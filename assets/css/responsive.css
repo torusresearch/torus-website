@@ -346,9 +346,16 @@
 */
 
 @media only screen and (min-width: 0px) and (max-width: 767px) {
-
+    .holder {
+      top: -270px;
+      left: 0px;
+      position: relative;
+    }
     .heading h1 {
         font-size: 18px;
+    }
+    .welcome-text {
+      margin-left:0px;
     }
     .logo-area img {
         width: 80px;
@@ -362,8 +369,8 @@
         line-height: 20px;
     }
     .welcome-text img {
-      height:40px;
-      width: 160px;
+      height:60px;
+      width: 240px;
     }
     .welcome-text h4 {
         font-size: 12px;
