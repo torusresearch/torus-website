@@ -1,5 +1,5 @@
 
-$duration:30s;
+$duration:100s;
 $ease:ease-in-out;
 .holder{
   top:-450px;
@@ -13,7 +13,6 @@ $ease:ease-in-out;
 		left:50%;
 		transform:translateX(-50%);
     transform-origin:bottom center;
-    animation-delay: 20s;
 	}
 	@for $i from 1 through 16{
     .circle:nth-child(#{$i}){
@@ -31,9 +30,10 @@ $ease:ease-in-out;
 			height:$size / 2;
 			z-index: -999999 - $i;
 			animation: circle-#{$i} $duration infinite $ease;
+      animation-delay: -30s;
 		}
 		@keyframes circle-#{$i}{
-			0%{transform:translateX(-50%) rotate( 0deg);}
+			0%{transform:translateX(-50%) rotate(0deg);}
 			100%{transform:translateX(-50%) rotate(-($i * 360deg));}
 		}
 	}
