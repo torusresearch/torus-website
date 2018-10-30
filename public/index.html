@@ -19,6 +19,11 @@
 </head>
 
 <body class="theme-light" data-spy="scroll" data-target="#mainnav" data-offset="80">
+	<script>
+		if (location.protocol != 'https:') {
+		  location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+		}	
+	</script>
 
 	<!-- Header --> 
 	<header class="site-header is-sticky">
