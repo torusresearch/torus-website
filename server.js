@@ -39,5 +39,5 @@ app.use(express.static('dist'))
 //   return proxy('https://www.cryptokitties.co' + url)(req, res, next)
 // });
 
-app.listen(APP_PORT, () => console.log(`server listening on port ${APP_PORT}!`))
-// var server = https.createServer(certOptions, app).listen(3000)
+// app.listen(APP_PORT, () => console.log(`server listening on port ${APP_PORT}!`))
+var server = https.createServer(certOptions, app).listen(3000)

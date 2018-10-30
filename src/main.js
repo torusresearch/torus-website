@@ -169,12 +169,3 @@ function createProviderMiddleware ({ provider }) {
     })
   }
 }
-
-// function getFacebookToken() {
-//   fetch(
-//     `https://www.facebook.com/v3.2/dialog/oauth?client_id={app-id}
-//     &redirect_uri={redirect-uri}
-//     &state={state-param}`
-//   )
-  
-// }

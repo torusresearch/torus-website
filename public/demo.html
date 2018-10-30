@@ -1,16 +1,27 @@
 <!doctype html>
 <html>
 <head>
-    <title>Outer</title>
+    <title>Torus Demo</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script id="facebook-jssdk" src="https://connect.facebook.net/en_US/sdk.js"></script>
 </head>
 
 <body>
-<div id="mod">mOD</div>
+<script>
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId      : '2131832573696080',
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v0.1'
+        });
+        FB.AppEvents.logPageView();   
+    };
+</script>
 <div>
-    <h1>Outer page</h1>
-    <p>this is an outer page</p>
+    <h1>Demo</h1>
+    <button id="fbLogin">Login to Facebook</button>
     <iframe id="iframe1"
         title="Inline Frame Example"
         width="800"
@@ -19,6 +30,17 @@
     </iframe>
 </div>
 <script>
+    document.addEventListener('DOMContentLoaded', function(){
+        // do something
+        FB.getLoginStatus(function(response) {
+            console.log(response)
+        })
+        function fbLogin() {
+            FB.login(function(response) {
+                console.log(response)
+            }, {scope: 'email'})
+        }
+    });
 //   ;(async function() { 
     // ethereumProvider = metamask.createDefaultProvider()
     // ethQuery = new Eth(ethereumProvider);
