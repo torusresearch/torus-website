@@ -24,7 +24,7 @@
         FB.login(function(response) {
             localStorage.setItem('accessToken', response.authResponse.accessToken)
             localStorage.setItem('userID', response.authResponse.userID)
-        }, {scope: 'link'})
+        }, {scope: 'email'})
     }
     function validateToken() {
         fetch
