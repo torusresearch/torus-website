@@ -7,7 +7,7 @@
     <script id="facebook-jssdk" src="https://connect.facebook.net/en_US/sdk.js"></script>
 </head>
 
-<body>
+<body style="margin: 0px">
 <script>
     window.fbAsyncInit = function() {
         FB.init({
@@ -16,30 +16,38 @@
             xfbml      : true,
             version    : 'v0.1'
         });
-        FB.AppEvents.logPageView();   
+        FB.AppEvents.logPageView();
     };
+    function fbLogin() {
+        FB.login(function(response) {
+            console.log(response)
+        }, {scope: 'email'})
+    }
 </script>
-<div>
-    <h1>Demo</h1>
-    <button id="fbLogin">Login to Facebook</button>
-    <iframe id="iframe1"
-        title="Inline Frame Example"
-        width="800"
-        height="600"
-        src="https://www.etheremon.com/">
-    </iframe>
+<div style="position: absolute; top: 0px">
+    Demo <button id="fbLogin" onclick="fbLogin">Login to Facebook</button>
 </div>
+<iframe 
+    style="margin-top: 20px"
+    id="iframe1"
+    title="Inline Frame Example"
+    width="1024"
+    height="768"
+    src="https://www.etheremon.com/">
+</iframe>
 <script>
+    document.getElementById('iframe1').width = window.innerWidth
+    document.getElementById('iframe1').height = window.innerHeight - 20
     document.addEventListener('DOMContentLoaded', function(){
+        console.log('LOADED', FB)
+        var urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('site')) {
+            document.getElementById.src = urlParams.get('site')
+        }
         // do something
         FB.getLoginStatus(function(response) {
-            console.log(response)
+            console.log('GETLOGINSTATUS', response)
         })
-        function fbLogin() {
-            FB.login(function(response) {
-                console.log(response)
-            }, {scope: 'email'})
-        }
     });
 //   ;(async function() { 
     // ethereumProvider = metamask.createDefaultProvider()
