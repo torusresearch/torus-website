@@ -20,6 +20,14 @@ if (!!process.env.FORCE_USE_SSL) {
 
 // app.use(cors())
 
+app.get('/privacy', (req, res) => {
+  res.sendFile(__dirname + '/public/privacy.html')
+})
+
+app.get('/demo', (req, res) => {
+  res.sendFile(__dirname + '/public/demo.html')
+})
+
 app.use(express.static('public'))
 app.use(express.static('dist'))
 
