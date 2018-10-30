@@ -13,9 +13,11 @@ if (!!process.env.FORCE_USE_SSL) {
   app.use(sslRedirect(['production'], 301))
 }
 
-var certOptions = {
-  key: fs.readFileSync(path.resolve('./ssl/server.key')),
-  cert: fs.readFileSync(path.resolve('./ssl/server.crt'))
+if (!process.env.DEMO) {
+  var certOptions = {
+    key: fs.readFileSync(path.resolve('./ssl/server.key')),
+    cert: fs.readFileSync(path.resolve('./ssl/server.crt'))
+  }
 }
 
 // app.use(cors())
