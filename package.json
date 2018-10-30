@@ -17,6 +17,7 @@
         "browserify": "^16.2.3",
         "cors": "^2.8.4",
         "dnode": "^1.2.2",
+        "dotenv": "^6.1.0",
         "eth-json-rpc-filters": "^3.0.1",
         "eth-json-rpc-infura": "^3.1.2",
         "eth-query": "^2.1.2",
