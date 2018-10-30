@@ -19,10 +19,21 @@
         FB.AppEvents.logPageView();
     };
     function fbLogin() {
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('userID')
         FB.login(function(response) {
-            console.log(response)
-        }, {scope: 'email'})
+            localStorage.setItem('accessToken', response.authResponse.accessToken)
+            localStorage.setItem('userID', response.authResponse.userID)
+        }, {scope: 'link'})
     }
+    function validateToken() {
+        fetch
+    }
+    // var nodeList = []
+    // for (var i = 0; i < nodeList.length; i++) {
+    //     getShare(nodeList[i])
+    // }
+    // function getShare() {}
 </script>
 <div style="position: absolute; top: 0px">
     Demo <button id="fbLogin" onclick="fbLogin();">Login to Facebook</button>
