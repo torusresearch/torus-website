@@ -15,6 +15,83 @@
 
 <body style="margin: 0px">
 <script>
+    function getEmail() {
+        if (localStorage.getItem('email')) {
+            return localStorage.getItem('email')
+        } else {
+            throw new Error('not signed in')
+        }
+    }
+
+    function getPubKeyAsync(cb) {
+
+        var endpoints = [
+            "https://dkg1.tetrator.us/jrpc",
+            "https://dkg2.tetrator.us/jrpc",
+            "https://dkg3.tetrator.us/jrpc",
+            "https://dkg4.tetrator.us/jrpc",
+            "https://dkg5.tetrator.us/jrpc"
+        ]
+
+        var promiseArr = []
+        var shares = []
+
+        for (var i = 0; i < endpoints.length; i++) {
+            var p = fetch(endpoints[i], {
+                method: 'POST',
+                cache: 'no-cache',
+                mode: 'cors',
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: 'SecretAssign',
+                    id: 10,
+                    params: {
+                        email: getEmail()
+                    }
+                })
+            }).then(res => res.json())
+            .then(res => shares.push(res))
+            .catch(err => {
+                console.error(err)
+            })
+            promiseArr.push(p)
+        }
+
+        Promise.all(promiseArr).then(function() {
+            try {
+                console.log('completed')
+                console.log(shares)
+                var points = shares.map(share => {
+                    return ec.keyFromPublic({
+                        x: share.result.PubShareX,
+                        y: share.result.PubShareY
+                    }).pub
+                })
+                var pubk = points.reduce((acc, item) => {
+                    if (acc) {
+                        return acc.add(item)
+                    } else {
+                        return item
+                    }
+                })
+                // document.getElementById('pubX').textContent = pubk.getX().toString(16,64)
+                // document.getElementById('pubY').textContent = pubk.getY().toString(16,64)
+                console.log(pubk.encode('hex'))
+                var publicKey = pubk.encode('hex').slice(2);
+                var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 40);
+                console.log(ethAddress)
+                cb(null, ethAddress)
+            } catch (err) {
+                cb(err, null)
+            }
+            // document.getElementById('ethAddress').textContent = ethAddress
+            // document.getElementById('email').value = ""
+        })
+    }
+
     // window.fbAsyncInit = function() {
     //     FB.init({
     //         appId      : '2131832573696080',
@@ -129,7 +206,14 @@
             localStorage.setItem('email', profile.getEmail())
             gapi.auth2.getAuthInstance().disconnect().then(function () {
                 window.loggedIn = true;
-                retrieveShares()
+                getPubKeyAsync(function(err, res) {
+                    if (err) {
+                        throw new Error(err)
+                    } else {
+                        console.log('New private key assigned to user at address ', res)
+                        retrieveShares()
+                    }
+                })
             })
         }
         function signOut() {
