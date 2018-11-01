@@ -8,6 +8,10 @@ const https = require('https')
 var cors = require('cors')
 const APP_PORT = process.env.PORT || 3000
 const sslRedirect = require('heroku-ssl-redirect')
+const bodyParser = require('body-parser')
+
+const {OAuth2Client} = require('google-auth-library');
+const client = new OAuth2Client('876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com');
 
 if (!!process.env.FORCE_USE_SSL) {
   app.use(sslRedirect(['production'], 301))
@@ -21,6 +25,7 @@ if (!process.env.DEMO) {
 }
 
 // app.use(cors())
+app.use(bodyParser.json())
 
 app.get('/privacy', (req, res) => {
   res.sendFile(__dirname + '/public/privacy.html')
@@ -28,6 +33,36 @@ app.get('/privacy', (req, res) => {
 
 app.get('/demo', (req, res) => {
   res.sendFile(__dirname + '/public/demo.html')
+})
+
+app.get('/publickey', (req, res) => {
+  res.sendFile(__dirname + '/public/publickey.html')
+})
+
+async function verify(token) {
+  const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com',  // Specify the CLIENT_ID of the app that accesses the backend
+      // Or, if multiple clients access the backend:
+      //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+  });
+  const payload = ticket.getPayload();
+  console.log(ticket, payload)
+  const userid = payload['sub'];
+  // If request specified a G Suite domain:
+  //const domain = payload['hd'];
+  return userid;
+}
+
+app.post('/retrieveShare', async (req, res) => {
+  let userId
+  try {
+    userId = await verify(req.body.token)
+  } catch (err) {
+    console.error(err)
+  }
+  console.log(userId)
+  res.send(JSON.stringify({data: 'share'}))
 })
 
 app.use(express.static('public'))

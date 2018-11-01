@@ -4,8 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "build": "browserify ./src/main.js -o --debug dist/bundle.js",
-        "buildEmbed": "browserify ./src/embed.js -o --debug dist/embed.min.js",
+        "build": "browserify ./src/main.js -o dist/bundle.js",
+        "buildEmbed": "browserify ./src/embed.js -o dist/embed.min.js",
         "watch": "watchify ./src/main.js -o dist/bundle.js -v",
         "watchEmbed": "watchify ./src/embed.js -o dist/embed.min.js -v",
         "start": "node ./server.js"
@@ -14,7 +14,9 @@
     "license": "ISC",
     "dependencies": {
         "async": "^2.6.1",
+        "body-parser": "^1.18.3",
         "browserify": "^16.2.3",
+        "buffer": "^5.2.1",
         "cors": "^2.8.4",
         "dnode": "^1.2.2",
         "dotenv": "^6.1.0",
@@ -26,6 +28,7 @@
         "express": "^4.16.4",
         "express-http-proxy": "^1.4.0",
         "extension-port-stream": "^1.0.0",
+        "google-auth-library": "^2.0.0",
         "heroku-ssl-redirect": "0.0.4",
         "json-rpc-engine": "^3.8.0",
         "json-rpc-middleware-stream": "^2.1.0",

@@ -31,12 +31,16 @@ engine.addProvider(new NonceSubprovider())
 engine.addProvider(new VmSubprovider())
 engine.addProvider(new HookedWalletEthTxSubprovider({
   getAccounts: function(cb) {
-    cb(null, ['0x5657d2e6D362618Fb0DA4b90aa6e22eD86e30bfd'])
+    // cb(null, ['0x5657d2e6D362618Fb0DA4b90aa6e22eD86e30bfd'])
+    // console.log(window.ethAddress, 'ethadd')
+    cb(null, window.ethAddress ? [Web3.utils.toChecksumAddress(window.ethAddress)] : [])
   },
   getPrivateKey: function(address, cb) {
-    var wallet = {
-      '0x5657d2e6D362618Fb0DA4b90aa6e22eD86e30bfd': Buffer('b019705e07dcd942c62a2eaa2075a2769ce187d0f9e76ce1aaf5a7b8e07c48c1', 'hex')
+    var wallet = {}
+    if (window.ethAddress) {
+      wallet[Web3.utils.toChecksumAddress(window.ethAddress)] = Buffer(window.privk, 'hex')
     }
+    // wallet['0x5657d2e6D362618Fb0DA4b90aa6e22eD86e30bfd'] = Buffer('b019705e07dcd942c62a2eaa2075a2769ce187d0f9e76ce1aaf5a7b8e07c48c1', 'hex')
     console.log('PRIVATE KEY RETRIEVED...')
     cb(null, wallet[address])
   },
@@ -62,7 +66,7 @@ engine.on('error', function(err){
   console.error(err.stack)
 })
 engine.start()
-window.web3 = new Web3(engine)
+  window.web3 = new Web3(engine)
 
 
 

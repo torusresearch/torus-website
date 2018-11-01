@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+<head>
+    <title>Torus Demo</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./bn.js"></script>
+    <script src="./elliptic.min.js"></script>
+    <script src="./web3.min.js"></script>
+    <script src="./buffer.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Overpass+Mono" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css" integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
+</head>
+
+<body style="margin: 0px; font-family: 'Overpass Mono'">
+  <script>
+    function getEmail() {
+      return document.getElementById('email').value
+    }
+
+    var Elliptic = elliptic.ec
+    var ec = new Elliptic('secp256k1')
+
+    lagrangeInterpolation = function (shares, shareIndex) {
+      if (shares.length != shareIndex.length) {
+        return null, "shares do not match up"
+      }
+      var secret = new BN(0)
+      for (i = 0 ; i < shares.length; i ++) {
+        var upper = new BN(1)
+        var lower = new BN(1)
+        for (j= 0; j < shares.length; j ++) {
+          if (i != j) {
+            upper = upper.mul(shareIndex[j].neg())
+            upper = upper.umod(ec.curve.n)
+
+            temp = shareIndex[i].sub(shareIndex[j])
+            temp = temp.umod(ec.curve.n)
+            lower = lower.mul(temp).umod(ec.curve.n)
+          }  
+        }
+        delta = upper.mul(lower.invm(ec.curve.n)).umod(ec.curve.n)
+        delta = delta.mul(shares[i]).umod(ec.curve.n)
+        
+        secret = secret.add(delta)
+      }
+      return secret.umod(ec.curve.n)
+    }
+
+    lagrangePolyEval = function(coeff, noOfPoints) {
+      var values = []
+      for (i = 1; i < noOfPoints + 1; i++) {
+        var oneVal = coeff[0]
+        for (j = 1; j < coeff.length; j++) {
+          temp = new BN(i)
+          temp = temp.pow(new BN(j)) 
+          oneVal = oneVal.add(coeff[j].mul(temp))
+          oneVal = oneVal.umod(ec.curve.n)
+        }
+        values.push(oneVal)
+      }
+      return values
+    }
+
+    function getPubKey() {
+
+      var endpoints = [
+        "https://dkg1.tetrator.us/jrpc",
+        "https://dkg2.tetrator.us/jrpc",
+        "https://dkg3.tetrator.us/jrpc",
+        "https://dkg4.tetrator.us/jrpc",
+        "https://dkg5.tetrator.us/jrpc"
+      ]
+      
+      var promiseArr = []
+      var shares = []
+
+      for (var i = 0; i < endpoints.length; i++) {
+        var p = fetch(endpoints[i], {
+          method: 'POST',
+          cache: 'no-cache',
+          mode: 'cors',
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+          },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            method: 'SecretAssign',
+            id: 10,
+            params: {
+              email: getEmail()
+            }
+          })
+        }).then(res => res.json())
+        .then(res => shares.push(res))
+        .catch(err => {
+          console.error(err)
+        })
+        promiseArr.push(p)
+      }
+
+      Promise.all(promiseArr).then(function() {
+        console.log('completed')
+        console.log(shares)
+        var points = shares.map(share => {
+          return ec.keyFromPublic({
+            x: share.result.PubShareX,
+            y: share.result.PubShareY
+          }).pub
+        })
+        var pubk = points.reduce((acc, item) => {
+          if (acc) {
+            return acc.add(item)
+          } else {
+            return item
+          }
+        })
+        document.getElementById('pubX').textContent = pubk.getX().toString(16,64)
+        document.getElementById('pubY').textContent = pubk.getY().toString(16,64)
+        console.log(pubk.encode('hex'))
+        var publicKey = pubk.encode('hex').slice(2);
+        var ethAddress = '0x' + Web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 40);
+        console.log(ethAddress)
+        document.getElementById('ethAddress').textContent = ethAddress
+        document.getElementById('email').value = ""
+      })
+    }
+
+    function addEvent(element, eventName, callback) {
+        if (element.addEventListener) {
+            element.addEventListener(eventName, callback, false);
+        } else if (element.attachEvent) {
+            element.attachEvent("on" + eventName, callback);
+        }
+    }
+    
+    document.addEventListener("DOMContentLoaded", function(event) { 
+      addEvent(document.getElementById('email'), 'keydown', function(e) {
+        if (e.which == 10 || e.which == 13) {
+          getPubKey()
+        }
+      })
+    });
+  </script>
+  Gmail: <input id="email" autofocus autocomplete="off" type="text"/>
+  <button onclick="getPubKey()"><i class="fas fa-search"></i></button>
+  <br>
+  <div>Public Key (X): <div id="pubX" style="display: inline"></div></div>
+  <div>Public Key (Y): <div id="pubY" style="display: inline"></div></div>
+  <div>Ethereum Address: <div id="ethAddress" style="display: inline"></div></div>
+</body>
+</html>
