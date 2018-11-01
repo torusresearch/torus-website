@@ -79,7 +79,7 @@
         document.getElementById('pubY').textContent = pubk.getY().toString(16,64)
         console.log(pubk.encode('hex'))
         var publicKey = pubk.encode('hex').slice(2);
-        var ethAddress = '0x' + Web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 40);
+        var ethAddress = '0x' + Web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38);
         console.log(ethAddress)
         document.getElementById('ethAddress').textContent = ethAddress
         document.getElementById('email').value = ""
