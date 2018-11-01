@@ -115,7 +115,6 @@
         // }
       </script>
       <script>
-
         var Elliptic = elliptic.ec
         var ec = new Elliptic('secp256k1')
         function onSignIn(googleUser) {
@@ -127,6 +126,10 @@
             console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
             localStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
             localStorage.setItem('email', profile.getEmail())
+            gapi.auth2.getAuthInstance().disconnect().then(function () {
+                window.loggedIn = true;
+                retrieveShares()
+            })
         }
         function signOut() {
             var auth2 = gapi.auth2.getAuthInstance();
@@ -240,29 +243,29 @@
               onload="this.onload=function(){};handleClientLoad()" 
               onreadystatechange="if (this.readyState === 'complete') this.onload()">
       </script> -->
-<div style="position: absolute; top: 0px; height: 40px;">
+<div style="position: absolute; top: 0px; height: 20px;">
     <!-- Demo <button id="fbLogin" onclick="fbLogin();">Login to Facebook</button> -->
     <div style="display: flex; justify-content: space-around">
-        <div style="height:36px; display: table;">
+        <!-- <div style="height:36px; display: table;">
             <div style="display: table-cell; vertical-align: middle">
                 <div>Demo</div>
             </div>
-        </div>
-        <div class="g-signin2" data-onsuccess="onSignIn"></div>
-        <div style="height:36px; display: table;">
+        </div> -->
+        <div class="g-signin2" style="height: 20px;" data-onsuccess="onSignIn"></div>
+        <!-- <div style="height:36px; display: table;">
             <div style="display: table-cell; vertical-align: middle">
                 <div><a href="#" onclick="signOut();">Sign out</a></div>
             </div>
-        </div>
-        <div style="height:36px; display: table;">
+        </div> -->
+        <!-- <div style="height:36px; display: table;">
             <div style="display: table-cell; vertical-align: middle">
                 <div><a href="#" onclick="retrieveShares();">Get Key</a></div>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 <iframe 
-    style="margin-top: 40px"
+    style="margin-top: 20px"
     id="iframe1"
     title="Inline Frame Example"
     width="1024"
