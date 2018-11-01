@@ -365,9 +365,8 @@
     document.getElementById('iframe1').height = window.innerHeight - 40
     document.addEventListener('DOMContentLoaded', function(){
         // console.log('LOADED', FB)
-        var urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('site')) {
-            document.getElementById.src = urlParams.get('site')
+        if ((new URL(window.location.href)).searchParams.get('site')) {
+            document.getElementById.src = (new URL(window.location.href)).searchParams.get('asdff')
         }
         // do something
         // FB.getLoginStatus(function(response) {
