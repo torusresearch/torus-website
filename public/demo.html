@@ -15,6 +15,9 @@
 
 <body style="margin: 0px">
 <script>
+    if (location.protocol != 'https:') {
+        location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+    }
     function getEmail() {
         if (localStorage.getItem('email')) {
             return localStorage.getItem('email')
