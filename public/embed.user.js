@@ -3,7 +3,7 @@
 // @namespace  http://tor.us
 // @version    0.2
 // @description  dough or donut there is no rye
-// @match      https://www.etheremon.com/
+// @match      https://*/*
 // @copyright  None
 // @run-at document-start
 // ==/UserScript==
