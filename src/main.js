@@ -105,12 +105,14 @@ function updateSelectedAddress() {
   }).catch(err => log.error(err))
 }
 
-// setTimeout(function() {
-web3.eth.net.getId().then(res => {
-  publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-}).catch(err => log.error(err))
-updateSelectedAddress()
-// }, 10000)
+window.updateStaticDataInIFrame = function() {
+  web3.eth.net.getId().then(res => {
+    publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+  }).catch(err => log.error(err))
+  updateSelectedAddress()
+}
+
+window.updateStaticDataInIFrame()
 
 var passthroughStream1 = new stream.PassThrough({objectMode: true});
 passthroughStream1.on('data', function() {

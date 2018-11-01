@@ -97785,14 +97785,16 @@ function updateSelectedAddress() {
   });
 }
 
-// setTimeout(function() {
-web3.eth.net.getId().then(function (res) {
-  publicConfigOutStream.write(JSON.stringify({ networkVersion: res }));
-}).catch(function (err) {
-  return log.error(err);
-});
-updateSelectedAddress();
-// }, 10000)
+window.updateStaticDataInIFrame = function () {
+  web3.eth.net.getId().then(function (res) {
+    publicConfigOutStream.write(JSON.stringify({ networkVersion: res }));
+  }).catch(function (err) {
+    return log.error(err);
+  });
+  updateSelectedAddress();
+};
+
+window.updateStaticDataInIFrame();
 
 var passthroughStream1 = new stream.PassThrough({ objectMode: true });
 passthroughStream1.on('data', function () {

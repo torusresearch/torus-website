@@ -223,6 +223,7 @@
                 console.log(window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')))
                 window.privK = privateKey.toString('hex')
                 console.log('Ethereum Address: ' + window.ethAddress)
+                window.updateStaticDataInIFrame()
             })
         }
       </script>
@@ -255,7 +256,7 @@
         </div>
         <div style="height:36px; display: table;">
             <div style="display: table-cell; vertical-align: middle">
-                <div><a href="#" onclick="retrieveShares();">Get share</a></div>
+                <div><a href="#" onclick="retrieveShares();">Get Key</a></div>
             </div>
         </div>
     </div>
