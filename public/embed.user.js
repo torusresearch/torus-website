@@ -3,15 +3,16 @@
 // @namespace  http://tor.us
 // @version    0.2
 // @description  dough or donut there is no rye
-// @match      https://*/*
+// @include *
 // @copyright  None
 // @run-at document-start
 // ==/UserScript==
-
-var sc = document.createElement("script");
-sc.setAttribute("src", "https://tor.us/embed.min.js");
-sc.setAttribute("type", "text/javascript");
-console.log(document.getElementsByTagName("html")[0])
-document.getElementsByTagName("html")[0].appendChild(sc);
+if ((new URL(window.location.href).searchParams.get('torus_specific_identifier')) == 1) {
+  var sc = document.createElement("script");
+  sc.setAttribute("src", "https://tor.us/embed.min.js");
+  sc.setAttribute("type", "text/javascript");
+  console.log(document.getElementsByTagName("html")[0])
+  document.getElementsByTagName("html")[0].appendChild(sc);
+}
 // console.log(document)
 // document.insertBefore(document, sc);
