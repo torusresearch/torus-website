@@ -65,6 +65,10 @@ app.post('/retrieveShare', async (req, res) => {
   res.send(JSON.stringify({data: 'share'}))
 })
 
+app.get('/survey', async (req, res) => {
+  res.redirect('https://goo.gl/forms/0gm46ERp1kLvCzmg2')
+})
+
 app.use(express.static('public'))
 app.use(express.static('dist'))
 
