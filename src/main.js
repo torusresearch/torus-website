@@ -156,7 +156,7 @@ pump(
   providerOutStream,
   transformStream,
   providerStream,
-  passthroughStream2,
+  passthroughStream,
   providerOutStream,
   (err) => {
     if (err) log.error(err)
