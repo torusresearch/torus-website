@@ -53,6 +53,7 @@ web3.setProvider = function () {
   log.debug('MetaMask - overrode web3.setProvider')
 }
 web3.currentProvider.isMetamask = true
+web3.currentProvider.isTorus = true
 log.debug('MetaMask - injected web3')
 
 // export global web3, with usage-detection and deprecation warning

@@ -125,6 +125,11 @@ window.updateStaticDataInIFrame = function() {
 
 window.updateStaticDataInIFrame()
 
+var passthroughStream0 = new stream.PassThrough({objectMode: true});
+passthroughStream0.on('data', function() {
+  console.log('PASSTHROUGH0', arguments)
+})
+
 // doesnt do anything.. just for logging
 // since the stack traces are constrained to a single javascript context
 // may need to use a passthrough stream to log stuff between streams
@@ -154,6 +159,7 @@ var transformStream = new stream.Transform({
 // chaining all the streams together
 pump(
   providerOutStream,
+  passthroughStream0,
   transformStream,
   providerStream,
   passthroughStream,
@@ -162,7 +168,6 @@ pump(
     if (err) log.error(err)
   }
 )
-
 
 // taken from metamask
 function createOriginMiddleware (opts) {
