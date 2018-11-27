@@ -1,6 +1,6 @@
 ## Torus Website
 
-To install dependencies and build projects run following commands from the main project directory:
+To install dependencies and build website, run the following commands from the main project directory:
 
 ```sh
 yarn && yarn build
