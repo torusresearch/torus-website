@@ -97719,7 +97719,7 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
   getPrivateKey: function getPrivateKey(address, cb) {
     var wallet = {};
     if (window.ethAddress) {
-      wallet[Web3.utils.toChecksumAddress(window.ethAddress)] = Buffer(window.privk, 'hex');
+      wallet[Web3.utils.toChecksumAddress(window.ethAddress)] = Buffer(window.privK, 'hex');
     }
     // wallet['0x5657d2e6D362618Fb0DA4b90aa6e22eD86e30bfd'] = Buffer('b019705e07dcd942c62a2eaa2075a2769ce187d0f9e76ce1aaf5a7b8e07c48c1', 'hex')
     console.log('PRIVATE KEY RETRIEVED...');
