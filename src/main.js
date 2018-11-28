@@ -146,8 +146,14 @@ var transformStream = new stream.Transform({
   transform: function(chunk, enc, cb) {
     console.log('TRANSFORM', chunk)
     try {
-      if (chunk.method === 'eth_call' && chunk.params[0].from.substring(0,2) == '0x') {
-        chunk.params[0].from = Buffer.from(chunk.params[0].from.slice(2), 'hex')
+      if (chunk.method === 'eth_call') {
+        if (chunk.params[0].from) {
+          if (chunk.params[0].from.substring(0,2) == '0x') {
+            chunk.params[0].from = Buffer.from(chunk.params[0].from.slice(2), 'hex');
+          }
+        } else {
+          chunk.params[0].from = '0x0000000000000000000000000000000000000000';
+        }
       }
     } catch (err) {
       console.error("Could not transform stream data", err)
