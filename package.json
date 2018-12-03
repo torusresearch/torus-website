@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "build": "browserify ./src/main.js -o dist/bundle.js",
+        "build": "browserify ./src/main.js -o dist/bundle.js && ./fixEthJS.sh",
         "buildEmbed": "browserify ./src/embed.js -o dist/embed.min.js",
         "watch": "watchify ./src/main.js -o dist/bundle.js -v",
         "watchEmbed": "watchify ./src/embed.js -o dist/embed.min.js -v",
