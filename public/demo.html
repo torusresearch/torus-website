@@ -319,46 +319,41 @@
         }
       </script>
       
-      <!-- <button id="sign-in-or-out-button"
-              style="margin-left: 25px">Sign In/Authorize</button>
-      <button id="revoke-access-button"
-              style="display: none; margin-left: 25px">Revoke access</button>
-      
-      <div id="auth-status" style="display: inline; padding-left: 25px"></div><hr>
-      
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-      <script async defer src="https://apis.google.com/js/api.js" 
-              onload="this.onload=function(){};handleClientLoad()" 
-              onreadystatechange="if (this.readyState === 'complete') this.onload()">
-      </script> -->
 <div style="position: absolute; top: 0px; height: 20px;">
-    <!-- Demo <button id="fbLogin" onclick="fbLogin();">Login to Facebook</button> -->
-    <div style="display: flex; justify-content: space-around">
-        <!-- <div style="height:36px; display: table;">
-            <div style="display: table-cell; vertical-align: middle">
-                <div>Demo</div>
-            </div>
-        </div> -->
+    <button 
+        class="torus-button" 
+        style="border-radius: 50%; height: 50px; width: 50px;background: url(images/torus-button.png);"
+        >    
+    </button>
+    <div 
+        style="display: none; background-color:lightblue; height: 300px; width: 200px; border: 5px solid gray; justify-content: space-around; text-align: center;">
         <div class="g-signin2" style="height: 20px;" data-onsuccess="onSignIn"></div>
-        <!-- <div style="height:36px; display: table;">
-            <div style="display: table-cell; vertical-align: middle">
-                <div><a href="#" onclick="signOut();">Sign out</a></div>
-            </div>
-        </div> -->
-        <!-- <div style="height:36px; display: table;">
-            <div style="display: table-cell; vertical-align: middle">
-                <div><a href="#" onclick="retrieveShares();">Get Key</a></div>
-            </div>
-        </div> -->
     </div>
 </div>
+
+<!-- Script to show and hide content container for torus -->
+<script>
+    var coll = document.getElementsByClassName("torus-button");
+    var i;
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        this.classList.toggle("active");
+        var content = this.nextElementSibling;
+        if (content.style.display === "flex") {
+          content.style.display = "none";
+        } else {
+          content.style.display = "flex";
+        }
+      });
+    }
+</script>
+
 <iframe 
-    style="margin-top: 20px"
     id="iframe1"
     title="Inline Frame Example"
     width="1024"
     height="768"
-    src="https://www.etheremon.com/?torus_specific_identifier=1">
+    src="https://www.etheremon.com//?torus_specific_identifier=1">
 </iframe>
 <script>
     (function(funcName, baseObj) {
