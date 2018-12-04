@@ -50,6 +50,7 @@
                     } else {
                         console.log('New private key assigned to user at address ', res)
                         retrieveShares()
+                        updateWidgetDetails(res)
                     }
                 })
             })
@@ -251,27 +252,38 @@
       <script>
         var Elliptic = elliptic.ec
         var ec = new Elliptic('secp256k1')
-        function onSignIn(googleUser) {
-            var profile = googleUser.getBasicProfile();
-            console.log(googleUser)
-            console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-            console.log('Name: ' + profile.getName());
-            console.log('Image URL: ' + profile.getImageUrl());
-            console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-            localStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
-            localStorage.setItem('email', profile.getEmail())
-            gapi.auth2.getAuthInstance().disconnect().then(function () {
-                window.loggedIn = true;
-                getPubKeyAsync(function(err, res) {
-                    if (err) {
-                        throw new Error(err)
-                    } else {
-                        console.log('New private key assigned to user at address ', res)
-                        retrieveShares()
-                    }
-                })
-            })
+        // function onSignIn(googleUser) {
+        //     var profile = googleUser.getBasicProfile();
+        //     console.log(googleUser)
+        //     console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+        //     console.log('Name: ' + profile.getName());
+        //     console.log('Image URL: ' + profile.getImageUrl());
+        //     console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+        //     localStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
+        //     localStorage.setItem('email', profile.getEmail())
+        //     gapi.auth2.getAuthInstance().disconnect().then(function () {
+        //         window.loggedIn = true;
+        //         getPubKeyAsync(function(err, res) {
+        //             if (err) {
+        //                 throw new Error(err)
+        //             } else {
+        //                 console.log('New private key assigned to user at address ', res)
+        //                 retrieveShares()
+        //             }
+        //         })
+        //     })
+        // }
+        
+        function updateWidgetDetails(ethAddress) {
+            console.log('updating widget details')
+            window.connectionStream.write({name: "widget", data: {
+                ethAddress,
+                balance: 0,
+                email: localStorage.getItem('email')
+            }})
         }
+
+
         function signOut() {
             var auth2 = gapi.auth2.getAuthInstance();
             auth2.signOut().then(function () {

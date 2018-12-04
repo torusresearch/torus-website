@@ -6,13 +6,14 @@ var Web3 = require('web3')
 const log = require('loglevel')
 const LocalMessageDuplexStream = require('post-message-stream')
 const MetamaskInpageProvider = require('./inpage-provider.js')
-// const setupMultiplex = require('./stream-utils.js').setupMultiplex
-// var oauthStream
+const setupMultiplex = require('./stream-utils.js').setupMultiplex
+var mux, widget
 restoreContextAfterImports()
 log.setDefaultLevel(process.env.METAMASK_DEBUG ? 'debug' : 'warn')
 
 createWidget()
 setupWeb3()
+
 
 /**
  * Create widget
@@ -32,7 +33,11 @@ function createWidget() {
     ifrm.setAttribute("width", "0")
     ifrm.setAttribute("src", "https://localhost:3000/widget")
     window.document.body.appendChild(ifrm)
-    var elem = htmlToElement('<div id="torusWidget"><button id="torusLogin" tabIndex="-1"></button></div>')
+    var elem = htmlToElement('\
+    <div id="torusWidget">\
+      <button id="torusLogin" tabIndex="-1">\
+      </button>\
+    </div>')
     window.document.body.appendChild(elem)
     var retry = window.setInterval(function() {
       console.log('running')
@@ -61,6 +66,17 @@ function setupWeb3() {
       name: 'embed',
       target: 'iframe',
       targetWindow: document.getElementById("torusIFrame").contentWindow
+    })
+    window.connectionStream = new LocalMessageDuplexStream({
+      name: 'embed2',
+      target: 'iframe2',
+      targetWindow: document.getElementById("torusIFrame").contentWindow
+    })
+    mux = setupMultiplex(window.connectionStream)
+    widget = mux.createStream('widget')
+    widget.on('data', function() {
+      console.log('Received data for widget', arguments)
+      window.document.getElementById('torusWidget').setAttribute('hidden', true)
     })
     // compose the inpage provider
     var inpageProvider = new MetamaskInpageProvider(window.metamaskStream)

@@ -83,11 +83,11 @@ window.metamaskStream = new LocalMessageDuplexStream({
   target: 'embed',
   targetWindow: window.parent
 })
-// window.connectionStream = new LocalMessageDuplexStream({
-//   name: 'iframe2',
-//   target: 'embed2',
-//   targetWindow: window.parent
-// })
+window.connectionStream = new LocalMessageDuplexStream({
+  name: 'iframe2', // TODO: can we use the same name/target for two streams?
+  target: 'embed2',
+  targetWindow: window.parent
+})
 
 // taken from metamask...
 const rpcEngine = new RpcEngine()
@@ -104,7 +104,6 @@ rpcEngine.push(createProviderMiddleware({ provider: engine }))
 
 // this allows us to set up multiple channels using just a single stream connection
 const mux = setupMultiplex(window.metamaskStream)
-// const mux2 = setupMultiplex(window.connectionStream)
 
 // define channels within a stream
 const providerOutStream = mux.createStream('provider')
