@@ -84,7 +84,11 @@
                 // document.getElementById('pubY').textContent = pubk.getY().toString(16,64)
                 console.log(pubk.encode('hex'))
                 var publicKey = pubk.encode('hex').slice(2);
-                var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 40);
+                var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38);
+                var checkSumAddress = window.web3.utils.toChecksumAddress(ethAddress)
+                var accountBalance = window.web3.eth.getBalance(checkSumAddress);
+                document.getElementsByClassName("account-address")[0].innerHTML = ethAddress;
+                console.log("ACCOUNT BALANCE: " + accountBalance);
                 console.log(ethAddress)
                 cb(null, ethAddress)
             } catch (err) {
@@ -93,6 +97,13 @@
             // document.getElementById('ethAddress').textContent = ethAddress
             // document.getElementById('email').value = ""
         })
+
+        console.log("REMOVING SIGN IN BUTTON");
+        document.getElementsByClassName("sign-in-button")[0].style.display = 'none';
+        document.getElementsByClassName("account-address")[0].style.display = 'flex';
+
+        document.getElementsByClassName("account-balance")[0].style.display = 'flex';
+        document.getElementsByClassName("account-transactions")[0].style.display = 'flex';
     }
 
     // window.fbAsyncInit = function() {
@@ -326,8 +337,26 @@
         >    
     </button>
     <div 
-        style="display: none; background-color:lightblue; height: 300px; width: 200px; border: 5px solid gray; justify-content: space-around; text-align: center;">
-        <div class="g-signin2" style="height: 20px;" data-onsuccess="onSignIn"></div>
+    style="display: none; background-color:lightblue; height: 300px; width: 200px; border: 5px solid gray; justify-content: space-around; justify-content: center;">
+        <table style="width:100%">
+            <tr>
+                <th> Torus </th>
+            </tr>
+            <tr class="account-address" style="display: none; justify-content: center; font-size:9px">
+                <th> 0x00000000000000000000 </th>
+            </tr>
+            <tr class="account-balance" style="display: none; justify-content: center;">
+                <th> ETH Balance: 0 </th>
+            </tr>
+            <tr class="account-transactions" style="display: none; justify-content: center;">
+                <th> Transactions </th>
+            </tr>
+            <tr>
+                <th align="center" class="sign-in-button">
+                    <div class="g-signin2" style="height: 20px;" data-onsuccess="onSignIn"></div>
+                </th>
+            </tr>
+        </table>
     </div>
 </div>
 
