@@ -35,6 +35,10 @@ app.get('/demo', (req, res) => {
   res.sendFile(__dirname + '/public/demo.html')
 })
 
+app.get('/widget', (req, res) => {
+  res.sendFile(__dirname + '/public/widget.html')
+})
+
 app.get('/address', (req, res) => {
   res.sendFile(__dirname + '/public/publickey.html')
 })
