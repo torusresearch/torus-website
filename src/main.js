@@ -78,11 +78,16 @@ engine.start()
 const LocalMessageDuplexStream = require('post-message-stream')
 window.LocalMessageDuplexStream = LocalMessageDuplexStream
 // we set up a Window.postMessage() stream between localhost:3000 context (iframe) and the dapp inpage context (embed)
-window.connectionStream = new LocalMessageDuplexStream({
+window.metamaskStream = new LocalMessageDuplexStream({
   name: 'iframe',
   target: 'embed',
-  targetWindow: document.getElementById('iframe1').contentWindow
+  targetWindow: window.parent
 })
+// window.connectionStream = new LocalMessageDuplexStream({
+//   name: 'iframe2',
+//   target: 'embed2',
+//   targetWindow: window.parent
+// })
 
 // taken from metamask...
 const rpcEngine = new RpcEngine()
@@ -98,11 +103,22 @@ rpcEngine.push(createProviderMiddleware({ provider: engine }))
 
 
 // this allows us to set up multiple channels using just a single stream connection
-const mux = setupMultiplex(window.connectionStream)
+const mux = setupMultiplex(window.metamaskStream)
+// const mux2 = setupMultiplex(window.connectionStream)
 
 // define channels within a stream
 const providerOutStream = mux.createStream('provider')
 const publicConfigOutStream = mux.createStream('publicConfig')
+const oauthInputStream = mux.createStream('oauth')
+const p = new stream.PassThrough({objectMode: true});
+p.on('data', function() {
+  console.log('data gotten from p', arguments)
+  window.eventFire(window.document.getElementById("googleAuthBtn"), "click")
+})
+
+pump(oauthInputStream, p, (err) => {
+  if (err) log.error(err)
+})
 
 function updateSelectedAddress() {
   web3.eth.getAccounts().then(res => {
