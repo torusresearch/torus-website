@@ -1,0 +1,14 @@
+#torusWidget {
+  z-index: 999999;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  height: 17px;
+}
+
+#torusLogin {
+  border-radius: 30%;
+  height: 50px;
+  width: 50px;
+  background: url(https://localhost:3000/images/torus-button.png);
+}

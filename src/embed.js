@@ -1,4 +1,4 @@
-/*global Web3*/
+
 console.log('INJECTED IN', window.location.href)
 
 cleanContextForImports()
@@ -19,15 +19,21 @@ setupWeb3()
  */
 function createWidget() {
   console.log('Creating Torus widget...')
-  document.addEventListener("DOMContentLoaded", function(event) {
+
+  var onLoad = function() {
     var ifrm = window.document.createElement('iframe');
-    ifrm.setAttribute('id', 'torusWidget'); // assign an id
+    ifrm.setAttribute('id', 'torusIFrame'); // assign an id
     ifrm.setAttribute("height", "0")
     ifrm.setAttribute("width", "0")
     ifrm.setAttribute("src", "https://localhost:3000/widget")
     window.document.body.appendChild(ifrm)
-    var elem = htmlToElement('<div style = "z-index: 999999; position: fixed; top: 10px; left: 10px; height: 17px;"><button id="torusLogin" class="torus-button" style="border-radius: 50%; height: 50px; width: 50px;background: url(https://localhost:3000/images/torus-button.png);"></button></div>')
+    var elem = htmlToElement('<div id="torusWidget"><button id="torusLogin"></button></div>')
     window.document.body.appendChild(elem)
+    var link = window.document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('type', 'text/css');
+    link.setAttribute('href', 'https://localhost:3000/widget.css');
+    window.document.head.appendChild(link);
     var retry = window.setInterval(function() {
       console.log('running')
       if (window.document.readyState !== "complete") {
@@ -39,25 +45,23 @@ function createWidget() {
       })
       window.clearInterval(retry)
     }, 300)
-  });
+  }
+  if (window.document.body != null) {
+    onLoad()
+  } else {
+    document.addEventListener("DOMContentLoaded", onLoad);
+  }
 }
 
 function setupWeb3() {
-  document.addEventListener("DOMContentLoaded", function(event) {
+  var onLoad = function() {
     console.log('setupWeb3 running')
     // setup background connection
     window.metamaskStream = new LocalMessageDuplexStream({
       name: 'embed',
       target: 'iframe',
-      targetWindow: document.getElementById("torusWidget").contentWindow
+      targetWindow: document.getElementById("torusIFrame").contentWindow
     })
-    // window.connectionStream = new LocalMessageDuplexStream({
-    //   name: 'embed2',
-    //   traget: 'iframe2',
-    //   targetWindow: document.getElementById("torusWidget").contentWindow
-    // })
-    // var mux2 = setupMultiplex(window.connectionStream)
-    // oauthStream = mux2.createStream("oauth")
     // compose the inpage provider
     var inpageProvider = new MetamaskInpageProvider(window.metamaskStream)
     inpageProvider.setMaxListeners(1000)
@@ -97,7 +101,12 @@ function setupWeb3() {
     web3.currentProvider.isMetamask = true
     web3.currentProvider.isTorus = true
     log.debug('MetaMask - injected web3')
-  })
+  }
+  if (window.document.body != null) {
+    onLoad()
+  } else {
+    document.addEventListener("DOMContentLoaded", onLoad)
+  }
 }
 
 
