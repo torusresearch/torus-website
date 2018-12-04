@@ -21,19 +21,19 @@ function createWidget() {
   console.log('Creating Torus widget...')
 
   var onLoad = function() {
+    var link = window.document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('type', 'text/css');
+    link.setAttribute('href', 'https://localhost:3000/widget.css');
+    window.document.head.appendChild(link);
     var ifrm = window.document.createElement('iframe');
     ifrm.setAttribute('id', 'torusIFrame'); // assign an id
     ifrm.setAttribute("height", "0")
     ifrm.setAttribute("width", "0")
     ifrm.setAttribute("src", "https://localhost:3000/widget")
     window.document.body.appendChild(ifrm)
-    var elem = htmlToElement('<div id="torusWidget"><button id="torusLogin"></button></div>')
+    var elem = htmlToElement('<div id="torusWidget"><button id="torusLogin" tabIndex="-1"></button></div>')
     window.document.body.appendChild(elem)
-    var link = window.document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('type', 'text/css');
-    link.setAttribute('href', 'https://localhost:3000/widget.css');
-    window.document.head.appendChild(link);
     var retry = window.setInterval(function() {
       console.log('running')
       if (window.document.readyState !== "complete") {
