@@ -82,14 +82,9 @@
                 })
                 // document.getElementById('pubX').textContent = pubk.getX().toString(16,64)
                 // document.getElementById('pubY').textContent = pubk.getY().toString(16,64)
-                console.log(pubk.encode('hex'))
                 var publicKey = pubk.encode('hex').slice(2);
                 var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38);
-                var checkSumAddress = window.web3.utils.toChecksumAddress(ethAddress)
-                var accountBalance = window.web3.eth.getBalance(checkSumAddress);
                 document.getElementsByClassName("account-address")[0].innerHTML = ethAddress;
-                console.log("ACCOUNT BALANCE: " + accountBalance);
-                console.log(ethAddress)
                 cb(null, ethAddress)
             } catch (err) {
                 cb(err, null)
@@ -97,11 +92,12 @@
             // document.getElementById('ethAddress').textContent = ethAddress
             // document.getElementById('email').value = ""
         })
-
-        console.log("REMOVING SIGN IN BUTTON");
+        document.getElementsByClassName("torus-label")[0].style.display = 'none';
         document.getElementsByClassName("sign-in-button")[0].style.display = 'none';
+        document.getElementsByClassName("account-email")[0].style.display = 'flex';
+        document.getElementsByClassName("account-address-label")[0].style.display = 'flex';
         document.getElementsByClassName("account-address")[0].style.display = 'flex';
-
+        document.getElementsByClassName("account-balance-label")[0].style.display = 'flex';
         document.getElementsByClassName("account-balance")[0].style.display = 'flex';
         document.getElementsByClassName("account-transactions")[0].style.display = 'flex';
     }
@@ -218,6 +214,7 @@
             console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
             localStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
             localStorage.setItem('email', profile.getEmail())
+            document.getElementsByClassName("account-email")[0].innerHTML = profile.getEmail();
             gapi.auth2.getAuthInstance().disconnect().then(function () {
                 window.loggedIn = true;
                 getPubKeyAsync(function(err, res) {
@@ -226,10 +223,23 @@
                     } else {
                         console.log('New private key assigned to user at address ', res)
                         retrieveShares()
+                        resolveAccountDetails(res)
                     }
                 })
             })
         }
+
+        function resolveAccountDetails(ethAddress) {
+            var checkSumAddress = window.web3.utils.toChecksumAddress(ethAddress)
+            window.web3.eth.getBalance(checkSumAddress).then(result => {
+                var accountBalance = Number(window.web3.utils.fromWei(result));
+                var accountBalanceContent = accountBalance.toFixed(4) + " ETH";
+                document.getElementsByClassName("account-balance")[0].innerHTML = accountBalanceContent;
+            }).catch(error => {
+                throw new Error(error)
+            })
+        }
+
         function signOut() {
             var auth2 = gapi.auth2.getAuthInstance();
             auth2.signOut().then(function () {
@@ -339,15 +349,25 @@
     <div 
     style="display: none; background-color:lightblue; height: 300px; width: 200px; border: 5px solid gray; justify-content: space-around; justify-content: center;">
         <table style="width:100%">
-            <tr>
+            <tr class="torus-label">
                 <th> Torus </th>
             </tr>
+            <tr class="account-email" style="display: none; justify-content: center;">
+                <th> example@gmail.com </th>
+            </tr>
+            <tr class="account-address-label" style="display: none; justify-content: center;">
+                <th> Address </th>
+            </tr>
             <tr class="account-address" style="display: none; justify-content: center; font-size:9px">
-                <th> 0x00000000000000000000 </th>
+                <td> 0x00000000000000000000 </td>
+            </tr>
+            <tr class="account-balance-label" style="display: none; justify-content: center;">
+                <th> Balance </th>
             </tr>
             <tr class="account-balance" style="display: none; justify-content: center;">
-                <th> ETH Balance: 0 </th>
+                <td> ETH Balance: 0 </td>
             </tr>
+            <hr>
             <tr class="account-transactions" style="display: none; justify-content: center;">
                 <th> Transactions </th>
             </tr>
