@@ -54,7 +54,7 @@ function createWidget() {
 }
 
 function setupWeb3() {
-  var onLoad = function() {
+  var onLoad2 = function() {
     console.log('setupWeb3 running')
     // setup background connection
     window.metamaskStream = new LocalMessageDuplexStream({
@@ -95,17 +95,17 @@ function setupWeb3() {
     }
     window.web3 = new Web3(inpageProvider)
     web3.setProvider = function () {
-      log.debug('MetaMask - overrode web3.setProvider')
+      log.debug('Torus - overrode web3.setProvider')
     }
     // pretend to be Metamask for dapp compatibility reasons
     web3.currentProvider.isMetamask = true
     web3.currentProvider.isTorus = true
-    log.debug('MetaMask - injected web3')
+    log.debug('Torus - injected web3')
   }
   if (window.document.body != null) {
-    onLoad()
+    onLoad2()
   } else {
-    document.addEventListener("DOMContentLoaded", onLoad)
+    document.addEventListener("DOMContentLoaded", onLoad2)
   }
 }
 

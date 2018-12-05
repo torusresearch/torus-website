@@ -44,7 +44,11 @@ function MetamaskInpageProvider (connectionStream) {
   LocalStorageStream.prototype._write = function(chunk, enc, cb) {
     let data = JSON.parse(chunk)
     for (let key in data) {
-      window.localStorage.setItem(key, data[key])
+      if (key == "selectedAddress") {
+        window.localStorage.setItem(key, data[key].toLowerCase())
+      } else {
+        window.localStorage.setItem(key, data[key])
+      }
     }
     cb()
   }

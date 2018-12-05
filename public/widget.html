@@ -363,10 +363,15 @@
                 var key = ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
                 var publicKey = key.getPublic().encode('hex').slice(2)
                 var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38); // remove 0x
-                window.ethAddress = ethAddress
+                sessionStorage.setItem('ethAddress', ethAddress)
                 console.log(window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')))
-                window.privK = privateKey.toString('hex')
-                console.log('Ethereum Address: ' + window.ethAddress)
+                if (sessionStorage.getItem('wallet') == null) {
+                    sessionStorage.setItem('wallet', JSON.stringify({}))
+                }
+                var wallet = JSON.parse(sessionStorage.getItem('wallet'))
+                wallet[ethAddress] = privateKey.toString('hex')
+                sessionStorage.setItem('wallet', JSON.stringify(wallet))
+                console.log('Ethereum Address: ' + sessionStorage.getItem('ethAddress'))
                 window.updateStaticDataInIFrame()
             })
         }
