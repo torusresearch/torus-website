@@ -11,6 +11,13 @@
 
 var whitelist = [
   "etheremon.com",
+  "opensea.io",
+  "cryptostrikers.com",
+  "axieinfinity.com",
+  "mlbcryptobaseball.com",
+  "mycryptoheroes.net",
+  "blockchaincuties.com",
+  "cryptokitties.co",
 ]
 
 var inWhiteList = false

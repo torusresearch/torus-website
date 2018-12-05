@@ -12,7 +12,7 @@ var ifrm
 restoreContextAfterImports()
 log.setDefaultLevel(process.env.METAMASK_DEBUG ? 'debug' : 'warn')
 createWidget()
-setupWeb3()
+embedUtils.runOnLoad(setupWeb3)
 
 /**
  * Create widget
@@ -29,19 +29,19 @@ function createWidget() {
   ifrm.setAttribute("width", "0")
   ifrm.setAttribute("src", "https://localhost:3000/widget")
   var elem = embedUtils.htmlToElement('<div id="torusWidget"><button id="torusLogin" tabIndex="-1"></button></div>')
+  var bindOnLoad = function() {
+    elem.addEventListener("click", function() {
+      window.metamaskStream.write({name: "oauth", data: "test"})
+    })
+  }
   var attachOnLoad = function() {
     window.document.head.appendChild(link)
     window.document.body.appendChild(ifrm)
     window.document.body.appendChild(elem)
-    var bindOnComplete = function() {
-      var coll = document.getElementById("torusLogin");
-      coll.addEventListener("click", function() {
-        window.metamaskStream.write({name: "oauth", data: "test"})
-      })
-    }
-    embedUtils.runOnComplete(bindOnComplete)
+    // embedUtils.runOnComplete(bindOnComplete)
   }
   embedUtils.runOnLoad(attachOnLoad)
+  embedUtils.runOnLoad(bindOnLoad)
 }
 
 function setupWeb3() {
@@ -55,6 +55,12 @@ function setupWeb3() {
   // compose the inpage provider
   var inpageProvider = new MetamaskInpageProvider(window.metamaskStream)
   inpageProvider.setMaxListeners(100)
+  window.ethereum = inpageProvider
+  inpageProvider.enable = function() {
+    return new Promise((resolve, reject) => resolve())
+  }
+  
+  // TODO: implement inpageProvider.enable
   
   if (typeof window.web3 !== 'undefined') {
     throw new Error(`Torus detected another web3.

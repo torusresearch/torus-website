@@ -251,27 +251,27 @@
       <script>
         var Elliptic = elliptic.ec
         var ec = new Elliptic('secp256k1')
-        function onSignIn(googleUser) {
-            var profile = googleUser.getBasicProfile();
-            console.log(googleUser)
-            console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-            console.log('Name: ' + profile.getName());
-            console.log('Image URL: ' + profile.getImageUrl());
-            console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-            sessionStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
-            sessionStorage.setItem('email', profile.getEmail())
-            gapi.auth2.getAuthInstance().disconnect().then(function () {
-                window.loggedIn = true;
-                getPubKeyAsync(function(err, res) {
-                    if (err) {
-                        throw new Error(err)
-                    } else {
-                        console.log('New private key assigned to user at address ', res)
-                        retrieveShares()
-                    }
-                })
-            })
-        }
+        // function onSignIn(googleUser) {
+        //     var profile = googleUser.getBasicProfile();
+        //     console.log(googleUser)
+        //     console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+        //     console.log('Name: ' + profile.getName());
+        //     console.log('Image URL: ' + profile.getImageUrl());
+        //     console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+        //     sessionStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
+        //     sessionStorage.setItem('email', profile.getEmail())
+        //     gapi.auth2.getAuthInstance().disconnect().then(function () {
+        //         window.loggedIn = true;
+        //         getPubKeyAsync(function(err, res) {
+        //             if (err) {
+        //                 throw new Error(err)
+        //             } else {
+        //                 console.log('New private key assigned to user at address ', res)
+        //                 retrieveShares()
+        //             }
+        //         })
+        //     })
+        // }
         function signOut() {
             var auth2 = gapi.auth2.getAuthInstance();
             auth2.signOut().then(function () {
@@ -363,7 +363,7 @@
                 var key = ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
                 var publicKey = key.getPublic().encode('hex').slice(2)
                 var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38); // remove 0x
-                sessionStorage.setItem('ethAddress', ethAddress)
+                sessionStorage.setItem('ethAddress', ethAddress.toLowerCase()) // TODO: what is metamask's default?
                 console.log(window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')))
                 sessionStorage.setItem('wallet', JSON.stringify({})) // reset wallet when logging in
                 var wallet = JSON.parse(sessionStorage.getItem('wallet'))

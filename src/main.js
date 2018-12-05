@@ -38,7 +38,8 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
     // cb(null, ['0x5657d2e6D362618Fb0DA4b90aa6e22eD86e30bfd'])
     // console.log(window.ethAddress, 'ethadd')
     var ethAddress = sessionStorage.getItem('ethAddress')
-    cb(null, ethAddress ? [Web3.utils.toChecksumAddress(ethAddress)] : [])
+    // cb(null, ethAddress ? [Web3.utils.toChecksumAddress(ethAddress)] : [])
+    cb(null, ethAddress ? [ethAddress] : [])
   },
   getPrivateKey: function(address, cb) {
     var wallet = JSON.parse(sessionStorage.getItem("wallet"))

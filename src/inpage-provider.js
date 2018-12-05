@@ -46,7 +46,7 @@ function MetamaskInpageProvider (connectionStream) {
     for (let key in data) {
       if (key == "selectedAddress") {
         if (data.selectedAddress !== null) {
-          window.sessionStorage.setItem("selectedAddress", data.selectedAddress.toLowerCase())
+          window.sessionStorage.setItem("selectedAddress", data.selectedAddress)
         } else {
           window.sessionStorage.removeItem("selectedAddress")
         }
@@ -110,11 +110,6 @@ MetamaskInpageProvider.prototype.send = function (payload, callback) {
 MetamaskInpageProvider.prototype.sendAsync = function (payload, cb) {
   console.log('ASYNC REQUEST', payload)
   const self = this
-
-  if (payload.method === 'eth_signTypedData') {
-    console.warn('MetaMask: This experimental version of eth_signTypedData will be deprecated in the next release in favor of the standard as defined in EIP-712. See https://git.io/fNzPl for more information on the new standard.')
-  }
-
   self.rpcEngine.handle(payload, cb)
 }
 
@@ -144,7 +139,7 @@ MetamaskInpageProvider.prototype._sendSync = function (payload) {
 
     case 'net_version':
       console.log('NET VERSION REQUESTED')
-      const networkVersion = window.localStorage.getItem('networkVersion')
+      const networkVersion = window.sessionStorage.getItem('networkVersion')
       result = networkVersion || null
       break
 
