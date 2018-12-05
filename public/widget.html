@@ -16,6 +16,9 @@
 <body style="margin: 0px">
 <div id="googleAuthBtn" style="height: 20px; width: 20px;"></div>
 <script>
+    if (location.protocol != 'https:') {
+        location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+    }
     var googleUser = {};
     var startApp = function() {
       gapi.load('auth2', function(){
@@ -40,8 +43,8 @@
             console.log('Name: ' + profile.getName());
             console.log('Image URL: ' + profile.getImageUrl());
             console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-            localStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
-            localStorage.setItem('email', profile.getEmail())
+            sessionStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
+            sessionStorage.setItem('email', profile.getEmail())
             gapi.auth2.getAuthInstance().disconnect().then(function () {
                 window.loggedIn = true;
                 getPubKeyAsync(function(err, res) {
@@ -68,12 +71,9 @@
       }
     }
 
-    if (location.protocol != 'https:') {
-        location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
-    }
     function getEmail() {
-        if (localStorage.getItem('email')) {
-            return localStorage.getItem('email')
+        if (sessionStorage.getItem('email')) {
+            return sessionStorage.getItem('email')
         } else {
             throw new Error('not signed in')
         }
@@ -158,11 +158,11 @@
     //     FB.AppEvents.logPageView();
     // };
     // function fbLogin() {
-    //     localStorage.removeItem('accessToken')
-    //     localStorage.removeItem('userID')
+    //     sessionStorage.removeItem('accessToken')
+    //     sessionStorage.removeItem('userID')
     //     FB.login(function(response) {
-    //         localStorage.setItem('accessToken', response.authResponse.accessToken)
-    //         localStorage.setItem('userID', response.authResponse.userID)
+    //         sessionStorage.setItem('accessToken', response.authResponse.accessToken)
+    //         sessionStorage.setItem('userID', response.authResponse.userID)
     //     }, {scope: 'email'})
     // }
     // var nodeList = []
@@ -258,8 +258,8 @@
             console.log('Name: ' + profile.getName());
             console.log('Image URL: ' + profile.getImageUrl());
             console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-            localStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
-            localStorage.setItem('email', profile.getEmail())
+            sessionStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
+            sessionStorage.setItem('email', profile.getEmail())
             gapi.auth2.getAuthInstance().disconnect().then(function () {
                 window.loggedIn = true;
                 getPubKeyAsync(function(err, res) {
@@ -276,7 +276,7 @@
             var auth2 = gapi.auth2.getAuthInstance();
             auth2.signOut().then(function () {
                 console.log('User signed out.');
-                localStorage.removeItem('id_token')
+                sessionStorage.removeItem('id_token')
             });
         }
 
@@ -338,8 +338,8 @@
                     id: 10,
                     params: {
                         index: 0,
-                        idtoken: localStorage.getItem('id_token'),
-                        email: localStorage.getItem('email')
+                        idtoken: sessionStorage.getItem('id_token'),
+                        email: sessionStorage.getItem('email')
                     }
                 })
                 }).then(res => res.json())
@@ -372,78 +372,6 @@
         }
       </script>
 <script>
-    (function(funcName, baseObj) {
-        // The public function name defaults to window.docReady
-        // but you can pass in your own object and own function name and those will be used
-        // if you want to put them in a different namespace
-        funcName = funcName || "docReady";
-        baseObj = baseObj || window;
-        var readyList = [];
-        var readyFired = false;
-        var readyEventHandlersInstalled = false;
-
-        // call this when the document is ready
-        // this function protects itself against being called more than once
-        function ready() {
-            if (!readyFired) {
-                // this must be set to true before we start calling callbacks
-                readyFired = true;
-                for (var i = 0; i < readyList.length; i++) {
-                    // if a callback here happens to add new ready handlers,
-                    // the docReady() function will see that it already fired
-                    // and will schedule the callback to run right after
-                    // this event loop finishes so all handlers will still execute
-                    // in order and no new ones will be added to the readyList
-                    // while we are processing the list
-                    readyList[i].fn.call(window, readyList[i].ctx);
-                }
-                // allow any closures held by these functions to free
-                readyList = [];
-            }
-        }
-
-        function readyStateChange() {
-            if ( document.readyState === "complete" ) {
-                ready();
-            }
-        }
-
-        // This is the one public interface
-        // docReady(fn, context);
-        // the context argument is optional - if present, it will be passed
-        // as an argument to the callback
-        baseObj[funcName] = function(callback, context) {
-            if (typeof callback !== "function") {
-                throw new TypeError("callback for docReady(fn) must be a function");
-            }
-            // if ready has already fired, then just schedule the callback
-            // to fire asynchronously, but right away
-            if (readyFired) {
-                setTimeout(function() {callback(context);}, 1);
-                return;
-            } else {
-                // add the function and context to the list
-                readyList.push({fn: callback, ctx: context});
-            }
-            // if document already ready to go, schedule the ready function to run
-            if (document.readyState === "complete") {
-                setTimeout(ready, 1);
-            } else if (!readyEventHandlersInstalled) {
-                // otherwise if we don't have event handlers installed, install them
-                if (document.addEventListener) {
-                    // first choice is DOMContentLoaded event
-                    document.addEventListener("DOMContentLoaded", ready, false);
-                    // backup is window load event
-                    window.addEventListener("load", ready, false);
-                } else {
-                    // must be IE
-                    document.attachEvent("onreadystatechange", readyStateChange);
-                    window.attachEvent("onload", ready);
-                }
-                readyEventHandlersInstalled = true;
-            }
-        }
-    })("docReady", window);
 //   ;(async function() { 
     // ethereumProvider = metamask.createDefaultProvider()
     // ethQuery = new Eth(ethereumProvider);
