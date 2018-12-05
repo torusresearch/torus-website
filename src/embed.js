@@ -35,10 +35,18 @@ function createWidget() {
     window.document.body.appendChild(ifrm)
     var elem = htmlToElement('\
     <div id="torusWidget">\
+      <button id="torusButton">\
+      </button>\
       <button id="torusLogin" tabIndex="-1">\
       </button>\
+      <div id="torusContainer"">\
+      </div>\
     </div>')
     window.document.body.appendChild(elem)
+    // TODO: uncomment these once hiding torusLogin element doesn't remove
+    //window.document.getElementById('torusButton').setAttribute('hidden', true)
+
+
     var retry = window.setInterval(function() {
       console.log('running')
       if (window.document.readyState !== "complete") {
@@ -48,6 +56,17 @@ function createWidget() {
       coll.addEventListener("click", function() {
         window.metamaskStream.write({name: "oauth", data: "test"})
       })
+
+      var collapsibleButton = document.getElementById("torusButton");
+      collapsibleButton.addEventListener("click", function() {
+        if (window.document.getElementById('torusContainer').style.display === 'none') {
+          window.document.getElementById('torusContainer').style.display = 'flex';
+        } else {
+          window.document.getElementById('torusContainer').style.display = 'none';
+        }
+      })
+
+
       window.clearInterval(retry)
     }, 300)
   }
@@ -76,7 +95,9 @@ function setupWeb3() {
     widget = mux.createStream('widget')
     widget.on('data', function() {
       console.log('Received data for widget', arguments)
-      window.document.getElementById('torusWidget').setAttribute('hidden', true)
+      //window.document.getElementById('torusContainer').removeAttribute('hidden')
+      //window.document.getElementById('torusButton').removeAttribute('hidden')
+      //window.document.getElementById('torusWidget').setAttribute('hidden', true)
     })
     // compose the inpage provider
     var inpageProvider = new MetamaskInpageProvider(window.metamaskStream)

@@ -5,6 +5,32 @@
   left: 8px;
 }
 
+#torusButton {
+  border-radius: 20px;
+  height: 40px;
+  width: 40px;
+  background-image: url("https://localhost:3000/images/torus-button.png");
+  background-size: 60%;
+  background-repeat: no-repeat;
+  border-width: 0px;
+  background-position: center;
+  background-color: #75b4fd;
+  transition: background-color, background-image, width 0.1s ease-in-out;
+  user-select: none;
+  outline: none;
+  /*display: none;*/
+}
+
+#torusContainer {
+  display: none;
+  background-color: lightblue;
+  height: 300px;
+  width: 200px;
+  border: 5px solid gray;
+  justify-content: space-around;
+  justify-content: center;
+}
+
 #torusLogin {
   border-radius: 20px;
   height: 40px;
