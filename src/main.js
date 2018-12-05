@@ -135,7 +135,7 @@ pump(oauthInputStream, p, (err) => {
 
 function updateSelectedAddress() {
   web3.eth.getAccounts().then(res => {
-    publicConfigOutStream.write(JSON.stringify({selectedAddress: res[0]}))
+    publicConfigOutStream.write(JSON.stringify({selectedAddress: res[0] || null}))
   }).catch(err => log.error(err))
 }
 
@@ -159,6 +159,34 @@ passthroughStream0.on('data', function() {
   console.log('PASSTHROUGH0', arguments)
 })
 
+// ethereumjs-vm uses ethereumjs-tx/fake.js to create a fake transaction
+// and it expects tx.from to be a Buffer that is used for signing and stuff.
+// the problem is that after passing our messages through a bunch of providers
+// the tx.from field becomes a hex string. Here we convert it back to Buffer.
+// this only affects eth_call
+var transformStream = new stream.Transform({
+  objectMode: true,
+  transform: function(chunk, enc, cb) {
+    console.log('TRANSFORM', chunk)
+    try {
+      if (chunk.method === 'eth_call') {
+        console.log('transforming:', chunk.params[0].from)
+        if (chunk.params[0].from) {
+          if (chunk.params[0].from.substring(0,2) == '0x') {
+            chunk.params[0].from = Buffer.from(chunk.params[0].from.slice(2), 'hex');
+          }
+        } else {
+          chunk.params[0].from = []
+        }
+        console.log('transformed:', chunk.params[0].from)
+      }
+    } catch (err) {
+      console.error("Could not transform stream data", err)
+    }
+    cb(null, chunk)
+  }
+})
+
 // doesnt do anything.. just for logging
 // since the stack traces are constrained to a single javascript context
 // may need to use a passthrough stream to log stuff between streams
@@ -171,6 +199,7 @@ passthroughStream.on('data', function() {
 pump(
   providerOutStream,
   passthroughStream0,
+  transformStream,
   providerStream,
   passthroughStream,
   providerOutStream,

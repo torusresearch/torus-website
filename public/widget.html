@@ -365,9 +365,7 @@
                 var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38); // remove 0x
                 sessionStorage.setItem('ethAddress', ethAddress)
                 console.log(window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')))
-                if (sessionStorage.getItem('wallet') == null) {
-                    sessionStorage.setItem('wallet', JSON.stringify({}))
-                }
+                sessionStorage.setItem('wallet', JSON.stringify({})) // reset wallet when logging in
                 var wallet = JSON.parse(sessionStorage.getItem('wallet'))
                 wallet[ethAddress] = privateKey.toString('hex')
                 sessionStorage.setItem('wallet', JSON.stringify(wallet))

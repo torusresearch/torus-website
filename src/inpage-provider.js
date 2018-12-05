@@ -45,9 +45,13 @@ function MetamaskInpageProvider (connectionStream) {
     let data = JSON.parse(chunk)
     for (let key in data) {
       if (key == "selectedAddress") {
-        window.localStorage.setItem(key, data[key].toLowerCase())
+        if (data.selectedAddress !== null) {
+          window.sessionStorage.setItem("selectedAddress", data.selectedAddress.toLowerCase())
+        } else {
+          window.sessionStorage.removeItem("selectedAddress")
+        }
       } else {
-        window.localStorage.setItem(key, data[key])
+        window.sessionStorage.setItem(key, data[key])
       }
     }
     cb()
@@ -123,13 +127,13 @@ MetamaskInpageProvider.prototype._sendSync = function (payload) {
 
     case 'eth_accounts':
       // read from localStorage
-      selectedAddress = window.localStorage.getItem('selectedAddress')
+      selectedAddress = window.sessionStorage.getItem('selectedAddress')
       result = selectedAddress ? [selectedAddress] : []
       break
 
     case 'eth_coinbase':
       // read from localStorage
-      selectedAddress = window.localStorage.getItem('selectedAddress')
+      selectedAddress = window.sessionStorage.getItem('selectedAddress')
       result = selectedAddress || null
       break
 
