@@ -14,7 +14,7 @@
   background-repeat: no-repeat;
   border-width: 0px;
   background-position: center;
-  background-color: #75b4fd;
+  background-color: lightblue;
   transition: background-color, background-image, width 0.1s ease-in-out;
   user-select: none;
   outline: none;
@@ -39,7 +39,7 @@
   background-repeat: no-repeat;
   border-width: 0px;
   background-position: center;
-  background-color: #75b4fd;
+  background-color: lightblue;
   transition: background-color, background-image, width 0.1s ease-in-out;
   user-select: none;
   outline: none;
