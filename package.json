@@ -4,10 +4,9 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "build": "browserify ./src/main.js -o dist/bundle.js && ./fixEthJS.sh",
+        "buildBundle": "browserify ./src/main.js -o dist/bundle.js && ./fixEthJS.sh && cat ./dist/bundle.js | grep \"self._cache = new Cache(self._trie)\" > /dev/null || echo \"offending line in ethereumjs-vm not found, please build without running fixEthJs script\"",
         "buildEmbed": "browserify ./src/embed.js -o dist/embed.min.js",
-        "watch": "watchify ./src/main.js -o dist/bundle.js -v",
-        "watchEmbed": "watchify ./src/embed.js -o dist/embed.min.js -v",
+        "buildNpm": "browserify ./src/main.js -o dist/bundle.js && browserify ./src/embed.js -o dist/embed.min.js",
         "start": "node ./server.js"
     },
     "author": "",
