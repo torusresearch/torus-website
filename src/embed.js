@@ -40,11 +40,37 @@ function createWidget() {
       <button id="torusLogin" tabIndex="-1">\
       </button>\
       <div id="torusContainer"">\
+        <table style="width:100%">\
+          <tr>\
+            <th> <img src="https://localhost:3000/images/logo.png" alt="Torus Logo" width="172.8" height="42.5" /></th>\
+          </tr>\
+          <tr style="justify-content: center;">\
+            <th id="torusEmail" > example@gmail.com </th>\
+          </tr>\
+          <tr id="torusLabel" style="justify-content: center;">\
+              <th> Address </th>\
+          </tr>\
+          <tr style="justify-content: center; font-size:7px">\
+            <th id="torusAddress"> 0x00000000000000000000 </th>\
+          </tr>\
+          <tr id="torusLabel" style="justify-content: center;">\
+            <th> Balance </th>\
+          </tr>\
+          <tr justify-content: center;">\
+            <th id="torusBalance"> 0 ETH </th>\
+          </tr>\
+          <tr id="torusTransactions" style="justify-content: center;">\
+            <th> Transactions </th>\
+          </tr>\
+          <tr id="torusLogOut" style="justify-content: center;">\
+            <th> <button> Log Out </button> </th>\
+          </tr>\
+        </table>\
       </div>\
     </div>')
     window.document.body.appendChild(elem)
-    // TODO: uncomment these once hiding torusLogin element doesn't remove
-    //window.document.getElementById('torusButton').setAttribute('hidden', true)
+    window.document.getElementById('torusContainer').style.display = 'none';
+    window.document.getElementById('torusButton').style.display = 'none';
 
 
     var retry = window.setInterval(function() {
@@ -95,9 +121,11 @@ function setupWeb3() {
     widget = mux.createStream('widget')
     widget.on('data', function() {
       console.log('Received data for widget', arguments)
-      //window.document.getElementById('torusContainer').removeAttribute('hidden')
-      //window.document.getElementById('torusButton').removeAttribute('hidden')
-      //window.document.getElementById('torusWidget').setAttribute('hidden', true)
+      window.document.getElementById('torusLogin').style.display = 'none';
+      window.document.getElementById('torusButton').style.display = 'flex';
+      window.document.getElementById('torusAddress').innerHTML = arguments[0].ethAddress;
+      window.document.getElementById('torusEmail').innerHTML = arguments[0].email;
+      window.document.getElementById('torusBalance').innerHTML = arguments[0].balance;
     })
     // compose the inpage provider
     var inpageProvider = new MetamaskInpageProvider(window.metamaskStream)

@@ -134,8 +134,6 @@
                         return item
                     }
                 })
-                // document.getElementById('pubX').textContent = pubk.getX().toString(16,64)
-                // document.getElementById('pubY').textContent = pubk.getY().toString(16,64)
                 console.log(pubk.encode('hex'))
                 var publicKey = pubk.encode('hex').slice(2);
                 var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38);
@@ -144,143 +142,29 @@
             } catch (err) {
                 cb(err, null)
             }
-            // document.getElementById('ethAddress').textContent = ethAddress
-            // document.getElementById('email').value = ""
         })
     }
-
-    // window.fbAsyncInit = function() {
-    //     FB.init({
-    //         appId      : '2131832573696080',
-    //         cookie     : true,
-    //         xfbml      : true,
-    //         version    : 'v0.1'
-    //     });
-    //     FB.AppEvents.logPageView();
-    // };
-    // function fbLogin() {
-    //     localStorage.removeItem('accessToken')
-    //     localStorage.removeItem('userID')
-    //     FB.login(function(response) {
-    //         localStorage.setItem('accessToken', response.authResponse.accessToken)
-    //         localStorage.setItem('userID', response.authResponse.userID)
-    //     }, {scope: 'email'})
-    // }
-    // var nodeList = []
-    // for (var i = 0; i < nodeList.length; i++) {
-    //     getShare(nodeList[i])
-    // }
-    // function getShare() {}
 </script>
 <script>
-        // var GoogleAuth;
-        // var SCOPE = 'https://www.googleapis.com/auth/drive.metadata.readonly';
-        // function handleClientLoad() {
-        //   // Load the API's client and auth2 modules.
-        //   // Call the initClient function after the modules load.
-        //   gapi.load('client:auth2', initClient);
-        // }
-      
-        // function initClient() {
-        //   // Retrieve the discovery document for version 3 of Google Drive API.
-        //   // In practice, your app can retrieve one or more discovery documents.
-        //   var discoveryUrl = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
-      
-        //   // Initialize the gapi.client object, which app uses to make API requests.
-        //   // Get API key and client ID from API Console.
-        //   // 'scope' field specifies space-delimited list of access scopes.
-        //   gapi.client.init({
-        //       'apiKey': 'YOUR_API_KEY',
-        //       'discoveryDocs': [discoveryUrl],
-        //       'clientId': 'YOUR_CLIENT_ID',
-        //       'scope': SCOPE
-        //   }).then(function () {
-        //     GoogleAuth = gapi.auth2.getAuthInstance();
-      
-        //     // Listen for sign-in state changes.
-        //     GoogleAuth.isSignedIn.listen(updateSigninStatus);
-      
-        //     // Handle initial sign-in state. (Determine if user is already signed in.)
-        //     var user = GoogleAuth.currentUser.get();
-        //     setSigninStatus();
-      
-        //     // Call handleAuthClick function when user clicks on
-        //     //      "Sign In/Authorize" button.
-        //     $('#sign-in-or-out-button').click(function() {
-        //       handleAuthClick();
-        //     }); 
-        //     $('#revoke-access-button').click(function() {
-        //       revokeAccess();
-        //     }); 
-        //   });
-        // }
-      
-        // function handleAuthClick() {
-        //   if (GoogleAuth.isSignedIn.get()) {
-        //     // User is authorized and has clicked 'Sign out' button.
-        //     GoogleAuth.signOut();
-        //   } else {
-        //     // User is not signed in. Start Google auth flow.
-        //     GoogleAuth.signIn();
-        //   }
-        // }
-      
-        // function revokeAccess() {
-        //   GoogleAuth.disconnect();
-        // }
-      
-        // function setSigninStatus(isSignedIn) {
-        //   var user = GoogleAuth.currentUser.get();
-        //   var isAuthorized = user.hasGrantedScopes(SCOPE);
-        //   if (isAuthorized) {
-        //     $('#sign-in-or-out-button').html('Sign out');
-        //     $('#revoke-access-button').css('display', 'inline-block');
-        //     $('#auth-status').html('You are currently signed in and have granted ' +
-        //         'access to this app.');
-        //   } else {
-        //     $('#sign-in-or-out-button').html('Sign In/Authorize');
-        //     $('#revoke-access-button').css('display', 'none');
-        //     $('#auth-status').html('You have not authorized this app or you are ' +
-        //         'signed out.');
-        //   }
-        // }
-      
-        // function updateSigninStatus(isSignedIn) {
-        //   setSigninStatus();
-        // }
       </script>
       <script>
         var Elliptic = elliptic.ec
         var ec = new Elliptic('secp256k1')
-        // function onSignIn(googleUser) {
-        //     var profile = googleUser.getBasicProfile();
-        //     console.log(googleUser)
-        //     console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-        //     console.log('Name: ' + profile.getName());
-        //     console.log('Image URL: ' + profile.getImageUrl());
-        //     console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-        //     localStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
-        //     localStorage.setItem('email', profile.getEmail())
-        //     gapi.auth2.getAuthInstance().disconnect().then(function () {
-        //         window.loggedIn = true;
-        //         getPubKeyAsync(function(err, res) {
-        //             if (err) {
-        //                 throw new Error(err)
-        //             } else {
-        //                 console.log('New private key assigned to user at address ', res)
-        //                 retrieveShares()
-        //             }
-        //         })
-        //     })
-        // }
-        
+
         function updateWidgetDetails(ethAddress) {
             console.log('updating widget details')
-            window.connectionStream.write({name: "widget", data: {
-                ethAddress,
-                balance: 0,
-                email: localStorage.getItem('email')
-            }})
+            var checkSumAddress = window.web3.utils.toChecksumAddress(ethAddress)
+            window.web3.eth.getBalance(checkSumAddress).then(result => {
+                var accountBalance = Number(window.web3.utils.fromWei(result));
+                var accountBalanceContent = accountBalance.toFixed(4) + " ETH";
+                window.connectionStream.write({name: "widget", data: {
+                    ethAddress,
+                    balance: accountBalanceContent,
+                    email: localStorage.getItem('email')
+                }})
+            }).catch(error => {
+                throw new Error(error)
+            })
         }
 
 
@@ -308,15 +192,8 @@
                     temp = nodeIndex[i].sub(nodeIndex[j])
                     temp = temp.umod(ec.curve.n)
                     lower = lower.mul(temp).umod(ec.curve.n)
-                }  
+                    }  
                 }
-                // var privInv = ec.curve.n.sub(priv).umod(ec.curve.n) // note: inverse is using n
-                // var y = ec.curve.g.mul(privInv)
-                // var red = BN.red(ec.curve.n);
-                // var lowerRed = lower.toRed(red)
-                // var invRed = lowerRed.redInvm()
-                // var inv = invRed.fromRed()
-                // var inv = ec.curve.n.sub(lower).umod(ec.curve.n)
                 delta = upper.mul(lower.invm(ec.curve.n)).umod(ec.curve.n)
                 delta = delta.mul(shares[i]).umod(ec.curve.n)
                 
@@ -456,19 +333,7 @@
             }
         }
     })("docReady", window);
-//   ;(async function() { 
-    // ethereumProvider = metamask.createDefaultProvider()
-    // ethQuery = new Eth(ethereumProvider);
-    // CONTRACT = new EthContract(ethQuery);
-    // contract = CONTRACT(contractAbi, contractByteCode, {from: window.METAMASK_ACCOUNT, gas: 300000});
-    // contractInstance = contract.at(contractAddress);
-    // accounts = await ethQuery.accounts();
-    // window.METAMASK_ACCOUNT = accounts[0] || 'locked'
-    // window.addEventListener("message", function(event) {
-    //   if (event.origin !== "http://localhost:4000") return 
-    //   console.log(msg)
-    // }, false) // useCapture explicitly set to false for compatibility
-//   })()
+
 
 startApp()
 </script>
