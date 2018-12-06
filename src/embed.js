@@ -1,3 +1,4 @@
+const ETHERSCAN_API_KEY = require('../ssl/etherscan-api-key.json');
 
 console.log('INJECTED IN', window.location.href)
 
@@ -95,6 +96,7 @@ function createWidget() {
 
       var refreshButton = document.getElementById("torusRefresh");
       refreshButton.addEventListener("click", function() {
+        // Update Balance
         var ethAddress = window.document.getElementById('torusAddress').innerHTML;
         var checkSumAddress = window.web3.toChecksumAddress(ethAddress)
         window.web3.eth.getBalance(checkSumAddress, function(error, result){
@@ -106,6 +108,33 @@ function createWidget() {
             console.error(error);
           }
         })
+
+        // Update transactions
+        var request = new XMLHttpRequest();
+
+        // Open a new connection, using the GET request on the URL endpoint
+        var requestString = '//api.etherscan.io/api?module=account&action=txlist&address=' + ethAddress + '&startblock=0&endblock=99999999&sort=asc&apikey=' + ETHERSCAN_API_KEY;
+        request.open('GET', requestString, true);
+
+        request.onload = function () {
+          var data = JSON.parse(this.response);
+          if (request.status >= 200 && request.status < 400) {
+            console.log("DATA FROM ETHERSCAN");
+            console.log(this.response);
+          }
+        }
+
+        // Send request
+        request.send();
+
+
+
+        // TODO: This lists pending transactions, but for some reason, the library 'regneratorRuntime' is not
+        // Defined in bundle.js, so this doesn't work. Need to look into further
+        // window.web3.eth.filter('pending', function(error, result){
+        //  if (!error)
+        //    console.log(result);
+        // });
       })
 
 
