@@ -4,8 +4,9 @@ You will nead to create an SSL directory at the main project directory containin
 ```
 server.crt
 server.key
+etherscan-api-key.json
 ```
-Ask one of the developers for these keys.
+Ask one of the developers for these keys, you can use your own Etherscan API key.
 
 To install dependencies and build website, run the following commands from the main project directory:
 
