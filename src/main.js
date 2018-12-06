@@ -38,10 +38,13 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
     // cb(null, ['0x5657d2e6D362618Fb0DA4b90aa6e22eD86e30bfd'])
     // console.log(window.ethAddress, 'ethadd')
     var ethAddress = sessionStorage.getItem('ethAddress')
-    // cb(null, ethAddress ? [Web3.utils.toChecksumAddress(ethAddress)] : [])
-    cb(null, ethAddress ? [ethAddress] : [])
+
+    // TODO: checksumAddress
+    cb(null, ethAddress ? [Web3.utils.toChecksumAddress(ethAddress)] : [])
+    // cb(null, ethAddress ? [ethAddress] : [])
   },
   getPrivateKey: function(address, cb) {
+    var address = Web3.utils.toChecksumAddress(address)
     var wallet = JSON.parse(sessionStorage.getItem("wallet"))
     if (wallet == null) {
       cb(new Error("No wallet accessible. Please login."), null)
@@ -136,6 +139,8 @@ pump(oauthInputStream, p, (err) => {
 
 function updateSelectedAddress() {
   web3.eth.getAccounts().then(res => {
+    console.log('updateSelectedaddress', res[0])
+    // TODO: checksum address
     publicConfigOutStream.write(JSON.stringify({selectedAddress: res[0] || null}))
   }).catch(err => log.error(err))
 }
@@ -170,13 +175,13 @@ var transformStream = new stream.Transform({
   transform: function(chunk, enc, cb) {
     console.log('TRANSFORM', chunk)
     try {
-      if (chunk.method === 'eth_call') {
+      if (chunk.method === 'eth_call' || chunk.method === 'eth_estimateGas') {
         console.log('transforming:', chunk.params[0].from)
-        if (chunk.params[0].from) {
+        if (chunk.params[0].from && typeof chunk.params[0].from === "string") {
           if (chunk.params[0].from.substring(0,2) == '0x') {
             chunk.params[0].from = Buffer.from(chunk.params[0].from.slice(2), 'hex');
           }
-        } else {
+        } else if (!chunk.params[0].from) {
           chunk.params[0].from = []
         }
         console.log('transformed:', chunk.params[0].from)

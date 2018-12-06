@@ -59,6 +59,7 @@ function setupWeb3() {
   inpageProvider.enable = function() {
     return new Promise((resolve, reject) => resolve())
   }
+
   
   // TODO: implement inpageProvider.enable
   
@@ -70,6 +71,8 @@ function setupWeb3() {
       and try again.`)
   }
   window.web3 = new Web3(inpageProvider)
+  console.log(Web3.version)
+  window.torus = window.web3
   window.web3.setProvider = function () {
     log.debug('Torus - overrode web3.setProvider')
   }

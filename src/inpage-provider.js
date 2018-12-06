@@ -42,6 +42,7 @@ function MetamaskInpageProvider (connectionStream) {
   }
 
   LocalStorageStream.prototype._write = function(chunk, enc, cb) {
+    console.log('WRITTEN TO LOCALSTORAGESTREAM:', chunk)
     let data = JSON.parse(chunk)
     for (let key in data) {
       if (key == "selectedAddress") {
@@ -50,6 +51,9 @@ function MetamaskInpageProvider (connectionStream) {
         } else {
           window.sessionStorage.removeItem("selectedAddress")
         }
+      } else if (key == "networkVersion") {
+        window.sessionStorage.setItem(key, data[key])
+        window.ethereum.networkVersion = data[key].toString()
       } else {
         window.sessionStorage.setItem(key, data[key])
       }

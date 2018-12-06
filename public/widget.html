@@ -362,8 +362,9 @@
                 var privateKey = lagrangeInterpolation(shares.slice(2), nodeIndex.slice(2))
                 var key = ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
                 var publicKey = key.getPublic().encode('hex').slice(2)
-                var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38); // remove 0x
-                sessionStorage.setItem('ethAddress', ethAddress.toLowerCase()) // TODO: what is metamask's default?
+                var ethAddressLower = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38); // remove 0x
+                var ethAddress = window.web3.utils.toChecksumAddress(ethAddressLower)
+                sessionStorage.setItem('ethAddress', ethAddress) // TODO: checksum address
                 console.log(window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')))
                 sessionStorage.setItem('wallet', JSON.stringify({})) // reset wallet when logging in
                 var wallet = JSON.parse(sessionStorage.getItem('wallet'))
