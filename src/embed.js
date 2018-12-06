@@ -91,10 +91,28 @@ function createWidget() {
           window.document.getElementById('torusContainer').style.display = 'none';
         }
       })
-
-
       window.clearInterval(retry)
     }, 300)
+
+    var updateBalance = window.setInterval(function() {
+      // Update balance and transaction history if torus container is visible
+      if (window.document.getElementById('torusContainer').style.display === 'flex') {
+        console.log("UPDATING BALANCE");
+        var ethAddress = window.document.getElementById('torusAddress').innerHTML;
+        var checkSumAddress = window.web3.toChecksumAddress(ethAddress)
+        // This uodate the balance of the user's ethereum address, but causes transactions to fail
+        // Need to figure out what's wrong
+        // window.web3.eth.getBalance(checkSumAddress, function(error, result){
+        //    if(!error) {
+        //     var accountBalance = Number(window.web3.fromWei(result));
+        //     var accountBalanceContent = accountBalance.toFixed(4) + " ETH";
+        //     window.document.getElementById('torusBalance').innerHTML = accountBalanceContent;
+        //   } else {
+        //     console.error(error);
+        //   }
+        // })
+      }
+    }, 3000)
   }
   if (window.document.body != null) {
     onLoad()
