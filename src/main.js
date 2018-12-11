@@ -21,6 +21,16 @@ function buf2hex(buffer) { // buffer is an ArrayBuffer
   return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
 }
 
+function eventFire(el, etype){
+  if (el.fireEvent) {
+    el.fireEvent('on' + etype);
+  } else {
+    var evObj = window.document.createEvent('Events');
+    evObj.initEvent(etype, true, false);
+    el.dispatchEvent(evObj);
+  }
+}
+
 var engine = new ProviderEngine()
 engine.addProvider(new FixtureSubprovider({
   web3_clientVersion: 'ProviderEngine/v0.0.0/javascript',
@@ -128,9 +138,10 @@ const providerOutStream = mux.createStream('provider')
 const publicConfigOutStream = mux.createStream('publicConfig')
 const oauthInputStream = mux.createStream('oauth')
 const p = new stream.PassThrough({objectMode: true});
+
 p.on('data', function() {
   console.log('data gotten from p', arguments)
-  window.eventFire(window.document.getElementById("googleAuthBtn"), "click")
+  eventFire(window.document.getElementById("googleAuthBtn"), "click")
 })
 
 pump(oauthInputStream, p, (err) => {
