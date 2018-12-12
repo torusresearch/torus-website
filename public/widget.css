@@ -28,3 +28,13 @@
   background-image: url("https://localhost:3000/images/loginWithGoogle.png");
   transition: background-color, background-image, width 0.1s ease-in-out;
 }
+
+#torusIframeContainer {
+  display: none;
+  z-index: 999999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}

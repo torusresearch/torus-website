@@ -23,12 +23,16 @@ function createWidget() {
   link.setAttribute('rel', 'stylesheet');
   link.setAttribute('type', 'text/css');
   link.setAttribute('href', 'https://localhost:3000/widget.css');
-  ifrm = window.document.createElement('iframe');
-  ifrm.setAttribute('id', 'torusIFrame'); // assign an id
-  ifrm.setAttribute("height", "0")
-  ifrm.setAttribute("width", "0")
-  ifrm.setAttribute("src", "https://localhost:3000/widget")
-  var elem = embedUtils.htmlToElement('<div id="torusWidget"><button id="torusLogin" tabIndex="-1"></button></div>')
+  var elem = embedUtils.htmlToElement('\
+    <div id="torusWidget">\
+      <button id="torusLogin" tabIndex="-1" />\
+    </div>\
+  ');
+  var ifrm = embedUtils.htmlToElement('\
+    <div id="torusIframeContainer">\
+      <iframe id="torusIFrame" src="https://localhost:3000/widget"></iframe>\
+    </div>\
+  ');
   var bindOnLoad = function() {
     elem.addEventListener("click", function() {
       window.metamaskStream.write({name: "oauth", data: "test"})
@@ -50,7 +54,7 @@ function setupWeb3() {
   window.metamaskStream = new LocalMessageDuplexStream({
     name: 'embed',
     target: 'iframe',
-    targetWindow: ifrm.contentWindow
+    targetWindow: window.document.getElementById('torusIFrame').contentWindow
   })
   // compose the inpage provider
   var inpageProvider = new MetamaskInpageProvider(window.metamaskStream)
