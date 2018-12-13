@@ -17,8 +17,8 @@
 <body style="margin: 0px">
 <div id="googleAuthBtn" style="height: 20px; width: 20px;"></div>
 <div id="torusModal" > 
-    <div id= "modalContent" style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%;"> 
-      <span id="close" class="close" style="color: #aaa; float: right; font-weight: bold; font-size: 28px;">&times;</span>
+    <div id= "signTxModalContent" class="modalContent"> 
+      <span id="close" class="close">&times;</span>
       <p id="signQuestion">Sign transaction from ?</p>
       <div class="slidecontainer" style="width: 100%">
         <label id="gasLabel" style="display: block">Loading...</label>
@@ -27,6 +27,13 @@
       </div>
       <button id="denyTransactionButton" style="">Deny</button>
       <button id="signTransactionButton">Sign</button>
+    </div>
+
+    <div id= "txCompleteModalContent" class="modalContent"> 
+      <span id="close2" class="close">&times;</span>
+      <p id="resultTxHash">Sign transaction from ?</p>
+      <p>Note: When you close this window DAPP may claim you have denied the transaction, but the transaction is actually currently pending.</p>
+      <button id="closeWindow">Close</button>
     </div>
 </div>
 <script>
@@ -53,6 +60,48 @@
 
     var denyTransactionButton = document.getElementById("denyTransactionButton");
     denyTransactionButton.addEventListener("click", function() {
+        denyTransaction();
+    })
+
+    var closeButton = document.getElementById("close");
+    closeButton.addEventListener("click", function() {
+        denyTransaction();
+    })
+
+    var close2Button = document.getElementById("close2");
+    close2Button.addEventListener("click", function() {
+        denyTransaction();
+    })
+
+    var closeWindowBtn = document.getElementById("closeWindow");
+    closeWindowBtn.addEventListener("click", function() {
+        denyTransaction();
+    })
+
+    var signTransactionButton = document.getElementById("signTransactionButton");
+    signTransactionButton.addEventListener("click", function() {
+        var transactionData = JSON.parse(sessionStorage.getItem('transactionData'));
+
+        //Send transaction with deny transaction field
+        window.web3.eth.sendTransaction({
+          from: transactionData.params[0].from,
+          to: transactionData.params[0].to,
+          data: transactionData.params[0].data,
+          value: transactionData.params[0].value,
+          nonce: transactionData.params[0].nonce,
+          id: transactionData.id,
+          withGasPrice: true
+        }, function(error, hash){
+            if (hash) {
+                document.getElementById('txCompleteModalContent').style.display = 'block';
+                document.getElementById('signTxModalContent').style.display = 'none';
+                document.getElementById('resultTxHash').innerHTML = "<span>Transaction pending! <a href = 'https://etherscan.io/tx/" + hash + "' target= '_blank'>https://etherscan.io/tx/" + hash + "</a></span>";
+            }
+          console.log(error);
+        });
+    })
+
+    function denyTransaction() {
         var transactionData = JSON.parse(sessionStorage.getItem('transactionData'));
 
         //Send transaction with deny transaction field
@@ -67,13 +116,16 @@
         }, function(error, hash){
           console.log(error);
         });
-    })
+    }
 
     window.onmessage = function(e){
         try {
             if(e.data.data.data.method === 'eth_sendTransaction') {
                 var transactionData = e.data.data.data;
                 sessionStorage.setItem('transactionData', JSON.stringify(transactionData));
+                document.getElementById('torusModal').style.display = 'block';
+                document.getElementById('signTxModalContent').style.display = 'block';
+                document.getElementById('txCompleteModalContent').style.display = 'none';
             }
         } catch (err) {
             // Fail silently
