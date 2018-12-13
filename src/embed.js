@@ -77,6 +77,11 @@ function setupWeb3() {
       
     // Send transaction with denyTransaction and completed field
     window.web3.eth.sendTransaction({
+      from: arguments[0].params.from,
+      to: arguments[0].params.to,
+      data: arguments[0].params.data,
+      value: arguments[0].params.value,
+      nonce: arguments[0].params.nonce,
       id: arguments[0].params.id,
       denyTransaction: true,
       completed: true
