@@ -89,6 +89,25 @@
   cursor: pointer;
 }
 
+#signTransactionButton {
+  display: block;
+  border: none;
+  background-color: #4CAF50;
+  padding: 4% 22%;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+}
+
+#denyTransactionButton {
+  display: block;
+  border: none;
+  background-color: #bb5858;
+  padding: 4% 22%;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+}
 
 /* The slider itself */
 #gasSlider {

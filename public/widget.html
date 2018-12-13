@@ -116,7 +116,9 @@
                 document.getElementById('signTxModalContent').style.display = 'none';
                 document.getElementById('resultTxHash').innerHTML = "<span>Transaction pending! <a href = 'https://etherscan.io/tx/" + hash + "' target= '_blank'>https://etherscan.io/tx/" + hash + "</a></span>";
             }
-          console.log(error);
+            if (error) {
+                console.log(error);
+            }
         });
     })
 
@@ -190,8 +192,6 @@
                           var gweiFastest = gasInfo.fastest / 10;
                           window.gweiSafeLow = gweiSafeLow;
                           window.gweiFastest = gweiFastest;
-                          console.log(gweiSafeLow);
-                          console.log(gweiFastest);
                           document.getElementById('gasSlider').value = 1;
                           // document.getElementById('gasSlider').min = gweiSafeLow;
                           // document.getElementById('gasSlider').max = gweiFastest;
@@ -203,8 +203,6 @@
 
                           window.fastestWait = gasInfo.fastestWait;
                           window.safeLowWait = gasInfo.safeLowWait;
-                          console.log(safeLowWait);
-                          console.log(fastestWait);
                           document.getElementById('gasSpeedLabel').innerHTML = "Est Time: " + gasInfo.safeLowWait + " Minutes";
 
                         }
