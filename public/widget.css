@@ -47,6 +47,12 @@
 
 /* TORUS MODAL CSS */
 
+#torusLogo {
+  width: 50%;
+  height: 25%;
+  margin-left: 23%;
+}
+
 #torusModal {
   display: none;
   position: fixed; /* Stay in place */

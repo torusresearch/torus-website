@@ -19,6 +19,7 @@
 <div id="torusModal" > 
     <div id= "signTxModalContent" class="modalContent"> 
       <span id="close" class="close">&times;</span>
+      <img id="torusLogo" src="https://localhost:3000/images/logo.png" alt="Torus Logo"/>
       <p id="signQuestion">Sign transaction from ?</p>
       <div class="slidecontainer" style="width: 100%">
         <label id="gasLabel" style="display: block">Loading...</label>
@@ -31,6 +32,7 @@
 
     <div id= "txCompleteModalContent" class="modalContent"> 
       <span id="close2" class="close">&times;</span>
+      <img id="torusLogo" src="https://localhost:3000/images/logo.png" alt="Torus Logo"/>
       <p id="resultTxHash">Sign transaction from ?</p>
       <p>Note: When you close this window DAPP may claim you have denied the transaction, but the transaction is actually currently pending.</p>
       <button id="closeWindow">Close</button>
@@ -58,6 +60,18 @@
     }
     var googleUser = {};
 
+    var startApp = function() {
+      gapi.load('auth2', function(){
+      // Retrieve the singleton for the GoogleAuth library and set up the client.
+      auth2 = gapi.auth2.init({
+        client_id: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com'
+        // Request scopes in addition to 'profile' and 'email'
+        //scope: 'additional_scope'
+      });
+      attachSignin(document.getElementById('googleAuthBtn'));
+      });
+    }
+
     var denyTransactionButton = document.getElementById("denyTransactionButton");
     denyTransactionButton.addEventListener("click", function() {
         denyTransaction();
@@ -80,6 +94,9 @@
 
     var signTransactionButton = document.getElementById("signTransactionButton");
     signTransactionButton.addEventListener("click", function() {
+
+        var currentPercent = document.getElementById("gasSlider").value;
+        var gasPriceGwei = calculatePercent(currentPercent, window.gweiSafeLow, window.gweiFastest);
         var transactionData = JSON.parse(sessionStorage.getItem('transactionData'));
 
         //Send transaction with deny transaction field
@@ -89,6 +106,8 @@
           data: transactionData.params[0].data,
           value: transactionData.params[0].value,
           nonce: transactionData.params[0].nonce,
+          gasPrice: window.web3.utils.toWei(gasPriceGwei.toString(), 'gwei'),
+          gas: window.gasUsedEstimate,
           id: transactionData.id,
           withGasPrice: true
         }, function(error, hash){
@@ -118,6 +137,21 @@
         });
     }
 
+    var gasSlider = document.getElementById("gasSlider");
+    var gasLabel = document.getElementById("gasLabel");
+    var gasSpeedLabel = document.getElementById("gasSpeedLabel");
+
+    // Update the current slider value (each time you drag the slider handle)
+    gasSlider.oninput = function() {
+        var currentPercent = document.getElementById("gasSlider").value;
+        var gasPriceGwei = calculatePercent(currentPercent, window.gweiSafeLow, window.gweiFastest);
+        var txFee = calculateTxFee(window.gasUsedEstimate, gasPriceGwei);
+        gasLabel.innerHTML = "Max Transaction Fee: " + txFee + " ETH";
+
+        var estTime = calculatePercent(100 - currentPercent, window.fastestWait, window.safeLowWait);
+        gasSpeedLabel.innerHTML = "Est Time: " + estTime.toFixed(2) + " Minutes";
+    }
+
     window.onmessage = function(e){
         try {
             if(e.data.data.data.method === 'eth_sendTransaction') {
@@ -140,7 +174,7 @@
                   nonce: transactionData.params[0].nonce
                 }, function(error, result){
                     if (!error) {
-                      const gasUsedEstimate = result;
+                      window.gasUsedEstimate = result;
                       // Update gas price
                       var request = new XMLHttpRequest();
 
@@ -154,17 +188,23 @@
                           var gasInfo = JSON.parse(this.response);
                           var gweiSafeLow = gasInfo.safeLow / 10;
                           var gweiFastest = gasInfo.fastest / 10;
-                          document.getElementById('gasSlider').value = gweiSafeLow;
-                          document.getElementById('gasSlider').min = gweiSafeLow;
-                          document.getElementById('gasSlider').max = gweiFastest;
-                          var txFee = calculateTxFee(gasUsedEstimate, gweiSafeLow);
+                          window.gweiSafeLow = gweiSafeLow;
+                          window.gweiFastest = gweiFastest;
+                          console.log(gweiSafeLow);
+                          console.log(gweiFastest);
+                          document.getElementById('gasSlider').value = 1;
+                          // document.getElementById('gasSlider').min = gweiSafeLow;
+                          // document.getElementById('gasSlider').max = gweiFastest;
+                          var txFee = calculateTxFee(window.gasUsedEstimate, gweiSafeLow);
                           document.getElementById('gasLabel').innerHTML = "Max Transaction Fee: " + txFee + " ETH";
                           document.getElementById('denyTransactionButton').style.display = 'inline-block';
                           document.getElementById('signTransactionButton').style.display = 'inline-block';
 
-                          // window.fastestWait = gasInfo.fastestWait;
-                          // window.safeLowWait = gasInfo.safeLowWait;
-                          // window.averageWait = gasInfo.avgWait;
+
+                          window.fastestWait = gasInfo.fastestWait;
+                          window.safeLowWait = gasInfo.safeLowWait;
+                          console.log(safeLowWait);
+                          console.log(fastestWait);
                           document.getElementById('gasSpeedLabel').innerHTML = "Est Time: " + gasInfo.safeLowWait + " Minutes";
 
                         }
@@ -181,17 +221,22 @@
         }
     };
 
-    var startApp = function() {
-      gapi.load('auth2', function(){
-      // Retrieve the singleton for the GoogleAuth library and set up the client.
-      auth2 = gapi.auth2.init({
-        client_id: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com'
-        // Request scopes in addition to 'profile' and 'email'
-        //scope: 'additional_scope'
-      });
-      attachSignin(document.getElementById('googleAuthBtn'));
-      });
+    function calculatePercent(currentPercent, minNum, maxNum) {
+        var res = (currentPercent * maxNum) / 100;
+        if (minNum > res) {
+            return minNum;
+        } else {
+            return res;
+        }
     }
+
+    function calculateTxFee(gasUsedEstimate, gweiGasPrice) {
+      var gasPrice = gweiGasPrice * 1000000000; // convert to wei
+      var ethGasPrice = window.web3.utils.fromWei((gasPrice * gasUsedEstimate).toString()); // convert to ether
+      return Number(ethGasPrice).toFixed(4);
+    }
+
+
 
 
     function attachSignin(element) {
@@ -406,12 +451,6 @@
             // document.getElementById('ethAddress').textContent = ethAddress
             // document.getElementById('email').value = ""
         })
-    }
-
-    function calculateTxFee(gasUsedEstimate, gweiGasPrice) {
-      var gasPrice = gweiGasPrice * 1000000000; // convert to wei
-      var ethGasPrice = window.web3.utils.fromWei((gasPrice * gasUsedEstimate).toString()); // convert to ether
-      return Number(ethGasPrice).toFixed(4);
     }
 
     window.fbAsyncInit = function() {
