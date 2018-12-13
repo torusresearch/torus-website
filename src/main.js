@@ -185,6 +185,7 @@ var transformStream = new stream.Transform({
   objectMode: true,
   transform: function(chunk, enc, cb) {
     console.log('TRANSFORM', chunk)
+
     try {
       if (chunk.method === 'eth_call' || chunk.method === 'eth_estimateGas') {
         console.log('transforming:', chunk.params[0].from)
@@ -196,6 +197,15 @@ var transformStream = new stream.Transform({
           chunk.params[0].from = []
         }
         console.log('transformed:', chunk.params[0].from)
+      } else if (chunk.method === 'eth_sendTransaction') {
+        window.metamaskStream.write({
+          name: "approveTransaction", 
+          data: 
+          {
+            website: document.referrer,
+            params: chunk.params[0]
+          }
+        });
       }
     } catch (err) {
       console.error("Could not transform stream data", err)

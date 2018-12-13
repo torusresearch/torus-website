@@ -6,6 +6,7 @@ var Web3 = require('web3')
 const log = require('loglevel')
 const LocalMessageDuplexStream = require('post-message-stream')
 const MetamaskInpageProvider = require('./inpage-provider.js')
+const setupMultiplex = require('./stream-utils.js').setupMultiplex
 const embedUtils = require('./embedUtils.js')
 var ifrm
 
@@ -63,6 +64,13 @@ function setupWeb3() {
   inpageProvider.enable = function() {
     return new Promise((resolve, reject) => resolve())
   }
+
+  var mux = setupMultiplex(window.metamaskStream);
+  var approveTransaction = mux.createStream('approveTransaction');
+  approveTransaction.on('data', function() {
+    window.document.getElementById('torusIframeContainer').style.display = 'block';
+    //window.metamaskStream.write({name: "approveTransaction", data: arguments[0]})
+  });
 
   
   // TODO: implement inpageProvider.enable
