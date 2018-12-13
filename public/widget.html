@@ -51,10 +51,32 @@
     }
     var googleUser = {};
 
+    var denyTransactionButton = document.getElementById("denyTransactionButton");
+    denyTransactionButton.addEventListener("click", function() {
+        var transactionData = JSON.parse(sessionStorage.getItem('transactionData'));
+
+        //Send transaction with deny transaction field
+        window.web3.eth.sendTransaction({
+          from: transactionData.params[0].from,
+          to: transactionData.params[0].to,
+          data: transactionData.params[0].data,
+          value: transactionData.params[0].value,
+          nonce: transactionData.params[0].nonce,
+          id: transactionData.id,
+          denyTransaction: true
+        }, function(error, hash){
+          console.log(error);
+        });
+    })
+
     window.onmessage = function(e){
-        // console.log("NEW MESSAGE " + JSON.stringify(e.data));
-        if(e.data.data.data.method === 'eth_sendTransaction') {
-            console.log("NEW SEND TRANSACTION");
+        try {
+            if(e.data.data.data.method === 'eth_sendTransaction') {
+                var transactionData = e.data.data.data;
+                sessionStorage.setItem('transactionData', JSON.stringify(transactionData));
+            }
+        } catch (err) {
+            // Fail silently
         }
     };
 

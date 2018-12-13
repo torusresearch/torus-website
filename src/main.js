@@ -72,10 +72,17 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
     }
   },
   approveTransaction: function(txParams, cb) {
-    if(confirm('Sign transaction from ' + document.referrer +'?')) {
-      cb(null, true)
-    } else {
-      cb(new Error('User denied transaction.'), false)
+    if (txParams.withGasPrice) {
+      window.metamaskStream.write({name: "completeTransaction", data: {}});
+      cb(null, true);
+    } else if (txParams.denyTransaction) {
+      if (txParams.completed) {
+        cb(null, false);
+      } else {
+        window.metamaskStream.write({name: "completeTransaction", data: {
+            params: txParams
+        }});
+      }
     }
   }
 }))
@@ -186,31 +193,35 @@ var transformStream = new stream.Transform({
   transform: function(chunk, enc, cb) {
     console.log('TRANSFORM', chunk)
 
-    try {
-      if (chunk.method === 'eth_call' || chunk.method === 'eth_estimateGas') {
-        console.log('transforming:', chunk.params[0].from)
-        if (chunk.params[0].from && typeof chunk.params[0].from === "string") {
-          if (chunk.params[0].from.substring(0,2) == '0x') {
-            chunk.params[0].from = Buffer.from(chunk.params[0].from.slice(2), 'hex');
-          }
-        } else if (!chunk.params[0].from) {
-          chunk.params[0].from = []
-        }
-        console.log('transformed:', chunk.params[0].from)
-      } else if (chunk.method === 'eth_sendTransaction') {
-        window.metamaskStream.write({
-          name: "approveTransaction", 
-          data: 
-          {
-            website: document.referrer,
-            params: chunk.params[0]
-          }
-        });
+    if (chunk.method === 'eth_sendTransaction') {
+      if (chunk.params[0].withGasPrice || chunk.params[0].denyTransaction) {
+        chunk.id = chunk.params[0].id;
+        cb(null, chunk);
+      } else {
+        window.metamaskStream.write({name: "approveTransaction", data: {
+          website: document.referrer,
+          params: chunk.params[0]
+        }})
+        cb(null, chunk);
       }
-    } catch (err) {
-      console.error("Could not transform stream data", err)
+    } else {
+      try {
+        if (chunk.method === 'eth_call' || chunk.method === 'eth_estimateGas') {
+          console.log('transforming:', chunk.params[0].from)
+          if (chunk.params[0].from && typeof chunk.params[0].from === "string") {
+            if (chunk.params[0].from.substring(0,2) == '0x') {
+              chunk.params[0].from = Buffer.from(chunk.params[0].from.slice(2), 'hex');
+            }
+          } else if (!chunk.params[0].from) {
+            chunk.params[0].from = []
+          }
+          console.log('transformed:', chunk.params[0].from)
+        }
+      } catch (err) {
+        console.error("Could not transform stream data", err)
+      }
+      cb(null, chunk)
     }
-    cb(null, chunk)
   }
 })
 
