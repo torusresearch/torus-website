@@ -72,10 +72,10 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
     }
   },
   approveTransaction: function(txParams, cb) {
-    if(confirm('sign?')) {
+    if(confirm('Sign transaction from ' + document.referrer +'?')) {
       cb(null, true)
     } else {
-      cb(new Error('user say no'), false)
+      cb(new Error('User denied transaction.'), false)
     }
   }
 }))
