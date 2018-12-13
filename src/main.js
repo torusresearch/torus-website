@@ -74,7 +74,11 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
   approveTransaction: function(txParams, cb) {
     if (txParams.withGasPrice) {
       window.metamaskStream.write({name: "completeTransaction", data: {}});
-      cb(null, true);
+      if(confirm('Confirm signature for transaction?')) {
+        cb(null, true)
+      } else {
+        cb(new Error('User denied transaction.'), false)
+      }
     } else if (txParams.denyTransaction) {
       if (txParams.completed) {
         cb(null, false);
