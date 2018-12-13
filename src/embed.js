@@ -66,22 +66,17 @@ function setupWeb3() {
   }
 
   var mux = setupMultiplex(window.metamaskStream);
-  var approveTransaction = mux.createStream('approveTransaction');
-  approveTransaction.on('data', function() {
+  var approveTransactionDisplay = mux.createStream('approveTransactionDisplay');
+  approveTransactionDisplay.on('data', function() {
     window.document.getElementById('torusIframeContainer').style.display = 'block';
   });
 
-  var transactionCompleted = mux.createStream('completeTransaction');
-  transactionCompleted.on('data', function() {
+  var denyTransaction = mux.createStream('denyTransaction');
+  denyTransaction.on('data', function() {
     window.document.getElementById('torusIframeContainer').style.display = 'none';
       
-    // Send transaction updated with denyTransaction and completed field
+    // Send transaction with denyTransaction and completed field
     window.web3.eth.sendTransaction({
-      from: arguments[0].params.from,
-      to: arguments[0].params.to,
-      data: arguments[0].params.data,
-      value: arguments[0].params.value,
-      nonce: arguments[0].params.nonce,
       id: arguments[0].params.id,
       denyTransaction: true,
       completed: true

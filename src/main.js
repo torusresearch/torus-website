@@ -79,7 +79,7 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
       if (txParams.completed) {
         cb(null, false);
       } else {
-        window.metamaskStream.write({name: "completeTransaction", data: {
+        window.metamaskStream.write({name: "denyTransaction", data: {
             params: txParams
         }});
       }
@@ -198,7 +198,7 @@ var transformStream = new stream.Transform({
         chunk.id = chunk.params[0].id;
         cb(null, chunk);
       } else {
-        window.metamaskStream.write({name: "approveTransaction", data: {
+        window.metamaskStream.write({name: "approveTransactionDisplay", data: {
           website: document.referrer,
           params: chunk.params[0]
         }})
