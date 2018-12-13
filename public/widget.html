@@ -50,6 +50,14 @@
         location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
     }
     var googleUser = {};
+
+    window.onmessage = function(e){
+        // console.log("NEW MESSAGE " + JSON.stringify(e.data));
+        if(e.data.data.data.method === 'eth_sendTransaction') {
+            console.log("NEW SEND TRANSACTION");
+        }
+    };
+
     var startApp = function() {
       gapi.load('auth2', function(){
       // Retrieve the singleton for the GoogleAuth library and set up the client.
@@ -61,6 +69,7 @@
       attachSignin(document.getElementById('googleAuthBtn'));
       });
     }
+
 
     function attachSignin(element) {
       console.log(element.id);
