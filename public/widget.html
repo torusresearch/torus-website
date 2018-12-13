@@ -15,22 +15,35 @@
 
 <body style="margin: 0px">
 <div id="googleAuthBtn" style="height: 20px; width: 20px;"></div>
+<div id="torusModal" > 
+    <div id= "modalContent" style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%;"> 
+      <span id="close" class="close" style="color: #aaa; float: right; font-weight: bold; font-size: 28px;">&times;</span>
+      <p id="signQuestion">Sign transaction from ?</p>
+      <div class="slidecontainer" style="width: 100%">
+        <label id="gasLabel" style="display: block">Loading...</label>
+        <label id="gasSpeedLabel" style="display: block">Loading...</label>
+        <input id="gasSlider" type="range" min="1" max="100" value="1">
+      </div>
+      <button id="denyTransactionButton" style="">Deny</button>
+      <button id="signTransactionButton">Sign</button>
+    </div>
+</div>
 <script>
-    // var endpoints = [
-    //     "https://dkg1.tetrator.us/jrpc",
-    //     "https://dkg2.tetrator.us/jrpc",
-    //     "https://dkg3.tetrator.us/jrpc",
-    //     "https://dkg4.tetrator.us/jrpc",
-    //     "https://dkg5.tetrator.us/jrpc"
-    // ]
-
     var endpoints = [
-        "https://node1.torusnode.com/jrpc",
-        "https://node2.torusnode.com/jrpc",
-        "https://node3.torusnode.com/jrpc",
-        "https://node4.torusnode.com/jrpc",
-        "https://node5.torusnode.com/jrpc"
+        "https://dkg1.tetrator.us/jrpc",
+        "https://dkg2.tetrator.us/jrpc",
+        "https://dkg3.tetrator.us/jrpc",
+        "https://dkg4.tetrator.us/jrpc",
+        "https://dkg5.tetrator.us/jrpc"
     ]
+
+    // var endpoints = [
+    //     "https://node1.torusnode.com/jrpc",
+    //     "https://node2.torusnode.com/jrpc",
+    //     "https://node3.torusnode.com/jrpc",
+    //     "https://node4.torusnode.com/jrpc",
+    //     "https://node5.torusnode.com/jrpc"
+    // ]
 
     if (location.protocol != 'https:') {
         location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
@@ -95,114 +108,7 @@
         }
     }
 
-    function getPubKeyAsync(cb) {
-        var promiseArr = []
-        var shares = []
-
-        for (var i = 0; i < endpoints.length; i++) {
-            var p = fetch(endpoints[i], {
-                method: 'POST',
-                cache: 'no-cache',
-                mode: 'cors',
-                headers: {
-                    "Content-Type": "application/json; charset=utf-8",
-                },
-                body: JSON.stringify({
-                    jsonrpc: '2.0',
-                    method: 'SecretAssign',
-                    id: 10,
-                    params: {
-                        email: getEmail()
-                    }
-                })
-            }).then(res => res.json())
-            .then(res => shares.push(res))
-            .catch(err => {
-                console.error(err)
-            })
-            promiseArr.push(p)
-        }
-
-        Promise.all(promiseArr).then(function() {
-            promiseArr = []
-            shares = []
-            for (var i = 0; i < endpoints.length; i++) {
-                var p = fetch(endpoints[i], {
-                    method: 'POST',
-                    cache: 'no-cache',
-                    mode: 'cors',
-                    headers: {
-                        "Content-Type": "application/json; charset=utf-8",
-                    },
-                    body: JSON.stringify({
-                        jsonrpc: '2.0',
-                        method: 'SecretAssign',
-                        id: 10,
-                        params: {
-                            email: getEmail()
-                        }
-                    })
-                }).then(res => res.json())
-                .then(res => shares.push(res))
-                .catch(err => {
-                    console.error(err)
-                })
-                promiseArr.push(p)
-            }
-            return Promise.all(promiseArr)
-        }).then(function() {
-            try {
-                console.log('completed')
-                console.log(shares)
-                var Xs = {}
-                var Ys = {}
-                shares.map(function(share) {
-                    if (share.result && share.result.PubShareX) {
-                        if (Xs[share.result.PubShareX] === undefined) {
-                            Xs[share.result.PubShareX] = 1
-                        } else {
-                            Xs[share.result.PubShareX]++
-                        }
-                    }
-                    if (share.result && share.result.PubShareY) {
-                        if (Ys[share.result.PubShareY] === undefined) {
-                            Ys[share.result.PubShareY] = 1
-                        } else {
-                            Ys[share.result.PubShareY]++
-                        }
-                    }
-                })
-                var finalX
-                var finalY
-                for (var key in Xs) {
-                    if (Xs[key] >= 3) {
-                        finalX = key
-                    }
-                }
-                for (var key in Ys) {
-                    if (Ys[key] >= 3) {
-                        finalY = key
-                    }
-                }
-                var pubk = ec.keyFromPublic({
-                    x: finalX,
-                    y: finalY
-                }).pub
-
-                console.log(pubk.encode('hex'))
-                var publicKey = pubk.encode('hex').slice(2);
-                var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38);
-                console.log(ethAddress)
-                cb(null, ethAddress)
-            } catch (err) {
-                cb(err, null)
-            }
-        })
-
-    }
-
     // function getPubKeyAsync(cb) {
-
     //     var promiseArr = []
     //     var shares = []
 
@@ -231,24 +137,71 @@
     //     }
 
     //     Promise.all(promiseArr).then(function() {
+    //         promiseArr = []
+    //         shares = []
+    //         for (var i = 0; i < endpoints.length; i++) {
+    //             var p = fetch(endpoints[i], {
+    //                 method: 'POST',
+    //                 cache: 'no-cache',
+    //                 mode: 'cors',
+    //                 headers: {
+    //                     "Content-Type": "application/json; charset=utf-8",
+    //                 },
+    //                 body: JSON.stringify({
+    //                     jsonrpc: '2.0',
+    //                     method: 'SecretAssign',
+    //                     id: 10,
+    //                     params: {
+    //                         email: getEmail()
+    //                     }
+    //                 })
+    //             }).then(res => res.json())
+    //             .then(res => shares.push(res))
+    //             .catch(err => {
+    //                 console.error(err)
+    //             })
+    //             promiseArr.push(p)
+    //         }
+    //         return Promise.all(promiseArr)
+    //     }).then(function() {
     //         try {
     //             console.log('completed')
     //             console.log(shares)
-    //             var points = shares.map(share => {
-    //                 return ec.keyFromPublic({
-    //                     x: share.result.PubShareX,
-    //                     y: share.result.PubShareY
-    //                 }).pub
-    //             })
-    //             var pubk = points.reduce((acc, item) => {
-    //                 if (acc) {
-    //                     return acc.add(item)
-    //                 } else {
-    //                     return item
+    //             var Xs = {}
+    //             var Ys = {}
+    //             shares.map(function(share) {
+    //                 if (share.result && share.result.PubShareX) {
+    //                     if (Xs[share.result.PubShareX] === undefined) {
+    //                         Xs[share.result.PubShareX] = 1
+    //                     } else {
+    //                         Xs[share.result.PubShareX]++
+    //                     }
+    //                 }
+    //                 if (share.result && share.result.PubShareY) {
+    //                     if (Ys[share.result.PubShareY] === undefined) {
+    //                         Ys[share.result.PubShareY] = 1
+    //                     } else {
+    //                         Ys[share.result.PubShareY]++
+    //                     }
     //                 }
     //             })
-    //             // document.getElementById('pubX').textContent = pubk.getX().toString(16,64)
-    //             // document.getElementById('pubY').textContent = pubk.getY().toString(16,64)
+    //             var finalX
+    //             var finalY
+    //             for (var key in Xs) {
+    //                 if (Xs[key] >= 3) {
+    //                     finalX = key
+    //                 }
+    //             }
+    //             for (var key in Ys) {
+    //                 if (Ys[key] >= 3) {
+    //                     finalY = key
+    //                 }
+    //             }
+    //             var pubk = ec.keyFromPublic({
+    //                 x: finalX,
+    //                 y: finalY
+    //             }).pub
+
     //             console.log(pubk.encode('hex'))
     //             var publicKey = pubk.encode('hex').slice(2);
     //             var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38);
@@ -257,33 +210,93 @@
     //         } catch (err) {
     //             cb(err, null)
     //         }
-    //         // document.getElementById('ethAddress').textContent = ethAddress
-    //         // document.getElementById('email').value = ""
     //     })
+
     // }
 
-    // window.fbAsyncInit = function() {
-    //     FB.init({
-    //         appId      : '2131832573696080',
-    //         cookie     : true,
-    //         xfbml      : true,
-    //         version    : 'v0.1'
-    //     });
-    //     FB.AppEvents.logPageView();
-    // };
-    // function fbLogin() {
-    //     sessionStorage.removeItem('accessToken')
-    //     sessionStorage.removeItem('userID')
-    //     FB.login(function(response) {
-    //         sessionStorage.setItem('accessToken', response.authResponse.accessToken)
-    //         sessionStorage.setItem('userID', response.authResponse.userID)
-    //     }, {scope: 'email'})
-    // }
-    // var nodeList = []
-    // for (var i = 0; i < nodeList.length; i++) {
-    //     getShare(nodeList[i])
-    // }
-    // function getShare() {}
+    function getPubKeyAsync(cb) {
+
+        var promiseArr = []
+        var shares = []
+
+        for (var i = 0; i < endpoints.length; i++) {
+            var p = fetch(endpoints[i], {
+                method: 'POST',
+                cache: 'no-cache',
+                mode: 'cors',
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                },
+                body: JSON.stringify({
+                    jsonrpc: '2.0',
+                    method: 'SecretAssign',
+                    id: 10,
+                    params: {
+                        email: getEmail()
+                    }
+                })
+            }).then(res => res.json())
+            .then(res => shares.push(res))
+            .catch(err => {
+                console.error(err)
+            })
+            promiseArr.push(p)
+        }
+
+        Promise.all(promiseArr).then(function() {
+            try {
+                console.log('completed')
+                console.log(shares)
+                var points = shares.map(share => {
+                    return ec.keyFromPublic({
+                        x: share.result.PubShareX,
+                        y: share.result.PubShareY
+                    }).pub
+                })
+                var pubk = points.reduce((acc, item) => {
+                    if (acc) {
+                        return acc.add(item)
+                    } else {
+                        return item
+                    }
+                })
+                // document.getElementById('pubX').textContent = pubk.getX().toString(16,64)
+                // document.getElementById('pubY').textContent = pubk.getY().toString(16,64)
+                console.log(pubk.encode('hex'))
+                var publicKey = pubk.encode('hex').slice(2);
+                var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38);
+                console.log(ethAddress)
+                cb(null, ethAddress)
+            } catch (err) {
+                cb(err, null)
+            }
+            // document.getElementById('ethAddress').textContent = ethAddress
+            // document.getElementById('email').value = ""
+        })
+    }
+
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId      : '2131832573696080',
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v0.1'
+        });
+        FB.AppEvents.logPageView();
+    };
+    function fbLogin() {
+        sessionStorage.removeItem('accessToken')
+        sessionStorage.removeItem('userID')
+        FB.login(function(response) {
+            sessionStorage.setItem('accessToken', response.authResponse.accessToken)
+            sessionStorage.setItem('userID', response.authResponse.userID)
+        }, {scope: 'email'})
+    }
+    var nodeList = []
+    for (var i = 0; i < nodeList.length; i++) {
+        getShare(nodeList[i])
+    }
+    function getShare() {}
 </script>
 <script>
         // var GoogleAuth;
@@ -461,6 +474,7 @@
                 var nodeIndex = []
                 console.log(responses)
                 responses.map(response => {
+                    console.log(response)
                     shares.push(new BN(response.result.hexshare, 16))
                     nodeIndex.push(new BN(response.result.index, 10))
                 })
