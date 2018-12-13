@@ -1,7 +1,7 @@
 #torusWidget {
   z-index: 999999;
   position: fixed;
-  top: 8px;
+  bottom: 8px;
   left: 8px;
 }
 
