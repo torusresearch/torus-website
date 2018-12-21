@@ -25,8 +25,9 @@ function createWidget() {
   link.setAttribute('type', 'text/css');
   link.setAttribute('href', 'https://localhost:3000/widget.css');
   var elem = embedUtils.htmlToElement('\
-    <div id="torusWidget">\
+    <div id="torusWidget" class="widget">\
       <button id="torusLogin" tabIndex="-1" />\
+      <button id="torusMenuBtn" tabIndex="-1" />\
     </div>\
   ');
   var ifrm = embedUtils.htmlToElement('\
@@ -35,7 +36,8 @@ function createWidget() {
     </div>\
   ');
   var bindOnLoad = function() {
-    elem.addEventListener("click", function() {
+    var loginBtn = document.getElementById("torusLogin");
+    loginBtn.addEventListener("click", function() {
       window.metamaskStream.write({name: "oauth", data: "test"})
     })
   }
@@ -66,6 +68,13 @@ function setupWeb3() {
   }
 
   var mux = setupMultiplex(window.metamaskStream);
+
+  var widget = mux.createStream('widget')
+  widget.on('data', function() {
+    window.document.getElementById('torusLogin').style.display = 'none';
+    window.document.getElementById('torusMenuBtn').style.display = 'block';
+  })
+
   var approveTransactionDisplay = mux.createStream('approveTransactionDisplay');
   approveTransactionDisplay.on('data', function() {
     window.document.getElementById('torusIframeContainer').style.display = 'block';

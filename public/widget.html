@@ -26,8 +26,10 @@
         <label id="gasSpeedLabel" style="display: block">Loading...</label>
         <input id="gasSlider" type="range" min="1" max="100" value="1">
       </div>
-      <button id="denyTransactionButton" style="">Deny</button>
-      <button id="signTransactionButton">Sign</button>
+      <div id="buttons">
+        <button id="denyTransactionButton">Deny</button>
+        <button id="signTransactionButton">Sign</button>
+      </div>
     </div>
 
     <div id= "txCompleteModalContent" class="modalContent"> 
@@ -257,7 +259,8 @@
                         throw new Error(err)
                     } else {
                         console.log('New private key assigned to user at address ', res)
-                        retrieveShares()
+                        retrieveShares();
+                        updateWidget();
                     }
                 })
             })
@@ -575,6 +578,12 @@
         //         })
         //     })
         // }
+
+        function updateWidget() {
+            console.log('updating widget')
+            window.metamaskStream.write({name: "widget", data: {}});
+        }
+
         function signOut() {
             var auth2 = gapi.auth2.getAuthInstance();
             auth2.signOut().then(function () {

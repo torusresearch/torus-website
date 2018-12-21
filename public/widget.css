@@ -1,4 +1,4 @@
-#torusWidget {
+.widget {
   z-index: 999999;
   position: fixed;
   bottom: 8px;
@@ -18,6 +18,22 @@
   transition: background-color, background-image, width 0.1s ease-in-out;
   user-select: none;
   outline: none;
+}
+
+#torusMenuBtn {
+  border-radius: 20px;
+  height: 40px;
+  width: 40px;
+  background-image: url("https://localhost:3000/images/torusbig.png");
+  background-size: 60%;
+  background-repeat: no-repeat;
+  border-width: 0px;
+  background-position: center;
+  background-color: #75b4fd;
+  transition: background-color, background-image, width 0.1s ease-in-out;
+  user-select: none;
+  outline: none;
+  display: none;
 }
 
 #torusLogin:hover {
@@ -90,7 +106,7 @@
 }
 
 #signTransactionButton {
-  display: block;
+  display: inline-block;
   border: none;
   background-color: #4CAF50;
   padding: 4% 22%;
@@ -100,7 +116,7 @@
 }
 
 #denyTransactionButton {
-  display: block;
+  display: inline-block;
   border: none;
   background-color: #bb5858;
   padding: 4% 22%;
@@ -143,3 +159,9 @@
   background: #4CAF50; /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
+
+#buttons {
+  width:100%;
+  text-align: center;
+}
+
