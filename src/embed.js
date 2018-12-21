@@ -26,8 +26,8 @@ function createWidget() {
   link.setAttribute('href', 'https://localhost:3000/widget.css');
   var elem = embedUtils.htmlToElement('\
     <div id="torusWidget" class="widget">\
-      <button id="torusLogin" tabIndex="-1" />\
-      <button id="torusMenuBtn" tabIndex="-1" />\
+      <button id="torusLogin" />\
+      <button id="torusMenuBtn"/>\
     </div>\
   ');
   var ifrm = embedUtils.htmlToElement('\
@@ -49,6 +49,12 @@ function createWidget() {
   }
   embedUtils.runOnLoad(attachOnLoad)
   embedUtils.runOnLoad(bindOnLoad)
+
+  var torusMenuBtn = document.getElementById("torusMenuBtn");
+  torusMenuBtn.addEventListener("click", function() {
+    window.document.getElementById('torusMenuBtn').style.display = 'none';
+    window.document.getElementById('torusIframeContainer').style.display = 'block';
+  })
 }
 
 function setupWeb3() {
@@ -72,6 +78,7 @@ function setupWeb3() {
   var widget = mux.createStream('widget')
   widget.on('data', function() {
     window.document.getElementById('torusLogin').style.display = 'none';
+    window.document.getElementById('torusIframeContainer').style.display = 'none';
     window.document.getElementById('torusMenuBtn').style.display = 'block';
   })
 
@@ -80,9 +87,16 @@ function setupWeb3() {
     window.document.getElementById('torusIframeContainer').style.display = 'block';
   });
 
+  var closeWindow = mux.createStream('close');
+  closeWindow.on('data', function() {
+    window.document.getElementById('torusIframeContainer').style.display = 'none';
+    window.document.getElementById('torusMenuBtn').style.display = 'block';
+  });
+
   var denyTransaction = mux.createStream('denyTransaction');
   denyTransaction.on('data', function() {
     window.document.getElementById('torusIframeContainer').style.display = 'none';
+    window.document.getElementById('torusMenuBtn').style.display = 'block';
       
     // Send transaction with denyTransaction and completed field
     window.web3.eth.sendTransaction({

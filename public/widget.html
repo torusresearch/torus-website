@@ -40,6 +40,29 @@
       <button id="closeWindow">Close</button>
     </div>
 </div>
+
+<!-- The overlay -->
+<div id="myNav" class="overlay" >
+
+  <div class="overlay-header">
+    <h1 style="color: white;" id="email">Loading Email....</h1>
+    <p style="color: white;" id="address">Loading Address....</p>
+    <p style="color: white;" id="balance"> Loading Balance....</p>
+  </div>
+
+  <!-- Overlay content -->
+  <div class="overlay-content">
+    <a href="#" id="sendEtherBtn">Send Ether</a>
+    <a href="#">Receive Ether</a>
+    <a href="#" id="transactions">Transactions</a>
+    <a href="#" id="switchAccounts">Switch Account</a>
+  </div>
+</div>
+
+<div id="torusWidget" class="widget">
+  <button id="closeOverlayBtn"/>
+</div>
+
 <script>
     var endpoints = [
         "https://dkg1.tetrator.us/jrpc",
@@ -71,27 +94,33 @@
         //scope: 'additional_scope'
       });
       attachSignin(document.getElementById('googleAuthBtn'));
+      attachSignin(document.getElementById('switchAccounts'));
       });
     }
 
     var denyTransactionButton = document.getElementById("denyTransactionButton");
     denyTransactionButton.addEventListener("click", function() {
-        denyTransaction();
+      denyTransaction();
     })
 
     var closeButton = document.getElementById("close");
     closeButton.addEventListener("click", function() {
-        denyTransaction();
+      closeWindow();
+    })
+
+    var closeOverlayButton = document.getElementById("closeOverlayBtn");
+    closeOverlayButton.addEventListener("click", function() {
+      closeWindow();
     })
 
     var close2Button = document.getElementById("close2");
     close2Button.addEventListener("click", function() {
-        denyTransaction();
+      closeWindow();
     })
 
     var closeWindowBtn = document.getElementById("closeWindow");
     closeWindowBtn.addEventListener("click", function() {
-        denyTransaction();
+      closeWindow();
     })
 
     var signTransactionButton = document.getElementById("signTransactionButton");
@@ -116,7 +145,7 @@
             if (hash) {
                 document.getElementById('txCompleteModalContent').style.display = 'block';
                 document.getElementById('signTxModalContent').style.display = 'none';
-                document.getElementById('resultTxHash').innerHTML = "<span>Transaction pending! <a href = 'https://etherscan.io/tx/" + hash + "' target= '_blank'>https://etherscan.io/tx/" + hash + "</a></span>";
+                document.getElementById('resultTxHash').innerHTML = "<span><a href = 'https://etherscan.io/tx/" + hash + "' target= '_blank'>Transaction pending!</a></span>";
             }
             if (error) {
                 console.log(error);
@@ -124,21 +153,16 @@
         });
     })
 
-    function denyTransaction() {
-        var transactionData = JSON.parse(sessionStorage.getItem('transactionData'));
+    function closeWindow() {
+      denyTransaction();
+    }
 
-        //Send transaction with deny transaction field
-        window.web3.eth.sendTransaction({
-          from: transactionData.params[0].from,
-          to: transactionData.params[0].to,
-          data: transactionData.params[0].data,
-          value: transactionData.params[0].value,
-          nonce: transactionData.params[0].nonce,
-          id: transactionData.id,
-          denyTransaction: true
-        }, function(error, hash){
-          console.log(error);
-        });
+    function denyTransaction() {
+      window.metamaskStream.write({name: "close", data: {}});
+      document.getElementById('myNav').style.display = 'block';
+      document.getElementById('torusWidget').style.display = 'block';
+      document.getElementById('txCompleteModalContent').style.display = 'none';
+      document.getElementById('signTxModalContent').style.display = 'none';
     }
 
     var gasSlider = document.getElementById("gasSlider");
@@ -161,6 +185,8 @@
             if(e.data.data.data.method === 'eth_sendTransaction') {
                 var transactionData = e.data.data.data;
                 sessionStorage.setItem('transactionData', JSON.stringify(transactionData));
+                document.getElementById('myNav').style.display = 'none';
+                document.getElementById('torusWidget').style.display = 'none';
                 document.getElementById('torusModal').style.display = 'block';
                 document.getElementById('signTxModalContent').style.display = 'block';
                 document.getElementById('txCompleteModalContent').style.display = 'none';
@@ -250,6 +276,7 @@
             console.log('Name: ' + profile.getName());
             console.log('Image URL: ' + profile.getImageUrl());
             console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+            document.getElementById('email').innerHTML = profile.getEmail();
             sessionStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
             sessionStorage.setItem('email', profile.getEmail())
             gapi.auth2.getAuthInstance().disconnect().then(function () {
@@ -260,7 +287,7 @@
                     } else {
                         console.log('New private key assigned to user at address ', res)
                         retrieveShares();
-                        updateWidget();
+                        updateWidget(res);
                     }
                 })
             })
@@ -579,9 +606,21 @@
         //     })
         // }
 
-        function updateWidget() {
-            console.log('updating widget')
-            window.metamaskStream.write({name: "widget", data: {}});
+        function updateWidget(address) {
+          document.getElementById('address').innerHTML = address;
+          document.getElementById('transactions').href = 'https://etherscan.io/address/' + address;
+          document.getElementById('transactions').target = "_blank";
+          window.metamaskStream.write({name: "widget", data: {}});
+          var checkSumAddress = window.web3.utils.toChecksumAddress(address)
+          window.web3.eth.getBalance(checkSumAddress, function(error, result){
+             if(!error) {
+              var accountBalance = Number(window.web3.utils.fromWei(result));
+              var accountBalanceContent = 'Balance: ' + accountBalance.toFixed(4) + " ETH";
+              document.getElementById('balance').innerHTML = accountBalanceContent;
+            } else {
+              console.error(error);
+            }
+          })
         }
 
         function signOut() {
