@@ -195,8 +195,8 @@
           data: transactionData.params[0].data,
           value: transactionData.params[0].value,
           nonce: transactionData.params[0].nonce,
-          gasPrice: window.web3.utils.toWei(gasPriceGwei.toString(), 'gwei'),
-          gas: window.gasUsedEstimate,
+          gasPrice: Math.floor(window.web3.utils.toWei(gasPriceGwei.toString(), 'gwei')),
+          gas: Math.floor(window.gasUsedEstimate),
           id: transactionData.id,
           withGasPrice: true
         }, function(error, hash){
