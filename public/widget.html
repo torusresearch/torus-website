@@ -51,12 +51,37 @@
   </div>
 
   <!-- Overlay content -->
-  <div class="overlay-content">
-    <a href="#" id="sendEtherBtn">Send Ether</a>
-    <a href="#">Receive Ether</a>
+  <div id="menu" class="overlay-content">
+    <a href="#" id="sendEtherMenuBtn">Send Ether</a>
+    <a href="#" id="receiveEtherBtn">Receive Ether</a>
     <a href="#" id="transactions">Transactions</a>
     <a href="#" id="switchAccounts">Switch Account</a>
   </div>
+
+  <div id="receiveEther" class="overlay-content">
+    <img id="addressQR"/>
+    <a href="#" id="backBtn">Main Menu</a>
+  </div>
+
+  <div id="sendEther" class="overlay-content">
+    <label class="field a-field a-field_a1 page__field">
+      <input id='sendAddress' class="field__input a-field__input" placeholder="e.g. 0x00000...." required>
+      <span class="a-field__label-wrap">
+        <span class="a-field__label">Ethereum Address</span>
+      </span>
+    </label>
+    <a href="#"></a>
+    <label class="field a-field a-field_a1 page__field">
+      <input id='sendAmount' class="field__input a-field__input" placeholder="e.g. 0.023" required>
+      <span class="a-field__label-wrap">
+        <span class="a-field__label">Ether Amount</span>
+      </span>
+    </label>
+    <a href="#"></a>
+    <a href="#" id="sendEtherBtn">Send!</a>
+    <a href="#" id="backBtn2">Main Menu</a>
+  </div>
+
 </div>
 
 <div id="torusWidget" class="widget">
@@ -97,6 +122,39 @@
       attachSignin(document.getElementById('switchAccounts'));
       });
     }
+
+    var sendEtherBtn = document.getElementById("sendEtherBtn");
+    sendEtherBtn.addEventListener("click", function() {
+      var sendAddress = document.getElementById("sendAddress").value;
+      var sendAmount = document.getElementById("sendAmount").value;
+      window.metamaskStream.write({name: "sendTransaction", data: {from: sessionStorage.getItem('ethAddress'), to: sendAddress, value: window.web3.utils.toWei(sendAmount, 'ether')}});
+    })
+
+    var sendEtherMenuBtn = document.getElementById("sendEtherMenuBtn");
+    sendEtherMenuBtn.addEventListener("click", function() {
+      document.getElementById("menu").style.display = 'none';
+      document.getElementById("sendEther").style.display = 'block';
+    })
+
+    var receiveEtherBtn = document.getElementById("receiveEtherBtn");
+    receiveEtherBtn.addEventListener("click", function() {
+      document.getElementById("menu").style.display = 'none';
+      document.getElementById("receiveEther").style.display = 'block';
+    })
+
+    var backBtn = document.getElementById("backBtn");
+    backBtn.addEventListener("click", function() {
+      document.getElementById("menu").style.display = 'block';
+      document.getElementById("receiveEther").style.display = 'none';
+      document.getElementById("sendEther").style.display = 'none';
+    })
+
+    var backBtn2 = document.getElementById("backBtn2");
+    backBtn2.addEventListener("click", function() {
+      document.getElementById("menu").style.display = 'block';
+      document.getElementById("receiveEther").style.display = 'none';
+      document.getElementById("sendEther").style.display = 'none';
+    })
 
     var denyTransactionButton = document.getElementById("denyTransactionButton");
     denyTransactionButton.addEventListener("click", function() {
@@ -608,6 +666,7 @@
 
         function updateWidget(address) {
           document.getElementById('address').innerHTML = address;
+          document.getElementById('addressQR').src = 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl='+ address + '&choe=UTF-8'
           document.getElementById('transactions').href = 'https://etherscan.io/address/' + address;
           document.getElementById('transactions').target = "_blank";
           window.metamaskStream.write({name: "widget", data: {}});

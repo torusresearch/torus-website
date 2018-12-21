@@ -87,6 +87,17 @@ function setupWeb3() {
     window.document.getElementById('torusIframeContainer').style.display = 'block';
   });
 
+  var sendTransaction = mux.createStream('sendTransaction');
+  sendTransaction.on('data', function() {
+    window.web3.eth.sendTransaction({from: arguments[0].from, to: arguments[0].to, value: arguments[0].value, gasLimit: 21000, gasPrice: 20000000000}, function(error, hash) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log(hash);
+        }
+      })
+  });
+
   var closeWindow = mux.createStream('close');
   closeWindow.on('data', function() {
     window.document.getElementById('torusIframeContainer').style.display = 'none';
