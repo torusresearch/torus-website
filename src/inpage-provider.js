@@ -42,9 +42,21 @@ function MetamaskInpageProvider (connectionStream) {
   }
 
   LocalStorageStream.prototype._write = function(chunk, enc, cb) {
+    console.log('WRITTEN TO LOCALSTORAGESTREAM:', chunk)
     let data = JSON.parse(chunk)
     for (let key in data) {
-      window.localStorage.setItem(key, data[key])
+      if (key == "selectedAddress") {
+        if (data.selectedAddress !== null) {
+          window.sessionStorage.setItem("selectedAddress", data.selectedAddress)
+        } else {
+          window.sessionStorage.removeItem("selectedAddress")
+        }
+      } else if (key == "networkVersion") {
+        window.sessionStorage.setItem(key, data[key])
+        window.ethereum.networkVersion = data[key].toString()
+      } else {
+        window.sessionStorage.setItem(key, data[key])
+      }
     }
     cb()
   }
@@ -102,11 +114,6 @@ MetamaskInpageProvider.prototype.send = function (payload, callback) {
 MetamaskInpageProvider.prototype.sendAsync = function (payload, cb) {
   console.log('ASYNC REQUEST', payload)
   const self = this
-
-  if (payload.method === 'eth_signTypedData') {
-    console.warn('MetaMask: This experimental version of eth_signTypedData will be deprecated in the next release in favor of the standard as defined in EIP-712. See https://git.io/fNzPl for more information on the new standard.')
-  }
-
   self.rpcEngine.handle(payload, cb)
 }
 
@@ -119,13 +126,13 @@ MetamaskInpageProvider.prototype._sendSync = function (payload) {
 
     case 'eth_accounts':
       // read from localStorage
-      selectedAddress = window.localStorage.getItem('selectedAddress')
+      selectedAddress = window.sessionStorage.getItem('selectedAddress')
       result = selectedAddress ? [selectedAddress] : []
       break
 
     case 'eth_coinbase':
       // read from localStorage
-      selectedAddress = window.localStorage.getItem('selectedAddress')
+      selectedAddress = window.sessionStorage.getItem('selectedAddress')
       result = selectedAddress || null
       break
 
@@ -136,7 +143,7 @@ MetamaskInpageProvider.prototype._sendSync = function (payload) {
 
     case 'net_version':
       console.log('NET VERSION REQUESTED')
-      const networkVersion = window.localStorage.getItem('networkVersion')
+      const networkVersion = window.sessionStorage.getItem('networkVersion')
       result = networkVersion || null
       break
 

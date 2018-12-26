@@ -17,6 +17,20 @@ const log = require('loglevel')
 // const DuplexStream = require('readable-stream').Duplex
 const stream = require('stream')
 
+function buf2hex(buffer) { // buffer is an ArrayBuffer
+  return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
+}
+
+function eventFire(el, etype){
+  if (el.fireEvent) {
+    el.fireEvent('on' + etype);
+  } else {
+    var evObj = window.document.createEvent('Events');
+    evObj.initEvent(etype, true, false);
+    el.dispatchEvent(evObj);
+  }
+}
+
 var engine = new ProviderEngine()
 engine.addProvider(new FixtureSubprovider({
   web3_clientVersion: 'ProviderEngine/v0.0.0/javascript',
@@ -33,22 +47,46 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
   getAccounts: function(cb) {
     // cb(null, ['0x5657d2e6D362618Fb0DA4b90aa6e22eD86e30bfd'])
     // console.log(window.ethAddress, 'ethadd')
-    cb(null, window.ethAddress ? [Web3.utils.toChecksumAddress(window.ethAddress)] : [])
+    var ethAddress = sessionStorage.getItem('ethAddress')
+
+    // TODO: checksumAddress
+    cb(null, ethAddress ? [Web3.utils.toChecksumAddress(ethAddress)] : [])
+    // cb(null, ethAddress ? [ethAddress] : [])
   },
   getPrivateKey: function(address, cb) {
-    var wallet = {}
-    if (window.ethAddress) {
-      wallet[Web3.utils.toChecksumAddress(window.ethAddress)] = Buffer(window.privK, 'hex')
+    var address = Web3.utils.toChecksumAddress(address)
+    var wallet = JSON.parse(sessionStorage.getItem("wallet"))
+    if (wallet == null) {
+      cb(new Error("No wallet accessible. Please login."), null)
+      return
     }
-    // wallet['0x5657d2e6D362618Fb0DA4b90aa6e22eD86e30bfd'] = Buffer('b019705e07dcd942c62a2eaa2075a2769ce187d0f9e76ce1aaf5a7b8e07c48c1', 'hex')
-    console.log('PRIVATE KEY RETRIEVED...')
-    cb(null, wallet[address])
+    if (address == null) {
+      cb(new Error("No address given."), null)
+      return
+    } else if (wallet[address] == null) {
+      cb(new Error("No private key accessible. Please login."), null)
+      return
+    } else {
+      console.log('PRIVATE KEY RETRIEVED...')
+      cb(null, Buffer(wallet[address], 'hex'))
+    }
   },
   approveTransaction: function(txParams, cb) {
-    if(confirm('sign?')) {
-      cb(null, true)
-    } else {
-      cb(new Error('user say no'), false)
+    if (txParams.withGasPrice) {
+      window.metamaskStream.write({name: "completeTransaction", data: {}});
+      if(confirm('Confirm signature for transaction?')) {
+        cb(null, true)
+      } else {
+        cb(new Error('User denied transaction.'), false)
+      }
+    } else if (txParams.denyTransaction) {
+      if (txParams.completed) {
+        cb(null, false);
+      } else {
+        window.metamaskStream.write({name: "denyTransaction", data: {
+            params: txParams
+        }});
+      }
     }
   }
 }))
@@ -111,9 +149,10 @@ const providerOutStream = mux.createStream('provider')
 const publicConfigOutStream = mux.createStream('publicConfig')
 const oauthInputStream = mux.createStream('oauth')
 const p = new stream.PassThrough({objectMode: true});
+
 p.on('data', function() {
   console.log('data gotten from p', arguments)
-  window.eventFire(window.document.getElementById("googleAuthBtn"), "click")
+  eventFire(window.document.getElementById("googleAuthBtn"), "click")
 })
 
 pump(oauthInputStream, p, (err) => {
@@ -122,7 +161,9 @@ pump(oauthInputStream, p, (err) => {
 
 function updateSelectedAddress() {
   web3.eth.getAccounts().then(res => {
-    publicConfigOutStream.write(JSON.stringify({selectedAddress: res[0]}))
+    console.log('updateSelectedaddress', res[0])
+    // TODO: checksum address
+    publicConfigOutStream.write(JSON.stringify({selectedAddress: res[0] || null}))
   }).catch(err => log.error(err))
 }
 
@@ -146,36 +187,54 @@ passthroughStream0.on('data', function() {
   console.log('PASSTHROUGH0', arguments)
 })
 
+// ethereumjs-vm uses ethereumjs-tx/fake.js to create a fake transaction
+// and it expects tx.from to be a Buffer that is used for signing and stuff.
+// the problem is that after passing our messages through a bunch of providers
+// the tx.from field becomes a hex string. Here we convert it back to Buffer.
+// this only affects eth_call
+var transformStream = new stream.Transform({
+  objectMode: true,
+  transform: function(chunk, enc, cb) {
+    console.log('TRANSFORM', chunk)
+
+    if (chunk.method === 'eth_sendTransaction') {
+      if (chunk.params[0].withGasPrice || chunk.params[0].denyTransaction) {
+        chunk.id = chunk.params[0].id;
+        cb(null, chunk);
+      } else {
+        window.metamaskStream.write({name: "approveTransactionDisplay", data: {
+          website: document.referrer,
+          params: chunk.params[0]
+        }})
+        cb(null, chunk);
+      }
+    } else {
+      try {
+        if (chunk.method === 'eth_call' || chunk.method === 'eth_estimateGas') {
+          console.log('transforming:', chunk.params[0].from)
+          if (chunk.params[0].from && typeof chunk.params[0].from === "string") {
+            if (chunk.params[0].from.substring(0,2) == '0x') {
+              chunk.params[0].from = Buffer.from(chunk.params[0].from.slice(2), 'hex');
+            }
+          } else if (!chunk.params[0].from) {
+            chunk.params[0].from = []
+          }
+          console.log('transformed:', chunk.params[0].from)
+        }
+      } catch (err) {
+        console.error("Could not transform stream data", err)
+      }
+      cb(null, chunk)
+    }
+  }
+})
+
 // doesnt do anything.. just for logging
 // since the stack traces are constrained to a single javascript context
 // may need to use a passthrough stream to log stuff between streams
 var passthroughStream = new stream.PassThrough({objectMode: true});
 passthroughStream.on('data', function() {
   console.log('PASSTHROUGH', arguments)
-})
-
-// metamask's implementation of transaction formatting has a weird bug where
-// the "from" field is removed and then autogenerated from the signature...
-// and if you include it yourself, it will append an extra 0x in front.. hence this fix
-var transformStream = new stream.Transform({
-  objectMode: true,
-  transform: function(chunk, enc, cb) {
-    console.log('TRANSFORM', chunk)
-    try {
-      if (chunk.method === 'eth_call') {
-        if (chunk.params[0].from) {
-          if (chunk.params[0].from.substring(0,2) == '0x') {
-            chunk.params[0].from = Buffer.from(chunk.params[0].from.slice(2), 'hex');
-          }
-        } else {
-          chunk.params[0].from = '0x0000000000000000000000000000000000000000';
-        }
-      }
-    } catch (err) {
-      console.error("Could not transform stream data", err)
-    }
-    cb(null, chunk)
-  }
 })
 
 // chaining all the streams together

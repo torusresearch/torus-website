@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Torus Demo</title>
+    <link rel="stylesheet" type="text/css" href="https://localhost:3000/widget.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- <script id="facebook-jssdk" src="https://connect.facebook.net/en_US/sdk.js"></script> -->
@@ -15,8 +16,100 @@
 
 <body style="margin: 0px">
 <div id="googleAuthBtn" style="height: 20px; width: 20px;"></div>
+<div id="torusModal" > 
+    <div id= "signTxModalContent" class="modalContent"> 
+      <span id="close" class="close">&times;</span>
+      <img id="torusLogo" src="https://localhost:3000/images/logo.png" alt="Torus Logo"/>
+      <p id="signQuestion">Sign transaction from ?</p>
+      <div class="slidecontainer" style="width: 100%">
+        <label id="gasLabel" style="display: block">Loading...</label>
+        <label id="gasSpeedLabel" style="display: block">Loading...</label>
+        <input id="gasSlider" type="range" min="1" max="100" value="1">
+      </div>
+      <div id="buttons">
+        <button id="denyTransactionButton">Deny</button>
+        <button id="signTransactionButton">Sign</button>
+      </div>
+    </div>
+
+    <div id= "txCompleteModalContent" class="modalContent"> 
+      <span id="close2" class="close">&times;</span>
+      <img id="torusLogo" src="https://localhost:3000/images/logo.png" alt="Torus Logo"/>
+      <p id="resultTxHash">Sign transaction from ?</p>
+      <p>Note: When you close this window DAPP may claim you have denied the transaction, but the transaction is actually currently pending.</p>
+      <button id="closeWindow">Close</button>
+    </div>
+</div>
+
+<!-- The overlay -->
+<div id="myNav" class="overlay" >
+
+  <div class="overlay-header">
+    <h1 style="color: white;" id="email">Loading Email....</h1>
+    <p style="color: white;" id="address">Loading Address....</p>
+    <p style="color: white;" id="balance"> Loading Balance....</p>
+  </div>
+
+  <!-- Overlay content -->
+  <div id="menu" class="overlay-content">
+    <a href="#" id="sendEtherMenuBtn">Send Ether</a>
+    <a href="#" id="receiveEtherBtn">Receive Ether</a>
+    <a href="#" id="transactions">Transactions</a>
+    <a href="#" id="switchAccounts">Switch Account</a>
+  </div>
+
+  <div id="receiveEther" class="overlay-content">
+    <img id="addressQR"/>
+    <a href="#" id="backBtn">Main Menu</a>
+  </div>
+
+  <div id="sendEther" class="overlay-content">
+    <label class="field a-field a-field_a1 page__field">
+      <input id='sendAddress' class="field__input a-field__input" placeholder="e.g. 0x00000...." required>
+      <span class="a-field__label-wrap">
+        <span class="a-field__label">Ethereum Address</span>
+      </span>
+    </label>
+    <a href="#"></a>
+    <label class="field a-field a-field_a1 page__field">
+      <input id='sendAmount' class="field__input a-field__input" placeholder="e.g. 0.023" required>
+      <span class="a-field__label-wrap">
+        <span class="a-field__label">Ether Amount</span>
+      </span>
+    </label>
+    <a href="#"></a>
+    <a href="#" id="sendEtherBtn">Send!</a>
+    <a href="#" id="backBtn2">Main Menu</a>
+  </div>
+
+</div>
+
+<div id="torusWidget" class="widget">
+  <button id="closeOverlayBtn"/>
+</div>
+
 <script>
+    var endpoints = [
+        "https://dkg1.tetrator.us/jrpc",
+        "https://dkg2.tetrator.us/jrpc",
+        "https://dkg3.tetrator.us/jrpc",
+        "https://dkg4.tetrator.us/jrpc",
+        "https://dkg5.tetrator.us/jrpc"
+    ]
+
+    // var endpoints = [
+    //     "https://node1.torusnode.com/jrpc",
+    //     "https://node2.torusnode.com/jrpc",
+    //     "https://node3.torusnode.com/jrpc",
+    //     "https://node4.torusnode.com/jrpc",
+    //     "https://node5.torusnode.com/jrpc"
+    // ]
+
+    if (location.protocol != 'https:') {
+        location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+    }
     var googleUser = {};
+
     var startApp = function() {
       gapi.load('auth2', function(){
       // Retrieve the singleton for the GoogleAuth library and set up the client.
@@ -26,8 +119,209 @@
         //scope: 'additional_scope'
       });
       attachSignin(document.getElementById('googleAuthBtn'));
+      attachSignin(document.getElementById('switchAccounts'));
       });
     }
+
+    var sendEtherBtn = document.getElementById("sendEtherBtn");
+    sendEtherBtn.addEventListener("click", function() {
+      var sendAddress = document.getElementById("sendAddress").value;
+      var sendAmount = document.getElementById("sendAmount").value;
+      window.metamaskStream.write({name: "sendTransaction", data: {from: sessionStorage.getItem('ethAddress'), to: sendAddress, value: window.web3.utils.toWei(sendAmount, 'ether')}});
+    })
+
+    var sendEtherMenuBtn = document.getElementById("sendEtherMenuBtn");
+    sendEtherMenuBtn.addEventListener("click", function() {
+      document.getElementById("menu").style.display = 'none';
+      document.getElementById("sendEther").style.display = 'block';
+    })
+
+    var receiveEtherBtn = document.getElementById("receiveEtherBtn");
+    receiveEtherBtn.addEventListener("click", function() {
+      document.getElementById("menu").style.display = 'none';
+      document.getElementById("receiveEther").style.display = 'block';
+    })
+
+    var backBtn = document.getElementById("backBtn");
+    backBtn.addEventListener("click", function() {
+      document.getElementById("menu").style.display = 'block';
+      document.getElementById("receiveEther").style.display = 'none';
+      document.getElementById("sendEther").style.display = 'none';
+    })
+
+    var backBtn2 = document.getElementById("backBtn2");
+    backBtn2.addEventListener("click", function() {
+      document.getElementById("menu").style.display = 'block';
+      document.getElementById("receiveEther").style.display = 'none';
+      document.getElementById("sendEther").style.display = 'none';
+    })
+
+    var denyTransactionButton = document.getElementById("denyTransactionButton");
+    denyTransactionButton.addEventListener("click", function() {
+      denyTransaction();
+    })
+
+    var closeButton = document.getElementById("close");
+    closeButton.addEventListener("click", function() {
+      closeWindow();
+    })
+
+    var closeOverlayButton = document.getElementById("closeOverlayBtn");
+    closeOverlayButton.addEventListener("click", function() {
+      closeWindow();
+    })
+
+    var close2Button = document.getElementById("close2");
+    close2Button.addEventListener("click", function() {
+      closeWindow();
+    })
+
+    var closeWindowBtn = document.getElementById("closeWindow");
+    closeWindowBtn.addEventListener("click", function() {
+      closeWindow();
+    })
+
+    var signTransactionButton = document.getElementById("signTransactionButton");
+    signTransactionButton.addEventListener("click", function() {
+
+        var currentPercent = document.getElementById("gasSlider").value;
+        var gasPriceGwei = calculatePercent(currentPercent, window.gweiSafeLow, window.gweiFastest);
+        var transactionData = JSON.parse(sessionStorage.getItem('transactionData'));
+
+        //Send transaction with deny transaction field
+        window.web3.eth.sendTransaction({
+          from: transactionData.params[0].from,
+          to: transactionData.params[0].to,
+          data: transactionData.params[0].data,
+          value: transactionData.params[0].value,
+          nonce: transactionData.params[0].nonce,
+          gasPrice: Math.floor(window.web3.utils.toWei(gasPriceGwei.toString(), 'gwei')),
+          gas: Math.floor(window.gasUsedEstimate),
+          id: transactionData.id,
+          withGasPrice: true
+        }, function(error, hash){
+            if (hash) {
+                document.getElementById('txCompleteModalContent').style.display = 'block';
+                document.getElementById('signTxModalContent').style.display = 'none';
+                document.getElementById('resultTxHash').innerHTML = "<span><a href = 'https://etherscan.io/tx/" + hash + "' target= '_blank'>Transaction pending!</a></span>";
+            }
+            if (error) {
+                console.log(error);
+            }
+        });
+    })
+
+    function closeWindow() {
+      denyTransaction();
+    }
+
+    function denyTransaction() {
+      window.metamaskStream.write({name: "close", data: {}});
+      document.getElementById('myNav').style.display = 'block';
+      document.getElementById('torusWidget').style.display = 'block';
+      document.getElementById('txCompleteModalContent').style.display = 'none';
+      document.getElementById('signTxModalContent').style.display = 'none';
+    }
+
+    var gasSlider = document.getElementById("gasSlider");
+    var gasLabel = document.getElementById("gasLabel");
+    var gasSpeedLabel = document.getElementById("gasSpeedLabel");
+
+    // Update the current slider value (each time you drag the slider handle)
+    gasSlider.oninput = function() {
+        var currentPercent = document.getElementById("gasSlider").value;
+        var gasPriceGwei = calculatePercent(currentPercent, window.gweiSafeLow, window.gweiFastest);
+        var txFee = calculateTxFee(window.gasUsedEstimate, gasPriceGwei);
+        gasLabel.innerHTML = "Max Transaction Fee: " + txFee + " ETH";
+
+        var estTime = calculatePercent(100 - currentPercent, window.fastestWait, window.safeLowWait);
+        gasSpeedLabel.innerHTML = "Est Time: " + estTime.toFixed(2) + " Minutes";
+    }
+
+    window.onmessage = function(e){
+        try {
+            if(e.data.data.data.method === 'eth_sendTransaction') {
+                var transactionData = e.data.data.data;
+                sessionStorage.setItem('transactionData', JSON.stringify(transactionData));
+                document.getElementById('myNav').style.display = 'none';
+                document.getElementById('torusWidget').style.display = 'none';
+                document.getElementById('torusModal').style.display = 'block';
+                document.getElementById('signTxModalContent').style.display = 'block';
+                document.getElementById('txCompleteModalContent').style.display = 'none';
+                document.getElementById('signQuestion').innerHTML = 'Sign transaction from ' + document.referrer + '?';
+                document.getElementById('gasLabel').innerHTML = "Loading...";
+                document.getElementById('gasSpeedLabel').innerHTML = "Loading...";
+                document.getElementById('denyTransactionButton').style.display = 'none';
+                document.getElementById('signTransactionButton').style.display = 'none';
+                      // Get the gas estimate for the current transaction
+                window.web3.eth.estimateGas({
+                  from: transactionData.params[0].from,
+                  to: transactionData.params[0].to,
+                  data: transactionData.params[0].data,
+                  value: transactionData.params[0].value,
+                  nonce: transactionData.params[0].nonce
+                }, function(error, result){
+                    if (!error) {
+                      window.gasUsedEstimate = result;
+                      // Update gas price
+                      var request = new XMLHttpRequest();
+
+                      // Open a new connection, using the GET request on the URL endpoint
+                      var requestString = 'https://ethgasstation.info/json/ethgasAPI.json';
+                      request.open('GET', requestString, true);
+
+                      request.onload = function () {
+                        var data = JSON.parse(this.response);
+                        if (request.status >= 200 && request.status < 400) {
+                          var gasInfo = JSON.parse(this.response);
+                          var gweiSafeLow = gasInfo.safeLow / 10;
+                          var gweiFastest = gasInfo.fastest / 10;
+                          window.gweiSafeLow = gweiSafeLow;
+                          window.gweiFastest = gweiFastest;
+                          document.getElementById('gasSlider').value = 1;
+                          // document.getElementById('gasSlider').min = gweiSafeLow;
+                          // document.getElementById('gasSlider').max = gweiFastest;
+                          var txFee = calculateTxFee(window.gasUsedEstimate, gweiSafeLow);
+                          document.getElementById('gasLabel').innerHTML = "Max Transaction Fee: " + txFee + " ETH";
+                          document.getElementById('denyTransactionButton').style.display = 'inline-block';
+                          document.getElementById('signTransactionButton').style.display = 'inline-block';
+
+
+                          window.fastestWait = gasInfo.fastestWait;
+                          window.safeLowWait = gasInfo.safeLowWait;
+                          document.getElementById('gasSpeedLabel').innerHTML = "Est Time: " + gasInfo.safeLowWait + " Minutes";
+
+                        }
+                      }
+                      // Send request
+                      request.send();
+                    } else {
+                      console.log(error);
+                    }
+                });
+            }
+        } catch (err) {
+            // Fail silently
+        }
+    };
+
+    function calculatePercent(currentPercent, minNum, maxNum) {
+        var res = (currentPercent * maxNum) / 100;
+        if (minNum > res) {
+            return minNum;
+        } else {
+            return res;
+        }
+    }
+
+    function calculateTxFee(gasUsedEstimate, gweiGasPrice) {
+      var gasPrice = gweiGasPrice * 1000000000; // convert to wei
+      var ethGasPrice = window.web3.utils.fromWei((gasPrice * gasUsedEstimate).toString()); // convert to ether
+      return Number(ethGasPrice).toFixed(4);
+    }
+
+
+
 
     function attachSignin(element) {
       console.log(element.id);
@@ -40,8 +334,9 @@
             console.log('Name: ' + profile.getName());
             console.log('Image URL: ' + profile.getImageUrl());
             console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-            localStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
-            localStorage.setItem('email', profile.getEmail())
+            document.getElementById('email').innerHTML = profile.getEmail();
+            sessionStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
+            sessionStorage.setItem('email', profile.getEmail())
             gapi.auth2.getAuthInstance().disconnect().then(function () {
                 window.loggedIn = true;
                 getPubKeyAsync(function(err, res) {
@@ -49,7 +344,8 @@
                         throw new Error(err)
                     } else {
                         console.log('New private key assigned to user at address ', res)
-                        retrieveShares()
+                        retrieveShares();
+                        updateWidget(res);
                     }
                 })
             })
@@ -58,36 +354,131 @@
       });
     }
 
-    function eventFire(el, etype){
-      if (el.fireEvent) {
-        el.fireEvent('on' + etype);
-      } else {
-        var evObj = window.document.createEvent('Events');
-        evObj.initEvent(etype, true, false);
-        el.dispatchEvent(evObj);
-      }
-    }
+    // function eventFire(el, etype){
+    //   if (el.fireEvent) {
+    //     el.fireEvent('on' + etype);
+    //   } else {
+    //     var evObj = window.document.createEvent('Events');
+    //     evObj.initEvent(etype, true, false);
+    //     el.dispatchEvent(evObj);
+    //   }
+    // }
 
-    if (location.protocol != 'https:') {
-        location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
-    }
     function getEmail() {
-        if (localStorage.getItem('email')) {
-            return localStorage.getItem('email')
+        if (sessionStorage.getItem('email')) {
+            return sessionStorage.getItem('email')
         } else {
             throw new Error('not signed in')
         }
     }
 
-    function getPubKeyAsync(cb) {
+    // function getPubKeyAsync(cb) {
+    //     var promiseArr = []
+    //     var shares = []
 
-        var endpoints = [
-            "https://dkg1.tetrator.us/jrpc",
-            "https://dkg2.tetrator.us/jrpc",
-            "https://dkg3.tetrator.us/jrpc",
-            "https://dkg4.tetrator.us/jrpc",
-            "https://dkg5.tetrator.us/jrpc"
-        ]
+    //     for (var i = 0; i < endpoints.length; i++) {
+    //         var p = fetch(endpoints[i], {
+    //             method: 'POST',
+    //             cache: 'no-cache',
+    //             mode: 'cors',
+    //             headers: {
+    //                 "Content-Type": "application/json; charset=utf-8",
+    //             },
+    //             body: JSON.stringify({
+    //                 jsonrpc: '2.0',
+    //                 method: 'SecretAssign',
+    //                 id: 10,
+    //                 params: {
+    //                     email: getEmail()
+    //                 }
+    //             })
+    //         }).then(res => res.json())
+    //         .then(res => shares.push(res))
+    //         .catch(err => {
+    //             console.error(err)
+    //         })
+    //         promiseArr.push(p)
+    //     }
+
+    //     Promise.all(promiseArr).then(function() {
+    //         promiseArr = []
+    //         shares = []
+    //         for (var i = 0; i < endpoints.length; i++) {
+    //             var p = fetch(endpoints[i], {
+    //                 method: 'POST',
+    //                 cache: 'no-cache',
+    //                 mode: 'cors',
+    //                 headers: {
+    //                     "Content-Type": "application/json; charset=utf-8",
+    //                 },
+    //                 body: JSON.stringify({
+    //                     jsonrpc: '2.0',
+    //                     method: 'SecretAssign',
+    //                     id: 10,
+    //                     params: {
+    //                         email: getEmail()
+    //                     }
+    //                 })
+    //             }).then(res => res.json())
+    //             .then(res => shares.push(res))
+    //             .catch(err => {
+    //                 console.error(err)
+    //             })
+    //             promiseArr.push(p)
+    //         }
+    //         return Promise.all(promiseArr)
+    //     }).then(function() {
+    //         try {
+    //             console.log('completed')
+    //             console.log(shares)
+    //             var Xs = {}
+    //             var Ys = {}
+    //             shares.map(function(share) {
+    //                 if (share.result && share.result.PubShareX) {
+    //                     if (Xs[share.result.PubShareX] === undefined) {
+    //                         Xs[share.result.PubShareX] = 1
+    //                     } else {
+    //                         Xs[share.result.PubShareX]++
+    //                     }
+    //                 }
+    //                 if (share.result && share.result.PubShareY) {
+    //                     if (Ys[share.result.PubShareY] === undefined) {
+    //                         Ys[share.result.PubShareY] = 1
+    //                     } else {
+    //                         Ys[share.result.PubShareY]++
+    //                     }
+    //                 }
+    //             })
+    //             var finalX
+    //             var finalY
+    //             for (var key in Xs) {
+    //                 if (Xs[key] >= 3) {
+    //                     finalX = key
+    //                 }
+    //             }
+    //             for (var key in Ys) {
+    //                 if (Ys[key] >= 3) {
+    //                     finalY = key
+    //                 }
+    //             }
+    //             var pubk = ec.keyFromPublic({
+    //                 x: finalX,
+    //                 y: finalY
+    //             }).pub
+
+    //             console.log(pubk.encode('hex'))
+    //             var publicKey = pubk.encode('hex').slice(2);
+    //             var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38);
+    //             console.log(ethAddress)
+    //             cb(null, ethAddress)
+    //         } catch (err) {
+    //             cb(err, null)
+    //         }
+    //     })
+
+    // }
+
+    function getPubKeyAsync(cb) {
 
         var promiseArr = []
         var shares = []
@@ -148,28 +539,28 @@
         })
     }
 
-    // window.fbAsyncInit = function() {
-    //     FB.init({
-    //         appId      : '2131832573696080',
-    //         cookie     : true,
-    //         xfbml      : true,
-    //         version    : 'v0.1'
-    //     });
-    //     FB.AppEvents.logPageView();
-    // };
-    // function fbLogin() {
-    //     localStorage.removeItem('accessToken')
-    //     localStorage.removeItem('userID')
-    //     FB.login(function(response) {
-    //         localStorage.setItem('accessToken', response.authResponse.accessToken)
-    //         localStorage.setItem('userID', response.authResponse.userID)
-    //     }, {scope: 'email'})
-    // }
-    // var nodeList = []
-    // for (var i = 0; i < nodeList.length; i++) {
-    //     getShare(nodeList[i])
-    // }
-    // function getShare() {}
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId      : '2131832573696080',
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v0.1'
+        });
+        FB.AppEvents.logPageView();
+    };
+    function fbLogin() {
+        sessionStorage.removeItem('accessToken')
+        sessionStorage.removeItem('userID')
+        FB.login(function(response) {
+            sessionStorage.setItem('accessToken', response.authResponse.accessToken)
+            sessionStorage.setItem('userID', response.authResponse.userID)
+        }, {scope: 'email'})
+    }
+    var nodeList = []
+    for (var i = 0; i < nodeList.length; i++) {
+        getShare(nodeList[i])
+    }
+    function getShare() {}
 </script>
 <script>
         // var GoogleAuth;
@@ -251,32 +642,51 @@
       <script>
         var Elliptic = elliptic.ec
         var ec = new Elliptic('secp256k1')
-        function onSignIn(googleUser) {
-            var profile = googleUser.getBasicProfile();
-            console.log(googleUser)
-            console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-            console.log('Name: ' + profile.getName());
-            console.log('Image URL: ' + profile.getImageUrl());
-            console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
-            localStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
-            localStorage.setItem('email', profile.getEmail())
-            gapi.auth2.getAuthInstance().disconnect().then(function () {
-                window.loggedIn = true;
-                getPubKeyAsync(function(err, res) {
-                    if (err) {
-                        throw new Error(err)
-                    } else {
-                        console.log('New private key assigned to user at address ', res)
-                        retrieveShares()
-                    }
-                })
-            })
+        // function onSignIn(googleUser) {
+        //     var profile = googleUser.getBasicProfile();
+        //     console.log(googleUser)
+        //     console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+        //     console.log('Name: ' + profile.getName());
+        //     console.log('Image URL: ' + profile.getImageUrl());
+        //     console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+        //     sessionStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
+        //     sessionStorage.setItem('email', profile.getEmail())
+        //     gapi.auth2.getAuthInstance().disconnect().then(function () {
+        //         window.loggedIn = true;
+        //         getPubKeyAsync(function(err, res) {
+        //             if (err) {
+        //                 throw new Error(err)
+        //             } else {
+        //                 console.log('New private key assigned to user at address ', res)
+        //                 retrieveShares()
+        //             }
+        //         })
+        //     })
+        // }
+
+        function updateWidget(address) {
+          document.getElementById('address').innerHTML = address;
+          document.getElementById('addressQR').src = 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl='+ address + '&choe=UTF-8'
+          document.getElementById('transactions').href = 'https://etherscan.io/address/' + address;
+          document.getElementById('transactions').target = "_blank";
+          window.metamaskStream.write({name: "widget", data: {}});
+          var checkSumAddress = window.web3.utils.toChecksumAddress(address)
+          window.web3.eth.getBalance(checkSumAddress, function(error, result){
+             if(!error) {
+              var accountBalance = Number(window.web3.utils.fromWei(result));
+              var accountBalanceContent = 'Balance: ' + accountBalance.toFixed(4) + " ETH";
+              document.getElementById('balance').innerHTML = accountBalanceContent;
+            } else {
+              console.error(error);
+            }
+          })
         }
+
         function signOut() {
             var auth2 = gapi.auth2.getAuthInstance();
             auth2.signOut().then(function () {
                 console.log('User signed out.');
-                localStorage.removeItem('id_token')
+                sessionStorage.removeItem('id_token')
             });
         }
 
@@ -314,14 +724,6 @@
         }
 
         function retrieveShares() {
-            var endpoints = [
-                "https://dkg1.tetrator.us/jrpc",
-                "https://dkg2.tetrator.us/jrpc",
-                "https://dkg3.tetrator.us/jrpc",
-                "https://dkg4.tetrator.us/jrpc",
-                "https://dkg5.tetrator.us/jrpc"
-            ]
-
             var promiseArr = []
             var responses = []
             for (var i = 0; i < endpoints.length; i++) {
@@ -338,8 +740,8 @@
                     id: 10,
                     params: {
                         index: 0,
-                        idtoken: localStorage.getItem('id_token'),
-                        email: localStorage.getItem('email')
+                        idtoken: sessionStorage.getItem('id_token'),
+                        email: sessionStorage.getItem('email')
                     }
                 })
                 }).then(res => res.json())
@@ -355,6 +757,7 @@
                 var nodeIndex = []
                 console.log(responses)
                 responses.map(response => {
+                    console.log(response)
                     shares.push(new BN(response.result.hexshare, 16))
                     nodeIndex.push(new BN(response.result.index, 10))
                 })
@@ -362,88 +765,20 @@
                 var privateKey = lagrangeInterpolation(shares.slice(2), nodeIndex.slice(2))
                 var key = ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
                 var publicKey = key.getPublic().encode('hex').slice(2)
-                var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38); // remove 0x
-                window.ethAddress = ethAddress
+                var ethAddressLower = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38); // remove 0x
+                var ethAddress = window.web3.utils.toChecksumAddress(ethAddressLower)
+                sessionStorage.setItem('ethAddress', ethAddress) // TODO: checksum address
                 console.log(window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')))
-                window.privK = privateKey.toString('hex')
-                console.log('Ethereum Address: ' + window.ethAddress)
+                sessionStorage.setItem('wallet', JSON.stringify({})) // reset wallet when logging in
+                var wallet = JSON.parse(sessionStorage.getItem('wallet'))
+                wallet[ethAddress] = privateKey.toString('hex')
+                sessionStorage.setItem('wallet', JSON.stringify(wallet))
+                console.log('Ethereum Address: ' + sessionStorage.getItem('ethAddress'))
                 window.updateStaticDataInIFrame()
             })
         }
       </script>
 <script>
-    (function(funcName, baseObj) {
-        // The public function name defaults to window.docReady
-        // but you can pass in your own object and own function name and those will be used
-        // if you want to put them in a different namespace
-        funcName = funcName || "docReady";
-        baseObj = baseObj || window;
-        var readyList = [];
-        var readyFired = false;
-        var readyEventHandlersInstalled = false;
-
-        // call this when the document is ready
-        // this function protects itself against being called more than once
-        function ready() {
-            if (!readyFired) {
-                // this must be set to true before we start calling callbacks
-                readyFired = true;
-                for (var i = 0; i < readyList.length; i++) {
-                    // if a callback here happens to add new ready handlers,
-                    // the docReady() function will see that it already fired
-                    // and will schedule the callback to run right after
-                    // this event loop finishes so all handlers will still execute
-                    // in order and no new ones will be added to the readyList
-                    // while we are processing the list
-                    readyList[i].fn.call(window, readyList[i].ctx);
-                }
-                // allow any closures held by these functions to free
-                readyList = [];
-            }
-        }
-
-        function readyStateChange() {
-            if ( document.readyState === "complete" ) {
-                ready();
-            }
-        }
-
-        // This is the one public interface
-        // docReady(fn, context);
-        // the context argument is optional - if present, it will be passed
-        // as an argument to the callback
-        baseObj[funcName] = function(callback, context) {
-            if (typeof callback !== "function") {
-                throw new TypeError("callback for docReady(fn) must be a function");
-            }
-            // if ready has already fired, then just schedule the callback
-            // to fire asynchronously, but right away
-            if (readyFired) {
-                setTimeout(function() {callback(context);}, 1);
-                return;
-            } else {
-                // add the function and context to the list
-                readyList.push({fn: callback, ctx: context});
-            }
-            // if document already ready to go, schedule the ready function to run
-            if (document.readyState === "complete") {
-                setTimeout(ready, 1);
-            } else if (!readyEventHandlersInstalled) {
-                // otherwise if we don't have event handlers installed, install them
-                if (document.addEventListener) {
-                    // first choice is DOMContentLoaded event
-                    document.addEventListener("DOMContentLoaded", ready, false);
-                    // backup is window load event
-                    window.addEventListener("load", ready, false);
-                } else {
-                    // must be IE
-                    document.attachEvent("onreadystatechange", readyStateChange);
-                    window.attachEvent("onload", ready);
-                }
-                readyEventHandlersInstalled = true;
-            }
-        }
-    })("docReady", window);
 //   ;(async function() { 
     // ethereumProvider = metamask.createDefaultProvider()
     // ethQuery = new Eth(ethereumProvider);

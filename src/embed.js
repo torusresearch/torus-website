@@ -6,134 +6,149 @@ var Web3 = require('web3')
 const log = require('loglevel')
 const LocalMessageDuplexStream = require('post-message-stream')
 const MetamaskInpageProvider = require('./inpage-provider.js')
-// const setupMultiplex = require('./stream-utils.js').setupMultiplex
-// var oauthStream
+const setupMultiplex = require('./stream-utils.js').setupMultiplex
+const embedUtils = require('./embedUtils.js')
+var ifrm
+
 restoreContextAfterImports()
 log.setDefaultLevel(process.env.METAMASK_DEBUG ? 'debug' : 'warn')
-
 createWidget()
-setupWeb3()
+embedUtils.runOnLoad(setupWeb3)
 
 /**
  * Create widget
  */
 function createWidget() {
   console.log('Creating Torus widget...')
-
-  var onLoad = function() {
-    var link = window.document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('type', 'text/css');
-    link.setAttribute('href', 'https://localhost:3000/widget.css');
-    window.document.head.appendChild(link);
-    var ifrm = window.document.createElement('iframe');
-    ifrm.setAttribute('id', 'torusIFrame'); // assign an id
-    ifrm.setAttribute("height", "0")
-    ifrm.setAttribute("width", "0")
-    ifrm.setAttribute("src", "https://localhost:3000/widget")
+  var link = window.document.createElement('link');
+  link.setAttribute('rel', 'stylesheet');
+  link.setAttribute('type', 'text/css');
+  link.setAttribute('href', 'https://localhost:3000/widget.css');
+  var elem = embedUtils.htmlToElement('\
+    <div id="torusWidget" class="widget">\
+      <button id="torusLogin" />\
+      <button id="torusMenuBtn"/>\
+    </div>\
+  ');
+  var ifrm = embedUtils.htmlToElement('\
+    <div id="torusIframeContainer">\
+      <iframe id="torusIFrame" src="https://localhost:3000/widget"></iframe>\
+    </div>\
+  ');
+  var bindOnLoad = function() {
+    var loginBtn = document.getElementById("torusLogin");
+    loginBtn.addEventListener("click", function() {
+      window.metamaskStream.write({name: "oauth", data: "test"})
+    })
+  }
+  var attachOnLoad = function() {
+    window.document.head.appendChild(link)
     window.document.body.appendChild(ifrm)
-    var elem = htmlToElement('<div id="torusWidget"><button id="torusLogin" tabIndex="-1"></button></div>')
     window.document.body.appendChild(elem)
-    var retry = window.setInterval(function() {
-      console.log('running')
-      if (window.document.readyState !== "complete") {
-        return
-      }
-      var coll = document.getElementById("torusLogin");
-      coll.addEventListener("click", function() {
-        window.metamaskStream.write({name: "oauth", data: "test"})
-      })
-      window.clearInterval(retry)
-    }, 300)
+    // embedUtils.runOnComplete(bindOnComplete)
   }
-  if (window.document.body != null) {
-    onLoad()
-  } else {
-    document.addEventListener("DOMContentLoaded", onLoad);
-  }
+  embedUtils.runOnLoad(attachOnLoad)
+  embedUtils.runOnLoad(bindOnLoad)
+
+  var torusMenuBtn = document.getElementById("torusMenuBtn");
+  torusMenuBtn.addEventListener("click", function() {
+    window.document.getElementById('torusMenuBtn').style.display = 'none';
+    window.document.getElementById('torusIframeContainer').style.display = 'block';
+  })
 }
 
 function setupWeb3() {
-  var onLoad = function() {
-    console.log('setupWeb3 running')
-    // setup background connection
-    window.metamaskStream = new LocalMessageDuplexStream({
-      name: 'embed',
-      target: 'iframe',
-      targetWindow: document.getElementById("torusIFrame").contentWindow
-    })
-    // compose the inpage provider
-    var inpageProvider = new MetamaskInpageProvider(window.metamaskStream)
-    inpageProvider.setMaxListeners(1000)
-    
-    // inpageProvider.enable = function (options = {}) {
-    //   return new Promise((resolve, reject) => {
-    //     if (options.mockRejection) {
-    //       reject('User rejected account access')
-    //     } else {
-    //       inpageProvider.sendAsync({ method: 'eth_accounts', params: [] }, (error, response) => {
-    //         if (error) {
-    //           reject(error)
-    //         } else {
-    //           resolve(response.result)
-    //         }
-    //       })
-    //     }
-    //   })
-    // }
-    
-    //
-    // setup web3
-    //
-    
-    if (typeof window.web3 !== 'undefined') {
-      throw new Error(`Torus detected another web3.
-        Torus will not work reliably with another web3 extension.
-        This usually happens if you have two Torus' installed,
-        or Torus and another web3 extension. Please remove one
-        and try again.`)
-    }
-    window.web3 = new Web3(inpageProvider)
-    web3.setProvider = function () {
-      log.debug('MetaMask - overrode web3.setProvider')
-    }
-    // pretend to be Metamask for dapp compatibility reasons
-    web3.currentProvider.isMetamask = true
-    web3.currentProvider.isTorus = true
-    log.debug('MetaMask - injected web3')
+  console.log('setupWeb3 running')
+  // setup background connection
+  window.metamaskStream = new LocalMessageDuplexStream({
+    name: 'embed',
+    target: 'iframe',
+    targetWindow: window.document.getElementById('torusIFrame').contentWindow
+  })
+  // compose the inpage provider
+  var inpageProvider = new MetamaskInpageProvider(window.metamaskStream)
+  inpageProvider.setMaxListeners(100)
+  window.ethereum = inpageProvider
+  inpageProvider.enable = function() {
+    return new Promise((resolve, reject) => resolve())
   }
-  if (window.document.body != null) {
-    onLoad()
-  } else {
-    document.addEventListener("DOMContentLoaded", onLoad)
+
+  var mux = setupMultiplex(window.metamaskStream);
+
+  var widget = mux.createStream('widget')
+  widget.on('data', function() {
+    window.document.getElementById('torusLogin').style.display = 'none';
+    window.document.getElementById('torusIframeContainer').style.display = 'none';
+    window.document.getElementById('torusMenuBtn').style.display = 'block';
+  })
+
+  var approveTransactionDisplay = mux.createStream('approveTransactionDisplay');
+  approveTransactionDisplay.on('data', function() {
+    window.document.getElementById('torusIframeContainer').style.display = 'block';
+  });
+
+  var sendTransaction = mux.createStream('sendTransaction');
+  sendTransaction.on('data', function() {
+    window.web3.eth.sendTransaction({from: arguments[0].from, to: arguments[0].to, value: arguments[0].value, gasLimit: 21000, gasPrice: 20000000000}, function(error, hash) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log(hash);
+        }
+      })
+  });
+
+  var closeWindow = mux.createStream('close');
+  closeWindow.on('data', function() {
+    window.document.getElementById('torusIframeContainer').style.display = 'none';
+    window.document.getElementById('torusMenuBtn').style.display = 'block';
+  });
+
+  var denyTransaction = mux.createStream('denyTransaction');
+  denyTransaction.on('data', function() {
+    window.document.getElementById('torusIframeContainer').style.display = 'none';
+    window.document.getElementById('torusMenuBtn').style.display = 'block';
+      
+    // Send transaction with denyTransaction and completed field
+    window.web3.eth.sendTransaction({
+      from: arguments[0].params.from,
+      to: arguments[0].params.to,
+      data: arguments[0].params.data,
+      value: arguments[0].params.value,
+      nonce: arguments[0].params.nonce,
+      id: arguments[0].params.id,
+      denyTransaction: true,
+      completed: true
+    }, function(error, hash){
+      console.log(error);
+    });
+  });
+
+  
+  // TODO: implement inpageProvider.enable
+  
+  if (typeof window.web3 !== 'undefined') {
+    throw new Error(`Torus detected another web3.
+      Torus will not work reliably with another web3 extension.
+      This usually happens if you have two Torus' installed,
+      or Torus and another web3 extension. Please remove one
+      and try again.`)
   }
+  window.web3 = new Web3(inpageProvider)
+  console.log(Web3.version)
+  window.torus = window.web3
+  window.web3.setProvider = function () {
+    log.debug('Torus - overrode web3.setProvider')
+  }
+  // pretend to be Metamask for dapp compatibility reasons
+  window.web3.currentProvider.isMetamask = true
+  window.web3.currentProvider.isTorus = true
+  log.debug('Torus - injected web3')
 }
-
-
-// export global web3, with usage-detection and deprecation warning
-
-/* TODO: Uncomment this area once auto-reload.js has been deprecated:
-let hasBeenWarned = false
-global.web3 = new Proxy(web3, {
-  get: (_web3, key) => {
-    // show warning once on web3 access
-    if (!hasBeenWarned && key !== 'currentProvider') {
-      console.warn('MetaMask: web3 will be deprecated in the near future in favor of the ethereumProvider \nhttps://github.com/MetaMask/faq/blob/master/detecting_metamask.md#web3-deprecation')
-      hasBeenWarned = true
-    }
-    // return value normally
-    return _web3[key]
-  },
-  set: (_web3, key, value) => {
-    // set value normally
-    _web3[key] = value
-  },
-})
-*/
 
 // set web3 defaultAccount
 // inpageProvider.publicConfigStore.subscribe(function (state) {
-//   web3.eth.defaultAccount = state.selectedAddress
+//   window.web3.eth.defaultAccount = state.selectedAddress
 // })
 
 // need to make sure we aren't affected by overlapping namespaces
@@ -164,11 +179,4 @@ function restoreContextAfterImports () {
   } catch (_) {
     console.warn('MetaMask - global.define could not be overwritten.')
   }
-}
-
-function htmlToElement(html) {
-  var template = window.document.createElement('template');
-  html = html.trim(); // Never return a text node of whitespace as the result
-  template.innerHTML = html;
-  return template.content.firstChild;
 }

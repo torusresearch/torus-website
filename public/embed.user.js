@@ -7,7 +7,26 @@
 // @copyright  None
 // @run-at document-start
 // ==/UserScript==
-if ((new URL(window.location.href).searchParams.get('torus_specific_identifier')) == 1) {
+// if ((new URL(window.location.href).searchParams.get('torus')) == 1) {
+
+var whitelist = [
+  "etheremon.com",
+  "opensea.io",
+  "cryptostrikers.com",
+  "axieinfinity.com",
+  "mlbcryptobaseball.com",
+  "mycryptoheroes.net",
+  "blockchaincuties.com",
+  "cryptokitties.co",
+]
+
+var inWhiteList = false
+whitelist.map(function(url) {
+  if (window.location.hostname.indexOf(url) !== -1) {
+    inWhiteList = true
+  }
+})
+if (inWhiteList) {
   var sc = document.createElement("script");
   sc.setAttribute("src", "https://localhost:3000/embed.min.js");
   sc.setAttribute("type", "text/javascript");
