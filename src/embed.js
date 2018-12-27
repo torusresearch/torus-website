@@ -32,7 +32,7 @@ function createWidget() {
   ');
   var ifrm = embedUtils.htmlToElement('\
     <div id="torusIframeContainer">\
-      <iframe id="torusIFrame" src="https://localhost:3000/widget"></iframe>\
+      <iframe id="torusIFrame" frameBorder="0" src="https://localhost:3000/widget"></iframe>\
     </div>\
   ');
   var bindOnLoad = function() {
