@@ -28,7 +28,7 @@ whitelist.map(function(url) {
 })
 if (inWhiteList) {
   var sc = document.createElement("script");
-  sc.setAttribute("src", "https://tor.us/embed.min.js");
+  sc.setAttribute("src", "https://tor.us/embed-main.min.js");
   sc.setAttribute("type", "text/javascript");
   console.log(document.getElementsByTagName("html")[0])
   document.getElementsByTagName("html")[0].appendChild(sc);
