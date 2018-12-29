@@ -56,7 +56,7 @@
   height: 40px;
   width: 120px;
   background-size: 85%;
-  background-image: url("https://localhost:3000/images/loginWithGoogle.png");
+  background-image: url("https://localhost:3000/images/loginwithgoogle.png");
   transition: background-color, background-image, width 0.1s ease-in-out;
 }
 

@@ -39,6 +39,10 @@ app.get('/widget', (req, res) => {
   res.sendFile(__dirname + '/public/widget.html')
 })
 
+app.get('/widget-main', (req, res) => {
+  res.sendFile(__dirname + '/public/widget-main.html')
+})
+
 app.get('/address', (req, res) => {
   res.sendFile(__dirname + '/public/publickey.html')
 })
@@ -58,20 +62,9 @@ async function verify(token) {
   return userid;
 }
 
-app.post('/retrieveShare', async (req, res) => {
-  let userId
-  try {
-    userId = await verify(req.body.token)
-  } catch (err) {
-    console.error(err)
-  }
-  console.log(userId)
-  res.send(JSON.stringify({data: 'share'}))
-})
-
-app.get('/survey', async (req, res) => {
-  res.redirect('https://goo.gl/forms/0gm46ERp1kLvCzmg2')
-})
+// app.get('/survey', async (req, res) => {
+//   res.redirect('https://goo.gl/forms/0gm46ERp1kLvCzmg2')
+// })
 
 app.use(express.static('public'))
 app.use(express.static('dist'))

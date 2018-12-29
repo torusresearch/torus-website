@@ -19,7 +19,7 @@ To run website:
 yarn start
 ```
 
-To see website, navigate to https://localhost:3000
+To see website, navigate to https://tor.us
 
 ## Torus Demo
 
