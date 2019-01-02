@@ -4,7 +4,7 @@
 }
 
 #torusLogin {
-  border-radius: 20px;
+  border-radius: 50%;
   height: 40px;
   width: 40px;
   background-image: url("https://localhost:3000/images/login.png");
@@ -20,7 +20,7 @@
 
 #torusMenuBtn {
   cursor: pointer;
-  border-radius: 20px;
+  border-radius: 50%;
   height: 40px;
   width: 40px;
   background-image: url("https://localhost:3000/images/torusbig.png");
@@ -52,7 +52,6 @@
 }*/
 
 #closeOverlayBtn {
-  font-size: 40px;
   width: 5%;
   height: 5%;
   position: fixed;
@@ -61,6 +60,7 @@
 }
 
 #torusLogin:hover {
+  border-radius: 20px;
   background-color: #5b79ff;
   height: 40px;
   width: 120px;

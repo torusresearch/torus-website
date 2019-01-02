@@ -30,10 +30,11 @@ if (inWhiteList) {
   var sc = document.createElement("script");
   sc.setAttribute("src", "https://localhost:3000/embed.min.js");
   sc.setAttribute("type", "text/javascript");
-  sc.setAttribute("style-color", "white");
-  sc.setAttribute("style-position", "bottom-left");
-  sc.setAttribute("style-padding", "8px");
-  sc.setAttribute("style-diameter", "8px");
+  sc.setAttribute("custom-style", false);
+  sc.setAttribute("style-color", "black");
+  sc.setAttribute("style-position", "bottom-right");
+  sc.setAttribute("style-padding", "20px");
+  sc.setAttribute("style-diameter", "100px");
   console.log(document.getElementsByTagName("html")[0])
   document.getElementsByTagName("html")[0].appendChild(sc);
 }
