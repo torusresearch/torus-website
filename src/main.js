@@ -73,7 +73,7 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
   },
   approveTransaction: function(txParams, cb) {
     if (txParams.withGasPrice) {
-      window.metamaskStream.write({name: "completeTransaction", data: {}});
+      window.communicationStream.write({name: "completeTransaction", data: {}});
       if(confirm('Confirm signature for transaction?')) {
         cb(null, true)
       } else {
@@ -83,7 +83,7 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
       if (txParams.completed) {
         cb(null, false);
       } else {
-        window.metamaskStream.write({name: "denyTransaction", data: {
+        window.communicationStream.write({name: "denyTransaction", data: {
             params: txParams
         }});
       }
@@ -117,15 +117,15 @@ const LocalMessageDuplexStream = require('post-message-stream')
 window.LocalMessageDuplexStream = LocalMessageDuplexStream
 // we set up a Window.postMessage() stream between localhost:3000 context (iframe) and the dapp inpage context (embed)
 window.metamaskStream = new LocalMessageDuplexStream({
-  name: 'iframe',
-  target: 'embed',
+  name: 'iframe_metamask',
+  target: 'embed_metamask',
   targetWindow: window.parent
 })
-// window.connectionStream = new LocalMessageDuplexStream({
-//   name: 'iframe2',
-//   target: 'embed2',
-//   targetWindow: window.parent
-// })
+window.communicationStream = new LocalMessageDuplexStream({
+  name: 'iframe_comm',
+  target: 'embed_comm',
+  targetWindow: window.parent
+})
 
 // taken from metamask...
 const rpcEngine = new RpcEngine()
@@ -141,17 +141,17 @@ rpcEngine.push(createProviderMiddleware({ provider: engine }))
 
 
 // this allows us to set up multiple channels using just a single stream connection
-const mux = setupMultiplex(window.metamaskStream)
-// const mux2 = setupMultiplex(window.connectionStream)
+const metamaskMux = setupMultiplex(window.metamaskStream)
+const commMux = setupMultiplex(window.communicationStream)
 
 // define channels within a stream
-const providerOutStream = mux.createStream('provider')
-const publicConfigOutStream = mux.createStream('publicConfig')
-const oauthInputStream = mux.createStream('oauth')
+const providerOutStream = metamaskMux.createStream('provider')
+const publicConfigOutStream = metamaskMux.createStream('publicConfig')
+const oauthInputStream = commMux.createStream('oauth')
 const p = new stream.PassThrough({objectMode: true});
 
 p.on('data', function() {
-  console.log('data gotten from p', arguments)
+  console.log('p data:', arguments)
   eventFire(window.document.getElementById("googleAuthBtn"), "click")
 })
 
@@ -182,9 +182,9 @@ window.updateStaticDataInIFrame = function() {
 
 window.updateStaticDataInIFrame()
 
-var passthroughStream0 = new stream.PassThrough({objectMode: true});
-passthroughStream0.on('data', function() {
-  console.log('PASSTHROUGH0', arguments)
+var receivePassThroughStream = new stream.PassThrough({objectMode: true});
+receivePassThroughStream.on('data', function() {
+  console.log('receivePassThroughStream', arguments)
 })
 
 // ethereumjs-vm uses ethereumjs-tx/fake.js to create a fake transaction
@@ -202,7 +202,7 @@ var transformStream = new stream.Transform({
         chunk.id = chunk.params[0].id;
         cb(null, chunk);
       } else {
-        window.metamaskStream.write({name: "approveTransactionDisplay", data: {
+        window.communicationStream.write({name: "approveTransactionDisplay", data: {
           website: document.referrer,
           params: chunk.params[0]
         }})
@@ -232,18 +232,18 @@ var transformStream = new stream.Transform({
 // doesnt do anything.. just for logging
 // since the stack traces are constrained to a single javascript context
 // may need to use a passthrough stream to log stuff between streams
-var passthroughStream = new stream.PassThrough({objectMode: true});
-passthroughStream.on('data', function() {
-  console.log('PASSTHROUGH', arguments)
+var sendPassThroughStream = new stream.PassThrough({objectMode: true});
+sendPassThroughStream.on('data', function() {
+  console.log('sendPassThroughStream', arguments)
 })
 
 // chaining all the streams together
 pump(
   providerOutStream,
-  passthroughStream0,
+  sendPassThroughStream,
   transformStream,
   providerStream,
-  passthroughStream,
+  receivePassThroughStream,
   providerOutStream,
   (err) => {
     if (err) log.error(err)
