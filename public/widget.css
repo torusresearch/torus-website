@@ -19,6 +19,7 @@
 }
 
 #torusMenuBtn {
+  cursor: pointer;
   border-radius: 20px;
   height: 40px;
   width: 40px;
@@ -35,6 +36,7 @@
 }
 
 #closeOverlayBtn {
+  cursor: pointer;
   border-radius: 20px;
   height: 40px;
   width: 40px;
