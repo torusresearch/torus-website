@@ -10,7 +10,6 @@ const setupMultiplex = require('./stream-utils.js').setupMultiplex
 const embedUtils = require('./embedUtils.js')
 const styleColor = document.currentScript.getAttribute('style-color'); 
 const stylePosition = document.currentScript.getAttribute('style-position'); 
-var ifrm
 
 restoreContextAfterImports()
 log.setDefaultLevel(process.env.METAMASK_DEBUG ? 'debug' : 'warn')
@@ -92,6 +91,7 @@ function setupWeb3() {
     target: 'iframe_metamask',
     targetWindow: window.document.getElementById('torusIFrame').contentWindow
   })
+  window.metamaskStream.setMaxListeners(100)
 
   // Due to compatibility reasons, we cannot set up multiplexing on window.metamaskstream
   // because the MetamaskInpageProvider also attempts to do so.
@@ -101,6 +101,7 @@ function setupWeb3() {
     target: 'iframe_comm',
     targetWindow: window.document.getElementById('torusIFrame').contentWindow
   })
+  window.communicationStream.setMaxListeners(100)
 
   // compose the inpage provider
   var inpageProvider = new MetamaskInpageProvider(window.metamaskStream)
@@ -110,21 +111,22 @@ function setupWeb3() {
     return new Promise((resolve, reject) => resolve())
   }
 
-  var mux = setupMultiplex(window.communicationStream);
+  var commMux = setupMultiplex(window.communicationStream);
+  commMux.setMaxListeners(100)
 
-  var widget = mux.createStream('widget')
+  var widget = commMux.createStream('widget')
   widget.on('data', function() {
     window.document.getElementById('torusLogin').style.display = 'none';
     window.document.getElementById('torusIframeContainer').style.display = 'none';
     window.document.getElementById('torusMenuBtn').style.display = 'block';
   })
 
-  var approveTransactionDisplay = mux.createStream('approveTransactionDisplay');
+  var approveTransactionDisplay = commMux.createStream('approveTransactionDisplay');
   approveTransactionDisplay.on('data', function() {
     window.document.getElementById('torusIframeContainer').style.display = 'block';
   });
 
-  var sendTransaction = mux.createStream('sendTransaction');
+  var sendTransaction = commMux.createStream('sendTransaction');
   sendTransaction.on('data', function() {
     window.web3.eth.sendTransaction({from: arguments[0].from, to: arguments[0].to, value: arguments[0].value, gasLimit: 21000, gasPrice: 20000000000}, function(error, hash) {
         if (error) {
@@ -135,14 +137,14 @@ function setupWeb3() {
       })
   });
 
-  var closeWindow = mux.createStream('close');
+  var closeWindow = commMux.createStream('close');
   closeWindow.on('data', function() {
     console.log("CLOSE CALLED");
     window.document.getElementById('torusIframeContainer').style.display = 'none';
     window.document.getElementById('torusMenuBtn').style.display = 'block';
   });
 
-  var denyTransaction = mux.createStream('denyTransaction');
+  var denyTransaction = commMux.createStream('denyTransaction');
   denyTransaction.on('data', function() {
     window.document.getElementById('torusIframeContainer').style.display = 'none';
     window.document.getElementById('torusMenuBtn').style.display = 'block';

@@ -118,7 +118,7 @@
     sendEtherBtn.addEventListener("click", function() {
       var sendAddress = document.getElementById("sendAddress").value;
       var sendAmount = document.getElementById("sendAmount").value;
-      window.metamaskStream.write({name: "sendTransaction", data: {from: sessionStorage.getItem('ethAddress'), to: sendAddress, value: window.web3.utils.toWei(sendAmount, 'ether')}});
+      window.communicationStream.write({name: "sendTransaction", data: {from: sessionStorage.getItem('ethAddress'), to: sendAddress, value: window.web3.utils.toWei(sendAmount, 'ether')}});
     })
 
     var sendEtherMenuBtn = document.getElementById("sendEtherMenuBtn");
@@ -207,7 +207,7 @@
     }
 
     function denyTransaction() {
-      window.metamaskStream.write({name: "close", data: {}});
+      window.communicationStream.write({name: "close", data: {}});
       document.getElementById('myNav').style.display = 'block';
       document.getElementById('torusWidget').style.display = 'block';
       document.getElementById('txCompleteModalContent').style.display = 'none';
@@ -660,7 +660,7 @@
           document.getElementById('addressQR').src = 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl='+ address + '&choe=UTF-8'
           document.getElementById('transactions').href = 'https://etherscan.io/address/' + address;
           document.getElementById('transactions').target = "_blank";
-          window.metamaskStream.write({name: "widget", data: {}});
+          window.communicationStream.write({name: "widget", data: {}});
           var checkSumAddress = window.web3.utils.toChecksumAddress(address)
           window.web3.eth.getBalance(checkSumAddress, function(error, result){
              if(!error) {

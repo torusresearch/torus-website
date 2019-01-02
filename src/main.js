@@ -141,16 +141,17 @@ rpcEngine.push(createProviderMiddleware({ provider: engine }))
 
 
 // this allows us to set up multiple channels using just a single stream connection
-const mux = setupMultiplex(window.metamaskStream)
+const metamaskMux = setupMultiplex(window.metamaskStream)
+const commMux = setupMultiplex(window.communicationStream)
 
 // define channels within a stream
-const providerOutStream = mux.createStream('provider')
-const publicConfigOutStream = mux.createStream('publicConfig')
-const oauthInputStream = mux.createStream('oauth')
+const providerOutStream = metamaskMux.createStream('provider')
+const publicConfigOutStream = metamaskMux.createStream('publicConfig')
+const oauthInputStream = commMux.createStream('oauth')
 const p = new stream.PassThrough({objectMode: true});
 
 p.on('data', function() {
-  console.log('data gotten from p', arguments)
+  console.log('p data:', arguments)
   eventFire(window.document.getElementById("googleAuthBtn"), "click")
 })
 
@@ -181,9 +182,9 @@ window.updateStaticDataInIFrame = function() {
 
 window.updateStaticDataInIFrame()
 
-var passthroughStream0 = new stream.PassThrough({objectMode: true});
-passthroughStream0.on('data', function() {
-  console.log('PASSTHROUGH0', arguments)
+var receivePassThroughStream = new stream.PassThrough({objectMode: true});
+receivePassThroughStream.on('data', function() {
+  console.log('receivePassThroughStream', arguments)
 })
 
 // ethereumjs-vm uses ethereumjs-tx/fake.js to create a fake transaction
@@ -231,18 +232,18 @@ var transformStream = new stream.Transform({
 // doesnt do anything.. just for logging
 // since the stack traces are constrained to a single javascript context
 // may need to use a passthrough stream to log stuff between streams
-var passthroughStream = new stream.PassThrough({objectMode: true});
-passthroughStream.on('data', function() {
-  console.log('PASSTHROUGH', arguments)
+var sendPassThroughStream = new stream.PassThrough({objectMode: true});
+sendPassThroughStream.on('data', function() {
+  console.log('sendPassThroughStream', arguments)
 })
 
 // chaining all the streams together
 pump(
   providerOutStream,
-  passthroughStream0,
+  sendPassThroughStream,
   transformStream,
   providerStream,
-  passthroughStream,
+  receivePassThroughStream,
   providerOutStream,
   (err) => {
     if (err) log.error(err)
