@@ -35,22 +35,6 @@
   display: none;
 }
 
-/*#closeOverlayBtn {
-  cursor: pointer;
-  border-radius: 20px;
-  height: 40px;
-  width: 40px;
-  background-image: url("https://localhost:3000/images/red-x.png");
-  background-size: 60%;
-  background-repeat: no-repeat;
-  border-width: 0px;
-  background-position: center;
-  background-color: #75b4fd;
-  transition: background-color, background-image, width 0.1s ease-in-out;
-  user-select: none;
-  outline: none;
-}*/
-
 #closeOverlayBtn {
   width: 5%;
   height: 5%;

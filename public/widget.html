@@ -234,7 +234,6 @@
     window.onmessage = function(e){
         try {
             if(e.data.data.data.method === 'eth_sendTransaction') {
-                console.log("STUFF SHOULD BE HAPPENING");
                 var transactionData = e.data.data.data;
                 sessionStorage.setItem('transactionData', JSON.stringify(transactionData));
                 document.getElementById('myNav').style.display = 'none';
