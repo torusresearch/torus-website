@@ -1,8 +1,6 @@
 .widget {
   z-index: 999999;
   position: fixed;
-  bottom: 8px;
-  left: 8px;
 }
 
 #torusLogin {

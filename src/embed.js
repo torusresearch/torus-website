@@ -8,6 +8,8 @@ const LocalMessageDuplexStream = require('post-message-stream')
 const MetamaskInpageProvider = require('./inpage-provider.js')
 const setupMultiplex = require('./stream-utils.js').setupMultiplex
 const embedUtils = require('./embedUtils.js')
+const styleColor = document.currentScript.getAttribute('style-color'); 
+const stylePosition = document.currentScript.getAttribute('style-position'); 
 var ifrm
 
 restoreContextAfterImports()
@@ -55,6 +57,31 @@ function createWidget() {
     window.document.getElementById('torusMenuBtn').style.display = 'none';
     window.document.getElementById('torusIframeContainer').style.display = 'block';
   })
+
+  torusMenuBtn.style.backgroundColor = styleColor;
+  console.log("STYLE POSITION: " + stylePosition);
+  switch(stylePosition) {
+    case 'top-left':
+      document.getElementById("torusWidget").style.top = '8px';
+      document.getElementById("torusWidget").style.left = '8px';
+      break;
+    case 'top-right':
+      document.getElementById("torusWidget").style.top = '8px';
+      document.getElementById("torusWidget").style.right = '8px';
+      break;
+    case 'bottom-right':
+      document.getElementById("torusWidget").style.bottom = '8px';
+      document.getElementById("torusWidget").style.right = '8px';
+      break;
+    case 'bottom-left':
+      document.getElementById("torusWidget").style.bottom = '8px';
+      document.getElementById("torusWidget").style.left = '8px';
+      break;
+    default:
+      document.getElementById("torusWidget").style.bottom = '8px';
+      document.getElementById("torusWidget").style.left = '8px';
+  }
+
 }
 
 function setupWeb3() {
@@ -100,6 +127,7 @@ function setupWeb3() {
 
   var closeWindow = mux.createStream('close');
   closeWindow.on('data', function() {
+    console.log("CLOSE CALLED");
     window.document.getElementById('torusIframeContainer').style.display = 'none';
     window.document.getElementById('torusMenuBtn').style.display = 'block';
   });

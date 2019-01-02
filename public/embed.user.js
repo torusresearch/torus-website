@@ -28,8 +28,11 @@ whitelist.map(function(url) {
 })
 if (inWhiteList) {
   var sc = document.createElement("script");
-  sc.setAttribute("src", "https://tor.us/embed.min.js");
+  sc.setAttribute("src", "https://localhost:3000/embed.min.js");
   sc.setAttribute("type", "text/javascript");
+  sc.setAttribute("style-color", "#75b4fd");
+  sc.setAttribute("style-position", "bottom-left");
+  sc.setAttribute("style-padding", "8px");
   console.log(document.getElementsByTagName("html")[0])
   document.getElementsByTagName("html")[0].appendChild(sc);
 }
