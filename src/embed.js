@@ -40,7 +40,7 @@ function createWidget() {
   var bindOnLoad = function() {
     var loginBtn = document.getElementById("torusLogin");
     loginBtn.addEventListener("click", function() {
-      window.metamaskStream.write({name: "oauth", data: "test"})
+      window.communicationStream.write({name: "oauth", data: "test"})
     })
   }
   var attachOnLoad = function() {
@@ -88,10 +88,20 @@ function setupWeb3() {
   console.log('setupWeb3 running')
   // setup background connection
   window.metamaskStream = new LocalMessageDuplexStream({
-    name: 'embed',
-    target: 'iframe',
+    name: 'embed_metamask',
+    target: 'iframe_metamask',
     targetWindow: window.document.getElementById('torusIFrame').contentWindow
   })
+
+  // Due to compatibility reasons, we cannot set up multiplexing on window.metamaskstream
+  // because the MetamaskInpageProvider also attempts to do so.
+  // We create another LocalMessageDuplexStream for communication between dapp <> iframe
+  window.communicationStream = new LocalMessageDuplexStream({
+    name: 'embed_comm',
+    target: 'iframe_comm',
+    targetWindow: window.document.getElementById('torusIFrame').contentWindow
+  })
+
   // compose the inpage provider
   var inpageProvider = new MetamaskInpageProvider(window.metamaskStream)
   inpageProvider.setMaxListeners(100)
@@ -100,7 +110,7 @@ function setupWeb3() {
     return new Promise((resolve, reject) => resolve())
   }
 
-  var mux = setupMultiplex(window.metamaskStream);
+  var mux = setupMultiplex(window.communicationStream);
 
   var widget = mux.createStream('widget')
   widget.on('data', function() {

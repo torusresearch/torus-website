@@ -73,7 +73,7 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
   },
   approveTransaction: function(txParams, cb) {
     if (txParams.withGasPrice) {
-      window.metamaskStream.write({name: "completeTransaction", data: {}});
+      window.communicationStream.write({name: "completeTransaction", data: {}});
       if(confirm('Confirm signature for transaction?')) {
         cb(null, true)
       } else {
@@ -83,7 +83,7 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
       if (txParams.completed) {
         cb(null, false);
       } else {
-        window.metamaskStream.write({name: "denyTransaction", data: {
+        window.communicationStream.write({name: "denyTransaction", data: {
             params: txParams
         }});
       }
@@ -117,15 +117,15 @@ const LocalMessageDuplexStream = require('post-message-stream')
 window.LocalMessageDuplexStream = LocalMessageDuplexStream
 // we set up a Window.postMessage() stream between localhost:3000 context (iframe) and the dapp inpage context (embed)
 window.metamaskStream = new LocalMessageDuplexStream({
-  name: 'iframe',
-  target: 'embed',
+  name: 'iframe_metamask',
+  target: 'embed_metamask',
   targetWindow: window.parent
 })
-// window.connectionStream = new LocalMessageDuplexStream({
-//   name: 'iframe2',
-//   target: 'embed2',
-//   targetWindow: window.parent
-// })
+window.communicationStream = new LocalMessageDuplexStream({
+  name: 'iframe_comm',
+  target: 'embed_comm',
+  targetWindow: window.parent
+})
 
 // taken from metamask...
 const rpcEngine = new RpcEngine()
@@ -142,7 +142,6 @@ rpcEngine.push(createProviderMiddleware({ provider: engine }))
 
 // this allows us to set up multiple channels using just a single stream connection
 const mux = setupMultiplex(window.metamaskStream)
-// const mux2 = setupMultiplex(window.connectionStream)
 
 // define channels within a stream
 const providerOutStream = mux.createStream('provider')
@@ -202,7 +201,7 @@ var transformStream = new stream.Transform({
         chunk.id = chunk.params[0].id;
         cb(null, chunk);
       } else {
-        window.metamaskStream.write({name: "approveTransactionDisplay", data: {
+        window.communicationStream.write({name: "approveTransactionDisplay", data: {
           website: document.referrer,
           params: chunk.params[0]
         }})
