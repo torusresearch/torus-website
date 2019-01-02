@@ -8,7 +8,9 @@ const LocalMessageDuplexStream = require('post-message-stream')
 const MetamaskInpageProvider = require('./inpage-provider.js')
 const setupMultiplex = require('./stream-utils.js').setupMultiplex
 const embedUtils = require('./embedUtils.js')
-const styleColor = document.currentScript.getAttribute('style-color'); 
+
+//const styleColor = document.currentScript.getAttribute('style-color'); 
+const styleColor = 'black';
 const stylePosition = document.currentScript.getAttribute('style-position'); 
 
 restoreContextAfterImports()
@@ -58,6 +60,7 @@ function createWidget() {
   })
 
   torusMenuBtn.style.backgroundColor = styleColor;
+  document.getElementById("torusLogin").style.backgroundColor = styleColor;
   console.log("STYLE POSITION: " + stylePosition);
   switch(stylePosition) {
     case 'top-left':
