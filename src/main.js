@@ -5,7 +5,8 @@ const FilterSubprovider = require('web3-provider-engine/subproviders/filters.js'
 const VmSubprovider = require('web3-provider-engine/subproviders/vm.js')
 const HookedWalletEthTxSubprovider = require('web3-provider-engine/subproviders/hooked-wallet-ethtx.js')
 const NonceSubprovider = require('web3-provider-engine/subproviders/nonce-tracker.js')
-const RpcSubprovider = require('web3-provider-engine/subproviders/rpc.js')
+// const RpcSubprovider = require('web3-provider-engine/subproviders/rpc.js')
+const WebsocketSubprovider = require('./websocket.js')
 const Web3 = require('web3')
 const createEngineStream = require('json-rpc-middleware-stream/engineStream')
 const pump = require('pump')
@@ -14,6 +15,7 @@ const setupMultiplex = require('./stream-utils.js').setupMultiplex
 const RpcEngine = require('json-rpc-engine')
 const createFilterMiddleware = require('eth-json-rpc-filters')
 const log = require('loglevel')
+log.setDefaultLevel('info')
 // const DuplexStream = require('readable-stream').Duplex
 const stream = require('stream')
 
@@ -46,7 +48,7 @@ engine.addProvider(new VmSubprovider())
 engine.addProvider(new HookedWalletEthTxSubprovider({
   getAccounts: function(cb) {
     // cb(null, ['0x5657d2e6D362618Fb0DA4b90aa6e22eD86e30bfd'])
-    // console.log(window.ethAddress, 'ethadd')
+    // log.info(window.ethAddress, 'ethadd')
     var ethAddress = sessionStorage.getItem('ethAddress')
 
     // TODO: checksumAddress
@@ -67,7 +69,7 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
       cb(new Error("No private key accessible. Please login."), null)
       return
     } else {
-      console.log('PRIVATE KEY RETRIEVED...')
+      log.info('PRIVATE KEY RETRIEVED...')
       cb(null, Buffer(wallet[address], 'hex'))
     }
   },
@@ -90,18 +92,22 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
     }
   }
 }))
-var rpcSource = new RpcSubprovider({
-  rpcUrl: 'https://mainnet.infura.io/4cQUeyeUSfkCXsgEAUH2',
-  // rpcUrl: 'http://localhost:7545'
+// var rpcSource = new RpcSubprovider({
+//   rpcUrl: 'https://mainnet.infura.io/v3/619e62693bc14791a9925152bbe514d1',
+//   // rpcUrl: 'http://localhost:7545'
+// })
+// engine.addProvider(rpcSource)
+var wsSubprovider = new WebsocketSubprovider({
+  rpcUrl: 'wss://mainnet.infura.io/ws/v3/619e62693bc14791a9925152bbe514d1',
 })
-engine.addProvider(rpcSource)
+engine.addProvider(wsSubprovider)
 engine.on('block', function(block){
-  console.log('================================')
-  console.log('BLOCK CHANGED:', '#'+block.number.toString('hex'), '0x'+block.hash.toString('hex'))
-  console.log('================================')
+  log.info('================================')
+  log.info('BLOCK CHANGED:', '#'+block.number.toString('hex'), '0x'+block.hash.toString('hex'))
+  log.info('================================')
 })
 engine.on('error', function(err){
-  console.error(err.stack)
+  log.error(err.stack)
 })
 engine.start()
   window.web3 = new Web3(engine)
@@ -151,7 +157,7 @@ const oauthInputStream = commMux.createStream('oauth')
 const p = new stream.PassThrough({objectMode: true});
 
 p.on('data', function() {
-  console.log('p data:', arguments)
+  log.info('p data:', arguments)
   eventFire(window.document.getElementById("googleAuthBtn"), "click")
 })
 
@@ -161,7 +167,7 @@ pump(oauthInputStream, p, (err) => {
 
 function updateSelectedAddress() {
   web3.eth.getAccounts().then(res => {
-    console.log('updateSelectedaddress', res[0])
+    log.info('updateSelectedaddress', res[0])
     // TODO: checksum address
     publicConfigOutStream.write(JSON.stringify({selectedAddress: res[0] || null}))
   }).catch(err => log.error(err))
@@ -184,7 +190,7 @@ window.updateStaticDataInIFrame()
 
 var receivePassThroughStream = new stream.PassThrough({objectMode: true});
 receivePassThroughStream.on('data', function() {
-  console.log('receivePassThroughStream', arguments)
+  log.info('receivePassThroughStream', arguments)
 })
 
 // ethereumjs-vm uses ethereumjs-tx/fake.js to create a fake transaction
@@ -195,7 +201,7 @@ receivePassThroughStream.on('data', function() {
 var transformStream = new stream.Transform({
   objectMode: true,
   transform: function(chunk, enc, cb) {
-    console.log('TRANSFORM', chunk)
+    log.info('TRANSFORM', chunk)
 
     if (chunk.method === 'eth_sendTransaction') {
       if (chunk.params[0].withGasPrice || chunk.params[0].denyTransaction) {
@@ -211,7 +217,7 @@ var transformStream = new stream.Transform({
     } else {
       try {
         if (chunk.method === 'eth_call' || chunk.method === 'eth_estimateGas') {
-          console.log('transforming:', chunk.params[0].from)
+          log.info('transforming:', chunk.params[0].from)
           if (chunk.params[0].from && typeof chunk.params[0].from === "string") {
             if (chunk.params[0].from.substring(0,2) == '0x') {
               chunk.params[0].from = Buffer.from(chunk.params[0].from.slice(2), 'hex');
@@ -219,10 +225,10 @@ var transformStream = new stream.Transform({
           } else if (!chunk.params[0].from) {
             chunk.params[0].from = []
           }
-          console.log('transformed:', chunk.params[0].from)
+          log.info('transformed:', chunk.params[0].from)
         }
       } catch (err) {
-        console.error("Could not transform stream data", err)
+        log.error("Could not transform stream data", err)
       }
       cb(null, chunk)
     }
@@ -234,7 +240,7 @@ var transformStream = new stream.Transform({
 // may need to use a passthrough stream to log stuff between streams
 var sendPassThroughStream = new stream.PassThrough({objectMode: true});
 sendPassThroughStream.on('data', function() {
-  console.log('sendPassThroughStream', arguments)
+  log.info('sendPassThroughStream', arguments)
 })
 
 // chaining all the streams together

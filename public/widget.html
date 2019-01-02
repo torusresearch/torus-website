@@ -11,6 +11,7 @@
     <script src="./bn.js"></script>
     <script src="./elliptic.min.js"></script>
     <script src="./buffer.min.js"></script>
+    <script src="./loglevel.min.js"></script>
 </head>
 
 <body style="margin: 0px">
@@ -88,6 +89,7 @@
 </div>
 
 <script>
+    log.setDefaultLevel('info')
     var endpoints = [
         "https://binancelabs.torusnode.com/jrpc",
         "https://waseda.torusnode.com/jrpc",
@@ -197,7 +199,7 @@
                 document.getElementById('resultTxHash').innerHTML = "<span><a href = 'https://etherscan.io/tx/" + hash + "' target= '_blank'>Transaction pending!</a></span>";
             }
             if (error) {
-                console.log(error);
+                log.error(error);
             }
         });
     })
@@ -287,7 +289,7 @@
                       // Send request
                       request.send();
                     } else {
-                      console.log(error);
+                      log.error(error);
                     }
                 });
             }
@@ -315,16 +317,16 @@
 
 
     function attachSignin(element) {
-      console.log(element.id);
+      log.info(element.id);
       auth2.attachClickHandler(element, {},
       function(googleUser) {
-        console.log("GOOGLE USER: ", googleUser)
+        log.info("GOOGLE USER: ", googleUser)
         var profile = googleUser.getBasicProfile();
-            // console.log(googleUser)
-            console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-            console.log('Name: ' + profile.getName());
-            console.log('Image URL: ' + profile.getImageUrl());
-            console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+            // log.info(googleUser)
+            log.info('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+            log.info('Name: ' + profile.getName());
+            log.info('Image URL: ' + profile.getImageUrl());
+            log.info('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
             document.getElementById('email').innerHTML = profile.getEmail();
             sessionStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
             sessionStorage.setItem('email', profile.getEmail())
@@ -334,7 +336,7 @@
                     if (err) {
                         throw new Error(err)
                     } else {
-                        console.log('New private key assigned to user at address ', res)
+                        log.info('New private key assigned to user at address ', res)
                         retrieveShares();
                         updateWidget(res);
                     }
@@ -386,7 +388,7 @@
             }).then(res => res.json())
             .then(res => shares.push(res))
             .catch(err => {
-                console.error(err)
+                log.error(err)
             })
             promiseArr.push(p)
         }
@@ -413,15 +415,15 @@
                 }).then(res => res.json())
                 .then(res => shares.push(res))
                 .catch(err => {
-                    console.error(err)
+                    log.error(err)
                 })
                 promiseArr.push(p)
             }
             return Promise.all(promiseArr)
         }).then(function() {
             try {
-                console.log('completed')
-                console.log(shares)
+                log.info('completed')
+                log.info(shares)
                 var Xs = {}
                 var Ys = {}
                 shares.map(function(share) {
@@ -457,10 +459,10 @@
                     y: finalY
                 }).pub
 
-                console.log(pubk.encode('hex'))
+                log.info(pubk.encode('hex'))
                 var publicKey = pubk.encode('hex').slice(2);
                 var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38);
-                console.log(ethAddress)
+                log.info(ethAddress)
                 cb(null, ethAddress)
             } catch (err) {
                 cb(err, null)
@@ -493,15 +495,15 @@
     //         }).then(res => res.json())
     //         .then(res => shares.push(res))
     //         .catch(err => {
-    //             console.error(err)
+    //             log.error(err)
     //         })
     //         promiseArr.push(p)
     //     }
 
     //     Promise.all(promiseArr).then(function() {
     //         try {
-    //             console.log('completed')
-    //             console.log(shares)
+    //             log.info('completed')
+    //             log.info(shares)
     //             var points = shares.map(share => {
     //                 return ec.keyFromPublic({
     //                     x: share.result.PubShareX,
@@ -517,10 +519,10 @@
     //             })
     //             // document.getElementById('pubX').textContent = pubk.getX().toString(16,64)
     //             // document.getElementById('pubY').textContent = pubk.getY().toString(16,64)
-    //             console.log(pubk.encode('hex'))
+    //             log.info(pubk.encode('hex'))
     //             var publicKey = pubk.encode('hex').slice(2);
     //             var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38);
-    //             console.log(ethAddress)
+    //             log.info(ethAddress)
     //             cb(null, ethAddress)
     //         } catch (err) {
     //             cb(err, null)
@@ -568,7 +570,7 @@
         //   var discoveryUrl = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
       
         //   // Initialize the gapi.client object, which app uses to make API requests.
-        //   // Get API key and client ID from API Console.
+        //   // Get API key and client ID from API Console
         //   // 'scope' field specifies space-delimited list of access scopes.
         //   gapi.client.init({
         //       'apiKey': 'YOUR_API_KEY',
@@ -635,11 +637,11 @@
         var ec = new Elliptic('secp256k1')
         // function onSignIn(googleUser) {
         //     var profile = googleUser.getBasicProfile();
-        //     console.log(googleUser)
-        //     console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-        //     console.log('Name: ' + profile.getName());
-        //     console.log('Image URL: ' + profile.getImageUrl());
-        //     console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+        //     log.info(googleUser)
+        //     log.info('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+        //     log.info('Name: ' + profile.getName());
+        //     log.info('Image URL: ' + profile.getImageUrl());
+        //     log.info('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
         //     sessionStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
         //     sessionStorage.setItem('email', profile.getEmail())
         //     gapi.auth2.getAuthInstance().disconnect().then(function () {
@@ -648,7 +650,7 @@
         //             if (err) {
         //                 throw new Error(err)
         //             } else {
-        //                 console.log('New private key assigned to user at address ', res)
+        //                 log.info('New private key assigned to user at address ', res)
         //                 retrieveShares()
         //             }
         //         })
@@ -668,7 +670,7 @@
               var accountBalanceContent = 'Balance: ' + accountBalance.toFixed(4) + " ETH";
               document.getElementById('balance').innerHTML = accountBalanceContent;
             } else {
-              console.error(error);
+              log.error(error);
             }
           })
         }
@@ -676,7 +678,7 @@
         function signOut() {
             var auth2 = gapi.auth2.getAuthInstance();
             auth2.signOut().then(function () {
-                console.log('User signed out.');
+                log.info('User signed out.');
                 sessionStorage.removeItem('id_token')
             });
         }
@@ -738,33 +740,33 @@
                 }).then(res => res.json())
                 .then(res => responses.push(res))
                 .catch(err => {
-                console.error(err)
+                log.error(err)
                 })
                 promiseArr.push(p)
             }
             Promise.all(promiseArr).then(function() {
-                console.log('completed')
+                log.info('completed')
                 var shares = []
                 var nodeIndex = []
-                console.log(responses)
+                log.info(responses)
                 responses.map(response => {
-                    console.log(response)
+                    log.info(response)
                     shares.push(new BN(response.result.hexshare, 16))
                     nodeIndex.push(new BN(response.result.index, 10))
                 })
-                console.log(shares, nodeIndex)
+                log.info(shares, nodeIndex)
                 var privateKey = lagrangeInterpolation(shares.slice(2), nodeIndex.slice(2))
                 var key = ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
                 var publicKey = key.getPublic().encode('hex').slice(2)
                 var ethAddressLower = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38); // remove 0x
                 var ethAddress = window.web3.utils.toChecksumAddress(ethAddressLower)
                 sessionStorage.setItem('ethAddress', ethAddress) // TODO: checksum address
-                console.log(window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')))
+                log.info(window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')))
                 sessionStorage.setItem('wallet', JSON.stringify({})) // reset wallet when logging in
                 var wallet = JSON.parse(sessionStorage.getItem('wallet'))
                 wallet[ethAddress] = privateKey.toString('hex')
                 sessionStorage.setItem('wallet', JSON.stringify(wallet))
-                console.log('Ethereum Address: ' + sessionStorage.getItem('ethAddress'))
+                log.info('Ethereum Address: ' + sessionStorage.getItem('ethAddress'))
                 window.updateStaticDataInIFrame()
             })
         }
@@ -780,7 +782,7 @@
     // window.METAMASK_ACCOUNT = accounts[0] || 'locked'
     // window.addEventListener("message", function(event) {
     //   if (event.origin !== "http://localhost:4000") return 
-    //   console.log(msg)
+    //   log.info(msg)
     // }, false) // useCapture explicitly set to false for compatibility
 //   })()
 

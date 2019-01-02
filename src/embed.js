@@ -1,9 +1,10 @@
-
-console.log('INJECTED IN', window.location.href)
+// Torus loading message
+console.log('TORUS INJECTED IN', window.location.href)
 
 cleanContextForImports()
 var Web3 = require('web3')
 const log = require('loglevel')
+log.setDefaultLevel('info')
 const LocalMessageDuplexStream = require('post-message-stream')
 const MetamaskInpageProvider = require('./inpage-provider.js')
 const setupMultiplex = require('./stream-utils.js').setupMultiplex
@@ -12,7 +13,6 @@ const styleColor = document.currentScript.getAttribute('style-color');
 const stylePosition = document.currentScript.getAttribute('style-position'); 
 
 restoreContextAfterImports()
-log.setDefaultLevel(process.env.METAMASK_DEBUG ? 'debug' : 'warn')
 createWidget()
 embedUtils.runOnLoad(setupWeb3)
 
@@ -20,7 +20,7 @@ embedUtils.runOnLoad(setupWeb3)
  * Create widget
  */
 function createWidget() {
-  console.log('Creating Torus widget...')
+  log.info('Creating Torus widget...')
   var link = window.document.createElement('link');
   link.setAttribute('rel', 'stylesheet');
   link.setAttribute('type', 'text/css');
@@ -58,7 +58,7 @@ function createWidget() {
   })
 
   torusMenuBtn.style.backgroundColor = styleColor;
-  console.log("STYLE POSITION: " + stylePosition);
+  log.info("STYLE POSITION: " + stylePosition);
   switch(stylePosition) {
     case 'top-left':
       document.getElementById("torusWidget").style.top = '8px';
@@ -84,7 +84,7 @@ function createWidget() {
 }
 
 function setupWeb3() {
-  console.log('setupWeb3 running')
+  log.info('setupWeb3 running')
   // setup background connection
   window.metamaskStream = new LocalMessageDuplexStream({
     name: 'embed_metamask',
@@ -130,16 +130,16 @@ function setupWeb3() {
   sendTransaction.on('data', function() {
     window.web3.eth.sendTransaction({from: arguments[0].from, to: arguments[0].to, value: arguments[0].value, gasLimit: 21000, gasPrice: 20000000000}, function(error, hash) {
         if (error) {
-          console.log(error);
+          log.error(error);
         } else {
-          console.log(hash);
+          log.info(hash);
         }
       })
   });
 
   var closeWindow = commMux.createStream('close');
   closeWindow.on('data', function() {
-    console.log("CLOSE CALLED");
+    log.info("CLOSE CALLED");
     window.document.getElementById('torusIframeContainer').style.display = 'none';
     window.document.getElementById('torusMenuBtn').style.display = 'block';
   });
@@ -160,7 +160,7 @@ function setupWeb3() {
       denyTransaction: true,
       completed: true
     }, function(error, hash){
-      console.log(error);
+      log.error(error);
     });
   });
 
@@ -175,7 +175,7 @@ function setupWeb3() {
       and try again.`)
   }
   window.web3 = new Web3(inpageProvider)
-  console.log(Web3.version)
+  log.info(Web3.version)
   window.torus = window.web3
   window.web3.setProvider = function () {
     log.debug('Torus - overrode web3.setProvider')
@@ -206,7 +206,7 @@ function cleanContextForImports () {
   try {
     global.define = undefined
   } catch (_) {
-    console.warn('MetaMask - global.define could not be deleted.')
+    log.warn('MetaMask - global.define could not be deleted.')
   }
 }
 
@@ -217,6 +217,6 @@ function restoreContextAfterImports () {
   try {
     global.define = __define
   } catch (_) {
-    console.warn('MetaMask - global.define could not be overwritten.')
+    log.warn('MetaMask - global.define could not be overwritten.')
   }
 }

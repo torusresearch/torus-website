@@ -9,6 +9,7 @@ const util = require('util')
 const SafeEventEmitter = require('safe-event-emitter')
 const setupMultiplex = require('./stream-utils.js').setupMultiplex
 const DuplexStream = require('readable-stream').Duplex
+const log = require('loglevel')
 
 module.exports = MetamaskInpageProvider
 
@@ -34,15 +35,15 @@ function MetamaskInpageProvider (connectionStream) {
   }
 
   LocalStorageStore.prototype._read = function(chunk, enc, cb) {
-    console.log('reading from LocalStorageStore')
+    log.info('reading from LocalStorageStore')
   }
 
   LocalStorageStore.prototype._onMessage = function(event) {
-    console.log('LocalStorageStore', event)
+    log.info('LocalStorageStore', event)
   }
 
   LocalStorageStream.prototype._write = function(chunk, enc, cb) {
-    console.log('WRITTEN TO LOCALSTORAGESTREAM:', chunk)
+    log.info('WRITTEN TO LOCALSTORAGESTREAM:', chunk)
     let data = JSON.parse(chunk)
     for (let key in data) {
       if (key == "selectedAddress") {
@@ -112,7 +113,7 @@ MetamaskInpageProvider.prototype.send = function (payload, callback) {
 // handle sendAsync requests via asyncProvider
 // also remap ids inbound and outbound
 MetamaskInpageProvider.prototype.sendAsync = function (payload, cb) {
-  console.log('ASYNC REQUEST', payload)
+  log.info('ASYNC REQUEST', payload)
   const self = this
   self.rpcEngine.handle(payload, cb)
 }
@@ -142,7 +143,7 @@ MetamaskInpageProvider.prototype._sendSync = function (payload) {
       break
 
     case 'net_version':
-      console.log('NET VERSION REQUESTED')
+      log.info('NET VERSION REQUESTED')
       const networkVersion = window.sessionStorage.getItem('networkVersion')
       result = networkVersion || null
       break
@@ -174,7 +175,7 @@ MetamaskInpageProvider.prototype.isMetaMask = true
 function logStreamDisconnectWarning (remoteLabel, err) {
   let warningMsg = `MetamaskInpageProvider - lost connection to ${remoteLabel}`
   if (err) warningMsg += '\n' + err.stack
-  console.warn(warningMsg)
+  log.warn(warningMsg)
   const listeners = this.listenerCount('error')
   if (listeners > 0) {
     this.emit('error', warningMsg)
