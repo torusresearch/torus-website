@@ -30,6 +30,7 @@ if (inWhiteList) {
   var sc = document.createElement("script");
   sc.setAttribute("src", "https://localhost:3000/embed.min.js");
   sc.setAttribute("type", "text/javascript");
+  sc.setAttribute("show-widget", true);
   sc.setAttribute("custom-style", false);
   sc.setAttribute("style-color", "black");
   sc.setAttribute("style-position", "bottom-right");
