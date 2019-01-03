@@ -55,7 +55,6 @@ function createWidget() {
     window.document.getElementById('torusIframeContainer').style.display = 'block';
   })
 
-
   // Insert custom attributes if any
   if (document.currentScript.getAttribute('custom-style')) {
     if (document.currentScript.getAttribute('custom-style') !== 'false') {
@@ -113,6 +112,12 @@ function createWidget() {
   } else {
     document.getElementById("torusWidget").style.bottom = '8px';
     document.getElementById("torusWidget").style.left = '8px';
+  }
+
+  if (document.currentScript.getAttribute('show-widget')) {
+    if (document.currentScript.getAttribute('show-widget') === 'false') {
+      document.getElementById("torusWidget").style.display = 'none';
+    }
   }
 }
 
@@ -172,7 +177,6 @@ function setupWeb3() {
 
   var closeWindow = commMux.createStream('close');
   closeWindow.on('data', function() {
-    console.log("CLOSE CALLED");
     window.document.getElementById('torusIframeContainer').style.display = 'none';
     window.document.getElementById('torusMenuBtn').style.display = 'block';
   });
