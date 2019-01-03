@@ -42,6 +42,7 @@
 
 <!-- The overlay -->
 <div id="myNav" class="overlay" >
+  <span id="closeOverlayBtn" class="close">&times;</span>
 
   <div class="overlay-header">
     <h1 style="color: white;" id="email">Loading Email....</h1>
@@ -55,6 +56,7 @@
     <a href="#" id="receiveEtherBtn">Receive Ether</a>
     <a href="#" id="transactions">Transactions</a>
     <a href="#" id="switchAccounts">Switch Account</a>
+    <a href="#" id="closeOption">Close</a>
   </div>
 
   <div id="receiveEther" class="overlay-content">
@@ -81,10 +83,6 @@
     <a href="#" id="backBtn2">Main Menu</a>
   </div>
 
-</div>
-
-<div id="torusWidget" class="widget">
-  <button id="closeOverlayBtn"/>
 </div>
 
 <script>
@@ -157,6 +155,11 @@
       closeWindow();
     })
 
+    var closeOption = document.getElementById("closeOption");
+    closeOption.addEventListener("click", function() {
+      closeWindow();
+    })
+
     var closeOverlayButton = document.getElementById("closeOverlayBtn");
     closeOverlayButton.addEventListener("click", function() {
       closeWindow();
@@ -209,7 +212,6 @@
     function denyTransaction() {
       window.communicationStream.write({name: "close", data: {}});
       document.getElementById('myNav').style.display = 'block';
-      document.getElementById('torusWidget').style.display = 'block';
       document.getElementById('txCompleteModalContent').style.display = 'none';
       document.getElementById('signTxModalContent').style.display = 'none';
     }
@@ -235,7 +237,6 @@
                 var transactionData = e.data.data.data;
                 sessionStorage.setItem('transactionData', JSON.stringify(transactionData));
                 document.getElementById('myNav').style.display = 'none';
-                document.getElementById('torusWidget').style.display = 'none';
                 document.getElementById('torusModal').style.display = 'block';
                 document.getElementById('signTxModalContent').style.display = 'block';
                 document.getElementById('txCompleteModalContent').style.display = 'none';

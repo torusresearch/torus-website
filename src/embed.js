@@ -8,8 +8,6 @@ const LocalMessageDuplexStream = require('post-message-stream')
 const MetamaskInpageProvider = require('./inpage-provider.js')
 const setupMultiplex = require('./stream-utils.js').setupMultiplex
 const embedUtils = require('./embedUtils.js')
-const styleColor = document.currentScript.getAttribute('style-color'); 
-const stylePosition = document.currentScript.getAttribute('style-position'); 
 
 restoreContextAfterImports()
 log.setDefaultLevel(process.env.METAMASK_DEBUG ? 'debug' : 'warn')
@@ -57,30 +55,65 @@ function createWidget() {
     window.document.getElementById('torusIframeContainer').style.display = 'block';
   })
 
-  torusMenuBtn.style.backgroundColor = styleColor;
-  console.log("STYLE POSITION: " + stylePosition);
-  switch(stylePosition) {
-    case 'top-left':
-      document.getElementById("torusWidget").style.top = '8px';
-      document.getElementById("torusWidget").style.left = '8px';
-      break;
-    case 'top-right':
-      document.getElementById("torusWidget").style.top = '8px';
-      document.getElementById("torusWidget").style.right = '8px';
-      break;
-    case 'bottom-right':
-      document.getElementById("torusWidget").style.bottom = '8px';
-      document.getElementById("torusWidget").style.right = '8px';
-      break;
-    case 'bottom-left':
-      document.getElementById("torusWidget").style.bottom = '8px';
-      document.getElementById("torusWidget").style.left = '8px';
-      break;
-    default:
-      document.getElementById("torusWidget").style.bottom = '8px';
-      document.getElementById("torusWidget").style.left = '8px';
-  }
 
+  // Insert custom attributes if any
+  if (document.currentScript.getAttribute('custom-style')) {
+    if (document.currentScript.getAttribute('custom-style') !== 'false') {
+      var padding = '8px';
+
+      if (document.currentScript.getAttribute('style-color')){
+        var styleColor = document.currentScript.getAttribute('style-color');
+        torusMenuBtn.style.backgroundColor = styleColor;
+        document.getElementById("torusLogin").style.backgroundColor = styleColor;
+      }
+
+      if (document.currentScript.getAttribute('style-padding')){
+        padding = document.currentScript.getAttribute('style-padding');
+      }
+
+      if (document.currentScript.getAttribute('style-diameter')){
+        var diameter = document.currentScript.getAttribute('style-diameter');
+        torusMenuBtn.style.height = diameter;
+        torusMenuBtn.style.width = diameter;
+        document.getElementById("torusLogin").style.height = diameter;
+        document.getElementById("torusLogin").style.width = diameter;
+      }
+
+      if (document.currentScript.getAttribute('style-position')) {
+        var stylePosition = document.currentScript.getAttribute('style-position');
+        switch(stylePosition) {
+          case 'top-left':
+            document.getElementById("torusWidget").style.top = padding;
+            document.getElementById("torusWidget").style.left = padding;
+            break;
+          case 'top-right':
+            document.getElementById("torusWidget").style.top = padding;
+            document.getElementById("torusWidget").style.right = padding;
+            break;
+          case 'bottom-right':
+            document.getElementById("torusWidget").style.bottom = padding;
+            document.getElementById("torusWidget").style.right = padding;
+            break;
+          case 'bottom-left':
+            document.getElementById("torusWidget").style.bottom = padding;
+            document.getElementById("torusWidget").style.left = padding;
+            break;
+          default:
+            document.getElementById("torusWidget").style.bottom = padding;
+            document.getElementById("torusWidget").style.left = padding;
+        }
+      } else {
+        document.getElementById("torusWidget").style.bottom = '8px';
+        document.getElementById("torusWidget").style.left = '8px';
+      }
+    } else {
+      document.getElementById("torusWidget").style.bottom = '8px';
+      document.getElementById("torusWidget").style.left = '8px';
+    }
+  } else {
+    document.getElementById("torusWidget").style.bottom = '8px';
+    document.getElementById("torusWidget").style.left = '8px';
+  }
 }
 
 function setupWeb3() {
