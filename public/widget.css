@@ -113,6 +113,10 @@
   cursor: pointer;
 }
 
+#address:hover {
+ cursor:pointer;
+}
+
 #signTransactionButton {
   display: inline-block;
   border: none;
