@@ -240,8 +240,7 @@
             }
             if (error) {
                 console.log(error);               
-                var message = error.message.charAt(0).toUpperCase() + error.message.substr(1);
-                signErrorElement.innerHTML = `Error: ${message}`; 
+                signErrorElement.innerText = `TorusSignError: ${error.message}`; 
                 signErrorElement.hidden = false;
             }
         });
