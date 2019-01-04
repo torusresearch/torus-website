@@ -33,7 +33,7 @@
 
     <div id= "txCompleteModalContent" class="modalContent"> 
       <span id="close2" class="close">&times;</span>
-      <img id="torusLogo" src="https://localhost:3000/images/logo.png" alt="Torus Logo"/>
+      <img style="display:inline-block;" id="torusLogo" src="https://localhost:3000/images/logo.png" alt="Torus Logo"/>
       <p id="resultTxHash">Sign transaction from ?</p>
       <p>Note: When you close this window DAPP may claim you have denied the transaction, but the transaction is actually currently pending.</p>
       <button id="closeWindow">Close</button>
@@ -60,7 +60,8 @@
   </div>
 
   <div id="receiveEther" class="overlay-content">
-    <img id="addressQR"/>
+    <img id="addressQR" style="cursor: pointer"/>
+    <a href="#" id="copyAddressOption">Copy Address</a>
     <a href="#" id="backBtn">Main Menu</a>
   </div>
 
@@ -111,6 +112,40 @@
       attachSignin(document.getElementById('switchAccounts'));
       });
     }
+
+
+    var addressQR = document.getElementById("addressQR");
+    addressQR.addEventListener("click", function() {
+      const el = document.createElement('textarea');
+      el.value = addressLabel.innerHTML;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      alert("Copied address: " + addressLabel.innerHTML);
+      document.body.removeChild(el);
+    })
+
+    var addressLabel = document.getElementById("address");
+    addressLabel.addEventListener("click", function() {
+      const el = document.createElement('textarea');
+      el.value = addressLabel.innerHTML;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      alert("Copied address: " + addressLabel.innerHTML);
+      document.body.removeChild(el);
+    })
+
+    var copyAddressOption = document.getElementById("copyAddressOption");
+    copyAddressOption.addEventListener("click", function() {
+      const el = document.createElement('textarea');
+      el.value = addressLabel.innerHTML;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      alert("Copied address: " + addressLabel.innerHTML);
+      document.body.removeChild(el);
+    })
 
     var sendEtherBtn = document.getElementById("sendEtherBtn");
     sendEtherBtn.addEventListener("click", function() {
