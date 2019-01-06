@@ -8,6 +8,8 @@ var elliptic = require('./vendor/elliptic.js')
 var log = require('./vendor/loglevel.js')
 var web3 = window.web3
 
+Vue.use(require('vue-script2'))
+
 Vue.config.productionTip = false
 
 new Vue({

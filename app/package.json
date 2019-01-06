@@ -10,6 +10,7 @@
   "dependencies": {
     "vue": "^2.5.21",
     "vue-router": "^3.0.1",
+    "vue-script2": "^2.0.3",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
@@ -34,8 +35,10 @@
     "rules": {},
     "overrides": [
       {
-        "files": ["vendor/*"],
-        "excludedFiles": "web3.*" 
+        "files": [
+          "*/vendor/*"
+        ],
+        "excludedFiles": "*"
       }
     ],
     "parserOptions": {
