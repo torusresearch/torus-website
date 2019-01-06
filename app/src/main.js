@@ -3,10 +3,10 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
-import * as BN from './vendor/bn.js'
-import * as elliptic from './vendor/elliptic.js'
-import * as log from './vendor/loglevel.js'
-import * as web3 from './vendor/web3.js'
+var BN = require('./vendor/bn.js')
+var elliptic = require('./vendor/elliptic.js')
+var log = require('./vendor/loglevel.js')
+var web3 = window.web3
 
 Vue.config.productionTip = false
 
@@ -17,7 +17,15 @@ new Vue({
 }).$mount('#app')
 
 // Setup vendor imports
-Object.defineProperty(Vue.prototype, '$BN', { value: BN })
-Object.defineProperty(Vue.prototype, '$elliptic', { value: elliptic })
-Object.defineProperty(Vue.prototype, '$log', { value: log })
-Object.defineProperty(Vue.prototype, '$web3', { value: web3 })
+Object.defineProperty(Vue.prototype, '$BN', {
+  value: BN
+})
+Object.defineProperty(Vue.prototype, '$elliptic', {
+  value: elliptic
+})
+Object.defineProperty(Vue.prototype, '$log', {
+  value: log
+})
+Object.defineProperty(Vue.prototype, '$web3', {
+  value: web3
+})

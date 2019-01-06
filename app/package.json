@@ -32,6 +32,12 @@
       "@vue/standard"
     ],
     "rules": {},
+    "overrides": [
+      {
+        "files": ["vendor/*"],
+        "excludedFiles": "web3.*" 
+      }
+    ],
     "parserOptions": {
       "parser": "babel-eslint"
     }

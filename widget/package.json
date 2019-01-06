@@ -1,0 +1,22 @@
+{
+  "name": "widget",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "json-rpc-engine": "^4.0.0",
+    "json-rpc-middleware-stream": "^2.1.0",
+    "loglevel": "^1.6.1",
+    "obs-store": "^3.0.2",
+    "post-message-stream": "^3.0.0",
+    "pump": "^3.0.0",
+    "readable-stream": "^3.1.1",
+    "safe-event-emitter": "^1.0.1",
+    "web3": "^1.0.0-beta.37"
+  }
+}
