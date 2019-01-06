@@ -1,0 +1,309 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Torus</title>
+  <script>
+    // Script redirect to https
+    if (location.protocol != 'https:') { location.href = 'https:' + window.location.href.substring(window.location.protocol.length) }
+    // Allocate namespace
+    if (window.torus !== undefined) { window._torus = window.torus }
+    else { window.torus = {} }
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="shortcut icon" href="images/favicon.png">
+  <script src="https://apis.google.com/js/platform.js"></script>
+  <meta name="google-signin-client_id" content="876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com">
+  <script src="./bn.js"></script>
+  <script src="./elliptic.min.js"></script>
+  <script src="./buffer.min.js"></script>
+  <script src="./loglevel.min.js"></script>
+  <script src="./externalAPIs.js"></script>
+</head>
+
+<body style="margin: 0px">
+  <div id="app"></div>
+  <script>
+    gapi.load('auth2', function() {
+      auth2 = gapi.auth2.init({ client_id: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com'})
+    })
+  </script>
+  <script>
+    var endpoints = [
+      'https://binancelabs.torusnode.com/jrpc',
+      'https://waseda.torusnode.com/jrpc',
+      'https://vgr.torusnode.com/jrpc',
+      'https://torus.torusnode.com/jrpc',
+      'https://etc.torusnode.com/jrpc'
+    ]
+
+    function attachSignin(element) {
+      log.info(element.id);
+      auth2.attachClickHandler(element, {},
+      function (googleUser) {
+        log.info('GOOGLE USER: ', googleUser)
+        var profile = googleUser.getBasicProfile();
+        // log.info(googleUser)
+        log.info('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+        log.info('Name: ' + profile.getName());
+        log.info('Image URL: ' + profile.getImageUrl());
+        log.info('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+        document.getElementById('email').innerHTML = profile.getEmail();
+        sessionStorage.setItem('id_token', googleUser.getAuthResponse().id_token)
+        sessionStorage.setItem('email', profile.getEmail())
+        gapi.auth2.getAuthInstance().disconnect().then(function () {
+          window.loggedIn = true;
+          getPubKeyAsync(function (err, res) {
+            if (err) {
+              throw new Error(err)
+            } else {
+              log.info('Private key retrieved/assigned to user at address ', res)
+              updateWidget(res);
+              retrieveShares();
+            }
+          })
+        })
+      },
+      function (error) {
+        alert(JSON.stringify(error, undefined, 2));
+      });
+    }
+
+    function getEmail() {
+      if (sessionStorage.getItem('email')) {
+        return sessionStorage.getItem('email')
+      } else {
+        throw new Error('not signed in')
+      }
+    }
+
+    function getPubKeyAsync(cb) {
+      var promiseArr = []
+      var shares = []
+
+      for (var i = 0; i < endpoints.length; i++) {
+        var p = fetch(endpoints[i], {
+            method: 'POST',
+            cache: 'no-cache',
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              method: 'SecretAssign',
+              id: 10,
+              params: {
+                email: getEmail()
+              }
+            })
+          }).then(res => res.json())
+          .then(res => shares.push(res))
+          .catch(err => {
+            log.error(err)
+          })
+        promiseArr.push(p)
+      }
+
+      Promise.all(promiseArr).then(function () {
+        promiseArr = []
+        shares = []
+        for (var i = 0; i < endpoints.length; i++) {
+          var p = fetch(endpoints[i], {
+              method: 'POST',
+              cache: 'no-cache',
+              mode: 'cors',
+              headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+              },
+              body: JSON.stringify({
+                jsonrpc: '2.0',
+                method: 'SecretAssign',
+                id: 10,
+                params: {
+                  email: getEmail()
+                }
+              })
+            }).then(res => res.json())
+            .then(res => shares.push(res))
+            .catch(err => {
+              log.error(err)
+            })
+          promiseArr.push(p)
+        }
+        return Promise.all(promiseArr)
+      }).then(function () {
+        try {
+          log.info('completed')
+          log.info(shares)
+          var Xs = {}
+          var Ys = {}
+          shares.map(function (share) {
+            if (share.result && share.result.PubShareX) {
+              if (Xs[share.result.PubShareX] === undefined) {
+                Xs[share.result.PubShareX] = 1
+              } else {
+                Xs[share.result.PubShareX]++
+              }
+            }
+            if (share.result && share.result.PubShareY) {
+              if (Ys[share.result.PubShareY] === undefined) {
+                Ys[share.result.PubShareY] = 1
+              } else {
+                Ys[share.result.PubShareY]++
+              }
+            }
+          })
+          var finalX
+          var finalY
+          for (var key in Xs) {
+            if (Xs[key] >= 3) {
+              finalX = key
+            }
+          }
+          for (var key in Ys) {
+            if (Ys[key] >= 3) {
+              finalY = key
+            }
+          }
+          var pubk = ec.keyFromPublic({
+            x: finalX,
+            y: finalY
+          }).pub
+
+          log.info(pubk.encode('hex'))
+          var publicKey = pubk.encode('hex').slice(2);
+          var ethAddress = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38);
+          log.info(ethAddress)
+          cb(null, ethAddress)
+        } catch (err) {
+          cb(err, null)
+        }
+      })
+
+    }
+
+    var Elliptic = elliptic.ec
+    var ec = new Elliptic('secp256k1')
+
+    function updateWidget(address) {
+      document.getElementById('address').innerHTML = address;
+      document.getElementById('addressQR').src = 'https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=' + address +
+        '&choe=UTF-8'
+      document.getElementById('transactions').href = 'https://etherscan.io/address/' + address;
+      document.getElementById('transactions').target = '_blank';
+      var checkSumAddress = window.web3.utils.toChecksumAddress(address)
+      window.web3.eth.getBalance(checkSumAddress, function (error, result) {
+        if (!error) {
+          var accountBalance = Number(window.web3.utils.fromWei(result));
+          var accountBalanceContent = 'Balance: ' + accountBalance.toFixed(4) + ' ETH';
+          document.getElementById('balance').innerHTML = accountBalanceContent;
+        } else {
+          log.error(error);
+        }
+      })
+    }
+
+    function signOut() {
+      var auth2 = gapi.auth2.getAuthInstance();
+      auth2.signOut().then(function () {
+        log.info('User signed out.');
+        sessionStorage.removeItem('id_token')
+      });
+    }
+
+    function lagrangeInterpolation(shares, nodeIndex) {
+      if (shares.length != nodeIndex.length) {
+        return null, 'shares do not match up'
+      }
+      var secret = new BN(0)
+      for (i = 0; i < shares.length; i++) {
+        var upper = new BN(1)
+        var lower = new BN(1)
+        for (j = 0; j < shares.length; j++) {
+          if (i != j) {
+            upper = upper.mul(nodeIndex[j].neg())
+            upper = upper.umod(ec.curve.n)
+
+            temp = nodeIndex[i].sub(nodeIndex[j])
+            temp = temp.umod(ec.curve.n)
+            lower = lower.mul(temp).umod(ec.curve.n)
+          }
+        }
+        // var privInv = ec.curve.n.sub(priv).umod(ec.curve.n) // note: inverse is using n
+        // var y = ec.curve.g.mul(privInv)
+        // var red = BN.red(ec.curve.n);
+        // var lowerRed = lower.toRed(red)
+        // var invRed = lowerRed.redInvm()
+        // var inv = invRed.fromRed()
+        // var inv = ec.curve.n.sub(lower).umod(ec.curve.n)
+        delta = upper.mul(lower.invm(ec.curve.n)).umod(ec.curve.n)
+        delta = delta.mul(shares[i]).umod(ec.curve.n)
+
+        secret = secret.add(delta)
+      }
+      return secret.umod(ec.curve.n)
+    }
+
+    function retrieveShares() {
+      var promiseArr = []
+      var responses = []
+      for (var i = 0; i < endpoints.length; i++) {
+        var p = fetch(endpoints[i], {
+            method: 'POST',
+            cache: 'no-cache',
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              method: 'ShareRequest',
+              id: 10,
+              params: {
+                index: 0,
+                idtoken: sessionStorage.getItem('id_token'),
+                email: sessionStorage.getItem('email')
+              }
+            })
+          }).then(res => res.json())
+          .then(res => responses.push(res))
+          .catch(err => {
+            log.error(err)
+          })
+        promiseArr.push(p)
+      }
+      Promise.all(promiseArr).then(function () {
+        log.info('completed')
+        var shares = []
+        var nodeIndex = []
+        log.info(responses)
+        responses.map(response => {
+          log.info(response)
+          shares.push(new BN(response.result.hexshare, 16))
+          nodeIndex.push(new BN(response.result.index, 10))
+        })
+        log.info(shares, nodeIndex)
+        var privateKey = lagrangeInterpolation(shares.slice(2), nodeIndex.slice(2))
+        var key = ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
+        var publicKey = key.getPublic().encode('hex').slice(2)
+        var ethAddressLower = '0x' + window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38); // remove 0x
+        var ethAddress = window.web3.utils.toChecksumAddress(ethAddressLower)
+        sessionStorage.setItem('ethAddress', ethAddress)
+        log.info(window.web3.utils.keccak256(Buffer.from(publicKey, 'hex')))
+        sessionStorage.setItem('wallet', JSON.stringify({})) // reset wallet when logging in
+        var wallet = JSON.parse(sessionStorage.getItem('wallet'))
+        wallet[ethAddress] = privateKey.toString('hex')
+        sessionStorage.setItem('wallet', JSON.stringify(wallet))
+        log.info('Ethereum Address: ' + sessionStorage.getItem('ethAddress'))
+        window.torus.updateStaticDataInIFrame()
+      })
+    }
+
+    startApp()
+  </script>
+  <script src="bundle.js"></script>
+</body>
+
+</html>
