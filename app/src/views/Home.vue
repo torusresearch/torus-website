@@ -1,15 +1,15 @@
 <template>
-  <Home />
+  <HomeComponent />
 </template>
 
 <script>
 // @ is an alias to /src
-import Home from '../components/Home.vue'
+import HomeComponent from '../components/HomeComponent.vue'
 
 export default {
   name: 'home',
   components: {
-    Home
+    HomeComponent
   },
   mounted () {
     /* global particlesJS $:true */
