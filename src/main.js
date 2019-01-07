@@ -98,6 +98,7 @@ function startWeb3(network) {
     console.log('================================')
     console.log('BLOCK CHANGED:', '#'+block.number.toString('hex'), '0x'+block.hash.toString('hex'))
     console.log('================================')
+    eventFire(window.document.getElementById("torus-refresh"), "click");
   })
   engine.on('error', function(err){
     console.error(err.stack)

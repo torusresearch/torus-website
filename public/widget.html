@@ -135,7 +135,9 @@
 
     var refresh = document.getElementById("torus-refresh");
     refresh.addEventListener("click", function() {
-      updateWidget(document.getElementById("address").innerHTML);
+      if (document.getElementById("address").innerHTML !== 'Loading Address....') {
+        updateWidget(document.getElementById("address").innerHTML);
+      }
     })
 
     var addressLabel = document.getElementById("address");
@@ -260,11 +262,6 @@
       closeWindow();
     })
 
-    var closeWindowBtn = document.getElementById("closeWindow");
-    closeWindowBtn.addEventListener("click", function() {
-      closeWindow();
-    })
-
     var signTransactionButton = document.getElementById("signTransactionButton");
     signTransactionButton.addEventListener("click", function() {
 
@@ -360,8 +357,9 @@
                   value: transactionData.params[0].value,
                   nonce: transactionData.params[0].nonce
                 }, function(error, result){
+                    console.log("GAS USED ESTIMATE: " + result)
                     if (!error) {
-                      window.gasUsedEstimate = result;
+                      window.gasUsedEstimate = result - 1000000;
                       // Update gas price
                       var request = new XMLHttpRequest();
 
