@@ -38,7 +38,6 @@ function createWidget() {
     var loginBtn = document.getElementById("torusLogin");
     loginBtn.addEventListener("click", function() {
       window.communicationStream.write({name: "oauth", data: "login"})
-      //window.communicationStream.write({name: "network", data: "https://ropsten.infura.io"})
     })
   }
   var attachOnLoad = function() {
@@ -186,28 +185,7 @@ function setupWeb3() {
 
   var network = commMux.createStream('network');
   network.on('data', function() {
-    console.log('NETWORK SWITCH', arguments);
-    window.communicationStream.write({name: "network", data: "https://ropsten.infura.io"})
-  });
-
-  var denyTransaction = commMux.createStream('denyTransaction');
-  denyTransaction.on('data', function() {
-    window.document.getElementById('torusIframeContainer').style.display = 'none';
-    window.document.getElementById('torusMenuBtn').style.display = 'block';
-      
-    // Send transaction with denyTransaction and completed field
-    window.web3.eth.sendTransaction({
-      from: arguments[0].params.from,
-      to: arguments[0].params.to,
-      data: arguments[0].params.data,
-      value: arguments[0].params.value,
-      nonce: arguments[0].params.nonce,
-      id: arguments[0].params.id,
-      denyTransaction: true,
-      completed: true
-    }, function(error, hash){
-      console.log(error);
-    });
+    window.communicationStream.write({name: "network", data: arguments[0]})
   });
 
   

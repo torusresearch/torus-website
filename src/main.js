@@ -84,21 +84,15 @@ function startWeb3(network) {
         } else {
           cb(new Error('User denied transaction.'), false)
         }
-      } else if (txParams.denyTransaction) {
-        if (txParams.completed) {
-          cb(null, false);
-        } else {
-          window.communicationStream.write({name: "denyTransaction", data: {
-              params: txParams
-          }});
-        }
       }
     }
   }))
+
   var rpcSource = new RpcSubprovider({
     rpcUrl: network + '/' + infuraKey,
     // rpcUrl: 'http://localhost:7545'
   })
+
   engine.addProvider(rpcSource)
   engine.on('block', function(block){
     console.log('================================')
@@ -170,6 +164,7 @@ p.on('data', function() {
 q.on('data', function() {
   console.log('q data:', arguments)
   startWeb3(arguments[0]);
+  eventFire(window.document.getElementById("torus-refresh"), "click");
 })
 
 pump(oauthInputStream, p, (err) => {
@@ -220,7 +215,7 @@ var transformStream = new stream.Transform({
     console.log('TRANSFORM', chunk)
 
     if (chunk.method === 'eth_sendTransaction') {
-      if (chunk.params[0].withGasPrice || chunk.params[0].denyTransaction) {
+      if (chunk.params[0].withGasPrice) {
         chunk.id = chunk.params[0].id;
         cb(null, chunk);
       } else {

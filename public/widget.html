@@ -15,6 +15,7 @@
 
 <body style="margin: 0px">
 <div id="googleAuthBtn" style="height: 20px; width: 20px;"></div>
+<div id="torus-refresh" style="height: 20px; width: 20px;"></div>
 <div id="torusModal" > 
     <div id= "signTxModalContent" class="modalContent"> 
       <span id="close" class="close">&times;</span>
@@ -88,6 +89,7 @@
   <div id="torus-switchNetwork" class="overlay-content">
     <a href="#" id="torus-mainnet">Mainnet</a>
     <a href="#" id="torus-ropsten">Ropsten</a>
+    <a href="#" id="torus-kovan">Kovan</a>
     <a href="#" id="torus-rinkeby">Rinkeby</a>
     <a href="#" id="backBtn3">Main Menu</a>
   </div>
@@ -131,6 +133,12 @@
       document.execCommand('copy');
       alert("Copied address: " + addressLabel.innerHTML);
       document.body.removeChild(el);
+    })
+
+    var refresh = document.getElementById("torus-refresh");
+    refresh.addEventListener("click", function() {
+      console.log('refresh!')
+      updateWidget(document.getElementById("address").innerHTML);
     })
 
     var addressLabel = document.getElementById("address");
@@ -182,10 +190,24 @@
       document.getElementById("torus-switchNetwork").style.display = 'block';
     })
 
+    var mainnet = document.getElementById("torus-mainnet");
+    mainnet.addEventListener("click", function() {
+      window.communicationStream.write({name: "network", data: "https://mainnet.infura.io"})
+    })
+
     var ropsten = document.getElementById("torus-ropsten");
     ropsten.addEventListener("click", function() {
       window.communicationStream.write({name: "network", data: "https://ropsten.infura.io"})
-      updateWidget(document.getElementById("address").innerHTML);
+    })
+
+    var kovan = document.getElementById("torus-kovan");
+    kovan.addEventListener("click", function() {
+      window.communicationStream.write({name: "network", data: "https://kovan.infura.io"})
+    })
+
+    var rinkeby = document.getElementById("torus-rinkeby");
+    rinkeby.addEventListener("click", function() {
+      window.communicationStream.write({name: "network", data: "https://rinkeby.infura.io"})
     })
 
     var backBtn = document.getElementById("backBtn");
