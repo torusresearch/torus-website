@@ -11,7 +11,7 @@ export default new Vuex.Store({
     balance: {},
     loggedIn: false,
     selectedAddress: '',
-    networkId: 0,
+    networkId: 0
   },
   getters: {},
   mutations: {
