@@ -431,7 +431,6 @@
 	
 	// Preloader
 	var $preload = $('#preloader'), $loader = $('#loader');
-	console.log('PRELOADER IS', $preload, $loader)
 	if ($preload.length > 0) {
 		$win.on('load', function() {
 			$loader.fadeOut(300);
