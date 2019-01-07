@@ -48,7 +48,7 @@
     <h1 style="color: white;" id="email">Loading Email....</h1>
     <p style="color: white;" id="address">Loading Address....</p>
     <p style="color: white;" id="balance"> Loading Balance....</p>
-    <p style="color: white;" id="torus.network"> Loading Network....</p>
+    <p style="color: white; cursor: pointer;" id="torus-network"> Loading Network....</p>
   </div>
 
   <!-- Overlay content -->
@@ -83,6 +83,13 @@
     <a href="#"></a>
     <a href="#" id="sendEtherBtn">Send</a>
     <a href="#" id="backBtn2">Main Menu</a>
+  </div>
+
+  <div id="torus-switchNetwork" class="overlay-content">
+    <a href="#" id="torus-mainnet">Mainnet</a>
+    <a href="#" id="torus-ropsten">Ropsten</a>
+    <a href="#" id="torus-rinkeby">Rinkeby</a>
+    <a href="#" id="backBtn3">Main Menu</a>
   </div>
 
 </div>
@@ -167,11 +174,26 @@
       document.getElementById("receiveEther").style.display = 'block';
     })
 
+    var networkSwitch = document.getElementById("torus-network");
+    networkSwitch.addEventListener("click", function() {
+      document.getElementById("menu").style.display = 'none';
+      document.getElementById("receiveEther").style.display = 'none';
+      document.getElementById("sendEther").style.display = 'none';
+      document.getElementById("torus-switchNetwork").style.display = 'block';
+    })
+
+    var ropsten = document.getElementById("torus-ropsten");
+    ropsten.addEventListener("click", function() {
+      window.communicationStream.write({name: "network", data: "https://ropsten.infura.io"})
+      updateWidget(document.getElementById("address").innerHTML);
+    })
+
     var backBtn = document.getElementById("backBtn");
     backBtn.addEventListener("click", function() {
       document.getElementById("menu").style.display = 'block';
       document.getElementById("receiveEther").style.display = 'none';
       document.getElementById("sendEther").style.display = 'none';
+      document.getElementById("torus-switchNetwork").style.display = 'none';
     })
 
     var backBtn2 = document.getElementById("backBtn2");
@@ -179,6 +201,15 @@
       document.getElementById("menu").style.display = 'block';
       document.getElementById("receiveEther").style.display = 'none';
       document.getElementById("sendEther").style.display = 'none';
+      document.getElementById("torus-switchNetwork").style.display = 'none';
+    })
+
+    var backBtn3 = document.getElementById("backBtn3");
+    backBtn3.addEventListener("click", function() {
+      document.getElementById("menu").style.display = 'block';
+      document.getElementById("receiveEther").style.display = 'none';
+      document.getElementById("sendEther").style.display = 'none';
+      document.getElementById("torus-switchNetwork").style.display = 'none';
     })
 
     var denyTransactionButton = document.getElementById("denyTransactionButton");
@@ -703,7 +734,7 @@
 
           window.web3.eth.net.getNetworkType((error, netId) => {
            if(!error) {
-              document.getElementById('torus.network').innerHTML = 'Network: ' + netId;
+              document.getElementById('torus-network').innerHTML = 'Network: <u>' + netId + '</u>';
             } else {
               console.error(error);
             }

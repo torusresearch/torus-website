@@ -156,8 +156,10 @@ function setupWeb3() {
   var widget = commMux.createStream('widget')
   widget.on('data', function() {
     window.document.getElementById('torusLogin').style.display = 'none';
-    window.document.getElementById('torusIframeContainer').style.display = 'none';
-    window.document.getElementById('torusMenuBtn').style.display = 'block';
+    console.log(window.document.getElementById('torusIframeContainer').style.display);
+    if (!window.document.getElementById('torusIframeContainer').style.display) {
+      window.document.getElementById('torusMenuBtn').style.display = 'block';
+    }
   })
 
   var approveTransactionDisplay = commMux.createStream('approveTransactionDisplay');
@@ -180,6 +182,12 @@ function setupWeb3() {
   closeWindow.on('data', function() {
     window.document.getElementById('torusIframeContainer').style.display = 'none';
     window.document.getElementById('torusMenuBtn').style.display = 'block';
+  });
+
+  var network = commMux.createStream('network');
+  network.on('data', function() {
+    console.log('NETWORK SWITCH', arguments);
+    window.communicationStream.write({name: "network", data: "https://ropsten.infura.io"})
   });
 
   var denyTransaction = commMux.createStream('denyTransaction');
