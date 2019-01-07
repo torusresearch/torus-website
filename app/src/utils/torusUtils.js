@@ -33,12 +33,13 @@ engine.addProvider(new NonceSubprovider())
 engine.addProvider(new VmSubprovider())
 engine.addProvider(new HookedWalletEthTxSubprovider({
   getAccounts: function (cb) {
-    var ethAddress = sessionStorage.getItem('ethAddress')
+    var ethAddress = window.Vue.$store.state.selectedAddress
+    console.log('GETTING ACCOUNT:', ethAddress)
     cb(null, ethAddress ? [Web3.utils.toChecksumAddress(ethAddress)] : [])
   },
   getPrivateKey: function (address, cb) {
     var addr = Web3.utils.toChecksumAddress(address)
-    var wallet = JSON.parse(sessionStorage.getItem('wallet'))
+    var wallet = JSON.parse(window.Vue.$store.state.wallet)
     if (wallet == null) {
       cb(new Error('No wallet accessible. Please login.'), null)
       return
@@ -126,14 +127,15 @@ var setupMultiplex = function (connectionStream) {
 var TorusUtils = {
   ec: Elliptic('secp256k1'),
   setupMultiplex,
-  metamaskMux: setupMultiplex(communicationStream),
-  communicationMux: setupMultiplex(metamaskStream),
+  metamaskMux: setupMultiplex(metamaskStream),
+  communicationMux: setupMultiplex(communicationStream),
   updateStaticData: function (payload) {
-    var providerOutStream = TorusUtils.metamaskMux.getStream('provider')
+    console.log('STATIC DATA:', payload)
+    var publicConfigOutStream = TorusUtils.metamaskMux.getStream('publicConfig')
     if (payload.selectedAddress) {
-      providerOutStream.write(JSON.stringify({ selectedAddress: payload.selectedAddress }))
+      publicConfigOutStream.write(JSON.stringify({ selectedAddress: payload.selectedAddress }))
     } else if (payload.networkId) {
-      providerOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
+      publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
     }
   },
   web3: new Web3(engine),

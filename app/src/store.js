@@ -4,6 +4,7 @@ import log from 'loglevel'
 import torusUtils from './utils/torusUtils'
 import stream from 'stream'
 import pump from 'pump'
+import config from './config'
 
 Vue.use(Vuex)
 
@@ -86,7 +87,6 @@ var VuexStore = new Vuex.Store({
         log.error('Could not find window.auth2, might not be loaded yet')
         return
       }
-      var that = this
       window.auth2.signIn().then(function (googleUser) {
         log.info('GOOGLE USER: ', googleUser)
         var profile = googleUser.getBasicProfile()
@@ -96,26 +96,26 @@ var VuexStore = new Vuex.Store({
         log.info('Image URL: ' + profile.getImageUrl())
         log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
 
-        that.updateIdToken({ idToken: googleUser.getAuthResponse().id_token })
+        VuexStore.dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
         var email = profile.getEmail()
-        that.updateEmail({ email })
+        VuexStore.dispatch('updateEmail', { email })
         window.gapi.auth2.getAuthInstance().disconnect().then(function () {
-          torusUtils.getPubKeyAsync(torusUtils.web3, that.torusNodeEndpoints, email, function (err, res) {
+          torusUtils.getPubKeyAsync(torusUtils.web3, config.torusNodeEndpoints, email, function (err, res) {
             if (err) {
               log.error(err)
             } else {
               log.info('New private key assigned to user at address ', res)
               torusUtils.retrieveShares(
-                that.torusNodeEndpoints,
-                that.$store.state.email,
-                that.$store.state.idToken,
+                config.torusNodeEndpoints,
+                VuexStore.state.email,
+                VuexStore.state.idToken,
                 function (err, data) {
                   if (err) { log.error(err) }
-                  that.updateSelectedAddress(data.ethAddress)
-                  that.addWallet(data)
+                  VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
+                  VuexStore.dispatch('addWallet', data)
                   torusUtils.web3.eth.net.getId()
                     .then(res => {
-                      that.updateNetworkId(res)
+                      VuexStore.dispatch('updateNetworkId', { networkId: res })
                     // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
                     })
                     .catch(e => log.error(e))
