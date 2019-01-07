@@ -17,6 +17,10 @@ const log = require('loglevel')
 // const DuplexStream = require('readable-stream').Duplex
 const stream = require('stream')
 
+const infuraKey = '4cQUeyeUSfkCXsgEAUH2';
+
+var web3Engine;
+
 function buf2hex(buffer) { // buffer is an ArrayBuffer
   return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
 }
@@ -31,81 +35,87 @@ function eventFire(el, etype){
   }
 }
 
-var engine = new ProviderEngine()
-engine.addProvider(new FixtureSubprovider({
-  web3_clientVersion: 'ProviderEngine/v0.0.0/javascript',
-  net_listening: true,
-  eth_hashrate: '0x00',
-  eth_mining: false,
-  eth_syncing: true,
-}))
-engine.addProvider(new CacheSubprovider())
-engine.addProvider(new FilterSubprovider())
-engine.addProvider(new NonceSubprovider())
-engine.addProvider(new VmSubprovider())
-engine.addProvider(new HookedWalletEthTxSubprovider({
-  getAccounts: function(cb) {
-    // cb(null, ['0x5657d2e6D362618Fb0DA4b90aa6e22eD86e30bfd'])
-    // console.log(window.ethAddress, 'ethadd')
-    var ethAddress = sessionStorage.getItem('ethAddress')
+function startWeb3(network) {
+  var engine = new ProviderEngine()
+  engine.addProvider(new FixtureSubprovider({
+    web3_clientVersion: 'ProviderEngine/v0.0.0/javascript',
+    net_listening: true,
+    eth_hashrate: '0x00',
+    eth_mining: false,
+    eth_syncing: true,
+  }))
+  engine.addProvider(new CacheSubprovider())
+  engine.addProvider(new FilterSubprovider())
+  engine.addProvider(new NonceSubprovider())
+  engine.addProvider(new VmSubprovider())
+  engine.addProvider(new HookedWalletEthTxSubprovider({
+    getAccounts: function(cb) {
+      // cb(null, ['0x5657d2e6D362618Fb0DA4b90aa6e22eD86e30bfd'])
+      // console.log(window.ethAddress, 'ethadd')
+      var ethAddress = sessionStorage.getItem('ethAddress')
 
-    // TODO: checksumAddress
-    cb(null, ethAddress ? [Web3.utils.toChecksumAddress(ethAddress)] : [])
-    // cb(null, ethAddress ? [ethAddress] : [])
-  },
-  getPrivateKey: function(address, cb) {
-    var address = Web3.utils.toChecksumAddress(address)
-    var wallet = JSON.parse(sessionStorage.getItem("wallet"))
-    if (wallet == null) {
-      cb(new Error("No wallet accessible. Please login."), null)
-      return
-    }
-    if (address == null) {
-      cb(new Error("No address given."), null)
-      return
-    } else if (wallet[address] == null) {
-      cb(new Error("No private key accessible. Please login."), null)
-      return
-    } else {
-      console.log('PRIVATE KEY RETRIEVED...')
-      cb(null, Buffer(wallet[address], 'hex'))
-    }
-  },
-  approveTransaction: function(txParams, cb) {
-    if (txParams.withGasPrice) {
-      window.communicationStream.write({name: "completeTransaction", data: {}});
-      if(confirm('Confirm signature for transaction?')) {
-        cb(null, true)
-      } else {
-        cb(new Error('User denied transaction.'), false)
+      // TODO: checksumAddress
+      cb(null, ethAddress ? [Web3.utils.toChecksumAddress(ethAddress)] : [])
+      // cb(null, ethAddress ? [ethAddress] : [])
+    },
+    getPrivateKey: function(address, cb) {
+      var address = Web3.utils.toChecksumAddress(address)
+      var wallet = JSON.parse(sessionStorage.getItem("wallet"))
+      if (wallet == null) {
+        cb(new Error("No wallet accessible. Please login."), null)
+        return
       }
-    } else if (txParams.denyTransaction) {
-      if (txParams.completed) {
-        cb(null, false);
+      if (address == null) {
+        cb(new Error("No address given."), null)
+        return
+      } else if (wallet[address] == null) {
+        cb(new Error("No private key accessible. Please login."), null)
+        return
       } else {
-        window.communicationStream.write({name: "denyTransaction", data: {
-            params: txParams
-        }});
+        console.log('PRIVATE KEY RETRIEVED...')
+        cb(null, Buffer(wallet[address], 'hex'))
+      }
+    },
+    approveTransaction: function(txParams, cb) {
+      if (txParams.withGasPrice) {
+        window.communicationStream.write({name: "completeTransaction", data: {}});
+        if(confirm('Confirm signature for transaction?')) {
+          cb(null, true)
+        } else {
+          cb(new Error('User denied transaction.'), false)
+        }
+      } else if (txParams.denyTransaction) {
+        if (txParams.completed) {
+          cb(null, false);
+        } else {
+          window.communicationStream.write({name: "denyTransaction", data: {
+              params: txParams
+          }});
+        }
       }
     }
-  }
-}))
-var rpcSource = new RpcSubprovider({
-  rpcUrl: 'https://mainnet.infura.io/4cQUeyeUSfkCXsgEAUH2',
-  // rpcUrl: 'http://localhost:7545'
-})
-engine.addProvider(rpcSource)
-engine.on('block', function(block){
-  console.log('================================')
-  console.log('BLOCK CHANGED:', '#'+block.number.toString('hex'), '0x'+block.hash.toString('hex'))
-  console.log('================================')
-})
-engine.on('error', function(err){
-  console.error(err.stack)
-})
-engine.start()
-  window.web3 = new Web3(engine)
+  }))
+  var rpcSource = new RpcSubprovider({
+    rpcUrl: network + '/' + infuraKey,
+    // rpcUrl: 'http://localhost:7545'
+  })
+  engine.addProvider(rpcSource)
+  engine.on('block', function(block){
+    console.log('================================')
+    console.log('BLOCK CHANGED:', '#'+block.number.toString('hex'), '0x'+block.hash.toString('hex'))
+    console.log('================================')
+  })
+  engine.on('error', function(err){
+    console.error(err.stack)
+  })
+  engine.start()
+    window.web3 = new Web3(engine)
+  web3Engine = engine;
+}
 
+if (!web3Engine) {
+  startWeb3('https://mainnet.infura.io');
+}
 
 
 /* 
@@ -131,13 +141,13 @@ window.communicationStream = new LocalMessageDuplexStream({
 const rpcEngine = new RpcEngine()
 const providerStream = createEngineStream({engine: rpcEngine})
 const filterMiddleware = createFilterMiddleware({
-  provider: engine,
-  blockTracker: engine._blockTracker,
+  provider: web3Engine,
+  blockTracker: web3Engine._blockTracker,
 })
 rpcEngine.push(createOriginMiddleware({ origin: 'torus' }))
 rpcEngine.push(createLoggerMiddleware({ origin: 'torus' }))
 rpcEngine.push(filterMiddleware)
-rpcEngine.push(createProviderMiddleware({ provider: engine }))
+rpcEngine.push(createProviderMiddleware({ provider: web3Engine }))
 
 
 // this allows us to set up multiple channels using just a single stream connection
@@ -148,16 +158,28 @@ const commMux = setupMultiplex(window.communicationStream)
 const providerOutStream = metamaskMux.createStream('provider')
 const publicConfigOutStream = metamaskMux.createStream('publicConfig')
 const oauthInputStream = commMux.createStream('oauth')
+const networkStream = commMux.createStream('network')
 const p = new stream.PassThrough({objectMode: true});
+const q = new stream.PassThrough({objectMode: true});
 
 p.on('data', function() {
   console.log('p data:', arguments)
-  eventFire(window.document.getElementById("googleAuthBtn"), "click")
+  eventFire(window.document.getElementById("googleAuthBtn"), "click");
+})
+
+q.on('data', function() {
+  console.log('q data:', arguments)
+  startWeb3(arguments[0]);
 })
 
 pump(oauthInputStream, p, (err) => {
   if (err) log.error(err)
 })
+
+pump(networkStream, q, (err) => {
+  if (err) log.error(err)
+})
+
 
 function updateSelectedAddress() {
   web3.eth.getAccounts().then(res => {

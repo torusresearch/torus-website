@@ -48,6 +48,7 @@
     <h1 style="color: white;" id="email">Loading Email....</h1>
     <p style="color: white;" id="address">Loading Address....</p>
     <p style="color: white;" id="balance"> Loading Balance....</p>
+    <p style="color: white;" id="torus.network"> Loading Network....</p>
   </div>
 
   <!-- Overlay content -->
@@ -280,7 +281,8 @@
                 document.getElementById('gasSpeedLabel').innerHTML = "Loading...";
                 document.getElementById('denyTransactionButton').style.display = 'none';
                 document.getElementById('signTransactionButton').style.display = 'none';
-                      // Get the gas estimate for the current transaction
+
+                // Get the gas estimate for the current transaction
                 window.web3.eth.estimateGas({
                   from: transactionData.params[0].from,
                   to: transactionData.params[0].to,
@@ -698,6 +700,15 @@
           document.getElementById('transactions').target = "_blank";
           window.communicationStream.write({name: "widget", data: {}});
           var checkSumAddress = window.web3.utils.toChecksumAddress(address)
+
+          window.web3.eth.net.getNetworkType((error, netId) => {
+           if(!error) {
+              document.getElementById('torus.network').innerHTML = 'Network: ' + netId;
+            } else {
+              console.error(error);
+            }
+          });
+
           window.web3.eth.getBalance(checkSumAddress, function(error, result){
              if(!error) {
               var accountBalance = Number(window.web3.utils.fromWei(result));

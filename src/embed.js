@@ -37,7 +37,8 @@ function createWidget() {
   var bindOnLoad = function() {
     var loginBtn = document.getElementById("torusLogin");
     loginBtn.addEventListener("click", function() {
-      window.communicationStream.write({name: "oauth", data: "test"})
+      window.communicationStream.write({name: "oauth", data: "login"})
+      //window.communicationStream.write({name: "network", data: "https://ropsten.infura.io"})
     })
   }
   var attachOnLoad = function() {
