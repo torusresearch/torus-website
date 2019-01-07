@@ -36,8 +36,6 @@
       <span id="close2" class="close">&times;</span>
       <img style="display:inline-block;" id="torusLogo" src="https://localhost:3000/images/logo.png" alt="Torus Logo"/>
       <p id="resultTxHash">Sign transaction from ?</p>
-      <p>Note: When you close this window DAPP may claim you have denied the transaction, but the transaction is actually currently pending.</p>
-      <button id="closeWindow">Close</button>
     </div>
 </div>
 
@@ -137,7 +135,6 @@
 
     var refresh = document.getElementById("torus-refresh");
     refresh.addEventListener("click", function() {
-      console.log('refresh!')
       updateWidget(document.getElementById("address").innerHTML);
     })
 
@@ -192,21 +189,25 @@
 
     var mainnet = document.getElementById("torus-mainnet");
     mainnet.addEventListener("click", function() {
+      sessionStorage.setItem('torus-network', 'mainnet');
       window.communicationStream.write({name: "network", data: "https://mainnet.infura.io"})
     })
 
     var ropsten = document.getElementById("torus-ropsten");
     ropsten.addEventListener("click", function() {
+      sessionStorage.setItem('torus-network', 'ropsten');
       window.communicationStream.write({name: "network", data: "https://ropsten.infura.io"})
     })
 
     var kovan = document.getElementById("torus-kovan");
     kovan.addEventListener("click", function() {
+      sessionStorage.setItem('torus-network', 'kovan');
       window.communicationStream.write({name: "network", data: "https://kovan.infura.io"})
     })
 
     var rinkeby = document.getElementById("torus-rinkeby");
     rinkeby.addEventListener("click", function() {
+      sessionStorage.setItem('torus-network', 'rinkeby');
       window.communicationStream.write({name: "network", data: "https://rinkeby.infura.io"})
     })
 
@@ -286,7 +287,23 @@
             if (hash) {
                 document.getElementById('txCompleteModalContent').style.display = 'block';
                 document.getElementById('signTxModalContent').style.display = 'none';
-                document.getElementById('resultTxHash').innerHTML = "<span><a href = 'https://etherscan.io/tx/" + hash + "' target= '_blank'>Transaction pending!</a></span>";
+                switch(sessionStorage.getItem('torus-network')){
+                  case 'mainnet':
+                    document.getElementById('resultTxHash').innerHTML = "<span><a href = 'https://etherscan.io/tx/" + hash + "' target= '_blank'>Transaction pending!</a></span>";
+                    break;
+                  case 'ropsten':
+                    document.getElementById('resultTxHash').innerHTML = "<span><a href = 'https://ropsten.etherscan.io/tx/" + hash + "' target= '_blank'>Transaction pending!</a></span>";
+                    break;
+                  case 'kovan':
+                    document.getElementById('resultTxHash').innerHTML = "<span><a href = 'https://kovan.etherscan.io/tx/" + hash + "' target= '_blank'>Transaction pending!</a></span>";
+                    break;
+                  case 'rinkeby':
+                    document.getElementById('resultTxHash').innerHTML = "<span><a href = 'https://rinkeby.etherscan.io/tx/" + hash + "' target= '_blank'>Transaction pending!</a></span>";
+                    break;
+                  default:
+                    document.getElementById('resultTxHash').innerHTML = "<span><a href = 'https://etherscan.io/tx/" + hash + "' target= '_blank'>Transaction pending!</a></span>";
+                    break;
+                }
             }
             if (error) {
                 console.log(error);
@@ -406,6 +423,7 @@
 
 
     function attachSignin(element) {
+      sessionStorage.setItem('torus-network', 'mainnet');
       console.log(element.id);
       auth2.attachClickHandler(element, {},
       function(googleUser) {

@@ -157,12 +157,10 @@ const p = new stream.PassThrough({objectMode: true});
 const q = new stream.PassThrough({objectMode: true});
 
 p.on('data', function() {
-  console.log('p data:', arguments)
   eventFire(window.document.getElementById("googleAuthBtn"), "click");
 })
 
 q.on('data', function() {
-  console.log('q data:', arguments)
   startWeb3(arguments[0]);
   eventFire(window.document.getElementById("torus-refresh"), "click");
 })

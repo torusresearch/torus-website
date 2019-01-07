@@ -155,7 +155,6 @@ function setupWeb3() {
   var widget = commMux.createStream('widget')
   widget.on('data', function() {
     window.document.getElementById('torusLogin').style.display = 'none';
-    console.log(window.document.getElementById('torusIframeContainer').style.display);
     if (!window.document.getElementById('torusIframeContainer').style.display) {
       window.document.getElementById('torusMenuBtn').style.display = 'block';
     }
