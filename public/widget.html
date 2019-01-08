@@ -20,6 +20,7 @@
     <div id= "signTxModalContent" class="modalContent"> 
       <span id="close" class="close">&times;</span>
       <img id="torusLogo" src="https://localhost:3000/images/logo.png" alt="Torus Logo"/>
+      <p id="signError" style="color:red; font-weight:bold" hidden />
       <p id="signQuestion">Sign transaction from ?</p>
       <div class="slidecontainer" style="width: 100%">
         <label id="gasLabel" style="display: block">Loading...</label>
@@ -269,6 +270,8 @@
         var gasPriceGwei = calculatePercent(currentPercent, window.gweiSafeLow, window.gweiFastest);
         var transactionData = JSON.parse(sessionStorage.getItem('transactionData'));
 
+        var signErrorElement = document.getElementById('signError');
+
         //Send transaction with deny transaction field
         window.web3.eth.sendTransaction({
           from: transactionData.params[0].from,
@@ -282,6 +285,7 @@
           withGasPrice: true
         }, function(error, hash){
             if (hash) {
+                signErrorElement.hidden = true;
                 document.getElementById('txCompleteModalContent').style.display = 'block';
                 document.getElementById('signTxModalContent').style.display = 'none';
                 switch(sessionStorage.getItem('torus-network')){
@@ -303,7 +307,9 @@
                 }
             }
             if (error) {
-                console.log(error);
+                console.log(error);               
+                signErrorElement.innerText = `TorusSignError: ${error.message}`; 
+                signErrorElement.hidden = false;
             }
         });
     })
@@ -348,7 +354,8 @@
                 document.getElementById('gasSpeedLabel').innerHTML = "Loading...";
                 document.getElementById('denyTransactionButton').style.display = 'none';
                 document.getElementById('signTransactionButton').style.display = 'none';
-
+                document.getElementById('signError').hidden = true;
+              
                 // Get the gas estimate for the current transaction
                 window.web3.eth.estimateGas({
                   from: transactionData.params[0].from,
