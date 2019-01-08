@@ -39,11 +39,7 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
   },
   getPrivateKey: function (address, cb) {
     var addr = Web3.utils.toChecksumAddress(address)
-    var wallet = JSON.parse(window.Vue.$store.state.wallet)
-    if (wallet == null) {
-      cb(new Error('No wallet accessible. Please login.'), null)
-      return
-    }
+    var wallet = window.Vue.$store.state.wallet
     if (addr == null) {
       cb(new Error('No address given.'), null)
     } else if (wallet[addr] == null) {
@@ -62,8 +58,7 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
   }
 }))
 // var rpcSource = new RpcSubprovider({
-//   rpcUrl: 'https://mainnet.infura.io/v3/619e62693bc14791a9925152bbe514d1',
-//   // rpcUrl: 'http://localhost:7545'
+//   rpcUrl: 'https://mainnet.infura.io/v3/619e62693bc14791a9925152bbe514d1'
 // })
 // engine.addProvider(rpcSource)
 var wsSubprovider = new WebsocketSubprovider({
