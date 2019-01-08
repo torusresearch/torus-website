@@ -286,6 +286,7 @@
                 document.getElementById('gasSpeedLabel').innerHTML = "Loading...";
                 document.getElementById('denyTransactionButton').style.display = 'none';
                 document.getElementById('signTransactionButton').style.display = 'none';
+                document.getElementById('signError').hidden = true;
                       // Get the gas estimate for the current transaction
                 window.web3.eth.estimateGas({
                   from: transactionData.params[0].from,
