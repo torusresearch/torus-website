@@ -190,7 +190,7 @@ var TorusUtils = {
       // console.log('Ethereum Address: ' + sessionStorage.getItem('ethAddress'))
       cb(null, {
         ethAddress,
-        privKey: privateKey
+        privKey: privateKey.toString('hex')
       })
     })
   },
