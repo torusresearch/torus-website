@@ -9,6 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "ajv": "^6.6.2",
     "backoff": "^2.5.0",
     "eth-json-rpc-filters": "^3.0.1",
     "json-rpc-engine": "^4.0.0",
