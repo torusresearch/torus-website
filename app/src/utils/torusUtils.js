@@ -1,4 +1,4 @@
-import WebsocketSubprovider from './websocket.js'
+// import WebsocketSubprovider from './websocket.js'
 var Elliptic = require('elliptic').ec
 var log = require('loglevel')
 var BN = require('bn.js')
@@ -10,7 +10,7 @@ var FilterSubprovider = require('web3-provider-engine/subproviders/filters.js')
 var VmSubprovider = require('web3-provider-engine/subproviders/vm.js')
 var HookedWalletEthTxSubprovider = require('web3-provider-engine/subproviders/hooked-wallet-ethtx.js')
 var NonceSubprovider = require('web3-provider-engine/subproviders/nonce-tracker.js')
-// var RpcSubprovider = require('web3-provider-engine/subproviders/rpc.js')
+var RpcSubprovider = require('web3-provider-engine/subproviders/rpc.js')
 var LocalMessageDuplexStream = require('post-message-stream')
 const ObjectMultiplex = require('obj-multiplex')
 const pump = require('pump')
@@ -60,11 +60,15 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
 // var rpcSource = new RpcSubprovider({
 //   rpcUrl: 'https://mainnet.infura.io/v3/619e62693bc14791a9925152bbe514d1'
 // })
-// engine.addProvider(rpcSource)
-var wsSubprovider = new WebsocketSubprovider({
-  rpcUrl: 'wss://mainnet.infura.io/ws/v3/619e62693bc14791a9925152bbe514d1'
+var rpcSource = new RpcSubprovider({
+  rpcUrl: 'https://mainnet.infura.io/4cQUeyeUSfkCXsgEAUH2'
+  // rpcUrl: 'http://localhost:7545'
 })
-engine.addProvider(wsSubprovider)
+engine.addProvider(rpcSource)
+// var wsSubprovider = new WebsocketSubprovider({
+//   rpcUrl: 'wss://mainnet.infura.io/ws/v3/619e62693bc14791a9925152bbe514d1'
+// })
+// engine.addProvider(wsSubprovider)
 engine.on('block', function (block) {
   log.info('================================')
   log.info('BLOCK CHANGED:', '#' + block.number.toString('hex'), '0x' + block.hash.toString('hex'))

@@ -26,11 +26,11 @@ var VuexStore = new Vuex.Store({
     setIdToken (state, idToken) {
       state.idToken = idToken
     },
-    setWallet (state, payload) {
-      state.wallet = { ...payload.wallet }
+    setWallet (state, wallet) {
+      state.wallet = wallet
     },
-    setBalance (state, payload) {
-      state.balance = { ...payload.balance }
+    setBalance (state, balance) {
+      state.balance = balance
     },
     setLoginStatus (state, loggedIn) {
       state.loggedIn = loggedIn
