@@ -37,6 +37,7 @@
         "obs-store": "^3.0.2",
         "post-message-stream": "^3.0.0",
         "pump": "^3.0.0",
+        "request": "^2.88.0",
         "safe-event-emitter": "^1.0.1",
         "swat-proxy": "^1.1.0",
         "through2": "^2.0.3",

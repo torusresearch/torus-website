@@ -16,10 +16,13 @@ const createFilterMiddleware = require('eth-json-rpc-filters')
 const log = require('loglevel')
 // const DuplexStream = require('readable-stream').Duplex
 const stream = require('stream')
+var request = require('request');
+
 
 const infuraKey = '4cQUeyeUSfkCXsgEAUH2';
 
 var web3Engine;
+var currentNetwork;
 
 function buf2hex(buffer) { // buffer is an ArrayBuffer
   return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
@@ -88,8 +91,9 @@ function startWeb3(network) {
     }
   }))
 
+  currentNetwork = network + '/' + infuraKey;
   var rpcSource = new RpcSubprovider({
-    rpcUrl: network + '/' + infuraKey,
+    rpcUrl: currentNetwork,
     // rpcUrl: 'http://localhost:7545'
   })
 
@@ -218,11 +222,27 @@ var transformStream = new stream.Transform({
         chunk.id = chunk.params[0].id;
         cb(null, chunk);
       } else {
-        window.communicationStream.write({name: "approveTransactionDisplay", data: {
-          website: document.referrer,
-          params: chunk.params[0]
-        }})
-        cb(null, chunk);
+        // Get gas estimate from Infura and open dialogue
+        var headers = {
+            'Content-Type': 'application/json'
+        };
+
+        var dataString = constructInfuraGasPostMessage(chunk.params[0]);
+        var options = {
+            url: currentNetwork,
+            method: 'POST',
+            headers: headers,
+            body: dataString
+        };
+
+        request(options, function(error, result){
+          var body = JSON.parse(result.body);
+          var gasEstimate = parseInt(body.result);
+          window.document.getElementById("torus-transact").innerHTML = gasEstimate;
+          eventFire(window.document.getElementById("torus-transact"), "click");
+          window.communicationStream.write({name: "approveTransactionDisplay", data: {}})
+          cb(null, chunk);
+        });
       }
     } else {
       try {
@@ -265,6 +285,29 @@ pump(
     if (err) log.error(err)
   }
 )
+
+function constructInfuraGasPostMessage(txParams) {
+  var dataString;
+
+  if (txParams.value && txParams.data) {
+    dataString = '{\
+      "jsonrpc":"2.0",\
+      "method":"eth_estimateGas",\
+      "params": [{"from": "' + txParams.from + '","to": "' + txParams.to + '","value": "' + txParams.value + '","data": "' + txParams.data + '"}],"id":1}';
+  } else if (txParams.value) {
+    dataString = '{\
+      "jsonrpc":"2.0",\
+      "method":"eth_estimateGas",\
+      "params": [{"from": "' + txParams.from + '","to": "' + txParams.to + '","value": "' + txParams.value + '"}],"id":1}';
+  } else if (txParams.data) {
+    dataString = '{\
+      "jsonrpc":"2.0",\
+      "method":"eth_estimateGas",\
+      "params": [{"from": "' + txParams.from + '","to": "' + txParams.to + '","data": "' + txParams.data + '"}],"id":1}';
+  }
+
+  return dataString;
+}
 
 // taken from metamask
 function createOriginMiddleware (opts) {
