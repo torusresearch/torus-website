@@ -57,13 +57,13 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
     }
   }
 }))
-// var rpcSource = new RpcSubprovider({
-//   rpcUrl: 'https://mainnet.infura.io/v3/619e62693bc14791a9925152bbe514d1'
-// })
 var rpcSource = new RpcSubprovider({
-  rpcUrl: 'https://mainnet.infura.io/4cQUeyeUSfkCXsgEAUH2'
-  // rpcUrl: 'http://localhost:7545'
+  rpcUrl: 'https://mainnet.infura.io/v3/619e62693bc14791a9925152bbe514d1'
 })
+// var rpcSource = new RpcSubprovider({
+//   rpcUrl: 'https://mainnet.infura.io/4cQUeyeUSfkCXsgEAUH2'
+//   // rpcUrl: 'http://localhost:7545'
+// })
 engine.addProvider(rpcSource)
 // var wsSubprovider = new WebsocketSubprovider({
 //   rpcUrl: 'wss://mainnet.infura.io/ws/v3/619e62693bc14791a9925152bbe514d1'

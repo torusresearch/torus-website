@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name       Torus
+// @name       OLDTORUS
 // @namespace  http://tor.us
 // @version    0.2
 // @description  dough or donut there is no rye
