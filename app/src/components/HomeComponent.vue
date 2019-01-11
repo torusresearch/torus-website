@@ -205,13 +205,10 @@
   </div>
 </template>
 <script>
-import Preloader from './Preloader.vue'
-import WelcomeImage from './WelcomeImage.vue'
-
 export default {
   components: {
-    Preloader: Preloader,
-    WelcomeImage: WelcomeImage
+    Preloader: require('./Preloader.vue').default,
+    WelcomeImage: require('./WelcomeImage.vue').default
   }
 }
 </script>
