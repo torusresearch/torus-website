@@ -205,7 +205,7 @@
     <!-- End Section -->
 
     <!-- Start Section -->
-    <div class="section footer-scetion no-pt section-pad-sm section-bg-alt">
+    <div class="section footer-section no-pt section-pad-sm section-bg-alt">
       <div class="container">
         <div class="row text-center">
           <div class="col-md-12">
@@ -224,11 +224,11 @@
   </div>
 </template>
 <script>
-import PreloadTemplate from './Preloader.vue'
+import Preloader from './Preloader.vue'
 
 export default {
   components: {
-    Preloader: PreloadTemplate
+    Preloader: Preloader
   }
 }
 </script>
