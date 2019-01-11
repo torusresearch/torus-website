@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view />
   </div>
 </template>
 <style src='../public/css/vendor.bundle.css?ver=142'></style>

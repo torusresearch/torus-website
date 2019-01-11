@@ -219,12 +219,16 @@
     <!-- End Section -->
 
     <!-- Preloader !remove please if you do not want -->
-    <div id="preloader">
-      <div id="loader"></div>
-      <div class="loader-section loader-top"></div>
-      <div class="loader-section loader-bottom"></div>
-    </div>
-    <!-- Preloader End -->
+    <preloader />
 
   </div>
 </template>
+<script>
+import PreloadTemplate from './Preloader.vue'
+
+export default {
+  components: {
+    Preloader: PreloadTemplate
+  }
+}
+</script>
