@@ -37,7 +37,7 @@ function createWidget() {
   var bindOnLoad = function() {
     var loginBtn = document.getElementById("torusLogin");
     loginBtn.addEventListener("click", function() {
-      window.communicationStream.write({name: "oauth", data: "test"})
+      window.communicationStream.write({name: "oauth", data: "login"})
     })
   }
   var attachOnLoad = function() {
@@ -155,8 +155,9 @@ function setupWeb3() {
   var widget = commMux.createStream('widget')
   widget.on('data', function() {
     window.document.getElementById('torusLogin').style.display = 'none';
-    window.document.getElementById('torusIframeContainer').style.display = 'none';
-    window.document.getElementById('torusMenuBtn').style.display = 'block';
+    if (!window.document.getElementById('torusIframeContainer').style.display) {
+      window.document.getElementById('torusMenuBtn').style.display = 'block';
+    }
   })
 
   var approveTransactionDisplay = commMux.createStream('approveTransactionDisplay');
@@ -181,24 +182,9 @@ function setupWeb3() {
     window.document.getElementById('torusMenuBtn').style.display = 'block';
   });
 
-  var denyTransaction = commMux.createStream('denyTransaction');
-  denyTransaction.on('data', function() {
-    window.document.getElementById('torusIframeContainer').style.display = 'none';
-    window.document.getElementById('torusMenuBtn').style.display = 'block';
-      
-    // Send transaction with denyTransaction and completed field
-    window.web3.eth.sendTransaction({
-      from: arguments[0].params.from,
-      to: arguments[0].params.to,
-      data: arguments[0].params.data,
-      value: arguments[0].params.value,
-      nonce: arguments[0].params.nonce,
-      id: arguments[0].params.id,
-      denyTransaction: true,
-      completed: true
-    }, function(error, hash){
-      console.log(error);
-    });
+  var network = commMux.createStream('network');
+  network.on('data', function() {
+    window.communicationStream.write({name: "network", data: arguments[0]})
   });
 
   
