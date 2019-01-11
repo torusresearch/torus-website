@@ -46,29 +46,10 @@
                     <!-- <img src="images/chainrock.png" class="img-fluid ml-4"> -->
                   </div>
                 </div>
-              </div><!-- .col  -->
+              </div>
               <div class="col-lg-5 offset-lg-1 col-md-12">
-                <div class="welcome-img">
-                  <div class="holder">
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                    <div class="circle"></div>
-                  </div>
-                </div>
-              </div><!-- .col  -->
+                <welcome-image />
+              </div>
             </div><!-- .row  -->
           </div><!-- .banner-content  -->
         </div><!-- .container  -->
@@ -225,10 +206,12 @@
 </template>
 <script>
 import Preloader from './Preloader.vue'
+import WelcomeImage from './WelcomeImage.vue'
 
 export default {
   components: {
-    Preloader: Preloader
+    Preloader: Preloader,
+    WelcomeImage: WelcomeImage
   }
 }
 </script>
