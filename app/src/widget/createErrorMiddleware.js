@@ -29,7 +29,7 @@ const RPC_ERRORS = {
   [-32603]: 'Internal JSON-RPC error.',
   [-32700]: 'Invalid JSON was received by the server. An error occurred on the server while parsing the JSON text.',
   internal: 'Internal server error.',
-  unknown: 'Unknown JSON-RPC error.',
+  unknown: 'Unknown JSON-RPC error.'
 }
 
 /**
