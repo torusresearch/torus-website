@@ -17,7 +17,9 @@ var whitelist = [
   'mlbcryptobaseball.com',
   'mycryptoheroes.net',
   'blockchaincuties.com',
-  'cryptokitties.co'
+  'cryptokitties.co',
+  'mycrypto.com',
+  'myetherwallet.com'
 ]
 
 var inWhiteList = false

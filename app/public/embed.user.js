@@ -17,7 +17,8 @@ var whitelist = [
   'mlbcryptobaseball.com',
   'mycryptoheroes.net',
   'blockchaincuties.com',
-  'cryptokitties.co'
+  'cryptokitties.co',
+  'mycrypto.com'
 ]
 
 var inWhiteList = false
@@ -28,7 +29,7 @@ whitelist.map(function (url) {
 })
 if (inWhiteList) {
   var sc = document.createElement('script')
-  sc.setAttribute('src', 'https://tor.us/embed.min.js')
+  sc.setAttribute('src', 'https://tor.us/embed-main.min.js')
   sc.setAttribute('type', 'text/javascript')
   sc.setAttribute('style-color', '#75b4fd')
   sc.setAttribute('style-position', 'bottom-left')
