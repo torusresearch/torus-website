@@ -58,7 +58,8 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
   }
 }))
 var rpcSource = new RpcSubprovider({
-  rpcUrl: 'https://mainnet.infura.io/v3/619e62693bc14791a9925152bbe514d1'
+  // rpcUrl: 'https://mainnet.infura.io/v3/619e62693bc14791a9925152bbe514d1'
+  rpcUrl: 'https://api.infura.io/v1/jsonrpc/mainnet'
 })
 // var rpcSource = new RpcSubprovider({
 //   rpcUrl: 'https://mainnet.infura.io/4cQUeyeUSfkCXsgEAUH2'

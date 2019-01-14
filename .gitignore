@@ -3,3 +3,5 @@ node_modules/
 ssl/
 dist/
 .env
+package-lock.json
+embed.min.js

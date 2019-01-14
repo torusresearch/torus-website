@@ -4,7 +4,8 @@ if (window.torus === undefined) {
   window.torus = {}
 }
 cleanContextForImports()
-var Web3 = require('web3')
+/* global Web3 */
+require('../vendor/web3')
 const log = require('loglevel')
 log.setDefaultLevel('info')
 const LocalMessageDuplexStream = require('post-message-stream')
@@ -108,6 +109,20 @@ function setupWeb3 () {
     return new Promise((resolve, reject) => resolve())
   }
 
+  // detect eth_requestAccounts and pipe to enable for now
+  function detectAccountRequest (method) {
+    const originalMethod = inpageProvider[method]
+    inpageProvider[method] = function ({ method }) {
+      if (method === 'eth_requestAccounts') {
+        return window.ethereum.enable()
+      }
+      return originalMethod.apply(this, arguments)
+    }
+  }
+
+  detectAccountRequest('send')
+  detectAccountRequest('sendAsync')
+
   var communicationMux = setupMultiplex(window.torus.communicationStream)
   window.torus.communicationMux = communicationMux
 
@@ -156,6 +171,7 @@ function setupWeb3 () {
   }
 
   window.web3 = new Web3(inpageProvider)
+  window.Web3 = Web3
   log.info(Web3.version)
   window.web3.setProvider = function () {
     log.debug('Torus - overrode web3.setProvider')
