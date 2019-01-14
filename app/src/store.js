@@ -5,10 +5,17 @@ import torusUtils from './utils/torusUtils'
 import stream from 'stream'
 import pump from 'pump'
 import config from './config'
+import VuexPersist from 'vuex-persist'
 
 Vue.use(Vuex)
 
+const vuexPersist = new VuexPersist({
+  key: 'my-app',
+  storage: window.sessionStorage
+})
+
 var VuexStore = new Vuex.Store({
+  plugins: [vuexPersist.plugin],
   state: {
     email: '',
     idToken: '',

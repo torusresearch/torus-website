@@ -18,6 +18,7 @@ const createEngineStream = require('json-rpc-middleware-stream/engineStream')
 const RpcEngine = require('json-rpc-engine')
 const createFilterMiddleware = require('eth-json-rpc-filters')
 const stream = require('stream')
+const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionManager')
 
 var engine = new ProviderEngine()
 engine.addProvider(new FixtureSubprovider({
@@ -81,15 +82,16 @@ engine.on('error', function (err) {
 engine.start()
 
 const rpcEngine = new RpcEngine()
-const providerStream = createEngineStream({ engine: rpcEngine })
-const filterMiddleware = createFilterMiddleware({
-  provider: engine,
-  blockTracker: engine._blockTracker
-})
+const filterMiddleware = createFilterMiddleware({ provider: engine, blockTracker: engine._blockTracker })
+const subscriptionManager = createSubscriptionManager({ provider: engine, blockTracker: engine._blockTracker })
+subscriptionManager.events.on('notification', (message) => rpcEngine.emit('notification', message))
 rpcEngine.push(createOriginMiddleware({ origin: 'torus' }))
 rpcEngine.push(createLoggerMiddleware({ origin: 'torus' }))
 rpcEngine.push(filterMiddleware)
+rpcEngine.push(subscriptionManager.middleware)
 rpcEngine.push(createProviderMiddleware({ provider: engine }))
+
+const providerStream = createEngineStream({ engine: rpcEngine })
 
 var metamaskStream = new LocalMessageDuplexStream({
   name: 'iframe_metamask',
