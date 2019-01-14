@@ -20,6 +20,8 @@ const createFilterMiddleware = require('eth-json-rpc-filters')
 const stream = require('stream')
 const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionManager')
 
+/* Provider engine setup block */
+
 var engine = new ProviderEngine()
 engine.addProvider(new FixtureSubprovider({
   web3_clientVersion: 'ProviderEngine/v0.0.0/javascript',
@@ -105,26 +107,7 @@ var communicationStream = new LocalMessageDuplexStream({
   targetWindow: window.parent
 })
 
-var setupMultiplex = function (connectionStream) {
-  const mux = new ObjectMultiplex()
-  pump(
-    connectionStream,
-    mux,
-    connectionStream,
-    (err) => {
-      if (err) console.error(err)
-    }
-  )
-  // bind helper method to get previously created streams
-  mux.getStream = function (name) {
-    if (this._substreams[name]) {
-      return this._substreams[name]
-    } else {
-      return this.createStream(name)
-    }
-  }
-  return mux
-}
+/* Provider engine setup block */
 
 var TorusUtils = {
   ec: Elliptic('secp256k1'),
@@ -184,13 +167,6 @@ var TorusUtils = {
       var publicKey = key.getPublic().encode('hex').slice(2)
       var ethAddressLower = '0x' + TorusUtils.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
       var ethAddress = TorusUtils.web3.utils.toChecksumAddress(ethAddressLower)
-      // sessionStorage.setItem('ethAddress', ethAddress) // TODO: checksum address
-      // console.log(TorusUtils.web3.utils.keccak256(Buffer.from(publicKey, 'hex')))
-      // sessionStorage.setItem('wallet', JSON.stringify({})) // reset wallet when logging in
-      // var wallet = JSON.parse(sessionStorage.getItem('wallet'))
-      // wallet[ethAddress] = privateKey.toString('hex')
-      // sessionStorage.setItem('wallet', JSON.stringify(wallet))
-      // console.log('Ethereum Address: ' + sessionStorage.getItem('ethAddress'))
       cb(null, {
         ethAddress,
         privKey: privateKey.toString('hex')
@@ -324,12 +300,7 @@ var TorusUtils = {
   }
 }
 
-function createOriginMiddleware (opts) {
-  return function originMiddleware (req, res, next) {
-    req.origin = opts.origin
-    next()
-  }
-}
+/* Stream setup block */
 
 var transformStream = new stream.Transform({
   objectMode: true,
@@ -368,6 +339,22 @@ sendPassThroughStream.on('data', function () {
   log.info('sendPassThroughStream', arguments)
 })
 
+const providerOutStream = TorusUtils.metamaskMux.createStream('provider')
+
+pump(
+  providerOutStream,
+  sendPassThroughStream,
+  transformStream,
+  providerStream,
+  receivePassThroughStream,
+  providerOutStream,
+  (err) => {
+    if (err) log.error(err)
+  }
+)
+
+/* Stream setup block */
+
 function createLoggerMiddleware (opts) {
   return function loggerMiddleware (/** @type {any} */ req, /** @type {any} */ res, /** @type {Function} */ next) {
     next((/** @type {Function} */ cb) => {
@@ -391,20 +378,32 @@ function createProviderMiddleware ({ provider }) {
   }
 }
 
-// define channels within a stream
-const providerOutStream = TorusUtils.metamaskMux.createStream('provider')
-
-// chaining all the streams together
-pump(
-  providerOutStream,
-  sendPassThroughStream,
-  transformStream,
-  providerStream,
-  receivePassThroughStream,
-  providerOutStream,
-  (err) => {
-    if (err) log.error(err)
+function setupMultiplex (connectionStream) {
+  const mux = new ObjectMultiplex()
+  pump(
+    connectionStream,
+    mux,
+    connectionStream,
+    (err) => {
+      if (err) console.error(err)
+    }
+  )
+  // bind helper method to get previously created streams
+  mux.getStream = function (name) {
+    if (this._substreams[name]) {
+      return this._substreams[name]
+    } else {
+      return this.createStream(name)
+    }
   }
-)
+  return mux
+}
+
+function createOriginMiddleware (opts) {
+  return function originMiddleware (req, res, next) {
+    req.origin = opts.origin
+    next()
+  }
+}
 
 export default TorusUtils
