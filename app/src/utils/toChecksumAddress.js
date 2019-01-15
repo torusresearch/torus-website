@@ -1,6 +1,11 @@
 const createKeccakHash = require('keccak')
 
-module.exports = function toChecksumAddress (address) {
+/**
+ * Returns checksumed address based on EIP-55
+ * @param {string} address
+ */
+function toChecksumAddress (address) {
+  if (address == null) return ''
   address = address.toLowerCase().replace('0x', '')
   var hash = createKeccakHash('keccak256').update(address).digest('hex')
   var ret = '0x'
@@ -15,3 +20,5 @@ module.exports = function toChecksumAddress (address) {
 
   return ret
 }
+
+module.exports = toChecksumAddress
