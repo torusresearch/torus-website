@@ -1,11 +1,11 @@
 const jsonDiffer = require('fast-json-patch')
 const clone = require('clone')
-/** @module*/
-module.exports = {
+
+export default {
   generateHistoryEntry,
   replayHistory,
   snapshotFromTxMeta,
-  migrateFromSnapshotsToDiffs,
+  migrateFromSnapshotsToDiffs
 }
 
 /**
@@ -17,10 +17,10 @@ function migrateFromSnapshotsToDiffs (longHistory) {
   return (
     longHistory
     // convert non-initial history entries into diffs
-    .map((entry, index) => {
-      if (index === 0) return entry
-      return generateHistoryEntry(longHistory[index - 1], entry)
-    })
+      .map((entry, index) => {
+        if (index === 0) return entry
+        return generateHistoryEntry(longHistory[index - 1], entry)
+      })
   )
 }
 

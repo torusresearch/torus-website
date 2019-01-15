@@ -3,9 +3,7 @@ const createScaffoldMiddleware = require('json-rpc-engine/src/createScaffoldMidd
 const createAsyncMiddleware = require('json-rpc-engine/src/createAsyncMiddleware')
 const createWalletSubprovider = require('eth-json-rpc-middleware/wallet')
 
-module.exports = createMetamaskMiddleware
-
-function createMetamaskMiddleware ({
+export default function createMetamaskMiddleware ({
   version,
   getAccounts,
   processTransaction,

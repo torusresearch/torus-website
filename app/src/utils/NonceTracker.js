@@ -158,4 +158,4 @@ class NonceTracker {
 
 }
 
-module.exports = NonceTracker
+export default NonceTracker

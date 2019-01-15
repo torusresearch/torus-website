@@ -3,12 +3,12 @@ const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
 const Transaction = require('ethereumjs-tx')
 const EthQuery = require('ethjs-query')
-const TransactionStateManager = require('./TransactionStateManager')
-const TxGasUtil = require('./TxGasUtil')
-const PendingTransactionTracker = require('./PendingTransactionTracker')
-const NonceTracker = require('./NonceTracker')
+const TransactionStateManager = require('./TransactionStateManager').default
+const TxGasUtil = require('./TxGasUtil').default
+const PendingTransactionTracker = require('./PendingTransactionTracker').default
+const NonceTracker = require('./NonceTracker').default
 const txUtils = require('./txUtils')
-const cleanErrorStack = require('./cleanErrorStack')
+const cleanErrorStack = require('./cleanErrorStack').default
 const log = require('loglevel')
 const {
   TRANSACTION_TYPE_CANCEL,
@@ -46,7 +46,7 @@ const { hexToBn, bnToHex, BnMultiplyByFraction } = require('./utils')
   @param {Object}  opts.preferencesStore
 */
 
-class TransactionController extends EventEmitter {
+export default class TransactionController extends EventEmitter {
   constructor (opts) {
     super()
     this.networkStore = opts.networkStore || new ObservableStore({})
@@ -617,5 +617,3 @@ class TransactionController extends EventEmitter {
     this.memStore.updateState({ unapprovedTxs, selectedAddressTxList })
   }
 }
-
-module.exports = TransactionController

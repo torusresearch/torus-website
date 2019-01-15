@@ -144,4 +144,4 @@ class TxGasUtil {
   }
 }
 
-module.exports = TxGasUtil
+export default TxGasUtil

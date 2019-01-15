@@ -1,4 +1,5 @@
 // import WebsocketSubprovider from './websocket.js'
+import TorusController from './TorusController'
 var Elliptic = require('elliptic').ec
 var log = require('loglevel')
 var BN = require('bn.js')
@@ -18,8 +19,8 @@ const RpcEngine = require('json-rpc-engine')
 const createFilterMiddleware = require('eth-json-rpc-filters')
 const stream = require('stream')
 const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionManager')
-const toChecksumAddress = require('./toChecksumAddress')
-const setupMultiplex = require('./setupMultiplex')
+const toChecksumAddress = require('./toChecksumAddress').default
+const setupMultiplex = require('./setupMultiplex').default
 
 /* Provider engine setup block */
 
@@ -84,16 +85,17 @@ engine.on('error', function (err) {
 })
 engine.start()
 
+const torusController = new TorusController()
+
 const rpcEngine = new RpcEngine()
-const filterMiddleware = createFilterMiddleware({ provider: engine, blockTracker: engine._blockTracker })
-const subscriptionManager = createSubscriptionManager({ provider: engine, blockTracker: engine._blockTracker })
+const filterMiddleware = createFilterMiddleware({ provider: torusController.provider, blockTracker: torusController.blockTracker })
+const subscriptionManager = createSubscriptionManager({ provider: torusController.provider, blockTracker: torusController.blockTracker })
 subscriptionManager.events.on('notification', (message) => rpcEngine.emit('notification', message))
 rpcEngine.push(createOriginMiddleware({ origin: 'torus' }))
 rpcEngine.push(createLoggerMiddleware({ origin: 'torus' }))
 rpcEngine.push(filterMiddleware)
 rpcEngine.push(subscriptionManager.middleware)
-rpcEngine.push(createProviderMiddleware({ provider: engine }))
-
+rpcEngine.push(createProviderMiddleware({ provider: torusController.provider }))
 const providerStream = createEngineStream({ engine: rpcEngine })
 
 var metamaskStream = new LocalMessageDuplexStream({

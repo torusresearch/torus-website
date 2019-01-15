@@ -24,7 +24,7 @@ const log = require('loglevel')
  *
  */
 
-module.exports = class PersonalMessageManager extends EventEmitter {
+export default class PersonalMessageManager extends EventEmitter {
   /**
    * Controller in charge of managing - storing, adding, removing, updating - PersonalMessage.
    *

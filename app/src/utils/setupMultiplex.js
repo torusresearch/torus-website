@@ -1,7 +1,7 @@
 const ObjectMultiplex = require('obj-multiplex')
 const pump = require('pump')
 
-module.exports = function setupMultiplex (connectionStream) {
+function setupMultiplex (connectionStream) {
   const mux = new ObjectMultiplex()
   pump(
     connectionStream,
@@ -21,3 +21,5 @@ module.exports = function setupMultiplex (connectionStream) {
   }
   return mux
 }
+
+export default setupMultiplex

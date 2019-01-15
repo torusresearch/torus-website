@@ -12,9 +12,7 @@ const ObservableStore = require('obs-store')
 const log = require('loglevel')
 const pify = require('pify')
 
-
-class AccountTracker {
-
+export default class AccountTracker {
   /**
    * This module is responsible for tracking any number of accounts and caching their current balances & transaction
    * counts.
@@ -36,7 +34,7 @@ class AccountTracker {
   constructor (opts = {}) {
     const initState = {
       accounts: {},
-      currentBlockGasLimit: '',
+      currentBlockGasLimit: ''
     }
     this.store = new ObservableStore(initState)
 
@@ -193,5 +191,3 @@ class AccountTracker {
   }
 
 }
-
-module.exports = AccountTracker

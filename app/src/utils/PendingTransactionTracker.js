@@ -183,4 +183,4 @@ class PendingTransactionTracker extends EventEmitter {
   }
 }
 
-module.exports = PendingTransactionTracker
+export default PendingTransactionTracker

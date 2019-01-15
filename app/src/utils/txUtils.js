@@ -6,7 +6,7 @@ const {
 /**
 @module
 */
-module.exports = {
+export {
   normalizeTxParams,
   validateTxParams,
   validateFrom,

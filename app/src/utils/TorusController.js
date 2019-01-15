@@ -1,18 +1,18 @@
 const EventEmitter = require('events')
-const ComposableObservableStore = require('./ComposableObservableStore')
+const ComposableObservableStore = require('./ComposableObservableStore').default
 const log = require('loglevel')
 const EthQuery = require('eth-query')
-const NetworkController = require('./NetworkController')
-const AccountTracker = require('./AccountTracker')
-const TransactionController = require('./TransactionController')
-const toChecksumAddress = require('./toChecksumAddress')
+const NetworkController = require('./NetworkController').default
+const AccountTracker = require('./AccountTracker').default
+const TransactionController = require('./TransactionController').default
+const toChecksumAddress = require('./toChecksumAddress').default
 const BN = require('ethereumjs-util').BN
 const GWEI_BN = new BN('1000000000')
 const percentile = require('percentile')
 const sigUtil = require('eth-sig-util')
 const Dnode = require('dnode')
 const pump = require('pump')
-const setupMultiplex = require('./setupMultiplex')
+const setupMultiplex = require('./setupMultiplex').default
 const asStream = require('obs-store/lib/asStream')
 const RpcEngine = require('json-rpc-engine')
 const createFilterMiddleware = require('eth-json-rpc-filters')
@@ -21,15 +21,15 @@ const createOriginMiddleware = require('./createOriginMiddleware')
 const createLoggerMiddleware = require('./createLoggerMiddleware')
 const createProviderMiddleware = require('./createProviderMiddleware')
 const createEngineStream = require('json-rpc-middleware-stream/engineStream')
-const MessageManager = require('./MessageManager')
-const PersonalMessageManager = require('./PersonalMessageManager')
-const TypedMessageManager = require('./TypedMessageManager')
+const MessageManager = require('./MessageManager').default
+const PersonalMessageManager = require('./PersonalMessageManager').default
+const TypedMessageManager = require('./TypedMessageManager').default
 const ObservableStore = require('obs-store')
 
 // defaults and constants
 const version = '0.0.1'
 
-module.exports = class TorusController extends EventEmitter {
+export default class TorusController extends EventEmitter {
   /**
    * @constructor
    * @param {Object} opts

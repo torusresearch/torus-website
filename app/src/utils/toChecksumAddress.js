@@ -21,4 +21,4 @@ function toChecksumAddress (address) {
   return ret
 }
 
-module.exports = toChecksumAddress
+export default toChecksumAddress

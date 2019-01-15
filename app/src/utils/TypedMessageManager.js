@@ -24,7 +24,7 @@ const jsonschema = require('jsonschema')
  *
  */
 
-module.exports = class TypedMessageManager extends EventEmitter {
+export default class TypedMessageManager extends EventEmitter {
   /**
    * Controller in charge of managing - storing, adding, removing, updating - TypedMessage.
    */

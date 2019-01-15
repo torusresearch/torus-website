@@ -9,7 +9,7 @@ const {
   PLATFORM_OPERA,
   PLATFORM_CHROME,
   PLATFORM_EDGE,
-  PLATFORM_BRAVE,
+  PLATFORM_BRAVE
 } = require('./enums')
 
 /**
@@ -78,8 +78,8 @@ const getPlatform = _ => {
  */
 function sufficientBalance (txParams, hexBalance) {
   // validate hexBalance is a hex string
-  assert.equal(typeof hexBalance, 'string', 'sufficientBalance - hexBalance is not a hex string')
-  assert.equal(hexBalance.slice(0, 2), '0x', 'sufficientBalance - hexBalance is not a hex string')
+  assert.strictEqual(typeof hexBalance, 'string', 'sufficientBalance - hexBalance is not a hex string')
+  assert.strictEqual(hexBalance.slice(0, 2), '0x', 'sufficientBalance - hexBalance is not a hex string')
 
   const balance = hexToBn(hexBalance)
   const value = hexToBn(txParams.value)
@@ -139,7 +139,7 @@ function removeListeners (listeners, emitter) {
   })
 }
 
-module.exports = {
+export {
   removeListeners,
   applyListeners,
   getPlatform,
@@ -148,5 +148,5 @@ module.exports = {
   sufficientBalance,
   hexToBn,
   bnToHex,
-  BnMultiplyByFraction,
+  BnMultiplyByFraction
 }

@@ -21,7 +21,7 @@ const createId = require('./random-id')
  *
  */
 
-module.exports = class MessageManager extends EventEmitter {
+export default class MessageManager extends EventEmitter {
 
   /**
    * Controller in charge of managing - storing, adding, removing, updating - Messages.
