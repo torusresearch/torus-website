@@ -2,12 +2,15 @@
   <div>
     <button v-on:click="triggerLogin" id="googleAuthBtn">Google</button>
     <input id="email" />
+    <p>{{ this.$store.state.loggedIn }}</p>
+    <p>{{ loggedIn }}</p>
   </div>
 </template>
 
 <script>
+/* eslint-disable */
 import torusUtils from '@/utils/torusUtils'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import * as log from 'loglevel'
 
 export default {
@@ -35,6 +38,9 @@ export default {
       updateNetworkId: 'updateNetworkId',
       triggerLogin: 'triggerLogin'
     }),
+  },
+  computed: {
+    ...mapGetters (['loggedIn'])
   },
   mounted () {
     // setup google auth sdk

@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import Vuex from 'vuex'
 import App from './App.vue'
 import router from './router'
 import store from './store'
@@ -8,7 +9,7 @@ import torusUtils from './utils/torusUtils'
 log.setDefaultLevel('info')
 
 Vue.use(require('vue-script2'))
-
+Vue.use(Vuex)
 Vue.config.productionTip = false
 
 Object.defineProperty(Vue.prototype, 'TorusUtils', { value: torusUtils })

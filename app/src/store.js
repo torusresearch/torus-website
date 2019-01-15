@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import VuexPersist from 'vuex-persis'
 import log from 'loglevel'
 import torusUtils from './utils/torusUtils'
 import stream from 'stream'
@@ -7,18 +8,24 @@ import pump from 'pump'
 import config from './config'
 
 Vue.use(Vuex)
+const vuexPersist = new VuexPersist({
+  key: 'torus-widget',
+  storage: window.sessionStorage
+})
 
 var VuexStore = new Vuex.Store({
+  plugins: [vuexPersist.plugin],
   state: {
     email: '',
     idToken: '',
     wallet: {},
     balance: {},
-    loggedIn: false,
     selectedAddress: '',
     networkId: 0
   },
-  getters: {},
+  getters: {
+    loggedIn: (state) => state.email.length > 0 && state.idToken.length > 0
+  },
   mutations: {
     setEmail (state, email) {
       state.email = email
@@ -31,9 +38,6 @@ var VuexStore = new Vuex.Store({
     },
     setBalance (state, balance) {
       state.balance = balance
-    },
-    setLoginStatus (state, loggedIn) {
-      state.loggedIn = loggedIn
     },
     setSelectedAddress (state, selectedAddress) {
       state.selectedAddress = selectedAddress
@@ -70,9 +74,6 @@ var VuexStore = new Vuex.Store({
       if (payload.ethAddress && context.state.wallet.ethAddress) {
         context.commit('setBalance', { ...context.state.balance, [payload.ethAddress]: payload.value })
       }
-    },
-    updateLoginStatus (context, payload) {
-      context.commit('setLoginStatus', payload.loggedIn)
     },
     updateSelectedAddress (context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
