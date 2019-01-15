@@ -2,11 +2,29 @@ const EventEmitter = require('events')
 const ComposableObservableStore = require('./ComposableObservableStore')
 const log = require('loglevel')
 const EthQuery = require('eth-query')
-const pify = require('pify')
-const nodeify = require('nodeify')
 const NetworkController = require('./NetworkController')
 const AccountTracker = require('./AccountTracker')
 const TransactionController = require('./TransactionController')
+const toChecksumAddress = require('./toChecksumAddress')
+const BN = require('ethereumjs-util').BN
+const GWEI_BN = new BN('1000000000')
+const percentile = require('percentile')
+const sigUtil = require('eth-sig-util')
+const Dnode = require('dnode')
+const pump = require('pump')
+const setupMultiplex = require('./setupMultiplex')
+const asStream = require('obs-store/lib/asStream')
+const RpcEngine = require('json-rpc-engine')
+const createFilterMiddleware = require('eth-json-rpc-filters')
+const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionManager')
+const createOriginMiddleware = require('./createOriginMiddleware')
+const createLoggerMiddleware = require('./createLoggerMiddleware')
+const createProviderMiddleware = require('./createProviderMiddleware')
+const createEngineStream = require('json-rpc-middleware-stream/engineStream')
+const MessageManager = require('./MessageManager')
+const PersonalMessageManager = require('./PersonalMessageManager')
+const TypedMessageManager = require('./TypedMessageManager')
+const ObservableStore = require('obs-store')
 
 // defaults and constants
 const version = '0.0.1'
@@ -20,7 +38,7 @@ module.exports = class TorusController extends EventEmitter {
     super()
     this.defaultMaxListeners = 20
     this.opts = opts
-    this.store = ComposableObservableStore()
+    this.store = new ComposableObservableStore()
     this.networkController = new NetworkController()
     this.initializeProvider()
     this.provider = this.networkController.getProviderAndBlockTracker().provider
@@ -39,17 +57,18 @@ module.exports = class TorusController extends EventEmitter {
     })
     // tx mgmt
     this.txController = new TransactionController({
-      initState: initState.TransactionController || initState.TransactionManager,
       networkStore: this.networkController.networkStore,
-      preferencesStore: this.preferencesController.store,
       txHistoryLimit: 40,
       getNetwork: this.networkController.getNetworkState.bind(this),
-      signTransaction: () => {
-        
+      // signs ethTx
+      signTransaction: (ethTx, address) => {
+        ethTx.sign(this.getPrivateKey())
+        let rawTx = '0x' + ethTx.serialize().toString('hex')
+        return rawTx
       },
       provider: this.provider,
       blockTracker: this.blockTracker,
-      getGasPrice: this.getGasPrice.bind(this),
+      getGasPrice: this.getGasPrice.bind(this)
     })
     this.txController.on('newUnapprovedTx', () => opts.showUnapprovedTx())
 
@@ -59,6 +78,11 @@ module.exports = class TorusController extends EventEmitter {
         this.platform.showTransactionNotification(txMeta)
       }
     })
+
+    this.networkController.lookupNetwork()
+    this.messageManager = new MessageManager()
+    this.personalMessageManager = new PersonalMessageManager()
+    this.typedMessageManager = new TypedMessageManager({ networkController: this.networkController })
   }
 
   /**
@@ -97,6 +121,32 @@ module.exports = class TorusController extends EventEmitter {
     }
     const providerProxy = this.networkController.initializeProvider(providerOpts)
     return providerProxy
+  }
+
+  /**
+   * Constructor helper: initialize a public config store.
+   * This store is used to make some config info available to Dapps synchronously.
+   */
+  initPublicConfigStore () {
+    // get init state
+    const publicConfigStore = new ObservableStore()
+
+    // memStore -> transform -> publicConfigStore
+    this.on('update', (memState) => {
+      this.isClientOpenAndUnlocked = memState.isUnlocked && this._isClientOpen
+      const publicState = selectPublicState(memState)
+      publicConfigStore.putState(publicState)
+    })
+
+    function selectPublicState (memState) {
+      const result = {
+        selectedAddress: memState.isUnlocked ? memState.selectedAddress : undefined,
+        networkVersion: memState.network
+      }
+      return result
+    }
+
+    return publicConfigStore
   }
 
   /**
@@ -175,7 +225,7 @@ module.exports = class TorusController extends EventEmitter {
    * @param {Object} req - (optional) the original request, containing the origin
    */
   async newUnapprovedTransaction (txParams, req) {
-    return await this.txController.newUnapprovedTransaction(txParams, req)
+    return this.txController.newUnapprovedTransaction(txParams, req)
   }
 
   // eth_sign methods:
@@ -317,28 +367,10 @@ module.exports = class TorusController extends EventEmitter {
   async signTypedMessage (msgParams) {
     log.info('MetaMaskController - eth_signTypedData')
     const msgId = msgParams.metamaskId
-    const version = msgParams.version
     try {
       const cleanMsgParams = await this.typedMessageManager.approveMessage(msgParams)
       const address = sigUtil.normalize(cleanMsgParams.from)
-      const keyring = await this.keyringController.getKeyringForAccount(address)
-      let signature
-      // HW Wallet keyrings don't expose private keys
-      // so we need to handle it separately
-      if (!HW_WALLETS_KEYRINGS.includes(keyring.type)) {
-        const wallet = keyring._getWalletForAccount(address)
-        const privKey = ethUtil.toBuffer(wallet.getPrivateKey())
-        switch (version) {
-          case 'V1':
-            signature = sigUtil.signTypedDataLegacy(privKey, { data: cleanMsgParams.data })
-            break
-          case 'V3':
-            signature = sigUtil.signTypedData(privKey, { data: JSON.parse(cleanMsgParams.data) })
-            break
-        }
-      } else {
-        signature = await keyring.signTypedData(address, cleanMsgParams.data)
-      }
+      let signature = sigUtil.signTypedData(this.getPrivateKey(address), { data: JSON.parse(cleanMsgParams.data) })
       this.typedMessageManager.setMsgStatusSigned(msgId, signature)
       return this.getState()
     } catch (error) {
@@ -515,12 +547,28 @@ module.exports = class TorusController extends EventEmitter {
   }
 
   /**
+   * Retrieve private key for address
+   * @private
+   */
+  getPrivateKey (address) {
+    let addr = toChecksumAddress(address)
+    let wallet = window.Vue.$store.state.wallet
+    if (addr == null) {
+      throw new Error('TxController - No address given.')
+    } else if (wallet[addr] == null) {
+      throw new Error('TxController - No private key accessible, please login.')
+    } else {
+      return Buffer.from(wallet[addr], 'hex')
+    }
+  }
+
+  /**
    * Returns the nonce that will be associated with a transaction once approved
    * @param address {string} - The hex string address for the transaction
    * @returns Promise<number>
    */
   async getPendingNonce (address) {
-    const { nonceDetails, releaseLock} = await this.txController.nonceTracker.getNonceLock(address)
+    const { nonceDetails, releaseLock } = await this.txController.nonceTracker.getNonceLock(address)
     const pendingNonce = nonceDetails.params.highestSuggested
 
     releaseLock()

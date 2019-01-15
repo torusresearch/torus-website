@@ -2,12 +2,10 @@ const EthQuery = require('ethjs-query')
 const {
   hexToBn,
   BnMultiplyByFraction,
-  bnToHex,
-} = require('../../lib/util')
+  bnToHex
+} = require('./utils')
 const { addHexPrefix } = require('ethereumjs-util')
 const SIMPLE_GAS_COST = '0x5208' // Hex for 21000, cost of a simple send.
-
-import { TRANSACTION_NO_CONTRACT_ERROR_KEY } from '../../../../ui/app/constants/error-keys'
 
 /**
 tx-gas-utils are gas utility methods for Transaction manager
@@ -17,7 +15,6 @@ and used to do things like calculate gas of a tx.
 */
 
 class TxGasUtil {
-
   constructor (provider) {
     this.query = new EthQuery(provider)
   }
@@ -35,10 +32,10 @@ class TxGasUtil {
       txMeta.simulationFails = {
         reason: err.message,
         errorKey: err.errorKey,
-        debug: { blockNumber: block.number, blockGasLimit: block.gasLimit },
+        debug: { blockNumber: block.number, blockGasLimit: block.gasLimit }
       }
 
-      if (err.errorKey === TRANSACTION_NO_CONTRACT_ERROR_KEY) {
+      if (err.errorKey === 'transactionErrorNoContract') {
         txMeta.simulationFails.debug.getCodeResponse = err.getCodeResponse
       }
 
@@ -79,7 +76,7 @@ class TxGasUtil {
         if (txParams.data) {
           const err = new Error('TxGasUtil - Trying to call a function on a non-contract address')
           // set error key so ui can display localized error message
-          err.errorKey = TRANSACTION_NO_CONTRACT_ERROR_KEY
+          err.errorKey = 'transactionErrorNoContract'
 
           // set the response on the error so that we can see in logs what the actual response was
           err.getCodeResponse = code
@@ -100,7 +97,7 @@ class TxGasUtil {
     txParams.gas = bnToHex(saferGasLimitBN)
 
     // estimate tx gas requirements
-    return await this.query.estimateGas(txParams)
+    return this.query.estimateGas(txParams)
   }
 
   /**
@@ -123,7 +120,6 @@ class TxGasUtil {
     // try adding an additional gas buffer to our estimation for safety
     const recommendedGasHex = this.addGasBuffer(txMeta.estimatedGas, blockGasLimitHex)
     txParams.gas = recommendedGasHex
-    return
   }
 
   /**

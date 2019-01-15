@@ -3,9 +3,9 @@ const EventEmitter = require('safe-event-emitter')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
 const log = require('loglevel')
-const txStateHistoryHelper = require('./lib/tx-state-history-helper')
-const createId = require('../../lib/random-id')
-const { getFinalStates } = require('./lib/util')
+const txStateHistoryHelper = require('./tx-state-history-helper')
+const createId = require('./random-id')
+const { getFinalStates } = require('./txUtils')
 /**
   TransactionStateManager is responsible for the state of a transaction and
   storing the transaction
@@ -34,8 +34,8 @@ class TransactionStateManager extends EventEmitter {
 
     this.store = new ObservableStore(
       extend({
-        transactions: [],
-    }, initState))
+        transactions: []
+      }, initState))
     this.txHistoryLimit = txHistoryLimit
     this.getNetwork = getNetwork
   }
@@ -52,7 +52,7 @@ class TransactionStateManager extends EventEmitter {
       time: (new Date()).getTime(),
       status: 'unapproved',
       metamaskNetworkId: netId,
-      loadingDefaults: true,
+      loadingDefaults: true
     }, opts)
   }
 
@@ -200,7 +200,6 @@ class TransactionStateManager extends EventEmitter {
     this._saveTxList(txList)
   }
 
-
   /**
     merges txParams obj onto txMeta.txParams
     use extend to ensure that all fields are filled
@@ -233,7 +232,7 @@ class TransactionStateManager extends EventEmitter {
     })
   }
 
-/**
+  /**
   @param opts {object} -  an object of fields to search for eg:<br>
   let <code>thingsToLookFor = {<br>
     to: '0x0..',<br>
@@ -355,7 +354,6 @@ class TransactionStateManager extends EventEmitter {
     this._setTxStatus(txId, 'dropped')
   }
 
-
   /**
     should update the status of the tx to 'failed'.
     and put the error on the txMeta
@@ -369,7 +367,7 @@ class TransactionStateManager extends EventEmitter {
     txMeta.err = {
       message: error.toString(),
       rpc: error.value,
-      stack: error.stack,
+      stack: error.stack
     }
     this.updateTx(txMeta, 'transactions:tx-state-manager#fail - add error')
     this._setTxStatus(txId, 'failed')
@@ -391,9 +389,6 @@ class TransactionStateManager extends EventEmitter {
     // Update state
     this._saveTxList(otherAccountTxs)
   }
-//
-//           PRIVATE METHODS
-//
 
   // STATUS METHODS
   // statuses:

@@ -7,8 +7,8 @@ const TransactionStateManager = require('./TransactionStateManager')
 const TxGasUtil = require('./TxGasUtil')
 const PendingTransactionTracker = require('./PendingTransactionTracker')
 const NonceTracker = require('./NonceTracker')
-const txUtils = require('./lib/util')
-const cleanErrorStack = require('../../lib/cleanErrorStack')
+const txUtils = require('./txUtils')
+const cleanErrorStack = require('./cleanErrorStack')
 const log = require('loglevel')
 const {
   TRANSACTION_TYPE_CANCEL,
@@ -17,7 +17,7 @@ const {
   TRANSACTION_STATUS_APPROVED
 } = require('./enums')
 
-const { hexToBn, bnToHex, BnMultiplyByFraction } = require('../../lib/util')
+const { hexToBn, bnToHex, BnMultiplyByFraction } = require('./utils')
 
 /**
   Transaction Controller is an aggregate of sub-controllers and trackers

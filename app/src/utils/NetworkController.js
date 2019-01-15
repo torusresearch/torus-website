@@ -61,6 +61,7 @@ module.exports = class NetworkController extends EventEmitter {
     const { type, rpcTarget, chainId, ticker, nickname } = this.providerStore.getState()
     this._configureProvider({ type, rpcTarget, chainId, ticker, nickname })
     this.lookupNetwork()
+    return this._providerProxy
   }
 
   /**

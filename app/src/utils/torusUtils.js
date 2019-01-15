@@ -12,13 +12,14 @@ var HookedWalletEthTxSubprovider = require('web3-provider-engine/subproviders/ho
 var NonceSubprovider = require('web3-provider-engine/subproviders/nonce-tracker.js')
 var RpcSubprovider = require('web3-provider-engine/subproviders/rpc.js')
 var LocalMessageDuplexStream = require('post-message-stream')
-const ObjectMultiplex = require('obj-multiplex')
 const pump = require('pump')
 const createEngineStream = require('json-rpc-middleware-stream/engineStream')
 const RpcEngine = require('json-rpc-engine')
 const createFilterMiddleware = require('eth-json-rpc-filters')
 const stream = require('stream')
 const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionManager')
+const toChecksumAddress = require('./toChecksumAddress')
+const setupMultiplex = require('./setupMultiplex')
 
 /* Provider engine setup block */
 
@@ -38,10 +39,10 @@ engine.addProvider(new HookedWalletEthTxSubprovider({
   getAccounts: function (cb) {
     var ethAddress = window.Vue.$store.state.selectedAddress
     console.log('GETTING ACCOUNT:', ethAddress)
-    cb(null, ethAddress ? [Web3.utils.toChecksumAddress(ethAddress)] : [])
+    cb(null, ethAddress ? [toChecksumAddress(ethAddress)] : [])
   },
   getPrivateKey: function (address, cb) {
-    var addr = Web3.utils.toChecksumAddress(address)
+    var addr = toChecksumAddress(address)
     var wallet = window.Vue.$store.state.wallet
     if (addr == null) {
       cb(new Error('No address given.'), null)
@@ -166,7 +167,7 @@ var TorusUtils = {
       var key = TorusUtils.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
       var publicKey = key.getPublic().encode('hex').slice(2)
       var ethAddressLower = '0x' + TorusUtils.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
-      var ethAddress = TorusUtils.web3.utils.toChecksumAddress(ethAddressLower)
+      var ethAddress = toChecksumAddress(ethAddressLower)
       cb(null, {
         ethAddress,
         privKey: privateKey.toString('hex')
@@ -376,27 +377,6 @@ function createProviderMiddleware ({ provider }) {
       end()
     })
   }
-}
-
-function setupMultiplex (connectionStream) {
-  const mux = new ObjectMultiplex()
-  pump(
-    connectionStream,
-    mux,
-    connectionStream,
-    (err) => {
-      if (err) console.error(err)
-    }
-  )
-  // bind helper method to get previously created streams
-  mux.getStream = function (name) {
-    if (this._substreams[name]) {
-      return this._substreams[name]
-    } else {
-      return this.createStream(name)
-    }
-  }
-  return mux
 }
 
 function createOriginMiddleware (opts) {
