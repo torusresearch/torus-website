@@ -45,7 +45,7 @@ function createWidget () {
   }
   var attachOnLoad = function () {
     window.document.head.appendChild(link)
-    window.document.body.appendChild(torusIframe)
+    window.document.body.appendChild(torusIframeContainer)
     window.document.body.appendChild(torusWidget)
     // embedUtils.runOnComplete(bindOnComplete)
   }
