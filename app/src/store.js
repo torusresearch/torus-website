@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import VuexPersist from 'vuex-persis'
+import VuexPersist from 'vuex-persist'
 import log from 'loglevel'
 import torusUtils from './utils/torusUtils'
 import stream from 'stream'
