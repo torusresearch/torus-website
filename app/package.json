@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "browserify ./src/widget/embed.js -o public/embed.min.js && vue-cli-service serve",
     "build": "vue-cli-service build",
     "buildEmbed": "browserify ./src/widget/embed.js -o public/embed.min.js",
     "lint": "vue-cli-service lint"
@@ -11,6 +11,7 @@
   "dependencies": {
     "ajv": "^6.6.2",
     "backoff": "^2.5.0",
+    "browserify": "^16.2.3",
     "eth-json-rpc-filters": "^3.0.1",
     "ethereumjs-vm": "2.4.0",
     "json-rpc-engine": "^4.0.0",
