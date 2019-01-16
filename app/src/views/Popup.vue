@@ -1,7 +1,12 @@
 <template>
   <div>
-    <button v-on:click="triggerLogin" id="googleAuthBtn">Google</button>
-    <input id="email" />
+    <div v-if="popupVisible">
+      <Confirm />
+    </div>
+    <div v-else>
+      <button v-on:click="triggerLogin" id="googleAuthBtn">Google</button>
+      <input id="email" />
+    </div>
   </div>
 </template>
 
@@ -9,9 +14,13 @@
 import torusUtils from '@/utils/torusUtils'
 import { mapActions } from 'vuex'
 import * as log from 'loglevel'
+import Confirm from './Confirm.vue'
 
 export default {
   name: 'popup',
+  components: {
+    Confirm
+  },
   data: function () {
     return {
       torusNodeEndpoints: [
@@ -22,6 +31,9 @@ export default {
         'https://etc.torusnode.com/jrpc'
       ]
     }
+  },
+  computed: {
+    popupVisible () { return this.$store.state.popupVisible }
   },
   methods: {
     ...mapActions({

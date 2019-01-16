@@ -85,7 +85,19 @@ engine.on('error', function (err) {
 })
 engine.start()
 
-const torusController = new TorusController()
+/**
+ * TODO: temporary, to be fixed with a Vue popup or something like that
+ */
+function triggerUi (type) {
+  window.Vue.$store.dispatch('showPopup')
+}
+
+const torusController = new TorusController({
+  showUnconfirmedMessage: triggerUi.bind(window, 'showUnconfirmedMessage'),
+  unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
+  showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
+  openPopup: triggerUi.bind(window, 'bindopenPopup')
+})
 
 const rpcEngine = new RpcEngine()
 const filterMiddleware = createFilterMiddleware({ provider: torusController.provider, blockTracker: torusController.blockTracker })

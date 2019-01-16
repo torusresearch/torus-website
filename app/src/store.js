@@ -23,7 +23,8 @@ var VuexStore = new Vuex.Store({
     balance: {},
     loggedIn: false,
     selectedAddress: '',
-    networkId: 0
+    networkId: 0,
+    popupVisible: false
   },
   getters: {},
   mutations: {
@@ -47,9 +48,15 @@ var VuexStore = new Vuex.Store({
     },
     setNetworkId (state, networkId) {
       state.networkId = networkId
+    },
+    setPopupVisibility (state, popupVisible) {
+      state.popupVisible = popupVisible
     }
   },
   actions: {
+    showPopup (context, payload) {
+      context.commit('setPopupVisibility', true)
+    },
     updateEmail (context, payload) {
       context.commit('setEmail', payload.email)
     },

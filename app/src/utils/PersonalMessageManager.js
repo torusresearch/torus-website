@@ -1,7 +1,7 @@
 const EventEmitter = require('events')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
-const createId = require('./random-id')
+const createId = require('./random-id').default
 const hexRe = /^[0-9A-Fa-f]+$/g
 const log = require('loglevel')
 
@@ -30,15 +30,15 @@ export default class PersonalMessageManager extends EventEmitter {
    *
    * @typedef {Object} PersonalMessageManager
    * @param {Object} opts @deprecated
-   * @property {Object} memStore The observable store where PersonalMessage are saved with persistance.
-   * @property {Object} memStore.unapprovedPersonalMsgs A collection of all PersonalMessages in the 'unapproved' state
-   * @property {number} memStore.unapprovedPersonalMsgCount The count of all PersonalMessages in this.memStore.unapprobedMsgs
+   * @property {Object} store The observable store where PersonalMessage are saved with persistance.
+   * @property {Object} store.unapprovedPersonalMsgs A collection of all PersonalMessages in the 'unapproved' state
+   * @property {number} store.unapprovedPersonalMsgCount The count of all PersonalMessages in this.store.unapprobedMsgs
    * @property {array} messages Holds all messages that have been created by this PersonalMessageManager
    *
    */
   constructor (opts) {
     super()
-    this.memStore = new ObservableStore({
+    this.store = new ObservableStore({
       unapprovedPersonalMsgs: {},
       unapprovedPersonalMsgCount: 0
     })
@@ -70,7 +70,7 @@ export default class PersonalMessageManager extends EventEmitter {
   /**
    * Creates a new PersonalMessage with an 'unapproved' status using the passed msgParams. this.addMsg is called to add
    * the new PersonalMessage to this.messages, and to save the unapproved PersonalMessages from that list to
-   * this.memStore.
+   * this.store.
    *
    * @param {Object} msgParams The params for the eth_sign call to be made after the message is approved.
    * @param {Object} req (optional) The original request object possibly containing the origin
@@ -99,7 +99,7 @@ export default class PersonalMessageManager extends EventEmitter {
   /**
    * Creates a new PersonalMessage with an 'unapproved' status using the passed msgParams. this.addMsg is called to add
    * the new PersonalMessage to this.messages, and to save the unapproved PersonalMessages from that list to
-   * this.memStore.
+   * this.store.
    *
    * @param {Object} msgParams The params for the eth_sign call to be made after the message is approved.
    * @param {Object} req (optional) The original request object possibly containing the origin
@@ -130,7 +130,7 @@ export default class PersonalMessageManager extends EventEmitter {
 
   /**
    * Adds a passed PersonalMessage to this.messages, and calls this._saveMsgList() to save the unapproved PersonalMessages from that
-   * list to this.memStore.
+   * list to this.store.
    *
    * @param {Message} msg The PersonalMessage to add to this.messages
    *
@@ -255,7 +255,7 @@ export default class PersonalMessageManager extends EventEmitter {
   }
 
   /**
-   * Saves the unapproved PersonalMessages, and their count, to this.memStore
+   * Saves the unapproved PersonalMessages, and their count, to this.store
    *
    * @private
    * @fires 'updateBadge'
@@ -264,7 +264,7 @@ export default class PersonalMessageManager extends EventEmitter {
   _saveMsgList () {
     const unapprovedPersonalMsgs = this.getUnapprovedMsgs()
     const unapprovedPersonalMsgCount = Object.keys(unapprovedPersonalMsgs).length
-    this.memStore.updateState({ unapprovedPersonalMsgs, unapprovedPersonalMsgCount })
+    this.store.updateState({ unapprovedPersonalMsgs, unapprovedPersonalMsgCount })
     this.emit('updateBadge')
   }
 

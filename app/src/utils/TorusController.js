@@ -1,3 +1,4 @@
+const debounce = require('debounce')
 const EventEmitter = require('events')
 const ComposableObservableStore = require('./ComposableObservableStore').default
 const log = require('loglevel')
@@ -43,6 +44,7 @@ export default class TorusController extends EventEmitter {
     this.initializeProvider()
     this.provider = this.networkController.getProviderAndBlockTracker().provider
     this.blockTracker = this.networkController.getProviderAndBlockTracker().blockTracker
+    this.sendUpdate = debounce(this.privateSendUpdate.bind(this), 200)
     this.accountTracker = new AccountTracker({
       provider: this.provider,
       blockTracker: this.blockTracker
@@ -83,6 +85,14 @@ export default class TorusController extends EventEmitter {
     this.messageManager = new MessageManager()
     this.personalMessageManager = new PersonalMessageManager()
     this.typedMessageManager = new TypedMessageManager({ networkController: this.networkController })
+
+    this.store.updateStructure({
+      TransactionController: this.txController.store,
+      NetworkController: this.networkController.store,
+      MessageManager: this.messageManager.store,
+      PersonalMessageManager: this.personalMessageManager.store,
+      TypedMessageManager: this.typedMessageManager.store
+    })
   }
 
   /**
@@ -99,16 +109,8 @@ export default class TorusController extends EventEmitter {
       getAccounts: async ({ origin }) => {
         // Expose no accounts if this origin has not been approved, preventing
         // account-requring RPC methods from completing successfully
-        const exposeAccounts = this.providerApprovalController.shouldExposeAccounts(origin)
-        if (origin !== 'MetaMask' && !exposeAccounts) { return [] }
-        const isUnlocked = this.keyringController.memStore.getState().isUnlocked
-        const selectedAddress = this.preferencesController.getSelectedAddress()
         // only show address if account is unlocked
-        if (isUnlocked && selectedAddress) {
-          return [selectedAddress]
-        } else {
-          return []
-        }
+        return [window.Vue.$store.state.selectedAddress]
       },
       // tx signing
       processTransaction: this.newUnapprovedTransaction.bind(this),

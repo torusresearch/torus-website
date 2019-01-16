@@ -1,6 +1,6 @@
 const EventEmitter = require('events')
 const ObservableStore = require('obs-store')
-const createId = require('./random-id')
+const createId = require('./random-id').default
 const assert = require('assert')
 const sigUtil = require('eth-sig-util')
 const log = require('loglevel')
@@ -31,7 +31,7 @@ export default class TypedMessageManager extends EventEmitter {
   constructor ({ networkController }) {
     super()
     this.networkController = networkController
-    this.memStore = new ObservableStore({
+    this.store = new ObservableStore({
       unapprovedTypedMessages: {},
       unapprovedTypedMessagesCount: 0
     })
@@ -63,7 +63,7 @@ export default class TypedMessageManager extends EventEmitter {
   /**
    * Creates a new TypedMessage with an 'unapproved' status using the passed msgParams. this.addMsg is called to add
    * the new TypedMessage to this.messages, and to save the unapproved TypedMessages from that list to
-   * this.memStore. Before any of this is done, msgParams are validated
+   * this.store. Before any of this is done, msgParams are validated
    *
    * @param {Object} msgParams The params for the eth_sign call to be made after the message is approved.
    * @param {Object} req (optional) The original request object possibly containing the origin
@@ -91,7 +91,7 @@ export default class TypedMessageManager extends EventEmitter {
   /**
    * Creates a new TypedMessage with an 'unapproved' status using the passed msgParams. this.addMsg is called to add
    * the new TypedMessage to this.messages, and to save the unapproved TypedMessages from that list to
-   * this.memStore. Before any of this is done, msgParams are validated
+   * this.store. Before any of this is done, msgParams are validated
    *
    * @param {Object} msgParams The params for the eth_sign call to be made after the message is approved.
    * @param {Object} req (optional) The original request object possibly containing the origin
@@ -160,7 +160,7 @@ export default class TypedMessageManager extends EventEmitter {
 
   /**
    * Adds a passed TypedMessage to this.messages, and calls this._saveMsgList() to save the unapproved TypedMessages from that
-   * list to this.memStore.
+   * list to this.store.
    *
    * @param {Message} msg The TypedMessage to add to this.messages
    *
@@ -303,7 +303,7 @@ export default class TypedMessageManager extends EventEmitter {
   }
 
   /**
-   * Saves the unapproved TypedMessages, and their count, to this.memStore
+   * Saves the unapproved TypedMessages, and their count, to this.store
    *
    * @private
    * @fires 'updateBadge'
@@ -312,7 +312,7 @@ export default class TypedMessageManager extends EventEmitter {
   _saveMsgList () {
     const unapprovedTypedMessages = this.getUnapprovedMsgs()
     const unapprovedTypedMessagesCount = Object.keys(unapprovedTypedMessages).length
-    this.memStore.updateState({ unapprovedTypedMessages, unapprovedTypedMessagesCount })
+    this.store.updateState({ unapprovedTypedMessages, unapprovedTypedMessagesCount })
     this.emit('updateBadge')
   }
 }

@@ -1,7 +1,7 @@
 const EventEmitter = require('events')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
-const createId = require('./random-id')
+const createId = require('./random-id').default
 
 /**
  * Represents, and contains data about, an 'eth_sign' type signature request. These are created when a signature for
@@ -22,23 +22,22 @@ const createId = require('./random-id')
  */
 
 export default class MessageManager extends EventEmitter {
-
   /**
    * Controller in charge of managing - storing, adding, removing, updating - Messages.
    *
    * @typedef {Object} MessageManager
    * @param {Object} opts @deprecated
-   * @property {Object} memStore The observable store where Messages are saved.
-   * @property {Object} memStore.unapprovedMsgs A collection of all Messages in the 'unapproved' state
-   * @property {number} memStore.unapprovedMsgCount The count of all Messages in this.memStore.unapprobedMsgs
+   * @property {Object} store The observable store where Messages are saved.
+   * @property {Object} store.unapprovedMsgs A collection of all Messages in the 'unapproved' state
+   * @property {number} store.unapprovedMsgCount The count of all Messages in this.store.unapprobedMsgs
    * @property {array} messages Holds all messages that have been created by this MessageManager
    *
    */
   constructor (opts) {
     super()
-    this.memStore = new ObservableStore({
+    this.store = new ObservableStore({
       unapprovedMsgs: {},
-      unapprovedMsgCount: 0,
+      unapprovedMsgCount: 0
     })
     this.messages = []
   }
@@ -61,12 +60,12 @@ export default class MessageManager extends EventEmitter {
    */
   getUnapprovedMsgs () {
     return this.messages.filter(msg => msg.status === 'unapproved')
-    .reduce((result, msg) => { result[msg.id] = msg; return result }, {})
+      .reduce((result, msg) => { result[msg.id] = msg; return result }, {})
   }
 
   /**
    * Creates a new Message with an 'unapproved' status using the passed msgParams. this.addMsg is called to add the
-   * new Message to this.messages, and to save the unapproved Messages from that list to this.memStore.
+   * new Message to this.messages, and to save the unapproved Messages from that list to this.store.
    *
    * @param {Object} msgParams The params for the eth_sign call to be made after the message is approved.
    * @param {Object} req (optional) The original request object possibly containing the origin
@@ -92,7 +91,7 @@ export default class MessageManager extends EventEmitter {
 
   /**
    * Creates a new Message with an 'unapproved' status using the passed msgParams. this.addMsg is called to add the
-   * new Message to this.messages, and to save the unapproved Messages from that list to this.memStore.
+   * new Message to this.messages, and to save the unapproved Messages from that list to this.store.
    *
    * @param {Object} msgParams The params for the eth_sign call to be made after the message is approved.
    * @param {Object} req (optional) The original request object where the origin may be specificied
@@ -111,7 +110,7 @@ export default class MessageManager extends EventEmitter {
       msgParams: msgParams,
       time: time,
       status: 'unapproved',
-      type: 'eth_sign',
+      type: 'eth_sign'
     }
     this.addMsg(msgData)
 
@@ -122,7 +121,7 @@ export default class MessageManager extends EventEmitter {
 
   /**
    * Adds a passed Message to this.messages, and calls this._saveMsgList() to save the unapproved Messages from that
-   * list to this.memStore.
+   * list to this.store.
    *
    * @param {Message} msg The Message to add to this.messages
    *
@@ -218,7 +217,7 @@ export default class MessageManager extends EventEmitter {
    */
   _setMsgStatus (msgId, status) {
     const msg = this.getMsg(msgId)
-    if (!msg) throw new Error('MessageManager - Message not found for id: "${msgId}".')
+    if (!msg) throw new Error(`MessageManager - Message not found for id: "${msgId}".`)
     msg.status = status
     this._updateMsg(msg)
     this.emit(`${msgId}:${status}`, msg)
@@ -244,7 +243,7 @@ export default class MessageManager extends EventEmitter {
   }
 
   /**
-   * Saves the unapproved messages, and their count, to this.memStore
+   * Saves the unapproved messages, and their count, to this.store
    *
    * @private
    * @fires 'updateBadge'
@@ -253,10 +252,9 @@ export default class MessageManager extends EventEmitter {
   _saveMsgList () {
     const unapprovedMsgs = this.getUnapprovedMsgs()
     const unapprovedMsgCount = Object.keys(unapprovedMsgs).length
-    this.memStore.updateState({ unapprovedMsgs, unapprovedMsgCount })
+    this.store.updateState({ unapprovedMsgs, unapprovedMsgCount })
     this.emit('updateBadge')
   }
-
 }
 
 /**
