@@ -1,3 +1,4 @@
+const ethUtil = require('ethereumjs-util')
 const debounce = require('debounce')
 const EventEmitter = require('events')
 const ComposableObservableStore = require('./ComposableObservableStore').default
@@ -251,7 +252,7 @@ export default class TorusController extends EventEmitter {
   /**
    * Signifies user intent to complete an eth_sign method.
    *
-   * @param  {Object} msgParams The params passed to eth_call.
+   * @param  {Object} msgParams The params passed to eth_sign.
    * @returns {Promise<Object>} Full state update.
    */
   signMessage (msgParams) {
@@ -260,16 +261,22 @@ export default class TorusController extends EventEmitter {
 
     // sets the status op the message to 'approved'
     // and removes the metamaskId for signing
+    var that = this
     return this.messageManager.approveMessage(msgParams)
       .then((cleanMsgParams) => {
-      // signs the message
-        return this.keyringController.signMessage(cleanMsgParams)
-      })
-      .then((rawSig) => {
-      // tells the listener that the message has been signed
-      // and can be returned to the dapp
-        this.messageManager.setMsgStatusSigned(msgId, rawSig)
-        return this.getState()
+        // signs the message
+        // return this.keyringController.signMessage(cleanMsgParams)
+        try {
+          var address = toChecksumAddress(sigUtil.normalize(cleanMsgParams.from))
+          var privKey = that.getPrivateKey(address)
+          var msgSig = ethUtil.ecsign(Buffer.from(cleanMsgParams.data, 'hex'), privKey)
+          var signature = ethUtil.bufferToHex(sigUtil.concatSig(msgSig.v, msgSig.r, msgSig.s))
+
+          that.messageManager.setMsgStatusSigned(msgId, signature)
+          return that.getState()
+        } catch (error) {
+          log.info('MetaMaskController - eth_signTypedData failed.', error)
+        }
       })
   }
 
@@ -318,16 +325,19 @@ export default class TorusController extends EventEmitter {
     const msgId = msgParams.metamaskId
     // sets the status op the message to 'approved'
     // and removes the metamaskId for signing
+    var that = this
     return this.personalMessageManager.approveMessage(msgParams)
       .then((cleanMsgParams) => {
         // signs the message
-        return this.keyringController.signPersonalMessage(cleanMsgParams)
-      })
-      .then((rawSig) => {
-        // tells the listener that the message has been signed
-        // and can be returned to the dapp
-        this.personalMessageManager.setMsgStatusSigned(msgId, rawSig)
-        return this.getState()
+        // return this.keyringController.signPersonalMessage(cleanMsgParams)
+        try {
+          const address = toChecksumAddress(sigUtil.normalize(cleanMsgParams.from))
+          let signature = sigUtil.personalSign(that.getPrivateKey(address), { data: cleanMsgParams.data })
+          that.personalMessageManager.setMsgStatusSigned(msgId, signature)
+          return that.getState()
+        } catch (error) {
+          log.info('MetaMaskController - eth_signTypedData failed.', error)
+        }
       })
   }
 
@@ -371,7 +381,7 @@ export default class TorusController extends EventEmitter {
     const msgId = msgParams.metamaskId
     try {
       const cleanMsgParams = await this.typedMessageManager.approveMessage(msgParams)
-      const address = sigUtil.normalize(cleanMsgParams.from)
+      const address = toChecksumAddress(sigUtil.normalize(cleanMsgParams.from))
       let signature = sigUtil.signTypedData(this.getPrivateKey(address), { data: JSON.parse(cleanMsgParams.data) })
       this.typedMessageManager.setMsgStatusSigned(msgId, signature)
       return this.getState()

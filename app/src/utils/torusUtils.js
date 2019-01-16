@@ -125,6 +125,7 @@ var communicationStream = new LocalMessageDuplexStream({
 /* Provider engine setup block */
 
 var TorusUtils = {
+  torusController,
   ec: Elliptic('secp256k1'),
   setupMultiplex,
   metamaskMux: setupMultiplex(metamaskStream),
@@ -359,7 +360,7 @@ const providerOutStream = TorusUtils.metamaskMux.createStream('provider')
 pump(
   providerOutStream,
   sendPassThroughStream,
-  transformStream,
+  // transformStream,
   providerStream,
   receivePassThroughStream,
   providerOutStream,
