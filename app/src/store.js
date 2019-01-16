@@ -13,8 +13,7 @@ const vuexPersist = new VuexPersist({
   key: 'my-app',
   storage: window.sessionStorage,
   reducer: (state) => {
-    delete state.popupVisible
-    return state
+    return { ...state, popupVisible: false }
   }
 })
 
