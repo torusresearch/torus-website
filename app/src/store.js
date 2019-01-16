@@ -12,7 +12,10 @@ Vue.use(Vuex)
 const vuexPersist = new VuexPersist({
   key: 'my-app',
   storage: window.sessionStorage,
-  filter: (mutation) => mutation.type === 'setPopupVisibility'
+  reducer: (state) => {
+    delete state.popupVisible
+    return state
+  }
 })
 
 var VuexStore = new Vuex.Store({
