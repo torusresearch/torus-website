@@ -59,7 +59,7 @@
             transactions.push(state.transactions[id])
           }
           console.log(transactions)
-          torusController.updateAndApproveTransaction(transactions[0].id)
+          torusController.updateAndApproveTransaction(transactions[0])
         } else {
           throw new Error('NO NEW TRANSACTIONS!!!!')
         }

@@ -67,7 +67,7 @@ export default class TorusController extends EventEmitter {
       getNetwork: this.networkController.getNetworkState.bind(this),
       // signs ethTx
       signTransaction: (ethTx, address) => {
-        ethTx.sign(this.getPrivateKey())
+        ethTx.sign(this.getPrivateKey(address))
         let rawTx = '0x' + ethTx.serialize().toString('hex')
         return rawTx
       },

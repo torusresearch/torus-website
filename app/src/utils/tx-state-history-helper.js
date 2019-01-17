@@ -54,7 +54,10 @@ function generateHistoryEntry (previousState, newState, note) {
 function replayHistory (_shortHistory) {
   // TODO: fix this
   const shortHistory = clone(_shortHistory)
-  return shortHistory.reduce((val, entry) => jsonDiffer.applyPatch(val, entry).newDocument)
+  console.log('HERE IN REPLAY HISTORY', _shortHistory)
+  var res = shortHistory.reduce((val, entry) => jsonDiffer.applyPatch(val, entry).newDocument)
+  console.log(res)
+  return res
 }
 
 /**

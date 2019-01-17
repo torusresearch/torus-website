@@ -176,11 +176,12 @@ class TransactionStateManager extends EventEmitter {
   */
   updateTx (txMeta, note) {
     // validate txParams
+    console.log('INSIDE updateTx', txMeta, note)
     if (txMeta.txParams) {
       if (typeof txMeta.txParams.data === 'undefined') {
         delete txMeta.txParams.data
       }
-
+      console.log('aweaweawe')
       this.validateTxParams(txMeta.txParams)
     }
 
@@ -197,6 +198,7 @@ class TransactionStateManager extends EventEmitter {
     const txList = this.getFullTxList()
     const index = txList.findIndex(txData => txData.id === txId)
     txList[index] = txMeta
+    console.log('beforesavelist')
     this._saveTxList(txList)
   }
 
@@ -217,6 +219,7 @@ class TransactionStateManager extends EventEmitter {
     @param txParams {object} - txParams to validate
   */
   validateTxParams (txParams) {
+    console.log('VALIDATETXPARAMS', txParams)
     Object.keys(txParams).forEach((key) => {
       const value = txParams[key]
       // validate types
@@ -437,6 +440,7 @@ class TransactionStateManager extends EventEmitter {
   */
   // Function is intended only for internal use
   _saveTxList (transactions) {
+    console.log('savetx')
     this.store.updateState({ transactions })
   }
 
