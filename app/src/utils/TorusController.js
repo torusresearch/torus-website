@@ -23,10 +23,12 @@ const createOriginMiddleware = require('./createOriginMiddleware')
 const createLoggerMiddleware = require('./createLoggerMiddleware')
 const createProviderMiddleware = require('./createProviderMiddleware')
 const createEngineStream = require('json-rpc-middleware-stream/engineStream')
+const RecentBlocksController = require('./RecentBlocksController').default
 const MessageManager = require('./MessageManager').default
 const PersonalMessageManager = require('./PersonalMessageManager').default
 const TypedMessageManager = require('./TypedMessageManager').default
 const ObservableStore = require('obs-store')
+const nodeify = require('./nodeify').default
 
 // defaults and constants
 const version = '0.0.1'
@@ -86,7 +88,10 @@ export default class TorusController extends EventEmitter {
     this.messageManager = new MessageManager()
     this.personalMessageManager = new PersonalMessageManager()
     this.typedMessageManager = new TypedMessageManager({ networkController: this.networkController })
-
+    this.recentBlocksController = new RecentBlocksController({
+      blockTracker: this.blockTracker,
+      provider: this.provider
+    })
     this.store.updateStructure({
       TransactionController: this.txController.store,
       NetworkController: this.networkController.store,
@@ -94,6 +99,7 @@ export default class TorusController extends EventEmitter {
       PersonalMessageManager: this.personalMessageManager.store,
       TypedMessageManager: this.typedMessageManager.store
     })
+    this.updateAndApproveTransaction = nodeify(this.txController.updateAndApproveTransaction, this.txController)
   }
 
   /**

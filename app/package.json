@@ -25,7 +25,6 @@
     "json-rpc-engine": "^4.0.0",
     "json-rpc-middleware-stream": "^2.1.0",
     "jsonschema": "^1.2.4",
-    "nodeify": "^1.0.1",
     "obj-multiplex": "^1.0.0",
     "obs-store": "^3.0.2",
     "percentile": "^1.2.1",

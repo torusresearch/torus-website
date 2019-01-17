@@ -89,6 +89,7 @@ engine.start()
  * TODO: temporary, to be fixed with a Vue popup or something like that
  */
 function triggerUi (type) {
+  console.log('TRIGGERUI:' + type)
   window.Vue.$store.dispatch('showPopup')
 }
 
@@ -318,29 +319,29 @@ var TorusUtils = {
 
 /* Stream setup block */
 
-var transformStream = new stream.Transform({
-  objectMode: true,
-  transform: function (chunk, enc, cb) {
-    log.info('TRANSFORM', chunk)
-    try {
-      if (chunk.method === 'eth_call' || chunk.method === 'eth_estimateGas') {
-        log.info('transforming:', chunk.params[0].from)
-        if (chunk.params[0].from && typeof chunk.params[0].from === 'string') {
-          if (chunk.params[0].from.substring(0, 2) === '0x') {
-            chunk.params[0].from = Buffer.from(chunk.params[0].from.slice(2), 'hex')
-          }
-        } else if (!chunk.params[0].from) {
-          chunk.params[0].from = []
-        }
-        log.info('transformed:', chunk.params[0].from)
-      }
-      cb(null, chunk)
-    } catch (err) {
-      log.error('Could not transform stream data', err)
-      cb(err, null)
-    }
-  }
-})
+// var transformStream = new stream.Transform({
+//   objectMode: true,
+//   transform: function (chunk, enc, cb) {
+//     log.info('TRANSFORM', chunk)
+//     try {
+//       if (chunk.method === 'eth_call' || chunk.method === 'eth_estimateGas') {
+//         log.info('transforming:', chunk.params[0].from)
+//         if (chunk.params[0].from && typeof chunk.params[0].from === 'string') {
+//           if (chunk.params[0].from.substring(0, 2) === '0x') {
+//             chunk.params[0].from = Buffer.from(chunk.params[0].from.slice(2), 'hex')
+//           }
+//         } else if (!chunk.params[0].from) {
+//           chunk.params[0].from = []
+//         }
+//         log.info('transformed:', chunk.params[0].from)
+//       }
+//       cb(null, chunk)
+//     } catch (err) {
+//       log.error('Could not transform stream data', err)
+//       cb(err, null)
+//     }
+//   }
+// })
 
 // doesnt do anything.. just for logging
 // since the stack traces are constrained to a single javascript context

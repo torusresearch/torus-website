@@ -60,6 +60,9 @@ var VuexStore = new Vuex.Store({
     showPopup (context, payload) {
       context.commit('setPopupVisibility', true)
     },
+    hidePopup(context, payload) {
+      context.commit('setPopupVisibility', false)
+    },
     updateEmail (context, payload) {
       context.commit('setEmail', payload.email)
     },
