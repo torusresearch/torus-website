@@ -1,14 +1,29 @@
 <template>
   <div id='torusModal'>
-    <div id='torusModal-content' >
-      <div id="torusModal-header">
-        <span id="close">&times;</span>
-        <h2>Sign Transaction?</h2>
+    <div v-if="this.type === 'signMessage'">
+      <div id='torusModal-content' >
+        <div id="torusModal-header">
+          <span id="close">&times;</span>
+          <h2>New Message</h2>
+        </div>
+        <div id="torusModal-body">
+          <p>Sign message from {{ this.msgOrigin }}?</p>
+          <button v-on:click="triggerDeny" style='width:50%'> Deny </button>
+          <button v-on:click="triggerSign" style='width:50%'> Sign </button>
+        </div>
       </div>
-      <div id="torusModal-body">
-        <p>Sign transaction from ???</p>
-        <button v-on:click="triggerDeny" style='width:50%'> Deny </button>
-        <button v-on:click="triggerSign" style='width:50%'> Sign </button>
+    </div>
+    <div v-else-if="this.type === 'transaction'"> 
+      <div id='torusModal-content' >
+        <div id="torusModal-header">
+          <span id="close">&times;</span>
+          <h2>New Transaction</h2>
+        </div>
+        <div id="torusModal-body">
+          <p>Send {{ parseInt(this.txParams.value, 16) / 1000000000000000000 }} ETH to {{ this.txParams.to }}?</p>
+          <button v-on:click="triggerDeny" style='width:50%'> Deny </button>
+          <button v-on:click="triggerSign" style='width:50%'> Send </button>
+        </div>
       </div>
     </div>
   </div>
@@ -19,6 +34,13 @@
 
   export default {
     name: "confirm",
+    data () {
+      return {
+        type: 'signMessage',
+        msgOrigin: 'unknown',
+        txParams: []
+      }
+    },
     methods: {
       triggerSign: function (event) {
         this.hidePopup();
@@ -61,7 +83,9 @@
           let transactions = []
           console.log(state)
           for (let id in state.transactions) {
-            transactions.push(state.transactions[id])
+            if (state.transactions[id].status === "unapproved") {
+              transactions.push(state.transactions[id])
+            }
           }
           console.log(transactions)
           torusController.updateAndApproveTransaction(transactions[0])
@@ -71,11 +95,29 @@
       },
       triggerDeny: function (event) {
         this.hidePopup();
+        //this.denyTransaction();
         throw new Error('USER DENIED TRANSACTION');
       },
       ...mapActions({
         hidePopup: 'hidePopup'
       })
+    },
+    mounted () {
+      this.msgOrigin = document.referrer;
+      let torusController = window.Vue.TorusUtils.torusController
+      let state = torusController.getState()
+      if (Object.keys(state.transactions).length > 0) {
+        let transactions = []
+        for (let id in state.transactions) {
+          if (state.transactions[id].status === "unapproved") {
+            transactions.push(state.transactions[id])
+          }
+        }
+        if (transactions.length >= 0) {
+          this.txParams = transactions[0].txParams;
+          this.type = 'transaction';
+        }
+      }
     }
   }
 </script>
