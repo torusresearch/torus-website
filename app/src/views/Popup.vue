@@ -35,13 +35,6 @@ export default {
   computed: {
     popupVisible () { return this.$store.state.popupVisible }
   },
-  watch: {
-    popupVisible () {
-      if (this.$store.state.popupVisible) {
-        this.showIFrame();
-      }
-    }
-  },
   methods: {
     ...mapActions({
       updateEmail: 'updateEmail',

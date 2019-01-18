@@ -130,6 +130,8 @@ function setupWeb3 () {
   window.addEventListener('message', message => {
     if (message.data === 'showTorusIframe') {
       showTorusOverlay();
+    } else if (message.data === 'hideTorusIframe') {
+      hideTorusOverlay();
     }
   });
 
@@ -144,6 +146,11 @@ function setupWeb3 () {
   function showTorusOverlay () {
     window.document.getElementById('torusLogin').style.display = 'none';
     window.document.getElementById('torusIframeContainer').style.display = 'block';
+  }
+
+  function hideTorusOverlay () {
+    window.document.getElementById('torusLogin').style.display = 'block';
+    window.document.getElementById('torusIframeContainer').style.display = 'none';
   }
 
   function showTorusButton () {

@@ -59,9 +59,11 @@ var VuexStore = new Vuex.Store({
   actions: {
     showPopup (context, payload) {
       context.commit('setPopupVisibility', true)
+      window.parent.postMessage('showTorusIframe', '*');
     },
     hidePopup(context, payload) {
       context.commit('setPopupVisibility', false)
+      window.parent.postMessage('hideTorusIframe', '*');
     },
     updateEmail (context, payload) {
       context.commit('setEmail', payload.email)
@@ -101,9 +103,6 @@ var VuexStore = new Vuex.Store({
     updateNetworkId (context, payload) {
       context.commit('setNetworkId', payload.networkId)
       torusUtils.updateStaticData({ networkId: payload.networkId })
-    },
-    showIFrame () {
-      window.parent.postMessage('showTorusIframe', '*');
     },
     triggerLogin: function () {
       if (window.auth2 === undefined) {
