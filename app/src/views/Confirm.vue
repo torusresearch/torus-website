@@ -70,8 +70,8 @@
         }
       },
       triggerDeny: function (event) {
-        throw new Error('USER DENIED TRANSACTION')
         this.hidePopup();
+        throw new Error('USER DENIED TRANSACTION');
       },
       ...mapActions({
         hidePopup: 'hidePopup'
