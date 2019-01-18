@@ -21,6 +21,7 @@
         </div>
         <div id="torusModal-body">
           <p>Send {{ parseInt(this.txParams.value, 16) / 1000000000000000000 }} ETH to {{ this.txParams.to }}?</p>
+          <p> Your balance: {{ balance }} ETH </p>
           <button v-on:click="triggerDeny" style='width:50%'> Deny </button>
           <button v-on:click="triggerSign" style='width:50%'> Send </button>
         </div>
@@ -38,6 +39,7 @@
       return {
         type: 'signMessage',
         msgOrigin: 'unknown',
+        balance: 0,
         txParams: []
       }
     },
@@ -103,6 +105,8 @@
       })
     },
     mounted () {
+      // TODO: implement balance
+      //this.balance = this.$store.state.balance;
       this.msgOrigin = document.referrer;
       let torusController = window.Vue.TorusUtils.torusController
       let state = torusController.getState()
