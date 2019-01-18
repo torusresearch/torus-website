@@ -102,6 +102,9 @@ var VuexStore = new Vuex.Store({
       context.commit('setNetworkId', payload.networkId)
       torusUtils.updateStaticData({ networkId: payload.networkId })
     },
+    showIFrame () {
+      window.parent.postMessage('showTorusIframe', '*');
+    },
     triggerLogin: function () {
       if (window.auth2 === undefined) {
         log.error('Could not find window.auth2, might not be loaded yet')

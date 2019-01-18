@@ -4,7 +4,7 @@
       <Confirm />
     </div>
     <div v-else>
-      <button v-on:click="triggerLogin" id="googleAuthBtn">Google</button>
+      <button v-on:click="triggerLogin" id="googleAuthBtnf">Google</button>
       <input id="email" />
     </div>
   </div>
@@ -35,6 +35,13 @@ export default {
   computed: {
     popupVisible () { return this.$store.state.popupVisible }
   },
+  watch: {
+    popupVisible () {
+      if (this.$store.state.popupVisible) {
+        this.showIFrame();
+      }
+    }
+  },
   methods: {
     ...mapActions({
       updateEmail: 'updateEmail',
@@ -45,7 +52,8 @@ export default {
       updateLoginStatus: 'updateLoginStatus',
       updateSelectedAddress: 'updateSelectedAddress',
       updateNetworkId: 'updateNetworkId',
-      triggerLogin: 'triggerLogin'
+      triggerLogin: 'triggerLogin',
+      showIFrame: 'showIFrame'
     }),
   },
   mounted () {
