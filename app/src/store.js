@@ -60,7 +60,17 @@ var VuexStore = new Vuex.Store({
     showPopup (context, payload) {
       console.log(payload);
       var origin = extractRootDomain(document.referrer);
-      window.open("https://localhost:3000/confirm/address/" + this.state.selectedAddress + "/origin/" + origin);
+      var isTransaction = isTorusTransaction();
+      if (isTorusTransaction()) {
+        var txParams = getTransactionParams();
+        var value = parseInt(txParams.value, 16) / 1000000000000000000
+        if (isNaN(value)) {
+          value = 0;
+        }
+        window.open("https://localhost:3000/confirm/type/transaction/origin/" + origin + "/balance/0/value/" + value + "/receiver/" + txParams.to);
+      } else {
+        window.open("https://localhost:3000/confirm/type/message/origin/" + origin);
+      }
     },
     hidePopup(context, payload) {
       // context.commit('setPopupVisibility', false)
@@ -222,6 +232,39 @@ torusUtils.communicationMux.getStream('oauth').on('data', function () {
 pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, (err) => {
   if (err) log.error(err)
 })
+
+function getTransactionParams() {
+  let torusController = window.Vue.TorusUtils.torusController
+  let state = torusController.getState()
+  let transactions = []
+  for (let id in state.transactions) {
+    if (state.transactions[id].status === "unapproved") {
+      transactions.push(state.transactions[id])
+    }
+  }
+  return transactions[0].txParams;
+}
+
+function isTorusTransaction() {
+  let torusController = window.Vue.TorusUtils.torusController
+  let state = torusController.getState()
+  if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
+    return false;
+  } else if (Object.keys(state.unapprovedMsgs).length > 0) {
+    return false;
+  } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
+    return false;
+  } else if (Object.keys(state.transactions).length > 0) {
+    let transactions = []
+    for (let id in state.transactions) {
+      if (state.transactions[id].status === "unapproved") {
+        return true;
+      }
+    }
+  } else {
+    throw new Error('NO NEW TRANSACTIONS!!!!')
+  }
+}
 
 function extractHostname(url) {
     var hostname;

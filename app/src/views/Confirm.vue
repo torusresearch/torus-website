@@ -1,6 +1,6 @@
 <template>
   <div id='torusModal'>
-    <div v-if="this.type === 'signMessage'">
+    <div v-if="$route.params.type === 'message'">
       <div id='torusModal-content' >
         <div id="torusModal-header">
           <span id="close">&times;</span>
@@ -13,15 +13,15 @@
         </div>
       </div>
     </div>
-    <div v-else-if="this.type === 'transaction'"> 
+    <div v-else-if="$route.params.type === 'transaction'"> 
       <div id='torusModal-content' >
         <div id="torusModal-header">
           <span id="close">&times;</span>
           <h2>New Transaction</h2>
         </div>
         <div id="torusModal-body">
-          <p>Send {{ parseInt(this.txParams.value, 16) / 1000000000000000000 }} ETH to {{ this.txParams.to }}?</p>
-          <p> Your balance: {{ balance }} ETH </p>
+          <p>Send {{ $route.params.value }} ETH to {{ $route.params.receiver }}?</p>
+          <p> Your balance: {{ $route.params.balance }} ETH </p>
           <button v-on:click="triggerDeny" style='width:50%'> Deny </button>
           <button v-on:click="triggerSign" style='width:50%'> Send </button>
         </div>
