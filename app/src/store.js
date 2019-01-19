@@ -24,6 +24,7 @@ var VuexStore = new Vuex.Store({
     idToken: '',
     wallet: {},
     balance: {},
+    weiBalance: 0,
     loggedIn: false,
     selectedAddress: '',
     networkId: 0,
@@ -43,6 +44,9 @@ var VuexStore = new Vuex.Store({
     setBalance (state, balance) {
       state.balance = balance
     },
+    setWeiBalance(state, weiBalance) {
+      state.weiBalance = weiBalance
+    },
     setLoginStatus (state, loggedIn) {
       state.loggedIn = loggedIn
     },
@@ -58,16 +62,14 @@ var VuexStore = new Vuex.Store({
   },
   actions: {
     showPopup (context, payload) {
-      console.log(payload);
       var origin = extractRootDomain(document.referrer);
       var isTransaction = isTorusTransaction();
       if (isTorusTransaction()) {
         var txParams = getTransactionParams();
-        var value = parseInt(txParams.value, 16) / 1000000000000000000
-        if (isNaN(value)) {
-          value = 0;
-        }
-        window.open("https://localhost:3000/confirm/type/transaction/origin/" + origin + "/balance/0/value/" + value + "/receiver/" + txParams.to);
+        var value = torusUtils.web3.utils.fromWei(txParams.value);
+        console.log("BALANCE", this.state.weiBalance);
+        var balance = torusUtils.web3.utils.fromWei(this.state.weiBalance.toString());
+        window.open("https://localhost:3000/confirm/type/transaction/origin/" + origin + "/balance/" + balance + "/value/" + value + "/receiver/" + txParams.to);
       } else {
         window.open("https://localhost:3000/confirm/type/message/origin/" + origin);
       }
@@ -103,6 +105,9 @@ var VuexStore = new Vuex.Store({
       if (payload.ethAddress && context.state.wallet.ethAddress) {
         context.commit('setBalance', { ...context.state.balance, [payload.ethAddress]: payload.value })
       }
+    },
+    updateWeiBalance (context, payload) {
+      context.commit('setWeiBalance', payload.weiBalance);
     },
     updateLoginStatus (context, payload) {
       context.commit('setLoginStatus', payload.loggedIn)
@@ -149,6 +154,10 @@ var VuexStore = new Vuex.Store({
                   torusUtils.web3.eth.net.getId()
                     .then(res => {
                       VuexStore.dispatch('updateNetworkId', { networkId: res })
+                      torusUtils.web3.eth.getBalance(data.ethAddress, function (err, res) {
+                        if (err) { log.error(err) }
+                        VuexStore.dispatch('updateWeiBalance', { weiBalance: res });
+                      })
                     // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
                     })
                     .catch(e => log.error(e))
