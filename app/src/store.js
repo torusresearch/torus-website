@@ -58,12 +58,13 @@ var VuexStore = new Vuex.Store({
   },
   actions: {
     showPopup (context, payload) {
-      context.commit('setPopupVisibility', true)
-      window.parent.postMessage('showTorusIframe', '*');
+      console.log(payload);
+      var origin = extractRootDomain(document.referrer);
+      window.open("https://localhost:3000/confirm/address/" + this.state.selectedAddress + "/origin/" + origin);
     },
     hidePopup(context, payload) {
-      context.commit('setPopupVisibility', false)
-      window.parent.postMessage('hideTorusIframe', '*');
+      // context.commit('setPopupVisibility', false)
+      // window.parent.postMessage('hideTorusIframe', '*');
     },
     updateEmail (context, payload) {
       context.commit('setEmail', payload.email)
@@ -153,6 +154,62 @@ var VuexStore = new Vuex.Store({
   }
 })
 
+var bc = new BroadcastChannel('torus_channel');
+bc.onmessage = function (ev) { 
+  if (ev.origin === 'https://localhost:3000' || 'https://tor.us') {
+    if (ev.data === 'confirm-transaction') {
+        let torusController = window.Vue.TorusUtils.torusController
+        let state = torusController.getState()
+        if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
+          let unapprovedPersonalMsgs = []
+          console.log(state)
+          for (let id in state.unapprovedPersonalMsgs) {
+            unapprovedPersonalMsgs.push(state.unapprovedPersonalMsgs[id])
+          }
+          unapprovedPersonalMsgs = unapprovedPersonalMsgs.sort((a, b) => { return a.time - b.time })
+          console.log(unapprovedPersonalMsgs)
+          let msgParams = unapprovedPersonalMsgs[0].msgParams
+          msgParams.metamaskId = parseInt(unapprovedPersonalMsgs[0].id)
+          torusController.signPersonalMessage(msgParams)
+        } else if (Object.keys(state.unapprovedMsgs).length > 0) {
+          let unapprovedMsgs = []
+          console.log(state)
+          for (let id in state.unapprovedMsgs) {
+            unapprovedMsgs.push(state.unapprovedMsgs[id])
+          }
+          unapprovedMsgs = unapprovedMsgs.sort((a, b) => { return a.time - b.time })
+          console.log(unapprovedMsgs)
+          let msgParams = unapprovedMsgs[0].msgParams
+          msgParams.metamaskId = parseInt(unapprovedMsgs[0].id)
+          torusController.signPersonalMessage(msgParams)
+        } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
+          let unapprovedTypedMessages = []
+          console.log(state)
+          for (let id in state.unapprovedTypedMessages) {
+            unapprovedTypedMessages.push(state.unapprovedTypedMessages[id])
+          }
+          unapprovedTypedMessages = unapprovedTypedMessages.sort((a, b) => { return a.time - b.time })
+          console.log(unapprovedTypedMessages)
+          let msgParams = unapprovedTypedMessages[0].msgParams
+          msgParams.metamaskId = parseInt(unapprovedTypedMessages[0].id)
+          torusController.signPersonalMessage(msgParams)
+        } else if (Object.keys(state.transactions).length > 0) {
+          let transactions = []
+          console.log(state)
+          for (let id in state.transactions) {
+            if (state.transactions[id].status === "unapproved") {
+              transactions.push(state.transactions[id])
+            }
+          }
+          console.log(transactions)
+          torusController.updateAndApproveTransaction(transactions[0])
+        } else {
+          throw new Error('NO NEW TRANSACTIONS!!!!')
+        }
+    }
+  }
+}
+
 // setup handlers for communicationStream
 var passthroughStream = new stream.PassThrough({ objectMode: true })
 passthroughStream.on('data', function () {
@@ -165,5 +222,43 @@ torusUtils.communicationMux.getStream('oauth').on('data', function () {
 pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, (err) => {
   if (err) log.error(err)
 })
+
+function extractHostname(url) {
+    var hostname;
+    //find & remove protocol (http, ftp, etc.) and get hostname
+
+    if (url.indexOf("//") > -1) {
+        hostname = url.split('/')[2];
+    }
+    else {
+        hostname = url.split('/')[0];
+    }
+
+    //find & remove port number
+    hostname = hostname.split(':')[0];
+    //find & remove "?"
+    hostname = hostname.split('?')[0];
+
+    return hostname;
+}
+
+// To address those who want the "root domain," use this function:
+function extractRootDomain(url) {
+    var domain = extractHostname(url),
+        splitArr = domain.split('.'),
+        arrLen = splitArr.length;
+
+    //extracting the root domain here
+    //if there is a subdomain 
+    if (arrLen > 2) {
+        domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
+        //check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
+        if (splitArr[arrLen - 2].length == 2 && splitArr[arrLen - 1].length == 2) {
+            //this is using a ccTLD
+            domain = splitArr[arrLen - 3] + '.' + domain;
+        }
+    }
+    return domain;
+}
 
 export default VuexStore

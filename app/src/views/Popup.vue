@@ -45,8 +45,7 @@ export default {
       updateLoginStatus: 'updateLoginStatus',
       updateSelectedAddress: 'updateSelectedAddress',
       updateNetworkId: 'updateNetworkId',
-      triggerLogin: 'triggerLogin',
-      showIFrame: 'showIFrame'
+      triggerLogin: 'triggerLogin'
     }),
   },
   mounted () {
