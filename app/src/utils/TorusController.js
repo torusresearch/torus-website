@@ -100,6 +100,7 @@ export default class TorusController extends EventEmitter {
       TypedMessageManager: this.typedMessageManager.store
     })
     this.updateAndApproveTransaction = nodeify(this.txController.updateAndApproveTransaction, this.txController)
+    this.cancelTransaction = nodeify(this.txController.cancelTransaction, this.txController)
   }
 
   /**
