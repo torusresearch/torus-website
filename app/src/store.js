@@ -266,7 +266,7 @@ bc.onmessage = function (ev) {
             transactions.push(state.transactions[id])
           }
         }
-        torusController.cancelTransaction(transactions[0])
+        torusController.cancelTransaction(transactions[0].id)
       }
     }
   }
