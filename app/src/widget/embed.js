@@ -51,11 +51,6 @@ function createWidget () {
   }
   embedUtils.runOnLoad(attachOnLoad)
   embedUtils.runOnLoad(bindOnLoad)
-  // torusMenuBtn.addEventListener('click', function () {
-  //   torusMenuBtn.style.display = 'none'
-  //   torusIframe.style.display = 'block'
-  // })
-  // torusMenuBtn.style.backgroundColor = styleColor
 
   log.info('STYLE POSITION: ' + stylePosition)
   switch (stylePosition) {
@@ -166,7 +161,6 @@ function setupWeb3 () {
 
   var displayStream = communicationMux.createStream('display')
   displayStream.on('data', function (msg) {
-    console.log("DISPLAY IFRAME!")
     if (msg === 'close') {
       showTorusButton()
     } else if (msg === 'open') {

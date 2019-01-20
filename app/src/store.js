@@ -63,7 +63,6 @@ var VuexStore = new Vuex.Store({
   actions: {
     showPopup (context, payload) {
       var origin = extractRootDomain(document.referrer);
-      var isTransaction = isTorusTransaction();
       if (isTorusTransaction()) {
         var txParams = getTransactionParams();
         var value = torusUtils.web3.utils.fromWei(txParams.value.toString());
@@ -106,7 +105,12 @@ var VuexStore = new Vuex.Store({
       }
     },
     updateWeiBalance (context, payload) {
-      context.commit('setWeiBalance', payload.weiBalance);
+      if (this.state.selectedAddress) {
+        torusUtils.web3.eth.getBalance(this.state.selectedAddress, function (err, res) {
+          if (err) { log.error(err) }
+          context.commit('setWeiBalance', res);
+        })
+      }
     },
     updateLoginStatus (context, payload) {
       context.commit('setLoginStatus', payload.loggedIn)
@@ -153,11 +157,6 @@ var VuexStore = new Vuex.Store({
                   torusUtils.web3.eth.net.getId()
                     .then(res => {
                       VuexStore.dispatch('updateNetworkId', { networkId: res })
-                      torusUtils.web3.eth.getBalance(data.ethAddress, function (err, res) {
-                        if (err) { log.error(err) }
-                        VuexStore.dispatch('updateWeiBalance', { weiBalance: res });
-                      })
-                    // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
                     })
                     .catch(e => log.error(e))
                 }

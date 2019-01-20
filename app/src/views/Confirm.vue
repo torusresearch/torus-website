@@ -20,6 +20,7 @@
           <h2>New Transaction</h2>
         </div>
         <div id="torusModal-body">
+          <p> Origin: {{ $route.params.origin }} </p>
           <p>Send {{ $route.params.value }} ETH to {{ $route.params.receiver }}?</p>
           <p> Your balance: {{ $route.params.balance }} ETH </p>
           <button v-on:click="triggerDeny" style='width:50%'> Deny </button>
