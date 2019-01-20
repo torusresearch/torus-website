@@ -29,6 +29,7 @@ const PersonalMessageManager = require('./PersonalMessageManager').default
 const TypedMessageManager = require('./TypedMessageManager').default
 const ObservableStore = require('obs-store')
 const nodeify = require('./nodeify').default
+const KeyringController = require('eth-keyring-controller')
 
 // defaults and constants
 const version = '0.0.1'
@@ -60,6 +61,15 @@ export default class TorusController extends EventEmitter {
         this.accountTracker.stop()
       }
     })
+
+    // key mgmt
+    this.keyringController = new KeyringController({
+      getNetwork: this.networkController.getNetworkState.bind(this.networkController),
+      encryptor: opts.encryptor || undefined
+    })
+
+    this.keyringController.memStore.subscribe((s) => this._onKeyringControllerUpdate(s))
+
     // tx mgmt
     this.txController = new TransactionController({
       networkStore: this.networkController.networkStore,
@@ -94,6 +104,7 @@ export default class TorusController extends EventEmitter {
     })
     this.store.updateStructure({
       TransactionController: this.txController.store,
+      KeyringController: this.keyringController.store,
       NetworkController: this.networkController.store,
       MessageManager: this.messageManager.store,
       PersonalMessageManager: this.personalMessageManager.store,
@@ -591,5 +602,33 @@ export default class TorusController extends EventEmitter {
 
     releaseLock()
     return pendingNonce
+  }
+
+  /**
+   * Handle a KeyringController update
+   * @param {object} state the KC state
+   * @return {Promise<void>}
+   * @private
+   */
+  async _onKeyringControllerUpdate (state) {
+    const { isUnlocked, keyrings } = state
+    const addresses = keyrings.reduce((acc, { accounts }) => acc.concat(accounts), [])
+
+    if (!addresses.length) {
+      return
+    }
+
+    // Ensure preferences + identities controller know about all addresses
+    this.preferencesController.addAddresses(addresses)
+    this.accountTracker.syncWithAddresses(addresses)
+
+    const wasLocked = !isUnlocked
+    if (wasLocked) {
+      const oldSelectedAddress = this.preferencesController.getSelectedAddress()
+      if (!addresses.includes(oldSelectedAddress)) {
+        const address = addresses[0]
+        await this.preferencesController.setSelectedAddress(address)
+      }
+    }
   }
 }
