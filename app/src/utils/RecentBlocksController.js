@@ -22,18 +22,21 @@ class RecentBlocksController {
    * @property {array} store.recentBlocks Contains all recent blocks, up to a total that is equal to this.historyLength
    *
    */
-  constructor (opts = {}) {
+  constructor(opts = {}) {
     const { blockTracker, provider } = opts
     this.blockTracker = blockTracker
     this.ethQuery = new EthQuery(provider)
     this.historyLength = opts.historyLength || 40
 
-    const initState = extend({
-      recentBlocks: []
-    }, opts.initState)
+    const initState = extend(
+      {
+        recentBlocks: []
+      },
+      opts.initState
+    )
     this.store = new ObservableStore(initState)
 
-    this.blockTracker.on('latest', async (newBlockNumberHex) => {
+    this.blockTracker.on('latest', async newBlockNumberHex => {
       try {
         await this.processBlock(newBlockNumberHex)
       } catch (err) {
@@ -47,7 +50,7 @@ class RecentBlocksController {
    * Sets store.recentBlocks to an empty array
    *
    */
-  resetState () {
+  resetState() {
     this.store.updateState({
       recentBlocks: []
     })
@@ -60,7 +63,7 @@ class RecentBlocksController {
    * @param {object} newBlock The new block to modify and add to the recentBlocks array
    *
    */
-  async processBlock (newBlockNumberHex) {
+  async processBlock(newBlockNumberHex) {
     const newBlockNumber = Number.parseInt(newBlockNumberHex, 16)
     const newBlock = await this.getBlockByNumber(newBlockNumber, true)
     if (!newBlock) return
@@ -86,7 +89,7 @@ class RecentBlocksController {
    * @param {object} newBlock The new block to modify and add to the beginning of the recentBlocks array
    *
    */
-  backfillBlock (newBlock) {
+  backfillBlock(newBlock) {
     const block = this.mapTransactionsToPrices(newBlock)
 
     const state = this.store.getState()
@@ -106,9 +109,9 @@ class RecentBlocksController {
    * @returns {object} The modified block.
    *
    */
-  mapTransactionsToPrices (newBlock) {
+  mapTransactionsToPrices(newBlock) {
     const block = extend(newBlock, {
-      gasPrices: newBlock.transactions.map((tx) => {
+      gasPrices: newBlock.transactions.map(tx => {
         return tx.gasPrice
       })
     })
@@ -126,22 +129,26 @@ class RecentBlocksController {
    *
    * @returns {Promise<void>} Promises undefined
    */
-  async backfill () {
-    this.blockTracker.once('latest', async (blockNumberHex) => {
+  async backfill() {
+    this.blockTracker.once('latest', async blockNumberHex => {
       const currentBlockNumber = Number.parseInt(blockNumberHex, 16)
       const blocksToFetch = Math.min(currentBlockNumber, this.historyLength)
       const prevBlockNumber = currentBlockNumber - 1
-      const targetBlockNumbers = Array(blocksToFetch).fill().map((_, index) => prevBlockNumber - index)
-      await Promise.all(targetBlockNumbers.map(async (targetBlockNumber) => {
-        try {
-          const newBlock = await this.getBlockByNumber(targetBlockNumber, true)
-          if (!newBlock) return
+      const targetBlockNumbers = Array(blocksToFetch)
+        .fill()
+        .map((_, index) => prevBlockNumber - index)
+      await Promise.all(
+        targetBlockNumbers.map(async targetBlockNumber => {
+          try {
+            const newBlock = await this.getBlockByNumber(targetBlockNumber, true)
+            if (!newBlock) return
 
-          this.backfillBlock(newBlock)
-        } catch (e) {
-          log.error(e)
-        }
-      }))
+            this.backfillBlock(newBlock)
+          } catch (e) {
+            log.error(e)
+          }
+        })
+      )
     })
   }
 
@@ -152,7 +159,7 @@ class RecentBlocksController {
    * @returns {Promise<object>} Promises A block with the passed number
    *
    */
-  async getBlockByNumber (number) {
+  async getBlockByNumber(number) {
     const blockNumberHex = '0x' + number.toString(16)
     return pify(this.ethQuery.getBlockByNumber).call(this.ethQuery, blockNumberHex, true)
   }

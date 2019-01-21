@@ -25,43 +25,48 @@ const setupMultiplex = require('./setupMultiplex').default
 /* Provider engine setup block */
 
 var engine = new ProviderEngine()
-engine.addProvider(new FixtureSubprovider({
-  web3_clientVersion: 'ProviderEngine/v0.0.0/javascript',
-  net_listening: true,
-  eth_hashrate: '0x00',
-  eth_mining: false,
-  eth_syncing: true
-}))
+engine.addProvider(
+  new FixtureSubprovider({
+    web3_clientVersion: 'ProviderEngine/v0.0.0/javascript',
+    net_listening: true,
+    eth_hashrate: '0x00',
+    eth_mining: false,
+    eth_syncing: true
+  })
+)
 engine.addProvider(new CacheSubprovider())
 engine.addProvider(new FilterSubprovider())
 engine.addProvider(new NonceSubprovider())
 engine.addProvider(new VmSubprovider())
-engine.addProvider(new HookedWalletEthTxSubprovider({
-  getAccounts: function (cb) {
-    var ethAddress = window.Vue.$store.state.selectedAddress
-    console.log('GETTING ACCOUNT:', ethAddress)
-    cb(null, ethAddress ? [toChecksumAddress(ethAddress)] : [])
-  },
-  getPrivateKey: function (address, cb) {
-    var addr = toChecksumAddress(address)
-    var wallet = window.Vue.$store.state.wallet
-    if (addr == null) {
-      cb(new Error('No address given.'), null)
-    } else if (wallet[addr] == null) {
-      cb(new Error('No private key accessible. Please login.'), null)
-    } else {
-      log.info('PRIVATE KEY RETRIEVED...')
-      cb(null, Buffer.from(wallet[addr], 'hex'))
+engine.addProvider(
+  new HookedWalletEthTxSubprovider({
+    getAccounts: function(cb) {
+      var ethAddress = window.Vue.$store.state.selectedAddress
+      console.log('GETTING ACCOUNT:', ethAddress)
+      cb(null, ethAddress ? [toChecksumAddress(ethAddress)] : [])
+    },
+    getPrivateKey: function(address, cb) {
+      var addr = toChecksumAddress(address)
+      var wallet = window.Vue.$store.state.wallet
+      if (addr == null) {
+        cb(new Error('No address given.'), null)
+      } else if (wallet[addr] == null) {
+        cb(new Error('No private key accessible. Please login.'), null)
+      } else {
+        log.info('PRIVATE KEY RETRIEVED...')
+        cb(null, Buffer.from(wallet[addr], 'hex'))
+      }
+    },
+    approveTransaction: function(txParams, cb) {
+      if (confirm('Confirm signature for transaction?')) {
+        // TODO: add transaction details
+        cb(null, true)
+      } else {
+        cb(new Error('User denied transaction.'), false)
+      }
     }
-  },
-  approveTransaction: function (txParams, cb) {
-    if (confirm('Confirm signature for transaction?')) { // TODO: add transaction details
-      cb(null, true)
-    } else {
-      cb(new Error('User denied transaction.'), false)
-    }
-  }
-}))
+  })
+)
 var rpcSource = new RpcSubprovider({
   // rpcUrl: 'https://mainnet.infura.io/v3/619e62693bc14791a9925152bbe514d1'
   rpcUrl: 'https://api.infura.io/v1/jsonrpc/mainnet'
@@ -75,12 +80,12 @@ engine.addProvider(rpcSource)
 //   rpcUrl: 'wss://mainnet.infura.io/ws/v3/619e62693bc14791a9925152bbe514d1'
 // })
 // engine.addProvider(wsSubprovider)
-engine.on('block', function (block) {
+engine.on('block', function(block) {
   log.info('================================')
   log.info('BLOCK CHANGED:', '#' + block.number.toString('hex'), '0x' + block.hash.toString('hex'))
   log.info('================================')
 })
-engine.on('error', function (err) {
+engine.on('error', function(err) {
   log.error(err.stack)
 })
 engine.start()
@@ -88,7 +93,7 @@ engine.start()
 /**
  * TODO: temporary, to be fixed with a Vue popup or something like that
  */
-function triggerUi (type) {
+function triggerUi(type) {
   console.log('TRIGGERUI:' + type)
   window.Vue.$store.dispatch('showPopup')
 }
@@ -103,7 +108,7 @@ const torusController = new TorusController({
 const rpcEngine = new RpcEngine()
 const filterMiddleware = createFilterMiddleware({ provider: torusController.provider, blockTracker: torusController.blockTracker })
 const subscriptionManager = createSubscriptionManager({ provider: torusController.provider, blockTracker: torusController.blockTracker })
-subscriptionManager.events.on('notification', (message) => rpcEngine.emit('notification', message))
+subscriptionManager.events.on('notification', message => rpcEngine.emit('notification', message))
 rpcEngine.push(createOriginMiddleware({ origin: 'torus' }))
 rpcEngine.push(createLoggerMiddleware({ origin: 'torus' }))
 rpcEngine.push(filterMiddleware)
@@ -131,7 +136,7 @@ var TorusUtils = {
   setupMultiplex,
   metamaskMux: setupMultiplex(metamaskStream),
   communicationMux: setupMultiplex(communicationStream),
-  updateStaticData: function (payload) {
+  updateStaticData: function(payload) {
     console.log('STATIC DATA:', payload)
     var publicConfigOutStream = TorusUtils.metamaskMux.getStream('publicConfig')
     if (payload.selectedAddress) {
@@ -141,7 +146,7 @@ var TorusUtils = {
     }
   },
   web3: new Web3(engine),
-  retrieveShares: function (endpoints, email, idToken, cb) {
+  retrieveShares: function(endpoints, email, idToken, cb) {
     var promiseArr = []
     var responses = []
     for (var i = 0; i < endpoints.length; i++) {
@@ -162,14 +167,15 @@ var TorusUtils = {
             email: email
           }
         })
-      }).then(res => res.json())
+      })
+        .then(res => res.json())
         .then(res => responses.push(res))
         .catch(err => {
           console.error(err)
         })
       promiseArr.push(p)
     }
-    Promise.all(promiseArr).then(function () {
+    Promise.all(promiseArr).then(function() {
       console.log('completed')
       var shares = []
       var nodeIndex = []
@@ -181,7 +187,10 @@ var TorusUtils = {
       console.log(shares, nodeIndex)
       var privateKey = TorusUtils.lagrangeInterpolation(shares.slice(2), nodeIndex.slice(2))
       var key = TorusUtils.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
-      var publicKey = key.getPublic().encode('hex').slice(2)
+      var publicKey = key
+        .getPublic()
+        .encode('hex')
+        .slice(2)
       var ethAddressLower = '0x' + TorusUtils.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
       var ethAddress = toChecksumAddress(ethAddressLower)
       cb(null, {
@@ -190,7 +199,7 @@ var TorusUtils = {
       })
     })
   },
-  lagrangeInterpolation: function (shares, nodeIndex) {
+  lagrangeInterpolation: function(shares, nodeIndex) {
     if (shares.length !== nodeIndex.length) {
       log.error('Shares do not match up')
       return null
@@ -214,7 +223,7 @@ var TorusUtils = {
     }
     return secret.umod(TorusUtils.ec.curve.n)
   },
-  getPubKeyAsync: function (web3, endpoints, email, cb) {
+  getPubKeyAsync: function(web3, endpoints, email, cb) {
     var promiseArr = []
     var shares = []
     for (var i = 0; i < endpoints.length; i++) {
@@ -233,87 +242,91 @@ var TorusUtils = {
             email
           }
         })
-      }).then(res => res.json())
+      })
+        .then(res => res.json())
         .then(res => shares.push(res))
         .catch(err => {
           console.error(err)
         })
       promiseArr.push(p)
     }
-    Promise.all(promiseArr).then(function () {
-      promiseArr = []
-      shares = []
-      for (var i = 0; i < endpoints.length; i++) {
-        var p = fetch(endpoints[i], {
-          method: 'POST',
-          cache: 'no-cache',
-          mode: 'cors',
-          headers: {
-            'Content-Type': 'application/json; charset=utf-8'
-          },
-          body: JSON.stringify({
-            jsonrpc: '2.0',
-            method: 'SecretAssign',
-            id: 10,
-            params: {
-              email
+    Promise.all(promiseArr)
+      .then(function() {
+        promiseArr = []
+        shares = []
+        for (var i = 0; i < endpoints.length; i++) {
+          var p = fetch(endpoints[i], {
+            method: 'POST',
+            cache: 'no-cache',
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json; charset=utf-8'
+            },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              method: 'SecretAssign',
+              id: 10,
+              params: {
+                email
+              }
+            })
+          })
+            .then(res => res.json())
+            .then(res => shares.push(res))
+            .catch(err => {
+              console.error(err)
+            })
+          promiseArr.push(p)
+        }
+        return Promise.all(promiseArr)
+      })
+      .then(function() {
+        try {
+          console.log('completed')
+          console.log(shares)
+          var Xs = {}
+          var Ys = {}
+          shares.map(function(share) {
+            if (share.result && share.result.PubShareX) {
+              if (Xs[share.result.PubShareX] === undefined) {
+                Xs[share.result.PubShareX] = 1
+              } else {
+                Xs[share.result.PubShareX]++
+              }
+            }
+            if (share.result && share.result.PubShareY) {
+              if (Ys[share.result.PubShareY] === undefined) {
+                Ys[share.result.PubShareY] = 1
+              } else {
+                Ys[share.result.PubShareY]++
+              }
             }
           })
-        }).then(res => res.json())
-          .then(res => shares.push(res))
-          .catch(err => {
-            console.error(err)
-          })
-        promiseArr.push(p)
-      }
-      return Promise.all(promiseArr)
-    }).then(function () {
-      try {
-        console.log('completed')
-        console.log(shares)
-        var Xs = {}
-        var Ys = {}
-        shares.map(function (share) {
-          if (share.result && share.result.PubShareX) {
-            if (Xs[share.result.PubShareX] === undefined) {
-              Xs[share.result.PubShareX] = 1
-            } else {
-              Xs[share.result.PubShareX]++
+          var finalX
+          var finalY
+          for (let key in Xs) {
+            if (Xs[key] >= 3) {
+              finalX = key
             }
           }
-          if (share.result && share.result.PubShareY) {
-            if (Ys[share.result.PubShareY] === undefined) {
-              Ys[share.result.PubShareY] = 1
-            } else {
-              Ys[share.result.PubShareY]++
+          for (let key in Ys) {
+            if (Ys[key] >= 3) {
+              finalY = key
             }
           }
-        })
-        var finalX
-        var finalY
-        for (let key in Xs) {
-          if (Xs[key] >= 3) {
-            finalX = key
-          }
+          var pubk = TorusUtils.ec.keyFromPublic({
+            x: finalX,
+            y: finalY
+          }).pub
+          console.log(pubk.encode('hex'))
+          var publicKey = pubk.encode('hex').slice(2)
+          var ethAddress = '0x' + web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38)
+          console.log(ethAddress)
+          cb(null, ethAddress)
+        } catch (err) {
+          cb(err, null)
         }
-        for (let key in Ys) {
-          if (Ys[key] >= 3) {
-            finalY = key
-          }
-        }
-        var pubk = TorusUtils.ec.keyFromPublic({
-          x: finalX,
-          y: finalY
-        }).pub
-        console.log(pubk.encode('hex'))
-        var publicKey = pubk.encode('hex').slice(2)
-        var ethAddress = '0x' + web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38)
-        console.log(ethAddress)
-        cb(null, ethAddress)
-      } catch (err) {
-        cb(err, null)
-      }
-    })
+      })
   }
 }
 
@@ -347,12 +360,12 @@ var TorusUtils = {
 // since the stack traces are constrained to a single javascript context
 // we use a passthrough stream to log method calls
 var receivePassThroughStream = new stream.PassThrough({ objectMode: true })
-receivePassThroughStream.on('data', function () {
+receivePassThroughStream.on('data', function() {
   log.info('receivePassThroughStream', arguments)
 })
 
 var sendPassThroughStream = new stream.PassThrough({ objectMode: true })
-sendPassThroughStream.on('data', function () {
+sendPassThroughStream.on('data', function() {
   log.info('sendPassThroughStream', arguments)
 })
 
@@ -365,15 +378,15 @@ pump(
   providerStream,
   receivePassThroughStream,
   providerOutStream,
-  (err) => {
+  err => {
     if (err) log.error(err)
   }
 )
 
 /* Stream setup block */
 
-function createLoggerMiddleware (opts) {
-  return function loggerMiddleware (/** @type {any} */ req, /** @type {any} */ res, /** @type {Function} */ next) {
+function createLoggerMiddleware(opts) {
+  return function loggerMiddleware(/** @type {any} */ req, /** @type {any} */ res, /** @type {Function} */ next) {
     next((/** @type {Function} */ cb) => {
       if (res.error) {
         log.error('Error in RPC response:\n', res)
@@ -385,7 +398,7 @@ function createLoggerMiddleware (opts) {
   }
 }
 
-function createProviderMiddleware ({ provider }) {
+function createProviderMiddleware({ provider }) {
   return (req, res, next, end) => {
     provider.sendAsync(req, (err, _res) => {
       if (err) return end(err)
@@ -395,8 +408,8 @@ function createProviderMiddleware ({ provider }) {
   }
 }
 
-function createOriginMiddleware (opts) {
-  return function originMiddleware (req, res, next) {
+function createOriginMiddleware(opts) {
+  return function originMiddleware(req, res, next) {
     req.origin = opts.origin
     next()
   }

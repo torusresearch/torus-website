@@ -33,7 +33,7 @@ export default class MessageManager extends EventEmitter {
    * @property {array} messages Holds all messages that have been created by this MessageManager
    *
    */
-  constructor (opts) {
+  constructor(opts) {
     super()
     this.store = new ObservableStore({
       unapprovedMsgs: {},
@@ -48,7 +48,7 @@ export default class MessageManager extends EventEmitter {
    * @returns {number} The number of 'unapproved' Messages in this.messages
    *
    */
-  get unapprovedMsgCount () {
+  get unapprovedMsgCount() {
     return Object.keys(this.getUnapprovedMsgs()).length
   }
 
@@ -58,9 +58,11 @@ export default class MessageManager extends EventEmitter {
    * @returns {Object} An index of Message ids to Messages, for all 'unapproved' Messages in this.messages
    *
    */
-  getUnapprovedMsgs () {
-    return this.messages.filter(msg => msg.status === 'unapproved')
-      .reduce((result, msg) => { result[msg.id] = msg; return result }, {})
+  getUnapprovedMsgs() {
+    return this.messages.filter(msg => msg.status === 'unapproved').reduce((result, msg) => {
+      result[msg.id] = msg
+      return result
+    }, {})
   }
 
   /**
@@ -72,11 +74,11 @@ export default class MessageManager extends EventEmitter {
    * @returns {promise} after signature has been
    *
    */
-  addUnapprovedMessageAsync (msgParams, req) {
+  addUnapprovedMessageAsync(msgParams, req) {
     return new Promise((resolve, reject) => {
       const msgId = this.addUnapprovedMessage(msgParams, req)
       // await finished
-      this.once(`${msgId}:finished`, (data) => {
+      this.once(`${msgId}:finished`, data => {
         switch (data.status) {
           case 'signed':
             return resolve(data.rawSig)
@@ -98,12 +100,12 @@ export default class MessageManager extends EventEmitter {
    * @returns {number} The id of the newly created message.
    *
    */
-  addUnapprovedMessage (msgParams, req) {
+  addUnapprovedMessage(msgParams, req) {
     // add origin from request
     if (req) msgParams.origin = req.origin
     msgParams.data = normalizeMsgData(msgParams.data)
     // create txData obj with parameters and meta data
-    var time = (new Date()).getTime()
+    var time = new Date().getTime()
     var msgId = createId()
     var msgData = {
       id: msgId,
@@ -126,7 +128,7 @@ export default class MessageManager extends EventEmitter {
    * @param {Message} msg The Message to add to this.messages
    *
    */
-  addMsg (msg) {
+  addMsg(msg) {
     this.messages.push(msg)
     this._saveMsgList()
   }
@@ -138,7 +140,7 @@ export default class MessageManager extends EventEmitter {
    * @returns {Message|undefined} The Message with the id that matches the passed msgId, or undefined if no Message has that id.
    *
    */
-  getMsg (msgId) {
+  getMsg(msgId) {
     return this.messages.find(msg => msg.id === msgId)
   }
 
@@ -151,7 +153,7 @@ export default class MessageManager extends EventEmitter {
    * @returns {Promise<object>} Promises the msgParams object with metamaskId removed.
    *
    */
-  approveMessage (msgParams) {
+  approveMessage(msgParams) {
     this.setMsgStatusApproved(msgParams.metamaskId)
     return this.prepMsgForSigning(msgParams)
   }
@@ -162,7 +164,7 @@ export default class MessageManager extends EventEmitter {
    * @param {number} msgId The id of the Message to approve.
    *
    */
-  setMsgStatusApproved (msgId) {
+  setMsgStatusApproved(msgId) {
     this._setMsgStatus(msgId, 'approved')
   }
 
@@ -174,7 +176,7 @@ export default class MessageManager extends EventEmitter {
    * @param {buffer} rawSig The raw data of the signature request
    *
    */
-  setMsgStatusSigned (msgId, rawSig) {
+  setMsgStatusSigned(msgId, rawSig) {
     const msg = this.getMsg(msgId)
     msg.rawSig = rawSig
     this._updateMsg(msg)
@@ -188,7 +190,7 @@ export default class MessageManager extends EventEmitter {
    * @returns {Promise<object>} Promises the msgParams with the metamaskId property removed
    *
    */
-  prepMsgForSigning (msgParams) {
+  prepMsgForSigning(msgParams) {
     delete msgParams.metamaskId
     return Promise.resolve(msgParams)
   }
@@ -199,7 +201,7 @@ export default class MessageManager extends EventEmitter {
    * @param {number} msgId The id of the Message to reject.
    *
    */
-  rejectMsg (msgId) {
+  rejectMsg(msgId) {
     this._setMsgStatus(msgId, 'rejected')
   }
 
@@ -215,7 +217,7 @@ export default class MessageManager extends EventEmitter {
    * @fires If status is 'rejected' or 'signed', an event with a name equal to `${msgId}:finished` is fired along with the message
    *
    */
-  _setMsgStatus (msgId, status) {
+  _setMsgStatus(msgId, status) {
     const msg = this.getMsg(msgId)
     if (!msg) throw new Error(`MessageManager - Message not found for id: "${msgId}".`)
     msg.status = status
@@ -234,8 +236,8 @@ export default class MessageManager extends EventEmitter {
    * @param {msg} Message A Message that will replace an existing Message (with the same id) in this.messages
    *
    */
-  _updateMsg (msg) {
-    const index = this.messages.findIndex((message) => message.id === msg.id)
+  _updateMsg(msg) {
+    const index = this.messages.findIndex(message => message.id === msg.id)
     if (index !== -1) {
       this.messages[index] = msg
     }
@@ -249,7 +251,7 @@ export default class MessageManager extends EventEmitter {
    * @fires 'updateBadge'
    *
    */
-  _saveMsgList () {
+  _saveMsgList() {
     const unapprovedMsgs = this.getUnapprovedMsgs()
     const unapprovedMsgCount = Object.keys(unapprovedMsgs).length
     this.store.updateState({ unapprovedMsgs, unapprovedMsgCount })
@@ -264,7 +266,7 @@ export default class MessageManager extends EventEmitter {
  * @returns {string} A hex string conversion of the buffer data
  *
  */
-function normalizeMsgData (data) {
+function normalizeMsgData(data) {
   if (data.slice(0, 2) === '0x') {
     // data is already hex
     return data

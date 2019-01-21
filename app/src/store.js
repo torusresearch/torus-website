@@ -12,7 +12,7 @@ Vue.use(Vuex)
 const vuexPersist = new VuexPersist({
   key: 'my-app',
   storage: window.sessionStorage,
-  reducer: (state) => {
+  reducer: state => {
     return { ...state, popupVisible: false }
   }
 })
@@ -31,50 +31,50 @@ var VuexStore = new Vuex.Store({
   },
   getters: {},
   mutations: {
-    setEmail (state, email) {
+    setEmail(state, email) {
       state.email = email
     },
-    setIdToken (state, idToken) {
+    setIdToken(state, idToken) {
       state.idToken = idToken
     },
-    setWallet (state, wallet) {
+    setWallet(state, wallet) {
       state.wallet = wallet
     },
-    setBalance (state, balance) {
+    setBalance(state, balance) {
       state.balance = balance
     },
-    setLoginStatus (state, loggedIn) {
+    setLoginStatus(state, loggedIn) {
       state.loggedIn = loggedIn
     },
-    setSelectedAddress (state, selectedAddress) {
+    setSelectedAddress(state, selectedAddress) {
       state.selectedAddress = selectedAddress
     },
-    setNetworkId (state, networkId) {
+    setNetworkId(state, networkId) {
       state.networkId = networkId
     },
-    setPopupVisibility (state, popupVisible) {
+    setPopupVisibility(state, popupVisible) {
       state.popupVisible = popupVisible
     }
   },
   actions: {
-    showPopup (context, payload) {
+    showPopup(context, payload) {
       context.commit('setPopupVisibility', true)
     },
     hidePopup(context, payload) {
       context.commit('setPopupVisibility', false)
     },
-    updateEmail (context, payload) {
+    updateEmail(context, payload) {
       context.commit('setEmail', payload.email)
     },
-    updateIdToken (context, payload) {
+    updateIdToken(context, payload) {
       context.commit('setIdToken', payload.idToken)
     },
-    addWallet (context, payload) {
+    addWallet(context, payload) {
       if (payload.ethAddress) {
         context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
       }
     },
-    removeWallet (context, payload) {
+    removeWallet(context, payload) {
       if (payload.ethAddress) {
         var stateWallet = { ...context.state.wallet }
         delete stateWallet[payload.ethAddress]
@@ -86,28 +86,28 @@ var VuexStore = new Vuex.Store({
         }
       }
     },
-    updateBalance (context, payload) {
+    updateBalance(context, payload) {
       if (payload.ethAddress && context.state.wallet.ethAddress) {
         context.commit('setBalance', { ...context.state.balance, [payload.ethAddress]: payload.value })
       }
     },
-    updateLoginStatus (context, payload) {
+    updateLoginStatus(context, payload) {
       context.commit('setLoginStatus', payload.loggedIn)
     },
-    updateSelectedAddress (context, payload) {
+    updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
       torusUtils.updateStaticData({ selectedAddress: payload.selectedAddress })
     },
-    updateNetworkId (context, payload) {
+    updateNetworkId(context, payload) {
       context.commit('setNetworkId', payload.networkId)
       torusUtils.updateStaticData({ networkId: payload.networkId })
     },
-    triggerLogin: function () {
+    triggerLogin: function() {
       if (window.auth2 === undefined) {
         log.error('Could not find window.auth2, might not be loaded yet')
         return
       }
-      window.auth2.signIn().then(function (googleUser) {
+      window.auth2.signIn().then(function(googleUser) {
         log.info('GOOGLE USER: ', googleUser)
         var profile = googleUser.getBasicProfile()
         // console.log(googleUser)
@@ -119,33 +119,35 @@ var VuexStore = new Vuex.Store({
         VuexStore.dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
         var email = profile.getEmail()
         VuexStore.dispatch('updateEmail', { email })
-        window.gapi.auth2.getAuthInstance().disconnect().then(function () {
-          torusUtils.getPubKeyAsync(torusUtils.web3, config.torusNodeEndpoints, email, function (err, res) {
-            if (err) {
-              log.error(err)
-            } else {
-              log.info('New private key assigned to user at address ', res)
-              torusUtils.retrieveShares(
-                config.torusNodeEndpoints,
-                VuexStore.state.email,
-                VuexStore.state.idToken,
-                function (err, data) {
-                  if (err) { log.error(err) }
+        window.gapi.auth2
+          .getAuthInstance()
+          .disconnect()
+          .then(function() {
+            torusUtils.getPubKeyAsync(torusUtils.web3, config.torusNodeEndpoints, email, function(err, res) {
+              if (err) {
+                log.error(err)
+              } else {
+                log.info('New private key assigned to user at address ', res)
+                torusUtils.retrieveShares(config.torusNodeEndpoints, VuexStore.state.email, VuexStore.state.idToken, function(err, data) {
+                  if (err) {
+                    log.error(err)
+                  }
                   VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
                   VuexStore.dispatch('addWallet', data)
-                  torusUtils.web3.eth.net.getId()
+                  torusUtils.web3.eth.net
+                    .getId()
                     .then(res => {
                       VuexStore.dispatch('updateNetworkId', { networkId: res })
-                    // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+                      // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
                     })
                     .catch(e => log.error(e))
-                }
-              )
-            }
+                })
+              }
+            })
           })
-        }).catch(function (err) {
-          log.error(err)
-        })
+          .catch(function(err) {
+            log.error(err)
+          })
       })
     }
   }
@@ -153,14 +155,14 @@ var VuexStore = new Vuex.Store({
 
 // setup handlers for communicationStream
 var passthroughStream = new stream.PassThrough({ objectMode: true })
-passthroughStream.on('data', function () {
+passthroughStream.on('data', function() {
   log.info('p data:', arguments)
 })
-torusUtils.communicationMux.getStream('oauth').on('data', function () {
+torusUtils.communicationMux.getStream('oauth').on('data', function() {
   VuexStore.dispatch('triggerLogin')
 })
 
-pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, (err) => {
+pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
 })
 

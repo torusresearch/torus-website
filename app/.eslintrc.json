@@ -11,6 +11,7 @@
     }
   ],
   "rules": {
+    "quotes": [2, "single"],
     "max-len": [
       2,
       {
@@ -32,6 +33,7 @@
     "prettier/prettier": [
       "error",
       {
+        "singleQuote": true,
         "printWidth": 150,
         "semi": false
       }

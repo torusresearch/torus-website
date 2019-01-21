@@ -5,7 +5,7 @@ module.exports = createProviderMiddleware
  *
  * @param {{ provider: Object }} config Configuration containing current Web3 provider
  */
-function createProviderMiddleware ({ provider }) {
+function createProviderMiddleware({ provider }) {
   return (req, res, next, end) => {
     provider.sendAsync(req, (err, _res) => {
       if (err) return end(err)

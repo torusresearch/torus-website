@@ -1,22 +1,17 @@
 const jsonDiffer = require('fast-json-patch')
 const clone = require('clone')
 
-export default {
-  generateHistoryEntry,
-  replayHistory,
-  snapshotFromTxMeta,
-  migrateFromSnapshotsToDiffs
-}
+export default { generateHistoryEntry, replayHistory, snapshotFromTxMeta, migrateFromSnapshotsToDiffs }
 
 /**
   converts non-initial history entries into diffs
   @param longHistory {array}
   @returns {array}
 */
-function migrateFromSnapshotsToDiffs (longHistory) {
+function migrateFromSnapshotsToDiffs(longHistory) {
   return (
     longHistory
-    // convert non-initial history entries into diffs
+      // convert non-initial history entries into diffs
       .map((entry, index) => {
         if (index === 0) return entry
         return generateHistoryEntry(longHistory[index - 1], entry)
@@ -36,7 +31,7 @@ function migrateFromSnapshotsToDiffs (longHistory) {
   @param note {string} - a optional note for the state change
   @returns {array}
 */
-function generateHistoryEntry (previousState, newState, note) {
+function generateHistoryEntry(previousState, newState, note) {
   const entry = jsonDiffer.compare(previousState, newState)
   // Add a note to the first op, since it breaks if we append it to the entry
   if (entry[0]) {
@@ -51,12 +46,10 @@ function generateHistoryEntry (previousState, newState, note) {
   Recovers previous txMeta state obj
   @returns {object}
 */
-function replayHistory (_shortHistory) {
+function replayHistory(_shortHistory) {
   // TODO: fix this
   const shortHistory = clone(_shortHistory)
-  console.log('HERE IN REPLAY HISTORY', _shortHistory)
   var res = shortHistory.reduce((val, entry) => jsonDiffer.applyPatch(val, entry).newDocument)
-  console.log(res)
   return res
 }
 
@@ -64,7 +57,7 @@ function replayHistory (_shortHistory) {
   @param txMeta {Object}
   @returns {object} a clone object of the txMeta with out history
 */
-function snapshotFromTxMeta (txMeta) {
+function snapshotFromTxMeta(txMeta) {
   // create txMeta snapshot for history
   const snapshot = clone(txMeta)
   // dont include previous history in this snapshot
