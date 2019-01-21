@@ -29,7 +29,9 @@ const PersonalMessageManager = require('./PersonalMessageManager').default
 const TypedMessageManager = require('./TypedMessageManager').default
 const ObservableStore = require('obs-store')
 const nodeify = require('./nodeify').default
+const TorusKeyring = require('./TorusKeyring')
 const KeyringController = require('eth-keyring-controller')
+const Mutex = require('await-semaphore').Mutex
 
 // defaults and constants
 const version = '0.0.1'
@@ -44,6 +46,8 @@ export default class TorusController extends EventEmitter {
     this.defaultMaxListeners = 20
     this.opts = opts
     this.store = new ComposableObservableStore()
+    // lock to ensure only one vault created at once
+    this.createVaultMutex = new Mutex()
     this.networkController = new NetworkController()
     this.initializeProvider()
     this.provider = this.networkController.getProviderAndBlockTracker().provider
@@ -63,7 +67,9 @@ export default class TorusController extends EventEmitter {
     })
 
     // key mgmt
+    const additionalKeyrings = [TorusKeyring]
     this.keyringController = new KeyringController({
+      keyringTypes: additionalKeyrings,
       getNetwork: this.networkController.getNetworkState.bind(this.networkController),
       encryptor: opts.encryptor || undefined
     })
@@ -176,6 +182,89 @@ export default class TorusController extends EventEmitter {
    */
   getState () {
     return this.store.getFlatState()
+  }
+
+  //= ============================================================================
+  // VAULT / KEYRING RELATED METHODS
+  //= ============================================================================
+
+  /**
+   * Creates a new Vault and create a new keychain.
+   *
+   * A vault, or KeyringController, is a controller that contains
+   * many different account strategies, currently called Keyrings.
+   * Creating it new means wiping all previous keyrings.
+   *
+   * A keychain, or keyring, controls many accounts with a single backup and signing strategy.
+   * For example, a mnemonic phrase can generate many accounts, and is a keyring.
+   *
+   * @param  {string} password
+   *
+   * @returns {Object} vault
+   */
+  async createNewVaultAndKeychain (password) {
+    const releaseLock = await this.createVaultMutex.acquire()
+    try {
+      let vault
+      const accounts = await this.keyringController.getAccounts()
+      if (accounts.length > 0) {
+        vault = await this.keyringController.fullUpdate()
+      } else {
+        vault = await this.keyringController.createNewVaultAndKeychain(password)
+        const accounts = await this.keyringController.getAccounts()
+        this.preferencesController.setAddresses(accounts)
+        this.selectFirstIdentity()
+      }
+      releaseLock()
+      return vault
+    } catch (err) {
+      releaseLock()
+      throw err
+    }
+  }
+
+  /**
+   * Create a new Vault and restore an existent keyring.
+   * @param  {} password
+   * @param  {} seed
+   */
+  async createNewVaultAndRestore (password, seed) {
+    const releaseLock = await this.createVaultMutex.acquire()
+    try {
+      let accounts, lastBalance
+
+      const keyringController = this.keyringController
+
+      // clear known identities
+      this.preferencesController.setAddresses([])
+      // create new vault
+      const vault = await keyringController.createNewVaultAndRestore(password, seed)
+
+      const ethQuery = new EthQuery(this.provider)
+      accounts = await keyringController.getAccounts()
+      lastBalance = await this.getBalance(accounts[accounts.length - 1], ethQuery)
+
+      const primaryKeyring = keyringController.getKeyringsByType('HD Key Tree')[0]
+      if (!primaryKeyring) {
+        throw new Error('MetamaskController - No HD Key Tree found')
+      }
+
+      // seek out the first zero balance
+      while (lastBalance !== '0x0') {
+        await keyringController.addNewAccount(primaryKeyring)
+        accounts = await keyringController.getAccounts()
+        lastBalance = await this.getBalance(accounts[accounts.length - 1], ethQuery)
+      }
+
+      // set new identities
+      this.preferencesController.setAddresses(accounts)
+      this.selectFirstIdentity()
+      releaseLock()
+      return vault
+    } catch (err) {
+      releaseLock()
+      throw err
+    }
   }
 
   /**
@@ -400,6 +489,7 @@ export default class TorusController extends EventEmitter {
       const cleanMsgParams = await this.typedMessageManager.approveMessage(msgParams)
       const address = toChecksumAddress(sigUtil.normalize(cleanMsgParams.from))
       let signature = sigUtil.signTypedData(this.getPrivateKey(address), { data: JSON.parse(cleanMsgParams.data) })
+      // TODO: Sign TypedData using keyring instead
       this.typedMessageManager.setMsgStatusSigned(msgId, signature)
       return this.getState()
     } catch (error) {
