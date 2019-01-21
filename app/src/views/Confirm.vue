@@ -12,7 +12,7 @@
       })
     },
     mounted () {
-      let confirmed = window.confirm('im a confirm and im TRIGGEREEEEDD >:(((')
+      let confirmed = window.confirm('Confirm transaction?')
       this.hidePopup()
       if (!confirmed) {
         throw new Error('USER DID NOT CONFIRM??')
