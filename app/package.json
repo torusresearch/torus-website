@@ -8,7 +8,8 @@
     "buildEmbed": "browserify ./src/widget/embed.js -o public/embed.min.js",
     "lint": "vue-cli-service lint",
     "lint:es": "eslint .",
-    "test:unit": "mocha --exit -r esm -r jsdom-global/register ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js"
+    "test:unit": "mocha --exit -r esm -r jsdom-global/register ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js",
+    "test:coverage": "nyc --reporter=text --reporter=html npm run test:unit"
   },
   "dependencies": {
     "ajv": "^6.6.2",
@@ -71,7 +72,8 @@
     "vue-template-compiler": "^2.5.21",
     "luxon": "^1.10.0",
     "nock": "^10.0.6",
-    "eth-phishing-detect": "^1.1.13"
+    "eth-phishing-detect": "^1.1.13",
+    "nyc": "^13.1.0"
   },
   "browserslist": [
     "> 1%",
