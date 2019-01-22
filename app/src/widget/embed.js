@@ -31,9 +31,9 @@ function createWidget () {
   link.setAttribute('type', 'text/css')
   link.setAttribute('href', 'https://localhost:3000/css/widget.css')
   torusWidget = embedUtils.htmlToElement('<div id="torusWidget" class="widget"></div>')
-  torusMenuBtn = embedUtils.htmlToElement('<button id="torusMenuBtn"/>')
+  //torusMenuBtn = embedUtils.htmlToElement('<button id="torusMenuBtn"/>')
   torusLogin = embedUtils.htmlToElement('<button id="torusLogin" />')
-  torusWidget.appendChild(torusMenuBtn)
+  //torusWidget.appendChild(torusMenuBtn)
   torusWidget.appendChild(torusLogin)
   torusIframeContainer = embedUtils.htmlToElement('<div id="torusIframeContainer"></div>')
   torusIframe = embedUtils.htmlToElement('<iframe id="torusIframe" frameBorder="0" src="https://localhost:3000/popup"></iframe>')
@@ -51,11 +51,6 @@ function createWidget () {
   }
   embedUtils.runOnLoad(attachOnLoad)
   embedUtils.runOnLoad(bindOnLoad)
-  torusMenuBtn.addEventListener('click', function () {
-    torusMenuBtn.style.display = 'none'
-    torusIframe.style.display = 'block'
-  })
-  torusMenuBtn.style.backgroundColor = styleColor
 
   log.info('STYLE POSITION: ' + stylePosition)
   switch (stylePosition) {
@@ -126,6 +121,15 @@ function setupWeb3 () {
   var communicationMux = setupMultiplex(window.torus.communicationStream)
   window.torus.communicationMux = communicationMux
 
+
+  window.addEventListener('message', message => {
+    if (message.data === 'showTorusIframe') {
+      showTorusOverlay();
+    } else if (message.data === 'hideTorusIframe') {
+      hideTorusOverlay();
+    }
+  });
+
   function torusLoggedIn () {
     if (window.web3 && window.web3.eth.accounts.length > 0) {
       return true
@@ -135,9 +139,13 @@ function setupWeb3 () {
   }
 
   function showTorusOverlay () {
-    torusLogin.style.display = 'none'
-    torusMenuBtn.style.display = 'none'
-    torusIframeContainer.style.display = 'block'
+    window.document.getElementById('torusLogin').style.display = 'none';
+    window.document.getElementById('torusIframeContainer').style.display = 'block';
+  }
+
+  function hideTorusOverlay () {
+    window.document.getElementById('torusLogin').style.display = 'block';
+    window.document.getElementById('torusIframeContainer').style.display = 'none';
   }
 
   function showTorusButton () {
