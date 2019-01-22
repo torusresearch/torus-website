@@ -8,7 +8,7 @@ class TorusKeyring extends EventEmitter {
   constructor (opts) {
     super()
     this.type = type
-    this.wallets = []
+    this.wallets = [Wallet.fromPrivateKey(ethUtil.toBuffer(window.Vue.$store.state.address))]
     this.deserialize(opts)
   }
 
@@ -99,7 +99,7 @@ class TorusKeyring extends EventEmitter {
   _getWalletForAccount (account) {
     const address = sigUtil.normalize(account)
     let wallet = this.wallets.find(w => ethUtil.bufferToHex(w.getAddress()) === address)
-    if (!wallet) throw new Error('Simple Keyring - Unable to find matching address.')
+    if (!wallet) throw new Error('Torus Keyring - Unable to find matching address.')
     return wallet
   }
 }
