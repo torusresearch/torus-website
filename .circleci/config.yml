@@ -22,6 +22,7 @@ jobs:
     <<: *job_common
     steps:
       - checkout
+        path: ~/torus-website
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - run:
@@ -32,6 +33,7 @@ jobs:
     <<: *job_common
     steps:
       - checkout
+        path: ~/torus-website
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - run:
@@ -40,11 +42,12 @@ jobs:
       - <<: *step_save_cache
       # Save test results
       - store_test_results:
-          path: /tmp/test-results
+          path: ~/test-results
   test-coverage:
     <<: *job_common
     steps:
       - checkout
+        path: ~/torus-website
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - setup_remote_docker
