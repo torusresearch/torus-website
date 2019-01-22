@@ -65,7 +65,12 @@ var VuexStore = new Vuex.Store({
       var origin = extractRootDomain(document.referrer);
       if (isTorusTransaction()) {
         var txParams = getTransactionParams();
-        var value = torusUtils.web3.utils.fromWei(txParams.value.toString());
+        var value;
+        if (txParams.value) {
+          value = torusUtils.web3.utils.fromWei(txParams.value.toString());
+        } else {
+          value = 0;
+        }
         var balance = torusUtils.web3.utils.fromWei(this.state.weiBalance.toString());
         window.open("https://localhost:3000/confirm/type/transaction/origin/" + origin + "/balance/" + balance + "/value/" + value + "/receiver/" + txParams.to);
       } else {
