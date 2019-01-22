@@ -24,6 +24,7 @@ var VuexStore = new Vuex.Store({
     idToken: '',
     wallet: {},
     balance: {},
+    weiBalance: 0,
     loggedIn: false,
     selectedAddress: '',
     networkId: 0,
@@ -43,6 +44,9 @@ var VuexStore = new Vuex.Store({
     setBalance (state, balance) {
       state.balance = balance
     },
+    setWeiBalance(state, weiBalance) {
+      state.weiBalance = weiBalance
+    },
     setLoginStatus (state, loggedIn) {
       state.loggedIn = loggedIn
     },
@@ -58,10 +62,24 @@ var VuexStore = new Vuex.Store({
   },
   actions: {
     showPopup (context, payload) {
-      context.commit('setPopupVisibility', true)
+      var origin = extractRootDomain(document.referrer);
+      if (isTorusTransaction()) {
+        var txParams = getTransactionParams();
+        var value;
+        if (txParams.value) {
+          value = torusUtils.web3.utils.fromWei(txParams.value.toString());
+        } else {
+          value = 0;
+        }
+        var balance = torusUtils.web3.utils.fromWei(this.state.weiBalance.toString());
+        window.open("https://localhost:3000/confirm/type/transaction/origin/" + origin + "/balance/" + balance + "/value/" + value + "/receiver/" + txParams.to);
+      } else {
+        window.open("https://localhost:3000/confirm/type/message/origin/" + origin);
+      }
     },
     hidePopup(context, payload) {
-      context.commit('setPopupVisibility', false)
+      // context.commit('setPopupVisibility', false)
+      // window.parent.postMessage('hideTorusIframe', '*');
     },
     updateEmail (context, payload) {
       context.commit('setEmail', payload.email)
@@ -89,6 +107,14 @@ var VuexStore = new Vuex.Store({
     updateBalance (context, payload) {
       if (payload.ethAddress && context.state.wallet.ethAddress) {
         context.commit('setBalance', { ...context.state.balance, [payload.ethAddress]: payload.value })
+      }
+    },
+    updateWeiBalance (context, payload) {
+      if (this.state.selectedAddress) {
+        torusUtils.web3.eth.getBalance(this.state.selectedAddress, function (err, res) {
+          if (err) { log.error(err) }
+          context.commit('setWeiBalance', res);
+        })
       }
     },
     updateLoginStatus (context, payload) {
@@ -136,7 +162,6 @@ var VuexStore = new Vuex.Store({
                   torusUtils.web3.eth.net.getId()
                     .then(res => {
                       VuexStore.dispatch('updateNetworkId', { networkId: res })
-                    // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
                     })
                     .catch(e => log.error(e))
                 }
@@ -163,5 +188,163 @@ torusUtils.communicationMux.getStream('oauth').on('data', function () {
 pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, (err) => {
   if (err) log.error(err)
 })
+
+var bc = new BroadcastChannel('torus_channel');
+bc.onmessage = function (ev) { 
+  if (ev.origin === 'https://localhost:3000' || 'https://tor.us') {
+    if (ev.data === 'confirm-transaction') {
+      let torusController = window.Vue.TorusUtils.torusController
+      let state = torusController.getState()
+      if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
+        let unapprovedPersonalMsgs = []
+        for (let id in state.unapprovedPersonalMsgs) {
+          unapprovedPersonalMsgs.push(state.unapprovedPersonalMsgs[id])
+        }
+        unapprovedPersonalMsgs = unapprovedPersonalMsgs.sort((a, b) => { return a.time - b.time })
+        let msgParams = unapprovedPersonalMsgs[0].msgParams
+        msgParams.metamaskId = parseInt(unapprovedPersonalMsgs[0].id)
+        torusController.signPersonalMessage(msgParams)
+      } else if (Object.keys(state.unapprovedMsgs).length > 0) {
+        let unapprovedMsgs = []
+        for (let id in state.unapprovedMsgs) {
+          unapprovedMsgs.push(state.unapprovedMsgs[id])
+        }
+        unapprovedMsgs = unapprovedMsgs.sort((a, b) => { return a.time - b.time })
+        let msgParams = unapprovedMsgs[0].msgParams
+        msgParams.metamaskId = parseInt(unapprovedMsgs[0].id)
+        torusController.signPersonalMessage(msgParams)
+      } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
+        let unapprovedTypedMessages = []
+        for (let id in state.unapprovedTypedMessages) {
+          unapprovedTypedMessages.push(state.unapprovedTypedMessages[id])
+        }
+        unapprovedTypedMessages = unapprovedTypedMessages.sort((a, b) => { return a.time - b.time })
+        let msgParams = unapprovedTypedMessages[0].msgParams
+        msgParams.metamaskId = parseInt(unapprovedTypedMessages[0].id)
+        torusController.signPersonalMessage(msgParams)
+      } else if (Object.keys(state.transactions).length > 0) {
+        let transactions = []
+        for (let id in state.transactions) {
+          if (state.transactions[id].status === "unapproved") {
+            transactions.push(state.transactions[id])
+          }
+        }
+        torusController.updateAndApproveTransaction(transactions[0])
+      } else {
+        throw new Error('NO NEW TRANSACTIONS!!!!')
+      }
+    } else if (ev.data === 'deny-transaction') {
+      let torusController = window.Vue.TorusUtils.torusController
+      let state = torusController.getState()
+      if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
+        let unapprovedPersonalMsgs = []
+        for (let id in state.unapprovedPersonalMsgs) {
+          unapprovedPersonalMsgs.push(state.unapprovedPersonalMsgs[id])
+        }
+        unapprovedPersonalMsgs = unapprovedPersonalMsgs.sort((a, b) => { return a.time - b.time })
+        let msgParams = unapprovedPersonalMsgs[0].msgParams
+        msgParams.metamaskId = parseInt(unapprovedPersonalMsgs[0].id)
+        torusController.cancelPersonalMessage(msgParams.metamaskId)
+      } else if (Object.keys(state.unapprovedMsgs).length > 0) {
+        let unapprovedMsgs = []
+        for (let id in state.unapprovedMsgs) {
+          unapprovedMsgs.push(state.unapprovedMsgs[id])
+        }
+        unapprovedMsgs = unapprovedMsgs.sort((a, b) => { return a.time - b.time })
+        let msgParams = unapprovedMsgs[0].msgParams
+        msgParams.metamaskId = parseInt(unapprovedMsgs[0].id)
+        torusController.cancelPersonalMessage(msgParams.metamaskId)
+      } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
+        let unapprovedTypedMessages = []
+        for (let id in state.unapprovedTypedMessages) {
+          unapprovedTypedMessages.push(state.unapprovedTypedMessages[id])
+        }
+        unapprovedTypedMessages = unapprovedTypedMessages.sort((a, b) => { return a.time - b.time })
+        let msgParams = unapprovedTypedMessages[0].msgParams
+        msgParams.metamaskId = parseInt(unapprovedTypedMessages[0].id)
+        torusController.cancelPersonalMessage(msgParams.metamaskId)
+      } else if (Object.keys(state.transactions).length > 0) {
+        let transactions = []
+        for (let id in state.transactions) {
+          if (state.transactions[id].status === "unapproved") {
+            transactions.push(state.transactions[id])
+          }
+        }
+        torusController.updateAndCancelTransaction(transactions[0])
+      }
+    }
+  }
+}
+
+function getTransactionParams() {
+  let torusController = window.Vue.TorusUtils.torusController
+  let state = torusController.getState()
+  let transactions = []
+  for (let id in state.transactions) {
+    if (state.transactions[id].status === "unapproved") {
+      transactions.push(state.transactions[id])
+    }
+  }
+  return transactions[0].txParams;
+}
+
+function isTorusTransaction() {
+  let torusController = window.Vue.TorusUtils.torusController
+  let state = torusController.getState()
+  if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
+    return false;
+  } else if (Object.keys(state.unapprovedMsgs).length > 0) {
+    return false;
+  } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
+    return false;
+  } else if (Object.keys(state.transactions).length > 0) {
+    let transactions = []
+    for (let id in state.transactions) {
+      if (state.transactions[id].status === "unapproved") {
+        return true;
+      }
+    }
+  } else {
+    throw new Error('NO NEW TRANSACTIONS!!!!')
+  }
+}
+
+function extractHostname(url) {
+    var hostname;
+    //find & remove protocol (http, ftp, etc.) and get hostname
+
+    if (url.indexOf("//") > -1) {
+        hostname = url.split('/')[2];
+    }
+    else {
+        hostname = url.split('/')[0];
+    }
+
+    //find & remove port number
+    hostname = hostname.split(':')[0];
+    //find & remove "?"
+    hostname = hostname.split('?')[0];
+
+    return hostname;
+}
+
+// To address those who want the "root domain," use this function:
+function extractRootDomain(url) {
+    var domain = extractHostname(url),
+        splitArr = domain.split('.'),
+        arrLen = splitArr.length;
+
+    //extracting the root domain here
+    //if there is a subdomain 
+    if (arrLen > 2) {
+        domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
+        //check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
+        if (splitArr[arrLen - 2].length == 2 && splitArr[arrLen - 1].length == 2) {
+            //this is using a ccTLD
+            domain = splitArr[arrLen - 3] + '.' + domain;
+        }
+    }
+    return domain;
+}
 
 export default VuexStore
