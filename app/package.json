@@ -9,7 +9,8 @@
     "lint": "vue-cli-service lint",
     "lint:es": "eslint .",
     "test:unit": "mocha --exit -r esm -r jsdom-global/register ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js",
-    "test:coverage": "nyc --reporter=text --reporter=html npm run test:unit"
+    "test:coverage": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:coveralls-upload",
+    "test:coveralls-upload": "if [ $COVERALLS_REPO_TOKEN ]; then nyc report --reporter=text-lcov | coveralls; fi"
   },
   "dependencies": {
     "ajv": "^6.6.2",
@@ -50,6 +51,7 @@
     "@vue/cli-service": "^3.2.0",
     "@vue/eslint-config-standard": "^4.0.0",
     "babel-eslint": "^10.0.1",
+    "coveralls": "^3.0.2",
     "eslint": "^5.8.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-prettier": "^3.6.0",
@@ -61,19 +63,19 @@
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^5.0.0",
     "esm": "^3.1.1",
+    "eth-phishing-detect": "^1.1.13",
     "ganache-core": "^2.3.1",
     "jsdom": "13.1.0",
     "jsdom-global": "3.0.2",
+    "luxon": "^1.10.0",
     "mocha": "^5.2.0",
     "mocha-eslint": "^5.0.0",
     "mocha-jsdom": "^2.0.0",
     "mocha-sinon": "^2.1.0",
-    "sinon": "^5.0.0",
-    "vue-template-compiler": "^2.5.21",
-    "luxon": "^1.10.0",
     "nock": "^10.0.6",
-    "eth-phishing-detect": "^1.1.13",
-    "nyc": "^13.1.0"
+    "nyc": "^13.1.0",
+    "sinon": "^5.0.0",
+    "vue-template-compiler": "^2.5.21"
   },
   "browserslist": [
     "> 1%",
