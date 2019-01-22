@@ -21,8 +21,8 @@ jobs:
   build:
     <<: *job_common
     steps:
-      - checkout
-        path: ~/torus-website
+      - checkout:
+          path: ~/torus-website
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - run:
@@ -32,8 +32,8 @@ jobs:
   unit-test:
     <<: *job_common
     steps:
-      - checkout
-        path: ~/torus-website
+      - checkout:
+          path: ~/torus-website
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - run:
@@ -46,8 +46,8 @@ jobs:
   test-coverage:
     <<: *job_common
     steps:
-      - checkout
-        path: ~/torus-website
+      - checkout:
+          path: ~/torus-website
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - setup_remote_docker
