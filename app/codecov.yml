@@ -1,0 +1,18 @@
+codecov:
+  notify:
+    require_ci_to_pass: yes
+
+coverage:
+  precision: 2
+  round: down
+
+fixes:
+  - "torus-website/::" # reduce root e.g., "before/path/" => "path/"
+
+ignore:
+  - "app/src/components"
+  - "app/src/vendor"
+  - "app/src/views"
+  - "app/src/widget"
+  - "app/src/_*.js"
+  - "app/src/_*.vue"
