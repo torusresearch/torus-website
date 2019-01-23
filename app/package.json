@@ -12,7 +12,7 @@
     "test:coverage-coveralls": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:coveralls-upload",
     "test:coverage-codecov": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:codecov-upload",
     "test:coveralls-upload": "if [ $COVERALLS_REPO_TOKEN ]; then nyc report --reporter=text-lcov | coveralls; fi",
-    "test:codecov-upload": "if [ $CODECOV_TOKEN ]; then nyc report --reporter=text-lcov > coverage.lcov && codecov"
+    "test:codecov-upload": "if [ $CODECOV_TOKEN ]; then nyc report --reporter=text-lcov > coverage.lcov && codecov; fi"
   },
   "dependencies": {
     "ajv": "^6.6.2",
