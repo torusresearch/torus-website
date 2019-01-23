@@ -145,32 +145,16 @@ var VuexStore = new Vuex.Store({
         VuexStore.dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
         var email = profile.getEmail()
         VuexStore.dispatch('updateEmail', { email })
-        window.gapi.auth2.getAuthInstance().disconnect().then(function () {
-          torusUtils.getPubKeyAsync(torusUtils.web3, config.torusNodeEndpoints, email, function (err, res) {
-            if (err) {
-              log.error(err)
-            } else {
-              log.info('New private key assigned to user at address ', res)
-              torusUtils.retrieveShares(
-                config.torusNodeEndpoints,
-                VuexStore.state.email,
-                VuexStore.state.idToken,
-                function (err, data) {
-                  if (err) { log.error(err) }
-                  VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
-                  VuexStore.dispatch('addWallet', data)
-                  torusUtils.web3.eth.net.getId()
-                    .then(res => {
-                      VuexStore.dispatch('updateNetworkId', { networkId: res })
-                    })
-                    .catch(e => log.error(e))
-                }
-              )
-            }
+        window.gapi.auth2.getAuthInstance().disconnect()
+          .then(torusUtils.getPubKeyAsync(
+            torusUtils.web3,
+            config.torusNodeEndpoints,
+            email,
+            handlePrivateKey
+          ))
+          .catch(function (err) {
+            log.error(err)
           })
-        }).catch(function (err) {
-          log.error(err)
-        })
       })
     }
   }
@@ -346,6 +330,31 @@ function extractRootDomain (url) {
     }
   }
   return domain
+}
+
+function handlePrivateKey (err, res) {
+  if (err) {
+    log.error(err)
+  } else {
+    log.info('New private key assigned to user at address ', res)
+    torusUtils.retrieveShares(
+      config.torusNodeEndpoints,
+      VuexStore.state.email,
+      VuexStore.state.idToken,
+      function (err, data) {
+        if (err) { log.error(err) }
+        VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
+        log.info(data.ethAddress)
+        VuexStore.dispatch('addWallet', data)
+        torusUtils.torusController.createNewVaultAndKeychain(VuexStore.state.idToken)
+        torusUtils.web3.eth.net.getId()
+          .then(res => {
+            VuexStore.dispatch('updateNetworkId', { networkId: res })
+          })
+          .catch(e => log.error(e))
+      }
+    )
+  }
 }
 
 export default VuexStore
