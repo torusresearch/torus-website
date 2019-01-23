@@ -53,10 +53,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: "Running unit tests with coverage"
-          command: npm run test:coverage
-      - run:
-          name: "Upload Coverage"
-          command: bash <(curl -s https://codecov.io/bash)
+          command: npm run test:coverage-codecov
       # Save coverage artifacts
       - store_artifacts:
           path: coverage

@@ -9,8 +9,10 @@
     "lint": "vue-cli-service lint",
     "lint:es": "eslint .",
     "test:unit": "mocha --exit -r esm -r jsdom-global/register ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js",
-    "test:coverage": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:coveralls-upload",
-    "test:coveralls-upload": "if [ $COVERALLS_REPO_TOKEN ]; then nyc report --reporter=text-lcov | coveralls; fi"
+    "test:coverage-coveralls": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:coveralls-upload",
+    "test:coverage-codecov": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:codecov-upload",
+    "test:coveralls-upload": "if [ $COVERALLS_REPO_TOKEN ]; then nyc report --reporter=text-lcov | coveralls; fi",
+    "test:codecov-upload": "if [ $CODECOV_TOKEN ]; then nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "dependencies": {
     "ajv": "^6.6.2",
@@ -51,6 +53,7 @@
     "@vue/cli-service": "^3.2.0",
     "@vue/eslint-config-standard": "^4.0.0",
     "babel-eslint": "^10.0.1",
+    "codecov": "^3.1.0",
     "coveralls": "^3.0.2",
     "eslint": "^5.8.0",
     "eslint-config-airbnb": "^17.1.0",
