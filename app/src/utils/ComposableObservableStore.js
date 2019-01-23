@@ -11,7 +11,7 @@ class ComposableObservableStore extends ObservableStore {
    * @param {Object} [initState] - The initial store state
    * @param {Object} [config] - Map of internal state keys to child stores
    */
-  constructor (initState, config) {
+  constructor(initState, config) {
     super(initState)
     this.updateStructure(config)
   }
@@ -21,11 +21,11 @@ class ComposableObservableStore extends ObservableStore {
    *
    * @param {Object} [config] - Map of internal state keys to child stores
    */
-  updateStructure (config) {
+  updateStructure(config) {
     this.config = config
     this.removeAllListeners()
     for (const key in config) {
-      config[key].subscribe((state) => {
+      config[key].subscribe(state => {
         this.updateState({ [key]: state })
       })
     }
@@ -37,7 +37,7 @@ class ComposableObservableStore extends ObservableStore {
    *
    * @returns {Object} - Object containing merged child store state
    */
-  getFlatState () {
+  getFlatState() {
     let flatState = {}
     for (const key in this.config) {
       flatState = { ...flatState, ...this.config[key].getState() }

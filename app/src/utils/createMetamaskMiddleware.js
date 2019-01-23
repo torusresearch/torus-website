@@ -3,7 +3,7 @@ const createScaffoldMiddleware = require('json-rpc-engine/src/createScaffoldMidd
 const createAsyncMiddleware = require('json-rpc-engine/src/createAsyncMiddleware')
 const createWalletSubprovider = require('eth-json-rpc-middleware/wallet')
 
-export default function createMetamaskMiddleware ({
+export default function createMetamaskMiddleware({
   version,
   getAccounts,
   processTransaction,
@@ -32,7 +32,7 @@ export default function createMetamaskMiddleware ({
   return metamaskMiddleware
 }
 
-function createPendingNonceMiddleware ({ getPendingNonce }) {
+function createPendingNonceMiddleware({ getPendingNonce }) {
   return createAsyncMiddleware(async (req, res, next) => {
     if (req.method !== 'eth_getTransactionCount') return next()
     const address = req.params[0]

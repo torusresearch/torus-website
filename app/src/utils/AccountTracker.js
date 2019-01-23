@@ -31,7 +31,7 @@ export default class AccountTracker {
    * @property {Object} _currentBlockNumber Reference to a property on the _blockTracker: the number (i.e. an id) of the the current block
    *
    */
-  constructor (opts = {}) {
+  constructor(opts = {}) {
     const initState = {
       accounts: {},
       currentBlockGasLimit: ''
@@ -50,7 +50,7 @@ export default class AccountTracker {
     this._updateForBlock = this._updateForBlock.bind(this)
   }
 
-  start () {
+  start() {
     // remove first to avoid double add
     this._blockTracker.removeListener('latest', this._updateForBlock)
     // add listener
@@ -59,7 +59,7 @@ export default class AccountTracker {
     this._updateAccounts()
   }
 
-  stop () {
+  stop() {
     // remove listener
     this._blockTracker.removeListener('latest', this._updateForBlock)
   }
@@ -75,19 +75,19 @@ export default class AccountTracker {
    * in sync
    *
    */
-  syncWithAddresses (addresses) {
+  syncWithAddresses(addresses) {
     const accounts = this.store.getState().accounts
     const locals = Object.keys(accounts)
 
     const accountsToAdd = []
-    addresses.forEach((upstream) => {
+    addresses.forEach(upstream => {
       if (!locals.includes(upstream)) {
         accountsToAdd.push(upstream)
       }
     })
 
     const accountsToRemove = []
-    locals.forEach((local) => {
+    locals.forEach(local => {
       if (!addresses.includes(local)) {
         accountsToRemove.push(local)
       }
@@ -104,7 +104,7 @@ export default class AccountTracker {
    * @param {array} addresses An array of hex addresses of new accounts to track
    *
    */
-  addAccounts (addresses) {
+  addAccounts(addresses) {
     const accounts = this.store.getState().accounts
     // add initial state for addresses
     addresses.forEach(address => {
@@ -123,7 +123,7 @@ export default class AccountTracker {
    * @param {array} an array of hex addresses to stop tracking
    *
    */
-  removeAccount (addresses) {
+  removeAccount(addresses) {
     const accounts = this.store.getState().accounts
     // remove each state object
     addresses.forEach(address => {
@@ -142,7 +142,7 @@ export default class AccountTracker {
    * @fires 'block' The updated state, if all account updates are successful
    *
    */
-  async _updateForBlock (blockNumber) {
+  async _updateForBlock(blockNumber) {
     this._currentBlockNumber = blockNumber
 
     // block gasLimit polling shouldn't be in account-tracker shouldn't be here...
@@ -164,7 +164,7 @@ export default class AccountTracker {
    * @returns {Promise} after all account balances updated
    *
    */
-  async _updateAccounts () {
+  async _updateAccounts() {
     const accounts = this.store.getState().accounts
     const addresses = Object.keys(accounts)
     await Promise.all(addresses.map(this._updateAccount.bind(this)))
@@ -178,7 +178,7 @@ export default class AccountTracker {
    * @returns {Promise} after the account balance is updated
    *
    */
-  async _updateAccount (address) {
+  async _updateAccount(address) {
     // query balance
     const balance = await this._query.getBalance(address)
     const result = { address, balance }
@@ -189,5 +189,4 @@ export default class AccountTracker {
     accounts[address] = result
     this.store.updateState({ accounts })
   }
-
 }

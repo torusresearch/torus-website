@@ -1,0 +1,18 @@
+codecov:
+  notify:
+    require_ci_to_pass: yes
+
+coverage:
+  precision: 2
+  round: down
+
+fixes:
+  - "::app/" # move root   e.g., "path/" => "after/path/"
+
+ignore:
+  - "src/components"
+  - "src/vendor"
+  - "src/views"
+  - "src/widget"
+  - "src/_*.js"
+  - "src/_*.vue"

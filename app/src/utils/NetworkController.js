@@ -31,7 +31,7 @@ export default class NetworkController extends EventEmitter {
    * @constructor
    * @param {Object} opts
    */
-  constructor (opts = {}) {
+  constructor(opts = {}) {
     super()
     this.defaultMaxListeners = 20
     const providerConfig = opts.provider || defaultProviderConfig
@@ -56,7 +56,7 @@ export default class NetworkController extends EventEmitter {
   /**
    * Helper method for initializing provider
    */
-  initializeProvider (providerParams) {
+  initializeProvider(providerParams) {
     this._baseProviderParams = providerParams
     const { type, rpcTarget, chainId, ticker, nickname } = this.providerStore.getState()
     this._configureProvider({ type, rpcTarget, chainId, ticker, nickname })
@@ -67,7 +67,7 @@ export default class NetworkController extends EventEmitter {
   /**
    * Returns proxies so the references will always be good
    */
-  getProviderAndBlockTracker () {
+  getProviderAndBlockTracker() {
     const provider = this._providerProxy
     const blockTracker = this._blockTrackerProxy
     return { provider, blockTracker }
@@ -76,21 +76,21 @@ export default class NetworkController extends EventEmitter {
   /**
    * For checking network when restoring connectivity
    */
-  verifyNetwork () {
+  verifyNetwork() {
     if (this.isNetworkLoading()) this.lookupNetwork()
   }
 
   /**
    * Get network state
    */
-  getNetworkState () {
+  getNetworkState() {
     return this.networkStore.getState()
   }
 
   /**
    * Get network config
    */
-  getNetworkConfig () {
+  getNetworkConfig() {
     return this.networkConfig.getState()
   }
 
@@ -99,13 +99,14 @@ export default class NetworkController extends EventEmitter {
    * @param {string} network
    * @param {Object} type
    */
-  setNetworkState (network, type) {
+  setNetworkState(network, type) {
     if (network === 'loading') {
       return this.networkStore.putState(network)
     }
     if (!type) {
       return
     }
+    // eslint-disable-next-line no-param-reassign
     network = networks.networkList[type] && networks.networkList[type].chainId ? networks.networkList[type].chainId : network
     return this.networkStore.putState(network)
   }
@@ -113,14 +114,14 @@ export default class NetworkController extends EventEmitter {
   /**
    * Return networking loading status
    */
-  isNetworkLoading () {
+  isNetworkLoading() {
     return this.getNetworkState() === 'loading'
   }
 
   /**
    * Return network type
    */
-  lookupNetwork () {
+  lookupNetwork() {
     // Prevent firing when provider is not defined.
     if (!this._provider) {
       return log.warn('NetworkController - lookupNetwork aborted due to missing provider')
@@ -143,8 +144,8 @@ export default class NetworkController extends EventEmitter {
    * Set provider
    * @param {string} type
    */
-  async setProviderType (type) {
-    assert.notStrictEqual(type, 'rpc', `NetworkController - cannot call "setProviderType" with type 'rpc'. use "setRpcTarget"`)
+  async setProviderType(type) {
+    assert.notStrictEqual(type, 'rpc', 'NetworkController - cannot call "setProviderType" with type \'rpc\'. use "setRpcTarget"')
     assert(INFURA_PROVIDER_TYPES.includes(type) || type === LOCALHOST, `NetworkController - Unknown rpc type "${type}"`)
     const providerConfig = { type }
     this.providerConfig = providerConfig
@@ -153,14 +154,14 @@ export default class NetworkController extends EventEmitter {
   /**
    * Reset network connection
    */
-  resetConnection () {
+  resetConnection() {
     this.providerConfig = this.getProviderConfig()
   }
 
   /**
    * Setter for providerConfig
    */
-  set providerConfig (providerConfig) {
+  set providerConfig(providerConfig) {
     this.providerStore.updateState(providerConfig)
     this._switchNetwork(providerConfig)
   }
@@ -168,17 +169,17 @@ export default class NetworkController extends EventEmitter {
   /**
    * Getter for providerConfig
    */
-  getProviderConfig () {
+  getProviderConfig() {
     return this.providerStore.getState()
   }
 
-  _switchNetwork (opts) {
+  _switchNetwork(opts) {
     this.setNetworkState('loading')
     this._configureProvider(opts)
     this.emit('networkDidChange')
   }
 
-  _configureProvider (opts) {
+  _configureProvider(opts) {
     // infura type-based endpoints
     const isInfura = INFURA_PROVIDER_TYPES.includes(opts.type)
     if (isInfura) {
@@ -188,7 +189,7 @@ export default class NetworkController extends EventEmitter {
     }
   }
 
-  _configureInfuraProvider ({ type }) {
+  _configureInfuraProvider({ type }) {
     log.info('NetworkController - configureInfuraProvider', type)
     const networkClient = createInfuraClient({ network: type })
     this._setNetworkClient(networkClient)
@@ -199,7 +200,7 @@ export default class NetworkController extends EventEmitter {
     this.networkConfig.putState(settings)
   }
 
-  _setNetworkClient ({ networkMiddleware, blockTracker }) {
+  _setNetworkClient({ networkMiddleware, blockTracker }) {
     const metamaskMiddleware = createMetamaskMiddleware(this._baseProviderParams)
     const engine = new JsonRpcEngine()
     engine.push(metamaskMiddleware)
@@ -208,7 +209,7 @@ export default class NetworkController extends EventEmitter {
     this._setProviderAndBlockTracker({ provider, blockTracker })
   }
 
-  _setProviderAndBlockTracker ({ provider, blockTracker }) {
+  _setProviderAndBlockTracker({ provider, blockTracker }) {
     // update or intialize proxies
     if (this._providerProxy) {
       this._providerProxy.setTarget(provider)
@@ -225,13 +226,13 @@ export default class NetworkController extends EventEmitter {
     this._blockTracker = blockTracker
   }
 
-  _logBlock (block) {
+  _logBlock(block) {
     log.info(`BLOCK CHANGED: #${block.number.toString('hex')} 0x${block.hash.toString('hex')}`)
     this.verifyNetwork()
   }
 }
 
-function createInfuraClient ({ network }) {
+function createInfuraClient({ network }) {
   const infuraMiddleware = createInfuraMiddleware({ network })
   const infuraProvider = providerFromMiddleware(infuraMiddleware)
   const blockTracker = new BlockTracker({ provider: infuraProvider })
@@ -248,7 +249,7 @@ function createInfuraClient ({ network }) {
   return { networkMiddleware, blockTracker }
 }
 
-function createNetworkAndChainIdMiddleware ({ network }) {
+function createNetworkAndChainIdMiddleware({ network }) {
   let chainId
   let netId
 
