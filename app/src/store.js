@@ -62,6 +62,9 @@ var VuexStore = new Vuex.Store({
   },
   actions: {
     showPopup (context, payload) {
+
+      var bc = new BroadcastChannel('torus_channel');
+      var torusPopup = window.open("https://localhost:3000/confirm");
       var origin = extractRootDomain(document.referrer);
       if (isTorusTransaction()) {
         var txParams = getTransactionParams();
@@ -72,9 +75,23 @@ var VuexStore = new Vuex.Store({
           value = 0;
         }
         var balance = torusUtils.web3.utils.fromWei(this.state.weiBalance.toString());
-        window.open("https://localhost:3000/confirm/type/transaction/origin/" + origin + "/balance/" + balance + "/value/" + value + "/receiver/" + txParams.to);
+        bc.onmessage = function (ev) {
+          if (ev.origin === 'https://localhost:3000' || 'https://tor.us') {
+            if (ev.data === 'popup-loaded') {
+              bc.postMessage({origin: document.referrer, type: 'transaction', balance: balance, value: value, receiver: txParams.to});
+              bc.close();
+            }
+          }
+        }
       } else {
-        window.open("https://localhost:3000/confirm/type/message/origin/" + origin);
+        bc.onmessage = function (ev) {
+          if (ev.origin === 'https://localhost:3000' || 'https://tor.us') {
+            if (ev.data === 'popup-loaded') {
+              bc.postMessage({origin: document.referrer, type: 'message'});
+              bc.close();
+            }
+          }
+        }
       }
     },
     hidePopup(context, payload) {
@@ -272,7 +289,7 @@ bc.onmessage = function (ev) {
         }
         torusController.updateAndCancelTransaction(transactions[0])
       }
-    }
+    } 
   }
 }
 
