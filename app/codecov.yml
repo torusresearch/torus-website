@@ -7,12 +7,12 @@ coverage:
   round: down
 
 fixes:
-  - "torus-website/::" # reduce root e.g., "before/path/" => "path/"
+  - "::torus-website/" # move root   e.g., "path/" => "after/path/"
 
 ignore:
-  - "app/src/components"
-  - "app/src/vendor"
-  - "app/src/views"
-  - "app/src/widget"
-  - "app/src/_*.js"
-  - "app/src/_*.vue"
+  - "src/components"
+  - "src/vendor"
+  - "src/views"
+  - "src/widget"
+  - "src/_*.js"
+  - "src/_*.vue"
