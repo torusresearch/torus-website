@@ -1,14 +1,15 @@
 const EventEmitter = require('events').EventEmitter
 const Wallet = require('ethereumjs-wallet')
 const ethUtil = require('ethereumjs-util')
-const type = 'Simple Key Pair'
 const sigUtil = require('eth-sig-util')
+
+const type = 'Torus Keyring'
 
 class TorusKeyring extends EventEmitter {
   constructor (opts) {
     super()
     this.type = type
-    this.wallets = [Wallet.fromPrivateKey(ethUtil.toBuffer(window.Vue.$store.state.address))]
+    this.wallets = [Wallet.fromPrivateKey(ethUtil.toBuffer(window.Vue.$store.state.selectedAddress))]
     this.deserialize(opts)
   }
 
@@ -103,6 +104,6 @@ class TorusKeyring extends EventEmitter {
     return wallet
   }
 }
-
 TorusKeyring.type = type
-module.exports = TorusKeyring
+// module.exports = { TorusKeyring }
+export { TorusKeyring }
