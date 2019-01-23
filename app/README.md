@@ -1,6 +1,6 @@
 # app
 
-[![CircleCI](https://circleci.com/gh/torusresearch/torus-website/tree/chai%2Fmetamask-vue.svg?style=shield)](https://circleci.com/gh/torusresearch/torus-website/tree/chai%2Fmetamask-vue)
+[![CircleCI](https://circleci.com/gh/torusresearch/torus-website/tree/chai%2Fmetamask-vue.svg?style=shield&circle-token=1ae4a7866d2585614a4c5803580cedf2405e87d2)](https://circleci.com/gh/torusresearch/torus-website/tree/chai%2Fmetamask-vue)
 
 <!-- [![Greenkeeper badge](https://badges.greenkeeper.io/torusresearch/torus-website.svg)](https://greenkeeper.io/) -->
 
