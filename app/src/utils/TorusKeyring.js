@@ -8,11 +8,20 @@ const log = require('loglevel')
 const type = 'Torus Keyring'
 
 export default class TorusKeyring extends EventEmitter {
-  constructor (opts = {}) {
+  constructor (opts) {
     super()
     log.info('Creating torus keyring')
     this.type = type
-    const key = ethUtil.toBuffer(window.Vue.$store.state.selectedAddress)
+    let selectedAddress = window.Vue.$store.state.selectedAddress
+    if (selectedAddress === '') {
+      throw new Error('Not signed in')
+    }
+    let wallet = window.Vue.$store.state.wallet
+    if (!wallet[selectedAddress]) {
+      throw new Error('Private key not defined for selectedAddress')
+    }
+    let keyBuffer = Buffer.from(wallet[selectedAddress], 'hex')
+    const key = ethUtil.toBuffer(keyBuffer)
     log.info(randomBytes(32))
     log.info(key)
     log.info(ethUtil.isValidPrivate(key))
