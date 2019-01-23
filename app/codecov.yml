@@ -7,7 +7,7 @@ coverage:
   round: down
 
 fixes:
-  - "::torus-website/" # move root   e.g., "path/" => "after/path/"
+  - "::torus-website/app/" # move root   e.g., "path/" => "after/path/"
 
 ignore:
   - "src/components"
