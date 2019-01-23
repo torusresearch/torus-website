@@ -1,12 +1,10 @@
 # app
 
-[![npm version](https://badge.fury.io/js/membershipverificationtoken.svg)](https://badge.fury.io/js/torus-website)
+[![CircleCI](https://circleci.com/gh/torusresearch/torus-website/tree/chai%2Fmetamask-vue.svg?style=svg)](https://circleci.com/gh/torusresearch/torus-website/tree/chai%2Fmetamask-vue)
 
-[![CircleCI](https://circleci.com/gh/torusresearch/torus-website/tree/chai/metamask-vue.svg?style=shield)](https://circleci.com/gh/torusresearch/torus-website/tree/metamask-vue)
+<!-- [![Greenkeeper badge](https://badges.greenkeeper.io/torusresearch/torus-website.svg)](https://greenkeeper.io/) -->
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/torusresearch/torus-website.svg)](https://greenkeeper.io/)
-
-[![codecov](https://codecov.io/gh/torusresearch/torus-website/branch/chai/metamask-vue/graph/badge.svg)](https://codecov.io/gh/torusresearch/torus-website)
+[![codecov](https://codecov.io/gh/torusresearch/torus-website/branch/chai%2Fmetamask-vue/graph/badge.svg?token=fzYfxUOTLd)](https://codecov.io/gh/torusresearch/torus-website)
 
 ## Project setup
 
