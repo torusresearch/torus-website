@@ -78,7 +78,7 @@
     "nock": "^10.0.6",
     "nyc": "^13.1.0",
     "sinon": "^5.0.0",
-    "vue-template-compiler": "^2.5.21"
+    "vue-template-compiler": "^2.5.22"
   },
   "browserslist": [
     "> 1%",
