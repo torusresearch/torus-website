@@ -1,28 +1,28 @@
 <template>
   <div id='torusModal'>
-    <div v-if="$route.params.type === 'message'">
+    <div v-if="this.type === 'message'">
       <div id='torusModal-content' >
         <div id="torusModal-header">
           <span id="close">&times;</span>
           <h2>New Message</h2>
         </div>
         <div id="torusModal-body">
-          <p>Sign message from {{ $route.params.origin }}?</p>
+          <p>Sign message from {{ this.origin }}?</p>
           <button v-on:click="triggerDeny" style='width:50%'> Deny </button>
           <button v-on:click="triggerSign" style='width:50%'> Sign </button>
         </div>
       </div>
     </div>
-    <div v-else-if="$route.params.type === 'transaction'"> 
+    <div v-else-if="this.type === 'transaction'"> 
       <div id='torusModal-content' >
         <div id="torusModal-header">
           <span id="close">&times;</span>
           <h2>New Transaction</h2>
         </div>
         <div id="torusModal-body">
-          <p> Origin: {{ $route.params.origin }} </p>
-          <p>Send {{ $route.params.value }} ETH to {{ $route.params.receiver }}?</p>
-          <p> Your balance: {{ $route.params.balance }} ETH </p>
+          <p> Origin: {{ this.origin }} </p>
+          <p>Send {{ this.value }} ETH to {{ this.receiver }}?</p>
+          <p> Your balance: {{ this.balance }} ETH </p>
           <button v-on:click="triggerDeny" style='width:50%'> Deny </button>
           <button v-on:click="triggerSign" style='width:50%'> Send </button>
         </div>
@@ -36,20 +36,51 @@
 
   export default {
     name: "confirm",
+    data () {
+      return {
+        type: 'none',
+        origin: 'unknown',
+        balance: 0,
+        value: 0,
+        receiver: 'unknown'
+      }
+    },
     methods: {
       triggerSign: function (event) {
         var bc = new BroadcastChannel('torus_channel');
         bc.postMessage('confirm-transaction');
+        bc.close();
         window.close();
       },
       triggerDeny: function (event) {
         var bc = new BroadcastChannel('torus_channel');
         bc.postMessage('deny-transaction');
+        bc.close();
         window.close();
       },
       ...mapActions({
         hidePopup: 'hidePopup'
       })
+    },
+    mounted () {
+      const that = this;
+      var bc = new BroadcastChannel('torus_channel');
+      bc.onmessage = function (ev) {
+        if (ev.origin === 'https://localhost:3000' || 'https://tor.us') {
+          if (ev.data.type === 'message') {
+            that.origin = ev.data.origin;
+            that.type = ev.data.type;
+          } else if (ev.data.type === 'transaction') {
+            that.origin = ev.data.origin;
+            that.type = ev.data.type;
+            that.receiver = ev.data.receiver;
+            that.value = ev.data.value;
+            that.balance = ev.data.balance;
+          }
+          bc.close();
+        }
+      }
+      bc.postMessage('popup-loaded');
     }
   }
 </script>
