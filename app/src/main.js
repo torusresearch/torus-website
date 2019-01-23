@@ -11,7 +11,7 @@ Vue.use(require('vue-script2'))
 
 Vue.config.productionTip = false
 
-Object.defineProperty(Vue.prototype, '  Utils', { value: torusUtils })
+Object.defineProperty(Vue.prototype, 'TorusUtils', { value: torusUtils })
 
 var vue = new Vue({
   router,
