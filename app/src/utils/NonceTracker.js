@@ -11,7 +11,6 @@ const Mutex = require('await-semaphore').Mutex
   @class
 */
 class NonceTracker {
-
   constructor ({ provider, blockTracker, getPendingTransactions, getConfirmedTransactions }) {
     this.provider = provider
     this.blockTracker = blockTracker
@@ -64,7 +63,7 @@ class NonceTracker {
       nonceDetails.params = {
         highestLocallyConfirmed,
         highestSuggested,
-        nextNetworkNonce,
+        nextNetworkNonce
       }
       nonceDetails.local = localNonceResult
       nonceDetails.network = networkNonceResult
@@ -155,7 +154,6 @@ class NonceTracker {
 
     return { name: 'local', nonce: highest, details: { startPoint, highest } }
   }
-
 }
 
 export default NonceTracker

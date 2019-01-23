@@ -15,7 +15,6 @@ const EthQuery = require('ethjs-query')
     @param {function} config.getPendingTransactions a function for getting an array of transactions,
     @param {function} config.publishTransaction a async function for publishing raw transactions,
 
-
 @class
 */
 
@@ -82,7 +81,7 @@ class PendingTransactionTracker extends EventEmitter {
       // encountered real error - transition to error state
       txMeta.warning = {
         error: errorMessage,
-        message: 'There was an error when resubmitting this transaction.',
+        message: 'There was an error when resubmitting this transaction.'
       }
       this.emit('tx:warning', txMeta, err)
     }))
@@ -160,7 +159,7 @@ class PendingTransactionTracker extends EventEmitter {
     } catch (err) {
       txMeta.warning = {
         error: err.message,
-        message: 'There was a problem loading this transaction.',
+        message: 'There was a problem loading this transaction.'
       }
       this.emit('tx:warning', txMeta, err)
     }
@@ -171,7 +170,6 @@ class PendingTransactionTracker extends EventEmitter {
     @param txMeta {Object} - txMeta object
     @returns {boolean}
   */
-
 
   async _checkIfNonceIsTaken (txMeta) {
     const address = txMeta.txParams.from

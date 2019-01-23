@@ -189,5 +189,4 @@ export default class AccountTracker {
     accounts[address] = result
     this.store.updateState({ accounts })
   }
-
 }

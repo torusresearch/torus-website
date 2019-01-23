@@ -44,7 +44,7 @@ var VuexStore = new Vuex.Store({
     setBalance (state, balance) {
       state.balance = balance
     },
-    setWeiBalance(state, weiBalance) {
+    setWeiBalance (state, weiBalance) {
       state.weiBalance = weiBalance
     },
     setLoginStatus (state, loggedIn) {
@@ -62,22 +62,22 @@ var VuexStore = new Vuex.Store({
   },
   actions: {
     showPopup (context, payload) {
-      var origin = extractRootDomain(document.referrer);
+      var origin = extractRootDomain(document.referrer)
       if (isTorusTransaction()) {
-        var txParams = getTransactionParams();
-        var value;
+        var txParams = getTransactionParams()
+        var value
         if (txParams.value) {
-          value = torusUtils.web3.utils.fromWei(txParams.value.toString());
+          value = torusUtils.web3.utils.fromWei(txParams.value.toString())
         } else {
-          value = 0;
+          value = 0
         }
-        var balance = torusUtils.web3.utils.fromWei(this.state.weiBalance.toString());
-        window.open("https://localhost:3000/confirm/type/transaction/origin/" + origin + "/balance/" + balance + "/value/" + value + "/receiver/" + txParams.to);
+        var balance = torusUtils.web3.utils.fromWei(this.state.weiBalance.toString())
+        window.open('https://localhost:3000/confirm/type/transaction/origin/' + origin + '/balance/' + balance + '/value/' + value + '/receiver/' + txParams.to)
       } else {
-        window.open("https://localhost:3000/confirm/type/message/origin/" + origin);
+        window.open('https://localhost:3000/confirm/type/message/origin/' + origin)
       }
     },
-    hidePopup(context, payload) {
+    hidePopup (context, payload) {
       // context.commit('setPopupVisibility', false)
       // window.parent.postMessage('hideTorusIframe', '*');
     },
@@ -113,7 +113,7 @@ var VuexStore = new Vuex.Store({
       if (this.state.selectedAddress) {
         torusUtils.web3.eth.getBalance(this.state.selectedAddress, function (err, res) {
           if (err) { log.error(err) }
-          context.commit('setWeiBalance', res);
+          context.commit('setWeiBalance', res)
         })
       }
     },
@@ -189,8 +189,8 @@ pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, (err) =>
   if (err) log.error(err)
 })
 
-var bc = new BroadcastChannel('torus_channel');
-bc.onmessage = function (ev) { 
+var bc = new BroadcastChannel('torus_channel')
+bc.onmessage = function (ev) {
   if (ev.origin === 'https://localhost:3000' || 'https://tor.us') {
     if (ev.data === 'confirm-transaction') {
       let torusController = window.Vue.TorusUtils.torusController
@@ -225,7 +225,7 @@ bc.onmessage = function (ev) {
       } else if (Object.keys(state.transactions).length > 0) {
         let transactions = []
         for (let id in state.transactions) {
-          if (state.transactions[id].status === "unapproved") {
+          if (state.transactions[id].status === 'unapproved') {
             transactions.push(state.transactions[id])
           }
         }
@@ -266,7 +266,7 @@ bc.onmessage = function (ev) {
       } else if (Object.keys(state.transactions).length > 0) {
         let transactions = []
         for (let id in state.transactions) {
-          if (state.transactions[id].status === "unapproved") {
+          if (state.transactions[id].status === 'unapproved') {
             transactions.push(state.transactions[id])
           }
         }
@@ -276,32 +276,32 @@ bc.onmessage = function (ev) {
   }
 }
 
-function getTransactionParams() {
+function getTransactionParams () {
   let torusController = window.Vue.TorusUtils.torusController
   let state = torusController.getState()
   let transactions = []
   for (let id in state.transactions) {
-    if (state.transactions[id].status === "unapproved") {
+    if (state.transactions[id].status === 'unapproved') {
       transactions.push(state.transactions[id])
     }
   }
-  return transactions[0].txParams;
+  return transactions[0].txParams
 }
 
-function isTorusTransaction() {
+function isTorusTransaction () {
   let torusController = window.Vue.TorusUtils.torusController
   let state = torusController.getState()
   if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
-    return false;
+    return false
   } else if (Object.keys(state.unapprovedMsgs).length > 0) {
-    return false;
+    return false
   } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
-    return false;
+    return false
   } else if (Object.keys(state.transactions).length > 0) {
-    let transactions = []
+    // let transactions = []
     for (let id in state.transactions) {
-      if (state.transactions[id].status === "unapproved") {
-        return true;
+      if (state.transactions[id].status === 'unapproved') {
+        return true
       }
     }
   } else {
@@ -309,42 +309,43 @@ function isTorusTransaction() {
   }
 }
 
-function extractHostname(url) {
-    var hostname;
-    //find & remove protocol (http, ftp, etc.) and get hostname
+function extractHostname (url) {
+  var hostname
+  // find & remove protocol (http, ftp, etc.) and get hostname
 
-    if (url.indexOf("//") > -1) {
-        hostname = url.split('/')[2];
-    }
-    else {
-        hostname = url.split('/')[0];
-    }
+  if (url.indexOf('//') > -1) {
+    hostname = url.split('/')[2]
+  } else {
+    hostname = url.split('/')[0]
+  }
 
-    //find & remove port number
-    hostname = hostname.split(':')[0];
-    //find & remove "?"
-    hostname = hostname.split('?')[0];
+  // find & remove port number
+  hostname = hostname.split(':')[0]
+  // find & remove "?"
+  hostname = hostname.split('?')[0]
 
-    return hostname;
+  return hostname
 }
 
 // To address those who want the "root domain," use this function:
-function extractRootDomain(url) {
-    var domain = extractHostname(url),
-        splitArr = domain.split('.'),
-        arrLen = splitArr.length;
+function extractRootDomain (url) {
+  var domain = extractHostname(url)
 
-    //extracting the root domain here
-    //if there is a subdomain 
-    if (arrLen > 2) {
-        domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
-        //check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
-        if (splitArr[arrLen - 2].length == 2 && splitArr[arrLen - 1].length == 2) {
-            //this is using a ccTLD
-            domain = splitArr[arrLen - 3] + '.' + domain;
-        }
+  var splitArr = domain.split('.')
+
+  var arrLen = splitArr.length
+
+  // extracting the root domain here
+  // if there is a subdomain
+  if (arrLen > 2) {
+    domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1]
+    // check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
+    if (splitArr[arrLen - 2].length === 2 && splitArr[arrLen - 1].length === 2) {
+      // this is using a ccTLD
+      domain = splitArr[arrLen - 3] + '.' + domain
     }
-    return domain;
+  }
+  return domain
 }
 
 export default VuexStore

@@ -11,9 +11,9 @@
 </template>
 
 <script>
-import torusUtils from '@/utils/torusUtils'
+// import torusUtils from '@/utils/torusUtils'
 import { mapActions } from 'vuex'
-import * as log from 'loglevel'
+// import * as log from 'loglevel'
 import Confirm from './Confirm.vue'
 
 export default {
@@ -46,7 +46,7 @@ export default {
       updateSelectedAddress: 'updateSelectedAddress',
       updateNetworkId: 'updateNetworkId',
       triggerLogin: 'triggerLogin'
-    }),
+    })
   },
   mounted () {
     // setup google auth sdk
