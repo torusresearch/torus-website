@@ -36,7 +36,7 @@ Updated	 :	09.02.2018
 body { font-family: "Poppins", sans-serif; color: #3c3c3c; font-size: 15px; line-height: 1.86; font-weight: 300; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; position: relative; }
 
 body { color: #fff; background: #10122d; }
-body.theme-light, body.io-dark-light .section-light, body.io-dark-light .section-light-alt { color: #28384c; background: #fff; }
+body.theme-light, body.io-dark-light .section-light, body.io-dark-light .section-light-alt { color: #28384c; background: none; }
 body.io-azure { background: #0d42b2; }
 body.io-azure .section-pro, body.io-azure .section-pro-alt { color: #313c56; }
 

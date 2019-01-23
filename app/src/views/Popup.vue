@@ -4,7 +4,7 @@
       <Confirm />
     </div>
     <div v-else>
-      <button v-on:click="triggerLogin" id="googleAuthBtn">Google</button>
+      <button v-on:click="triggerLogin" id="googleAuthBtnf">Google</button>
       <input id="email" />
     </div>
   </div>
