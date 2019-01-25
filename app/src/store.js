@@ -63,7 +63,7 @@ var VuexStore = new Vuex.Store({
   actions: {
     showPopup(context, payload) {
       var bc = new BroadcastChannel('torus_channel')
-      var torusPopup = window.open('https://localhost:3000/confirm')
+      window.open('https://localhost:3000/confirm', '_blank', 'toolbar=0,location=0,menubar=0,height=400,width=600')
       if (isTorusTransaction()) {
         var txParams = getTransactionParams()
         var value
@@ -74,7 +74,7 @@ var VuexStore = new Vuex.Store({
         }
         var balance = torusUtils.web3.utils.fromWei(this.state.weiBalance.toString())
         bc.onmessage = function(ev) {
-          if (ev.origin === 'https://localhost:3000' || 'https://tor.us') {
+          if (ev.origin === 'https://localhost:3000' || ev.origin === 'https://tor.us') {
             if (ev.data === 'popup-loaded') {
               bc.postMessage({ origin: document.referrer, type: 'transaction', balance: balance, value: value, receiver: txParams.to })
               bc.close()
@@ -83,7 +83,7 @@ var VuexStore = new Vuex.Store({
         }
       } else {
         bc.onmessage = function(ev) {
-          if (ev.origin === 'https://localhost:3000' || 'https://tor.us') {
+          if (ev.origin === 'https://localhost:3000' || ev.origin === 'https://tor.us') {
             if (ev.data === 'popup-loaded') {
               bc.postMessage({ origin: document.referrer, type: 'message' })
               bc.close()
@@ -208,7 +208,7 @@ pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, err => {
 
 var bc = new BroadcastChannel('torus_channel')
 bc.onmessage = function(ev) {
-  if (ev.origin === 'https://localhost:3000' || 'https://tor.us') {
+  if (ev.origin === 'https://localhost:3000' || ev.origin === 'https://tor.us') {
     if (ev.data === 'confirm-transaction') {
       let torusController = window.Vue.TorusUtils.torusController
       let state = torusController.getState()
@@ -327,7 +327,6 @@ function isTorusTransaction() {
   } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
     return false
   } else if (Object.keys(state.transactions).length > 0) {
-    let transactions = []
     for (let id in state.transactions) {
       if (state.transactions[id].status === 'unapproved') {
         return true
