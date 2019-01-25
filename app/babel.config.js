@@ -1,4 +1,5 @@
 module.exports = {
   presets: ['@vue/app'],
-  ignore: ['**/vendor/*']
+  ignore: ['**/vendor/*'],
+  sourceType: 'unambiguous'
 }
