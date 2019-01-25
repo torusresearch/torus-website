@@ -6,18 +6,9 @@ const path = require('path')
 const https = require('https')
 const http = require('http')
 const APP_PORT = process.env.PORT || 3000
-var certOptions
-
-if (process.env.NODE_ENV === 'production') {
-  certOptions = {
-    key: fs.readFileSync(path.resolve('../ssl/privkey.pem')),
-    cert: fs.readFileSync(path.resolve('../ssl/fullchain.pem'))
-  }
-} else {
-  certOptions = {
-    key: fs.readFileSync(path.resolve('../ssl/server.key')),
-    cert: fs.readFileSync(path.resolve('../ssl/server.crt'))
-  }
+var certOptions = {
+  key: fs.readFileSync(path.resolve('../ssl/server.key')),
+  cert: fs.readFileSync(path.resolve('../ssl/server.crt'))
 }
 
 // app.get('/privacy', (req, res) => {
