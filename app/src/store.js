@@ -63,7 +63,7 @@ var VuexStore = new Vuex.Store({
   actions: {
     showPopup(context, payload) {
       var bc = new BroadcastChannel('torus_channel')
-      window.open('https://localhost:3000/confirm', '_blank', 'toolbar=0,location=0,menubar=0,height=400,width=600')
+      window.open('/confirm', '_blank', 'toolbar=0,location=0,menubar=0,height=400,width=600')
       if (isTorusTransaction()) {
         var txParams = getTransactionParams()
         var value

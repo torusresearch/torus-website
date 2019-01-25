@@ -10,9 +10,6 @@ module.exports = {
       key: fs.readFileSync(path.resolve('../ssl/server.key')),
       cert: fs.readFileSync(path.resolve('../ssl/server.crt'))
     },
-    hotOnly: false,
-    resolve: {
-      symlinks: false
-    }
+    hotOnly: false
   }
 }
