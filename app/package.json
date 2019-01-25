@@ -20,6 +20,7 @@
     "backoff": "^2.5.0",
     "debounce": "^1.2.0",
     "dnode": "^1.2.2",
+    "dotenv": "^6.2.0",
     "eth-block-tracker": "^4.1.0",
     "eth-json-rpc-filters": "^3.0.1",
     "eth-json-rpc-middleware": "^3.1.7",
