@@ -84,7 +84,7 @@ engine.on('block', function(block) {
   log.info('================================')
   log.info('BLOCK CHANGED:', '#' + block.number.toString('hex'), '0x' + block.hash.toString('hex'))
   log.info('================================')
-  window.Vue.$store.dispatch('updateWeiBalance');
+  window.Vue.$store.dispatch('updateWeiBalance')
 })
 engine.on('error', function(err) {
   log.error(err.stack)
