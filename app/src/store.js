@@ -47,8 +47,7 @@ var VuexStore = new Vuex.Store({
     setWeiBalance(state, weiBalance) {
       state.weiBalance = weiBalance
     },
-    setLoginStatus (state, loggedIn) {
-
+    setLoginStatus(state, loggedIn) {
       state.loggedIn = loggedIn
     },
     setSelectedAddress(state, selectedAddress) {
@@ -62,39 +61,38 @@ var VuexStore = new Vuex.Store({
     }
   },
   actions: {
-    showPopup (context, payload) {
-      var bc = new BroadcastChannel('torus_channel');
-      var torusPopup = window.open('https://localhost:3000/confirm');
+    showPopup(context, payload) {
+      var bc = new BroadcastChannel('torus_channel')
+      var torusPopup = window.open('https://localhost:3000/confirm')
       if (isTorusTransaction()) {
-        var txParams = getTransactionParams();
-        var value;
+        var txParams = getTransactionParams()
+        var value
         if (txParams.value) {
-          value = torusUtils.web3.utils.fromWei(txParams.value.toString());
+          value = torusUtils.web3.utils.fromWei(txParams.value.toString())
         } else {
-          value = 0;
+          value = 0
         }
-        var balance = torusUtils.web3.utils.fromWei(this.state.weiBalance.toString());
-        bc.onmessage = function (ev) {
+        var balance = torusUtils.web3.utils.fromWei(this.state.weiBalance.toString())
+        bc.onmessage = function(ev) {
           if (ev.origin === 'https://localhost:3000' || 'https://tor.us') {
             if (ev.data === 'popup-loaded') {
-              bc.postMessage({origin: document.referrer, type: 'transaction', balance: balance, value: value, receiver: txParams.to});
-              bc.close();
+              bc.postMessage({ origin: document.referrer, type: 'transaction', balance: balance, value: value, receiver: txParams.to })
+              bc.close()
             }
           }
         }
       } else {
-        bc.onmessage = function (ev) {
+        bc.onmessage = function(ev) {
           if (ev.origin === 'https://localhost:3000' || 'https://tor.us') {
             if (ev.data === 'popup-loaded') {
-              bc.postMessage({origin: document.referrer, type: 'message'});
-              bc.close();
+              bc.postMessage({ origin: document.referrer, type: 'message' })
+              bc.close()
             }
           }
         }
       }
     },
-    hidePopup(context, payload) {
-    },
+    hidePopup(context, payload) {},
     updateEmail(context, payload) {
       context.commit('setEmail', payload.email)
     },
@@ -123,15 +121,17 @@ var VuexStore = new Vuex.Store({
         context.commit('setBalance', { ...context.state.balance, [payload.ethAddress]: payload.value })
       }
     },
-    updateWeiBalance (context, payload) {
+    updateWeiBalance(context, payload) {
       if (this.state.selectedAddress) {
-        torusUtils.web3.eth.getBalance(this.state.selectedAddress, function (err, res) {
-          if (err) { log.error(err) }
-          context.commit('setWeiBalance', res);
+        torusUtils.web3.eth.getBalance(this.state.selectedAddress, function(err, res) {
+          if (err) {
+            log.error(err)
+          }
+          context.commit('setWeiBalance', res)
         })
       }
     },
-    updateLoginStatus (context, payload) {
+    updateLoginStatus(context, payload) {
       context.commit('setLoginStatus', payload.loggedIn)
     },
     updateSelectedAddress(context, payload) {
@@ -206,8 +206,8 @@ pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
 })
 
-var bc = new BroadcastChannel('torus_channel');
-bc.onmessage = function (ev) { 
+var bc = new BroadcastChannel('torus_channel')
+bc.onmessage = function(ev) {
   if (ev.origin === 'https://localhost:3000' || 'https://tor.us') {
     if (ev.data === 'confirm-transaction') {
       let torusController = window.Vue.TorusUtils.torusController
@@ -217,7 +217,9 @@ bc.onmessage = function (ev) {
         for (let id in state.unapprovedPersonalMsgs) {
           unapprovedPersonalMsgs.push(state.unapprovedPersonalMsgs[id])
         }
-        unapprovedPersonalMsgs = unapprovedPersonalMsgs.sort((a, b) => { return a.time - b.time })
+        unapprovedPersonalMsgs = unapprovedPersonalMsgs.sort((a, b) => {
+          return a.time - b.time
+        })
         let msgParams = unapprovedPersonalMsgs[0].msgParams
         msgParams.metamaskId = parseInt(unapprovedPersonalMsgs[0].id)
         torusController.signPersonalMessage(msgParams)
@@ -226,7 +228,9 @@ bc.onmessage = function (ev) {
         for (let id in state.unapprovedMsgs) {
           unapprovedMsgs.push(state.unapprovedMsgs[id])
         }
-        unapprovedMsgs = unapprovedMsgs.sort((a, b) => { return a.time - b.time })
+        unapprovedMsgs = unapprovedMsgs.sort((a, b) => {
+          return a.time - b.time
+        })
         let msgParams = unapprovedMsgs[0].msgParams
         msgParams.metamaskId = parseInt(unapprovedMsgs[0].id)
         torusController.signPersonalMessage(msgParams)
@@ -235,7 +239,9 @@ bc.onmessage = function (ev) {
         for (let id in state.unapprovedTypedMessages) {
           unapprovedTypedMessages.push(state.unapprovedTypedMessages[id])
         }
-        unapprovedTypedMessages = unapprovedTypedMessages.sort((a, b) => { return a.time - b.time })
+        unapprovedTypedMessages = unapprovedTypedMessages.sort((a, b) => {
+          return a.time - b.time
+        })
         let msgParams = unapprovedTypedMessages[0].msgParams
         msgParams.metamaskId = parseInt(unapprovedTypedMessages[0].id)
         torusController.signPersonalMessage(msgParams)
@@ -258,7 +264,9 @@ bc.onmessage = function (ev) {
         for (let id in state.unapprovedPersonalMsgs) {
           unapprovedPersonalMsgs.push(state.unapprovedPersonalMsgs[id])
         }
-        unapprovedPersonalMsgs = unapprovedPersonalMsgs.sort((a, b) => { return a.time - b.time })
+        unapprovedPersonalMsgs = unapprovedPersonalMsgs.sort((a, b) => {
+          return a.time - b.time
+        })
         let msgParams = unapprovedPersonalMsgs[0].msgParams
         msgParams.metamaskId = parseInt(unapprovedPersonalMsgs[0].id)
         torusController.cancelPersonalMessage(msgParams.metamaskId)
@@ -267,7 +275,9 @@ bc.onmessage = function (ev) {
         for (let id in state.unapprovedMsgs) {
           unapprovedMsgs.push(state.unapprovedMsgs[id])
         }
-        unapprovedMsgs = unapprovedMsgs.sort((a, b) => { return a.time - b.time })
+        unapprovedMsgs = unapprovedMsgs.sort((a, b) => {
+          return a.time - b.time
+        })
         let msgParams = unapprovedMsgs[0].msgParams
         msgParams.metamaskId = parseInt(unapprovedMsgs[0].id)
         torusController.cancelPersonalMessage(msgParams.metamaskId)
@@ -276,7 +286,9 @@ bc.onmessage = function (ev) {
         for (let id in state.unapprovedTypedMessages) {
           unapprovedTypedMessages.push(state.unapprovedTypedMessages[id])
         }
-        unapprovedTypedMessages = unapprovedTypedMessages.sort((a, b) => { return a.time - b.time })
+        unapprovedTypedMessages = unapprovedTypedMessages.sort((a, b) => {
+          return a.time - b.time
+        })
         let msgParams = unapprovedTypedMessages[0].msgParams
         msgParams.metamaskId = parseInt(unapprovedTypedMessages[0].id)
         torusController.cancelPersonalMessage(msgParams.metamaskId)
@@ -289,7 +301,7 @@ bc.onmessage = function (ev) {
         }
         torusController.updateAndCancelTransaction(transactions[0])
       }
-    } 
+    }
   }
 }
 
@@ -302,23 +314,23 @@ function getTransactionParams() {
       transactions.push(state.transactions[id])
     }
   }
-  return transactions[0].txParams;
+  return transactions[0].txParams
 }
 
 function isTorusTransaction() {
   let torusController = window.Vue.TorusUtils.torusController
   let state = torusController.getState()
   if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
-    return false;
+    return false
   } else if (Object.keys(state.unapprovedMsgs).length > 0) {
-    return false;
+    return false
   } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
-    return false;
+    return false
   } else if (Object.keys(state.transactions).length > 0) {
     let transactions = []
     for (let id in state.transactions) {
       if (state.transactions[id].status === 'unapproved') {
-        return true;
+        return true
       }
     }
   } else {
