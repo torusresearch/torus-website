@@ -41,7 +41,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/dist/index.html'))
 })
 
-// app.use(express.static('public'))
+app.use(express.static('public'))
 
 https.createServer(certOptions, app).listen(APP_PORT)
 console.log('listening to port ' + APP_PORT)
