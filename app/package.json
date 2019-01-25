@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "production": "npm run buildEmbedProduction && PORT=443 NODE_ENV=production node server.js",
-    "dev": "npm run buildEmbedDevelopment && NODE_ENV=development node server.js",
+    "production": "PORT=443 NODE_ENV=production node server.js",
+    "dev": "NODE_ENV=development node server.js",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
