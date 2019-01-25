@@ -19,7 +19,7 @@ const EthQuery = require('ethjs-query')
 */
 
 class PendingTransactionTracker extends EventEmitter {
-  constructor (config) {
+  constructor(config) {
     super()
     this.query = new EthQuery(config.provider)
     this.nonceTracker = config.nonceTracker
@@ -33,12 +33,12 @@ class PendingTransactionTracker extends EventEmitter {
   /**
     checks the network for signed txs and releases the nonce global lock if it is
   */
-  async updatePendingTxs () {
+  async updatePendingTxs() {
     // in order to keep the nonceTracker accurate we block it while updating pending transactions
     const nonceGlobalLock = await this.nonceTracker.getGlobalLock()
     try {
       const pendingTxs = this.getPendingTransactions()
-      await Promise.all(pendingTxs.map((txMeta) => this._checkPendingTx(txMeta)))
+      await Promise.all(pendingTxs.map(txMeta => this._checkPendingTx(txMeta)))
     } catch (err) {
       log.error('PendingTransactionTracker - Error updating pending transactions')
       log.error(err)
@@ -51,12 +51,13 @@ class PendingTransactionTracker extends EventEmitter {
     @param block {object} - a block object
     @emits tx:warning
   */
-  resubmitPendingTxs (blockNumber) {
+  resubmitPendingTxs(blockNumber) {
     const pending = this.getPendingTransactions()
     // only try resubmitting if their are transactions to resubmit
     if (!pending.length) return
-    pending.forEach((txMeta) => this._resubmitTx(txMeta, blockNumber).catch((err) => {
-      /*
+    pending.forEach(txMeta =>
+      this._resubmitTx(txMeta, blockNumber).catch(err => {
+        /*
       Dont marked as failed if the error is a "known" transaction warning
       "there is already a transaction with the same sender-nonce
       but higher/same gas price"
@@ -64,27 +65,27 @@ class PendingTransactionTracker extends EventEmitter {
       Also don't mark as failed if it has ever been broadcast successfully.
       A successful broadcast means it may still be mined.
       */
-      const errorMessage = err.message.toLowerCase()
-      const isKnownTx = (
-        // geth
-        errorMessage.includes('replacement transaction underpriced') ||
-        errorMessage.includes('known transaction') ||
-        // parity
-        errorMessage.includes('gas price too low to replace') ||
-        errorMessage.includes('transaction with the same hash was already imported') ||
-        // other
-        errorMessage.includes('gateway timeout') ||
-        errorMessage.includes('nonce too low')
-      )
-      // ignore resubmit warnings, return early
-      if (isKnownTx) return
-      // encountered real error - transition to error state
-      txMeta.warning = {
-        error: errorMessage,
-        message: 'There was an error when resubmitting this transaction.'
-      }
-      this.emit('tx:warning', txMeta, err)
-    }))
+        const errorMessage = err.message.toLowerCase()
+        const isKnownTx =
+          // geth
+          errorMessage.includes('replacement transaction underpriced') ||
+          errorMessage.includes('known transaction') ||
+          // parity
+          errorMessage.includes('gas price too low to replace') ||
+          errorMessage.includes('transaction with the same hash was already imported') ||
+          // other
+          errorMessage.includes('gateway timeout') ||
+          errorMessage.includes('nonce too low')
+        // ignore resubmit warnings, return early
+        if (isKnownTx) return
+        // encountered real error - transition to error state
+        txMeta.warning = {
+          error: errorMessage,
+          message: 'There was an error when resubmitting this transaction.'
+        }
+        this.emit('tx:warning', txMeta, err)
+      })
+    )
   }
 
   /**
@@ -94,7 +95,7 @@ class PendingTransactionTracker extends EventEmitter {
     @emits tx:retry
     @returns txHash {string}
   */
-  async _resubmitTx (txMeta, latestBlockNumber) {
+  async _resubmitTx(txMeta, latestBlockNumber) {
     if (!txMeta.firstRetryBlockNumber) {
       this.emit('tx:block-update', txMeta, latestBlockNumber)
     }
@@ -125,7 +126,7 @@ class PendingTransactionTracker extends EventEmitter {
     @emits tx:confirmed
     @emits tx:warning
   */
-  async _checkPendingTx (txMeta) {
+  async _checkPendingTx(txMeta) {
     const txHash = txMeta.hash
     const txId = txMeta.id
 
@@ -171,10 +172,10 @@ class PendingTransactionTracker extends EventEmitter {
     @returns {boolean}
   */
 
-  async _checkIfNonceIsTaken (txMeta) {
+  async _checkIfNonceIsTaken(txMeta) {
     const address = txMeta.txParams.from
     const completed = this.getCompletedTransactions(address)
-    const sameNonce = completed.filter((otherMeta) => {
+    const sameNonce = completed.filter(otherMeta => {
       return otherMeta.txParams.nonce === txMeta.txParams.nonce
     })
     return sameNonce.length > 0

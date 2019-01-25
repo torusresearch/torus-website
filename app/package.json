@@ -6,7 +6,13 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "buildEmbed": "browserify ./src/widget/embed.js -o public/embed.min.js",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "lint:es": "eslint .",
+    "test:unit": "mocha --exit -r esm -r jsdom-global/register ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js",
+    "test:coverage-coveralls": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:coveralls-upload",
+    "test:coverage-codecov": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:codecov-upload",
+    "test:coveralls-upload": "if [ $COVERALLS_REPO_TOKEN ]; then nyc report --reporter=text-lcov | coveralls; fi",
+    "test:codecov-upload": "if [ $CODECOV_TOKEN ]; then nyc report --reporter=text-lcov > coverage.lcov && codecov; fi"
   },
   "dependencies": {
     "ajv": "^6.6.2",
@@ -39,7 +45,9 @@
     "vuex": "^3.0.1",
     "vuex-persist": "^2.0.0",
     "web3": "^1.0.0-beta.37",
-    "web3-provider-engine": "^14.1.0"
+    "web3-provider-engine": "^14.1.0",
+    "xtend": "^4.0.1",
+    "human-standard-token-abi": "^2.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.2.0",
@@ -47,40 +55,39 @@
     "@vue/cli-service": "^3.2.0",
     "@vue/eslint-config-standard": "^4.0.0",
     "babel-eslint": "^10.0.1",
+    "codecov": "^3.1.0",
+    "coveralls": "^3.0.2",
     "eslint": "^5.8.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-prettier": "^3.6.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-flowtype": "^3.2.1",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^5.0.0",
-    "vue-template-compiler": "^2.5.21"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "@vue/standard"
-    ],
-    "rules": {},
-    "overrides": [
-      {
-        "files": [
-          "*/vendor/*"
-        ],
-        "excludedFiles": "*"
-      }
-    ],
-    "parserOptions": {
-      "parser": "babel-eslint"
-    }
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
+    "esm": "^3.1.1",
+    "eth-phishing-detect": "^1.1.13",
+    "ganache-core": "^2.3.1",
+    "jsdom": "13.1.0",
+    "jsdom-global": "3.0.2",
+    "luxon": "^1.10.0",
+    "mocha": "^5.2.0",
+    "mocha-eslint": "^5.0.0",
+    "mocha-jsdom": "^2.0.0",
+    "mocha-sinon": "^2.1.0",
+    "nock": "^10.0.6",
+    "nyc": "^13.1.0",
+    "sinon": "^5.0.0",
+    "vue-template-compiler": "^2.5.22"
   },
   "browserslist": [
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "engines": {
+    "node": "10.x"
+  }
 }

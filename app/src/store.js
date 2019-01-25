@@ -12,7 +12,7 @@ Vue.use(Vuex)
 const vuexPersist = new VuexPersist({
   key: 'my-app',
   storage: window.sessionStorage,
-  reducer: (state) => {
+  reducer: state => {
     return { ...state, popupVisible: false }
   }
 })
@@ -32,37 +32,39 @@ var VuexStore = new Vuex.Store({
   },
   getters: {},
   mutations: {
-    setEmail (state, email) {
+    setEmail(state, email) {
       state.email = email
     },
-    setIdToken (state, idToken) {
+    setIdToken(state, idToken) {
       state.idToken = idToken
     },
-    setWallet (state, wallet) {
+    setWallet(state, wallet) {
       state.wallet = wallet
     },
-    setBalance (state, balance) {
+    setBalance(state, balance) {
       state.balance = balance
     },
     setWeiBalance (state, weiBalance) {
       state.weiBalance = weiBalance
     },
     setLoginStatus (state, loggedIn) {
+
       state.loggedIn = loggedIn
     },
-    setSelectedAddress (state, selectedAddress) {
+    setSelectedAddress(state, selectedAddress) {
       state.selectedAddress = selectedAddress
     },
-    setNetworkId (state, networkId) {
+    setNetworkId(state, networkId) {
       state.networkId = networkId
     },
-    setPopupVisibility (state, popupVisible) {
+    setPopupVisibility(state, popupVisible) {
       state.popupVisible = popupVisible
     }
   },
   actions: {
     showPopup (context, payload) {
-      var origin = extractRootDomain(document.referrer)
+      var bc = new BroadcastChannel('torus_channel');
+      var torusPopup = window.open('https://localhost:3000/confirm');
       if (isTorusTransaction()) {
         var txParams = getTransactionParams()
         var value
@@ -71,28 +73,40 @@ var VuexStore = new Vuex.Store({
         } else {
           value = 0
         }
-        var balance = torusUtils.web3.utils.fromWei(this.state.weiBalance.toString())
-        window.open('https://localhost:3000/confirm/type/transaction/origin/' + origin + '/balance/' + balance + '/value/' + value + '/receiver/' + txParams.to)
+        var balance = torusUtils.web3.utils.fromWei(this.state.weiBalance.toString());
+        bc.onmessage = function (ev) {
+          if (ev.origin === 'https://localhost:3000' || 'https://tor.us') {
+            if (ev.data === 'popup-loaded') {
+              bc.postMessage({origin: document.referrer, type: 'transaction', balance: balance, value: value, receiver: txParams.to});
+              bc.close();
+            }
+          }
+        }
       } else {
-        window.open('https://localhost:3000/confirm/type/message/origin/' + origin)
+        bc.onmessage = function (ev) {
+          if (ev.origin === 'https://localhost:3000' || 'https://tor.us') {
+            if (ev.data === 'popup-loaded') {
+              bc.postMessage({origin: document.referrer, type: 'message'});
+              bc.close();
+            }
+          }
+        }
       }
     },
-    hidePopup (context, payload) {
-      // context.commit('setPopupVisibility', false)
-      // window.parent.postMessage('hideTorusIframe', '*');
+    hidePopup(context, payload) {
     },
-    updateEmail (context, payload) {
+    updateEmail(context, payload) {
       context.commit('setEmail', payload.email)
     },
-    updateIdToken (context, payload) {
+    updateIdToken(context, payload) {
       context.commit('setIdToken', payload.idToken)
     },
-    addWallet (context, payload) {
+    addWallet(context, payload) {
       if (payload.ethAddress) {
         context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
       }
     },
-    removeWallet (context, payload) {
+    removeWallet(context, payload) {
       if (payload.ethAddress) {
         var stateWallet = { ...context.state.wallet }
         delete stateWallet[payload.ethAddress]
@@ -104,7 +118,7 @@ var VuexStore = new Vuex.Store({
         }
       }
     },
-    updateBalance (context, payload) {
+    updateBalance(context, payload) {
       if (payload.ethAddress && context.state.wallet.ethAddress) {
         context.commit('setBalance', { ...context.state.balance, [payload.ethAddress]: payload.value })
       }
@@ -120,20 +134,20 @@ var VuexStore = new Vuex.Store({
     updateLoginStatus (context, payload) {
       context.commit('setLoginStatus', payload.loggedIn)
     },
-    updateSelectedAddress (context, payload) {
+    updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
       torusUtils.updateStaticData({ selectedAddress: payload.selectedAddress })
     },
-    updateNetworkId (context, payload) {
+    updateNetworkId(context, payload) {
       context.commit('setNetworkId', payload.networkId)
       torusUtils.updateStaticData({ networkId: payload.networkId })
     },
-    triggerLogin: function () {
+    triggerLogin: function() {
       if (window.auth2 === undefined) {
         log.error('Could not find window.auth2, might not be loaded yet')
         return
       }
-      window.auth2.signIn().then(function (googleUser) {
+      window.auth2.signIn().then(function(googleUser) {
         log.info('GOOGLE USER: ', googleUser)
         var profile = googleUser.getBasicProfile()
         // console.log(googleUser)
@@ -145,14 +159,33 @@ var VuexStore = new Vuex.Store({
         VuexStore.dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
         var email = profile.getEmail()
         VuexStore.dispatch('updateEmail', { email })
-        window.gapi.auth2.getAuthInstance().disconnect()
-          .then(torusUtils.getPubKeyAsync(
-            torusUtils.web3,
-            config.torusNodeEndpoints,
-            email,
-            handlePrivateKey
-          ))
-          .catch(function (err) {
+        window.gapi.auth2
+          .getAuthInstance()
+          .disconnect()
+          .then(function() {
+            torusUtils.getPubKeyAsync(torusUtils.web3, config.torusNodeEndpoints, email, function(err, res) {
+              if (err) {
+                log.error(err)
+              } else {
+                log.info('New private key assigned to user at address ', res)
+                torusUtils.retrieveShares(config.torusNodeEndpoints, VuexStore.state.email, VuexStore.state.idToken, function(err, data) {
+                  if (err) {
+                    log.error(err)
+                  }
+                  VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
+                  VuexStore.dispatch('addWallet', data)
+                  torusUtils.web3.eth.net
+                    .getId()
+                    .then(res => {
+                      VuexStore.dispatch('updateNetworkId', { networkId: res })
+                      // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+                    })
+                    .catch(e => log.error(e))
+                })
+              }
+            })
+          })
+          .catch(function(err) {
             log.error(err)
           })
       })
@@ -162,14 +195,14 @@ var VuexStore = new Vuex.Store({
 
 // setup handlers for communicationStream
 var passthroughStream = new stream.PassThrough({ objectMode: true })
-passthroughStream.on('data', function () {
+passthroughStream.on('data', function() {
   log.info('p data:', arguments)
 })
-torusUtils.communicationMux.getStream('oauth').on('data', function () {
+torusUtils.communicationMux.getStream('oauth').on('data', function() {
   VuexStore.dispatch('triggerLogin')
 })
 
-pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, (err) => {
+pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
 })
 
@@ -215,7 +248,7 @@ bc.onmessage = function (ev) {
         }
         torusController.updateAndApproveTransaction(transactions[0])
       } else {
-        throw new Error('NO NEW TRANSACTIONS!!!!')
+        throw new Error('No new transactions.')
       }
     } else if (ev.data === 'deny-transaction') {
       let torusController = window.Vue.TorusUtils.torusController
@@ -256,7 +289,7 @@ bc.onmessage = function (ev) {
         }
         torusController.updateAndCancelTransaction(transactions[0])
       }
-    }
+    } 
   }
 }
 
@@ -285,75 +318,11 @@ function isTorusTransaction () {
     // let transactions = []
     for (let id in state.transactions) {
       if (state.transactions[id].status === 'unapproved') {
-        return true
+        return true;
       }
     }
   } else {
-    throw new Error('NO NEW TRANSACTIONS!!!!')
-  }
-}
-
-function extractHostname (url) {
-  var hostname
-  // find & remove protocol (http, ftp, etc.) and get hostname
-
-  if (url.indexOf('//') > -1) {
-    hostname = url.split('/')[2]
-  } else {
-    hostname = url.split('/')[0]
-  }
-
-  // find & remove port number
-  hostname = hostname.split(':')[0]
-  // find & remove "?"
-  hostname = hostname.split('?')[0]
-
-  return hostname
-}
-
-// To address those who want the "root domain," use this function:
-function extractRootDomain (url) {
-  var domain = extractHostname(url)
-
-  var splitArr = domain.split('.')
-
-  var arrLen = splitArr.length
-
-  // extracting the root domain here
-  // if there is a subdomain
-  if (arrLen > 2) {
-    domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1]
-    // check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
-    if (splitArr[arrLen - 2].length === 2 && splitArr[arrLen - 1].length === 2) {
-      // this is using a ccTLD
-      domain = splitArr[arrLen - 3] + '.' + domain
-    }
-  }
-  return domain
-}
-
-function handlePrivateKey (err, res) {
-  if (err) {
-    log.error(err)
-  } else {
-    log.info('New private key assigned to user at address ', res)
-    torusUtils.retrieveShares(
-      config.torusNodeEndpoints,
-      VuexStore.state.email,
-      VuexStore.state.idToken,
-      function (err, data) {
-        if (err) { log.error(err) }
-        VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
-        log.info(data.ethAddress)
-        VuexStore.dispatch('addWallet', data)
-        torusUtils.torusController.createNewVaultAndKeychain(VuexStore.state.idToken)
-        torusUtils.web3.eth.net.getId()
-          .then(res => {
-            VuexStore.dispatch('updateNetworkId', { networkId: res })
-          })
-          .catch(e => log.error(e))
-      }
-    )
+    throw new Error('No new transactions.')
   }
 }
 

@@ -18,7 +18,7 @@ const {
  * @returns {string} A stack trace
  *
  */
-function getStack () {
+function getStack() {
   const stack = new Error('Stack trace generator - not an error').stack
   return stack
 }
@@ -76,7 +76,7 @@ const getPlatform = _ => {
  * @returns {boolean} Whether the balance is greater than or equal to the value plus the value of gas times gasPrice
  *
  */
-function sufficientBalance (txParams, hexBalance) {
+function sufficientBalance(txParams, hexBalance) {
   // validate hexBalance is a hex string
   assert.strictEqual(typeof hexBalance, 'string', 'sufficientBalance - hexBalance is not a hex string')
   assert.strictEqual(hexBalance.slice(0, 2), '0x', 'sufficientBalance - hexBalance is not a hex string')
@@ -97,7 +97,7 @@ function sufficientBalance (txParams, hexBalance) {
  * @returns {string} A '0x' prefixed hex string
  *
  */
-function bnToHex (inputBn) {
+function bnToHex(inputBn) {
   return ethUtil.addHexPrefix(inputBn.toString(16))
 }
 
@@ -108,7 +108,7 @@ function bnToHex (inputBn) {
  * @returns {Object} A BN object
  *
  */
-function hexToBn (inputHex) {
+function hexToBn(inputHex) {
   return new BN(ethUtil.stripHexPrefix(inputHex), 16)
 }
 
@@ -121,32 +121,22 @@ function hexToBn (inputHex) {
  * @returns {BN} The product of the multiplication
  *
  */
-function BnMultiplyByFraction (targetBN, numerator, denominator) {
+function BnMultiplyByFraction(targetBN, numerator, denominator) {
   const numBN = new BN(numerator)
   const denomBN = new BN(denominator)
   return targetBN.mul(numBN).div(denomBN)
 }
 
-function applyListeners (listeners, emitter) {
-  Object.keys(listeners).forEach((key) => {
+function applyListeners(listeners, emitter) {
+  Object.keys(listeners).forEach(key => {
     emitter.on(key, listeners[key])
   })
 }
 
-function removeListeners (listeners, emitter) {
-  Object.keys(listeners).forEach((key) => {
+function removeListeners(listeners, emitter) {
+  Object.keys(listeners).forEach(key => {
     emitter.removeListener(key, listeners[key])
   })
 }
 
-export {
-  removeListeners,
-  applyListeners,
-  getPlatform,
-  getStack,
-  getEnvironmentType,
-  sufficientBalance,
-  hexToBn,
-  bnToHex,
-  BnMultiplyByFraction
-}
+export { removeListeners, applyListeners, getPlatform, getStack, getEnvironmentType, sufficientBalance, hexToBn, bnToHex, BnMultiplyByFraction }

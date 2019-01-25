@@ -1,9 +1,5 @@
 const EthQuery = require('ethjs-query')
-const {
-  hexToBn,
-  BnMultiplyByFraction,
-  bnToHex
-} = require('./utils')
+const { hexToBn, BnMultiplyByFraction, bnToHex } = require('./utils')
 const { addHexPrefix } = require('ethereumjs-util')
 const SIMPLE_GAS_COST = '0x5208' // Hex for 21000, cost of a simple send.
 
@@ -15,7 +11,7 @@ and used to do things like calculate gas of a tx.
 */
 
 class TxGasUtil {
-  constructor (provider) {
+  constructor(provider) {
     this.query = new EthQuery(provider)
   }
 
@@ -23,7 +19,7 @@ class TxGasUtil {
     @param txMeta {Object} - the txMeta object
     @returns {object} the txMeta object with the gas written to the txParams
   */
-  async analyzeGasUsage (txMeta) {
+  async analyzeGasUsage(txMeta) {
     const block = await this.query.getBlockByNumber('latest', false)
     let estimatedGasHex
     try {
@@ -51,7 +47,7 @@ class TxGasUtil {
     @param blockGasLimitHex {string} - hex string of the block's gas limit
     @returns {string} the estimated gas limit as a hex string
   */
-  async estimateTxGas (txMeta, blockGasLimitHex) {
+  async estimateTxGas(txMeta, blockGasLimitHex) {
     const txParams = txMeta.txParams
 
     // check if gasLimit is already specified
@@ -106,7 +102,7 @@ class TxGasUtil {
     @param blockGasLimitHex {string} - the block gas limit hex
     @param estimatedGasHex {string} - the estimated gas hex
   */
-  setTxGas (txMeta, blockGasLimitHex, estimatedGasHex) {
+  setTxGas(txMeta, blockGasLimitHex, estimatedGasHex) {
     txMeta.estimatedGas = addHexPrefix(estimatedGasHex)
     const txParams = txMeta.txParams
 
@@ -129,7 +125,7 @@ class TxGasUtil {
     @param blockGasLimitHex {string} - the block gas limit
     @returns {string} the buffered gas limit as a hex string
   */
-  addGasBuffer (initialGasLimitHex, blockGasLimitHex) {
+  addGasBuffer(initialGasLimitHex, blockGasLimitHex) {
     const initialGasLimitBn = hexToBn(initialGasLimitHex)
     const blockGasLimitBn = hexToBn(blockGasLimitHex)
     const upperGasLimitBn = blockGasLimitBn.muln(0.9)

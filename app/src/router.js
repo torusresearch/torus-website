@@ -26,16 +26,6 @@ export default new Router({
       component: Confirm
     },
     {
-      path: '/confirm/type/:type/origin/:origin',
-      name: 'confirm',
-      component: Confirm
-    },
-    {
-      path: '/confirm/type/:type/origin/:origin/balance/:balance/value/:value/receiver/:receiver',
-      name: 'confirm',
-      component: Confirm
-    },
-    {
       path: '/privacy',
       name: 'privacy',
       component: () => import('./views/Privacy.vue')

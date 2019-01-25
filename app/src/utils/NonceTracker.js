@@ -11,7 +11,7 @@ const Mutex = require('await-semaphore').Mutex
   @class
 */
 class NonceTracker {
-  constructor ({ provider, blockTracker, getPendingTransactions, getConfirmedTransactions }) {
+  constructor({ provider, blockTracker, getPendingTransactions, getConfirmedTransactions }) {
     this.provider = provider
     this.blockTracker = blockTracker
     this.ethQuery = new EthQuery(provider)
@@ -23,7 +23,7 @@ class NonceTracker {
   /**
     @returns {Promise<Object>} with the key releaseLock (the gloabl mutex)
   */
-  async getGlobalLock () {
+  async getGlobalLock() {
     const globalMutex = this._lookupMutex('global')
     // await global mutex free
     const releaseLock = await globalMutex.acquire()
@@ -44,7 +44,7 @@ class NonceTracker {
   @param address {string} the hex string for the address whose nonce we are calculating
   @returns {Promise<NonceDetails>}
   */
-  async getNonceLock (address) {
+  async getNonceLock(address) {
     // await global mutex free
     await this._globalMutexFree()
     // await lock free, then take lock
@@ -80,19 +80,19 @@ class NonceTracker {
     }
   }
 
-  async _globalMutexFree () {
+  async _globalMutexFree() {
     const globalMutex = this._lookupMutex('global')
     const releaseLock = await globalMutex.acquire()
     releaseLock()
   }
 
-  async _takeMutex (lockId) {
+  async _takeMutex(lockId) {
     const mutex = this._lookupMutex(lockId)
     const releaseLock = await mutex.acquire()
     return releaseLock
   }
 
-  _lookupMutex (lockId) {
+  _lookupMutex(lockId) {
     let mutex = this.lockMap[lockId]
     if (!mutex) {
       mutex = new Mutex()
@@ -101,7 +101,7 @@ class NonceTracker {
     return mutex
   }
 
-  async _getNetworkNextNonce (address) {
+  async _getNetworkNextNonce(address) {
     // calculate next nonce
     // we need to make sure our base count
     // and pending count are from the same block
@@ -113,14 +113,14 @@ class NonceTracker {
     return { name: 'network', nonce: baseCount, details: nonceDetails }
   }
 
-  _getHighestLocallyConfirmed (address) {
+  _getHighestLocallyConfirmed(address) {
     const confirmedTransactions = this.getConfirmedTransactions(address)
     const highest = this._getHighestNonce(confirmedTransactions)
     return Number.isInteger(highest) ? highest + 1 : 0
   }
 
-  _getHighestNonce (txList) {
-    const nonces = txList.map((txMeta) => {
+  _getHighestNonce(txList) {
+    const nonces = txList.map(txMeta => {
       const nonce = txMeta.txParams.nonce
       assert(typeof nonce, 'string', 'nonces should be hex strings')
       return parseInt(nonce, 16)
@@ -140,8 +140,8 @@ class NonceTracker {
     @param startPoint {number} - the highest known locally confirmed nonce
     @returns {highestContinuousFrom}
   */
-  _getHighestContinuousFrom (txList, startPoint) {
-    const nonces = txList.map((txMeta) => {
+  _getHighestContinuousFrom(txList, startPoint) {
+    const nonces = txList.map(txMeta => {
       const nonce = txMeta.txParams.nonce
       assert(typeof nonce, 'string', 'nonces should be hex strings')
       return parseInt(nonce, 16)

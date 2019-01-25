@@ -1,18 +1,13 @@
 const ObjectMultiplex = require('obj-multiplex')
 const pump = require('pump')
 
-function setupMultiplex (connectionStream) {
+function setupMultiplex(connectionStream) {
   const mux = new ObjectMultiplex()
-  pump(
-    connectionStream,
-    mux,
-    connectionStream,
-    (err) => {
-      if (err) console.error(err)
-    }
-  )
+  pump(connectionStream, mux, connectionStream, err => {
+    if (err) console.error(err)
+  })
   // bind helper method to get previously created streams
-  mux.getStream = function (name) {
+  mux.getStream = function(name) {
     if (this._substreams[name]) {
       return this._substreams[name]
     } else {
