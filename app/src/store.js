@@ -44,7 +44,7 @@ var VuexStore = new Vuex.Store({
     setBalance(state, balance) {
       state.balance = balance
     },
-    setWeiBalance (state, weiBalance) {
+    setWeiBalance(state, weiBalance) {
       state.weiBalance = weiBalance
     },
     setLoginStatus(state, loggedIn) {
@@ -305,7 +305,7 @@ bc.onmessage = function(ev) {
   }
 }
 
-function getTransactionParams () {
+function getTransactionParams() {
   let torusController = window.Vue.TorusUtils.torusController
   let state = torusController.getState()
   let transactions = []
@@ -317,7 +317,7 @@ function getTransactionParams () {
   return transactions[0].txParams
 }
 
-function isTorusTransaction () {
+function isTorusTransaction() {
   let torusController = window.Vue.TorusUtils.torusController
   let state = torusController.getState()
   if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {

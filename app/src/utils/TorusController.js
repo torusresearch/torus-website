@@ -74,7 +74,7 @@ export default class TorusController extends EventEmitter {
       encryptor: opts.encryptor || undefined
     })
 
-    this.keyringController.memStore.subscribe((s) => this._onKeyringControllerUpdate(s))
+    this.keyringController.memStore.subscribe(s => this._onKeyringControllerUpdate(s))
 
     // tx mgmt
     this.txController = new TransactionController({
@@ -207,7 +207,7 @@ export default class TorusController extends EventEmitter {
    *
    * @returns {Object} vault
    */
-  async createNewVaultAndKeychain (password) {
+  async createNewVaultAndKeychain(password) {
     log.info('createnewvaultandkeychain', password)
     const releaseLock = await this.createVaultMutex.acquire()
     try {
@@ -221,6 +221,7 @@ export default class TorusController extends EventEmitter {
       }
 
       this.keyringController.addNewKeyring('Torus Keyring')
+      log.info(this.keyringController.getKeyringsByType('Torus Keyring'))
       log.info('new vault created', vault)
       releaseLock()
       return vault
@@ -235,7 +236,7 @@ export default class TorusController extends EventEmitter {
    * @param  {} password
    * @param  {} seed
    */
-  async createNewVaultAndRestore (password, seed) {
+  async createNewVaultAndRestore(password, seed) {
     const releaseLock = await this.createVaultMutex.acquire()
     try {
       let accounts, lastBalance
@@ -439,8 +440,9 @@ export default class TorusController extends EventEmitter {
     const msgId = msgParams.metamaskId
     // sets the status op the message to 'approved'
     // and removes the metamaskId for signing
-    return this.personalMessageManager.approveMessage(msgParams)
-      .then((cleanMsgParams) => {
+    return this.personalMessageManager
+      .approveMessage(msgParams)
+      .then(cleanMsgParams => {
         // signs the message
         return this.keyringController.signPersonalMessage(cleanMsgParams)
         // try {
@@ -452,7 +454,7 @@ export default class TorusController extends EventEmitter {
         //   log.info('MetaMaskController - eth_signTypedData failed.', error)
         // }
       })
-      .then((rawSig) => {
+      .then(rawSig => {
         // tells the listener that the message has been signed
         // and can be returned to the dapp
         this.personalMessageManager.setMsgStatusSigned(msgId, rawSig)
@@ -684,7 +686,7 @@ export default class TorusController extends EventEmitter {
    * @return {Promise<void>}
    * @private
    */
-  async _onKeyringControllerUpdate (state) {
+  async _onKeyringControllerUpdate(state) {
     const { isUnlocked, keyrings } = state
     const addresses = keyrings.reduce((acc, { accounts }) => acc.concat(accounts), [])
 

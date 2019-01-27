@@ -6,20 +6,10 @@
       <div class="navbar navbar-expand-lg is-transparent" id="mainnav">
         <nav class="container">
           <a class="navbar-brand" href="./">
-            <img
-              class="logo logo-dark"
-              alt="logo"
-              src="images/logo.png"
-              srcset="images/logo2x.png 2x"
-            >
+            <img class="logo logo-dark" alt="logo" src="images/logo.png" srcset="images/logo2x.png 2x" />
           </a>
-          
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarToggle"
-          >
+
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle">
             <span class="navbar-toggler-icon">
               <span class="ti ti-align-justify"></span>
             </span>
@@ -42,29 +32,22 @@
       </div>
       <!-- End Navbar -->
       <!-- Banner/Slider -->
-      <div
-        id="header"
-        class="banner banner-full banner-curb banner-particle d-flex align-items-center"
-      >
+      <div id="header" class="banner banner-full banner-curb banner-particle d-flex align-items-center">
         <div class="container">
           <div class="banner-content">
             <div class="row align-items-center">
               <div class="col-lg-6 col-md-12">
                 <div class="header-txt tab-center mobile-center">
-                  <h1>Frictionless Logins
-                    <br>for Dapps
-                  </h1>
+                  <h1>Frictionless Logins <br />for Dapps</h1>
                   <p class="lead color-secondary">Get started with social logins for your dApp:</p>
                   <div class="alert alert-primary codebox">
-                    <p
-                      class="mb-0"
-                    >&lt;script src="https://tor.us/embed-main.min.js"&gt;&lt;/script&gt;</p>
+                    <p class="mb-0">&lt;script src="https://tor.us/embed-main.min.js"&gt;&lt;/script&gt;</p>
                   </div>
                   <div class="gaps size-3x"></div>
                   <div class="gaps size-3x d-none d-md-block"></div>
                   <div class="header-support">
                     <p>Supported By</p>
-                    <img src="images/binance.png" class="img-fluid">
+                    <img src="images/binance.png" class="img-fluid" />
                     <!-- <img src="images/chainrock.png" class="img-fluid ml-4"> -->
                   </div>
                 </div>
@@ -109,7 +92,7 @@
         <div class="row align-items-center justify-content-between">
           <div class="col-md-6">
             <div class="res-m-btm">
-              <img src="images/graph-jasmine-b.png" alt="graph">
+              <img src="images/graph-jasmine-b.png" alt="graph" />
             </div>
           </div>
           <!-- .col  -->
@@ -118,13 +101,13 @@
               <h6 class="heading-sm-s2">Prioritizing User Experience</h6>
               <h2>Targeting Mainstream Users</h2>
               <p>
-                Although blockchain technology and cryptocurrencies offer many advantages and opportunities, mainstream
-                adoption is still relatively low.
+                Although blockchain technology and cryptocurrencies offer many advantages and opportunities, mainstream adoption is still relatively
+                low.
               </p>
               <p>
-                In particular, user experience for key management is still poor, and requires adoption of an entirely new set
-                of tools and interfaces. Torus allows users to use their social identities (eg. Google) to derive private keys
-                in a trustless manner, making it easy for new users to seamlessly use existing blockchain applications.
+                In particular, user experience for key management is still poor, and requires adoption of an entirely new set of tools and interfaces.
+                Torus allows users to use their social identities (eg. Google) to derive private keys in a trustless manner, making it easy for new
+                users to seamlessly use existing blockchain applications.
               </p>
             </div>
           </div>
@@ -153,39 +136,39 @@
           <div class="col-md-4 res-m-bttm">
             <div class="features-box-s3">
               <div class="features-icon-s3">
-                <img src="images/icon-a.png" alt="icon">
+                <img src="images/icon-a.png" alt="icon" />
               </div>
               <h5 class="features-title-s3">Trustless Key Distribution</h5>
               <span class="features-subtitle-s3">Safe & Secure</span>
               <p>
-                Private keys are derived from their social identities using Torus' distributed key generation protocol. Each
-                node generates a piece of your private key, which are combined and held by you locally.
+                Private keys are derived from their social identities using Torus' distributed key generation protocol. Each node generates a piece of
+                your private key, which are combined and held by you locally.
               </p>
             </div>
           </div>
           <div class="col-md-4 res-m-bttm">
             <div class="features-box-s3">
               <div class="features-icon-s3">
-                <img src="images/icon-b.png" alt="icon">
+                <img src="images/icon-b.png" alt="icon" />
               </div>
               <h5 class="features-title-s3">Seamless Integration</h5>
               <span class="features-subtitle-s3">Instant Application</span>
               <p>
-                Developers only need to include our embedded web3 script into their website to start using Torus today,
-                allowing dApps to reach a greater range of users.
+                Developers only need to include our embedded web3 script into their website to start using Torus today, allowing dApps to reach a
+                greater range of users.
               </p>
             </div>
           </div>
           <div class="col-md-4">
             <div class="features-box-s3">
               <div class="features-icon-s3">
-                <img src="images/icon-c.png" alt="icon">
+                <img src="images/icon-c.png" alt="icon" />
               </div>
               <h5 class="features-title-s3">A Credible Ecosystem</h5>
               <span class="features-subtitle-s3">Trusted Identities</span>
               <p>
-                By integrating existing online social identities, Torus allows users to interact with applications in a more
-                meaningul and trusted manner.
+                By integrating existing online social identities, Torus allows users to interact with applications in a more meaningul and trusted
+                manner.
               </p>
             </div>
           </div>
