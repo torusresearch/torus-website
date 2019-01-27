@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name       OLDTORUS
+// @name       TORUS USER SCRIPT
 // @namespace  http://tor.us
-// @version    0.2
+// @version    0.0.2
 // @description  dough or donut there is no rye
 // @include *
 // @copyright  None
@@ -29,7 +29,7 @@ whitelist.map(function (url) {
 })
 if (inWhiteList) {
   var sc = document.createElement('script')
-  sc.setAttribute('src', 'https://tor.us/embed-main.min.js')
+  sc.setAttribute('src', 'https://tor.us/embed.min.js')
   sc.setAttribute('type', 'text/javascript')
   sc.setAttribute('style-color', '#75b4fd')
   sc.setAttribute('style-position', 'bottom-left')

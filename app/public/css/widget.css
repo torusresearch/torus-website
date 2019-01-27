@@ -7,7 +7,7 @@
   border-radius: 20px;
   height: 40px;
   width: 40px;
-  background-image: url("https://localhost:3000/images/login.png");
+  background-image: url("/images/login.png");
   background-size: 60%;
   background-repeat: no-repeat;
   border-width: 0px;
@@ -23,7 +23,7 @@
   border-radius: 20px;
   height: 40px;
   width: 40px;
-  background-image: url("https://localhost:3000/images/torusbig.png");
+  background-image: url("/images/torusbig.png");
   background-size: 60%;
   background-repeat: no-repeat;
   border-width: 0px;
@@ -40,7 +40,7 @@
   border-radius: 20px;
   height: 40px;
   width: 40px;
-  background-image: url("https://localhost:3000/images/red-x.png");
+  background-image: url("/images/red-x.png");
   background-size: 60%;
   background-repeat: no-repeat;
   border-width: 0px;
@@ -52,11 +52,11 @@
 }
 
 #torusLogin:hover {
-  background-color: #5b79ff;
+  background-color: #75b4fd;
   height: 40px;
   width: 120px;
   background-size: 85%;
-  background-image: url("https://localhost:3000/images/loginwithgoogle.png");
+  background-image: url("/images/loginwithgoogle.png");
   transition: background-color, background-image, width 0.1s ease-in-out;
 }
 

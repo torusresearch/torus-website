@@ -1,5 +1,14 @@
 // Torus loading message
 console.log('TORUS INJECTED IN', window.location.href)
+
+// Set url depending on NODE_ENV
+var torusUrl
+if (process.env.NODE_ENV === 'production') {
+  torusUrl = 'https://tor.us'
+} else {
+  torusUrl = 'https://localhost:3000'
+}
+
 if (window.torus === undefined) {
   window.torus = {}
 }
@@ -12,7 +21,7 @@ const LocalMessageDuplexStream = require('post-message-stream')
 const MetamaskInpageProvider = require('./inpage-provider.js')
 const setupMultiplex = require('./stream-utils.js').setupMultiplex
 const embedUtils = require('./embedUtils.js')
-const styleColor = document.currentScript.getAttribute('style-color')
+// const styleColor = document.currentScript.getAttribute('style-color')
 const stylePosition = document.currentScript.getAttribute('style-position')
 
 var torusWidget, torusMenuBtn, torusLogin, torusIframeContainer, torusIframe
@@ -24,26 +33,26 @@ embedUtils.runOnLoad(setupWeb3)
 /**
  * Create widget
  */
-function createWidget () {
+function createWidget() {
   log.info('Creating Torus widget...')
   var link = window.document.createElement('link')
   link.setAttribute('rel', 'stylesheet')
   link.setAttribute('type', 'text/css')
-  link.setAttribute('href', 'https://localhost:3000/css/widget.css')
+  link.setAttribute('href', torusUrl + '/css/widget.css')
   torusWidget = embedUtils.htmlToElement('<div id="torusWidget" class="widget"></div>')
   // torusMenuBtn = embedUtils.htmlToElement('<button id="torusMenuBtn"/>')
   torusLogin = embedUtils.htmlToElement('<button id="torusLogin" />')
   // torusWidget.appendChild(torusMenuBtn)
   torusWidget.appendChild(torusLogin)
   torusIframeContainer = embedUtils.htmlToElement('<div id="torusIframeContainer"></div>')
-  torusIframe = embedUtils.htmlToElement('<iframe id="torusIframe" frameBorder="0" src="https://localhost:3000/popup"></iframe>')
+  torusIframe = embedUtils.htmlToElement('<iframe id="torusIframe" frameBorder="0" src="' + torusUrl + '/popup"></iframe>')
   torusIframeContainer.appendChild(torusIframe)
-  var bindOnLoad = function () {
-    torusLogin.addEventListener('click', function () {
+  var bindOnLoad = function() {
+    torusLogin.addEventListener('click', function() {
       window.torus.communicationStream.write({ name: 'oauth', data: {} })
     })
   }
-  var attachOnLoad = function () {
+  var attachOnLoad = function() {
     window.document.head.appendChild(link)
     window.document.body.appendChild(torusIframeContainer)
     window.document.body.appendChild(torusWidget)
@@ -76,7 +85,7 @@ function createWidget () {
   }
 }
 
-function setupWeb3 () {
+function setupWeb3() {
   log.info('setupWeb3 running')
   // setup background connection
   window.torus.metamaskStream = new LocalMessageDuplexStream({
@@ -100,14 +109,14 @@ function setupWeb3 () {
   var inpageProvider = new MetamaskInpageProvider(window.torus.metamaskStream)
   inpageProvider.setMaxListeners(100)
   window.ethereum = inpageProvider
-  inpageProvider.enable = function () {
+  inpageProvider.enable = function() {
     return new Promise((resolve, reject) => resolve())
   }
 
   // detect eth_requestAccounts and pipe to enable for now
-  function detectAccountRequest (method) {
+  function detectAccountRequest(method) {
     const originalMethod = inpageProvider[method]
-    inpageProvider[method] = function ({ method }) {
+    inpageProvider[method] = function({ method }) {
       if (method === 'eth_requestAccounts') {
         return window.ethereum.enable()
       }
@@ -129,7 +138,7 @@ function setupWeb3 () {
     }
   })
 
-  function torusLoggedIn () {
+  function torusLoggedIn() {
     if (window.web3 && window.web3.eth.accounts.length > 0) {
       return true
     } else {
@@ -137,17 +146,17 @@ function setupWeb3 () {
     }
   }
 
-  function showTorusOverlay () {
+  function showTorusOverlay() {
     window.document.getElementById('torusLogin').style.display = 'none'
     window.document.getElementById('torusIframeContainer').style.display = 'block'
   }
 
-  function hideTorusOverlay () {
+  function hideTorusOverlay() {
     window.document.getElementById('torusLogin').style.display = 'block'
     window.document.getElementById('torusIframeContainer').style.display = 'none'
   }
 
-  function showTorusButton () {
+  function showTorusButton() {
     torusIframeContainer.style.display = 'none'
     if (torusLoggedIn()) {
       torusMenuBtn.style.display = 'block'
@@ -159,7 +168,7 @@ function setupWeb3 () {
   }
 
   var displayStream = communicationMux.createStream('display')
-  displayStream.on('data', function (msg) {
+  displayStream.on('data', function(msg) {
     if (msg === 'close') {
       showTorusButton()
     } else if (msg === 'open') {
@@ -180,7 +189,7 @@ function setupWeb3 () {
   window.web3 = new Web3(inpageProvider)
   window.Web3 = Web3
   log.info(Web3.version)
-  window.web3.setProvider = function () {
+  window.web3.setProvider = function() {
     log.debug('Torus - overrode web3.setProvider')
   }
   // pretend to be Metamask for dapp compatibility reasons
@@ -204,7 +213,7 @@ var __define
  * avoid conflicts with other global define objects, such as
  * AMD's define function
  */
-function cleanContextForImports () {
+function cleanContextForImports() {
   __define = global.define
   try {
     global.define = undefined
@@ -216,7 +225,7 @@ function cleanContextForImports () {
 /**
  * Restores global define object from cached reference
  */
-function restoreContextAfterImports () {
+function restoreContextAfterImports() {
   try {
     global.define = __define
   } catch (_) {

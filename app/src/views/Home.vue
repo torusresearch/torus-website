@@ -5,6 +5,7 @@
 <script>
 // @ is an alias to /src
 import HomeComponent from '../components/HomeComponent.vue'
+/* eslint-disable max-len */
 
 export default {
   name: 'home',
@@ -174,6 +175,7 @@ export default {
     if (timelineCarousel.length > 0) {
       var cRtl = !!bodyRef.hasClass('is-rtl')
       timelineCarousel.addClass('owl-carousel').owlCarousel({
+        // eslint-disable-next-line prettier/prettier
         navText: ['<i class=\'ti ti-angle-left\'></i>', '<i class=\'ti ti-angle-right\'></i>'],
         items: 6,
         nav: true,
@@ -300,6 +302,7 @@ export default {
         var cCtr = !!$self.data('center')
         var cMgn = $self.data('margin') ? $self.data('margin') : 30
         $self.addClass('owl-carousel').owlCarousel({
+          // eslint-disable-next-line prettier/prettier
           navText: ['<i class=\'fa fa-angle-left\'></i>', '<i class=\'fa fa-angle-right\'></i>'],
           items: cItem,
           loop: cLoop,
