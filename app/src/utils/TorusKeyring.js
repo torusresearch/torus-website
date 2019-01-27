@@ -1,5 +1,3 @@
-import { randomBytes } from 'crypto'
-
 const EventEmitter = require('events').EventEmitter
 const Wallet = require('ethereumjs-wallet')
 const ethUtil = require('ethereumjs-util')
@@ -22,13 +20,8 @@ export default class TorusKeyring extends EventEmitter {
     }
     let keyBuffer = Buffer.from(wallet[selectedAddress], 'hex')
     const key = ethUtil.toBuffer(keyBuffer)
-    log.info(randomBytes(32))
-    log.info(key)
-    log.info(ethUtil.isValidPrivate(key))
-    log.info(ethUtil.isValidPrivate(randomBytes(32)))
-    const defaultWallet = Wallet.fromPrivateKey(key)
-    this.wallets = [defaultWallet]
-    this.deserialize(opts)
+    this.wallets = []
+    this.deserialize([key])
   }
 
   serialize() {

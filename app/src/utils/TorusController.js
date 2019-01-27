@@ -215,7 +215,6 @@ export default class TorusController extends EventEmitter {
       }
 
       await this.keyringController.addNewKeyring('Torus Keyring')
-      log.info(this.keyringController.getKeyringsByType('Torus Keyring'))
       return vault
     } catch (err) {
       throw err
@@ -381,7 +380,6 @@ export default class TorusController extends EventEmitter {
   signPersonalMessage(msgParams) {
     log.info('MetaMaskController - signPersonalMessage')
     const msgId = msgParams.metamaskId
-    log.info(msgParams)
     // sets the status op the message to 'approved'
     // and removes the metamaskId for signing
     return this.personalMessageManager

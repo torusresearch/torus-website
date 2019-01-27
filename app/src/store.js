@@ -149,7 +149,7 @@ var VuexStore = new Vuex.Store({
       }
       window.auth2.signIn().then(function(googleUser) {
         log.info('GOOGLE USER: ', googleUser)
-        var profile = googleUser.getBasicProfile()
+        let profile = googleUser.getBasicProfile()
         // console.log(googleUser)
         log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
         log.info('Name: ' + profile.getName())
@@ -157,7 +157,7 @@ var VuexStore = new Vuex.Store({
         log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
 
         VuexStore.dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
-        var email = profile.getEmail()
+        let email = profile.getEmail()
         VuexStore.dispatch('updateEmail', { email })
         window.gapi.auth2
           .getAuthInstance()
@@ -174,6 +174,9 @@ var VuexStore = new Vuex.Store({
                   }
                   VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
                   VuexStore.dispatch('addWallet', data)
+                  let torusController = window.Vue.TorusUtils.torusController
+                  // TODO: utilise more secure password
+                  torusController.createNewVaultAndKeychain(email)
                   torusUtils.web3.eth.net
                     .getId()
                     .then(res => {
