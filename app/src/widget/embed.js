@@ -106,14 +106,13 @@ function setupWeb3() {
   window.ethereum = inpageProvider
   inpageProvider.enable = function() {
     return new Promise((resolve, reject) => {
-      window.web3.eth
-        .getAccounts()
-        .then(function(accounts) {
-          resolve(accounts)
-        })
-        .catch(function(err) {
+      window.web3.eth.getAccounts(function(err, accounts) {
+        if (err) {
           reject(err)
-        })
+        } else {
+          resolve(accounts)
+        }
+      })
     })
   }
 
