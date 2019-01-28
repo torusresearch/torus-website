@@ -266,7 +266,7 @@ function approveNextMsgOrTransaction() {
         transactions.push(state.transactions[id])
       }
     }
-    torusController.updateAndApproveTransaction(transactions[0])
+    torusController.updateAndApproveTransaction(transactions[transactions.length - 1])
   } else {
     throw new Error('No new transactions.')
   }
@@ -315,7 +315,7 @@ function denyNextMsgOrTransaction() {
         transactions.push(state.transactions[id])
       }
     }
-    torusController.updateAndCancelTransaction(transactions[0])
+    torusController.updateAndCancelTransaction(transactions[transactions.length - 1])
   }
 }
 
@@ -328,7 +328,7 @@ function getTransactionParams() {
       transactions.push(state.transactions[id])
     }
   }
-  return transactions[0].txParams
+  return transactions[transactions.length - 1].txParams
 }
 
 function isTorusTransaction() {
