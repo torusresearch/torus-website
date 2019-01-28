@@ -142,7 +142,7 @@ var VuexStore = new Vuex.Store({
       context.commit('setNetworkId', payload.networkId)
       torusUtils.updateStaticData({ networkId: payload.networkId })
     },
-    triggerLogin: function() {
+    triggerLogin: function(context, payload) {
       if (window.auth2 === undefined) {
         log.error('Could not find window.auth2, might not be loaded yet')
         return
@@ -174,6 +174,10 @@ var VuexStore = new Vuex.Store({
                   }
                   VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
                   VuexStore.dispatch('addWallet', data)
+                  //continue enable function
+                  if (payload.calledFromEnable) {
+                    torusUtils.continueEnable(data.ethAddress)
+                  }
                   torusUtils.web3.eth.net
                     .getId()
                     .then(res => {
@@ -186,8 +190,10 @@ var VuexStore = new Vuex.Store({
             })
           })
           .catch(function(err) {
-            log.error(err)
+            throw(err)
           })
+      }).catch(function(err){
+        throw(err)
       })
     }
   }
@@ -198,8 +204,8 @@ var passthroughStream = new stream.PassThrough({ objectMode: true })
 passthroughStream.on('data', function() {
   log.info('p data:', arguments)
 })
-torusUtils.communicationMux.getStream('oauth').on('data', function() {
-  VuexStore.dispatch('triggerLogin')
+torusUtils.communicationMux.getStream('oauth').on('data', function(calledFromEmbed) {
+  VuexStore.dispatch('triggerLogin', {calledFromEmbed: calledFromEmbed})
 })
 
 pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, err => {

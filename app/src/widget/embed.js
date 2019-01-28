@@ -44,7 +44,7 @@ function createWidget() {
   torusIframeContainer.appendChild(torusIframe)
   var bindOnLoad = function() {
     torusLogin.addEventListener('click', function() {
-      window.torus.login()
+      window.torus.login(false)
     })
   }
   var attachOnLoad = function() {
@@ -106,20 +106,14 @@ function setupWeb3() {
   window.ethereum = inpageProvider
   inpageProvider.enable = function() {
     return new Promise((resolve, reject) => {
-      // //set up listener for login
-      // var oauthStream = window.communicationMux.getStream('oauth')
-      // oauthStream.on('selectedAddress', selectedAddress => {
-      //   //returns an array (cause accounts expects it)
-      //   resolve([selectedAddress])
-      // })
-      // window.torus.login()
-      window.web3.eth.getAccounts(function(err, accounts) {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(accounts)
-        }
+      //TODO: Handle errors in a elegent manner
+      //set up listener for login
+      var oauthStream = window.torus.communicationMux.getStream('oauth')
+      oauthStream.on('selectedAddress', selectedAddress => {
+        //returns an array (cause accounts expects it)
+        resolve([selectedAddress])
       })
+      window.torus.login(true)
     })
   }
 
@@ -186,10 +180,10 @@ function setupWeb3() {
     }
   })
 
-  //Exposing login function
-  window.torus.login = function() {
+  //Exposing login function, if called from embed, flag as true
+  window.torus.login = function(calledFromEmbed) {
     var oauthStream = window.torus.communicationMux.getStream('oauth')
-    oauthStream.write({name:'oauth', data:{}})
+    oauthStream.write({name:'oauth', data: calledFromEmbed})
   }
 
 
