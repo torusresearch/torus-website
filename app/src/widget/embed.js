@@ -44,7 +44,7 @@ function createWidget() {
   torusIframeContainer.appendChild(torusIframe)
   var bindOnLoad = function() {
     torusLogin.addEventListener('click', function() {
-      window.torus.communicationStream.write({ name: 'oauth', data: {} })
+      window.torus.login()
     })
   }
   var attachOnLoad = function() {
@@ -106,6 +106,13 @@ function setupWeb3() {
   window.ethereum = inpageProvider
   inpageProvider.enable = function() {
     return new Promise((resolve, reject) => {
+      // //set up listener for login
+      // var oauthStream = window.communicationMux.getStream('oauth')
+      // oauthStream.on('selectedAddress', selectedAddress => {
+      //   //returns an array (cause accounts expects it)
+      //   resolve([selectedAddress])
+      // })
+      // window.torus.login()
       window.web3.eth.getAccounts(function(err, accounts) {
         if (err) {
           reject(err)
@@ -179,7 +186,12 @@ function setupWeb3() {
     }
   })
 
-  // TODO: implement inpageProvider.enable
+  //Exposing login function
+  window.torus.login = function() {
+    var oauthStream = window.torus.communicationMux.getStream('oauth')
+    oauthStream.write({name:'oauth', data:{}})
+  }
+
 
   if (typeof window.web3 !== 'undefined') {
     throw new Error(`Torus detected another web3.

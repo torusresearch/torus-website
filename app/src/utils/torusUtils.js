@@ -137,6 +137,11 @@ var TorusUtils = {
   setupMultiplex,
   metamaskMux: setupMultiplex(metamaskStream),
   communicationMux: setupMultiplex(communicationStream),
+  continueEnable: function(selectedAddress) {
+    console.log("ENABLE WITH: ", selectedAddress)
+    var continueEnableStream = TorusUtils.communicationMux.getStream('continueEnable')
+    publicConfigOutStream.write(JSON.stringify({ selectedAddress: selectedAddress }))
+  },
   updateStaticData: function(payload) {
     console.log('STATIC DATA:', payload)
     var publicConfigOutStream = TorusUtils.metamaskMux.getStream('publicConfig')
