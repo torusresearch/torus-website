@@ -147,54 +147,57 @@ var VuexStore = new Vuex.Store({
         log.error('Could not find window.auth2, might not be loaded yet')
         return
       }
-      window.auth2.signIn().then(function(googleUser) {
-        log.info('GOOGLE USER: ', googleUser)
-        var profile = googleUser.getBasicProfile()
-        // console.log(googleUser)
-        log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
-        log.info('Name: ' + profile.getName())
-        log.info('Image URL: ' + profile.getImageUrl())
-        log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
+      window.auth2
+        .signIn()
+        .then(function(googleUser) {
+          log.info('GOOGLE USER: ', googleUser)
+          var profile = googleUser.getBasicProfile()
+          // console.log(googleUser)
+          log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
+          log.info('Name: ' + profile.getName())
+          log.info('Image URL: ' + profile.getImageUrl())
+          log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
 
-        VuexStore.dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
-        var email = profile.getEmail()
-        VuexStore.dispatch('updateEmail', { email })
-        window.gapi.auth2
-          .getAuthInstance()
-          .disconnect()
-          .then(function() {
-            torusUtils.getPubKeyAsync(torusUtils.web3, config.torusNodeEndpoints, email, function(err, res) {
-              if (err) {
-                log.error(err)
-              } else {
-                log.info('New private key assigned to user at address ', res)
-                torusUtils.retrieveShares(config.torusNodeEndpoints, VuexStore.state.email, VuexStore.state.idToken, function(err, data) {
-                  if (err) {
-                    log.error(err)
-                  }
-                  VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
-                  VuexStore.dispatch('addWallet', data)
-                  //continue enable function
-                  if (payload.calledFromEnable) {
-                    torusUtils.continueEnable(data.ethAddress)
-                  }
-                  torusUtils.web3.eth.net
-                    .getId()
-                    .then(res => {
-                      VuexStore.dispatch('updateNetworkId', { networkId: res })
-                      // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-                    })
-                    .catch(e => log.error(e))
-                })
-              }
+          VuexStore.dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
+          var email = profile.getEmail()
+          VuexStore.dispatch('updateEmail', { email })
+          window.gapi.auth2
+            .getAuthInstance()
+            .disconnect()
+            .then(function() {
+              torusUtils.getPubKeyAsync(torusUtils.web3, config.torusNodeEndpoints, email, function(err, res) {
+                if (err) {
+                  log.error(err)
+                } else {
+                  log.info('New private key assigned to user at address ', res)
+                  torusUtils.retrieveShares(config.torusNodeEndpoints, VuexStore.state.email, VuexStore.state.idToken, function(err, data) {
+                    if (err) {
+                      log.error(err)
+                    }
+                    VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
+                    VuexStore.dispatch('addWallet', data)
+                    // continue enable function
+                    if (payload.calledFromEnable) {
+                      torusUtils.continueEnable(data.ethAddress)
+                    }
+                    torusUtils.web3.eth.net
+                      .getId()
+                      .then(res => {
+                        VuexStore.dispatch('updateNetworkId', { networkId: res })
+                        // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+                      })
+                      .catch(e => log.error(e))
+                  })
+                }
+              })
             })
-          })
-          .catch(function(err) {
-            throw(err)
-          })
-      }).catch(function(err){
-        throw(err)
-      })
+            .catch(function(err) {
+              throw err
+            })
+        })
+        .catch(function(err) {
+          log.error(err)
+        })
     }
   }
 })
@@ -205,7 +208,7 @@ passthroughStream.on('data', function() {
   log.info('p data:', arguments)
 })
 torusUtils.communicationMux.getStream('oauth').on('data', function(calledFromEmbed) {
-  VuexStore.dispatch('triggerLogin', {calledFromEmbed: calledFromEmbed})
+  VuexStore.dispatch('triggerLogin', { calledFromEmbed: calledFromEmbed })
 })
 
 pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, err => {
