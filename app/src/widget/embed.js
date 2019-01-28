@@ -2,12 +2,7 @@
 console.log('TORUS INJECTED IN', window.location.href)
 
 // Set url depending on NODE_ENV
-var torusUrl
-if (process.env.NODE_ENV === 'production') {
-  torusUrl = 'https://tor.us'
-} else {
-  torusUrl = 'https://localhost:3000'
-}
+var torusUrl = '<BROWSERIFY_REPLACE_URL>'
 
 if (window.torus === undefined) {
   window.torus = {}
@@ -110,7 +105,16 @@ function setupWeb3() {
   inpageProvider.setMaxListeners(100)
   window.ethereum = inpageProvider
   inpageProvider.enable = function() {
-    return new Promise((resolve, reject) => resolve())
+    return new Promise((resolve, reject) => {
+      window.web3.eth
+        .getAccounts()
+        .then(function(accounts) {
+          resolve(accounts)
+        })
+        .catch(function(err) {
+          reject(err)
+        })
+    })
   }
 
   // detect eth_requestAccounts and pipe to enable for now
