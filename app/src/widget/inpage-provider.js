@@ -1,5 +1,6 @@
 const pump = require('pump')
 const RpcEngine = require('json-rpc-engine')
+const createIdRemapMiddleware = require('json-rpc-engine/src/idRemapMiddleware')
 const createErrorMiddleware = require('./createErrorMiddleware')
 const createJsonRpcStream = require('json-rpc-middleware-stream')
 const LocalStorageStore = require('obs-store')
@@ -81,7 +82,7 @@ function MetamaskInpageProvider (connectionStream) {
 
   // handle sendAsync requests via dapp-side rpc engine
   const rpcEngine = new RpcEngine()
-  // rpcEngine.push(createIdRemapMiddleware()) // TODO: fix?
+  rpcEngine.push(createIdRemapMiddleware()) // TODO: fix metamask's janky way of keeping message ids unique
   rpcEngine.push(createErrorMiddleware())
   rpcEngine.push(jsonRpcConnection.middleware)
   self.rpcEngine = rpcEngine
