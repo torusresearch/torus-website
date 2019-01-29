@@ -118,9 +118,13 @@ export default class TorusController extends EventEmitter {
       // account mgmt
       getAccounts: async ({ origin }) => {
         // Expose no accounts if this origin has not been approved, preventing
-        // account-requring RPC methods from completing successfully
+        // account-requiring RPC methods from completing successfully
         // only show address if account is unlocked
-        return [window.Vue.$store.state.selectedAddress]
+        if (window.Vue.$store.state.selectedAddress) {
+          return [window.Vue.$store.state.selectedAddress]
+        } else {
+          return []
+        }
       },
       // tx signing
       processTransaction: this.newUnapprovedTransaction.bind(this),
