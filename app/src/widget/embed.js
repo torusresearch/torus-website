@@ -100,6 +100,9 @@ function setupWeb3() {
   })
   window.torus.communicationStream.setMaxListeners(100)
 
+  // Backward compatibility with Gotchi :)
+  window.metamaskStream = window.torus.communicationStream
+
   // compose the inpage provider
   var inpageProvider = new MetamaskInpageProvider(window.torus.metamaskStream)
   inpageProvider.setMaxListeners(100)

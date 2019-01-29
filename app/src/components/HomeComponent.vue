@@ -58,7 +58,7 @@
                   <div class="alert alert-primary codebox">
                     <p
                       class="mb-0"
-                    >&lt;script src="https://tor.us/embed-main.min.js"&gt;&lt;/script&gt;</p>
+                    >&lt;script src="https://tor.us/embed.min.js"&gt;&lt;/script&gt;</p>
                   </div>
                   <div class="gaps size-3x"></div>
                   <div class="gaps size-3x d-none d-md-block"></div>
