@@ -128,76 +128,76 @@ describe('MetaMaskController', function() {
     })
   })
 
-  // describe('#createNewVaultAndKeychain', function() {
-  //   it('can only create new vault on keyringController once', async function() {
-  //     const selectStub = sandbox.stub(metamaskController, 'selectFirstIdentity')
+  describe('#createNewVaultAndKeychain', function() {
+    it('can only create new vault on keyringController once', async function() {
+      // const selectStub = sandbox.stub(metamaskController, 'selectFirstIdentity')
 
-  //     const password = 'a-fake-password'
+      const password = 'a-fake-password'
 
-  //     await metamaskController.createNewVaultAndKeychain(password)
-  //     await metamaskController.createNewVaultAndKeychain(password)
+      await metamaskController.createNewVaultAndKeychain(password)
+      await metamaskController.createNewVaultAndKeychain(password)
 
-  //     assert(metamaskController.keyringController.createNewVaultAndKeychain.calledOnce)
+      assert(metamaskController.keyringController.createNewVaultAndKeychain.calledOnce)
 
-  //     selectStub.reset()
-  //   })
-  // })
+      // selectStub.reset()
+    })
+  })
 
-  // describe('#createNewVaultAndRestore', function() {
-  //   it('should be able to call newVaultAndRestore despite a mistake.', async function() {
-  //     const password = 'what-what-what'
-  //     sandbox.stub(metamaskController, 'getBalance')
-  //     metamaskController.getBalance.callsFake(() => {
-  //       return Promise.resolve('0x0')
-  //     })
+  describe('#createNewVaultAndRestore', function() {
+    it('should be able to call newVaultAndRestore despite a mistake.', async function() {
+      const password = 'what-what-what'
+      sandbox.stub(metamaskController, 'getBalance')
+      metamaskController.getBalance.callsFake(() => {
+        return Promise.resolve('0x0')
+      })
 
-  //     await metamaskController.createNewVaultAndRestore(password, TEST_SEED.slice(0, -1)).catch(e => null)
-  //     await metamaskController.createNewVaultAndRestore(password, TEST_SEED)
+      await metamaskController.createNewVaultAndRestore(password, TEST_SEED.slice(0, -1)).catch(e => null)
+      await metamaskController.createNewVaultAndRestore(password, TEST_SEED)
 
-  //     assert(metamaskController.keyringController.createNewVaultAndRestore.calledTwice)
-  //   })
+      assert(metamaskController.keyringController.createNewVaultAndRestore.calledTwice)
+    })
 
-  //   it('should clear previous identities after vault restoration', async () => {
-  //     sandbox.stub(metamaskController, 'getBalance')
-  //     metamaskController.getBalance.callsFake(() => {
-  //       return Promise.resolve('0x0')
-  //     })
+    // it('should clear previous identities after vault restoration', async () => {
+    //   sandbox.stub(metamaskController, 'getBalance')
+    //   metamaskController.getBalance.callsFake(() => {
+    //     return Promise.resolve('0x0')
+    //   })
 
-  //     await metamaskController.createNewVaultAndRestore('foobar1337', TEST_SEED)
-  //     assert.deepStrictEqual(metamaskController.getState().identities, {
-  //       [TEST_ADDRESS]: { address: TEST_ADDRESS, name: DEFAULT_LABEL }
-  //     })
+    //   await metamaskController.createNewVaultAndRestore('foobar1337', TEST_SEED)
+    //   assert.deepStrictEqual(metamaskController.getState().identities, {
+    //     [TEST_ADDRESS]: { address: TEST_ADDRESS, name: DEFAULT_LABEL }
+    //   })
 
-  //     await metamaskController.preferencesController.setAccountLabel(TEST_ADDRESS, 'Account Foo')
-  //     assert.deepStrictEqual(metamaskController.getState().identities, {
-  //       [TEST_ADDRESS]: { address: TEST_ADDRESS, name: 'Account Foo' }
-  //     })
+    //   await metamaskController.preferencesController.setAccountLabel(TEST_ADDRESS, 'Account Foo')
+    //   assert.deepStrictEqual(metamaskController.getState().identities, {
+    //     [TEST_ADDRESS]: { address: TEST_ADDRESS, name: 'Account Foo' }
+    //   })
 
-  //     await metamaskController.createNewVaultAndRestore('foobar1337', TEST_SEED_ALT)
-  //     assert.deepStrictEqual(metamaskController.getState().identities, {
-  //       [TEST_ADDRESS_ALT]: { address: TEST_ADDRESS_ALT, name: DEFAULT_LABEL }
-  //     })
-  //   })
+    //   await metamaskController.createNewVaultAndRestore('foobar1337', TEST_SEED_ALT)
+    //   assert.deepStrictEqual(metamaskController.getState().identities, {
+    //     [TEST_ADDRESS_ALT]: { address: TEST_ADDRESS_ALT, name: DEFAULT_LABEL }
+    //   })
+    // })
 
-  //   it('should restore any consecutive accounts with balances', async () => {
-  //     sandbox.stub(metamaskController, 'getBalance')
-  //     metamaskController.getBalance.withArgs(TEST_ADDRESS).callsFake(() => {
-  //       return Promise.resolve('0x14ced5122ce0a000')
-  //     })
-  //     metamaskController.getBalance.withArgs(TEST_ADDRESS_2).callsFake(() => {
-  //       return Promise.resolve('0x0')
-  //     })
-  //     metamaskController.getBalance.withArgs(TEST_ADDRESS_3).callsFake(() => {
-  //       return Promise.resolve('0x14ced5122ce0a000')
-  //     })
+    // it('should restore any consecutive accounts with balances', async () => {
+    //   sandbox.stub(metamaskController, 'getBalance')
+    //   metamaskController.getBalance.withArgs(TEST_ADDRESS).callsFake(() => {
+    //     return Promise.resolve('0x14ced5122ce0a000')
+    //   })
+    //   metamaskController.getBalance.withArgs(TEST_ADDRESS_2).callsFake(() => {
+    //     return Promise.resolve('0x0')
+    //   })
+    //   metamaskController.getBalance.withArgs(TEST_ADDRESS_3).callsFake(() => {
+    //     return Promise.resolve('0x14ced5122ce0a000')
+    //   })
 
-  //     await metamaskController.createNewVaultAndRestore('foobar1337', TEST_SEED)
-  //     assert.deepStrictEqual(metamaskController.getState().identities, {
-  //       [TEST_ADDRESS]: { address: TEST_ADDRESS, name: DEFAULT_LABEL },
-  //       [TEST_ADDRESS_2]: { address: TEST_ADDRESS_2, name: DEFAULT_LABEL_2 }
-  //     })
-  //   })
-  // })
+    //   await metamaskController.createNewVaultAndRestore('foobar1337', TEST_SEED)
+    //   assert.deepStrictEqual(metamaskController.getState().identities, {
+    //     [TEST_ADDRESS]: { address: TEST_ADDRESS, name: DEFAULT_LABEL },
+    //     [TEST_ADDRESS_2]: { address: TEST_ADDRESS_2, name: DEFAULT_LABEL_2 }
+    //   })
+    // })
+  })
 
   describe('#getBalance', () => {
     it('should return the balance known by accountTracker', async () => {
