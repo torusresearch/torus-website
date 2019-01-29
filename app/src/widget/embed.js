@@ -106,12 +106,12 @@ function setupWeb3() {
   window.ethereum = inpageProvider
   inpageProvider.enable = function() {
     return new Promise((resolve, reject) => {
-      //TODO: Handle errors in a elegent manner
-      //set up listener for login
+      // TODO: Handle errors
+      // set up listener for login
       var oauthStream = window.torus.communicationMux.getStream('oauth')
       oauthStream.on('selectedAddress', selectedAddress => {
-        //returns an array (cause accounts expects it)
-        resolve([selectedAddress])
+        // returns an array (cause accounts expects it)
+        resolve([embedUtils.transformEthAddress(selectedAddress)])
       })
       window.torus.login(true)
     })
@@ -180,12 +180,11 @@ function setupWeb3() {
     }
   })
 
-  //Exposing login function, if called from embed, flag as true
+  // Exposing login function, if called from embed, flag as true
   window.torus.login = function(calledFromEmbed) {
     var oauthStream = window.torus.communicationMux.getStream('oauth')
-    oauthStream.write({name:'oauth', data: calledFromEmbed})
+    oauthStream.write({ name: 'oauth', data: calledFromEmbed })
   }
-
 
   if (typeof window.web3 !== 'undefined') {
     throw new Error(`Torus detected another web3.

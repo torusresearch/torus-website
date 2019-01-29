@@ -2,6 +2,7 @@ module.exports = {
   runOnLoad,
   runOnComplete,
   htmlToElement,
+  transformEthAddress
 }
 
 function runOnLoad(fn) {
@@ -14,7 +15,7 @@ function runOnLoad(fn) {
 
 function runOnComplete(fn) {
   var retry = window.setInterval(function() {
-    if (window.document.readyState == 'complete') {
+    if (window.document.readyState === 'complete') {
       window.clearInterval(retry)
       fn()
     }
@@ -22,8 +23,18 @@ function runOnComplete(fn) {
 }
 
 function htmlToElement(html) {
-  var template = window.document.createElement('template');
-  html = html.trim(); // Never return a text node of whitespace as the result
-  template.innerHTML = html;
-  return template.content.firstChild;
+  var template = window.document.createElement('template')
+  var trimmedHtml = html.trim() // Never return a text node of whitespace as the result
+  template.innerHTML = trimmedHtml
+  return template.content.firstChild
+}
+
+function transformEthAddress(ethAddress) {
+  if (Array.isArray(ethAddress)) {
+    return ethAddress.map(addr => (typeof addr === 'string' ? addr.toLowerCase() : addr))
+  } else if (typeof ethAddress === 'string') {
+    return ethAddress.toLowerCase()
+  } else {
+    throw new Error('Unexpected Ethereum address format')
+  }
 }
