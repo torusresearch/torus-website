@@ -116,7 +116,6 @@ export default class TorusController extends EventEmitter {
     })
     this.updateAndApproveTransaction = nodeify(this.txController.updateAndApproveTransaction, this.txController)
     this.updateAndCancelTransaction = nodeify(this.txController.updateAndCancelTransaction, this.txController)
-    log.info(this.store.getFlatState())
   }
 
   /**
@@ -132,9 +131,13 @@ export default class TorusController extends EventEmitter {
       // account mgmt
       getAccounts: async ({ origin }) => {
         // Expose no accounts if this origin has not been approved, preventing
-        // account-requring RPC methods from completing successfully
+        // account-requiring RPC methods from completing successfully
         // only show address if account is unlocked
-        return [window.Vue.$store.state.selectedAddress]
+        if (window.Vue.$store.state.selectedAddress) {
+          return [window.Vue.$store.state.selectedAddress]
+        } else {
+          return []
+        }
       },
       // tx signing
       processTransaction: this.newUnapprovedTransaction.bind(this),
@@ -184,6 +187,7 @@ export default class TorusController extends EventEmitter {
     return this.store.getFlatState()
   }
 
+  
   //= ============================================================================
   // VAULT / KEYRING RELATED METHODS
   //= ============================================================================
@@ -459,6 +463,8 @@ export default class TorusController extends EventEmitter {
       cb(null, this.getState())
     }
   }
+
+  // eth_signTypedData methods
 
   /**
    * Called when a dapp uses the eth_signTypedData method, per EIP 712.
