@@ -110,17 +110,23 @@ function setupWeb3() {
   inpageProvider.enable = function() {
     return new Promise((resolve, reject) => {
       // TODO: Handle errors
-      // set up listener for login
-      var oauthStream = window.torus.communicationMux.getStream('oauth')
-      oauthStream.on('error', err => {
-        // TODO: implement passing of errors from iframe context
-        reject(new Error(err))
-      })
-      oauthStream.on('selectedAddress', selectedAddress => {
-        // returns an array (cause accounts expects it)
-        resolve([embedUtils.transformEthAddress(selectedAddress)])
-      })
-      window.torus.login(true)
+
+      // If user is already logged in, we assume they have given access to the website
+      if (window.torus.web3.eth.accounts.length > 0) {
+        resolve(window.torus.web3.eth.accounts)
+      } else {
+        // set up listener for login
+        var oauthStream = window.torus.communicationMux.getStream('oauth')
+        oauthStream.on('error', err => {
+          // TODO: implement passing of errors from iframe context
+          reject(new Error(err))
+        })
+        oauthStream.on('selectedAddress', selectedAddress => {
+          // returns an array (cause accounts expects it)
+          resolve([embedUtils.transformEthAddress(selectedAddress)])
+        })
+        window.torus.login(true)
+      }
     })
   }
 
@@ -201,7 +207,8 @@ function setupWeb3() {
       and try again.`)
   }
 
-  window.web3 = new Web3(inpageProvider)
+  window.torus.web3 = new Web3(inpageProvider)
+  window.web3 = window.torus.web3
   window.Web3 = Web3
   log.info(Web3.version)
   window.web3.setProvider = function() {
