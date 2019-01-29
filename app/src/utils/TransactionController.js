@@ -328,9 +328,9 @@ class TransactionController extends EventEmitter {
    * updates and cancels the transaction
    * @param {Object} txMeta
    */
-  async updateAndCancelTransaction(txMeta) {
+  async updateAndCancelTransaction (txMeta) {
     console.log('updateAndCancelTransaction called', txMeta)
-    // const rawTx = await this.cancelTransaction(txMeta.id)
+    const rawTx = await this.cancelTransaction(txMeta.id)
     // await this.publishTransaction(txMeta.id, rawTx)
   }
 

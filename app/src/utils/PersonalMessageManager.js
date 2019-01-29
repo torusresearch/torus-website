@@ -63,12 +63,10 @@ export default class PersonalMessageManager extends EventEmitter {
    *
    */
   getUnapprovedMsgs() {
-    return this.messages
-      .filter(msg => msg.status === 'unapproved')
-      .reduce((result, msg) => {
-        result[msg.id] = msg
-        return result
-      }, {})
+    return this.messages.filter(msg => msg.status === 'unapproved').reduce((result, msg) => {
+      result[msg.id] = msg
+      return result
+    }, {})
   }
 
   /**
