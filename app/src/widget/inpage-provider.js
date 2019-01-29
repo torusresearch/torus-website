@@ -1,19 +1,22 @@
 const pump = require('pump')
 const RpcEngine = require('json-rpc-engine')
+const createIdRemapMiddleware = require('json-rpc-engine/src/idRemapMiddleware')
 const createErrorMiddleware = require('./createErrorMiddleware')
 const createJsonRpcStream = require('json-rpc-middleware-stream')
+const createTransformEthAddressMiddleware = require('./createTransformEthAddressMiddleware')
 const LocalStorageStore = require('obs-store')
 const util = require('util')
 const SafeEventEmitter = require('safe-event-emitter')
 const setupMultiplex = require('./stream-utils.js').setupMultiplex
 const DuplexStream = require('readable-stream').Duplex
 const log = require('loglevel')
+const embedUtils = require('./embedUtils')
 
 module.exports = MetamaskInpageProvider
 
 util.inherits(MetamaskInpageProvider, SafeEventEmitter)
 
-function MetamaskInpageProvider (connectionStream) {
+function MetamaskInpageProvider(connectionStream) {
   const self = this
 
   // super constructor
@@ -27,26 +30,26 @@ function MetamaskInpageProvider (connectionStream) {
   // self.publicConfigStore = new LocalStorageStore({ storageKey: 'MetaMask-Config' })
 
   class LocalStorageStream extends DuplexStream {
-    constructor () {
+    constructor() {
       super({ objectMode: true })
     }
   }
 
-  LocalStorageStore.prototype._read = function (chunk, enc, cb) {
+  LocalStorageStore.prototype._read = function(chunk, enc, cb) {
     log.info('reading from LocalStorageStore')
   }
 
-  LocalStorageStore.prototype._onMessage = function (event) {
+  LocalStorageStore.prototype._onMessage = function(event) {
     log.info('LocalStorageStore', event)
   }
 
-  LocalStorageStream.prototype._write = function (chunk, enc, cb) {
-    log.info('WRITTEN TO LOCALSTORAGESTREAM:', chunk)
+  LocalStorageStream.prototype._write = function(chunk, enc, cb) {
     let data = JSON.parse(chunk)
+    log.info('WRITING TO LOCALSTORAGESTREAM, CHUNK:', chunk)
     for (let key in data) {
       if (key === 'selectedAddress') {
         if (data.selectedAddress !== null) {
-          window.sessionStorage.setItem('selectedAddress', data.selectedAddress)
+          window.sessionStorage.setItem('selectedAddress', embedUtils.transformEthAddress(data.selectedAddress))
         } else {
           window.sessionStorage.removeItem('selectedAddress')
         }
@@ -62,10 +65,7 @@ function MetamaskInpageProvider (connectionStream) {
 
   window.lss = new LocalStorageStream()
 
-  pump(
-    publicConfigStream,
-    window.lss
-  )
+  pump(publicConfigStream, window.lss)
 
   // ignore phishing warning message (handled elsewhere)
   mux.ignoreStream('phishing')
@@ -81,13 +81,14 @@ function MetamaskInpageProvider (connectionStream) {
 
   // handle sendAsync requests via dapp-side rpc engine
   const rpcEngine = new RpcEngine()
-  // rpcEngine.push(createIdRemapMiddleware()) // TODO: fix?
+  rpcEngine.push(createIdRemapMiddleware()) // TODO: fix metamask's janky way of keeping message ids unique
   rpcEngine.push(createErrorMiddleware())
+  rpcEngine.push(createTransformEthAddressMiddleware())
   rpcEngine.push(jsonRpcConnection.middleware)
   self.rpcEngine = rpcEngine
 
   // forward json rpc notifications
-  jsonRpcConnection.events.on('notification', function (payload) {
+  jsonRpcConnection.events.on('notification', function(payload) {
     self.emit('data', null, payload)
   })
 
@@ -98,25 +99,25 @@ function MetamaskInpageProvider (connectionStream) {
 }
 
 // Web3 1.0 provider uses `send` with a callback for async queries
-MetamaskInpageProvider.prototype.send = function (payload, callback) {
+MetamaskInpageProvider.prototype.send = function(payload, callback) {
   const self = this
 
   if (callback) {
     self.sendAsync(payload, callback)
   } else {
-    return self._sendSync(payload)
+    return self._sendSync(payload, callback)
   }
 }
 
 // handle sendAsync requests via asyncProvider
 // also remap ids inbound and outbound
-MetamaskInpageProvider.prototype.sendAsync = function (payload, cb) {
+MetamaskInpageProvider.prototype.sendAsync = function(payload, cb) {
   log.info('ASYNC REQUEST', payload)
   const self = this
   self.rpcEngine.handle(payload, cb)
 }
 
-MetamaskInpageProvider.prototype._sendSync = function (payload) {
+MetamaskInpageProvider.prototype._sendSync = function(payload, cb) {
   const self = this
 
   let selectedAddress
@@ -148,7 +149,9 @@ MetamaskInpageProvider.prototype._sendSync = function (payload) {
     // throw not-supported Error
     default:
       var link = 'https://github.com/MetaMask/faq/blob/master/DEVELOPERS.md#dizzy-all-async---think-of-metamask-as-a-light-client'
-      var message = `The MetaMask Web3 object does not support synchronous methods like ${payload.method} without a callback parameter. See ${link} for details.`
+      var message = `The MetaMask Web3 object does not support synchronous methods like ${
+        payload.method
+      } without a callback parameter. See ${link} for details.`
       throw new Error(message)
   }
 
@@ -160,7 +163,7 @@ MetamaskInpageProvider.prototype._sendSync = function (payload) {
   }
 }
 
-MetamaskInpageProvider.prototype.isConnected = function () {
+MetamaskInpageProvider.prototype.isConnected = function() {
   return true
 }
 
@@ -168,7 +171,7 @@ MetamaskInpageProvider.prototype.isMetaMask = true
 
 // util
 
-function logStreamDisconnectWarning (remoteLabel, err) {
+function logStreamDisconnectWarning(remoteLabel, err) {
   let warningMsg = `MetamaskInpageProvider - lost connection to ${remoteLabel}`
   if (err) warningMsg += '\n' + err.stack
   log.warn(warningMsg)
@@ -178,4 +181,4 @@ function logStreamDisconnectWarning (remoteLabel, err) {
   }
 }
 
-function noop () {}
+function noop() {}

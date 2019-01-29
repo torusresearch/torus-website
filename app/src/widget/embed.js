@@ -2,12 +2,7 @@
 console.log('TORUS INJECTED IN', window.location.href)
 
 // Set url depending on NODE_ENV
-var torusUrl
-if (process.env.NODE_ENV === 'production') {
-  torusUrl = 'https://tor.us'
-} else {
-  torusUrl = 'https://localhost:3000'
-}
+var torusUrl = '<BROWSERIFY_REPLACE_URL>'
 
 if (window.torus === undefined) {
   window.torus = {}
@@ -49,7 +44,7 @@ function createWidget() {
   torusIframeContainer.appendChild(torusIframe)
   var bindOnLoad = function() {
     torusLogin.addEventListener('click', function() {
-      window.torus.communicationStream.write({ name: 'oauth', data: {} })
+      window.torus.login(false)
     })
   }
   var attachOnLoad = function() {
@@ -105,12 +100,38 @@ function setupWeb3() {
   })
   window.torus.communicationStream.setMaxListeners(100)
 
+  // Backward compatibility with Gotchi :)
+  window.metamaskStream = window.torus.communicationStream
+
   // compose the inpage provider
   var inpageProvider = new MetamaskInpageProvider(window.torus.metamaskStream)
   inpageProvider.setMaxListeners(100)
   window.ethereum = inpageProvider
   inpageProvider.enable = function() {
-    return new Promise((resolve, reject) => resolve())
+    return new Promise((resolve, reject) => {
+      // TODO: Handle errors
+
+      // If user is already logged in, we assume they have given access to the website
+      window.web3.eth.getAccounts(function(err, res) {
+        if (err) {
+          reject(err)
+        } else if (Array.isArray(res) && res.length > 0) {
+          resolve(res)
+        } else {
+          // set up listener for login
+          var oauthStream = window.torus.communicationMux.getStream('oauth')
+          oauthStream.on('error', err => {
+            // TODO: implement passing of errors from iframe context
+            reject(new Error(err))
+          })
+          oauthStream.on('selectedAddress', selectedAddress => {
+            // returns an array (cause accounts expects it)
+            resolve([embedUtils.transformEthAddress(selectedAddress)])
+          })
+          window.torus.login(true)
+        }
+      })
+    })
   }
 
   // detect eth_requestAccounts and pipe to enable for now
@@ -176,7 +197,11 @@ function setupWeb3() {
     }
   })
 
-  // TODO: implement inpageProvider.enable
+  // Exposing login function, if called from embed, flag as true
+  window.torus.login = function(calledFromEmbed) {
+    var oauthStream = window.torus.communicationMux.getStream('oauth')
+    oauthStream.write({ name: 'oauth', data: calledFromEmbed })
+  }
 
   if (typeof window.web3 !== 'undefined') {
     throw new Error(`Torus detected another web3.
@@ -186,7 +211,8 @@ function setupWeb3() {
       and try again.`)
   }
 
-  window.web3 = new Web3(inpageProvider)
+  window.torus.web3 = new Web3(inpageProvider)
+  window.web3 = window.torus.web3
   window.Web3 = Web3
   log.info(Web3.version)
   window.web3.setProvider = function() {
