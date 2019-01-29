@@ -106,7 +106,6 @@ function setupWeb3() {
   // compose the inpage provider
   var inpageProvider = new MetamaskInpageProvider(window.torus.metamaskStream)
   inpageProvider.setMaxListeners(100)
-  window.ethereum = inpageProvider
   inpageProvider.enable = function() {
     return new Promise((resolve, reject) => {
       // TODO: Handle errors
@@ -134,21 +133,35 @@ function setupWeb3() {
     })
   }
 
-  // detect eth_requestAccounts and pipe to enable for now
-  function detectAccountRequest(m) {
-    debugger
-    const originalMethod = inpageProvider[m]
-    inpageProvider[m] = function({ method }) {
-      if (method === 'eth_requestAccounts') {
-        return window.ethereum.enable()
-      }
-      return originalMethod.apply(this, arguments)
+  // // detect eth_requestAccounts and pipe to enable for now
+  // function detectAccountRequest(m) {
+  //   console.log('CALLED FOR DETECTACCREQ', m)
+  //   const originalMethod = inpageProvider[m]
+  //   inpageProvider[m] = function({ method }) {
+  //     if (method === 'eth_requestAccounts') {
+  //       return window.ethereum.enable()
+  //     }
+  //     return originalMethod.apply(this, arguments)
+  //   }
+  // }
+
+  var originalSend = inpageProvider.send
+  inpageProvider.send = function({ method }) {
+    if (method === 'eth_requestAccounts') {
+      return window.ethereum.enable()
     }
+    return originalSend.apply(this, arguments)
   }
 
-  detectAccountRequest('send')
-  detectAccountRequest('sendAsync')
+  var originalSendAsync = inpageProvider.sendAsync
+  inpageProvider.sendAsync = function({ method }) {
+    if (method === 'eth_requestAccounts') {
+      return window.ethereum.enable()
+    }
+    return originalSendAsync.apply(this, arguments)
+  }
 
+  window.ethereum = inpageProvider
   var communicationMux = setupMultiplex(window.torus.communicationStream)
   window.torus.communicationMux = communicationMux
 
