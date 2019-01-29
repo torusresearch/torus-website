@@ -30,11 +30,12 @@ function htmlToElement(html) {
 }
 
 function transformEthAddress(ethAddress) {
-  if (Array.isArray(ethAddress)) {
-    return ethAddress.map(addr => (typeof addr === 'string' ? addr.toLowerCase() : addr))
-  } else if (typeof ethAddress === 'string') {
-    return ethAddress.toLowerCase()
-  } else {
-    throw new Error('Unexpected Ethereum address format')
-  }
+  return ethAddress
+  // if (Array.isArray(ethAddress)) {
+  //   return ethAddress.map(addr => (typeof addr === 'string' ? addr.toLowerCase() : addr))
+  // } else if (typeof ethAddress === 'string') {
+  //   return ethAddress.toLowerCase()
+  // } else {
+  //   throw new Error('Unexpected Ethereum address format')
+  // }
 }

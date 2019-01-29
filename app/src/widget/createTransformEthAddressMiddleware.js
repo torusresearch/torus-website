@@ -1,8 +1,10 @@
+const embedUtils = require('./embedUtils')
+
 function CreateTransformEthAddressMiddleware({ override = true } = {}) {
   return (req, res, next) => {
     next(function(done) {
       if (req.method === 'eth_accounts') {
-        res.result = res.result.map(addr => addr.toLowerCase())
+        res.result = embedUtils.transformEthAddress(res.result)
       }
       done()
     })
