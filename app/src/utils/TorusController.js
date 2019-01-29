@@ -30,6 +30,7 @@ const ObservableStore = require('obs-store')
 const nodeify = require('./nodeify').default
 const TorusKeyring = require('./TorusKeyring').default
 const KeyringController = require('eth-keyring-controller')
+const Mutex = require('await-semaphore').Mutex
 
 // defaults and constants
 const version = '0.0.1'
@@ -72,6 +73,9 @@ export default class TorusController extends EventEmitter {
 
     this.keyringController.memStore.subscribe(s => this._onKeyringControllerUpdate(s))
 
+    // lock to ensure only one vault created at once
+    this.createVaultMutex = new Mutex()
+
     // tx mgmt
     this.txController = new TransactionController({
       networkStore: this.networkController.networkStore,
@@ -79,11 +83,6 @@ export default class TorusController extends EventEmitter {
       getNetwork: this.networkController.getNetworkState.bind(this),
       // signs ethTx
       signTransaction: this.keyringController.signTransaction.bind(this.keyringController),
-      // signTransaction: (ethTx, address) => {
-      //   ethTx.sign(this.getPrivateKey(address))
-      //   let rawTx = '0x' + ethTx.serialize().toString('hex')
-      //   return rawTx
-      // },
       provider: this.provider,
       blockTracker: this.blockTracker,
       getGasPrice: this.getGasPrice.bind(this)
@@ -204,6 +203,7 @@ export default class TorusController extends EventEmitter {
    * @returns {Object} vault
    */
   async createNewVaultAndKeychain(password) {
+    const releaseLock = await this.createVaultMutex.acquire()
     try {
       let vault
       const accounts = await this.keyringController.getAccounts()
@@ -212,13 +212,64 @@ export default class TorusController extends EventEmitter {
       } else {
         log.info('creating new vault')
         vault = await this.keyringController.createNewVaultAndKeychain(password)
+        // const accounts = await this.keyringController.getAccounts()
+        // this.preferencesController.setAddresses(accounts)
+        // this.selectFirstIdentity()
       }
-
-      await this.keyringController.addNewKeyring('Torus Keyring')
+      releaseLock()
       return vault
     } catch (err) {
+      releaseLock()
       throw err
     }
+  }
+
+  /**
+   * Create a new Vault and restore an existent keyring.
+   * @param  {} password
+   * @param  {} seed
+   */
+  async createNewVaultAndRestore(password, seed) {
+    const releaseLock = await this.createVaultMutex.acquire()
+    try {
+      let accounts, lastBalance
+
+      const keyringController = this.keyringController
+
+      // clear known identities
+      // this.preferencesController.setAddresses([])
+      // create new vault
+      const vault = await keyringController.createNewVaultAndRestore(password, seed)
+
+      const ethQuery = new EthQuery(this.provider)
+      accounts = await keyringController.getAccounts()
+      lastBalance = await this.getBalance(accounts[accounts.length - 1], ethQuery)
+
+      const primaryKeyring = keyringController.getKeyringsByType('HD Key Tree')[0]
+      if (!primaryKeyring) {
+        throw new Error('MetamaskController - No HD Key Tree found')
+      }
+
+      // seek out the first zero balance
+      while (lastBalance !== '0x0') {
+        await keyringController.addNewAccount(primaryKeyring)
+        accounts = await keyringController.getAccounts()
+        lastBalance = await this.getBalance(accounts[accounts.length - 1], ethQuery)
+      }
+
+      // set new identities
+      // this.preferencesController.setAddresses(accounts)
+      // this.selectFirstIdentity()
+      releaseLock()
+      return vault
+    } catch (err) {
+      releaseLock()
+      throw err
+    }
+  }
+
+  addNewKeyring(keyringType) {
+    this.keyringController.addNewKeyring(keyringType)
   }
 
   /**
@@ -394,6 +445,19 @@ export default class TorusController extends EventEmitter {
         this.personalMessageManager.setMsgStatusSigned(msgId, rawSig)
         return this.getState()
       })
+  }
+
+  /**
+   * Used to cancel a personal_sign type message.
+   * @param {string} msgId - The ID of the message to cancel.
+   * @param {Function} cb - The callback function called with a full state update.
+   */
+  cancelPersonalMessage(msgId, cb) {
+    const messageManager = this.personalMessageManager
+    messageManager.rejectMsg(msgId)
+    if (cb && typeof cb === 'function') {
+      cb(null, this.getState())
+    }
   }
 
   /**

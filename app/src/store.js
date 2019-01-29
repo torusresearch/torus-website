@@ -175,8 +175,7 @@ var VuexStore = new Vuex.Store({
                   VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
                   VuexStore.dispatch('addWallet', data)
                   let torusController = window.Vue.TorusUtils.torusController
-                  // TODO: utilise more secure password
-                  torusController.createNewVaultAndKeychain(email)
+                  torusController.createNewVaultAndKeychain(VuexStore.state.idToken).then(() => torusController.addNewKeyring('Torus Keyring'))
                   torusUtils.web3.eth.net
                     .getId()
                     .then(res => {

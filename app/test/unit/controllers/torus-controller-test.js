@@ -70,7 +70,7 @@ describe('MetaMaskController', function() {
     metamaskController.diagnostics = null
     // add sinon method spies
     sandbox.spy(metamaskController.keyringController, 'createNewVaultAndKeychain')
-    // sandbox.spy(metamaskController.keyringController, 'createNewVaultAndRestore')
+    sandbox.spy(metamaskController.keyringController, 'createNewVaultAndRestore')
   })
 
   afterEach(function() {
@@ -619,7 +619,7 @@ describe('MetaMaskController', function() {
         return Promise.resolve('0x0')
       })
 
-      // await metamaskController.createNewVaultAndRestore('foobar1337', TEST_SEED_ALT)
+      await metamaskController.createNewVaultAndRestore('foobar1337', TEST_SEED_ALT)
 
       msgParams = {
         from: address,
@@ -691,7 +691,7 @@ describe('MetaMaskController', function() {
         return Promise.resolve('0x0')
       })
 
-      // await metamaskController.createNewVaultAndRestore('foobar1337', TEST_SEED_ALT)
+      await metamaskController.createNewVaultAndRestore('foobar1337', TEST_SEED_ALT)
 
       msgParams = {
         from: address,
@@ -732,11 +732,11 @@ describe('MetaMaskController', function() {
 
     it('errors when signing a message', async function() {
       await metamaskController.signPersonalMessage(personalMessages[0].msgParams)
-      assert.strictEqual(metamaskPersonalMsgs[msgId].status, 'approved') // Not signed cause no keyringcontroller
-      // assert.strictEqual(
-      //   metamaskPersonalMsgs[msgId].rawSig,
-      //   '0x6a1b65e2b8ed53cf398a769fad24738f9fbe29841fe6854e226953542c4b6a173473cb152b6b1ae5f06d601d45dd699a129b0a8ca84e78b423031db5baa734741b'
-      // )
+      assert.strictEqual(metamaskPersonalMsgs[msgId].status, 'signed') // Not signed cause no keyringcontroller
+      assert.strictEqual(
+        metamaskPersonalMsgs[msgId].rawSig,
+        '0x6a1b65e2b8ed53cf398a769fad24738f9fbe29841fe6854e226953542c4b6a173473cb152b6b1ae5f06d601d45dd699a129b0a8ca84e78b423031db5baa734741b'
+      )
     })
   })
 
