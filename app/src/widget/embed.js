@@ -112,21 +112,25 @@ function setupWeb3() {
       // TODO: Handle errors
 
       // If user is already logged in, we assume they have given access to the website
-      if (window.torus.web3.eth.accounts.length > 0) {
-        resolve(window.torus.web3.eth.accounts)
-      } else {
-        // set up listener for login
-        var oauthStream = window.torus.communicationMux.getStream('oauth')
-        oauthStream.on('error', err => {
-          // TODO: implement passing of errors from iframe context
-          reject(new Error(err))
-        })
-        oauthStream.on('selectedAddress', selectedAddress => {
-          // returns an array (cause accounts expects it)
-          resolve([embedUtils.transformEthAddress(selectedAddress)])
-        })
-        window.torus.login(true)
-      }
+      window.web3.eth.getAccounts(function(err, res) {
+        if (err) {
+          reject(err)
+        } else if (Array.isArray(res) && res.length > 0) {
+          resolve(res)
+        } else {
+          // set up listener for login
+          var oauthStream = window.torus.communicationMux.getStream('oauth')
+          oauthStream.on('error', err => {
+            // TODO: implement passing of errors from iframe context
+            reject(new Error(err))
+          })
+          oauthStream.on('selectedAddress', selectedAddress => {
+            // returns an array (cause accounts expects it)
+            resolve([embedUtils.transformEthAddress(selectedAddress)])
+          })
+          window.torus.login(true)
+        }
+      })
     })
   }
 
