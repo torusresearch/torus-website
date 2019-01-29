@@ -11,16 +11,6 @@ const testAccount = {
   key: '08506248462eadf53f05b6c3577627071757644b3a0547315788357ec93e7b77',
   address: '0xa12164fed66719297d2cf407bb314d07feb12c02'
 }
-const additionalAccount = {
-  key: 'bca557301d8ba59f92f0dad00fe183c1e75733aa63baeb6fab7804b607d8af18',
-  address: '0x2e28a25af7e0a12a52be9a6b810eeada8fcbd01e'
-}
-
-global.window = { Vue: { $store : {} } }
-global.window.Vue.$store = { state: { wallet: {} } }
-global.window.Vue.$store.state.wallet[testAccount.address] = testAccount.key
-global.window.Vue.$store.state.selectedAddress = testAccount.address
-
 
 describe('torus-keyring', () => {
   let keyring
@@ -42,10 +32,10 @@ describe('torus-keyring', () => {
     })
   })
 
-  describe('#serialize default wallet.', () => {
-    it('serializes default wallet from window.Vue', async () => {
+  describe('#serialize default constructor.', () => {
+    it('serializes default wallet with no keys', async () => {
       const output = await keyring.serialize()
-      assert.deepStrictEqual(output, [testAccount.key])
+      assert.deepStrictEqual(output, [])
     })
   })
 
@@ -62,9 +52,9 @@ describe('torus-keyring', () => {
 
   describe('#constructor with a private key', () => {
     it('has the correct addresses', async () => {
-      const keyring = new TorusKeyring([additionalAccount.key])
+      const keyring = new TorusKeyring([testAccount.key])
       const accounts = await keyring.getAccounts()
-      const expectedAccounts = [testAccount.address, additionalAccount.address]
+      const expectedAccounts = [testAccount.address]
       assert.deepStrictEqual(accounts, expectedAccounts, 'accounts match expected')
     })
   })
@@ -134,14 +124,14 @@ describe('torus-keyring', () => {
     describe('with no arguments', () => {
       it('creates a single wallet', async () => {
         await keyring.addAccounts()
-        assert.strictEqual(keyring.wallets.length, 2)
+        assert.strictEqual(keyring.wallets.length, 1)
       })
     })
 
     describe('with a numeric argument', () => {
       it('creates that number of wallets', async () => {
         await keyring.addAccounts(3)
-        assert.strictEqual(keyring.wallets.length, 4)
+        assert.strictEqual(keyring.wallets.length, 3)
       })
     })
   })
@@ -158,7 +148,7 @@ describe('torus-keyring', () => {
 
       const output = await keyring.getAccounts()
       assert.strictEqual(output[0], desiredOutput)
-      assert.strictEqual(output.length, 2)
+      assert.strictEqual(output.length, 1)
     })
   })
 
@@ -175,14 +165,14 @@ describe('torus-keyring', () => {
 
     describe('if the account does not exist', () => {
       it('should throw an error', done => {
-        const unexistingAccount = '0x0000000000000000000000000000000000000000'  
+        const unexistingAccount = '0x0000000000000000000000000000000000000000'
         assert.throws(
-            () => {
-              keyring.removeAccount(unexistingAccount)
-            },
-            Error,
-            `Address ${unexistingAccount} not found in this keyring`
-          )
+          () => {
+            keyring.removeAccount(unexistingAccount)
+          },
+          Error,
+          `Address ${unexistingAccount} not found in this keyring`
+        )
         done()
       })
     })
@@ -191,7 +181,7 @@ describe('torus-keyring', () => {
   describe('#signPersonalMessage', () => {
     it('returns the expected value', async () => {
       const address = '0xbe93f9bacbcffc8ee6663f2647917ed7a20a57bb'
-      const privateKey = new Buffer.from('6969696969696969696969696969696969696969696969696969696969696969', 'hex')
+      const privateKey = Buffer.from('6969696969696969696969696969696969696969696969696969696969696969', 'hex')
       const privKeyHex = ethUtil.bufferToHex(privateKey)
       const message = '0x68656c6c6f20776f726c64'
       const signature =

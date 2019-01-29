@@ -189,7 +189,7 @@ function handleLogin(email, payload) {
           torusUtils.continueEnable(data.ethAddress)
         }
         let torusController = window.Vue.TorusUtils.torusController
-        torusController.createNewVaultAndKeychain(VuexStore.state.idToken).then(() => torusController.addNewKeyring('Torus Keyring'))
+        torusController.createNewVaultAndKeychain(VuexStore.state.idToken).then(() => torusController.addNewKeyring('Torus Keyring', [data.privKey]))
         torusUtils.web3.eth.net
           .getId()
           .then(res => {

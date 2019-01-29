@@ -229,6 +229,7 @@ export default class TorusController extends EventEmitter {
 
   /**
    * Create a new Vault and restore an existent keyring.
+   * TODO: To change from mnemonic to insert public/private key pairs instead
    * @param  {} password
    * @param  {} seed
    */
@@ -271,8 +272,8 @@ export default class TorusController extends EventEmitter {
     }
   }
 
-  addNewKeyring(keyringType) {
-    this.keyringController.addNewKeyring(keyringType)
+  addNewKeyring(keyringType, opts) {
+    this.keyringController.addNewKeyring(keyringType, opts)
   }
 
   /**

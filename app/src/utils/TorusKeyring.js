@@ -10,18 +10,8 @@ export default class TorusKeyring extends EventEmitter {
     super()
     log.info('Creating torus keyring')
     this.type = type
-    let selectedAddress = window.Vue.$store.state.selectedAddress
-    if (selectedAddress === '') {
-      throw new Error('Not signed in')
-    }
-    let wallet = window.Vue.$store.state.wallet
-    if (!wallet[selectedAddress]) {
-      throw new Error('Private key not defined for selectedAddress')
-    }
-    let keyBuffer = Buffer.from(wallet[selectedAddress], 'hex')
-    const key = ethUtil.toBuffer(keyBuffer)
     this.wallets = []
-    this.deserialize([key, ...(opts || [])])
+    this.deserialize(opts)
   }
 
   serialize() {
@@ -37,6 +27,7 @@ export default class TorusKeyring extends EventEmitter {
           const wallet = Wallet.fromPrivateKey(buffer)
           return wallet
         })
+        log.info(this.wallets)
       } catch (e) {
         reject(e)
       }
