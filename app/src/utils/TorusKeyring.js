@@ -21,7 +21,7 @@ export default class TorusKeyring extends EventEmitter {
     let keyBuffer = Buffer.from(wallet[selectedAddress], 'hex')
     const key = ethUtil.toBuffer(keyBuffer)
     this.wallets = []
-    this.deserialize([key])
+    this.deserialize([key, ...(opts || [])])
   }
 
   serialize() {
