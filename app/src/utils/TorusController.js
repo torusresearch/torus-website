@@ -1,4 +1,3 @@
-const ethUtil = require('ethereumjs-util')
 const debounce = require('debounce')
 const EventEmitter = require('events')
 const ComposableObservableStore = require('./ComposableObservableStore').default
@@ -29,6 +28,9 @@ const PersonalMessageManager = require('./PersonalMessageManager').default
 const TypedMessageManager = require('./TypedMessageManager').default
 const ObservableStore = require('obs-store')
 const nodeify = require('./nodeify').default
+const TorusKeyring = require('./TorusKeyring').default
+const KeyringController = require('eth-keyring-controller')
+const Mutex = require('await-semaphore').Mutex
 
 // defaults and constants
 const version = '0.0.1'
@@ -60,17 +62,27 @@ export default class TorusController extends EventEmitter {
         this.accountTracker.stop()
       }
     })
+
+    // key mgmt
+    const additionalKeyrings = [TorusKeyring]
+    this.keyringController = new KeyringController({
+      keyringTypes: additionalKeyrings,
+      getNetwork: this.networkController.getNetworkState.bind(this.networkController),
+      encryptor: opts.encryptor || undefined
+    })
+
+    this.keyringController.memStore.subscribe(s => this._onKeyringControllerUpdate(s))
+
+    // lock to ensure only one vault created at once
+    this.createVaultMutex = new Mutex()
+
     // tx mgmt
     this.txController = new TransactionController({
       networkStore: this.networkController.networkStore,
       txHistoryLimit: 40,
       getNetwork: this.networkController.getNetworkState.bind(this),
       // signs ethTx
-      signTransaction: (ethTx, address) => {
-        ethTx.sign(this.getPrivateKey(address))
-        let rawTx = '0x' + ethTx.serialize().toString('hex')
-        return rawTx
-      },
+      signTransaction: this.keyringController.signTransaction.bind(this.keyringController),
       provider: this.provider,
       blockTracker: this.blockTracker,
       getGasPrice: this.getGasPrice.bind(this)
@@ -96,6 +108,7 @@ export default class TorusController extends EventEmitter {
     })
     this.store.updateStructure({
       TransactionController: this.txController.store,
+      KeyringController: this.keyringController.store,
       NetworkController: this.networkController.store,
       MessageManager: this.messageManager.store,
       PersonalMessageManager: this.personalMessageManager.store,
@@ -172,6 +185,95 @@ export default class TorusController extends EventEmitter {
    */
   getState() {
     return this.store.getFlatState()
+  }
+
+  // =============================================================================
+  // VAULT / KEYRING RELATED METHODS
+  // =============================================================================
+
+  /**
+   * Creates a new Vault and create a new keychain.
+   *
+   * A vault, or KeyringController, is a controller that contains
+   * many different account strategies, currently called Keyrings.
+   * Creating it new means wiping all previous keyrings.
+   *
+   * A keychain, or keyring, controls many accounts with a single backup and signing strategy.
+   * For example, a mnemonic phrase can generate many accounts, and is a keyring.
+   *
+   * @param  {string} password
+   *
+   * @returns {Object} vault
+   */
+  async createNewVaultAndKeychain(password) {
+    const releaseLock = await this.createVaultMutex.acquire()
+    try {
+      let vault
+      const accounts = await this.keyringController.getAccounts()
+      if (accounts.length > 0) {
+        vault = await this.keyringController.fullUpdate()
+      } else {
+        log.info('creating new vault')
+        vault = await this.keyringController.createNewVaultAndKeychain(password)
+        // const accounts = await this.keyringController.getAccounts()
+        // this.preferencesController.setAddresses(accounts)
+        // this.selectFirstIdentity()
+      }
+      releaseLock()
+      return vault
+    } catch (err) {
+      releaseLock()
+      throw err
+    }
+  }
+
+  /**
+   * Create a new Vault and restore an existent keyring.
+   * TODO: To change from mnemonic to insert public/private key pairs instead
+   * @param  {} password
+   * @param  {} seed
+   */
+  async createNewVaultAndRestore(password, seed) {
+    const releaseLock = await this.createVaultMutex.acquire()
+    try {
+      let accounts, lastBalance
+
+      const keyringController = this.keyringController
+
+      // clear known identities
+      // this.preferencesController.setAddresses([])
+      // create new vault
+      const vault = await keyringController.createNewVaultAndRestore(password, seed)
+
+      const ethQuery = new EthQuery(this.provider)
+      accounts = await keyringController.getAccounts()
+      lastBalance = await this.getBalance(accounts[accounts.length - 1], ethQuery)
+
+      const primaryKeyring = keyringController.getKeyringsByType('HD Key Tree')[0]
+      if (!primaryKeyring) {
+        throw new Error('MetamaskController - No HD Key Tree found')
+      }
+
+      // seek out the first zero balance
+      while (lastBalance !== '0x0') {
+        await keyringController.addNewAccount(primaryKeyring)
+        accounts = await keyringController.getAccounts()
+        lastBalance = await this.getBalance(accounts[accounts.length - 1], ethQuery)
+      }
+
+      // set new identities
+      // this.preferencesController.setAddresses(accounts)
+      // this.selectFirstIdentity()
+      releaseLock()
+      return vault
+    } catch (err) {
+      releaseLock()
+      throw err
+    }
+  }
+
+  addNewKeyring(keyringType, opts) {
+    this.keyringController.addNewKeyring(keyringType, opts)
   }
 
   /**
@@ -276,22 +378,18 @@ export default class TorusController extends EventEmitter {
 
     // sets the status op the message to 'approved'
     // and removes the metamaskId for signing
-    var that = this
-    return this.messageManager.approveMessage(msgParams).then(cleanMsgParams => {
-      // signs the message
-      // return this.keyringController.signMessage(cleanMsgParams)
-      try {
-        var address = toChecksumAddress(sigUtil.normalize(cleanMsgParams.from))
-        var privKey = that.getPrivateKey(address)
-        var msgSig = ethUtil.ecsign(Buffer.from(cleanMsgParams.data, 'hex'), privKey)
-        var signature = ethUtil.bufferToHex(sigUtil.concatSig(msgSig.v, msgSig.r, msgSig.s))
-
-        that.messageManager.setMsgStatusSigned(msgId, signature)
-        return that.getState()
-      } catch (error) {
-        log.info('MetaMaskController - eth_signTypedData failed.', error)
-      }
-    })
+    return this.messageManager
+      .approveMessage(msgParams)
+      .then(cleanMsgParams => {
+        // signs the message
+        return this.keyringController.signMessage(cleanMsgParams)
+      })
+      .then(rawSig => {
+        // tells the listener that the message has been signed
+        // and can be returned to the dapp
+        this.messageManager.setMsgStatusSigned(msgId, rawSig)
+        return this.getState()
+      })
   }
 
   /**
@@ -339,19 +437,18 @@ export default class TorusController extends EventEmitter {
     const msgId = msgParams.metamaskId
     // sets the status op the message to 'approved'
     // and removes the metamaskId for signing
-    var that = this
-    return this.personalMessageManager.approveMessage(msgParams).then(cleanMsgParams => {
-      // signs the message
-      // return this.keyringController.signPersonalMessage(cleanMsgParams)
-      try {
-        const address = toChecksumAddress(sigUtil.normalize(cleanMsgParams.from))
-        let signature = sigUtil.personalSign(that.getPrivateKey(address), { data: cleanMsgParams.data })
-        that.personalMessageManager.setMsgStatusSigned(msgId, signature)
-        return that.getState()
-      } catch (error) {
-        log.info('MetaMaskController - eth_signTypedData failed.', error)
-      }
-    })
+    return this.personalMessageManager
+      .approveMessage(msgParams)
+      .then(cleanMsgParams => {
+        // signs the message
+        return this.keyringController.signPersonalMessage(cleanMsgParams)
+      })
+      .then(rawSig => {
+        // tells the listener that the message has been signed
+        // and can be returned to the dapp
+        this.personalMessageManager.setMsgStatusSigned(msgId, rawSig)
+        return this.getState()
+      })
   }
 
   /**
@@ -395,11 +492,12 @@ export default class TorusController extends EventEmitter {
     try {
       const cleanMsgParams = await this.typedMessageManager.approveMessage(msgParams)
       const address = toChecksumAddress(sigUtil.normalize(cleanMsgParams.from))
-      let signature = sigUtil.signTypedData(this.getPrivateKey(address), { data: JSON.parse(cleanMsgParams.data) })
+      const keyring = await this.keyringController.getKeyringForAccount(address)
+      let signature = await keyring.signTypedData(address, cleanMsgParams.data)
       this.typedMessageManager.setMsgStatusSigned(msgId, signature)
       return this.getState()
     } catch (error) {
-      log.info('MetaMaskController - eth_signTypedData failed.', error)
+      log.info('TorusController - eth_signTypedData failed.', error)
       this.typedMessageManager.errorMessage(msgId, error)
     }
   }
@@ -584,5 +682,36 @@ export default class TorusController extends EventEmitter {
 
     releaseLock()
     return pendingNonce
+  }
+
+  /**
+   * Handle a KeyringController update
+   * @param {object} state the KC state
+   * @return {Promise<void>}
+   * @private
+   */
+  async _onKeyringControllerUpdate(state) {
+    const { isUnlocked, keyrings } = state
+    const addresses = keyrings.reduce((acc, { accounts }) => acc.concat(accounts), [])
+
+    if (!addresses.length) {
+      return
+    }
+
+    // Ensure preferences + identities controller know about all addresses
+    // TODO: map preferencescontroller
+    // this.preferencesController.addAddresses(addresses)
+    this.accountTracker.syncWithAddresses(addresses)
+
+    const wasLocked = !isUnlocked
+    if (wasLocked) {
+      // const oldSelectedAddress = this.preferencesController.getSelectedAddress()
+      // TODO: map preferencescontroller
+      const oldSelectedAddress = window.Vue.$store.state.selectedAddress
+      if (!addresses.includes(oldSelectedAddress)) {
+        const address = addresses[0]
+        await window.Vue.$store.state.updateSelectedAddress(address)
+      }
+    }
   }
 }
