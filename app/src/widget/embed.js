@@ -135,9 +135,10 @@ function setupWeb3() {
   }
 
   // detect eth_requestAccounts and pipe to enable for now
-  function detectAccountRequest(method) {
-    const originalMethod = inpageProvider[method]
-    inpageProvider[method] = function({ method }) {
+  function detectAccountRequest(m) {
+    debugger
+    const originalMethod = inpageProvider[m]
+    inpageProvider[m] = function({ method }) {
       if (method === 'eth_requestAccounts') {
         return window.ethereum.enable()
       }

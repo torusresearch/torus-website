@@ -105,7 +105,7 @@ MetamaskInpageProvider.prototype.send = function(payload, callback) {
   if (callback) {
     self.sendAsync(payload, callback)
   } else {
-    return self._sendSync(payload, callback)
+    return self._sendSync(payload)
   }
 }
 
@@ -117,7 +117,7 @@ MetamaskInpageProvider.prototype.sendAsync = function(payload, cb) {
   self.rpcEngine.handle(payload, cb)
 }
 
-MetamaskInpageProvider.prototype._sendSync = function(payload, cb) {
+MetamaskInpageProvider.prototype._sendSync = function(payload) {
   const self = this
 
   let selectedAddress

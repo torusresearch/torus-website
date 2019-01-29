@@ -138,9 +138,9 @@ var TorusUtils = {
   metamaskMux: setupMultiplex(metamaskStream),
   communicationMux: setupMultiplex(communicationStream),
   continueEnable: function(selectedAddress) {
-    console.log("ENABLE WITH: ", selectedAddress)
+    console.log('ENABLE WITH: ', selectedAddress)
     var oauthStream = TorusUtils.communicationMux.getStream('oauth')
-    oauth.write(JSON.stringify({ selectedAddress: selectedAddress }))
+    oauthStream.write(JSON.stringify({ selectedAddress: selectedAddress }))
   },
   updateStaticData: function(payload) {
     console.log('STATIC DATA:', payload)

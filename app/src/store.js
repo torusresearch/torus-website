@@ -137,7 +137,6 @@ var VuexStore = new Vuex.Store({
     updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
       torusUtils.updateStaticData({ selectedAddress: payload.selectedAddress })
-      torusUtils.communicationMux.getStream('oauth').write({ selectedAddress: payload.selectedAddress })
     },
     updateNetworkId(context, payload) {
       context.commit('setNetworkId', payload.networkId)
