@@ -44,7 +44,7 @@ function MetamaskInpageProvider(connectionStream) {
   }
 
   LocalStorageStream.prototype._write = function(chunk, enc, cb) {
-    log.info('WRITTEN TO LOCALSTORAGESTREAM:', chunk)
+    log.info('WRITTEN TO LOCALSTORAGESTREAM:', embedUtils.transformEthAddress(data.selectedAddress))
     let data = JSON.parse(chunk)
     for (let key in data) {
       if (key === 'selectedAddress') {
