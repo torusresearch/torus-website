@@ -281,7 +281,6 @@ class TransactionStateManager extends EventEmitter {
     @returns {array} a list of txMetas who matches the search params
   */
   getTxsByMetaData(key, value, txList = this.getTxList()) {
-
     return txList.filter(txMeta => {
       if (key in txMeta.txParams) {
         return txMeta.txParams[key] === value
@@ -426,7 +425,7 @@ class TransactionStateManager extends EventEmitter {
     txMeta.status = status
     setTimeout(() => {
       try {
-        console.log("UPDATING TX", txMeta)
+        console.log('UPDATING TX', txMeta)
         this.updateTx(txMeta, `txStateManager: setting status to ${status}`)
         this.emit(`${txMeta.id}:${status}`, txId)
         this.emit('tx:status-update', txId, status)

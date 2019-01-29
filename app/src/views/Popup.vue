@@ -21,9 +21,9 @@
 </template>
 
 <script>
-import torusUtils from '@/utils/torusUtils'
+// import torusUtils from '@/utils/torusUtils'
 import { mapActions } from 'vuex'
-import * as log from 'loglevel'
+// import * as log from 'loglevel'
 
 export default {
   name: 'popup',

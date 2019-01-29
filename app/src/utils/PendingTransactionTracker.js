@@ -15,7 +15,6 @@ const EthQuery = require('ethjs-query')
     @param {function} config.getPendingTransactions a function for getting an array of transactions,
     @param {function} config.publishTransaction a async function for publishing raw transactions,
 
-
 @class
 */
 
