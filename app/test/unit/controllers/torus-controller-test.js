@@ -69,7 +69,7 @@ describe('MetaMaskController', function() {
     // disable diagnostics
     metamaskController.diagnostics = null
     // add sinon method spies
-    // sandbox.spy(metamaskController.keyringController, 'createNewVaultAndKeychain')
+    sandbox.spy(metamaskController.keyringController, 'createNewVaultAndKeychain')
     // sandbox.spy(metamaskController.keyringController, 'createNewVaultAndRestore')
   })
 
