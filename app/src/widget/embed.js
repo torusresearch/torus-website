@@ -154,6 +154,12 @@ function setupWeb3() {
     })
   }
 
+  window.lss.on('data', function(data) {
+    if (data.selectedAddress !== undefined) {
+      window.torus.web3.eth.defaultAccount = data.selectedAddress
+    }
+  })
+
   window.ethereum = inpageProvider
   var communicationMux = setupMultiplex(window.torus.communicationStream)
   window.torus.communicationMux = communicationMux
@@ -167,7 +173,7 @@ function setupWeb3() {
   })
 
   function torusLoggedIn() {
-    if (window.web3 && window.web3.eth.accounts.length > 0) {
+    if (window.torus.web3 && window.torus.web3.eth.accounts.length > 0) {
       return true
     } else {
       return false
@@ -219,22 +225,17 @@ function setupWeb3() {
   }
 
   window.torus.web3 = new Web3(inpageProvider)
-  window.web3 = window.torus.web3
-  window.Web3 = Web3
-  log.info(Web3.version)
-  window.web3.setProvider = function() {
+  window.torus.web3.setProvider = function() {
     log.debug('Torus - overrode web3.setProvider')
   }
   // pretend to be Metamask for dapp compatibility reasons
-  window.web3.currentProvider.isMetamask = true
-  window.web3.currentProvider.isTorus = true
+  window.torus.web3.currentProvider.isMetamask = true
+  window.torus.web3.currentProvider.isTorus = true
+  window.web3 = window.torus.web3
+  window.Web3 = Web3
+  log.info(Web3.version)
   log.debug('Torus - injected web3')
 }
-
-// set web3 defaultAccount
-// inpageProvider.publicConfigStore.subscribe(function (state) {
-//   window.web3.eth.defaultAccount = state.selectedAddress
-// })
 
 // need to make sure we aren't affected by overlapping namespaces
 // and that we dont affect the app with our namespace

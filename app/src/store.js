@@ -185,9 +185,7 @@ function handleLogin(email, payload) {
         VuexStore.dispatch('addWallet', data)
         // continue enable function
         if (payload.calledFromEmbed) {
-          setTimeout(function() {
-            torusUtils.continueEnable(data.ethAddress)
-          }, 50)
+          torusUtils.continueEnable(data.ethAddress)
         }
         let torusController = window.Vue.TorusUtils.torusController
         torusController.createNewVaultAndKeychain(VuexStore.state.idToken).then(() => torusController.addNewKeyring('Torus Keyring', [data.privKey]))

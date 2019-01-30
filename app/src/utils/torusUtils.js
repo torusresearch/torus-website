@@ -145,10 +145,13 @@ var TorusUtils = {
   updateStaticData: function(payload) {
     log.info('STATIC DATA:', payload)
     var publicConfigOutStream = TorusUtils.metamaskMux.getStream('publicConfig')
+    // JSON.stringify is used here even though the stream is in object mode
+    // because it is parsed in the dapp context, this behavior emulates nonobject mode
+    // for compatibility reasons when using pump
     if (payload.selectedAddress) {
-      publicConfigOutStream.write({ selectedAddress: payload.selectedAddress })
+      publicConfigOutStream.write(JSON.stringify({ selectedAddress: payload.selectedAddress }))
     } else if (payload.networkId) {
-      publicConfigOutStream.write({ networkVersion: payload.networkId })
+      publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
     }
   },
   web3: new Web3(engine),
