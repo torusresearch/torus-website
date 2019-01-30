@@ -103,24 +103,22 @@ function setupWeb3() {
   // Backward compatibility with Gotchi :)
   window.metamaskStream = window.torus.communicationStream
 
+  // compose the inpage provider
+  var inpageProvider = new MetamaskInpageProvider(window.torus.metamaskStream)
+
   // detect eth_requestAccounts and pipe to enable for now
-  // due to some issues with web3 1.0 which modifies the inpageProvider's
-  // sendAsync method, we directly modify the prototype for MetamaskInpageProvider
-  function detectAccountRequestPrototypeModifier(prototype, m) {
-    const originalMethod = prototype[m]
-    prototype[m] = function({ method }) {
+  function detectAccountRequestPrototypeModifier(m) {
+    const originalMethod = inpageProvider[m]
+    inpageProvider[m] = function({ method }) {
       if (method === 'eth_requestAccounts') {
         return window.ethereum.enable()
       }
       return originalMethod.apply(this, arguments)
     }
   }
+  detectAccountRequestPrototypeModifier('send')
+  detectAccountRequestPrototypeModifier('sendAsync')
 
-  detectAccountRequestPrototypeModifier(MetamaskInpageProvider.prototype, 'send')
-  detectAccountRequestPrototypeModifier(MetamaskInpageProvider.prototype, 'sendAsync')
-
-  // compose the inpage provider
-  var inpageProvider = new MetamaskInpageProvider(window.torus.metamaskStream)
   inpageProvider.setMaxListeners(100)
   inpageProvider.enable = function() {
     return new Promise((resolve, reject) => {
@@ -156,7 +154,15 @@ function setupWeb3() {
     })
   }
 
-  window.ethereum = inpageProvider
+  // Work around for web3@1.0 deleting the bound `sendAsync` but not the unbound
+  // `sendAsync` method on the prototype, causing `this` reference issues with drizzle
+  const proxiedInpageProvider = new Proxy(inpageProvider, {
+    // straight up lie that we deleted the property so that it doesnt
+    // throw an error in strict mode
+    deleteProperty: () => true,
+  })
+
+  window.ethereum = proxiedInpageProvider
   var communicationMux = setupMultiplex(window.torus.communicationStream)
   window.torus.communicationMux = communicationMux
 

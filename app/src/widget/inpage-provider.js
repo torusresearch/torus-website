@@ -25,7 +25,7 @@ function MetamaskInpageProvider(connectionStream) {
   // setup connectionStream multiplexing
   const mux = setupMultiplex(connectionStream)
   const publicConfigStream = mux.createStream('publicConfig')
-  self.metamaskMux = mux
+  self.mux = mux
 
   // subscribe to metamask public config (one-way)
   // self.publicConfigStore = new LocalStorageStore({ storageKey: 'MetaMask-Config' })
@@ -53,12 +53,14 @@ function MetamaskInpageProvider(connectionStream) {
           var prevSelectedAddress = window.sessionStorage.getItem('selectedAddress')
           var newSelectedAddress = embedUtils.transformEthAddress(data[key])
           window.torus.web3.eth.defaultAccount = newSelectedAddress
+          window.ethereum.selectedAddress = newSelectedAddress
           window.sessionStorage.setItem('selectedAddress', newSelectedAddress)
           if (prevSelectedAddress !== newSelectedAddress) {
             self.emit('accountsChanged', [newSelectedAddress])
           }
         } else {
           delete window.torus.web3.eth.defaultAccount
+          delete window.ethereum.selectedAddress
           window.sessionStorage.removeItem('selectedAddress')
         }
       } else if (key === 'networkVersion') {
