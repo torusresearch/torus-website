@@ -129,9 +129,13 @@ function setupWeb3() {
       // If user is already logged in, we assume they have given access to the website
       window.web3.eth.getAccounts(function(err, res) {
         if (err) {
-          reject(err)
+          setTimeout(function() {
+            reject(err)
+          })
         } else if (Array.isArray(res) && res.length > 0) {
-          resolve(res)
+          setTimeout(function() {
+            resolve(res)
+          })
         } else {
           // set up listener for login
           var oauthStream = window.torus.communicationMux.getStream('oauth')
