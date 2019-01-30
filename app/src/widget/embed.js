@@ -206,7 +206,7 @@ function setupWeb3() {
   // Exposing login function, if called from embed, flag as true
   window.torus.login = function(calledFromEmbed) {
     var oauthStream = window.torus.communicationMux.getStream('oauth')
-    oauthStream.write({ name: 'oauth', data: calledFromEmbed })
+    oauthStream.write({ name: 'oauth', data: { calledFromEmbed } })
   }
 
   if (typeof window.web3 !== 'undefined') {

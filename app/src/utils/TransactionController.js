@@ -319,7 +319,7 @@ class TransactionController extends EventEmitter {
    * @param {Object} txMeta
    */
   async updateAndApproveTransaction(txMeta) {
-    console.log('updateAndApproveTransaction called', txMeta)
+    log.info('updateAndApproveTransaction called', txMeta)
     this.txStateManager.updateTx(txMeta, 'confTx: user approved transaction')
     await this.approveTransaction(txMeta.id)
   }
@@ -329,7 +329,7 @@ class TransactionController extends EventEmitter {
    * @param {Object} txMeta
    */
   async updateAndCancelTransaction(txMeta) {
-    console.log('updateAndCancelTransaction called', txMeta)
+    log.info('updateAndCancelTransaction called', txMeta)
     // const rawTx = await this.cancelTransaction(txMeta.id)
     // await this.publishTransaction(txMeta.id, rawTx)
   }
