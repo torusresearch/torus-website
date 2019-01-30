@@ -154,12 +154,6 @@ function setupWeb3() {
     })
   }
 
-  window.lss.on('data', function(data) {
-    if (data.selectedAddress !== undefined) {
-      window.torus.web3.eth.defaultAccount = data.selectedAddress
-    }
-  })
-
   window.ethereum = inpageProvider
   var communicationMux = setupMultiplex(window.torus.communicationStream)
   window.torus.communicationMux = communicationMux

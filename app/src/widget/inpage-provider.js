@@ -48,14 +48,18 @@ function MetamaskInpageProvider(connectionStream) {
     log.info('WRITING TO LOCALSTORAGESTREAM, CHUNK:', chunk)
     for (let key in data) {
       if (key === 'selectedAddress') {
-        if (data[key] !== null) {
+        if (data[key] !== '' && data[key] !== null && data[key] !== undefined) {
+          window.torus.web3.eth.defaultAccount = embedUtils.transformEthAddress(data[key])
           window.sessionStorage.setItem('selectedAddress', embedUtils.transformEthAddress(data[key]))
         } else {
+          delete window.torus.web3.eth.defaultAccount
           window.sessionStorage.removeItem('selectedAddress')
         }
       } else if (key === 'networkVersion') {
         window.sessionStorage.setItem(key, data[key])
-        window.ethereum.networkVersion = data[key].toString()
+        if (window.ethereum.networkVersion !== data[key].toString()) {
+          window.ethereum.networkVersion = data[key].toString()
+        }
       } else {
         window.sessionStorage.setItem(key, data[key])
       }
@@ -63,9 +67,9 @@ function MetamaskInpageProvider(connectionStream) {
     cb()
   }
 
-  window.lss = new LocalStorageStream()
+  self.lss = new LocalStorageStream()
 
-  pump(publicConfigStream, window.lss)
+  pump(publicConfigStream, self.lss)
 
   // ignore phishing warning message (handled elsewhere)
   mux.ignoreStream('phishing')
