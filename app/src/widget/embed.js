@@ -139,13 +139,14 @@ function setupWeb3() {
         } else {
           // set up listener for login
           var oauthStream = window.torus.communicationMux.getStream('oauth')
-          oauthStream.on('error', err => {
-            // TODO: implement passing of errors from iframe context
-            reject(new Error(err))
-          })
-          oauthStream.on('selectedAddress', selectedAddress => {
-            // returns an array (cause accounts expects it)
-            resolve([embedUtils.transformEthAddress(selectedAddress)])
+          oauthStream.on('data', data => {
+            var { err, selectedAddress } = data
+            if (err) {
+              reject(err)
+            } else {
+              // returns an array (cause accounts expects it)
+              resolve([embedUtils.transformEthAddress(selectedAddress)])
+            }
           })
           window.torus.login(true)
         }

@@ -140,15 +140,15 @@ var TorusUtils = {
   continueEnable: function(selectedAddress) {
     log.info('ENABLE WITH: ', selectedAddress)
     var oauthStream = TorusUtils.communicationMux.getStream('oauth')
-    oauthStream.write(JSON.stringify({ selectedAddress: selectedAddress }))
+    oauthStream.write({ selectedAddress: selectedAddress })
   },
   updateStaticData: function(payload) {
     log.info('STATIC DATA:', payload)
     var publicConfigOutStream = TorusUtils.metamaskMux.getStream('publicConfig')
     if (payload.selectedAddress) {
-      publicConfigOutStream.write(JSON.stringify({ selectedAddress: payload.selectedAddress }))
+      publicConfigOutStream.write({ selectedAddress: payload.selectedAddress })
     } else if (payload.networkId) {
-      publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
+      publicConfigOutStream.write({ networkVersion: payload.networkId })
     }
   },
   web3: new Web3(engine),

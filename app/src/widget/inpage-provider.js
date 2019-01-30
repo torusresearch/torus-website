@@ -24,6 +24,7 @@ function MetamaskInpageProvider(connectionStream) {
 
   // setup connectionStream multiplexing
   const mux = setupMultiplex(connectionStream)
+  window.metamaskMux = mux
   const publicConfigStream = mux.createStream('publicConfig')
 
   // subscribe to metamask public config (one-way)
@@ -44,20 +45,19 @@ function MetamaskInpageProvider(connectionStream) {
   }
 
   LocalStorageStream.prototype._write = function(chunk, enc, cb) {
-    let data = JSON.parse(chunk)
     log.info('WRITING TO LOCALSTORAGESTREAM, CHUNK:', chunk)
-    for (let key in data) {
+    for (let key in chunk) {
       if (key === 'selectedAddress') {
-        if (data.selectedAddress !== null) {
-          window.sessionStorage.setItem('selectedAddress', embedUtils.transformEthAddress(data.selectedAddress))
+        if (chunk[key] !== null) {
+          window.sessionStorage.setItem('selectedAddress', embedUtils.transformEthAddress(chunk[key]))
         } else {
           window.sessionStorage.removeItem('selectedAddress')
         }
       } else if (key === 'networkVersion') {
-        window.sessionStorage.setItem(key, data[key])
-        window.ethereum.networkVersion = data[key].toString()
+        window.sessionStorage.setItem(key, chunk[key])
+        window.ethereum.networkVersion = chunk[key].toString()
       } else {
-        window.sessionStorage.setItem(key, data[key])
+        window.sessionStorage.setItem(key, chunk[key])
       }
     }
     cb()
