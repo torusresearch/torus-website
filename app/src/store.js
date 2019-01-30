@@ -184,8 +184,10 @@ function handleLogin(email, payload) {
         VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
         VuexStore.dispatch('addWallet', data)
         // continue enable function
-        if (payload.calledFromEnable) {
-          torusUtils.continueEnable(data.ethAddress)
+        if (payload.calledFromEmbed) {
+          setTimeout(function() {
+            torusUtils.continueEnable(data.ethAddress)
+          }, 50)
         }
         let torusController = window.Vue.TorusUtils.torusController
         torusController.createNewVaultAndKeychain(VuexStore.state.idToken).then(() => torusController.addNewKeyring('Torus Keyring', [data.privKey]))
@@ -207,8 +209,8 @@ passthroughStream.on('data', function() {
   log.info('p data:', arguments)
 })
 
-torusUtils.communicationMux.getStream('oauth').on('data', function(calledFromEmbed) {
-  VuexStore.dispatch('triggerLogin', { calledFromEmbed: calledFromEmbed })
+torusUtils.communicationMux.getStream('oauth').on('data', function(chunk) {
+  VuexStore.dispatch('triggerLogin', { calledFromEmbed: chunk.data.calledFromEmbed })
 })
 
 pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, err => {
