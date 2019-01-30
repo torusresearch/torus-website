@@ -103,10 +103,25 @@ function setupWeb3() {
   // Backward compatibility with Gotchi :)
   window.metamaskStream = window.torus.communicationStream
 
+  // detect eth_requestAccounts and pipe to enable for now
+  // due to some issues with web3 1.0 which modifies the inpageProvider's
+  // sendAsync method, we directly modify the prototype for MetamaskInpageProvider
+  function detectAccountRequestPrototypeModifier(prototype, m) {
+    const originalMethod = prototype[m]
+    prototype[m] = function({ method }) {
+      if (method === 'eth_requestAccounts') {
+        return window.ethereum.enable()
+      }
+      return originalMethod.apply(this, arguments)
+    }
+  }
+
+  detectAccountRequestPrototypeModifier(MetamaskInpageProvider.prototype, 'send')
+  detectAccountRequestPrototypeModifier(MetamaskInpageProvider.prototype, 'sendAsync')
+
   // compose the inpage provider
   var inpageProvider = new MetamaskInpageProvider(window.torus.metamaskStream)
   inpageProvider.setMaxListeners(100)
-  window.ethereum = inpageProvider
   inpageProvider.enable = function() {
     return new Promise((resolve, reject) => {
       // TODO: Handle errors
@@ -134,20 +149,7 @@ function setupWeb3() {
     })
   }
 
-  // detect eth_requestAccounts and pipe to enable for now
-  function detectAccountRequest(method) {
-    const originalMethod = inpageProvider[method]
-    inpageProvider[method] = function({ method }) {
-      if (method === 'eth_requestAccounts') {
-        return window.ethereum.enable()
-      }
-      return originalMethod.apply(this, arguments)
-    }
-  }
-
-  detectAccountRequest('send')
-  detectAccountRequest('sendAsync')
-
+  window.ethereum = inpageProvider
   var communicationMux = setupMultiplex(window.torus.communicationStream)
   window.torus.communicationMux = communicationMux
 

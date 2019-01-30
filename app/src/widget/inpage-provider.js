@@ -105,7 +105,7 @@ MetamaskInpageProvider.prototype.send = function(payload, callback) {
   if (callback) {
     self.sendAsync(payload, callback)
   } else {
-    return self._sendSync(payload, callback)
+    return self._sendSync(payload)
   }
 }
 
@@ -114,10 +114,17 @@ MetamaskInpageProvider.prototype.send = function(payload, callback) {
 MetamaskInpageProvider.prototype.sendAsync = function(payload, cb) {
   log.info('ASYNC REQUEST', payload)
   const self = this
-  self.rpcEngine.handle(payload, cb)
+  // fixes bug with web3 1.0 where send was being routed to sendAsync
+  // with an empty callback
+  if (cb === undefined) {
+    self.rpcEngine.handle(payload, noop)
+    return self._sendSync(payload)
+  } else {
+    self.rpcEngine.handle(payload, cb)
+  }
 }
 
-MetamaskInpageProvider.prototype._sendSync = function(payload, cb) {
+MetamaskInpageProvider.prototype._sendSync = function(payload) {
   const self = this
 
   let selectedAddress
