@@ -131,11 +131,11 @@ function setupWeb3() {
         if (err) {
           setTimeout(function() {
             reject(err)
-          })
+          }, 50)
         } else if (Array.isArray(res) && res.length > 0) {
           setTimeout(function() {
             resolve(res)
-          })
+          }, 50)
         } else {
           // set up listener for login
           var oauthStream = window.torus.communicationMux.getStream('oauth')
