@@ -35,11 +35,11 @@ function MetamaskInpageProvider(connectionStream) {
     }
   }
 
-  LocalStorageStore.prototype._read = function(chunk, enc, cb) {
+  LocalStorageStream.prototype._read = function(chunk, enc, cb) {
     log.info('reading from LocalStorageStore')
   }
 
-  LocalStorageStore.prototype._onMessage = function(event) {
+  LocalStorageStream.prototype._onMessage = function(event) {
     log.info('LocalStorageStore', event)
   }
 
@@ -49,8 +49,13 @@ function MetamaskInpageProvider(connectionStream) {
     for (let key in data) {
       if (key === 'selectedAddress') {
         if (data[key] !== '' && data[key] !== null && data[key] !== undefined) {
-          window.torus.web3.eth.defaultAccount = embedUtils.transformEthAddress(data[key])
-          window.sessionStorage.setItem('selectedAddress', embedUtils.transformEthAddress(data[key]))
+          var prevSelectedAddress = window.sessionStorage.getItem('selectedAddress')
+          var newSelectedAddress = embedUtils.transformEthAddress(data[key])
+          window.torus.web3.eth.defaultAccount = newSelectedAddress
+          window.sessionStorage.setItem('selectedAddress', newSelectedAddress)
+          if (prevSelectedAddress !== newSelectedAddress) {
+            self.emit('accountsChanged', [newSelectedAddress])
+          }
         } else {
           delete window.torus.web3.eth.defaultAccount
           window.sessionStorage.removeItem('selectedAddress')
