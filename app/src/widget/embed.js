@@ -139,7 +139,7 @@ function setupWeb3() {
         } else {
           // set up listener for login
           var oauthStream = window.torus.communicationMux.getStream('oauth')
-          oauthStream.on('data', data => {
+          var handler = function(data) {
             var { err, selectedAddress } = data
             if (err) {
               reject(err)
@@ -147,7 +147,9 @@ function setupWeb3() {
               // returns an array (cause accounts expects it)
               resolve([embedUtils.transformEthAddress(selectedAddress)])
             }
-          })
+            oauthStream.removeListener('data', handler)
+          }
+          oauthStream.on('data', handler)
           window.torus.login(true)
         }
       })

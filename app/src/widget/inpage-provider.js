@@ -25,6 +25,7 @@ function MetamaskInpageProvider(connectionStream) {
   // setup connectionStream multiplexing
   const mux = setupMultiplex(connectionStream)
   const publicConfigStream = mux.createStream('publicConfig')
+  self.metamaskMux = mux
 
   // subscribe to metamask public config (one-way)
   // self.publicConfigStore = new LocalStorageStore({ storageKey: 'MetaMask-Config' })
