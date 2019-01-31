@@ -105,8 +105,21 @@ function setupWeb3() {
 
   // compose the inpage provider
   var inpageProvider = new MetamaskInpageProvider(window.torus.metamaskStream)
+
+  // detect eth_requestAccounts and pipe to enable for now
+  function detectAccountRequestPrototypeModifier(m) {
+    const originalMethod = inpageProvider[m]
+    inpageProvider[m] = function({ method }) {
+      if (method === 'eth_requestAccounts') {
+        return window.ethereum.enable()
+      }
+      return originalMethod.apply(this, arguments)
+    }
+  }
+  detectAccountRequestPrototypeModifier('send')
+  detectAccountRequestPrototypeModifier('sendAsync')
+
   inpageProvider.setMaxListeners(100)
-  window.ethereum = inpageProvider
   inpageProvider.enable = function() {
     return new Promise((resolve, reject) => {
       // TODO: Handle errors
@@ -114,40 +127,42 @@ function setupWeb3() {
       // If user is already logged in, we assume they have given access to the website
       window.web3.eth.getAccounts(function(err, res) {
         if (err) {
-          reject(err)
+          setTimeout(function() {
+            reject(err)
+          }, 50)
         } else if (Array.isArray(res) && res.length > 0) {
-          resolve(res)
+          setTimeout(function() {
+            resolve(res)
+          }, 50)
         } else {
           // set up listener for login
           var oauthStream = window.torus.communicationMux.getStream('oauth')
-          oauthStream.on('error', err => {
-            // TODO: implement passing of errors from iframe context
-            reject(new Error(err))
-          })
-          oauthStream.on('selectedAddress', selectedAddress => {
-            // returns an array (cause accounts expects it)
-            resolve([embedUtils.transformEthAddress(selectedAddress)])
-          })
+          var handler = function(data) {
+            var { err, selectedAddress } = data
+            if (err) {
+              reject(err)
+            } else {
+              // returns an array (cause accounts expects it)
+              resolve([embedUtils.transformEthAddress(selectedAddress)])
+            }
+            oauthStream.removeListener('data', handler)
+          }
+          oauthStream.on('data', handler)
           window.torus.login(true)
         }
       })
     })
   }
 
-  // detect eth_requestAccounts and pipe to enable for now
-  function detectAccountRequest(method) {
-    const originalMethod = inpageProvider[method]
-    inpageProvider[method] = function({ method }) {
-      if (method === 'eth_requestAccounts') {
-        return window.ethereum.enable()
-      }
-      return originalMethod.apply(this, arguments)
-    }
-  }
+  // Work around for web3@1.0 deleting the bound `sendAsync` but not the unbound
+  // `sendAsync` method on the prototype, causing `this` reference issues with drizzle
+  const proxiedInpageProvider = new Proxy(inpageProvider, {
+    // straight up lie that we deleted the property so that it doesnt
+    // throw an error in strict mode
+    deleteProperty: () => true,
+  })
 
-  detectAccountRequest('send')
-  detectAccountRequest('sendAsync')
-
+  window.ethereum = proxiedInpageProvider
   var communicationMux = setupMultiplex(window.torus.communicationStream)
   window.torus.communicationMux = communicationMux
 
@@ -160,7 +175,7 @@ function setupWeb3() {
   })
 
   function torusLoggedIn() {
-    if (window.web3 && window.web3.eth.accounts.length > 0) {
+    if (window.torus.web3 && window.torus.web3.eth.accounts.length > 0) {
       return true
     } else {
       return false
@@ -200,7 +215,7 @@ function setupWeb3() {
   // Exposing login function, if called from embed, flag as true
   window.torus.login = function(calledFromEmbed) {
     var oauthStream = window.torus.communicationMux.getStream('oauth')
-    oauthStream.write({ name: 'oauth', data: calledFromEmbed })
+    oauthStream.write({ name: 'oauth', data: { calledFromEmbed } })
   }
 
   if (typeof window.web3 !== 'undefined') {
@@ -212,22 +227,17 @@ function setupWeb3() {
   }
 
   window.torus.web3 = new Web3(inpageProvider)
-  window.web3 = window.torus.web3
-  window.Web3 = Web3
-  log.info(Web3.version)
-  window.web3.setProvider = function() {
+  window.torus.web3.setProvider = function() {
     log.debug('Torus - overrode web3.setProvider')
   }
   // pretend to be Metamask for dapp compatibility reasons
-  window.web3.currentProvider.isMetamask = true
-  window.web3.currentProvider.isTorus = true
+  window.torus.web3.currentProvider.isMetamask = true
+  window.torus.web3.currentProvider.isTorus = true
+  window.web3 = window.torus.web3
+  window.Web3 = Web3
+  log.info(Web3.version)
   log.debug('Torus - injected web3')
 }
-
-// set web3 defaultAccount
-// inpageProvider.publicConfigStore.subscribe(function (state) {
-//   window.web3.eth.defaultAccount = state.selectedAddress
-// })
 
 // need to make sure we aren't affected by overlapping namespaces
 // and that we dont affect the app with our namespace

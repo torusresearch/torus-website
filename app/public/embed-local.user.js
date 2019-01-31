@@ -19,7 +19,8 @@ var whitelist = [
   'blockchaincuties.com',
   'cryptokitties.co',
   'mycrypto.com',
-  'myetherwallet.com'
+  'myetherwallet.com',
+  'digix.global'
 ]
 
 var inWhiteList = false

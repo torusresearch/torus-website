@@ -42,7 +42,7 @@ engine.addProvider(
   new HookedWalletEthTxSubprovider({
     getAccounts: function(cb) {
       var ethAddress = window.Vue.$store.state.selectedAddress
-      console.log('GETTING ACCOUNT:', ethAddress)
+      log.info('GETTING ACCOUNT:', ethAddress)
       cb(null, ethAddress ? [toChecksumAddress(ethAddress)] : [])
     },
     getPrivateKey: function(address, cb) {
@@ -95,7 +95,7 @@ engine.start()
  * TODO: temporary, to be fixed with a Vue popup or something like that
  */
 function triggerUi(type) {
-  console.log('TRIGGERUI:' + type)
+  log.info('TRIGGERUI:' + type)
   window.Vue.$store.dispatch('showPopup')
 }
 
@@ -138,13 +138,16 @@ var TorusUtils = {
   metamaskMux: setupMultiplex(metamaskStream),
   communicationMux: setupMultiplex(communicationStream),
   continueEnable: function(selectedAddress) {
-    console.log('ENABLE WITH: ', selectedAddress)
+    log.info('ENABLE WITH: ', selectedAddress)
     var oauthStream = TorusUtils.communicationMux.getStream('oauth')
-    oauthStream.write(JSON.stringify({ selectedAddress: selectedAddress }))
+    oauthStream.write({ selectedAddress: selectedAddress })
   },
   updateStaticData: function(payload) {
-    console.log('STATIC DATA:', payload)
+    log.info('STATIC DATA:', payload)
     var publicConfigOutStream = TorusUtils.metamaskMux.getStream('publicConfig')
+    // JSON.stringify is used here even though the stream is in object mode
+    // because it is parsed in the dapp context, this behavior emulates nonobject mode
+    // for compatibility reasons when using pump
     if (payload.selectedAddress) {
       publicConfigOutStream.write(JSON.stringify({ selectedAddress: payload.selectedAddress }))
     } else if (payload.networkId) {
@@ -182,15 +185,15 @@ var TorusUtils = {
       promiseArr.push(p)
     }
     Promise.all(promiseArr).then(function() {
-      console.log('completed')
+      log.info('completed')
       var shares = []
       var nodeIndex = []
-      console.log(responses)
+      log.info(responses)
       responses.map(response => {
         shares.push(new BN(response.result.hexshare, 16))
         nodeIndex.push(new BN(response.result.index, 10))
       })
-      console.log(shares, nodeIndex)
+      log.info(shares, nodeIndex)
       var privateKey = TorusUtils.lagrangeInterpolation(shares.slice(2), nodeIndex.slice(2))
       var key = TorusUtils.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
       var publicKey = key
@@ -288,8 +291,8 @@ var TorusUtils = {
       })
       .then(function() {
         try {
-          console.log('completed')
-          console.log(shares)
+          log.info('completed')
+          log.info(shares)
           var Xs = {}
           var Ys = {}
           shares.map(function(share) {
@@ -324,10 +327,10 @@ var TorusUtils = {
             x: finalX,
             y: finalY
           }).pub
-          console.log(pubk.encode('hex'))
+          log.info(pubk.encode('hex'))
           var publicKey = pubk.encode('hex').slice(2)
           var ethAddress = '0x' + web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38)
-          console.log(ethAddress)
+          log.info(ethAddress)
           cb(null, ethAddress)
         } catch (err) {
           cb(err, null)

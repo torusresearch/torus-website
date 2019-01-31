@@ -25,6 +25,7 @@ function MetamaskInpageProvider(connectionStream) {
   // setup connectionStream multiplexing
   const mux = setupMultiplex(connectionStream)
   const publicConfigStream = mux.createStream('publicConfig')
+  self.mux = mux
 
   // subscribe to metamask public config (one-way)
   // self.publicConfigStore = new LocalStorageStore({ storageKey: 'MetaMask-Config' })
@@ -35,11 +36,11 @@ function MetamaskInpageProvider(connectionStream) {
     }
   }
 
-  LocalStorageStore.prototype._read = function(chunk, enc, cb) {
+  LocalStorageStream.prototype._read = function(chunk, enc, cb) {
     log.info('reading from LocalStorageStore')
   }
 
-  LocalStorageStore.prototype._onMessage = function(event) {
+  LocalStorageStream.prototype._onMessage = function(event) {
     log.info('LocalStorageStore', event)
   }
 
@@ -48,14 +49,25 @@ function MetamaskInpageProvider(connectionStream) {
     log.info('WRITING TO LOCALSTORAGESTREAM, CHUNK:', chunk)
     for (let key in data) {
       if (key === 'selectedAddress') {
-        if (data.selectedAddress !== null) {
-          window.sessionStorage.setItem('selectedAddress', embedUtils.transformEthAddress(data.selectedAddress))
+        if (data[key] !== '' && data[key] !== null && data[key] !== undefined) {
+          var prevSelectedAddress = window.sessionStorage.getItem('selectedAddress')
+          var newSelectedAddress = embedUtils.transformEthAddress(data[key])
+          window.torus.web3.eth.defaultAccount = newSelectedAddress
+          window.ethereum.selectedAddress = newSelectedAddress
+          window.sessionStorage.setItem('selectedAddress', newSelectedAddress)
+          if (prevSelectedAddress !== newSelectedAddress) {
+            self.emit('accountsChanged', [newSelectedAddress])
+          }
         } else {
+          delete window.torus.web3.eth.defaultAccount
+          delete window.ethereum.selectedAddress
           window.sessionStorage.removeItem('selectedAddress')
         }
       } else if (key === 'networkVersion') {
         window.sessionStorage.setItem(key, data[key])
-        window.ethereum.networkVersion = data[key].toString()
+        if (window.ethereum.networkVersion !== data[key].toString()) {
+          window.ethereum.networkVersion = data[key].toString()
+        }
       } else {
         window.sessionStorage.setItem(key, data[key])
       }
@@ -63,9 +75,9 @@ function MetamaskInpageProvider(connectionStream) {
     cb()
   }
 
-  window.lss = new LocalStorageStream()
+  self.lss = new LocalStorageStream()
 
-  pump(publicConfigStream, window.lss)
+  pump(publicConfigStream, self.lss)
 
   // ignore phishing warning message (handled elsewhere)
   mux.ignoreStream('phishing')
@@ -105,7 +117,7 @@ MetamaskInpageProvider.prototype.send = function(payload, callback) {
   if (callback) {
     self.sendAsync(payload, callback)
   } else {
-    return self._sendSync(payload, callback)
+    return self._sendSync(payload)
   }
 }
 
@@ -114,10 +126,17 @@ MetamaskInpageProvider.prototype.send = function(payload, callback) {
 MetamaskInpageProvider.prototype.sendAsync = function(payload, cb) {
   log.info('ASYNC REQUEST', payload)
   const self = this
-  self.rpcEngine.handle(payload, cb)
+  // fixes bug with web3 1.0 where send was being routed to sendAsync
+  // with an empty callback
+  if (cb === undefined) {
+    self.rpcEngine.handle(payload, noop)
+    return self._sendSync(payload)
+  } else {
+    self.rpcEngine.handle(payload, cb)
+  }
 }
 
-MetamaskInpageProvider.prototype._sendSync = function(payload, cb) {
+MetamaskInpageProvider.prototype._sendSync = function(payload) {
   const self = this
 
   let selectedAddress

@@ -425,7 +425,7 @@ class TransactionStateManager extends EventEmitter {
     txMeta.status = status
     setTimeout(() => {
       try {
-        console.log('UPDATING TX', txMeta)
+        log.info('UPDATING TX', txMeta)
         this.updateTx(txMeta, `txStateManager: setting status to ${status}`)
         this.emit(`${txMeta.id}:${status}`, txId)
         this.emit('tx:status-update', txId, status)

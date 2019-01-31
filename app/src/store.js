@@ -137,7 +137,6 @@ var VuexStore = new Vuex.Store({
     updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
       torusUtils.updateStaticData({ selectedAddress: payload.selectedAddress })
-      torusUtils.communicationMux.getStream('oauth').write({ selectedAddress: payload.selectedAddress })
     },
     updateNetworkId(context, payload) {
       context.commit('setNetworkId', payload.networkId)
@@ -185,7 +184,7 @@ function handleLogin(email, payload) {
         VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
         VuexStore.dispatch('addWallet', data)
         // continue enable function
-        if (payload.calledFromEnable) {
+        if (payload.calledFromEmbed) {
           torusUtils.continueEnable(data.ethAddress)
         }
         let torusController = window.Vue.TorusUtils.torusController
@@ -208,8 +207,8 @@ passthroughStream.on('data', function() {
   log.info('p data:', arguments)
 })
 
-torusUtils.communicationMux.getStream('oauth').on('data', function(calledFromEmbed) {
-  VuexStore.dispatch('triggerLogin', { calledFromEmbed: calledFromEmbed })
+torusUtils.communicationMux.getStream('oauth').on('data', function(chunk) {
+  VuexStore.dispatch('triggerLogin', { calledFromEmbed: chunk.data.calledFromEmbed })
 })
 
 pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, err => {
