@@ -4,7 +4,6 @@ const createIdRemapMiddleware = require('json-rpc-engine/src/idRemapMiddleware')
 const createErrorMiddleware = require('./createErrorMiddleware')
 const createJsonRpcStream = require('json-rpc-middleware-stream')
 const createTransformEthAddressMiddleware = require('./createTransformEthAddressMiddleware')
-const LocalStorageStore = require('obs-store')
 const util = require('util')
 const SafeEventEmitter = require('safe-event-emitter')
 const setupMultiplex = require('./stream-utils.js').setupMultiplex

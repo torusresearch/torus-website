@@ -103,7 +103,29 @@ const torusController = new TorusController({
   showUnconfirmedMessage: triggerUi.bind(window, 'showUnconfirmedMessage'),
   unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
   showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
-  openPopup: triggerUi.bind(window, 'bindopenPopup')
+  openPopup: triggerUi.bind(window, 'bindopenPopup'),
+  rehydrate: function() {
+    let selectedAddress = window.Vue.$store.state.selectedAddress
+    let wallet = window.Vue.$store.state.wallet
+    if (selectedAddress && wallet[selectedAddress]) {
+      setTimeout(function() {
+        window.Vue.$store.dispatch('updateSelectedAddress', { selectedAddress })
+      }, 50)
+      TorusUtils.torusController.createNewVaultAndKeychain('default').then(() => {
+        TorusUtils.torusController.addNewKeyring('Torus Keyring', [wallet[selectedAddress]])
+        log.info('rehydrated wallet')
+      })
+      TorusUtils.web3.eth.net
+        .getId()
+        .then(res => {
+          setTimeout(function() {
+            window.Vue.$store.dispatch('updateNetworkId', { networkId: res })
+          })
+          // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+        })
+        .catch(e => log.error(e))
+    }
+  }
 })
 
 const rpcEngine = new RpcEngine()
