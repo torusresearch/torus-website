@@ -325,16 +325,6 @@ class TransactionController extends EventEmitter {
   }
 
   /**
-   * updates and cancels the transaction
-   * @param {Object} txMeta
-   */
-  async updateAndCancelTransaction(txMeta) {
-    log.info('updateAndCancelTransaction called', txMeta)
-    // const rawTx = await this.cancelTransaction(txMeta.id)
-    // await this.publishTransaction(txMeta.id, rawTx)
-  }
-
-  /**
    * sets the tx status to approved
    * auto fills the nonce
    * signs the transaction

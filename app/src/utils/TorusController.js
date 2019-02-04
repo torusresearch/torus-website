@@ -115,7 +115,7 @@ export default class TorusController extends EventEmitter {
       TypedMessageManager: this.typedMessageManager.store
     })
     this.updateAndApproveTransaction = nodeify(this.txController.updateAndApproveTransaction, this.txController)
-    this.updateAndCancelTransaction = nodeify(this.txController.updateAndCancelTransaction, this.txController)
+    this.cancelTransaction = nodeify(this.txController.cancelTransaction, this.txController)
 
     if (typeof opts.rehydrate === 'function') {
       setTimeout(function() {
