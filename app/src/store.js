@@ -142,6 +142,10 @@ var VuexStore = new Vuex.Store({
       context.commit('setNetworkId', payload.networkId)
       torusUtils.updateStaticData({ networkId: payload.networkId })
     },
+    setProviderType(context, payload) {
+      torusUtils.torusController.networkController.setProviderType(payload.network)
+      // set network id?
+    },
     triggerLogin: function(context, payload) {
       if (window.auth2 === undefined) {
         log.error('Could not find window.auth2, might not be loaded yet')
@@ -185,7 +189,9 @@ function handleLogin(email, payload) {
         VuexStore.dispatch('addWallet', data)
         // continue enable function
         if (payload.calledFromEmbed) {
-          torusUtils.continueEnable(data.ethAddress)
+          setTimeout(function() {
+            torusUtils.continueEnable(data.ethAddress)
+          }, 50)
         }
         let torusController = window.Vue.TorusUtils.torusController
         torusController.createNewVaultAndKeychain(VuexStore.state.idToken).then(() => torusController.addNewKeyring('Torus Keyring', [data.privKey]))
@@ -210,6 +216,11 @@ passthroughStream.on('data', function() {
 torusUtils.communicationMux.getStream('oauth').on('data', function(chunk) {
   VuexStore.dispatch('triggerLogin', { calledFromEmbed: chunk.data.calledFromEmbed })
 })
+
+// Metamask does not expose ability to change networks to the inpage, if we want to we can enable this 
+// torusUtils.communicationMux.getStream('networkChange').on('data', function(chunk) {
+//   VuexStore.dispatch('changeNetworkConnection', { network: chunk.data.network })
+// })
 
 pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
