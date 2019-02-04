@@ -1,9 +1,9 @@
 <template>
-  <v-container>
+  <v-container ma-0 pa-0>
     <v-layout row justify-center>
-      <v-dialog v-model="dialog" persistent>
+      <v-dialog v-model="dialog" persistent fullscreen="true">
         <div v-if="this.type === 'message'">
-          <v-card>
+          <v-card height="100vh">
             <v-card-title class="headline">New Message</v-card-title>
 
             <v-card-text>Sign message from {{ this.origin }} ?</v-card-text>
@@ -16,7 +16,7 @@
           </v-card>
         </div>
         <div v-else-if="this.type === 'transaction'">
-          <v-card>
+          <v-card height="100vh">
             <v-card-title class="headline">New Transaction</v-card-title>
 
             <v-card-text>

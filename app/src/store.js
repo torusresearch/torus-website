@@ -63,7 +63,7 @@ var VuexStore = new Vuex.Store({
   actions: {
     showPopup(context, payload) {
       var bc = new BroadcastChannel('torus_channel')
-      window.open('/confirm', '_blank', 'toolbar=0,location=0,menubar=0,height=400,width=600')
+      window.open('/confirm', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=350,width=600')
       if (isTorusTransaction()) {
         var txParams = getTransactionParams()
         var value
@@ -293,7 +293,7 @@ bc.onmessage = function(ev) {
         })
         let msgParams = unapprovedMsgs[0].msgParams
         msgParams.metamaskId = parseInt(unapprovedMsgs[0].id)
-        torusController.cancelPersonalMessage(msgParams.metamaskId)
+        torusController.cancelMessage(msgParams.metamaskId)
       } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
         let unapprovedTypedMessages = []
         for (let id in state.unapprovedTypedMessages) {
@@ -304,7 +304,7 @@ bc.onmessage = function(ev) {
         })
         let msgParams = unapprovedTypedMessages[0].msgParams
         msgParams.metamaskId = parseInt(unapprovedTypedMessages[0].id)
-        torusController.cancelPersonalMessage(msgParams.metamaskId)
+        torusController.cancelTypedMessage(msgParams.metamaskId)
       } else if (Object.keys(state.transactions).length > 0) {
         let transactions = []
         for (let id in state.transactions) {
@@ -312,7 +312,7 @@ bc.onmessage = function(ev) {
             transactions.push(state.transactions[id])
           }
         }
-        torusController.updateAndCancelTransaction(transactions[0])
+        torusController.cancelTransaction(transactions[0].id)
       }
     }
   }
