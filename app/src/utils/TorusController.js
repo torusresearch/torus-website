@@ -116,6 +116,12 @@ export default class TorusController extends EventEmitter {
     })
     this.updateAndApproveTransaction = nodeify(this.txController.updateAndApproveTransaction, this.txController)
     this.updateAndCancelTransaction = nodeify(this.txController.updateAndCancelTransaction, this.txController)
+
+    if (typeof opts.rehydrate === 'function') {
+      setTimeout(function() {
+        opts.rehydrate()
+      }, 50)
+    }
   }
 
   /**
@@ -219,51 +225,6 @@ export default class TorusController extends EventEmitter {
         // this.preferencesController.setAddresses(accounts)
         // this.selectFirstIdentity()
       }
-      releaseLock()
-      return vault
-    } catch (err) {
-      releaseLock()
-      throw err
-    }
-  }
-
-  /**
-   * Create a new Vault and restore an existent keyring.
-   * TODO: To change from mnemonic to insert public/private key pairs instead
-   * @param  {} password
-   * @param  {} seed
-   */
-  async createNewVaultAndRestore(password, seed) {
-    const releaseLock = await this.createVaultMutex.acquire()
-    try {
-      let accounts, lastBalance
-
-      const keyringController = this.keyringController
-
-      // clear known identities
-      // this.preferencesController.setAddresses([])
-      // create new vault
-      const vault = await keyringController.createNewVaultAndRestore(password, seed)
-
-      const ethQuery = new EthQuery(this.provider)
-      accounts = await keyringController.getAccounts()
-      lastBalance = await this.getBalance(accounts[accounts.length - 1], ethQuery)
-
-      const primaryKeyring = keyringController.getKeyringsByType('HD Key Tree')[0]
-      if (!primaryKeyring) {
-        throw new Error('MetamaskController - No HD Key Tree found')
-      }
-
-      // seek out the first zero balance
-      while (lastBalance !== '0x0') {
-        await keyringController.addNewAccount(primaryKeyring)
-        accounts = await keyringController.getAccounts()
-        lastBalance = await this.getBalance(accounts[accounts.length - 1], ethQuery)
-      }
-
-      // set new identities
-      // this.preferencesController.setAddresses(accounts)
-      // this.selectFirstIdentity()
       releaseLock()
       return vault
     } catch (err) {

@@ -184,11 +184,15 @@ function handleLogin(email, payload) {
         VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
         VuexStore.dispatch('addWallet', data)
         // continue enable function
+        var ethAddress = data.ethAddress
         if (payload.calledFromEmbed) {
-          torusUtils.continueEnable(data.ethAddress)
+          setTimeout(function() {
+            torusUtils.continueEnable(ethAddress)
+          }, 50)
         }
-        let torusController = window.Vue.TorusUtils.torusController
-        torusController.createNewVaultAndKeychain(VuexStore.state.idToken).then(() => torusController.addNewKeyring('Torus Keyring', [data.privKey]))
+        torusUtils.torusController
+          .createNewVaultAndKeychain('default')
+          .then(() => torusUtils.torusController.addNewKeyring('Torus Keyring', [data.privKey]))
         torusUtils.web3.eth.net
           .getId()
           .then(res => {

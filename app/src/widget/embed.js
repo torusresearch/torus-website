@@ -159,7 +159,7 @@ function setupWeb3() {
   const proxiedInpageProvider = new Proxy(inpageProvider, {
     // straight up lie that we deleted the property so that it doesnt
     // throw an error in strict mode
-    deleteProperty: () => true,
+    deleteProperty: () => true
   })
 
   window.ethereum = proxiedInpageProvider
