@@ -22,8 +22,7 @@ const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionMana
 const toChecksumAddress = require('./utils/toChecksumAddress').default
 const setupMultiplex = require('./utils/setupMultiplex').default
 
-/* Provider engine setup block */
-
+/* TODO: move to onload.js */
 var engine = new ProviderEngine()
 engine.addProvider(
   new FixtureSubprovider({
@@ -90,15 +89,14 @@ engine.on('error', function(err) {
   log.error(err.stack)
 })
 engine.start()
+/* TODO: move out to onload.js */
 
-/**
- * TODO: temporary, to be fixed with a Vue popup or something like that
- */
 function triggerUi(type) {
   log.info('TRIGGERUI:' + type)
   window.Vue.$store.dispatch('showPopup')
 }
 
+/* TODO: move out to onload.js */
 const torusController = new TorusController({
   showUnconfirmedMessage: triggerUi.bind(window, 'showUnconfirmedMessage'),
   unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
@@ -150,15 +148,14 @@ var communicationStream = new LocalMessageDuplexStream({
   target: 'embed_comm',
   targetWindow: window.parent
 })
-
-/* Provider engine setup block */
+/* TODO: move out to onload.js */
 
 var Torus = {
   torusController,
   ec: Elliptic('secp256k1'),
   setupMultiplex,
-  metamaskMux: setupMultiplex(metamaskStream),
-  communicationMux: setupMultiplex(communicationStream),
+  metamaskMux: setupMultiplex(metamaskStream), // TODO: move out to onload.js
+  communicationMux: setupMultiplex(communicationStream), // TODO: move out to onload.js
   continueEnable: function(selectedAddress) {
     log.info('ENABLE WITH: ', selectedAddress)
     var oauthStream = Torus.communicationMux.getStream('oauth')

@@ -23,7 +23,7 @@ const { createSwappableProxy, createEventEmitterProxy } = require('swappable-obj
 const defaultProviderConfig = { type: 'mainnet' }
 const defaultNetworkConfig = { ticker: 'ETH' }
 const networks = { networkList: {} }
-const { ROPSTEN, RINKEBY, KOVAN, MAINNET, LOCALHOST } = require('./enums')
+const { ROPSTEN, RINKEBY, KOVAN, MAINNET, LOCALHOST } = require('../utils/enums')
 const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
 
 export default class NetworkController extends EventEmitter {

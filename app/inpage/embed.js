@@ -9,7 +9,7 @@ if (window.torus === undefined) {
 }
 cleanContextForImports()
 /* global Web3 */
-require('../vendor/web3')
+require('./vendor/web3')
 const log = require('loglevel')
 log.setDefaultLevel('info')
 const LocalMessageDuplexStream = require('post-message-stream')

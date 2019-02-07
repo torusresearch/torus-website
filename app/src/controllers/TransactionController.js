@@ -10,7 +10,7 @@ const NonceTracker = require('./NonceTracker').default
 const txUtils = require('../utils/txUtils')
 const cleanErrorStack = require('../utils/cleanErrorStack').default
 const log = require('loglevel')
-const { TRANSACTION_TYPE_CANCEL, TRANSACTION_TYPE_RETRY, TRANSACTION_TYPE_STANDARD, TRANSACTION_STATUS_APPROVED } = require('./enums')
+const { TRANSACTION_TYPE_CANCEL, TRANSACTION_TYPE_RETRY, TRANSACTION_TYPE_STANDARD, TRANSACTION_STATUS_APPROVED } = require('../utils/enums')
 
 const { hexToBn, bnToHex, BnMultiplyByFraction } = require('../utils/utils')
 
