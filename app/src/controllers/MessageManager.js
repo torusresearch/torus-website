@@ -1,7 +1,7 @@
 const EventEmitter = require('events')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
-const createId = require('./random-id').default
+const createId = require('../utils/random-id').default
 
 /**
  * Represents, and contains data about, an 'eth_sign' type signature request. These are created when a signature for

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import log from 'loglevel'
-import torusUtils from './utils/torusUtils'
+import torus from './torus'
 import stream from 'stream'
 import pump from 'pump'
 import config from './config'
@@ -68,11 +68,11 @@ var VuexStore = new Vuex.Store({
         var txParams = getTransactionParams()
         var value
         if (txParams.value) {
-          value = torusUtils.web3.utils.fromWei(txParams.value.toString())
+          value = torus.web3.utils.fromWei(txParams.value.toString())
         } else {
           value = 0
         }
-        var balance = torusUtils.web3.utils.fromWei(this.state.weiBalance.toString())
+        var balance = torus.web3.utils.fromWei(this.state.weiBalance.toString())
         bc.onmessage = function(ev) {
           if (ev.origin === 'https://localhost:3000' || ev.origin === 'https://tor.us') {
             if (ev.data === 'popup-loaded') {
@@ -123,7 +123,7 @@ var VuexStore = new Vuex.Store({
     },
     updateWeiBalance(context, payload) {
       if (this.state.selectedAddress) {
-        torusUtils.web3.eth.getBalance(this.state.selectedAddress, function(err, res) {
+        torus.web3.eth.getBalance(this.state.selectedAddress, function(err, res) {
           if (err) {
             log.error(err)
           }
@@ -136,11 +136,11 @@ var VuexStore = new Vuex.Store({
     },
     updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
-      torusUtils.updateStaticData({ selectedAddress: payload.selectedAddress })
+      torus.updateStaticData({ selectedAddress: payload.selectedAddress })
     },
     updateNetworkId(context, payload) {
       context.commit('setNetworkId', payload.networkId)
-      torusUtils.updateStaticData({ networkId: payload.networkId })
+      torus.updateStaticData({ networkId: payload.networkId })
     },
     triggerLogin: function(context, payload) {
       if (window.auth2 === undefined) {
@@ -172,12 +172,12 @@ var VuexStore = new Vuex.Store({
 })
 
 function handleLogin(email, payload) {
-  torusUtils.getPubKeyAsync(torusUtils.web3, config.torusNodeEndpoints, email, function(err, res) {
+  torus.getPubKeyAsync(torus.web3, config.torusNodeEndpoints, email, function(err, res) {
     if (err) {
       log.error(err)
     } else {
       log.info('New private key assigned to user at address ', res)
-      torusUtils.retrieveShares(config.torusNodeEndpoints, VuexStore.state.email, VuexStore.state.idToken, function(err, data) {
+      torus.retrieveShares(config.torusNodeEndpoints, VuexStore.state.email, VuexStore.state.idToken, function(err, data) {
         if (err) {
           log.error(err)
         }
@@ -187,13 +187,13 @@ function handleLogin(email, payload) {
         var ethAddress = data.ethAddress
         if (payload.calledFromEmbed) {
           setTimeout(function() {
-            torusUtils.continueEnable(ethAddress)
+            torus.continueEnable(ethAddress)
           }, 50)
         }
-        torusUtils.torusController
+        torus.torusController
           .createNewVaultAndKeychain('default')
-          .then(() => torusUtils.torusController.addNewKeyring('Torus Keyring', [data.privKey]))
-        torusUtils.web3.eth.net
+          .then(() => torus.torusController.addNewKeyring('Torus Keyring', [data.privKey]))
+        torus.web3.eth.net
           .getId()
           .then(res => {
             VuexStore.dispatch('updateNetworkId', { networkId: res })
@@ -211,11 +211,11 @@ passthroughStream.on('data', function() {
   log.info('p data:', arguments)
 })
 
-torusUtils.communicationMux.getStream('oauth').on('data', function(chunk) {
+torus.communicationMux.getStream('oauth').on('data', function(chunk) {
   VuexStore.dispatch('triggerLogin', { calledFromEmbed: chunk.data.calledFromEmbed })
 })
 
-pump(torusUtils.communicationMux.getStream('oauth'), passthroughStream, err => {
+pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
 })
 
@@ -223,7 +223,7 @@ var bc = new BroadcastChannel('torus_channel')
 bc.onmessage = function(ev) {
   if (ev.origin === 'https://localhost:3000' || ev.origin === 'https://tor.us') {
     if (ev.data === 'confirm-transaction') {
-      let torusController = window.Vue.TorusUtils.torusController
+      let torusController = window.Vue.torus.torusController
       let state = torusController.getState()
       if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
         let unapprovedPersonalMsgs = []
@@ -270,7 +270,7 @@ bc.onmessage = function(ev) {
         throw new Error('No new transactions.')
       }
     } else if (ev.data === 'deny-transaction') {
-      let torusController = window.Vue.TorusUtils.torusController
+      let torusController = window.Vue.torus.torusController
       let state = torusController.getState()
       if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
         let unapprovedPersonalMsgs = []
@@ -319,7 +319,7 @@ bc.onmessage = function(ev) {
 }
 
 function getTransactionParams() {
-  let torusController = window.Vue.TorusUtils.torusController
+  let torusController = window.Vue.torus.torusController
   let state = torusController.getState()
   let transactions = []
   for (let id in state.transactions) {
@@ -331,7 +331,7 @@ function getTransactionParams() {
 }
 
 function isTorusTransaction() {
-  let torusController = window.Vue.TorusUtils.torusController
+  let torusController = window.Vue.torus.torusController
   let state = torusController.getState()
   if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
     return false

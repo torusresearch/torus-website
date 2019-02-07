@@ -1,5 +1,5 @@
 // import WebsocketSubprovider from './websocket.js'
-import TorusController from './TorusController'
+import TorusController from './controllers/TorusController'
 var Elliptic = require('elliptic').ec
 var log = require('loglevel')
 var BN = require('bn.js')
@@ -19,8 +19,8 @@ const RpcEngine = require('json-rpc-engine')
 const createFilterMiddleware = require('eth-json-rpc-filters')
 const stream = require('stream')
 const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionManager')
-const toChecksumAddress = require('./toChecksumAddress').default
-const setupMultiplex = require('./setupMultiplex').default
+const toChecksumAddress = require('./utils/toChecksumAddress').default
+const setupMultiplex = require('./utils/setupMultiplex').default
 
 /* Provider engine setup block */
 
@@ -111,11 +111,11 @@ const torusController = new TorusController({
       setTimeout(function() {
         window.Vue.$store.dispatch('updateSelectedAddress', { selectedAddress })
       }, 50)
-      TorusUtils.torusController.createNewVaultAndKeychain('default').then(() => {
-        TorusUtils.torusController.addNewKeyring('Torus Keyring', [wallet[selectedAddress]])
+      Torus.torusController.createNewVaultAndKeychain('default').then(() => {
+        Torus.torusController.addNewKeyring('Torus Keyring', [wallet[selectedAddress]])
         log.info('rehydrated wallet')
       })
-      TorusUtils.web3.eth.net
+      Torus.web3.eth.net
         .getId()
         .then(res => {
           setTimeout(function() {
@@ -153,7 +153,7 @@ var communicationStream = new LocalMessageDuplexStream({
 
 /* Provider engine setup block */
 
-var TorusUtils = {
+var Torus = {
   torusController,
   ec: Elliptic('secp256k1'),
   setupMultiplex,
@@ -161,12 +161,12 @@ var TorusUtils = {
   communicationMux: setupMultiplex(communicationStream),
   continueEnable: function(selectedAddress) {
     log.info('ENABLE WITH: ', selectedAddress)
-    var oauthStream = TorusUtils.communicationMux.getStream('oauth')
+    var oauthStream = Torus.communicationMux.getStream('oauth')
     oauthStream.write({ selectedAddress: selectedAddress })
   },
   updateStaticData: function(payload) {
     log.info('STATIC DATA:', payload)
-    var publicConfigOutStream = TorusUtils.metamaskMux.getStream('publicConfig')
+    var publicConfigOutStream = Torus.metamaskMux.getStream('publicConfig')
     // JSON.stringify is used here even though the stream is in object mode
     // because it is parsed in the dapp context, this behavior emulates nonobject mode
     // for compatibility reasons when using pump
@@ -216,13 +216,13 @@ var TorusUtils = {
         nodeIndex.push(new BN(response.result.index, 10))
       })
       log.info(shares, nodeIndex)
-      var privateKey = TorusUtils.lagrangeInterpolation(shares.slice(2), nodeIndex.slice(2))
-      var key = TorusUtils.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
+      var privateKey = Torus.lagrangeInterpolation(shares.slice(2), nodeIndex.slice(2))
+      var key = Torus.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
       var publicKey = key
         .getPublic()
         .encode('hex')
         .slice(2)
-      var ethAddressLower = '0x' + TorusUtils.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
+      var ethAddressLower = '0x' + Torus.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
       var ethAddress = toChecksumAddress(ethAddressLower)
       cb(null, {
         ethAddress,
@@ -242,17 +242,17 @@ var TorusUtils = {
       for (let j = 0; j < shares.length; j++) {
         if (i !== j) {
           upper = upper.mul(nodeIndex[j].neg())
-          upper = upper.umod(TorusUtils.ec.curve.n)
+          upper = upper.umod(Torus.ec.curve.n)
           let temp = nodeIndex[i].sub(nodeIndex[j])
-          temp = temp.umod(TorusUtils.ec.curve.n)
-          lower = lower.mul(temp).umod(TorusUtils.ec.curve.n)
+          temp = temp.umod(Torus.ec.curve.n)
+          lower = lower.mul(temp).umod(Torus.ec.curve.n)
         }
       }
-      let delta = upper.mul(lower.invm(TorusUtils.ec.curve.n)).umod(TorusUtils.ec.curve.n)
-      delta = delta.mul(shares[i]).umod(TorusUtils.ec.curve.n)
+      let delta = upper.mul(lower.invm(Torus.ec.curve.n)).umod(Torus.ec.curve.n)
+      delta = delta.mul(shares[i]).umod(Torus.ec.curve.n)
       secret = secret.add(delta)
     }
-    return secret.umod(TorusUtils.ec.curve.n)
+    return secret.umod(Torus.ec.curve.n)
   },
   getPubKeyAsync: function(web3, endpoints, email, cb) {
     var promiseArr = []
@@ -345,7 +345,7 @@ var TorusUtils = {
               finalY = key
             }
           }
-          var pubk = TorusUtils.ec.keyFromPublic({
+          var pubk = Torus.ec.keyFromPublic({
             x: finalX,
             y: finalY
           }).pub
@@ -400,7 +400,7 @@ sendPassThroughStream.on('data', function() {
   log.info('sendPassThroughStream', arguments)
 })
 
-const providerOutStream = TorusUtils.metamaskMux.createStream('provider')
+const providerOutStream = Torus.metamaskMux.createStream('provider')
 
 pump(
   providerOutStream,
@@ -446,4 +446,4 @@ function createOriginMiddleware(opts) {
   }
 }
 
-export default TorusUtils
+export default Torus
