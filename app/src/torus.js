@@ -1,169 +1,22 @@
 // import WebsocketSubprovider from './websocket.js'
-import TorusController from './controllers/TorusController'
 var Elliptic = require('elliptic').ec
 var log = require('loglevel')
 var BN = require('bn.js')
-var Web3 = require('web3')
-var ProviderEngine = require('web3-provider-engine')
-var CacheSubprovider = require('web3-provider-engine/subproviders/cache.js')
-var FixtureSubprovider = require('web3-provider-engine/subproviders/fixture.js')
-var FilterSubprovider = require('web3-provider-engine/subproviders/filters.js')
-var VmSubprovider = require('web3-provider-engine/subproviders/vm.js')
-var HookedWalletEthTxSubprovider = require('web3-provider-engine/subproviders/hooked-wallet-ethtx.js')
-var NonceSubprovider = require('web3-provider-engine/subproviders/nonce-tracker.js')
-var RpcSubprovider = require('web3-provider-engine/subproviders/rpc.js')
-var LocalMessageDuplexStream = require('post-message-stream')
-const pump = require('pump')
-const createEngineStream = require('json-rpc-middleware-stream/engineStream')
-const RpcEngine = require('json-rpc-engine')
-const createFilterMiddleware = require('eth-json-rpc-filters')
-const stream = require('stream')
-const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionManager')
-const toChecksumAddress = require('./utils/toChecksumAddress').default
 const setupMultiplex = require('./utils/setupMultiplex').default
+const toChecksumAddress = require('./utils/toChecksumAddress').default
+var onloadTorus = require('./onload.js').default
 
-/* TODO: move to onload.js */
-var engine = new ProviderEngine()
-engine.addProvider(
-  new FixtureSubprovider({
-    web3_clientVersion: 'ProviderEngine/v0.0.0/javascript',
-    net_listening: true,
-    eth_hashrate: '0x00',
-    eth_mining: false,
-    eth_syncing: true
-  })
-)
-engine.addProvider(new CacheSubprovider())
-engine.addProvider(new FilterSubprovider())
-engine.addProvider(new NonceSubprovider())
-engine.addProvider(new VmSubprovider())
-engine.addProvider(
-  new HookedWalletEthTxSubprovider({
-    getAccounts: function(cb) {
-      var ethAddress = window.Vue.$store.state.selectedAddress
-      log.info('GETTING ACCOUNT:', ethAddress)
-      cb(null, ethAddress ? [toChecksumAddress(ethAddress)] : [])
-    },
-    getPrivateKey: function(address, cb) {
-      var addr = toChecksumAddress(address)
-      var wallet = window.Vue.$store.state.wallet
-      if (addr == null) {
-        cb(new Error('No address given.'), null)
-      } else if (wallet[addr] == null) {
-        cb(new Error('No private key accessible. Please login.'), null)
-      } else {
-        log.info('PRIVATE KEY RETRIEVED...')
-        cb(null, Buffer.from(wallet[addr], 'hex'))
-      }
-    },
-    approveTransaction: function(txParams, cb) {
-      if (confirm('Confirm signature for transaction?')) {
-        // TODO: add transaction details
-        cb(null, true)
-      } else {
-        cb(new Error('User denied transaction.'), false)
-      }
-    }
-  })
-)
-var rpcSource = new RpcSubprovider({
-  // rpcUrl: 'https://mainnet.infura.io/v3/619e62693bc14791a9925152bbe514d1'
-  rpcUrl: 'https://api.infura.io/v1/jsonrpc/mainnet'
-})
-// var rpcSource = new RpcSubprovider({
-//   rpcUrl: 'https://mainnet.infura.io/4cQUeyeUSfkCXsgEAUH2'
-//   // rpcUrl: 'http://localhost:7545'
-// })
-engine.addProvider(rpcSource)
-// var wsSubprovider = new WebsocketSubprovider({
-//   rpcUrl: 'wss://mainnet.infura.io/ws/v3/619e62693bc14791a9925152bbe514d1'
-// })
-// engine.addProvider(wsSubprovider)
-engine.on('block', function(block) {
-  log.info('================================')
-  log.info('BLOCK CHANGED:', '#' + block.number.toString('hex'), '0x' + block.hash.toString('hex'))
-  log.info('================================')
-  window.Vue.$store.dispatch('updateWeiBalance')
-})
-engine.on('error', function(err) {
-  log.error(err.stack)
-})
-engine.start()
-/* TODO: move out to onload.js */
-
-function triggerUi(type) {
-  log.info('TRIGGERUI:' + type)
-  window.Vue.$store.dispatch('showPopup')
-}
-
-/* TODO: move out to onload.js */
-const torusController = new TorusController({
-  showUnconfirmedMessage: triggerUi.bind(window, 'showUnconfirmedMessage'),
-  unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
-  showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
-  openPopup: triggerUi.bind(window, 'bindopenPopup'),
-  rehydrate: function() {
-    let selectedAddress = window.Vue.$store.state.selectedAddress
-    let wallet = window.Vue.$store.state.wallet
-    if (selectedAddress && wallet[selectedAddress]) {
-      setTimeout(function() {
-        window.Vue.$store.dispatch('updateSelectedAddress', { selectedAddress })
-      }, 50)
-      Torus.torusController.createNewVaultAndKeychain('default').then(() => {
-        Torus.torusController.addNewKeyring('Torus Keyring', [wallet[selectedAddress]])
-        log.info('rehydrated wallet')
-      })
-      Torus.web3.eth.net
-        .getId()
-        .then(res => {
-          setTimeout(function() {
-            window.Vue.$store.dispatch('updateNetworkId', { networkId: res })
-          })
-          // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-        })
-        .catch(e => log.error(e))
-    }
-  }
-})
-
-const rpcEngine = new RpcEngine()
-const filterMiddleware = createFilterMiddleware({ provider: torusController.provider, blockTracker: torusController.blockTracker })
-const subscriptionManager = createSubscriptionManager({ provider: torusController.provider, blockTracker: torusController.blockTracker })
-subscriptionManager.events.on('notification', message => rpcEngine.emit('notification', message))
-rpcEngine.push(createOriginMiddleware({ origin: 'torus' }))
-rpcEngine.push(createLoggerMiddleware({ origin: 'torus' }))
-rpcEngine.push(filterMiddleware)
-rpcEngine.push(subscriptionManager.middleware)
-rpcEngine.push(createProviderMiddleware({ provider: torusController.provider }))
-const providerStream = createEngineStream({ engine: rpcEngine })
-
-var metamaskStream = new LocalMessageDuplexStream({
-  name: 'iframe_metamask',
-  target: 'embed_metamask',
-  targetWindow: window.parent
-})
-
-var communicationStream = new LocalMessageDuplexStream({
-  name: 'iframe_comm',
-  target: 'embed_comm',
-  targetWindow: window.parent
-})
-/* TODO: move out to onload.js */
-
-var Torus = {
-  torusController,
+var torus = {
   ec: Elliptic('secp256k1'),
   setupMultiplex,
-  metamaskMux: setupMultiplex(metamaskStream), // TODO: move out to onload.js
-  communicationMux: setupMultiplex(communicationStream), // TODO: move out to onload.js
   continueEnable: function(selectedAddress) {
     log.info('ENABLE WITH: ', selectedAddress)
-    var oauthStream = Torus.communicationMux.getStream('oauth')
+    var oauthStream = torus.communicationMux.getStream('oauth')
     oauthStream.write({ selectedAddress: selectedAddress })
   },
   updateStaticData: function(payload) {
     log.info('STATIC DATA:', payload)
-    var publicConfigOutStream = Torus.metamaskMux.getStream('publicConfig')
+    var publicConfigOutStream = torus.metamaskMux.getStream('publicConfig')
     // JSON.stringify is used here even though the stream is in object mode
     // because it is parsed in the dapp context, this behavior emulates nonobject mode
     // for compatibility reasons when using pump
@@ -173,7 +26,6 @@ var Torus = {
       publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
     }
   },
-  web3: new Web3(engine),
   retrieveShares: function(endpoints, email, idToken, cb) {
     var promiseArr = []
     var responses = []
@@ -213,13 +65,13 @@ var Torus = {
         nodeIndex.push(new BN(response.result.index, 10))
       })
       log.info(shares, nodeIndex)
-      var privateKey = Torus.lagrangeInterpolation(shares.slice(2), nodeIndex.slice(2))
-      var key = Torus.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
+      var privateKey = torus.lagrangeInterpolation(shares.slice(2), nodeIndex.slice(2))
+      var key = torus.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
       var publicKey = key
         .getPublic()
         .encode('hex')
         .slice(2)
-      var ethAddressLower = '0x' + Torus.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
+      var ethAddressLower = '0x' + torus.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
       var ethAddress = toChecksumAddress(ethAddressLower)
       cb(null, {
         ethAddress,
@@ -239,17 +91,17 @@ var Torus = {
       for (let j = 0; j < shares.length; j++) {
         if (i !== j) {
           upper = upper.mul(nodeIndex[j].neg())
-          upper = upper.umod(Torus.ec.curve.n)
+          upper = upper.umod(torus.ec.curve.n)
           let temp = nodeIndex[i].sub(nodeIndex[j])
-          temp = temp.umod(Torus.ec.curve.n)
-          lower = lower.mul(temp).umod(Torus.ec.curve.n)
+          temp = temp.umod(torus.ec.curve.n)
+          lower = lower.mul(temp).umod(torus.ec.curve.n)
         }
       }
-      let delta = upper.mul(lower.invm(Torus.ec.curve.n)).umod(Torus.ec.curve.n)
-      delta = delta.mul(shares[i]).umod(Torus.ec.curve.n)
+      let delta = upper.mul(lower.invm(torus.ec.curve.n)).umod(torus.ec.curve.n)
+      delta = delta.mul(shares[i]).umod(torus.ec.curve.n)
       secret = secret.add(delta)
     }
-    return secret.umod(Torus.ec.curve.n)
+    return secret.umod(torus.ec.curve.n)
   },
   getPubKeyAsync: function(web3, endpoints, email, cb) {
     var promiseArr = []
@@ -342,7 +194,7 @@ var Torus = {
               finalY = key
             }
           }
-          var pubk = Torus.ec.keyFromPublic({
+          var pubk = torus.ec.keyFromPublic({
             x: finalX,
             y: finalY
           }).pub
@@ -358,89 +210,7 @@ var Torus = {
   }
 }
 
-/* Stream setup block */
+/* Inialize torus object on load */
+onloadTorus(torus)
 
-// var transformStream = new stream.Transform({
-//   objectMode: true,
-//   transform: function (chunk, enc, cb) {
-//     log.info('TRANSFORM', chunk)
-//     try {
-//       if (chunk.method === 'eth_call' || chunk.method === 'eth_estimateGas') {
-//         log.info('transforming:', chunk.params[0].from)
-//         if (chunk.params[0].from && typeof chunk.params[0].from === 'string') {
-//           if (chunk.params[0].from.substring(0, 2) === '0x') {
-//             chunk.params[0].from = Buffer.from(chunk.params[0].from.slice(2), 'hex')
-//           }
-//         } else if (!chunk.params[0].from) {
-//           chunk.params[0].from = []
-//         }
-//         log.info('transformed:', chunk.params[0].from)
-//       }
-//       cb(null, chunk)
-//     } catch (err) {
-//       log.error('Could not transform stream data', err)
-//       cb(err, null)
-//     }
-//   }
-// })
-
-// doesnt do anything.. just for logging
-// since the stack traces are constrained to a single javascript context
-// we use a passthrough stream to log method calls
-var receivePassThroughStream = new stream.PassThrough({ objectMode: true })
-receivePassThroughStream.on('data', function() {
-  log.info('receivePassThroughStream', arguments)
-})
-
-var sendPassThroughStream = new stream.PassThrough({ objectMode: true })
-sendPassThroughStream.on('data', function() {
-  log.info('sendPassThroughStream', arguments)
-})
-
-const providerOutStream = Torus.metamaskMux.createStream('provider')
-
-pump(
-  providerOutStream,
-  sendPassThroughStream,
-  // transformStream,
-  providerStream,
-  receivePassThroughStream,
-  providerOutStream,
-  err => {
-    if (err) log.error(err)
-  }
-)
-
-/* Stream setup block */
-
-function createLoggerMiddleware(opts) {
-  return function loggerMiddleware(/** @type {any} */ req, /** @type {any} */ res, /** @type {Function} */ next) {
-    next((/** @type {Function} */ cb) => {
-      if (res.error) {
-        log.error('Error in RPC response:\n', res)
-      }
-      if (req.isMetamaskInternal) return
-      log.info(`RPC (${opts.origin}):`, req, '->', res)
-      cb()
-    })
-  }
-}
-
-function createProviderMiddleware({ provider }) {
-  return (req, res, next, end) => {
-    provider.sendAsync(req, (err, _res) => {
-      if (err) return end(err)
-      res.result = _res.result
-      end()
-    })
-  }
-}
-
-function createOriginMiddleware(opts) {
-  return function originMiddleware(req, res, next) {
-    req.origin = opts.origin
-    next()
-  }
-}
-
-export default Torus
+export default torus
