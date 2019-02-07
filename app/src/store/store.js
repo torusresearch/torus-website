@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import log from 'loglevel'
-import torus from './torus'
-import config from './config'
+import torus from '../torus'
+import config from '../config'
 import VuexPersist from 'vuex-persist'
 
 Vue.use(Vuex)

@@ -5,7 +5,6 @@ import router from './router'
 import store from './store'
 import log from 'loglevel'
 import torus from './torus'
-import './setupStoreChannels'
 
 log.setDefaultLevel('info')
 

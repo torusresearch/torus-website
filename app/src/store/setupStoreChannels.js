@@ -1,8 +1,8 @@
 import log from 'loglevel'
-import torus from './torus'
+import torus from '../torus'
 import stream from 'stream'
 import pump from 'pump'
-import VuexStore from './store'
+import VuexStore from '.'
 
 // setup handlers for communicationStream
 var passthroughStream = new stream.PassThrough({ objectMode: true })
