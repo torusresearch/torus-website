@@ -9,7 +9,7 @@ if (window.torus === undefined) {
 }
 cleanContextForImports()
 /* global Web3 */
-require('../vendor/web3')
+require('./vendor/web3')
 const log = require('loglevel')
 log.setDefaultLevel('info')
 const LocalMessageDuplexStream = require('post-message-stream')
@@ -159,7 +159,7 @@ function setupWeb3() {
   const proxiedInpageProvider = new Proxy(inpageProvider, {
     // straight up lie that we deleted the property so that it doesnt
     // throw an error in strict mode
-    deleteProperty: () => true,
+    deleteProperty: () => true
   })
 
   window.ethereum = proxiedInpageProvider

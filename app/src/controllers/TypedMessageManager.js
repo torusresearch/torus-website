@@ -1,6 +1,6 @@
 const EventEmitter = require('events')
 const ObservableStore = require('obs-store')
-const createId = require('./random-id').default
+const createId = require('../utils/random-id').default
 const assert = require('assert')
 const sigUtil = require('eth-sig-util')
 const log = require('loglevel')

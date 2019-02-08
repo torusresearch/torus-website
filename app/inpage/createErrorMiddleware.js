@@ -39,8 +39,10 @@ const RPC_ERRORS = {
  * @param {RpcError} error - JSON-RPC error object
  * @param {boolean} override - Use RPC_ERRORS message in place of provider message
  */
-function sanitizeRPCError (error, override) {
-  if (error.message && !override) { return error }
+function sanitizeRPCError(error, override) {
+  if (error.message && !override) {
+    return error
+  }
   const message = error.code > -31099 && error.code < -32100 ? RPC_ERRORS.internal : RPC_ERRORS[error.code]
   error.message = message || RPC_ERRORS.unknown
 }
@@ -52,11 +54,13 @@ function sanitizeRPCError (error, override) {
  * @param {MiddlewareConfig} [config={override:true}] - Middleware configuration
  * @returns {Function} json-rpc-engine middleware function
  */
-function createErrorMiddleware ({ override = true } = {}) {
+function createErrorMiddleware({ override = true } = {}) {
   return (req, res, next) => {
     next(done => {
       const { error } = res
-      if (!error) { return done() }
+      if (!error) {
+        return done()
+      }
       sanitizeRPCError(error)
       log.error(`MetaMask - RPC Error: ${error.message}`, error)
       done()

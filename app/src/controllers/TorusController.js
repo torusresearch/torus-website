@@ -1,34 +1,34 @@
 const debounce = require('debounce')
 const EventEmitter = require('events')
-const ComposableObservableStore = require('./ComposableObservableStore').default
+const ComposableObservableStore = require('../utils/ComposableObservableStore').default
 const log = require('loglevel')
 const EthQuery = require('eth-query')
 const NetworkController = require('./NetworkController').default
 const AccountTracker = require('./AccountTracker').default
 const TransactionController = require('./TransactionController').default
-const toChecksumAddress = require('./toChecksumAddress').default
+const toChecksumAddress = require('../utils/toChecksumAddress').default
 const BN = require('ethereumjs-util').BN
 const GWEI_BN = new BN('1000000000')
 const percentile = require('percentile')
 const sigUtil = require('eth-sig-util')
 const Dnode = require('dnode')
 const pump = require('pump')
-const setupMultiplex = require('./setupMultiplex').default
+const setupMultiplex = require('../utils/setupMultiplex').default
 const asStream = require('obs-store/lib/asStream')
 const RpcEngine = require('json-rpc-engine')
 const createFilterMiddleware = require('eth-json-rpc-filters')
 const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionManager')
-const createOriginMiddleware = require('./createOriginMiddleware')
-const createLoggerMiddleware = require('./createLoggerMiddleware')
-const createProviderMiddleware = require('./createProviderMiddleware')
+const createOriginMiddleware = require('../utils/createOriginMiddleware')
+const createLoggerMiddleware = require('../utils/createLoggerMiddleware')
+const createProviderMiddleware = require('../utils/createProviderMiddleware')
 const createEngineStream = require('json-rpc-middleware-stream/engineStream')
 const RecentBlocksController = require('./RecentBlocksController').default
 const MessageManager = require('./MessageManager').default
 const PersonalMessageManager = require('./PersonalMessageManager').default
 const TypedMessageManager = require('./TypedMessageManager').default
 const ObservableStore = require('obs-store')
-const nodeify = require('./nodeify').default
-const TorusKeyring = require('./TorusKeyring').default
+const nodeify = require('../utils/nodeify').default
+const TorusKeyring = require('../utils/TorusKeyring').default
 const KeyringController = require('eth-keyring-controller')
 const Mutex = require('await-semaphore').Mutex
 
@@ -115,7 +115,13 @@ export default class TorusController extends EventEmitter {
       TypedMessageManager: this.typedMessageManager.store
     })
     this.updateAndApproveTransaction = nodeify(this.txController.updateAndApproveTransaction, this.txController)
-    this.updateAndCancelTransaction = nodeify(this.txController.updateAndCancelTransaction, this.txController)
+    this.cancelTransaction = nodeify(this.txController.cancelTransaction, this.txController)
+
+    if (typeof opts.rehydrate === 'function') {
+      setTimeout(function() {
+        opts.rehydrate()
+      }, 50)
+    }
   }
 
   /**
@@ -219,51 +225,6 @@ export default class TorusController extends EventEmitter {
         // this.preferencesController.setAddresses(accounts)
         // this.selectFirstIdentity()
       }
-      releaseLock()
-      return vault
-    } catch (err) {
-      releaseLock()
-      throw err
-    }
-  }
-
-  /**
-   * Create a new Vault and restore an existent keyring.
-   * TODO: To change from mnemonic to insert public/private key pairs instead
-   * @param  {} password
-   * @param  {} seed
-   */
-  async createNewVaultAndRestore(password, seed) {
-    const releaseLock = await this.createVaultMutex.acquire()
-    try {
-      let accounts, lastBalance
-
-      const keyringController = this.keyringController
-
-      // clear known identities
-      // this.preferencesController.setAddresses([])
-      // create new vault
-      const vault = await keyringController.createNewVaultAndRestore(password, seed)
-
-      const ethQuery = new EthQuery(this.provider)
-      accounts = await keyringController.getAccounts()
-      lastBalance = await this.getBalance(accounts[accounts.length - 1], ethQuery)
-
-      const primaryKeyring = keyringController.getKeyringsByType('HD Key Tree')[0]
-      if (!primaryKeyring) {
-        throw new Error('MetamaskController - No HD Key Tree found')
-      }
-
-      // seek out the first zero balance
-      while (lastBalance !== '0x0') {
-        await keyringController.addNewAccount(primaryKeyring)
-        accounts = await keyringController.getAccounts()
-        lastBalance = await this.getBalance(accounts[accounts.length - 1], ethQuery)
-      }
-
-      // set new identities
-      // this.preferencesController.setAddresses(accounts)
-      // this.selectFirstIdentity()
       releaseLock()
       return vault
     } catch (err) {

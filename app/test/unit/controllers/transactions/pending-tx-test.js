@@ -1,7 +1,7 @@
 /* eslint-disable quotes */
 const assert = require('assert')
 const { createTestProviderTools } = require('../../../stub/provider')
-const PendingTransactionTracker = require('../../../../src/utils/PendingTransactionTracker').default
+const PendingTransactionTracker = require('../../../../src/controllers/PendingTransactionTracker').default
 const MockTxGen = require('../../lib/mock-tx-gen')
 const sinon = require('sinon')
 

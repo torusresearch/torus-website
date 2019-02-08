@@ -4,15 +4,15 @@ const ethUtil = require('ethereumjs-util')
 const Transaction = require('ethereumjs-tx')
 const EthQuery = require('ethjs-query')
 const TransactionStateManager = require('./TransactionStateManager').default
-const TxGasUtil = require('./TxGasUtil').default
+const TxGasUtil = require('../utils/TxGasUtil').default
 const PendingTransactionTracker = require('./PendingTransactionTracker').default
 const NonceTracker = require('./NonceTracker').default
-const txUtils = require('./txUtils')
-const cleanErrorStack = require('./cleanErrorStack').default
+const txUtils = require('../utils/txUtils')
+const cleanErrorStack = require('../utils/cleanErrorStack').default
 const log = require('loglevel')
-const { TRANSACTION_TYPE_CANCEL, TRANSACTION_TYPE_RETRY, TRANSACTION_TYPE_STANDARD, TRANSACTION_STATUS_APPROVED } = require('./enums')
+const { TRANSACTION_TYPE_CANCEL, TRANSACTION_TYPE_RETRY, TRANSACTION_TYPE_STANDARD, TRANSACTION_STATUS_APPROVED } = require('../utils/enums')
 
-const { hexToBn, bnToHex, BnMultiplyByFraction } = require('./utils')
+const { hexToBn, bnToHex, BnMultiplyByFraction } = require('../utils/utils')
 
 /**
   Transaction Controller is an aggregate of sub-controllers and trackers
@@ -322,16 +322,6 @@ class TransactionController extends EventEmitter {
     log.info('updateAndApproveTransaction called', txMeta)
     this.txStateManager.updateTx(txMeta, 'confTx: user approved transaction')
     await this.approveTransaction(txMeta.id)
-  }
-
-  /**
-   * updates and cancels the transaction
-   * @param {Object} txMeta
-   */
-  async updateAndCancelTransaction(txMeta) {
-    log.info('updateAndCancelTransaction called', txMeta)
-    // const rawTx = await this.cancelTransaction(txMeta.id)
-    // await this.publishTransaction(txMeta.id, rawTx)
   }
 
   /**

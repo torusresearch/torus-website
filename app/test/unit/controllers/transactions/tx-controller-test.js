@@ -4,7 +4,7 @@ const ethUtil = require('ethereumjs-util')
 const EthTx = require('ethereumjs-tx')
 const ObservableStore = require('obs-store')
 const sinon = require('sinon')
-const TransactionController = require('../../../../src/utils/TransactionController').default
+const TransactionController = require('../../../../src/controllers/TransactionController').default
 const { TRANSACTION_TYPE_RETRY } = require('../../../../src/utils/enums')
 const { createTestProviderTools, getTestAccounts } = require('../../../stub/provider')
 
