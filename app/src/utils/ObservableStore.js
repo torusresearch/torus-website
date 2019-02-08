@@ -1,5 +1,9 @@
 const EventEmitter = require('events')
 
+/*
+Obervable store taken from packabe obs-store and written to adhere to 
+Torus build process for Composable store
+*/
 class ObservableStore extends EventEmitter {
   constructor(initState = {}) {
     super()

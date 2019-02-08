@@ -1,4 +1,4 @@
-const ObservableStore = require('./ObservableStore').default
+const ObservableStore = require('./ObservableStore.js').default
 
 /**
  * An ObservableStore that can composes a flat
