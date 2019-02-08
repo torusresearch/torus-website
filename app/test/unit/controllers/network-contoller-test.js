@@ -1,6 +1,6 @@
 const assert = require('assert')
 const nock = require('nock')
-const NetworkController = require('../../../src/utils/NetworkController').default
+const NetworkController = require('../../../src/controllers/NetworkController').default
 // const { getNetworkDisplayName } = require('../../../../app/scripts/controllers/network/util')
 
 describe('# Network Controller', function() {

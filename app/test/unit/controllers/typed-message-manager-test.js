@@ -1,7 +1,7 @@
 const assert = require('assert')
 
-const TypedMessageManager = require('../../../src/utils/TypedMessageManager').default
-const NetworkController = require('../../../src/utils/NetworkController').default
+const TypedMessageManager = require('../../../src/controllers/TypedMessageManager').default
+const NetworkController = require('../../../src/controllers/NetworkController').default
 
 describe('Personal Message Manager', function() {
   let messageManager

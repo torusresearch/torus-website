@@ -1,5 +1,5 @@
 const assert = require('assert')
-const TxStateManager = require('../../../../src/utils/TransactionStateManager').default
+const TxStateManager = require('../../../../src/controllers/TransactionStateManager').default
 const txStateHistoryHelper = require('../../../../src/utils/tx-state-history-helper').default
 const noop = () => true
 
