@@ -5,3 +5,4 @@ dist/
 .env
 package-lock.json
 embed.min.js
+disc.html
