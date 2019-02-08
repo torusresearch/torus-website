@@ -14,7 +14,7 @@ const providerFromMiddleware = require('eth-json-rpc-middleware/providerFromMidd
 const createInfuraMiddleware = require('eth-json-rpc-infura')
 const BlockTracker = require('eth-block-tracker')
 const EthQuery = require('eth-query')
-const createMetamaskMiddleware = require('./createMetamaskMiddleware').default
+const createMetamaskMiddleware = require('../utils/createMetamaskMiddleware').default
 const JsonRpcEngine = require('json-rpc-engine')
 const providerFromEngine = require('eth-json-rpc-middleware/providerFromEngine')
 const { createSwappableProxy, createEventEmitterProxy } = require('swappable-obj-proxy')
@@ -23,7 +23,7 @@ const { createSwappableProxy, createEventEmitterProxy } = require('swappable-obj
 const defaultProviderConfig = { type: 'mainnet' }
 const defaultNetworkConfig = { ticker: 'ETH' }
 const networks = { networkList: {} }
-const { ROPSTEN, RINKEBY, KOVAN, MAINNET, LOCALHOST } = require('./enums')
+const { ROPSTEN, RINKEBY, KOVAN, MAINNET, LOCALHOST } = require('../utils/enums')
 const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
 
 export default class NetworkController extends EventEmitter {

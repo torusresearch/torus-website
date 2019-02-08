@@ -1,7 +1,7 @@
 const EventEmitter = require('events')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
-const createId = require('./random-id').default
+const createId = require('../utils/random-id').default
 
 /**
  * Represents, and contains data about, an 'eth_sign' type signature request. These are created when a signature for
@@ -59,10 +59,12 @@ export default class MessageManager extends EventEmitter {
    *
    */
   getUnapprovedMsgs() {
-    return this.messages.filter(msg => msg.status === 'unapproved').reduce((result, msg) => {
-      result[msg.id] = msg
-      return result
-    }, {})
+    return this.messages
+      .filter(msg => msg.status === 'unapproved')
+      .reduce((result, msg) => {
+        result[msg.id] = msg
+        return result
+      }, {})
   }
 
   /**

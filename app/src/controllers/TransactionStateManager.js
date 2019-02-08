@@ -3,9 +3,9 @@ const EventEmitter = require('safe-event-emitter')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
 const log = require('loglevel')
-const txStateHistoryHelper = require('./tx-state-history-helper').default
-const createId = require('./random-id').default
-const { getFinalStates } = require('./txUtils')
+const txStateHistoryHelper = require('../utils/tx-state-history-helper').default
+const createId = require('../utils/random-id').default
+const { getFinalStates } = require('../utils/txUtils')
 /**
   TransactionStateManager is responsible for the state of a transaction and
   storing the transaction

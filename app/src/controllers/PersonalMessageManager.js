@@ -1,7 +1,7 @@
 const EventEmitter = require('events')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
-const createId = require('./random-id').default
+const createId = require('../utils/random-id').default
 const hexRe = /^[0-9A-Fa-f]+$/g
 const log = require('loglevel')
 
@@ -63,10 +63,12 @@ export default class PersonalMessageManager extends EventEmitter {
    *
    */
   getUnapprovedMsgs() {
-    return this.messages.filter(msg => msg.status === 'unapproved').reduce((result, msg) => {
-      result[msg.id] = msg
-      return result
-    }, {})
+    return this.messages
+      .filter(msg => msg.status === 'unapproved')
+      .reduce((result, msg) => {
+        result[msg.id] = msg
+        return result
+      }, {})
   }
 
   /**
