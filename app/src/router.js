@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
-import Popup from './views/Popup.vue'
-import Confirm from './views/Confirm.vue'
+const Home = () => import('./views/Home.vue')
+const Popup = () => import('./views/Popup.vue')
+const Confirm = () => import('./views/Confirm.vue')
+const Privacy = () => import('./views/Privacy.vue')
 
 Vue.use(Router)
 
@@ -28,7 +29,7 @@ export default new Router({
     {
       path: '/privacy',
       name: 'privacy',
-      component: () => import('./views/Privacy.vue')
+      component: Privacy
     }
   ]
 })

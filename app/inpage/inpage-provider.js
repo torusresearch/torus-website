@@ -9,6 +9,7 @@ const SafeEventEmitter = require('safe-event-emitter')
 const setupMultiplex = require('./stream-utils.js').setupMultiplex
 const DuplexStream = require('readable-stream').Duplex
 const log = require('loglevel')
+const ObservableStore = require('obs-store') 
 const embedUtils = require('./embedUtils')
 
 module.exports = MetamaskInpageProvider
@@ -27,7 +28,11 @@ function MetamaskInpageProvider(connectionStream) {
   self.mux = mux
 
   // subscribe to metamask public config (one-way)
-  // self.publicConfigStore = new LocalStorageStore({ storageKey: 'MetaMask-Config' })
+  self.publicConfigStore = new ObservableStore({})
+
+  self.publicConfigStore.subscribe(function (state) {
+    window.torus.web3.eth.defaultAccount = state.selectedAddress
+  })
 
   class LocalStorageStream extends DuplexStream {
     constructor() {
@@ -53,6 +58,7 @@ function MetamaskInpageProvider(connectionStream) {
           var newSelectedAddress = embedUtils.transformEthAddress(data[key])
           window.torus.web3.eth.defaultAccount = newSelectedAddress
           window.ethereum.selectedAddress = newSelectedAddress
+          window.ethereum.publicConfigStore.updateState({ selectedAddress: newSelectedAddress })
           window.sessionStorage.setItem('selectedAddress', newSelectedAddress)
           if (prevSelectedAddress !== newSelectedAddress) {
             self.emit('accountsChanged', [newSelectedAddress])
@@ -65,6 +71,7 @@ function MetamaskInpageProvider(connectionStream) {
       } else if (key === 'networkVersion') {
         window.sessionStorage.setItem(key, data[key])
         if (window.ethereum.networkVersion !== data[key].toString()) {
+          window.ethereum.publicConfigStore.updateState({ networkVersion: data[key].toString() })
           window.ethereum.networkVersion = data[key].toString()
         }
       } else {
@@ -187,6 +194,8 @@ MetamaskInpageProvider.prototype.isConnected = function() {
 
 MetamaskInpageProvider.prototype.isMetaMask = true
 
+
+
 // util
 
 function logStreamDisconnectWarning(remoteLabel, err) {
@@ -198,5 +207,6 @@ function logStreamDisconnectWarning(remoteLabel, err) {
     this.emit('error', warningMsg)
   }
 }
+
 
 function noop() {}
