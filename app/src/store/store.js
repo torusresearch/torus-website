@@ -184,7 +184,7 @@ function handleLogin(email, payload) {
             torus.continueEnable(ethAddress)
           }, 50)
         }
-        torus.torusController.createNewVaultAndKeychain('default').then(() => torus.torusController.addNewKeyring('Torus Keyring', [data.privKey]))
+        torus.torusController.initTorusKeyring([data.privKey])
         torus.web3.eth.net
           .getId()
           .then(res => {
