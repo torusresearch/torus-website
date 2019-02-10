@@ -1,17 +1,27 @@
 // Torus loading message
 console.log('TORUS INJECTED IN', window.location.href)
 
-// Set url depending on NODE_ENV
-var torusUrl = '<BROWSERIFY_REPLACE_URL>'
+const mode = '<BROWSERIFY_REPLACE_MODE>'
+let torusUrl
+let logLevel
+
+/* global Web3 */
+require('./vendor/<BROWSERIFY_REPLACE_VENDOR_WEB3>')
+console.log('MODE:', mode)
+if (mode === 'production') {
+  torusUrl = 'https://tor.us'
+  logLevel = 'error'
+} else if (mode === 'development') {
+  torusUrl = 'https://localhost:3000'
+  logLevel = 'debug'
+}
 
 if (window.torus === undefined) {
   window.torus = {}
 }
 cleanContextForImports()
-/* global Web3 */
-require('./vendor/web3')
 const log = require('loglevel')
-log.setDefaultLevel('info')
+log.setDefaultLevel(logLevel)
 const LocalMessageDuplexStream = require('post-message-stream')
 const MetamaskInpageProvider = require('./inpage-provider.js')
 const setupMultiplex = require('./stream-utils.js').setupMultiplex
@@ -35,9 +45,7 @@ function createWidget() {
   link.setAttribute('type', 'text/css')
   link.setAttribute('href', torusUrl + '/css/widget.css')
   torusWidget = embedUtils.htmlToElement('<div id="torusWidget" class="widget"></div>')
-  // torusMenuBtn = embedUtils.htmlToElement('<button id="torusMenuBtn"/>')
   torusLogin = embedUtils.htmlToElement('<button id="torusLogin" />')
-  // torusWidget.appendChild(torusMenuBtn)
   torusWidget.appendChild(torusLogin)
   torusIframeContainer = embedUtils.htmlToElement('<div id="torusIframeContainer"></div>')
   torusIframe = embedUtils.htmlToElement('<iframe id="torusIframe" frameBorder="0" src="' + torusUrl + '/popup"></iframe>')
@@ -51,7 +59,6 @@ function createWidget() {
     window.document.head.appendChild(link)
     window.document.body.appendChild(torusIframeContainer)
     window.document.body.appendChild(torusWidget)
-    // embedUtils.runOnComplete(bindOnComplete)
   }
   embedUtils.runOnLoad(attachOnLoad)
   embedUtils.runOnLoad(bindOnLoad)
@@ -122,7 +129,7 @@ function setupWeb3() {
   inpageProvider.setMaxListeners(100)
   inpageProvider.enable = function() {
     return new Promise((resolve, reject) => {
-      // TODO: Handle errors
+      // TODO: Handle errors when pipe is broken (eg. popup window is closed)
 
       // If user is already logged in, we assume they have given access to the website
       window.web3.eth.getAccounts(function(err, res) {
@@ -235,7 +242,6 @@ function setupWeb3() {
   window.torus.web3.currentProvider.isTorus = true
   window.web3 = window.torus.web3
   window.Web3 = Web3
-  log.info(Web3.version)
   log.debug('Torus - injected web3')
 }
 
