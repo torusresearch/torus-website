@@ -22,6 +22,11 @@ torus.communicationMux.getStream('oauth').on('data', function(chunk) {
   VuexStore.dispatch('triggerLogin', { calledFromEmbed: chunk.data.calledFromEmbed })
 })
 
+// Metamask does not expose ability to change networks to the inpage, if we want to we can enable this 
+// torusUtils.communicationMux.getStream('networkChange').on('data', function(chunk) {
+//   VuexStore.dispatch('changeNetworkConnection', { network: chunk.data.network })
+// })
+
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
 })
