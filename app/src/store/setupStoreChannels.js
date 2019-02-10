@@ -4,6 +4,14 @@ import stream from 'stream'
 import pump from 'pump'
 import VuexStore from '.'
 
+/* 
+Edited to change networkId => network state. Has an implication of changing neworkVersion 
+to "loading" at times in the inpage API
+ */
+torus.torusController.networkController.networkStore.subscribe(function(state) {
+  VuexStore.dispatch('updateNetworkId', { networkId: state })
+})
+
 // setup handlers for communicationStream
 var passthroughStream = new stream.PassThrough({ objectMode: true })
 passthroughStream.on('data', function() {

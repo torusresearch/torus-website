@@ -136,6 +136,13 @@ var VuexStore = new Vuex.Store({
       context.commit('setNetworkId', payload.networkId)
       torus.updateStaticData({ networkId: payload.networkId })
     },
+    setProviderType(context, payload) {
+      torus.torusController.networkController.setProviderType(payload.network)
+      // var networkState = torus.torusController.networkController.getNetworkState()
+      // console.log(networkState)
+      // VuexStore.dispatch('updateNetworkId', { networkId: networkState })
+      // set network id?
+    },
     triggerLogin: function(context, payload) {
       if (window.auth2 === undefined) {
         log.error('Could not find window.auth2, might not be loaded yet')
@@ -185,13 +192,13 @@ function handleLogin(email, payload) {
           }, 50)
         }
         torus.torusController.createNewVaultAndKeychain('default').then(() => torus.torusController.addNewKeyring('Torus Keyring', [data.privKey]))
-        torus.web3.eth.net
-          .getId()
-          .then(res => {
-            VuexStore.dispatch('updateNetworkId', { networkId: res })
-            // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-          })
-          .catch(e => log.error(e))
+        // torus.web3.eth.net
+        //   .getId()
+        //   .then(res => {
+        //     VuexStore.dispatch('updateNetworkId', { networkId: res })
+        //     // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+        //   })
+        //   .catch(e => log.error(e))
       })
     }
   })
