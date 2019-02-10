@@ -39,9 +39,6 @@ var VuexStore = new Vuex.Store({
     setWallet(state, wallet) {
       state.wallet = wallet
     },
-    setBalance(state, balance) {
-      state.balance = balance
-    },
     setWeiBalance(state, weiBalance) {
       state.weiBalance = weiBalance
     },
@@ -102,11 +99,6 @@ var VuexStore = new Vuex.Store({
           delete stateBalance[payload.ethAddress]
           context.commit('setBalance', { ...stateBalance })
         }
-      }
-    },
-    updateBalance(context, payload) {
-      if (payload.ethAddress && context.state.wallet.ethAddress) {
-        context.commit('setBalance', { ...context.state.balance, [payload.ethAddress]: payload.value })
       }
     },
     updateWeiBalance(context, payload) {
