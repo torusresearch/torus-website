@@ -21,12 +21,9 @@ var VuexStore = new Vuex.Store({
     email: '',
     idToken: '',
     wallet: {},
-    balance: {},
     weiBalance: 0,
-    loggedIn: false,
     selectedAddress: '',
     networkId: 0,
-    popupVisible: false
   },
   getters: {},
   mutations: {
@@ -39,23 +36,14 @@ var VuexStore = new Vuex.Store({
     setWallet(state, wallet) {
       state.wallet = wallet
     },
-    setBalance(state, balance) {
-      state.balance = balance
-    },
     setWeiBalance(state, weiBalance) {
       state.weiBalance = weiBalance
-    },
-    setLoginStatus(state, loggedIn) {
-      state.loggedIn = loggedIn
     },
     setSelectedAddress(state, selectedAddress) {
       state.selectedAddress = selectedAddress
     },
     setNetworkId(state, networkId) {
       state.networkId = networkId
-    },
-    setPopupVisibility(state, popupVisible) {
-      state.popupVisible = popupVisible
     }
   },
   actions: {
@@ -110,11 +98,6 @@ var VuexStore = new Vuex.Store({
         }
       }
     },
-    updateBalance(context, payload) {
-      if (payload.ethAddress && context.state.wallet.ethAddress) {
-        context.commit('setBalance', { ...context.state.balance, [payload.ethAddress]: payload.value })
-      }
-    },
     updateWeiBalance(context, payload) {
       if (this.state.selectedAddress) {
         torus.web3.eth.getBalance(this.state.selectedAddress, function(err, res) {
@@ -124,9 +107,6 @@ var VuexStore = new Vuex.Store({
           context.commit('setWeiBalance', res)
         })
       }
-    },
-    updateLoginStatus(context, payload) {
-      context.commit('setLoginStatus', payload.loggedIn)
     },
     updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
