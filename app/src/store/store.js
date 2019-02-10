@@ -45,17 +45,11 @@ var VuexStore = new Vuex.Store({
     setWeiBalance(state, weiBalance) {
       state.weiBalance = weiBalance
     },
-    setLoginStatus(state, loggedIn) {
-      state.loggedIn = loggedIn
-    },
     setSelectedAddress(state, selectedAddress) {
       state.selectedAddress = selectedAddress
     },
     setNetworkId(state, networkId) {
       state.networkId = networkId
-    },
-    setPopupVisibility(state, popupVisible) {
-      state.popupVisible = popupVisible
     }
   },
   actions: {
@@ -124,9 +118,6 @@ var VuexStore = new Vuex.Store({
           context.commit('setWeiBalance', res)
         })
       }
-    },
-    updateLoginStatus(context, payload) {
-      context.commit('setLoginStatus', payload.loggedIn)
     },
     updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
