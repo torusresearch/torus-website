@@ -22,10 +22,10 @@ torus.communicationMux.getStream('oauth').on('data', function(chunk) {
   VuexStore.dispatch('triggerLogin', { calledFromEmbed: chunk.data.calledFromEmbed })
 })
 
-// Metamask does not expose ability to change networks to the inpage, if we want to we can enable this 
-// torusUtils.communicationMux.getStream('networkChange').on('data', function(chunk) {
-//   VuexStore.dispatch('changeNetworkConnection', { network: chunk.data.network })
-// })
+// Metamask does not expose ability to change networks to the inpage, if we want to we can enable this
+torus.communicationMux.getStream('network-change').on('data', function(chunk) {
+  VuexStore.dispatch('showNetworkChangePopup', { network: chunk.data.network })
+})
 
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
@@ -125,5 +125,15 @@ bc.onmessage = function(ev) {
       }
       torusController.cancelTransaction(transactions[0].id)
     }
+  }
+}
+
+var networkChannel = new BroadcastChannel('torus_network_channel')
+networkChannel.onmessage = function(ev) {
+  if (ev.data.approve) {
+    log.info('Network change approved', ev.data.network)
+    window.Vue.torus.setProviderType(ev.data.network)
+  } else if (ev.data === 'deny-network-change') {
+    log.info('Network change denied')
   }
 }

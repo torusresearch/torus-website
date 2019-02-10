@@ -23,7 +23,7 @@ var VuexStore = new Vuex.Store({
     wallet: {},
     weiBalance: 0,
     selectedAddress: '',
-    networkId: 0,
+    networkId: 0
   },
   getters: {},
   mutations: {
@@ -74,7 +74,16 @@ var VuexStore = new Vuex.Store({
         }
       }
     },
-    hidePopup(context, payload) {},
+    showNetworkChangePopup(context, payload) {
+      var bc = new BroadcastChannel('torus_network_channel')
+      window.open('/networkChange', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=350,width=600')
+      bc.onmessage = function(ev) {
+        if (ev.data === 'popup-loaded') {
+          bc.postMessage({ origin: document.referrer, network: payload.network })
+          bc.close()
+        }
+      }
+    },
     updateEmail(context, payload) {
       context.commit('setEmail', payload.email)
     },
@@ -118,10 +127,6 @@ var VuexStore = new Vuex.Store({
     },
     setProviderType(context, payload) {
       torus.torusController.networkController.setProviderType(payload.network)
-      // var networkState = torus.torusController.networkController.getNetworkState()
-      // console.log(networkState)
-      // VuexStore.dispatch('updateNetworkId', { networkId: networkState })
-      // set network id?
     },
     triggerLogin: function(context, payload) {
       if (window.auth2 === undefined) {
