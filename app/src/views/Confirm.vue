@@ -1,10 +1,10 @@
 <template>
   <v-container ma-0 pa-0>
     <v-layout row justify-center>
-      <v-dialog v-model="dialog" persistent fullscreen="true">
+      <v-dialog v-model="dialog" persistent fullscreen>
         <div v-if="this.type === 'message'">
           <v-card height="100vh">
-            <v-card-title class="headline">New Message</v-card-title>
+            <v-card-title class="headline">Message</v-card-title>
 
             <v-card-text>Sign message from {{ this.origin }} ?</v-card-text>
 
@@ -17,13 +17,40 @@
         </div>
         <div v-else-if="this.type === 'transaction'">
           <v-card height="100vh">
-            <v-card-title class="headline">New Transaction</v-card-title>
+            <v-card-title class="headline">Transaction</v-card-title>
 
             <v-card-text>
               <p>Origin: {{ this.origin }}</p>
               <p>Send {{ this.value }} ETH to {{ this.receiver }} ?</p>
               <p>Your balance: {{ this.balance }} ETH</p>
             </v-card-text>
+
+            <!-- <v-toolbar card dense>
+              <v-toolbar-title>
+                <span class="subheading">Gas Costs</span>
+              </v-toolbar-title>
+              <v-spacer></v-spacer>
+            </v-toolbar> -->
+
+            <v-card-text>
+            <v-layout justify-space-between mb-3>
+              <v-flex text-xs-left>
+                <span class="display-3 font-weight-light" v-text="gas"></span>
+                <span class="subheading font-weight-light mr-1">Gas Cost (GWei)</span>
+              </v-flex>
+            </v-layout>
+
+            <v-slider v-model="gas" :color="color" always-dirty :min="min" :max="max">
+              <!-- <v-icon slot="prepend" :color="color" @click="decrement">
+                mdi-minus
+              </v-icon>
+
+              <v-icon slot="append" :color="color" @click="increment">
+                mdi-plus
+              </v-icon> -->
+            </v-slider>
+            </v-card-text>
+
 
             <v-card-actions>
               <v-btn large color="error" flat @click="triggerDeny">Disagree</v-btn>
@@ -46,10 +73,22 @@ export default {
     return {
       type: 'none',
       origin: 'unknown',
+      gas: 10,
+      min: 1,
+      max: 50,
       balance: 0,
       value: 0,
       receiver: 'unknown',
       dialog: true
+    }
+  },
+  computed: {
+    color() {
+      if (this.gas < 5) return 'indigo'
+      if (this.gas < 10) return 'teal'
+      if (this.gas < 20) return 'green'
+      if (this.gas < 35) return 'orange'
+      return 'red'
     }
   },
   methods: {
@@ -64,6 +103,12 @@ export default {
       bc.postMessage('deny-transaction')
       bc.close()
       window.close()
+    },
+    decrement() {
+      this.gas--
+    },
+    increment() {
+      this.gas++
     },
     ...mapActions({
       hidePopup: 'hidePopup'
