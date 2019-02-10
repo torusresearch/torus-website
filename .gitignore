@@ -5,4 +5,6 @@ dist/
 .env
 package-lock.json
 embed.min.js
+embed-main.min.js
+embed-temp.min.js
 disc.html

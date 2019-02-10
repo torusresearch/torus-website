@@ -5,20 +5,21 @@ const mode = '<BROWSERIFY_REPLACE_MODE>'
 let torusUrl
 let logLevel
 
+/* global Web3 */
+require('./vendor/<BROWSERIFY_REPLACE_VENDOR_WEB3>')
+console.log('MODE:', mode)
 if (mode === 'production') {
   torusUrl = 'https://tor.us'
-  logLevel = 'debug'
+  logLevel = 'error'
 } else if (mode === 'development') {
   torusUrl = 'https://localhost:3000'
-  logLevel = 'info'
+  logLevel = 'debug'
 }
 
 if (window.torus === undefined) {
   window.torus = {}
 }
 cleanContextForImports()
-/* global Web3 */
-require('./vendor/web3')
 const log = require('loglevel')
 log.setDefaultLevel(logLevel)
 const LocalMessageDuplexStream = require('post-message-stream')
@@ -241,7 +242,6 @@ function setupWeb3() {
   window.torus.web3.currentProvider.isTorus = true
   window.web3 = window.torus.web3
   window.Web3 = Web3
-  log.info(Web3.version)
   log.debug('Torus - injected web3')
 }
 
