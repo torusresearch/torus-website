@@ -21,12 +21,9 @@ var VuexStore = new Vuex.Store({
     email: '',
     idToken: '',
     wallet: {},
-    balance: {},
     weiBalance: 0,
-    loggedIn: false,
     selectedAddress: '',
     networkId: 0,
-    popupVisible: false
   },
   getters: {},
   mutations: {
