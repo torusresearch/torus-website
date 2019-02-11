@@ -30,8 +30,7 @@ torus.communicationMux.getStream('network-change').on('data', function(chunk) {
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
 })
-
-var bc = new BroadcastChannel('torus_channel')
+var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
 bc.onmessage = function(ev) {
   if (ev.data.type === 'confirm-transaction') {
   let torusController = window.Vue.torus.torusController
@@ -59,7 +58,7 @@ bc.onmessage = function(ev) {
       let msgParams = unapprovedMsgs[0].msgParams
       log.info(' MSG PARAMS:', msgParams)
       msgParams.metamaskId = parseInt(unapprovedMsgs[0].id)
-      torusController.signPersonalMessage(msgParams)
+      torusController.signMessage(msgParams)
     } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
       let unapprovedTypedMessages = []
       for (let id in state.unapprovedTypedMessages) {
@@ -71,7 +70,7 @@ bc.onmessage = function(ev) {
       let msgParams = unapprovedTypedMessages[0].msgParams
       log.info('TYPED MSG PARAMS:', msgParams)
       msgParams.metamaskId = parseInt(unapprovedTypedMessages[0].id)
-      torusController.signPersonalMessage(msgParams)
+      torusController.signTypedMessage(msgParams)
     } else if (Object.keys(state.transactions).length > 0) {
       let transactions = []
       for (let id in state.transactions) {

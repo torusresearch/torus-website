@@ -1,3 +1,8 @@
+var args = process.argv.slice()
+var headless = true
+if (args[2] === 'false') {
+  headless = false
+}
 const log = require('loglevel')
 log.setDefaultLevel('debug')
 const secrets = require('../../secrets.json')
@@ -34,7 +39,7 @@ const puppeteer = require('puppeteer')
       log.info(`Setting default timeout to ${timeout}ms`)
       throw new Error('Timed out')
     }, timeout)
-    const browser = await puppeteer.launch()
+    const browser = await puppeteer.launch({ headless })
     const page = await browser.newPage()
     var pageLoading = page.goto('https://www.etheremon.com')
     log.info('Opening Etheremon page')
