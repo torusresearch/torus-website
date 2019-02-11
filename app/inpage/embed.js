@@ -225,6 +225,11 @@ function setupWeb3() {
     oauthStream.write({ name: 'oauth', data: { calledFromEmbed } })
   }
 
+  window.torus.changeNetwork = function(network) {
+    var networkStream = window.torus.communicationMux.getStream('network-change')
+    networkStream.write({ name: 'network-change', data: { network } })
+  }
+
   if (typeof window.web3 !== 'undefined') {
     throw new Error(`Torus detected another web3.
       Torus will not work reliably with another web3 extension.

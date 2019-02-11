@@ -65,9 +65,7 @@ export default {
       bc.close()
       window.close()
     },
-    ...mapActions({
-      hidePopup: 'hidePopup'
-    })
+    ...mapActions({})
   },
   mounted() {
     const that = this
