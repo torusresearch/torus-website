@@ -23,9 +23,9 @@ torus.communicationMux.getStream('oauth').on('data', function(chunk) {
 })
 
 // Metamask does not expose ability to change networks to the inpage, if we want to we can enable this
-// torusUtils.communicationMux.getStream('networkChange').on('data', function(chunk) {
-//   VuexStore.dispatch('changeNetworkConnection', { network: chunk.data.network })
-// })
+torus.communicationMux.getStream('network-change').on('data', function(chunk) {
+  VuexStore.dispatch('showNetworkChangePopup', { network: chunk.data.network })
+})
 
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
@@ -33,7 +33,7 @@ pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
 
 var bc = new BroadcastChannel('torus_channel')
 bc.onmessage = function(ev) {
-  if (ev.data === 'confirm-transaction') {
+  if (ev.data.type === 'confirm-transaction') {
     let torusController = window.Vue.torus.torusController
     let state = torusController.getState()
     if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
@@ -80,7 +80,7 @@ bc.onmessage = function(ev) {
     } else {
       throw new Error('No new transactions.')
     }
-  } else if (ev.data === 'deny-transaction') {
+  } else if (ev.data.type === 'deny-transaction') {
     let torusController = window.Vue.torus.torusController
     let state = torusController.getState()
     if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
@@ -125,5 +125,15 @@ bc.onmessage = function(ev) {
       }
       torusController.cancelTransaction(transactions[0].id)
     }
+  }
+}
+
+var networkChannel = new BroadcastChannel('torus_network_channel')
+networkChannel.onmessage = function(ev) {
+  if (ev.data.approve) {
+    log.info('Network change approved', ev.data.network)
+    window.Vue.torus.setProviderType(ev.data.network)
+  } else if (ev.data === 'deny-network-change') {
+    log.info('Network change denied')
   }
 }

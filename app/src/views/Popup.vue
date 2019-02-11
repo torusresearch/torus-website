@@ -50,8 +50,6 @@ export default {
       updateIdToken: 'updateIdToken',
       addWallet: 'addWallet',
       removeWallet: 'removeWallet',
-      updateBalance: 'updateBalance',
-      updateLoginStatus: 'updateLoginStatus',
       updateSelectedAddress: 'updateSelectedAddress',
       updateNetworkId: 'updateNetworkId',
       triggerLogin: 'triggerLogin'
