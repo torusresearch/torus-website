@@ -1,7 +1,7 @@
 <template>
   <v-container ma-0 pa-0>
     <v-layout row justify-center>
-      <v-dialog v-model="dialog" persistent fullscreen=true>
+      <v-dialog v-model="dialog" persistent fullscreen>
         <div v-if="this.type === 'message'">
           <v-card height="100vh">
             <v-card-title class="headline">Message</v-card-title>
@@ -22,15 +22,13 @@
               <p>Origin: {{ this.origin }}</p>
               <p>Send {{ this.value }} ETH to {{ this.receiver }} ?</p>
               <p>Your balance: {{ this.balance }} ETH</p>
-            
 
-            <!-- <v-toolbar card dense>
+              <!-- <v-toolbar card dense>
               <v-toolbar-title>
                 <span class="subheading">Gas Costs</span>
               </v-toolbar-title>
               <v-spacer></v-spacer>
             </v-toolbar> -->
-
 
               <v-layout justify-space-between mb-3>
                 <v-flex text-xs-left>
@@ -65,6 +63,8 @@
 <script>
 import { mapActions } from 'vuex'
 
+const weiInGwei = 1000000000
+
 export default {
   name: 'confirm',
   data() {
@@ -92,14 +92,14 @@ export default {
   methods: {
     triggerSign: function(event) {
       var bc = new BroadcastChannel('torus_channel')
-      var gasHex = window.Vue.torus.web3.utils.NumberToHex(this.$data.gasPrice)
+      var gasHex = window.Vue.torus.web3.utils.numberToHex(this.$data.gasPrice * weiInGwei)
       bc.postMessage({ type: 'confirm-transaction', gasPrice: gasHex })
       bc.close()
       window.close()
     },
     triggerDeny: function(event) {
       var bc = new BroadcastChannel('torus_channel')
-      bc.postMessage( {type: 'deny-transaction'} )
+      bc.postMessage({ type: 'deny-transaction' })
       bc.close()
       window.close()
     },
@@ -115,19 +115,20 @@ export default {
           that.type = ev.data.type
         } else if (ev.data.type === 'transaction') {
           console.log('EV:', ev)
+          var web3Utils = window.Vue.torus.web3.utils
           var txParams = ev.data.txParams
           var value
           if (txParams.value) {
-            value = window.Vue.torus.web3.utils.fromWei(txParams.value.toString())
+            value = web3Utils.fromWei(txParams.value.toString())
           } else {
             value = 0
           }
-          that.gas = window.Vue.torus.web3.utils.par
+          var gweiGasPrice = web3Utils.hexToNumber(txParams.gasPrice) / weiInGwei
           that.origin = ev.data.origin
           that.type = ev.data.type
-          that.receiver = ev.data.txParams.to
+          that.receiver = txParams.to
           that.value = value
-          that.gasPrice = ev.data.txParams.gasPrice
+          that.gasPrice = gweiGasPrice
           that.balance = ev.data.balance
         }
         bc.close()

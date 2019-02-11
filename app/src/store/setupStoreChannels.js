@@ -34,7 +34,7 @@ pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
 var bc = new BroadcastChannel('torus_channel')
 bc.onmessage = function(ev) {
   if (ev.data.type === 'confirm-transaction') {
-    let torusController = window.Vue.torus.torusController
+  let torusController = window.Vue.torus.torusController
     let state = torusController.getState()
     if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
       let unapprovedPersonalMsgs = []
@@ -45,6 +45,7 @@ bc.onmessage = function(ev) {
         return a.time - b.time
       })
       let msgParams = unapprovedPersonalMsgs[0].msgParams
+      log.info('PERSONAL MSG PARAMS:', msgParams)
       msgParams.metamaskId = parseInt(unapprovedPersonalMsgs[0].id)
       torusController.signPersonalMessage(msgParams)
     } else if (Object.keys(state.unapprovedMsgs).length > 0) {
@@ -56,6 +57,7 @@ bc.onmessage = function(ev) {
         return a.time - b.time
       })
       let msgParams = unapprovedMsgs[0].msgParams
+      log.info(' MSG PARAMS:', msgParams)
       msgParams.metamaskId = parseInt(unapprovedMsgs[0].id)
       torusController.signPersonalMessage(msgParams)
     } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
@@ -67,6 +69,7 @@ bc.onmessage = function(ev) {
         return a.time - b.time
       })
       let msgParams = unapprovedTypedMessages[0].msgParams
+      log.info('TYPED MSG PARAMS:', msgParams)
       msgParams.metamaskId = parseInt(unapprovedTypedMessages[0].id)
       torusController.signPersonalMessage(msgParams)
     } else if (Object.keys(state.transactions).length > 0) {
@@ -76,7 +79,18 @@ bc.onmessage = function(ev) {
           transactions.push(state.transactions[id])
         }
       }
-      torusController.updateAndApproveTransaction(transactions[0])
+      var txMeta = transactions[0]
+      log.info('STANDARD TX PARAMS:', txMeta)
+
+      if (ev.data.gasPrice) {
+        log.info('Changed gas price to:', ev.data.gasPrice)
+        var newTxMeta = JSON.parse(JSON.stringify(txMeta))
+        newTxMeta.txParams.gasPrice = ev.data.gasPrice
+        torusController.txController.updateTransaction(newTxMeta)
+        txMeta = newTxMeta
+        log.info('New txMeta: ', txMeta)
+      } 
+      torusController.updateAndApproveTransaction(txMeta)
     } else {
       throw new Error('No new transactions.')
     }
