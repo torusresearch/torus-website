@@ -48,7 +48,7 @@ var VuexStore = new Vuex.Store({
   },
   actions: {
     showPopup(context, payload) {
-      var bc = new BroadcastChannel(`torus_channel${torus.instanceId}`)
+      var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
       window.open(
         `/confirm?instanceId=${torus.instanceId}`,
         '_blank',

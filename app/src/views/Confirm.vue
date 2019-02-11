@@ -54,13 +54,14 @@ export default {
   },
   methods: {
     triggerSign: function(event) {
-      var bc = new BroadcastChannel('torus_channel')
-      bc.postMessage('confirm-transaction')
+      var instanceId = (new window.URL(window.location.href)).searchParams.get("instanceId")
+      var bc = new BroadcastChannel(`torus_channel_${instanceId}`)
       bc.close()
       window.close()
     },
     triggerDeny: function(event) {
-      var bc = new BroadcastChannel('torus_channel')
+      var instanceId = (new window.URL(window.location.href)).searchParams.get("instanceId")
+      var bc = new BroadcastChannel(`torus_channel_${instanceId}`)
       bc.postMessage('deny-transaction')
       bc.close()
       window.close()
@@ -68,9 +69,9 @@ export default {
     ...mapActions({})
   },
   mounted() {
-    var instanceId = (new window.URL(window.location.href)).searchParams.get("instanceId")
     const that = this
-    var bc = new BroadcastChannel(`torus_channel${instanceId}`)
+    var instanceId = (new window.URL(window.location.href)).searchParams.get("instanceId")
+    var bc = new BroadcastChannel(`torus_channel_${instanceId}`)
     bc.onmessage = function(ev) {
       if (ev.data.type === 'message') {
         that.origin = ev.data.origin
