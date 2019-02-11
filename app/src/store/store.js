@@ -56,16 +56,10 @@ var VuexStore = new Vuex.Store({
       )
       if (isTorusTransaction()) {
         var txParams = getTransactionParams()
-        var value
-        if (txParams.value) {
-          value = torus.web3.utils.fromWei(txParams.value.toString())
-        } else {
-          value = 0
-        }
-        var balance = torus.web3.utils.fromWei(this.state.weiBalance.toString())
+        var balance = window.Vue.torus.web3.utils.fromWei(this.state.weiBalance.toString())
         bc.onmessage = function(ev) {
           if (ev.data === 'popup-loaded') {
-            bc.postMessage({ origin: document.referrer, type: 'transaction', balance: balance, value: value, receiver: txParams.to })
+            bc.postMessage({ origin: document.referrer, type: 'transaction', txParams: txParams, balance: balance })
             bc.close()
           }
         }
