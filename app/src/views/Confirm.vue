@@ -1,7 +1,7 @@
 <template>
   <v-container ma-0 pa-0>
     <v-layout row justify-center>
-      <v-dialog v-model="dialog" persistent fullscreen="true">
+      <v-dialog v-model="dialog" persistent fullscreen=true>
         <div v-if="this.type === 'message'">
           <v-card height="100vh">
             <v-card-title class="headline">New Message</v-card-title>
