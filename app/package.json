@@ -51,6 +51,7 @@
     "percentile": "^1.2.1",
     "pify": "^4.0.1",
     "post-message-stream": "^3.0.0",
+    "random-id": "^1.0.3",
     "readable-stream": "^3.1.1",
     "swappable-obj-proxy": "^1.1.0",
     "through2": "^3.0.0",

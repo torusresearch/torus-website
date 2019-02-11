@@ -68,22 +68,21 @@ export default {
     ...mapActions({})
   },
   mounted() {
+    var instanceId = (new window.URL(window.location.href)).searchParams.get("instanceId")
     const that = this
-    var bc = new BroadcastChannel('torus_channel')
+    var bc = new BroadcastChannel(`torus_channel${instanceId}`)
     bc.onmessage = function(ev) {
-      if (ev.origin === 'https://localhost:3000' || ev.origin === 'https://tor.us') {
-        if (ev.data.type === 'message') {
-          that.origin = ev.data.origin
-          that.type = ev.data.type
-        } else if (ev.data.type === 'transaction') {
-          that.origin = ev.data.origin
-          that.type = ev.data.type
-          that.receiver = ev.data.receiver
-          that.value = ev.data.value
-          that.balance = ev.data.balance
-        }
-        bc.close()
+      if (ev.data.type === 'message') {
+        that.origin = ev.data.origin
+        that.type = ev.data.type
+      } else if (ev.data.type === 'transaction') {
+        that.origin = ev.data.origin
+        that.type = ev.data.type
+        that.receiver = ev.data.receiver
+        that.value = ev.data.value
+        that.balance = ev.data.balance
       }
+      bc.close()
     }
     bc.postMessage('popup-loaded')
   }
