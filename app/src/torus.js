@@ -1,3 +1,5 @@
+import randomId from 'random-id'
+
 // import WebsocketSubprovider from './websocket.js'
 var Elliptic = require('elliptic').ec
 var log = require('loglevel')
@@ -7,6 +9,7 @@ const toChecksumAddress = require('./utils/toChecksumAddress').default
 var onloadTorus = require('./onload.js').default
 
 var torus = {
+  instanceId: randomId(),
   ec: Elliptic('secp256k1'),
   setupMultiplex,
   continueEnable: function(selectedAddress) {

@@ -1,7 +1,7 @@
 <template>
   <v-container ma-0 pa-0>
     <v-layout row justify-center>
-      <v-dialog v-model="dialog" persistent fullscreen=true>
+      <v-dialog v-model="dialog" persistent fullscreen>
         <div v-if="this.type === 'message'">
           <v-card height="100vh">
             <v-card-title class="headline">New Message</v-card-title>
@@ -54,13 +54,14 @@ export default {
   },
   methods: {
     triggerSign: function(event) {
-      var bc = new BroadcastChannel('torus_channel')
+
+      var bc = new BroadcastChannel(`torus_channel_${(new URLSearchParams(window.location.search)).get('instanceId')}`)
       bc.postMessage('confirm-transaction')
       bc.close()
       window.close()
     },
     triggerDeny: function(event) {
-      var bc = new BroadcastChannel('torus_channel')
+      var bc = new BroadcastChannel(`torus_channel_${(new URLSearchParams(window.location.search)).get('instanceId')}`)
       bc.postMessage('deny-transaction')
       bc.close()
       window.close()
@@ -69,21 +70,19 @@ export default {
   },
   mounted() {
     const that = this
-    var bc = new BroadcastChannel('torus_channel')
+    var bc = new BroadcastChannel(`torus_channel_${(new URLSearchParams(window.location.search)).get('instanceId')}`)
     bc.onmessage = function(ev) {
-      if (ev.origin === 'https://localhost:3000' || ev.origin === 'https://tor.us') {
-        if (ev.data.type === 'message') {
-          that.origin = ev.data.origin
-          that.type = ev.data.type
-        } else if (ev.data.type === 'transaction') {
-          that.origin = ev.data.origin
-          that.type = ev.data.type
-          that.receiver = ev.data.receiver
-          that.value = ev.data.value
-          that.balance = ev.data.balance
-        }
-        bc.close()
+      if (ev.data.type === 'message') {
+        that.origin = ev.data.origin
+        that.type = ev.data.type
+      } else if (ev.data.type === 'transaction') {
+        that.origin = ev.data.origin
+        that.type = ev.data.type
+        that.receiver = ev.data.receiver
+        that.value = ev.data.value
+        that.balance = ev.data.balance
       }
+      bc.close()
     }
     bc.postMessage('popup-loaded')
   }

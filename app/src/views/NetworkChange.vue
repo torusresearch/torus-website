@@ -51,11 +51,9 @@ export default {
     const that = this
     var bc = new BroadcastChannel('torus_network_channel')
     bc.onmessage = function(ev) {
-      if (ev.origin === 'https://localhost:3000' || ev.origin === 'https://tor.us') {
-        that.origin = ev.data.origin
-        that.network = ev.data.network
-        bc.close()
-      }
+      that.origin = ev.data.origin
+      that.network = ev.data.network
+      bc.close()
     }
     bc.postMessage('popup-loaded')
   }
