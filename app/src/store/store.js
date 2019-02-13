@@ -21,12 +21,9 @@ var VuexStore = new Vuex.Store({
     email: '',
     idToken: '',
     wallet: {},
-    balance: {},
     weiBalance: 0,
-    loggedIn: false,
     selectedAddress: '',
-    networkId: 0,
-    popupVisible: false
+    networkId: 0
   },
   getters: {},
   mutations: {
@@ -39,41 +36,30 @@ var VuexStore = new Vuex.Store({
     setWallet(state, wallet) {
       state.wallet = wallet
     },
-    setBalance(state, balance) {
-      state.balance = balance
-    },
     setWeiBalance(state, weiBalance) {
       state.weiBalance = weiBalance
-    },
-    setLoginStatus(state, loggedIn) {
-      state.loggedIn = loggedIn
     },
     setSelectedAddress(state, selectedAddress) {
       state.selectedAddress = selectedAddress
     },
     setNetworkId(state, networkId) {
       state.networkId = networkId
-    },
-    setPopupVisibility(state, popupVisible) {
-      state.popupVisible = popupVisible
     }
   },
   actions: {
     showPopup(context, payload) {
-      var bc = new BroadcastChannel('torus_channel')
-      window.open('/confirm', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=350,width=600')
+      var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
+      window.open(
+        `/confirm?instanceId=${torus.instanceId}`,
+        '_blank',
+        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=350,width=600'
+      )
       if (isTorusTransaction()) {
         var txParams = getTransactionParams()
-        var value
-        if (txParams.value) {
-          value = torus.web3.utils.fromWei(txParams.value.toString())
-        } else {
-          value = 0
-        }
-        var balance = torus.web3.utils.fromWei(this.state.weiBalance.toString())
+        var balance = window.Vue.torus.web3.utils.fromWei(this.state.weiBalance.toString())
         bc.onmessage = function(ev) {
           if (ev.data === 'popup-loaded') {
-            bc.postMessage({ origin: document.referrer, type: 'transaction', balance: balance, value: value, receiver: txParams.to })
+            bc.postMessage({ origin: document.referrer, type: 'transaction', txParams: txParams, balance: balance })
             bc.close()
           }
         }
@@ -86,7 +72,16 @@ var VuexStore = new Vuex.Store({
         }
       }
     },
-    hidePopup(context, payload) {},
+    showNetworkChangePopup(context, payload) {
+      var bc = new BroadcastChannel('torus_network_channel')
+      window.open('/networkChange', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=350,width=600')
+      bc.onmessage = function(ev) {
+        if (ev.data === 'popup-loaded') {
+          bc.postMessage({ origin: document.referrer, network: payload.network })
+          bc.close()
+        }
+      }
+    },
     updateEmail(context, payload) {
       context.commit('setEmail', payload.email)
     },
@@ -110,11 +105,6 @@ var VuexStore = new Vuex.Store({
         }
       }
     },
-    updateBalance(context, payload) {
-      if (payload.ethAddress && context.state.wallet.ethAddress) {
-        context.commit('setBalance', { ...context.state.balance, [payload.ethAddress]: payload.value })
-      }
-    },
     updateWeiBalance(context, payload) {
       if (this.state.selectedAddress) {
         torus.web3.eth.getBalance(this.state.selectedAddress, function(err, res) {
@@ -125,9 +115,6 @@ var VuexStore = new Vuex.Store({
         })
       }
     },
-    updateLoginStatus(context, payload) {
-      context.commit('setLoginStatus', payload.loggedIn)
-    },
     updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
       torus.updateStaticData({ selectedAddress: payload.selectedAddress })
@@ -135,6 +122,9 @@ var VuexStore = new Vuex.Store({
     updateNetworkId(context, payload) {
       context.commit('setNetworkId', payload.networkId)
       torus.updateStaticData({ networkId: payload.networkId })
+    },
+    setProviderType(context, payload) {
+      torus.torusController.networkController.setProviderType(payload.network)
     },
     triggerLogin: function(context, payload) {
       if (window.auth2 === undefined) {
@@ -185,13 +175,13 @@ function handleLogin(email, payload) {
           }, 50)
         }
         torus.torusController.initTorusKeyring([data.privKey])
-        torus.web3.eth.net
-          .getId()
-          .then(res => {
-            VuexStore.dispatch('updateNetworkId', { networkId: res })
-            // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-          })
-          .catch(e => log.error(e))
+        // torus.web3.eth.net
+        //   .getId()
+        //   .then(res => {
+        //     VuexStore.dispatch('updateNetworkId', { networkId: res })
+        //     // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+        //   })
+        //   .catch(e => log.error(e))
       })
     }
   })

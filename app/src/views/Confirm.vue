@@ -1,10 +1,10 @@
 <template>
   <v-container ma-0 pa-0>
     <v-layout row justify-center>
-      <v-dialog v-model="dialog" persistent fullscreen="true">
+      <v-dialog v-model="dialog" persistent fullscreen>
         <div v-if="this.type === 'message'">
           <v-card height="100vh">
-            <v-card-title class="headline">New Message</v-card-title>
+            <v-card-title class="headline">Message</v-card-title>
 
             <v-card-text>Sign message from {{ this.origin }} ?</v-card-text>
 
@@ -16,13 +16,36 @@
           </v-card>
         </div>
         <div v-else-if="this.type === 'transaction'">
-          <v-card height="100vh">
-            <v-card-title class="headline">New Transaction</v-card-title>
-
+          <v-card>
+            <v-card-title class="headline">Transaction</v-card-title>
             <v-card-text>
               <p>Origin: {{ this.origin }}</p>
               <p>Send {{ this.value }} ETH to {{ this.receiver }} ?</p>
               <p>Your balance: {{ this.balance }} ETH</p>
+
+              <!-- <v-toolbar card dense>
+              <v-toolbar-title>
+                <span class="subheading">Gas Costs</span>
+              </v-toolbar-title>
+              <v-spacer></v-spacer>
+            </v-toolbar> -->
+
+              <v-layout justify-space-between mb-3>
+                <v-flex text-xs-left>
+                  <span class="display-2 font-weight-light" v-text="gasPrice"></span>
+                  <span class="subheading font-weight-light mr-1">Gas Price (GWei)</span>
+                </v-flex>
+              </v-layout>
+
+              <v-slider v-model="gasPrice" :color="color" always-dirty :min="min" :max="max">
+                <!-- <v-icon slot="prepend" :color="color" @click="decrement">
+                  mdi-minus
+                </v-icon>
+
+                <v-icon slot="append" :color="color" @click="increment">
+                  mdi-plus
+                </v-icon> -->
+              </v-slider>
             </v-card-text>
 
             <v-card-actions>
@@ -40,52 +63,75 @@
 <script>
 import { mapActions } from 'vuex'
 
+const weiInGwei = 1000000000
+
 export default {
   name: 'confirm',
   data() {
     return {
       type: 'none',
       origin: 'unknown',
+      gasPrice: 10,
+      min: 1,
+      max: 50,
       balance: 0,
       value: 0,
       receiver: 'unknown',
       dialog: true
     }
   },
+  computed: {
+    color() {
+      if (this.gasPrice < 5) return 'indigo'
+      if (this.gasPrice < 10) return 'teal'
+      if (this.gasPrice < 20) return 'green'
+      if (this.gasPrice < 35) return 'orange'
+      return 'red'
+    }
+  },
   methods: {
     triggerSign: function(event) {
-      var bc = new BroadcastChannel('torus_channel')
-      bc.postMessage('confirm-transaction')
+      var bc = new BroadcastChannel(`torus_channel_${(new URLSearchParams(window.location.search)).get('instanceId')}`)
+      var gasHex = window.Vue.torus.web3.utils.numberToHex(this.$data.gasPrice * weiInGwei)
+      bc.postMessage({ type: 'confirm-transaction', gasPrice: gasHex })
       bc.close()
       window.close()
     },
     triggerDeny: function(event) {
-      var bc = new BroadcastChannel('torus_channel')
-      bc.postMessage('deny-transaction')
+      var bc = new BroadcastChannel(`torus_channel_${(new URLSearchParams(window.location.search)).get('instanceId')}`)
+      bc.postMessage({ type: 'deny-transaction' })
       bc.close()
       window.close()
     },
-    ...mapActions({
-      hidePopup: 'hidePopup'
-    })
+    ...mapActions({})
   },
   mounted() {
     const that = this
-    var bc = new BroadcastChannel('torus_channel')
+    var bc = new BroadcastChannel(`torus_channel_${(new URLSearchParams(window.location.search)).get('instanceId')}`)
     bc.onmessage = function(ev) {
-      if (ev.origin === 'https://localhost:3000' || ev.origin === 'https://tor.us') {
         if (ev.data.type === 'message') {
           that.origin = ev.data.origin
           that.type = ev.data.type
         } else if (ev.data.type === 'transaction') {
+          console.log('EV:', ev)
+          var web3Utils = window.Vue.torus.web3.utils
+          var txParams = ev.data.txParams
+          var value
+          if (txParams.value) {
+            value = web3Utils.fromWei(txParams.value.toString())
+          } else {
+            value = 0
+          }
+          var gweiGasPrice = web3Utils.hexToNumber(txParams.gasPrice) / weiInGwei
           that.origin = ev.data.origin
           that.type = ev.data.type
-          that.receiver = ev.data.receiver
-          that.value = ev.data.value
+          that.receiver = txParams.to
+          that.value = value
+          that.gasPrice = gweiGasPrice
           that.balance = ev.data.balance
         }
         bc.close()
-      }
+      bc.close()
     }
     bc.postMessage('popup-loaded')
   }

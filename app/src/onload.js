@@ -149,6 +149,9 @@ function onloadTorus(torus) {
   torus.metamaskMux = setupMultiplex(metamaskStream)
   torus.communicationMux = setupMultiplex(communicationStream)
   torus.web3 = new Web3(engine)
+  torus.setProviderType = function(network) {
+    window.Vue.$store.dispatch('setProviderType', { network })
+  }
 
   /* Stream setup block */
   // doesnt do anything.. just for logging

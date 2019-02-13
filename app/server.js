@@ -11,30 +11,6 @@ var certOptions = {
   cert: fs.readFileSync(path.resolve('../ssl/server.crt'))
 }
 
-// app.get('/privacy', (req, res) => {
-//   res.sendFile(path.join(__dirname, '/public/privacy.html'))
-// })
-
-// app.get('/demo', (req, res) => {
-//   res.sendFile(path.join(__dirname, '/public/demo.html'))
-// })
-
-// app.get('/widget', (req, res) => {
-//   res.sendFile(path.join(__dirname, '/public/widget.html'))
-// })
-
-// app.get('/widget-main', (req, res) => {
-//   res.sendFile(path.join(__dirname, '/public/widget-main.html'))
-// })
-
-// app.get('/address', (req, res) => {
-//   res.sendFile(path.join(__dirname, '/public/publickey.html'))
-// })
-
-// // app.get('/survey', async (req, res) => {
-// //   res.redirect('https://goo.gl/forms/0gm46ERp1kLvCzmg2')
-// // })
-
 app.use(express.static('dist'))
 
 app.get('*', (req, res) => {
