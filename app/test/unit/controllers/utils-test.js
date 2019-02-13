@@ -13,7 +13,7 @@ describe('util', function() {
 
   describe('#hexToText', function() {
     const message = 'hello world'
-    const hexEquivalent = '68656c6c6f20776f726c64'
+    const hexEquivalent = '0x68656c6c6f20776f726c64'
     it('should decode hex to text properly', () => {
       const convertedText = utils.hexToText(hexEquivalent)
       assert.deepStrictEqual(convertedText, message)
