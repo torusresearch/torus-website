@@ -139,6 +139,12 @@ function removeListeners(listeners, emitter) {
   })
 }
 
+/**
+ * Converts a hex-encoded string to a text string.
+ *
+ * @param {string} hex Hex string to be converted
+ * @returns {string} Text converted from the hex string
+ */
 function hexToText(hex) {
   try {
     const stripped = ethUtil.stripHexPrefix(hex)
