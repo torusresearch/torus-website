@@ -4,6 +4,7 @@ import log from 'loglevel'
 import torus from '../torus'
 import config from '../config'
 import VuexPersist from 'vuex-persist'
+import { hexToText } from '../utils/utils'
 
 Vue.use(Vuex)
 
@@ -59,14 +60,24 @@ var VuexStore = new Vuex.Store({
         var balance = window.Vue.torus.web3.utils.fromWei(this.state.weiBalance.toString())
         bc.onmessage = function(ev) {
           if (ev.data === 'popup-loaded') {
-            bc.postMessage({ origin: document.referrer, type: 'transaction', txParams: txParams, balance: balance })
+            bc.postMessage({
+              origin: document.referrer,
+              type: 'transaction',
+              txParams,
+              balance
+            })
             bc.close()
           }
         }
       } else {
+        var msgParams = getMessageParams()
         bc.onmessage = function(ev) {
           if (ev.data === 'popup-loaded') {
-            bc.postMessage({ origin: document.referrer, type: 'message' })
+            bc.postMessage({
+              origin: document.referrer,
+              type: 'message',
+              msgParams
+            })
             bc.close()
           }
         }
@@ -188,15 +199,32 @@ function handleLogin(email, payload) {
 }
 
 function getTransactionParams() {
-  let torusController = window.Vue.torus.torusController
-  let state = torusController.getState()
-  let transactions = []
+  const torusController = window.Vue.torus.torusController
+  const state = torusController.getState()
+  const transactions = []
   for (let id in state.transactions) {
     if (state.transactions[id].status === 'unapproved') {
       transactions.push(state.transactions[id])
     }
   }
   return transactions[0].txParams
+}
+
+function getMessageParams() {
+  const torusController = window.Vue.torus.torusController
+  const state = torusController.getState()
+  let msg = {}
+  for (let id in state.unapprovedMsgs) {
+    msg = state.unapprovedMsgs[id]
+  }
+  for (let id in state.unapprovedPersonalMsgs) {
+    msg = state.unapprovedPersonalMsgs[id]
+  }
+  for (let id in state.unapprovedTypedMessages) {
+    msg = state.unapprovedTypedMessages[id]
+  }
+  if (msg) msg.msgParams.message = hexToText(msg.msgParams.data)
+  return msg ? msg.msgParams : {}
 }
 
 function isTorusTransaction() {

@@ -6,7 +6,10 @@
           <v-card height="100vh">
             <v-card-title class="headline">Message</v-card-title>
 
-            <v-card-text>Sign message from {{ this.origin }} ?</v-card-text>
+            <v-card-text>
+              <p>Sign message from {{ this.origin }} ?</p>
+              <p>Message: {{ this.message }}</p>
+            </v-card-text>
 
             <v-card-actions>
               <v-btn large color="error" flat @click="triggerDeny">Disagree</v-btn>
@@ -77,7 +80,8 @@ export default {
       balance: 0,
       value: 0,
       receiver: 'unknown',
-      dialog: true
+      dialog: true,
+      message: ''
     }
   },
   computed: {
@@ -91,14 +95,14 @@ export default {
   },
   methods: {
     triggerSign: function(event) {
-      var bc = new BroadcastChannel(`torus_channel_${(new URLSearchParams(window.location.search)).get('instanceId')}`)
+      var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
       var gasHex = window.Vue.torus.web3.utils.numberToHex(this.$data.gasPrice * weiInGwei)
       bc.postMessage({ type: 'confirm-transaction', gasPrice: gasHex })
       bc.close()
       window.close()
     },
     triggerDeny: function(event) {
-      var bc = new BroadcastChannel(`torus_channel_${(new URLSearchParams(window.location.search)).get('instanceId')}`)
+      var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
       bc.postMessage({ type: 'deny-transaction' })
       bc.close()
       window.close()
@@ -107,30 +111,31 @@ export default {
   },
   mounted() {
     const that = this
-    var bc = new BroadcastChannel(`torus_channel_${(new URLSearchParams(window.location.search)).get('instanceId')}`)
+    var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
     bc.onmessage = function(ev) {
-        if (ev.data.type === 'message') {
-          that.origin = ev.data.origin
-          that.type = ev.data.type
-        } else if (ev.data.type === 'transaction') {
-          console.log('EV:', ev)
-          var web3Utils = window.Vue.torus.web3.utils
-          var txParams = ev.data.txParams
-          var value
-          if (txParams.value) {
-            value = web3Utils.fromWei(txParams.value.toString())
-          } else {
-            value = 0
-          }
-          var gweiGasPrice = web3Utils.hexToNumber(txParams.gasPrice) / weiInGwei
-          that.origin = ev.data.origin
-          that.type = ev.data.type
-          that.receiver = txParams.to
-          that.value = value
-          that.gasPrice = gweiGasPrice
-          that.balance = ev.data.balance
+      if (ev.data.type === 'message') {
+        that.message = ev.data.msgParams ? ev.data.msgParams.message : ''
+        that.origin = ev.data.origin
+        that.type = ev.data.type
+      } else if (ev.data.type === 'transaction') {
+        console.log('EV:', ev)
+        var web3Utils = window.Vue.torus.web3.utils
+        var txParams = ev.data.txParams
+        var value
+        if (txParams.value) {
+          value = web3Utils.fromWei(txParams.value.toString())
+        } else {
+          value = 0
         }
-        bc.close()
+        var gweiGasPrice = web3Utils.hexToNumber(txParams.gasPrice) / weiInGwei
+        that.origin = ev.data.origin
+        that.type = ev.data.type
+        that.receiver = txParams.to
+        that.value = value
+        that.gasPrice = gweiGasPrice
+        that.balance = ev.data.balance
+      }
+      bc.close()
       bc.close()
     }
     bc.postMessage('popup-loaded')
