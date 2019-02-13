@@ -70,7 +70,7 @@ var VuexStore = new Vuex.Store({
           }
         }
       } else {
-        var msgParams = getMessageParams()
+        var msgParams = getLatestMessageParams()
         bc.onmessage = function(ev) {
           if (ev.data === 'popup-loaded') {
             bc.postMessage({
@@ -210,18 +210,22 @@ function getTransactionParams() {
   return transactions[0].txParams
 }
 
-function getMessageParams() {
+function getLatestMessageParams() {
   const torusController = window.Vue.torus.torusController
   const state = torusController.getState()
+  let time = 0
   let msg = {}
   for (let id in state.unapprovedMsgs) {
-    msg = state.unapprovedMsgs[id]
+    const msgTime = state.unapprovedMsgs[id].time
+    msg = msgTime > time ? state.unapprovedMsgs[id] : msg
   }
   for (let id in state.unapprovedPersonalMsgs) {
-    msg = state.unapprovedPersonalMsgs[id]
+    const msgTime = state.unapprovedPersonalMsgs[id].time
+    msg = msgTime > time ? state.unapprovedPersonalMsgs[id] : msg
   }
   for (let id in state.unapprovedTypedMessages) {
-    msg = state.unapprovedTypedMessages[id]
+    const msgTime = state.unapprovedTypedMessages[id].time
+    msg = msgTime > time ? state.unapprovedTypedMessages[id] : msg
   }
   if (msg) msg.msgParams.message = hexToText(msg.msgParams.data)
   return msg ? msg.msgParams : {}
