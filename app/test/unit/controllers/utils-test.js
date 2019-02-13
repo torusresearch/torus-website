@@ -19,9 +19,15 @@ describe('util', function() {
       assert.deepStrictEqual(convertedText, message)
     })
 
-    it('should return same string if unable to decode', () => {
+    it('should return blank string if unable to decode', () => {
       const convertedText = utils.hexToText('test')
-      assert.deepStrictEqual(convertedText, 'test')
+      assert.deepStrictEqual(convertedText, '')
+    })
+
+    it('should return the same input if error', () => {
+      const testObj = { a: 'b' }
+      const converted = utils.hexToText(testObj)
+      assert.deepStrictEqual(converted, testObj)
     })
   })
 })
