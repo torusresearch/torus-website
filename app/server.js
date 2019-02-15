@@ -11,21 +11,6 @@ var certOptions = {
   cert: fs.readFileSync(path.resolve('../ssl/server.crt'))
 }
 
-// Prevents cross-frame clickjacking attacks from external websites
-const securityHeaderMiddleware = (req, res, next) => {
-  console.log(req.originalUrl)
-  if (req.originalUrl.startsWith('/popup')) {
-    // skip any /popup routes
-    next()
-    return
-  }
-  res.setHeader('X-Frame-Options', 'sameorigin')
-  next()
-}
-
-
-app.use(securityHeaderMiddleware)
-
 app.use(express.static('dist'))
 
 app.get('*', (req, res) => {
