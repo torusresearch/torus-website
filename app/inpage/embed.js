@@ -226,8 +226,8 @@ function setupWeb3() {
   }
 
   window.torus.changeNetwork = function(network) {
-    var networkStream = window.torus.communicationMux.getStream('network-change')
-    networkStream.write({ name: 'network-change', data: { network } })
+    var networkStream = window.torus.communicationMux.getStream('network_change')
+    networkStream.write({ name: 'network_change', data: { network } })
   }
 
   if (typeof window.web3 !== 'undefined') {
