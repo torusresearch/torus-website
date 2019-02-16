@@ -34,8 +34,5 @@ if (inWhiteList) {
   sc.setAttribute('style-color', '#75b4fd')
   sc.setAttribute('style-position', 'bottom-left')
   sc.setAttribute('style-padding', '8px')
-  console.log(document.getElementsByTagName('html')[0])
   document.getElementsByTagName('html')[0].appendChild(sc)
 }
-// console.log(document)
-// document.insertBefore(document, sc);
