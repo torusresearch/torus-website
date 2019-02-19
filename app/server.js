@@ -13,9 +13,12 @@ var certOptions = {
 
 // Prevents cross-frame clickjacking attacks from external websites
 const securityHeaderMiddleware = (req, res, next) => {
-  console.log(req.originalUrl)
+  res.setHeader('Content-Security-Policy', 'default-src: https: "unsafe-inline"')
+  res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
+  res.setHeader('X-XSS-Protection', '1; mode=block')
+  res.setHeader('X-Content-Type-Options',  'nosniff')
   if (req.originalUrl.startsWith('/popup')) {
-    // skip any /popup routes
+    // skip any /popup routes for x-frame-options for it to function properly
     next()
     return
   }
