@@ -31,7 +31,7 @@ jobs:
       - persist_to_workspace:
           root: ~/torus-website/
           paths:
-            - dist
+            - app/dist
       - <<: *step_save_cache
   unit-test:
     <<: *job_common
