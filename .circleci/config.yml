@@ -64,7 +64,7 @@ jobs:
   deploy:
     <<: *job_common
     steps:
-     - attach_workspace:
+      - attach_workspace:
           at: app
       - add_ssh_keys
       - checkout:
