@@ -67,8 +67,7 @@ jobs:
           name: "Deploy Over SSH"
           command: |
             echo '165.227.26.16 ecdsa-sha2-nistp256 AAAAB3NzaC1yc2EAAAADAQABAAABAQDBG/QYnk7/FVDiMlI2l66vdKNVC6P2IJZoXmt76FRTEX2iPsg1nYKQzU7bjGRbLaDjPdSt5cXY5UG2ZNFhhed9IM6MlOb9oZ9wNdlIvCFlV1E51hRQdRXCbNtKSZ+sBJKywysWbdapxEaDlDp5fdKip/uhHWN1B3kiZ73fnN5+J6/8z2RhUkk2jjfS/MvRT5HLRCPaCerodXtSnGf54QfITeZ3w+xczwv1jre011sg3wlbpd7kxt6rGsYjPn161GkVxOrJSbci9gqhK/bhsWZruBfxqh0AfjN6JtS2pS/rL9ZIJTEa4ikne4L0QWFzEdZcRF7yVLGzc1jgzrjlgZU9' >> ~/.ssh/known_hosts
-
-            scp -r ~/build torus@165.227.26.16:~/torus-website
+            scp -r dist torus@165.227.26.16:~/torus-website
 
 workflows:
   version: 2
