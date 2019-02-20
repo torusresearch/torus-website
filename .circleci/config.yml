@@ -28,6 +28,10 @@ jobs:
       - run:
           name: "Build code for torus website"
           command: npm run build && npm run build-embed:copy-main
+      - persist_to_workspace:
+          root: ~/torus-website/
+          paths:
+            - dist
       - <<: *step_save_cache
   unit-test:
     <<: *job_common
@@ -74,11 +78,9 @@ workflows:
   commit:
     jobs:
       - build
-      - test-coverage
       - deploy:
           requires:
             - build
-            - test-coverage
           filters:
             branches:
               only: chai/metamask-vue
