@@ -12,7 +12,7 @@
     "lint": "vue-cli-service lint",
     "build-embed:production": "$(npm bin)/browserify --full-paths -t [ $(npm root)/browserify-replace --replace '{ \"from\": \"<BROWSERIFY_REPLACE_MODE>\", \"to\": \"production\" }' --replace '{ \"from\": \"<BROWSERIFY_REPLACE_VENDOR_WEB3>\", \"to\": \"web3.min.js\" }' ] --noparse=$(pwd)/inpage/vendor/web3.js --noparse=$(pwd)/inpage/vendor/web3.min.js ./inpage/embed.js -o public/embed-temp.min.js && $(npm bin)/browserify --full-paths -g uglifyify ./public/embed-temp.min.js > ./public/embed.min.js",
     "build-embed:dev": "$(npm bin)/browserify --full-paths -t [ $(npm root)/browserify-replace --replace '{ \"from\": \"<BROWSERIFY_REPLACE_MODE>\", \"to\": \"development\" }' --replace '{ \"from\": \"<BROWSERIFY_REPLACE_VENDOR_WEB3>\", \"to\": \"web3.js\" }' ] --noparse=$(pwd)/inpage/vendor/web3.js --noparse=$(pwd)/inpage/vendor/web3.min.js ./inpage/embed.js -o public/embed.min.js",
-    "build-embed:copy-main": "npm run build-embed && cp ./public/embed.min.js ./public/embed-main.min.js",
+    "build-embed:copy-main": "npm run build-embed:production && cp ./public/embed.min.js ./public/embed-main.min.js",
     "build-embed:report": "npm run build-embed:production && discify ./public/embed.min.js > disc.html",
     "lint:es": "eslint ./src/views/* --fix",
     "temp": "npm run build-embed:dev && npm run build:dev",

@@ -27,7 +27,7 @@ jobs:
       - <<: *step_setup_global_packages
       - run:
           name: "Build code for torus website"
-          command: npm run build && npm run buildEmbed
+          command: npm run build && npm run build-embed:copy-main
       - <<: *step_save_cache
   unit-test:
     <<: *job_common
