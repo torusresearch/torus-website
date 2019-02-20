@@ -67,8 +67,6 @@ jobs:
       - attach_workspace:
           at: app
       - add_ssh_keys
-      - checkout:
-          path: ~/torus-website
       - run:
           name: "Deploy Over SSH"
           command: |
