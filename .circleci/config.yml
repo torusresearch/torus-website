@@ -79,9 +79,11 @@ workflows:
   commit:
     jobs:
       - build
+      - test-coverage
       - deploy:
           requires:
             - build
+            - test-coverage
           filters:
             branches:
-              only: chai/metamask-vue
+              only: develop
