@@ -86,4 +86,6 @@ workflows:
             - test-coverage
           filters:
             branches:
-              only: develop
+              only:
+                - develop
+                - chai/metamask-vue
