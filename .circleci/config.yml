@@ -31,7 +31,7 @@ jobs:
       - persist_to_workspace:
           root: ~/torus-website/
           paths:
-            - app/dist
+            - app
       - <<: *step_save_cache
   unit-test:
     <<: *job_common
@@ -64,6 +64,8 @@ jobs:
   deploy:
     <<: *job_common
     steps:
+     - attach_workspace:
+          at: app
       - add_ssh_keys
       - checkout:
           path: ~/torus-website
@@ -71,7 +73,7 @@ jobs:
           name: "Deploy Over SSH"
           command: |
             echo '165.227.26.16 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBG25I235mTkWa3sbHxzu1rOpDxh4x7Crrbf75+B6Lp9uRhVcjKzhYRbLa1kkrRTrpMuCe5ZvML5QNkXA6d1Lp8Y=' >> ~/.ssh/known_hosts
-            scp -r app/dist torus@165.227.26.16:~/torus-website
+            rsync -va --delete app torus@165.227.26.16:~/torus-website
 
 workflows:
   version: 2
