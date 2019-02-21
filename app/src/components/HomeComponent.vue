@@ -43,7 +43,7 @@
                   <div class="alert alert-primary codebox">
                     <p class="mb-0">
                       &lt;script src="https://tor.us/embed.min.js" integrity=
-                      "sha384-jieVM0d7fc5F41q9QADugVP5pXMoKgfXoO/wZv9npNJVNYlVEeZWTQbdEGEWFNQw" crossorigin="anonymous"&gt;&lt;/script&gt;
+                      "sha384-fZF4q4WtkcnH0trCW7lzPw2zAHgMJGMIRPJhUHDZZhwPa0HBSDVfmJhua/mIddkI" crossorigin="anonymous"&gt;&lt;/script&gt;
                     </p>
                   </div>
                   <div class="gaps size-3x"></div>
