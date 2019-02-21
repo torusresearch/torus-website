@@ -22,7 +22,7 @@ var whitelist = [
 ]
 
 var inWhiteList = false
-whitelist.map(function (url) {
+whitelist.map(function(url) {
   if (window.location.hostname.indexOf(url) !== -1) {
     inWhiteList = true
   }
@@ -30,6 +30,8 @@ whitelist.map(function (url) {
 if (inWhiteList) {
   var sc = document.createElement('script')
   sc.setAttribute('src', 'https://tor.us/embed.min.js')
+  sc.setAttribute('integrity', 'sha384-jieVM0d7fc5F41q9QADugVP5pXMoKgfXoO/wZv9npNJVNYlVEeZWTQbdEGEWFNQw')
+  sc.setAttribute('crossorigin', 'anonymous')
   sc.setAttribute('type', 'text/javascript')
   sc.setAttribute('style-color', '#75b4fd')
   sc.setAttribute('style-position', 'bottom-left')

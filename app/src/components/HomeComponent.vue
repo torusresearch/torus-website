@@ -41,7 +41,10 @@
                   <h1>Frictionless Logins <br />for Dapps</h1>
                   <p class="lead color-secondary">Get started with social logins for your dApp:</p>
                   <div class="alert alert-primary codebox">
-                    <p class="mb-0">&lt;script src="https://tor.us/embed.min.js"&gt;&lt;/script&gt;</p>
+                    <p class="mb-0">
+                      &lt;script src="https://tor.us/embed.min.js" integrity=
+                      "sha384-jieVM0d7fc5F41q9QADugVP5pXMoKgfXoO/wZv9npNJVNYlVEeZWTQbdEGEWFNQw" crossorigin="anonymous"&gt;&lt;/script&gt;
+                    </p>
                   </div>
                   <div class="gaps size-3x"></div>
                   <div class="gaps size-3x d-none d-md-block"></div>
