@@ -1020,7 +1020,7 @@ select:focus { outline: none; border: none; }
 .token-section { position: relative; }
 .token-section:after { content: ""; background: linear-gradient(to top, #1b30a4 15%, rgba(13, 66, 178, 0) 100%); height: 80%; width: 100%; position: absolute; bottom: 0; left: 0; }
 
-.event-info { margin-bottom: -30px; pading-right: 20px; }
+.event-info { margin-bottom: -30px; padding-right: 20px; }
 .event-info .event-single-info { margin-bottom: 30px; position: relative; padding-left: 16px; }
 .event-info .event-single-info:before { content: ""; background: #46bdf4; height: 5px; width: 5px; border-radius: 50%; position: absolute; top: 9px; left: 0; }
 .event-info h6 { margin-bottom: 2px; }
