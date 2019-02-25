@@ -27,7 +27,11 @@ jobs:
       - <<: *step_setup_global_packages
       - run:
           name: "Build code for torus website"
-          command: npm run build && npm run buildEmbed
+          command: npm run build-embed:copy-main && npm run build
+      - persist_to_workspace:
+          root: ~/torus-website/
+          paths:
+            - app
       - <<: *step_save_cache
   unit-test:
     <<: *job_common
@@ -57,10 +61,30 @@ jobs:
       # Save coverage artifacts
       - store_artifacts:
           path: coverage
+  deploy:
+    <<: *job_common
+    steps:
+      - attach_workspace:
+          at: app
+      - add_ssh_keys
+      - run:
+          name: "Deploy Over SSH"
+          command: |
+            echo '165.227.26.16 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBG25I235mTkWa3sbHxzu1rOpDxh4x7Crrbf75+B6Lp9uRhVcjKzhYRbLa1kkrRTrpMuCe5ZvML5QNkXA6d1Lp8Y=' >> ~/.ssh/known_hosts
+            cd app/app/
+            scp -r ./dist torus@165.227.26.16:~/torus-website
 
 workflows:
   version: 2
   commit:
     jobs:
-      - unit-test
+      - build
       - test-coverage
+      - deploy:
+          requires:
+            - build
+            - test-coverage
+          filters:
+            branches:
+              only:
+                - develop

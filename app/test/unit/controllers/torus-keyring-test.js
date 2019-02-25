@@ -76,7 +76,7 @@ describe('torus-keyring', () => {
       }
       const tx = new EthereumTx(txParams)
 
-      const signed = await keyring.signTransaction(address, tx)
+      const signed = await keyring.signTransaction(tx, address)
       assert.ok(signed.raw, 'has a raw signature')
     })
   })

@@ -5,11 +5,13 @@ const fs = require('fs')
 const path = require('path')
 const https = require('https')
 const http = require('http')
+const UAParser = require('ua-parser-js')
 const APP_PORT = process.env.PORT || 3000
 var certOptions = {
   key: fs.readFileSync(path.resolve('../ssl/server.key')),
   cert: fs.readFileSync(path.resolve('../ssl/server.crt'))
 }
+app.all(/^(?!(\/notsupported)).*$/, ensureCompatibleBrowser)
 
 // Prevents cross-frame clickjacking attacks from external websites
 const securityHeaderMiddleware = (req, res, next) => {
@@ -17,6 +19,7 @@ const securityHeaderMiddleware = (req, res, next) => {
   res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
   res.setHeader('X-XSS-Protection', '1; mode=block')
   res.setHeader('X-Content-Type-Options', 'nosniff')
+  res.setHeader('Access-Control-Allow-Origin', '*')
   if (req.originalUrl.startsWith('/popup')) {
     // skip any /popup routes for x-frame-options for it to function properly
     next()
@@ -30,9 +33,16 @@ app.use(securityHeaderMiddleware)
 
 app.use(express.static('dist'))
 
-app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*')
-  next()
+function ensureCompatibleBrowser(req, res, next) {
+  var parser = new UAParser()
+  var ua = req.headers['user-agent']
+  var browserName = parser.setUA(ua).getBrowser().name
+  if (browserName === 'IE' || browserName === 'Edge' || browserName === 'Safari') res.redirect('/notsupported/')
+  else return next()
+}
+
+app.get('/notsupported/', (req, res) => {
+  res.send('Broadcast channels are currently not supported on Edge and Safari browsers. Please check back for further updates')
 })
 
 app.get('*', (req, res) => {

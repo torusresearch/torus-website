@@ -107,10 +107,8 @@ function onloadTorus(torus) {
         setTimeout(function() {
           window.Vue.$store.dispatch('updateSelectedAddress', { selectedAddress })
         }, 50)
-        torus.torusController.createNewVaultAndKeychain('default').then(() => {
-          torus.torusController.addNewKeyring('Torus Keyring', [wallet[selectedAddress]])
-          log.info('rehydrated wallet')
-        })
+        torus.torusController.initTorusKeyring([wallet[selectedAddress]])
+        log.info('rehydrated wallet')
         torus.web3.eth.net
           .getId()
           .then(res => {
