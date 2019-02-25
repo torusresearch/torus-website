@@ -8,10 +8,10 @@ const type = 'Torus Keyring'
 export default class TorusKeyring extends EventEmitter {
   constructor(opts) {
     super()
-    log.info('Creating torus keyring')
     this.type = type
     this.wallets = []
     this.deserialize(opts)
+    log.info('wallet initialised')
   }
 
   serialize() {
@@ -27,7 +27,6 @@ export default class TorusKeyring extends EventEmitter {
           const wallet = Wallet.fromPrivateKey(buffer)
           return wallet
         })
-        log.info(this.wallets)
       } catch (e) {
         reject(e)
       }
@@ -50,7 +49,7 @@ export default class TorusKeyring extends EventEmitter {
   }
 
   // tx is an instance of the ethereumjs-transaction class.
-  signTransaction(address, tx) {
+  signTransaction(tx, address) {
     const wallet = this._getWalletForAccount(address)
     var privKey = wallet.getPrivateKey()
     tx.sign(privKey)

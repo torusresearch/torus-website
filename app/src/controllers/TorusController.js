@@ -29,8 +29,6 @@ const TypedMessageManager = require('./TypedMessageManager').default
 const ObservableStore = require('obs-store')
 const nodeify = require('../utils/nodeify').default
 const TorusKeyring = require('../utils/TorusKeyring').default
-const KeyringController = require('eth-keyring-controller')
-const Mutex = require('await-semaphore').Mutex
 
 // defaults and constants
 const version = '0.0.1'
@@ -64,17 +62,7 @@ export default class TorusController extends EventEmitter {
     })
 
     // key mgmt
-    const additionalKeyrings = [TorusKeyring]
-    this.keyringController = new KeyringController({
-      keyringTypes: additionalKeyrings,
-      getNetwork: this.networkController.getNetworkState.bind(this.networkController),
-      encryptor: opts.encryptor || undefined
-    })
-
-    this.keyringController.memStore.subscribe(s => this._onKeyringControllerUpdate(s))
-
-    // lock to ensure only one vault created at once
-    this.createVaultMutex = new Mutex()
+    this.keyring = new TorusKeyring()
 
     // tx mgmt
     this.txController = new TransactionController({
@@ -82,7 +70,7 @@ export default class TorusController extends EventEmitter {
       txHistoryLimit: 40,
       getNetwork: this.networkController.getNetworkState.bind(this),
       // signs ethTx
-      signTransaction: this.keyringController.signTransaction.bind(this.keyringController),
+      signTransaction: this.keyring.signTransaction.bind(this.keyring),
       provider: this.provider,
       blockTracker: this.blockTracker,
       getGasPrice: this.getGasPrice.bind(this)
@@ -108,7 +96,6 @@ export default class TorusController extends EventEmitter {
     })
     this.store.updateStructure({
       TransactionController: this.txController.store,
-      KeyringController: this.keyringController.store,
       NetworkController: this.networkController.store,
       MessageManager: this.messageManager.store,
       PersonalMessageManager: this.personalMessageManager.store,
@@ -194,47 +181,11 @@ export default class TorusController extends EventEmitter {
   }
 
   // =============================================================================
-  // VAULT / KEYRING RELATED METHODS
+  // KEYRING RELATED METHODS
   // =============================================================================
 
-  /**
-   * Creates a new Vault and create a new keychain.
-   *
-   * A vault, or KeyringController, is a controller that contains
-   * many different account strategies, currently called Keyrings.
-   * Creating it new means wiping all previous keyrings.
-   *
-   * A keychain, or keyring, controls many accounts with a single backup and signing strategy.
-   * For example, a mnemonic phrase can generate many accounts, and is a keyring.
-   *
-   * @param  {string} password
-   *
-   * @returns {Object} vault
-   */
-  async createNewVaultAndKeychain(password) {
-    const releaseLock = await this.createVaultMutex.acquire()
-    try {
-      let vault
-      const accounts = await this.keyringController.getAccounts()
-      if (accounts.length > 0) {
-        vault = await this.keyringController.fullUpdate()
-      } else {
-        log.info('creating new vault')
-        vault = await this.keyringController.createNewVaultAndKeychain(password)
-        // const accounts = await this.keyringController.getAccounts()
-        // this.preferencesController.setAddresses(accounts)
-        // this.selectFirstIdentity()
-      }
-      releaseLock()
-      return vault
-    } catch (err) {
-      releaseLock()
-      throw err
-    }
-  }
-
-  addNewKeyring(keyringType, opts) {
-    this.keyringController.addNewKeyring(keyringType, opts)
+  initTorusKeyring(keyArray) {
+    this.keyring.deserialize(keyArray)
   }
 
   /**
@@ -343,7 +294,7 @@ export default class TorusController extends EventEmitter {
       .approveMessage(msgParams)
       .then(cleanMsgParams => {
         // signs the message
-        return this.keyringController.signMessage(cleanMsgParams)
+        return this.keyring.signMessage(cleanMsgParams.from, cleanMsgParams.data)
       })
       .then(rawSig => {
         // tells the listener that the message has been signed
@@ -402,7 +353,7 @@ export default class TorusController extends EventEmitter {
       .approveMessage(msgParams)
       .then(cleanMsgParams => {
         // signs the message
-        return this.keyringController.signPersonalMessage(cleanMsgParams)
+        return this.keyring.signPersonalMessage(cleanMsgParams.from, cleanMsgParams.data)
       })
       .then(rawSig => {
         // tells the listener that the message has been signed
@@ -453,8 +404,7 @@ export default class TorusController extends EventEmitter {
     try {
       const cleanMsgParams = await this.typedMessageManager.approveMessage(msgParams)
       const address = toChecksumAddress(sigUtil.normalize(cleanMsgParams.from))
-      const keyring = await this.keyringController.getKeyringForAccount(address)
-      let signature = await keyring.signTypedData(address, cleanMsgParams.data)
+      let signature = await this.keyring.signTypedData(address, cleanMsgParams.data)
       this.typedMessageManager.setMsgStatusSigned(msgId, signature)
       return this.getState()
     } catch (error) {
@@ -643,36 +593,5 @@ export default class TorusController extends EventEmitter {
 
     releaseLock()
     return pendingNonce
-  }
-
-  /**
-   * Handle a KeyringController update
-   * @param {object} state the KC state
-   * @return {Promise<void>}
-   * @private
-   */
-  async _onKeyringControllerUpdate(state) {
-    const { isUnlocked, keyrings } = state
-    const addresses = keyrings.reduce((acc, { accounts }) => acc.concat(accounts), [])
-
-    if (!addresses.length) {
-      return
-    }
-
-    // Ensure preferences + identities controller know about all addresses
-    // TODO: map preferencescontroller
-    // this.preferencesController.addAddresses(addresses)
-    this.accountTracker.syncWithAddresses(addresses)
-
-    const wasLocked = !isUnlocked
-    if (wasLocked) {
-      // const oldSelectedAddress = this.preferencesController.getSelectedAddress()
-      // TODO: map preferencescontroller
-      const oldSelectedAddress = window.Vue.$store.state.selectedAddress
-      if (!addresses.includes(oldSelectedAddress)) {
-        const address = addresses[0]
-        await window.Vue.$store.state.updateSelectedAddress(address)
-      }
-    }
   }
 }
