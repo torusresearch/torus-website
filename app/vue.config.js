@@ -6,10 +6,10 @@ module.exports = {
     // open: process.platform === 'darwin',
     host: 'localhost',
     port: 3000, // CHANGE YOUR PORT HERE!
-    https: {
-      key: fs.readFileSync(path.resolve('../ssl/server.key')),
-      cert: fs.readFileSync(path.resolve('../ssl/server.crt'))
-    },
+    // https: {
+    //   key: fs.readFileSync(path.resolve('../ssl/server.key')),
+    //   cert: fs.readFileSync(path.resolve('../ssl/server.crt'))
+    // },
     hotOnly: false,
     headers: {
       'Access-Control-Allow-Origin': '*'
