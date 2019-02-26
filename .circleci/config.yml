@@ -27,7 +27,7 @@ jobs:
       - <<: *step_setup_global_packages
       - run:
           name: "Build code for torus website"
-          command: npm run build-embed:copy-main && npm run build
+          command: npm run build
       - persist_to_workspace:
           root: ~/torus-website/
           paths:
