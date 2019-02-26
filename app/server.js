@@ -18,7 +18,8 @@ const securityHeaderMiddleware = (req, res, next) => {
   res.setHeader('Content-Security-Policy', 'default-src: https: "unsafe-inline"')
   res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload')
   res.setHeader('X-XSS-Protection', '1; mode=block')
-  res.setHeader('X-Content-Type-Options',  'nosniff')
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  res.setHeader('Access-Control-Allow-Origin', '*')
   if (req.originalUrl.startsWith('/popup')) {
     // skip any /popup routes for x-frame-options for it to function properly
     next()
@@ -27,7 +28,6 @@ const securityHeaderMiddleware = (req, res, next) => {
   res.setHeader('X-Frame-Options', 'sameorigin')
   next()
 }
-
 
 app.use(securityHeaderMiddleware)
 
