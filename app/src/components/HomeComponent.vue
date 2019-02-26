@@ -43,7 +43,7 @@
                   <div class="alert alert-primary codebox">
                     <p class="mb-0">
                       &lt;script src="https://tor.us/embed.min.js" integrity=
-                      "sha384-5q6fDEUJlrsQMWIEDoYHgMFCz1BkrzaM+xk9gnFVGUwc6N7ub64go/igkidWNC7q" crossorigin="anonymous"&gt;&lt;/script&gt;
+                      "sha384-QQebNxU3jh0m/9Fza7wxQ/09Z3UpfLlf8E1IBXBdY+qcP7CtbvHL2s26/b/z4Yna" crossorigin="anonymous"&gt;&lt;/script&gt;
                     </p>
                   </div>
                   <div class="gaps size-3x"></div>
@@ -199,7 +199,7 @@
             <div class="text-block">
               <pre class="code">
                     <span class="tr"><span class="th"></span><code>// Add the following script to the top of &lt;head&gt;</code></span>
-                    <span class="tr"><span class="th"></span><code>&lt;script src="https://tor.us/embed-main.min.js"&gt;&lt;/script&gt;</code></span>
+                    <span class="tr"><span class="th"></span><code>&lt;script src="https://tor.us/embed.min.js" integrity= "sha384-QQebNxU3jh0m/9Fza7wxQ/09Z3UpfLlf8E1IBXBdY+qcP7CtbvHL2s26/b/z4Yna" crossorigin="anonymous"&gt;&lt;/script&gt;</code></span>
                     <span class="tr"><span class="th"></span><code></code></span>
                     <span class="tr"><span class="th"></span><code>// Start using web3 in your dapp</code></span>
                     <span class="tr"><span class="th"></span><code>$ web3.eth.accounts[0]</code></span>

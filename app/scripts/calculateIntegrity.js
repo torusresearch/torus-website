@@ -20,11 +20,13 @@ filesToReplace.forEach(filePath => {
     if (err) {
       return console.log(err)
     }
-    const number = data.substr(data.indexOf('sha384-'), 64 + 7)
-    const result = data.replace(number, integrity)
+    let index = data.indexOf('sha384-')
+    while (index !== -1) {
+      const number = data.substr(index, 64 + 7)
+      const result = data.replace(number, integrity)
 
-    fs.writeFile(reqPath, result, 'utf8', err => {
-      if (err) return console.log(err)
-    })
+      fs.writeFileSync(reqPath, result, 'utf8')
+      index = data.indexOf('sha384-', index + 1)
+    }
   })
 })
