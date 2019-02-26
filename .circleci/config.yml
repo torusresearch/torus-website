@@ -72,6 +72,7 @@ jobs:
           command: |
             echo '165.227.26.16 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBG25I235mTkWa3sbHxzu1rOpDxh4x7Crrbf75+B6Lp9uRhVcjKzhYRbLa1kkrRTrpMuCe5ZvML5QNkXA6d1Lp8Y=' >> ~/.ssh/known_hosts
             cd app/app/
+            sudo rm -rf -d ./dist/js/*.map
             scp -r ./dist torus@165.227.26.16:~/torus-website
 
 workflows:
