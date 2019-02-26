@@ -26,7 +26,7 @@
     "test:unit": "mocha --exit -r esm -r jsdom-global/register ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js"
   },
   "dependencies": {
-    "ajv": "^6.9.1",
+    "ajv": "^6.9.2",
     "assert": "^1.4.1",
     "backoff": "^2.5.0",
     "browserify": "^16.2.3",
@@ -92,7 +92,7 @@
     "jsdom": "13.2.0",
     "jsdom-global": "3.0.2",
     "luxon": "^1.11.3",
-    "mocha": "^6.0.0",
+    "mocha": "^6.0.1",
     "mocha-eslint": "^5.0.0",
     "mocha-jsdom": "^2.0.0",
     "mocha-sinon": "^2.1.0",
