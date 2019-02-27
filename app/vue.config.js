@@ -14,5 +14,6 @@ module.exports = {
     headers: {
       'Access-Control-Allow-Origin': '*'
     }
-  }
+  },
+  productionSourceMap: false
 }
