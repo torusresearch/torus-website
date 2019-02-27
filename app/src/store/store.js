@@ -61,7 +61,7 @@ var VuexStore = new Vuex.Store({
         bc.onmessage = function(ev) {
           if (ev.data === 'popup-loaded') {
             bc.postMessage({
-              origin: window.location.ancestorOrigins[0] || document.referrer,
+              origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
               type: 'transaction',
               txParams,
               balance
@@ -74,7 +74,7 @@ var VuexStore = new Vuex.Store({
         bc.onmessage = function(ev) {
           if (ev.data === 'popup-loaded') {
             bc.postMessage({
-              origin: window.location.ancestorOrigins[0] || document.referrer,
+              origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
               type: 'message',
               msgParams
             })
@@ -88,7 +88,10 @@ var VuexStore = new Vuex.Store({
       window.open('/networkChange', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=350,width=600')
       bc.onmessage = function(ev) {
         if (ev.data === 'popup-loaded') {
-          bc.postMessage({ origin: window.location.ancestorOrigins[0] || document.referrer, network: payload.network })
+          bc.postMessage({
+            origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+            network: payload.network
+          })
           bc.close()
         }
       }
