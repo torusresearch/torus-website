@@ -26,7 +26,7 @@ filesToReplace.forEach(filePath => {
       const result = data.replace(number, integrity)
 
       fs.writeFileSync(reqPath, result, 'utf8')
-      index = data.indexOf('sha384-', index + 1)
+      index = data.indexOf('sha384-', index + 64 + 7)
     }
   })
 })
