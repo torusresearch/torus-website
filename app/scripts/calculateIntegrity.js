@@ -15,18 +15,17 @@ const integrity = sriToolbox.generate(
 const filesToReplace = ['../public/embed-local.user.js', '../public/embed.user.js', '../src/components/HomeComponent.vue']
 
 filesToReplace.forEach(filePath => {
-  const reqPath = path.resolve(__dirname, filePath)
-  fs.readFile(reqPath, 'utf8', (err, data) => {
-    if (err) {
-      return console.log(err)
-    }
+  try {
+    const reqPath = path.resolve(__dirname, filePath)
+    let data = fs.readFileSync(reqPath, 'utf8')
     let index = data.indexOf('sha384-')
     while (index !== -1) {
-      const number = data.substr(index, 64 + 7)
-      const result = data.replace(number, integrity)
-
+      const result = data.substr(0, index) + integrity + data.substr(index + integrity.length)
       fs.writeFileSync(reqPath, result, 'utf8')
       index = data.indexOf('sha384-', index + 64 + 7)
-    }
-  })
+      data = result
+    }  
+  } catch (error) {
+    console.log(error)
+  }
 })
