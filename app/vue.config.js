@@ -4,6 +4,7 @@ const path = require('path')
 module.exports = {
   devServer: {
     // open: process.platform === 'darwin',
+    https: true,
     host: 'localhost',
     port: 3000, // CHANGE YOUR PORT HERE!
     // https: {
