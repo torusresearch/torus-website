@@ -9,6 +9,15 @@
             <v-card-text>
               <p>Sign message from {{ this.origin }} ?</p>
               <p>Message: {{ this.message }}</p>
+              <!-- <div 
+                v-else-if="this.typedMessages" 
+                v-for="typedMessage in this.typedMessages"
+                v-bind:key="typedMessage.name"
+              >
+                <p>Type: {{ typedMessage.type }}</p>
+                <p>Name: {{ typedMessage.name }}</p>
+                <p>Message: {{ typedMessage.value }}</p>
+              </div> -->
             </v-card-text>
 
             <v-card-actions>
@@ -17,6 +26,7 @@
               <v-btn large color="blue" flat @click="triggerSign">Agree</v-btn>
             </v-card-actions>
           </v-card>
+
         </div>
         <div v-else-if="this.type === 'transaction'">
           <v-card>

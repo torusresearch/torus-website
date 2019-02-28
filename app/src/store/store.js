@@ -4,6 +4,7 @@ import log from 'loglevel'
 import torus from '../torus'
 import config from '../config'
 import VuexPersist from 'vuex-persist'
+import { hexToText } from '../utils/utils'
 
 Vue.use(Vuex)
 
@@ -225,11 +226,17 @@ function getLatestMessageParams() {
     const msgTime = state.unapprovedPersonalMsgs[id].time
     msg = msgTime > time ? state.unapprovedPersonalMsgs[id] : msg
   }
+  // handle hex-based messages and convert to text
+  if (msg) msg.msgParams.message = hexToText(msg.msgParams.data)
+  // handle untyped messages
   for (let id in state.unapprovedTypedMessages) {
     const msgTime = state.unapprovedTypedMessages[id].time
-    msg = msgTime > time ? state.unapprovedTypedMessages[id] : msg
+    if (msgTime > time) {
+      msg = state.unapprovedTypedMessages[id]
+      msg.msgParams.message = JSON.stringify(msg.msgParams.data, null, 2) // TODO: remove later on
+      // msg.msgParams.typedMessages = msg.msgParams.data // TODO: use for differentiating msgs later on
+    }
   }
-  if (msg) msg.msgParams.message = JSON.stringify(msg.msgParams.data, null, 2)
   return msg ? msg.msgParams : {}
 }
 

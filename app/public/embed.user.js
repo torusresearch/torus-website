@@ -18,7 +18,8 @@ var whitelist = [
   'mycryptoheroes.net',
   'blockchaincuties.com',
   'cryptokitties.co',
-  'mycrypto.com'
+  'mycrypto.com',
+  'danfinlay.github.io'
 ]
 
 var inWhiteList = false
@@ -30,7 +31,7 @@ whitelist.map(function(url) {
 if (inWhiteList) {
   var sc = document.createElement('script')
   sc.setAttribute('src', 'https://tor.us/embed.min.js')
-  sc.setAttribute('integrity', 'sha384-QQebNxU3jh0m/9Fza7wxQ/09Z3UpfLlf8E1IBXBdY+qcP7CtbvHL2s26/b/z4Yna')
+  sc.setAttribute('integrity', 'sha384-G+WGVFGjgjI1rgmFuFpJlkNf+0yKvqr30jLZ9Wi/XQXSRQhaSfFlaAD2FJrVlMj0')
   sc.setAttribute('crossorigin', 'anonymous')
   sc.setAttribute('type', 'text/javascript')
   sc.setAttribute('style-color', '#75b4fd')
