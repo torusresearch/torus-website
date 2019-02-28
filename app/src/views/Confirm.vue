@@ -8,16 +8,16 @@
 
             <v-card-text>
               <p>Sign message from {{ this.origin }} ?</p>
-              <p>Message: {{ this.message }}</p>
-              <!-- <div 
-                v-else-if="this.typedMessages" 
+              <p v-if="this.messageType === 'normal'">Message: {{ this.message }}</p>
+              <div 
+                v-else-if="this.messageType === 'typed'" 
                 v-for="typedMessage in this.typedMessages"
                 v-bind:key="typedMessage.name"
               >
                 <p>Type: {{ typedMessage.type }}</p>
                 <p>Name: {{ typedMessage.name }}</p>
                 <p>Message: {{ typedMessage.value }}</p>
-              </div> -->
+              </div>
             </v-card-text>
 
             <v-card-actions>
@@ -125,6 +125,8 @@ export default {
     bc.onmessage = function(ev) {
       if (ev.data.type === 'message') {
         that.message = ev.data.msgParams ? ev.data.msgParams.message : ''
+        that.typedMessages = ev.data.msgParams ? ev.data.msgParams.typedMessages : {}
+        that.messageType = ev.data.msgParams.typedMessage ? 'typed' : 'normal'
         that.origin = ev.data.origin
         that.type = ev.data.type
       } else if (ev.data.type === 'transaction') {
