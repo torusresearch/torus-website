@@ -8,9 +8,8 @@
 
             <v-card-text>
               <p>Sign message from {{ this.origin }} ?</p>
-              <!-- TODO: test this
-              <p v-if="this.message">Message: {{ this.message }}</p>
-              <div 
+              <p>Message: {{ this.message }}</p>
+              <!-- <div 
                 v-else-if="this.typedMessages" 
                 v-for="typedMessage in this.typedMessages"
                 v-bind:key="typedMessage.name"
@@ -125,10 +124,7 @@ export default {
     var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
     bc.onmessage = function(ev) {
       if (ev.data.type === 'message') {
-        if (ev.data.msgParams) {
-          that.message = ev.data.msgParams.message
-          // that.typedMessages = ev.data.msgParams.typedMessages  
-        }
+        that.message = ev.data.msgParams ? ev.data.msgParams.message : ''
         that.origin = ev.data.origin
         that.type = ev.data.type
       } else if (ev.data.type === 'transaction') {

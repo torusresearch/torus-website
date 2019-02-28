@@ -234,7 +234,7 @@ function getLatestMessageParams() {
     if (msgTime > time) {
       msg = state.unapprovedTypedMessages[id]
       msg.msgParams.message = JSON.stringify(msg.msgParams.data, null, 2) // TODO: remove later on
-      msg.msgParams.typedMessages = msg.msgParams.data // TODO: use for differentiating msgs later on
+      // msg.msgParams.typedMessages = msg.msgParams.data // TODO: use for differentiating msgs later on
     }
   }
   return msg ? msg.msgParams : {}
