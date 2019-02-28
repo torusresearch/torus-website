@@ -218,8 +218,6 @@ function getLatestMessageParams() {
   const state = torusController.getState()
   let time = 0
   let msg = null
-
-  log.info('starting getLatest')
   for (let id in state.unapprovedMsgs) {
     const msgTime = state.unapprovedMsgs[id].time
     if (msgTime > time) {
@@ -248,7 +246,6 @@ function getLatestMessageParams() {
     if (msgTime > time) {
       time = msgTime
       msg = state.unapprovedTypedMessages[id]
-      log.info(msg)
       msg.msgParams.typedMessages = msg.msgParams.data // TODO: use for differentiating msgs later on
     }
   }
