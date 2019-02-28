@@ -217,24 +217,39 @@ function getLatestMessageParams() {
   const torusController = window.Vue.torus.torusController
   const state = torusController.getState()
   let time = 0
-  let msg = {}
+  let msg = null
+
+  log.info('starting getLatest')
   for (let id in state.unapprovedMsgs) {
     const msgTime = state.unapprovedMsgs[id].time
-    msg = msgTime > time ? state.unapprovedMsgs[id] : msg
+    if (msgTime > time) {
+      msg = state.unapprovedMsgs[id]
+      time = msgTime
+    }
   }
+  
   for (let id in state.unapprovedPersonalMsgs) {
     const msgTime = state.unapprovedPersonalMsgs[id].time
-    msg = msgTime > time ? state.unapprovedPersonalMsgs[id] : msg
+    if (msgTime > time) {
+      msg = state.unapprovedPersonalMsgs[id]
+      time = msgTime
+    }
   }
+
   // handle hex-based messages and convert to text
-  if (msg) msg.msgParams.message = hexToText(msg.msgParams.data)
-  // handle untyped messages
+  if (msg) {
+    msg.msgParams.message = hexToText(msg.msgParams.data)
+  } 
+
+  // handle typed messages
   for (let id in state.unapprovedTypedMessages) {
+    console.log(id)
     const msgTime = state.unapprovedTypedMessages[id].time
     if (msgTime > time) {
+      time = msgTime
       msg = state.unapprovedTypedMessages[id]
-      msg.msgParams.message = JSON.stringify(msg.msgParams.data, null, 2) // TODO: remove later on
-      // msg.msgParams.typedMessages = msg.msgParams.data // TODO: use for differentiating msgs later on
+      log.info(msg)
+      msg.msgParams.typedMessages = msg.msgParams.data // TODO: use for differentiating msgs later on
     }
   }
   return msg ? msg.msgParams : {}

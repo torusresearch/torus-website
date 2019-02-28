@@ -9,14 +9,11 @@
             <v-card-text>
               <p>Sign message from {{ this.origin }} ?</p>
               <p v-if="this.messageType === 'normal'">Message: {{ this.message }}</p>
-              <div 
-                v-else-if="this.messageType === 'typed'" 
-                v-for="typedMessage in this.typedMessages"
-                v-bind:key="typedMessage.name"
-              >
-                <p>Type: {{ typedMessage.type }}</p>
-                <p>Name: {{ typedMessage.name }}</p>
-                <p>Message: {{ typedMessage.value }}</p>
+              <div v-else-if="this.messageType === 'typed'" v-for="typedMessage in this.typedMessages" v-bind:key="typedMessage.name">
+                Type: {{ typedMessage.type }}<br>
+                Name: {{ typedMessage.name }}<br>
+                Message: {{ typedMessage.value }}<br>
+                <hr>
               </div>
             </v-card-text>
 
@@ -26,7 +23,6 @@
               <v-btn large color="blue" flat @click="triggerSign">Agree</v-btn>
             </v-card-actions>
           </v-card>
-
         </div>
         <div v-else-if="this.type === 'transaction'">
           <v-card>
@@ -124,9 +120,11 @@ export default {
     var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
     bc.onmessage = function(ev) {
       if (ev.data.type === 'message') {
-        that.message = ev.data.msgParams ? ev.data.msgParams.message : ''
-        that.typedMessages = ev.data.msgParams ? ev.data.msgParams.typedMessages : {}
-        that.messageType = ev.data.msgParams.typedMessage ? 'typed' : 'normal'
+        if (ev.data.msgParams) {
+          that.message = ev.data.msgParams.message
+          that.typedMessages = ev.data.msgParams.typedMessages
+          that.messageType = that.typedMessages ? 'typed' : 'normal'
+        }
         that.origin = ev.data.origin
         that.type = ev.data.type
       } else if (ev.data.type === 'transaction') {
@@ -156,6 +154,10 @@ export default {
 </script>
 
 <style>
+hr {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
 #close {
   color: #aaa;
   float: right;
