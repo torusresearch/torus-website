@@ -13,7 +13,7 @@
   "eslint.provideLintTask": true,
   "eslint.options": {
     "extends": ["plugin:vue/essential", "@vue/standard", "prettier"],
-    "plugins": ["prettier"],
+    "plugins": ["prettier", "html"],
     "parserOptions": {
       "parser": "babel-eslint"
     },
@@ -24,6 +24,8 @@
       }
     ],
     "rules": {
+      "jsx-a11y/label-has-for": 0,
+      "react/jsx-filename-extension": 0,
       "quotes": [2, "single"],
       "max-len": [
         2,
