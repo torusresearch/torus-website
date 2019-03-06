@@ -29,7 +29,7 @@ const embedUtils = require('./embedUtils.js')
 // const styleColor = document.currentScript.getAttribute('style-color')
 const stylePosition = document.currentScript.getAttribute('style-position')
 
-var torusWidget, torusMenuBtn, torusLogin, torusIframeContainer, torusIframe
+var torusWidget, torusMenuBtn, torusLogin, torusIframe
 
 restoreContextAfterImports()
 createWidget()
@@ -44,20 +44,29 @@ function createWidget() {
   link.setAttribute('rel', 'stylesheet')
   link.setAttribute('type', 'text/css')
   link.setAttribute('href', torusUrl + '/css/widget.css')
+  // Login button code
   torusWidget = embedUtils.htmlToElement('<div id="torusWidget" class="widget"></div>')
   torusLogin = embedUtils.htmlToElement('<button id="torusLogin" />')
   torusWidget.appendChild(torusLogin)
-  torusIframeContainer = embedUtils.htmlToElement('<div id="torusIframeContainer"></div>')
+  torusMenuBtn = embedUtils.htmlToElement('<button id="torusMenuBtn" />')
+  torusWidget.appendChild(torusMenuBtn)
+
+  // Iframe code
   torusIframe = embedUtils.htmlToElement('<iframe id="torusIframe" frameBorder="0" src="' + torusUrl + '/popup"></iframe>')
-  torusIframeContainer.appendChild(torusIframe)
+
+  // Setup on load code
   var bindOnLoad = function() {
     torusLogin.addEventListener('click', function() {
       window.torus.login(false)
     })
+    torusMenuBtn.addEventListener('click', function() {
+      // TODO: popup menu selection
+      // window.torus.menu(false)
+    })
   }
   var attachOnLoad = function() {
     window.document.head.appendChild(link)
-    window.document.body.appendChild(torusIframeContainer)
+    window.document.body.appendChild(torusIframe)
     window.document.body.appendChild(torusWidget)
   }
   embedUtils.runOnLoad(attachOnLoad)
@@ -173,50 +182,45 @@ function setupWeb3() {
   var communicationMux = setupMultiplex(window.torus.communicationStream)
   window.torus.communicationMux = communicationMux
 
-  window.addEventListener('message', message => {
-    if (message.data === 'showTorusIframe') {
-      showTorusOverlay()
-    } else if (message.data === 'hideTorusIframe') {
-      hideTorusOverlay()
-    }
-  })
+  // window.addEventListener('message', message => {
+  //   if (message.data === 'showTorusIframe') {
+  //     showTorusOverlay()
+  //   } else if (message.data === 'hideTorusIframe') {
+  //     hideTorusOverlay()
+  //   }
+  // })
 
-  function torusLoggedIn() {
-    if (window.torus.web3 && window.torus.web3.eth.accounts.length > 0) {
-      return true
-    } else {
-      return false
-    }
-  }
-
+  // TODO: check if unused
   function showTorusOverlay() {
     window.document.getElementById('torusLogin').style.display = 'none'
-    window.document.getElementById('torusIframeContainer').style.display = 'block'
   }
 
   function hideTorusOverlay() {
     window.document.getElementById('torusLogin').style.display = 'block'
-    window.document.getElementById('torusIframeContainer').style.display = 'none'
   }
 
   function showTorusButton() {
-    torusIframeContainer.style.display = 'none'
-    if (torusLoggedIn()) {
-      torusMenuBtn.style.display = 'block'
-      torusLogin.style.display = 'none'
-    } else {
-      torusLogin.style.display = 'block'
-      torusMenuBtn.style.display = 'none'
-    }
+    // torusIframeContainer.style.display = 'none'
+    torusMenuBtn.style.display = 'block'
+    torusLogin.style.display = 'none'
   }
 
-  var displayStream = communicationMux.createStream('display')
+  var displayStream = communicationMux.getStream('display')
   displayStream.on('data', function(msg) {
     if (msg === 'close') {
       showTorusButton()
     } else if (msg === 'open') {
       showTorusOverlay()
     }
+  })
+  // TODO: end check if unused
+
+  // Show torus button if wallet has been hydrated/detected
+  var statusStream = window.torus.communicationMux.getStream('status')
+  statusStream.on('data', function(status) {
+    log.info('data received on statusStream')
+    log.info(status)
+    if (status.loggedIn) showTorusButton()
   })
 
   // Exposing login function, if called from embed, flag as true

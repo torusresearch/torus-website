@@ -87,14 +87,12 @@ function onloadTorus(torus) {
     log.error(err.stack)
   })
   engine.start()
-  /* TODO: move out to onload.js */
 
   function triggerUi(type) {
     log.info('TRIGGERUI:' + type)
     window.Vue.$store.dispatch('showPopup')
   }
 
-  /* TODO: move out to onload.js */
   const torusController = new TorusController({
     showUnconfirmedMessage: triggerUi.bind(window, 'showUnconfirmedMessage'),
     unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
@@ -108,6 +106,7 @@ function onloadTorus(torus) {
           window.Vue.$store.dispatch('updateSelectedAddress', { selectedAddress })
         }, 50)
         torus.torusController.initTorusKeyring([wallet[selectedAddress]])
+        statusStream.write({ loggedIn: true })
         log.info('rehydrated wallet')
         torus.web3.eth.net
           .getId()
@@ -167,7 +166,10 @@ function onloadTorus(torus) {
     log.info('sendPassThroughStream', arguments)
   })
 
-  const providerOutStream = torus.metamaskMux.createStream('provider')
+  const providerOutStream = torus.metamaskMux.getStream('provider')
+
+  // stream to send logged in status
+  const statusStream = torus.communicationMux.getStream('status')
 
   // var transformStream = new stream.Transform({
   //   objectMode: true,
@@ -199,6 +201,7 @@ function onloadTorus(torus) {
     providerStream,
     receivePassThroughStream,
     providerOutStream,
+    statusStream,
     err => {
       if (err) log.error(err)
     }

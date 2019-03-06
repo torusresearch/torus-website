@@ -35,6 +35,11 @@
   display: none;
 }
 
+#torusMenuBtn:hover {
+  background-color: #EEEEEE;
+  transition: background-color, 0.1s ease-in-out;
+}
+
 #closeOverlayBtn {
   cursor: pointer;
   border-radius: 20px;
