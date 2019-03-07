@@ -10,10 +10,10 @@
               <p>Sign message from {{ this.origin }} ?</p>
               <p v-if="this.messageType === 'normal'">Message: {{ this.message }}</p>
               <div v-else-if="this.messageType === 'typed'" v-for="typedMessage in this.typedMessages" v-bind:key="typedMessage.name">
-                Type: {{ typedMessage.type }}<br>
-                Name: {{ typedMessage.name }}<br>
-                Message: {{ typedMessage.value }}<br>
-                <hr>
+                Type: {{ typedMessage.type }}<br />
+                Name: {{ typedMessage.name }}<br />
+                Message: {{ typedMessage.value }}<br />
+                <hr />
               </div>
             </v-card-text>
 

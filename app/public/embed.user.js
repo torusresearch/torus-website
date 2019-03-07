@@ -31,7 +31,7 @@ whitelist.map(function(url) {
 if (inWhiteList) {
   var sc = document.createElement('script')
   sc.setAttribute('src', 'https://tor.us/embed.min.js')
-  sc.setAttribute('integrity', 'sha384-5RAB4YHx6Oo9OdeRgbq5CJudMe2gLhoC1IEv8y+BNt9rCSyWa4J/jQQPPVjzqSNJ')
+  sc.setAttribute('integrity', 'sha384-aoAepIlk2tLo65evo46kcZnajhqvLRdqDcYGT9s6d0AaFHZmKPX85wrE9dRNuNAU')
   sc.setAttribute('crossorigin', 'anonymous')
   sc.setAttribute('type', 'text/javascript')
   sc.setAttribute('style-color', '#75b4fd')

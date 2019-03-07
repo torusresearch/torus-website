@@ -190,14 +190,6 @@ function setupWeb3() {
   //   }
   // })
 
-  // TODO: check if unused
-  function showTorusOverlay() {
-    window.document.getElementById('torusLogin').style.display = 'none'
-  }
-
-  function hideTorusOverlay() {
-    window.document.getElementById('torusLogin').style.display = 'block'
-  }
 
   function showTorusButton() {
     // torusIframeContainer.style.display = 'none'
@@ -205,14 +197,28 @@ function setupWeb3() {
     torusLogin.style.display = 'none'
   }
 
-  var displayStream = communicationMux.getStream('display')
-  displayStream.on('data', function(msg) {
-    if (msg === 'close') {
-      showTorusButton()
-    } else if (msg === 'open') {
-      showTorusOverlay()
-    }
-  })
+  function hideTorusButton() {
+    torusLogin.style.display = 'block'
+    torusMenuBtn.style.display = 'none'
+  }
+
+  // TODO: check if unused
+  // function showTorusOverlay() {
+  //   window.document.getElementById('torusLogin').style.display = 'none'
+  // }
+
+  // function hideTorusOverlay() {
+  //   window.document.getElementById('torusLogin').style.display = 'block'
+  // }
+
+  // var displayStream = communicationMux.getStream('display')
+  // displayStream.on('data', function(msg) {
+  //   if (msg === 'close') {
+  //     showTorusButton()
+  //   } else if (msg === 'open') {
+  //     showTorusOverlay()
+  //   }
+  // })
   // TODO: end check if unused
 
   // Show torus button if wallet has been hydrated/detected
@@ -221,6 +227,7 @@ function setupWeb3() {
     log.info('data received on statusStream')
     log.info(status)
     if (status.loggedIn) showTorusButton()
+    else if (status.loggedIn === false) hideTorusButton()
   })
 
   // Exposing login function, if called from embed, flag as true
