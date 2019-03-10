@@ -89,7 +89,7 @@
     "esm": "^3.2.5",
     "eth-phishing-detect": "^1.1.13",
     "ganache-core": "^2.5.1",
-    "jsdom": "13.2.0",
+    "jsdom": "14.0.0",
     "jsdom-global": "3.0.2",
     "luxon": "^1.11.3",
     "mocha": "^6.0.1",
