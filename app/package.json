@@ -44,7 +44,7 @@
     "ethereumjs-wallet": "^0.6.3",
     "fast-json-patch": "^2.0.7",
     "human-standard-token-abi": "^2.0.0",
-    "json-rpc-engine": "^4.0.0",
+    "json-rpc-engine": "^5.0.0",
     "json-rpc-middleware-stream": "^2.1.0",
     "jsonschema": "^1.2.4",
     "obj-multiplex": "^1.0.0",
