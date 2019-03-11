@@ -48,7 +48,7 @@
     "json-rpc-middleware-stream": "^2.1.0",
     "jsonschema": "^1.2.4",
     "obj-multiplex": "^1.0.0",
-    "obs-store": "^3.0.2",
+    "obs-store": "^4.0.0",
     "percentile": "^1.2.1",
     "pify": "^4.0.1",
     "post-message-stream": "^3.0.0",
