@@ -60,14 +60,14 @@ export default {
     }),
     sendEth: function() {
       window.Vue.torus.web3.eth.sendTransaction({
-        from: this.$store.state.selectedAddress,
+        from: this.selectedAddress,
         to: this.toAddress,
         value: window.Vue.torus.web3.utils.toWei(this.amount)
       })
     },
     getTokenBalances: function() {
       let selectedAddress = this.selectedAddress
-      selectedAddress = '0x5cc494843e3f4ac175a5e730c300b011fabf2cea'
+      // selectedAddress = '0x5cc494843e3f4ac175a5e730c300b011fabf2cea'
       fetch(
         // eslint-disable-next-line max-len
         `https://api.etherscan.io/api?module=account&action=tokentx&address=${selectedAddress}&startblock=0&endblock=999999999&sort=asc&apikey=99M2SA7ZXJYC6N74Z4XRKCY28TFDVZKN4D`,
