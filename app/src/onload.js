@@ -87,14 +87,12 @@ function onloadTorus(torus) {
     log.error(err.stack)
   })
   engine.start()
-  /* TODO: move out to onload.js */
 
   function triggerUi(type) {
     log.info('TRIGGERUI:' + type)
     window.Vue.$store.dispatch('showPopup')
   }
 
-  /* TODO: move out to onload.js */
   const torusController = new TorusController({
     showUnconfirmedMessage: triggerUi.bind(window, 'showUnconfirmedMessage'),
     unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
