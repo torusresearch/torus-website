@@ -1,30 +1,49 @@
 <template>
-  <v-container fluid fill-height>
-    <v-layout row wrap align-center justify-center v-if="loggedIn">
-      <v-flex>
-        <v-btn color="#75b4fd" class="white--text" v-on:click="logout" id="googleAuthBtnf">Logout</v-btn>
-      </v-flex>
-      <v-flex xs12 sm8 md4>
-        <span>ETH Balance:</span>
-        <span>{{ parseFloat(balance).toFixed(5) }} ETH</span>
-      </v-flex>
-      <v-flex xs12 sm6 md3>
-        <v-text-field
-          id="toAddress"
-          placeholder="Enter address to send to"
-          aria-label="box"
-          solo
-          v-model="toAddress"
-          :rules="[rules.toAddress]"
-          height="15px"
-        ></v-text-field>
-        <v-text-field id="amount" placeholder="Enter Amount to send" aria-label="box" solo v-model="amount" height="15px"></v-text-field>
-        <v-btn color="#75b4fd" class="white--text" v-on:click="sendEth" id="googleAuthBtnf">Send</v-btn>
-        <div>
-          <v-btn color="#75b4fd" class="white--text" v-on:click="getTokenBalances" id="googleAuthBtnf">Get Token Balances</v-btn>
+  <v-container fill-height grid-list-sm>
+    <v-layout v-if="loggedIn">
+      <v-layout v-if="balance === '0'" align-center justify-center>
+        <v-flex d-flex xs12 sm12 md12>
+          <div class="text-xs-center">
+            <v-progress-circular indeterminate color="#75b4fd"></v-progress-circular>
+          </div>
+        </v-flex>
+      </v-layout>
+      <v-layout v-else row wrap justify-center>
+        <v-flex xs12>
+          <v-btn color="#75b4fd" class="white--text" v-on:click="logout">Logout</v-btn>
+        </v-flex>
+        <v-flex xs12 font-weight-medium>
+          <span>ETH Balance: </span>
+          <span>{{ parseFloat(balance).toFixed(5) }} ETH</span>
+        </v-flex>
+        <v-flex xs12>
+          <v-text-field
+            id="toAddress"
+            placeholder="Enter address to send to"
+            aria-label="box"
+            solo
+            v-model="toAddress"
+            :rules="[rules.toAddress, rules.required]"
+            height="15px"
+            class="input-width"
+          ></v-text-field>
+          <v-text-field
+            id="amount"
+            placeholder="Enter Amount to send"
+            aria-label="box"
+            solo
+            v-model="amount"
+            height="15px"
+            :rules="[rules.required]"
+            class="input-width"
+          ></v-text-field>
+          <v-btn color="#75b4fd" class="white--text" v-on:click="sendEth">Send</v-btn>
+        </v-flex>
+        <v-flex xs12>
+          <v-btn color="#75b4fd" class="white--text" v-on:click="getTokenBalances">Get Token Balances</v-btn>
           <div v-for="(value, key) in tokenBalances" :key="key">{{ key }}: {{ parseFloat(value).toFixed(5) }}</div>
-        </div>
-      </v-flex>
+        </v-flex>
+      </v-layout>
     </v-layout>
     <v-layout v-else align-center justify-center>
       <v-flex xs12 sm8 md4>
@@ -57,9 +76,8 @@ export default {
       amount: '',
       tokenBalances: {},
       rules: {
-        toAddress: value => {
-          return window.Vue.torus.web3.utils.isAddress(value)
-        }
+        toAddress: value => window.Vue.torus.web3.utils.isAddress(value) || 'Invalid Eth Address',
+        required: value => !!value || 'Required'
       }
     }
   },
@@ -124,4 +142,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.input-width {
+  max-width: 400px;
+}
+</style>
