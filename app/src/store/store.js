@@ -16,15 +16,12 @@ const vuexPersist = new VuexPersist({
   }
 })
 
+const initialState = { email: '', idToken: '', wallet: {}, weiBalance: 0, selectedAddress: '', networkId: 0 }
+
 var VuexStore = new Vuex.Store({
   plugins: [vuexPersist.plugin],
   state: {
-    email: '',
-    idToken: '',
-    wallet: {},
-    weiBalance: 0,
-    selectedAddress: '',
-    networkId: 0
+    ...initialState
   },
   getters: {},
   mutations: {
@@ -48,6 +45,17 @@ var VuexStore = new Vuex.Store({
     }
   },
   actions: {
+    resetStore(context, payload) {
+      let state = this.$store.state
+      let newState = {}
+
+      Object.keys(state).forEach(key => {
+        newState[key] = null // or = initialState[key]
+      })
+
+      this.$store.replaceState(newState)
+      window.sessionStorage.clear()
+    },
     showPopup(context, payload) {
       var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
       window.open(
@@ -225,7 +233,7 @@ function getLatestMessageParams() {
       time = msgTime
     }
   }
-  
+
   for (let id in state.unapprovedPersonalMsgs) {
     const msgTime = state.unapprovedPersonalMsgs[id].time
     if (msgTime > time) {
@@ -237,7 +245,7 @@ function getLatestMessageParams() {
   // handle hex-based messages and convert to text
   if (msg) {
     msg.msgParams.message = hexToText(msg.msgParams.data)
-  } 
+  }
 
   // handle typed messages
   for (let id in state.unapprovedTypedMessages) {
