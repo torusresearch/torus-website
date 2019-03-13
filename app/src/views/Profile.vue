@@ -41,7 +41,36 @@
         </v-flex>
         <v-flex xs12>
           <v-btn color="#75b4fd" class="white--text" v-on:click="getTokenBalances">Get Token Balances</v-btn>
-          <div v-for="(value, key) in tokenBalances" :key="key">{{ key }}: {{ parseFloat(value).toFixed(5) }}</div>
+          <div v-if="tokenBalances.length > 0 && fetchedTokenBalances">
+            <v-card>
+              <v-card-title>
+                Token Balances
+                <v-spacer />
+                <v-text-field
+                  class="input-width text-lg-right"
+                  v-model="search"
+                  append-icon="search"
+                  label="Search"
+                  single-line
+                  hide-details
+                ></v-text-field>
+              </v-card-title>
+              <v-data-table :headers="headers" :items="tokenBalances" :search="search">
+                <template v-slot:items="props">
+                  <td>{{ props.item.ticker }}</td>
+                  <td class="text-xs-left">{{ props.item.name }}</td>
+                  <td class="text-xs-left">{{ props.item.balance }}</td>
+                  <td class="text-xs-left">
+                    <a :href="props.item.etherscanLink" class="btn" target="_blank" rel="noreferrer noopener">View On Etherscan</a>
+                  </td>
+                </template>
+                <v-alert v-slot:no-results :value="true" color="error" icon="warning"> Your search for "{{ search }}" found no results. </v-alert>
+              </v-data-table>
+            </v-card>
+          </div>
+          <div v-else-if="fetchedTokenBalances" class="font-weight-medium">
+            You don't hold any ERC-20 tokens
+          </div>
         </v-flex>
       </v-layout>
     </v-layout>
@@ -74,7 +103,19 @@ export default {
     return {
       toAddress: '',
       amount: '',
-      tokenBalances: {},
+      tokenBalances: [],
+      fetchedTokenBalances: false,
+      search: '',
+      headers: [
+        {
+          text: 'Ticker',
+          align: 'left',
+          value: 'ticker'
+        },
+        { text: 'Name', value: 'name' },
+        { text: 'Balance', value: 'balance' },
+        { text: 'Etherscan', value: 'etherscanLink' }
+      ],
       rules: {
         toAddress: value => window.Vue.torus.web3.utils.isAddress(value) || 'Invalid Eth Address',
         required: value => !!value || 'Required'
@@ -102,9 +143,25 @@ export default {
         value: window.Vue.torus.web3.utils.toWei(this.amount)
       })
     },
+    significantDigits: function(number, perc = false, len = 2) {
+      let input = number
+      if (input === 0) return input
+      if (perc) {
+        input *= 100
+      }
+      let depth
+      if (input >= 1) {
+        depth = 2
+      } else {
+        depth = len - 1 + Math.ceil(Math.log10(1 / input))
+      }
+      const shift = Math.pow(10, depth)
+      const roundedNum = Math.round(shift * input) / shift
+      return roundedNum
+    },
     getTokenBalances: function() {
       let selectedAddress = this.selectedAddress
-      // selectedAddress = '0x5cc494843e3f4ac175a5e730c300b011fabf2cea'
+      selectedAddress = '0x5cc494843e3f4ac175a5e730c300b011fabf2cea'
       fetch(
         // eslint-disable-next-line max-len
         `https://api.etherscan.io/api?module=account&action=tokentx&address=${selectedAddress}&startblock=0&endblock=999999999&sort=asc&apikey=99M2SA7ZXJYC6N74Z4XRKCY28TFDVZKN4D`,
@@ -120,11 +177,19 @@ export default {
           const balances = {}
           for (let index = 0; index < res.result.length; index++) {
             const element = res.result[index]
-            balances[element.tokenSymbol] = balances[element.tokenSymbol] ? balances[element.tokenSymbol] : 0
+            balances[element.tokenSymbol] = balances[element.tokenSymbol]
+              ? balances[element.tokenSymbol]
+              : { balance: 0, name: '', ticker: '', etherscanLink: '' }
             const value = parseFloat(element.value) / 10 ** parseInt(element.tokenDecimal, 10)
-            balances[element.tokenSymbol] += element.from === selectedAddress ? -value : +value
+            balances[element.tokenSymbol].balance += element.from === selectedAddress ? -value : +value
+            balances[element.tokenSymbol].name = element.tokenName
+            balances[element.tokenSymbol].ticker = element.tokenSymbol
+            balances[element.tokenSymbol].etherscanLink = `https://etherscan.io/address/${element.contractAddress}`
           }
-          this.tokenBalances = balances
+          this.tokenBalances = Object.keys(balances).map(item => {
+            return { ...balances[item], balance: this.significantDigits(balances[item].balance) }
+          })
+          this.fetchedTokenBalances = true
         })
         .catch(err => {
           console.error(err)
