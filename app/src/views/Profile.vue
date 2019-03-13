@@ -18,27 +18,29 @@
         </v-flex>
         <v-flex xs12>
           <div class="font-weight-medium mb-4">Send ETH:</div>
-          <v-text-field
-            id="toAddress"
-            placeholder="Enter address to send ether to"
-            aria-label="box"
-            solo
-            v-model="toAddress"
-            :rules="[rules.toAddress, rules.required]"
-            height="15px"
-            class="input-width"
-          ></v-text-field>
-          <v-text-field
-            id="amount"
-            placeholder="Enter ether amount to send"
-            aria-label="box"
-            solo
-            v-model="amount"
-            height="15px"
-            :rules="[rules.required]"
-            class="input-width"
-          ></v-text-field>
-          <v-btn color="#75b4fd" class="white--text" v-on:click="sendEth">Send</v-btn>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-text-field
+              id="toAddress"
+              placeholder="Enter address to send ether to"
+              aria-label="box"
+              solo
+              v-model="toAddress"
+              :rules="[rules.toAddress, rules.required]"
+              height="15px"
+              class="input-width"
+            ></v-text-field>
+            <v-text-field
+              id="amount"
+              placeholder="Enter ether amount to send"
+              aria-label="box"
+              solo
+              v-model="amount"
+              height="15px"
+              :rules="[rules.required]"
+              class="input-width"
+            ></v-text-field>
+            <v-btn color="#75b4fd" :disabled="!valid" class="white--text" v-on:click="sendEth">Send</v-btn>
+          </v-form>
         </v-flex>
         <v-flex xs12>
           <v-btn color="#75b4fd" class="white--text mb-4" v-on:click="getTokenBalances">Get Token Balances</v-btn>
@@ -68,48 +70,50 @@
                       <template v-slot:activator="{ on }">
                         <v-btn color="#75b4fd" v-on="on" class="white--text mb-4">Transfer</v-btn>
                       </template>
-                      <v-card>
-                        <v-card-title>
-                          <span class="headline">Send Token: {{ props.item.ticker }}</span>
-                        </v-card-title>
-                        <v-card-text>
-                          <v-container grid-list-md>
-                            <v-layout wrap>
-                              <v-flex xs12 sm12 md12>
-                                <v-text-field
-                                  id="toAddress"
-                                  placeholder="Enter address to send token to"
-                                  aria-label="box"
-                                  solo
-                                  required
-                                  v-model="toAddress"
-                                  :rules="[rules.toAddress, rules.required]"
-                                  height="15px"
-                                  class="input-width"
-                                ></v-text-field>
-                              </v-flex>
-                              <v-flex xs12 sm12 md12>
-                                <v-text-field
-                                  id="amount"
-                                  placeholder="Enter token amount to send"
-                                  aria-label="box"
-                                  solo
-                                  required
-                                  v-model="amount"
-                                  height="15px"
-                                  :rules="[rules.required]"
-                                  class="input-width"
-                                ></v-text-field>
-                              </v-flex>
-                            </v-layout>
-                          </v-container>
-                        </v-card-text>
-                        <v-card-actions>
-                          <v-btn color="blue darken-1" large flat @click="props.item.dialog = false">Close</v-btn>
-                          <v-spacer></v-spacer>
-                          <v-btn color="blue darken-1" large flat @click="onTransferToken(props.item)">Send</v-btn>
-                        </v-card-actions>
-                      </v-card>
+                      <v-form ref="tokenForm" v-model="tokenFormValid" lazy-validation>
+                        <v-card>
+                          <v-card-title>
+                            <span class="headline">Send Token: {{ props.item.ticker }}</span>
+                          </v-card-title>
+                          <v-card-text>
+                            <v-container grid-list-md>
+                              <v-layout wrap>
+                                <v-flex xs12 sm12 md12>
+                                  <v-text-field
+                                    id="tokenToAddress"
+                                    placeholder="Enter address to send token to"
+                                    aria-label="box"
+                                    solo
+                                    required
+                                    v-model="tokenToAddress"
+                                    :rules="[rules.toAddress, rules.required]"
+                                    height="15px"
+                                    class="input-width"
+                                  ></v-text-field>
+                                </v-flex>
+                                <v-flex xs12 sm12 md12>
+                                  <v-text-field
+                                    id="amount"
+                                    placeholder="Enter token amount to send"
+                                    aria-label="box"
+                                    solo
+                                    required
+                                    v-model="tokenAmount"
+                                    height="15px"
+                                    :rules="[rules.required]"
+                                    class="input-width"
+                                  ></v-text-field>
+                                </v-flex>
+                              </v-layout>
+                            </v-container>
+                          </v-card-text>
+                          <v-card-actions>
+                            <v-btn color="blue darken-1" large flat @click="props.item.dialog = false">Close</v-btn>
+                            <v-spacer></v-spacer>
+                            <v-btn color="blue darken-1" large flat :disabled="!tokenFormValid" @click="onTransferToken(props.item)">Send</v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-form>
                     </v-dialog>
                   </td>
                 </template>
@@ -151,7 +155,11 @@ export default {
   data: function() {
     return {
       toAddress: '',
+      tokenToAddress: '',
       amount: '',
+      tokenAmount: '',
+      valid: true,
+      tokenFormValid: true,
       tokenBalances: [],
       fetchedTokenBalances: false,
       search: '',
@@ -186,46 +194,50 @@ export default {
       window.Vue.$store.dispatch('resetStore')
     },
     onTransferToken: function(item) {
-      item.dialog = false
-      const web3 = window.Vue.torus.web3
-      const contractInstance = new web3.eth.Contract(
-        [
-          {
-            constant: false,
-            inputs: [
-              {
-                name: '_to',
-                type: 'address'
-              },
-              {
-                name: '_value',
-                type: 'uint256'
-              }
-            ],
-            name: 'transfer',
-            outputs: [
-              {
-                name: 'success',
-                type: 'bool'
-              }
-            ],
-            payable: false,
-            stateMutability: 'nonpayable',
-            type: 'function'
-          }
-        ],
-        item.address
-      )
-      contractInstance.methods.transfer(this.toAddress, this.amount).send({
-        from: this.selectedAddress
-      })
+      if (this.$refs.tokenForm.validate()) {
+        const web3 = window.Vue.torus.web3
+        const contractInstance = new web3.eth.Contract(
+          [
+            {
+              constant: false,
+              inputs: [
+                {
+                  name: '_to',
+                  type: 'address'
+                },
+                {
+                  name: '_value',
+                  type: 'uint256'
+                }
+              ],
+              name: 'transfer',
+              outputs: [
+                {
+                  name: 'success',
+                  type: 'bool'
+                }
+              ],
+              payable: false,
+              stateMutability: 'nonpayable',
+              type: 'function'
+            }
+          ],
+          item.address
+        )
+        contractInstance.methods.transfer(this.tokenToAddress, this.tokenAmount).send({
+          from: this.selectedAddress
+        })
+        item.dialog = false
+      }
     },
     sendEth: function() {
-      window.Vue.torus.web3.eth.sendTransaction({
-        from: this.selectedAddress,
-        to: this.toAddress,
-        value: window.Vue.torus.web3.utils.toWei(this.amount)
-      })
+      if (this.$refs.form.validate()) {
+        window.Vue.torus.web3.eth.sendTransaction({
+          from: this.selectedAddress,
+          to: this.toAddress,
+          value: window.Vue.torus.web3.utils.toWei(this.amount)
+        })
+      }
     },
     significantDigits: function(number, perc = false, len = 2) {
       let input = number
