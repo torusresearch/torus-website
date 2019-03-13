@@ -17,9 +17,10 @@
           <span>{{ parseFloat(balance).toFixed(5) }} ETH</span>
         </v-flex>
         <v-flex xs12>
+          <div class="font-weight-medium mb-4">Send ETH:</div>
           <v-text-field
             id="toAddress"
-            placeholder="Enter address to send to"
+            placeholder="Enter address to send ether to"
             aria-label="box"
             solo
             v-model="toAddress"
@@ -29,7 +30,7 @@
           ></v-text-field>
           <v-text-field
             id="amount"
-            placeholder="Enter Amount to send"
+            placeholder="Enter ether amount to send"
             aria-label="box"
             solo
             v-model="amount"
@@ -40,14 +41,14 @@
           <v-btn color="#75b4fd" class="white--text" v-on:click="sendEth">Send</v-btn>
         </v-flex>
         <v-flex xs12>
-          <v-btn color="#75b4fd" class="white--text" v-on:click="getTokenBalances">Get Token Balances</v-btn>
+          <v-btn color="#75b4fd" class="white--text mb-4" v-on:click="getTokenBalances">Get Token Balances</v-btn>
           <div v-if="tokenBalances.length > 0 && fetchedTokenBalances">
             <v-card>
               <v-card-title>
                 Token Balances
                 <v-spacer />
                 <v-text-field
-                  class="input-width text-lg-right"
+                  class="input-width-200 text-lg-right"
                   v-model="search"
                   append-icon="search"
                   label="Search"
@@ -58,10 +59,58 @@
               <v-data-table :headers="headers" :items="tokenBalances" :search="search">
                 <template v-slot:items="props">
                   <td>{{ props.item.ticker }}</td>
-                  <td class="text-xs-left">{{ props.item.name }}</td>
+                  <td class="text-xs-left">
+                    <a :href="props.item.etherscanLink" target="_blank" rel="noreferrer noopener">{{ props.item.name }}</a>
+                  </td>
                   <td class="text-xs-left">{{ props.item.balance }}</td>
                   <td class="text-xs-left">
-                    <a :href="props.item.etherscanLink" class="btn" target="_blank" rel="noreferrer noopener">View On Etherscan</a>
+                    <v-dialog v-model="props.item.dialog" persistent max-width="600px">
+                      <template v-slot:activator="{ on }">
+                        <v-btn color="#75b4fd" v-on="on" class="white--text mb-4">Transfer</v-btn>
+                      </template>
+                      <v-card>
+                        <v-card-title>
+                          <span class="headline">Send Token: {{ props.item.ticker }}</span>
+                        </v-card-title>
+                        <v-card-text>
+                          <v-container grid-list-md>
+                            <v-layout wrap>
+                              <v-flex xs12 sm12 md12>
+                                <v-text-field
+                                  id="toAddress"
+                                  placeholder="Enter address to send token to"
+                                  aria-label="box"
+                                  solo
+                                  required
+                                  v-model="toAddress"
+                                  :rules="[rules.toAddress, rules.required]"
+                                  height="15px"
+                                  class="input-width"
+                                ></v-text-field>
+                              </v-flex>
+                              <v-flex xs12 sm12 md12>
+                                <v-text-field
+                                  id="amount"
+                                  placeholder="Enter token amount to send"
+                                  aria-label="box"
+                                  solo
+                                  required
+                                  v-model="amount"
+                                  height="15px"
+                                  :rules="[rules.required]"
+                                  class="input-width"
+                                ></v-text-field>
+                              </v-flex>
+                            </v-layout>
+                          </v-container>
+                        </v-card-text>
+                        <v-card-actions>
+                          <v-btn color="blue darken-1" large flat @click="props.item.dialog = false">Close</v-btn>
+                          <v-spacer></v-spacer>
+                          <v-btn color="blue darken-1" large flat @click="onTransferToken(props.item)">Send</v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
                   </td>
                 </template>
                 <v-alert v-slot:no-results :value="true" color="error" icon="warning"> Your search for "{{ search }}" found no results. </v-alert>
@@ -114,7 +163,7 @@ export default {
         },
         { text: 'Name', value: 'name' },
         { text: 'Balance', value: 'balance' },
-        { text: 'Etherscan', value: 'etherscanLink' }
+        { text: 'Transfer', value: 'transfer' }
       ],
       rules: {
         toAddress: value => window.Vue.torus.web3.utils.isAddress(value) || 'Invalid Eth Address',
@@ -135,6 +184,41 @@ export default {
     }),
     logout: function() {
       window.Vue.$store.dispatch('resetStore')
+    },
+    onTransferToken: function(item) {
+      item.dialog = false
+      const web3 = window.Vue.torus.web3
+      const contractInstance = new web3.eth.Contract(
+        [
+          {
+            constant: false,
+            inputs: [
+              {
+                name: '_to',
+                type: 'address'
+              },
+              {
+                name: '_value',
+                type: 'uint256'
+              }
+            ],
+            name: 'transfer',
+            outputs: [
+              {
+                name: 'success',
+                type: 'bool'
+              }
+            ],
+            payable: false,
+            stateMutability: 'nonpayable',
+            type: 'function'
+          }
+        ],
+        item.address
+      )
+      contractInstance.methods.transfer(this.toAddress, this.amount).send({
+        from: this.selectedAddress
+      })
     },
     sendEth: function() {
       window.Vue.torus.web3.eth.sendTransaction({
@@ -161,7 +245,7 @@ export default {
     },
     getTokenBalances: function() {
       let selectedAddress = this.selectedAddress
-      //   selectedAddress = '0x5cc494843e3f4ac175a5e730c300b011fabf2cea'
+      selectedAddress = '0x5cc494843e3f4ac175a5e730c300b011fabf2cea'
       fetch(
         // eslint-disable-next-line max-len
         `https://api.etherscan.io/api?module=account&action=tokentx&address=${selectedAddress}&startblock=0&endblock=999999999&sort=asc&apikey=99M2SA7ZXJYC6N74Z4XRKCY28TFDVZKN4D`,
@@ -184,7 +268,9 @@ export default {
             balances[element.tokenSymbol].balance += element.from === selectedAddress ? -value : +value
             balances[element.tokenSymbol].name = element.tokenName
             balances[element.tokenSymbol].ticker = element.tokenSymbol
+            balances[element.tokenSymbol].address = element.contractAddress
             balances[element.tokenSymbol].etherscanLink = `https://etherscan.io/address/${element.contractAddress}`
+            balances[element.tokenSymbol].dialog = false
           }
           const finalBalances = []
           Object.keys(balances).map(item => {
@@ -212,5 +298,8 @@ export default {
 <style>
 .input-width {
   max-width: 400px;
+}
+.input-width-200 {
+  max-width: 200px;
 }
 </style>
