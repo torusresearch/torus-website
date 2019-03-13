@@ -161,7 +161,7 @@ export default {
     },
     getTokenBalances: function() {
       let selectedAddress = this.selectedAddress
-      selectedAddress = '0x5cc494843e3f4ac175a5e730c300b011fabf2cea'
+      //   selectedAddress = '0x5cc494843e3f4ac175a5e730c300b011fabf2cea'
       fetch(
         // eslint-disable-next-line max-len
         `https://api.etherscan.io/api?module=account&action=tokentx&address=${selectedAddress}&startblock=0&endblock=999999999&sort=asc&apikey=99M2SA7ZXJYC6N74Z4XRKCY28TFDVZKN4D`,
@@ -186,9 +186,11 @@ export default {
             balances[element.tokenSymbol].ticker = element.tokenSymbol
             balances[element.tokenSymbol].etherscanLink = `https://etherscan.io/address/${element.contractAddress}`
           }
-          this.tokenBalances = Object.keys(balances).map(item => {
-            return { ...balances[item], balance: this.significantDigits(balances[item].balance) }
+          const finalBalances = []
+          Object.keys(balances).map(item => {
+            if (balances[item].balance > 0) finalBalances.push({ ...balances[item], balance: this.significantDigits(balances[item].balance) })
           })
+          this.tokenBalances = finalBalances
           this.fetchedTokenBalances = true
         })
         .catch(err => {
