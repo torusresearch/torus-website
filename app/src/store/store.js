@@ -42,18 +42,16 @@ var VuexStore = new Vuex.Store({
     },
     setNetworkId(state, networkId) {
       state.networkId = networkId
+    },
+    resetStore(state, requiredState) {
+      Object.keys(state).forEach(key => {
+        state[key] = initialState[key] // or = initialState[key]
+      })
     }
   },
   actions: {
     resetStore(context, payload) {
-      let state = this.$store.state
-      let newState = {}
-
-      Object.keys(state).forEach(key => {
-        newState[key] = null // or = initialState[key]
-      })
-
-      this.$store.replaceState(newState)
+      context.commit('resetStore', initialState)
       window.sessionStorage.clear()
     },
     showPopup(context, payload) {

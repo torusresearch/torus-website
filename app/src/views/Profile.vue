@@ -58,7 +58,6 @@ export default {
       tokenBalances: {},
       rules: {
         toAddress: value => {
-          // eslint-disable-next-line max-len
           return window.Vue.torus.web3.utils.isAddress(value)
         }
       }
