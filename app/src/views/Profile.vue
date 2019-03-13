@@ -14,33 +14,38 @@
         </v-flex>
         <v-flex xs12 font-weight-medium>
           <span>ETH Balance: </span>
-          <span>{{ parseFloat(balance).toFixed(5) }} ETH</span>
+          <span>{{ this.significantDigits(parseFloat(balance).toFixed(5)) }} ETH</span>
         </v-flex>
-        <v-flex xs12>
-          <div class="font-weight-medium mb-4">Send ETH:</div>
-          <v-form ref="form" v-model="valid" lazy-validation>
-            <v-text-field
-              id="toAddress"
-              placeholder="Enter address to send ether to"
-              aria-label="box"
-              solo
-              v-model="toAddress"
-              :rules="[rules.toAddress, rules.required]"
-              height="15px"
-              class="input-width"
-            ></v-text-field>
-            <v-text-field
-              id="amount"
-              placeholder="Enter ether amount to send"
-              aria-label="box"
-              solo
-              v-model="amount"
-              height="15px"
-              :rules="[rules.required]"
-              class="input-width"
-            ></v-text-field>
-            <v-btn color="#75b4fd" :disabled="!valid" class="white--text" v-on:click="sendEth">Send</v-btn>
-          </v-form>
+        <v-flex xs6>
+          <v-btn outline color="#75b4fd" class="font-weight-medium mb-4" @click="sendEthExpand = !sendEthExpand">Send ETH</v-btn>
+          <v-expand-transition>
+            <v-form ref="form" v-model="valid" lazy-validation v-show="sendEthExpand">
+              <v-text-field
+                id="toAddress"
+                placeholder="Enter address to send ether to"
+                aria-label="box"
+                solo
+                v-model="toAddress"
+                :rules="[rules.toAddress, rules.required]"
+                height="15px"
+                class="input-width"
+              ></v-text-field>
+              <v-text-field
+                id="amount"
+                placeholder="Enter ether amount to send"
+                aria-label="box"
+                solo
+                v-model="amount"
+                height="15px"
+                :rules="[rules.required]"
+                class="input-width"
+              ></v-text-field>
+              <v-btn color="#75b4fd" :disabled="!valid" class="white--text" v-on:click="sendEth">Send</v-btn>
+            </v-form>
+          </v-expand-transition>
+        </v-flex>
+        <v-flex xs6>
+          <v-btn outline color="#75b4fd" class="font-weight-medium mb-4" @click="depositETHOption">Deposit ETH</v-btn>
         </v-flex>
         <v-flex xs12 justify-space-around>
           <v-btn color="#75b4fd" class="white--text mb-4" v-on:click="getTokenBalances">Get Token Balances</v-btn>
@@ -159,10 +164,13 @@ export default {
   data: function() {
     return {
       toAddress: '',
+      widget: {},
       tokenToAddress: '',
       amount: '',
       tokenAmount: '',
       valid: true,
+      sendEthExpand: false,
+      depositEthExpand: false,
       tokenFormValid: true,
       tokenBalances: [],
       fetchedTokenBalances: false,
@@ -196,6 +204,10 @@ export default {
     }),
     logout: function() {
       window.Vue.$store.dispatch('resetStore')
+    },
+    depositETHOption: function() {
+      this.depositEthExpand = !this.depositEthExpand
+      this.widget.open()
     },
     onTransferToken: function(item) {
       if (this.$refs.tokenForm.validate()) {
@@ -307,6 +319,23 @@ export default {
         client_id: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com'
       })
     })
+    // window.web3 = window.Vue.torus.web3
+    // window.Web3 = window.Vue.torus.Web3
+    window.web3 = window.Vue.torus.web3
+    let sendWyreScript = document.createElement('script')
+    sendWyreScript.setAttribute('src', 'https://verify.sendwyre.com/js/widget-loader.js')
+    document.head.appendChild(sendWyreScript)
+    sendWyreScript.onload = function() {
+      this.widget = new window.Wyre.Widget({
+        env: 'test',
+        accountId: 'AC_26U73M3RTCT',
+        auth: { type: 'metamask' },
+        operation: {
+          type: 'onramp',
+          destCurrency: 'ETH'
+        }
+      })
+    }.bind(this)
   }
 }
 </script>
