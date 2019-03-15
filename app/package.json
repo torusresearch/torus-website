@@ -101,7 +101,7 @@
     "mocha-sinon": "^2.1.0",
     "nock": "^10.0.6",
     "nyc": "^13.3.0",
-    "prerender-spa-plugin": "^3.2.1",
+    "prerender-spa-plugin": "^3.4.0",
     "puppeteer": "^1.13.0",
     "sinon": "^7.2.7",
     "sri-toolbox": "^0.2.0",
