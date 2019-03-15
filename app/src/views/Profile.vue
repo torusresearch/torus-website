@@ -1,7 +1,7 @@
 <template>
   <v-container fill-height grid-list-sm>
     <v-layout v-if="loggedIn">
-      <v-layout v-if="balance === '0'" align-center justify-center>
+      <v-layout v-if="!loggedIn" align-center justify-center>
         <v-flex d-flex xs12 sm12 md12>
           <div class="text-xs-center">
             <v-progress-circular indeterminate color="#75b4fd"></v-progress-circular>

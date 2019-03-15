@@ -1,7 +1,7 @@
 version: 2
 job_common: &job_common
   docker:
-    - image: circleci/node:10.15.0
+    - image: alekzonder/puppeteer
   working_directory: ~/torus-website/app
 step_save_cache: &step_save_cache
   save_cache:
@@ -110,3 +110,4 @@ workflows:
             branches:
               only:
                 - develop
+                - chai/metamask-vue
