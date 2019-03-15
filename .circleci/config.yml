@@ -1,7 +1,7 @@
 version: 2
 job_common: &job_common
   docker:
-    - image: circleci/node:10.15.0
+    - image: overmorrow/nodext:latest
   working_directory: ~/torus-website/app
 step_save_cache: &step_save_cache
   save_cache:
@@ -15,7 +15,7 @@ step_setup_global_packages: &step_setup_global_packages
   run:
     name: "Set up global packages"
     command: |
-      sudo apt-get update && sudo apt-get install -y libx11-xcb1 libxrandr2 libasound2 libpangocairo-1.0-0 libatk1.0-0 libatk-bridge2.0-0 libgtk-3-0 libnss3 libxss1 && npm install
+      npm install
 
 jobs:
   build:
