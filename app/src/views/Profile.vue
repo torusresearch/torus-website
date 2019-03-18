@@ -14,7 +14,7 @@
         </v-flex>
         <v-flex xs12 font-weight-medium>
           <span>ETH Balance: </span>
-          <span>{{ this.significantDigits(parseFloat(balance).toFixed(5)) }} ETH</span>
+          <span>{{ this.significantDigits(parseFloat(balance).toFixed(5)) || 0 }} ETH</span>
         </v-flex>
         <v-flex xs6>
           <v-btn outline color="#75b4fd" class="font-weight-medium mb-4" @click="sendEthExpand = !sendEthExpand">Send ETH</v-btn>
@@ -273,7 +273,7 @@ export default {
     },
     getTokenBalances: function() {
       let selectedAddress = this.selectedAddress
-      selectedAddress = '0x5cc494843e3f4ac175a5e730c300b011fabf2cea'
+      // selectedAddress = '0x5cc494843e3f4ac175a5e730c300b011fabf2cea'
       fetch(
         // eslint-disable-next-line max-len
         `https://api.etherscan.io/api?module=account&action=tokentx&address=${selectedAddress}&startblock=0&endblock=999999999&sort=asc&apikey=99M2SA7ZXJYC6N74Z4XRKCY28TFDVZKN4D`,
