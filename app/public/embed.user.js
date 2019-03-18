@@ -19,7 +19,8 @@ var whitelist = [
   'blockchaincuties.com',
   'cryptokitties.co',
   'mycrypto.com',
-  'danfinlay.github.io'
+  'danfinlay.github.io',
+  'myetherwallet.com'
 ]
 
 var inWhiteList = false

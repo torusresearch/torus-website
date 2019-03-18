@@ -36,7 +36,7 @@
         <div class="container">
           <div class="banner-content">
             <div class="row align-items-center">
-              <div class="col-lg-6 col-md-12">
+              <div class="col-lg-12 col-md-12">
                 <div class="header-txt tab-center mobile-center">
                   <h1>Frictionless Logins <br />for Dapps</h1>
                   <p class="lead color-secondary">Get started with social logins for your dApp:</p>
