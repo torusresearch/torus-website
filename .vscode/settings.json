@@ -1,7 +1,7 @@
 {
   "git.autofetch": true,
   "editor.formatOnSave": false,
-  "window.zoomLevel": 0,
+  "window.zoomLevel": -1,
   "javascript.updateImportsOnFileMove.enabled": "always",
   "git.confirmSync": false,
   "git.enableSmartCommit": true,
