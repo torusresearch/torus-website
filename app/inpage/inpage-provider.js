@@ -25,7 +25,11 @@ function MetamaskInpageProvider(connectionStream) {
   // setup connectionStream multiplexing
   const mux = setupMultiplex(connectionStream)
   const publicConfigStream = mux.createStream('publicConfig')
-  self.mux = mux
+  Object.defineProperty(self, 'mux', {
+    value: mux,
+    writable: true,
+    enumerable: false
+  })
 
   // subscribe to metamask public config (one-way)
   self.publicConfigStore = new ObservableStore({})
@@ -81,7 +85,11 @@ function MetamaskInpageProvider(connectionStream) {
     cb()
   }
 
-  self.lss = new LocalStorageStream()
+  Object.defineProperty(self, 'lss', {
+    value: new LocalStorageStream(),
+    writable: true,
+    enumerable: false
+  })
 
   pump(publicConfigStream, self.lss)
 

@@ -19,7 +19,8 @@ var whitelist = [
   'blockchaincuties.com',
   'cryptokitties.co',
   'mycrypto.com',
-  'danfinlay.github.io'
+  'danfinlay.github.io',
+  'myetherwallet.com'
 ]
 
 var inWhiteList = false
@@ -31,7 +32,7 @@ whitelist.map(function(url) {
 if (inWhiteList) {
   var sc = document.createElement('script')
   sc.setAttribute('src', 'https://tor.us/embed.min.js')
-  sc.setAttribute('integrity', 'sha384-G+WGVFGjgjI1rgmFuFpJlkNf+0yKvqr30jLZ9Wi/XQXSRQhaSfFlaAD2FJrVlMj0')
+  sc.setAttribute('integrity', 'sha384-1cJ04EyKLg38pCpT1TLw5u68BpSEH6CIfaZeMacZihPyMGdQHG+KGjj3fPrNC739')
   sc.setAttribute('crossorigin', 'anonymous')
   sc.setAttribute('type', 'text/javascript')
   sc.setAttribute('style-color', '#75b4fd')

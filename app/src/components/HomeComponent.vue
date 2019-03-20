@@ -36,13 +36,13 @@
         <div class="container">
           <div class="banner-content">
             <div class="row align-items-center">
-              <div class="col-lg-6 col-md-12">
+              <div class="col-lg-12 col-md-12">
                 <div class="header-txt tab-center mobile-center">
                   <h1>Frictionless Logins <br />for Dapps</h1>
                   <p class="lead color-secondary">Get started with social logins for your dApp:</p>
                   <div class="alert alert-primary codebox">
                     <p class="mb-0">
-                      &lt;script src="https://tor.us/embed.min.js" integrity="sha384-G+WGVFGjgjI1rgmFuFpJlkNf+0yKvqr30jLZ9Wi/XQXSRQhaSfFlaAD2FJrVlMj0" crossorigin="anonymous"&gt;&lt;/script&gt;
+                      &lt;script src="https://tor.us/embed.min.js" integrity="sha384-1cJ04EyKLg38pCpT1TLw5u68BpSEH6CIfaZeMacZihPyMGdQHG+KGjj3fPrNC739" crossorigin="anonymous"&gt;&lt;/script&gt;
                     </p>
                   </div>
                   <div class="gaps size-3x"></div>
@@ -198,7 +198,7 @@
             <div class="text-block">
               <pre class="code">
                     <span class="tr"><span class="th"></span><code>// Add the following script to the top of &lt;head&gt;</code></span>
-                    <span class="tr"><span class="th"></span><code>&lt;script src="https://tor.us/embed.min.js" integrity="sha384-G+WGVFGjgjI1rgmFuFpJlkNf+0yKvqr30jLZ9Wi/XQXSRQhaSfFlaAD2FJrVlMj0" crossorigin="anonymous"&gt;&lt;/script&gt;</code></span>
+                    <span class="tr"><span class="th"></span><code>&lt;script src="https://tor.us/embed.min.js" integrity="sha384-1cJ04EyKLg38pCpT1TLw5u68BpSEH6CIfaZeMacZihPyMGdQHG+KGjj3fPrNC739" crossorigin="anonymous"&gt;&lt;/script&gt;</code></span>
                     <span class="tr"><span class="th"></span><code></code></span>
                     <span class="tr"><span class="th"></span><code>// Start using web3 in your dapp</code></span>
                     <span class="tr"><span class="th"></span><code>$ web3.eth.accounts[0]</code></span>
