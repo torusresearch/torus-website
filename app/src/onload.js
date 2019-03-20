@@ -19,6 +19,8 @@ const stream = require('stream')
 const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionManager')
 const toChecksumAddress = require('./utils/toChecksumAddress').default
 const setupMultiplex = require('./utils/setupMultiplex').default
+const MetamaskInpageProvider = require('../inpage/inpage-provider')
+const routerStream = require('./utils/routerStream')
 
 function onloadTorus(torus) {
   var engine = new ProviderEngine()
@@ -167,40 +169,46 @@ function onloadTorus(torus) {
 
   const providerOutStream = torus.metamaskMux.createStream('provider')
 
-  // var transformStream = new stream.Transform({
-  //   objectMode: true,
-  //   transform: function (chunk, enc, cb) {
-  //     log.info('TRANSFORM', chunk)
-  //     try {
-  //       if (chunk.method === 'eth_call' || chunk.method === 'eth_estimateGas') {
-  //         log.info('transforming:', chunk.params[0].from)
-  //         if (chunk.params[0].from && typeof chunk.params[0].from === 'string') {
-  //           if (chunk.params[0].from.substring(0, 2) === '0x') {
-  //             chunk.params[0].from = Buffer.from(chunk.params[0].from.slice(2), 'hex')
-  //           }
-  //         } else if (!chunk.params[0].from) {
-  //           chunk.params[0].from = []
-  //         }
-  //         log.info('transformed:', chunk.params[0].from)
-  //       }
-  //       cb(null, chunk)
-  //     } catch (err) {
-  //       log.error('Could not transform stream data', err)
-  //       cb(err, null)
-  //     }
-  //   }
-  // })
-  pump(
-    providerOutStream,
-    sendPassThroughStream,
-    // transformStream,
-    providerStream,
-    receivePassThroughStream,
-    providerOutStream,
-    err => {
-      if (err) log.error(err)
+  var iframeMetamaskStream = new stream.Duplex({
+    objectMode: true,
+    read: function() {},
+    write: function(obj, enc, cb) {
+      cb()
     }
+  })
+  var iframeMetamask = new MetamaskInpageProvider(iframeMetamaskStream)
+  var reverseMux = setupMultiplex(
+    new stream.Duplex({
+      objectMode: true,
+      read: function() {},
+      write: function(obj, enc, cb) {
+        cb()
+      }
+    })
   )
+
+  window.web3 = new Web3(iframeMetamask)
+  pump(iframeMetamask.mux, reverseMux, iframeMetamask.mux)
+
+  var rStream = routerStream(providerOutStream, reverseMux.createStream('provider'))
+
+  rStream.mergeSteam
+    .pipe(sendPassThroughStream)
+    .pipe(providerStream)
+    .pipe(receivePassThroughStream)
+    .pipe(rStream.splitStream)
+
+  // pump(
+  //   providerOutStream,
+  //   sendPassThroughStream,
+  //   // transformStream,
+  //   providerStream,
+  //   receivePassThroughStream,
+  //   providerOutStream,
+  //   err => {
+  //     if (err) log.error(err)
+  //   }
+  // )
   /* Stream setup block */
 
   return torus
