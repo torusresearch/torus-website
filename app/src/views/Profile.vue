@@ -186,13 +186,13 @@ export default {
         { text: 'Transfer', value: 'transfer' }
       ],
       rules: {
-        toAddress: value => window.Vue.torus.web3.utils.isAddress(value) || 'Invalid Eth Address',
+        toAddress: value => window.web3.utils.isAddress(value) || 'Invalid Eth Address',
         required: value => !!value || 'Required'
       }
     }
   },
   computed: mapState({
-    balance: state => window.Vue.torus.web3.utils.fromWei(state.weiBalance || '0'),
+    balance: state => window.web3.utils.fromWei(state.weiBalance || '0'),
     selectedAddress: 'selectedAddress',
     loggedIn: state => {
       return state.selectedAddress !== ''
@@ -211,7 +211,7 @@ export default {
     },
     onTransferToken: function(item) {
       if (this.$refs.tokenForm.validate()) {
-        const web3 = window.Vue.torus.web3
+        const web3 = window.web3
         const contractInstance = new web3.eth.Contract(
           [
             {
@@ -248,10 +248,10 @@ export default {
     },
     sendEth: function() {
       if (this.$refs.form.validate()) {
-        window.Vue.torus.web3.eth.sendTransaction({
+        window.web3.eth.sendTransaction({
           from: this.selectedAddress,
           to: this.toAddress,
-          value: window.Vue.torus.web3.utils.toWei(this.amount)
+          value: window.web3.utils.toWei(this.amount)
         })
       }
     },
@@ -319,9 +319,9 @@ export default {
         client_id: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com'
       })
     })
-    // window.web3 = window.Vue.torus.web3
-    // window.Web3 = window.Vue.torus.Web3
-    window.web3 = window.Vue.torus.web3
+    // window.web3 = window.web3
+    // window.Web3 = window.web3
+    window.web3 = window.web3
     let sendWyreScript = document.createElement('script')
     sendWyreScript.setAttribute('src', 'https://verify.sendwyre.com/js/widget-loader.js')
     document.head.appendChild(sendWyreScript)
