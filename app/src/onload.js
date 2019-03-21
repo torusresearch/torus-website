@@ -194,6 +194,7 @@ function onloadTorus(torus) {
       }
     })
   )
+  reverseMux.setMaxListeners(0)
 
 
   window.web3 = new Web3(iframeMetamask)
