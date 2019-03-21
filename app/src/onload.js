@@ -21,6 +21,14 @@ const toChecksumAddress = require('./utils/toChecksumAddress').default
 const setupMultiplex = require('./utils/setupMultiplex').default
 const MetamaskInpageProvider = require('../inpage/inpage-provider')
 const routerStream = require('./utils/routerStream')
+;(function() {
+  var origNextTick = process.nextTick.bind(process)
+  process.nextTick = function() {
+    var args = Array.prototype.slice.call(arguments)
+    var fn = args.shift()
+    origNextTick(fn.bind.apply(fn, [null].concat(args)))
+  }
+})()
 
 function onloadTorus(torus) {
   var engine = new ProviderEngine()
@@ -186,6 +194,7 @@ function onloadTorus(torus) {
       }
     })
   )
+
 
   window.web3 = new Web3(iframeMetamask)
   pump(iframeMetamask.mux, reverseMux, iframeMetamask.mux)
