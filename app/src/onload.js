@@ -184,6 +184,7 @@ function onloadTorus(torus) {
       cb()
     }
   })
+  iframeMetamaskStream.setMaxListeners(100)
   var iframeMetamask = new MetamaskInpageProvider(iframeMetamaskStream, { skipStatic: true })
   var reverseMux = setupMultiplex(
     new stream.Duplex({
@@ -194,7 +195,7 @@ function onloadTorus(torus) {
       }
     })
   )
-  reverseMux.setMaxListeners(0)
+  reverseMux.setMaxListeners(100)
 
 
   window.web3 = new Web3(iframeMetamask)
