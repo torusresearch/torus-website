@@ -176,7 +176,7 @@ function onloadTorus(torus) {
       cb()
     }
   })
-  var iframeMetamask = new MetamaskInpageProvider(iframeMetamaskStream)
+  var iframeMetamask = new MetamaskInpageProvider(iframeMetamaskStream, { skipStatic: true })
   var reverseMux = setupMultiplex(
     new stream.Duplex({
       objectMode: true,

@@ -9,14 +9,14 @@ const SafeEventEmitter = require('safe-event-emitter')
 const setupMultiplex = require('./stream-utils.js').setupMultiplex
 const DuplexStream = require('readable-stream').Duplex
 const log = require('loglevel')
-const ObservableStore = require('obs-store') 
+const ObservableStore = require('obs-store')
 const embedUtils = require('./embedUtils')
 
 module.exports = MetamaskInpageProvider
 
 util.inherits(MetamaskInpageProvider, SafeEventEmitter)
 
-function MetamaskInpageProvider(connectionStream) {
+function MetamaskInpageProvider(connectionStream, opts = {}) {
   const self = this
 
   // super constructor
@@ -32,67 +32,67 @@ function MetamaskInpageProvider(connectionStream) {
   })
 
   // subscribe to metamask public config (one-way)
-  self.publicConfigStore = new ObservableStore({})
+  if (!opts.skipStatic) {
+    self.publicConfigStore = new ObservableStore({})
+    self.publicConfigStore.subscribe(function(state) {
+      window.torus.web3.eth.defaultAccount = state.selectedAddress
+    })
 
-  self.publicConfigStore.subscribe(function (state) {
-    window.torus.web3.eth.defaultAccount = state.selectedAddress
-  })
-
-  class LocalStorageStream extends DuplexStream {
-    constructor() {
-      super({ objectMode: true })
-    }
-  }
-
-  LocalStorageStream.prototype._read = function(chunk, enc, cb) {
-    log.info('reading from LocalStorageStore')
-  }
-
-  LocalStorageStream.prototype._onMessage = function(event) {
-    log.info('LocalStorageStore', event)
-  }
-
-  LocalStorageStream.prototype._write = function(chunk, enc, cb) {
-    let data = JSON.parse(chunk)
-    log.info('WRITING TO LOCALSTORAGESTREAM, CHUNK:', chunk)
-    for (let key in data) {
-      if (key === 'selectedAddress') {
-        if (data[key] !== '' && data[key] !== null && data[key] !== undefined) {
-          var prevSelectedAddress = window.sessionStorage.getItem('selectedAddress')
-          var newSelectedAddress = embedUtils.transformEthAddress(data[key])
-          window.torus.web3.eth.defaultAccount = newSelectedAddress
-          window.ethereum.selectedAddress = newSelectedAddress
-          window.ethereum.publicConfigStore.updateState({ selectedAddress: newSelectedAddress })
-          window.sessionStorage.setItem('selectedAddress', newSelectedAddress)
-          if (prevSelectedAddress !== newSelectedAddress) {
-            self.emit('accountsChanged', [newSelectedAddress])
-          }
-        } else {
-          delete window.torus.web3.eth.defaultAccount
-          delete window.ethereum.selectedAddress
-          window.sessionStorage.removeItem('selectedAddress')
-        }
-      } else if (key === 'networkVersion') {
-        window.sessionStorage.setItem(key, data[key])
-        if (window.ethereum.networkVersion !== data[key].toString()) {
-          window.ethereum.publicConfigStore.updateState({ networkVersion: data[key].toString() })
-          window.ethereum.networkVersion = data[key].toString()
-        }
-      } else {
-        window.sessionStorage.setItem(key, data[key])
+    class LocalStorageStream extends DuplexStream {
+      constructor() {
+        super({ objectMode: true })
       }
     }
-    cb()
+
+    LocalStorageStream.prototype._read = function(chunk, enc, cb) {
+      log.info('reading from LocalStorageStore')
+    }
+
+    LocalStorageStream.prototype._onMessage = function(event) {
+      log.info('LocalStorageStore', event)
+    }
+
+    LocalStorageStream.prototype._write = function(chunk, enc, cb) {
+      let data = JSON.parse(chunk)
+      log.info('WRITING TO LOCALSTORAGESTREAM, CHUNK:', chunk)
+      for (let key in data) {
+        if (key === 'selectedAddress') {
+          if (data[key] !== '' && data[key] !== null && data[key] !== undefined) {
+            var prevSelectedAddress = window.sessionStorage.getItem('selectedAddress')
+            var newSelectedAddress = embedUtils.transformEthAddress(data[key])
+            window.torus.web3.eth.defaultAccount = newSelectedAddress
+            window.ethereum.selectedAddress = newSelectedAddress
+            window.ethereum.publicConfigStore.updateState({ selectedAddress: newSelectedAddress })
+            window.sessionStorage.setItem('selectedAddress', newSelectedAddress)
+            if (prevSelectedAddress !== newSelectedAddress) {
+              self.emit('accountsChanged', [newSelectedAddress])
+            }
+          } else {
+            delete window.torus.web3.eth.defaultAccount
+            delete window.ethereum.selectedAddress
+            window.sessionStorage.removeItem('selectedAddress')
+          }
+        } else if (key === 'networkVersion') {
+          window.sessionStorage.setItem(key, data[key])
+          if (window.ethereum.networkVersion !== data[key].toString()) {
+            window.ethereum.publicConfigStore.updateState({ networkVersion: data[key].toString() })
+            window.ethereum.networkVersion = data[key].toString()
+          }
+        } else {
+          window.sessionStorage.setItem(key, data[key])
+        }
+      }
+      cb()
+    }
+
+    Object.defineProperty(self, 'lss', {
+      value: new LocalStorageStream(),
+      writable: true,
+      enumerable: false
+    })
+
+    pump(publicConfigStream, self.lss)
   }
-
-  Object.defineProperty(self, 'lss', {
-    value: new LocalStorageStream(),
-    writable: true,
-    enumerable: false
-  })
-
-  pump(publicConfigStream, self.lss)
-
   // ignore phishing warning message (handled elsewhere)
   mux.ignoreStream('phishing')
 
@@ -202,8 +202,6 @@ MetamaskInpageProvider.prototype.isConnected = function() {
 
 MetamaskInpageProvider.prototype.isMetaMask = true
 
-
-
 // util
 
 function logStreamDisconnectWarning(remoteLabel, err) {
@@ -215,6 +213,5 @@ function logStreamDisconnectWarning(remoteLabel, err) {
     this.emit('error', warningMsg)
   }
 }
-
 
 function noop() {}
