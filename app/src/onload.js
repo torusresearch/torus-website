@@ -199,6 +199,7 @@ function onloadTorus(torus) {
   var reverseMux = setupMultiplex(reverseStream)
   reverseMux.setMaxListeners(100)
 
+  window.Web3 = Web3
   window.web3 = new Web3(iframeMetamask)
   pump(iframeMetamask.mux, reverseMux, iframeMetamask.mux)
 
