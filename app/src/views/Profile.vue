@@ -321,7 +321,6 @@ export default {
     })
     // window.web3 = window.web3
     // window.Web3 = window.web3
-    window.web3 = window.web3
     let sendWyreScript = document.createElement('script')
     sendWyreScript.setAttribute('src', 'https://verify.sendwyre.com/js/widget-loader.js')
     document.head.appendChild(sendWyreScript)
