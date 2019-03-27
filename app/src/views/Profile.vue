@@ -16,7 +16,7 @@
           <span>ETH Balance: </span>
           <span>{{ this.significantDigits(parseFloat(balance).toFixed(5)) || 0 }} ETH</span>
         </v-flex>
-        <v-flex xs6>
+        <v-flex xs12>
           <v-btn outline color="#75b4fd" class="font-weight-medium mb-4" @click="sendEthExpand = !sendEthExpand">Send ETH</v-btn>
           <v-expand-transition>
             <v-form ref="form" v-model="valid" lazy-validation v-show="sendEthExpand">
@@ -44,9 +44,9 @@
             </v-form>
           </v-expand-transition>
         </v-flex>
-        <v-flex xs6>
+        <!-- <v-flex xs6>
           <v-btn outline color="#75b4fd" class="font-weight-medium mb-4" @click="depositETHOption">Deposit ETH</v-btn>
-        </v-flex>
+        </v-flex> -->
         <v-flex xs12 justify-space-around>
           <v-btn color="#75b4fd" class="white--text mb-4" v-on:click="getTokenBalances">Get Token Balances</v-btn>
           <v-expand-transition>
@@ -170,7 +170,7 @@ export default {
       tokenAmount: '',
       valid: true,
       sendEthExpand: false,
-      depositEthExpand: false,
+      // depositEthExpand: false,
       tokenFormValid: true,
       tokenBalances: [],
       fetchedTokenBalances: false,
@@ -205,10 +205,10 @@ export default {
     logout: function() {
       window.Vue.$store.dispatch('resetStore')
     },
-    depositETHOption: function() {
-      this.depositEthExpand = !this.depositEthExpand
-      this.widget.open()
-    },
+    // depositETHOption: function() {
+    //   this.depositEthExpand = !this.depositEthExpand
+    //   this.widget.open()
+    // },
     onTransferToken: function(item) {
       if (this.$refs.tokenForm.validate()) {
         const web3 = window.web3
@@ -321,20 +321,20 @@ export default {
     })
     // window.web3 = window.web3
     // window.Web3 = window.web3
-    let sendWyreScript = document.createElement('script')
-    sendWyreScript.setAttribute('src', 'https://verify.sendwyre.com/js/widget-loader.js')
-    document.head.appendChild(sendWyreScript)
-    sendWyreScript.onload = function() {
-      this.widget = new window.Wyre.Widget({
-        env: 'test',
-        accountId: 'AC_26U73M3RTCT',
-        auth: { type: 'metamask' },
-        operation: {
-          type: 'onramp',
-          destCurrency: 'ETH'
-        }
-      })
-    }.bind(this)
+    // let sendWyreScript = document.createElement('script')
+    // sendWyreScript.setAttribute('src', 'https://verify.sendwyre.com/js/widget-loader.js')
+    // document.head.appendChild(sendWyreScript)
+    // sendWyreScript.onload = function() {
+    //   this.widget = new window.Wyre.Widget({
+    //     env: 'test',
+    //     accountId: 'AC_26U73M3RTCT',
+    //     auth: { type: 'metamask' },
+    //     operation: {
+    //       type: 'onramp',
+    //       destCurrency: 'ETH'
+    //     }
+    //   })
+    // }.bind(this)
   }
 }
 </script>
