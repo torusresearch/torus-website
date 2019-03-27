@@ -3,6 +3,7 @@ import torus from '../torus'
 import stream from 'stream'
 import pump from 'pump'
 import VuexStore from '.'
+import BroadcastChannel from 'broadcast-channel'
 
 /* 
 Edited to change networkId => network state. Has an implication of changing neworkVersion 

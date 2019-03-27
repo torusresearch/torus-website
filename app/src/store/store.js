@@ -5,6 +5,7 @@ import torus from '../torus'
 import config from '../config'
 import VuexPersist from 'vuex-persist'
 import { hexToText } from '../utils/utils'
+import BroadcastChannel from 'broadcast-channel'
 
 Vue.use(Vuex)
 

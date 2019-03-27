@@ -29,6 +29,7 @@
     "ajv": "^6.10.0",
     "assert": "^1.4.1",
     "backoff": "^2.5.0",
+    "broadcast-channel": "^2.1.10",
     "browserify": "^16.2.3",
     "browserify-replace": "^1.0.0",
     "debounce": "^1.2.0",

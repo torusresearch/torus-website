@@ -22,6 +22,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import BroadcastChannel from 'broadcast-channel'
 
 export default {
   name: 'networkChange',

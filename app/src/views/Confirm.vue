@@ -71,6 +71,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import BroadcastChannel from 'broadcast-channel'
 
 const weiInGwei = 1000000000
 
