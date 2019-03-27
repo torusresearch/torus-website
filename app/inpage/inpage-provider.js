@@ -34,6 +34,17 @@ function MetamaskInpageProvider(connectionStream, opts = {}) {
   // subscribe to metamask public config (one-way)
   if (!opts.skipStatic) {
     self.publicConfigStore = new ObservableStore({})
+    self.publicConfigStore.updateState = function (partialState) {
+      // if non-null object, merge
+      if (partialState && partialState instanceof Object) {
+        const state = this.getState()
+        const newState = Object.assign({}, state, partialState)
+        this.putState(newState)
+      // if not object, use new value
+      } else {
+        this.putState(partialState)
+      }
+    }
     self.publicConfigStore.subscribe(function(state) {
       window.torus.web3.eth.defaultAccount = state.selectedAddress
     })
