@@ -109,6 +109,9 @@ var VuexStore = new Vuex.Store({
         }
       }
     },
+    showProfilePopup(context, payload) {
+      window.open('/profile', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=350,width=600')
+    },
     updateEmail(context, payload) {
       context.commit('setEmail', payload.email)
     },

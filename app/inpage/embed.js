@@ -60,8 +60,7 @@ function createWidget() {
       window.torus.login(false)
     })
     torusMenuBtn.addEventListener('click', function() {
-      // TODO: popup menu selection
-      // window.torus.menu(false)
+      window.torus.showProfile(true)
     })
   }
   var attachOnLoad = function() {
@@ -239,6 +238,11 @@ function setupWeb3() {
   window.torus.changeNetwork = function(network) {
     var networkStream = window.torus.communicationMux.getStream('network_change')
     networkStream.write({ name: 'network_change', data: { network } })
+  }
+
+  window.torus.showProfile = function(calledFromEmbed) {
+    var showProfileStream = window.torus.communicationMux.getStream('show_profile')
+    showProfileStream.write({ name: 'show_profile', data: { calledFromEmbed } })
   }
 
   if (typeof window.web3 !== 'undefined') {

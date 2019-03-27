@@ -28,6 +28,10 @@ torus.communicationMux.getStream('network_change').on('data', function(chunk) {
   VuexStore.dispatch('showNetworkChangePopup', { network: chunk.data.network })
 })
 
+torus.communicationMux.getStream('show_profile').on('data', function(chunk) {
+  VuexStore.dispatch('showProfilePopup', { network: chunk.data.calledFromEmbed })
+})
+
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
 })
