@@ -22,6 +22,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import BroadcastChannel from 'broadcast-channel'
 
 export default {
   name: 'networkChange',
@@ -35,13 +36,13 @@ export default {
   methods: {
     triggerSign: function(event) {
       var bc = new BroadcastChannel('torus_network_channel')
-      bc.postMessage({ approve: true, network: this.$data.network })
+      bc.postMessage({ data: { approve: true, network: this.$data.network } })
       bc.close()
       window.close()
     },
     triggerDeny: function(event) {
       var bc = new BroadcastChannel('torus_network_channel')
-      bc.postMessage({ approve: false })
+      bc.postMessage({ data: { approve: false } })
       bc.close()
       window.close()
     },
@@ -55,7 +56,7 @@ export default {
       that.network = ev.data.network
       bc.close()
     }
-    bc.postMessage('popup-loaded')
+    bc.postMessage({ data: 'popup-loaded' })
   }
 }
 </script>

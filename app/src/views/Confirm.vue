@@ -10,10 +10,10 @@
               <p>Sign message from {{ this.origin }} ?</p>
               <p v-if="this.messageType === 'normal'">Message: {{ this.message }}</p>
               <div v-else-if="this.messageType === 'typed'" v-for="typedMessage in this.typedMessages" v-bind:key="typedMessage.name">
-                Type: {{ typedMessage.type }}<br>
-                Name: {{ typedMessage.name }}<br>
-                Message: {{ typedMessage.value }}<br>
-                <hr>
+                Type: {{ typedMessage.type }}<br />
+                Name: {{ typedMessage.name }}<br />
+                Message: {{ typedMessage.value }}<br />
+                <hr />
               </div>
             </v-card-text>
 
@@ -71,6 +71,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import BroadcastChannel from 'broadcast-channel'
 
 const weiInGwei = 1000000000
 
@@ -103,13 +104,13 @@ export default {
     triggerSign: function(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
       var gasHex = window.Vue.torus.web3.utils.numberToHex(this.$data.gasPrice * weiInGwei)
-      bc.postMessage({ type: 'confirm-transaction', gasPrice: gasHex })
+      bc.postMessage({ data: { type: 'confirm-transaction', gasPrice: gasHex } })
       bc.close()
       window.close()
     },
     triggerDeny: function(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
-      bc.postMessage({ type: 'deny-transaction' })
+      bc.postMessage({ data: { type: 'deny-transaction' } })
       bc.close()
       window.close()
     },
@@ -148,7 +149,7 @@ export default {
       bc.close()
       bc.close()
     }
-    bc.postMessage('popup-loaded')
+    bc.postMessage({ data: 'popup-loaded' })
   }
 }
 </script>

@@ -1,6 +1,6 @@
 {
   "extends": ["plugin:vue/essential", "@vue/standard", "prettier"],
-  "plugins": ["prettier"],
+  "plugins": ["prettier", "html"],
   "parserOptions": {
     "parser": "babel-eslint"
   },
@@ -19,6 +19,8 @@
       }
     ],
     "camelcase": 0,
+    "react/jsx-filename-extension": 0,
+    "jsx-a11y/label-has-for": 0,
     "no-console": 0,
     "import/prefer-default-export": 0,
     "no-nested-ternary": 0,

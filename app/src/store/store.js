@@ -5,6 +5,7 @@ import torus from '../torus'
 import config from '../config'
 import VuexPersist from 'vuex-persist'
 import { hexToText } from '../utils/utils'
+import BroadcastChannel from 'broadcast-channel'
 
 Vue.use(Vuex)
 
@@ -16,15 +17,12 @@ const vuexPersist = new VuexPersist({
   }
 })
 
+const initialState = { email: '', idToken: '', wallet: {}, weiBalance: 0, selectedAddress: '', networkId: 0 }
+
 var VuexStore = new Vuex.Store({
   plugins: [vuexPersist.plugin],
   state: {
-    email: '',
-    idToken: '',
-    wallet: {},
-    weiBalance: 0,
-    selectedAddress: '',
-    networkId: 0
+    ...initialState
   },
   getters: {},
   mutations: {
@@ -45,9 +43,18 @@ var VuexStore = new Vuex.Store({
     },
     setNetworkId(state, networkId) {
       state.networkId = networkId
+    },
+    resetStore(state, requiredState) {
+      Object.keys(state).forEach(key => {
+        state[key] = initialState[key] // or = initialState[key]
+      })
     }
   },
   actions: {
+    resetStore(context, payload) {
+      context.commit('resetStore', initialState)
+      window.sessionStorage.clear()
+    },
     showPopup(context, payload) {
       var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
       window.open(
@@ -61,10 +68,12 @@ var VuexStore = new Vuex.Store({
         bc.onmessage = function(ev) {
           if (ev.data === 'popup-loaded') {
             bc.postMessage({
-              origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-              type: 'transaction',
-              txParams,
-              balance
+              data: {
+                origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+                type: 'transaction',
+                txParams,
+                balance
+              }
             })
             bc.close()
           }
@@ -74,9 +83,11 @@ var VuexStore = new Vuex.Store({
         bc.onmessage = function(ev) {
           if (ev.data === 'popup-loaded') {
             bc.postMessage({
-              origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-              type: 'message',
-              msgParams
+              data: {
+                origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+                type: 'message',
+                msgParams
+              }
             })
             bc.close()
           }
@@ -89,12 +100,17 @@ var VuexStore = new Vuex.Store({
       bc.onmessage = function(ev) {
         if (ev.data === 'popup-loaded') {
           bc.postMessage({
-            origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-            network: payload.network
+            data: {
+              origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+              network: payload.network
+            }
           })
           bc.close()
         }
       }
+    },
+    showProfilePopup(context, payload) {
+      window.open('/profile', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=350,width=600')
     },
     updateEmail(context, payload) {
       context.commit('setEmail', payload.email)
@@ -189,6 +205,8 @@ function handleLogin(email, payload) {
           }, 50)
         }
         torus.torusController.initTorusKeyring([data.privKey])
+        const statusStream = torus.communicationMux.getStream('status')
+        statusStream.write({ loggedIn: true })
         // torus.web3.eth.net
         //   .getId()
         //   .then(res => {
@@ -225,7 +243,7 @@ function getLatestMessageParams() {
       time = msgTime
     }
   }
-  
+
   for (let id in state.unapprovedPersonalMsgs) {
     const msgTime = state.unapprovedPersonalMsgs[id].time
     if (msgTime > time) {
@@ -237,7 +255,7 @@ function getLatestMessageParams() {
   // handle hex-based messages and convert to text
   if (msg) {
     msg.msgParams.message = hexToText(msg.msgParams.data)
-  } 
+  }
 
   // handle typed messages
   for (let id in state.unapprovedTypedMessages) {
