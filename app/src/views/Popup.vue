@@ -56,12 +56,16 @@ export default {
     })
   },
   mounted() {
-    // setup google auth sdk
-    window.gapi.load('auth2', function() {
-      window.auth2 = window.gapi.auth2.init({
-        client_id: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com'
-      })
-    })
+    const interval = setInterval(() => {
+      if (window.gapi) {
+        window.gapi.load('auth2', function() {
+          window.auth2 = window.gapi.auth2.init({
+            client_id: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com'
+          })
+          clearInterval(interval)
+        })
+      }
+    }, 2000)
   }
 }
 </script>
