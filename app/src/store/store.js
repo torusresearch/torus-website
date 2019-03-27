@@ -68,10 +68,12 @@ var VuexStore = new Vuex.Store({
         bc.onmessage = function(ev) {
           if (ev.data === 'popup-loaded') {
             bc.postMessage({
-              origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-              type: 'transaction',
-              txParams,
-              balance
+              data: {
+                origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+                type: 'transaction',
+                txParams,
+                balance
+              }
             })
             bc.close()
           }
@@ -81,9 +83,11 @@ var VuexStore = new Vuex.Store({
         bc.onmessage = function(ev) {
           if (ev.data === 'popup-loaded') {
             bc.postMessage({
-              origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-              type: 'message',
-              msgParams
+              data: {
+                origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+                type: 'message',
+                msgParams
+              }
             })
             bc.close()
           }
@@ -96,8 +100,10 @@ var VuexStore = new Vuex.Store({
       bc.onmessage = function(ev) {
         if (ev.data === 'popup-loaded') {
           bc.postMessage({
-            origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-            network: payload.network
+            data: {
+              origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+              network: payload.network
+            }
           })
           bc.close()
         }

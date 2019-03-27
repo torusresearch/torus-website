@@ -104,13 +104,13 @@ export default {
     triggerSign: function(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
       var gasHex = window.Vue.torus.web3.utils.numberToHex(this.$data.gasPrice * weiInGwei)
-      bc.postMessage({ type: 'confirm-transaction', gasPrice: gasHex })
+      bc.postMessage({ data: { type: 'confirm-transaction', gasPrice: gasHex } })
       bc.close()
       window.close()
     },
     triggerDeny: function(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
-      bc.postMessage({ type: 'deny-transaction' })
+      bc.postMessage({ data: { type: 'deny-transaction' } })
       bc.close()
       window.close()
     },
@@ -149,7 +149,7 @@ export default {
       bc.close()
       bc.close()
     }
-    bc.postMessage('popup-loaded')
+    bc.postMessage({ data: 'popup-loaded' })
   }
 }
 </script>
