@@ -116,6 +116,7 @@ function onloadTorus(torus) {
           window.Vue.$store.dispatch('updateSelectedAddress', { selectedAddress })
         }, 50)
         torus.torusController.initTorusKeyring([wallet[selectedAddress]])
+        statusStream.write({ loggedIn: true })
         log.info('rehydrated wallet')
         torus.web3.eth.net
           .getId()
@@ -175,7 +176,10 @@ function onloadTorus(torus) {
     log.info('sendPassThroughStream', arguments)
   })
 
-  const providerOutStream = torus.metamaskMux.createStream('provider')
+  const providerOutStream = torus.metamaskMux.getStream('provider')
+
+  // stream to send logged in status
+  const statusStream = torus.communicationMux.getStream('status')
 
   var iframeMetamaskStream = new stream.Duplex({
     objectMode: true,
@@ -210,6 +214,7 @@ function onloadTorus(torus) {
     .pipe(providerStream)
     .pipe(receivePassThroughStream)
     .pipe(rStream.splitStream)
+    .pipe(statusStream)
 
   // pump(
   //   providerOutStream,

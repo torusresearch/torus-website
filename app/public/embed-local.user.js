@@ -33,7 +33,11 @@ whitelist.map(function(url) {
 if (inWhiteList) {
   var sc = document.createElement('script')
   sc.setAttribute('src', 'https://localhost:3000/embed.min.js')
+<<<<<<< HEAD
   // sc.setAttribute('integrity', 'sha384-1cJ04EyKLg38pCpT1TLw5u68BpSEH6CIfaZeMacZihPyMGdQHG+KGjj3fPrNC739')
+=======
+  sc.setAttribute('integrity', 'sha384-aoAepIlk2tLo65evo46kcZnajhqvLRdqDcYGT9s6d0AaFHZmKPX85wrE9dRNuNAU')
+>>>>>>> ambrose/add-send-receive
   sc.setAttribute('crossorigin', 'anonymous')
   sc.setAttribute('type', 'text/javascript')
   sc.setAttribute('style-color', '#75b4fd')

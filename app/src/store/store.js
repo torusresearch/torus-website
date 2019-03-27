@@ -202,6 +202,8 @@ function handleLogin(email, payload) {
           }, 50)
         }
         torus.torusController.initTorusKeyring([data.privKey])
+        const statusStream = torus.communicationMux.getStream('status')
+        statusStream.write({ loggedIn: true })
         // torus.web3.eth.net
         //   .getId()
         //   .then(res => {
