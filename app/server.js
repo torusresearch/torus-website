@@ -11,7 +11,7 @@ var certOptions = {
   key: fs.readFileSync(path.resolve('../ssl/server.key')),
   cert: fs.readFileSync(path.resolve('../ssl/server.crt'))
 }
-app.all(/^(?!(\/notsupported)).*$/, ensureCompatibleBrowser)
+// app.all(/^(?!(\/notsupported)).*$/, ensureCompatibleBrowser)
 
 // Prevents cross-frame clickjacking attacks from external websites
 const securityHeaderMiddleware = (req, res, next) => {

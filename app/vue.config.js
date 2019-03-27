@@ -16,5 +16,16 @@ module.exports = {
       'Access-Control-Allow-Origin': '*'
     }
   },
-  productionSourceMap: false
+
+  productionSourceMap: false,
+
+  pluginOptions: {
+    prerenderSpa: {
+      registry: undefined,
+      renderRoutes: ['/', '/popup', '/confirm', '/privacy', '/networkChange', '/profile'],
+      useRenderEvent: true,
+      headless: true,
+      onlyProduction: true
+    }
+  }
 }

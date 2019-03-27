@@ -19,6 +19,16 @@ const stream = require('stream')
 const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionManager')
 const toChecksumAddress = require('./utils/toChecksumAddress').default
 const setupMultiplex = require('./utils/setupMultiplex').default
+const MetamaskInpageProvider = require('../inpage/inpage-provider')
+const routerStream = require('./utils/routerStream')
+;(function() {
+  var origNextTick = process.nextTick.bind(process)
+  process.nextTick = function() {
+    var args = Array.prototype.slice.call(arguments)
+    var fn = args.shift()
+    origNextTick(fn.bind.apply(fn, [null].concat(args)))
+  }
+})()
 
 function onloadTorus(torus) {
   var engine = new ProviderEngine()
@@ -65,8 +75,8 @@ function onloadTorus(torus) {
     })
   )
   var rpcSource = new RpcSubprovider({
-    // rpcUrl: 'https://mainnet.infura.io/v3/619e62693bc14791a9925152bbe514d1'
-    rpcUrl: 'https://api.infura.io/v1/jsonrpc/mainnet'
+    rpcUrl: 'https://mainnet.infura.io/v3/619e62693bc14791a9925152bbe514d1'
+    // rpcUrl: 'https://api.infura.io/v1/jsonrpc/mainnet'
   })
   // var rpcSource = new RpcSubprovider({
   //   rpcUrl: 'https://mainnet.infura.io/4cQUeyeUSfkCXsgEAUH2'
@@ -87,14 +97,12 @@ function onloadTorus(torus) {
     log.error(err.stack)
   })
   engine.start()
-  /* TODO: move out to onload.js */
 
   function triggerUi(type) {
     log.info('TRIGGERUI:' + type)
     window.Vue.$store.dispatch('showPopup')
   }
 
-  /* TODO: move out to onload.js */
   const torusController = new TorusController({
     showUnconfirmedMessage: triggerUi.bind(window, 'showUnconfirmedMessage'),
     unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
@@ -108,6 +116,7 @@ function onloadTorus(torus) {
           window.Vue.$store.dispatch('updateSelectedAddress', { selectedAddress })
         }, 50)
         torus.torusController.initTorusKeyring([wallet[selectedAddress]])
+        statusStream.write({ loggedIn: true })
         log.info('rehydrated wallet')
         torus.web3.eth.net
           .getId()
@@ -167,42 +176,57 @@ function onloadTorus(torus) {
     log.info('sendPassThroughStream', arguments)
   })
 
-  const providerOutStream = torus.metamaskMux.createStream('provider')
+  const providerOutStream = torus.metamaskMux.getStream('provider')
 
-  // var transformStream = new stream.Transform({
-  //   objectMode: true,
-  //   transform: function (chunk, enc, cb) {
-  //     log.info('TRANSFORM', chunk)
-  //     try {
-  //       if (chunk.method === 'eth_call' || chunk.method === 'eth_estimateGas') {
-  //         log.info('transforming:', chunk.params[0].from)
-  //         if (chunk.params[0].from && typeof chunk.params[0].from === 'string') {
-  //           if (chunk.params[0].from.substring(0, 2) === '0x') {
-  //             chunk.params[0].from = Buffer.from(chunk.params[0].from.slice(2), 'hex')
-  //           }
-  //         } else if (!chunk.params[0].from) {
-  //           chunk.params[0].from = []
-  //         }
-  //         log.info('transformed:', chunk.params[0].from)
-  //       }
-  //       cb(null, chunk)
-  //     } catch (err) {
-  //       log.error('Could not transform stream data', err)
-  //       cb(err, null)
-  //     }
-  //   }
-  // })
-  pump(
-    providerOutStream,
-    sendPassThroughStream,
-    // transformStream,
-    providerStream,
-    receivePassThroughStream,
-    providerOutStream,
-    err => {
-      if (err) log.error(err)
+  // stream to send logged in status
+  const statusStream = torus.communicationMux.getStream('status')
+
+  var iframeMetamaskStream = new stream.Duplex({
+    objectMode: true,
+    read: function() {},
+    write: function(obj, enc, cb) {
+      cb()
     }
-  )
+  })
+  iframeMetamaskStream.setMaxListeners(100)
+  var iframeMetamask = new MetamaskInpageProvider(iframeMetamaskStream, { skipStatic: true })
+  iframeMetamask.setMaxListeners(100)
+  iframeMetamask.mux.setMaxListeners(100)
+  var reverseStream = new stream.Duplex({
+    objectMode: true,
+    read: function() {},
+    write: function(obj, enc, cb) {
+      cb()
+    }
+  })
+  reverseStream.setMaxListeners(100)
+  var reverseMux = setupMultiplex(reverseStream)
+  reverseMux.setMaxListeners(100)
+
+  window.web3 = new Web3(iframeMetamask)
+  window.Web3 = Web3
+  pump(iframeMetamask.mux, reverseMux, iframeMetamask.mux)
+
+  var rStream = routerStream(providerOutStream, reverseMux.createStream('provider'))
+
+  rStream.mergeSteam
+    .pipe(sendPassThroughStream)
+    .pipe(providerStream)
+    .pipe(receivePassThroughStream)
+    .pipe(rStream.splitStream)
+    .pipe(statusStream)
+
+  // pump(
+  //   providerOutStream,
+  //   sendPassThroughStream,
+  //   // transformStream,
+  //   providerStream,
+  //   receivePassThroughStream,
+  //   providerOutStream,
+  //   err => {
+  //     if (err) log.error(err)
+  //   }
+  // )
   /* Stream setup block */
 
   return torus

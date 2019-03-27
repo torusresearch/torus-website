@@ -3,6 +3,7 @@ import torus from '../torus'
 import stream from 'stream'
 import pump from 'pump'
 import VuexStore from '.'
+import BroadcastChannel from 'broadcast-channel'
 
 /* 
 Edited to change networkId => network state. Has an implication of changing neworkVersion 
@@ -25,6 +26,10 @@ torus.communicationMux.getStream('oauth').on('data', function(chunk) {
 // Metamask does not expose ability to change networks to the inpage, if we want to we can enable this
 torus.communicationMux.getStream('network_change').on('data', function(chunk) {
   VuexStore.dispatch('showNetworkChangePopup', { network: chunk.data.network })
+})
+
+torus.communicationMux.getStream('show_profile').on('data', function(chunk) {
+  VuexStore.dispatch('showProfilePopup', { network: chunk.data.calledFromEmbed })
 })
 
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {

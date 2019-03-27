@@ -33,7 +33,7 @@ whitelist.map(function(url) {
 if (inWhiteList) {
   var sc = document.createElement('script')
   sc.setAttribute('src', 'https://localhost:3000/embed.min.js')
-  // sc.setAttribute('integrity', 'sha384-eHR3Zp1X64sTb8+LhZEIEwhKxjEpaCYFeocjTusQDdjKW16vLXALFGygw4GGasPP')
+  // sc.setAttribute('integrity', 'sha384-1cJ04EyKLg38pCpT1TLw5u68BpSEH6CIfaZeMacZihPyMGdQHG+KGjj3fPrNC739')
   sc.setAttribute('crossorigin', 'anonymous')
   sc.setAttribute('type', 'text/javascript')
   sc.setAttribute('style-color', '#75b4fd')
