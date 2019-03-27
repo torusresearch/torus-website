@@ -197,8 +197,13 @@
           <div class="col-md-12">
             <div class="text-block">
               <pre class="code">
+<<<<<<< HEAD
                     <span class="tr"><span class="th"></span><code>// Add the following script to the top of &lt;head&gt;</code></span>
                     <span class="tr"><span class="th"></span><code>&lt;script src="https://tor.us/embed.min.js" integrity="sha384-1cJ04EyKLg38pCpT1TLw5u68BpSEH6CIfaZeMacZihPyMGdQHG+KGjj3fPrNC739" crossorigin="anonymous"&gt;&lt;/script&gt;</code></span>
+=======
+                    <span class="tr"><span class="th"></span><code>// Add the following script to the top of &lt;body&gt;</code></span>
+                    <span class="tr"><span class="th"></span><code>&lt;script src="https://tor.us/embed.min.js" integrity="sha384-eHR3Zp1X64sTb8+LhZEIEwhKxjEpaCYFeocjTusQDdjKW16vLXALFGygw4GGasPP" crossorigin="anonymous"&gt;&lt;/script&gt;</code></span>
+>>>>>>> develop
                     <span class="tr"><span class="th"></span><code></code></span>
                     <span class="tr"><span class="th"></span><code>// Start using web3 in your dapp</code></span>
                     <span class="tr"><span class="th"></span><code>$ web3.eth.accounts[0]</code></span>
