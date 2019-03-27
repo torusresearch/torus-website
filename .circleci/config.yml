@@ -110,3 +110,4 @@ workflows:
             branches:
               only:
                 - develop
+                - chai/metamask-vue
