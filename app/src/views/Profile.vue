@@ -313,6 +313,10 @@ export default {
     }
   },
   mounted() {
+    // if (this.selectedAddress) {
+    //   this.balance = window.web3.utils.fromWei(await window.web3.eth.getBalance(this.selectedAddress))
+    //   console.log(this.balance)
+    // }
     // setup google auth sdk
     const interval = setInterval(() => {
       if (window.gapi) {
