@@ -155,6 +155,13 @@ function hexToText(hex) {
   }
 }
 
+function addressSlicer(address = '') {
+  if (address.length < 11) {
+    return address
+  }
+  return `${address.slice(0, 6)}...${address.slice(-4)}`
+}
+
 export {
   removeListeners,
   applyListeners,
@@ -165,5 +172,6 @@ export {
   hexToBn,
   bnToHex,
   BnMultiplyByFraction,
-  hexToText
+  hexToText,
+  addressSlicer
 }

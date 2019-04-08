@@ -10,7 +10,13 @@
       </v-layout>
       <v-layout v-else row wrap justify-center>
         <v-flex xs12>
-          <v-btn color="#75b4fd" class="white--text" v-on:click="logout">Logout</v-btn>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <div class="selected-account" v-on="on" v-on:click="copyToClip">{{ slicedAddress }}</div>
+            </template>
+            <span v-if="copied">Copied!</span>
+            <span v-else>Copy to clipboard</span>
+          </v-tooltip>
         </v-flex>
         <v-flex xs12 font-weight-medium>
           <span>ETH Balance: </span>
@@ -158,6 +164,8 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import copyToClipboard from 'copy-to-clipboard'
+import { addressSlicer } from '../utils/utils'
 
 export default {
   name: 'profile',
@@ -175,6 +183,7 @@ export default {
       tokenBalances: [],
       fetchedTokenBalances: false,
       search: '',
+      copied: false,
       headers: [
         {
           text: 'Ticker',
@@ -194,6 +203,7 @@ export default {
   computed: mapState({
     balance: state => window.web3.utils.fromWei(state.weiBalance || '0'),
     selectedAddress: 'selectedAddress',
+    slicedAddress: state => addressSlicer(state.selectedAddress) || '0x',
     loggedIn: state => {
       return state.selectedAddress !== ''
     }
@@ -202,8 +212,12 @@ export default {
     ...mapActions({
       triggerLogin: 'triggerLogin'
     }),
-    logout: function() {
-      window.Vue.$store.dispatch('resetStore')
+    copyToClip: function() {
+      this.copied = true
+      copyToClipboard(this.selectedAddress)
+      setTimeout(() => {
+        this.copied = false
+      }, 3000)
     },
     // depositETHOption: function() {
     //   this.depositEthExpand = !this.depositEthExpand
@@ -313,6 +327,10 @@ export default {
     }
   },
   mounted() {
+    // if (this.selectedAddress) {
+    //   this.balance = window.web3.utils.fromWei(await window.web3.eth.getBalance(this.selectedAddress))
+    //   console.log(this.balance)
+    // }
     // setup google auth sdk
     const interval = setInterval(() => {
       if (window.gapi) {
@@ -346,6 +364,18 @@ export default {
 </script>
 
 <style>
+.selected-account {
+  padding: 5px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  max-width: 120px;
+}
+.selected-account:hover {
+  background-color: #afadaf;
+}
+.selected-account:active {
+  background-color: #7d7c7e;
+}
 .input-width {
   max-width: 400px;
 }
