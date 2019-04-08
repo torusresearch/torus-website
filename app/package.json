@@ -32,6 +32,7 @@
     "broadcast-channel": "^2.1.10",
     "browserify": "^16.2.3",
     "browserify-replace": "^1.0.0",
+    "copy-to-clipboard": "^3.1.0",
     "core-js": "2.6.5",
     "debounce": "^1.2.0",
     "dnode": "^1.2.2",
