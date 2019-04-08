@@ -38,7 +38,7 @@ pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
 var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
 bc.onmessage = function(ev) {
   if (ev.data.type === 'confirm-transaction') {
-  let torusController = window.Vue.torus.torusController
+    let torusController = window.Vue.torus.torusController
     let state = torusController.getState()
     if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
       let unapprovedPersonalMsgs = []
@@ -93,7 +93,7 @@ bc.onmessage = function(ev) {
         torusController.txController.updateTransaction(newTxMeta)
         txMeta = newTxMeta
         log.info('New txMeta: ', txMeta)
-      } 
+      }
       torusController.updateAndApproveTransaction(txMeta)
     } else {
       throw new Error('No new transactions.')

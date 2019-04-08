@@ -31,38 +31,6 @@ for (var currency in valueTable) {
   bnTable[currency] = new ethUtil.BN(valueTable[currency], 10)
 }
 
-module.exports = {
-  valuesFor: valuesFor,
-  addressSummary: addressSummary,
-  miniAddressSummary: miniAddressSummary,
-  isAllOneCase: isAllOneCase,
-  isValidAddress: isValidAddress,
-  isValidENSAddress,
-  numericBalance: numericBalance,
-  parseBalance: parseBalance,
-  formatBalance: formatBalance,
-  generateBalanceObject: generateBalanceObject,
-  dataSize: dataSize,
-  readableDate: readableDate,
-  normalizeToWei: normalizeToWei,
-  normalizeEthStringToWei: normalizeEthStringToWei,
-  normalizeNumberToWei: normalizeNumberToWei,
-  valueTable: valueTable,
-  bnTable: bnTable,
-  isHex: isHex,
-  formatDate,
-  bnMultiplyByFraction,
-  getTxFeeBn,
-  shortenBalance,
-  getContractAtAddress,
-  exportAsFile: exportAsFile,
-  isInvalidChecksumAddress,
-  allNull,
-  getTokenAddressFromTokenObject,
-  checksumAddress,
-  addressSlicer
-}
-
 function valuesFor(obj) {
   if (!obj) return []
   return Object.keys(obj).map(function(key) {
@@ -316,4 +284,36 @@ function addressSlicer(address = '') {
   }
 
   return `${address.slice(0, 6)}...${address.slice(-4)}`
+}
+
+module.exports = {
+  valuesFor: valuesFor,
+  addressSummary: addressSummary,
+  miniAddressSummary: miniAddressSummary,
+  isAllOneCase: isAllOneCase,
+  isValidAddress: isValidAddress,
+  isValidENSAddress,
+  numericBalance: numericBalance,
+  parseBalance: parseBalance,
+  formatBalance: formatBalance,
+  generateBalanceObject: generateBalanceObject,
+  dataSize: dataSize,
+  readableDate: readableDate,
+  normalizeToWei: normalizeToWei,
+  normalizeEthStringToWei: normalizeEthStringToWei,
+  normalizeNumberToWei: normalizeNumberToWei,
+  valueTable: valueTable,
+  bnTable: bnTable,
+  isHex: isHex,
+  formatDate,
+  bnMultiplyByFraction,
+  getTxFeeBn,
+  shortenBalance,
+  getContractAtAddress,
+  exportAsFile: exportAsFile,
+  isInvalidChecksumAddress,
+  allNull,
+  getTokenAddressFromTokenObject,
+  checksumAddress,
+  addressSlicer
 }
