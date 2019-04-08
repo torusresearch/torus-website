@@ -60,7 +60,7 @@ var VuexStore = new Vuex.Store({
       window.open(
         `/confirm?instanceId=${torus.instanceId}`,
         '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=350,width=600'
+        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600'
       )
       if (isTorusTransaction()) {
         var txParams = getTransactionParams()
@@ -96,7 +96,7 @@ var VuexStore = new Vuex.Store({
     },
     showNetworkChangePopup(context, payload) {
       var bc = new BroadcastChannel('torus_network_channel')
-      window.open('/networkChange', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=350,width=600')
+      window.open('/networkChange', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600')
       bc.onmessage = function(ev) {
         if (ev.data === 'popup-loaded') {
           bc.postMessage({
@@ -110,7 +110,7 @@ var VuexStore = new Vuex.Store({
       }
     },
     showProfilePopup(context, payload) {
-      window.open('/profile', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=350,width=600')
+      window.open('/profile', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600')
     },
     updateEmail(context, payload) {
       context.commit('setEmail', payload.email)
