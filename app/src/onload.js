@@ -1,7 +1,6 @@
 // import WebsocketSubprovider from './websocket.js'
-import TorusController from './controllers/TorusController'
-
 import store from './store'
+const TorusController = require('./controllers/TorusController').default
 var log = require('loglevel')
 var Web3 = require('web3')
 var ProviderEngine = require('web3-provider-engine')
