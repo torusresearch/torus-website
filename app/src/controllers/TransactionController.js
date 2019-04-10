@@ -1,4 +1,3 @@
-import store from '../store'
 const EventEmitter = require('safe-event-emitter')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
@@ -55,7 +54,7 @@ class TransactionController extends EventEmitter {
     this.memStore = new ObservableStore({})
     this.query = new EthQuery(this.provider)
     this.txGasUtil = new TxGasUtil(this.provider)
-
+    this.opts = opts
     this._mapMethods()
     this.txStateManager = new TransactionStateManager({
       initState: opts.initState,
@@ -471,7 +470,12 @@ class TransactionController extends EventEmitter {
     /** @returns the network number stored in networkStore */
     this.getNetwork = () => this.networkStore.getState()
     /** @returns the user selected address */
-    this.getSelectedAddress = () => (store && store.state.selectedAddress.toLowerCase()) || ''
+    this.getSelectedAddress = () => {
+      if (typeof this.opts.storeProps === 'function') {
+        const { selectedAddress } = this.opts.storeProps() || {}
+        return (selectedAddress && selectedAddress.toLowerCase()) || ''
+      } else return ''
+    }
     /** Returns an array of transactions whos status is unapproved */
     this.getUnapprovedTxCount = () => Object.keys(this.txStateManager.getUnapprovedTxList()).length
     /**

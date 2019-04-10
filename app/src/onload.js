@@ -115,6 +115,11 @@ function onloadTorus(torus) {
     unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
     showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
     openPopup: triggerUi.bind(window, 'bindopenPopup'),
+    storeProps: () => {
+      const { state } = store || {}
+      let { selectedAddress, wallet } = state || {}
+      return { selectedAddress, wallet }
+    },
     rehydrate: function() {
       let { selectedAddress, wallet } = store.state
       if (selectedAddress && wallet[selectedAddress]) {

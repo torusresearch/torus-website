@@ -1,4 +1,3 @@
-import store from '../store'
 const debounce = require('debounce')
 const EventEmitter = require('events')
 const ComposableObservableStore = require('../utils/ComposableObservableStore').default
@@ -74,7 +73,8 @@ export default class TorusController extends EventEmitter {
       signTransaction: this.keyring.signTransaction.bind(this.keyring),
       provider: this.provider,
       blockTracker: this.blockTracker,
-      getGasPrice: this.getGasPrice.bind(this)
+      getGasPrice: this.getGasPrice.bind(this),
+      storeProps: this.opts.storeProps
     })
     this.txController.on('newUnapprovedTx', () => opts.showUnapprovedTx())
 
@@ -127,10 +127,13 @@ export default class TorusController extends EventEmitter {
         // Expose no accounts if this origin has not been approved, preventing
         // account-requiring RPC methods from completing successfully
         // only show address if account is unlocked
-        if (store.state.selectedAddress) {
-          return [store.state.selectedAddress]
-        } else {
-          return []
+        if (typeof this.opts.storeProps === 'function') {
+          const { selectedAddress } = this.opts.storeProps()
+          if (selectedAddress) {
+            return [selectedAddress]
+          } else {
+            return []
+          }
         }
       },
       // tx signing
@@ -573,13 +576,15 @@ export default class TorusController extends EventEmitter {
    */
   getPrivateKey(address) {
     let addr = toChecksumAddress(address)
-    let { wallet } = store.state
-    if (addr == null) {
-      throw new Error('TxController - No address given.')
-    } else if (wallet[addr] == null) {
-      throw new Error('TxController - No private key accessible, please login.')
-    } else {
-      return Buffer.from(wallet[addr], 'hex')
+    if (typeof this.opts.storeProps === 'function') {
+      let { wallet } = this.opts.storeProps()
+      if (addr == null) {
+        throw new Error('TxController - No address given.')
+      } else if (wallet[addr] == null) {
+        throw new Error('TxController - No private key accessible, please login.')
+      } else {
+        return Buffer.from(wallet[addr], 'hex')
+      }
     }
   }
 

@@ -13,14 +13,14 @@ Vue.use(require('vue-script2'))
 
 Vue.config.productionTip = false
 
+Object.defineProperty(Vue.prototype, 'torus', { value: torus })
+Object.defineProperty(Vue.prototype, 'Buffer', { value: Buffer })
+
 var vue = new Vue({
   router,
   store,
   render: h => h(App),
   mounted: () => document.dispatchEvent(new Event('x-app-rendered'))
 }).$mount('#app')
-
-Object.defineProperty(Vue.prototype, 'torus', { value: torus })
-Object.defineProperty(Vue.prototype, 'Buffer', { value: Buffer })
 
 window.Vue = vue
