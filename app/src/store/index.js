@@ -1,4 +1,3 @@
-import VuexStore from './store.js'
-import './setupStoreChannels'
+import VuexStore from './setupStoreChannels'
 
 export default VuexStore

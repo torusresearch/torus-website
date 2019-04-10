@@ -2,7 +2,7 @@ import log from 'loglevel'
 import torus from '../torus'
 import stream from 'stream'
 import pump from 'pump'
-import VuexStore from '.'
+import VuexStore from './store'
 import BroadcastChannel from 'broadcast-channel'
 
 /* 
@@ -155,3 +155,5 @@ networkChannel.onmessage = function(ev) {
     log.info('Network change denied')
   }
 }
+
+export default VuexStore
