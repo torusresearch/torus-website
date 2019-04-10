@@ -136,14 +136,17 @@ var VuexStore = new Vuex.Store({
       }
     },
     updateWeiBalance(context, payload) {
-      if (this.state.selectedAddress) {
-        torus.web3.eth.getBalance(this.state.selectedAddress, function(err, res) {
-          if (err) {
-            log.error(err)
-          }
-          context.commit('setWeiBalance', res)
-        })
-      }
+      const interval = setInterval(() => {
+        if (this.state.selectedAddress) {
+          torus.web3.eth.getBalance(this.state.selectedAddress, function(err, res) {
+            if (err) {
+              log.error(err)
+            }
+            clearInterval(interval)
+            context.commit('setWeiBalance', res)
+          })
+        }
+      }, 1000)
     },
     updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)

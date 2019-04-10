@@ -1,14 +1,7 @@
 <template>
   <v-container fill-height grid-list-sm>
-    <v-layout v-if="loggedIn">
-      <v-layout v-if="!loggedIn" align-center justify-center>
-        <v-flex d-flex xs12 sm12 md12>
-          <div class="text-xs-center">
-            <v-progress-circular indeterminate color="#75b4fd"></v-progress-circular>
-          </div>
-        </v-flex>
-      </v-layout>
-      <v-layout v-else row wrap justify-center>
+    <v-layout v-if="gapiLoaded">
+      <v-layout v-if="loggedIn" row wrap justify-center>
         <v-flex xs12>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
@@ -141,22 +134,29 @@
           </v-expand-transition>
         </v-flex>
       </v-layout>
+      <v-layout v-else align-center justify-center>
+        <v-flex xs12 sm8 md4>
+          <v-card class="elevation-10">
+            <v-card-text>
+              <div class="title">
+                Welcome back!
+              </div>
+              <v-spacer></v-spacer>
+              <div class="subheading">The decentralized web awaits</div>
+              <v-spacer></v-spacer>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="#75b4fd" class="white--text ml-auto" v-on:click="triggerLogin" id="googleAuthBtnf">Login</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-flex>
+      </v-layout>
     </v-layout>
     <v-layout v-else align-center justify-center>
-      <v-flex xs12 sm8 md4>
-        <v-card class="elevation-10">
-          <v-card-text>
-            <div class="title">
-              Welcome back!
-            </div>
-            <v-spacer></v-spacer>
-            <div class="subheading">The decentralized web awaits</div>
-            <v-spacer></v-spacer>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn color="#75b4fd" class="white--text ml-auto" v-on:click="triggerLogin" id="googleAuthBtnf">Login</v-btn>
-          </v-card-actions>
-        </v-card>
+      <v-flex d-flex xs12 sm12 md12>
+        <div class="text-xs-center">
+          <v-progress-circular indeterminate color="#75b4fd"></v-progress-circular>
+        </div>
       </v-flex>
     </v-layout>
   </v-container>
@@ -184,6 +184,7 @@ export default {
       fetchedTokenBalances: false,
       search: '',
       copied: false,
+      gapiLoaded: false,
       headers: [
         {
           text: 'Ticker',
@@ -338,6 +339,7 @@ export default {
           window.auth2 = window.gapi.auth2.init({
             client_id: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com'
           })
+          this.gapiLoaded = true
           clearInterval(interval)
         })
       }
