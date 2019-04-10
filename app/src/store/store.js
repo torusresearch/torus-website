@@ -64,7 +64,7 @@ var VuexStore = new Vuex.Store({
       )
       if (isTorusTransaction()) {
         var txParams = getTransactionParams()
-        var balance = window.Vue.torus.web3.utils.fromWei(this.state.weiBalance.toString())
+        var balance = torus.web3.utils.fromWei(this.state.weiBalance.toString())
         bc.onmessage = function(ev) {
           if (ev.data === 'popup-loaded') {
             bc.postMessage({
@@ -223,7 +223,7 @@ function handleLogin(email, payload) {
 }
 
 function getTransactionParams() {
-  const torusController = window.Vue.torus.torusController
+  const { torusController } = torus
   const state = torusController.getState()
   const transactions = []
   for (let id in state.transactions) {
@@ -235,7 +235,7 @@ function getTransactionParams() {
 }
 
 function getLatestMessageParams() {
-  const torusController = window.Vue.torus.torusController
+  const { torusController } = torus
   const state = torusController.getState()
   let time = 0
   let msg = null
@@ -274,7 +274,7 @@ function getLatestMessageParams() {
 }
 
 function isTorusTransaction() {
-  let torusController = window.Vue.torus.torusController
+  let { torusController } = torus
   let state = torusController.getState()
   if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
     return false

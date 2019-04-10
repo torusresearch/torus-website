@@ -166,6 +166,7 @@
 import { mapActions, mapState } from 'vuex'
 import copyToClipboard from 'copy-to-clipboard'
 import { addressSlicer } from '../utils/utils'
+import { localweb3 } from '../onload'
 
 export default {
   name: 'profile',
@@ -196,13 +197,13 @@ export default {
         { text: 'Transfer', value: 'transfer' }
       ],
       rules: {
-        toAddress: value => window.web3.utils.isAddress(value) || 'Invalid Eth Address',
+        toAddress: value => localweb3.utils.isAddress(value) || 'Invalid Eth Address',
         required: value => !!value || 'Required'
       }
     }
   },
   computed: mapState({
-    balance: state => window.web3.utils.fromWei(state.weiBalance || '0'),
+    balance: state => localweb3.utils.fromWei(state.weiBalance || '0'),
     selectedAddress: 'selectedAddress',
     slicedAddress: state => addressSlicer(state.selectedAddress) || '0x',
     loggedIn: state => {
@@ -226,8 +227,7 @@ export default {
     // },
     onTransferToken: function(item) {
       if (this.$refs.tokenForm.validate()) {
-        const web3 = window.web3
-        const contractInstance = new web3.eth.Contract(
+        const contractInstance = new localweb3.eth.Contract(
           [
             {
               constant: false,
@@ -263,10 +263,10 @@ export default {
     },
     sendEth: function() {
       if (this.$refs.form.validate()) {
-        window.web3.eth.sendTransaction({
+        localweb3.eth.sendTransaction({
           from: this.selectedAddress,
           to: this.toAddress,
-          value: window.web3.utils.toWei(this.amount)
+          value: localweb3.utils.toWei(this.amount)
         })
       }
     },
@@ -328,10 +328,6 @@ export default {
     }
   },
   mounted() {
-    // if (this.selectedAddress) {
-    //   this.balance = window.web3.utils.fromWei(await window.web3.eth.getBalance(this.selectedAddress))
-    //   console.log(this.balance)
-    // }
     // setup google auth sdk
     const interval = setInterval(() => {
       if (window.gapi) {
@@ -344,9 +340,6 @@ export default {
         })
       }
     }, 2000)
-
-    // window.web3 = window.web3
-    // window.Web3 = window.web3
     // let sendWyreScript = document.createElement('script')
     // sendWyreScript.setAttribute('src', 'https://verify.sendwyre.com/js/widget-loader.js')
     // document.head.appendChild(sendWyreScript)

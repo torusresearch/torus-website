@@ -38,7 +38,7 @@ pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
 var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
 bc.onmessage = function(ev) {
   if (ev.data.type === 'confirm-transaction') {
-    let torusController = window.Vue.torus.torusController
+    let { torusController } = torus
     let state = torusController.getState()
     if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
       let unapprovedPersonalMsgs = []
@@ -99,7 +99,7 @@ bc.onmessage = function(ev) {
       throw new Error('No new transactions.')
     }
   } else if (ev.data.type === 'deny-transaction') {
-    let torusController = window.Vue.torus.torusController
+    let { torusController } = torus
     let state = torusController.getState()
     if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
       let unapprovedPersonalMsgs = []
@@ -150,7 +150,7 @@ var networkChannel = new BroadcastChannel('torus_network_channel')
 networkChannel.onmessage = function(ev) {
   if (ev.data.approve) {
     log.info('Network change approved', ev.data.network)
-    window.Vue.torus.setProviderType(ev.data.network)
+    torus.setProviderType(ev.data.network)
   } else if (ev.data === 'deny-network-change') {
     log.info('Network change denied')
   }

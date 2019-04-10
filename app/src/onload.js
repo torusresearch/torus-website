@@ -1,5 +1,7 @@
 // import WebsocketSubprovider from './websocket.js'
 import TorusController from './controllers/TorusController'
+
+import store from './store'
 var log = require('loglevel')
 var Web3 = require('web3')
 var ProviderEngine = require('web3-provider-engine')
@@ -30,6 +32,8 @@ const routerStream = require('./utils/routerStream')
   }
 })()
 
+let localweb3
+
 function onloadTorus(torus) {
   var engine = new ProviderEngine()
   engine.addProvider(
@@ -48,13 +52,13 @@ function onloadTorus(torus) {
   engine.addProvider(
     new HookedWalletEthTxSubprovider({
       getAccounts: function(cb) {
-        var ethAddress = window.Vue.$store.state.selectedAddress
+        var ethAddress = store.state.selectedAddress
         log.info('GETTING ACCOUNT:', ethAddress)
         cb(null, ethAddress ? [toChecksumAddress(ethAddress)] : [])
       },
       getPrivateKey: function(address, cb) {
         var addr = toChecksumAddress(address)
-        var wallet = window.Vue.$store.state.wallet
+        var wallet = store.state.wallet
         if (addr == null) {
           cb(new Error('No address given.'), null)
         } else if (wallet[addr] == null) {
@@ -88,10 +92,14 @@ function onloadTorus(torus) {
   // })
   // engine.addProvider(wsSubprovider)
   engine.on('block', function(block) {
-    log.info('================================')
-    log.info('BLOCK CHANGED:', '#' + block.number.toString('hex'), '0x' + block.hash.toString('hex'))
-    log.info('================================')
-    window.Vue.$store.dispatch('updateWeiBalance')
+    try {
+      log.info('================================')
+      log.info('BLOCK CHANGED:', '#' + block.number.toString('hex'), '0x' + block.hash.toString('hex'))
+      log.info('================================')
+      store.dispatch('updateWeiBalance')
+    } catch (error) {
+      console.log(error)
+    }
   })
   engine.on('error', function(err) {
     log.error(err.stack)
@@ -100,7 +108,7 @@ function onloadTorus(torus) {
 
   function triggerUi(type) {
     log.info('TRIGGERUI:' + type)
-    window.Vue.$store.dispatch('showPopup')
+    store.dispatch('showPopup')
   }
 
   const torusController = new TorusController({
@@ -109,11 +117,10 @@ function onloadTorus(torus) {
     showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
     openPopup: triggerUi.bind(window, 'bindopenPopup'),
     rehydrate: function() {
-      let selectedAddress = window.Vue.$store.state.selectedAddress
-      let wallet = window.Vue.$store.state.wallet
+      let { selectedAddress, wallet } = store.state
       if (selectedAddress && wallet[selectedAddress]) {
         setTimeout(function() {
-          window.Vue.$store.dispatch('updateSelectedAddress', { selectedAddress })
+          store.dispatch('updateSelectedAddress', { selectedAddress })
         }, 50)
         torus.torusController.initTorusKeyring([wallet[selectedAddress]])
         statusStream.write({ loggedIn: true })
@@ -122,7 +129,7 @@ function onloadTorus(torus) {
           .getId()
           .then(res => {
             setTimeout(function() {
-              window.Vue.$store.dispatch('updateNetworkId', { networkId: res })
+              store.dispatch('updateNetworkId', { networkId: res })
             })
             // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
           })
@@ -159,7 +166,7 @@ function onloadTorus(torus) {
   torus.communicationMux = setupMultiplex(communicationStream)
   torus.web3 = new Web3(engine)
   torus.setProviderType = function(network) {
-    window.Vue.$store.dispatch('setProviderType', { network })
+    store.dispatch('setProviderType', { network })
   }
 
   /* Stream setup block */
@@ -203,8 +210,7 @@ function onloadTorus(torus) {
   var reverseMux = setupMultiplex(reverseStream)
   reverseMux.setMaxListeners(100)
 
-  window.web3 = new Web3(iframeMetamask)
-  window.Web3 = Web3
+  localweb3 = new Web3(iframeMetamask)
   pump(iframeMetamask.mux, reverseMux, iframeMetamask.mux)
 
   var rStream = routerStream(providerOutStream, reverseMux.createStream('provider'))
@@ -263,3 +269,4 @@ function createOriginMiddleware(opts) {
 }
 
 export default onloadTorus
+export { onloadTorus, localweb3 }

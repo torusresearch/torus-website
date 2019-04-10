@@ -1,3 +1,4 @@
+import store from '../store'
 const EventEmitter = require('safe-event-emitter')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
@@ -470,7 +471,7 @@ class TransactionController extends EventEmitter {
     /** @returns the network number stored in networkStore */
     this.getNetwork = () => this.networkStore.getState()
     /** @returns the user selected address */
-    this.getSelectedAddress = () => (window.Vue ? window.Vue.$store.state.selectedAddress.toLowerCase() : '')
+    this.getSelectedAddress = () => (store && store.state.selectedAddress.toLowerCase()) || ''
     /** Returns an array of transactions whos status is unapproved */
     this.getUnapprovedTxCount = () => Object.keys(this.txStateManager.getUnapprovedTxList()).length
     /**

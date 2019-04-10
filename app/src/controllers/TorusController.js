@@ -1,3 +1,4 @@
+import store from '../store'
 const debounce = require('debounce')
 const EventEmitter = require('events')
 const ComposableObservableStore = require('../utils/ComposableObservableStore').default
@@ -126,8 +127,8 @@ export default class TorusController extends EventEmitter {
         // Expose no accounts if this origin has not been approved, preventing
         // account-requiring RPC methods from completing successfully
         // only show address if account is unlocked
-        if (window.Vue.$store.state.selectedAddress) {
-          return [window.Vue.$store.state.selectedAddress]
+        if (store.state.selectedAddress) {
+          return [store.state.selectedAddress]
         } else {
           return []
         }
@@ -572,7 +573,7 @@ export default class TorusController extends EventEmitter {
    */
   getPrivateKey(address) {
     let addr = toChecksumAddress(address)
-    let wallet = window.Vue.$store.state.wallet
+    let { wallet } = store.state
     if (addr == null) {
       throw new Error('TxController - No address given.')
     } else if (wallet[addr] == null) {
