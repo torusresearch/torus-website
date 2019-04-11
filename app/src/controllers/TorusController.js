@@ -686,7 +686,7 @@ export default class TorusController extends EventEmitter {
         nativeCurrency: ticker || 'ETH',
         conversionRate: this.currencyController.getConversionRate(),
         currentCurrency: this.currencyController.getCurrentCurrency(),
-        conversionDate: this.currencyController.getConversionDate(),
+        conversionDate: this.currencyController.getConversionDate()
       }
       cb(null, data)
     } catch (err) {
