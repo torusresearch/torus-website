@@ -143,7 +143,7 @@ function onloadTorus(torus) {
   rpcEngine.push(subscriptionManager.middleware)
   rpcEngine.push(createProviderMiddleware({ provider: torusController.provider }))
   const providerStream = createEngineStream({ engine: rpcEngine })
-
+  // stop using the above and use `torusController.setupTrustedCommunication(stream, 'metamask')`
   var metamaskStream = new LocalMessageDuplexStream({
     name: 'iframe_metamask',
     target: 'embed_metamask',
