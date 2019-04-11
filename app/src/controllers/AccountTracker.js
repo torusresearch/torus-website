@@ -105,6 +105,7 @@ export default class AccountTracker {
    *
    */
   addAccounts(addresses) {
+    console.log('adding accounts', addresses)
     const accounts = this.store.getState().accounts
     // add initial state for addresses
     addresses.forEach(address => {
@@ -112,6 +113,7 @@ export default class AccountTracker {
     })
     // save accounts state
     this.store.updateState({ accounts })
+    console.log(this._currentBlockNumber, "block number")
     // fetch balances for the accounts if there is block number ready
     if (!this._currentBlockNumber) return
     addresses.forEach(address => this._updateAccount(address))
@@ -180,6 +182,7 @@ export default class AccountTracker {
    */
   async _updateAccount(address) {
     // query balance
+    console.log('updated account', address)
     const balance = await this._query.getBalance(address)
     const result = { address, balance }
     // update accounts state

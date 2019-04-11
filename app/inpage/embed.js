@@ -95,6 +95,17 @@ function createWidget() {
   }
 }
 
+function showTorusButton() {
+  // torusIframeContainer.style.display = 'none'
+  torusMenuBtn.style.display = 'block'
+  torusLogin.style.display = 'none'
+}
+
+function hideTorusButton() {
+  torusLogin.style.display = 'block'
+  torusMenuBtn.style.display = 'none'
+}
+
 function setupWeb3() {
   log.info('setupWeb3 running')
   // setup background connection
@@ -188,18 +199,6 @@ function setupWeb3() {
   //     hideTorusOverlay()
   //   }
   // })
-
-
-  function showTorusButton() {
-    // torusIframeContainer.style.display = 'none'
-    torusMenuBtn.style.display = 'block'
-    torusLogin.style.display = 'none'
-  }
-
-  function hideTorusButton() {
-    torusLogin.style.display = 'block'
-    torusMenuBtn.style.display = 'none'
-  }
 
   // TODO: check if unused
   // function showTorusOverlay() {

@@ -188,8 +188,9 @@ export default class TorusController extends EventEmitter {
   // KEYRING RELATED METHODS
   // =============================================================================
 
-  initTorusKeyring(keyArray) {
+  initTorusKeyring(keyArray, addresses) {
     this.keyring.deserialize(keyArray)
+    this.accountTracker.syncWithAddresses(addresses)
   }
 
   /**
@@ -201,15 +202,17 @@ export default class TorusController extends EventEmitter {
     return new Promise((resolve, reject) => {
       const ethQuery = EthQuery(this.provider)
       const cached = this.accountTracker.store.getState().accounts[address]
-
+      console.log('cached balance', cached)
       if (cached && cached.balance) {
         resolve(cached.balance)
       } else {
         ethQuery.getBalance(address, (error, balance) => {
           if (error) {
+            console.log(balance, 'reject')
             reject(error)
             log.error(error)
           } else {
+            console.log(balance)
             resolve(balance || '0x0')
           }
         })

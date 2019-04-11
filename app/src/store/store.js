@@ -207,7 +207,7 @@ function handleLogin(email, payload) {
             torus.continueEnable(ethAddress)
           }, 50)
         }
-        torus.torusController.initTorusKeyring([data.privKey])
+        torus.torusController.initTorusKeyring([data.privKey], [data.ethAddress])
         const statusStream = torus.communicationMux.getStream('status')
         statusStream.write({ loggedIn: true })
         // torus.web3.eth.net

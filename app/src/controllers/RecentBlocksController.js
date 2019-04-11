@@ -64,6 +64,7 @@ class RecentBlocksController {
    *
    */
   async processBlock(newBlockNumberHex) {
+    console.log('processing blocks', newBlockNumberHex)
     const newBlockNumber = Number.parseInt(newBlockNumberHex, 16)
     const newBlock = await this.getBlockByNumber(newBlockNumber, true)
     if (!newBlock) return
