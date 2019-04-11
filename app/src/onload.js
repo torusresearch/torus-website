@@ -143,7 +143,6 @@ function onloadTorus(torus) {
   rpcEngine.push(subscriptionManager.middleware)
   rpcEngine.push(createProviderMiddleware({ provider: torusController.provider }))
   const providerStream = createEngineStream({ engine: rpcEngine })
-  // stop using the above and use `torusController.setupTrustedCommunication(stream, 'metamask')`
   var metamaskStream = new LocalMessageDuplexStream({
     name: 'iframe_metamask',
     target: 'embed_metamask',
@@ -209,7 +208,10 @@ function onloadTorus(torus) {
   pump(iframeMetamask.mux, reverseMux, iframeMetamask.mux)
 
   var rStream = routerStream(providerOutStream, reverseMux.createStream('provider'))
-
+  // stop using the above and use `torusController.setupTrustedCommunication(stream, 'metamask')`
+  // this will remove the need for localweb3 because the torus.web3 will invoke the same - maybe - need to test
+  // also need to define getApi() in toruscontroller - not necessary
+  // also need to set autoreload in embed.js upon network change
   rStream.mergeSteam
     .pipe(sendPassThroughStream)
     .pipe(providerStream)

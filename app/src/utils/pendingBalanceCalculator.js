@@ -71,4 +71,4 @@ class PendingBalanceCalculator {
   }
 }
 
-module.exports = PendingBalanceCalculator
+export default PendingBalanceCalculator

@@ -1,6 +1,6 @@
 /* eslint-disable no-fallthrough */
 const ObservableStore = require('obs-store')
-const PendingBalanceCalculator = require('../utils/pendingBalanceCalculator')
+const PendingBalanceCalculator = require('../utils/pendingBalanceCalculator').default
 const BN = require('ethereumjs-util').BN
 
 class BalanceController {
@@ -132,4 +132,4 @@ class BalanceController {
   }
 }
 
-module.exports = BalanceController
+export default BalanceController

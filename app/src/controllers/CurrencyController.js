@@ -203,4 +203,4 @@ class CurrencyController {
   }
 }
 
-module.exports = CurrencyController
+export default CurrencyController

@@ -84,6 +84,7 @@ export default class TorusController extends EventEmitter {
 
     // key mgmt
     this.keyringController = new KeyringController()
+    this.publicConfigStore = this.initPublicConfigStore()
 
     // tx mgmt
     this.txController = new TransactionController({
@@ -91,7 +92,7 @@ export default class TorusController extends EventEmitter {
       txHistoryLimit: 40,
       getNetwork: this.networkController.getNetworkState.bind(this),
       // signs ethTx
-      signTransaction: this.keyring.signTransaction.bind(this.keyring),
+      signTransaction: this.keyringController.signTransaction.bind(this.keyringController),
       provider: this.provider,
       blockTracker: this.blockTracker,
       getGasPrice: this.getGasPrice.bind(this),
@@ -191,7 +192,7 @@ export default class TorusController extends EventEmitter {
 
     // memStore -> transform -> publicConfigStore
     this.on('update', memState => {
-      this.isClientOpenAndUnlocked = memState.isUnlocked && this._isClientOpen
+      this.isClientOpenAndUnlocked = memState.isUnlocked
       const publicState = selectPublicState(memState)
       publicConfigStore.putState(publicState)
     })
@@ -214,6 +215,54 @@ export default class TorusController extends EventEmitter {
    */
   getState() {
     return this.store.getFlatState()
+  }
+
+  /**
+   * Returns an Object containing API Callback Functions.
+   * These functions are the interface for the UI.
+   * The API object can be transmitted over a stream with dnode.
+   *
+   * @returns {Object} Object containing API functions.
+   */
+  getApi() {
+    const keyringController = this.keyringController
+    const txController = this.txController
+    const networkController = this.networkController
+
+    return {
+      // etc
+      getState: cb => cb(null, this.getState()),
+      setCurrentCurrency: this.setCurrentCurrency.bind(this),
+      getGasPrice: cb => cb(null, this.getGasPrice()),
+
+      // network management
+      setProviderType: nodeify(networkController.setProviderType, networkController),
+
+      // KeyringController
+      exportAccount: nodeify(keyringController.exportAccount, keyringController),
+
+      // txController
+      cancelTransaction: nodeify(txController.cancelTransaction, txController),
+      updateTransaction: nodeify(txController.updateTransaction, txController),
+      updateAndApproveTransaction: nodeify(txController.updateAndApproveTransaction, txController),
+      retryTransaction: nodeify(this.retryTransaction, this),
+      createCancelTransaction: nodeify(this.createCancelTransaction, this),
+      createSpeedUpTransaction: nodeify(this.createSpeedUpTransaction, this),
+      getFilteredTxList: nodeify(txController.getFilteredTxList, txController),
+      estimateGas: nodeify(this.estimateGas, this),
+
+      // messageManager
+      signMessage: nodeify(this.signMessage, this),
+      cancelMessage: this.cancelMessage.bind(this),
+
+      // personalMessageManager
+      signPersonalMessage: nodeify(this.signPersonalMessage, this),
+      cancelPersonalMessage: this.cancelPersonalMessage.bind(this),
+
+      // personalMessageManager
+      signTypedMessage: nodeify(this.signTypedMessage, this),
+      cancelTypedMessage: this.cancelTypedMessage.bind(this)
+    }
   }
 
   // =============================================================================

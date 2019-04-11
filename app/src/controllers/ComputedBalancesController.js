@@ -1,6 +1,6 @@
 const ObservableStore = require('obs-store')
 const extend = require('xtend')
-const BalanceController = require('./BalanceController')
+const BalanceController = require('./BalanceController').default
 
 /**
  * @typedef {Object} ComputedBalancesOptions
@@ -119,4 +119,4 @@ class ComputedbalancesController {
   }
 }
 
-module.exports = ComputedbalancesController
+export default ComputedbalancesController
