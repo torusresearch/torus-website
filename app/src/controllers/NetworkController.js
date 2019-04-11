@@ -140,6 +140,7 @@ export default class NetworkController extends EventEmitter {
       }
     })
   }
+
   /**
    * Set provider
    * @param {string} type

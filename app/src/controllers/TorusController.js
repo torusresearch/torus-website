@@ -2,10 +2,12 @@ const debounce = require('debounce')
 const EventEmitter = require('events')
 const ComposableObservableStore = require('../utils/ComposableObservableStore').default
 const log = require('loglevel')
-const EthQuery = require('eth-query')
 const NetworkController = require('./NetworkController').default
 const AccountTracker = require('./AccountTracker').default
 const TransactionController = require('./TransactionController').default
+const BalancesController = require('./ComputedBalancesController').default
+const RecentBlocksController = require('./RecentBlocksController').default
+const CurrencyController = require('./CurrencyController').default
 const toChecksumAddress = require('../utils/toChecksumAddress').default
 const BN = require('ethereumjs-util').BN
 const GWEI_BN = new BN('1000000000')
@@ -22,13 +24,12 @@ const createOriginMiddleware = require('../utils/createOriginMiddleware')
 const createLoggerMiddleware = require('../utils/createLoggerMiddleware')
 const createProviderMiddleware = require('../utils/createProviderMiddleware')
 const createEngineStream = require('json-rpc-middleware-stream/engineStream')
-const RecentBlocksController = require('./RecentBlocksController').default
 const MessageManager = require('./MessageManager').default
 const PersonalMessageManager = require('./PersonalMessageManager').default
 const TypedMessageManager = require('./TypedMessageManager').default
 const ObservableStore = require('obs-store')
 const nodeify = require('../utils/nodeify').default
-const TorusKeyring = require('../utils/TorusKeyring').default
+const KeyringController = require('../utils/TorusKeyring').default
 
 // defaults and constants
 const version = '0.0.1'
@@ -41,16 +42,31 @@ export default class TorusController extends EventEmitter {
   constructor(opts) {
     super()
     this.defaultMaxListeners = 20
+    this.sendUpdate = debounce(this.privateSendUpdate.bind(this), 200)
     this.opts = opts
     this.store = new ComposableObservableStore()
     this.networkController = new NetworkController()
+
+    this.currencyController = new CurrencyController({
+      initState: {}
+    })
+    this.currencyController.updateConversionRate()
+    this.currencyController.scheduleConversionInterval()
+
     this.initializeProvider()
     this.provider = this.networkController.getProviderAndBlockTracker().provider
     this.blockTracker = this.networkController.getProviderAndBlockTracker().blockTracker
-    this.sendUpdate = debounce(this.privateSendUpdate.bind(this), 200)
+
+    this.recentBlocksController = new RecentBlocksController({
+      blockTracker: this.blockTracker,
+      provider: this.provider,
+      networkController: this.networkController
+    })
+
     this.accountTracker = new AccountTracker({
       provider: this.provider,
-      blockTracker: this.blockTracker
+      blockTracker: this.blockTracker,
+      network: this.networkController
     })
     // start and stop polling for balances based on activeControllerConnections
     this.on('controllerConnectionChanged', activeControllerConnections => {
@@ -61,8 +77,13 @@ export default class TorusController extends EventEmitter {
       }
     })
 
+    // ensure accountTracker updates balances after network change
+    this.networkController.on('networkDidChange', () => {
+      this.accountTracker._updateAccounts()
+    })
+
     // key mgmt
-    this.keyring = new TorusKeyring()
+    this.keyringController = new KeyringController()
 
     // tx mgmt
     this.txController = new TransactionController({
@@ -87,20 +108,31 @@ export default class TorusController extends EventEmitter {
       }
     })
 
+    // computed balances (accounting for pending transactions)
+    this.balancesController = new BalancesController({
+      accountTracker: this.accountTracker,
+      txController: this.txController,
+      blockTracker: this.blockTracker
+    })
+
+    this.networkController.on('networkDidChange', () => {
+      const currentCurrency = this.currencyController.getCurrentCurrency()
+      this.setCurrentCurrency(currentCurrency, function() {})
+    })
+    this.balancesController.updateAllBalances()
+
     this.networkController.lookupNetwork()
     this.messageManager = new MessageManager()
     this.personalMessageManager = new PersonalMessageManager()
     this.typedMessageManager = new TypedMessageManager({ networkController: this.networkController })
-    this.recentBlocksController = new RecentBlocksController({
-      blockTracker: this.blockTracker,
-      provider: this.provider
-    })
     this.store.updateStructure({
       TransactionController: this.txController.store,
       NetworkController: this.networkController.store,
       MessageManager: this.messageManager.store,
+      CurrencyController: this.currencyController.store,
       PersonalMessageManager: this.personalMessageManager.store,
-      TypedMessageManager: this.typedMessageManager.store
+      TypedMessageManager: this.typedMessageManager.store,
+      BalancesController: this.balancesController.store
     })
     this.updateAndApproveTransaction = nodeify(this.txController.updateAndApproveTransaction, this.txController)
     this.cancelTransaction = nodeify(this.txController.cancelTransaction, this.txController)
@@ -189,7 +221,7 @@ export default class TorusController extends EventEmitter {
   // =============================================================================
 
   initTorusKeyring(keyArray, addresses) {
-    this.keyring.deserialize(keyArray)
+    this.keyringController.deserialize(keyArray)
     this.accountTracker.syncWithAddresses(addresses)
   }
 
@@ -198,9 +230,8 @@ export default class TorusController extends EventEmitter {
    * @param {string} address - The account address
    * @param {EthQuery} ethQuery - The EthQuery instance to use when asking the network
    */
-  getBalance(address) {
+  getBalance(address, ethQuery) {
     return new Promise((resolve, reject) => {
-      const ethQuery = EthQuery(this.provider)
       const cached = this.accountTracker.store.getState().accounts[address]
       console.log('cached balance', cached)
       if (cached && cached.balance) {
@@ -301,7 +332,7 @@ export default class TorusController extends EventEmitter {
       .approveMessage(msgParams)
       .then(cleanMsgParams => {
         // signs the message
-        return this.keyring.signMessage(cleanMsgParams.from, cleanMsgParams.data)
+        return this.keyringController.signMessage(cleanMsgParams.from, cleanMsgParams.data)
       })
       .then(rawSig => {
         // tells the listener that the message has been signed
@@ -360,7 +391,7 @@ export default class TorusController extends EventEmitter {
       .approveMessage(msgParams)
       .then(cleanMsgParams => {
         // signs the message
-        return this.keyring.signPersonalMessage(cleanMsgParams.from, cleanMsgParams.data)
+        return this.keyringController.signPersonalMessage(cleanMsgParams.from, cleanMsgParams.data)
       })
       .then(rawSig => {
         // tells the listener that the message has been signed
@@ -411,7 +442,7 @@ export default class TorusController extends EventEmitter {
     try {
       const cleanMsgParams = await this.typedMessageManager.approveMessage(msgParams)
       const address = toChecksumAddress(sigUtil.normalize(cleanMsgParams.from))
-      let signature = await this.keyring.signTypedData(address, cleanMsgParams.data)
+      let signature = await this.keyringController.signTypedData(address, cleanMsgParams.data)
       this.typedMessageManager.setMsgStatusSigned(msgId, signature)
       return this.getState()
     } catch (error) {
@@ -431,6 +462,42 @@ export default class TorusController extends EventEmitter {
     if (cb && typeof cb === 'function') {
       cb(null, this.getState())
     }
+  }
+
+  /**
+   * Allows a user to try to speed up a transaction by retrying it
+   * with higher gas.
+   *
+   * @param {string} txId - The ID of the transaction to speed up.
+   * @param {Function} cb - The callback function called with a full state update.
+   */
+  async retryTransaction(txId, gasPrice, cb) {
+    await this.txController.retryTransaction(txId, gasPrice)
+    const state = await this.getState()
+    return state
+  }
+
+  /**
+   * Allows a user to attempt to cancel a previously submitted transaction by creating a new
+   * transaction.
+   * @param {number} originalTxId - the id of the txMeta that you want to attempt to cancel
+   * @param {string=} customGasPrice - the hex value to use for the cancel transaction
+   * @returns {object} MetaMask state
+   */
+  async createCancelTransaction(originalTxId, customGasPrice, cb) {
+    try {
+      await this.txController.createCancelTransaction(originalTxId, customGasPrice)
+      const state = await this.getState()
+      return state
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async createSpeedUpTransaction(originalTxId, customGasPrice, cb) {
+    await this.txController.createSpeedUpTransaction(originalTxId, customGasPrice)
+    const state = await this.getState()
+    return state
   }
 
   /**
@@ -533,7 +600,7 @@ export default class TorusController extends EventEmitter {
     engine.push(filterMiddleware)
     engine.push(subscriptionManager.middleware)
     // watch asset
-    engine.push(this.preferencesController.requestWatchAsset.bind(this.preferencesController))
+    // engine.push(this.preferencesController.requestWatchAsset.bind(this.preferencesController))
     // forward to metamask primary provider
     engine.push(createProviderMiddleware({ provider }))
 
@@ -602,5 +669,28 @@ export default class TorusController extends EventEmitter {
 
     releaseLock()
     return pendingNonce
+  }
+
+  /**
+   * A method for setting the user's preferred display currency.
+   * @param {string} currencyCode - The code of the preferred currency.
+   * @param {Function} cb - A callback function returning currency info.
+   */
+  setCurrentCurrency(currencyCode, cb) {
+    const { ticker } = this.networkController.getNetworkConfig()
+    try {
+      this.currencyController.setNativeCurrency(ticker)
+      this.currencyController.setCurrentCurrency(currencyCode)
+      this.currencyController.updateConversionRate()
+      const data = {
+        nativeCurrency: ticker || 'ETH',
+        conversionRate: this.currencyController.getConversionRate(),
+        currentCurrency: this.currencyController.getCurrentCurrency(),
+        conversionDate: this.currencyController.getConversionDate(),
+      }
+      cb(null, data)
+    } catch (err) {
+      cb(err)
+    }
   }
 }

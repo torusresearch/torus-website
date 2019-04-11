@@ -116,7 +116,7 @@ export default class AccountTracker {
     console.log(this._currentBlockNumber, "block number")
     // fetch balances for the accounts if there is block number ready
     if (!this._currentBlockNumber) return
-    addresses.forEach(address => this._updateAccount(address))
+    this._updateAccounts()
   }
 
   /**
