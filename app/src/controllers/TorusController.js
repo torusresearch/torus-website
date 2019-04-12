@@ -5,7 +5,6 @@ const log = require('loglevel')
 const NetworkController = require('./NetworkController').default
 const AccountTracker = require('./AccountTracker').default
 const TransactionController = require('./TransactionController').default
-const BalancesController = require('./ComputedBalancesController').default
 const RecentBlocksController = require('./RecentBlocksController').default
 const CurrencyController = require('./CurrencyController').default
 const toChecksumAddress = require('../utils/toChecksumAddress').default
@@ -109,18 +108,10 @@ export default class TorusController extends EventEmitter {
       }
     })
 
-    // computed balances (accounting for pending transactions)
-    this.balancesController = new BalancesController({
-      accountTracker: this.accountTracker,
-      txController: this.txController,
-      blockTracker: this.blockTracker
-    })
-
     this.networkController.on('networkDidChange', () => {
       const currentCurrency = this.currencyController.getCurrentCurrency()
       this.setCurrentCurrency(currentCurrency, function() {})
     })
-    this.balancesController.updateAllBalances()
 
     this.networkController.lookupNetwork()
     this.messageManager = new MessageManager()
@@ -132,8 +123,7 @@ export default class TorusController extends EventEmitter {
       MessageManager: this.messageManager.store,
       CurrencyController: this.currencyController.store,
       PersonalMessageManager: this.personalMessageManager.store,
-      TypedMessageManager: this.typedMessageManager.store,
-      BalancesController: this.balancesController.store
+      TypedMessageManager: this.typedMessageManager.store
     })
     this.updateAndApproveTransaction = nodeify(this.txController.updateAndApproveTransaction, this.txController)
     this.cancelTransaction = nodeify(this.txController.cancelTransaction, this.txController)
@@ -272,6 +262,7 @@ export default class TorusController extends EventEmitter {
   initTorusKeyring(keyArray, addresses) {
     this.keyringController.deserialize(keyArray)
     this.accountTracker.syncWithAddresses(addresses)
+    this.accountTracker._updateAccounts()
   }
 
   /**
@@ -282,17 +273,14 @@ export default class TorusController extends EventEmitter {
   getBalance(address, ethQuery) {
     return new Promise((resolve, reject) => {
       const cached = this.accountTracker.store.getState().accounts[address]
-      console.log('cached balance', cached)
       if (cached && cached.balance) {
         resolve(cached.balance)
       } else {
         ethQuery.getBalance(address, (error, balance) => {
           if (error) {
-            console.log(balance, 'reject')
             reject(error)
             log.error(error)
           } else {
-            console.log(balance)
             resolve(balance || '0x0')
           }
         })

@@ -5,11 +5,7 @@ var log = require('loglevel')
 var Web3 = require('web3')
 var LocalMessageDuplexStream = require('post-message-stream')
 const pump = require('pump')
-const createEngineStream = require('json-rpc-middleware-stream/engineStream')
-const RpcEngine = require('json-rpc-engine')
-const createFilterMiddleware = require('eth-json-rpc-filters')
 const stream = require('stream')
-const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionManager')
 const setupMultiplex = require('./utils/setupMultiplex').default
 const MetamaskInpageProvider = require('../inpage/inpage-provider')
 const routerStream = require('./utils/routerStream')
@@ -226,36 +222,6 @@ function onloadTorus(torus) {
   /* Stream setup block */
 
   return torus
-}
-
-function createLoggerMiddleware(opts) {
-  return function loggerMiddleware(/** @type {any} */ req, /** @type {any} */ res, /** @type {Function} */ next) {
-    next((/** @type {Function} */ cb) => {
-      if (res.error) {
-        log.error('Error in RPC response:\n', res)
-      }
-      if (req.isMetamaskInternal) return
-      log.info(`RPC (${opts.origin}):`, req, '->', res)
-      cb()
-    })
-  }
-}
-
-function createProviderMiddleware({ provider }) {
-  return (req, res, next, end) => {
-    provider.sendAsync(req, (err, _res) => {
-      if (err) return end(err)
-      res.result = _res.result
-      end()
-    })
-  }
-}
-
-function createOriginMiddleware(opts) {
-  return function originMiddleware(req, res, next) {
-    req.origin = opts.origin
-    next()
-  }
 }
 
 export default onloadTorus
