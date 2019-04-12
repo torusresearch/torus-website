@@ -200,6 +200,7 @@ function handleLogin(email, payload) {
         }
         VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
         VuexStore.dispatch('addWallet', data)
+        VuexStore.dispatch('updateWeiBalance')
         // continue enable function
         var ethAddress = data.ethAddress
         if (payload.calledFromEmbed) {

@@ -39,6 +39,9 @@ function onloadTorus(torus) {
       if (selectedAddress && wallet[selectedAddress]) {
         setTimeout(function() {
           store.dispatch('updateSelectedAddress', { selectedAddress })
+          setTimeout(function() {
+            store.dispatch('updateWeiBalance')
+          }, 50)
         }, 50)
         torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
         statusStream.write({ loggedIn: true })
