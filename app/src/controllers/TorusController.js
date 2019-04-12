@@ -630,7 +630,7 @@ export default class TorusController extends EventEmitter {
    * @param {*} outStream - The stream to provide over.
    * @param {string} origin - The URI of the requesting resource.
    */
-  setupProviderConnection(outStream, origin) {
+  setupProviderConnection(inStream, outStream, origin) {
     // setup json rpc engine stack
     const engine = new RpcEngine()
     const provider = this.provider
@@ -656,11 +656,14 @@ export default class TorusController extends EventEmitter {
     // setup connection
     const providerStream = createEngineStream({ engine })
 
-    pump(outStream, providerStream, outStream, err => {
-      // cleanup filter polyfill middleware
-      filterMiddleware.destroy()
-      if (err) log.error(err)
-    })
+    inStream
+      .pipe(providerStream)
+      .pipe(outStream)
+      .on('error', err => {
+        // cleanup filter polyfill middleware
+        filterMiddleware.destroy()
+        if (err) log.error(err)
+      })
   }
 
   /**
