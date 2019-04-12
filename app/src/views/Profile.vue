@@ -166,7 +166,7 @@
 import { mapActions, mapState } from 'vuex'
 import copyToClipboard from 'copy-to-clipboard'
 import { addressSlicer } from '../utils/utils'
-import { localweb3 } from '../onload'
+import torus from '../torus'
 
 export default {
   name: 'profile',
@@ -197,13 +197,13 @@ export default {
         { text: 'Transfer', value: 'transfer' }
       ],
       rules: {
-        toAddress: value => localweb3.utils.isAddress(value) || 'Invalid Eth Address',
+        toAddress: value => torus.web3.utils.isAddress(value) || 'Invalid Eth Address',
         required: value => !!value || 'Required'
-      }
+      } 
     }
   },
   computed: mapState({
-    balance: state => localweb3.utils.fromWei(state.weiBalance || '0'),
+    balance: state => torus.web3.utils.fromWei(state.weiBalance || '0'),
     selectedAddress: 'selectedAddress',
     slicedAddress: state => addressSlicer(state.selectedAddress) || '0x',
     loggedIn: state => {
@@ -227,7 +227,7 @@ export default {
     // },
     onTransferToken: function(item) {
       if (this.$refs.tokenForm.validate()) {
-        const contractInstance = new localweb3.eth.Contract(
+        const contractInstance = new torus.web3.eth.Contract(
           [
             {
               constant: false,
@@ -263,10 +263,10 @@ export default {
     },
     sendEth: function() {
       if (this.$refs.form.validate()) {
-        localweb3.eth.sendTransaction({
+        torus.web3.eth.sendTransaction({
           from: this.selectedAddress,
           to: this.toAddress,
-          value: localweb3.utils.toWei(this.amount)
+          value: torus.web3.utils.toWei(this.amount)
         })
       }
     },
