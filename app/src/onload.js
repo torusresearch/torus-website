@@ -18,8 +18,6 @@ const routerStream = require('./utils/routerStream')
   }
 })()
 
-let localweb3
-
 function onloadTorus(torus) {
   // var engine = new ProviderEngine()
   // engine.addProvider(
@@ -190,11 +188,10 @@ function onloadTorus(torus) {
   var reverseMux = setupMultiplex(reverseStream)
   reverseMux.setMaxListeners(100)
 
-  localweb3 = new Web3(iframeMetamask)
   pump(iframeMetamask.mux, reverseMux, iframeMetamask.mux)
-
+  
   var rStream = routerStream(providerOutStream, reverseMux.createStream('provider'))
-
+  
   torusController.setupProviderConnection(rStream.mergeSteam, rStream.splitStream, 'metamask')
 
   // stop using the above and use `torusController.setupTrustedCommunication(stream, 'metamask')`
@@ -225,4 +222,4 @@ function onloadTorus(torus) {
 }
 
 export default onloadTorus
-export { onloadTorus, localweb3 }
+export { onloadTorus }
