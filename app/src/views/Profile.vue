@@ -199,7 +199,7 @@ export default {
       rules: {
         toAddress: value => torus.web3.utils.isAddress(value) || 'Invalid Eth Address',
         required: value => !!value || 'Required'
-      } 
+      }
     }
   },
   computed: mapState({

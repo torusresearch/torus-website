@@ -563,8 +563,8 @@ export default class TorusController extends EventEmitter {
   setupUntrustedCommunication(connectionStream, originDomain) {
     // setup multiplexing
     const mux = setupMultiplex(connectionStream)
-    // connect features
-    this.setupProviderConnection(mux.createStream('provider'), originDomain)
+    // connect features && for test cases
+    this.setupProviderConnection(mux.createStream('test'), mux.createStream('provider'), originDomain)
     this.setupPublicConfig(mux.createStream('publicConfig'))
   }
 
@@ -583,7 +583,8 @@ export default class TorusController extends EventEmitter {
     const mux = setupMultiplex(connectionStream)
     // connect features
     this.setupControllerConnection(mux.createStream('controller'))
-    this.setupProviderConnection(mux.createStream('provider'), originDomain)
+    // to fix test cases
+    this.setupProviderConnection(mux.createStream('test'), mux.createStream('provider'), originDomain)
   }
 
   /**

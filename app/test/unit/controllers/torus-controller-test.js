@@ -143,25 +143,25 @@ describe('MetaMaskController', function() {
   })
 
   // Not implemented but referenced - ##fail
-  // describe('#getApi', function() {
-  //   let getApi, state
+  describe('#getApi', function() {
+    let getApi, state
 
-  //   beforeEach(function() {
-  //     getApi = metamaskController.getApi()
-  //   })
+    beforeEach(function() {
+      getApi = metamaskController.getApi()
+    })
 
-  //   it('getState', function(done) {
-  //     getApi.getState((err, res) => {
-  //       if (err) {
-  //         done(err)
-  //       } else {
-  //         state = res
-  //       }
-  //     })
-  //     assert.deepStrictEqual(state, metamaskController.getState())
-  //     done()
-  //   })
-  // })
+    it('getState', function(done) {
+      getApi.getState((err, res) => {
+        if (err) {
+          done(err)
+        } else {
+          state = res
+        }
+      })
+      assert.deepStrictEqual(state, metamaskController.getState())
+      done()
+    })
+  })
 
   // Not implemented but defined preferences controller - ##fail
   // describe('preferencesController', function() {
@@ -682,8 +682,8 @@ describe('MetaMaskController', function() {
   //   })
 
   //   it('sets up phishing stream for untrusted communication ', async () => {
-  //     // await metamaskController.blacklistController.updatePhishingList()
-  //     // console.log(blacklistJSON.blacklist.includes(phishingUrl))
+  //     await metamaskController.blacklistController.updatePhishingList()
+  //     console.log(blacklistJSON.blacklist.includes(phishingUrl))
 
   //     const { promise, resolve } = deferredPromise()
 
