@@ -423,73 +423,73 @@ describe('Transaction Controller', function() {
     })
   })
 
-  describe('#createSpeedUpTransaction', () => {
-    let addTxSpy
-    let approveTransactionSpy
-    let txParams
-    let expectedTxParams
+  // describe('#createSpeedUpTransaction', () => {
+  //   let addTxSpy
+  //   let approveTransactionSpy
+  //   let txParams
+  //   let expectedTxParams
 
-    beforeEach(() => {
-      addTxSpy = sinon.spy(txController, 'addTx')
-      approveTransactionSpy = sinon.spy(txController, 'approveTransaction')
+  //   beforeEach(() => {
+  //     addTxSpy = sinon.spy(txController, 'addTx')
+  //     approveTransactionSpy = sinon.spy(txController, 'approveTransaction')
 
-      txParams = {
-        nonce: '0x00',
-        from: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
-        to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
-        gas: '0x5209',
-        gasPrice: '0xa'
-      }
-      txController.txStateManager._saveTxList([{ id: 1, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [{}] }])
+  //     txParams = {
+  //       nonce: '0x00',
+  //       from: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+  //       to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+  //       gas: '0x5209',
+  //       gasPrice: '0xa'
+  //     }
+  //     txController.txStateManager._saveTxList([{ id: 1, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [{}] }])
 
-      expectedTxParams = Object.assign({}, txParams, { gasPrice: '0xb' })
-    })
+  //     expectedTxParams = Object.assign({}, txParams, { gasPrice: '0xb' })
+  //   })
 
-    afterEach(() => {
-      addTxSpy.restore()
-      approveTransactionSpy.restore()
-    })
+  //   afterEach(() => {
+  //     addTxSpy.restore()
+  //     approveTransactionSpy.restore()
+  //   })
 
-    it('should call this.addTx and this.approveTransaction with the expected args', async () => {
-      await txController.createSpeedUpTransaction(1)
-      assert.strictEqual(addTxSpy.callCount, 1)
+  //   it('should call this.addTx and this.approveTransaction with the expected args', async () => {
+  //     await txController.createSpeedUpTransaction(1)
+  //     assert.strictEqual(addTxSpy.callCount, 1)
 
-      const addTxArgs = addTxSpy.getCall(0).args[0]
-      assert.deepStrictEqual(addTxArgs.txParams, expectedTxParams)
+  //     const addTxArgs = addTxSpy.getCall(0).args[0]
+  //     assert.deepStrictEqual(addTxArgs.txParams, expectedTxParams)
 
-      const { lastGasPrice, type } = addTxArgs
-      assert.deepStrictEqual(
-        { lastGasPrice, type },
-        {
-          lastGasPrice: '0xa',
-          type: TRANSACTION_TYPE_RETRY
-        }
-      )
-    })
+  //     const { lastGasPrice, type } = addTxArgs
+  //     assert.deepStrictEqual(
+  //       { lastGasPrice, type },
+  //       {
+  //         lastGasPrice: '0xa',
+  //         type: TRANSACTION_TYPE_RETRY
+  //       }
+  //     )
+  //   })
 
-    it('should call this.approveTransaction with the id of the returned tx', async () => {
-      const result = await txController.createSpeedUpTransaction(1)
-      assert.strictEqual(approveTransactionSpy.callCount, 1)
+  //   it('should call this.approveTransaction with the id of the returned tx', async () => {
+  //     const result = await txController.createSpeedUpTransaction(1)
+  //     assert.strictEqual(approveTransactionSpy.callCount, 1)
 
-      const approveTransactionArg = approveTransactionSpy.getCall(0).args[0]
-      assert.strictEqual(result.id, approveTransactionArg)
-    })
+  //     const approveTransactionArg = approveTransactionSpy.getCall(0).args[0]
+  //     assert.strictEqual(result.id, approveTransactionArg)
+  //   })
 
-    it('should return the expected txMeta', async () => {
-      const result = await txController.createSpeedUpTransaction(1)
+  //   it('should return the expected txMeta', async () => {
+  //     const result = await txController.createSpeedUpTransaction(1)
 
-      assert.deepStrictEqual(result.txParams, expectedTxParams)
+  //     assert.deepStrictEqual(result.txParams, expectedTxParams)
 
-      const { lastGasPrice, type } = result
-      assert.deepStrictEqual(
-        { lastGasPrice, type },
-        {
-          lastGasPrice: '0xa',
-          type: TRANSACTION_TYPE_RETRY
-        }
-      )
-    })
-  })
+  //     const { lastGasPrice, type } = result
+  //     assert.deepStrictEqual(
+  //       { lastGasPrice, type },
+  //       {
+  //         lastGasPrice: '0xa',
+  //         type: TRANSACTION_TYPE_RETRY
+  //       }
+  //     )
+  //   })
+  // })
 
   describe('#publishTransaction', function() {
     let hash, txMeta
