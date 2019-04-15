@@ -18,7 +18,6 @@ torus.torusController.networkController.networkStore.subscribe(function(state) {
 window.addEventListener(
   'storage',
   function() {
-    console.log('Storage changed')
     if (localStorage.getItem('torus_network_type') !== VuexStore.state.networkType) {
       VuexStore.dispatch('setProviderType', { network: localStorage.getItem('torus_network_type') })
     }

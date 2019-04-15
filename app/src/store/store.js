@@ -60,7 +60,6 @@ var VuexStore = new Vuex.Store({
       state.networkId = networkId
     },
     setNetworkType(state, networkType) {
-      console.log('setting network type', networkType)
       state.networkType = networkType
     },
     resetStore(state, requiredState) {
@@ -152,7 +151,6 @@ var VuexStore = new Vuex.Store({
     },
     setProviderType(context, payload) {
       context.commit('setNetworkType', payload.network)
-      console.log('setprovidertype', payload)
       localStorage.setItem('torus_network_type', payload.network)
       torus.torusController.networkController.setProviderType(payload.network)
     },

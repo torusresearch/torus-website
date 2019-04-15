@@ -227,7 +227,6 @@ export default {
       }, 3000)
     },
     networkChanged: function() {
-      console.log('network changed')
       this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
     },
     // depositETHOption: function() {
