@@ -9,6 +9,7 @@ import BroadcastChannel from 'broadcast-channel'
 Edited to change networkId => network state. Has an implication of changing neworkVersion 
 to "loading" at times in the inpage API
  */
+
 torus.torusController.networkController.networkStore.subscribe(function(state) {
   VuexStore.dispatch('updateNetworkId', { networkId: state })
 })
@@ -21,11 +22,6 @@ passthroughStream.on('data', function() {
 
 torus.communicationMux.getStream('oauth').on('data', function(chunk) {
   VuexStore.dispatch('triggerLogin', { calledFromEmbed: chunk.data.calledFromEmbed })
-})
-
-// Metamask does not expose ability to change networks to the inpage, if we want to we can enable this
-torus.communicationMux.getStream('network_change').on('data', function(chunk) {
-  VuexStore.dispatch('showNetworkChangePopup', { network: chunk.data.network })
 })
 
 torus.communicationMux.getStream('show_profile').on('data', function(chunk) {
@@ -145,15 +141,4 @@ bc.onmessage = function(ev) {
     }
   }
 }
-
-var networkChannel = new BroadcastChannel('torus_network_channel')
-networkChannel.onmessage = function(ev) {
-  if (ev.data.approve) {
-    log.info('Network change approved', ev.data.network)
-    torus.setProviderType(ev.data.network)
-  } else if (ev.data === 'deny-network-change') {
-    log.info('Network change denied')
-  }
-}
-
 export default VuexStore

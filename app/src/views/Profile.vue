@@ -11,6 +11,9 @@
             <span v-else>Copy to clipboard</span>
           </v-tooltip>
         </v-flex>
+        <v-flex xs12 sm6 d-flex>
+          <v-select :items="networks" v-model="selectedNetwork" v-on:change="networkChanged" label="Network"></v-select>
+        </v-flex>
         <v-flex xs12 font-weight-medium>
           <span>ETH Balance: </span>
           <span>{{ this.significantDigits(parseFloat(balance).toFixed(5)) || 0 }} ETH</span>
@@ -172,6 +175,8 @@ export default {
   name: 'profile',
   data: function() {
     return {
+      selectedNetwork: '',
+      networks: ['mainnet', 'rinkeby', 'ropsten', 'kovan'],
       toAddress: '',
       widget: {},
       tokenToAddress: '',
@@ -220,6 +225,10 @@ export default {
       setTimeout(() => {
         this.copied = false
       }, 3000)
+    },
+    networkChanged: function() {
+      console.log('network changed')
+      this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
     },
     // depositETHOption: function() {
     //   this.depositEthExpand = !this.depositEthExpand
@@ -328,6 +337,8 @@ export default {
     }
   },
   mounted() {
+    this.selectedNetwork = localStorage.getItem('torus_network_type') || 'mainnet'
+
     // setup google auth sdk
     const interval = setInterval(() => {
       if (window.gapi) {

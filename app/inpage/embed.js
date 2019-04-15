@@ -234,10 +234,10 @@ function setupWeb3() {
     oauthStream.write({ name: 'oauth', data: { calledFromEmbed } })
   }
 
-  window.torus.changeNetwork = function(network) {
-    var networkStream = window.torus.communicationMux.getStream('network_change')
-    networkStream.write({ name: 'network_change', data: { network } })
-  }
+  // window.torus.changeNetwork = function(network) {
+  //   var networkStream = window.torus.communicationMux.getStream('network_change')
+  //   networkStream.write({ name: 'network_change', data: { network } })
+  // }
 
   window.torus.showProfile = function(calledFromEmbed) {
     var showProfileStream = window.torus.communicationMux.getStream('show_profile')

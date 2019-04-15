@@ -13,11 +13,26 @@ const vuexPersist = new VuexPersist({
   key: 'my-app',
   storage: window.sessionStorage,
   reducer: state => {
-    return { ...state, popupVisible: false }
+    return {
+      email: state.email,
+      idToken: state.idToken,
+      wallet: state.wallet,
+      weiBalance: state.weiBalance,
+      selectedAddress: state.selectedAddress,
+      networkId: state.networkId
+    }
   }
 })
 
-const initialState = { email: '', idToken: '', wallet: {}, weiBalance: 0, selectedAddress: '', networkId: 0 }
+const initialState = {
+  email: '',
+  idToken: '',
+  wallet: {},
+  weiBalance: 0,
+  selectedAddress: '',
+  networkId: 0,
+  networkType: localStorage.getItem('torus_network_type') || 'mainnet'
+}
 
 var VuexStore = new Vuex.Store({
   plugins: [vuexPersist.plugin],
@@ -43,6 +58,10 @@ var VuexStore = new Vuex.Store({
     },
     setNetworkId(state, networkId) {
       state.networkId = networkId
+    },
+    setNetworkType(state, networkType) {
+      console.log('setting network type', networkType)
+      state.networkType = networkType
     },
     resetStore(state, requiredState) {
       Object.keys(state).forEach(key => {
@@ -94,21 +113,6 @@ var VuexStore = new Vuex.Store({
         }
       }
     },
-    showNetworkChangePopup(context, payload) {
-      var bc = new BroadcastChannel('torus_network_channel')
-      window.open('/networkChange', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600')
-      bc.onmessage = function(ev) {
-        if (ev.data === 'popup-loaded') {
-          bc.postMessage({
-            data: {
-              origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-              network: payload.network
-            }
-          })
-          bc.close()
-        }
-      }
-    },
     showProfilePopup(context, payload) {
       window.open('/profile', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600')
     },
@@ -147,6 +151,9 @@ var VuexStore = new Vuex.Store({
       torus.updateStaticData({ networkId: payload.networkId })
     },
     setProviderType(context, payload) {
+      context.commit('setNetworkType', payload.network)
+      console.log('setprovidertype', payload)
+      localStorage.setItem('torus_network_type', payload.network)
       torus.torusController.networkController.setProviderType(payload.network)
     },
     triggerLogin: function(context, payload) {

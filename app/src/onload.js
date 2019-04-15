@@ -35,7 +35,12 @@ function onloadTorus(torus) {
       return { selectedAddress, wallet }
     },
     rehydrate: function() {
-      let { selectedAddress, wallet } = store.state
+      let { selectedAddress, wallet, networkType } = store.state
+      if (networkType) {
+        console.log('Network Type being set on rehydrate', networkType)
+        console.log('SessionStorage:', sessionStorage)
+        store.dispatch('setProviderType', { network: networkType })
+      }
       if (selectedAddress && wallet[selectedAddress]) {
         setTimeout(function() {
           store.dispatch('updateSelectedAddress', { selectedAddress })
