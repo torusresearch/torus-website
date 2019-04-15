@@ -135,18 +135,8 @@ var VuexStore = new Vuex.Store({
         }
       }
     },
-    updateWeiBalance(context, payload) {
-      const interval = setInterval(() => {
-        if (this.state.selectedAddress) {
-          torus.web3.eth.getBalance(this.state.selectedAddress, function(err, res) {
-            if (err) {
-              log.error(err)
-            }
-            clearInterval(interval)
-            context.commit('setWeiBalance', res)
-          })
-        }
-      }, 1000)
+    updateWeiBalance({ commit, state }, payload) {
+      if (payload.address === state.selectedAddress) commit('setWeiBalance', payload.balance)
     },
     updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
@@ -200,7 +190,16 @@ function handleLogin(email, payload) {
         }
         VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
         VuexStore.dispatch('addWallet', data)
-        VuexStore.dispatch('updateWeiBalance')
+        torus.torusController.accountTracker.store.subscribe(function(state) {
+          if (state.accounts) {
+            for (const key in state.accounts) {
+              if (state.accounts.hasOwnProperty(key)) {
+                const account = state.accounts[key]
+                VuexStore.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
+              }
+            }
+          }
+        })
         // continue enable function
         var ethAddress = data.ethAddress
         if (payload.calledFromEmbed) {

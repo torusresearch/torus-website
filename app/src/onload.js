@@ -39,9 +39,16 @@ function onloadTorus(torus) {
       if (selectedAddress && wallet[selectedAddress]) {
         setTimeout(function() {
           store.dispatch('updateSelectedAddress', { selectedAddress })
-          setTimeout(function() {
-            store.dispatch('updateWeiBalance')
-          }, 50)
+          torus.torusController.accountTracker.store.subscribe(function(state) {
+            if (state.accounts) {
+              for (const key in state.accounts) {
+                if (state.accounts.hasOwnProperty(key)) {
+                  const account = state.accounts[key]
+                  store.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
+                }
+              }
+            }
+          })
         }, 50)
         torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
         statusStream.write({ loggedIn: true })
