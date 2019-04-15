@@ -14,6 +14,18 @@ torus.torusController.networkController.networkStore.subscribe(function(state) {
   VuexStore.dispatch('updateNetworkId', { networkId: state })
 })
 
+// listen to changes on localstorage
+window.addEventListener(
+  'storage',
+  function() {
+    console.log('Storage changed')
+    if (localStorage.getItem('torus_network_type') !== VuexStore.state.networkType) {
+      VuexStore.dispatch('setProviderType', { network: localStorage.getItem('torus_network_type') })
+    }
+  },
+  false
+)
+
 // setup handlers for communicationStream
 var passthroughStream = new stream.PassThrough({ objectMode: true })
 passthroughStream.on('data', function() {
