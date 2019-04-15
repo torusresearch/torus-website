@@ -1,14 +1,7 @@
 <template>
   <v-container fill-height grid-list-sm>
-    <v-layout v-if="loggedIn">
-      <v-layout v-if="!loggedIn" align-center justify-center>
-        <v-flex d-flex xs12 sm12 md12>
-          <div class="text-xs-center">
-            <v-progress-circular indeterminate color="#75b4fd"></v-progress-circular>
-          </div>
-        </v-flex>
-      </v-layout>
-      <v-layout v-else row wrap justify-center>
+    <v-layout v-if="gapiLoaded">
+      <v-layout v-if="loggedIn" row wrap justify-center>
         <v-flex xs12>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
@@ -17,6 +10,9 @@
             <span v-if="copied">Copied!</span>
             <span v-else>Copy to clipboard</span>
           </v-tooltip>
+        </v-flex>
+        <v-flex xs12 sm6 d-flex>
+          <v-select :items="networks" v-model="selectedNetwork" v-on:change="networkChanged" label="Network"></v-select>
         </v-flex>
         <v-flex xs12 font-weight-medium>
           <span>ETH Balance: </span>
@@ -141,22 +137,29 @@
           </v-expand-transition>
         </v-flex>
       </v-layout>
+      <v-layout v-else align-center justify-center>
+        <v-flex xs12 sm8 md4>
+          <v-card class="elevation-10">
+            <v-card-text>
+              <div class="title">
+                Welcome back!
+              </div>
+              <v-spacer></v-spacer>
+              <div class="subheading">The decentralized web awaits</div>
+              <v-spacer></v-spacer>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="#75b4fd" class="white--text ml-auto" v-on:click="triggerLogin" id="googleAuthBtnf">Login</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-flex>
+      </v-layout>
     </v-layout>
     <v-layout v-else align-center justify-center>
-      <v-flex xs12 sm8 md4>
-        <v-card class="elevation-10">
-          <v-card-text>
-            <div class="title">
-              Welcome back!
-            </div>
-            <v-spacer></v-spacer>
-            <div class="subheading">The decentralized web awaits</div>
-            <v-spacer></v-spacer>
-          </v-card-text>
-          <v-card-actions>
-            <v-btn color="#75b4fd" class="white--text ml-auto" v-on:click="triggerLogin" id="googleAuthBtnf">Login</v-btn>
-          </v-card-actions>
-        </v-card>
+      <v-flex d-flex xs12 sm12 md12>
+        <div class="text-xs-center">
+          <v-progress-circular indeterminate color="#75b4fd"></v-progress-circular>
+        </div>
       </v-flex>
     </v-layout>
   </v-container>
@@ -166,11 +169,14 @@
 import { mapActions, mapState } from 'vuex'
 import copyToClipboard from 'copy-to-clipboard'
 import { addressSlicer } from '../utils/utils'
+import torus from '../torus'
 
 export default {
   name: 'profile',
   data: function() {
     return {
+      selectedNetwork: '',
+      networks: ['mainnet', 'rinkeby', 'ropsten', 'kovan'],
       toAddress: '',
       widget: {},
       tokenToAddress: '',
@@ -184,6 +190,7 @@ export default {
       fetchedTokenBalances: false,
       search: '',
       copied: false,
+      gapiLoaded: false,
       headers: [
         {
           text: 'Ticker',
@@ -195,13 +202,13 @@ export default {
         { text: 'Transfer', value: 'transfer' }
       ],
       rules: {
-        toAddress: value => window.web3.utils.isAddress(value) || 'Invalid Eth Address',
+        toAddress: value => torus.web3.utils.isAddress(value) || 'Invalid Eth Address',
         required: value => !!value || 'Required'
       }
     }
   },
   computed: mapState({
-    balance: state => window.web3.utils.fromWei(state.weiBalance || '0'),
+    balance: state => torus.web3.utils.fromWei(state.weiBalance || '0'),
     selectedAddress: 'selectedAddress',
     slicedAddress: state => addressSlicer(state.selectedAddress) || '0x',
     loggedIn: state => {
@@ -219,14 +226,16 @@ export default {
         this.copied = false
       }, 3000)
     },
+    networkChanged: function() {
+      this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
+    },
     // depositETHOption: function() {
     //   this.depositEthExpand = !this.depositEthExpand
     //   this.widget.open()
     // },
     onTransferToken: function(item) {
       if (this.$refs.tokenForm.validate()) {
-        const web3 = window.web3
-        const contractInstance = new web3.eth.Contract(
+        const contractInstance = new torus.web3.eth.Contract(
           [
             {
               constant: false,
@@ -262,10 +271,10 @@ export default {
     },
     sendEth: function() {
       if (this.$refs.form.validate()) {
-        window.web3.eth.sendTransaction({
+        torus.web3.eth.sendTransaction({
           from: this.selectedAddress,
           to: this.toAddress,
-          value: window.web3.utils.toWei(this.amount)
+          value: torus.web3.utils.toWei(this.amount)
         })
       }
     },
@@ -327,10 +336,8 @@ export default {
     }
   },
   mounted() {
-    // if (this.selectedAddress) {
-    //   this.balance = window.web3.utils.fromWei(await window.web3.eth.getBalance(this.selectedAddress))
-    //   console.log(this.balance)
-    // }
+    this.selectedNetwork = localStorage.getItem('torus_network_type') || 'mainnet'
+
     // setup google auth sdk
     const interval = setInterval(() => {
       if (window.gapi) {
@@ -338,13 +345,11 @@ export default {
           window.auth2 = window.gapi.auth2.init({
             client_id: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com'
           })
+          this.gapiLoaded = true
           clearInterval(interval)
         })
       }
     }, 2000)
-
-    // window.web3 = window.web3
-    // window.Web3 = window.web3
     // let sendWyreScript = document.createElement('script')
     // sendWyreScript.setAttribute('src', 'https://verify.sendwyre.com/js/widget-loader.js')
     // document.head.appendChild(sendWyreScript)

@@ -95,6 +95,17 @@ function createWidget() {
   }
 }
 
+function showTorusButton() {
+  // torusIframeContainer.style.display = 'none'
+  torusMenuBtn.style.display = 'block'
+  torusLogin.style.display = 'none'
+}
+
+function hideTorusButton() {
+  torusLogin.style.display = 'block'
+  torusMenuBtn.style.display = 'none'
+}
+
 function setupWeb3() {
   log.info('setupWeb3 running')
   // setup background connection
@@ -189,18 +200,6 @@ function setupWeb3() {
   //   }
   // })
 
-
-  function showTorusButton() {
-    // torusIframeContainer.style.display = 'none'
-    torusMenuBtn.style.display = 'block'
-    torusLogin.style.display = 'none'
-  }
-
-  function hideTorusButton() {
-    torusLogin.style.display = 'block'
-    torusMenuBtn.style.display = 'none'
-  }
-
   // TODO: check if unused
   // function showTorusOverlay() {
   //   window.document.getElementById('torusLogin').style.display = 'none'
@@ -235,10 +234,10 @@ function setupWeb3() {
     oauthStream.write({ name: 'oauth', data: { calledFromEmbed } })
   }
 
-  window.torus.changeNetwork = function(network) {
-    var networkStream = window.torus.communicationMux.getStream('network_change')
-    networkStream.write({ name: 'network_change', data: { network } })
-  }
+  // window.torus.changeNetwork = function(network) {
+  //   var networkStream = window.torus.communicationMux.getStream('network_change')
+  //   networkStream.write({ name: 'network_change', data: { network } })
+  // }
 
   window.torus.showProfile = function(calledFromEmbed) {
     var showProfileStream = window.torus.communicationMux.getStream('show_profile')

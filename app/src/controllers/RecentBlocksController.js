@@ -4,6 +4,9 @@ const EthQuery = require('eth-query')
 const log = require('loglevel')
 const pify = require('pify')
 
+const { ROPSTEN, RINKEBY, KOVAN, MAINNET } = require('../utils/enums')
+const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
+
 class RecentBlocksController {
   /**
    * Controller responsible for storing, updating and managing the recent history of blocks. Blocks are back filled
@@ -23,7 +26,7 @@ class RecentBlocksController {
    *
    */
   constructor(opts = {}) {
-    const { blockTracker, provider } = opts
+    const { blockTracker, provider, networkController } = opts
     this.blockTracker = blockTracker
     this.ethQuery = new EthQuery(provider)
     this.historyLength = opts.historyLength || 40
@@ -36,11 +39,24 @@ class RecentBlocksController {
     )
     this.store = new ObservableStore(initState)
 
-    this.blockTracker.on('latest', async newBlockNumberHex => {
+    const blockListner = async newBlockNumberHex => {
       try {
         await this.processBlock(newBlockNumberHex)
       } catch (err) {
         log.error(err)
+      }
+    }
+    let isListening = false
+    const { type } = networkController.getProviderConfig()
+    if (!INFURA_PROVIDER_TYPES.includes(type) && type !== 'loading') {
+      this.blockTracker.on('latest', blockListner)
+      isListening = true
+    }
+    networkController.on('networkDidChange', newType => {
+      if (INFURA_PROVIDER_TYPES.includes(newType) && isListening) {
+        this.blockTracker.removeListener('latest', blockListner)
+      } else if (!INFURA_PROVIDER_TYPES.includes(type) && type !== 'loading' && !isListening) {
+        this.blockTracker.on('latest', blockListner)
       }
     })
     this.backfill()
@@ -64,6 +80,7 @@ class RecentBlocksController {
    *
    */
   async processBlock(newBlockNumberHex) {
+    console.log('processing blocks', newBlockNumberHex)
     const newBlockNumber = Number.parseInt(newBlockNumberHex, 16)
     const newBlock = await this.getBlockByNumber(newBlockNumber, true)
     if (!newBlock) return

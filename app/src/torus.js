@@ -1,4 +1,5 @@
 import randomId from 'random-id'
+import onloadTorus from './onload.js'
 
 // import WebsocketSubprovider from './websocket.js'
 var Elliptic = require('elliptic').ec
@@ -6,7 +7,6 @@ var log = require('loglevel')
 var BN = require('bn.js')
 const setupMultiplex = require('./utils/setupMultiplex').default
 const toChecksumAddress = require('./utils/toChecksumAddress').default
-var onloadTorus = require('./onload.js').default
 
 var torus = {
   instanceId: randomId(),
