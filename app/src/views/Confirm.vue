@@ -72,6 +72,7 @@
 <script>
 import { mapActions } from 'vuex'
 import BroadcastChannel from 'broadcast-channel'
+import torus from '../torus'
 
 const weiInGwei = 1000000000
 
@@ -103,7 +104,7 @@ export default {
   methods: {
     triggerSign: function(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
-      var gasHex = window.Vue.torus.web3.utils.numberToHex(this.$data.gasPrice * weiInGwei)
+      var gasHex = torus.web3.utils.numberToHex(this.$data.gasPrice * weiInGwei)
       bc.postMessage({ data: { type: 'confirm-transaction', gasPrice: gasHex } })
       bc.close()
       window.close()
@@ -130,7 +131,7 @@ export default {
         that.type = ev.data.type
       } else if (ev.data.type === 'transaction') {
         console.log('EV:', ev)
-        var web3Utils = window.Vue.torus.web3.utils
+        var web3Utils = torus.web3.utils
         var txParams = ev.data.txParams
         var value
         if (txParams.value) {

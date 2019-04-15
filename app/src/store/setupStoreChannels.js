@@ -2,16 +2,28 @@ import log from 'loglevel'
 import torus from '../torus'
 import stream from 'stream'
 import pump from 'pump'
-import VuexStore from '.'
+import VuexStore from './store'
 import BroadcastChannel from 'broadcast-channel'
 
 /* 
 Edited to change networkId => network state. Has an implication of changing neworkVersion 
 to "loading" at times in the inpage API
  */
+
 torus.torusController.networkController.networkStore.subscribe(function(state) {
   VuexStore.dispatch('updateNetworkId', { networkId: state })
 })
+
+// listen to changes on localstorage
+window.addEventListener(
+  'storage',
+  function() {
+    if (localStorage.getItem('torus_network_type') !== VuexStore.state.networkType) {
+      VuexStore.dispatch('setProviderType', { network: localStorage.getItem('torus_network_type') })
+    }
+  },
+  false
+)
 
 // setup handlers for communicationStream
 var passthroughStream = new stream.PassThrough({ objectMode: true })
@@ -21,11 +33,6 @@ passthroughStream.on('data', function() {
 
 torus.communicationMux.getStream('oauth').on('data', function(chunk) {
   VuexStore.dispatch('triggerLogin', { calledFromEmbed: chunk.data.calledFromEmbed })
-})
-
-// Metamask does not expose ability to change networks to the inpage, if we want to we can enable this
-torus.communicationMux.getStream('network_change').on('data', function(chunk) {
-  VuexStore.dispatch('showNetworkChangePopup', { network: chunk.data.network })
 })
 
 torus.communicationMux.getStream('show_profile').on('data', function(chunk) {
@@ -38,7 +45,7 @@ pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
 var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
 bc.onmessage = function(ev) {
   if (ev.data.type === 'confirm-transaction') {
-    let torusController = window.Vue.torus.torusController
+    let { torusController } = torus
     let state = torusController.getState()
     if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
       let unapprovedPersonalMsgs = []
@@ -99,7 +106,7 @@ bc.onmessage = function(ev) {
       throw new Error('No new transactions.')
     }
   } else if (ev.data.type === 'deny-transaction') {
-    let torusController = window.Vue.torus.torusController
+    let { torusController } = torus
     let state = torusController.getState()
     if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
       let unapprovedPersonalMsgs = []
@@ -145,13 +152,4 @@ bc.onmessage = function(ev) {
     }
   }
 }
-
-var networkChannel = new BroadcastChannel('torus_network_channel')
-networkChannel.onmessage = function(ev) {
-  if (ev.data.approve) {
-    log.info('Network change approved', ev.data.network)
-    window.Vue.torus.setProviderType(ev.data.network)
-  } else if (ev.data === 'deny-network-change') {
-    log.info('Network change denied')
-  }
-}
+export default VuexStore

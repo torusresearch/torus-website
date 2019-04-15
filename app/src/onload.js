@@ -1,23 +1,11 @@
 // import WebsocketSubprovider from './websocket.js'
 import TorusController from './controllers/TorusController'
+import store from './store'
 var log = require('loglevel')
 var Web3 = require('web3')
-var ProviderEngine = require('web3-provider-engine')
-var CacheSubprovider = require('web3-provider-engine/subproviders/cache.js')
-var FixtureSubprovider = require('web3-provider-engine/subproviders/fixture.js')
-var FilterSubprovider = require('web3-provider-engine/subproviders/filters.js')
-var VmSubprovider = require('web3-provider-engine/subproviders/vm.js')
-var HookedWalletEthTxSubprovider = require('web3-provider-engine/subproviders/hooked-wallet-ethtx.js')
-var NonceSubprovider = require('web3-provider-engine/subproviders/nonce-tracker.js')
-var RpcSubprovider = require('web3-provider-engine/subproviders/rpc.js')
 var LocalMessageDuplexStream = require('post-message-stream')
 const pump = require('pump')
-const createEngineStream = require('json-rpc-middleware-stream/engineStream')
-const RpcEngine = require('json-rpc-engine')
-const createFilterMiddleware = require('eth-json-rpc-filters')
 const stream = require('stream')
-const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionManager')
-const toChecksumAddress = require('./utils/toChecksumAddress').default
 const setupMultiplex = require('./utils/setupMultiplex').default
 const MetamaskInpageProvider = require('../inpage/inpage-provider')
 const routerStream = require('./utils/routerStream')
@@ -31,76 +19,9 @@ const routerStream = require('./utils/routerStream')
 })()
 
 function onloadTorus(torus) {
-  var engine = new ProviderEngine()
-  engine.addProvider(
-    new FixtureSubprovider({
-      web3_clientVersion: 'ProviderEngine/v0.0.0/javascript',
-      net_listening: true,
-      eth_hashrate: '0x00',
-      eth_mining: false,
-      eth_syncing: true
-    })
-  )
-  engine.addProvider(new CacheSubprovider())
-  engine.addProvider(new FilterSubprovider())
-  engine.addProvider(new NonceSubprovider())
-  engine.addProvider(new VmSubprovider())
-  engine.addProvider(
-    new HookedWalletEthTxSubprovider({
-      getAccounts: function(cb) {
-        var ethAddress = window.Vue.$store.state.selectedAddress
-        log.info('GETTING ACCOUNT:', ethAddress)
-        cb(null, ethAddress ? [toChecksumAddress(ethAddress)] : [])
-      },
-      getPrivateKey: function(address, cb) {
-        var addr = toChecksumAddress(address)
-        var wallet = window.Vue.$store.state.wallet
-        if (addr == null) {
-          cb(new Error('No address given.'), null)
-        } else if (wallet[addr] == null) {
-          cb(new Error('No private key accessible. Please login.'), null)
-        } else {
-          log.info('PRIVATE KEY RETRIEVED...')
-          cb(null, Buffer.from(wallet[addr], 'hex'))
-        }
-      },
-      approveTransaction: function(txParams, cb) {
-        if (confirm('Confirm signature for transaction?')) {
-          // TODO: add transaction details
-          cb(null, true)
-        } else {
-          cb(new Error('User denied transaction.'), false)
-        }
-      }
-    })
-  )
-  var rpcSource = new RpcSubprovider({
-    rpcUrl: 'https://mainnet.infura.io/v3/619e62693bc14791a9925152bbe514d1'
-    // rpcUrl: 'https://api.infura.io/v1/jsonrpc/mainnet'
-  })
-  // var rpcSource = new RpcSubprovider({
-  //   rpcUrl: 'https://mainnet.infura.io/4cQUeyeUSfkCXsgEAUH2'
-  //   // rpcUrl: 'http://localhost:7545'
-  // })
-  engine.addProvider(rpcSource)
-  // var wsSubprovider = new WebsocketSubprovider({
-  //   rpcUrl: 'wss://mainnet.infura.io/ws/v3/619e62693bc14791a9925152bbe514d1'
-  // })
-  // engine.addProvider(wsSubprovider)
-  engine.on('block', function(block) {
-    log.info('================================')
-    log.info('BLOCK CHANGED:', '#' + block.number.toString('hex'), '0x' + block.hash.toString('hex'))
-    log.info('================================')
-    window.Vue.$store.dispatch('updateWeiBalance')
-  })
-  engine.on('error', function(err) {
-    log.error(err.stack)
-  })
-  engine.start()
-
   function triggerUi(type) {
     log.info('TRIGGERUI:' + type)
-    window.Vue.$store.dispatch('showPopup')
+    store.dispatch('showPopup')
   }
 
   const torusController = new TorusController({
@@ -108,21 +29,38 @@ function onloadTorus(torus) {
     unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
     showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
     openPopup: triggerUi.bind(window, 'bindopenPopup'),
+    storeProps: () => {
+      const { state } = store || {}
+      let { selectedAddress, wallet } = state || {}
+      return { selectedAddress, wallet }
+    },
     rehydrate: function() {
-      let selectedAddress = window.Vue.$store.state.selectedAddress
-      let wallet = window.Vue.$store.state.wallet
+      let { selectedAddress, wallet, networkType } = store.state
+      if (networkType) {
+        store.dispatch('setProviderType', { network: networkType })
+      }
       if (selectedAddress && wallet[selectedAddress]) {
         setTimeout(function() {
-          window.Vue.$store.dispatch('updateSelectedAddress', { selectedAddress })
+          store.dispatch('updateSelectedAddress', { selectedAddress })
+          torus.torusController.accountTracker.store.subscribe(function(state) {
+            if (state.accounts) {
+              for (const key in state.accounts) {
+                if (state.accounts.hasOwnProperty(key)) {
+                  const account = state.accounts[key]
+                  store.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
+                }
+              }
+            }
+          })
         }, 50)
-        torus.torusController.initTorusKeyring([wallet[selectedAddress]])
+        torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
         statusStream.write({ loggedIn: true })
         log.info('rehydrated wallet')
         torus.web3.eth.net
           .getId()
           .then(res => {
             setTimeout(function() {
-              window.Vue.$store.dispatch('updateNetworkId', { networkId: res })
+              store.dispatch('updateNetworkId', { networkId: res })
             })
             // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
           })
@@ -130,17 +68,6 @@ function onloadTorus(torus) {
       }
     }
   })
-
-  const rpcEngine = new RpcEngine()
-  const filterMiddleware = createFilterMiddleware({ provider: torusController.provider, blockTracker: torusController.blockTracker })
-  const subscriptionManager = createSubscriptionManager({ provider: torusController.provider, blockTracker: torusController.blockTracker })
-  subscriptionManager.events.on('notification', message => rpcEngine.emit('notification', message))
-  rpcEngine.push(createOriginMiddleware({ origin: 'torus' }))
-  rpcEngine.push(createLoggerMiddleware({ origin: 'torus' }))
-  rpcEngine.push(filterMiddleware)
-  rpcEngine.push(subscriptionManager.middleware)
-  rpcEngine.push(createProviderMiddleware({ provider: torusController.provider }))
-  const providerStream = createEngineStream({ engine: rpcEngine })
 
   var metamaskStream = new LocalMessageDuplexStream({
     name: 'iframe_metamask',
@@ -157,9 +84,9 @@ function onloadTorus(torus) {
   torus.torusController = torusController
   torus.metamaskMux = setupMultiplex(metamaskStream)
   torus.communicationMux = setupMultiplex(communicationStream)
-  torus.web3 = new Web3(engine)
+  torus.web3 = new Web3(torusController.provider)
   torus.setProviderType = function(network) {
-    window.Vue.$store.dispatch('setProviderType', { network })
+    store.dispatch('setProviderType', { network })
   }
 
   /* Stream setup block */
@@ -203,63 +130,21 @@ function onloadTorus(torus) {
   var reverseMux = setupMultiplex(reverseStream)
   reverseMux.setMaxListeners(100)
 
-  window.web3 = new Web3(iframeMetamask)
-  window.Web3 = Web3
   pump(iframeMetamask.mux, reverseMux, iframeMetamask.mux)
-
   var rStream = routerStream(providerOutStream, reverseMux.createStream('provider'))
+  torusController.setupProviderConnection(rStream.mergeSteam, rStream.splitStream, 'metamask')
 
-  rStream.mergeSteam
-    .pipe(sendPassThroughStream)
-    .pipe(providerStream)
-    .pipe(receivePassThroughStream)
-    .pipe(rStream.splitStream)
-    .pipe(statusStream)
+  // also need to set autoreload in embed.js upon network change
+  // rStream.mergeSteam
+  //   .pipe(sendPassThroughStream)
+  //   .pipe(providerStream)
+  //   .pipe(receivePassThroughStream)
+  //   .pipe(rStream.splitStream)
+  //   .pipe(statusStream)
 
-  // pump(
-  //   providerOutStream,
-  //   sendPassThroughStream,
-  //   // transformStream,
-  //   providerStream,
-  //   receivePassThroughStream,
-  //   providerOutStream,
-  //   err => {
-  //     if (err) log.error(err)
-  //   }
-  // )
   /* Stream setup block */
 
   return torus
-}
-
-function createLoggerMiddleware(opts) {
-  return function loggerMiddleware(/** @type {any} */ req, /** @type {any} */ res, /** @type {Function} */ next) {
-    next((/** @type {Function} */ cb) => {
-      if (res.error) {
-        log.error('Error in RPC response:\n', res)
-      }
-      if (req.isMetamaskInternal) return
-      log.info(`RPC (${opts.origin}):`, req, '->', res)
-      cb()
-    })
-  }
-}
-
-function createProviderMiddleware({ provider }) {
-  return (req, res, next, end) => {
-    provider.sendAsync(req, (err, _res) => {
-      if (err) return end(err)
-      res.result = _res.result
-      end()
-    })
-  }
-}
-
-function createOriginMiddleware(opts) {
-  return function originMiddleware(req, res, next) {
-    req.origin = opts.origin
-    next()
-  }
 }
 
 export default onloadTorus

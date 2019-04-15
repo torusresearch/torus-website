@@ -4,7 +4,6 @@ const Home = () => import('./views/Home.vue')
 const Popup = () => import('./views/Popup.vue')
 const Confirm = () => import('./views/Confirm.vue')
 const Privacy = () => import('./views/Privacy.vue')
-const NetworkChange = () => import('./views/NetworkChange.vue')
 const Profile = () => import('./views/Profile.vue')
 
 Vue.use(Router)
@@ -32,11 +31,6 @@ export default new Router({
       path: '/privacy',
       name: 'privacy',
       component: Privacy
-    },
-    {
-      path: '/networkChange',
-      name: 'networkChange',
-      component: NetworkChange
     },
     {
       path: '/profile',
