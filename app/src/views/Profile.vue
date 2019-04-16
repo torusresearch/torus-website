@@ -5,14 +5,14 @@
         <v-flex xs12>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <div class="selected-account" v-on="on" v-on:click="copyToClip">{{ slicedAddress }}</div>
+              <div class="selected-account" v-on="on" @click="copyToClip">{{ slicedAddress }}</div>
             </template>
             <span v-if="copied">Copied!</span>
             <span v-else>Copy to clipboard</span>
           </v-tooltip>
         </v-flex>
         <v-flex xs12 sm6 d-flex>
-          <v-select :items="networks" v-model="selectedNetwork" v-on:change="networkChanged" label="Network"></v-select>
+          <v-select :items="networks" v-model="selectedNetwork" @change="networkChanged" label="Network"></v-select>
         </v-flex>
         <v-flex xs12 font-weight-medium>
           <span>ETH Balance: </span>
@@ -42,7 +42,7 @@
                 :rules="[rules.required]"
                 class="input-width"
               ></v-text-field>
-              <v-btn color="#75b4fd" :disabled="!valid" class="white--text" v-on:click="sendEth">Send</v-btn>
+              <v-btn color="#75b4fd" :disabled="!valid" class="white--text" @click="sendEth">Send</v-btn>
             </v-form>
           </v-expand-transition>
         </v-flex>
@@ -50,7 +50,7 @@
           <v-btn outline color="#75b4fd" class="font-weight-medium mb-4" @click="depositETHOption">Deposit ETH</v-btn>
         </v-flex> -->
         <v-flex xs12 justify-space-around>
-          <v-btn color="#75b4fd" class="white--text mb-4" v-on:click="getTokenBalances">Get Token Balances</v-btn>
+          <v-btn color="#75b4fd" class="white--text mb-4" @click="getTokenBalances">Get Token Balances</v-btn>
           <v-expand-transition>
             <div v-show="tokenBalances.length > 0 && fetchedTokenBalances">
               <v-card>
@@ -149,7 +149,7 @@
               <v-spacer></v-spacer>
             </v-card-text>
             <v-card-actions>
-              <v-btn color="#75b4fd" class="white--text ml-auto" v-on:click="triggerLogin" id="googleAuthBtnf">Login</v-btn>
+              <v-btn color="#75b4fd" class="white--text ml-auto" @click="triggerLogin" id="googleAuthBtnf">Login</v-btn>
             </v-card-actions>
           </v-card>
         </v-flex>
@@ -350,20 +350,6 @@ export default {
         })
       }
     }, 2000)
-    // let sendWyreScript = document.createElement('script')
-    // sendWyreScript.setAttribute('src', 'https://verify.sendwyre.com/js/widget-loader.js')
-    // document.head.appendChild(sendWyreScript)
-    // sendWyreScript.onload = function() {
-    //   this.widget = new window.Wyre.Widget({
-    //     env: 'test',
-    //     accountId: 'AC_26U73M3RTCT',
-    //     auth: { type: 'metamask' },
-    //     operation: {
-    //       type: 'onramp',
-    //       destCurrency: 'ETH'
-    //     }
-    //   })
-    // }.bind(this)
   }
 }
 </script>

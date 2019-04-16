@@ -9,7 +9,7 @@
             <v-card-text>
               <p>Sign message from {{ this.origin }} ?</p>
               <p v-if="this.messageType === 'normal'">Message: {{ this.message }}</p>
-              <div v-else-if="this.messageType === 'typed'" v-for="typedMessage in this.typedMessages" v-bind:key="typedMessage.name">
+              <div v-else-if="this.messageType === 'typed'" v-for="typedMessage in this.typedMessages" :key="typedMessage.name">
                 Type: {{ typedMessage.type }}<br />
                 Name: {{ typedMessage.name }}<br />
                 Message: {{ typedMessage.value }}<br />
@@ -118,17 +118,16 @@ export default {
     ...mapActions({})
   },
   mounted() {
-    const that = this
     var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
     bc.onmessage = function(ev) {
       if (ev.data.type === 'message') {
         if (ev.data.msgParams) {
-          that.message = ev.data.msgParams.message
-          that.typedMessages = ev.data.msgParams.typedMessages
-          that.messageType = that.typedMessages ? 'typed' : 'normal'
+          this.message = ev.data.msgParams.message
+          this.typedMessages = ev.data.msgParams.typedMessages
+          this.messageType = this.typedMessages ? 'typed' : 'normal'
         }
-        that.origin = ev.data.origin
-        that.type = ev.data.type
+        this.origin = ev.data.origin
+        this.type = ev.data.type
       } else if (ev.data.type === 'transaction') {
         console.log('EV:', ev)
         var web3Utils = torus.web3.utils
@@ -140,12 +139,12 @@ export default {
           value = 0
         }
         var gweiGasPrice = web3Utils.hexToNumber(txParams.gasPrice) / weiInGwei
-        that.origin = ev.data.origin
-        that.type = ev.data.type
-        that.receiver = txParams.to
-        that.value = value
-        that.gasPrice = gweiGasPrice
-        that.balance = ev.data.balance
+        this.origin = ev.data.origin
+        this.type = ev.data.type
+        this.receiver = txParams.to
+        this.value = value
+        this.gasPrice = gweiGasPrice
+        this.balance = ev.data.balance
       }
       bc.close()
       bc.close()
@@ -205,75 +204,3 @@ hr {
   padding-top: 20px;
 }
 </style>
-
-<!--
-<template>
-  <v-dialog persistent>
-    <div v-if="this.type === 'message'">
-      <v-container>
-        <v-layout row wrap>
-          <v-flex xs12 sm6 md3 id="torusModal-header">
-            <span id="close">&times;</span>
-            <h2>New Message</h2>
-          </v-flex>
-        </v-layout>
-        <v-layout row wrap id="torusModal-body">
-          <v-flex xs12 sm6 md3>
-            <p>Sign message from {{ this.origin }}?</p>
-            <v-btn color="error" v-on:click="triggerDeny" style="width:50%">Deny</v-btn>
-            <v-btn color="blue" v-on:click="triggerSign" style="width:50%">Sign</v-btn>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </div>
-    <div v-else-if="this.type === 'transaction'">
-      <v-container>
-        <v-layout row wrap>
-          <v-flex xs12 sm6 md3 id="torusModal-header">
-            <span id="close">&times;</span>
-            <h2>New Transaction</h2>
-          </v-flex>
-        </v-layout>
-        <v-layout row wrap id="torusModal-body">
-          <v-flex xs12 sm6 md3>
-            <p>Origin: {{ this.origin }}</p>
-            <p>Send {{ this.value }} ETH to {{ this.receiver }}?</p>
-            <p>Your balance: {{ this.balance }} ETH</p>
-            <v-btn color="error" class="white--text" v-on:click="triggerDeny" style="width:50%">Deny</v-btn>
-            <v-btn color="blue" class="white--text" v-on:click="triggerSign" style="width:50%">Sign</v-btn>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </div>
-  </v-dialog>
-</template>
-
-      <div v-if="this.type === 'message'">
-        <div id="torusModal-content">
-          <div id="torusModal-header">
-            <span id="close">&times;</span>
-            <h2>New Message</h2>
-          </div>
-          <div id="torusModal-body">
-            <p>Sign message from {{ this.origin }}?</p>
-            <button v-on:click="triggerDeny" style="width:50%">Deny</button>
-            <button v-on:click="triggerSign" style="width:50%">Sign</button>
-          </div>
-        </div>
-      </div>
-      <div v-else-if="this.type === 'transaction'">
-        <div id="torusModal-content">
-          <div id="torusModal-header">
-            <span id="close">&times;</span>
-            <h2>New Transaction</h2>
-          </div>
-          <div id="torusModal-body">
-            <p>Origin: {{ this.origin }}</p>
-            <p>Send {{ this.value }} ETH to {{ this.receiver }}?</p>
-            <p>Your balance: {{ this.balance }} ETH</p>
-            <button v-on:click="triggerDeny" style="width:50%">Deny</button>
-            <button v-on:click="triggerSign" style="width:50%">Send</button>
-          </div>
-        </div>
-      </div>
--->
