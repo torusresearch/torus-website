@@ -7,8 +7,8 @@
             <v-card-title class="headline text-bluish">Requesting Signature</v-card-title>
             <hr />
             <v-card-text>
-              <v-layout column>
-                <v-flex xs6 ml-3 mt-3>
+              <v-layout row wrap>
+                <v-flex xs12 sm6 ml-3 mt-3>
                   <div class="mb-3">
                     From: <span class="text-bluish">{{ origin }}</span>
                   </div>
@@ -22,16 +22,19 @@
                     <br />
                   </div>
                 </v-flex>
+                <v-flex xs12 sm6>
+                  <img src="images/signature.png" class="bcg hidden-xs-and-down" />
+                </v-flex>
               </v-layout>
-              <v-layout column>
-                <img src="images/signature.png" class="bcg hidden-xs-and-down" />
+              <v-layout row wrap class="mt-5">
+                <v-flex xs8 sm4>
+                  <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
+                </v-flex>
+                <v-flex xs8 sm4>
+                  <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
+                </v-flex>
               </v-layout>
             </v-card-text>
-
-            <v-card-actions class="mt-5">
-              <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
-              <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
-            </v-card-actions>
             <img src="images/torus_logo.png" class="bcg-logo hidden-xs-and-down push--top-10" />
           </v-card>
         </div>
@@ -168,7 +171,7 @@ export default {
 
 <style>
 /* Portrait phones and smaller */
-@media (max-width: 480px) {
+@media (max-width: 576px) {
   .bcg-logo {
     display: none;
   }
