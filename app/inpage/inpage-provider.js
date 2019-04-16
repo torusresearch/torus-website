@@ -135,6 +135,8 @@ function MetamaskInpageProvider(connectionStream, opts = {}) {
   self.sendAsync = self.sendAsync.bind(self)
 }
 
+MetamaskInpageProvider.prototype.constructor = MetamaskInpageProvider
+
 // Web3 1.0 provider uses `send` with a callback for async queries
 MetamaskInpageProvider.prototype.send = function(payload, callback) {
   const self = this
