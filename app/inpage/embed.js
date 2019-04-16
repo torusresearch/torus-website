@@ -11,6 +11,9 @@ console.log('MODE:', mode)
 if (mode === 'production') {
   torusUrl = 'https://tor.us'
   logLevel = 'error'
+} else if (mode === 'staging') {
+  torusUrl = 'https://staging.tor.us'
+  logLevel = 'info'
 } else if (mode === 'development') {
   torusUrl = 'https://localhost:3000'
   logLevel = 'debug'
