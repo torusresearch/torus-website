@@ -1,43 +1,54 @@
 <template>
-  <v-container ma-0 pa-0>
+  <v-container grid-list-sm>
     <v-layout row justify-center>
       <v-dialog v-model="dialog" persistent fullscreen>
-        <div v-if="this.type === 'message'">
+        <div v-if="type === 'message'">
           <v-card height="100vh">
-            <v-card-title class="headline">Message</v-card-title>
-
+            <v-card-title class="headline text-bluish">Requesting Signature</v-card-title>
+            <hr />
             <v-card-text>
-              <p>Sign message from {{ this.origin }} ?</p>
-              <p v-if="this.messageType === 'normal'">Message: {{ this.message }}</p>
-              <div v-else-if="this.messageType === 'typed'" v-for="typedMessage in this.typedMessages" :key="typedMessage.name">
-                Type: {{ typedMessage.type }}<br />
-                Name: {{ typedMessage.name }}<br />
-                Message: {{ typedMessage.value }}<br />
-                <hr />
-              </div>
+              <v-layout column>
+                <v-flex xs6 ml-3 mt-3>
+                  <div class="mb-3">
+                    From: <span class="text-bluish">{{ origin }}</span>
+                  </div>
+                  <div v-if="messageType === 'normal'">{{ message }}</div>
+                  <div v-else-if="messageType === 'typed'" v-for="typedMessage in typedMessages" :key="typedMessage.name">
+                    Type: {{ typedMessage.type }}
+                    <br />
+                    Name: {{ typedMessage.name }}
+                    <br />
+                    Message: {{ typedMessage.value }}
+                    <br />
+                  </div>
+                </v-flex>
+              </v-layout>
+              <v-layout column>
+                <img src="images/signature.png" class="bcg hidden-xs-and-down" />
+              </v-layout>
             </v-card-text>
 
-            <v-card-actions>
-              <v-btn large color="error" flat @click="triggerDeny">Disagree</v-btn>
-              <v-spacer></v-spacer>
-              <v-btn large color="blue" flat @click="triggerSign">Agree</v-btn>
+            <v-card-actions class="mt-5">
+              <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
+              <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
             </v-card-actions>
+            <img src="images/torus_logo.png" class="bcg-logo hidden-xs-and-down push--top-10" />
           </v-card>
         </div>
-        <div v-else-if="this.type === 'transaction'">
+        <div v-else-if="type === 'transaction'">
           <v-card>
             <v-card-title class="headline">Transaction</v-card-title>
             <v-card-text>
-              <p>Origin: {{ this.origin }}</p>
-              <p>Send {{ this.value }} ETH to {{ this.receiver }} ?</p>
-              <p>Your balance: {{ this.balance }} ETH</p>
+              <p>Origin: {{ origin }}</p>
+              <p>Send {{ value }} ETH to {{ receiver }} ?</p>
+              <p>Your balance: {{ balance }} ETH</p>
 
               <!-- <v-toolbar card dense>
               <v-toolbar-title>
                 <span class="subheading">Gas Costs</span>
               </v-toolbar-title>
               <v-spacer></v-spacer>
-            </v-toolbar> -->
+              </v-toolbar>-->
 
               <v-layout justify-space-between mb-3>
                 <v-flex text-xs-left>
@@ -53,7 +64,7 @@
 
                 <v-icon slot="append" :color="color" @click="increment">
                   mdi-plus
-                </v-icon> -->
+                </v-icon>-->
               </v-slider>
             </v-card-text>
 
@@ -105,7 +116,9 @@ export default {
     triggerSign: function(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
       var gasHex = torus.web3.utils.numberToHex(this.$data.gasPrice * weiInGwei)
-      bc.postMessage({ data: { type: 'confirm-transaction', gasPrice: gasHex } })
+      bc.postMessage({
+        data: { type: 'confirm-transaction', gasPrice: gasHex }
+      })
       bc.close()
       window.close()
     },
@@ -129,7 +142,6 @@ export default {
         this.origin = ev.data.origin
         this.type = ev.data.type
       } else if (ev.data.type === 'transaction') {
-        console.log('EV:', ev)
         var web3Utils = torus.web3.utils
         var txParams = ev.data.txParams
         var value
@@ -148,13 +160,56 @@ export default {
       }
       bc.close()
       bc.close()
-    }
+    }.bind(this)
     bc.postMessage({ data: 'popup-loaded' })
   }
 }
 </script>
 
 <style>
+/* Portrait phones and smaller */
+@media (max-width: 480px) {
+  .bcg-logo {
+    display: none;
+  }
+
+  .bcg {
+    display: none;
+  }
+}
+
+.text-bluish {
+  color: #187bd1;
+}
+
+.bcg {
+  position: fixed;
+  right: 0;
+  top: 10%;
+}
+
+.push--top-10 {
+  margin-top: -10px;
+}
+
+.bcg-logo {
+  position: fixed;
+  right: 0;
+}
+
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 0% 35% 0% 15px;
+  padding: 0;
+}
+
+.rounded-btn {
+  border-radius: 8px !important;
+}
+
 hr {
   margin-top: 0px;
   margin-bottom: 0px;
