@@ -8,7 +8,7 @@ var bundler = browserify(__dirname + '/../inpage/embed.js', {
 })
 
 if (process.env.NODE_ENV !== 'development') {
-  bundler.transform('uglifyify', { global: true, keep_fnames: false})
+  bundler.transform('uglifyify', { global: true, keep_fnames: true})
 }
 bundler.transform(envify({
   NODE_ENV: process.env.NODE_ENV,
