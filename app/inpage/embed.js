@@ -1,17 +1,20 @@
 // Torus loading message
 console.log('TORUS INJECTED IN', window.location.href)
 
-const mode = '<BROWSERIFY_REPLACE_MODE>'
 let torusUrl
 let logLevel
 
 /* global Web3 */
-require('./vendor/<BROWSERIFY_REPLACE_VENDOR_WEB3>')
-console.log('MODE:', mode)
-if (mode === 'production') {
+if (process.env.NODE_ENV === 'production') {
+  require('./vendor/web3.min.js')
   torusUrl = 'https://tor.us'
   logLevel = 'error'
-} else if (mode === 'development') {
+} else if (process.env.NODE_ENV === 'staging') {
+  require('./vendor/web3.min.js')
+  torusUrl = 'https://staging.tor.us'
+  logLevel = 'info'
+} else if (process.env.NODE_ENV === 'development') {
+  require('./vendor/web3.js')
   torusUrl = 'https://localhost:3000'
   logLevel = 'debug'
 }
