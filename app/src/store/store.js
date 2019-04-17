@@ -19,10 +19,13 @@ const vuexPersist = new VuexPersist({
       wallet: state.wallet,
       weiBalance: state.weiBalance,
       selectedAddress: state.selectedAddress,
-      networkId: state.networkId
+      networkId: state.networkId,
+      currencyRate: state.currencyRate
     }
   }
 })
+
+var profileWindow
 
 const initialState = {
   email: '',
@@ -31,7 +34,8 @@ const initialState = {
   weiBalance: 0,
   selectedAddress: '',
   networkId: 0,
-  networkType: localStorage.getItem('torus_network_type') || 'mainnet'
+  networkType: localStorage.getItem('torus_network_type') || 'mainnet',
+  currencyRate: 0
 }
 
 var VuexStore = new Vuex.Store({
@@ -61,6 +65,9 @@ var VuexStore = new Vuex.Store({
     },
     setNetworkType(state, networkType) {
       state.networkType = networkType
+    },
+    setCurrencyRate(state, currencyRate) {
+      state.currencyRate = currencyRate
     },
     resetStore(state, requiredState) {
       Object.keys(state).forEach(key => {
@@ -113,7 +120,13 @@ var VuexStore = new Vuex.Store({
       }
     },
     showProfilePopup(context, payload) {
-      window.open('/profile', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600')
+      profileWindow =
+        profileWindow || window.open('/profile', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600')
+      profileWindow.blur()
+      setTimeout(profileWindow.focus(), 0)
+      profileWindow.onbeforeunload = function() {
+        profileWindow = undefined
+      }
     },
     updateEmail(context, payload) {
       context.commit('setEmail', payload.email)
@@ -140,6 +153,9 @@ var VuexStore = new Vuex.Store({
     },
     updateWeiBalance({ commit, state }, payload) {
       if (payload.address === state.selectedAddress) commit('setWeiBalance', payload.balance)
+    },
+    updateCurrencyRate(context, payload) {
+      context.commit('setCurrencyRate', payload.conversionRate)
     },
     updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
@@ -205,6 +221,8 @@ function handleLogin(email, payload) {
             }
           }
         })
+        const conversionRate = torus.torusController.currencyController.getConversionRate()
+        VuexStore.dispatch('updateCurrencyRate', { conversionRate })
         // continue enable function
         var ethAddress = data.ethAddress
         if (payload.calledFromEmbed) {

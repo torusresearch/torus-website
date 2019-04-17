@@ -39,19 +39,27 @@
           </v-card>
         </div>
         <div v-else-if="type === 'transaction'">
-          <v-card>
-            <v-card-title class="headline">Transaction</v-card-title>
+          <v-card height="100vh">
+            <v-card-title class="headline text-bluish">Transaction Request</v-card-title>
+            <hr />
             <v-card-text>
-              <p>Origin: {{ origin }}</p>
-              <p>Send {{ value }} ETH to {{ receiver }} ?</p>
-              <p>Your balance: {{ balance }} ETH</p>
-
-              <!-- <v-toolbar card dense>
-              <v-toolbar-title>
-                <span class="subheading">Gas Costs</span>
-              </v-toolbar-title>
-              <v-spacer></v-spacer>
-              </v-toolbar>-->
+              <h6 class="mb-4">
+                From: <span class="text-bluish">{{ origin }}</span>
+              </h6>
+              <div>
+                Balance: <span class="text-bluish">{{ computedBalance }} ETH </span>
+                <v-icon color="green" small @click="openWallet">account_balance_wallet</v-icon>
+              </div>
+              <div>
+                Total Cost: <span class="text-bluish">{{ totalEthCost }} ETH </span>
+                <span class="text-grayish">($ {{ totalUsdCost }}) </span>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-icon color="#aaa" small v-on="on">info</v-icon>
+                  </template>
+                  <span>Approximate Cost</span>
+                </v-tooltip>
+              </div>
 
               <v-layout justify-space-between mb-3>
                 <v-flex text-xs-left>
@@ -87,8 +95,9 @@
 import { mapActions } from 'vuex'
 import BroadcastChannel from 'broadcast-channel'
 import torus from '../torus'
+import { significantDigits } from '../utils/utils'
 
-const weiInGwei = 1000000000
+const weiInGwei = 10 ** 9
 
 export default {
   name: 'confirm',
@@ -103,7 +112,12 @@ export default {
       value: 0,
       receiver: 'unknown',
       dialog: true,
-      message: ''
+      message: '',
+      gasEstimate: 0,
+      txData: '',
+      sender: '',
+      totalUsdCost: 0,
+      totalEthCost: 0
     }
   },
   computed: {
@@ -113,12 +127,22 @@ export default {
       if (this.gasPrice < 20) return 'green'
       if (this.gasPrice < 35) return 'orange'
       return 'red'
+    },
+    computedBalance: function() {
+      return significantDigits(parseFloat(this.balance).toFixed(5)) || 0
+    }
+  },
+  watch: {
+    gasPrice: function(newGasPrice, oldGasPrice) {
+      const ethCost = parseFloat(this.value) + newGasPrice * this.gasEstimate * 10 ** -9
+      this.totalEthCost = significantDigits(ethCost.toFixed(5))
+      this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate)
     }
   },
   methods: {
     triggerSign: function(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
-      var gasHex = torus.web3.utils.numberToHex(this.$data.gasPrice * weiInGwei)
+      var gasHex = torus.web3.utils.numberToHex(this.gasPrice * weiInGwei)
       bc.postMessage({
         data: { type: 'confirm-transaction', gasPrice: gasHex }
       })
@@ -131,37 +155,44 @@ export default {
       bc.close()
       window.close()
     },
+    openWallet: function() {
+      this.$store.dispatch('showProfilePopup')
+    },
     ...mapActions({})
   },
   mounted() {
     var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
     bc.onmessage = function(ev) {
-      if (ev.data.type === 'message') {
-        if (ev.data.msgParams) {
-          this.message = ev.data.msgParams.message
-          this.typedMessages = ev.data.msgParams.typedMessages
-          this.messageType = this.typedMessages ? 'typed' : 'normal'
+      const { type, msgParams, txParams, origin, balance } = ev.data || {}
+      if (type === 'message') {
+        const { message, typedMessages } = msgParams || {}
+        this.message = message
+        this.typedMessages = typedMessages
+        this.messageType = typedMessages ? 'typed' : 'normal'
+        this.origin = origin
+        this.type = type
+      } else if (type === 'transaction') {
+        console.log(ev.data, 'data')
+        const web3Utils = torus.web3.utils
+        let finalValue = 0
+        const { value, to, data, from: sender, gas, gasPrice } = txParams || {}
+        if (value) {
+          finalValue = web3Utils.fromWei(value.toString())
         }
-        this.origin = ev.data.origin
-        this.type = ev.data.type
-      } else if (ev.data.type === 'transaction') {
-        var web3Utils = torus.web3.utils
-        var txParams = ev.data.txParams
-        var value
-        if (txParams.value) {
-          value = web3Utils.fromWei(txParams.value.toString())
-        } else {
-          value = 0
-        }
-        var gweiGasPrice = web3Utils.hexToNumber(txParams.gasPrice) / weiInGwei
-        this.origin = ev.data.origin
-        this.type = ev.data.type
-        this.receiver = txParams.to
-        this.value = value
-        this.gasPrice = gweiGasPrice
-        this.balance = ev.data.balance
+        var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
+        this.origin = origin // origin of tx: website url
+        this.type = type // type of tx
+        this.receiver = to // address pf receiver
+        this.value = finalValue // value of eth sending
+        this.gasPrice = gweiGasPrice // gas price in gwei
+        this.balance = balance // in eth
+        this.gasEstimate = web3Utils.hexToNumber(gas) // gas number
+        this.txData = data // data hex
+        this.sender = sender // address of sender
+        const ethCost = parseFloat(finalValue) + gweiGasPrice * this.gasEstimate * 10 ** -9
+        this.totalEthCost = significantDigits(ethCost.toFixed(5))
+        this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate)
       }
-      bc.close()
       bc.close()
     }.bind(this)
     bc.postMessage({ data: 'popup-loaded' })
@@ -183,6 +214,10 @@ export default {
 
 .text-bluish {
   color: #187bd1;
+}
+
+.text-grayish {
+  color: #aaa;
 }
 
 .bcg {

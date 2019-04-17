@@ -16,7 +16,7 @@
         </v-flex>
         <v-flex xs12 font-weight-medium>
           <span>ETH Balance: </span>
-          <span>{{ this.significantDigits(parseFloat(balance).toFixed(5)) || 0 }} ETH</span>
+          <span>{{ computedBalance }} ETH</span>
         </v-flex>
         <v-flex xs12>
           <v-btn outline color="#75b4fd" class="font-weight-medium mb-4" @click="sendEthExpand = !sendEthExpand">Send ETH</v-btn>
@@ -168,7 +168,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import copyToClipboard from 'copy-to-clipboard'
-import { addressSlicer } from '../utils/utils'
+import { addressSlicer, significantDigits } from '../utils/utils'
 import torus from '../torus'
 
 export default {
@@ -213,6 +213,9 @@ export default {
     slicedAddress: state => addressSlicer(state.selectedAddress) || '0x',
     loggedIn: state => {
       return state.selectedAddress !== ''
+    },
+    computedBalance: function() {
+      return significantDigits(parseFloat(this.balance).toFixed(5)) || 0
     }
   }),
   methods: {
@@ -278,22 +281,6 @@ export default {
         })
       }
     },
-    significantDigits: function(number, perc = false, len = 2) {
-      let input = number
-      if (input === 0) return input
-      if (perc) {
-        input *= 100
-      }
-      let depth
-      if (input >= 1) {
-        depth = 2
-      } else {
-        depth = len - 1 + Math.ceil(Math.log10(1 / input))
-      }
-      const shift = Math.pow(10, depth)
-      const roundedNum = Math.round(shift * input) / shift
-      return roundedNum
-    },
     getTokenBalances: function() {
       let selectedAddress = this.selectedAddress
       // selectedAddress = '0x5cc494843e3f4ac175a5e730c300b011fabf2cea'
@@ -325,7 +312,7 @@ export default {
           }
           const finalBalances = []
           Object.keys(balances).map(item => {
-            if (balances[item].balance > 0) finalBalances.push({ ...balances[item], balance: this.significantDigits(balances[item].balance) })
+            if (balances[item].balance > 0) finalBalances.push({ ...balances[item], balance: significantDigits(balances[item].balance) })
           })
           this.tokenBalances = finalBalances
           this.fetchedTokenBalances = true

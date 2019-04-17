@@ -162,6 +162,23 @@ function addressSlicer(address = '') {
   return `${address.slice(0, 6)}...${address.slice(-4)}`
 }
 
+function significantDigits(number, perc = false, len = 2) {
+  let input = number
+  if (input === 0) return input
+  if (perc) {
+    input *= 100
+  }
+  let depth
+  if (input >= 1) {
+    depth = 2
+  } else {
+    depth = len - 1 + Math.ceil(Math.log10(1 / input))
+  }
+  const shift = Math.pow(10, depth)
+  const roundedNum = Math.round(shift * input) / shift
+  return roundedNum
+}
+
 export {
   removeListeners,
   applyListeners,
@@ -173,5 +190,6 @@ export {
   bnToHex,
   BnMultiplyByFraction,
   hexToText,
-  addressSlicer
+  addressSlicer,
+  significantDigits
 }
