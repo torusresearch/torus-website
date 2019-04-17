@@ -4,10 +4,12 @@ var envify = require('envify/custom')
 try {
 var bundler = browserify(__dirname + '/../inpage/embed.js', {
   fullPaths: true,
-  noParse: [__dirname + '/../inpage/vendor/web3.js', __dirname + '/../inpage/vendor/web3.min.js'],
+  noParse: [require.resolve(__dirname + '/../inpage/vendor/web3.js'), require.resolve(__dirname + '/../inpage/vendor/web3.min.js')],
 })
 
-bundler.transform('uglifyify', { global: true })
+if (process.env.NODE_ENV !== 'development') {
+  bundler.transform('uglifyify', { global: true, keep_fnames: false})
+}
 bundler.transform(envify({
   NODE_ENV: process.env.NODE_ENV,
 }))
