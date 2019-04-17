@@ -78,7 +78,6 @@
     "@vue/eslint-config-standard": "^4.0.0",
     "babel-eslint": "^10.0.1",
     "browserify": "^16.2.3",
-    "browserify-replace": "^1.0.0",
     "codecov": "^3.2.0",
     "cross-env": "^5.2.0",
     "eslint": "^5.16.0",
