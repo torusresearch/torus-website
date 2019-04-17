@@ -5,10 +5,12 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "cross-env NODE_ENV=production npm run build-embed:production && npm run build-embed:copy-main && npm run pre-build && vue-cli-service build",
+    "build:staging": "cross-env NODE_ENV=production npm run build-embed:staging && npm run build-embed:copy-main && npm run pre-build && vue-cli-service build",
     "lint": "vue-cli-service lint",
     "build-embed:copy-main": "cp ./public/embed.min.js ./public/embed-main.min.js",
     "build-embed:dev": "$(npm bin)/browserify --full-paths -t [ $(npm root)/browserify-replace --replace '{ \"from\": \"<BROWSERIFY_REPLACE_MODE>\", \"to\": \"development\" }' --replace '{ \"from\": \"<BROWSERIFY_REPLACE_VENDOR_WEB3>\", \"to\": \"web3.js\" }' ] --noparse=$(pwd)/inpage/vendor/web3.js --noparse=$(pwd)/inpage/vendor/web3.min.js ./inpage/embed.js -o public/embed.min.js",
     "build-embed:production": "$(npm bin)/browserify --full-paths -t [ $(npm root)/browserify-replace --replace '{ \"from\": \"<BROWSERIFY_REPLACE_MODE>\", \"to\": \"production\" }' --replace '{ \"from\": \"<BROWSERIFY_REPLACE_VENDOR_WEB3>\", \"to\": \"web3.min.js\" }' ] --noparse=$(pwd)/inpage/vendor/web3.js --noparse=$(pwd)/inpage/vendor/web3.min.js ./inpage/embed.js -o public/embed-temp.min.js && $(npm bin)/browserify --full-paths -g uglifyify --keep-fnames ./public/embed-temp.min.js > ./public/embed.min.js",
+    "build-embed:staging": "$(npm bin)/browserify --full-paths -t [ $(npm root)/browserify-replace --replace '{ \"from\": \"<BROWSERIFY_REPLACE_MODE>\", \"to\": \"staging\" }' --replace '{ \"from\": \"<BROWSERIFY_REPLACE_VENDOR_WEB3>\", \"to\": \"web3.min.js\" }' ] --noparse=$(pwd)/inpage/vendor/web3.js --noparse=$(pwd)/inpage/vendor/web3.min.js ./inpage/embed.js -o public/embed-temp.min.js && $(npm bin)/browserify --full-paths -g uglifyify ./public/embed-temp.min.js > ./public/embed.min.js",
     "build-embed:report": "npm run build-embed:production && discify ./public/embed.min.js > disc.html",
     "build:dev": "npm run build-embed:dev && npm run build-embed:copy-main && npm run pre-build && vue-cli-service build --mode development",
     "build:report": "vue-cli-service build --report",
@@ -105,7 +107,7 @@
     "mocha-jsdom": "^2.0.0",
     "mocha-sinon": "^2.1.0",
     "nock": "^10.0.6",
-    "nyc": "^13.3.0",
+    "nyc": "^14.0.0",
     "prerender-spa-plugin": "^3.4.0",
     "puppeteer": "^1.14.0",
     "sinon": "^7.3.1",
@@ -116,6 +118,9 @@
     "vue-cli-plugin-vuetify": "^0.5.0",
     "vue-template-compiler": "^2.6.10",
     "vuetify-loader": "^1.2.1"
+  },
+  "mocha": {
+    "timeout": 0
   },
   "browserslist": [
     "> 1%",
