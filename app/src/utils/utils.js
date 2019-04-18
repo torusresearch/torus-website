@@ -179,6 +179,14 @@ function significantDigits(number, perc = false, len = 2) {
   return roundedNum
 }
 
+function calculateGasKnob(gasPrice) {
+  return gasPrice < 20 ? gasPrice * 100 : (gasPrice + 60) * 25
+}
+
+function calculateGasPrice(gasKnob) {
+  return gasKnob < 2000 ? gasKnob / 100 : Math.round(gasKnob / 25) - 60
+}
+
 export {
   removeListeners,
   applyListeners,
@@ -191,5 +199,7 @@ export {
   BnMultiplyByFraction,
   hexToText,
   addressSlicer,
-  significantDigits
+  significantDigits,
+  calculateGasKnob,
+  calculateGasPrice
 }
