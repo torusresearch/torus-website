@@ -88,19 +88,26 @@ var VuexStore = new Vuex.Store({
         'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600'
       )
       if (isTorusTransaction()) {
-        var txParams = getTransactionParams()
         var balance = torus.web3.utils.fromWei(this.state.weiBalance.toString())
-        bc.onmessage = function(ev) {
+        let counter = 0
+        let interval
+        bc.onmessage = ev => {
           if (ev.data === 'popup-loaded') {
-            bc.postMessage({
-              data: {
-                origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-                type: 'transaction',
-                txParams,
-                balance
+            interval = setInterval(() => {
+              var txParams = getTransactionParams()
+              bc.postMessage({
+                data: {
+                  origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+                  type: 'transaction',
+                  txParams,
+                  balance
+                }
+              })
+              if (counter === 3) {
+                bc.close()
+                clearInterval(interval)
               }
-            })
-            bc.close()
+            }, 500)
           }
         }
       } else {
@@ -254,7 +261,8 @@ function getTransactionParams() {
       transactions.push(state.transactions[id])
     }
   }
-  return transactions[0].txParams
+  const { txParams, simulationFails } = transactions[0] || {}
+  return { txParams, simulationFails }
 }
 
 function getLatestMessageParams() {
@@ -285,7 +293,6 @@ function getLatestMessageParams() {
 
   // handle typed messages
   for (let id in state.unapprovedTypedMessages) {
-    console.log(id)
     const msgTime = state.unapprovedTypedMessages[id].time
     if (msgTime > time) {
       time = msgTime

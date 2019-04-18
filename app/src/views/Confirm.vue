@@ -117,7 +117,8 @@ export default {
       txData: '',
       sender: '',
       totalUsdCost: 0,
-      totalEthCost: 0
+      totalEthCost: 0,
+      errorMsg: ''
     }
   },
   computed: {
@@ -162,7 +163,8 @@ export default {
   },
   mounted() {
     var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
-    bc.onmessage = function(ev) {
+    let counter = 0
+    bc.onmessage = ev => {
       const { type, msgParams, txParams, origin, balance } = ev.data || {}
       if (type === 'message') {
         const { message, typedMessages } = msgParams || {}
@@ -172,10 +174,11 @@ export default {
         this.origin = origin
         this.type = type
       } else if (type === 'transaction') {
-        console.log(ev.data, 'data')
         const web3Utils = torus.web3.utils
         let finalValue = 0
-        const { value, to, data, from: sender, gas, gasPrice } = txParams || {}
+        const { value, to, data, from: sender, gas, gasPrice } = txParams.txParams || {}
+        const { simulationFails } = txParams || {}
+        const { reason } = simulationFails || {}
         if (value) {
           finalValue = web3Utils.fromWei(value.toString())
         }
@@ -192,9 +195,11 @@ export default {
         const ethCost = parseFloat(finalValue) + gweiGasPrice * this.gasEstimate * 10 ** -9
         this.totalEthCost = significantDigits(ethCost.toFixed(5))
         this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate)
+        this.errorMsg = reason
       }
-      bc.close()
-    }.bind(this)
+      if (counter === 3) bc.close()
+      counter++
+    }
     bc.postMessage({ data: 'popup-loaded' })
   }
 }
