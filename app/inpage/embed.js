@@ -30,7 +30,10 @@ const MetamaskInpageProvider = require('./inpage-provider.js')
 const setupMultiplex = require('./stream-utils.js').setupMultiplex
 const embedUtils = require('./embedUtils.js')
 // const styleColor = document.currentScript.getAttribute('style-color')
-const stylePosition = document.currentScript.getAttribute('style-position')
+let stylePosition = ''
+if (window.document.currentScript) {
+  stylePosition = window.document.currentScript.getAttribute('style-position')
+}
 
 var torusWidget, torusMenuBtn, torusLogin, torusIframe
 
@@ -255,7 +258,7 @@ function setupWeb3() {
       and try again.`)
   }
 
-  window.torus.web3 = new Web3(inpageProvider)
+  window.torus.web3 = new window.Web3(inpageProvider)
   window.torus.web3.setProvider = function() {
     log.debug('Torus - overrode web3.setProvider')
   }
@@ -263,7 +266,6 @@ function setupWeb3() {
   window.torus.web3.currentProvider.isMetamask = true
   window.torus.web3.currentProvider.isTorus = true
   window.web3 = window.torus.web3
-  window.Web3 = Web3
   log.debug('Torus - injected web3')
 }
 
