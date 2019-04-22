@@ -3,12 +3,12 @@
     <v-layout row justify-center>
       <v-dialog v-model="dialog" persistent fullscreen>
         <div v-if="type === 'message'">
-          <v-card>
+          <v-card height="100vh">
             <v-card-title class="headline text-bluish">Requesting Signature</v-card-title>
             <hr />
             <v-card-text>
               <v-layout row wrap>
-                <v-flex xs12 sm6 ml-3 mt-3>
+                <v-flex ml-3 mt-3>
                   <div class="mb-3">
                     From: <span class="text-bluish">{{ origin }}</span>
                   </div>
@@ -22,9 +22,7 @@
                     <br />
                   </div>
                 </v-flex>
-                <v-flex xs12 sm6>
-                  <img src="images/signature.png" class="bcg bcg-top10 hidden-xs-and-down" />
-                </v-flex>
+                <img src="images/signature.png" class="bcg bcg-top10 hidden-xs-and-down" />
               </v-layout>
               <v-layout row wrap class="mt-5">
                 <v-flex xs8 sm4>
@@ -33,9 +31,9 @@
                 <v-flex xs8 sm4>
                   <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
                 </v-flex>
+                <img src="images/torus_logo.png" class="bcg-logo hidden-xs-and-down" />
               </v-layout>
             </v-card-text>
-            <img src="images/torus_logo.png" class="bcg-logo hidden-xs-and-down push--top-10" />
           </v-card>
         </div>
         <div v-else-if="type === 'transaction'">
@@ -80,8 +78,7 @@
                         <div class="subheading">More Details</div>
                       </template>
                       <v-card>
-                        <v-card-text>
-                        </v-card-text>
+                        <v-card-text> </v-card-text>
                       </v-card>
                     </v-expansion-panel-content>
                   </v-expansion-panel>
@@ -222,8 +219,12 @@ export default {
         this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate)
         this.errorMsg = reason
       }
-      if (counter === 3) bc.close()
-      counter++
+      if (type === 'message' || (counter === 3 && type === 'transaction')) {
+        bc.close()
+        counter = 0
+      } else {
+        counter++
+      }
     }
     bc.postMessage({ data: 'popup-loaded' })
   }
@@ -259,22 +260,10 @@ export default {
   top: 10%;
 }
 
-.bcg-top30 {
-  top: 30%;
-}
-
-.bcg {
-  position: relative;
-  right: 0;
-}
-
-.push--top-10 {
-  margin-top: -10px;
-}
-
 .bcg-logo {
   position: fixed;
   right: 0;
+  bottom: 10px;
 }
 
 hr {

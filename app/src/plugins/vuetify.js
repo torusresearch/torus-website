@@ -3,10 +3,10 @@ import Vuetify from 'vuetify/lib'
 import 'vuetify/src/stylus/app.styl'
 
 Vue.use(Vuetify, {
-  iconfont: 'md',
-  breakpoint: {
-    thresholds: {
-      xs: 576
-    }
-  }
+  iconfont: 'md'
+  // breakpoint: {
+  //   thresholds: {
+  //     xs: 576
+  //   }
+  // }
 })
