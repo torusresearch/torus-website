@@ -62,9 +62,10 @@
                   </div>
                 </v-flex>
               </v-layout>
-              <div class="text-xs-center">
-                <v-btn @click="openBottom" fab color="#56ab7f">
-                  <v-icon color="white">expand_more</v-icon>
+              <div v-if="!open" class="text-xs-center">
+                <v-btn @click="openBottom" flat color="grey">
+                  <div>More Details</div>
+                  <v-icon>expand_more</v-icon>
                 </v-btn>
               </div>
               <BottomSheet :show.sync="open" :on-close="closeBottom">
@@ -82,7 +83,7 @@
           <v-card class="higherZ" :elevation="0" flat>
             <v-card-text>
               <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
-              <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
+              <v-btn class="white--text rounded-btn" large light color="#56ab7f" @click="triggerSign">Accept</v-btn>
             </v-card-text>
           </v-card>
         </div>

@@ -3,8 +3,8 @@
     <div class="glass" :class="{ open: show }" @click="close"></div>
     <div class="bottomsheet-body" :class="{ open: show }">
       <div class="bottomsheet-header text-xs-center">
-        <v-btn fab color="#56ab7f" @click="close">
-          <v-icon color="white">expand_more</v-icon>
+        <v-btn fab flat color="white" @click="close">
+          <v-icon color="grey">expand_more</v-icon>
         </v-btn>
       </div>
       <div class="bottomsheet-content">
@@ -65,7 +65,7 @@ export default {
 
     display: flex;
     flex-direction: column;
-    max-height: 80vh;
+    height: 60%;
     overflow: inherit;
     padding: 0 0 1rem 1rem;
 
@@ -78,7 +78,7 @@ export default {
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 1rem;
+      height: 2rem;
       flex: 0 0 1rem;
       padding: 0 2rem 0.5rem 1rem;
     }
