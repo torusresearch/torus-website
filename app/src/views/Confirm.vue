@@ -1,93 +1,104 @@
 <template>
-  <v-container grid-list-sm>
-    <v-layout row justify-center>
-      <v-dialog v-model="dialog" persistent fullscreen>
-        <div v-if="type === 'message'">
-          <v-card height="100vh">
-            <v-card-title class="headline text-bluish">Requesting Signature</v-card-title>
-            <hr />
-            <v-card-text>
+  <v-container grid-list-xs fill-height>
+    <v-layout row wrap align-center>
+      <div v-if="type === 'message'">
+        <v-card flat>
+          <v-card-title class="headline text-bluish">Requesting Signature</v-card-title>
+          <hr />
+          <v-card-text>
+            <v-layout row wrap>
+              <v-flex mt-3>
+                <div class="mb-3">
+                  From: <span class="text-bluish">{{ origin }}</span>
+                </div>
+                <div v-if="messageType === 'normal'">{{ message }}</div>
+                <div v-else-if="messageType === 'typed'" v-for="typedMessage in typedMessages" :key="typedMessage.name">
+                  Type: {{ typedMessage.type }}
+                  <br />
+                  Name: {{ typedMessage.name }}
+                  <br />
+                  Message: {{ typedMessage.value }}
+                  <br />
+                </div>
+              </v-flex>
+              <img src="images/signature.png" class="bcg bcg-top10 hidden-xs-and-down" />
+            </v-layout>
+            <div class="hide-xs">
               <v-layout row wrap>
-                <v-flex ml-3 mt-3>
-                  <div class="mb-3">
-                    From: <span class="text-bluish">{{ origin }}</span>
-                  </div>
-                  <div v-if="messageType === 'normal'">{{ message }}</div>
-                  <div v-else-if="messageType === 'typed'" v-for="typedMessage in typedMessages" :key="typedMessage.name">
-                    Type: {{ typedMessage.type }}
-                    <br />
-                    Name: {{ typedMessage.name }}
-                    <br />
-                    Message: {{ typedMessage.value }}
-                    <br />
-                  </div>
-                </v-flex>
-                <img src="images/signature.png" class="bcg bcg-top10 hidden-xs-and-down" />
-              </v-layout>
-              <v-layout row wrap class="mt-5">
-                <v-flex xs8 sm4>
+                <v-flex xs12 sm6>
                   <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
                 </v-flex>
-                <v-flex xs8 sm4>
+                <v-flex xs12 sm6>
                   <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
                 </v-flex>
-                <img src="images/torus_logo.png" class="bcg-logo hidden-xs-and-down" />
               </v-layout>
-            </v-card-text>
-          </v-card>
-        </div>
-        <div v-else-if="type === 'transaction'">
-          <v-card :elevation="0" flat height="100vh">
-            <v-card-title class="headline text-bluish">Transaction Request</v-card-title>
-            <h6 class="ml-3 title">
-              From: <span class="text-bluish">{{ origin }}</span>
-            </h6>
-            <hr />
-            <v-card-text>
-              <v-layout row wrap>
-                <v-flex sm5 ml-3 mt-3>
-                  <div>
-                    Balance: <span class="text-bluish">{{ computedBalance }} ETH </span>
-                    <v-icon color="green" small @click="openWallet">account_balance_wallet</v-icon>
-                  </div>
-                  <div>
-                    Total Cost: <span class="text-bluish">{{ totalEthCost }} ETH </span>
-                    <span class="text-grayish">($ {{ totalUsdCost }}) </span>
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on }">
-                        <v-icon color="#aaa" small v-on="on">info</v-icon>
-                      </template>
-                      <span>Approximate Cost</span>
-                    </v-tooltip>
-                  </div>
-                </v-flex>
-              </v-layout>
-              <div v-if="!open" class="text-xs-center">
-                <v-btn @click="openBottom" flat color="grey">
-                  <div>More Details</div>
-                  <v-icon>expand_more</v-icon>
-                </v-btn>
-              </div>
-              <BottomSheet :show.sync="open" :on-close="closeBottom">
-                <v-knob-control
-                  v-model="gasKnob"
-                  :min="min"
-                  :max="max"
-                  :primary-color="color"
-                  :size="150"
-                  :value-display-function="showGasPrice"
-                ></v-knob-control>
-              </BottomSheet>
-            </v-card-text>
-          </v-card>
-          <v-card class="higherZ" :elevation="0" flat>
-            <v-card-text>
-              <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
-              <v-btn class="white--text rounded-btn" large light color="#56ab7f" @click="triggerSign">Accept</v-btn>
-            </v-card-text>
-          </v-card>
-        </div>
-      </v-dialog>
+            </div>
+            <img src="images/torus_logo.png" class="bcg-logo" />
+          </v-card-text>
+        </v-card>
+        <v-card class="higherZ hidden-sm-and-up" :elevation="0" flat>
+          <v-card-text>
+            <v-layout row wrap>
+              <v-flex xs6>
+                <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
+              </v-flex>
+              <v-flex xs6>
+                <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
+              </v-flex>
+            </v-layout>
+          </v-card-text>
+        </v-card>
+      </div>
+      <div v-else-if="type === 'transaction'">
+        <v-card :elevation="0" flat height="100vh">
+          <v-card-title class="headline text-bluish">Transaction Request</v-card-title>
+          <h6 class="ml-3 title">
+            From: <span class="text-bluish">{{ origin }}</span>
+          </h6>
+          <hr />
+          <v-card-text>
+            <v-layout row wrap>
+              <v-flex sm5 ml-3 mt-3>
+                <div>
+                  Balance: <span class="text-bluish">{{ computedBalance }} ETH </span>
+                  <v-icon color="green" small @click="openWallet">account_balance_wallet</v-icon>
+                </div>
+                <div>
+                  Total Cost: <span class="text-bluish">{{ totalEthCost }} ETH </span>
+                  <span class="text-grayish">($ {{ totalUsdCost }}) </span>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-icon color="#aaa" small v-on="on">info</v-icon>
+                    </template>
+                    <span>Approximate Cost</span>
+                  </v-tooltip>
+                </div>
+              </v-flex>
+            </v-layout>
+            <div class="text-xs-center">
+              <v-btn @click="openBottom" fab color="#56ab7f">
+                <v-icon color="white">expand_more</v-icon>
+              </v-btn>
+            </div>
+            <BottomSheet :show.sync="open" :on-close="closeBottom">
+              <v-knob-control
+                v-model="gasKnob"
+                :min="min"
+                :max="max"
+                :primary-color="color"
+                :size="150"
+                :value-display-function="showGasPrice"
+              ></v-knob-control>
+            </BottomSheet>
+          </v-card-text>
+        </v-card>
+        <v-card class="higherZ" :elevation="0" flat>
+          <v-card-text>
+            <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
+            <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
+          </v-card-text>
+        </v-card>
+      </div>
     </v-layout>
   </v-container>
 </template>
@@ -236,12 +247,16 @@ export default {
 
 <style>
 /* Portrait phones and smaller */
-@media (max-width: 576px) {
+@media (max-width: 598px) {
   .bcg-logo {
     display: none;
   }
 
   .bcg {
+    display: none;
+  }
+
+  .hide-xs {
     display: none;
   }
 }
@@ -264,12 +279,12 @@ export default {
 }
 
 .bcg {
-  position: fixed;
-  right: 0;
+  position: relative;
 }
 
 .bcg-top10 {
-  top: 10%;
+  left: 70px;
+  bottom: 50px;
 }
 
 .bcg-logo {
@@ -312,36 +327,5 @@ hr {
   color: black;
   text-decoration: none;
   cursor: pointer;
-}
-
-#torusModal {
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0, 0, 0); /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
-}
-
-#torusModal-content {
-  background-color: #fefefe;
-  margin: 15% auto; /* 15% from the top and centered */
-  border: 1px solid #888;
-  width: 80%; /* Could be more or less, depending on screen size */
-}
-
-#torusModal-header {
-  width: 100%; /* Full width */
-  padding: 2px 16px;
-  background-color: #5cb8b0;
-  color: white;
-}
-
-#torusModal-body {
-  padding: 4px;
-  padding-top: 20px;
 }
 </style>

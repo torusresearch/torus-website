@@ -82,12 +82,15 @@ var VuexStore = new Vuex.Store({
     },
     showPopup(context, payload) {
       var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
+      const isTx = isTorusTransaction()
+      const width = isTx ? 700 : 600
+      const height = isTx ? 390 : 350
       window.open(
         `/confirm?instanceId=${torus.instanceId}`,
         '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600'
+        `directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=${height},width=${width}`
       )
-      if (isTorusTransaction()) {
+      if (isTx) {
         var balance = torus.web3.utils.fromWei(this.state.weiBalance.toString())
         let counter = 0
         let interval
