@@ -41,29 +41,13 @@ const puppeteer = require('puppeteer')
     }, timeout)
     const browser = await puppeteer.launch({ headless })
     const page = await browser.newPage()
-    var pageLoading = page.goto('https://www.etheremon.com')
-    log.info('Opening Etheremon page')
-    var timer = setInterval(async function() {
-      log.info('Attemping to inject Torus script')
-      try {
-        var pageBody = await page.$('body')
-        if (pageBody) {
-          page.addScriptTag({ url: 'https://localhost:3000/embed.min.js' })
-          log.info('Torus script injected into page')
-          clearTimeout(timer)
-        }
-      } catch (e) {
-        log.info('Could not retrieve page body...')
-      }
-    }, 50)
+    var pageLoading = page.goto('https://web3-test-torus.herokuapp.com')
+    log.info('Opening web3-test page')
     await pageLoading
-    log.info('Etheremon page loaded')
-    await page.waitForFunction('(document.querySelector(".navbar__item.username a")||{}).innerText == "sign in"')
-    log.info('Etheremon sign in button loaded')
-    page.click('.navbar__item.username a')
-    await page.waitForFunction('(document.querySelector(".widget__button-new div.content")||{}).innerText == "Unlock Metamask"')
-    log.info('Etheremon Unlock Metamask button loaded')
-    page.click('.widget__button-new div.content')
+    log.info('web3-test page loaded')
+    await sleep(5000)
+    page.click('#ethereum-enable')
+    log.info('Ethereum enable button clicked')
     var pageCount = 0
     await runUntilEvaluateEquals(function() {
       ;(async function() {
@@ -109,48 +93,43 @@ const puppeteer = require('puppeteer')
     await sleep(100)
     await googleLoginPopup.keyboard.type(password_3)
     await sleep(100)
-    await googleLoginPopup.keyboard.press('Enter')
+    googleLoginPopup.keyboard.press('Enter')
     log.info('Google login popup password entered')
-
-    await page.waitForFunction('(document.querySelector(".widget__button-new div.content")||{}).innerText == "Sign In"')
-    log.info('Etheremon page updated, requesting private key signin')
-    await page.click('.widget__button-new div.content')
-
-    pageCount = 0
-    await runUntilEvaluateEquals(function() {
-      ;(async function() {
-        pageCount = (await browser.pages()).length
-      })()
-      return pageCount
-    }, 3)
+    await page.waitForFunction(
+      // eslint-disable-next-line max-len
+      'window.web3.eth.accounts.length === 1'
+    )
+    page.click('#web3-personalSign')
     log.info('Popup opened')
-
+    await sleep(1000)
     browserPages = await browser.pages()
     var torusPopup = browserPages.reduce(function(acc, curr) {
-      if (curr.url().indexOf('localhost') !== -1) {
+      if (curr.url().indexOf('staging') !== -1) {
         return curr
       } else {
         return acc
       }
     })
+    await sleep(1000)
     await torusPopup.waitForFunction(
       // eslint-disable-next-line max-len
-      '(document.getElementsByClassName("v-card__actions")[0]||{}).children && document.getElementsByClassName("v-card__actions")[0].children[2] && document.getElementsByClassName("v-card__actions")[0].children[2].innerText === "AGREE"'
+      'document.getElementsByTagName("button").length >= 2'
     )
-    log.info('Torus popup agree button loaded')
     await sleep(1000)
-    await torusPopup.keyboard.press('Tab')
-    await sleep(100)
-    await torusPopup.keyboard.press('Tab')
-    await sleep(100)
-    try {
-      await torusPopup.keyboard.press('Enter')
-      torusPopup.close()
-    } catch (e) {
-      // fail silently, was throwing errors because window was closed
+    await torusPopup.evaluate('document.getElementsByTagName("button")[1].click()')
+    let alertAppeared = false
+    let alertMsg = ''
+    page.on('dialog', dialog => {
+      alertMsg = dialog.message()
+      alertAppeared = true
+    })
+    await runUntilEvaluateEquals(function() {
+      return alertAppeared
+    }, true)
+    if (alertMsg.indexOf('OK.') === -1) {
+      throw new Error('Could not get back the right message')
     }
     log.info('Torus popup agree button pressed')
-    await page.waitForFunction('(document.querySelector(".signup__label")||{}).innerText == "Register to start the journey"')
     log.info('E2E test passed')
     process.exit(0)
   } catch (e) {
