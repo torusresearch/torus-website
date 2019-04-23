@@ -3,14 +3,9 @@
     <div class="glass" :class="{ open: show }" @click="close"></div>
     <div class="bottomsheet-body" :class="{ open: show }">
       <div class="bottomsheet-header text-xs-center">
-        <!-- <div class="bottomsheet-title">
-          <slot name="title"></slot>
-        </div> -->
-        <span>
-          <v-btn fab color="green" @click="close">
-            <v-icon color="white">expand_more</v-icon>
-          </v-btn>
-        </span>
+        <v-btn fab color="#56ab7f" @click="close">
+          <v-icon color="white">expand_more</v-icon>
+        </v-btn>
       </div>
       <div class="bottomsheet-content">
         <slot></slot>
@@ -38,16 +33,6 @@ export default {
 </script>
 
 <style lang="scss">
-#app {
-  padding: 2rem;
-  h1 {
-    margin-bottom: 1rem;
-  }
-  button {
-    align-self: flex-start;
-  }
-}
-
 .bottomsheet {
   .glass {
     z-index: 99;
@@ -60,7 +45,6 @@ export default {
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
-    //will-change: opacity;
 
     &.open {
       pointer-events: initial;
@@ -75,11 +59,9 @@ export default {
     right: 0;
     opacity: 0;
     background: #fff;
-    // box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.33);
     transform: translateY(100%);
     z-index: 100;
     transition: opacity 0.3s ease, transform 0.3s ease;
-    //will-change: opacity, transform;
 
     display: flex;
     flex-direction: column;
@@ -99,11 +81,6 @@ export default {
       height: 1rem;
       flex: 0 0 1rem;
       padding: 0 2rem 0.5rem 1rem;
-    }
-
-    .bottomsheet-title {
-      font-size: 1.35rem;
-      line-height: 1.6rem;
     }
 
     .bottomsheet-content {

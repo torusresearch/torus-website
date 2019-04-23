@@ -63,7 +63,7 @@
                 </v-flex>
               </v-layout>
               <div class="text-xs-center">
-                <v-btn @click="openBottom" fab color="green">
+                <v-btn @click="openBottom" fab color="#56ab7f">
                   <v-icon color="white">expand_more</v-icon>
                 </v-btn>
               </div>
