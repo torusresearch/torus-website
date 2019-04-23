@@ -8,9 +8,9 @@
           <v-card-text>
             <v-layout row wrap>
               <v-flex mt-3>
-                <div class="mb-3">
+                <h6 class="mb-3">
                   From: <span class="text-bluish">{{ origin }}</span>
-                </div>
+                </h6>
                 <div v-if="messageType === 'normal'">{{ message }}</div>
                 <div v-else-if="messageType === 'typed'" v-for="typedMessage in typedMessages" :key="typedMessage.name">
                   Type: {{ typedMessage.type }}
@@ -50,15 +50,17 @@
         </v-card>
       </div>
       <div v-else-if="type === 'transaction'">
-        <v-card :elevation="0" flat height="100vh">
+        <v-card flat>
           <v-card-title class="headline text-bluish">Transaction Request</v-card-title>
-          <h6 class="ml-3 title">
-            From: <span class="text-bluish">{{ origin }}</span>
-          </h6>
           <hr />
           <v-card-text>
             <v-layout row wrap>
-              <v-flex sm5 ml-3 mt-3>
+              <v-flex xs12>
+                <h6 class="mb-3">
+                  From: <span class="text-bluish">{{ origin }}</span>
+                </h6>
+              </v-flex>
+              <v-flex mt-3>
                 <div>
                   Balance: <span class="text-bluish">{{ computedBalance }} ETH </span>
                   <v-icon color="green" small @click="openWallet">account_balance_wallet</v-icon>
@@ -92,10 +94,16 @@
             </BottomSheet>
           </v-card-text>
         </v-card>
-        <v-card class="higherZ" :elevation="0" flat>
+        <v-card class="higherZ" flat>
           <v-card-text>
-            <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
-            <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
+            <v-layout row wrap>
+              <v-flex xs6>
+                <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
+              </v-flex>
+              <v-flex xs6>
+                <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
+              </v-flex>
+            </v-layout>
           </v-card-text>
         </v-card>
       </div>
