@@ -37,7 +37,7 @@
           </v-card>
         </div>
         <div v-else-if="type === 'transaction'">
-          <v-card>
+          <v-card :elevation="0" flat height="100vh">
             <v-card-title class="headline text-bluish">Transaction Request</v-card-title>
             <h6 class="ml-3 title">
               From: <span class="text-bluish">{{ origin }}</span>
@@ -61,37 +61,28 @@
                     </v-tooltip>
                   </div>
                 </v-flex>
-                <v-flex sm6>
-                  <v-knob-control
-                    v-model="gasKnob"
-                    :min="min"
-                    :max="max"
-                    :primary-color="color"
-                    :size="200"
-                    :value-display-function="showGasPrice"
-                  ></v-knob-control>
-                </v-flex>
-                <v-flex sm12>
-                  <v-expansion-panel popout>
-                    <v-expansion-panel-content hide-actions>
-                      <template v-slot:header>
-                        <div class="subheading">More Details</div>
-                      </template>
-                      <v-card>
-                        <v-card-text> </v-card-text>
-                      </v-card>
-                    </v-expansion-panel-content>
-                  </v-expansion-panel>
-                </v-flex>
               </v-layout>
-              <v-layout row wrap class="mt-5">
-                <v-flex xs8 sm4>
-                  <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
-                </v-flex>
-                <v-flex xs8 sm4>
-                  <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
-                </v-flex>
-              </v-layout>
+              <div class="text-xs-center">
+                <v-btn @click="openBottom" fab color="green">
+                  <v-icon color="white">expand_more</v-icon>
+                </v-btn>
+              </div>
+              <BottomSheet :show.sync="open" :on-close="closeBottom">
+                <v-knob-control
+                  v-model="gasKnob"
+                  :min="min"
+                  :max="max"
+                  :primary-color="color"
+                  :size="150"
+                  :value-display-function="showGasPrice"
+                ></v-knob-control>
+              </BottomSheet>
+            </v-card-text>
+          </v-card>
+          <v-card class="higherZ" :elevation="0" flat>
+            <v-card-text>
+              <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
+              <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
             </v-card-text>
           </v-card>
         </div>
@@ -101,6 +92,7 @@
 </template>
 
 <script>
+import BottomSheet from '../components/BottomSheet.vue'
 import { mapActions } from 'vuex'
 import BroadcastChannel from 'broadcast-channel'
 import torus from '../torus'
@@ -110,8 +102,12 @@ const weiInGwei = 10 ** 9
 
 export default {
   name: 'confirm',
+  components: {
+    BottomSheet
+  },
   data() {
     return {
+      open: false,
       type: 'none',
       origin: 'unknown',
       gasPrice: 10,
@@ -157,6 +153,12 @@ export default {
     }
   },
   methods: {
+    closeBottom() {
+      this.open = false
+    },
+    openBottom() {
+      this.open = true
+    },
     triggerSign: function(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
       var gasHex = torus.web3.utils.numberToHex(this.gasPrice * weiInGwei)
@@ -241,6 +243,15 @@ export default {
   .bcg {
     display: none;
   }
+}
+
+.higherZ {
+  position: fixed;
+  z-index: 100;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 75px;
 }
 
 .text-bluish {
