@@ -1,6 +1,6 @@
 <template>
   <v-container grid-list-xs fill-height>
-    <v-layout row wrap align-center>
+    <v-layout row wrap align-top>
       <div v-if="type === 'message'">
         <v-card flat>
           <v-card-title class="headline text-bluish">Requesting Signature</v-card-title>
@@ -36,13 +36,13 @@
             <img src="images/torus_logo.png" class="bcg-logo" />
           </v-card-text>
         </v-card>
-        <v-card class="higherZ hidden-sm-and-up" :elevation="0" flat>
+        <v-card class="higherZ hidden-sm-and-up" flat>
           <v-card-text>
             <v-layout row wrap>
-              <v-flex xs6>
+              <v-flex xs4>
                 <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
-              <v-flex xs6>
+              <v-flex xs4>
                 <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
               </v-flex>
             </v-layout>
@@ -51,7 +51,7 @@
       </div>
       <div v-else-if="type === 'transaction'">
         <v-card flat>
-          <v-card-title class="headline text-bluish">Transaction Request</v-card-title>
+          <v-card-title class="headline text-bluish">{{ header }}</v-card-title>
           <hr />
           <v-card-text>
             <v-layout row wrap>
@@ -60,50 +60,154 @@
                   From: <span class="text-bluish">{{ origin }}</span>
                 </h6>
               </v-flex>
-              <v-flex mt-3>
-                <div>
-                  Balance: <span class="text-bluish">{{ computedBalance }} ETH </span>
-                  <v-icon color="green" small @click="openWallet">account_balance_wallet</v-icon>
-                </div>
-                <div>
-                  Total Cost: <span class="text-bluish">{{ totalEthCost }} ETH </span>
-                  <span class="text-grayish">($ {{ totalUsdCost }}) </span>
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="#aaa" small v-on="on">info</v-icon>
-                    </template>
-                    <span>Approximate Cost</span>
-                  </v-tooltip>
-                </div>
+              <v-flex mt-3 xs12 sm4 align-self-top text-sm-center text-xs-left>
+                <v-layout row wrap>
+                  <v-flex xs6 sm12>
+                    <div class="divWrapSvgStyle">
+                      <img src="images/wallet.svg" alt="Wallet" class="svg-setting" />
+                    </div>
+                  </v-flex>
+                  <v-flex xs6 sm12>
+                    <div class="text-grayish font-weight-bold text-uppercase">Your Wallet</div>
+                    <div>
+                      Address:
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on }">
+                          <span class="selected-account font-weight-medium" color="#56ab7f" size="18" v-on="on" @click="copyToClip(sender)">
+                            {{ slicedAddress(sender) }}
+                          </span>
+                        </template>
+                        <span v-if="copied">Copied!</span>
+                        <span v-else>Copy to clipboard</span>
+                      </v-tooltip>
+                    </div>
+                    <div>
+                      Balance: <span class="text-bluish font-weight-medium">{{ computedBalance }} ETH</span>
+                    </div>
+                  </v-flex>
+                </v-layout>
+              </v-flex>
+              <v-flex mt-3 xs12 sm4 align-self-top text-sm-center text-xs-left>
+                <v-layout row wrap>
+                  <v-flex xs6 sm12>
+                    <div class="divWrap">
+                      <img src="images/blue_arrow_right.svg" alt="Arrow" class="svg-setting__big hidden-xs-only" />
+                      <img src="images/blue_arrow_down.svg" alt="Arrow" class="svg-setting__big hidden-sm-and-up" />
+                    </div>
+                  </v-flex>
+                  <v-flex xs6 sm12>
+                    <div class="text-grayish font-weight-bold text-uppercase">
+                      {{ !doesSendEther ? 'Network Fee' : 'Amount' }}
+                    </div>
+                    <div class="text-bluish font-weight-medium">{{ totalUsdCost }} USD</div>
+                    <div class="text-bluish font-weight-medium">({{ totalEthCost }} ETH)</div>
+                  </v-flex>
+                </v-layout>
+              </v-flex>
+              <v-flex mt-3 xs12 sm4 align-self-top text-sm-center text-xs-left>
+                <v-layout row wrap>
+                  <v-flex xs6 sm12>
+                    <div class="divWrapSvgStyle">
+                      <img src="images/user.svg" alt="User" class="svg-setting" />
+                    </div>
+                  </v-flex>
+                  <v-flex xs6 sm12>
+                    <div class="text-grayish font-weight-bold text-uppercase">Payee's Wallet</div>
+                    <div>
+                      Address:
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on }">
+                          <span class="selected-account font-weight-medium" color="#56ab7f" size="18" v-on="on" @click="copyToClip(receiver)">
+                            {{ slicedAddress(receiver) }}
+                          </span>
+                        </template>
+                        <span v-if="copied">Copied!</span>
+                        <span v-else>Copy to clipboard</span>
+                      </v-tooltip>
+                    </div>
+                  </v-flex>
+                </v-layout>
               </v-flex>
             </v-layout>
-            <div class="text-xs-center">
-              <v-btn @click="openBottom" fab color="#56ab7f">
-                <v-icon color="white">expand_more</v-icon>
+            <v-layout row wrap v-show="canShowError">
+              <v-flex text-xs-left mb-2 mt-2>
+                <div class="red--text">Error: {{ errorMsg }}</div>
+              </v-flex>
+            </v-layout>
+            <div class="text-xs-center mb-5">
+              <v-btn @click="openBottom" flat>
+                <span class="text-grayish font-weight-bold text-uppercase">More Details</span>
+                <v-icon color="#959595">expand_more</v-icon>
               </v-btn>
             </div>
             <BottomSheet :show.sync="open" :on-close="closeBottom">
-              <v-knob-control
-                v-model="gasKnob"
-                :min="min"
-                :max="max"
-                :primary-color="color"
-                :size="150"
-                :value-display-function="showGasPrice"
-              ></v-knob-control>
+              <v-layout row wrap justify-center align-center text-xs-center>
+                <v-flex xs12 sm3 v-if="doesSendEther">
+                  <div class="text-grayish font-weight-bold text-uppercase">
+                    Amount To Transfer
+                  </div>
+                  <div class="text-bluish font-weight-medium">$ {{ dollarValue }}</div>
+                  <div class="text-bluish font-weight-medium">({{ value }} ETH)</div>
+                </v-flex>
+                <v-flex xs12 sm1 v-if="doesSendEther">
+                  <img src="images/plus.svg" alt="Add" class="svg-setting-small" />
+                </v-flex>
+                <v-flex mt-3 xs12 sm4 align-self-top text-xs-center>
+                  <v-knob-control
+                    v-model="gasKnob"
+                    :min="min"
+                    :max="max"
+                    :primary-color="color"
+                    :size="150"
+                    :value-display-function="showGasPrice"
+                  ></v-knob-control>
+                </v-flex>
+                <v-flex xs12 sm1>
+                  <!-- v-if="doesSendEther" -->
+                  <img src="images/equal.svg" alt="Equals" class="svg-setting-small" />
+                </v-flex>
+                <v-flex xs12 sm3>
+                  <!-- v-if="doesSendEther" -->
+                  <div class="text-grayish font-weight-bold text-uppercase">
+                    Total Cost
+                  </div>
+                  <div class="text-bluish font-weight-medium">$ {{ totalUsdCost }}</div>
+                  <div class="text-bluish font-weight-medium">({{ totalEthCost }} ETH)</div>
+                </v-flex>
+              </v-layout>
+              <v-layout row wrap>
+                <v-flex xs12>
+                  <span class="text-grayish font-weight-bold">Network Used: </span>
+                  <span class="text-capitalize text-bluish font-weight-medium">{{ network }} </span>
+                </v-flex>
+                <v-flex xs12 v-if="!doesSendEther || isContractInteraction || isDeployContract">
+                  <span class="text-grayish font-weight-bold">Raw Data: </span>
+                  <span class="text-bluish font-weight-medium">
+                    {{ slicedAddress(txData) }}
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on }">
+                        <v-icon class="selected-account" color="#56ab7f" size="18" v-on="on" @click="copyToClip(txData)">file_copy</v-icon>
+                      </template>
+                      <span v-if="copied">Copied!</span>
+                      <span v-else>Copy to clipboard</span>
+                    </v-tooltip>
+                  </span>
+                </v-flex>
+              </v-layout>
             </BottomSheet>
           </v-card-text>
         </v-card>
         <v-card class="higherZ" flat>
           <v-card-text>
             <v-layout row wrap>
-              <v-flex xs6>
+              <v-flex xs4>
                 <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
-              <v-flex xs6>
-                <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
+              <v-flex xs4>
+                <v-btn large light :disabled="!canApprove" color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
               </v-flex>
             </v-layout>
+            <img src="images/torus_logo.png" class="bcg-logo" />
           </v-card-text>
         </v-card>
       </div>
@@ -114,9 +218,11 @@
 <script>
 import BottomSheet from '../components/BottomSheet.vue'
 import { mapActions } from 'vuex'
+import copyToClipboard from 'copy-to-clipboard'
+import psl from 'psl'
 import BroadcastChannel from 'broadcast-channel'
 import torus from '../torus'
-import { significantDigits, calculateGasKnob, calculateGasPrice } from '../utils/utils'
+import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress, extractHostname } from '../utils/utils'
 
 const weiInGwei = 10 ** 9
 
@@ -145,7 +251,14 @@ export default {
       totalUsdCost: 0,
       totalEthCost: 0,
       errorMsg: '',
-      txFees: 0
+      txFees: 0,
+      copied: false,
+      isDeployContract: false,
+      isContractInteraction: false,
+      doesSendEther: false,
+      network: '',
+      dollarValue: 0,
+      canApprove: true
     }
   },
   computed: {
@@ -156,8 +269,15 @@ export default {
       if (this.gasPrice < 50) return 'orange'
       return 'red'
     },
+    canShowError: function() {
+      return this.errorMsg && this.errorMsg !== ''
+    },
     computedBalance: function() {
       return significantDigits(parseFloat(this.balance).toFixed(5)) || 0
+    },
+    header: function() {
+      console.log(this.isDeployContract, this.isContractInteraction)
+      return this.isDeployContract ? 'Contract Deployment' : this.isContractInteraction ? 'Contract Interaction' : 'Transaction Request'
     }
   },
   watch: {
@@ -165,19 +285,33 @@ export default {
       const gasCost = newGasPrice * this.gasEstimate * 10 ** -9
       this.txFees = gasCost * this.$store.state.currencyRate
       const ethCost = parseFloat(this.value) + gasCost
-      this.totalEthCost = significantDigits(ethCost.toFixed(5))
+      this.totalEthCost = significantDigits(ethCost.toFixed(5), false, 3)
       this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate)
+      if (parseFloat(this.balance) < ethCost && !this.canShowError) {
+        this.errorMsg = 'Insufficient Funds'
+        this.canApprove = false
+      }
     },
     gasKnob: function(newGasKnob, oldGasKnob) {
       this.gasPrice = calculateGasPrice(newGasKnob)
     }
   },
   methods: {
+    slicedAddress: function(user) {
+      return addressSlicer(user) || '0x'
+    },
     closeBottom() {
       this.open = false
     },
     openBottom() {
       this.open = true
+    },
+    copyToClip: function(address) {
+      this.copied = true
+      copyToClipboard(address)
+      setTimeout(() => {
+        this.copied = false
+      }, 3000)
     },
     triggerSign: function(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
@@ -198,36 +332,38 @@ export default {
       this.$store.dispatch('showProfilePopup')
     },
     showGasPrice: function(val) {
-      return `Tx Fee: $ ${significantDigits(parseFloat(this.txFees).toFixed(2))}`
+      return `Fee: $ ${significantDigits(parseFloat(this.txFees).toFixed(2))}`
     },
     ...mapActions({})
   },
   mounted() {
     var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
     let counter = 0
-    bc.onmessage = ev => {
+    bc.onmessage = async ev => {
       const { type, msgParams, txParams, origin, balance } = ev.data || {}
       if (type === 'message') {
         const { message, typedMessages } = msgParams || {}
         this.message = message
         this.typedMessages = typedMessages
         this.messageType = typedMessages ? 'typed' : 'normal'
-        this.origin = origin
+        this.origin = psl.get(extractHostname(origin))
         this.type = type
       } else if (type === 'transaction') {
         const web3Utils = torus.web3.utils
         let finalValue = 0
         const { value, to, data, from: sender, gas, gasPrice } = txParams.txParams || {}
-        const { simulationFails } = txParams || {}
+        const { simulationFails, network } = txParams || {}
         const { reason } = simulationFails || {}
         if (value) {
           finalValue = web3Utils.fromWei(value.toString())
         }
+        this.network = network
         var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
-        this.origin = origin // origin of tx: website url
+        this.origin = psl.get(extractHostname(origin)) // origin of tx: website url
         this.type = type // type of tx
         this.receiver = to // address pf receiver
         this.value = finalValue // value of eth sending
+        this.dollarValue = significantDigits(parseFloat(finalValue) * this.$store.state.currencyRate)
         this.gasPrice = gweiGasPrice // gas price in gwei
         this.gasKnob = calculateGasKnob(gweiGasPrice)
         this.balance = balance // in eth
@@ -240,6 +376,14 @@ export default {
         this.totalEthCost = significantDigits(ethCost.toFixed(5))
         this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate)
         this.errorMsg = reason
+        if (!to) this.isDeployContract = true
+        else this.isContractInteraction = await isSmartContractAddress(to, torus.web3)
+        this.doesSendEther = parseFloat(finalValue) !== 0
+
+        if (parseFloat(this.balance) < ethCost && !this.canShowError) {
+          this.errorMsg = 'Insufficient Funds'
+          this.canApprove = false
+        }
       }
       if (type === 'message' || (counter === 3 && type === 'transaction')) {
         bc.close()
@@ -253,7 +397,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 /* Portrait phones and smaller */
 @media (max-width: 598px) {
   .bcg-logo {
@@ -269,6 +413,56 @@ export default {
   }
 }
 
+.selected-account {
+  cursor: pointer;
+  @extend .text-bluish;
+}
+
+.selected-account:hover {
+  background-color: #959595;
+  opacity: 0.5;
+  color: #fff;
+}
+.selected-account:active {
+  background-color: #7d7c7e;
+}
+
+.svg-bcg-color {
+  background-color: #6c6c6c;
+  opacity: 0.5;
+}
+
+.svg-setting-small {
+  width: 24px;
+  height: 24px;
+}
+
+.svg-setting {
+  width: 38px;
+  height: 38px;
+}
+
+.svg-setting__big {
+  width: 80px;
+  height: 80px;
+}
+
+.divWrap {
+  display: block;
+  justify-content: center;
+  align-items: center;
+}
+
+.divWrapSvgStyle {
+  @extend .svg-bcg-color;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+}
+
 .higherZ {
   position: fixed;
   z-index: 100;
@@ -279,11 +473,11 @@ export default {
 }
 
 .text-bluish {
-  color: #187bd1;
+  color: #3a70d1;
 }
 
 .text-grayish {
-  color: #aaa;
+  color: #959595;
 }
 
 .bcg {
@@ -319,10 +513,6 @@ hr {
   text-align: center;
 }
 
-hr {
-  margin-top: 0px;
-  margin-bottom: 0px;
-}
 #close {
   color: #aaa;
   float: right;

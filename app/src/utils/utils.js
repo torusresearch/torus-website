@@ -187,6 +187,31 @@ function calculateGasPrice(gasKnob) {
   return gasKnob < 2000 ? gasKnob / 100 : Math.round(gasKnob / 25) - 60
 }
 
+async function isSmartContractAddress(address, web3) {
+  const code = await web3.eth.getCode(address)
+  // Geth will return '0x', and ganache-core v2.2.1 will return '0x0'
+  const codeIsEmpty = !code || code === '0x' || code === '0x0'
+  return !codeIsEmpty
+}
+
+function extractHostname(url) {
+  var hostname
+  // find & remove protocol (http, ftp, etc.) and get hostname
+  if (!url) return ''
+  if (url.indexOf('//') > -1) {
+    hostname = url.split('/')[2]
+  } else {
+    hostname = url.split('/')[0]
+  }
+
+  // find & remove port number
+  hostname = hostname.split(':')[0]
+  // find & remove "?"
+  hostname = hostname.split('?')[0]
+
+  return hostname
+}
+
 export {
   removeListeners,
   applyListeners,
@@ -201,5 +226,7 @@ export {
   addressSlicer,
   significantDigits,
   calculateGasKnob,
-  calculateGasPrice
+  calculateGasPrice,
+  isSmartContractAddress,
+  extractHostname
 }

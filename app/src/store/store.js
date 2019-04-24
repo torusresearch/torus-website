@@ -102,7 +102,7 @@ var VuexStore = new Vuex.Store({
                 data: {
                   origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
                   type: 'transaction',
-                  txParams,
+                  txParams: { ...txParams, network: context.state.networkType },
                   balance
                 }
               })
@@ -110,6 +110,7 @@ var VuexStore = new Vuex.Store({
                 bc.close()
                 clearInterval(interval)
               }
+              counter++
             }, 500)
           }
         }
