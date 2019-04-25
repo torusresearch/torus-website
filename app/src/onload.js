@@ -35,7 +35,7 @@ function onloadTorus(torus) {
       return { selectedAddress, wallet }
     },
     rehydrate: function() {
-      let { selectedAddress, wallet, networkType } = store.state
+      let { selectedAddress, wallet, networkType, currencyRate } = store.state
       if (networkType) {
         store.dispatch('setProviderType', { network: networkType })
       }
@@ -52,6 +52,7 @@ function onloadTorus(torus) {
               }
             }
           })
+          store.dispatch('updateCurrencyRate', { conversionRate: currencyRate })
         }, 50)
         torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
         statusStream.write({ loggedIn: true })

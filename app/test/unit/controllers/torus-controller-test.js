@@ -682,8 +682,8 @@ describe('MetaMaskController', function() {
   //   })
 
   //   it('sets up phishing stream for untrusted communication ', async () => {
-  //     await metamaskController.blacklistController.updatePhishingList()
-  //     console.log(blacklistJSON.blacklist.includes(phishingUrl))
+  //     // await metamaskController.blacklistController.updatePhishingList()
+  //     // console.log(blacklistJSON.blacklist.includes(phishingUrl))
 
   //     const { promise, resolve } = deferredPromise()
 
@@ -742,88 +742,28 @@ describe('MetaMaskController', function() {
   //   })
   // })
 
-  // describe('#_onKeyringControllerUpdate', function() {
-  //   it('should do nothing if there are no keyrings in state', async function() {
-  //     const addAddresses = sinon.fake()
-  //     const syncWithAddresses = sinon.fake()
-  //     sandbox.replace(metamaskController, 'preferencesController', {
-  //       addAddresses
-  //     })
-  //     sandbox.replace(metamaskController, 'accountTracker', {
-  //       syncWithAddresses
-  //     })
+  describe('#_onKeyringControllerUpdate', function() {
+    it('should update selected address if keyrings are provided', async function() {
+      // const addAddresses = sinon.fake()
+      // const getSelectedAddress = sinon.fake.returns('0x42')
+      // const setSelectedAddress = sinon.fake()
+      const syncWithAddresses = sinon.fake()
+      // sandbox.replace(metamaskController, 'preferencesController', {
+      //   addAddresses,
+      //   getSelectedAddress,
+      //   setSelectedAddress
+      // })
+      sandbox.replace(metamaskController, 'accountTracker', {
+        syncWithAddresses
+      })
 
-  //     const oldState = metamaskController.getState()
-  //     await metamaskController._onKeyringControllerUpdate({ keyrings: [] })
+      const oldState = metamaskController.getState()
+      await metamaskController.initTorusKeyring([], [TEST_ADDRESS, TEST_ADDRESS_2])
 
-  //     assert.ok(addAddresses.notCalled)
-  //     assert.ok(syncWithAddresses.notCalled)
-  //     assert.deepStrictEqual(metamaskController.getState(), oldState)
-  //   })
-
-  //   it('should update selected address if keyrings was locked', async function() {
-  //     const addAddresses = sinon.fake()
-  //     const getSelectedAddress = sinon.fake.returns('0x42')
-  //     const setSelectedAddress = sinon.fake()
-  //     const syncWithAddresses = sinon.fake()
-  //     sandbox.replace(metamaskController, 'preferencesController', {
-  //       addAddresses,
-  //       getSelectedAddress,
-  //       setSelectedAddress
-  //     })
-  //     sandbox.replace(metamaskController, 'accountTracker', {
-  //       syncWithAddresses
-  //     })
-
-  //     const oldState = metamaskController.getState()
-  //     await metamaskController._onKeyringControllerUpdate({
-  //       isUnlocked: false,
-  //       keyrings: [
-  //         {
-  //           accounts: ['0x1', '0x2']
-  //         }
-  //       ]
-  //     })
-
-  //     assert.deepStrictEqual(addAddresses.args, [[['0x1', '0x2']]])
-  //     assert.deepStrictEqual(syncWithAddresses.args, [[['0x1', '0x2']]])
-  //     assert.deepStrictEqual(setSelectedAddress.args, [['0x1']])
-  //     assert.deepStrictEqual(metamaskController.getState(), oldState)
-  //   })
-
-  //   it('should NOT update selected address if already unlocked', async function() {
-  //     const addAddresses = sinon.fake()
-  //     const syncWithAddresses = sinon.fake()
-  //     sandbox.replace(metamaskController, 'preferencesController', {
-  //       addAddresses
-  //     })
-  //     sandbox.replace(metamaskController, 'accountTracker', {
-  //       syncWithAddresses
-  //     })
-
-  //     const oldState = metamaskController.getState()
-  //     await metamaskController._onKeyringControllerUpdate({
-  //       isUnlocked: true,
-  //       keyrings: [
-  //         {
-  //           accounts: ['0x1', '0x2']
-  //         }
-  //       ]
-  //     })
-
-  //     assert.deepStrictEqual(addAddresses.args, [[['0x1', '0x2']]])
-  //     assert.deepStrictEqual(syncWithAddresses.args, [[['0x1', '0x2']]])
-  //     assert.deepStrictEqual(metamaskController.getState(), oldState)
-  //   })
-  // })
-})
-
-// eslint-disable-next-line no-unused-vars
-function deferredPromise() {
-  let resolve
-  // eslint-disable-next-line promise/param-names
-  const promise = new Promise(_resolve => {
-    resolve = _resolve
+      // assert.deepStrictEqual(addAddresses.args, [[['0x1', '0x2']]])
+      assert.deepStrictEqual(syncWithAddresses.args, [[[TEST_ADDRESS, TEST_ADDRESS_2]]])
+      // assert.deepStrictEqual(setSelectedAddress.args, [['0x1']])
+      assert.deepStrictEqual(metamaskController.getState(), oldState)
+    })
   })
-  return { promise, resolve }
-}
+})

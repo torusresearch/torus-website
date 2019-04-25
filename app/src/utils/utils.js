@@ -162,6 +162,56 @@ function addressSlicer(address = '') {
   return `${address.slice(0, 6)}...${address.slice(-4)}`
 }
 
+function significantDigits(number, perc = false, len = 2) {
+  let input = number
+  if (input === 0) return input
+  if (perc) {
+    input *= 100
+  }
+  let depth
+  if (input >= 1) {
+    depth = 2
+  } else {
+    depth = len - 1 + Math.ceil(Math.log10(1 / input))
+  }
+  const shift = Math.pow(10, depth)
+  const roundedNum = Math.round(shift * input) / shift
+  return roundedNum
+}
+
+function calculateGasKnob(gasPrice) {
+  return gasPrice < 20 ? gasPrice * 100 : (gasPrice + 60) * 25
+}
+
+function calculateGasPrice(gasKnob) {
+  return gasKnob < 2000 ? gasKnob / 100 : Math.round(gasKnob / 25) - 60
+}
+
+async function isSmartContractAddress(address, web3) {
+  const code = await web3.eth.getCode(address)
+  // Geth will return '0x', and ganache-core v2.2.1 will return '0x0'
+  const codeIsEmpty = !code || code === '0x' || code === '0x0'
+  return !codeIsEmpty
+}
+
+function extractHostname(url) {
+  var hostname
+  // find & remove protocol (http, ftp, etc.) and get hostname
+  if (!url) return ''
+  if (url.indexOf('//') > -1) {
+    hostname = url.split('/')[2]
+  } else {
+    hostname = url.split('/')[0]
+  }
+
+  // find & remove port number
+  hostname = hostname.split(':')[0]
+  // find & remove "?"
+  hostname = hostname.split('?')[0]
+
+  return hostname
+}
+
 export {
   removeListeners,
   applyListeners,
@@ -173,5 +223,10 @@ export {
   bnToHex,
   BnMultiplyByFraction,
   hexToText,
-  addressSlicer
+  addressSlicer,
+  significantDigits,
+  calculateGasKnob,
+  calculateGasPrice,
+  isSmartContractAddress,
+  extractHostname
 }
