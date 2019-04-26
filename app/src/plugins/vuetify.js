@@ -3,6 +3,17 @@ import Vuetify from 'vuetify/lib'
 import '../stylus/main.styl'
 
 Vue.use(Vuetify, {
+  theme: {
+    primary: '#3f51b5',
+    secondary: '#b0bec5',
+    accent: '#8c9eff',
+    error: '#b71c1c',
+    torus_accept: '#56ab7f',
+    torus_reject: '#959595'
+  },
+  options: {
+    customProperties: true
+  },
   iconfont: 'md'
   // breakpoint: {
   //   thresholds: {

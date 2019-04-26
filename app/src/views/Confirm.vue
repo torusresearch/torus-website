@@ -26,10 +26,10 @@
             <div class="hide-xs">
               <v-layout row wrap>
                 <v-flex xs12 sm6>
-                  <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
+                  <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
                 </v-flex>
                 <v-flex xs12 sm6>
-                  <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
+                  <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
                 </v-flex>
               </v-layout>
             </div>
@@ -40,10 +40,10 @@
           <v-card-text>
             <v-layout row wrap>
               <v-flex xs4>
-                <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
+                <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
               <v-flex xs4>
-                <v-btn large light color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
+                <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
               </v-flex>
             </v-layout>
           </v-card-text>
@@ -73,7 +73,13 @@
                       Address:
                       <v-tooltip bottom>
                         <template v-slot:activator="{ on }">
-                          <span class="selected-account font-weight-medium" color="#56ab7f" size="18" v-on="on" @click="copyToClip(sender)">
+                          <span
+                            class="selected-account font-weight-medium"
+                            :color="$vuetify.theme.torus_accept"
+                            size="18"
+                            v-on="on"
+                            @click="copyToClip(sender)"
+                          >
                             {{ slicedAddress(sender) }}
                           </span>
                         </template>
@@ -117,7 +123,13 @@
                       Address:
                       <v-tooltip bottom>
                         <template v-slot:activator="{ on }">
-                          <span class="selected-account font-weight-medium" color="#56ab7f" size="18" v-on="on" @click="copyToClip(receiver)">
+                          <span
+                            class="selected-account font-weight-medium"
+                            :color="$vuetify.theme.torus_accept"
+                            size="18"
+                            v-on="on"
+                            @click="copyToClip(receiver)"
+                          >
                             {{ slicedAddress(receiver) }}
                           </span>
                         </template>
@@ -137,7 +149,7 @@
             <div class="text-xs-center mb-5">
               <v-btn @click="openBottom" flat>
                 <span class="text-grayish font-weight-bold text-uppercase">More Details</span>
-                <v-icon color="#959595">expand_more</v-icon>
+                <v-icon :color="$vuetify.theme.torus_reject">expand_more</v-icon>
               </v-btn>
             </div>
             <BottomSheet :show.sync="open" :on-close="closeBottom">
@@ -186,7 +198,9 @@
                     {{ slicedAddress(txData) }}
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on }">
-                        <v-icon class="selected-account" color="#56ab7f" size="18" v-on="on" @click="copyToClip(txData)">file_copy</v-icon>
+                        <v-icon class="selected-account" :color="$vuetify.theme.torus_accept" size="18" v-on="on" @click="copyToClip(txData)">
+                          file_copy
+                        </v-icon>
                       </template>
                       <span v-if="copied">Copied!</span>
                       <span v-else>Copy to clipboard</span>
@@ -201,10 +215,12 @@
           <v-card-text>
             <v-layout row wrap>
               <v-flex xs4>
-                <v-btn large light color="#959595" flat @click="triggerDeny">Reject</v-btn>
+                <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
               <v-flex xs4>
-                <v-btn large light :disabled="!canApprove" color="#56ab7f" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
+                <v-btn large light :disabled="!canApprove" :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">
+                  Accept
+                </v-btn>
               </v-flex>
             </v-layout>
             <img src="images/torus_logo.png" class="bcg-logo" />
@@ -269,14 +285,13 @@ export default {
       if (this.gasPrice < 50) return 'orange'
       return 'red'
     },
-    canShowError: function() {
+    canShowError() {
       return this.errorMsg && this.errorMsg !== ''
     },
-    computedBalance: function() {
+    computedBalance() {
       return significantDigits(parseFloat(this.balance).toFixed(5)) || 0
     },
-    header: function() {
-      console.log(this.isDeployContract, this.isContractInteraction)
+    header() {
       return this.isDeployContract ? 'Contract Deployment' : this.isContractInteraction ? 'Contract Interaction' : 'Transaction Request'
     }
   },
@@ -297,7 +312,7 @@ export default {
     }
   },
   methods: {
-    slicedAddress: function(user) {
+    slicedAddress(user) {
       return addressSlicer(user) || '0x'
     },
     closeBottom() {
@@ -306,14 +321,14 @@ export default {
     openBottom() {
       this.open = true
     },
-    copyToClip: function(address) {
+    copyToClip(address) {
       this.copied = true
       copyToClipboard(address)
       setTimeout(() => {
         this.copied = false
       }, 3000)
     },
-    triggerSign: function(event) {
+    triggerSign(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
       var gasHex = torus.web3.utils.numberToHex(this.gasPrice * weiInGwei)
       bc.postMessage({
@@ -322,16 +337,16 @@ export default {
       bc.close()
       window.close()
     },
-    triggerDeny: function(event) {
+    triggerDeny(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
       bc.postMessage({ data: { type: 'deny-transaction' } })
       bc.close()
       window.close()
     },
-    openWallet: function() {
+    openWallet() {
       this.$store.dispatch('showProfilePopup')
     },
-    showGasPrice: function(val) {
+    showGasPrice(val) {
       return `Fee: $ ${significantDigits(parseFloat(this.txFees).toFixed(2))}`
     },
     ...mapActions({})
@@ -419,8 +434,7 @@ export default {
 }
 
 .selected-account:hover {
-  background-color: #959595;
-  opacity: 0.5;
+  background-color: #95959580;
   color: #fff;
 }
 .selected-account:active {
@@ -428,8 +442,7 @@ export default {
 }
 
 .svg-bcg-color {
-  background-color: #6c6c6c;
-  opacity: 0.5;
+  background-color: #6c6c6c80;
 }
 
 .svg-setting-small {
@@ -477,7 +490,7 @@ export default {
 }
 
 .text-grayish {
-  color: #959595;
+  color: var(--v-torus_reject-base);
 }
 
 .bcg {
@@ -511,19 +524,5 @@ hr {
 .knob-control__text-display {
   font-size: 0.7rem !important;
   text-align: center;
-}
-
-#close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-#close:hover,
-#close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
 }
 </style>
