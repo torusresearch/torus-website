@@ -1,17 +1,20 @@
 // Torus loading message
 console.log('TORUS INJECTED IN', window.location.href)
 
-const mode = '<BROWSERIFY_REPLACE_MODE>'
 let torusUrl
 let logLevel
 
 /* global Web3 */
-require('./vendor/<BROWSERIFY_REPLACE_VENDOR_WEB3>')
-console.log('MODE:', mode)
-if (mode === 'production') {
+if (process.env.NODE_ENV === 'production') {
+  require('./vendor/web3.min.js')
   torusUrl = 'https://tor.us'
   logLevel = 'error'
-} else if (mode === 'development') {
+} else if (process.env.NODE_ENV === 'staging') {
+  require('./vendor/web3.min.js')
+  torusUrl = 'https://staging.tor.us'
+  logLevel = 'info'
+} else if (process.env.NODE_ENV === 'development') {
+  require('./vendor/web3.js')
   torusUrl = 'https://localhost:3000'
   logLevel = 'debug'
 }
@@ -27,7 +30,10 @@ const MetamaskInpageProvider = require('./inpage-provider.js')
 const setupMultiplex = require('./stream-utils.js').setupMultiplex
 const embedUtils = require('./embedUtils.js')
 // const styleColor = document.currentScript.getAttribute('style-color')
-const stylePosition = document.currentScript.getAttribute('style-position')
+let stylePosition = ''
+if (window.document.currentScript) {
+  stylePosition = window.document.currentScript.getAttribute('style-position')
+}
 
 var torusWidget, torusMenuBtn, torusLogin, torusIframe
 
@@ -252,7 +258,7 @@ function setupWeb3() {
       and try again.`)
   }
 
-  window.torus.web3 = new Web3(inpageProvider)
+  window.torus.web3 = new window.Web3(inpageProvider)
   window.torus.web3.setProvider = function() {
     log.debug('Torus - overrode web3.setProvider')
   }
@@ -260,7 +266,6 @@ function setupWeb3() {
   window.torus.web3.currentProvider.isMetamask = true
   window.torus.web3.currentProvider.isTorus = true
   window.web3 = window.torus.web3
-  window.Web3 = Web3
   log.debug('Torus - injected web3')
 }
 

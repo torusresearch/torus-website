@@ -33,6 +33,21 @@ jobs:
           paths:
             - app
       - <<: *step_save_cache
+  build-staging:
+    <<: *job_common
+    steps:
+      - checkout:
+          path: ~/torus-website
+      - <<: *step_restore_cache
+      - <<: *step_setup_global_packages
+      - run:
+          name: "Build code for torus website"
+          command: npm run build:staging
+      - persist_to_workspace:
+          root: ~/torus-website/
+          paths:
+            - app
+      - <<: *step_save_cache
   unit-test:
     <<: *job_common
     steps:
@@ -92,8 +107,17 @@ workflows:
   version: 2
   commit:
     jobs:
-      - build
       - test-coverage
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+      - build-staging:
+          filters:
+            branches:
+              only:
+                - develop
       - deploy:
           requires:
             - build
@@ -104,7 +128,7 @@ workflows:
                 - master
       - deploy-staging:
           requires:
-            - build
+            - build-staging
             - test-coverage
           filters:
             branches:

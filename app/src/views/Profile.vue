@@ -5,18 +5,18 @@
         <v-flex xs12>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <div class="selected-account" v-on="on" v-on:click="copyToClip">{{ slicedAddress }}</div>
+              <div class="selected-account" v-on="on" @click="copyToClip">{{ slicedAddress }}</div>
             </template>
             <span v-if="copied">Copied!</span>
             <span v-else>Copy to clipboard</span>
           </v-tooltip>
         </v-flex>
         <v-flex xs12 sm6 d-flex>
-          <v-select :items="networks" v-model="selectedNetwork" v-on:change="networkChanged" label="Network"></v-select>
+          <v-select :items="networks" v-model="selectedNetwork" @change="networkChanged" label="Network"></v-select>
         </v-flex>
         <v-flex xs12 font-weight-medium>
           <span>ETH Balance: </span>
-          <span>{{ this.significantDigits(parseFloat(balance).toFixed(5)) || 0 }} ETH</span>
+          <span>{{ computedBalance }} ETH</span>
         </v-flex>
         <v-flex xs12>
           <v-btn outline color="#75b4fd" class="font-weight-medium mb-4" @click="sendEthExpand = !sendEthExpand">Send ETH</v-btn>
@@ -42,7 +42,7 @@
                 :rules="[rules.required]"
                 class="input-width"
               ></v-text-field>
-              <v-btn color="#75b4fd" :disabled="!valid" class="white--text" v-on:click="sendEth">Send</v-btn>
+              <v-btn color="#75b4fd" :disabled="!valid" class="white--text" @click="sendEth">Send</v-btn>
             </v-form>
           </v-expand-transition>
         </v-flex>
@@ -50,7 +50,7 @@
           <v-btn outline color="#75b4fd" class="font-weight-medium mb-4" @click="depositETHOption">Deposit ETH</v-btn>
         </v-flex> -->
         <v-flex xs12 justify-space-around>
-          <v-btn color="#75b4fd" class="white--text mb-4" v-on:click="getTokenBalances">Get Token Balances</v-btn>
+          <v-btn color="#75b4fd" class="white--text mb-4" @click="getTokenBalances">Get Token Balances</v-btn>
           <v-expand-transition>
             <div v-show="tokenBalances.length > 0 && fetchedTokenBalances">
               <v-card>
@@ -149,7 +149,7 @@
               <v-spacer></v-spacer>
             </v-card-text>
             <v-card-actions>
-              <v-btn color="#75b4fd" class="white--text ml-auto" v-on:click="triggerLogin" id="googleAuthBtnf">Login</v-btn>
+              <v-btn color="#75b4fd" class="white--text ml-auto" @click="triggerLogin" id="googleAuthBtnf">Login</v-btn>
             </v-card-actions>
           </v-card>
         </v-flex>
@@ -168,7 +168,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import copyToClipboard from 'copy-to-clipboard'
-import { addressSlicer } from '../utils/utils'
+import { addressSlicer, significantDigits } from '../utils/utils'
 import torus from '../torus'
 
 export default {
@@ -213,6 +213,9 @@ export default {
     slicedAddress: state => addressSlicer(state.selectedAddress) || '0x',
     loggedIn: state => {
       return state.selectedAddress !== ''
+    },
+    computedBalance: function() {
+      return significantDigits(parseFloat(this.balance).toFixed(5)) || 0
     }
   }),
   methods: {
@@ -278,22 +281,6 @@ export default {
         })
       }
     },
-    significantDigits: function(number, perc = false, len = 2) {
-      let input = number
-      if (input === 0) return input
-      if (perc) {
-        input *= 100
-      }
-      let depth
-      if (input >= 1) {
-        depth = 2
-      } else {
-        depth = len - 1 + Math.ceil(Math.log10(1 / input))
-      }
-      const shift = Math.pow(10, depth)
-      const roundedNum = Math.round(shift * input) / shift
-      return roundedNum
-    },
     getTokenBalances: function() {
       let selectedAddress = this.selectedAddress
       // selectedAddress = '0x5cc494843e3f4ac175a5e730c300b011fabf2cea'
@@ -325,7 +312,7 @@ export default {
           }
           const finalBalances = []
           Object.keys(balances).map(item => {
-            if (balances[item].balance > 0) finalBalances.push({ ...balances[item], balance: this.significantDigits(balances[item].balance) })
+            if (balances[item].balance > 0) finalBalances.push({ ...balances[item], balance: significantDigits(balances[item].balance) })
           })
           this.tokenBalances = finalBalances
           this.fetchedTokenBalances = true
@@ -350,20 +337,6 @@ export default {
         })
       }
     }, 2000)
-    // let sendWyreScript = document.createElement('script')
-    // sendWyreScript.setAttribute('src', 'https://verify.sendwyre.com/js/widget-loader.js')
-    // document.head.appendChild(sendWyreScript)
-    // sendWyreScript.onload = function() {
-    //   this.widget = new window.Wyre.Widget({
-    //     env: 'test',
-    //     accountId: 'AC_26U73M3RTCT',
-    //     auth: { type: 'metamask' },
-    //     operation: {
-    //       type: 'onramp',
-    //       destCurrency: 'ETH'
-    //     }
-    //   })
-    // }.bind(this)
   }
 }
 </script>

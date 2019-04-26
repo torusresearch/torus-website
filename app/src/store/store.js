@@ -19,10 +19,13 @@ const vuexPersist = new VuexPersist({
       wallet: state.wallet,
       weiBalance: state.weiBalance,
       selectedAddress: state.selectedAddress,
-      networkId: state.networkId
+      networkId: state.networkId,
+      currencyRate: state.currencyRate
     }
   }
 })
+
+var profileWindow
 
 const initialState = {
   email: '',
@@ -31,7 +34,8 @@ const initialState = {
   weiBalance: 0,
   selectedAddress: '',
   networkId: 0,
-  networkType: localStorage.getItem('torus_network_type') || 'mainnet'
+  networkType: localStorage.getItem('torus_network_type') || 'mainnet',
+  currencyRate: 0
 }
 
 var VuexStore = new Vuex.Store({
@@ -62,6 +66,9 @@ var VuexStore = new Vuex.Store({
     setNetworkType(state, networkType) {
       state.networkType = networkType
     },
+    setCurrencyRate(state, currencyRate) {
+      state.currencyRate = currencyRate
+    },
     resetStore(state, requiredState) {
       Object.keys(state).forEach(key => {
         state[key] = initialState[key] // or = initialState[key]
@@ -75,25 +82,36 @@ var VuexStore = new Vuex.Store({
     },
     showPopup(context, payload) {
       var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
+      const isTx = isTorusTransaction()
+      const width = isTx ? 700 : 600
+      const height = isTx ? 450 : 350
       window.open(
         `/confirm?instanceId=${torus.instanceId}`,
         '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600'
+        `directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=${height},width=${width}`
       )
-      if (isTorusTransaction()) {
-        var txParams = getTransactionParams()
+      if (isTx) {
         var balance = torus.web3.utils.fromWei(this.state.weiBalance.toString())
-        bc.onmessage = function(ev) {
+        let counter = 0
+        let interval
+        bc.onmessage = ev => {
           if (ev.data === 'popup-loaded') {
-            bc.postMessage({
-              data: {
-                origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-                type: 'transaction',
-                txParams,
-                balance
+            interval = setInterval(() => {
+              var txParams = getTransactionParams()
+              bc.postMessage({
+                data: {
+                  origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+                  type: 'transaction',
+                  txParams: { ...txParams, network: context.state.networkType },
+                  balance
+                }
+              })
+              if (counter === 3) {
+                bc.close()
+                clearInterval(interval)
               }
-            })
-            bc.close()
+              counter++
+            }, 500)
           }
         }
       } else {
@@ -113,7 +131,13 @@ var VuexStore = new Vuex.Store({
       }
     },
     showProfilePopup(context, payload) {
-      window.open('/profile', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600')
+      profileWindow =
+        profileWindow || window.open('/profile', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600')
+      profileWindow.blur()
+      setTimeout(profileWindow.focus(), 0)
+      profileWindow.onbeforeunload = function() {
+        profileWindow = undefined
+      }
     },
     updateEmail(context, payload) {
       context.commit('setEmail', payload.email)
@@ -140,6 +164,9 @@ var VuexStore = new Vuex.Store({
     },
     updateWeiBalance({ commit, state }, payload) {
       if (payload.address === state.selectedAddress) commit('setWeiBalance', payload.balance)
+    },
+    updateCurrencyRate(context, payload) {
+      context.commit('setCurrencyRate', payload.conversionRate)
     },
     updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
@@ -205,6 +232,8 @@ function handleLogin(email, payload) {
             }
           }
         })
+        const conversionRate = torus.torusController.currencyController.getConversionRate()
+        VuexStore.dispatch('updateCurrencyRate', { conversionRate })
         // continue enable function
         var ethAddress = data.ethAddress
         if (payload.calledFromEmbed) {
@@ -236,7 +265,8 @@ function getTransactionParams() {
       transactions.push(state.transactions[id])
     }
   }
-  return transactions[0].txParams
+  const { txParams, simulationFails } = transactions[0] || {}
+  return { txParams, simulationFails }
 }
 
 function getLatestMessageParams() {
@@ -267,7 +297,6 @@ function getLatestMessageParams() {
 
   // handle typed messages
   for (let id in state.unapprovedTypedMessages) {
-    console.log(id)
     const msgTime = state.unapprovedTypedMessages[id].time
     if (msgTime > time) {
       time = msgTime

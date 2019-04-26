@@ -262,7 +262,7 @@ export default class TorusController extends EventEmitter {
   initTorusKeyring(keyArray, addresses) {
     this.keyringController.deserialize(keyArray)
     this.accountTracker.syncWithAddresses(addresses)
-    this.accountTracker._updateAccounts()
+    // this.accountTracker._updateAccounts()
   }
 
   /**

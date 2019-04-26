@@ -30,9 +30,9 @@ module.exports = function() {
   return { mergeSteam: output, splitStream: split }
 
   function route(obj) {
-    console.log('ROUTING', obj)
+    console.log('ROUTING..', obj)
     if (obj.id && routerMapping[obj.id]) {
-      console.log('ROUTING1', obj)
+      console.log('FOUND STREAM:', obj)
       routerMapping[obj.id].write(obj)
       delete routerMapping[obj.id]
     }
