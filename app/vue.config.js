@@ -17,6 +17,8 @@ module.exports = {
     }
   },
 
+  transpileDependencies: ['eth-json-rpc-infura'],
+
   productionSourceMap: false,
 
   pluginOptions: {
