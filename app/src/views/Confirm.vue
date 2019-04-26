@@ -447,8 +447,6 @@ export default {
 }
 
 @mixin svg-size($args...) {
-  @debug keywords($args); // (string: #080, comment: #800, $variable: $60b)
-
   @each $name, $size in keywords($args) {
     .svg-setting-#{$name} {
       width: $size;
@@ -459,17 +457,20 @@ export default {
 
 @include svg-size($small: 24px, $medium: 38px, $large: 80px);
 
-.divWrap {
-  display: block;
+%justify-align {
   justify-content: center;
   align-items: center;
+}
+
+.divWrap {
+  display: block;
+  @extend %justify-align;
 }
 
 .divWrapSvgStyle {
   @extend .svg-bcg-color;
   display: inline-flex;
-  justify-content: center;
-  align-items: center;
+  @extend %justify-align;
   border-radius: 50%;
   @extend .svg-setting-large;
 }
@@ -484,7 +485,7 @@ export default {
 }
 
 .text-bluish {
-  color: #3a70d1;
+  color: var(--v-torus_blue-base);
 }
 
 .text-grayish {
