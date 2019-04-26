@@ -68,7 +68,7 @@ var torus = {
         nodeIndex.push(new BN(response.result.index, 10))
       })
       log.info(shares, nodeIndex)
-      var privateKey = torus.lagrangeInterpolation(shares.slice(2), nodeIndex.slice(2))
+      var privateKey = torus.lagrangeInterpolation(shares.slice(0, 3), nodeIndex.slice(0, 3))
       var key = torus.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
       var publicKey = key
         .getPublic()
