@@ -16,6 +16,14 @@ module.exports = {
       'Access-Control-Allow-Origin': '*'
     }
   },
+  transpileDependencies: [
+    // can be string or regex
+    // 'js-sha3',
+    // 'broadcast-channel',
+    // 'eth-ens-namehash',
+    // 'ethers',
+    'eth-json-rpc-infura'
+  ],
 
   productionSourceMap: false,
 
