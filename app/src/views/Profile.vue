@@ -341,19 +341,23 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .selected-account {
+  cursor: pointer;
   padding: 5px 15px;
   border-radius: 10px;
-  cursor: pointer;
   max-width: 120px;
+  &:hover {
+    background-color: var(--v-torus_reject_mild-base);
+    opacity: 0.5;
+    color: #fff;
+  }
+
+  &.active {
+    background-color: var(--v-torus_active-base);
+  }
 }
-.selected-account:hover {
-  background-color: #afadaf;
-}
-.selected-account:active {
-  background-color: #7d7c7e;
-}
+
 .input-width {
   max-width: 400px;
 }
