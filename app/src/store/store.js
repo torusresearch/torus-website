@@ -183,30 +183,35 @@ var VuexStore = new Vuex.Store({
     },
     triggerLogin: function(context, payload) {
       // log.error('Could not find window.auth2, might not be loaded yet')
-      const interval = setInterval(() => {
-        if (window.auth2) {
-          window.auth2.signIn().then(function(googleUser) {
-            log.info('GOOGLE USER: ', googleUser)
-            let profile = googleUser.getBasicProfile()
-            // console.log(googleUser)
-            log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
-            log.info('Name: ' + profile.getName())
-            log.info('Image URL: ' + profile.getImageUrl())
-            log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
-            VuexStore.dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
-            let email = profile.getEmail()
-            VuexStore.dispatch('updateEmail', { email })
-            window.gapi.auth2
-              .getAuthInstance()
-              .disconnect()
-              .then(handleLogin(email, payload))
-              .catch(function(err) {
-                log.error(err)
-              })
-          })
-          clearInterval(interval)
-        }
-      }, 1000)
+      const interval = setInterval(
+        (function gapiLoadCall() {
+          if (window.auth2) {
+            log.info('calling gapi success')
+            window.auth2.signIn().then(function(googleUser) {
+              log.info('GOOGLE USER: ', googleUser)
+              let profile = googleUser.getBasicProfile()
+              // console.log(googleUser)
+              log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
+              log.info('Name: ' + profile.getName())
+              log.info('Image URL: ' + profile.getImageUrl())
+              log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
+              VuexStore.dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
+              let email = profile.getEmail()
+              VuexStore.dispatch('updateEmail', { email })
+              window.gapi.auth2
+                .getAuthInstance()
+                .disconnect()
+                .then(handleLogin(email, payload))
+                .catch(function(err) {
+                  log.error(err)
+                })
+            })
+            clearInterval(interval)
+          }
+          return gapiLoadCall
+        })(),
+        1000
+      )
     }
   }
 })
