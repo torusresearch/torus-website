@@ -182,30 +182,32 @@ var VuexStore = new Vuex.Store({
       torus.torusController.networkController.setProviderType(payload.network)
     },
     triggerLogin: function(context, payload) {
-      if (window.auth2 === undefined) {
-        log.error('Could not find window.auth2, might not be loaded yet')
-        return
-      }
-      window.auth2.signIn().then(function(googleUser) {
-        log.info('GOOGLE USER: ', googleUser)
-        let profile = googleUser.getBasicProfile()
-        // console.log(googleUser)
-        log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
-        log.info('Name: ' + profile.getName())
-        log.info('Image URL: ' + profile.getImageUrl())
-        log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
-
-        VuexStore.dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
-        let email = profile.getEmail()
-        VuexStore.dispatch('updateEmail', { email })
-        window.gapi.auth2
-          .getAuthInstance()
-          .disconnect()
-          .then(handleLogin(email, payload))
-          .catch(function(err) {
-            log.error(err)
+      // log.error('Could not find window.auth2, might not be loaded yet')
+      ;(function gapiLoadCall() {
+        if (window.auth2) {
+          window.auth2.signIn().then(function(googleUser) {
+            log.info('GOOGLE USER: ', googleUser)
+            let profile = googleUser.getBasicProfile()
+            // console.log(googleUser)
+            log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
+            log.info('Name: ' + profile.getName())
+            log.info('Image URL: ' + profile.getImageUrl())
+            log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
+            VuexStore.dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
+            let email = profile.getEmail()
+            VuexStore.dispatch('updateEmail', { email })
+            window.gapi.auth2
+              .getAuthInstance()
+              .disconnect()
+              .then(handleLogin(email, payload))
+              .catch(function(err) {
+                log.error(err)
+              })
           })
-      })
+        } else {
+          setTimeout(gapiLoadCall, 1000)
+        }
+      })()
     }
   }
 })
