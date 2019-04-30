@@ -29,7 +29,7 @@
                   <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
                 </v-flex>
                 <v-flex xs12 sm6>
-                  <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
+                  <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Approve</v-btn>
                 </v-flex>
               </v-layout>
             </div>
@@ -43,7 +43,7 @@
                 <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
               <v-flex xs5>
-                <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
+                <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Approve</v-btn>
               </v-flex>
             </v-layout>
           </v-card-text>
@@ -219,7 +219,7 @@
               </v-flex>
               <v-flex xs5>
                 <v-btn large light :disabled="!canApprove" :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">
-                  Accept
+                  Approve
                 </v-btn>
               </v-flex>
             </v-layout>
