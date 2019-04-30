@@ -298,8 +298,8 @@ export default {
       const gasCost = newGasPrice * this.gasEstimate * 10 ** -9
       this.txFees = gasCost * this.$store.state.currencyRate
       const ethCost = parseFloat(this.value) + gasCost
-      this.totalEthCost = significantDigits(ethCost.toFixed(5), false, 3)
-      this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate)
+      this.totalEthCost = significantDigits(ethCost.toFixed(5), false, 3) || 0
+      this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate || 0)
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
         this.canApprove = false
@@ -387,8 +387,8 @@ export default {
         const gasCost = gweiGasPrice * this.gasEstimate * 10 ** -9
         this.txFees = gasCost * this.$store.state.currencyRate
         const ethCost = parseFloat(finalValue) + gasCost
-        this.totalEthCost = significantDigits(ethCost.toFixed(5))
-        this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate)
+        this.totalEthCost = significantDigits(ethCost.toFixed(5), false, 3) || 0
+        this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate || 0)
         if (reason) this.errorMsg = reason
         if (!to) this.isDeployContract = true
         else this.isContractInteraction = await isSmartContractAddress(to, torus.web3)
