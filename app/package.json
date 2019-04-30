@@ -73,7 +73,7 @@
     "vuetify": "^1.5.13",
     "vuex": "^3.1.0",
     "vuex-persist": "^2.0.0",
-    "web3": "1.0.0-beta.37",
+    "web3": "1.0.0-beta.52",
     "web3-provider-engine": "^15.0.0",
     "xtend": "^4.0.1"
   },
@@ -115,7 +115,6 @@
     "mock-browser": "^0.92.14",
     "nock": "^10.0.6",
     "node-sass": "^4.11.0",
-    "npm": "^6.9.0",
     "nyc": "^14.0.0",
     "prerender-spa-plugin": "^3.4.0",
     "puppeteer": "^1.14.0",
