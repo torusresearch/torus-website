@@ -8,6 +8,7 @@ const TransactionController = require('./TransactionController').default
 const RecentBlocksController = require('./RecentBlocksController').default
 const CurrencyController = require('./CurrencyController').default
 const DetectTokensController = require('./DetectTokensController').default
+const TokenRatesController = require('./TokenRatesController').default
 const toChecksumAddress = require('../utils/toChecksumAddress').default
 const BN = require('ethereumjs-util').BN
 const GWEI_BN = new BN('1000000000')
@@ -72,6 +73,11 @@ export default class TorusController extends EventEmitter {
     // detect tokens controller
     this.detectTokensController = new DetectTokensController({
       network: this.networkController
+    })
+
+    this.tokenRatesController = new TokenRatesController({
+      currency: this.currencyController.store,
+      tokensStore: this.detectTokensController.detectedTokensStore
     })
 
     // start and stop polling for balances based on activeControllerConnections

@@ -30,7 +30,7 @@ class DetectTokensController {
   constructor({ interval = DEFAULT_INTERVAL, network } = {}) {
     this.interval = interval
     this.network = network
-    this.detectedTokensStore = new ObservableStore([])
+    this.detectedTokensStore = new ObservableStore({ tokens: [] })
   }
 
   /**
@@ -61,11 +61,10 @@ class DetectTokensController {
         if (!balance.isZero()) {
           // do sth else here
           nonZeroTokens.push({ tokenAddress, balance, ...contracts[tokenAddress] })
-          console.log('non zero here', tokenAddress, balance, contracts[tokenAddress])
           // this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
         }
       })
-      this.detectedTokensStore.putState(nonZeroTokens)
+      this.detectedTokensStore.putState({ tokens: nonZeroTokens })
     })
   }
 
@@ -81,7 +80,7 @@ class DetectTokensController {
     const ethContract = new web3Instance.eth.Contract(ERC20_ABI, contractAddress)
     ethContract.methods.balanceOf(this.selectedAddress).call({ from: this.selectedAddress }, (error, result) => {
       if (!error) {
-        const nonZeroTokens = this.detectedTokensStore.getState()
+        const nonZeroTokens = this.detectedTokensStore.getState().tokens
         if (!result.isZero()) {
           // do sth else here
           const index = nonZeroTokens.findIndex(elem => elem.tokenAddress.toLowerCase() === contractAddress.toLowerCase())
@@ -90,7 +89,7 @@ class DetectTokensController {
           } else {
             nonZeroTokens[index] = { ...nonZeroTokens[index], balance: result }
           }
-          this.detectedTokensStore.putState(nonZeroTokens)
+          this.detectedTokensStore.putState({ tokens: nonZeroTokens })
           // this._preferences.addToken(contractAddress, contracts[contractAddress].symbol, contracts[contractAddress].decimals)
         }
       } else {
