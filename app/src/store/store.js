@@ -57,6 +57,12 @@ var VuexStore = new Vuex.Store({
     setWeiBalance(state, weiBalance) {
       state.weiBalance = weiBalance
     },
+    setTokenData(state, tokenData) {
+      state.tokenData = tokenData
+    },
+    setTokenRates(state, tokenRates) {
+      state.tokenRates = tokenRates
+    },
     setSelectedAddress(state, selectedAddress) {
       state.selectedAddress = selectedAddress
     },
@@ -181,6 +187,12 @@ var VuexStore = new Vuex.Store({
     updateWeiBalance({ commit, state }, payload) {
       if (payload.address === state.selectedAddress) commit('setWeiBalance', payload.balance)
     },
+    updateTokenData({ commit, state }, payload) {
+      commit('setTokenData', payload.tokenData)
+    },
+    updateTokenRates({ commit, state }, payload) {
+      commit('setTokenRates', payload.tokenRates)
+    },
     updateCurrencyRate(context, payload) {
       context.commit('setCurrencyRate', payload.conversionRate)
     },
@@ -252,6 +264,19 @@ function handleLogin(email, payload) {
         })
         const conversionRate = torus.torusController.currencyController.getConversionRate()
         VuexStore.dispatch('updateCurrencyRate', { conversionRate })
+
+        torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
+          if (tokens.length > 0) {
+            VuexStore.dispatch('updateTokenData', { tokenData: tokens })
+          }
+        })
+
+        torus.torusController.tokenRatesController.store.subscribe(function({ contractExchangeRates }) {
+          if (contractExchangeRates) {
+            VuexStore.dispatch('updateTokenRates', { tokenRates: contractExchangeRates })
+          }
+        })
+
         // continue enable function
         var ethAddress = data.ethAddress
         if (payload.calledFromEmbed) {
