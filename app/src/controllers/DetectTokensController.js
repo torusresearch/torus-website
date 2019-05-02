@@ -78,24 +78,21 @@ class DetectTokensController {
   async detectTokenBalance(contractAddress, data = {}) {
     const web3Instance = this.web3
     const ethContract = new web3Instance.eth.Contract(ERC20_ABI, contractAddress)
-    ethContract.methods.balanceOf(this.selectedAddress).call({ from: this.selectedAddress }, (error, result) => {
-      if (!error) {
-        const nonZeroTokens = this.detectedTokensStore.getState().tokens
-        if (!result.isZero()) {
-          // do sth else here
-          const index = nonZeroTokens.findIndex(elem => elem.tokenAddress.toLowerCase() === contractAddress.toLowerCase())
-          if (index === -1) {
+    const nonZeroTokens = this.detectedTokensStore.getState().tokens
+    const index = nonZeroTokens.findIndex(elem => elem.tokenAddress.toLowerCase() === contractAddress.toLowerCase())
+    if (index === -1) {
+      ethContract.methods.balanceOf(this.selectedAddress).call({ from: this.selectedAddress }, (error, result) => {
+        if (!error) {
+          if (!result.isZero()) {
             nonZeroTokens.push({ tokenAddress: contractAddress, balance: result, ...data })
-          } else {
-            nonZeroTokens[index] = { ...nonZeroTokens[index], balance: result }
+            this.detectedTokensStore.putState({ tokens: nonZeroTokens })
+            // this._preferences.addToken(contractAddress, contracts[contractAddress].symbol, contracts[contractAddress].decimals)
           }
-          this.detectedTokensStore.putState({ tokens: nonZeroTokens })
-          // this._preferences.addToken(contractAddress, contracts[contractAddress].symbol, contracts[contractAddress].decimals)
+        } else {
+          warn(`MetaMask - DetectTokensController balance fetch failed for ${contractAddress}.`, error)
         }
-      } else {
-        warn(`MetaMask - DetectTokensController balance fetch failed for ${contractAddress}.`, error)
-      }
-    })
+      })
+    }
   }
 
   /**
