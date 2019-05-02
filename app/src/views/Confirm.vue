@@ -503,7 +503,7 @@ export default {
 
 .bcg-logo {
   position: fixed;
-  right: 0;
+  right: 10px;
   bottom: 10px;
 }
 
