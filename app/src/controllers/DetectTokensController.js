@@ -1,7 +1,8 @@
 const Web3 = require('web3')
 const contracts = require('eth-contract-metadata')
 const { warn } = require('loglevel')
-const { MAINNET } = require('./network/enums')
+const ObservableStore = require('obs-store')
+const { MAINNET } = require('../utils/enums')
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
 const ERC20_ABI = [
@@ -29,6 +30,7 @@ class DetectTokensController {
   constructor({ interval = DEFAULT_INTERVAL, network } = {}) {
     this.interval = interval
     this.network = network
+    this.detectedTokensStore = new ObservableStore([])
   }
 
   /**
@@ -46,21 +48,24 @@ class DetectTokensController {
         tokensToDetect.push(contractAddress)
       }
     }
-
-    const ethContract = this.web3.eth.contract(SINGLE_CALL_BALANCES_ABI).at(SINGLE_CALL_BALANCES_ADDRESS)
-    ethContract.balances([this.selectedAddress], tokensToDetect, (error, result) => {
+    const web3Instance = this.web3
+    const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, SINGLE_CALL_BALANCES_ADDRESS)
+    ethContract.methods.balances([this.selectedAddress], tokensToDetect).call({ from: this.selectedAddress }, (error, result) => {
       if (error) {
         warn('MetaMask - DetectTokensController single call balance fetch failed', error)
         return
       }
-      console.log(result, 'token balances detected')
+      const nonZeroTokens = []
       tokensToDetect.forEach((tokenAddress, index) => {
         const balance = result[index]
         if (!balance.isZero()) {
           // do sth else here
-          this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
+          nonZeroTokens.push({ tokenAddress, balance, ...contracts[tokenAddress] })
+          console.log('non zero here', tokenAddress, balance, contracts[tokenAddress])
+          // this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
         }
       })
+      this.detectedTokensStore.putState(nonZeroTokens)
     })
   }
 
@@ -72,12 +77,21 @@ class DetectTokensController {
    *
    */
   async detectTokenBalance(contractAddress) {
-    const ethContract = this.web3.eth.contract(ERC20_ABI).at(contractAddress)
-    ethContract.balanceOf(this.selectedAddress, (error, result) => {
+    const web3Instance = this.web3
+    const ethContract = new web3Instance.eth.Contract(ERC20_ABI, contractAddress)
+    ethContract.methods.balanceOf(this.selectedAddress).call({ from: this.selectedAddress }, (error, result) => {
       if (!error) {
+        const nonZeroTokens = this.detectedTokensStore.getState()
         if (!result.isZero()) {
           // do sth else here
-          this._preferences.addToken(contractAddress, contracts[contractAddress].symbol, contracts[contractAddress].decimals)
+          const index = nonZeroTokens.findIndex(elem => elem.tokenAddress.toLowerCase() === contractAddress.toLowerCase())
+          if (index === -1) {
+            nonZeroTokens.push({ tokenAddress: contractAddress, balance: result, ...contracts[contractAddress] })
+          } else {
+            nonZeroTokens[index] = { ...nonZeroTokens[index], balance: result }
+          }
+          this.detectedTokensStore.putState(nonZeroTokens)
+          // this._preferences.addToken(contractAddress, contracts[contractAddress].symbol, contracts[contractAddress].decimals)
         }
       } else {
         warn(`MetaMask - DetectTokensController balance fetch failed for ${contractAddress}.`, error)
@@ -132,4 +146,4 @@ class DetectTokensController {
   }
 }
 
-module.exports = DetectTokensController
+export default DetectTokensController
