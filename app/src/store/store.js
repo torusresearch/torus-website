@@ -80,6 +80,21 @@ var VuexStore = new Vuex.Store({
       context.commit('resetStore', initialState)
       window.sessionStorage.clear()
     },
+    forceFetchTokens({ commit, state }, payload) {
+      fetch(`https://api.tor.us/tokenbalances?address=${state.selectedAddress}`)
+        .then(inter => inter.json())
+        .then(response => {
+          response.forEach(obj => {
+            torus.torusController.detectTokensController.detectTokenBalance(obj.contractAddress, {
+              decimals: obj.tokenDecimal,
+              erc20: true,
+              logo: '',
+              name: obj.name,
+              symbol: obj.ticker
+            })
+          })
+        })
+    },
     showPopup(context, payload) {
       var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
       const isTx = isTorusTransaction()

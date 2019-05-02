@@ -65,7 +65,7 @@ class TokenRatesController {
     if (!tokensStore) {
       return
     }
-    this._preferences = tokensStore
+    this._tokensStore = tokensStore
     this.tokens = tokensStore.getState().tokens
     tokensStore.subscribe(({ tokens = [] }) => {
       this.tokens = tokens

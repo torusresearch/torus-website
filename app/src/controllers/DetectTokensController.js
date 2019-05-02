@@ -75,7 +75,7 @@ class DetectTokensController {
    * @returns {boolean} If balance is detected, token is added.
    *
    */
-  async detectTokenBalance(contractAddress) {
+  async detectTokenBalance(contractAddress, data = {}) {
     const web3Instance = this.web3
     const ethContract = new web3Instance.eth.Contract(ERC20_ABI, contractAddress)
     ethContract.methods.balanceOf(this.selectedAddress).call({ from: this.selectedAddress }, (error, result) => {
@@ -85,7 +85,7 @@ class DetectTokensController {
           // do sth else here
           const index = nonZeroTokens.findIndex(elem => elem.tokenAddress.toLowerCase() === contractAddress.toLowerCase())
           if (index === -1) {
-            nonZeroTokens.push({ tokenAddress: contractAddress, balance: result, ...contracts[contractAddress] })
+            nonZeroTokens.push({ tokenAddress: contractAddress, balance: result, ...data })
           } else {
             nonZeroTokens[index] = { ...nonZeroTokens[index], balance: result }
           }
