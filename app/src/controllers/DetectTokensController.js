@@ -79,7 +79,12 @@ class DetectTokensController {
     const nonZeroTokens = this.detectedTokensStore.getState().tokens
     const index = nonZeroTokens.findIndex(elem => elem.tokenAddress.toLowerCase() === contractAddress.toLowerCase())
     if (index === -1) {
-      nonZeroTokens.push({ ...data, tokenAddress: contractAddress })
+      const web3Instance = this.web3
+      nonZeroTokens.push({
+        ...data,
+        tokenAddress: contractAddress,
+        balance: web3Instance.utils.toHex(parseFloat(data.balance) * 10 ** data.decimals)
+      })
       this.detectedTokensStore.putState({ tokens: nonZeroTokens })
       // this._preferences.addToken(contractAddress, contracts[contractAddress].symbol, contracts[contractAddress].decimals)
     }
