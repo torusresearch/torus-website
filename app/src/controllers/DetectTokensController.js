@@ -26,11 +26,9 @@ class DetectTokensController {
    *
    * @param {Object} [config] - Options to configure controller
    */
-  constructor({ interval = DEFAULT_INTERVAL, preferences, network, keyringMemStore } = {}) {
-    this.preferences = preferences
+  constructor({ interval = DEFAULT_INTERVAL, network } = {}) {
     this.interval = interval
     this.network = network
-    this.keyringMemStore = keyringMemStore
   }
 
   /**
@@ -38,16 +36,13 @@ class DetectTokensController {
    *
    */
   async detectNewTokens() {
-    if (!this.isActive) {
-      return
-    }
     if (this._network.store.getState().provider.type !== MAINNET) {
       return
     }
     const tokensToDetect = []
     this.web3.setProvider(this._network._provider)
     for (const contractAddress in contracts) {
-      if (contracts[contractAddress].erc20 && !this.tokenAddresses.includes(contractAddress.toLowerCase())) {
+      if (contracts[contractAddress].erc20) {
         tokensToDetect.push(contractAddress)
       }
     }
@@ -58,6 +53,7 @@ class DetectTokensController {
         warn('MetaMask - DetectTokensController single call balance fetch failed', error)
         return
       }
+      console.log(result, 'token balances detected')
       tokensToDetect.forEach((tokenAddress, index) => {
         const balance = result[index]
         if (!balance.isZero()) {
@@ -95,7 +91,7 @@ class DetectTokensController {
    *
    */
   restartTokenDetection() {
-    if (!(this.isActive && this.selectedAddress)) {
+    if (!this.selectedAddress) {
       return
     }
     this.detectNewTokens()
@@ -116,28 +112,6 @@ class DetectTokensController {
   }
 
   /**
-   * In setter when selectedAddress is changed, detectNewTokens and restart polling
-   * @type {Object}
-   */
-  set preferences(preferences) {
-    if (!preferences) {
-      return
-    }
-    this._preferences = preferences
-    preferences.store.subscribe(({ tokens = [] }) => {
-      this.tokenAddresses = tokens.map(obj => {
-        return obj.address
-      })
-    })
-    preferences.store.subscribe(({ selectedAddress }) => {
-      if (this.selectedAddress !== selectedAddress) {
-        this.selectedAddress = selectedAddress
-        this.restartTokenDetection()
-      }
-    })
-  }
-
-  /**
    * @type {Object}
    */
   set network(network) {
@@ -152,27 +126,9 @@ class DetectTokensController {
    * In setter when isUnlocked is updated to true, detectNewTokens and restart polling
    * @type {Object}
    */
-  set keyringMemStore(keyringMemStore) {
-    if (!keyringMemStore) {
-      return
-    }
-    this._keyringMemStore = keyringMemStore
-    this._keyringMemStore.subscribe(({ isUnlocked }) => {
-      if (this.isUnlocked !== isUnlocked) {
-        this.isUnlocked = isUnlocked
-        if (isUnlocked) {
-          this.restartTokenDetection()
-        }
-      }
-    })
-  }
-
-  /**
-   * Internal isActive state
-   * @type {Object}
-   */
-  get isActive() {
-    return this.isOpen && this.isUnlocked
+  startTokenDetection(selectedAddress) {
+    this.selectedAddress = selectedAddress
+    this.restartTokenDetection()
   }
 }
 
