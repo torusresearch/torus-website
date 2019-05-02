@@ -90,6 +90,7 @@ var VuexStore = new Vuex.Store({
               erc20: true,
               logo: '',
               name: obj.name,
+              balance: obj.balance,
               symbol: obj.ticker
             })
           })
