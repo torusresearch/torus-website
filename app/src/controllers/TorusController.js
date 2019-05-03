@@ -7,6 +7,8 @@ const AccountTracker = require('./AccountTracker').default
 const TransactionController = require('./TransactionController').default
 const RecentBlocksController = require('./RecentBlocksController').default
 const CurrencyController = require('./CurrencyController').default
+const DetectTokensController = require('./DetectTokensController').default
+const TokenRatesController = require('./TokenRatesController').default
 const toChecksumAddress = require('../utils/toChecksumAddress').default
 const BN = require('ethereumjs-util').BN
 const GWEI_BN = new BN('1000000000')
@@ -67,6 +69,17 @@ export default class TorusController extends EventEmitter {
       blockTracker: this.blockTracker,
       network: this.networkController
     })
+
+    // detect tokens controller
+    this.detectTokensController = new DetectTokensController({
+      network: this.networkController
+    })
+
+    this.tokenRatesController = new TokenRatesController({
+      currency: this.currencyController.store,
+      tokensStore: this.detectTokensController.detectedTokensStore
+    })
+
     // start and stop polling for balances based on activeControllerConnections
     this.on('controllerConnectionChanged', activeControllerConnections => {
       if (activeControllerConnections > 0) {
@@ -79,6 +92,9 @@ export default class TorusController extends EventEmitter {
     // ensure accountTracker updates balances after network change
     this.networkController.on('networkDidChange', () => {
       this.accountTracker._updateAccounts()
+      const currentCurrency = this.currencyController.getCurrentCurrency()
+      this.setCurrentCurrency(currentCurrency, function() {})
+      this.detectTokensController.restartTokenDetection()
     })
 
     // key mgmt
@@ -106,11 +122,6 @@ export default class TorusController extends EventEmitter {
           this.platform.showTransactionNotification(txMeta) // TODO: implement platform specific handlers
         }
       }
-    })
-
-    this.networkController.on('networkDidChange', () => {
-      const currentCurrency = this.currencyController.getCurrentCurrency()
-      this.setCurrentCurrency(currentCurrency, function() {})
     })
 
     this.networkController.lookupNetwork()
@@ -262,6 +273,7 @@ export default class TorusController extends EventEmitter {
   initTorusKeyring(keyArray, addresses) {
     this.keyringController.deserialize(keyArray)
     this.accountTracker.syncWithAddresses(addresses)
+    this.detectTokensController.startTokenDetection(addresses[0])
     // this.accountTracker._updateAccounts()
   }
 

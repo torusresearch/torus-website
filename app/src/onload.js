@@ -53,6 +53,18 @@ function onloadTorus(torus) {
             }
           })
           store.dispatch('updateCurrencyRate', { conversionRate: currencyRate })
+
+          torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
+            if (tokens.length > 0) {
+              store.dispatch('updateTokenData', { tokenData: tokens })
+            }
+          })
+
+          torus.torusController.tokenRatesController.store.subscribe(function({ contractExchangeRates }) {
+            if (contractExchangeRates) {
+              store.dispatch('updateTokenRates', { tokenRates: contractExchangeRates })
+            }
+          })
         }, 50)
         torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
         statusStream.write({ loggedIn: true })

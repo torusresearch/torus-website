@@ -29,7 +29,7 @@
                   <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
                 </v-flex>
                 <v-flex xs12 sm6>
-                  <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
+                  <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Approve</v-btn>
                 </v-flex>
               </v-layout>
             </div>
@@ -43,7 +43,7 @@
                 <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
               <v-flex xs5>
-                <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Accept</v-btn>
+                <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Approve</v-btn>
               </v-flex>
             </v-layout>
           </v-card-text>
@@ -219,7 +219,7 @@
               </v-flex>
               <v-flex xs5>
                 <v-btn large light :disabled="!canApprove" :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">
-                  Accept
+                  Approve
                 </v-btn>
               </v-flex>
             </v-layout>
@@ -298,8 +298,8 @@ export default {
       const gasCost = newGasPrice * this.gasEstimate * 10 ** -9
       this.txFees = gasCost * this.$store.state.currencyRate
       const ethCost = parseFloat(this.value) + gasCost
-      this.totalEthCost = significantDigits(ethCost.toFixed(5), false, 3)
-      this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate)
+      this.totalEthCost = significantDigits(ethCost.toFixed(5), false, 3) || 0
+      this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate || 0)
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
         this.canApprove = false
@@ -387,8 +387,8 @@ export default {
         const gasCost = gweiGasPrice * this.gasEstimate * 10 ** -9
         this.txFees = gasCost * this.$store.state.currencyRate
         const ethCost = parseFloat(finalValue) + gasCost
-        this.totalEthCost = significantDigits(ethCost.toFixed(5))
-        this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate)
+        this.totalEthCost = significantDigits(ethCost.toFixed(5), false, 3) || 0
+        this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate || 0)
         if (reason) this.errorMsg = reason
         if (!to) this.isDeployContract = true
         else this.isContractInteraction = await isSmartContractAddress(to, torus.web3)
