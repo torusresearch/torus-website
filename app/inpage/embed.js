@@ -66,7 +66,7 @@ function createWidget() {
       window.torus.login(false)
     })
     torusMenuBtn.addEventListener('click', function() {
-      window.torus.showProfile(true)
+      window.torus.showWallet(true)
     })
   }
   var attachOnLoad = function() {
@@ -245,9 +245,9 @@ function setupWeb3() {
   //   networkStream.write({ name: 'network_change', data: { network } })
   // }
 
-  window.torus.showProfile = function(calledFromEmbed) {
-    var showProfileStream = window.torus.communicationMux.getStream('show_profile')
-    showProfileStream.write({ name: 'show_profile', data: { calledFromEmbed } })
+  window.torus.showWallet = function(calledFromEmbed) {
+    var showWalletStream = window.torus.communicationMux.getStream('show_wallet')
+    showWalletStream.write({ name: 'show_wallet', data: { calledFromEmbed } })
   }
 
   if (typeof window.web3 !== 'undefined') {

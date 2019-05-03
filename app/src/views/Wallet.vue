@@ -172,7 +172,7 @@ import { addressSlicer, significantDigits } from '../utils/utils'
 import torus from '../torus'
 
 export default {
-  name: 'profile',
+  name: 'wallet',
   data: function() {
     return {
       selectedNetwork: '',

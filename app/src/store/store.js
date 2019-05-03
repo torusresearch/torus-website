@@ -25,7 +25,7 @@ const vuexPersist = new VuexPersist({
   }
 })
 
-var profileWindow
+var walletWindow
 
 const initialState = {
   email: '',
@@ -152,13 +152,13 @@ var VuexStore = new Vuex.Store({
         }
       }
     },
-    showProfilePopup(context, payload) {
-      profileWindow =
-        profileWindow || window.open('/profile', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600')
-      profileWindow.blur()
-      setTimeout(profileWindow.focus(), 0)
-      profileWindow.onbeforeunload = function() {
-        profileWindow = undefined
+    showWalletPopup(context, payload) {
+      walletWindow =
+        walletWindow || window.open('/wallet', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600')
+      walletWindow.blur()
+      setTimeout(walletWindow.focus(), 0)
+      walletWindow.onbeforeunload = function() {
+        walletWindow = undefined
       }
     },
     updateEmail(context, payload) {

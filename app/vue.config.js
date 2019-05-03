@@ -24,7 +24,7 @@ module.exports = {
   pluginOptions: {
     prerenderSpa: {
       registry: undefined,
-      renderRoutes: ['/', '/popup', '/confirm', '/privacy', '/profile'],
+      renderRoutes: ['/', '/popup', '/confirm', '/privacy', '/wallet'],
       useRenderEvent: true,
       headless: true,
       onlyProduction: true

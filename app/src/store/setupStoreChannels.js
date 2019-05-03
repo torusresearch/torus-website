@@ -35,8 +35,8 @@ torus.communicationMux.getStream('oauth').on('data', function(chunk) {
   VuexStore.dispatch('triggerLogin', { calledFromEmbed: chunk.data.calledFromEmbed })
 })
 
-torus.communicationMux.getStream('show_profile').on('data', function(chunk) {
-  VuexStore.dispatch('showProfilePopup', { network: chunk.data.calledFromEmbed })
+torus.communicationMux.getStream('show_wallet').on('data', function(chunk) {
+  VuexStore.dispatch('showWalletPopup', { network: chunk.data.calledFromEmbed })
 })
 
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
