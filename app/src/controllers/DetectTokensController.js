@@ -62,7 +62,7 @@ class DetectTokensController {
           const balance = result[index]
           if (!balance.isZero()) {
             // do sth else here
-            nonZeroTokens.push({ tokenAddress, balance, ...contracts[tokenAddress] })
+            nonZeroTokens.push({ ...contracts[tokenAddress], tokenAddress, balance: web3Instance.utils.toHex(balance) })
             // this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
           }
         })
@@ -86,14 +86,15 @@ class DetectTokensController {
       nonZeroTokens.push({
         ...data,
         tokenAddress: contractAddress,
-        balance: web3Instance.utils.toBN(parseFloat(data.balance) * 10 ** data.decimals)
+        balance: web3Instance.utils.toHex(parseFloat(data.balance) * 10 ** data.decimals)
       })
       this.detectedTokensStore.putState({ tokens: nonZeroTokens })
     }
   }
 
   async refreshTokenBalances() {
-    const tokenAddresses = this.detectedTokensStore.getState().tokens.map(x => x.tokenAddress)
+    const oldTokens = this.detectedTokensStore.getState().tokens
+    const tokenAddresses = oldTokens.map(x => x.tokenAddress)
     if (tokenAddresses.length > 0) {
       const web3Instance = this.web3
       const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, SINGLE_CALL_BALANCES_ADDRESS)
@@ -106,7 +107,7 @@ class DetectTokensController {
         tokenAddresses.forEach((tokenAddress, index) => {
           const balance = result[index]
           if (!balance.isZero()) {
-            nonZeroTokens.push({ tokenAddress, balance, ...contracts[tokenAddress] })
+            nonZeroTokens.push({ ...oldTokens[index], balance: web3Instance.utils.toHex(balance) })
           }
         })
         this.detectedTokensStore.putState({ tokens: nonZeroTokens })
