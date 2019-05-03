@@ -41,31 +41,34 @@ class DetectTokensController {
     if (this._network.store.getState().provider.type !== MAINNET) {
       return
     }
+    const tokenAddresses = this.detectedTokensStore.getState().tokens.map(x => x.tokenAddress.toLowerCase())
     const tokensToDetect = []
     this.web3.setProvider(this._network._provider)
     for (const contractAddress in contracts) {
-      if (contracts[contractAddress].erc20) {
+      if (contracts[contractAddress].erc20 && !tokenAddresses.includes(contractAddress.toLowerCase())) {
         tokensToDetect.push(contractAddress)
       }
     }
-    const web3Instance = this.web3
-    const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, SINGLE_CALL_BALANCES_ADDRESS)
-    ethContract.methods.balances([this.selectedAddress], tokensToDetect).call({ from: this.selectedAddress }, (error, result) => {
-      if (error) {
-        warn('MetaMask - DetectTokensController single call balance fetch failed', error)
-        return
-      }
-      const nonZeroTokens = []
-      tokensToDetect.forEach((tokenAddress, index) => {
-        const balance = result[index]
-        if (!balance.isZero()) {
-          // do sth else here
-          nonZeroTokens.push({ tokenAddress, balance, ...contracts[tokenAddress] })
-          // this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
+    if (tokensToDetect.length > 0) {
+      const web3Instance = this.web3
+      const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, SINGLE_CALL_BALANCES_ADDRESS)
+      ethContract.methods.balances([this.selectedAddress], tokensToDetect).call({ from: this.selectedAddress }, (error, result) => {
+        if (error) {
+          warn('MetaMask - DetectTokensController single call balance fetch failed', error)
+          return
         }
+        const nonZeroTokens = []
+        tokensToDetect.forEach((tokenAddress, index) => {
+          const balance = result[index]
+          if (!balance.isZero()) {
+            // do sth else here
+            nonZeroTokens.push({ tokenAddress, balance, ...contracts[tokenAddress] })
+            // this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
+          }
+        })
+        this.detectedTokensStore.putState({ tokens: nonZeroTokens })
       })
-      this.detectedTokensStore.putState({ tokens: nonZeroTokens })
-    })
+    }
   }
 
   /**
@@ -75,7 +78,7 @@ class DetectTokensController {
    * @returns {boolean} If balance is detected, token is added.
    *
    */
-  async detectTokenBalance(contractAddress, data = {}) {
+  async detectEtherscanTokenBalance(contractAddress, data = {}) {
     const nonZeroTokens = this.detectedTokensStore.getState().tokens
     const index = nonZeroTokens.findIndex(elem => elem.tokenAddress.toLowerCase() === contractAddress.toLowerCase())
     if (index === -1) {
@@ -83,10 +86,31 @@ class DetectTokensController {
       nonZeroTokens.push({
         ...data,
         tokenAddress: contractAddress,
-        balance: web3Instance.utils.toHex(parseFloat(data.balance) * 10 ** data.decimals)
+        balance: web3Instance.utils.toBN(parseFloat(data.balance) * 10 ** data.decimals)
       })
       this.detectedTokensStore.putState({ tokens: nonZeroTokens })
-      // this._preferences.addToken(contractAddress, contracts[contractAddress].symbol, contracts[contractAddress].decimals)
+    }
+  }
+
+  async refreshTokenBalances() {
+    const tokenAddresses = this.detectedTokensStore.getState().tokens.map(x => x.tokenAddress)
+    if (tokenAddresses.length > 0) {
+      const web3Instance = this.web3
+      const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, SINGLE_CALL_BALANCES_ADDRESS)
+      ethContract.methods.balances([this.selectedAddress], tokenAddresses).call({ from: this.selectedAddress }, (error, result) => {
+        if (error) {
+          warn('MetaMask - DetectTokensController single call balance fetch failed', error)
+          return
+        }
+        const nonZeroTokens = []
+        tokenAddresses.forEach((tokenAddress, index) => {
+          const balance = result[index]
+          if (!balance.isZero()) {
+            nonZeroTokens.push({ tokenAddress, balance, ...contracts[tokenAddress] })
+          }
+        })
+        this.detectedTokensStore.putState({ tokens: nonZeroTokens })
+      })
     }
   }
 
@@ -113,6 +137,7 @@ class DetectTokensController {
     }
     this._handle = setInterval(() => {
       this.detectNewTokens()
+      this.refreshTokenBalances()
     }, interval)
   }
 

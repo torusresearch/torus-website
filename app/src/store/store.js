@@ -91,7 +91,7 @@ var VuexStore = new Vuex.Store({
         .then(inter => inter.json())
         .then(response => {
           response.forEach(obj => {
-            torus.torusController.detectTokensController.detectTokenBalance(obj.contractAddress, {
+            torus.torusController.detectTokensController.detectEtherscanTokenBalance(obj.contractAddress, {
               decimals: obj.tokenDecimal,
               erc20: true,
               logo: '',

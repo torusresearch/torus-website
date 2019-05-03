@@ -92,7 +92,6 @@ export default class TorusController extends EventEmitter {
     // ensure accountTracker updates balances after network change
     this.networkController.on('networkDidChange', () => {
       this.accountTracker._updateAccounts()
-      console.log('changed network')
       const currentCurrency = this.currencyController.getCurrentCurrency()
       this.setCurrentCurrency(currentCurrency, function() {})
       this.detectTokensController.restartTokenDetection()
