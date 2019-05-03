@@ -113,7 +113,6 @@ export default class AccountTracker {
     })
     // save accounts state
     this.store.updateState({ accounts })
-    console.log(this._currentBlockNumber, 'block number')
     // fetch balances for the accounts if there is block number ready
     if (!this._currentBlockNumber) return
     this._updateAccounts()

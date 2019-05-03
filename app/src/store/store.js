@@ -20,7 +20,9 @@ const vuexPersist = new VuexPersist({
       weiBalance: state.weiBalance,
       selectedAddress: state.selectedAddress,
       networkId: state.networkId,
-      currencyRate: state.currencyRate
+      currencyRate: state.currencyRate,
+      tokenData: state.tokenData,
+      tokenRates: state.tokenRates
     }
   }
 })
@@ -35,7 +37,9 @@ const initialState = {
   selectedAddress: '',
   networkId: 0,
   networkType: localStorage.getItem('torus_network_type') || 'mainnet',
-  currencyRate: 0
+  currencyRate: 0,
+  tokenData: {},
+  tokenRates: {}
 }
 
 var VuexStore = new Vuex.Store({
