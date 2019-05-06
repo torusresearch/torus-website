@@ -39,7 +39,8 @@ const initialState = {
   networkType: localStorage.getItem('torus_network_type') || 'mainnet',
   currencyRate: 0,
   tokenData: {},
-  tokenRates: {}
+  tokenRates: {},
+  transactions: []
 }
 
 var VuexStore = new Vuex.Store({
@@ -47,7 +48,17 @@ var VuexStore = new Vuex.Store({
   state: {
     ...initialState
   },
-  getters: {},
+  getters: {
+    unApprovedTransactions: state => {
+      const transactions = []
+      for (let id in state.transactions) {
+        if (state.transactions[id].status === 'unapproved') {
+          transactions.push(state.transactions[id])
+        }
+      }
+      return transactions
+    }
+  },
   mutations: {
     setEmail(state, email) {
       state.email = email
@@ -79,6 +90,9 @@ var VuexStore = new Vuex.Store({
     setCurrencyRate(state, currencyRate) {
       state.currencyRate = currencyRate
     },
+    setTransactions(state, transactions) {
+      state.transactions = transactions
+    },
     resetStore(state, requiredState) {
       Object.keys(state).forEach(key => {
         state[key] = initialState[key] // or = initialState[key]
@@ -106,7 +120,7 @@ var VuexStore = new Vuex.Store({
           })
         })
     },
-    showPopup(context, payload) {
+    showPopup({ state, getters }, payload) {
       var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
       const isTx = isTorusTransaction()
       const width = isTx ? 700 : 600
@@ -122,21 +136,26 @@ var VuexStore = new Vuex.Store({
         let interval
         bc.onmessage = ev => {
           if (ev.data === 'popup-loaded') {
+            // dispatch to store that popup has loaded
+            // dispatch transactions when popup loaded
+            // also dispatch transactions if popup loaded + transactions changes. Don't use interval
             interval = setInterval(() => {
-              var txParams = getTransactionParams()
+              // console.log(getters)
+              var txParams = getters.unApprovedTransactions[0]
               bc.postMessage({
                 data: {
                   origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
                   type: 'transaction',
-                  txParams: { ...txParams, network: context.state.networkType },
+                  txParams: { ...txParams, network: state.networkType },
                   balance
                 }
               })
-              if ((counter > 3 && txParams.txParams.gas) || counter > 10) {
+              if (txParams.txParams.gas || counter > 9) {
                 bc.close()
                 clearInterval(interval)
               }
               counter++
+              // console.log(counter, txParams.txParams.gas)
             }, 500)
           }
         }
@@ -191,10 +210,13 @@ var VuexStore = new Vuex.Store({
     updateWeiBalance({ commit, state }, payload) {
       if (payload.address === state.selectedAddress) commit('setWeiBalance', payload.balance)
     },
-    updateTokenData({ commit, state }, payload) {
+    updateTransactions({ commit }, payload) {
+      commit('setTransactions', payload.transactions)
+    },
+    updateTokenData({ commit }, payload) {
       commit('setTokenData', payload.tokenData)
     },
-    updateTokenRates({ commit, state }, payload) {
+    updateTokenRates({ commit }, payload) {
       commit('setTokenRates', payload.tokenRates)
     },
     updateCurrencyRate(context, payload) {
@@ -267,6 +289,13 @@ function handleLogin(email, payload) {
             }
           }
         })
+
+        torus.torusController.txController.store.subscribe(function({ transactions }) {
+          if (transactions) {
+            VuexStore.dispatch('updateTransactions', { transactions })
+          }
+        })
+
         const conversionRate = torus.torusController.currencyController.getConversionRate()
         VuexStore.dispatch('updateCurrencyRate', { conversionRate })
 

@@ -54,6 +54,13 @@ function onloadTorus(torus) {
               }
             }
           })
+
+          torus.torusController.txController.store.subscribe(function({ transactions }) {
+            if (transactions) {
+              store.dispatch('updateTransactions', { transactions })
+            }
+          })
+
           store.dispatch('updateCurrencyRate', { conversionRate: currencyRate })
 
           torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
