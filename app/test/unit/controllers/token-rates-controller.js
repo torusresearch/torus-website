@@ -7,8 +7,8 @@ describe('TokenRatesController', () => {
   it('should listen for preferences store updates', () => {
     const tokensStore = new ObservableStore({ tokens: [] })
     const controller = new TokenRatesController({ tokensStore })
-    tokensStore.putState({ tokens: ['foo'] })
-    assert.deepStrictEqual(controller._tokens, ['foo'])
+    tokensStore.putState({ tokens: [{ tokenAddress: 'foo' }] })
+    assert.deepStrictEqual(controller._tokens, [{ tokenAddress: 'foo' }])
   })
 
   it('should poll on correct interval', async () => {
