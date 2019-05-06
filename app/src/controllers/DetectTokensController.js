@@ -66,7 +66,7 @@ class DetectTokensController {
             // this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
           }
         })
-        this.detectedTokensStore.putState({ tokens: nonZeroTokens })
+        if (nonZeroTokens.length > 0) this.detectedTokensStore.putState({ tokens: nonZeroTokens })
       })
     }
   }
@@ -110,7 +110,7 @@ class DetectTokensController {
             nonZeroTokens.push({ ...oldTokens[index], balance: web3Instance.utils.toHex(balance) })
           }
         })
-        this.detectedTokensStore.putState({ tokens: nonZeroTokens })
+        if (nonZeroTokens.length > 0) this.detectedTokensStore.putState({ tokens: nonZeroTokens })
       })
     }
   }

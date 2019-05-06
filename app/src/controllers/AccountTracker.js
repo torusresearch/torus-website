@@ -105,7 +105,6 @@ export default class AccountTracker {
    *
    */
   addAccounts(addresses) {
-    console.log('adding accounts', addresses)
     const accounts = this.store.getState().accounts
     // add initial state for addresses
     addresses.forEach(address => {
@@ -145,7 +144,6 @@ export default class AccountTracker {
    */
   async _updateForBlock(blockNumber) {
     this._currentBlockNumber = blockNumber
-
     // block gasLimit polling shouldn't be in account-tracker shouldn't be here...
     const currentBlock = await this._query.getBlockByNumber(blockNumber, false)
     if (!currentBlock) return
@@ -181,7 +179,6 @@ export default class AccountTracker {
    */
   async _updateAccount(address) {
     // query balance
-    console.log('updated account', address)
     const balance = await this._query.getBalance(address)
     const result = { address, balance }
     // update accounts state

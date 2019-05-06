@@ -3,13 +3,13 @@ import Vuex from 'vuex'
 import log from 'loglevel'
 import torus from '../torus'
 import config from '../config'
-import VuexPersist from 'vuex-persist'
+import VuexPersistence from 'vuex-persist'
 import { hexToText } from '../utils/utils'
 import BroadcastChannel from 'broadcast-channel'
 
 Vue.use(Vuex)
 
-const vuexPersist = new VuexPersist({
+const vuexPersist = new VuexPersistence({
   key: 'my-app',
   storage: window.sessionStorage,
   reducer: state => {
@@ -17,11 +17,11 @@ const vuexPersist = new VuexPersist({
       email: state.email,
       idToken: state.idToken,
       wallet: state.wallet,
-      weiBalance: state.weiBalance,
+      // weiBalance: state.weiBalance,
       selectedAddress: state.selectedAddress,
       networkId: state.networkId,
       currencyRate: state.currencyRate,
-      tokenData: state.tokenData,
+      // tokenData: state.tokenData,
       tokenRates: state.tokenRates
     }
   }
@@ -256,12 +256,13 @@ function handleLogin(email, payload) {
         }
         VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
         VuexStore.dispatch('addWallet', data)
-        torus.torusController.accountTracker.store.subscribe(function(state) {
-          if (state.accounts) {
-            for (const key in state.accounts) {
-              if (state.accounts.hasOwnProperty(key)) {
-                const account = state.accounts[key]
-                VuexStore.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
+        torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
+          if (accounts) {
+            for (const key in accounts) {
+              if (accounts.hasOwnProperty(key)) {
+                const account = accounts[key]
+                if (VuexStore.state.weiBalance !== account.balance)
+                  VuexStore.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
               }
             }
           }
@@ -306,6 +307,7 @@ function handleLogin(email, payload) {
 function getTransactionParams() {
   const { torusController } = torus
   const state = torusController.getState()
+  console.log(torusController.getState(), 'torus state')
   const transactions = []
   for (let id in state.transactions) {
     if (state.transactions[id].status === 'unapproved') {

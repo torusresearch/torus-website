@@ -14,7 +14,7 @@ const BN = require('ethereumjs-util').BN
 const GWEI_BN = new BN('1000000000')
 const percentile = require('percentile')
 const sigUtil = require('eth-sig-util')
-const Dnode = require('dnode')
+// const Dnode = require('dnode')
 const pump = require('pump')
 const setupMultiplex = require('../utils/setupMultiplex').default
 const asStream = require('obs-store/lib/asStream')
@@ -47,6 +47,10 @@ export default class TorusController extends EventEmitter {
     this.opts = opts
     this.store = new ComposableObservableStore()
     this.networkController = new NetworkController()
+
+    // this keeps track of how many "controllerStream" connections are open
+    // the only thing that uses controller connections are open metamask UI instances
+    this.activeControllerConnections = 0
 
     this.currencyController = new CurrencyController({
       initState: {}
@@ -274,6 +278,7 @@ export default class TorusController extends EventEmitter {
     this.keyringController.deserialize(keyArray)
     this.accountTracker.syncWithAddresses(addresses)
     this.detectTokensController.startTokenDetection(addresses[0])
+    // this.setupControllerConnection()
     // this.accountTracker._updateAccounts()
   }
 
@@ -590,13 +595,13 @@ export default class TorusController extends EventEmitter {
    * @param {string} originDomain - The domain requesting the connection,
    * used in logging and error reporting.
    */
-  setupTrustedCommunication(connectionStream, originDomain) {
+  setupTrustedCommunication(inStream, outStream, originDomain) {
     // setup multiplexing
-    const mux = setupMultiplex(connectionStream)
+    // const mux = setupMultiplex(connectionStream)
     // connect features
-    this.setupControllerConnection(mux.createStream('controller'))
+    this.setupControllerConnection(outStream)
     // to fix test cases
-    this.setupProviderConnection(mux.createStream('test'), mux.createStream('provider'), originDomain)
+    this.setupProviderConnection(inStream, outStream, originDomain)
   }
 
   /**
@@ -604,26 +609,26 @@ export default class TorusController extends EventEmitter {
    * @param {*} outStream - The stream to provide our API over.
    */
   setupControllerConnection(outStream) {
-    const api = this.getApi()
-    const dnode = Dnode(api)
+    // const api = this.getApi()
+    // const dnode = Dnode(api)
     // report new active controller connection
     this.activeControllerConnections++
     this.emit('controllerConnectionChanged', this.activeControllerConnections)
     // connect dnode api to remote connection
-    pump(outStream, dnode, outStream, err => {
-      // report new active controller connection
-      this.activeControllerConnections--
-      this.emit('controllerConnectionChanged', this.activeControllerConnections)
-      // report any error
-      if (err) log.error(err)
-    })
-    dnode.on('remote', remote => {
-      // push updates to popup
-      const sendUpdate = update => remote.sendUpdate(update)
-      this.on('update', sendUpdate)
-      // remove update listener once the connection ends
-      dnode.on('end', () => this.removeListener('update', sendUpdate))
-    })
+    // pump(outStream, dnode, outStream, err => {
+    //   // report new active controller connection
+    //   this.activeControllerConnections--
+    //   this.emit('controllerConnectionChanged', this.activeControllerConnections)
+    //   // report any error
+    //   if (err) log.error(err)
+    // })
+    // dnode.on('remote', remote => {
+    //   // push updates to popup
+    //   const sendUpdate = update => remote.sendUpdate(update)
+    //   this.on('update', sendUpdate)
+    //   // remove update listener once the connection ends
+    //   dnode.on('end', () => this.removeListener('update', sendUpdate))
+    // })
   }
 
   /**
