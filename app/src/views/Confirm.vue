@@ -398,7 +398,7 @@ export default {
           this.canApprove = false
         }
       }
-      if (type === 'message' || (counter === 3 && type === 'transaction')) {
+      if (type === 'message' || (counter > 3 && txParams.gas && type === 'transaction') || counter > 10) {
         bc.close()
         counter = 0
       } else {

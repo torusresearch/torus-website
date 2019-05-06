@@ -132,7 +132,7 @@ var VuexStore = new Vuex.Store({
                   balance
                 }
               })
-              if (counter === 3) {
+              if ((counter > 3 && txParams.txParams.gas) || counter > 10) {
                 bc.close()
                 clearInterval(interval)
               }
