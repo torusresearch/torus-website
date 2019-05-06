@@ -172,7 +172,7 @@ import { addressSlicer, significantDigits } from '../utils/utils'
 import torus from '../torus'
 
 export default {
-  name: 'profile',
+  name: 'wallet',
   data: function() {
     return {
       selectedNetwork: '',
@@ -193,9 +193,9 @@ export default {
       gapiLoaded: false,
       headers: [
         {
-          text: 'Ticker',
+          text: 'Symbol',
           align: 'left',
-          value: 'ticker'
+          value: 'symbol'
         },
         { text: 'Name', value: 'name' },
         { text: 'Balance', value: 'balance' },
@@ -264,9 +264,9 @@ export default {
               type: 'function'
             }
           ],
-          item.address
+          item.tokenAddress
         )
-        contractInstance.methods.transfer(this.tokenToAddress, this.tokenAmount).send({
+        contractInstance.methods.transfer(this.tokenToAddress, (this.tokenAmount * 10 ** item.decimals).toString()).send({
           from: this.selectedAddress
         })
         item.dialog = false
@@ -282,44 +282,8 @@ export default {
       }
     },
     getTokenBalances: function() {
-      let selectedAddress = this.selectedAddress
-      // selectedAddress = '0x5cc494843e3f4ac175a5e730c300b011fabf2cea'
-      fetch(
-        // eslint-disable-next-line max-len
-        `https://api.etherscan.io/api?module=account&action=tokentx&address=${selectedAddress}&startblock=0&endblock=999999999&sort=asc&apikey=99M2SA7ZXJYC6N74Z4XRKCY28TFDVZKN4D`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json; charset=utf-8'
-          }
-        }
-      )
-        .then(res => res.json())
-        .then(res => {
-          const balances = {}
-          for (let index = 0; index < res.result.length; index++) {
-            const element = res.result[index]
-            balances[element.tokenSymbol] = balances[element.tokenSymbol]
-              ? balances[element.tokenSymbol]
-              : { balance: 0, name: '', ticker: '', etherscanLink: '' }
-            const value = parseFloat(element.value) / 10 ** parseInt(element.tokenDecimal, 10)
-            balances[element.tokenSymbol].balance += element.from === selectedAddress ? -value : +value
-            balances[element.tokenSymbol].name = element.tokenName
-            balances[element.tokenSymbol].ticker = element.tokenSymbol
-            balances[element.tokenSymbol].address = element.contractAddress
-            balances[element.tokenSymbol].etherscanLink = `https://etherscan.io/address/${element.contractAddress}`
-            balances[element.tokenSymbol].dialog = false
-          }
-          const finalBalances = []
-          Object.keys(balances).map(item => {
-            if (balances[item].balance > 0) finalBalances.push({ ...balances[item], balance: significantDigits(balances[item].balance) })
-          })
-          this.tokenBalances = finalBalances
-          this.fetchedTokenBalances = true
-        })
-        .catch(err => {
-          console.error(err)
-        })
+      this.tokenBalances = this.$store.state.tokenData
+      this.fetchedTokenBalances = true
     }
   },
   mounted() {

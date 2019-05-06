@@ -345,7 +345,7 @@ export default {
       window.close()
     },
     openWallet() {
-      this.$store.dispatch('showProfilePopup')
+      this.$store.dispatch('showWalletPopup')
     },
     showGasPrice(val) {
       return `Fee: $ ${significantDigits(parseFloat(this.txFees).toFixed(2))}`

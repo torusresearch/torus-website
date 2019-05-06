@@ -38,11 +38,11 @@ class TokenRatesController {
           const price = prices[token.tokenAddress.toLowerCase()]
           contractExchangeRates[normalizeAddress(token.tokenAddress)] = price ? price[nativeCurrency] : 0
         })
+        this.store.putState({ contractExchangeRates })
       } catch (error) {
         log.warn('MetaMask - TokenRatesController exchange rate fetch failed.', error)
       }
     }
-    this.store.putState({ contractExchangeRates })
   }
 
   /**
@@ -68,7 +68,9 @@ class TokenRatesController {
     this._tokensStore = tokensStore
     this.tokens = tokensStore.getState().tokens
     tokensStore.subscribe(({ tokens = [] }) => {
-      this.tokens = tokens
+      const tokenAddresses = tokens.map(x => x.tokenAddress)
+      const presentAddresses = (this._tokens && this._tokens.map(x => x.tokenAddress)) || []
+      if (tokenAddresses.sort().toString() !== presentAddresses.sort().toString()) this.tokens = tokens
     })
   }
 

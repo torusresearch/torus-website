@@ -40,14 +40,16 @@ function onloadTorus(torus) {
         store.dispatch('setProviderType', { network: networkType })
       }
       if (selectedAddress && wallet[selectedAddress]) {
+        torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
         setTimeout(function() {
           store.dispatch('updateSelectedAddress', { selectedAddress })
-          torus.torusController.accountTracker.store.subscribe(function(state) {
-            if (state.accounts) {
-              for (const key in state.accounts) {
-                if (state.accounts.hasOwnProperty(key)) {
-                  const account = state.accounts[key]
-                  store.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
+          torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
+            if (accounts) {
+              for (const key in accounts) {
+                if (accounts.hasOwnProperty(key)) {
+                  const account = accounts[key]
+                  if (store.state.weiBalance !== account.balance)
+                    store.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
                 }
               }
             }
@@ -66,7 +68,6 @@ function onloadTorus(torus) {
             }
           })
         }, 50)
-        torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
         statusStream.write({ loggedIn: true })
         log.info('rehydrated wallet')
         torus.web3.eth.net
@@ -145,7 +146,7 @@ function onloadTorus(torus) {
 
   pump(iframeMetamask.mux, reverseMux, iframeMetamask.mux)
   var rStream = routerStream(providerOutStream, reverseMux.createStream('provider'))
-  torusController.setupProviderConnection(rStream.mergeSteam, rStream.splitStream, 'metamask')
+  torusController.setupTrustedCommunication(rStream.mergeSteam, rStream.splitStream, 'metamask')
 
   // also need to set autoreload in embed.js upon network change
   // rStream.mergeSteam

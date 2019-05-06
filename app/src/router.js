@@ -4,7 +4,7 @@ const Home = () => import('./views/Home.vue')
 const Popup = () => import('./views/Popup.vue')
 const Confirm = () => import('./views/Confirm.vue')
 const Privacy = () => import('./views/Privacy.vue')
-const Profile = () => import('./views/Profile.vue')
+const Wallet = () => import('./views/Wallet.vue')
 
 Vue.use(Router)
 
@@ -33,9 +33,9 @@ export default new Router({
       component: Privacy
     },
     {
-      path: '/profile',
-      name: 'profile',
-      component: Profile
+      path: '/wallet',
+      name: 'wallet',
+      component: Wallet
     }
   ]
 })
