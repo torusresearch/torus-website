@@ -71,9 +71,9 @@
                     <div class="text-grayish font-weight-bold text-uppercase">Your Wallet</div>
                     <div>
                       Address:
-                      <ShowToolTip :address="sender">
+                      <show-tool-tip :address="sender">
                         {{ slicedAddress(sender) }}
-                      </ShowToolTip>
+                      </show-tool-tip>
                     </div>
                     <div>
                       Balance: <span class="text-bluish font-weight-medium">{{ computedBalance }} ETH</span>
@@ -109,9 +109,9 @@
                     <div class="text-grayish font-weight-bold text-uppercase">Payee's Wallet</div>
                     <div>
                       Address:
-                      <ShowToolTip :address="receiver">
+                      <show-tool-tip :address="receiver">
                         {{ slicedAddress(receiver) }}
-                      </ShowToolTip>
+                      </show-tool-tip>
                     </div>
                   </v-flex>
                 </v-layout>
@@ -119,8 +119,8 @@
             </v-layout>
             <v-layout row wrap fill-height>
               <v-flex text-xs-left mb-2 mt-2>
-                <template v-if="canShowError" class="red--text">
-                  Error: {{ errorMsg }}
+                <template v-if="canShowError">
+                  <span class="red--text">Error: {{ errorMsg }}</span>
                 </template>
               </v-flex>
             </v-layout>
@@ -130,7 +130,7 @@
                 <v-icon :color="$vuetify.theme.torus_reject">expand_more</v-icon>
               </v-btn>
             </div>
-            <BottomSheet :show.sync="open" :on-close="closeBottom">
+            <bottom-sheet :show.sync="open" :on-close="closeBottom">
               <v-layout row wrap justify-center align-center text-xs-center>
                 <v-flex xs12 sm3 v-if="doesSendEther">
                   <div class="text-grayish font-weight-bold text-uppercase">
@@ -174,13 +174,13 @@
                   <span class="text-grayish font-weight-bold">Raw Data: </span>
                   <span class="text-bluish font-weight-medium">
                     {{ slicedAddress(txData) }}
-                    <ShowToolTip :address="txData">
+                    <show-tool-tip :address="txData">
                       <v-icon :color="$vuetify.theme.torus_accept" size="18">file_copy</v-icon>
-                    </ShowToolTip>
+                    </show-tool-tip>
                   </span>
                 </v-flex>
               </v-layout>
-            </BottomSheet>
+            </bottom-sheet>
           </v-card-text>
         </v-card>
         <v-card class="higherZ" flat>
@@ -241,7 +241,6 @@ export default {
       totalEthCost: 0,
       errorMsg: '',
       txFees: 0,
-      copied: false,
       isDeployContract: false,
       isContractInteraction: false,
       doesSendEther: false,

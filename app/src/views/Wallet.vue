@@ -1,15 +1,11 @@
 <template>
   <v-container fill-height grid-list-sm>
-    <v-layout v-if="gapiLoaded">
+    <template v-if="gapiLoaded">
       <v-layout v-if="loggedIn" row wrap justify-center>
         <v-flex xs12>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <div class="selected-account" v-on="on" @click="copyToClip">{{ slicedAddress }}</div>
-            </template>
-            <span v-if="copied">Copied!</span>
-            <span v-else>Copy to clipboard</span>
-          </v-tooltip>
+          <show-tool-tip>
+            {{ slicedAddress }}
+          </show-tool-tip>
         </v-flex>
         <v-flex xs12 sm6 d-flex>
           <v-select :items="networks" v-model="selectedNetwork" @change="networkChanged" label="Network"></v-select>
@@ -52,7 +48,7 @@
         <v-flex xs12 justify-space-around>
           <v-btn color="#75b4fd" class="white--text mb-4" @click="getTokenBalances">Get Token Balances</v-btn>
           <v-expand-transition>
-            <div v-show="tokenBalances.length > 0 && fetchedTokenBalances">
+            <div v-if="tokenBalances.length > 0 && fetchedTokenBalances">
               <v-card>
                 <v-card-title>
                   Token Balances
@@ -131,48 +127,33 @@
             </div>
           </v-expand-transition>
           <v-expand-transition>
-            <div v-show="fetchedTokenBalances && tokenBalances.length === 0" class="font-weight-medium">
+            <div v-if="fetchedTokenBalances && tokenBalances.length === 0" class="font-weight-medium">
               You don't hold any ERC-20 tokens
             </div>
           </v-expand-transition>
         </v-flex>
       </v-layout>
-      <v-layout v-else align-center justify-center>
-        <v-flex xs12 sm8 md4>
-          <v-card class="elevation-10">
-            <v-card-text>
-              <div class="title">
-                Welcome back!
-              </div>
-              <v-spacer></v-spacer>
-              <div class="subheading">The decentralized web awaits</div>
-              <v-spacer></v-spacer>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn color="#75b4fd" class="white--text ml-auto" @click="triggerLogin" id="googleAuthBtnf">Login</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-flex>
-      </v-layout>
-    </v-layout>
-    <v-layout v-else align-center justify-center>
-      <v-flex d-flex xs12 sm12 md12>
-        <div class="text-xs-center">
-          <v-progress-circular indeterminate color="#75b4fd"></v-progress-circular>
-        </div>
-      </v-flex>
-    </v-layout>
+      <template v-else>
+        <wallet-welcome />
+      </template>
+    </template>
+    <template v-else>
+      <page-loader />
+    </template>
   </v-container>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
-import copyToClipboard from 'copy-to-clipboard'
+import { mapState } from 'vuex'
+import PageLoader from '../components/PageLoader.vue'
+import ShowToolTip from '../components/ShowToolTip.vue'
+import WalletWelcome from '../components/WalletWelcome.vue'
 import { addressSlicer, significantDigits } from '../utils/utils'
 import torus from '../torus'
 
 export default {
   name: 'wallet',
+  components: { PageLoader, WalletWelcome, ShowToolTip },
   data: function() {
     return {
       selectedNetwork: '',
@@ -189,7 +170,6 @@ export default {
       tokenBalances: [],
       fetchedTokenBalances: false,
       search: '',
-      copied: false,
       gapiLoaded: false,
       headers: [
         {
@@ -219,16 +199,6 @@ export default {
     }
   }),
   methods: {
-    ...mapActions({
-      triggerLogin: 'triggerLogin'
-    }),
-    copyToClip: function() {
-      this.copied = true
-      copyToClipboard(this.selectedAddress)
-      setTimeout(() => {
-        this.copied = false
-      }, 3000)
-    },
     networkChanged: function() {
       this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
     },
