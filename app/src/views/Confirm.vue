@@ -204,12 +204,11 @@
 </template>
 
 <script>
-import BottomSheet from '../components/BottomSheet.vue'
-import ShowToolTip from '../components/ShowToolTip.vue'
 import { mapActions } from 'vuex'
-import copyToClipboard from 'copy-to-clipboard'
 import psl from 'psl'
 import BroadcastChannel from 'broadcast-channel'
+import BottomSheet from '../components/BottomSheet.vue'
+import ShowToolTip from '../components/ShowToolTip.vue'
 import torus from '../torus'
 import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress, extractHostname } from '../utils/utils'
 
@@ -295,13 +294,6 @@ export default {
     },
     openBottom() {
       this.open = true
-    },
-    copyToClip(address) {
-      this.copied = true
-      copyToClipboard(address)
-      setTimeout(() => {
-        this.copied = false
-      }, 2500)
     },
     triggerSign(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
