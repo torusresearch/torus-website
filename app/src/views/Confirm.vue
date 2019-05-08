@@ -1,7 +1,7 @@
 <template>
   <v-container grid-list-xs fill-height>
     <v-layout row wrap align-top>
-      <div v-if="type === 'message'">
+      <template v-if="type === 'message'">
         <v-card flat>
           <v-card-title class="headline text-bluish">Requesting Signature</v-card-title>
           <hr />
@@ -23,7 +23,7 @@
               </v-flex>
               <img src="images/signature.png" class="bcg bcg-top10 hidden-xs-and-down" />
             </v-layout>
-            <div class="hide-xs">
+            <template class="hide-xs">
               <v-layout row wrap>
                 <v-flex xs12 sm6>
                   <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
@@ -32,7 +32,7 @@
                   <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Approve</v-btn>
                 </v-flex>
               </v-layout>
-            </div>
+            </template>
             <img src="images/torus_logo.png" class="bcg-logo" />
           </v-card-text>
         </v-card>
@@ -48,8 +48,8 @@
             </v-layout>
           </v-card-text>
         </v-card>
-      </div>
-      <div v-else-if="type === 'transaction'">
+      </template>
+      <template v-else-if="type === 'transaction'">
         <v-card flat>
           <v-card-title class="headline text-bluish">{{ header }}</v-card-title>
           <hr />
@@ -83,8 +83,12 @@
                             {{ slicedAddress(sender) }}
                           </span>
                         </template>
-                        <span v-if="copied">Copied!</span>
-                        <span v-else>Copy to clipboard</span>
+                        <template v-if="copied">
+                          Copied!
+                        </template>
+                        <template v-else>
+                          Copy to clipboard
+                        </template>
                       </v-tooltip>
                     </div>
                     <div>
@@ -133,8 +137,12 @@
                             {{ slicedAddress(receiver) }}
                           </span>
                         </template>
-                        <span v-if="copied">Copied!</span>
-                        <span v-else>Copy to clipboard</span>
+                        <template v-if="copied">
+                          Copied!
+                        </template>
+                        <template v-else>
+                          Copy to clipboard
+                        </template>
                       </v-tooltip>
                     </div>
                   </v-flex>
@@ -143,7 +151,9 @@
             </v-layout>
             <v-layout row wrap fill-height>
               <v-flex text-xs-left mb-2 mt-2>
-                <div v-if="canShowError" class="red--text">Error: {{ errorMsg }}</div>
+                <template v-if="canShowError" class="red--text">
+                  Error: {{ errorMsg }}
+                </template>
               </v-flex>
             </v-layout>
             <div class="text-xs-center mb-5">
@@ -202,8 +212,12 @@
                           file_copy
                         </v-icon>
                       </template>
-                      <span v-if="copied">Copied!</span>
-                      <span v-else>Copy to clipboard</span>
+                      <template v-if="copied">
+                        Copied!
+                      </template>
+                      <template v-else>
+                        Copy to clipboard
+                      </template>
                     </v-tooltip>
                   </span>
                 </v-flex>
@@ -226,7 +240,7 @@
             <img src="images/torus_logo.png" class="bcg-logo" />
           </v-card-text>
         </v-card>
-      </div>
+      </template>
     </v-layout>
   </v-container>
 </template>
@@ -375,7 +389,7 @@ export default {
         }
         this.network = network
         var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
-        this.receiver = to // address pf receiver
+        this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
         this.dollarValue = significantDigits(parseFloat(finalValue) * this.$store.state.currencyRate)
         this.gasPrice = gweiGasPrice // gas price in gwei

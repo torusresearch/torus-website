@@ -333,19 +333,19 @@ function handleLogin(email, payload) {
   })
 }
 
-function getTransactionParams() {
-  const { torusController } = torus
-  const state = torusController.getState()
-  console.log(torusController.getState(), 'torus state')
-  const transactions = []
-  for (let id in state.transactions) {
-    if (state.transactions[id].status === 'unapproved') {
-      transactions.push(state.transactions[id])
-    }
-  }
-  const { txParams, simulationFails } = transactions[0] || {}
-  return { txParams, simulationFails }
-}
+// function getTransactionParams() {
+//   const { torusController } = torus
+//   const state = torusController.getState()
+//   console.log(torusController.getState(), 'torus state')
+//   const transactions = []
+//   for (let id in state.transactions) {
+//     if (state.transactions[id].status === 'unapproved') {
+//       transactions.push(state.transactions[id])
+//     }
+//   }
+//   const { txParams, simulationFails } = transactions[0] || {}
+//   return { txParams, simulationFails }
+// }
 
 function getLatestMessageParams() {
   const { torusController } = torus
