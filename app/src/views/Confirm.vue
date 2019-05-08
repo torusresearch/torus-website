@@ -23,7 +23,7 @@
               </v-flex>
               <img src="images/signature.png" class="bcg bcg-top10 hidden-xs-and-down" />
             </v-layout>
-            <template class="hide-xs">
+            <div class="hide-xs">
               <v-layout row wrap>
                 <v-flex xs12 sm6>
                   <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
@@ -32,17 +32,17 @@
                   <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Approve</v-btn>
                 </v-flex>
               </v-layout>
-            </template>
+            </div>
             <img src="images/torus_logo.png" class="bcg-logo" />
           </v-card-text>
         </v-card>
         <v-card class="higherZ hidden-sm-and-up" flat>
           <v-card-text>
-            <v-layout row wrap>
-              <v-flex xs5>
+            <v-layout row wrap align-center>
+              <v-flex xs6 align-self-center>
                 <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
-              <v-flex xs5>
+              <v-flex xs6 align-self-center>
                 <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Approve</v-btn>
               </v-flex>
             </v-layout>
@@ -185,11 +185,11 @@
         </v-card>
         <v-card class="higherZ" flat>
           <v-card-text>
-            <v-layout row wrap>
-              <v-flex xs5>
+            <v-layout row wrap align-center>
+              <v-flex xs6>
                 <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
-              <v-flex xs5>
+              <v-flex xs6>
                 <v-btn large light :disabled="!canApprove" :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">
                   Approve
                 </v-btn>
