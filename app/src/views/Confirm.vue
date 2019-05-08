@@ -71,25 +71,9 @@
                     <div class="text-grayish font-weight-bold text-uppercase">Your Wallet</div>
                     <div>
                       Address:
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on }">
-                          <span
-                            class="selected-account font-weight-medium"
-                            :color="$vuetify.theme.torus_accept"
-                            size="18"
-                            v-on="on"
-                            @click="copyToClip(sender)"
-                          >
-                            {{ slicedAddress(sender) }}
-                          </span>
-                        </template>
-                        <template v-if="copied">
-                          Copied!
-                        </template>
-                        <template v-else>
-                          Copy to clipboard
-                        </template>
-                      </v-tooltip>
+                      <ShowToolTip :address="sender">
+                        {{ slicedAddress(sender) }}
+                      </ShowToolTip>
                     </div>
                     <div>
                       Balance: <span class="text-bluish font-weight-medium">{{ computedBalance }} ETH</span>
@@ -125,25 +109,9 @@
                     <div class="text-grayish font-weight-bold text-uppercase">Payee's Wallet</div>
                     <div>
                       Address:
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on }">
-                          <span
-                            class="selected-account font-weight-medium"
-                            :color="$vuetify.theme.torus_accept"
-                            size="18"
-                            v-on="on"
-                            @click="copyToClip(receiver)"
-                          >
-                            {{ slicedAddress(receiver) }}
-                          </span>
-                        </template>
-                        <template v-if="copied">
-                          Copied!
-                        </template>
-                        <template v-else>
-                          Copy to clipboard
-                        </template>
-                      </v-tooltip>
+                      <ShowToolTip :address="receiver">
+                        {{ slicedAddress(receiver) }}
+                      </ShowToolTip>
                     </div>
                   </v-flex>
                 </v-layout>
@@ -206,19 +174,9 @@
                   <span class="text-grayish font-weight-bold">Raw Data: </span>
                   <span class="text-bluish font-weight-medium">
                     {{ slicedAddress(txData) }}
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on }">
-                        <v-icon class="selected-account" :color="$vuetify.theme.torus_accept" size="18" v-on="on" @click="copyToClip(txData)">
-                          file_copy
-                        </v-icon>
-                      </template>
-                      <template v-if="copied">
-                        Copied!
-                      </template>
-                      <template v-else>
-                        Copy to clipboard
-                      </template>
-                    </v-tooltip>
+                    <ShowToolTip :address="txData">
+                      <v-icon :color="$vuetify.theme.torus_accept" size="18">file_copy</v-icon>
+                    </ShowToolTip>
                   </span>
                 </v-flex>
               </v-layout>
@@ -247,6 +205,7 @@
 
 <script>
 import BottomSheet from '../components/BottomSheet.vue'
+import ShowToolTip from '../components/ShowToolTip.vue'
 import { mapActions } from 'vuex'
 import copyToClipboard from 'copy-to-clipboard'
 import psl from 'psl'
@@ -259,7 +218,8 @@ const weiInGwei = 10 ** 9
 export default {
   name: 'confirm',
   components: {
-    BottomSheet
+    BottomSheet,
+    ShowToolTip
   },
   data() {
     return {
