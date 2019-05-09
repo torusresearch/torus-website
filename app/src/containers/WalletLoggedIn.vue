@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-layout row wrap justify-center align-space-between fill-height>
     <v-tabs fixed-tabs v-model="selectedItem" grow>
       <header-item
         v-for="headerItem in headerItems"
@@ -25,7 +25,7 @@
         </v-tab-item>
       </v-tabs-items>
     </v-tabs>
-  </div>
+  </v-layout>
 </template>
 
 <script>

@@ -12,7 +12,7 @@ Vue.use(Vuetify, {
     torus_reject: '#959595',
     torus_reject_mild: '#959595',
     torus_active: '#7d7c7e',
-    torus_svg_bcg: '#6c6c6c',
+    torus_svg_bcg: '#3996ff',
     torus_blue: '#3a70d1'
   },
   options: {

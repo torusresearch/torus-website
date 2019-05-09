@@ -39,10 +39,10 @@
         <v-card class="higherZ hidden-sm-and-up" flat>
           <v-card-text>
             <v-layout row wrap align-center>
-              <v-flex xs6 align-self-center>
+              <v-flex xs6 sm4>
                 <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
-              <v-flex xs6 align-self-center>
+              <v-flex xs6 sm4>
                 <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Approve</v-btn>
               </v-flex>
             </v-layout>
@@ -102,7 +102,7 @@
                 <v-layout row wrap>
                   <v-flex xs6 sm12>
                     <div class="divWrapSvgStyle">
-                      <img src="images/user.svg" alt="User" class="svg-setting-medium" />
+                      <img :src="imageType" alt="User" class="svg-setting-medium" />
                     </div>
                   </v-flex>
                   <v-flex xs6 sm12>
@@ -186,11 +186,17 @@
         <v-card class="higherZ" flat>
           <v-card-text>
             <v-layout row wrap align-center>
-              <v-flex xs6>
-                <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
+              <v-flex xs6 sm4>
+                <v-btn light class="large-btn" :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
-              <v-flex xs6>
-                <v-btn large light :disabled="!canApprove" :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">
+              <v-flex xs6 sm4>
+                <v-btn
+                  light
+                  :disabled="!canApprove"
+                  :color="$vuetify.theme.torus_accept"
+                  class="white--text rounded-btn large-btn"
+                  @click="triggerSign"
+                >
                   Approve
                 </v-btn>
               </v-flex>
@@ -204,7 +210,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from 'vuex' // Maybe dispatch a bc to show popup from that instance
 import psl from 'psl'
 import BroadcastChannel from 'broadcast-channel'
 import BottomSheet from '../components/BottomSheet.vue'
@@ -263,6 +269,9 @@ export default {
     },
     header() {
       return this.isDeployContract ? 'Contract Deployment' : this.isContractInteraction ? 'Contract Interaction' : 'Transaction Request'
+    },
+    imageType() {
+      return this.isDeployContract || this.isContractInteraction ? 'images/file-signature.svg' : 'images/user.svg'
     }
   },
   watch: {
@@ -408,7 +417,6 @@ export default {
 
 .svg-bcg-color {
   background-color: var(--v-torus_svg_bcg-base);
-  opacity: 0.5;
 }
 
 @mixin svg-size($args...) {
@@ -437,7 +445,20 @@ export default {
   display: inline-flex;
   @extend %justify-align;
   border-radius: 50%;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.16);
   @extend .svg-setting-large;
+}
+
+.large-btn {
+  width: 141px;
+  height: 42px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  @extend .round-btn;
+  background-color: #ffffff;
+}
+
+.round-btn {
+  border-radius: 45px;
 }
 
 .higherZ {
@@ -479,10 +500,6 @@ hr {
   border-top: 1px solid #ccc;
   margin: 0% 35% 0% 15px;
   padding: 0;
-}
-
-.rounded-btn {
-  border-radius: 8px !important;
 }
 
 .knob-control__text-display {
