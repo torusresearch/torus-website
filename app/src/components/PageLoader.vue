@@ -1,6 +1,6 @@
 <template>
-  <v-layout align-center justify-center>
-    <v-flex d-flex xs12 sm12 md12>
+  <v-layout row wrap align-center justify-center>
+    <v-flex d-flex xs12>
       <div class="text-xs-center">
         <v-progress-circular indeterminate :color="$vuetify.theme.torus_blue"></v-progress-circular>
       </div>

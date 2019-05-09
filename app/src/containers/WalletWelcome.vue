@@ -1,9 +1,15 @@
 <template>
-  <v-layout align-center justify-center>
-    <v-flex xs8 sm6 md4 align-self-center>
+  <v-layout row align-center justify-center align-content-center>
+    <v-flex d-flex xs12>
       <img src="images/torus-logo-white.svg" alt="logo" />
-      <div class="headline text-capitalize  ml-2 mt-4 mb-5 white--text">The decentralized web awaits</div>
-      <v-btn class="white--text btnStyle d-flex text-xs-center" outline large @click="triggerLogin">Login</v-btn>
+    </v-flex>
+    <v-flex xs12 mt-3>
+      <div class="text-xs-center headline text-capitalize white--text">The decentralized web awaits</div>
+    </v-flex>
+    <v-flex xs12 mt-5>
+      <div class="text-xs-center ">
+        <v-btn class="white--text btnStyle" outline large @click="triggerLogin">Login</v-btn>
+      </div>
     </v-flex>
   </v-layout>
 </template>
@@ -26,6 +32,5 @@ export default {
   width: 172px;
   height: 48px;
   border-radius: 12px;
-  margin: 0 auto;
 }
 </style>
