@@ -1,19 +1,9 @@
 <template>
   <v-layout align-center justify-center>
-    <v-flex xs8 sm6 md4>
-      <v-card class="elevation-10">
-        <v-card-text>
-          <div class="title">
-            Welcome back!
-          </div>
-          <v-spacer></v-spacer>
-          <div class="subheading">The decentralized web awaits</div>
-          <v-spacer></v-spacer>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn :color="$vuetify.theme.torus_blue" class="white--text ml-auto" @click="triggerLogin">Login</v-btn>
-        </v-card-actions>
-      </v-card>
+    <v-flex xs8 sm6 md4 align-self-center>
+      <img src="images/torus-logo-white.svg" alt="logo" />
+      <div class="headline text-capitalize  ml-2 mt-4 mb-5 white--text">The decentralized web awaits</div>
+      <v-btn class="white--text btnStyle d-flex text-xs-center" outline large @click="triggerLogin">Login</v-btn>
     </v-flex>
   </v-layout>
 </template>
@@ -30,3 +20,12 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.btnStyle {
+  width: 172px;
+  height: 48px;
+  border-radius: 12px;
+  margin: 0 auto;
+}
+</style>
