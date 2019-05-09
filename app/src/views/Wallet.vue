@@ -160,8 +160,8 @@
 import { mapState } from 'vuex'
 import PageLoader from '../components/PageLoader.vue'
 import ShowToolTip from '../components/ShowToolTip.vue'
-import WalletWelcome from '../components/WalletWelcome.vue'
-import WalletLoggedIn from '../components/WalletLoggedIn.vue'
+import WalletWelcome from '../containers/WalletWelcome.vue'
+import WalletLoggedIn from '../containers/WalletLoggedIn.vue'
 import { addressSlicer, significantDigits } from '../utils/utils'
 import torus from '../torus'
 

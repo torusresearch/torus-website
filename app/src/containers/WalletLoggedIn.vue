@@ -12,16 +12,16 @@
       </header-item>
       <v-tabs-items v-model="selectedItem" vertical>
         <v-tab-item value="home" lazy>
-          Hello world
+          <wallet-home />
         </v-tab-item>
         <v-tab-item value="history" lazy>
-          Hello world 2
+          <wallet-history />
         </v-tab-item>
         <v-tab-item value="settings" lazy>
-          Hello world 3
+          <wallet-settings />
         </v-tab-item>
         <v-tab-item value="accounts" lazy>
-          Hello world 4
+          <wallet-accounts />
         </v-tab-item>
       </v-tabs-items>
     </v-tabs>
@@ -29,10 +29,15 @@
 </template>
 
 <script>
-import HeaderItem from './HeaderItem.vue'
+import HeaderItem from '../components/HeaderItem.vue'
+
 export default {
   components: {
-    HeaderItem
+    HeaderItem,
+    WalletHome: () => import('./WalletHome.vue'),
+    WalletHistory: () => import('./WalletHistory.vue'),
+    WalletSettings: () => import('./WalletSettings.vue'),
+    WalletAccounts: () => import('./WalletAccounts.vue')
   },
   data() {
     return {
