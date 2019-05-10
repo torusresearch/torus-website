@@ -19,8 +19,9 @@
           <div>Total Portfolio Value</div>
           <div>
             <span>
+              <span class="text-bluish headline spanWrapSvgStyle"> {{ tokenBalances.totalPortfolioValue }} </span>
               <v-select
-                class="select-width d-inline-flex"
+                class="select-width d-inline-flex ml-2 spanWrapSvgStyle"
                 height="23"
                 :items="supportedCurrencies"
                 v-model="selectedCurrency"
@@ -28,11 +29,10 @@
                 @change="onCurrencyChange"
               ></v-select>
             </span>
-            <span class="text-bluish headline ml-2"> {{ totalPortfolioValue }} </span>
           </div>
         </v-flex>
         <v-flex xs12>
-          <token-balances-table :headers="headers" :tokenBalances="tokenBalances" />
+          <token-balances-table :headers="headers" :tokenBalances="tokenBalances.finalBalancesArray" />
         </v-flex>
       </v-layout>
     </v-container>
@@ -61,17 +61,20 @@ export default {
       if (Object.keys(tokenData).length > 0) {
         full = [...full, ...tokenData]
       }
-      return full.map(x => {
+      let totalPortfolioValue = 0
+      const finalBalancesArray = full.map(x => {
         const computedBalance = parseFloat(web3Utils.hexToNumberString(x.balance)) / 10 ** parseFloat(x.decimals) || 0
         let tokenRateMultiplier = 1
         if (x.tokenAddress !== '0x') tokenRateMultiplier = tokenRates[x.tokenAddress.toLowerCase()] || 0
         const currencyBalance = computedBalance * currencyMultiplier * tokenRateMultiplier
+        totalPortfolioValue += currencyBalance
         return {
           ...x,
           formattedBalance: `${x.symbol} ${significantDigits(computedBalance || 0)}`,
           currencyBalance: `${this.selectedCurrency} ${significantDigits(currencyBalance || 0)}`
         }
       })
+      return { finalBalancesArray, totalPortfolioValue: `${significantDigits(totalPortfolioValue) || 0}` }
     }
   },
   data() {
