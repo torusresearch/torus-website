@@ -277,10 +277,10 @@ export default {
   watch: {
     gasPrice: function(newGasPrice, oldGasPrice) {
       const gasCost = newGasPrice * this.gasEstimate * 10 ** -9
-      this.txFees = gasCost * this.$store.state.currencyRate
+      this.txFees = gasCost * this.$store.state.currencyData['usd']
       const ethCost = parseFloat(this.value) + gasCost
       this.totalEthCost = significantDigits(ethCost.toFixed(5), false, 3) || 0
-      this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate || 0)
+      this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData['usd'] || 0)
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
         this.canApprove = false
@@ -351,7 +351,7 @@ export default {
         var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
         this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
-        this.dollarValue = significantDigits(parseFloat(finalValue) * this.$store.state.currencyRate)
+        this.dollarValue = significantDigits(parseFloat(finalValue) * this.$store.state.currencyData['usd'])
         this.gasPrice = gweiGasPrice // gas price in gwei
         this.gasKnob = calculateGasKnob(gweiGasPrice)
         this.balance = balance // in eth
@@ -359,10 +359,10 @@ export default {
         this.txData = data // data hex
         this.sender = sender // address of sender
         const gasCost = gweiGasPrice * this.gasEstimate * 10 ** -9
-        this.txFees = gasCost * this.$store.state.currencyRate
+        this.txFees = gasCost * this.$store.state.currencyData['usd']
         const ethCost = parseFloat(finalValue) + gasCost
         this.totalEthCost = significantDigits(ethCost.toFixed(5), false, 3) || 0
-        this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate || 0)
+        this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData['usd'] || 0)
         if (reason) this.errorMsg = reason
         if (!to) this.isDeployContract = true
         else this.isContractInteraction = await isSmartContractAddress(to, torus.web3)

@@ -5,5 +5,6 @@ export default {
     'https://vgr.torusnode.com/jrpc',
     'https://torus.torusnode.com/jrpc',
     'https://etc.torusnode.com/jrpc'
-  ]
+  ],
+  supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH']
 }

@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap justify-center fill-height>
     <v-flex d-flex xs12>
-      <v-tabs fixed-tabs v-model="selectedItem" grow>
+      <v-tabs fixed-tabs v-model="selectedItem" grow :color="$vuetify.theme.torus_bcg">
         <header-item
           v-for="headerItem in headerItems"
           :key="headerItem.name"
@@ -11,9 +11,9 @@
         >
           {{ headerItem.display }}
         </header-item>
-        <v-tabs-items v-model="selectedItem" vertical>
-          <v-tab-item value="home" lazy>
-            <wallet-home />
+        <v-tabs-items v-model="selectedItem" vertical class="fill-height">
+          <v-tab-item value="home" class="fill-height" lazy>
+            <wallet-home class="fill-height" />
           </v-tab-item>
           <v-tab-item value="history" lazy>
             <wallet-history />
@@ -55,4 +55,11 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+body {
+  background-color: #f7f7f7;
+}
+.v-window__container {
+  height: 100% !important;
+}
+</style>

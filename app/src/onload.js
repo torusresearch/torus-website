@@ -35,7 +35,7 @@ function onloadTorus(torus) {
       return { selectedAddress, wallet }
     },
     rehydrate: function() {
-      let { selectedAddress, wallet, networkType, currencyRate } = store.state
+      let { selectedAddress, wallet, networkType } = store.state
       if (networkType) {
         store.dispatch('setProviderType', { network: networkType })
       }
@@ -60,8 +60,6 @@ function onloadTorus(torus) {
               store.dispatch('updateTransactions', { transactions })
             }
           })
-
-          store.dispatch('updateCurrencyRate', { conversionRate: currencyRate })
 
           torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
             if (tokens.length > 0) {

@@ -20,7 +20,7 @@ const vuexPersist = new VuexPersistence({
       // weiBalance: state.weiBalance,
       selectedAddress: state.selectedAddress,
       networkId: state.networkId,
-      currencyRate: state.currencyRate,
+      currencyData: state.currencyData,
       // tokenData: state.tokenData,
       tokenRates: state.tokenRates
     }
@@ -37,7 +37,7 @@ const initialState = {
   selectedAddress: '',
   networkId: 0,
   networkType: localStorage.getItem('torus_network_type') || 'mainnet',
-  currencyRate: 0,
+  currencyData: {},
   tokenData: {},
   tokenRates: {},
   transactions: []
@@ -87,11 +87,11 @@ var VuexStore = new Vuex.Store({
     setNetworkType(state, networkType) {
       state.networkType = networkType
     },
-    setCurrencyRate(state, currencyRate) {
-      state.currencyRate = currencyRate
-    },
     setTransactions(state, transactions) {
       state.transactions = transactions
+    },
+    setCurrencyData(state, data) {
+      state.currencyData = { ...state.currencyData, [data.currentCurrency]: data.conversionRate }
     },
     resetStore(state, requiredState) {
       Object.keys(state).forEach(key => {
@@ -103,6 +103,12 @@ var VuexStore = new Vuex.Store({
     resetStore(context, payload) {
       context.commit('resetStore', initialState)
       window.sessionStorage.clear()
+    },
+    setSelectedCurrency({ commit }, payload) {
+      torus.torusController.setCurrentCurrency(payload, function(err, data) {
+        if (err) console.error('currency fetch failed')
+        commit('setCurrencyData', data)
+      })
     },
     forceFetchTokens({ commit, state }, payload) {
       fetch(`https://api.tor.us/tokenbalances?address=${state.selectedAddress}`)
@@ -219,9 +225,6 @@ var VuexStore = new Vuex.Store({
     updateTokenRates({ commit }, payload) {
       commit('setTokenRates', payload.tokenRates)
     },
-    updateCurrencyRate(context, payload) {
-      context.commit('setCurrencyRate', payload.conversionRate)
-    },
     updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
       torus.updateStaticData({ selectedAddress: payload.selectedAddress })
@@ -296,8 +299,7 @@ function handleLogin(email, payload) {
           }
         })
 
-        const conversionRate = torus.torusController.currencyController.getConversionRate()
-        VuexStore.dispatch('updateCurrencyRate', { conversionRate })
+        VuexStore.dispatch('setSelectedCurrency', 'usd')
 
         torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
           if (tokens.length > 0) {

@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'background-login': !loggedIn }">
+  <div :class="[{ 'background-login': !loggedIn }, 'default']">
     <v-container fill-height align-content-center>
       <template v-if="gapiLoaded">
         <template v-if="loggedIn">
@@ -19,7 +19,6 @@
 <script>
 import { mapState } from 'vuex'
 import PageLoader from '../components/PageLoader.vue'
-import ShowToolTip from '../components/ShowToolTip.vue'
 import WalletWelcome from '../containers/WalletWelcome.vue'
 import WalletLoggedIn from '../containers/WalletLoggedIn.vue'
 import { addressSlicer, significantDigits } from '../utils/utils'
@@ -27,7 +26,7 @@ import torus from '../torus'
 
 export default {
   name: 'wallet',
-  components: { PageLoader, WalletWelcome, ShowToolTip, WalletLoggedIn },
+  components: { PageLoader, WalletWelcome, WalletLoggedIn },
   data: function() {
     return {
       selectedNetwork: '',
@@ -163,6 +162,10 @@ export default {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
+  @extend .default;
+}
+
+.default {
   height: 100%;
 }
 

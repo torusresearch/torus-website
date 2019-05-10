@@ -734,12 +734,12 @@ export default class TorusController extends EventEmitter {
    * @param {string} currencyCode - The code of the preferred currency.
    * @param {Function} cb - A callback function returning currency info.
    */
-  setCurrentCurrency(currencyCode, cb) {
+  async setCurrentCurrency(currencyCode, cb) {
     const { ticker } = this.networkController.getNetworkConfig()
     try {
       this.currencyController.setNativeCurrency(ticker)
       this.currencyController.setCurrentCurrency(currencyCode)
-      this.currencyController.updateConversionRate()
+      await this.currencyController.updateConversionRate()
       const data = {
         nativeCurrency: ticker || 'ETH',
         conversionRate: this.currencyController.getConversionRate(),
