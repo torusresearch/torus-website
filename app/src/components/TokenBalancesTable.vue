@@ -19,8 +19,18 @@
           {{ props.item.logo }}
           {{ props.item.name }}
         </td>
-        <td class="text-xs-left">{{ props.item.formattedBalance }}</td>
-        <td class="text-xs-left">{{ props.item.currencyBalance }}</td>
+        <td class="text-xs-left text-bluish">{{ props.item.formattedBalance }}</td>
+        <td class="text-xs-left">
+          <span>{{ props.item.currencyBalance }}</span>
+          <span class="ml-2">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-icon :color="$vuetify.theme.torus_icon" size="15" v-on="on">help</v-icon>
+              </template>
+              <span>{{ props.item.currencyRateText }}</span>
+            </v-tooltip>
+          </span>
+        </td>
       </tr>
     </template>
     <v-alert v-slot:no-results :value="true" color="error" icon="warning"> Your search for "{{ search }}" found no results. </v-alert>
@@ -53,5 +63,9 @@ export default {
 <style lang="scss" scoped>
 .background-grey {
   background: var(--v-torus_bcg-base);
+}
+
+.text-bluish {
+  color: var(--v-torus_blue-base);
 }
 </style>

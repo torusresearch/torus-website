@@ -14,7 +14,8 @@ Vue.use(Vuetify, {
     torus_active: '#7d7c7e',
     torus_svg_bcg: '#3996ff',
     torus_blue: '#3996ff',
-    torus_bcg: '#f7f7f7'
+    torus_bcg: '#f7f7f7',
+    torus_icon: '#CCCACA'
   },
   options: {
     customProperties: true

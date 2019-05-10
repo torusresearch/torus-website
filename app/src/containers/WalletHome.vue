@@ -66,12 +66,15 @@ export default {
         const computedBalance = parseFloat(web3Utils.hexToNumberString(x.balance)) / 10 ** parseFloat(x.decimals) || 0
         let tokenRateMultiplier = 1
         if (x.tokenAddress !== '0x') tokenRateMultiplier = tokenRates[x.tokenAddress.toLowerCase()] || 0
-        const currencyBalance = computedBalance * currencyMultiplier * tokenRateMultiplier
+        const currencyRate = currencyMultiplier * tokenRateMultiplier
+        const currencyBalance = computedBalance * currencyRate
         totalPortfolioValue += currencyBalance
         return {
           ...x,
+          id: x.symbol,
           formattedBalance: `${x.symbol} ${significantDigits(computedBalance || 0)}`,
-          currencyBalance: `${this.selectedCurrency} ${significantDigits(currencyBalance || 0)}`
+          currencyBalance: `${this.selectedCurrency} ${significantDigits(currencyBalance || 0)}`,
+          currencyRateText: `1 ${x.symbol} = ${significantDigits(currencyRate || 0)} ${this.selectedCurrency}`
         }
       })
       return { finalBalancesArray, totalPortfolioValue: `${significantDigits(totalPortfolioValue) || 0}` }
