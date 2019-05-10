@@ -16,7 +16,7 @@
     <template v-slot:items="props">
       <tr :active="props.selected" @click="props.selected = !props.selected">
         <td>
-          {{ props.item.logo }}
+          <v-img :src="`images/logos/${props.item.logo}`" class="inline-small" onerror="if (this.src != 'eth.svg') this.src = 'eth.svg';"></v-img>
           {{ props.item.name }}
         </td>
         <td class="text-xs-left text-bluish">{{ props.item.formattedBalance }}</td>
@@ -67,5 +67,12 @@ export default {
 
 .text-bluish {
   color: var(--v-torus_blue-base);
+}
+
+.inline-small {
+  width: 25px;
+  height: 25px;
+  display: inline-block;
+  vertical-align: middle;
 }
 </style>
