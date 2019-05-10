@@ -7,7 +7,7 @@
       <div class="text-xs-center headline text-capitalize white--text">The decentralized web awaits</div>
     </v-flex>
     <v-flex xs12 mt-5>
-      <div class="text-xs-center ">
+      <div class="text-xs-center">
         <v-btn class="white--text btnStyle" outline large @click="triggerLogin">Login</v-btn>
       </div>
     </v-flex>

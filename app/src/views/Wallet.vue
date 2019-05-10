@@ -1,6 +1,6 @@
 <template>
   <div :class="{ 'background-login': !loggedIn }">
-    <v-container fill-height grid-list-sm align-content-center>
+    <v-container fill-height align-content-center>
       <template v-if="gapiLoaded">
         <template v-if="loggedIn">
           <wallet-logged-in />
