@@ -18,10 +18,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.temp {
-  padding: 0px;
-  margin: 0px;
-}
-</style>
