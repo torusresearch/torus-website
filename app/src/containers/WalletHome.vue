@@ -2,7 +2,7 @@
   <v-card flat :color="$vuetify.theme.torus_bcg">
     <v-container fill-height>
       <v-layout row wrap align-center justify-center align-content-center>
-        <v-flex xs12 sm4>
+        <v-flex xs12 sm5>
           <span>
             <span class="spanWrapSvgStyle">
               <img src="images/wallet-blue.svg" alt="Wallet" class="svg-setting-small" />
@@ -15,7 +15,7 @@
             </span>
           </span>
         </v-flex>
-        <v-flex xs12 sm2 offset-sm6>
+        <v-flex xs12 sm5 class="text-sm-right">
           <div>Total Portfolio Value</div>
           <div>
             <span>
@@ -42,7 +42,7 @@
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
 import config from '../config'
-import TokenBalancesTable from '../components/TokenBalancesTable'
+import TokenBalancesTable from '../components/TokenBalancesTable.vue'
 import torus from '../torus'
 import { significantDigits } from '../utils/utils'
 
@@ -88,11 +88,11 @@ export default {
       headers: [
         {
           text: 'Coin',
-          align: 'center',
-          value: 'coin'
+          align: 'left',
+          value: 'name'
         },
-        { text: 'Balance', value: 'balance', align: 'left' },
-        { text: 'Value', value: 'value', align: 'left' }
+        { text: 'Balance', value: 'formattedBalance', align: 'center' },
+        { text: 'Value', value: 'currencyBalance', align: 'right' }
       ]
     }
   },
