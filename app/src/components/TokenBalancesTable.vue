@@ -4,7 +4,15 @@
       <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
     </v-flex>
     <v-flex xs12 sm10 offset-sm1>
-      <v-data-table :headers="headers" :items="tokenBalances" :pagination.sync="pagination" :hide-actions="!showFooter" :search="search">
+      <v-data-table
+        :headers="headers"
+        :items="tokenBalances"
+        item-key="id"
+        :pagination.sync="pagination"
+        :hide-actions="!showFooter"
+        :search="search"
+        v-model="selected"
+      >
         <template v-slot:headers="props">
           <tr>
             <th
@@ -12,6 +20,7 @@
               :key="header.text"
               :class="[
                 'column sortable',
+                'background-grey',
                 pagination.descending ? 'desc' : 'asc',
                 header.value === pagination.sortBy ? 'active' : '',
                 header.align !== '' ? `text-xs-${header.align}` : ''
@@ -24,7 +33,8 @@
           </tr>
         </template>
         <template v-slot:items="props">
-          <tr @click="props.expanded = !props.expanded">
+          <!-- "props.expanded = !props.expanded" -->
+          <tr @click="select(props.item)" :active="props.selected" :class="{ activeRow: props.selected }">
             <td class="text-xs-left">
               <v-layout row wrap>
                 <v-flex xs2>
@@ -72,6 +82,17 @@
         </template>
       </v-data-table>
     </v-flex>
+    <v-flex xs12>
+      <v-layout row wrap>
+        <v-flex offset-xs1 class="text-xs-left">
+          <v-btn class="btnStyle" outline large @click="initiateTransfer">Transfer</v-btn>
+          <v-btn class="btnStyle" outline large @click="initiateTransfer">Top-up</v-btn>
+        </v-flex>
+        <v-flex xs2 align-self-center class="hidden-xs-only">
+          <img src="images/torus_logo.png" class="text-xs-right" />
+        </v-flex>
+      </v-layout>
+    </v-flex>
   </v-layout>
 </template>
 
@@ -83,7 +104,8 @@ export default {
       pagination: {
         sortBy: 'name'
       },
-      search: ''
+      search: '',
+      selected: []
     }
   },
   computed: {
@@ -92,6 +114,15 @@ export default {
     }
   },
   methods: {
+    select(selectedItem) {
+      // this is so that we don't break their api
+      this.selected = []
+      this.tokenBalances.forEach(item => {
+        if (item.id === selectedItem.id) {
+          this.selected.push(item)
+        }
+      })
+    },
     changeSort(column) {
       if (this.pagination.sortBy === column) {
         this.pagination.descending = !this.pagination.descending
@@ -108,6 +139,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@media (max-width: 598px) {
+  .bcg-logo {
+    display: none;
+  }
+}
 .background-grey {
   background: var(--v-torus_bcg-base);
 }
@@ -124,6 +160,8 @@ export default {
 }
 
 .btnStyle {
+  width: 141px;
+  height: 41px;
   border: #fff;
   border-radius: 45px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
@@ -136,11 +174,18 @@ export default {
   background: var(--v-torus_bcg-base) !important;
 }
 
+/deep/.activeRow {
+  background: #bdbdbd !important;
+}
+
+/deep/tr {
+  background: white;
+}
+
 /deep/td {
   border: solid 0px #fff;
   border-style: solid none;
   padding: 10px;
-  background: #ffffff;
   cursor: pointer;
 }
 
