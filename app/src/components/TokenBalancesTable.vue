@@ -1,6 +1,6 @@
 <template>
   <v-layout row wrap>
-    <v-flex d-flex offset-xs8 xs4 sm4 offset-sm7 align-self-end v-if="!showFooter">
+    <v-flex d-flex offset-xs8 xs4 sm4 offset-sm7 align-self-end v-if="showFooter">
       <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
     </v-flex>
     <v-flex xs12 sm10 offset-sm1>
