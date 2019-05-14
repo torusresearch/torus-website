@@ -38,11 +38,11 @@
             <td class="text-xs-left">
               <v-layout row wrap>
                 <v-flex xs2>
-                  <v-img
-                    :src="`images/logos/${props.item.logo}`"
+                  <img
+                    :src="require(`../../public/images/logos/${props.item.logo}`)"
                     class="inline-small"
-                    onerror="if (this.src != 'eth.svg') this.src = 'eth.svg';"
-                  ></v-img>
+                    onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                  />
                 </v-flex>
                 <v-flex xs10>
                   {{ props.item.name }}
@@ -89,7 +89,7 @@
           <v-btn class="btnStyle" outline large @click="initiateTransfer">Top-up</v-btn>
         </v-flex>
         <v-flex xs2 align-self-center class="hidden-xs-only">
-          <img src="images/torus_logo.png" class="text-xs-right" />
+          <img :src="require('../../public/images/torus_logo.png')" class="text-xs-right" />
         </v-flex>
       </v-layout>
     </v-flex>

@@ -1,172 +1,72 @@
 <template>
-  <div :class="[{ 'background-login': !loggedIn }, 'default']">
-    <v-container fill-height align-content-center>
-      <template v-if="gapiLoaded">
-        <template v-if="loggedIn">
-          <wallet-logged-in />
-        </template>
-        <template v-else>
-          <wallet-welcome />
-        </template>
-      </template>
-      <template v-else>
-        <page-loader />
-      </template>
-    </v-container>
-  </div>
+  <v-container fill-height align-content-center>
+    <v-layout row wrap justify-center fill-height>
+      <v-flex d-flex xs12>
+        <v-tabs fixed-tabs v-model="selectedItem" grow :color="$vuetify.theme.torus_bcg">
+          <header-item
+            v-for="headerItem in headerItems"
+            :key="headerItem.name"
+            :isSelected="selectedItem === headerItem.name"
+            :href="`#${headerItem.name}`"
+            :icon="headerItem.icon"
+            :to="`/wallet/${headerItem.name}`"
+          >
+            {{ headerItem.display }}
+          </header-item>
+        </v-tabs>
+      </v-flex>
+      <v-flex xs12>
+        <router-view></router-view>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import PageLoader from '../components/PageLoader.vue'
-import WalletWelcome from '../containers/WalletWelcome.vue'
-import WalletLoggedIn from '../containers/WalletLoggedIn.vue'
-import { addressSlicer, significantDigits } from '../utils/utils'
-import torus from '../torus'
+import HeaderItem from '../components/HeaderItem.vue'
 
+// <v-tabs-items v-model="selectedItem" vertical class="fill-height">
+//   <v-tab-item value="home" class="fill-height" lazy to="/wallet/home">
+//     <!-- <wallet-home class="fill-height" /> -->
+//   </v-tab-item>
+//   <v-tab-item value="history" lazy to="/wallet/history">
+//     <!-- <wallet-history /> -->
+//   </v-tab-item>
+//   <v-tab-item value="settings" lazy to="/wallet/settings">
+//     <!-- <wallet-settings /> -->
+//   </v-tab-item>
+//   <v-tab-item value="accounts" lazy to="/wallet/accounts">
+//     <!-- <wallet-accounts /> -->
+//   </v-tab-item>
+// </v-tabs-items>
 export default {
-  name: 'wallet',
-  components: { PageLoader, WalletWelcome, WalletLoggedIn },
-  data: function() {
+  components: {
+    HeaderItem
+    // WalletHome: () => import('../containers/WalletHome.vue'),
+    // WalletHistory: () => import('../containers/WalletHistory.vue'),
+    // WalletSettings: () => import('../containers/WalletSettings.vue'),
+    // WalletAccounts: () => import('../containers/WalletAccounts.vue')
+  },
+  data() {
     return {
-      selectedNetwork: '',
-      networks: ['mainnet', 'rinkeby', 'ropsten', 'kovan'],
-      toAddress: '',
-      widget: {},
-      tokenToAddress: '',
-      amount: '',
-      tokenAmount: '',
-      valid: true,
-      sendEthExpand: false,
-      // depositEthExpand: false,
-      tokenFormValid: true,
-      tokenBalances: [],
-      fetchedTokenBalances: false,
-      search: '',
-      gapiLoaded: false,
-      headers: [
-        {
-          text: 'Symbol',
-          align: 'left',
-          value: 'symbol'
-        },
-        { text: 'Name', value: 'name' },
-        { text: 'Balance', value: 'balance' },
-        { text: 'Transfer', value: 'transfer' }
-      ],
-      rules: {
-        toAddress: value => torus.web3.utils.isAddress(value) || 'Invalid Eth Address',
-        required: value => !!value || 'Required'
-      }
+      selectedItem: 'home',
+      headerItems: [
+        { name: 'home', icon: 'home', display: 'Home' },
+        { name: 'history', icon: 'history', display: 'History' },
+        { name: 'settings', icon: 'settings', display: 'Settings' },
+        { name: 'accounts', icon: 'account_circle', display: 'Accounts' }
+      ]
     }
-  },
-  computed: mapState({
-    balance: state => torus.web3.utils.fromWei(state.weiBalance || '0'),
-    selectedAddress: 'selectedAddress',
-    slicedAddress: state => addressSlicer(state.selectedAddress) || '0x',
-    loggedIn: state => {
-      return state.selectedAddress !== ''
-    },
-    computedBalance: function() {
-      return significantDigits(parseFloat(this.balance).toFixed(5)) || 0
-    }
-  }),
-  methods: {
-    networkChanged: function() {
-      this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
-    },
-    // depositETHOption: function() {
-    //   this.depositEthExpand = !this.depositEthExpand
-    //   this.widget.open()
-    // },
-    onTransferToken: function(item) {
-      if (this.$refs.tokenForm.validate()) {
-        const contractInstance = new torus.web3.eth.Contract(
-          [
-            {
-              constant: false,
-              inputs: [
-                {
-                  name: '_to',
-                  type: 'address'
-                },
-                {
-                  name: '_value',
-                  type: 'uint256'
-                }
-              ],
-              name: 'transfer',
-              outputs: [
-                {
-                  name: 'success',
-                  type: 'bool'
-                }
-              ],
-              payable: false,
-              stateMutability: 'nonpayable',
-              type: 'function'
-            }
-          ],
-          item.tokenAddress
-        )
-        contractInstance.methods.transfer(this.tokenToAddress, (this.tokenAmount * 10 ** item.decimals).toString()).send({
-          from: this.selectedAddress
-        })
-        item.dialog = false
-      }
-    },
-    sendEth: function() {
-      if (this.$refs.form.validate()) {
-        torus.web3.eth.sendTransaction({
-          from: this.selectedAddress,
-          to: this.toAddress,
-          value: torus.web3.utils.toWei(this.amount)
-        })
-      }
-    },
-    getTokenBalances: function() {
-      this.tokenBalances = this.$store.state.tokenData
-      this.fetchedTokenBalances = true
-    }
-  },
-  mounted() {
-    this.selectedNetwork = localStorage.getItem('torus_network_type') || 'mainnet'
-
-    // setup google auth sdk
-    const interval = setInterval(() => {
-      if (window.gapi) {
-        window.gapi.load('auth2', () => {
-          window.auth2 = window.gapi.auth2.init({
-            client_id: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com'
-          })
-          this.gapiLoaded = true
-          clearInterval(interval)
-        })
-      }
-    }, 2000)
   }
 }
 </script>
 
 <style lang="scss">
-.input-width {
-  max-width: 400px;
+body {
+  background-color: #f7f7f7;
 }
-.input-width-200 {
-  max-width: 200px;
-}
-
-.background-login {
-  position: relative;
-  background-image: url(/images/background_login.png);
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
-  @extend .default;
-}
-
-.default {
-  height: 100%;
+.v-window__container {
+  height: 100% !important;
 }
 
 body,

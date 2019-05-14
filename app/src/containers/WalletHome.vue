@@ -5,12 +5,12 @@
         <v-flex xs12 sm5>
           <span>
             <span class="spanWrapSvgStyle">
-              <img src="images/wallet-blue.svg" alt="Wallet" class="svg-setting-small" />
+              <img :src="require('../../public/images/wallet-blue.svg')" alt="Wallet" class="svg-setting-small" />
             </span>
             <span class="text-bluish headline"> My Portfolio</span>
             <span class="spanWrapSvgStyle">
               <v-btn icon size="18" small>
-                <img src="images/sync-blue.svg" alt="Wallet" class="svg-setting-tiny" />
+                <img :src="require('../../public/images/sync-blue.svg')" alt="Wallet" class="svg-setting-tiny" />
               </v-btn>
             </span>
           </span>

@@ -40,7 +40,8 @@ const initialState = {
   currencyData: {},
   tokenData: {},
   tokenRates: {},
-  transactions: []
+  transactions: [],
+  loginInProgress: false
 }
 
 var VuexStore = new Vuex.Store({
@@ -90,6 +91,9 @@ var VuexStore = new Vuex.Store({
     setTransactions(state, transactions) {
       state.transactions = transactions
     },
+    setLoginInProgress(state, payload) {
+      state.loginInProgress = payload
+    },
     setCurrencyData(state, data) {
       state.currencyData = { ...state.currencyData, [data.currentCurrency]: data.conversionRate }
     },
@@ -103,6 +107,9 @@ var VuexStore = new Vuex.Store({
     resetStore(context, payload) {
       context.commit('resetStore', initialState)
       window.sessionStorage.clear()
+    },
+    loginInProgress(context, payload) {
+      context.commit('setLoginInProgress', payload)
     },
     setSelectedCurrency({ commit }, payload) {
       torus.torusController.setCurrentCurrency(payload, function(err, data) {
@@ -270,6 +277,7 @@ var VuexStore = new Vuex.Store({
 })
 
 function handleLogin(email, payload) {
+  VuexStore.dispatch('loginInProgress', true)
   torus.getPubKeyAsync(torus.web3, config.torusNodeEndpoints, email, function(err, res) {
     if (err) {
       log.error(err)
@@ -323,6 +331,7 @@ function handleLogin(email, payload) {
         torus.torusController.initTorusKeyring([data.privKey], [data.ethAddress])
         const statusStream = torus.communicationMux.getStream('status')
         statusStream.write({ loggedIn: true })
+        VuexStore.dispatch('loginInProgress', false)
         // torus.web3.eth.net
         //   .getId()
         //   .then(res => {
