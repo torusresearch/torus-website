@@ -76,18 +76,19 @@ var VuexStore = new Vuex.Store({
         let tokenRateMultiplier = 1
         if (x.tokenAddress !== '0x') tokenRateMultiplier = tokenRates[x.tokenAddress.toLowerCase()] || 0
         const currencyRate = currencyMultiplier * tokenRateMultiplier
-        let currencyBalance = significantDigits(computedBalance * currencyRate || 0)
+        let currencyBalance = significantDigits(computedBalance * currencyRate || 0, false, 3)
         totalPortfolioValue += currencyBalance
         if (selectedCurrency !== 'ETH') currencyBalance = formatCurrencyNumber(currencyBalance)
         return {
           ...x,
           id: x.symbol,
-          formattedBalance: `${x.symbol} ${significantDigits(computedBalance || 0)}`,
+          formattedBalance: `${x.symbol} ${significantDigits(computedBalance || 0, false, 3)}`,
           currencyBalance: `${selectedCurrency} ${currencyBalance}`,
           currencyRateText: `1 ${x.symbol} = ${significantDigits(currencyRate || 0)} ${selectedCurrency}`
         }
       })
-      if (selectedCurrency !== 'ETH') totalPortfolioValue = formatCurrencyNumber(significantDigits(totalPortfolioValue) || 0)
+      totalPortfolioValue = significantDigits(totalPortfolioValue, false, 3) || 0
+      if (selectedCurrency !== 'ETH') totalPortfolioValue = formatCurrencyNumber(totalPortfolioValue)
       return { finalBalancesArray, totalPortfolioValue }
     }
   },
@@ -155,6 +156,7 @@ var VuexStore = new Vuex.Store({
       }
     },
     forceFetchTokens({ commit, state }, payload) {
+      torus.torusController.detectTokensController.refreshTokenBalances()
       fetch(`https://api.tor.us/tokenbalances?address=${state.selectedAddress}`)
         .then(inter => inter.json())
         .then(response => {

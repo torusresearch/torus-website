@@ -34,17 +34,17 @@
         </template>
         <template v-slot:items="props">
           <!-- "props.expanded = !props.expanded" -->
-          <tr @click="select(props.item)" :active="props.selected" :class="{ activeRow: props.selected }">
+          <tr @click="selectEmit(props.item)" :active="props.selected" :class="{ activeRow: props.selected }">
             <td class="text-xs-left">
               <v-layout row wrap>
-                <v-flex xs2>
+                <v-flex xs1>
                   <img
                     :src="require(`../../public/images/logos/${props.item.logo}`)"
                     class="inline-small"
                     onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
                   />
                 </v-flex>
-                <v-flex xs10>
+                <v-flex xs11 align-self-center>
                   {{ props.item.name }}
                 </v-flex>
               </v-layout>
@@ -82,30 +82,18 @@
         </template>
       </v-data-table>
     </v-flex>
-    <v-flex xs12>
-      <v-layout row wrap>
-        <v-flex offset-xs1 class="text-xs-left">
-          <v-btn class="btnStyle" outline large @click="initiateTransfer">Transfer</v-btn>
-          <v-btn class="btnStyle" outline large @click="initiateTransfer">Top-up</v-btn>
-        </v-flex>
-        <v-flex xs2 align-self-center class="hidden-xs-only">
-          <img :src="require('../../public/images/torus_logo.png')" class="text-xs-right" />
-        </v-flex>
-      </v-layout>
-    </v-flex>
   </v-layout>
 </template>
 
 <script>
 export default {
-  props: ['headers', 'tokenBalances'],
+  props: ['headers', 'tokenBalances', 'selected'],
   data() {
     return {
       pagination: {
         sortBy: 'name'
       },
-      search: '',
-      selected: []
+      search: ''
     }
   },
   computed: {
@@ -114,15 +102,6 @@ export default {
     }
   },
   methods: {
-    select(selectedItem) {
-      // this is so that we don't break their api
-      this.selected = []
-      this.tokenBalances.forEach(item => {
-        if (item.id === selectedItem.id) {
-          this.selected.push(item)
-        }
-      })
-    },
     changeSort(column) {
       if (this.pagination.sortBy === column) {
         this.pagination.descending = !this.pagination.descending
@@ -131,8 +110,8 @@ export default {
         this.pagination.descending = false
       }
     },
-    initiateTransfer() {
-      console.log('transferring stuff')
+    selectEmit(item) {
+      this.$emit('update:select', item)
     }
   }
 }
@@ -157,14 +136,6 @@ export default {
   height: 25px;
   display: inline-block;
   vertical-align: middle;
-}
-
-.btnStyle {
-  width: 141px;
-  height: 41px;
-  border: #fff;
-  border-radius: 45px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
 }
 
 /deep/table.v-table {

@@ -32,7 +32,25 @@
           </div>
         </v-flex>
         <v-flex xs12>
-          <token-balances-table :headers="headers" :tokenBalances="finalBalancesArray" />
+          <token-balances-table :headers="headers" :tokenBalances="finalBalancesArray" @update:select="select" :selected="selected" />
+        </v-flex>
+        <v-flex xs12>
+          <v-layout row wrap>
+            <v-flex offset-xs1 class="text-xs-left" id="flexibtn">
+              <v-tooltip bottom :disabled="!isTransferDisabled">
+                <template v-slot:activator="{ on }">
+                  <span v-on="on">
+                    <v-btn :disabled="isTransferDisabled" outline large class="btnStyle" @click="initiateTransfer">Transfer</v-btn>
+                  </span>
+                </template>
+                <span>Please select a coin/token</span>
+              </v-tooltip>
+              <v-btn outline large class="btnStyle" @click="initiateTransfer">Top-up</v-btn>
+            </v-flex>
+            <v-flex xs2 align-self-center class="hidden-xs-only">
+              <img :src="require('../../public/images/torus_logo.png')" class="text-xs-right" />
+            </v-flex>
+          </v-layout>
         </v-flex>
       </v-layout>
     </v-container>
@@ -58,7 +76,8 @@ export default {
         },
         { text: 'Balance', value: 'formattedBalance', align: 'center' },
         { text: 'Value', value: 'currencyBalance', align: 'right' }
-      ]
+      ],
+      selected: []
     }
   },
   computed: {
@@ -70,14 +89,29 @@ export default {
     },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
+    },
+    isTransferDisabled() {
+      return this.selected.length === 0
     }
   },
   methods: {
+    select(selectedItem) {
+      // this is so that we don't break their api
+      this.selected = []
+      this.finalBalancesArray.forEach(item => {
+        if (item.id === selectedItem.id) {
+          this.selected.push(item)
+        }
+      })
+    },
     onCurrencyChange(value) {
       this.$store.dispatch('setSelectedCurrency', value)
     },
     refreshBalances() {
       this.$store.dispatch('forceFetchTokens')
+    },
+    initiateTransfer() {
+      console.log('transferring stuff', this.selected)
     }
   }
 }
@@ -115,5 +149,14 @@ export default {
 
 .select-width {
   width: 50px;
+}
+
+#flexibtn .btnStyle {
+  width: 141px;
+  height: 41px;
+  border: #fff;
+  border-radius: 45px;
+  background-color: #fff !important;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
 }
 </style>
