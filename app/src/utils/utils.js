@@ -179,6 +179,33 @@ function significantDigits(number, perc = false, len = 2) {
   return roundedNum
 }
 
+function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', thousands = ',') {
+  try {
+    let amt = amount
+    let decimals = decimalCount
+    decimals = Math.abs(decimals)
+    decimals = isNaN(decimals) ? 2 : decimals
+
+    const negativeSign = amt < 0 ? '-' : ''
+
+    const i = parseInt((amt = Math.abs(Number(amount) || 0).toFixed(decimals)), 10).toString()
+    const j = i.length > 3 ? i.length % 3 : 0
+
+    return `${negativeSign +
+      (j ? i.substr(0, j) + thousands : '') +
+      i.substr(j).replace(/(\d{3})(?=\d)/g, `$1${thousands}`) +
+      (decimals
+        ? decimal +
+          Math.abs(amount - i)
+            .toFixed(decimals)
+            .slice(2)
+        : '')}`
+  } catch (e) {
+    console.log(e)
+  }
+  return null
+}
+
 function calculateGasKnob(gasPrice) {
   return gasPrice < 20 ? gasPrice * 100 : (gasPrice + 60) * 25
 }
@@ -228,5 +255,6 @@ export {
   calculateGasKnob,
   calculateGasPrice,
   isSmartContractAddress,
-  extractHostname
+  extractHostname,
+  formatCurrencyNumber
 }

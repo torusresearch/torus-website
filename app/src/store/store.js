@@ -4,7 +4,7 @@ import log from 'loglevel'
 import torus from '../torus'
 import config from '../config'
 import VuexPersistence from 'vuex-persist'
-import { hexToText } from '../utils/utils'
+import { hexToText, significantDigits, formatCurrencyNumber } from '../utils/utils'
 import BroadcastChannel from 'broadcast-channel'
 
 Vue.use(Vuex)
@@ -22,7 +22,8 @@ const vuexPersist = new VuexPersistence({
       networkId: state.networkId,
       currencyData: state.currencyData,
       // tokenData: state.tokenData,
-      tokenRates: state.tokenRates
+      tokenRates: state.tokenRates,
+      selectedCurrency: state.selectedCurrency
     }
   }
 })
@@ -35,6 +36,7 @@ const initialState = {
   wallet: {},
   weiBalance: 0,
   selectedAddress: '',
+  selectedCurrency: 'USD',
   networkId: 0,
   networkType: localStorage.getItem('torus_network_type') || 'mainnet',
   currencyData: {},
@@ -58,6 +60,35 @@ var VuexStore = new Vuex.Store({
         }
       }
       return transactions
+    },
+    tokenBalances: state => {
+      const { weiBalance, tokenData, tokenRates, currencyData, selectedCurrency } = state || {}
+      let currencyMultiplier = 1
+      if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+      let full = [{ balance: weiBalance, decimals: 18, erc20: false, logo: 'eth.svg', name: 'Ethereum', symbol: 'ETH', tokenAddress: '0x' }]
+      // because vue/babel is stupid
+      if (Object.keys(tokenData).length > 0) {
+        full = [...full, ...tokenData]
+      }
+      let totalPortfolioValue = 0
+      const finalBalancesArray = full.map(x => {
+        const computedBalance = parseFloat(torus.web3.utils.hexToNumberString(x.balance)) / 10 ** parseFloat(x.decimals) || 0
+        let tokenRateMultiplier = 1
+        if (x.tokenAddress !== '0x') tokenRateMultiplier = tokenRates[x.tokenAddress.toLowerCase()] || 0
+        const currencyRate = currencyMultiplier * tokenRateMultiplier
+        let currencyBalance = significantDigits(computedBalance * currencyRate || 0)
+        totalPortfolioValue += currencyBalance
+        if (selectedCurrency !== 'ETH') currencyBalance = formatCurrencyNumber(currencyBalance)
+        return {
+          ...x,
+          id: x.symbol,
+          formattedBalance: `${x.symbol} ${significantDigits(computedBalance || 0)}`,
+          currencyBalance: `${selectedCurrency} ${currencyBalance}`,
+          currencyRateText: `1 ${x.symbol} = ${significantDigits(currencyRate || 0)} ${selectedCurrency}`
+        }
+      })
+      if (selectedCurrency !== 'ETH') totalPortfolioValue = formatCurrencyNumber(significantDigits(totalPortfolioValue) || 0)
+      return { finalBalancesArray, totalPortfolioValue }
     }
   },
   mutations: {
@@ -97,6 +128,9 @@ var VuexStore = new Vuex.Store({
     setCurrencyData(state, data) {
       state.currencyData = { ...state.currencyData, [data.currentCurrency]: data.conversionRate }
     },
+    setCurrency(state, currency) {
+      state.selectedCurrency = currency
+    },
     resetStore(state, requiredState) {
       Object.keys(state).forEach(key => {
         state[key] = initialState[key] // or = initialState[key]
@@ -112,10 +146,13 @@ var VuexStore = new Vuex.Store({
       context.commit('setLoginInProgress', payload)
     },
     setSelectedCurrency({ commit }, payload) {
-      torus.torusController.setCurrentCurrency(payload, function(err, data) {
-        if (err) console.error('currency fetch failed')
-        commit('setCurrencyData', data)
-      })
+      commit('setCurrency', payload)
+      if (payload !== 'ETH') {
+        torus.torusController.setCurrentCurrency(payload.toLowerCase(), function(err, data) {
+          if (err) console.error('currency fetch failed')
+          commit('setCurrencyData', data)
+        })
+      }
     },
     forceFetchTokens({ commit, state }, payload) {
       fetch(`https://api.tor.us/tokenbalances?address=${state.selectedAddress}`)

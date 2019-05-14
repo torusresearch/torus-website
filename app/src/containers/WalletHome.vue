@@ -9,7 +9,7 @@
             </span>
             <span class="text-bluish headline"> My Portfolio</span>
             <span class="spanWrapSvgStyle">
-              <v-btn icon size="18" small>
+              <v-btn icon size="18" small @click="refreshBalances">
                 <img :src="require('../../public/images/sync-blue.svg')" alt="Wallet" class="svg-setting-tiny" />
               </v-btn>
             </span>
@@ -19,12 +19,12 @@
           <div>Total Portfolio Value</div>
           <div>
             <span>
-              <span class="text-bluish headline spanWrapSvgStyle"> {{ tokenBalances.totalPortfolioValue }} </span>
+              <span class="text-bluish headline spanWrapSvgStyle"> {{ totalPortfolioValue }} </span>
               <v-select
                 class="select-width d-inline-flex ml-2 spanWrapSvgStyle"
                 height="23"
                 :items="supportedCurrencies"
-                v-model="selectedCurrency"
+                :value="selectedCurrency"
                 label=""
                 @change="onCurrencyChange"
               ></v-select>
@@ -32,7 +32,7 @@
           </div>
         </v-flex>
         <v-flex xs12>
-          <token-balances-table :headers="headers" :tokenBalances="tokenBalances.finalBalancesArray" />
+          <token-balances-table :headers="headers" :tokenBalances="finalBalancesArray" />
         </v-flex>
       </v-layout>
     </v-container>
@@ -43,48 +43,13 @@
 // The color of dropdown icon requires half day work in modifying v-select
 import config from '../config'
 import TokenBalancesTable from '../components/TokenBalancesTable.vue'
-import torus from '../torus'
-import { significantDigits } from '../utils/utils'
-
-const web3Utils = torus.web3.utils
 
 export default {
   name: 'walletHome',
   components: { TokenBalancesTable },
-  computed: {
-    tokenBalances() {
-      const { weiBalance, tokenData, tokenRates, currencyData } = this.$store.state || {}
-      let currencyMultiplier = 1
-      if (this.selectedCurrency !== 'ETH') currencyMultiplier = currencyData[this.selectedCurrency.toLowerCase()] || 1
-      let full = [{ balance: weiBalance, decimals: 18, erc20: false, logo: 'eth.svg', name: 'Ethereum', symbol: 'ETH', tokenAddress: '0x' }]
-      // because vue is stupid
-      if (Object.keys(tokenData).length > 0) {
-        full = [...full, ...tokenData]
-      }
-      let totalPortfolioValue = 0
-      const finalBalancesArray = full.map(x => {
-        const computedBalance = parseFloat(web3Utils.hexToNumberString(x.balance)) / 10 ** parseFloat(x.decimals) || 0
-        let tokenRateMultiplier = 1
-        if (x.tokenAddress !== '0x') tokenRateMultiplier = tokenRates[x.tokenAddress.toLowerCase()] || 0
-        const currencyRate = currencyMultiplier * tokenRateMultiplier
-        const currencyBalance = computedBalance * currencyRate
-        totalPortfolioValue += currencyBalance
-        return {
-          ...x,
-          id: x.symbol,
-          formattedBalance: `${x.symbol} ${significantDigits(computedBalance || 0)}`,
-          currencyBalance: `${this.selectedCurrency} ${significantDigits(currencyBalance || 0)}`,
-          currencyRateText: `1 ${x.symbol} = ${significantDigits(currencyRate || 0)} ${this.selectedCurrency}`
-        }
-      })
-      return { finalBalancesArray, totalPortfolioValue: `${significantDigits(totalPortfolioValue) || 0}` }
-    }
-  },
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
-      selectedCurrency: 'USD',
-      totalPortfolioValue: '$ 0',
       headers: [
         {
           text: 'Coin',
@@ -96,9 +61,23 @@ export default {
       ]
     }
   },
+  computed: {
+    totalPortfolioValue() {
+      return this.$store.getters.tokenBalances.totalPortfolioValue || '$ 0'
+    },
+    finalBalancesArray() {
+      return this.$store.getters.tokenBalances.finalBalancesArray || []
+    },
+    selectedCurrency() {
+      return this.$store.state.selectedCurrency
+    }
+  },
   methods: {
-    onCurrencyChange() {
-      if (this.selectedCurrency !== 'ETH') this.$store.dispatch('setSelectedCurrency', this.selectedCurrency.toLowerCase())
+    onCurrencyChange(value) {
+      this.$store.dispatch('setSelectedCurrency', value)
+    },
+    refreshBalances() {
+      this.$store.dispatch('forceFetchTokens')
     }
   }
 }
