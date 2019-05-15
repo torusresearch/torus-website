@@ -12,6 +12,7 @@ const WalletHome = () => import('./containers/WalletHome.vue')
 const WalletHistory = () => import('./containers/WalletHistory.vue')
 const WalletSettings = () => import('./containers/WalletSettings.vue')
 const WalletAccounts = () => import('./containers/WalletAccounts.vue')
+const WalletTransfer = () => import('./containers/WalletTransfer.vue')
 
 Vue.use(Router)
 
@@ -76,6 +77,12 @@ const router = new Router({
           path: 'settings',
           name: 'walletSettings',
           component: WalletSettings
+        },
+        {
+          path: 'transfer',
+          name: 'walletTransfer',
+          component: WalletTransfer,
+          props: route => ({ address: route.query.address })
         }
       ]
     }

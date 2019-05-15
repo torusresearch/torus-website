@@ -1,6 +1,6 @@
 <template>
-  <v-container fill-height align-content-center>
-    <v-layout row wrap justify-center fill-height>
+  <v-container fill-height>
+    <v-layout row wrap justify-center fill-height align-content-start>
       <v-flex d-flex xs12>
         <v-tabs fixed-tabs v-model="selectedItem" grow :color="$vuetify.theme.torus_bcg">
           <header-item

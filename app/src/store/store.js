@@ -346,7 +346,7 @@ function handleLogin(email, payload) {
           }
         })
 
-        VuexStore.dispatch('setSelectedCurrency', 'usd')
+        VuexStore.dispatch('setSelectedCurrency', 'USD')
 
         torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
           if (tokens.length > 0) {
