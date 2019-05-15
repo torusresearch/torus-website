@@ -1,6 +1,6 @@
 <template>
   <v-container fill-height>
-    <v-layout row wrap align-center justify-center align-content-center>
+    <v-layout row wrap align-start justify-center align-content-start>
       <v-flex xs12 sm5>
         <span>
           <span class="spanWrapSvgStyle">

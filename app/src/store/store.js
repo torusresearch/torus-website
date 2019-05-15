@@ -82,6 +82,7 @@ var VuexStore = new Vuex.Store({
         return {
           ...x,
           id: x.symbol,
+          computedBalance: computedBalance,
           formattedBalance: `${x.symbol} ${significantDigits(computedBalance || 0, false, 3)}`,
           currencyBalance: `${selectedCurrency} ${currencyBalance}`,
           currencyRateText: `1 ${x.symbol} = ${significantDigits(currencyRate || 0)} ${selectedCurrency}`
