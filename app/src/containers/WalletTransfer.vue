@@ -126,7 +126,7 @@
                         </template>
                         <span>Resolve the errors</span>
                       </v-tooltip>
-                      <v-btn outline large class="btnStyle">Back</v-btn>
+                      <v-btn outline large class="btnStyle" @click="goBack">Back</v-btn>
                     </v-flex>
                     <v-flex xs2 align-self-center class="hidden-xs-only">
                       <img :src="require('../../public/images/torus_logo.png')" />
@@ -324,6 +324,9 @@ export default {
           })
         }
       }
+    },
+    goBack() {
+      this.$router.go(-1)
     }
   },
   created() {
