@@ -110,9 +110,7 @@
                 <v-flex xs12 sm6>
                   <span class="body-2">
                     <div>{{ gasDisplayString }}</div>
-                    <div class="spanWrapSvgStyle">
-                      <v-switch v-model="isFastChecked" :color="$vuetify.theme.torus_blue" :label="fastGasDisplayString"></v-switch>
-                    </div>
+                    <v-checkbox v-model="isFastChecked" :color="$vuetify.theme.torus_blue" :label="fastGasDisplayString"> </v-checkbox>
                   </span>
                 </v-flex>
                 <v-flex xs12>
@@ -444,5 +442,9 @@ export default {
 
 .v-text-field.v-text-field--solo .v-input__control {
   min-height: auto !important;
+}
+
+.v-input__slot .v-label {
+  margin-bottom: 0px;
 }
 </style>
