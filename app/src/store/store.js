@@ -234,7 +234,7 @@ var VuexStore = new Vuex.Store({
     },
     showWalletPopup(context, payload) {
       walletWindow =
-        walletWindow || window.open('/wallet', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600')
+        walletWindow || window.open('/wallet', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=750')
       walletWindow.blur()
       setTimeout(walletWindow.focus(), 0)
       walletWindow.onbeforeunload = function() {
