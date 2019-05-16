@@ -290,7 +290,6 @@ var VuexStore = new Vuex.Store({
       torus.updateStaticData({ networkId: payload.networkId })
     },
     setProviderType(context, payload) {
-      console.log(payload)
       if (payload.type && payload.type === RPC) {
         context.commit('setNetworkType', RPC)
         context.commit('setRPCDetails', payload.network)
