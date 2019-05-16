@@ -7,7 +7,7 @@
             <img :src="require('../../public/images/wallet-blue.svg')" alt="Wallet" class="svg-setting-small" />
           </span>
           <span class="text-bluish headline"> My Portfolio</span>
-          <span class="spanWrapSvgStyle">
+          <span class="spanWrapSvgStyle" v-show="isRefreshVisible">
             <v-btn icon size="18" small @click="refreshBalances">
               <img :src="require('../../public/images/sync-blue.svg')" alt="Wallet" class="svg-setting-tiny" />
             </v-btn>
@@ -92,6 +92,9 @@ export default {
     },
     isTransferDisabled() {
       return this.selected.length === 0
+    },
+    isRefreshVisible() {
+      return this.$store.state.networkType === 'mainnet'
     }
   },
   methods: {
