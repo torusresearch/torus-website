@@ -20,8 +20,10 @@
           <span>
             <span class="text-bluish headline spanWrapSvgStyle"> {{ totalPortfolioValue }} </span>
             <v-select
-              class="select-width d-inline-flex ml-2 spanWrapSvgStyle"
-              height="23"
+              class="select-width spanWrapSvgStyle d-inline-flex ml-2"
+              single-line
+              solo
+              flat
               :items="supportedCurrencies"
               :value="selectedCurrency"
               label=""
@@ -149,7 +151,7 @@ export default {
 }
 
 .select-width {
-  width: 50px;
+  width: 80px;
 }
 
 #flexibtn .btnStyle {
@@ -159,5 +161,20 @@ export default {
   border-radius: 45px;
   background-color: #fff !important;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+}
+
+.v-text-field--solo .v-input__slot,
+.v-text-field--outline .v-input__slot {
+  min-height: auto !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  border-radius: 17px !important;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.16);
+  margin-top: 20px;
+  margin-bottom: 0px;
+}
+
+.v-text-field.v-text-field--solo .v-input__control {
+  min-height: auto !important;
 }
 </style>

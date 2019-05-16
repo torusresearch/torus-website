@@ -18,17 +18,7 @@
                   <span class="body-2">Selected Coin </span>
                 </v-flex>
                 <v-flex xs7 sm4 align-self-center>
-                  <v-select
-                    single-line
-                    solo
-                    flat
-                    :items="finalBalancesArray"
-                    :value="selectedItem"
-                    label="Coin"
-                    class="setheight"
-                    id="selectBox"
-                    @change="selectedItemChanged"
-                  >
+                  <v-select single-line solo flat :items="finalBalancesArray" :value="selectedItem" label="Coin" @change="selectedItemChanged">
                     <template v-slot:item="props">
                       <v-layout row wrap align-center justify-center>
                         <v-flex xs2>
