@@ -88,6 +88,23 @@
           </v-card>
         </template>
       </v-flex>
+      <v-flex xs12 sm8 mb-5>
+        <v-expansion-panel>
+          <v-expansion-panel-content class="bodyBackground">
+            <template v-slot:header>
+              <div class="body-2">Frequently Asked Questions</div>
+            </template>
+            <v-card flat :color="$vuetify.theme.torus_bcg">
+              <v-card-text>
+                Learn how to
+                <a href="https://docs.tor.us" target="_blank" rel="noreferrer noopener">
+                  <span class="font-italic" style="text-decoration: underline;">Get Started</span>
+                </a>
+              </v-card-text>
+            </v-card>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-flex>
       <v-flex xs12>
         <v-layout row wrap>
           <v-flex offset-xs10 xs2 align-self-center class="hidden-xs-only">
@@ -194,6 +211,14 @@ export default {
 
 .v-text-field.v-text-field--solo .v-input__control {
   min-height: auto !important;
+}
+
+.v-expansion-panel {
+  box-shadow: none;
+}
+
+.v-expansion-panel__container {
+  background-color: var(--v-torus_bcg-base) !important;
 }
 
 %rounded {
