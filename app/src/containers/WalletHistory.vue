@@ -1,14 +1,148 @@
 <template>
-  <div>
-    Hello world History
-  </div>
+  <v-container fill-height>
+    <v-layout row wrap align-start justify-center align-content-start>
+      <v-flex xs12 sm5>
+        <span>
+          <span class="spanWrapSvgStyle">
+            <img :src="require('../../public/images/coins.svg')" alt="Wallet" class="svg-setting-small" />
+          </span>
+          <span class="text-bluish headline"> My Transactions</span>
+        </span>
+      </v-flex>
+      <v-flex xs12 sm5 class="text-sm-right">
+        <div>Total Portfolio Value</div>
+        <div>
+          <span>
+            <span class="text-bluish headline spanWrapSvgStyle"> {{ totalPortfolioValue }} </span>
+            <v-select
+              class="select-width d-inline-flex ml-2 spanWrapSvgStyle"
+              height="23"
+              :items="supportedCurrencies"
+              :value="selectedCurrency"
+              label=""
+              @change="onCurrencyChange"
+            ></v-select>
+          </span>
+        </div>
+      </v-flex>
+      <v-flex xs12>
+        <tx-history-table :headers="headers" :transactions="transactions" />
+      </v-flex>
+      <v-flex xs12>
+        <v-layout row wrap>
+          <v-flex offset-xs10 xs2 align-self-center class="hidden-xs-only">
+            <img :src="require('../../public/images/torus_logo.png')" />
+          </v-flex>
+        </v-layout>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
+// The color of dropdown icon requires half day work in modifying v-select
+import config from '../config'
+import TxHistoryTable from '../components/TxHistoryTable.vue'
+import { addressSlicer, significantDigits, getEtherScanHashLink } from '../utils/utils'
+import torus from '../torus'
+const web3Utils = torus.web3.utils
+
 export default {
   name: 'walletHistory',
+  components: { TxHistoryTable },
   data() {
-    return {}
+    return {
+      supportedCurrencies: ['ETH', ...config.supportedCurrencies],
+      headers: [
+        {
+          text: 'Date',
+          align: 'left',
+          value: 'date'
+        },
+        { text: 'From', value: 'slicedFrom', align: 'center' },
+        { text: 'To', value: 'slicedTo', align: 'center' },
+        { text: 'Amount', value: 'totalAmountString', align: 'center' },
+        { text: 'Value', value: 'currencyAmountString', align: 'center' },
+        { text: 'Status', value: 'status', align: 'center' }
+      ]
+    }
+  },
+  computed: {
+    totalPortfolioValue() {
+      return this.$store.getters.tokenBalances.totalPortfolioValue || '$ 0'
+    },
+    selectedCurrency() {
+      return this.$store.state.selectedCurrency
+    },
+    getCurrencyMultiplier() {
+      const { selectedCurrency, currencyData } = this.$store.state || {}
+      let currencyMultiplier = 1
+      if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+      return currencyMultiplier
+    },
+    transactions() {
+      const { networkId, transactions, networkType } = this.$store.state || {}
+      const finalTransactions = []
+      for (let tx in transactions) {
+        const txOld = transactions[tx]
+        if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
+          const txObj = {}
+          txObj.id = txOld.time
+          txObj.date = new Date(txOld.time).toDateString().substring(4)
+          txObj.from = txOld.txParams.from
+          txObj.slicedFrom = addressSlicer(txOld.txParams.from)
+          txObj.to = txOld.txParams.to
+          txObj.slicedTo = addressSlicer(txOld.txParams.to)
+          txObj.totalAmount = web3Utils.fromWei(
+            web3Utils.toBN(txOld.txParams.value).add(web3Utils.toBN(txOld.txParams.gas).mul(web3Utils.toBN(txOld.txParams.gasPrice)))
+          )
+          txObj.totalAmountString = `${significantDigits(txObj.totalAmount)} ETH`
+          txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount
+          txObj.currencyAmountString = `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`
+          txObj.status = txOld.status
+          console.log(networkType, txOld)
+          txObj.etherscanLink = getEtherScanHashLink(txOld.hash, networkType)
+          finalTransactions.push(txObj)
+        }
+      }
+      return finalTransactions
+    }
+  },
+  methods: {
+    onCurrencyChange(value) {
+      this.$store.dispatch('setSelectedCurrency', value)
+    }
   }
 }
 </script>
+
+<style lang="scss">
+@mixin svg-size($args...) {
+  @each $name, $size in keywords($args) {
+    .svg-setting-#{$name} {
+      width: $size;
+      height: $size;
+    }
+  }
+}
+
+@include svg-size($tiny: 18px, $small: 24px, $medium: 38px, $large: 80px);
+
+%justify-align {
+  justify-content: start;
+  align-items: center;
+}
+
+.spanWrapSvgStyle {
+  display: inline-flex;
+  @extend %justify-align;
+}
+
+.text-bluish {
+  color: var(--v-torus_blue-base);
+}
+
+.select-width {
+  width: 50px;
+}
+</style>

@@ -221,6 +221,11 @@ async function isSmartContractAddress(address, web3) {
   return !codeIsEmpty
 }
 
+function getEtherScanHashLink(txHash, network = null) {
+  const localNetwork = network === null ? 'mainnet' : network
+  return network === 'mainnet' ? `https://etherscan.io/tx/${txHash}` : `https://${localNetwork}.etherscan.io/tx/${txHash}`
+}
+
 function extractHostname(url) {
   var hostname
   // find & remove protocol (http, ftp, etc.) and get hostname
@@ -256,5 +261,6 @@ export {
   calculateGasPrice,
   isSmartContractAddress,
   extractHostname,
-  formatCurrencyNumber
+  formatCurrencyNumber,
+  getEtherScanHashLink
 }
