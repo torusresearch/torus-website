@@ -45,7 +45,7 @@ export default {
 
 <style lang="scss">
 body {
-  background-color: #f7f7f7;
+  background-color: var(--v-torus_bcg-base);
 }
 .v-window__container {
   height: 100% !important;
