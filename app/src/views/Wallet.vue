@@ -39,9 +39,6 @@ export default {
         { name: 'accounts', icon: 'account_circle', display: 'Accounts', route: '/wallet/accounts' }
       ]
     }
-  },
-  updated(){
-    console.log(this.selectedItem)
   }
 }
 </script>
