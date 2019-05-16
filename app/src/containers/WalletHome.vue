@@ -44,7 +44,7 @@
               </template>
               <span>Please select a coin/token</span>
             </v-tooltip>
-            <v-btn outline large class="btnStyle" @click="initiateTransfer">Top-up</v-btn>
+            <v-btn outline large class="btnStyle" @click="topup">Top-up</v-btn>
           </v-flex>
           <v-flex xs2 align-self-center class="hidden-xs-only">
             <img :src="require('../../public/images/torus_logo.png')" />
@@ -110,6 +110,9 @@ export default {
     },
     initiateTransfer() {
       this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
+    },
+    topup() {
+      window.alert('coming soon')
     }
   }
 }

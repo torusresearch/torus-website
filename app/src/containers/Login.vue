@@ -85,7 +85,6 @@ export default {
   position: relative;
   background-image: url(/images/background_login.png);
   background-repeat: no-repeat;
-  background-size: cover;
   background-position: center;
   @extend .default;
 }

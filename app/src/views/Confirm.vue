@@ -2,7 +2,7 @@
   <v-container grid-list-xs fill-height>
     <v-layout row wrap align-top>
       <template v-if="type === 'message'">
-        <v-card flat>
+        <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
           <v-card-title class="headline text-bluish">Requesting Signature</v-card-title>
           <hr />
           <v-card-text>
@@ -24,33 +24,37 @@
               <img src="images/signature.png" class="bcg bcg-top10 hidden-xs-and-down" />
             </v-layout>
             <div class="hide-xs">
-              <v-layout row wrap>
-                <v-flex xs12 sm6>
-                  <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
+              <v-layout row wrap align-center justify-center>
+                <v-flex xs12 sm4>
+                  <v-btn class="btnStyle" :color="$vuetify.theme.torus_reject" large light flat @click="triggerDeny">Reject</v-btn>
                 </v-flex>
-                <v-flex xs12 sm6>
-                  <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Approve</v-btn>
+                <v-flex xs12 sm4>
+                  <v-btn large light :color="$vuetify.theme.torus_accept" class="btnStyle white--text rounded-btn" @click="triggerSign">
+                    Approve
+                  </v-btn>
+                </v-flex>
+                <v-flex sm4 class="text-xs-right">
+                  <img src="images/torus_logo.png" class="bcg-logo" />
                 </v-flex>
               </v-layout>
             </div>
-            <img src="images/torus_logo.png" class="bcg-logo" />
           </v-card-text>
         </v-card>
-        <v-card class="higherZ hidden-sm-and-up" flat>
+        <v-card class="higherZ hidden-sm-and-up" flat :color="$vuetify.theme.torus_bcg">
           <v-card-text>
             <v-layout row wrap align-center>
               <v-flex xs6 sm4>
-                <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
+                <v-btn class="btnStyle" large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
               <v-flex xs6 sm4>
-                <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Approve</v-btn>
+                <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text btnStyle rounded-btn" @click="triggerSign">Approve</v-btn>
               </v-flex>
             </v-layout>
           </v-card-text>
         </v-card>
       </template>
       <template v-else-if="type === 'transaction'">
-        <v-card flat>
+        <v-card flat :color="$vuetify.theme.torus_bcg">
           <v-card-title class="headline text-bluish">{{ header }}</v-card-title>
           <hr />
           <v-card-text>
@@ -183,25 +187,27 @@
             </bottom-sheet>
           </v-card-text>
         </v-card>
-        <v-card class="higherZ" flat>
+        <v-card class="higherZ" flat :color="$vuetify.theme.torus_bcg">
           <v-card-text>
             <v-layout row wrap align-center>
               <v-flex xs6 sm4>
-                <v-btn light class="large-btn" :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
+                <v-btn light class="large-btn btnStyle" :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
               <v-flex xs6 sm4>
                 <v-btn
                   light
                   :disabled="!canApprove"
                   :color="$vuetify.theme.torus_accept"
-                  class="white--text rounded-btn large-btn"
+                  class="white--text rounded-btn large-btn btnStyle"
                   @click="triggerSign"
                 >
                   Approve
                 </v-btn>
               </v-flex>
+              <v-flex xs12 sm4 class="text-xs-right">
+                <img src="images/torus_logo.png" class="bcg-logo" />
+              </v-flex>
             </v-layout>
-            <img src="images/torus_logo.png" class="bcg-logo" />
           </v-card-text>
         </v-card>
       </template>
@@ -483,14 +489,8 @@ export default {
 }
 
 .bcg-top10 {
-  left: 70px;
+  left: 20px;
   bottom: 50px;
-}
-
-.bcg-logo {
-  position: fixed;
-  right: 10px;
-  bottom: 10px;
 }
 
 hr {
@@ -505,5 +505,13 @@ hr {
 .knob-control__text-display {
   font-size: 0.7rem !important;
   text-align: center;
+}
+
+.btnStyle {
+  width: 141px;
+  height: 41px;
+  border: #fff;
+  border-radius: 45px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
 }
 </style>

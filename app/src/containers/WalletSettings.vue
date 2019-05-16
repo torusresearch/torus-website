@@ -5,7 +5,17 @@
         <span class="body-2">Selected Network</span>
       </v-flex>
       <v-flex xs12 sm3>
-        <v-select :items="networks" v-model="selectedNetwork" @change="changeNetwork" label="Network"></v-select>
+        <v-select
+          single-line
+          solo
+          flat
+          :items="networks"
+          id="selectBox"
+          class="setheight"
+          v-model="selectedNetwork"
+          @change="changeNetwork"
+          label="Network"
+        ></v-select>
       </v-flex>
       <v-flex xs12>
         <v-layout row wrap>
@@ -37,3 +47,20 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.v-text-field--solo .v-input__slot,
+.v-text-field--outline .v-input__slot {
+  min-height: auto !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  border-radius: 17px !important;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.16);
+  margin-top: 20px;
+  margin-bottom: 0px;
+}
+
+.v-text-field.v-text-field--solo .v-input__control {
+  min-height: auto !important;
+}
+</style>

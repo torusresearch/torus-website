@@ -117,7 +117,7 @@
                 </v-flex>
                 <v-flex xs12>
                   <v-layout row wrap>
-                    <v-flex offset-xs1 class="text-xs-left" id="flexibtn">
+                    <v-flex class="text-xs-left" id="flexibtn">
                       <v-tooltip bottom :disabled="formValid">
                         <template v-slot:activator="{ on }">
                           <span v-on="on">
@@ -308,20 +308,31 @@ export default {
       const selectedAddress = this.$store.state.selectedAddress
       if (this.$refs.form.validate()) {
         if (this.selectedTokenAddress === '0x')
-          torus.web3.eth.sendTransaction({
-            from: selectedAddress,
-            to: toAddress,
-            value: torus.web3.utils.toWei(this.amount.toString()),
-            gas: this.gas.toString(),
-            gasPrice
-          })
+          torus.web3.eth
+            .sendTransaction({
+              from: selectedAddress,
+              to: toAddress,
+              value: torus.web3.utils.toWei(this.amount.toString()),
+              gas: this.gas.toString(),
+              gasPrice
+            })
+            .on('transactionHash', () => {
+              this.$router.push('/wallet/history')
+            })
+            .catch(err => console.log(err))
         else {
           const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
-          contractInstance.methods.transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()).send({
-            from: selectedAddress,
-            gas: this.gas.toString(),
-            gasPrice
-          })
+          contractInstance.methods
+            .transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString())
+            .send({
+              from: selectedAddress,
+              gas: this.gas.toString(),
+              gasPrice
+            })
+            .on('transactionHash', () => {
+              this.$router.push('/wallet/history')
+            })
+            .catch(err => console.log(err))
         }
       }
     },

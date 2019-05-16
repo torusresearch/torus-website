@@ -34,7 +34,7 @@
         </template>
         <template v-slot:items="props">
           <tr @click="props.expanded = !props.expanded" :class="{ activeRow: props.expanded }">
-            <td class="text-xs-left">
+            <td class="text-xs-center">
               <v-layout row wrap>
                 <v-flex xs11 align-self-center>
                   {{ props.item.date }}
