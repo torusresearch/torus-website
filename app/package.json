@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "ajv": "^6.10.0",
-    "assert": "^1.4.1",
+    "assert": "^2.0.0",
     "backoff": "^2.5.0",
     "broadcast-channel": "^2.1.12",
     "copy-to-clipboard": "^3.1.0",
