@@ -12,11 +12,11 @@ const RINKEYBY_CODE = 4
 const KOVAN_CODE = 42
 const GOERLI_CODE = 5
 
-const ROPSTEN_DISPLAY_NAME = 'Ropsten'
-const RINKEBY_DISPLAY_NAME = 'Rinkeby'
-const KOVAN_DISPLAY_NAME = 'Kovan'
+const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
+const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
+const KOVAN_DISPLAY_NAME = 'Kovan Test Network'
 const MAINNET_DISPLAY_NAME = 'Main Ethereum Network'
-const GOERLI_DISPLAY_NAME = 'Goerli'
+const GOERLI_DISPLAY_NAME = 'Goerli Test Network'
 const RPC_DISPLAY_NAME = 'RPC'
 const LOCALHOST_DISPLAY_NAME = 'localhost:8545'
 
