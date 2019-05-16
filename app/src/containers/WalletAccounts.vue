@@ -1,17 +1,29 @@
 <template>
   <v-container fill-height>
     <v-layout row wrap align-center justify-center align-content-start>
-      <v-flex xs12 mb-3>
-        <span class="body-2">Your Public Address:</span>
-        <show-tool-tip :address="selectedAddress">
-          {{ slicedAddress }}
-        </show-tool-tip>
+      <v-flex xs12 sm8>
+        <span>
+          <v-icon alt="Account" :color="$vuetify.theme.torus_blue" size="28">account_circle</v-icon>
+          <span class="text-bluish headline"> My Accounts</span>
+        </span>
       </v-flex>
-      <v-flex xs12>
-        <span class="body-2">Your Private Key:</span>
-        <show-tool-tip :address="selectedKey">
-          {{ slicedKey }}
-        </show-tool-tip>
+      <v-flex xs12 sm8 mt-3 mb-3>
+        <div class="d-flex has-border">
+          <span class="body-2">Public Address</span>
+          <span class="text-xs-right">
+            <show-tool-tip :address="selectedAddress">
+              {{ slicedAddress }}
+            </show-tool-tip>
+          </span>
+        </div>
+        <div class="d-flex has-border">
+          <span class="body-2">Private Key</span>
+          <span class="text-xs-right">
+            <show-tool-tip :address="selectedKey">
+              {{ slicedKey }}
+            </show-tool-tip>
+          </span>
+        </div>
       </v-flex>
       <v-flex xs12>
         <v-layout row wrap>
@@ -62,5 +74,12 @@ export default {
   &.active {
     background-color: var(--v-torus_active-base);
   }
+}
+
+.has-border {
+  border: 2px solid var(--v-torus_reject-base);
+  border-radius: 5px;
+  padding: 15px;
+  margin: 15px;
 }
 </style>
