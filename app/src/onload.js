@@ -1,6 +1,7 @@
 // import WebsocketSubprovider from './websocket.js'
 import TorusController from './controllers/TorusController'
 import store from './store'
+import { RPC } from './utils/enums'
 var log = require('loglevel')
 var Web3 = require('web3')
 var LocalMessageDuplexStream = require('post-message-stream')
@@ -35,9 +36,11 @@ function onloadTorus(torus) {
       return { selectedAddress, wallet }
     },
     rehydrate: function() {
-      let { selectedAddress, wallet, networkType } = store.state
-      if (networkType) {
+      let { selectedAddress, wallet, networkType, rpcDetails } = store.state
+      if (networkType && networkType !== RPC) {
         store.dispatch('setProviderType', { network: networkType })
+      } else if (networkType && networkType === RPC && rpcDetails) {
+        store.dispatch('setProviderType', { network: rpcDetails, type: RPC })
       }
       if (selectedAddress && wallet[selectedAddress]) {
         torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])

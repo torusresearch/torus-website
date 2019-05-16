@@ -5,7 +5,7 @@ import torus from '../torus'
 import config from '../config'
 import VuexPersistence from 'vuex-persist'
 import { hexToText, significantDigits, formatCurrencyNumber } from '../utils/utils'
-import { MAINNET } from '../utils/enums'
+import { MAINNET, RPC } from '../utils/enums'
 import BroadcastChannel from 'broadcast-channel'
 
 Vue.use(Vuex)
@@ -44,7 +44,8 @@ const initialState = {
   tokenData: {},
   tokenRates: {},
   transactions: [],
-  loginInProgress: false
+  loginInProgress: false,
+  rpcDetails: JSON.parse(localStorage.getItem('torus_custom_rpc')) || {}
 }
 
 var VuexStore = new Vuex.Store({
@@ -137,6 +138,9 @@ var VuexStore = new Vuex.Store({
     },
     setCurrency(state, currency) {
       state.selectedCurrency = currency
+    },
+    setRPCDetails(state, rpcDetails) {
+      state.rpcDetails = rpcDetails
     },
     resetStore(state, requiredState) {
       Object.keys(state).forEach(key => {
@@ -286,9 +290,18 @@ var VuexStore = new Vuex.Store({
       torus.updateStaticData({ networkId: payload.networkId })
     },
     setProviderType(context, payload) {
-      context.commit('setNetworkType', payload.network)
-      localStorage.setItem('torus_network_type', payload.network)
-      torus.torusController.networkController.setProviderType(payload.network)
+      console.log(payload)
+      if (payload.type && payload.type === RPC) {
+        context.commit('setNetworkType', RPC)
+        context.commit('setRPCDetails', payload.network)
+        localStorage.setItem('torus_custom_rpc', JSON.stringify(payload.network))
+        localStorage.setItem('torus_network_type', RPC)
+        torus.torusController.setCustomRpc(payload.network.networkUrl, payload.network.chainId, 'ETH', payload.network.networkName)
+      } else {
+        context.commit('setNetworkType', payload.network)
+        localStorage.setItem('torus_network_type', payload.network)
+        torus.torusController.networkController.setProviderType(payload.network)
+      }
     },
     triggerLogin: function(context, payload) {
       // log.error('Could not find window.auth2, might not be loaded yet')

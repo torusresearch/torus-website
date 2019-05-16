@@ -1,10 +1,10 @@
 <template>
   <v-container fill-height>
     <v-layout row wrap align-start justify-center align-content-start>
-      <v-flex xs12 sm3 align-self-center>
+      <v-flex xs12 sm4 align-self-center>
         <span class="body-2">Selected Network</span>
       </v-flex>
-      <v-flex xs12 sm3>
+      <v-flex xs12 sm4>
         <v-select
           single-line
           solo
@@ -18,6 +18,75 @@
           @change="changeNetwork"
           label="Network"
         ></v-select>
+      </v-flex>
+      <v-flex xs12 sm8>
+        <template v-if="isRPCSelected">
+          <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height">
+            <v-form ref="form" v-model="formValid" lazy-validation>
+              <v-container fill-height style="padding: 0px;">
+                <v-layout row align-center justify-center align-content-start>
+                  <v-flex xs12 sm6 align-self-center>
+                    <span class="body-2">Enter Network Name</span>
+                  </v-flex>
+                  <v-flex xs12 sm6>
+                    <v-text-field
+                      placeholder="Enter Network Name"
+                      aria-label="network name"
+                      v-model="rpc.networkName"
+                      solo
+                      flat
+                      required
+                      :rules="[rules.required]"
+                    ></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6>
+                    <span class="body-2">Enter RPC URL</span>
+                  </v-flex>
+                  <v-flex xs12 sm6>
+                    <v-text-field
+                      id="amount"
+                      placeholder="Enter RPC URL"
+                      aria-label="rpc url"
+                      solo
+                      flat
+                      required
+                      v-model="rpc.networkUrl"
+                      :rules="[rules.required]"
+                    ></v-text-field>
+                  </v-flex>
+                  <v-flex xs12 sm6>
+                    <span class="body-2">Enter Chain Id</span>
+                  </v-flex>
+                  <v-flex xs12 sm6>
+                    <v-text-field
+                      id="amount"
+                      placeholder="Enter chain Id"
+                      aria-label="chain Id"
+                      solo
+                      flat
+                      required
+                      v-model="rpc.chainId"
+                    ></v-text-field>
+                  </v-flex>
+                  <v-flex xs12>
+                    <v-layout row wrap>
+                      <v-flex class="text-xs-left" id="flexibtn">
+                        <v-tooltip bottom :disabled="formValid">
+                          <template v-slot:activator="{ on }">
+                            <span v-on="on">
+                              <v-btn id="flexibtn" :disabled="!formValid" outline large class="btnStyle" @click="setRPC">Confirm</v-btn>
+                            </span>
+                          </template>
+                          <span>Resolve the errors</span>
+                        </v-tooltip>
+                      </v-flex>
+                    </v-layout>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-form>
+          </v-card>
+        </template>
       </v-flex>
       <v-flex xs12>
         <v-layout row wrap>
@@ -82,16 +151,31 @@ export default {
           name: RPC_DISPLAY_NAME,
           value: RPC
         }
-      ]
+      ],
+      rpc: { chainId: '', networkName: '', networkUrl: '' },
+      formValid: true,
+      rules: {
+        required: value => !!value || 'Required'
+      }
+    }
+  },
+  computed: {
+    isRPCSelected() {
+      return this.selectedNetwork === RPC
     }
   },
   methods: {
     changeNetwork(value) {
       if (value !== RPC) this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
+    },
+    setRPC() {
+      this.selectedNetwork = RPC
+      this.$store.dispatch('setProviderType', { network: this.rpc, type: RPC })
     }
   },
   mounted() {
-    this.selectedNetwork = localStorage.getItem('torus_network_type') || MAINNET
+    this.selectedNetwork = this.$store.state.networkType
+    this.rpc = this.$store.state.rpcDetails
   }
 }
 </script>
@@ -110,5 +194,18 @@ export default {
 
 .v-text-field.v-text-field--solo .v-input__control {
   min-height: auto !important;
+}
+
+%rounded {
+  border-radius: 45px;
+}
+
+#flexibtn .btnStyle {
+  width: 141px;
+  height: 41px;
+  border: #fff;
+  background-color: #fff !important;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  @extend %rounded;
 }
 </style>
