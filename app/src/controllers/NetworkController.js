@@ -3,6 +3,7 @@ const EventEmitter = require('events')
 const ObservableStore = require('obs-store')
 const ComposedStore = require('obs-store/lib/composed')
 const log = require('loglevel')
+const extend = require('extend')
 const mergeMiddleware = require('json-rpc-engine/src/mergeMiddleware')
 const createScaffoldMiddleware = require('json-rpc-engine/src/createScaffoldMiddleware')
 const createBlockReRefMiddleware = require('eth-json-rpc-middleware/block-ref')
@@ -11,6 +12,8 @@ const createBlockCacheMiddleware = require('eth-json-rpc-middleware/block-cache'
 const createInflightMiddleware = require('eth-json-rpc-middleware/inflight-cache')
 const createBlockTrackerInspectorMiddleware = require('eth-json-rpc-middleware/block-tracker-inspector')
 const providerFromMiddleware = require('eth-json-rpc-middleware/providerFromMiddleware')
+const createFetchMiddleware = require('eth-json-rpc-middleware/fetch')
+const createBlockRefRewriteMiddleware = require('eth-json-rpc-middleware/block-ref-rewrite')
 const createInfuraMiddleware = require('eth-json-rpc-infura')
 const BlockTracker = require('eth-block-tracker')
 const EthQuery = require('eth-query')
@@ -23,8 +26,8 @@ const { createSwappableProxy, createEventEmitterProxy } = require('swappable-obj
 const defaultProviderConfig = { type: 'mainnet' }
 const defaultNetworkConfig = { ticker: 'ETH' }
 const networks = { networkList: {} }
-const { ROPSTEN, RINKEBY, KOVAN, MAINNET, LOCALHOST } = require('../utils/enums')
-const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
+const { ROPSTEN, RINKEBY, KOVAN, MAINNET, LOCALHOST, GOERLI } = require('../utils/enums')
+const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET, GOERLI]
 
 export default class NetworkController extends EventEmitter {
   /**
@@ -141,14 +144,26 @@ export default class NetworkController extends EventEmitter {
     })
   }
 
+  setRpcTarget(rpcTarget, chainId, ticker = 'ETH', nickname = '', rpcPrefs) {
+    const providerConfig = {
+      type: 'rpc',
+      rpcTarget,
+      chainId,
+      ticker,
+      nickname,
+      rpcPrefs
+    }
+    this.providerConfig = providerConfig
+  }
+
   /**
    * Set provider
    * @param {string} type
    */
-  async setProviderType(type) {
+  async setProviderType(type, rpcTarget = '', ticker = 'ETH', nickname = '') {
     assert.notStrictEqual(type, 'rpc', 'NetworkController - cannot call "setProviderType" with type \'rpc\'. use "setRpcTarget"')
     assert(INFURA_PROVIDER_TYPES.includes(type) || type === LOCALHOST, `NetworkController - Unknown rpc type "${type}"`)
-    const providerConfig = { type }
+    const providerConfig = { type, rpcTarget, ticker, nickname }
     this.providerConfig = providerConfig
   }
 
@@ -181,12 +196,18 @@ export default class NetworkController extends EventEmitter {
   }
 
   _configureProvider(opts) {
+    const { type, rpcTarget, chainId, ticker, nickname } = opts
     // infura type-based endpoints
-    const isInfura = INFURA_PROVIDER_TYPES.includes(opts.type)
+    const isInfura = INFURA_PROVIDER_TYPES.includes(type)
     if (isInfura) {
       this._configureInfuraProvider(opts)
+    } else if (type === LOCALHOST) {
+      this._configureLocalhostProvider()
+      // url-based rpc endpoints
+    } else if (type === 'rpc') {
+      this._configureStandardProvider({ rpcUrl: rpcTarget, chainId, ticker, nickname })
     } else {
-      throw new Error(`NetworkController - _configureProvider - unknown type "${opts.type}"`)
+      throw new Error(`NetworkController - _configureProvider - unknown type "${type}"`)
     }
   }
 
@@ -199,6 +220,31 @@ export default class NetworkController extends EventEmitter {
       ticker: 'ETH'
     }
     this.networkConfig.putState(settings)
+  }
+
+  _configureLocalhostProvider() {
+    log.info('NetworkController - configureLocalhostProvider')
+    const networkClient = createLocalhostClient()
+    this._setNetworkClient(networkClient)
+  }
+
+  _configureStandardProvider({ rpcUrl, chainId, ticker, nickname }) {
+    log.info('NetworkController - configureStandardProvider', rpcUrl)
+    const networkClient = createJsonRpcClient({ rpcUrl })
+    // hack to add a 'rpc' network with chainId
+    networks.networkList['rpc'] = {
+      chainId: chainId,
+      rpcUrl,
+      ticker: ticker || 'ETH',
+      nickname
+    }
+    // setup networkConfig
+    var settings = {
+      network: chainId
+    }
+    settings = extend(settings, networks.networkList['rpc'])
+    this.networkConfig.putState(settings)
+    this._setNetworkClient(networkClient)
   }
 
   _setNetworkClient({ networkMiddleware, blockTracker }) {
@@ -271,6 +317,10 @@ function createNetworkAndChainIdMiddleware({ network }) {
       netId = '42'
       chainId = '0x2a'
       break
+    case 'goerli':
+      netId = '5'
+      chainId = '0x05'
+      break
     default:
       throw new Error(`createInfuraClient - unknown network "${network}"`)
   }
@@ -279,4 +329,32 @@ function createNetworkAndChainIdMiddleware({ network }) {
     eth_chainId: chainId,
     net_version: netId
   })
+}
+
+function createLocalhostClient() {
+  const fetchMiddleware = createFetchMiddleware({ rpcUrl: 'http://localhost:8545/' })
+  const blockProvider = providerFromMiddleware(fetchMiddleware)
+  const blockTracker = new BlockTracker({ provider: blockProvider, pollingInterval: 1000 })
+
+  const networkMiddleware = mergeMiddleware([
+    createBlockRefRewriteMiddleware({ blockTracker }),
+    createBlockTrackerInspectorMiddleware({ blockTracker }),
+    fetchMiddleware
+  ])
+  return { networkMiddleware, blockTracker }
+}
+
+function createJsonRpcClient({ rpcUrl }) {
+  const fetchMiddleware = createFetchMiddleware({ rpcUrl })
+  const blockProvider = providerFromMiddleware(fetchMiddleware)
+  const blockTracker = new BlockTracker({ provider: blockProvider })
+
+  const networkMiddleware = mergeMiddleware([
+    createBlockRefRewriteMiddleware({ blockTracker }),
+    createBlockCacheMiddleware({ blockTracker }),
+    createInflightMiddleware(),
+    createBlockTrackerInspectorMiddleware({ blockTracker }),
+    fetchMiddleware
+  ])
+  return { networkMiddleware, blockTracker }
 }

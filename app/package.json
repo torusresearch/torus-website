@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "ajv": "^6.10.0",
-    "assert": "^1.4.1",
+    "assert": "^2.0.0",
     "backoff": "^2.5.0",
     "broadcast-channel": "^2.1.12",
     "copy-to-clipboard": "^3.1.0",
@@ -104,7 +104,7 @@
     "ganache-core": "^2.5.5",
     "install": "^0.12.2",
     "isomorphic-fetch": "^2.2.1",
-    "jsdom": "15.0.0",
+    "jsdom": "15.1.0",
     "jsdom-global": "3.0.2",
     "luxon": "^1.12.1",
     "mocha": "^6.1.4",
