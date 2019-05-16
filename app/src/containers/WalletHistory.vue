@@ -100,7 +100,6 @@ export default {
           txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount
           txObj.currencyAmountString = `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`
           txObj.status = txOld.status
-          console.log(networkType, txOld)
           txObj.etherscanLink = getEtherScanHashLink(txOld.hash, networkType)
           finalTransactions.push(txObj)
         }
