@@ -62,7 +62,11 @@ var VuexStore = new Vuex.Store({
       return transactions
     },
     tokenBalances: state => {
-      const { weiBalance, tokenData, tokenRates, currencyData, selectedCurrency } = state || {}
+      let { weiBalance, tokenData, tokenRates, currencyData, selectedCurrency, networkType } = state || {}
+      if (networkType !== 'mainnet') {
+        tokenData = {}
+        tokenRates = {}
+      }
       let currencyMultiplier = 1
       if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
       let full = [{ balance: weiBalance, decimals: 18, erc20: false, logo: 'eth.svg', name: 'Ethereum', symbol: 'ETH', tokenAddress: '0x' }]
