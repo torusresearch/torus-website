@@ -4,6 +4,7 @@ const KOVAN = 'kovan'
 const MAINNET = 'mainnet'
 const LOCALHOST = 'localhost'
 const GOERLI = 'goerli'
+const RPC = 'rpc'
 
 const MAINNET_CODE = 1
 const ROPSTEN_CODE = 3
@@ -16,6 +17,8 @@ const RINKEBY_DISPLAY_NAME = 'Rinkeby'
 const KOVAN_DISPLAY_NAME = 'Kovan'
 const MAINNET_DISPLAY_NAME = 'Main Ethereum Network'
 const GOERLI_DISPLAY_NAME = 'Goerli'
+const RPC_DISPLAY_NAME = 'RPC'
+const LOCALHOST_DISPLAY_NAME = 'localhost:8545'
 
 const TRANSACTION_TYPE_CANCEL = 'cancel'
 const TRANSACTION_TYPE_RETRY = 'retry'
@@ -31,6 +34,7 @@ module.exports = {
   MAINNET,
   LOCALHOST,
   GOERLI,
+  RPC,
   MAINNET_CODE,
   ROPSTEN_CODE,
   RINKEYBY_CODE,
@@ -41,6 +45,8 @@ module.exports = {
   KOVAN_DISPLAY_NAME,
   MAINNET_DISPLAY_NAME,
   GOERLI_DISPLAY_NAME,
+  RPC_DISPLAY_NAME,
+  LOCALHOST_DISPLAY_NAME,
   TRANSACTION_TYPE_CANCEL,
   TRANSACTION_TYPE_RETRY,
   TRANSACTION_TYPE_STANDARD,

@@ -10,6 +10,8 @@
           solo
           flat
           :items="networks"
+          item-text="name"
+          item-value="value"
           id="selectBox"
           class="setheight"
           v-model="selectedNetwork"
@@ -29,21 +31,67 @@
 </template>
 
 <script>
+const {
+  ROPSTEN,
+  RINKEBY,
+  KOVAN,
+  MAINNET,
+  LOCALHOST,
+  GOERLI,
+  RPC,
+  ROPSTEN_DISPLAY_NAME,
+  RINKEBY_DISPLAY_NAME,
+  KOVAN_DISPLAY_NAME,
+  MAINNET_DISPLAY_NAME,
+  LOCALHOST_DISPLAY_NAME,
+  GOERLI_DISPLAY_NAME,
+  RPC_DISPLAY_NAME
+} = require('../utils/enums')
+
 export default {
   name: 'walletSettings',
   data() {
     return {
       selectedNetwork: '',
-      networks: ['mainnet', 'rinkeby', 'ropsten', 'kovan']
+      networks: [
+        {
+          name: MAINNET_DISPLAY_NAME,
+          value: MAINNET
+        },
+        {
+          name: ROPSTEN_DISPLAY_NAME,
+          value: ROPSTEN
+        },
+        {
+          name: RINKEBY_DISPLAY_NAME,
+          value: RINKEBY
+        },
+        {
+          name: KOVAN_DISPLAY_NAME,
+          value: KOVAN
+        },
+        {
+          name: GOERLI_DISPLAY_NAME,
+          value: GOERLI
+        },
+        {
+          name: LOCALHOST_DISPLAY_NAME,
+          value: LOCALHOST
+        },
+        {
+          name: RPC_DISPLAY_NAME,
+          value: RPC
+        }
+      ]
     }
   },
   methods: {
     changeNetwork(value) {
-      this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
+      if (value !== RPC) this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
     }
   },
   mounted() {
-    this.selectedNetwork = localStorage.getItem('torus_network_type') || 'mainnet'
+    this.selectedNetwork = localStorage.getItem('torus_network_type') || MAINNET
   }
 }
 </script>

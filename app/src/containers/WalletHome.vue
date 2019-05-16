@@ -61,6 +61,7 @@
 // The color of dropdown icon requires half day work in modifying v-select
 import config from '../config'
 import TokenBalancesTable from '../components/TokenBalancesTable.vue'
+import { MAINNET } from '../utils/enums'
 
 export default {
   name: 'walletHome',
@@ -94,7 +95,7 @@ export default {
       return this.selected.length === 0
     },
     isRefreshVisible() {
-      return this.$store.state.networkType === 'mainnet'
+      return this.$store.state.networkType === MAINNET
     }
   },
   methods: {

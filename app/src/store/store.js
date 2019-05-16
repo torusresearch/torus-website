@@ -5,6 +5,7 @@ import torus from '../torus'
 import config from '../config'
 import VuexPersistence from 'vuex-persist'
 import { hexToText, significantDigits, formatCurrencyNumber } from '../utils/utils'
+import { MAINNET } from '../utils/enums'
 import BroadcastChannel from 'broadcast-channel'
 
 Vue.use(Vuex)
@@ -38,7 +39,7 @@ const initialState = {
   selectedAddress: '',
   selectedCurrency: 'USD',
   networkId: 0,
-  networkType: localStorage.getItem('torus_network_type') || 'mainnet',
+  networkType: localStorage.getItem('torus_network_type') || MAINNET,
   currencyData: {},
   tokenData: {},
   tokenRates: {},
@@ -63,7 +64,7 @@ var VuexStore = new Vuex.Store({
     },
     tokenBalances: state => {
       let { weiBalance, tokenData, tokenRates, currencyData, selectedCurrency, networkType } = state || {}
-      if (networkType !== 'mainnet') {
+      if (networkType !== MAINNET) {
         tokenData = {}
         tokenRates = {}
       }
