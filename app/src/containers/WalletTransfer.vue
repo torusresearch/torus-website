@@ -364,7 +364,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @mixin svg-size($args...) {
   @each $name, $size in keywords($args) {
     .svg-setting-#{$name} {
@@ -403,12 +403,12 @@ export default {
   @extend %rounded;
 }
 
-.v-btn--active {
-  background: var(--v-torus_blue-base);
+/deep/.v-btn--active {
+  background: var(--v-torus_blue-base) !important;
   color: #fff !important;
 }
 
-.v-item-group {
+/deep/.v-item-group {
   box-shadow: none !important;
 }
 
@@ -419,22 +419,22 @@ export default {
   vertical-align: middle;
 }
 
-.v-text-field--solo .v-input__slot,
+/deep/.v-text-field--solo .v-input__slot,
 .v-text-field--outline .v-input__slot {
   min-height: auto !important;
   display: flex !important;
   align-items: flex-end !important;
   border-radius: 17px !important;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.16);
-  margin-top: 20px;
-  margin-bottom: 0px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.16) !important;
+  margin-top: 20px !important;
+  margin-bottom: 0px !important;
 }
 
-.v-text-field.v-text-field--solo .v-input__control {
+/deep/.v-text-field.v-text-field--solo .v-input__control {
   min-height: auto !important;
 }
 
-.v-input__slot .v-label {
-  margin-bottom: 0px;
+/deep/.v-input__slot .v-label {
+  margin-bottom: 0px !important;
 }
 </style>

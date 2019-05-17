@@ -74,7 +74,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .btnStyle {
   width: 172px;
   height: 48px;

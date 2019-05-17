@@ -138,6 +138,8 @@ export default {
   vertical-align: middle;
 }
 
+// overriding css of vuetify requires the usage of important tag
+// https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity
 /deep/table.v-table {
   border-collapse: separate !important;
   border-spacing: 0 10px !important;
