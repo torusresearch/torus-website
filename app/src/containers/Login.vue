@@ -3,7 +3,7 @@
     <v-container fill-height align-content-center>
       <template v-if="gapiLoaded">
         <template v-if="!loginInProgress">
-          <v-layout row align-center justify-center align-content-center>
+          <v-layout row wrap align-center justify-center align-content-center>
             <v-flex d-flex xs12>
               <img :src="require('../../public/images/torus-logo-white.svg')" alt="logo" />
             </v-flex>
@@ -12,7 +12,7 @@
             </v-flex>
             <v-flex xs12 mt-5>
               <div class="text-xs-center">
-                <v-btn class="white--text btnStyle" outline large @click="triggerLogin">Login</v-btn>
+                <v-btn id="flexiBtn" class="white--text btnStyle" outline large @click="triggerLogin">Login</v-btn>
               </div>
             </v-flex>
           </v-layout>
@@ -75,7 +75,7 @@ export default {
 </script>
 
 <style lang="scss">
-.btnStyle {
+#flexiBtn.btnStyle {
   width: 172px;
   height: 48px;
   border-radius: 12px;

@@ -10,7 +10,7 @@
         </span>
       </v-flex>
       <v-flex xs12 sm9 class="fill-height">
-        <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height">
+        <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
           <v-form ref="form" v-model="formValid" lazy-validation class="fill-height">
             <v-container fill-height>
               <v-layout row wrap align-center justify-center align-content-start>

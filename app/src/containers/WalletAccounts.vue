@@ -81,7 +81,7 @@ export default {
 }
 
 .has-border {
-  border: 2px solid var(--v-torus_reject-base);
+  // border: 2px solid var(--v-torus_reject-base);
   border-radius: 5px;
   padding: 15px;
   margin: 15px;
