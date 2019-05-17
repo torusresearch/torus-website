@@ -42,8 +42,8 @@
                   <p class="lead color-secondary">Get started with social logins for your dApp:</p>
                   <div class="alert alert-primary codebox">
                     <p class="mb-0">
-                      &lt;script src="https://app.tor.us/embed.min.js" integrity="sha384-oTbpXBATgqGUpitlQwXaN7Thd4XD5cNf43GOcQDk+rs89/tygYSSPV5IoVCw+AMi"
-                      crossorigin="anonymous"&gt;&lt;/script&gt;
+                      &lt;script src="https://app.tor.us/embed.min.js"
+                      integrity="sha384-oTbpXBATgqGUpitlQwXaN7Thd4XD5cNf43GOcQDk+rs89/tygYSSPV5IoVCw+AMi" crossorigin="anonymous"&gt;&lt;/script&gt;
                     </p>
                   </div>
                   <div class="gaps size-3x"></div>

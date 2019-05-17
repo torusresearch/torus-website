@@ -191,20 +191,21 @@
           <v-card-text>
             <v-layout row wrap align-center>
               <v-flex xs6 sm4>
-                <v-btn light class="large-btn btnStyle" :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
+                <v-btn large light class="btnStyle" :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
               <v-flex xs6 sm4>
                 <v-btn
                   light
+                  large
                   :disabled="!canApprove"
                   :color="$vuetify.theme.torus_accept"
-                  class="white--text rounded-btn large-btn btnStyle"
+                  class="white--text btnStyle rounded-btn"
                   @click="triggerSign"
                 >
                   Approve
                 </v-btn>
               </v-flex>
-              <v-flex xs12 sm4 class="text-xs-right">
+              <v-flex sm4 class="text-xs-right">
                 <img src="images/torus_logo.png" class="bcg-logo" />
               </v-flex>
             </v-layout>
@@ -453,18 +454,6 @@ export default {
   border-radius: 50%;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.16);
   @extend .svg-setting-large;
-}
-
-.large-btn {
-  width: 141px;
-  height: 42px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-  @extend .round-btn;
-  background-color: #ffffff;
-}
-
-.round-btn {
-  border-radius: 45px;
 }
 
 .higherZ {
