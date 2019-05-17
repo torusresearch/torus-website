@@ -1,38 +1,42 @@
 <template>
   <v-container fill-height>
-    <v-layout row wrap align-center justify-center align-content-start>
-      <v-flex xs12 sm8>
-        <span>
-          <v-icon alt="Account" :color="$vuetify.theme.torus_blue" size="28">account_circle</v-icon>
-          <span class="text-bluish headline"> My Accounts</span>
-        </span>
-      </v-flex>
-      <v-flex xs12 sm8 mt-3 mb-3>
-        <div class="d-flex has-border">
-          <span class="body-2">Public Address</span>
-          <span class="text-xs-right">
-            <show-tool-tip :address="selectedAddress">
-              {{ slicedAddress }}
-            </show-tool-tip>
-          </span>
-        </div>
-        <div class="d-flex has-border">
-          <span class="body-2">Private Key</span>
-          <span class="text-xs-right">
-            <show-tool-tip :address="selectedKey">
-              {{ slicedKey }}
-            </show-tool-tip>
-          </span>
-        </div>
-      </v-flex>
-      <v-flex xs12>
-        <v-layout row wrap>
-          <v-flex offset-xs10 xs2 align-self-center class="hidden-xs-only">
-            <img :src="require('../../public/images/torus_logo.png')" />
+    <v-card class="fill-height" flat :color="$vuetify.theme.torus_bcg" style="width: 100%;">
+      <v-card-text>
+        <v-layout row wrap align-center justify-center align-content-start>
+          <v-flex xs12 sm8>
+            <span>
+              <v-icon alt="Account" :color="$vuetify.theme.torus_blue" size="28">account_circle</v-icon>
+              <span class="text-bluish headline"> My Accounts</span>
+            </span>
+          </v-flex>
+          <v-flex xs12 sm8 mt-3 mb-3>
+            <div class="d-flex has-border">
+              <span class="body-2">Public Address</span>
+              <span class="text-xs-right">
+                <show-tool-tip :address="selectedAddress">
+                  {{ slicedAddress }}
+                </show-tool-tip>
+              </span>
+            </div>
+            <div class="d-flex has-border">
+              <span class="body-2">Private Key</span>
+              <span class="text-xs-right">
+                <show-tool-tip :address="selectedKey">
+                  {{ slicedKey }}
+                </show-tool-tip>
+              </span>
+            </div>
+          </v-flex>
+          <v-flex xs12>
+            <v-layout row wrap>
+              <v-flex offset-xs10 xs2 align-self-center class="hidden-xs-only">
+                <img :src="require('../../public/images/torus_logo.png')" />
+              </v-flex>
+            </v-layout>
           </v-flex>
         </v-layout>
-      </v-flex>
-    </v-layout>
+      </v-card-text>
+    </v-card>
   </v-container>
 </template>
 
