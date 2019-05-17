@@ -36,16 +36,16 @@
           <!-- "props.expanded = !props.expanded" -->
           <tr @click="selectEmit(props.item)" :active="props.selected" :class="{ activeRow: props.selected }">
             <td class="text-xs-left">
-              <v-layout row wrap>
-                <v-flex xs1>
+              <v-layout row>
+                <v-flex xs2 sm1 align-self-center>
                   <img
                     :src="require(`../../public/images/logos/${props.item.logo}`)"
                     class="inline-small"
                     onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
                   />
                 </v-flex>
-                <v-flex xs11 align-self-center>
-                  {{ props.item.name }}
+                <v-flex xs10 sm11 align-self-center>
+                  <span class="ml-1">{{ props.item.name }} </span>
                 </v-flex>
               </v-layout>
             </td>
