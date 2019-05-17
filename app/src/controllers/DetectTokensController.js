@@ -105,9 +105,9 @@ class DetectTokensController {
         }
         const nonZeroTokens = []
         tokenAddresses.forEach((tokenAddress, index) => {
-          const balance = result[index]
-          if (!balance.isZero()) {
-            nonZeroTokens.push({ ...oldTokens[index], balance: web3Instance.utils.toHex(balance) })
+          const balance = web3Instance.utils.toHex(result[index])
+          if (balance !== '0x0') {
+            nonZeroTokens.push({ ...oldTokens[index], balance })
           }
         })
         if (nonZeroTokens.length > 0) this.detectedTokensStore.putState({ tokens: nonZeroTokens })
