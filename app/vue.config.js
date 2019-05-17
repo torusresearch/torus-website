@@ -17,7 +17,7 @@ module.exports = {
     }
   },
   css: {
-    extract: false
+    extract: true
   },
 
   transpileDependencies: ['eth-json-rpc-infura'],

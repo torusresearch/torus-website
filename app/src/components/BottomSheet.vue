@@ -32,7 +32,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .bottomsheet {
   .glass {
     z-index: 99;
@@ -58,7 +58,7 @@ export default {
     left: 0;
     right: 0;
     opacity: 0;
-    background: var(--v-torus_bcg-base);
+    background: var(--v-torus_bcg-base) !important;
     transform: translateY(100%);
     z-index: 100;
     transition: opacity 0.3s ease, transform 0.3s ease;

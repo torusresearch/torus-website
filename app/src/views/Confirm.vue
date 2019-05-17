@@ -187,7 +187,7 @@
             </bottom-sheet>
           </v-card-text>
         </v-card>
-        <v-card class="higherZ" flat :color="$vuetify.theme.torus_bcg">
+        <v-card class="higherZ" flat :color="$vuetify.theme.torus_bcg" style="width: 100%;">
           <v-card-text>
             <v-layout row wrap align-center>
               <v-flex xs6 sm4>
@@ -391,7 +391,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 /* Portrait phones and smaller */
 @media (max-width: 598px) {
   .bcg-logo {
@@ -491,7 +491,7 @@ hr {
   padding: 0;
 }
 
-.knob-control__text-display {
+/deep/.knob-control__text-display {
   font-size: 0.7rem !important;
   text-align: center;
 }
