@@ -16,6 +16,9 @@ module.exports = {
       'Access-Control-Allow-Origin': '*'
     }
   },
+  css: {
+    extract: false
+  },
 
   transpileDependencies: ['eth-json-rpc-infura'],
 
