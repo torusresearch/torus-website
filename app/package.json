@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "cross-env NODE_ENV=production npm run build-embed:production && npm run build-embed:copy-main && npm run pre-build && vue-cli-service build",
-    "build:staging": "cross-env NODE_ENV=development npm run build-embed:staging && npm run build-embed:copy-main && npm run pre-build && vue-cli-service build",
+    "build:staging": "cross-env NODE_ENV=production npm run build-embed:staging && npm run build-embed:copy-main && npm run pre-build && vue-cli-service build",
     "lint": "vue-cli-service lint",
     "build-embed:copy-main": "cp ./public/embed.min.js ./public/embed-main.min.js",
     "build-embed:dev": "cross-env NODE_ENV=development node ./scripts/createEmbed.js && npm run test:build-embed",

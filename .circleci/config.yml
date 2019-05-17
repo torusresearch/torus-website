@@ -118,7 +118,6 @@ workflows:
             branches:
               only:
                 - develop
-                - feature/wallet
       - deploy:
           requires:
             - build
@@ -135,4 +134,3 @@ workflows:
             branches:
               only:
                 - develop
-                - feature/wallet
