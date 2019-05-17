@@ -29,9 +29,23 @@ var torus = {
       publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
     }
   },
-  retrieveShares: function(endpoints, email, idToken, cb) {
+  retrieveShares: function(endpoints, indexes, email, idToken, cb) {
     var promiseArr = []
     var responses = []
+    var shareResponses = new Array(endpoints.length)
+    // CommitmentRequestParams struct {
+    //   MessagePrefix      string `json:"messageprefix"`
+    //   TokenCommitment    string `json:"tokencommitment"`
+    //   TempPubX           string `json:"temppubx"`
+    //   TempPubY           string `json:"temppuby"`
+    //   Timestamp          string `json:"timestamp"`
+    //   VerifierIdentifier string `json:"verifieridentifier"`
+    // }
+    console.log(idToken)
+    var tmpKey = torus.ec.genKeyPair()
+    var pubKey = tmpKey.getPublic()
+    var tokenCommitment = torus.web3.utils.keccak256(idToken)
+    console.log(tokenCommitment)
     for (var i = 0; i < endpoints.length; i++) {
       var p = fetch(endpoints[i], {
         method: 'POST',
@@ -42,12 +56,15 @@ var torus = {
         },
         body: JSON.stringify({
           jsonrpc: '2.0',
-          method: 'ShareRequest',
+          method: 'CommitmentRequest',
           id: 10,
           params: {
-            index: 0,
-            idtoken: idToken,
-            email: email
+            messageprefix: 'mug00',
+            tokencommitment: tokenCommitment,
+            temppubx: pubKey.getX().toString('hex'),
+            temppuby: pubKey.getY().toString('hex'),
+            timestamp: Date.now(),
+            verifieridentifier: email
           }
         })
       })
@@ -58,29 +75,106 @@ var torus = {
         })
       promiseArr.push(p)
     }
-    Promise.all(promiseArr).then(function() {
-      log.info('completed')
-      var shares = []
-      var nodeIndex = []
-      log.info(responses)
-      responses.map(response => {
-        shares.push(new BN(response.result.hexshare, 16))
-        nodeIndex.push(new BN(response.result.index, 10))
+    Promise.all(promiseArr)
+      .then(function() {
+        promiseArr = []
+
+        // ShareRequestParams struct {
+        //   Item []bijson.RawMessage `json:"item"`
+        // }
+        // ShareRequestItem struct {
+        //   IDToken            string          `json:"idtoken"`
+        //   NodeSignatures     []NodeSignature `json:"nodesignatures"`
+        //   VerifierIdentifier string          `json:"verifieridentifier"`
+        // }
+        // NodeSignature struct {
+        //   Signature   string
+        //   Data        string
+        //   NodePubKeyX string
+        //   NodePubKeyY string
+        // }
+        // CommitmentRequestResult struct {
+        //   Signature string `json:"signature"`
+        //   Data      string `json:"data"`
+        //   NodePubX  string `json:"nodepubx"`
+        //   NodePubY  string `json:"nodepuby"`
+        // }
+        var nodeSigs = []
+        for (var i = 0; i < responses.result.length; i++) {
+          nodeSigs.push(responses.result[i])
+        }
+        for (i = 0; i < endpoints.length; i++) {
+          var t = i
+          var p = fetch(endpoints[i], {
+            method: 'POST',
+            cache: 'no-cache',
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json; charset=utf-8'
+            },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              method: 'ShareRequest',
+              id: 10,
+              params: {
+                item: [{ idtoken: idToken, nodesignatures: nodeSigs, verifieridentifier: email }]
+              }
+            })
+          })
+            .then(res => res.json())
+            .then(res => {
+              shareResponses[t] = res
+            })
+            .catch(err => {
+              console.error(err)
+            })
+          promiseArr.push(p)
+        }
+        return Promise.all(promiseArr)
       })
-      log.info(shares, nodeIndex)
-      var privateKey = torus.lagrangeInterpolation(shares.slice(0, 3), nodeIndex.slice(0, 3))
-      var key = torus.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
-      var publicKey = key
-        .getPublic()
-        .encode('hex')
-        .slice(2)
-      var ethAddressLower = '0x' + torus.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
-      var ethAddress = toChecksumAddress(ethAddressLower)
-      cb(null, {
-        ethAddress,
-        privKey: privateKey.toString('hex')
+      .then(function() {
+        try {
+          // ShareRequestResult struct {
+          //   Keys []KeyAssignment
+          // }
+          //         / KeyAssignmentPublic -
+          // type KeyAssignmentPublic struct {
+          // 	Index     big.Int
+          // 	PublicKey common.Point
+          // 	Threshold int
+          // 	Verifiers map[string][]string // Verifier => VerifierID
+          // }
+
+          // // KeyAssignment -
+          // type KeyAssignment struct {
+          // 	KeyAssignmentPublic
+          // 	Share big.Int // Or Si
+          // }
+          log.info('completed')
+          var shares = []
+          var nodeIndex = []
+          log.info(shareResponses)
+          for (var i = 0; i < shareResponses.length; i++) {
+            shares.push(new BN(shareResponses[i].result.keys[0].share, 16))
+            nodeIndex.push(new BN(indexes[i], 16))
+          }
+          log.info(shares, nodeIndex)
+          var privateKey = torus.lagrangeInterpolation(shares.slice(0, 3), nodeIndex.slice(0, 3))
+          var key = torus.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
+          var publicKey = key
+            .getPublic()
+            .encode('hex')
+            .slice(2)
+          var ethAddressLower = '0x' + torus.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
+          var ethAddress = toChecksumAddress(ethAddressLower)
+          cb(null, {
+            ethAddress,
+            privKey: privateKey.toString('hex')
+          })
+        } catch (err) {
+          cb(err, null)
+        }
       })
-    })
   },
   lagrangeInterpolation: function(shares, nodeIndex) {
     if (shares.length !== nodeIndex.length) {
