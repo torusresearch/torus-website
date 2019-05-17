@@ -59,10 +59,10 @@ class DetectTokensController {
         }
         const nonZeroTokens = []
         tokensToDetect.forEach((tokenAddress, index) => {
-          const balance = result[index]
-          if (!balance.isZero()) {
+          const balance = web3Instance.utils.toHex(result[index])
+          if (balance !== '0x0') {
             // do sth else here
-            nonZeroTokens.push({ ...contracts[tokenAddress], tokenAddress, balance: web3Instance.utils.toHex(balance) })
+            nonZeroTokens.push({ ...contracts[tokenAddress], tokenAddress, balance })
             // this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
           }
         })
@@ -105,9 +105,9 @@ class DetectTokensController {
         }
         const nonZeroTokens = []
         tokenAddresses.forEach((tokenAddress, index) => {
-          const balance = result[index]
-          if (!balance.isZero()) {
-            nonZeroTokens.push({ ...oldTokens[index], balance: web3Instance.utils.toHex(balance) })
+          const balance = web3Instance.utils.toHex(result[index])
+          if (balance !== '0x0') {
+            nonZeroTokens.push({ ...oldTokens[index], balance })
           }
         })
         if (nonZeroTokens.length > 0) this.detectedTokensStore.putState({ tokens: nonZeroTokens })

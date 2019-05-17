@@ -4,6 +4,8 @@ const sinon = require('sinon')
 const DetectTokensController = require('../../../src/controllers/DetectTokensController').default
 const NetworkController = require('../../../src/controllers/NetworkController').default
 
+const TEMP_ADDRESS = '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'
+
 describe('DetectTokensController', () => {
   const sandbox = sinon.createSandbox()
   let clock, network, controller
@@ -64,50 +66,50 @@ describe('DetectTokensController', () => {
       .withArgs('0xBC86727E770de68B1060C91f6BB6945c73e10388')
       .returns(true)
 
-    await controller.detectNewTokens()
+    await controller.startTokenDetection(TEMP_ADDRESS)
     sandbox.assert.notCalled(stub)
   })
 
   it('should only check and add tokens while in main network', async () => {
     sandbox
       .stub(controller, 'detectEtherscanTokenBalance')
-      .withArgs('0x0d262e5dc4a06a0f1c90ce79c7a60c09dfc884e4', { decimals: 8, symbol: 'J8T' })
+      .withArgs('0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4', { decimals: 8, symbol: 'J8T' })
       .returns(
         controller.detectedTokensStore.putState({
           tokens: [
             {
-              tokenAddress: '0x0d262e5dc4a06a0f1c90ce79c7a60c09dfc884e4',
+              tokenAddress: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4',
               symbol: 'J8T',
               decimals: 8
             }
           ]
         })
       )
-      .withArgs('0xbc86727e770de68b1060c91f6bb6945c73e10388', { decimals: 18, symbol: 'XNK' })
+      .withArgs('0xBC86727E770de68B1060C91f6BB6945c73e10388', { decimals: 18, symbol: 'XNK' })
       .returns(
         controller.detectedTokensStore.putState({
           tokens: [
             {
-              tokenAddress: '0x0d262e5dc4a06a0f1c90ce79c7a60c09dfc884e4',
+              tokenAddress: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4',
               symbol: 'J8T',
               decimals: 8
             },
             {
-              tokenAddress: '0xbc86727e770de68b1060c91f6bb6945c73e10388',
+              tokenAddress: '0xBC86727E770de68B1060C91f6BB6945c73e10388',
               symbol: 'XNK',
               decimals: 18
             }
           ]
         })
       )
-    await controller.detectNewTokens()
+    await controller.startTokenDetection(TEMP_ADDRESS)
     assert.deepStrictEqual(
       controller.detectedTokensStore.getState().tokens.map(x => {
         return { address: x.tokenAddress, decimals: x.decimals, symbol: x.symbol }
       }),
       [
-        { address: '0x0d262e5dc4a06a0f1c90ce79c7a60c09dfc884e4', decimals: 8, symbol: 'J8T' },
-        { address: '0xbc86727e770de68b1060c91f6bb6945c73e10388', decimals: 18, symbol: 'XNK' }
+        { address: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4', decimals: 8, symbol: 'J8T' },
+        { address: '0xBC86727E770de68B1060C91f6BB6945c73e10388', decimals: 18, symbol: 'XNK' }
       ]
     )
   })
@@ -117,7 +119,7 @@ describe('DetectTokensController', () => {
     controller.detectedTokensStore.putState({
       tokens: [
         {
-          tokenAddress: '0x0d262e5dc4a06a0f1c90ce79c7a60c09dfc884e4',
+          tokenAddress: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4',
           symbol: 'J8T',
           decimals: 8
         }
@@ -131,7 +133,7 @@ describe('DetectTokensController', () => {
         controller.detectedTokensStore.putState({
           tokens: [
             {
-              tokenAddress: '0x0d262e5dc4a06a0f1c90ce79c7a60c09dfc884e4',
+              tokenAddress: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4',
               symbol: 'J8T',
               decimals: 8
             }
@@ -143,12 +145,12 @@ describe('DetectTokensController', () => {
         controller.detectedTokensStore.putState({
           tokens: [
             {
-              tokenAddress: '0x0d262e5dc4a06a0f1c90ce79c7a60c09dfc884e4',
+              tokenAddress: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4',
               symbol: 'J8T',
               decimals: 8
             },
             {
-              tokenAddress: '0xbc86727e770de68b1060c91f6bb6945c73e10388',
+              tokenAddress: '0xBC86727E770de68B1060C91f6BB6945c73e10388',
               symbol: 'XNK',
               decimals: 18
             }
@@ -156,14 +158,14 @@ describe('DetectTokensController', () => {
         })
       )
 
-    await controller.detectNewTokens()
+    await controller.startTokenDetection(TEMP_ADDRESS)
     assert.deepStrictEqual(
       controller.detectedTokensStore.getState().tokens.map(x => {
         return { address: x.tokenAddress, decimals: x.decimals, symbol: x.symbol }
       }),
       [
-        { address: '0x0d262e5dc4a06a0f1c90ce79c7a60c09dfc884e4', decimals: 8, symbol: 'J8T' },
-        { address: '0xbc86727e770de68b1060c91f6bb6945c73e10388', decimals: 18, symbol: 'XNK' }
+        { address: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4', decimals: 8, symbol: 'J8T' },
+        { address: '0xBC86727E770de68B1060C91f6BB6945c73e10388', decimals: 18, symbol: 'XNK' }
       ]
     )
   })

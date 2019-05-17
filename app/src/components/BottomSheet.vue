@@ -58,7 +58,7 @@ export default {
     left: 0;
     right: 0;
     opacity: 0;
-    background: #fff;
+    background: var(--v-torus_bcg-base);
     transform: translateY(100%);
     z-index: 100;
     transition: opacity 0.3s ease, transform 0.3s ease;

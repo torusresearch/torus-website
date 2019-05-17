@@ -1,8 +1,8 @@
 <template>
   <v-container grid-list-xs fill-height>
     <v-layout row wrap align-top>
-      <div v-if="type === 'message'">
-        <v-card flat>
+      <template v-if="type === 'message'">
+        <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
           <v-card-title class="headline text-bluish">Requesting Signature</v-card-title>
           <hr />
           <v-card-text>
@@ -24,33 +24,37 @@
               <img src="images/signature.png" class="bcg bcg-top10 hidden-xs-and-down" />
             </v-layout>
             <div class="hide-xs">
-              <v-layout row wrap>
-                <v-flex xs12 sm6>
-                  <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
+              <v-layout row wrap align-center justify-center>
+                <v-flex xs12 sm4>
+                  <v-btn class="btnStyle" :color="$vuetify.theme.torus_reject" large light flat @click="triggerDeny">Reject</v-btn>
                 </v-flex>
-                <v-flex xs12 sm6>
-                  <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Approve</v-btn>
+                <v-flex xs12 sm4>
+                  <v-btn large light :color="$vuetify.theme.torus_accept" class="btnStyle white--text rounded-btn" @click="triggerSign">
+                    Approve
+                  </v-btn>
+                </v-flex>
+                <v-flex sm4 class="text-xs-right">
+                  <img src="images/torus_logo.png" class="bcg-logo" />
                 </v-flex>
               </v-layout>
             </div>
-            <img src="images/torus_logo.png" class="bcg-logo" />
           </v-card-text>
         </v-card>
-        <v-card class="higherZ hidden-sm-and-up" flat>
+        <v-card class="higherZ hidden-sm-and-up" flat :color="$vuetify.theme.torus_bcg">
           <v-card-text>
-            <v-layout row wrap>
-              <v-flex xs5>
-                <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
+            <v-layout row wrap align-center>
+              <v-flex xs6 sm4>
+                <v-btn class="btnStyle" large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
-              <v-flex xs5>
-                <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">Approve</v-btn>
+              <v-flex xs6 sm4>
+                <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text btnStyle rounded-btn" @click="triggerSign">Approve</v-btn>
               </v-flex>
             </v-layout>
           </v-card-text>
         </v-card>
-      </div>
-      <div v-else-if="type === 'transaction'">
-        <v-card flat>
+      </template>
+      <template v-else-if="type === 'transaction'">
+        <v-card flat :color="$vuetify.theme.torus_bcg">
           <v-card-title class="headline text-bluish">{{ header }}</v-card-title>
           <hr />
           <v-card-text>
@@ -71,21 +75,9 @@
                     <div class="text-grayish font-weight-bold text-uppercase">Your Wallet</div>
                     <div>
                       Address:
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on }">
-                          <span
-                            class="selected-account font-weight-medium"
-                            :color="$vuetify.theme.torus_accept"
-                            size="18"
-                            v-on="on"
-                            @click="copyToClip(sender)"
-                          >
-                            {{ slicedAddress(sender) }}
-                          </span>
-                        </template>
-                        <span v-if="copied">Copied!</span>
-                        <span v-else>Copy to clipboard</span>
-                      </v-tooltip>
+                      <show-tool-tip :address="sender">
+                        {{ slicedAddress(sender) }}
+                      </show-tool-tip>
                     </div>
                     <div>
                       Balance: <span class="text-bluish font-weight-medium">{{ computedBalance }} ETH</span>
@@ -114,28 +106,16 @@
                 <v-layout row wrap>
                   <v-flex xs6 sm12>
                     <div class="divWrapSvgStyle">
-                      <img src="images/user.svg" alt="User" class="svg-setting-medium" />
+                      <img :src="imageType" alt="User" class="svg-setting-medium" />
                     </div>
                   </v-flex>
                   <v-flex xs6 sm12>
                     <div class="text-grayish font-weight-bold text-uppercase">Payee's Wallet</div>
                     <div>
                       Address:
-                      <v-tooltip bottom>
-                        <template v-slot:activator="{ on }">
-                          <span
-                            class="selected-account font-weight-medium"
-                            :color="$vuetify.theme.torus_accept"
-                            size="18"
-                            v-on="on"
-                            @click="copyToClip(receiver)"
-                          >
-                            {{ slicedAddress(receiver) }}
-                          </span>
-                        </template>
-                        <span v-if="copied">Copied!</span>
-                        <span v-else>Copy to clipboard</span>
-                      </v-tooltip>
+                      <show-tool-tip :address="receiver">
+                        {{ slicedAddress(receiver) }}
+                      </show-tool-tip>
                     </div>
                   </v-flex>
                 </v-layout>
@@ -143,7 +123,9 @@
             </v-layout>
             <v-layout row wrap fill-height>
               <v-flex text-xs-left mb-2 mt-2>
-                <div v-if="canShowError" class="red--text">Error: {{ errorMsg }}</div>
+                <template v-if="canShowError">
+                  <span class="red--text">Error: {{ errorMsg }}</span>
+                </template>
               </v-flex>
             </v-layout>
             <div class="text-xs-center mb-5">
@@ -152,7 +134,7 @@
                 <v-icon :color="$vuetify.theme.torus_reject">expand_more</v-icon>
               </v-btn>
             </div>
-            <BottomSheet :show.sync="open" :on-close="closeBottom">
+            <bottom-sheet :show.sync="open" :on-close="closeBottom">
               <v-layout row wrap justify-center align-center text-xs-center>
                 <v-flex xs12 sm3 v-if="doesSendEther">
                   <div class="text-grayish font-weight-bold text-uppercase">
@@ -196,47 +178,49 @@
                   <span class="text-grayish font-weight-bold">Raw Data: </span>
                   <span class="text-bluish font-weight-medium">
                     {{ slicedAddress(txData) }}
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on }">
-                        <v-icon class="selected-account" :color="$vuetify.theme.torus_accept" size="18" v-on="on" @click="copyToClip(txData)">
-                          file_copy
-                        </v-icon>
-                      </template>
-                      <span v-if="copied">Copied!</span>
-                      <span v-else>Copy to clipboard</span>
-                    </v-tooltip>
+                    <show-tool-tip :address="txData">
+                      <v-icon :color="$vuetify.theme.torus_accept" size="18">file_copy</v-icon>
+                    </show-tool-tip>
                   </span>
                 </v-flex>
               </v-layout>
-            </BottomSheet>
+            </bottom-sheet>
           </v-card-text>
         </v-card>
-        <v-card class="higherZ" flat>
+        <v-card class="higherZ" flat :color="$vuetify.theme.torus_bcg">
           <v-card-text>
-            <v-layout row wrap>
-              <v-flex xs5>
-                <v-btn large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
+            <v-layout row wrap align-center>
+              <v-flex xs6 sm4>
+                <v-btn light class="large-btn btnStyle" :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
-              <v-flex xs5>
-                <v-btn large light :disabled="!canApprove" :color="$vuetify.theme.torus_accept" class="white--text rounded-btn" @click="triggerSign">
+              <v-flex xs6 sm4>
+                <v-btn
+                  light
+                  :disabled="!canApprove"
+                  :color="$vuetify.theme.torus_accept"
+                  class="white--text rounded-btn large-btn btnStyle"
+                  @click="triggerSign"
+                >
                   Approve
                 </v-btn>
               </v-flex>
+              <v-flex xs12 sm4 class="text-xs-right">
+                <img src="images/torus_logo.png" class="bcg-logo" />
+              </v-flex>
             </v-layout>
-            <img src="images/torus_logo.png" class="bcg-logo" />
           </v-card-text>
         </v-card>
-      </div>
+      </template>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-import BottomSheet from '../components/BottomSheet.vue'
-import { mapActions } from 'vuex'
-import copyToClipboard from 'copy-to-clipboard'
+import { mapActions } from 'vuex' // Maybe dispatch a bc to show popup from that instance
 import psl from 'psl'
 import BroadcastChannel from 'broadcast-channel'
+import BottomSheet from '../components/BottomSheet.vue'
+import ShowToolTip from '../components/ShowToolTip.vue'
 import torus from '../torus'
 import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress, extractHostname } from '../utils/utils'
 
@@ -245,7 +229,8 @@ const weiInGwei = 10 ** 9
 export default {
   name: 'confirm',
   components: {
-    BottomSheet
+    BottomSheet,
+    ShowToolTip
   },
   data() {
     return {
@@ -268,7 +253,6 @@ export default {
       totalEthCost: 0,
       errorMsg: '',
       txFees: 0,
-      copied: false,
       isDeployContract: false,
       isContractInteraction: false,
       doesSendEther: false,
@@ -291,15 +275,18 @@ export default {
     },
     header() {
       return this.isDeployContract ? 'Contract Deployment' : this.isContractInteraction ? 'Contract Interaction' : 'Transaction Request'
+    },
+    imageType() {
+      return this.isDeployContract || this.isContractInteraction ? 'images/file-signature.svg' : 'images/user.svg'
     }
   },
   watch: {
     gasPrice: function(newGasPrice, oldGasPrice) {
       const gasCost = newGasPrice * this.gasEstimate * 10 ** -9
-      this.txFees = gasCost * this.$store.state.currencyRate
+      this.txFees = gasCost * this.$store.state.currencyData['usd']
       const ethCost = parseFloat(this.value) + gasCost
       this.totalEthCost = significantDigits(ethCost.toFixed(5), false, 3) || 0
-      this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate || 0)
+      this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData['usd'] || 0)
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
         this.canApprove = false
@@ -321,13 +308,6 @@ export default {
     },
     openBottom() {
       this.open = true
-    },
-    copyToClip(address) {
-      this.copied = true
-      copyToClipboard(address)
-      setTimeout(() => {
-        this.copied = false
-      }, 2500)
     },
     triggerSign(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
@@ -375,9 +355,9 @@ export default {
         }
         this.network = network
         var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
-        this.receiver = to // address pf receiver
+        this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
-        this.dollarValue = significantDigits(parseFloat(finalValue) * this.$store.state.currencyRate)
+        this.dollarValue = significantDigits(parseFloat(finalValue) * this.$store.state.currencyData['usd'])
         this.gasPrice = gweiGasPrice // gas price in gwei
         this.gasKnob = calculateGasKnob(gweiGasPrice)
         this.balance = balance // in eth
@@ -385,10 +365,10 @@ export default {
         this.txData = data // data hex
         this.sender = sender // address of sender
         const gasCost = gweiGasPrice * this.gasEstimate * 10 ** -9
-        this.txFees = gasCost * this.$store.state.currencyRate
+        this.txFees = gasCost * this.$store.state.currencyData['usd']
         const ethCost = parseFloat(finalValue) + gasCost
         this.totalEthCost = significantDigits(ethCost.toFixed(5), false, 3) || 0
-        this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyRate || 0)
+        this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData['usd'] || 0)
         if (reason) this.errorMsg = reason
         if (!to) this.isDeployContract = true
         else this.isContractInteraction = await isSmartContractAddress(to, torus.web3)
@@ -398,7 +378,7 @@ export default {
           this.canApprove = false
         }
       }
-      if (type === 'message' || (counter === 3 && type === 'transaction')) {
+      if (type === 'message' || (txParams.gas && type === 'transaction') || counter > 9) {
         bc.close()
         counter = 0
       } else {
@@ -443,7 +423,6 @@ export default {
 
 .svg-bcg-color {
   background-color: var(--v-torus_svg_bcg-base);
-  opacity: 0.5;
 }
 
 @mixin svg-size($args...) {
@@ -472,7 +451,20 @@ export default {
   display: inline-flex;
   @extend %justify-align;
   border-radius: 50%;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.16);
   @extend .svg-setting-large;
+}
+
+.large-btn {
+  width: 141px;
+  height: 42px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  @extend .round-btn;
+  background-color: #ffffff;
+}
+
+.round-btn {
+  border-radius: 45px;
 }
 
 .higherZ {
@@ -497,14 +489,8 @@ export default {
 }
 
 .bcg-top10 {
-  left: 70px;
+  left: 20px;
   bottom: 50px;
-}
-
-.bcg-logo {
-  position: fixed;
-  right: 10px;
-  bottom: 10px;
 }
 
 hr {
@@ -516,12 +502,16 @@ hr {
   padding: 0;
 }
 
-.rounded-btn {
-  border-radius: 8px !important;
-}
-
 .knob-control__text-display {
   font-size: 0.7rem !important;
   text-align: center;
+}
+
+.btnStyle {
+  width: 141px;
+  height: 41px;
+  border: #fff;
+  border-radius: 45px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
 }
 </style>

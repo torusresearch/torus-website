@@ -1,331 +1,60 @@
 <template>
-  <v-container fill-height grid-list-sm>
-    <v-layout v-if="gapiLoaded">
-      <v-layout v-if="loggedIn" row wrap justify-center>
-        <v-flex xs12>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <div class="selected-account" v-on="on" @click="copyToClip">{{ slicedAddress }}</div>
-            </template>
-            <span v-if="copied">Copied!</span>
-            <span v-else>Copy to clipboard</span>
-          </v-tooltip>
-        </v-flex>
-        <v-flex xs12 sm6 d-flex>
-          <v-select :items="networks" v-model="selectedNetwork" @change="networkChanged" label="Network"></v-select>
-        </v-flex>
-        <v-flex xs12 font-weight-medium>
-          <span>ETH Balance: </span>
-          <span>{{ computedBalance }} ETH</span>
-        </v-flex>
-        <v-flex xs12>
-          <v-btn outline color="#75b4fd" class="font-weight-medium mb-4" @click="sendEthExpand = !sendEthExpand">Send ETH</v-btn>
-          <v-expand-transition>
-            <v-form ref="form" v-model="valid" lazy-validation v-show="sendEthExpand">
-              <v-text-field
-                id="toAddress"
-                placeholder="Enter address to send ether to"
-                aria-label="box"
-                solo
-                v-model="toAddress"
-                :rules="[rules.toAddress, rules.required]"
-                height="15px"
-                class="input-width"
-              ></v-text-field>
-              <v-text-field
-                id="amount"
-                placeholder="Enter ether amount to send"
-                aria-label="box"
-                solo
-                v-model="amount"
-                height="15px"
-                :rules="[rules.required]"
-                class="input-width"
-              ></v-text-field>
-              <v-btn color="#75b4fd" :disabled="!valid" class="white--text" @click="sendEth">Send</v-btn>
-            </v-form>
-          </v-expand-transition>
-        </v-flex>
-        <!-- <v-flex xs6>
-          <v-btn outline color="#75b4fd" class="font-weight-medium mb-4" @click="depositETHOption">Deposit ETH</v-btn>
-        </v-flex> -->
-        <v-flex xs12 justify-space-around>
-          <v-btn color="#75b4fd" class="white--text mb-4" @click="getTokenBalances">Get Token Balances</v-btn>
-          <v-expand-transition>
-            <div v-show="tokenBalances.length > 0 && fetchedTokenBalances">
-              <v-card>
-                <v-card-title>
-                  Token Balances
-                  <v-spacer />
-                  <v-text-field
-                    class="input-width-200 text-lg-right"
-                    v-model="search"
-                    append-icon="search"
-                    label="Search"
-                    single-line
-                    hide-details
-                  ></v-text-field>
-                </v-card-title>
-                <v-data-table :headers="headers" :items="tokenBalances" :search="search">
-                  <template v-slot:items="props">
-                    <td>{{ props.item.ticker }}</td>
-                    <td class="text-xs-left">
-                      <a :href="props.item.etherscanLink" target="_blank" rel="noreferrer noopener">{{ props.item.name }}</a>
-                    </td>
-                    <td class="text-xs-left">{{ props.item.balance }}</td>
-                    <td class="text-xs-left">
-                      <v-dialog v-model="props.item.dialog" persistent max-width="600px">
-                        <template v-slot:activator="{ on }">
-                          <v-btn color="#75b4fd" v-on="on" class="white--text mb-4">Transfer</v-btn>
-                        </template>
-                        <v-form ref="tokenForm" v-model="tokenFormValid" lazy-validation>
-                          <v-card>
-                            <v-card-title>
-                              <span class="headline">Send Token: {{ props.item.ticker }}</span>
-                            </v-card-title>
-                            <v-card-text>
-                              <v-container grid-list-md>
-                                <v-layout wrap>
-                                  <v-flex xs12 sm12 md12>
-                                    <v-text-field
-                                      id="tokenToAddress"
-                                      placeholder="Enter address to send token to"
-                                      aria-label="box"
-                                      solo
-                                      required
-                                      v-model="tokenToAddress"
-                                      :rules="[rules.toAddress, rules.required]"
-                                      height="15px"
-                                      class="input-width"
-                                    ></v-text-field>
-                                  </v-flex>
-                                  <v-flex xs12 sm12 md12>
-                                    <v-text-field
-                                      id="amount"
-                                      placeholder="Enter token amount to send"
-                                      aria-label="box"
-                                      solo
-                                      required
-                                      v-model="tokenAmount"
-                                      height="15px"
-                                      :rules="[rules.required]"
-                                      class="input-width"
-                                    ></v-text-field>
-                                  </v-flex>
-                                </v-layout>
-                              </v-container>
-                            </v-card-text>
-                            <v-card-actions>
-                              <v-btn color="blue darken-1" large flat @click="props.item.dialog = false">Close</v-btn>
-                              <v-spacer></v-spacer>
-                              <v-btn color="blue darken-1" large flat :disabled="!tokenFormValid" @click="onTransferToken(props.item)">Send</v-btn>
-                            </v-card-actions>
-                          </v-card>
-                        </v-form>
-                      </v-dialog>
-                    </td>
-                  </template>
-                  <v-alert v-slot:no-results :value="true" color="error" icon="warning"> Your search for "{{ search }}" found no results. </v-alert>
-                </v-data-table>
-              </v-card>
-            </div>
-          </v-expand-transition>
-          <v-expand-transition>
-            <div v-show="fetchedTokenBalances && tokenBalances.length === 0" class="font-weight-medium">
-              You don't hold any ERC-20 tokens
-            </div>
-          </v-expand-transition>
-        </v-flex>
-      </v-layout>
-      <v-layout v-else align-center justify-center>
-        <v-flex xs12 sm8 md4>
-          <v-card class="elevation-10">
-            <v-card-text>
-              <div class="title">
-                Welcome back!
-              </div>
-              <v-spacer></v-spacer>
-              <div class="subheading">The decentralized web awaits</div>
-              <v-spacer></v-spacer>
-            </v-card-text>
-            <v-card-actions>
-              <v-btn color="#75b4fd" class="white--text ml-auto" @click="triggerLogin" id="googleAuthBtnf">Login</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-flex>
-      </v-layout>
-    </v-layout>
-    <v-layout v-else align-center justify-center>
-      <v-flex d-flex xs12 sm12 md12>
-        <div class="text-xs-center">
-          <v-progress-circular indeterminate color="#75b4fd"></v-progress-circular>
-        </div>
+  <v-container fill-height>
+    <v-layout row wrap justify-center fill-height align-content-start>
+      <v-flex d-flex xs12>
+        <v-tabs fixed-tabs v-model="selectedItem" grow :color="$vuetify.theme.torus_bcg">
+          <header-item
+            v-for="headerItem in headerItems"
+            :key="headerItem.name"
+            :isSelected="selectedItem === headerItem.route"
+            :href="`#${headerItem.name}`"
+            :icon="headerItem.icon"
+            :to="headerItem.route"
+          >
+            {{ headerItem.display }}
+          </header-item>
+        </v-tabs>
+      </v-flex>
+      <v-flex xs12 fill-height>
+        <router-view></router-view>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
-import copyToClipboard from 'copy-to-clipboard'
-import { addressSlicer, significantDigits } from '../utils/utils'
-import torus from '../torus'
+import HeaderItem from '../components/HeaderItem.vue'
 
 export default {
-  name: 'wallet',
-  data: function() {
+  components: {
+    HeaderItem
+  },
+  data() {
     return {
-      selectedNetwork: '',
-      networks: ['mainnet', 'rinkeby', 'ropsten', 'kovan'],
-      toAddress: '',
-      widget: {},
-      tokenToAddress: '',
-      amount: '',
-      tokenAmount: '',
-      valid: true,
-      sendEthExpand: false,
-      // depositEthExpand: false,
-      tokenFormValid: true,
-      tokenBalances: [],
-      fetchedTokenBalances: false,
-      search: '',
-      copied: false,
-      gapiLoaded: false,
-      headers: [
-        {
-          text: 'Symbol',
-          align: 'left',
-          value: 'symbol'
-        },
-        { text: 'Name', value: 'name' },
-        { text: 'Balance', value: 'balance' },
-        { text: 'Transfer', value: 'transfer' }
-      ],
-      rules: {
-        toAddress: value => torus.web3.utils.isAddress(value) || 'Invalid Eth Address',
-        required: value => !!value || 'Required'
-      }
+      selectedItem: 'home',
+      headerItems: [
+        { name: 'home', icon: 'home', display: 'Home', route: '/wallet/home' },
+        { name: 'history', icon: 'history', display: 'History', route: '/wallet/history' },
+        { name: 'settings', icon: 'settings', display: 'Settings', route: '/wallet/settings' },
+        { name: 'accounts', icon: 'account_circle', display: 'Accounts', route: '/wallet/accounts' }
+      ]
     }
-  },
-  computed: mapState({
-    balance: state => torus.web3.utils.fromWei(state.weiBalance || '0'),
-    selectedAddress: 'selectedAddress',
-    slicedAddress: state => addressSlicer(state.selectedAddress) || '0x',
-    loggedIn: state => {
-      return state.selectedAddress !== ''
-    },
-    computedBalance: function() {
-      return significantDigits(parseFloat(this.balance).toFixed(5)) || 0
-    }
-  }),
-  methods: {
-    ...mapActions({
-      triggerLogin: 'triggerLogin'
-    }),
-    copyToClip: function() {
-      this.copied = true
-      copyToClipboard(this.selectedAddress)
-      setTimeout(() => {
-        this.copied = false
-      }, 3000)
-    },
-    networkChanged: function() {
-      this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
-    },
-    // depositETHOption: function() {
-    //   this.depositEthExpand = !this.depositEthExpand
-    //   this.widget.open()
-    // },
-    onTransferToken: function(item) {
-      if (this.$refs.tokenForm.validate()) {
-        const contractInstance = new torus.web3.eth.Contract(
-          [
-            {
-              constant: false,
-              inputs: [
-                {
-                  name: '_to',
-                  type: 'address'
-                },
-                {
-                  name: '_value',
-                  type: 'uint256'
-                }
-              ],
-              name: 'transfer',
-              outputs: [
-                {
-                  name: 'success',
-                  type: 'bool'
-                }
-              ],
-              payable: false,
-              stateMutability: 'nonpayable',
-              type: 'function'
-            }
-          ],
-          item.tokenAddress
-        )
-        contractInstance.methods.transfer(this.tokenToAddress, (this.tokenAmount * 10 ** item.decimals).toString()).send({
-          from: this.selectedAddress
-        })
-        item.dialog = false
-      }
-    },
-    sendEth: function() {
-      if (this.$refs.form.validate()) {
-        torus.web3.eth.sendTransaction({
-          from: this.selectedAddress,
-          to: this.toAddress,
-          value: torus.web3.utils.toWei(this.amount)
-        })
-      }
-    },
-    getTokenBalances: function() {
-      this.tokenBalances = this.$store.state.tokenData
-      this.fetchedTokenBalances = true
-    }
-  },
-  mounted() {
-    this.selectedNetwork = localStorage.getItem('torus_network_type') || 'mainnet'
-
-    // setup google auth sdk
-    const interval = setInterval(() => {
-      if (window.gapi) {
-        window.gapi.load('auth2', () => {
-          window.auth2 = window.gapi.auth2.init({
-            client_id: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com'
-          })
-          this.gapiLoaded = true
-          clearInterval(interval)
-        })
-      }
-    }, 2000)
   }
 }
 </script>
 
 <style lang="scss">
-.selected-account {
-  cursor: pointer;
-  padding: 5px 15px;
-  border-radius: 10px;
-  max-width: 120px;
-  &:hover {
-    background-color: var(--v-torus_reject_mild-base);
-    opacity: 0.5;
-    color: #fff;
-  }
-
-  &.active {
-    background-color: var(--v-torus_active-base);
-  }
+body {
+  background-color: var(--v-torus_bcg-base);
 }
 
-.input-width {
-  max-width: 400px;
+.v-window__container {
+  height: 100% !important;
 }
-.input-width-200 {
-  max-width: 200px;
+
+body,
+html {
+  height: 100%;
+  overflow-y: hidden;
 }
 </style>
