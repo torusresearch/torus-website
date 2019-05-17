@@ -99,7 +99,7 @@
     "eslint-plugin-promise": "^4.1.1",
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^5.2.2",
-    "esm": "3.2.20",
+    "esm": "3.2.25",
     "eth-phishing-detect": "^1.1.13",
     "ganache-core": "^2.5.5",
     "install": "^0.12.2",
