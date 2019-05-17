@@ -7,7 +7,7 @@ let logLevel
 /* global Web3 */
 if (process.env.NODE_ENV === 'production') {
   require('./vendor/web3.min.js')
-  torusUrl = 'https://tor.us'
+  torusUrl = 'https://app.tor.us'
   logLevel = 'error'
 } else if (process.env.NODE_ENV === 'staging') {
   require('./vendor/web3.min.js')
