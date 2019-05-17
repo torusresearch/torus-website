@@ -13,7 +13,7 @@
         <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height">
           <v-form ref="form" v-model="formValid" lazy-validation class="fill-height">
             <v-container fill-height>
-              <v-layout row align-center justify-center align-content-start>
+              <v-layout row wrap align-center justify-center align-content-start>
                 <v-flex xs12 sm6>
                   <span class="body-2">Selected Coin </span>
                 </v-flex>

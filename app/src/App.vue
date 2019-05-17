@@ -10,3 +10,9 @@
 <style src="../public/css/theme.css?ver=142"></style>
 <style src="../public/css/circles.css"></style>
 <style src="../public/css/custom.css"></style>
+
+<style lang="scss">
+#app {
+  background: var(--v-torus_bcg-base) !important;
+}
+</style>
