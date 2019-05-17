@@ -1,6 +1,6 @@
 <template>
   <v-container fill-height>
-    <v-card class="fill-height" flat :color="$vuetify.theme.torus_bcg">
+    <v-card class="fill-height" flat :color="$vuetify.theme.torus_bcg" style="width: 100%;">
       <v-card-text>
         <v-layout row wrap align-center justify-center align-content-start>
           <v-flex xs12 sm8>
