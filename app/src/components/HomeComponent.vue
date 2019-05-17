@@ -42,7 +42,7 @@
                   <p class="lead color-secondary">Get started with social logins for your dApp:</p>
                   <div class="alert alert-primary codebox">
                     <p class="mb-0">
-                      &lt;script src="https://tor.us/embed.min.js" integrity="sha384-D4mH4vQYTJzuFSTrim2UTJywO8KvtLU1/GShfxtStaiXVLjaLnt9Vi8eN/zOMn6G"
+                      &lt;script src="https://tor.us/embed.min.js" integrity="sha384-+ffOWYbSUMIsEAsiEpF3BPYhAgONh04aGhrDbSuSg1Hn2nUxG0tH3sPIwBaqJ6HR"
                       crossorigin="anonymous"&gt;&lt;/script&gt;
                     </p>
                   </div>
@@ -200,7 +200,7 @@
               <pre class="code">
                     <span class="tr"><span class="th"></span><code>// Add the following script to the top of &lt;head&gt;</code></span>
                     <span class="tr"><span class="th"></span><code>&lt;script src="https://tor.us/embed.min.js" 
-                      integrity="sha384-D4mH4vQYTJzuFSTrim2UTJywO8KvtLU1/GShfxtStaiXVLjaLnt9Vi8eN/zOMn6G" 
+                      integrity="sha384-+ffOWYbSUMIsEAsiEpF3BPYhAgONh04aGhrDbSuSg1Hn2nUxG0tH3sPIwBaqJ6HR" 
                       crossorigin="anonymous"&gt;&lt;/script&gt;</code></span>
                     <span class="tr"><span class="th"></span><code></code></span>
                     <span class="tr"><span class="th"></span><code>// Start using web3 in your dapp</code></span>
