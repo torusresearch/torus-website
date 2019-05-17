@@ -3,7 +3,7 @@
     <v-container fill-height align-content-center>
       <template v-if="gapiLoaded">
         <template v-if="!loginInProgress">
-          <v-layout row align-center justify-center align-content-center>
+          <v-layout row wrap align-center justify-center align-content-center>
             <v-flex d-flex xs12>
               <img :src="require('../../public/images/torus-logo-white.svg')" alt="logo" />
             </v-flex>
