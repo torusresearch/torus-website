@@ -1,23 +1,29 @@
 <template>
   <v-container fill-height>
     <v-layout row wrap align-start justify-center align-content-start>
-      <v-flex xs12 sm4 align-self-center>
-        <span class="body-2">Selected Network</span>
+      <v-flex xs12 sm8>
+        <span>
+          <v-icon alt="Account" :color="$vuetify.theme.torus_blue" size="28">settings</v-icon>
+          <span class="text-bluish headline"> Settings</span>
+        </span>
       </v-flex>
-      <v-flex xs12 sm4>
-        <v-select
-          single-line
-          solo
-          flat
-          :items="networks"
-          item-text="name"
-          item-value="value"
-          id="selectBox"
-          class="setheight"
-          v-model="selectedNetwork"
-          @change="changeNetwork"
-          label="Network"
-        ></v-select>
+      <v-flex xs12 sm8 mt-3 mb-3>
+        <div class="d-flex" style="align-items:center;">
+          <span class="body-2">Selected Network</span>
+          <v-select
+            single-line
+            solo
+            flat
+            :items="networks"
+            item-text="name"
+            item-value="value"
+            id="selectBox"
+            class="set-size setheight"
+            v-model="selectedNetwork"
+            @change="changeNetwork"
+            label="Network"
+          ></v-select>
+        </div>
       </v-flex>
       <v-flex xs12 sm8>
         <template v-if="isRPCSelected">
@@ -223,6 +229,10 @@ export default {
 
 %rounded {
   border-radius: 45px;
+}
+
+.set-size {
+  max-width: 400px;
 }
 
 #flexibtn .btnStyle {
