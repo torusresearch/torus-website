@@ -18,7 +18,7 @@ npm run build-embed:dev
 npm run serve
 ```
 
-To see website, navigate to https://tor.us
+To see website, navigate to https://app.tor.us
 
 ## Torus Demo
 
