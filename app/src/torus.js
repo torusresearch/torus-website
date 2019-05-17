@@ -109,101 +109,68 @@ var torus = {
   getPubKeyAsync: function(web3, endpoints, email, cb) {
     var promiseArr = []
     var shares = []
-    for (var i = 0; i < endpoints.length; i++) {
-      var p = fetch(endpoints[i], {
-        method: 'POST',
-        cache: 'no-cache',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8'
-        },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'SecretAssign',
-          id: 10,
-          params: {
-            email
-          }
-        })
+    var p = fetch(endpoints[Math.random() % endpoints.length], {
+      method: 'POST',
+      cache: 'no-cache',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'KeyAssign',
+        id: 10,
+        params: {
+          verifier: 'google',
+          verifier_id: email
+        }
       })
-        .then(res => res.json())
-        .then(res => shares.push(res))
-        .catch(err => {
-          console.error(err)
-        })
-      promiseArr.push(p)
-    }
+    })
+      .then(res => res.json())
+      .then(res => shares.push(res))
+      .catch(err => {
+        console.error(err)
+      })
+    promiseArr.push(p)
+
+    // set a time out here
+    // lets do a retry
+
     Promise.all(promiseArr)
       .then(function() {
         promiseArr = []
         shares = []
-        for (var i = 0; i < endpoints.length; i++) {
-          var p = fetch(endpoints[i], {
-            method: 'POST',
-            cache: 'no-cache',
-            mode: 'cors',
-            headers: {
-              'Content-Type': 'application/json; charset=utf-8'
-            },
-            body: JSON.stringify({
-              jsonrpc: '2.0',
-              method: 'SecretAssign',
-              id: 10,
-              params: {
-                email
-              }
-            })
+        var p = fetch(endpoints[Math.random() % endpoints.length], {
+          method: 'POST',
+          cache: 'no-cache',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8'
+          },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            method: 'VerifierLookup',
+            id: 10,
+            params: {
+              verifier: 'google',
+              verifier_id: email
+            }
           })
-            .then(res => res.json())
-            .then(res => shares.push(res))
-            .catch(err => {
-              console.error(err)
-            })
-          promiseArr.push(p)
-        }
+        })
+          .then(res => res.json())
+          .then(res => shares.push(res))
+          .catch(err => {
+            console.error(err)
+          })
+        promiseArr.push(p)
         return Promise.all(promiseArr)
       })
       .then(function() {
         try {
           log.info('completed')
           log.info(shares)
-          var Xs = {}
-          var Ys = {}
-          shares.map(function(share) {
-            if (share.result && share.result.PubShareX) {
-              if (Xs[share.result.PubShareX] === undefined) {
-                Xs[share.result.PubShareX] = 1
-              } else {
-                Xs[share.result.PubShareX]++
-              }
-            }
-            if (share.result && share.result.PubShareY) {
-              if (Ys[share.result.PubShareY] === undefined) {
-                Ys[share.result.PubShareY] = 1
-              } else {
-                Ys[share.result.PubShareY]++
-              }
-            }
-          })
-          var finalX
-          var finalY
-          for (let key in Xs) {
-            if (Xs[key] >= 3) {
-              finalX = key
-            }
-          }
-          for (let key in Ys) {
-            if (Ys[key] >= 3) {
-              finalY = key
-            }
-          }
-          var pubk = torus.ec.keyFromPublic({
-            x: finalX,
-            y: finalY
-          }).pub
-          log.info(pubk.encode('hex'))
-          var publicKey = pubk.encode('hex').slice(2)
-          var ethAddress = '0x' + web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38)
+
+          var ethAddress = shares[0].result.keys[0].address
           log.info(ethAddress)
           cb(null, ethAddress)
         } catch (err) {
