@@ -60,15 +60,21 @@ var torus = {
           id: 10,
           params: {
             messageprefix: 'mug00',
-            tokencommitment: tokenCommitment,
+            tokencommitment: tokenCommitment.slice(2),
             temppubx: pubKey.getX().toString('hex'),
             temppuby: pubKey.getY().toString('hex'),
-            timestamp: Date.now(),
-            verifieridentifier: email
+            timestamp: Date.now().toString().slice(0, 10),
+            verifieridentifier: 'google'
           }
         })
       })
-        .then(res => res.json())
+        .then(res => {
+          if (res.ok) {
+            return res.json()
+          } else {
+            throw new Error('Could not connect', res)
+          }
+        })
         .then(res => responses.push(res))
         .catch(err => {
           console.error(err)
@@ -104,7 +110,7 @@ var torus = {
           nodeSigs.push(responses[i].result)
         }
         for (i = 0; i < endpoints.length; i++) {
-          var t = i
+          let t = i
           var p = fetch(endpoints[i], {
             method: 'POST',
             cache: 'no-cache',
@@ -117,12 +123,13 @@ var torus = {
               method: 'ShareRequest',
               id: 10,
               params: {
-                item: [{ idtoken: idToken, nodesignatures: nodeSigs, verifieridentifier: email }]
+                item: [{ idtoken: idToken, nodesignatures: nodeSigs, verifieridentifier: 'google', email: email }]
               }
             })
           })
             .then(res => res.json())
             .then(res => {
+              console.log("shareresponse here", res)
               shareResponses[t] = res
             })
             .catch(err => {
@@ -155,7 +162,7 @@ var torus = {
           var nodeIndex = []
           log.info(shareResponses)
           for (var i = 0; i < shareResponses.length; i++) {
-            shares.push(new BN(shareResponses[i].result.keys[0].share, 16))
+            shares.push(new BN(shareResponses[i].result.keys[0].Share, 16))
             nodeIndex.push(new BN(indexes[i], 16))
           }
           log.info(shares, nodeIndex)
