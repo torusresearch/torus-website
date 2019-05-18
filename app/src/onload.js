@@ -1,6 +1,7 @@
 // import WebsocketSubprovider from './websocket.js'
 import TorusController from './controllers/TorusController'
 import store from './store'
+import { RPC } from './utils/enums'
 var log = require('loglevel')
 var Web3 = require('web3')
 var LocalMessageDuplexStream = require('post-message-stream')
@@ -35,26 +36,46 @@ function onloadTorus(torus) {
       return { selectedAddress, wallet }
     },
     rehydrate: function() {
-      let { selectedAddress, wallet, networkType, currencyRate } = store.state
-      if (networkType) {
+      let { selectedAddress, wallet, networkType, rpcDetails } = store.state
+      if (networkType && networkType !== RPC) {
         store.dispatch('setProviderType', { network: networkType })
+      } else if (networkType && networkType === RPC && rpcDetails) {
+        store.dispatch('setProviderType', { network: rpcDetails, type: RPC })
       }
       if (selectedAddress && wallet[selectedAddress]) {
+        torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
         setTimeout(function() {
           store.dispatch('updateSelectedAddress', { selectedAddress })
-          torus.torusController.accountTracker.store.subscribe(function(state) {
-            if (state.accounts) {
-              for (const key in state.accounts) {
-                if (state.accounts.hasOwnProperty(key)) {
-                  const account = state.accounts[key]
-                  store.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
+          torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
+            if (accounts) {
+              for (const key in accounts) {
+                if (accounts.hasOwnProperty(key)) {
+                  const account = accounts[key]
+                  if (store.state.weiBalance !== account.balance)
+                    store.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
                 }
               }
             }
           })
-          store.dispatch('updateCurrencyRate', { conversionRate: currencyRate })
+
+          torus.torusController.txController.store.subscribe(function({ transactions }) {
+            if (transactions) {
+              store.dispatch('updateTransactions', { transactions })
+            }
+          })
+
+          torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
+            if (tokens.length > 0) {
+              store.dispatch('updateTokenData', { tokenData: tokens })
+            }
+          })
+
+          torus.torusController.tokenRatesController.store.subscribe(function({ contractExchangeRates }) {
+            if (contractExchangeRates) {
+              store.dispatch('updateTokenRates', { tokenRates: contractExchangeRates })
+            }
+          })
         }, 50)
-        torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
         statusStream.write({ loggedIn: true })
         log.info('rehydrated wallet')
         torus.web3.eth.net
@@ -133,7 +154,7 @@ function onloadTorus(torus) {
 
   pump(iframeMetamask.mux, reverseMux, iframeMetamask.mux)
   var rStream = routerStream(providerOutStream, reverseMux.createStream('provider'))
-  torusController.setupProviderConnection(rStream.mergeSteam, rStream.splitStream, 'metamask')
+  torusController.setupTrustedCommunication(rStream.mergeSteam, rStream.splitStream, 'metamask')
 
   // also need to set autoreload in embed.js upon network change
   // rStream.mergeSteam

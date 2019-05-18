@@ -231,7 +231,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-lg-8 offset-lg-2">
+          <div class="col-lg-12 offset-lg-1">
             <ul class="contact-info">
               <li>
                 <em class="fab fa-linkedin" style="margin-bottom: 15px;"></em>
@@ -248,7 +248,19 @@
               <li>
                 <em class="fa fa-paper-plane"></em>
                 <span>
-                  <a href="https://t.me/torusprotocol">@torusprotocol</a>
+                  <a href="https://t.me/TorusLabs">@toruslabs</a>
+                </span>
+              </li>
+              <li>
+                <em class="fab fa-facebook"></em>
+                <span>
+                  <a href="https://www.facebook.com/TorusProtocol/">toruslabs</a>
+                </span>
+              </li>
+              <li>
+                <em class="fab fa-twitter"></em>
+                <span>
+                  <a href="https://twitter.com/TorusLabs">@toruslabs</a>
                 </span>
               </li>
             </ul>

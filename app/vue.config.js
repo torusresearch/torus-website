@@ -16,13 +16,18 @@ module.exports = {
       'Access-Control-Allow-Origin': '*'
     }
   },
+  css: {
+    extract: true
+  },
+
+  transpileDependencies: ['eth-json-rpc-infura'],
 
   productionSourceMap: false,
 
   pluginOptions: {
     prerenderSpa: {
       registry: undefined,
-      renderRoutes: ['/', '/popup', '/confirm', '/privacy', '/profile'],
+      renderRoutes: ['/', '/popup', '/confirm', '/privacy', '/wallet'],
       useRenderEvent: true,
       headless: true,
       onlyProduction: true

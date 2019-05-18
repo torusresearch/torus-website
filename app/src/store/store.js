@@ -3,13 +3,14 @@ import Vuex from 'vuex'
 import log from 'loglevel'
 import torus from '../torus'
 import config from '../config'
-import VuexPersist from 'vuex-persist'
-import { hexToText } from '../utils/utils'
+import VuexPersistence from 'vuex-persist'
+import { hexToText, significantDigits, formatCurrencyNumber } from '../utils/utils'
+import { MAINNET, RPC } from '../utils/enums'
 import BroadcastChannel from 'broadcast-channel'
 
 Vue.use(Vuex)
 
-const vuexPersist = new VuexPersist({
+const vuexPersist = new VuexPersistence({
   key: 'my-app',
   storage: window.sessionStorage,
   reducer: state => {
@@ -17,15 +18,18 @@ const vuexPersist = new VuexPersist({
       email: state.email,
       idToken: state.idToken,
       wallet: state.wallet,
-      weiBalance: state.weiBalance,
+      // weiBalance: state.weiBalance,
       selectedAddress: state.selectedAddress,
       networkId: state.networkId,
-      currencyRate: state.currencyRate
+      currencyData: state.currencyData,
+      // tokenData: state.tokenData,
+      tokenRates: state.tokenRates,
+      selectedCurrency: state.selectedCurrency
     }
   }
 })
 
-var profileWindow
+var walletWindow
 
 const initialState = {
   email: '',
@@ -33,9 +37,15 @@ const initialState = {
   wallet: {},
   weiBalance: 0,
   selectedAddress: '',
+  selectedCurrency: 'USD',
   networkId: 0,
-  networkType: localStorage.getItem('torus_network_type') || 'mainnet',
-  currencyRate: 0
+  networkType: localStorage.getItem('torus_network_type') || MAINNET,
+  currencyData: {},
+  tokenData: {},
+  tokenRates: {},
+  transactions: [],
+  loginInProgress: false,
+  rpcDetails: JSON.parse(localStorage.getItem('torus_custom_rpc')) || {}
 }
 
 var VuexStore = new Vuex.Store({
@@ -43,7 +53,52 @@ var VuexStore = new Vuex.Store({
   state: {
     ...initialState
   },
-  getters: {},
+  getters: {
+    unApprovedTransactions: state => {
+      const transactions = []
+      for (let id in state.transactions) {
+        if (state.transactions[id].status === 'unapproved') {
+          transactions.push(state.transactions[id])
+        }
+      }
+      return transactions
+    },
+    tokenBalances: state => {
+      let { weiBalance, tokenData, tokenRates, currencyData, selectedCurrency, networkType } = state || {}
+      if (networkType !== MAINNET) {
+        tokenData = {}
+        tokenRates = {}
+      }
+      let currencyMultiplier = 1
+      if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+      let full = [{ balance: weiBalance, decimals: 18, erc20: false, logo: 'eth.svg', name: 'Ethereum', symbol: 'ETH', tokenAddress: '0x' }]
+      // because vue/babel is stupid
+      if (Object.keys(tokenData).length > 0) {
+        full = [...full, ...tokenData]
+      }
+      let totalPortfolioValue = 0
+      const finalBalancesArray = full.map(x => {
+        const computedBalance = parseFloat(torus.web3.utils.hexToNumberString(x.balance)) / 10 ** parseFloat(x.decimals) || 0
+        let tokenRateMultiplier = 1
+        if (x.tokenAddress !== '0x') tokenRateMultiplier = tokenRates[x.tokenAddress.toLowerCase()] || 0
+        const currencyRate = currencyMultiplier * tokenRateMultiplier
+        let currencyBalance = significantDigits(computedBalance * currencyRate || 0, false, 3)
+        totalPortfolioValue += currencyBalance
+        if (selectedCurrency !== 'ETH') currencyBalance = formatCurrencyNumber(currencyBalance)
+        return {
+          ...x,
+          id: x.symbol,
+          computedBalance: computedBalance,
+          formattedBalance: `${x.symbol} ${significantDigits(computedBalance || 0, false, 3)}`,
+          currencyBalance: `${selectedCurrency} ${currencyBalance}`,
+          currencyRateText: `1 ${x.symbol} = ${significantDigits(currencyRate || 0)} ${selectedCurrency}`
+        }
+      })
+      totalPortfolioValue = significantDigits(totalPortfolioValue, false, 3) || 0
+      if (selectedCurrency !== 'ETH') totalPortfolioValue = formatCurrencyNumber(totalPortfolioValue)
+      return { finalBalancesArray, totalPortfolioValue }
+    }
+  },
   mutations: {
     setEmail(state, email) {
       state.email = email
@@ -57,6 +112,12 @@ var VuexStore = new Vuex.Store({
     setWeiBalance(state, weiBalance) {
       state.weiBalance = weiBalance
     },
+    setTokenData(state, tokenData) {
+      state.tokenData = tokenData
+    },
+    setTokenRates(state, tokenRates) {
+      state.tokenRates = tokenRates
+    },
     setSelectedAddress(state, selectedAddress) {
       state.selectedAddress = selectedAddress
     },
@@ -66,8 +127,20 @@ var VuexStore = new Vuex.Store({
     setNetworkType(state, networkType) {
       state.networkType = networkType
     },
-    setCurrencyRate(state, currencyRate) {
-      state.currencyRate = currencyRate
+    setTransactions(state, transactions) {
+      state.transactions = transactions
+    },
+    setLoginInProgress(state, payload) {
+      state.loginInProgress = payload
+    },
+    setCurrencyData(state, data) {
+      state.currencyData = { ...state.currencyData, [data.currentCurrency]: data.conversionRate }
+    },
+    setCurrency(state, currency) {
+      state.selectedCurrency = currency
+    },
+    setRPCDetails(state, rpcDetails) {
+      state.rpcDetails = rpcDetails
     },
     resetStore(state, requiredState) {
       Object.keys(state).forEach(key => {
@@ -80,10 +153,39 @@ var VuexStore = new Vuex.Store({
       context.commit('resetStore', initialState)
       window.sessionStorage.clear()
     },
-    showPopup(context, payload) {
+    loginInProgress(context, payload) {
+      context.commit('setLoginInProgress', payload)
+    },
+    setSelectedCurrency({ commit }, payload) {
+      commit('setCurrency', payload)
+      if (payload !== 'ETH') {
+        torus.torusController.setCurrentCurrency(payload.toLowerCase(), function(err, data) {
+          if (err) console.error('currency fetch failed')
+          commit('setCurrencyData', data)
+        })
+      }
+    },
+    forceFetchTokens({ commit, state }, payload) {
+      torus.torusController.detectTokensController.refreshTokenBalances()
+      fetch(`https://api.tor.us/tokenbalances?address=${state.selectedAddress}`)
+        .then(inter => inter.json())
+        .then(response => {
+          response.forEach(obj => {
+            torus.torusController.detectTokensController.detectEtherscanTokenBalance(obj.contractAddress, {
+              decimals: obj.tokenDecimal,
+              erc20: true,
+              logo: '',
+              name: obj.name,
+              balance: obj.balance,
+              symbol: obj.ticker
+            })
+          })
+        })
+    },
+    showPopup({ state, getters }, payload) {
       var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
       const isTx = isTorusTransaction()
-      const width = isTx ? 700 : 600
+      const width = isTx ? 650 : 600
       const height = isTx ? 450 : 350
       window.open(
         `/confirm?instanceId=${torus.instanceId}`,
@@ -96,21 +198,26 @@ var VuexStore = new Vuex.Store({
         let interval
         bc.onmessage = ev => {
           if (ev.data === 'popup-loaded') {
+            // dispatch to store that popup has loaded
+            // dispatch transactions when popup loaded
+            // also dispatch transactions if popup loaded + transactions changes. Don't use interval
             interval = setInterval(() => {
-              var txParams = getTransactionParams()
+              // console.log(getters)
+              var txParams = getters.unApprovedTransactions[0]
               bc.postMessage({
                 data: {
                   origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
                   type: 'transaction',
-                  txParams: { ...txParams, network: context.state.networkType },
+                  txParams: { ...txParams, network: state.networkType },
                   balance
                 }
               })
-              if (counter === 3) {
+              if (txParams.txParams.gas || counter > 9) {
                 bc.close()
                 clearInterval(interval)
               }
               counter++
+              // console.log(counter, txParams.txParams.gas)
             }, 500)
           }
         }
@@ -130,13 +237,13 @@ var VuexStore = new Vuex.Store({
         }
       }
     },
-    showProfilePopup(context, payload) {
-      profileWindow =
-        profileWindow || window.open('/profile', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=390,width=600')
-      profileWindow.blur()
-      setTimeout(profileWindow.focus(), 0)
-      profileWindow.onbeforeunload = function() {
-        profileWindow = undefined
+    showWalletPopup(context, payload) {
+      walletWindow =
+        walletWindow || window.open('/wallet', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=750')
+      walletWindow.blur()
+      setTimeout(walletWindow.focus(), 0)
+      walletWindow.onbeforeunload = function() {
+        walletWindow = undefined
       }
     },
     updateEmail(context, payload) {
@@ -165,8 +272,14 @@ var VuexStore = new Vuex.Store({
     updateWeiBalance({ commit, state }, payload) {
       if (payload.address === state.selectedAddress) commit('setWeiBalance', payload.balance)
     },
-    updateCurrencyRate(context, payload) {
-      context.commit('setCurrencyRate', payload.conversionRate)
+    updateTransactions({ commit }, payload) {
+      commit('setTransactions', payload.transactions)
+    },
+    updateTokenData({ commit }, payload) {
+      commit('setTokenData', payload.tokenData)
+    },
+    updateTokenRates({ commit }, payload) {
+      commit('setTokenRates', payload.tokenRates)
     },
     updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
@@ -177,63 +290,94 @@ var VuexStore = new Vuex.Store({
       torus.updateStaticData({ networkId: payload.networkId })
     },
     setProviderType(context, payload) {
-      context.commit('setNetworkType', payload.network)
-      localStorage.setItem('torus_network_type', payload.network)
-      torus.torusController.networkController.setProviderType(payload.network)
+      if (payload.type && payload.type === RPC) {
+        context.commit('setNetworkType', RPC)
+        context.commit('setRPCDetails', payload.network)
+        localStorage.setItem('torus_custom_rpc', JSON.stringify(payload.network))
+        localStorage.setItem('torus_network_type', RPC)
+        torus.torusController.setCustomRpc(payload.network.networkUrl, payload.network.chainId, 'ETH', payload.network.networkName)
+      } else {
+        context.commit('setNetworkType', payload.network)
+        localStorage.setItem('torus_network_type', payload.network)
+        torus.torusController.networkController.setProviderType(payload.network)
+      }
     },
     triggerLogin: function(context, payload) {
-      if (window.auth2 === undefined) {
-        log.error('Could not find window.auth2, might not be loaded yet')
-        return
-      }
-      window.auth2.signIn().then(function(googleUser) {
-        log.info('GOOGLE USER: ', googleUser)
-        let profile = googleUser.getBasicProfile()
-        // console.log(googleUser)
-        log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
-        log.info('Name: ' + profile.getName())
-        log.info('Image URL: ' + profile.getImageUrl())
-        log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
-
-        VuexStore.dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
-        let email = profile.getEmail()
-        VuexStore.dispatch('updateEmail', { email })
-        window.gapi.auth2
-          .getAuthInstance()
-          .disconnect()
-          .then(handleLogin(email, payload))
-          .catch(function(err) {
-            log.error(err)
+      // log.error('Could not find window.auth2, might not be loaded yet')
+      ;(function gapiLoadCall() {
+        if (window.auth2) {
+          window.auth2.signIn().then(function(googleUser) {
+            log.info('GOOGLE USER: ', googleUser)
+            let profile = googleUser.getBasicProfile()
+            // console.log(googleUser)
+            log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
+            log.info('Name: ' + profile.getName())
+            log.info('Image URL: ' + profile.getImageUrl())
+            log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
+            VuexStore.dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
+            let email = profile.getEmail()
+            VuexStore.dispatch('updateEmail', { email })
+            window.gapi.auth2
+              .getAuthInstance()
+              .disconnect()
+              .then(handleLogin(email, payload))
+              .catch(function(err) {
+                log.error(err)
+              })
           })
-      })
+        } else {
+          setTimeout(gapiLoadCall, 1000)
+        }
+      })()
     }
   }
 })
 
 function handleLogin(email, payload) {
+  VuexStore.dispatch('loginInProgress', true)
   torus.getPubKeyAsync(torus.web3, config.torusNodeEndpoints, email, function(err, res) {
     if (err) {
       log.error(err)
     } else {
       log.info('New private key assigned to user at address ', res)
-      torus.retrieveShares(config.torusNodeEndpoints, VuexStore.state.email, VuexStore.state.idToken, function(err, data) {
+      torus.retrieveShares(config.torusNodeEndpoints, config.torusIndexes, VuexStore.state.email, VuexStore.state.idToken, function(err, data) {
         if (err) {
           log.error(err)
         }
         VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
         VuexStore.dispatch('addWallet', data)
-        torus.torusController.accountTracker.store.subscribe(function(state) {
-          if (state.accounts) {
-            for (const key in state.accounts) {
-              if (state.accounts.hasOwnProperty(key)) {
-                const account = state.accounts[key]
-                VuexStore.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
+        torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
+          if (accounts) {
+            for (const key in accounts) {
+              if (accounts.hasOwnProperty(key)) {
+                const account = accounts[key]
+                if (VuexStore.state.weiBalance !== account.balance)
+                  VuexStore.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
               }
             }
           }
         })
-        const conversionRate = torus.torusController.currencyController.getConversionRate()
-        VuexStore.dispatch('updateCurrencyRate', { conversionRate })
+
+        torus.torusController.txController.store.subscribe(function({ transactions }) {
+          if (transactions) {
+            VuexStore.dispatch('updateTransactions', { transactions })
+          }
+        })
+
+        VuexStore.dispatch('setSelectedCurrency', 'USD')
+
+        torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
+          if (tokens.length > 0) {
+            VuexStore.dispatch('updateTokenData', { tokenData: tokens })
+          }
+        })
+
+        torus.torusController.tokenRatesController.store.subscribe(function({ contractExchangeRates }) {
+          if (contractExchangeRates) {
+            VuexStore.dispatch('updateTokenRates', { tokenRates: contractExchangeRates })
+          }
+        })
+
         // continue enable function
         var ethAddress = data.ethAddress
         if (payload.calledFromEmbed) {
@@ -244,6 +388,7 @@ function handleLogin(email, payload) {
         torus.torusController.initTorusKeyring([data.privKey], [data.ethAddress])
         const statusStream = torus.communicationMux.getStream('status')
         statusStream.write({ loggedIn: true })
+        VuexStore.dispatch('loginInProgress', false)
         // torus.web3.eth.net
         //   .getId()
         //   .then(res => {
@@ -256,18 +401,19 @@ function handleLogin(email, payload) {
   })
 }
 
-function getTransactionParams() {
-  const { torusController } = torus
-  const state = torusController.getState()
-  const transactions = []
-  for (let id in state.transactions) {
-    if (state.transactions[id].status === 'unapproved') {
-      transactions.push(state.transactions[id])
-    }
-  }
-  const { txParams, simulationFails } = transactions[0] || {}
-  return { txParams, simulationFails }
-}
+// function getTransactionParams() {
+//   const { torusController } = torus
+//   const state = torusController.getState()
+//   console.log(torusController.getState(), 'torus state')
+//   const transactions = []
+//   for (let id in state.transactions) {
+//     if (state.transactions[id].status === 'unapproved') {
+//       transactions.push(state.transactions[id])
+//     }
+//   }
+//   const { txParams, simulationFails } = transactions[0] || {}
+//   return { txParams, simulationFails }
+// }
 
 function getLatestMessageParams() {
   const { torusController } = torus

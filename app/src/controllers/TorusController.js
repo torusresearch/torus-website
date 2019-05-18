@@ -7,12 +7,14 @@ const AccountTracker = require('./AccountTracker').default
 const TransactionController = require('./TransactionController').default
 const RecentBlocksController = require('./RecentBlocksController').default
 const CurrencyController = require('./CurrencyController').default
+const DetectTokensController = require('./DetectTokensController').default
+const TokenRatesController = require('./TokenRatesController').default
 const toChecksumAddress = require('../utils/toChecksumAddress').default
 const BN = require('ethereumjs-util').BN
 const GWEI_BN = new BN('1000000000')
 const percentile = require('percentile')
 const sigUtil = require('eth-sig-util')
-const Dnode = require('dnode')
+// const Dnode = require('dnode')
 const pump = require('pump')
 const setupMultiplex = require('../utils/setupMultiplex').default
 const asStream = require('obs-store/lib/asStream')
@@ -46,6 +48,10 @@ export default class TorusController extends EventEmitter {
     this.store = new ComposableObservableStore()
     this.networkController = new NetworkController()
 
+    // this keeps track of how many "controllerStream" connections are open
+    // the only thing that uses controller connections are open metamask UI instances
+    this.activeControllerConnections = 0
+
     this.currencyController = new CurrencyController({
       initState: {}
     })
@@ -67,6 +73,17 @@ export default class TorusController extends EventEmitter {
       blockTracker: this.blockTracker,
       network: this.networkController
     })
+
+    // detect tokens controller
+    this.detectTokensController = new DetectTokensController({
+      network: this.networkController
+    })
+
+    this.tokenRatesController = new TokenRatesController({
+      currency: this.currencyController.store,
+      tokensStore: this.detectTokensController.detectedTokensStore
+    })
+
     // start and stop polling for balances based on activeControllerConnections
     this.on('controllerConnectionChanged', activeControllerConnections => {
       if (activeControllerConnections > 0) {
@@ -79,6 +96,9 @@ export default class TorusController extends EventEmitter {
     // ensure accountTracker updates balances after network change
     this.networkController.on('networkDidChange', () => {
       this.accountTracker._updateAccounts()
+      const currentCurrency = this.currencyController.getCurrentCurrency()
+      this.setCurrentCurrency(currentCurrency, function() {})
+      this.detectTokensController.restartTokenDetection()
     })
 
     // key mgmt
@@ -106,11 +126,6 @@ export default class TorusController extends EventEmitter {
           this.platform.showTransactionNotification(txMeta) // TODO: implement platform specific handlers
         }
       }
-    })
-
-    this.networkController.on('networkDidChange', () => {
-      const currentCurrency = this.currencyController.getCurrentCurrency()
-      this.setCurrentCurrency(currentCurrency, function() {})
     })
 
     this.networkController.lookupNetwork()
@@ -262,6 +277,8 @@ export default class TorusController extends EventEmitter {
   initTorusKeyring(keyArray, addresses) {
     this.keyringController.deserialize(keyArray)
     this.accountTracker.syncWithAddresses(addresses)
+    this.detectTokensController.startTokenDetection(addresses[0])
+    // this.setupControllerConnection()
     // this.accountTracker._updateAccounts()
   }
 
@@ -578,13 +595,13 @@ export default class TorusController extends EventEmitter {
    * @param {string} originDomain - The domain requesting the connection,
    * used in logging and error reporting.
    */
-  setupTrustedCommunication(connectionStream, originDomain) {
+  setupTrustedCommunication(inStream, outStream, originDomain) {
     // setup multiplexing
-    const mux = setupMultiplex(connectionStream)
+    // const mux = setupMultiplex(connectionStream)
     // connect features
-    this.setupControllerConnection(mux.createStream('controller'))
+    this.setupControllerConnection(outStream)
     // to fix test cases
-    this.setupProviderConnection(mux.createStream('test'), mux.createStream('provider'), originDomain)
+    this.setupProviderConnection(inStream, outStream, originDomain)
   }
 
   /**
@@ -592,26 +609,26 @@ export default class TorusController extends EventEmitter {
    * @param {*} outStream - The stream to provide our API over.
    */
   setupControllerConnection(outStream) {
-    const api = this.getApi()
-    const dnode = Dnode(api)
+    // const api = this.getApi()
+    // const dnode = Dnode(api)
     // report new active controller connection
     this.activeControllerConnections++
     this.emit('controllerConnectionChanged', this.activeControllerConnections)
     // connect dnode api to remote connection
-    pump(outStream, dnode, outStream, err => {
-      // report new active controller connection
-      this.activeControllerConnections--
-      this.emit('controllerConnectionChanged', this.activeControllerConnections)
-      // report any error
-      if (err) log.error(err)
-    })
-    dnode.on('remote', remote => {
-      // push updates to popup
-      const sendUpdate = update => remote.sendUpdate(update)
-      this.on('update', sendUpdate)
-      // remove update listener once the connection ends
-      dnode.on('end', () => this.removeListener('update', sendUpdate))
-    })
+    // pump(outStream, dnode, outStream, err => {
+    //   // report new active controller connection
+    //   this.activeControllerConnections--
+    //   this.emit('controllerConnectionChanged', this.activeControllerConnections)
+    //   // report any error
+    //   if (err) log.error(err)
+    // })
+    // dnode.on('remote', remote => {
+    //   // push updates to popup
+    //   const sendUpdate = update => remote.sendUpdate(update)
+    //   this.on('update', sendUpdate)
+    //   // remove update listener once the connection ends
+    //   dnode.on('end', () => this.removeListener('update', sendUpdate))
+    // })
   }
 
   /**
@@ -717,12 +734,12 @@ export default class TorusController extends EventEmitter {
    * @param {string} currencyCode - The code of the preferred currency.
    * @param {Function} cb - A callback function returning currency info.
    */
-  setCurrentCurrency(currencyCode, cb) {
+  async setCurrentCurrency(currencyCode, cb) {
     const { ticker } = this.networkController.getNetworkConfig()
     try {
       this.currencyController.setNativeCurrency(ticker)
       this.currencyController.setCurrentCurrency(currencyCode)
-      this.currencyController.updateConversionRate()
+      await this.currencyController.updateConversionRate()
       const data = {
         nativeCurrency: ticker || 'ETH',
         conversionRate: this.currencyController.getConversionRate(),
@@ -733,5 +750,18 @@ export default class TorusController extends EventEmitter {
     } catch (err) {
       cb(err)
     }
+  }
+
+  /**
+   * A method for selecting a custom URL for an ethereum RPC provider.
+   * @param {string} rpcTarget - A URL for a valid Ethereum RPC API.
+   * @param {number} chainId - The chainId of the selected network.
+   * @param {string} ticker - The ticker symbol of the selected network.
+   * @param {string} nickname - Optional nickname of the selected network.
+   * @returns {Promise<String>} - The RPC Target URL confirmed.
+   */
+  async setCustomRpc(rpcTarget, chainId, ticker = 'ETH', nickname = '', rpcPrefs = {}) {
+    this.networkController.setRpcTarget(rpcTarget, chainId, ticker, nickname, rpcPrefs)
+    return rpcTarget
   }
 }
