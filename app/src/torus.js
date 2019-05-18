@@ -100,8 +100,8 @@ var torus = {
         //   NodePubY  string `json:"nodepuby"`
         // }
         var nodeSigs = []
-        for (var i = 0; i < responses.result.length; i++) {
-          nodeSigs.push(responses.result[i])
+        for (var i = 0; i < responses.length; i++) {
+          nodeSigs.push(responses[i].result)
         }
         for (i = 0; i < endpoints.length; i++) {
           var t = i
@@ -203,7 +203,7 @@ var torus = {
   getPubKeyAsync: function(web3, endpoints, email, cb) {
     var promiseArr = []
     var shares = []
-    var p = fetch(endpoints[Math.random() % endpoints.length], {
+    var p = fetch(endpoints[Math.floor(Math.random() * endpoints.length)], {
       method: 'POST',
       cache: 'no-cache',
       mode: 'cors',
@@ -234,7 +234,7 @@ var torus = {
       .then(function() {
         promiseArr = []
         shares = []
-        var p = fetch(endpoints[Math.random() % endpoints.length], {
+        var p = fetch(endpoints[Math.floor(Math.random() * endpoints.length)], {
           method: 'POST',
           cache: 'no-cache',
           mode: 'cors',
@@ -243,7 +243,7 @@ var torus = {
           },
           body: JSON.stringify({
             jsonrpc: '2.0',
-            method: 'VerifierLookup',
+            method: 'VerifierLookupRequest',
             id: 10,
             params: {
               verifier: 'google',
