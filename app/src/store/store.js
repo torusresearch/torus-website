@@ -340,7 +340,7 @@ function handleLogin(email, payload) {
       log.error(err)
     } else {
       log.info('New private key assigned to user at address ', res)
-      torus.retrieveShares(config.torusNodeEndpoints, VuexStore.state.email, VuexStore.state.idToken, function(err, data) {
+      torus.retrieveShares(config.torusNodeEndpoints, config.torusIndexes, VuexStore.state.email, VuexStore.state.idToken, function(err, data) {
         if (err) {
           log.error(err)
         }

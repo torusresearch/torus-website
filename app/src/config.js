@@ -1,10 +1,11 @@
 export default {
   torusNodeEndpoints: [
-    'https://binancelabs.torusnode.com/jrpc',
-    'https://waseda.torusnode.com/jrpc',
-    'https://vgr.torusnode.com/jrpc',
-    'https://torus.torusnode.com/jrpc',
-    'https://etc.torusnode.com/jrpc'
+    'https://binancelabsmain.torusnode.com/jrpc',
+    'https://wasedamain.torusnode.com/jrpc',
+    'https://vgrmain.torusnode.com/jrpc',
+    'https://torusmain.torusnode.com/jrpc',
+    'https://etcmain.torusnode.com/jrpc'
   ],
+  torusIndexes: [4, 3, 1, 5, 2],
   supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH']
 }
