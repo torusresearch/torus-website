@@ -332,7 +332,7 @@ function createNetworkAndChainIdMiddleware({ network }) {
 }
 
 function createLocalhostClient() {
-  const fetchMiddleware = createFetchMiddleware({ rpcUrl: 'http://localhost:8545/' })
+  const fetchMiddleware = createFetchMiddleware({ rpcUrl: 'https://localhost:8545/' })
   const blockProvider = providerFromMiddleware(fetchMiddleware)
   const blockTracker = new BlockTracker({ provider: blockProvider, pollingInterval: 1000 })
 
