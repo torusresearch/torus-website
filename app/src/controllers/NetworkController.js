@@ -37,7 +37,10 @@ export default class NetworkController extends EventEmitter {
   constructor(opts = {}) {
     super()
     this.defaultMaxListeners = 20
-    const providerConfig = opts.provider || defaultProviderConfig
+    let providerConfig = opts.provider || defaultProviderConfig
+    if (window.localStorage.getItem('torus_network_type')) {
+      providerConfig.type = window.localStorage.getItem('torus_network_type')
+    }
     this.providerStore = new ObservableStore(providerConfig)
     this.networkStore = new ObservableStore('loading')
     this.networkConfig = new ObservableStore(defaultNetworkConfig)
