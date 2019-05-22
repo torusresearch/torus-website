@@ -1,12 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from './store'
-const Home = () => import('./views/Home.vue')
 const Popup = () => import('./views/Popup.vue')
 const Confirm = () => import('./views/Confirm.vue')
-const Privacy = () => import('./views/Privacy.vue')
 const Wallet = () => import('./views/Wallet.vue')
-// const WalletTransfer = () => import('./views/WalletTransfer.vue')
 const Login = () => import('./containers/Login.vue')
 const WalletHome = () => import('./containers/WalletHome.vue')
 const WalletHistory = () => import('./containers/WalletHistory.vue')
@@ -22,8 +19,8 @@ const router = new Router({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: Home,
+      name: 'login',
+      component: Login,
       meta: { requiresAuth: false }
     },
     {
@@ -36,18 +33,6 @@ const router = new Router({
       path: '/confirm',
       name: 'confirm',
       component: Confirm
-    },
-    {
-      path: '/privacy',
-      name: 'privacy',
-      component: Privacy,
-      meta: { requiresAuth: false }
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: Login,
-      meta: { requiresAuth: false }
     },
     {
       path: '/wallet',
