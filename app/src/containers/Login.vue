@@ -4,7 +4,7 @@
       <template v-if="gapiLoaded">
         <template v-if="!loginInProgress">
           <v-layout row wrap align-center justify-center align-content-center>
-            <v-flex d-flex xs12>
+            <v-flex d-flex xs12 class="fix-size">
               <img :src="require('../../public/images/torus-logo-white.svg')" alt="logo" />
             </v-flex>
             <v-flex xs12 mt-3>
@@ -87,6 +87,10 @@ export default {
   background-repeat: no-repeat;
   background-position: center;
   @extend .default;
+}
+
+.fix-size {
+  height: 69px;
 }
 
 .default {
