@@ -8,9 +8,9 @@
           <v-card-text>
             <v-layout row wrap>
               <v-flex mt-3>
-                <h6 class="mb-3">
+                <p class="mb-3">
                   From: <span class="text-bluish">{{ origin }}</span>
-                </h6>
+                </p>
                 <div v-if="messageType === 'normal'">{{ message }}</div>
                 <div v-else-if="messageType === 'typed'" v-for="typedMessage in typedMessages" :key="typedMessage.name">
                   Type: {{ typedMessage.type }}
@@ -60,9 +60,9 @@
           <v-card-text>
             <v-layout row wrap>
               <v-flex xs12>
-                <h6 class="mb-3">
+                <p class="mb-3">
                   From: <span class="text-bluish">{{ origin }}</span>
-                </h6>
+                </p>
               </v-flex>
               <v-flex mt-3 xs12 sm4 align-self-top text-sm-center text-xs-left>
                 <v-layout row wrap>
