@@ -12,7 +12,7 @@ const integrity = sriToolbox.generate(
   embedFile
 )
 
-const filesToReplace = ['../public/embed-local.user.js', '../public/embed.user.js', '../src/components/HomeComponent.vue']
+const filesToReplace = ['../public/embed.user.js']
 
 filesToReplace.forEach(filePath => {
   try {
@@ -24,7 +24,7 @@ filesToReplace.forEach(filePath => {
       fs.writeFileSync(reqPath, result, 'utf8')
       index = data.indexOf('sha384-', index + 64 + 7)
       data = result
-    }  
+    }
   } catch (error) {
     console.log(error)
   }
