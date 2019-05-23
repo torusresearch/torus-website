@@ -4,9 +4,9 @@
 }
 
 #torusLogin {
-  border-radius: 20px;
-  height: 40px;
-  width: 40px;
+  border-radius: 25px;
+  height: 50px;
+  width: 50px;
   background-image: url("/images/login.png");
   background-size: 60%;
   background-repeat: no-repeat;
@@ -20,10 +20,10 @@
 
 #torusMenuBtn {
   cursor: pointer;
-  border-radius: 20px;
-  height: 40px;
-  width: 40px;
-  background-image: url("/images/torusbig.png");
+  border-radius: 25px;
+  height: 50px;
+  width: 50px;
+  background-image: url("/images/favicon.png");
   background-size: 60%;
   background-repeat: no-repeat;
   border-width: 0px;
@@ -58,7 +58,7 @@
 
 #torusLogin:hover {
   background-color: #75b4fd;
-  height: 40px;
+  height: 50px;
   width: 120px;
   background-size: 85%;
   background-image: url("/images/loginwithgoogle.png");
