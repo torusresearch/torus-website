@@ -23,8 +23,8 @@
   border-radius: 25px;
   height: 50px;
   width: 50px;
-  background-image: url("/images/favicon.png");
-  background-size: 60%;
+  background-image: url("/images/favicon_inverted.png");
+  background-size: 100%;
   background-repeat: no-repeat;
   border-width: 0px;
   background-position: center;
