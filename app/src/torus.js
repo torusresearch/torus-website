@@ -63,7 +63,7 @@ var torus = {
             tokencommitment: tokenCommitment.slice(2),
             temppubx: pubKey.getX().toString('hex'),
             temppuby: pubKey.getY().toString('hex'),
-            timestamp: Date.now().toString().slice(0, 10),
+            timestamp: (Date.now() - 2000).toString().slice(0, 10),
             verifieridentifier: 'google'
           }
         })
@@ -129,7 +129,7 @@ var torus = {
           })
             .then(res => res.json())
             .then(res => {
-              console.log("shareresponse here", res)
+              console.log('shareresponse here', res)
               shareResponses[t] = res
             })
             .catch(err => {
