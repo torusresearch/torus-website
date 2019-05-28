@@ -1,7 +1,7 @@
 <template>
   <v-tooltip bottom>
     <template v-slot:activator="{ on }">
-      <span class="selected-account font-weight-medium" :color="$vuetify.theme.torus_accept" size="18" v-on="on" @click="copyToClip(address)">
+      <span class="selected-account" :color="$vuetify.theme.torus_accept" size="18" v-on="on" @click="copyToClip(address)">
         <slot></slot>
       </span>
     </template>
@@ -44,7 +44,6 @@ export default {
 
 .selected-account {
   cursor: pointer;
-  @extend .text-bluish;
 
   &:hover {
     background-color: var(--v-torus_reject_mild-base);

@@ -35,8 +35,8 @@
         <template v-slot:items="props">
           <!-- "props.expanded = !props.expanded" -->
           <tr @click="selectEmit(props.item)" :active="props.selected" :class="{ activeRow: props.selected }">
-            <td class="text-xs-left">
-              <v-layout row>
+            <td class="text-xs-left unpaddedtd">
+              <v-layout row justify-space-between>
                 <v-flex xs2 sm1 align-self-center>
                   <img
                     :src="require(`../../public/images/logos/${props.item.logo}`)"
@@ -45,7 +45,7 @@
                   />
                 </v-flex>
                 <v-flex xs10 sm11 align-self-center>
-                  <span class="ml-1">{{ props.item.name }} </span>
+                  <span class="ml-2">{{ props.item.name }} </span>
                 </v-flex>
               </v-layout>
             </td>
@@ -136,6 +136,11 @@ export default {
   height: 25px;
   display: inline-block;
   vertical-align: middle;
+}
+
+/deep/.unpaddedtd {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
 }
 
 // overriding css of vuetify requires the usage of important tag

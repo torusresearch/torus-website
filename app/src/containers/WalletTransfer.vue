@@ -168,7 +168,7 @@ export default {
   data() {
     return {
       tokenAddress: '0x',
-      amount: '',
+      amount: 0,
       displayAmount: '',
       toAddress: '',
       formValid: true,
@@ -227,7 +227,8 @@ export default {
       return `Faster with ${significantDigits(currencyFee)} ${this.selectedCurrency} / ${significantDigits(ethFee)} ETH`
     },
     remainingBalanceString() {
-      return `${this.selectedItem.currencyBalance} / ${this.selectedItem.formattedBalance}`
+      if (this.selectedItem) return `${this.selectedItem.currencyBalance} / ${this.selectedItem.formattedBalance}`
+      return ''
     }
   },
   watch: {
@@ -244,11 +245,14 @@ export default {
   },
   methods: {
     lesserThan: function(value) {
-      let amount = value
-      if (this.toggle_exclusive === 1) {
-        amount = amount / this.getCurrencyTokenRate
+      if (this.selectedItem) {
+        let amount = value
+        if (this.toggle_exclusive === 1) {
+          amount = amount / this.getCurrencyTokenRate
+        }
+        return parseFloat(amount) < this.selectedItem.computedBalance || 'Must be lesser than current balance'
       }
-      return parseFloat(amount) < this.selectedItem.computedBalance || 'Must be lesser than current balance'
+      return ''
     },
     calculateGas() {
       if (torus.web3.utils.isAddress(this.toAddress)) {
