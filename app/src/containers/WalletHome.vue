@@ -1,64 +1,58 @@
 <template>
-  <v-container fill-height>
-    <v-card class="fill-height" flat :color="$vuetify.theme.torus_bcg" style="width: 100%">
-      <v-card-text>
-        <v-layout row wrap align-start justify-center align-content-start>
-          <v-flex xs12 sm5>
-            <span>
-              <span class="spanWrapSvgStyle">
-                <img :src="require('../../public/images/wallet-blue.svg')" alt="Wallet" class="svg-setting-small" />
+  <v-layout mt-5 row wrap align-start justify-center align-content-start>
+    <v-flex xs12 sm5>
+      <span>
+        <span class="spanWrapSvgStyle">
+          <img :src="require('../../public/images/wallet-blue.svg')" alt="Wallet" class="svg-setting-small" />
+        </span>
+        <span class="text-bluish headline"> My Portfolio</span>
+        <span class="spanWrapSvgStyle" v-show="isRefreshVisible">
+          <v-btn icon size="18" small @click="refreshBalances">
+            <img :src="require('../../public/images/sync-blue.svg')" alt="Wallet" class="svg-setting-tiny" />
+          </v-btn>
+        </span>
+      </span>
+    </v-flex>
+    <v-flex xs12 sm5 class="text-sm-right">
+      <div>Total Portfolio Value</div>
+      <div>
+        <span>
+          <span class="text-bluish headline spanWrapSvgStyle"> {{ totalPortfolioValue }} </span>
+          <v-select
+            class="select-width spanWrapSvgStyle d-inline-flex ml-2"
+            single-line
+            solo
+            flat
+            :items="supportedCurrencies"
+            :value="selectedCurrency"
+            label=""
+            @change="onCurrencyChange"
+          ></v-select>
+        </span>
+      </div>
+    </v-flex>
+    <v-flex xs12>
+      <token-balances-table :headers="headers" :tokenBalances="finalBalancesArray" @update:select="select" :selected="selected" />
+    </v-flex>
+    <v-flex xs12>
+      <v-layout row wrap>
+        <v-flex offset-xs1 class="text-xs-left" id="flexibtn">
+          <v-tooltip bottom :disabled="!isTransferDisabled">
+            <template v-slot:activator="{ on }">
+              <span v-on="on">
+                <v-btn :disabled="isTransferDisabled" outline large class="btnStyle" @click="initiateTransfer">Transfer</v-btn>
               </span>
-              <span class="text-bluish headline"> My Portfolio</span>
-              <span class="spanWrapSvgStyle" v-show="isRefreshVisible">
-                <v-btn icon size="18" small @click="refreshBalances">
-                  <img :src="require('../../public/images/sync-blue.svg')" alt="Wallet" class="svg-setting-tiny" />
-                </v-btn>
-              </span>
-            </span>
-          </v-flex>
-          <v-flex xs12 sm5 class="text-sm-right">
-            <div>Total Portfolio Value</div>
-            <div>
-              <span>
-                <span class="text-bluish headline spanWrapSvgStyle"> {{ totalPortfolioValue }} </span>
-                <v-select
-                  class="select-width spanWrapSvgStyle d-inline-flex ml-2"
-                  single-line
-                  solo
-                  flat
-                  :items="supportedCurrencies"
-                  :value="selectedCurrency"
-                  label=""
-                  @change="onCurrencyChange"
-                ></v-select>
-              </span>
-            </div>
-          </v-flex>
-          <v-flex xs12>
-            <token-balances-table :headers="headers" :tokenBalances="finalBalancesArray" @update:select="select" :selected="selected" />
-          </v-flex>
-          <v-flex xs12>
-            <v-layout row wrap>
-              <v-flex offset-xs1 class="text-xs-left" id="flexibtn">
-                <v-tooltip bottom :disabled="!isTransferDisabled">
-                  <template v-slot:activator="{ on }">
-                    <span v-on="on">
-                      <v-btn :disabled="isTransferDisabled" outline large class="btnStyle" @click="initiateTransfer">Transfer</v-btn>
-                    </span>
-                  </template>
-                  <span>Please select a coin/token</span>
-                </v-tooltip>
-                <v-btn outline large class="btnStyle" @click="topup">Top-up</v-btn>
-              </v-flex>
-              <v-flex xs2 align-self-center class="hidden-xs-only">
-                <img :src="require('../../public/images/torus_logo.png')" />
-              </v-flex>
-            </v-layout>
-          </v-flex>
-        </v-layout>
-      </v-card-text>
-    </v-card>
-  </v-container>
+            </template>
+            <span>Please select a coin/token</span>
+          </v-tooltip>
+          <v-btn outline large class="btnStyle" @click="topup">Top-up</v-btn>
+        </v-flex>
+        <v-flex xs2 align-self-center class="hidden-xs-only">
+          <img :src="require('../../public/images/torus_logo.png')" />
+        </v-flex>
+      </v-layout>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
