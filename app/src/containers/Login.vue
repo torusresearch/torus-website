@@ -100,5 +100,6 @@ export default {
 body,
 html {
   height: 100%;
+  overflow-y: hidden;
 }
 </style>
