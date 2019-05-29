@@ -1,48 +1,42 @@
 <template>
-  <v-container fill-height>
-    <v-card class="fill-height" flat :color="$vuetify.theme.torus_bcg" style="width: 100%;">
-      <v-card-text>
-        <v-layout row wrap align-start justify-center align-content-start>
-          <v-flex xs12 sm5>
-            <span>
-              <span class="spanWrapSvgStyle">
-                <img :src="require('../../public/images/coins.svg')" alt="Wallet" class="svg-setting-small" />
-              </span>
-              <span class="text-bluish headline"> My Transactions</span>
-            </span>
-          </v-flex>
-          <v-flex xs12 sm5 class="text-sm-right">
-            <div>Total Portfolio Value</div>
-            <div>
-              <span>
-                <span class="text-bluish headline spanWrapSvgStyle"> {{ totalPortfolioValue }} </span>
-                <v-select
-                  class="select-width d-inline-flex ml-2 spanWrapSvgStyle"
-                  single-line
-                  solo
-                  flat
-                  :items="supportedCurrencies"
-                  :value="selectedCurrency"
-                  label=""
-                  @change="onCurrencyChange"
-                ></v-select>
-              </span>
-            </div>
-          </v-flex>
-          <v-flex xs12>
-            <tx-history-table :headers="headers" :transactions="transactions" />
-          </v-flex>
-          <v-flex xs12 mt-5>
-            <v-layout row wrap>
-              <v-flex offset-xs10 xs2 align-self-center class="hidden-xs-only">
-                <img :src="require('../../public/images/torus_logo.png')" />
-              </v-flex>
-            </v-layout>
-          </v-flex>
-        </v-layout>
-      </v-card-text>
-    </v-card>
-  </v-container>
+  <v-layout mt-5 row wrap align-start justify-center align-content-start>
+    <v-flex xs12 sm5>
+      <span>
+        <span class="spanWrapSvgStyle">
+          <img :src="require('../../public/images/coins.svg')" alt="Wallet" class="svg-setting-small" />
+        </span>
+        <span class="text-bluish headline"> My Transactions</span>
+      </span>
+    </v-flex>
+    <v-flex xs12 sm5 class="text-sm-right">
+      <div>Total Portfolio Value</div>
+      <div>
+        <span>
+          <span class="text-bluish headline spanWrapSvgStyle"> {{ totalPortfolioValue }} </span>
+          <v-select
+            class="select-width d-inline-flex ml-2 spanWrapSvgStyle"
+            single-line
+            solo
+            flat
+            :items="supportedCurrencies"
+            :value="selectedCurrency"
+            label=""
+            @change="onCurrencyChange"
+          ></v-select>
+        </span>
+      </div>
+    </v-flex>
+    <v-flex xs12>
+      <tx-history-table :headers="headers" :transactions="transactions" />
+    </v-flex>
+    <v-flex xs12 mt-5>
+      <v-layout row wrap>
+        <v-flex offset-xs10 xs2 align-self-center class="hidden-xs-only">
+          <img :src="require('../../public/images/torus_logo.png')" />
+        </v-flex>
+      </v-layout>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>

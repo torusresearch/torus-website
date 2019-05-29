@@ -97,9 +97,12 @@ export default {
   height: 100%;
 }
 
+.application--wrap {
+  min-height: 0px !important;
+}
+
 body,
 html {
   height: 100%;
-  overflow-y: hidden;
 }
 </style>
