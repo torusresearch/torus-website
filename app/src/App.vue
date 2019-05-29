@@ -10,5 +10,6 @@
 <style lang="scss">
 #app {
   background: var(--v-torus_bcg-base) !important;
+  height: 100%;
 }
 </style>
