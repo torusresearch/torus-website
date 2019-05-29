@@ -44,9 +44,7 @@
                     onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
                   />
                 </v-flex>
-                <v-flex xs10 sm11 align-self-center>
-                  <span class="ml-2">{{ props.item.name }} </span>
-                </v-flex>
+                <v-flex ml-2 xs10 sm11 align-self-center> {{ props.item.name }} </v-flex>
               </v-layout>
             </td>
             <td class="text-xs-center no-wrap text-bluish">{{ props.item.formattedBalance }}</td>

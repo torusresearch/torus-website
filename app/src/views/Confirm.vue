@@ -509,6 +509,10 @@ hr {
   text-align: center;
 }
 
+.application--wrap {
+  min-height: 0px !important;
+}
+
 .btnStyle {
   width: 141px;
   height: 41px;
