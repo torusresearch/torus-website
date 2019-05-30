@@ -8,7 +8,7 @@ var LocalMessageDuplexStream = require('post-message-stream')
 const pump = require('pump')
 const stream = require('stream')
 const setupMultiplex = require('./utils/setupMultiplex').default
-const MetamaskInpageProvider = require('../inpage/inpage-provider')
+const MetamaskInpageProvider = require('@toruslabs/torus-embed/src/inpage-provider')
 const routerStream = require('./utils/routerStream')
 ;(function() {
   var origNextTick = process.nextTick.bind(process)
