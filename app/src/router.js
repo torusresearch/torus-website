@@ -1,15 +1,25 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from './store'
-const Popup = () => import('./views/Popup.vue')
-const Confirm = () => import('./views/Confirm.vue')
-const Wallet = () => import('./views/Wallet.vue')
-const Login = () => import('./containers/Login.vue')
-const WalletHome = () => import('./containers/WalletHome.vue')
-const WalletHistory = () => import('./containers/WalletHistory.vue')
-const WalletSettings = () => import('./containers/WalletSettings.vue')
-const WalletAccounts = () => import('./containers/WalletAccounts.vue')
-const WalletTransfer = () => import('./containers/WalletTransfer.vue')
+import Popup from './views/Popup.vue'
+import Confirm from './views/Confirm.vue'
+import Wallet from './views/Wallet.vue'
+import WalletHome from './containers/WalletHome.vue'
+import Login from './containers/Login.vue'
+import WalletHistory from './containers/WalletHistory.vue'
+import WalletSettings from './containers/WalletSettings.vue'
+import WalletAccounts from './containers/WalletAccounts.vue'
+import WalletTransfer from './containers/WalletTransfer.vue'
+
+// const Popup = () => import('./views/Popup.vue')
+// const Confirm = () => import('./views/Confirm.vue')
+// const Wallet = () => import('./views/Wallet.vue')
+// const Login = () => import('./containers/Login.vue')
+// const WalletHome = () => import('./containers/WalletHome.vue')
+// const WalletHistory = () => import('./containers/WalletHistory.vue')
+// const WalletSettings = () => import('./containers/WalletSettings.vue')
+// const WalletAccounts = () => import('./containers/WalletAccounts.vue')
+// const WalletTransfer = () => import('./containers/WalletTransfer.vue')
 
 Vue.use(Router)
 
