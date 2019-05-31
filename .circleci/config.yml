@@ -150,7 +150,7 @@ workflows:
           requires:
             - build-staging
             - test-coverage
-            filters:
-              branches:
-                only:
-                  - remove/inpage
+          filters:
+            branches:
+              only:
+                - remove/inpage
