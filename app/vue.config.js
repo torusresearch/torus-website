@@ -30,7 +30,18 @@ module.exports = {
   pluginOptions: {
     prerenderSpa: {
       registry: undefined,
-      renderRoutes: ['/', '/popup', '/confirm', '/privacy', '/wallet'],
+      renderRoutes: [
+        '/',
+        '/popup',
+        '/login',
+        '/confirm',
+        '/wallet',
+        '/wallet/home',
+        '/wallet/history',
+        '/wallet/accounts',
+        '/wallet/settings',
+        '/wallet/transfer'
+      ],
       useRenderEvent: true,
       headless: true,
       onlyProduction: true
