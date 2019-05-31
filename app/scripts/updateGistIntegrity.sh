@@ -10,5 +10,4 @@ echo "<script src="https://app.tor.us/embed.min.js"
 
 git config user.email "chaitanya.potti@gmail.com"
 git config user.name "chaitanyapotti"
-git commit -am "Updating embed"
-git push origin master
+git diff --quiet && git diff --staged --quiet || (git commit -am "Updating embed" && git push origin master)
