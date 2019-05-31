@@ -102,6 +102,18 @@ jobs:
             cd app/app/
             ssh torus@138.68.230.250 "rm -rf ~/staging-torus-website/*"
             scp -r ./dist torus@138.68.230.250:~/staging-torus-website
+  update-gist:
+    <<: *job_common
+    steps:
+      - attach_workspace:
+          at: app
+      - add_ssh_keys
+      - run:
+          name: "Deploy Over SSH"
+          command: |
+            ssh-keyscan -H gist.github.com >> ~/.ssh/known_hosts
+            cd app/app/
+            . ./scripts/updateGistIntegrity.sh
 
 workflows:
   version: 2
@@ -127,6 +139,14 @@ workflows:
               only:
                 - master
       - deploy-staging:
+          requires:
+            - build-staging
+            - test-coverage
+          filters:
+            branches:
+              only:
+                - develop
+      - update-gist:
           requires:
             - build-staging
             - test-coverage
