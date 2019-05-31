@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone https://gist.github.com/733405286923fa047af4cb26d167acd4.git ~/gist
+git clone git@gist.github.com:733405286923fa047af4cb26d167acd4.git ~/gist
 cd dist/
 HASH="$(cat embed.min.js | openssl dgst -sha384 -binary | openssl base64 -A)"
 cd ~/gist
