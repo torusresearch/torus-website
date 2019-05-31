@@ -20,6 +20,9 @@ module.exports = {
     extract: false
   },
 
+  integrity: true,
+  crossorigin: 'anonymous',
+
   transpileDependencies: ['eth-json-rpc-infura'],
 
   productionSourceMap: false,
