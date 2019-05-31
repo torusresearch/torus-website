@@ -85,10 +85,10 @@ jobs:
       - run:
           name: "Deploy Over SSH"
           command: |
-            echo '138.68.230.250 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEEQekDY4pm0iOZMDnHGh9ucm/1q1va9DrM6wtbtWFaFjbbh8na4mptJJppYSQ+9A+UROekZdO5QskMo5wubYHQ=' >> ~/.ssh/known_hosts
+            ssh-keyscan -H app.tor.us >> ~/.ssh/known_hosts
             cd app/app/
-            ssh torus@138.68.230.250 "rm -rf ~/torus-website/*"
-            scp -r ./dist torus@138.68.230.250:~/torus-website
+            ssh torus@app.tor.us "rm -rf ~/torus-website/*"
+            scp -r ./dist torus@app.tor.us:~/torus-website
   deploy-staging:
     <<: *job_common
     steps:
@@ -98,10 +98,10 @@ jobs:
       - run:
           name: "Deploy Over SSH"
           command: |
-            echo '138.68.230.250 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEEQekDY4pm0iOZMDnHGh9ucm/1q1va9DrM6wtbtWFaFjbbh8na4mptJJppYSQ+9A+UROekZdO5QskMo5wubYHQ=' >> ~/.ssh/known_hosts
+            ssh-keyscan -H staging.tor.us >> ~/.ssh/known_hosts
             cd app/app/
-            ssh torus@138.68.230.250 "rm -rf ~/staging-torus-website/*"
-            scp -r ./dist torus@138.68.230.250:~/staging-torus-website
+            ssh torus@staging.tor.us "rm -rf ~/staging-torus-website/*"
+            scp -r ./dist torus@staging.tor.us:~/staging-torus-website
   update-gist:
     <<: *job_common
     steps:
@@ -148,9 +148,9 @@ workflows:
                 - develop
       - update-gist:
           requires:
-            - build-staging
+            - build
             - test-coverage
           filters:
             branches:
               only:
-                - develop
+                - master
