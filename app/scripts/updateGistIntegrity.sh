@@ -5,7 +5,7 @@ cd dist/
 HASH="$(cat embed.min.js | openssl dgst -sha384 -binary | openssl base64 -A)"
 cd ~/gist
 echo "<script src="https://app.tor.us/embed.min.js"
-        integrity=\"$HASH\"
+        integrity=\"sha384-$HASH\"
         crossorigin="anonymous"></script>" > torus-embed.html
 
 git config user.email "chaitanya.potti@gmail.com"
