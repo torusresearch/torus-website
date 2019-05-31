@@ -102,6 +102,17 @@ jobs:
             cd app/app/
             ssh torus@138.68.230.250 "rm -rf ~/staging-torus-website/*"
             scp -r ./dist torus@138.68.230.250:~/staging-torus-website
+  update-gist:
+    <<: *job_common
+    steps:
+      - attach_workspace:
+          at: app
+      - add_ssh_keys
+      - run:
+          name: "Deploy Over SSH"
+          command: |
+            cd app/app/dist/
+            npm run update:gist
 
 workflows:
   version: 2
@@ -118,6 +129,7 @@ workflows:
             branches:
               only:
                 - develop
+                - remove/inpage
       - deploy:
           requires:
             - build
@@ -134,3 +146,11 @@ workflows:
             branches:
               only:
                 - develop
+      - update-gist:
+          requires:
+            - build-staging
+            - test-coverage
+            filters:
+              branches:
+                only:
+                  - remove/inpage

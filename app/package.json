@@ -25,7 +25,8 @@
     "test:e2e": "node ./test/e2e/puppeteer.js",
     "test:e2e:headful": "node ./test/e2e/puppeteer.js false",
     "test:unit": "mocha --exit -r esm -r jsdom-global/register -r isomorphic-fetch ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js",
-    "test:build-embed": "mocha --exit ./test/compile/Web3Test.js"
+    "test:build-embed": "mocha --exit ./test/compile/Web3Test.js",
+    "update:gist": ". ./scripts/updateGistIntegrity.sh"
   },
   "dependencies": {
     "assert": "^2.0.0",
