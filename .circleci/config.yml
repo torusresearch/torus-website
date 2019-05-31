@@ -111,7 +111,6 @@ jobs:
       - run:
           name: "Deploy Over SSH"
           command: |
-            cd app/app/dist/
             npm run update:gist
 
 workflows:
