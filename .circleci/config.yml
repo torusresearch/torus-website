@@ -111,6 +111,7 @@ jobs:
       - run:
           name: "Deploy Over SSH"
           command: |
+            ssh-keyscan -H gist.github.com >> ~/.ssh/known_hosts
             cd app/app/
             . ./scripts/updateGistIntegrity.sh
 
