@@ -111,7 +111,8 @@ jobs:
       - run:
           name: "Deploy Over SSH"
           command: |
-            npm run update:gist
+            cd app/app/
+            . ./scripts/updateGistIntegrity.sh
 
 workflows:
   version: 2
