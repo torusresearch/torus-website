@@ -9,8 +9,6 @@ import torus from './torus'
 log.setDefaultLevel('info')
 console.log('NODE_ENV', process.env.NODE_ENV)
 
-Vue.use(require('vue-script2'))
-
 Vue.config.productionTip = false
 
 Object.defineProperty(Vue.prototype, 'torus', { value: torus })
