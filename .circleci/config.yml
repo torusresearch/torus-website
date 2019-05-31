@@ -130,7 +130,6 @@ workflows:
             branches:
               only:
                 - develop
-                - remove/inpage
       - deploy:
           requires:
             - build
