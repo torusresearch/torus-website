@@ -21,7 +21,7 @@ npm run serve
 ### Compiles and minifies for production
 
 ```
-npm run build && npm run buildEmbed
+npm run build
 ```
 
 ### Run your tests
