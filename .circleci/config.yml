@@ -27,7 +27,8 @@ jobs:
       - <<: *step_setup_global_packages
       - run:
           name: "Build code for torus website"
-          command: npm run build
+          command: |
+            npm run update:buildVersion && npm run build && . ./scripts/gitPush.sh
       - persist_to_workspace:
           root: ~/torus-website/
           paths:
@@ -83,12 +84,10 @@ jobs:
           at: app
       - add_ssh_keys
       - run:
-          name: "Deploy Over SSH"
+          name: "Deploy Over SSH to AWS"
           command: |
-            ssh-keyscan -H app.tor.us >> ~/.ssh/known_hosts
-            cd app/app/
-            ssh torus@app.tor.us "rm -rf ~/torus-website/*"
-            scp -r ./dist torus@app.tor.us:~/torus-website
+            . ./scripts/uploadToAws.sh
+
   deploy-staging:
     <<: *job_common
     steps:
@@ -102,18 +101,17 @@ jobs:
             cd app/app/
             ssh torus@staging.tor.us "rm -rf ~/staging-torus-website/*"
             scp -r ./dist torus@staging.tor.us:~/staging-torus-website
-  update-gist:
+  update-iframeIntegrity:
     <<: *job_common
     steps:
       - attach_workspace:
           at: app
       - add_ssh_keys
       - run:
-          name: "Deploy Over SSH"
+          name: "Update iframe integrity"
           command: |
-            ssh-keyscan -H gist.github.com >> ~/.ssh/known_hosts
             cd app/app/
-            . ./scripts/updateGistIntegrity.sh
+            . ./scripts/updateIframeIntegrity.sh
 
 workflows:
   version: 2
@@ -138,6 +136,13 @@ workflows:
             branches:
               only:
                 - master
+      - update-iframeIntegrity:
+          requires:
+            - deploy
+          filters:
+            branches:
+              only:
+                - master
       - deploy-staging:
           requires:
             - build-staging
@@ -146,11 +151,3 @@ workflows:
             branches:
               only:
                 - develop
-      - update-gist:
-          requires:
-            - build
-            - test-coverage
-          filters:
-            branches:
-              only:
-                - master

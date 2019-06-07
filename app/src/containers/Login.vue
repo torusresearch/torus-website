@@ -54,7 +54,7 @@ export default {
   }),
   watch: {
     selectedAddress: function(newAddress, oldAddress) {
-      if (newAddress !== oldAddress && newAddress !== '') this.$router.push('/wallet')
+      if (newAddress !== oldAddress && newAddress !== '') this.$router.push('wallet')
     }
   },
   mounted() {
@@ -70,6 +70,8 @@ export default {
         })
       }
     }, 2000)
+
+    if (this.selectedAddress !== '') this.$router.push('wallet')
   }
 }
 </script>
@@ -83,7 +85,7 @@ export default {
 
 .background-login {
   position: relative;
-  background-image: url(/images/background_login.png);
+  background-image: url(../assets/background_login.png);
   background-repeat: no-repeat;
   background-position: center;
   @extend .default;

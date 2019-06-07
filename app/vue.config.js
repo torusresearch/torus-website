@@ -1,6 +1,14 @@
 const fs = require('fs')
 const path = require('path')
 
+let routes = ['/', '/popup', '/confirm', '/wallet', '/wallet/home', '/wallet/history', '/wallet/accounts', '/wallet/settings', '/wallet/transfer']
+
+if (process.env.TORUS_BUILD_ENV !== 'production') {
+  routes.push('/login')
+}
+
+const version = JSON.parse(fs.readFileSync(path.resolve('./package.json'))).buildVersion
+
 module.exports = {
   devServer: {
     // open: process.platform === 'darwin',
@@ -20,6 +28,8 @@ module.exports = {
     extract: false
   },
 
+  publicPath: process.env.TORUS_BUILD_ENV === 'production' ? `/${version}/` : '/',
+
   integrity: true,
   crossorigin: 'anonymous',
 
@@ -30,18 +40,7 @@ module.exports = {
   pluginOptions: {
     prerenderSpa: {
       registry: undefined,
-      renderRoutes: [
-        '/',
-        '/popup',
-        '/login',
-        '/confirm',
-        '/wallet',
-        '/wallet/home',
-        '/wallet/history',
-        '/wallet/accounts',
-        '/wallet/settings',
-        '/wallet/transfer'
-      ],
+      renderRoutes: routes,
       useRenderEvent: true,
       headless: true,
       onlyProduction: true
