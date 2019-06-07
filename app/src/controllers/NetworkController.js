@@ -37,7 +37,7 @@ export default class NetworkController extends EventEmitter {
   constructor(opts = {}) {
     super()
     this.defaultMaxListeners = 20
-    let providerConfig = opts.provider || defaultProviderConfig
+    const providerConfig = opts.provider || defaultProviderConfig
     this.providerStore = new ObservableStore(providerConfig)
     this.networkStore = new ObservableStore('loading')
     this.networkConfig = new ObservableStore(defaultNetworkConfig)
@@ -332,7 +332,7 @@ function createNetworkAndChainIdMiddleware({ network }) {
 }
 
 function createLocalhostClient() {
-  const fetchMiddleware = createFetchMiddleware({ rpcUrl: 'https://localhost:8545/' })
+  const fetchMiddleware = createFetchMiddleware({ rpcUrl: 'http://localhost:8545/' })
   const blockProvider = providerFromMiddleware(fetchMiddleware)
   const blockTracker = new BlockTracker({ provider: blockProvider, pollingInterval: 1000 })
 
