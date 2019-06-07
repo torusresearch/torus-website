@@ -86,6 +86,7 @@ jobs:
       - run:
           name: "Deploy Over SSH to AWS"
           command: |
+            cd app/app
             . ./scripts/uploadToAws.sh
 
   deploy-staging:
