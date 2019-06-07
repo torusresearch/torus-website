@@ -86,6 +86,7 @@ jobs:
       - run:
           name: "Deploy Over SSH to AWS"
           command: |
+            cd app/app
             . ./scripts/uploadToAws.sh
 
   deploy-staging:
@@ -110,6 +111,8 @@ jobs:
       - run:
           name: "Update iframe integrity"
           command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
             cd app/app/
             . ./scripts/updateIframeIntegrity.sh
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-cd app/app/
 PACKAGE_VERSION=$(cat package.json \
   | grep buildVersion \
   | head -1 \
