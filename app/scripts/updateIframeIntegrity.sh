@@ -6,7 +6,7 @@ cd dist
 HASH="$(cat index.html | openssl dgst -sha384 -binary | openssl base64 -A)"
 cd ~/torus-embed/src/
 sed -i -e "s|app\.tor\.us.*|app.tor.us\/$PACKAGE_VERSION\'|g" embed.js
-sed -i -e "s|sha384-..*|sha384-$HASH\'|g" embed.js
+sed -i -e "s|sha384-.*|sha384-$HASH\'|g" embed.js
 git config user.email "chaitanya.potti@gmail.com"
 git config user.name "chaitanyapotti"
 cd ..
