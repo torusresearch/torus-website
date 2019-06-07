@@ -14,7 +14,6 @@ To install dependencies and build website, run the following commands from the m
 ```sh
 cd app
 npm install
-npm run build-embed:dev
 npm run serve
 ```
 
@@ -24,6 +23,6 @@ To see website, navigate to https://app.tor.us
 
 Go to chrome://extensions
 Ensure developer mode
-Drag embed-local.user.js
+Drag embed.user.js
 Navigate to etheremon.com and signin
 

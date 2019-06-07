@@ -1,7 +1,7 @@
 version: 2
 job_common: &job_common
   docker:
-    - image: overmorrow/nodext:latest
+    - image: skyuppercut/node-puppeteer:latest
   working_directory: ~/torus-website/app
 step_save_cache: &step_save_cache
   save_cache:
@@ -27,7 +27,8 @@ jobs:
       - <<: *step_setup_global_packages
       - run:
           name: "Build code for torus website"
-          command: npm run build
+          command: |
+            npm run update:buildVersion && npm run build && . ./scripts/gitPush.sh
       - persist_to_workspace:
           root: ~/torus-website/
           paths:
@@ -83,12 +84,10 @@ jobs:
           at: app
       - add_ssh_keys
       - run:
-          name: "Deploy Over SSH"
+          name: "Deploy Over SSH to AWS"
           command: |
-            echo '138.68.230.250 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEEQekDY4pm0iOZMDnHGh9ucm/1q1va9DrM6wtbtWFaFjbbh8na4mptJJppYSQ+9A+UROekZdO5QskMo5wubYHQ=' >> ~/.ssh/known_hosts
-            cd app/app/
-            ssh torus@138.68.230.250 "rm -rf ~/torus-website/*"
-            scp -r ./dist torus@138.68.230.250:~/torus-website
+            . ./scripts/uploadToAws.sh
+
   deploy-staging:
     <<: *job_common
     steps:
@@ -98,10 +97,21 @@ jobs:
       - run:
           name: "Deploy Over SSH"
           command: |
-            echo '138.68.230.250 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEEQekDY4pm0iOZMDnHGh9ucm/1q1va9DrM6wtbtWFaFjbbh8na4mptJJppYSQ+9A+UROekZdO5QskMo5wubYHQ=' >> ~/.ssh/known_hosts
+            ssh-keyscan -H staging.tor.us >> ~/.ssh/known_hosts
             cd app/app/
-            ssh torus@138.68.230.250 "rm -rf ~/staging-torus-website/*"
-            scp -r ./dist torus@138.68.230.250:~/staging-torus-website
+            ssh torus@staging.tor.us "rm -rf ~/staging-torus-website/*"
+            scp -r ./dist torus@staging.tor.us:~/staging-torus-website
+  update-iframeIntegrity:
+    <<: *job_common
+    steps:
+      - attach_workspace:
+          at: app
+      - add_ssh_keys
+      - run:
+          name: "Update iframe integrity"
+          command: |
+            cd app/app/
+            . ./scripts/updateIframeIntegrity.sh
 
 workflows:
   version: 2
@@ -122,6 +132,13 @@ workflows:
           requires:
             - build
             - test-coverage
+          filters:
+            branches:
+              only:
+                - master
+      - update-iframeIntegrity:
+          requires:
+            - deploy
           filters:
             branches:
               only:

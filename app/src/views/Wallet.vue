@@ -52,9 +52,12 @@ body {
   height: 100% !important;
 }
 
+.application--wrap {
+  min-height: 0px !important;
+}
+
 body,
 html {
   height: 100%;
-  overflow-y: hidden;
 }
 </style>

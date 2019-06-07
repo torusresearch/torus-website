@@ -1,133 +1,131 @@
 <template>
-  <v-container fill-height>
-    <v-layout row wrap align-start align-content-start justify-center>
-      <v-flex xs12 sm9>
-        <span>
-          <span class="spanWrapSvgStyle">
-            <img :src="require('../../public/images/coins.svg')" alt="Wallet" class="svg-setting-small" />
-          </span>
-          <span class="headline"> Transaction Request</span>
+  <v-layout mt-5 row wrap align-start align-content-start justify-center>
+    <v-flex xs12 sm9>
+      <span>
+        <span class="spanWrapSvgStyle">
+          <img :src="require('../../public/images/coins.svg')" alt="Wallet" class="svg-setting-small" />
         </span>
-      </v-flex>
-      <v-flex xs12 sm9 class="fill-height">
-        <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
-          <v-form ref="form" v-model="formValid" lazy-validation class="fill-height">
-            <v-container fill-height>
-              <v-layout row wrap align-center justify-center align-content-start>
-                <v-flex xs12 sm6>
-                  <span class="body-2">Selected Coin </span>
-                </v-flex>
-                <v-flex xs7 sm4 align-self-center>
-                  <v-select single-line solo flat :items="finalBalancesArray" :value="selectedItem" label="Coin" @change="selectedItemChanged">
-                    <template v-slot:item="props">
-                      <v-layout row wrap align-center justify-center>
-                        <v-flex xs2>
-                          <img
-                            :src="require(`../../public/images/logos/${props.item.logo}`)"
-                            class="inline-small"
-                            onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
-                          />
-                        </v-flex>
-                        <v-flex xs10 align-self-center> {{ props.item.name }} </v-flex>
-                      </v-layout>
-                    </template>
-                    <template v-slot:selection="props">
-                      <v-layout row wrap align-bottom justify-center>
-                        <v-flex xs2>
-                          <img
-                            :src="require(`../../public/images/logos/${props.item.logo}`)"
-                            class="inline-small"
-                            onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
-                          />
-                        </v-flex>
-                        <v-flex xs10 align-self-end> {{ props.item.name }} </v-flex>
-                      </v-layout>
-                    </template>
-                  </v-select>
-                </v-flex>
-                <v-flex xs5 sm2>
-                  <span style="margin-left: 5px;">{{ selectedItem && selectedItem.currencyRateText }}</span>
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <span class="body-2">Current Balance</span>
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <span class="body-2">{{ remainingBalanceString }} </span>
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <span class="body-2">Enter To/Wallet Address</span>
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <v-text-field
-                    placeholder="Enter address to send coin to"
-                    aria-label="To/Wallet Address"
-                    v-model="toAddress"
-                    solo
-                    flat
-                    required
-                    :rules="[rules.toAddress, rules.required]"
-                  ></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <span class="body-2">Enter Amount To Transfer</span>
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <v-text-field
-                    id="amount"
-                    placeholder="Enter amount to send"
-                    aria-label="quantity"
-                    solo
-                    flat
-                    required
-                    v-model="displayAmount"
-                    :rules="[rules.required, lesserThan]"
-                  >
-                    <template v-slot:append>
-                      <v-btn-toggle v-model="toggle_exclusive" @change="changeSelectedToCurrency" mandatory>
-                        <v-btn flat>
-                          {{ selectedItem && selectedItem.symbol }}
-                        </v-btn>
-                        <v-btn flat>
-                          {{ selectedCurrency }}
-                        </v-btn>
-                      </v-btn-toggle>
-                    </template>
-                  </v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <span class="body-2">Transaction Fee</span>
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <span class="body-2">
-                    <div>{{ gasDisplayString }}</div>
-                    <v-checkbox v-model="isFastChecked" :color="$vuetify.theme.torus_blue" :label="fastGasDisplayString"> </v-checkbox>
-                  </span>
-                </v-flex>
-                <v-flex xs12>
-                  <v-layout row wrap>
-                    <v-flex class="text-xs-left" id="flexibtn">
-                      <v-tooltip bottom :disabled="formValid">
-                        <template v-slot:activator="{ on }">
-                          <span v-on="on">
-                            <v-btn :disabled="!formValid" outline large class="btnStyle" @click="sendCoin">Confirm</v-btn>
-                          </span>
-                        </template>
-                        <span>Resolve the errors</span>
-                      </v-tooltip>
-                      <v-btn outline large class="btnStyle" @click="goBack">Back</v-btn>
-                    </v-flex>
-                    <v-flex xs2 align-self-center class="hidden-xs-only">
-                      <img :src="require('../../public/images/torus_logo.png')" />
-                    </v-flex>
-                  </v-layout>
-                </v-flex>
-              </v-layout>
-            </v-container>
-          </v-form>
-        </v-card>
-      </v-flex>
-    </v-layout>
-  </v-container>
+        <span class="headline"> Transaction Request</span>
+      </span>
+    </v-flex>
+    <v-flex xs12 sm9 class="fill-height">
+      <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
+        <v-form ref="form" v-model="formValid" lazy-validation class="fill-height">
+          <v-container fill-height>
+            <v-layout row wrap align-center justify-center align-content-start>
+              <v-flex xs12 sm6>
+                <span class="body-2">Selected Coin </span>
+              </v-flex>
+              <v-flex xs7 sm4 align-self-center>
+                <v-select single-line solo flat :items="finalBalancesArray" :value="selectedItem" label="Coin" @change="selectedItemChanged">
+                  <template v-slot:item="props">
+                    <v-layout row wrap align-center justify-center>
+                      <v-flex xs2>
+                        <img
+                          :src="require(`../../public/images/logos/${props.item.logo}`)"
+                          class="inline-small"
+                          onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                        />
+                      </v-flex>
+                      <v-flex xs10 align-self-center> {{ props.item.name }} </v-flex>
+                    </v-layout>
+                  </template>
+                  <template v-slot:selection="props">
+                    <v-layout row wrap align-bottom justify-center>
+                      <v-flex xs2>
+                        <img
+                          :src="require(`../../public/images/logos/${props.item.logo}`)"
+                          class="inline-small"
+                          onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                        />
+                      </v-flex>
+                      <v-flex xs10 align-self-end> {{ props.item.name }} </v-flex>
+                    </v-layout>
+                  </template>
+                </v-select>
+              </v-flex>
+              <v-flex xs5 sm2>
+                <span style="margin-left: 5px;">{{ selectedItem && selectedItem.currencyRateText }}</span>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <span class="body-2">Current Balance</span>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <span class="body-2">{{ remainingBalanceString }} </span>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <span class="body-2">Enter To/Wallet Address</span>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <v-text-field
+                  placeholder="Enter address to send coin to"
+                  aria-label="To/Wallet Address"
+                  v-model="toAddress"
+                  solo
+                  flat
+                  required
+                  :rules="[rules.toAddress, rules.required]"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <span class="body-2">Enter Amount To Transfer</span>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <v-text-field
+                  id="amount"
+                  placeholder="Enter amount to send"
+                  aria-label="quantity"
+                  solo
+                  flat
+                  required
+                  v-model="displayAmount"
+                  :rules="[rules.required, lesserThan]"
+                >
+                  <template v-slot:append>
+                    <v-btn-toggle v-model="toggle_exclusive" @change="changeSelectedToCurrency" mandatory>
+                      <v-btn flat>
+                        {{ selectedItem && selectedItem.symbol }}
+                      </v-btn>
+                      <v-btn flat>
+                        {{ selectedCurrency }}
+                      </v-btn>
+                    </v-btn-toggle>
+                  </template>
+                </v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <span class="body-2">Transaction Fee</span>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <span class="body-2">
+                  <div>{{ gasDisplayString }}</div>
+                  <v-checkbox v-model="isFastChecked" :color="$vuetify.theme.torus_blue" :label="fastGasDisplayString"> </v-checkbox>
+                </span>
+              </v-flex>
+              <v-flex xs12>
+                <v-layout row wrap>
+                  <v-flex class="text-xs-left" id="flexibtn">
+                    <v-tooltip bottom :disabled="formValid">
+                      <template v-slot:activator="{ on }">
+                        <span v-on="on">
+                          <v-btn :disabled="!formValid" outline large class="btnStyle" @click="sendCoin">Confirm</v-btn>
+                        </span>
+                      </template>
+                      <span>Resolve the errors</span>
+                    </v-tooltip>
+                    <v-btn outline large class="btnStyle" @click="goBack">Back</v-btn>
+                  </v-flex>
+                  <v-flex xs2 align-self-center class="hidden-xs-only">
+                    <img :src="require('../../public/images/torus_logo.png')" />
+                  </v-flex>
+                </v-layout>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-form>
+      </v-card>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
@@ -168,7 +166,7 @@ export default {
   data() {
     return {
       tokenAddress: '0x',
-      amount: '',
+      amount: 0,
       displayAmount: '',
       toAddress: '',
       formValid: true,
@@ -227,7 +225,8 @@ export default {
       return `Faster with ${significantDigits(currencyFee)} ${this.selectedCurrency} / ${significantDigits(ethFee)} ETH`
     },
     remainingBalanceString() {
-      return `${this.selectedItem.currencyBalance} / ${this.selectedItem.formattedBalance}`
+      if (this.selectedItem) return `${this.selectedItem.currencyBalance} / ${this.selectedItem.formattedBalance}`
+      return ''
     }
   },
   watch: {
@@ -244,11 +243,14 @@ export default {
   },
   methods: {
     lesserThan: function(value) {
-      let amount = value
-      if (this.toggle_exclusive === 1) {
-        amount = amount / this.getCurrencyTokenRate
+      if (this.selectedItem) {
+        let amount = value
+        if (this.toggle_exclusive === 1) {
+          amount = amount / this.getCurrencyTokenRate
+        }
+        return parseFloat(amount) < this.selectedItem.computedBalance || 'Must be lesser than current balance'
       }
-      return parseFloat(amount) < this.selectedItem.computedBalance || 'Must be lesser than current balance'
+      return ''
     },
     calculateGas() {
       if (torus.web3.utils.isAddress(this.toAddress)) {

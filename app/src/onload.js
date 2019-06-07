@@ -8,7 +8,7 @@ var LocalMessageDuplexStream = require('post-message-stream')
 const pump = require('pump')
 const stream = require('stream')
 const setupMultiplex = require('./utils/setupMultiplex').default
-const MetamaskInpageProvider = require('../inpage/inpage-provider')
+const MetamaskInpageProvider = require('@toruslabs/torus-embed/src/inpage-provider')
 const routerStream = require('./utils/routerStream')
 ;(function() {
   var origNextTick = process.nextTick.bind(process)
@@ -109,6 +109,7 @@ function onloadTorus(torus) {
   torus.torusController = torusController
   torus.metamaskMux = setupMultiplex(metamaskStream)
   torus.communicationMux = setupMultiplex(communicationStream)
+  torusController.provider.setMaxListeners(20)
   torus.web3 = new Web3(torusController.provider)
   torus.setProviderType = function(network) {
     store.dispatch('setProviderType', { network })

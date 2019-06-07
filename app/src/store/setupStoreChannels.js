@@ -4,7 +4,7 @@ import stream from 'stream'
 import pump from 'pump'
 import VuexStore from './store'
 import BroadcastChannel from 'broadcast-channel'
-import { RPC } from '../utils/enums'
+import { RPC, MAINNET } from '../utils/enums'
 
 /* 
 Edited to change networkId => network state. Has an implication of changing neworkVersion 
@@ -19,7 +19,7 @@ torus.torusController.networkController.networkStore.subscribe(function(state) {
 window.addEventListener(
   'storage',
   function() {
-    const network = localStorage.getItem('torus_network_type')
+    const network = localStorage.getItem('torus_network_type') || MAINNET
     if (network !== RPC && network !== VuexStore.state.networkType) {
       VuexStore.dispatch('setProviderType', { network })
     }

@@ -1,218 +1,216 @@
 <template>
-  <v-container grid-list-xs fill-height>
-    <v-layout row wrap align-top>
-      <template v-if="type === 'message'">
-        <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
-          <v-card-title class="headline text-bluish">Requesting Signature</v-card-title>
-          <hr />
-          <v-card-text>
-            <v-layout row wrap>
-              <v-flex mt-3>
-                <h6 class="mb-3">
-                  From: <span class="text-bluish">{{ origin }}</span>
-                </h6>
-                <div v-if="messageType === 'normal'">{{ message }}</div>
-                <div v-else-if="messageType === 'typed'" v-for="typedMessage in typedMessages" :key="typedMessage.name">
-                  Type: {{ typedMessage.type }}
-                  <br />
-                  Name: {{ typedMessage.name }}
-                  <br />
-                  Message: {{ typedMessage.value }}
-                  <br />
-                </div>
+  <v-container fill-height>
+    <template v-if="type === 'message'">
+      <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
+        <v-card-text>
+          <v-layout row wrap align-start justify-center>
+            <v-flex xs12 mt-3 sm7>
+              <div class="headline mb-5">Requesting Signature</div>
+              <p class="mb-3 subheading">
+                From: <span class="text-bluish">{{ origin }}</span>
+              </p>
+              <div v-if="messageType === 'normal'">{{ message }}</div>
+              <div v-else-if="messageType === 'typed'" v-for="typedMessage in typedMessages" :key="typedMessage.name">
+                Type: {{ typedMessage.type }}
+                <br />
+                Name: {{ typedMessage.name }}
+                <br />
+                Message: {{ typedMessage.value }}
+                <br />
+              </div>
+            </v-flex>
+            <v-flex xs12 sm5 class="bcg">
+              <img src="images/signature.png" />
+            </v-flex>
+          </v-layout>
+          <div class="hide-xs mt-5">
+            <v-layout row wrap align-center justify-center>
+              <v-flex xs12 sm4 class="text-xs-center">
+                <v-btn class="btnStyle" :color="$vuetify.theme.torus_reject" large light flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
-              <img src="images/signature.png" class="bcg bcg-top10 hidden-xs-and-down" />
-            </v-layout>
-            <div class="hide-xs">
-              <v-layout row wrap align-center justify-center>
-                <v-flex xs12 sm4>
-                  <v-btn class="btnStyle" :color="$vuetify.theme.torus_reject" large light flat @click="triggerDeny">Reject</v-btn>
-                </v-flex>
-                <v-flex xs12 sm4>
-                  <v-btn large light :color="$vuetify.theme.torus_accept" class="btnStyle white--text rounded-btn" @click="triggerSign">
-                    Approve
-                  </v-btn>
-                </v-flex>
-                <v-flex sm4 class="text-xs-right">
-                  <img src="images/torus_logo.png" class="bcg-logo" />
-                </v-flex>
-              </v-layout>
-            </div>
-          </v-card-text>
-        </v-card>
-        <v-card class="higherZ hidden-sm-and-up" flat :color="$vuetify.theme.torus_bcg">
-          <v-card-text>
-            <v-layout row wrap align-center>
-              <v-flex xs6 sm4>
-                <v-btn class="btnStyle" large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
-              </v-flex>
-              <v-flex xs6 sm4>
-                <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text btnStyle rounded-btn" @click="triggerSign">Approve</v-btn>
-              </v-flex>
-            </v-layout>
-          </v-card-text>
-        </v-card>
-      </template>
-      <template v-else-if="type === 'transaction'">
-        <v-card flat :color="$vuetify.theme.torus_bcg">
-          <v-card-title class="headline text-bluish">{{ header }}</v-card-title>
-          <hr />
-          <v-card-text>
-            <v-layout row wrap>
-              <v-flex xs12>
-                <h6 class="mb-3">
-                  From: <span class="text-bluish">{{ origin }}</span>
-                </h6>
-              </v-flex>
-              <v-flex mt-3 xs12 sm4 align-self-top text-sm-center text-xs-left>
-                <v-layout row wrap>
-                  <v-flex xs6 sm12>
-                    <div class="divWrapSvgStyle">
-                      <img src="images/wallet.svg" alt="Wallet" class="svg-setting-medium" />
-                    </div>
-                  </v-flex>
-                  <v-flex xs6 sm12>
-                    <div class="text-grayish font-weight-bold text-uppercase">Your Wallet</div>
-                    <div>
-                      Address:
-                      <show-tool-tip :address="sender">
-                        {{ slicedAddress(sender) }}
-                      </show-tool-tip>
-                    </div>
-                    <div>
-                      Balance: <span class="text-bluish font-weight-medium">{{ computedBalance }} ETH</span>
-                    </div>
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-              <v-flex mt-3 xs12 sm4 align-self-top text-sm-center text-xs-left>
-                <v-layout row wrap>
-                  <v-flex xs6 sm12>
-                    <div class="divWrap">
-                      <img src="images/blue_arrow_right.svg" alt="Arrow" class="svg-setting-large hidden-xs-only" />
-                      <img src="images/blue_arrow_down.svg" alt="Arrow" class="svg-setting-large hidden-sm-and-up" />
-                    </div>
-                  </v-flex>
-                  <v-flex xs6 sm12>
-                    <div class="text-grayish font-weight-bold text-uppercase">
-                      {{ !doesSendEther ? 'Network Fee' : 'Amount' }}
-                    </div>
-                    <div class="text-bluish font-weight-medium">{{ totalUsdCost }} USD</div>
-                    <div class="text-bluish font-weight-medium">({{ totalEthCost }} ETH)</div>
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-              <v-flex mt-3 xs12 sm4 align-self-top text-sm-center text-xs-left>
-                <v-layout row wrap>
-                  <v-flex xs6 sm12>
-                    <div class="divWrapSvgStyle">
-                      <img :src="imageType" alt="User" class="svg-setting-medium" />
-                    </div>
-                  </v-flex>
-                  <v-flex xs6 sm12>
-                    <div class="text-grayish font-weight-bold text-uppercase">Payee's Wallet</div>
-                    <div>
-                      Address:
-                      <show-tool-tip :address="receiver">
-                        {{ slicedAddress(receiver) }}
-                      </show-tool-tip>
-                    </div>
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-            </v-layout>
-            <v-layout row wrap fill-height>
-              <v-flex text-xs-left mb-2 mt-2>
-                <template v-if="canShowError">
-                  <span class="red--text">Error: {{ errorMsg }}</span>
-                </template>
-              </v-flex>
-            </v-layout>
-            <div class="text-xs-center mb-5">
-              <v-btn @click="openBottom" flat>
-                <span class="text-grayish font-weight-bold text-uppercase">More Details</span>
-                <v-icon :color="$vuetify.theme.torus_reject">expand_more</v-icon>
-              </v-btn>
-            </div>
-            <bottom-sheet :show.sync="open" :on-close="closeBottom">
-              <v-layout row wrap justify-center align-center text-xs-center>
-                <v-flex xs12 sm3 v-if="doesSendEther">
-                  <div class="text-grayish font-weight-bold text-uppercase">
-                    Amount To Transfer
-                  </div>
-                  <div class="text-bluish font-weight-medium">$ {{ dollarValue }}</div>
-                  <div class="text-bluish font-weight-medium">({{ value }} ETH)</div>
-                </v-flex>
-                <v-flex xs12 sm1 v-if="doesSendEther">
-                  <img src="images/plus.svg" alt="Add" class="svg-setting-small" />
-                </v-flex>
-                <v-flex mt-3 xs12 sm4 align-self-top text-xs-center>
-                  <v-knob-control
-                    v-model="gasKnob"
-                    :min="min"
-                    :max="max"
-                    :primary-color="color"
-                    :size="150"
-                    :value-display-function="showGasPrice"
-                  ></v-knob-control>
-                </v-flex>
-                <v-flex xs12 sm1>
-                  <!-- v-if="doesSendEther" -->
-                  <img src="images/equal.svg" alt="Equals" class="svg-setting-small" />
-                </v-flex>
-                <v-flex xs12 sm3>
-                  <!-- v-if="doesSendEther" -->
-                  <div class="text-grayish font-weight-bold text-uppercase">
-                    Total Cost
-                  </div>
-                  <div class="text-bluish font-weight-medium">$ {{ totalUsdCost }}</div>
-                  <div class="text-bluish font-weight-medium">({{ totalEthCost }} ETH)</div>
-                </v-flex>
-              </v-layout>
-              <v-layout row wrap>
-                <v-flex xs12>
-                  <span class="text-grayish font-weight-bold">Network Used: </span>
-                  <span class="text-capitalize text-bluish font-weight-medium">{{ network }} </span>
-                </v-flex>
-                <v-flex xs12 v-if="!doesSendEther || isContractInteraction || isDeployContract">
-                  <span class="text-grayish font-weight-bold">Raw Data: </span>
-                  <span class="text-bluish font-weight-medium">
-                    {{ slicedAddress(txData) }}
-                    <show-tool-tip :address="txData">
-                      <v-icon :color="$vuetify.theme.torus_accept" size="18">file_copy</v-icon>
-                    </show-tool-tip>
-                  </span>
-                </v-flex>
-              </v-layout>
-            </bottom-sheet>
-          </v-card-text>
-        </v-card>
-        <v-card class="higherZ" flat :color="$vuetify.theme.torus_bcg" style="width: 100%;">
-          <v-card-text>
-            <v-layout row wrap align-center>
-              <v-flex xs6 sm4>
-                <v-btn large light class="btnStyle" :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
-              </v-flex>
-              <v-flex xs6 sm4>
-                <v-btn
-                  light
-                  large
-                  :disabled="!canApprove"
-                  :color="$vuetify.theme.torus_accept"
-                  class="white--text btnStyle rounded-btn"
-                  @click="triggerSign"
-                >
+              <v-flex xs12 sm4 class="text-xs-center">
+                <v-btn large light :color="$vuetify.theme.torus_accept" class="btnStyle white--text rounded-btn" @click="triggerSign">
                   Approve
                 </v-btn>
               </v-flex>
-              <v-flex sm4 class="text-xs-right">
+              <v-flex sm4 class="text-xs-center">
                 <img src="images/torus_logo.png" class="bcg-logo" />
               </v-flex>
             </v-layout>
-          </v-card-text>
-        </v-card>
-      </template>
-    </v-layout>
+          </div>
+        </v-card-text>
+      </v-card>
+      <v-card class="higherZ hidden-sm-and-up" flat :color="$vuetify.theme.torus_bcg">
+        <v-card-text>
+          <v-layout row wrap align-center>
+            <v-flex xs6 sm4>
+              <v-btn class="btnStyle" large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
+            </v-flex>
+            <v-flex xs6 sm4>
+              <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text btnStyle rounded-btn" @click="triggerSign">Approve</v-btn>
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+      </v-card>
+    </template>
+    <template v-else-if="type === 'transaction'">
+      <v-card flat :color="$vuetify.theme.torus_bcg">
+        <v-card-text>
+          <v-layout row wrap align-start justify-center>
+            <v-flex xs12>
+              <div class="headline mb-3">{{ header }}</div>
+              <p class="mb-3 subheading">
+                From: <span class="text-bluish">{{ origin }}</span>
+              </p>
+            </v-flex>
+            <v-flex mt-3 xs12 sm4 align-self-top text-sm-center text-xs-left>
+              <v-layout row wrap>
+                <v-flex xs6 sm12>
+                  <div class="divWrapSvgStyle">
+                    <img src="images/wallet.svg" alt="Wallet" class="svg-setting-medium" />
+                  </div>
+                </v-flex>
+                <v-flex xs6 sm12 mt-3>
+                  <div class="font-weight-medium subheading">My Wallet</div>
+                  <div>
+                    <span class="text-bluish">Address:</span>
+                    <show-tool-tip :address="sender">
+                      {{ slicedAddress(sender) }}
+                    </show-tool-tip>
+                  </div>
+                  <div>
+                    <span class="text-bluish"> Balance: </span><span>{{ computedBalance }} ETH</span>
+                  </div>
+                </v-flex>
+              </v-layout>
+            </v-flex>
+            <v-flex mt-3 xs12 sm4 align-self-top text-sm-center text-xs-left>
+              <v-layout row wrap>
+                <v-flex xs6 sm12>
+                  <div class="divWrap">
+                    <img src="images/blue_arrow_right.svg" alt="Arrow" class="svg-setting-large hidden-xs-only" />
+                    <img src="images/blue_arrow_down.svg" alt="Arrow" class="svg-setting-large hidden-sm-and-up" />
+                  </div>
+                </v-flex>
+                <v-flex xs6 sm12 mt-2>
+                  <div class="font-weight-medium subheading">
+                    {{ !doesSendEther ? 'Network Fee' : 'Amount' }}
+                  </div>
+                  <div class="text-bluish">{{ totalUsdCost }} USD</div>
+                  <div class="text-bluish">({{ totalEthCost }} ETH)</div>
+                </v-flex>
+              </v-layout>
+            </v-flex>
+            <v-flex mt-3 xs12 sm4 align-self-top text-sm-center text-xs-left>
+              <v-layout row wrap>
+                <v-flex xs6 sm12>
+                  <div class="divWrapSvgStyle">
+                    <img :src="imageType" alt="User" class="svg-setting-medium" />
+                  </div>
+                </v-flex>
+                <v-flex xs6 sm12 mt-3>
+                  <div class="font-weight-medium subheading">Payee's Wallet</div>
+                  <div>
+                    <span class="text-bluish">Address:</span>
+                    <show-tool-tip :address="receiver">
+                      {{ slicedAddress(receiver) }}
+                    </show-tool-tip>
+                  </div>
+                </v-flex>
+              </v-layout>
+            </v-flex>
+          </v-layout>
+          <v-layout row wrap fill-height>
+            <v-flex text-xs-left mb-1 mt-2>
+              <template v-if="canShowError">
+                <span class="red--text">Error: {{ errorMsg }}</span>
+              </template>
+            </v-flex>
+          </v-layout>
+          <div class="text-xs-center mb-4">
+            <v-btn @click="openBottom" flat>
+              <span class="text-grayish font-weight-bold text-uppercase">More Details</span>
+              <v-icon :color="$vuetify.theme.torus_reject">expand_more</v-icon>
+            </v-btn>
+          </div>
+          <bottom-sheet :show.sync="open" :on-close="closeBottom">
+            <v-layout row wrap justify-center align-center text-xs-center>
+              <v-flex xs12 sm3 v-if="doesSendEther">
+                <div class="font-weight-medium subheading">
+                  Amount To Transfer
+                </div>
+                <div class="text-bluish font-weight-medium">$ {{ dollarValue }}</div>
+                <div class="text-bluish font-weight-medium">({{ value }} ETH)</div>
+              </v-flex>
+              <v-flex xs12 sm1 v-if="doesSendEther">
+                <img src="images/plus.svg" alt="Add" class="svg-setting-small" />
+              </v-flex>
+              <v-flex mt-3 xs12 sm4 align-self-top text-xs-center>
+                <v-knob-control
+                  v-model="gasKnob"
+                  :min="min"
+                  :max="max"
+                  :primary-color="color"
+                  :size="150"
+                  :value-display-function="showGasPrice"
+                ></v-knob-control>
+              </v-flex>
+              <v-flex xs12 sm1>
+                <!-- v-if="doesSendEther" -->
+                <img src="images/equal.svg" alt="Equals" class="svg-setting-small" />
+              </v-flex>
+              <v-flex xs12 sm3>
+                <!-- v-if="doesSendEther" -->
+                <div class="font-weight-medium subheading">
+                  Total Cost
+                </div>
+                <div class="text-bluish">$ {{ totalUsdCost }}</div>
+                <div class="text-bluish">({{ totalEthCost }} ETH)</div>
+              </v-flex>
+            </v-layout>
+            <v-layout row wrap mt-2>
+              <v-flex xs12>
+                <span class="font-weight-medium">Network Used: </span>
+                <span class="text-bluish font-weight-medium text-capitalize">{{ network }} </span>
+              </v-flex>
+              <v-flex xs12 v-if="!doesSendEther || isContractInteraction || isDeployContract">
+                <span class="font-weight-medium">Raw Data: </span>
+                <span class="font-weight-medium">
+                  {{ slicedAddress(txData) }}
+                  <show-tool-tip :address="txData">
+                    <v-icon :color="$vuetify.theme.torus_reject" size="18">file_copy</v-icon>
+                  </show-tool-tip>
+                </span>
+              </v-flex>
+            </v-layout>
+          </bottom-sheet>
+        </v-card-text>
+      </v-card>
+      <v-card class="higherZ" flat :color="$vuetify.theme.torus_bcg" style="width: 100%;">
+        <v-card-text>
+          <v-layout row wrap align-center justify-center>
+            <v-flex xs6 sm4 class="text-xs-center">
+              <v-btn large light class="btnStyle" :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
+            </v-flex>
+            <v-flex xs6 sm4 class="text-xs-center">
+              <v-btn
+                light
+                large
+                :disabled="!canApprove"
+                :color="$vuetify.theme.torus_accept"
+                class="white--text btnStyle rounded-btn"
+                @click="triggerSign"
+              >
+                Approve
+              </v-btn>
+            </v-flex>
+            <v-flex sm4 class="text-xs-center">
+              <img src="images/torus_logo.png" class="bcg-logo" />
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+      </v-card>
+    </template>
   </v-container>
 </template>
 
@@ -442,6 +440,11 @@ export default {
   align-items: center;
 }
 
+%justify-align-start {
+  justify-content: start;
+  align-items: center;
+}
+
 .divWrap {
   display: block;
   @extend %justify-align;
@@ -454,6 +457,11 @@ export default {
   border-radius: 50%;
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.16);
   @extend .svg-setting-large;
+}
+
+.spanWrap {
+  display: inline-flex;
+  @extend %justify-align-start;
 }
 
 .higherZ {
@@ -477,9 +485,13 @@ export default {
   position: relative;
 }
 
+.bcg-logo {
+  height: 32px;
+}
+
 .bcg-top10 {
-  left: 20px;
-  bottom: 50px;
+  right: 20%;
+  bottom: 50%;
 }
 
 hr {
@@ -493,7 +505,12 @@ hr {
 
 /deep/.knob-control__text-display {
   font-size: 0.7rem !important;
+  font-weight: 500;
   text-align: center;
+}
+
+.application--wrap {
+  min-height: 0px !important;
 }
 
 .btnStyle {

@@ -4,25 +4,19 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta name="description" content="A simple and secure gateway to the decentralized ecosystem via Google or Facebook OAuth logins">
+    <meta name="keywords" content="crypto, wallet, oauth, login, best, ethereum, torus">
+    <meta name="author" content="Torus Labs">
     <link rel="shortcut icon" href="<%= BASE_URL %>favicon.png" />
     <title>Torus</title>
     <script>
-      // Script redirect to https
-      // This will be handled inside nginx
-      // if (location.protocol != 'https:') {
-      //   location.href = 'https:' + window.location.href.substring(window.location.protocol.length)
-      // }
-      // Allocate namespace
-
-      // <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
       if (window.torus !== undefined) {
         window._torus = window.torus;
       } else {
         window.torus = {};
       }
     </script>
-    <script src="<%= BASE_URL %>js/jquery.bundle.js"></script>
-    <script src="<%= BASE_URL %>js/gapi.js"></script>
+    <script src="<%= BASE_URL %>js/gapi.js" crossorigin="anonymous" integrity="sha384-VBxmEubWTf9VIdLhSPoCr2IgcixEJl2JvUKA5HqLTAU+ha6Ho+P2T736uB9JvgMw"></script>
     <meta name="google-signin-client_id" content="876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons" />    
