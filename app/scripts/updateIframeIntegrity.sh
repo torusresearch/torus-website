@@ -11,4 +11,4 @@ git config user.email "chaitanya.potti@gmail.com"
 git config user.name "chaitanyapotti"
 cd ..
 npm version patch -f -m 'Updating iframe integrity and publish %s'
-git diff --quiet && git diff --staged --quiet || (git push origin master && git push --tags)
+git diff --quiet && git diff --staged --quiet && git diff origin/master HEAD --quiet || (git push origin master && git push --tags)
