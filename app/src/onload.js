@@ -106,6 +106,7 @@ function onloadTorus(torus) {
   torus.torusController = torusController
   torus.metamaskMux = setupMultiplex(metamaskStream)
   torus.communicationMux = setupMultiplex(communicationStream)
+  torusController.provider.setMaxListeners(20)
   torus.web3 = new Web3(torusController.provider)
   torus.setProviderType = function(network) {
     store.dispatch('setProviderType', { network })

@@ -1,6 +1,7 @@
 {
   "name": "app",
   "version": "0.1.1",
+  "buildVersion": "v1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -15,7 +16,7 @@
     "build:report": "vue-cli-service build --report",
     "dev": "cross-env NODE_ENV=development TORUS_BUILD_ENV=development node server.js",
     "lint:es": "eslint ./src/views/* --fix",
-    "pre-build": "node ./scripts/calculateIntegrity.js",
+    "pre-build": ". ./scripts/calculateIntegrity.sh",
     "production": "cross-env PORT=443 NODE_ENV=production node server.js",
     "temp": "npm run build-embed:dev && npm run build:dev",
     "test:codecov-upload": "if [ $CODECOV_TOKEN ]; then nyc report --reporter=text-lcov > coverage.lcov && codecov; fi",
@@ -26,7 +27,7 @@
     "test:e2e:headful": "node ./test/e2e/puppeteer.js false",
     "test:unit": "mocha --exit -r esm -r jsdom-global/register -r isomorphic-fetch ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js",
     "test:build-embed": "mocha --exit ./test/compile/Web3Test.js",
-    "update:gist": ". ./scripts/updateGistIntegrity.sh"
+    "update:buildVersion": "node ./scripts/updatebuildVersion.js"
   },
   "dependencies": {
     "assert": "^2.0.0",
@@ -64,7 +65,6 @@
     "vue": "^2.6.10",
     "vue-knob-control": "^1.3.1",
     "vue-router": "^3.0.6",
-    "vue-script2": "^2.0.3",
     "vuetify": "^1.5.14",
     "vuex": "^3.1.1",
     "vuex-persist": "^2.0.1",

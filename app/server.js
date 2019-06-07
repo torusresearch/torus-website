@@ -1,4 +1,5 @@
 const express = require('express')
+var compression = require('compression')
 const app = express()
 const fs = require('fs')
 const path = require('path')
@@ -11,7 +12,7 @@ var certOptions = {
   cert: fs.readFileSync(path.resolve('../ssl/server.crt'))
 }
 // app.all(/^(?!(\/notsupported)).*$/, ensureCompatibleBrowser)
-
+app.use(compression())
 // Prevents cross-frame clickjacking attacks from external websites
 const securityHeaderMiddleware = (req, res, next) => {
   // res.setHeader('Content-Security-Policy', 'default-src https: "unsafe-inline"')
