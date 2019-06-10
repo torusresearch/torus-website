@@ -27,7 +27,7 @@
       </div>
     </v-flex>
     <v-flex xs12>
-      <tx-history-table :headers="headers" :transactions="transactions" />
+      <tx-history-table :headers="headers" :transactions="getTransactions()" />
     </v-flex>
     <v-flex xs12 mt-5>
       <v-layout row wrap>
@@ -79,8 +79,13 @@ export default {
       let currencyMultiplier = 1
       if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
       return currencyMultiplier
+    }
+  },
+  methods: {
+    onCurrencyChange(value) {
+      this.$store.dispatch('setSelectedCurrency', value)
     },
-    transactions() {
+    getTransactions() {
       const { networkId, transactions, networkType } = this.$store.state || {}
       const finalTransactions = []
       for (let tx in transactions) {
@@ -105,11 +110,6 @@ export default {
         }
       }
       return finalTransactions
-    }
-  },
-  methods: {
-    onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', value)
     }
   }
 }

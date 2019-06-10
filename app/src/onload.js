@@ -25,7 +25,10 @@ function onloadTorus(torus) {
     store.dispatch('showPopup')
   }
 
+  const localStorageCachedNetwork = localStorage.getItem('torus_network_type')
+
   const torusController = new TorusController({
+    localStorageCachedNetwork,
     showUnconfirmedMessage: triggerUi.bind(window, 'showUnconfirmedMessage'),
     unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
     showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
