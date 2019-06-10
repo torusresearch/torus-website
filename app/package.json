@@ -73,7 +73,7 @@
     "xtend": "^4.0.1"
   },
   "devDependencies": {
-    "@toruslabs/torus-embed": "0.0.2",
+    "@toruslabs/torus-embed": "0.0.4",
     "@vue/cli-plugin-babel": "^3.8.0",
     "@vue/cli-plugin-eslint": "^3.8.0",
     "@vue/cli-service": "^3.8.0",
