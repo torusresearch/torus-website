@@ -149,6 +149,7 @@ class DetectTokensController {
     if (!network) {
       return
     }
+    network._provider.setMaxListeners(20)
     this._network = network
     this.web3 = new Web3(network._provider)
   }
