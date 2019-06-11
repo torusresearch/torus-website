@@ -115,6 +115,19 @@ jobs:
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
             cd app/app/
             . ./scripts/updateIframeIntegrity.sh
+  update-lambda:
+    <<: *job_common
+    steps:
+      - attach_workspace:
+          at: app
+      - add_ssh_keys
+      - run:
+          name: "Update lambda version"
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            cd app/app/
+            . ./scripts/updateLambda.sh
 
 workflows:
   version: 2
@@ -140,6 +153,13 @@ workflows:
               only:
                 - master
       - update-iframeIntegrity:
+          requires:
+            - deploy
+          filters:
+            branches:
+              only:
+                - master
+      - update-lambda:
           requires:
             - deploy
           filters:
