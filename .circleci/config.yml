@@ -86,9 +86,6 @@ jobs:
       - run:
           name: "Deploy Over SSH to AWS"
           command: |
-            echo $(ls)
-            echo $(ls | xargs ls)
-            cd app
             . ./scripts/uploadToAws.sh
 
   deploy-staging:
@@ -101,7 +98,6 @@ jobs:
           name: "Deploy Over SSH"
           command: |
             ssh-keyscan -H staging.tor.us >> ~/.ssh/known_hosts
-            cd app/
             ssh torus@staging.tor.us "rm -rf ~/staging-torus-website/*"
             scp -r ./dist torus@staging.tor.us:~/staging-torus-website
   update-iframeIntegrity:
@@ -115,7 +111,6 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            cd app/
             . ./scripts/updateIframeIntegrity.sh
   update-lambda:
     <<: *job_common
@@ -128,7 +123,6 @@ jobs:
           command: |
             mkdir -p ~/.ssh
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            cd app/
             . ./scripts/updateLambda.sh
 
 workflows:
