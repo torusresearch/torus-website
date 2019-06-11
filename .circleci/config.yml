@@ -86,6 +86,8 @@ jobs:
       - run:
           name: "Deploy Over SSH to AWS"
           command: |
+            echo $(ls)
+            echo $(ls | xargs ls)
             cd app
             . ./scripts/uploadToAws.sh
 
