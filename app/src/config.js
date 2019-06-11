@@ -6,6 +6,6 @@ export default {
     'https://torusmain.torusnode.com/jrpc',
     'https://etcmain.torusnode.com/jrpc'
   ],
-  torusIndexes: [4, 3, 1, 5, 2],
+  torusIndexes: [4, 5, 1, 3, 2],
   supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH']
 }

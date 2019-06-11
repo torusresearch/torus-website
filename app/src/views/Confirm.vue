@@ -327,7 +327,7 @@ export default {
       this.$store.dispatch('showWalletPopup')
     },
     showGasPrice(val) {
-      return `Fee: $ ${significantDigits(parseFloat(this.txFees).toFixed(2))}`
+      return `Fee: $ ${significantDigits(parseFloat(this.txFees).toFixed(3))}`
     },
     ...mapActions({})
   },

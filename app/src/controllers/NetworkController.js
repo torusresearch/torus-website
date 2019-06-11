@@ -270,6 +270,7 @@ export default class NetworkController extends EventEmitter {
     }
     // set new provider and blockTracker
     this._provider = provider
+    provider.setMaxListeners(50)
     this._blockTracker = blockTracker
   }
 
@@ -299,7 +300,6 @@ function createInfuraClient({ network }) {
 function createNetworkAndChainIdMiddleware({ network }) {
   let chainId
   let netId
-
   switch (network) {
     case 'mainnet':
       netId = '1'
@@ -332,7 +332,7 @@ function createNetworkAndChainIdMiddleware({ network }) {
 }
 
 function createLocalhostClient() {
-  const fetchMiddleware = createFetchMiddleware({ rpcUrl: 'http://localhost:8545/' })
+  const fetchMiddleware = createFetchMiddleware({ rpcUrl: 'https://localhost:8545/' })
   const blockProvider = providerFromMiddleware(fetchMiddleware)
   const blockTracker = new BlockTracker({ provider: blockProvider, pollingInterval: 1000 })
 
