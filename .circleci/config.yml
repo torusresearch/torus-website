@@ -32,7 +32,7 @@ jobs:
       - persist_to_workspace:
           root: ~/torus-website/
           paths:
-            - app
+            - .
       - <<: *step_save_cache
   build-staging:
     <<: *job_common
@@ -47,7 +47,7 @@ jobs:
       - persist_to_workspace:
           root: ~/torus-website/
           paths:
-            - app
+            - .
       - <<: *step_save_cache
   unit-test:
     <<: *job_common
@@ -81,52 +81,52 @@ jobs:
     <<: *job_common
     steps:
       - attach_workspace:
-          at: app
+          at: ~/torus-website
       - add_ssh_keys
       - run:
           name: "Deploy Over SSH to AWS"
           command: |
-            cd app/app
+            cd app
             . ./scripts/uploadToAws.sh
 
   deploy-staging:
     <<: *job_common
     steps:
       - attach_workspace:
-          at: app
+          at: ~/torus-website
       - add_ssh_keys
       - run:
           name: "Deploy Over SSH"
           command: |
             ssh-keyscan -H staging.tor.us >> ~/.ssh/known_hosts
-            cd app/app/
+            cd app/
             ssh torus@staging.tor.us "rm -rf ~/staging-torus-website/*"
             scp -r ./dist torus@staging.tor.us:~/staging-torus-website
   update-iframeIntegrity:
     <<: *job_common
     steps:
       - attach_workspace:
-          at: app
+          at: ~/torus-website
       - add_ssh_keys
       - run:
           name: "Update iframe integrity"
           command: |
             mkdir -p ~/.ssh
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            cd app/app/
+            cd app/
             . ./scripts/updateIframeIntegrity.sh
   update-lambda:
     <<: *job_common
     steps:
       - attach_workspace:
-          at: app
+          at: ~/torus-website
       - add_ssh_keys
       - run:
           name: "Update lambda version"
           command: |
             mkdir -p ~/.ssh
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            cd app/app/
+            cd app/
             . ./scripts/updateLambda.sh
 
 workflows:
