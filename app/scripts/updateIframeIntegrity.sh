@@ -2,8 +2,9 @@
 #!/bin/bash
 git clone git@github.com:torusresearch/torus-embed.git ~/torus-embed
 PACKAGE_VERSION=$(cat package.json | grep buildVersion | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d ' ')
-cd dist
-HASH="$(cat index.html | openssl dgst -sha384 -binary | openssl base64 -A)"
+URL=$(echo "s3://app.tor.us/$(echo $PACKAGE_VERSION)/index.html" | tr -d ' ')
+aws s3 cp $URL ~
+HASH="$(cat ~/index.html | openssl dgst -sha384 -binary | openssl base64 -A)"
 cd ~/torus-embed/src/
 sed -i -e "s|app\.tor\.us.*|app.tor.us\/$PACKAGE_VERSION\'|g" embed.js
 sed -i -e "s|sha384-.*|sha384-$HASH\'|g" embed.js
