@@ -4,6 +4,8 @@ git clone git@github.com:torusresearch/torus-embed.git ~/torus-embed
 PACKAGE_VERSION=$(cat package.json | grep buildVersion | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d ' ')
 URL=$(echo "s3://app.tor.us/$(echo $PACKAGE_VERSION)/index.html" | tr -d ' ')
 aws s3 cp $URL ~
+cd dist
+cat index.html
 HASH="$(cat ~/index.html | openssl dgst -sha384 -binary | openssl base64 -A)"
 cd ~/torus-embed/src/
 sed -i -e "s|app\.tor\.us.*|app.tor.us\/$PACKAGE_VERSION\'|g" embed.js
