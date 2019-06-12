@@ -13,4 +13,3 @@ aws cloudfront get-distribution-config --id $CLOUDFRONT_DISTRIBUTION_ID > cf_con
 ETAG=$(cat cf_config.json | grep ETag | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g')
 node ~/torus-website/app/scripts/createUpdatedDistributionConfig.js
 aws cloudfront update-distribution --distribution-config "file://updated_cf_config.json" --id $CLOUDFRONT_DISTRIBUTION_ID --if-match "$ETAG"
-aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths /*
