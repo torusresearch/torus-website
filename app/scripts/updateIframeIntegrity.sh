@@ -1,7 +1,7 @@
 
 #!/bin/bash
 git clone git@github.com:torusresearch/torus-embed.git ~/torus-embed
-PACKAGE_VERSION=$(cat package.json | grep buildVersion | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g')
+PACKAGE_VERSION=$(cat package.json | grep buildVersion | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d ' ')
 cd dist
 HASH="$(cat index.html | openssl dgst -sha384 -binary | openssl base64 -A)"
 cd ~/torus-embed/src/
