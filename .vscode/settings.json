@@ -1,6 +1,7 @@
 {
   "git.autofetch": true,
   "editor.formatOnSave": false,
+  "eslint.autoFixOnSave": true,
   "window.zoomLevel": 0,
   "javascript.updateImportsOnFileMove.enabled": "always",
   "git.confirmSync": false,
@@ -13,19 +14,12 @@
   "eslint.provideLintTask": true,
   "eslint.options": {
     "extends": ["plugin:vue/essential", "@vue/standard", "prettier"],
-    "plugins": ["prettier", "html"],
+    "plugins": ["prettier", "vue"],
     "parserOptions": {
-      "parser": "babel-eslint"
+      "parser": "babel-eslint",
+      "ecmaVersion": 6
     },
-    "overrides": [
-      {
-        "files": ["*/vendor/*"],
-        "excludedFiles": "*"
-      }
-    ],
     "rules": {
-      "jsx-a11y/label-has-for": 0,
-      "react/jsx-filename-extension": 0,
       "quotes": [2, "single"],
       "max-len": [
         2,
@@ -33,7 +27,8 @@
           "code": 150
         }
       ],
-      "camelcase": 0,
+      "react/jsx-filename-extension": 0,
+      "jsx-a11y/label-has-for": 0,
       "no-console": 0,
       "import/prefer-default-export": 0,
       "no-nested-ternary": 0,

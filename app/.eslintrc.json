@@ -1,15 +1,10 @@
 {
   "extends": ["plugin:vue/essential", "@vue/standard", "prettier"],
-  "plugins": ["prettier", "html"],
+  "plugins": ["prettier", "vue"],
   "parserOptions": {
-    "parser": "babel-eslint"
+    "parser": "babel-eslint",
+    "ecmaVersion": 6
   },
-  "overrides": [
-    {
-      "files": ["*/vendor/*"],
-      "excludedFiles": "*"
-    }
-  ],
   "rules": {
     "quotes": [2, "single"],
     "max-len": [
@@ -18,7 +13,6 @@
         "code": 150
       }
     ],
-    "camelcase": 0,
     "react/jsx-filename-extension": 0,
     "jsx-a11y/label-has-for": 0,
     "no-console": 0,
