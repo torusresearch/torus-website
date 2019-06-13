@@ -186,7 +186,7 @@ workflows:
             branches:
               only:
                 - develop
-       - deploy-testing:
+      - deploy-testing:
           requires:
             - build-testing
             - test-coverage
