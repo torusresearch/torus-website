@@ -133,7 +133,7 @@ jobs:
       - run:
           name: "Build code for torus testing website"
           command: |
-            npm run build:dev
+            npm run build:testing
       - persist_to_workspace:
           root: ~/torus-website/
           paths:
