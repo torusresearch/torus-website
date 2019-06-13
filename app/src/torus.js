@@ -162,8 +162,10 @@ var torus = {
           var nodeIndex = []
           log.info(shareResponses)
           for (var i = 0; i < shareResponses.length; i++) {
-            shares.push(new BN(shareResponses[i].result.keys[0].Share, 16))
-            nodeIndex.push(new BN(indexes[i], 16))
+            if (shareResponses[i]) {
+              shares.push(new BN(shareResponses[i].result.keys[0].Share, 16))
+              nodeIndex.push(new BN(indexes[i], 16))
+            }
           }
           log.info(shares, nodeIndex)
           var privateKey = torus.lagrangeInterpolation(shares.slice(0, 3), nodeIndex.slice(0, 3))
