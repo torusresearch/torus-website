@@ -18,37 +18,6 @@ step_setup_global_packages: &step_setup_global_packages
       npm ci
 
 jobs:
-  build:
-    <<: *job_common
-    steps:
-      - checkout:
-          path: ~/torus-website
-      - <<: *step_restore_cache
-      - <<: *step_setup_global_packages
-      - run:
-          name: "Build code for torus website"
-          command: |
-            npm run update:buildVersion && npm run build && . ./scripts/gitPush.sh
-      - persist_to_workspace:
-          root: ~/torus-website/
-          paths:
-            - .
-      - <<: *step_save_cache
-  build-staging:
-    <<: *job_common
-    steps:
-      - checkout:
-          path: ~/torus-website
-      - <<: *step_restore_cache
-      - <<: *step_setup_global_packages
-      - run:
-          name: "Build code for torus website"
-          command: npm run build:staging
-      - persist_to_workspace:
-          root: ~/torus-website/
-          paths:
-            - .
-      - <<: *step_save_cache
   unit-test:
     <<: *job_common
     steps:
@@ -77,6 +46,22 @@ jobs:
       # Save coverage artifacts
       - store_artifacts:
           path: coverage
+  build:
+    <<: *job_common
+    steps:
+      - checkout:
+          path: ~/torus-website
+      - <<: *step_restore_cache
+      - <<: *step_setup_global_packages
+      - run:
+          name: "Build code for torus website"
+          command: |
+            npm run update:buildVersion && npm run build && . ./scripts/gitPush.sh
+      - persist_to_workspace:
+          root: ~/torus-website/
+          paths:
+            - .
+      - <<: *step_save_cache
   deploy:
     <<: *job_common
     steps:
@@ -87,31 +72,22 @@ jobs:
           name: "Deploy Over SSH to AWS"
           command: |
             . ./scripts/uploadToAws.sh
-
-  deploy-staging:
+  build-staging:
     <<: *job_common
     steps:
-      - attach_workspace:
-          at: ~/torus-website
-      - add_ssh_keys
+      - checkout:
+          path: ~/torus-website
+      - <<: *step_restore_cache
+      - <<: *step_setup_global_packages
       - run:
-          name: "Deploy Over SSH"
+          name: "Build code for torus staging website"
           command: |
-            ssh-keyscan -H staging.tor.us >> ~/.ssh/known_hosts
-            ssh torus@staging.tor.us "rm -rf ~/staging-torus-website/*"
-            scp -r ./dist torus@staging.tor.us:~/staging-torus-website
-  update-iframeIntegrity:
-    <<: *job_common
-    steps:
-      - attach_workspace:
-          at: ~/torus-website
-      - add_ssh_keys
-      - run:
-          name: "Update iframe integrity"
-          command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            . ./scripts/updateIframeIntegrity.sh
+            npm run update:buildVersion && npm run build:staging && . ./scripts/gitPush.sh
+      - persist_to_workspace:
+          root: ~/torus-website/
+          paths:
+            - .
+      - <<: *step_save_cache
   update-lambda:
     <<: *job_common
     steps:
@@ -124,6 +100,46 @@ jobs:
             mkdir -p ~/.ssh
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
             . ./scripts/updateLambda.sh
+  update-iframeIntegrity:
+    <<: *job_common
+    steps:
+      - attach_workspace:
+          at: ~/torus-website
+      - add_ssh_keys
+      - run:
+          name: "Update iframe integrity"
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            . ./scripts/updateIframeIntegrity.sh
+  build-testing:
+    <<: *job_common
+    steps:
+      - checkout:
+          path: ~/torus-website
+      - <<: *step_restore_cache
+      - <<: *step_setup_global_packages
+      - run:
+          name: "Build code for torus testing website"
+          command: |
+            npm run build:dev
+      - persist_to_workspace:
+          root: ~/torus-website/
+          paths:
+            - .
+      - <<: *step_save_cache
+  deploy-testing:
+    <<: *job_common
+    steps:
+      - attach_workspace:
+          at: ~/torus-website
+      - add_ssh_keys
+      - run:
+          name: "Deploy Over SSH"
+          command: |
+            ssh-keyscan -H testing.tor.us >> ~/.ssh/known_hosts
+            ssh torus@testing.tor.us "rm -rf ~/testing-torus-website/*"
+            scp -r ./dist torus@testing.tor.us:~/testing-torus-website
 
 workflows:
   version: 2
@@ -135,11 +151,6 @@ workflows:
             branches:
               only:
                 - master
-      - build-staging:
-          filters:
-            branches:
-              only:
-                - develop
       - deploy:
           requires:
             - build
@@ -148,13 +159,7 @@ workflows:
             branches:
               only:
                 - master
-      - update-iframeIntegrity:
-          requires:
-            - deploy
-          filters:
-            branches:
-              only:
-                - master
+                - staging
       - update-lambda:
           requires:
             - deploy
@@ -162,9 +167,28 @@ workflows:
             branches:
               only:
                 - master
-      - deploy-staging:
+                - staging
+      - build-staging:
+          filters:
+            branches:
+              only:
+                - staging
+      - update-iframeIntegrity:
           requires:
-            - build-staging
+            - deploy
+          filters:
+            branches:
+              only:
+                - master
+                - staging
+      - build-testing:
+          filters:
+            branches:
+              only:
+                - develop
+       - deploy-testing:
+          requires:
+            - build-testing
             - test-coverage
           filters:
             branches:
