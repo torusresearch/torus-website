@@ -9,10 +9,12 @@
     "build:staging": "cross-env NODE_ENV=production TORUS_BUILD_ENV=staging npm run build-embed:staging && npm run pre-build && cross-env TORUS_BUILD_ENV=staging vue-cli-service build",
     "lint": "vue-cli-service lint",
     "build-embed:dev": "cross-env TORUS_BUILD_ENV=development node ./scripts/createEmbed.js",
+    "build-embed:testing": "cross-env TORUS_BUILD_ENV=testing node ./scripts/createEmbed.js",
     "build-embed:production": "cross-env TORUS_BUILD_ENV=production NODE_ENV=production node ./scripts/createEmbed.js",
     "build-embed:staging": "cross-env TORUS_BUILD_ENV=staging node ./scripts/createEmbed.js && npm run test:build-embed",
     "build-embed:report": "npm run build-embed:production && discify ./public/embed.min.js > disc.html",
     "build:dev": "npm run build-embed:dev && npm run pre-build && vue-cli-service build --mode development",
+    "build:testing": "npm run build-embed:testing && npm run pre-build && vue-cli-service build --mode development",
     "build:report": "vue-cli-service build --report",
     "dev": "cross-env NODE_ENV=development TORUS_BUILD_ENV=development node server.js",
     "lint:es": "eslint ./src/views/* --fix",
@@ -73,7 +75,7 @@
     "xtend": "^4.0.1"
   },
   "devDependencies": {
-    "@toruslabs/torus-embed": "^0.0.13",
+    "@toruslabs/torus-embed": "^0.0.14",
     "@vue/cli-plugin-babel": "^3.8.0",
     "@vue/cli-plugin-eslint": "^3.8.0",
     "@vue/cli-service": "^3.8.0",

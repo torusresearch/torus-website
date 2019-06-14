@@ -16,39 +16,41 @@ step_setup_global_packages: &step_setup_global_packages
     name: "Set up global packages"
     command: |
       npm ci
-
+update_lambda_job: &update_lambda_job
+  <<: *job_common
+  steps:
+    - attach_workspace:
+        at: ~/torus-website
+    - add_ssh_keys
+    - run:
+        name: "Update lambda version"
+        command: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+          . ./scripts/updateLambda.sh
+update_iframeIntegrity: &update_iframeIntegrity
+  <<: *job_common
+  steps:
+    - attach_workspace:
+        at: ~/torus-website
+    - add_ssh_keys
+    - run:
+        name: "Update iframe integrity"
+        command: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+          . ./scripts/updateIframeIntegrity.sh
+deploy_function: &deploy_function
+  <<: *job_common
+  steps:
+    - attach_workspace:
+        at: ~/torus-website
+    - add_ssh_keys
+    - run:
+        name: "Deploy Over SSH to AWS"
+        command: |
+          . ./scripts/uploadToAws.sh
 jobs:
-  build:
-    <<: *job_common
-    steps:
-      - checkout:
-          path: ~/torus-website
-      - <<: *step_restore_cache
-      - <<: *step_setup_global_packages
-      - run:
-          name: "Build code for torus website"
-          command: |
-            npm run update:buildVersion && npm run build && . ./scripts/gitPush.sh
-      - persist_to_workspace:
-          root: ~/torus-website/
-          paths:
-            - .
-      - <<: *step_save_cache
-  build-staging:
-    <<: *job_common
-    steps:
-      - checkout:
-          path: ~/torus-website
-      - <<: *step_restore_cache
-      - <<: *step_setup_global_packages
-      - run:
-          name: "Build code for torus website"
-          command: npm run build:staging
-      - persist_to_workspace:
-          root: ~/torus-website/
-          paths:
-            - .
-      - <<: *step_save_cache
   unit-test:
     <<: *job_common
     steps:
@@ -77,18 +79,67 @@ jobs:
       # Save coverage artifacts
       - store_artifacts:
           path: coverage
-  deploy:
+  build:
     <<: *job_common
     steps:
-      - attach_workspace:
-          at: ~/torus-website
-      - add_ssh_keys
+      - checkout:
+          path: ~/torus-website
+      - <<: *step_restore_cache
+      - <<: *step_setup_global_packages
       - run:
-          name: "Deploy Over SSH to AWS"
+          name: "Build code for torus website"
           command: |
-            . ./scripts/uploadToAws.sh
-
+            npm run update:buildVersion && npm run build && . ./scripts/gitPush.sh
+      - persist_to_workspace:
+          root: ~/torus-website/
+          paths:
+            - .
+      - <<: *step_save_cache
+  build-staging:
+    <<: *job_common
+    steps:
+      - checkout:
+          path: ~/torus-website
+      - <<: *step_restore_cache
+      - <<: *step_setup_global_packages
+      - run:
+          name: "Build code for torus staging website"
+          command: |
+            npm run update:buildVersion && npm run build:staging && . ./scripts/gitPush.sh
+      - persist_to_workspace:
+          root: ~/torus-website/
+          paths:
+            - .
+      - <<: *step_save_cache
+  deploy:
+    <<: *deploy_function
   deploy-staging:
+    <<: *deploy_function
+  update-lambda:
+    <<: *update_lambda_job
+  update-lambda-staging:
+    <<: *update_lambda_job
+  update-iframeIntegrity:
+    <<: *update_iframeIntegrity
+  update-iframeIntegrity-staging:
+    <<: *update_iframeIntegrity
+  build-testing:
+    <<: *job_common
+    steps:
+      - checkout:
+          path: ~/torus-website
+      - <<: *step_restore_cache
+      - <<: *step_setup_global_packages
+      - run:
+          name: "Build code for torus testing website"
+          command: |
+            npm run build:testing
+      - persist_to_workspace:
+          root: ~/torus-website/
+          paths:
+            - .
+      - <<: *step_save_cache
+  deploy-testing:
     <<: *job_common
     steps:
       - attach_workspace:
@@ -97,33 +148,9 @@ jobs:
       - run:
           name: "Deploy Over SSH"
           command: |
-            ssh-keyscan -H staging.tor.us >> ~/.ssh/known_hosts
-            ssh torus@staging.tor.us "rm -rf ~/staging-torus-website/*"
-            scp -r ./dist torus@staging.tor.us:~/staging-torus-website
-  update-iframeIntegrity:
-    <<: *job_common
-    steps:
-      - attach_workspace:
-          at: ~/torus-website
-      - add_ssh_keys
-      - run:
-          name: "Update iframe integrity"
-          command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            . ./scripts/updateIframeIntegrity.sh
-  update-lambda:
-    <<: *job_common
-    steps:
-      - attach_workspace:
-          at: ~/torus-website
-      - add_ssh_keys
-      - run:
-          name: "Update lambda version"
-          command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            . ./scripts/updateLambda.sh
+            ssh-keyscan -H testing.tor.us >> ~/.ssh/known_hosts
+            ssh torus@testing.tor.us "rm -rf ~/testing-torus-website/*"
+            scp -r ./dist torus@testing.tor.us:~/testing-torus-website
 
 workflows:
   version: 2
@@ -135,22 +162,10 @@ workflows:
             branches:
               only:
                 - master
-      - build-staging:
-          filters:
-            branches:
-              only:
-                - develop
       - deploy:
           requires:
             - build
             - test-coverage
-          filters:
-            branches:
-              only:
-                - master
-      - update-iframeIntegrity:
-          requires:
-            - deploy
           filters:
             branches:
               only:
@@ -162,9 +177,48 @@ workflows:
             branches:
               only:
                 - master
+      - update-iframeIntegrity:
+          requires:
+            - deploy
+          filters:
+            branches:
+              only:
+                - master
+      - build-staging:
+          filters:
+            branches:
+              only:
+                - staging
       - deploy-staging:
           requires:
             - build-staging
+            - test-coverage
+          filters:
+            branches:
+              only:
+                - staging
+      - update-lambda-staging:
+          requires:
+            - deploy-staging
+          filters:
+            branches:
+              only:
+                - staging
+      - update-iframeIntegrity-staging:
+          requires:
+            - deploy-staging
+          filters:
+            branches:
+              only:
+                - staging
+      - build-testing:
+          filters:
+            branches:
+              only:
+                - develop
+      - deploy-testing:
+          requires:
+            - build-testing
             - test-coverage
           filters:
             branches:
