@@ -36,7 +36,7 @@
     "backoff": "^2.5.0",
     "broadcast-channel": "^2.1.12",
     "copy-to-clipboard": "^3.2.0",
-    "core-js": "2.6.5",
+    "core-js": "3.1.4",
     "debounce": "^1.2.0",
     "eth-block-tracker": "^4.4.1",
     "eth-contract-metadata": "^1.9.0",
