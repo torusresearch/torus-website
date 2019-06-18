@@ -33,7 +33,9 @@ module.exports = {
       // Get the current options from the Terser Plugin instance that vue-cli-service added:
       const options = config.optimization.minimizer[0].options
       // Set the options you want to set
-      options.terserOptions.keepFnames = true
+      options.terserOptions.keep_fnames = true
+      options.terserOptions.mangle.keep_fnames = true
+      options.terserOptions.compress.keep_fnames = true
       // create a fresh pülugin instance with the new options and
       // replace the current one with it
       config.optimization.minimizer[0] = new TerserPlugin(options)
