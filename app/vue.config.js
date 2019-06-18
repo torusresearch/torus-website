@@ -27,6 +27,18 @@ module.exports = {
   css: {
     extract: false
   },
+  configureWebpack: config => {
+    if (process.env.NODE_ENV === 'production') {
+      const TerserPlugin = require('terser-webpack-plugin')
+      // Get the current options from the Terser Plugin instance that vue-cli-service added:
+      const options = config.optimization.minimizer[0].options
+      // Set the options you want to set
+      options.terserOptions.keepFnames = true
+      // create a fresh pülugin instance with the new options and
+      // replace the current one with it
+      config.optimization.minimizer[0] = new TerserPlugin(options)
+    }
+  },
 
   publicPath: process.env.TORUS_BUILD_ENV === 'production' ? `/${version}/` : '/',
 
