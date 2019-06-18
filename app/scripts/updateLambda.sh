@@ -1,7 +1,7 @@
 
 #!/bin/bash
 git clone git@github.com:torusresearch/torus-serverless.git ~/torus-serverless
-PACKAGE_VERSION=$(cat package.json | grep buildVersion | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d ' ')
+PACKAGE_VERSION=$(cat package.json | grep '"buildVersion": "v' | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d ' ')
 FOLDER=''
 if [ "$CIRCLE_BRANCH" == 'master' ]; then
   FOLDER='cloudfront-redirect'
