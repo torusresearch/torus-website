@@ -45,19 +45,21 @@ module.exports = {
     config.plugin('pwa').tap(pwaPlugin => {
       pwaPlugin[0].name = 'Torus'
       pwaPlugin[0].short_name = 'Torus'
-      pwaPlugin[0].start_url = process.env.TORUS_BUILD_ENV === 'production' ? `/${version}/index.html` : '/index.html'
+      pwaPlugin[0].start_url =
+        process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/index.html` : '/index.html'
       pwaPlugin[0].display = 'standalone'
       pwaPlugin[0].theme_color = '#3996ff'
       pwaPlugin[0].manifestOptions = {
         name: 'Torus',
         short_name: 'Torus',
-        start_url: process.env.TORUS_BUILD_ENV === 'production' ? `/${version}/index.html` : '/index.html',
+        start_url:
+          process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/index.html` : '/index.html',
         display: 'standalone',
         theme_color: '#3996ff',
         icons: [
           {
             src:
-              process.env.TORUS_BUILD_ENV === 'production'
+              process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging'
                 ? `/${version}/img/icons/android-chrome-192x192.png`
                 : './img/icons/android-chrome-192x192.png',
             sizes: '192x192',
@@ -65,7 +67,7 @@ module.exports = {
           },
           {
             src:
-              process.env.TORUS_BUILD_ENV === 'production'
+              process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging'
                 ? `/${version}/img/icons/android-chrome-512x512.png`
                 : './img/icons/android-chrome-192x192.png',
             sizes: '512x512',
@@ -77,7 +79,7 @@ module.exports = {
     })
   },
 
-  publicPath: process.env.TORUS_BUILD_ENV === 'production' ? `/${version}/` : '/',
+  publicPath: process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/` : '/',
 
   integrity: true,
   crossorigin: 'anonymous',
@@ -103,11 +105,12 @@ module.exports = {
     appleMobileWebAppCapable: 'yes',
     appleMobileWebAppStatusBarStyle: 'black',
     workboxPluginMode: 'GenerateSW',
-    mainfestPath: process.env.TORUS_BUILD_ENV === 'production' ? `/${version}/manifest.json` : '/manifest.json',
+    mainfestPath:
+      process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/manifest.json` : '/manifest.json',
     manifestOptions: {
       name: 'Torus',
       short_name: 'Torus',
-      start_url: process.env.TORUS_BUILD_ENV === 'production' ? `/${version}/index.html` : '/index.html',
+      start_url: process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/index.html` : '/index.html',
       display: 'standalone',
       theme_color: '#3996ff'
     }
