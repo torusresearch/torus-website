@@ -309,7 +309,7 @@ export default {
             .on('transactionHash', () => {
               this.$router.push('/wallet/history')
             })
-            .catch(err => console.log(err))
+            .on('error', err => console.log(err))
         else {
           const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
           contractInstance.methods
@@ -322,7 +322,7 @@ export default {
             .on('transactionHash', () => {
               this.$router.push('/wallet/history')
             })
-            .catch(err => console.log(err))
+            .on('error', err => console.log(err))
         }
       }
     },
