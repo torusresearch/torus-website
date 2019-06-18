@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 PACKAGE_VERSION=$(cat package.json \
-  | grep buildVersion \
+  | grep '"buildVersion": "v' \
   | head -1 \
   | awk -F: '{ print $2 }' \
   | sed 's/[",]//g')
