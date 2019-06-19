@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "0.1.1",
+  "version": "0.0.14",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -27,8 +27,7 @@
     "test:coveralls-upload": "if [ $COVERALLS_REPO_TOKEN ]; then nyc report --reporter=text-lcov | coveralls; fi",
     "test:e2e": "node ./test/e2e/puppeteer.js",
     "test:e2e:headful": "node ./test/e2e/puppeteer.js false",
-    "test:unit": "mocha --exit -r esm -r jsdom-global/register -r isomorphic-fetch ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js",
-    "update:buildVersion": "node ./scripts/updatebuildVersion.js"
+    "test:unit": "mocha --exit -r esm -r jsdom-global/register -r isomorphic-fetch ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js"
   },
   "dependencies": {
     "assert": "^2.0.0",
@@ -133,7 +132,6 @@
     "last 2 versions",
     "not ie <= 8"
   ],
-  "buildVersion": "v0",
   "engines": {
     "node": "10.x"
   },

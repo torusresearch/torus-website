@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 
 import { register } from 'register-service-worker'
-import { buildVersion } from '../package.json'
+import { version } from '../package.json'
 
 if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
-  register(`/${buildVersion}/service-worker.js`, {
+  register(`/v${version}/service-worker.js`, {
     ready() {
       console.log('App is being served from cache by a service worker.\n' + 'For more details, visit https://goo.gl/AFskqB')
     },

@@ -7,7 +7,7 @@ if (process.env.TORUS_BUILD_ENV !== 'production') {
   routes.push('/login')
 }
 
-const version = JSON.parse(fs.readFileSync(path.resolve('./package.json'))).buildVersion
+const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
 
 module.exports = {
   devServer: {
