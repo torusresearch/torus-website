@@ -16,10 +16,9 @@ git config user.name "chaitanyapotti"
 git commit -am "Updating embed with new hash"
 cd ..
 if ! (git diff --quiet && git diff --staged --quiet && git diff origin/master HEAD --quiet); then
-    if (git push origin $CIRCLE_BRANCH); then 
-        if [[ "$CIRCLE_BRANCH" = 'master' ]]; then 
-            npm version patch -m 'Updating iframe integrity and publish %s'
-            git push --tags 
-        fi
+    if [[ "$CIRCLE_BRANCH" = 'master' ]]; then 
+        npm version patch -m 'Updating iframe integrity and publish %s'
+        git push origin $CIRCLE_BRANCH
+        git push --tags 
     fi
 fi
