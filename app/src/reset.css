@@ -1,0 +1,4 @@
+.container.fill-height {
+    overflow-y: auto;
+    overflow-x: hidden;
+}

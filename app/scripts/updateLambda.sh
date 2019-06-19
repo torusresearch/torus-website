@@ -1,19 +1,19 @@
 
 #!/bin/bash
 git clone git@github.com:torusresearch/torus-serverless.git ~/torus-serverless
-PACKAGE_VERSION=$(cat package.json | grep buildVersion | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d ' ')
+PACKAGE_VERSION=$(cat package.json | grep '"version"' | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d ' ')
 FOLDER=''
-if [ "$CIRCLE_BRANCH" == 'master' ]; then
+if [[ "$CIRCLE_BRANCH" = 'master' ]]; then
   FOLDER='cloudfront-redirect'
   FUNCTION_NAME='torus-routing'
   CLOUDFRONTID=$CLOUDFRONT_DISTRIBUTION_ID
-elif [ "$CIRCLE_BRANCH" == 'staging' ]; then
+elif [[ "$CIRCLE_BRANCH" = 'staging' ]]; then
   FOLDER='cloudfront-staging-redirect'
   FUNCTION_NAME='torus-staging-routing'
   CLOUDFRONTID=$CLOUDFRONT_STAGING_DISTRIBUTION_ID
 fi
 cd ~/torus-serverless/$FOLDER
-sed -i -e "s|const GLOBAL_VERSION.*|const GLOBAL_VERSION = \"$PACKAGE_VERSION\";|g" index.js
+sed -i -e "s|const GLOBAL_VERSION.*|const GLOBAL_VERSION = \"v$PACKAGE_VERSION\";|g" index.js
 git config user.email "chaitanya.potti@gmail.com"
 git config user.name "chaitanyapotti"
 git diff --quiet && git diff --staged --quiet || (git commit -am "Updating version" && git push origin master)

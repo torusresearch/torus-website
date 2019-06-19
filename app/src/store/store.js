@@ -8,6 +8,8 @@ import { hexToText, significantDigits, formatCurrencyNumber } from '../utils/uti
 import { MAINNET, RPC } from '../utils/enums'
 import BroadcastChannel from 'broadcast-channel'
 
+const baseRoute = process.env.BASE_URL
+
 Vue.use(Vuex)
 
 const vuexPersist = new VuexPersistence({
@@ -188,7 +190,7 @@ var VuexStore = new Vuex.Store({
       const width = isTx ? 650 : 600
       const height = isTx ? 470 : 350
       window.open(
-        `/confirm?instanceId=${torus.instanceId}`,
+        `${baseRoute}confirm?instanceId=${torus.instanceId}`,
         '_blank',
         `directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=${height},width=${width}`
       )
@@ -239,7 +241,8 @@ var VuexStore = new Vuex.Store({
     },
     showWalletPopup(context, payload) {
       walletWindow =
-        walletWindow || window.open('/wallet', '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=750')
+        walletWindow ||
+        window.open(`${baseRoute}wallet`, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=750')
       walletWindow.blur()
       setTimeout(walletWindow.focus(), 0)
       walletWindow.onbeforeunload = function() {

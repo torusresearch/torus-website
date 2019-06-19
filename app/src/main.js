@@ -1,9 +1,11 @@
 import Vue from 'vue'
+import './reset.css'
 import './plugins'
 import App from './App.vue'
 import router from './router'
 import store from './store'
 import log from 'loglevel'
+import './registerServiceWorker'
 // import torus from './torus'
 
 log.setDefaultLevel('info')
