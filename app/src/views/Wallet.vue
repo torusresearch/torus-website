@@ -15,7 +15,7 @@
           </header-item>
         </v-tabs>
       </v-flex>
-      <v-flex xs12 fill-height>
+      <v-flex xs12>
         <router-view></router-view>
       </v-flex>
     </v-layout>
