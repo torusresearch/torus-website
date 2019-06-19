@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import './reset.css'
 import './plugins'
 import App from './App.vue'
 import router from './router'
