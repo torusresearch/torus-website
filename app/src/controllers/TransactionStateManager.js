@@ -241,7 +241,6 @@ class TransactionStateManager extends EventEmitter {
           break
         default:
           if (typeof value !== 'string') throw new Error(`${key} in txParams is not a string. got: (${value})`)
-          if (!ethUtil.isHexPrefixed(value)) throw new Error(`${key} in txParams is not hex prefixed. got: (${value})`)
           break
       }
     })
