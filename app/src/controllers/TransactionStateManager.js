@@ -5,7 +5,7 @@ const ethUtil = require('ethereumjs-util')
 const log = require('loglevel')
 const txStateHistoryHelper = require('../utils/tx-state-history-helper').default
 const createId = require('../utils/random-id').default
-const { getFinalStates } = require('../utils/txUtils')
+const { getFinalStates, normalizeTxParams } = require('../utils/txUtils')
 /**
   TransactionStateManager is responsible for the state of a transaction and
   storing the transaction
@@ -133,6 +133,9 @@ class TransactionStateManager extends EventEmitter {
     @returns {object} the txMeta
   */
   addTx(txMeta) {
+    if (txMeta.txParams) {
+      this.normalizeAndValidateTxParams(txMeta.txParams)
+    }
     this.once(`${txMeta.id}:signed`, function(txId) {
       this.removeAllListeners(`${txMeta.id}:rejected`)
     })
@@ -184,10 +187,7 @@ class TransactionStateManager extends EventEmitter {
   updateTx(txMeta, note) {
     // validate txParams
     if (txMeta.txParams) {
-      if (typeof txMeta.txParams.data === 'undefined') {
-        delete txMeta.txParams.data
-      }
-      this.validateTxParams(txMeta.txParams)
+      this.normalizeAndValidateTxParams(txMeta.txParams)
     }
 
     // create txMeta snapshot for history
@@ -204,6 +204,14 @@ class TransactionStateManager extends EventEmitter {
     const index = txList.findIndex(txData => txData.id === txId)
     txList[index] = txMeta
     this._saveTxList(txList)
+  }
+
+  normalizeAndValidateTxParams(txParams) {
+    if (typeof txParams.data === 'undefined') {
+      delete txParams.data
+    }
+    const modifiedTxParams = normalizeTxParams(txParams, false)
+    this.validateTxParams(modifiedTxParams)
   }
 
   /**
