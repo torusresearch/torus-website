@@ -10,6 +10,7 @@ import WalletHistory from './containers/WalletHistory.vue'
 import WalletSettings from './containers/WalletSettings.vue'
 import WalletAccounts from './containers/WalletAccounts.vue'
 import WalletTransfer from './containers/WalletTransfer.vue'
+import Simplex from './views/Simplex.vue'
 
 // const Popup = () => import('./views/Popup.vue')
 // const Confirm = () => import('./views/Confirm.vue')
@@ -80,7 +81,12 @@ const router = new Router({
           props: route => ({ address: route.query.address })
         }
       ]
-    }
+    },
+    {
+      path: '/simplex',
+      name: 'simplex',
+      component: Simplex
+    },
   ]
 })
 
