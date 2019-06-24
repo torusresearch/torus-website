@@ -38,7 +38,7 @@ body {
 }
 
 .error-content .error-row {
-    margin-top: -75px;
+    margin-top: -90px;
 }
 
 .error-content .people {
@@ -46,7 +46,7 @@ body {
 }
 
 .error-content .page-header {
-    font-size: 30px;
+    font-size: 26px;
     margin: 0;
     line-height: 1.2em;
 }
@@ -99,6 +99,7 @@ body {
     }
 
     .error-content .home-button {
+        margin-top: 10px;
         padding: 10px 25px;
         font-size: 16px;
     }
@@ -115,7 +116,7 @@ body {
     }
 
     .error-content .people {
-        width: 80%;    
+        width: 90%;    
     }
 
     .error-content .page-header {
