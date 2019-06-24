@@ -1,7 +1,7 @@
 const extend = require('xtend')
 const EventEmitter = require('safe-event-emitter')
 const ObservableStore = require('obs-store')
-const ethUtil = require('ethereumjs-util')
+// const ethUtil = require('ethereumjs-util')
 const log = require('loglevel')
 const txStateHistoryHelper = require('../utils/tx-state-history-helper').default
 const createId = require('../utils/random-id').default
