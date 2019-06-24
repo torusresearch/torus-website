@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 let routes = ['/', '/popup', '/confirm', '/wallet', '/wallet/home', '/wallet/history', '/wallet/accounts', '/wallet/settings', '/wallet/transfer']
 
@@ -39,6 +40,18 @@ module.exports = {
       // create a fresh pülugin instance with the new options and
       // replace the current one with it
       config.optimization.minimizer[0] = new TerserPlugin(options)
+
+      config.plugins.push(
+        new HtmlWebpackPlugin({
+          // Also generate a test.html
+          filename: 'error-pages/404-notfound.html',
+          template: path.resolve('./public/error-pages/404-notfound.html'),
+          templateParameters: {
+            BASE_URL: `/${version}/`
+          },
+          excludeChunks: ['app', 'chunk-vendors']
+        })
+      )
     }
   },
   chainWebpack: config => {
