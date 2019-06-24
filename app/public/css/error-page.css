@@ -78,6 +78,7 @@ body {
         flex: 1;
         margin-top: -90px;
         display: flex;
+        align-items: center;
     }
 
     .error-content .error-column {
