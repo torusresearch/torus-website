@@ -81,12 +81,12 @@ body {
     }
 
     .error-content .error-column {
-        padding: 0 10px;
+        padding: 0 20px;
         flex: 1;
     }
 
     .error-content .people {
-        width: 90%;    
+        width: 100%;    
     }
 
     .error-content .page-header {
@@ -112,11 +112,6 @@ body {
 
     .error-content .error-row {
         margin-top: -120px;
-    }
-
-    .error-content .error-column {
-        padding: 0 20px;
-        flex: 1;
     }
 
     .error-content .people {
