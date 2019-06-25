@@ -78,7 +78,7 @@
           </v-flex>
         </v-layout>
         <div class="text-xs-center">
-          <v-btn class="torus-button text-xs-center" color="primary" type="submit">Checkout with Simplex</v-btn>
+          <v-btn class="torus-button text-xs-center" color="primary" type="submit" @click.prevent="sendOrder">Checkout with Simplex</v-btn>
         </div>
       </v-container>
     </v-form>
@@ -86,7 +86,7 @@
 </template>
 
 <script>
-import { getQuote } from '../plugins/simplex'
+import { getQuote, getOrder } from '../plugins/simplex'
 import throttle from 'lodash.throttle'
 import { significantDigits } from '../utils/utils'
 
@@ -97,6 +97,7 @@ export default {
       fiatValue: 0,
       ethValue: 0,
       currencyRate: 0,
+      currentOrder: {},
       rules: {
         required: value => !!value || 'Required'
       }
@@ -142,9 +143,81 @@ export default {
           this.fiatValue = result.result.fiat_money.total_amount
           this.ethValue = result.result.digital_money.amount
           this.currencyRate = result.result.digital_money.amount / result.result.fiat_money.total_amount
+          this.currentOrder = result.result
         })
         .catch(err => console.log(err))
-    }, 0)
+    }, 0),
+    sendOrder() {
+      getOrder({
+        'g-recaptcha-response': '',
+        account_details: {
+          app_end_user_id: this.currentOrder.user_id
+        },
+        transaction_details: {
+          payment_details: {
+            fiat_total_amount: {
+              currency: this.currentOrder.fiat_money.currency,
+              amount: this.currentOrder.fiat_money.total_amount
+            },
+            requested_digital_amount: {
+              currency: this.currentOrder.digital_money.currency,
+              amount: this.currentOrder.digital_money.amount
+            },
+            destination_wallet: {
+              currency: this.currentOrder.digital_money.currency,
+              address: this.$store.state.selectedAddress
+            }
+          }
+        }
+      }).then(result => {
+        const {
+          version,
+          partner,
+          return_url,
+          quote_id,
+          payment_id,
+          user_id,
+          destination_wallet_address,
+          destination_wallet_currency,
+          fiat_total_amount_amount,
+          fiat_total_amount_currency,
+          digital_total_amount_amount,
+          digital_total_amount_currency
+        } = result.result
+        this.post(result.result.payment_post_url, {
+          payment_flow_type: 'wallet',
+          version: version,
+          partner: partner,
+          return_url: return_url,
+          quote_id: quote_id,
+          payment_id: payment_id,
+          user_id: user_id,
+          'destination_wallet[address]': destination_wallet_address,
+          'destination_wallet[currency]': destination_wallet_currency,
+          'fiat_total_amount[amount]': fiat_total_amount_amount,
+          'fiat_total_amount[currency]': fiat_total_amount_currency,
+          'digital_total_amount[amount]': digital_total_amount_amount,
+          'digital_total_amount[currency]': digital_total_amount_currency
+        })
+      })
+    },
+    post(path, params, method = 'post') {
+      const form = document.createElement('form')
+      form.method = method
+      form.action = path
+      form.target = '_blank'
+      for (const key in params) {
+        if (params.hasOwnProperty(key)) {
+          const hiddenField = document.createElement('input')
+          hiddenField.type = 'hidden'
+          hiddenField.name = key
+          hiddenField.value = params[key]
+          form.appendChild(hiddenField)
+        }
+      }
+      document.body.appendChild(form)
+      form.submit()
+    }
   },
   async mounted() {
     this.fiatValue = 50
