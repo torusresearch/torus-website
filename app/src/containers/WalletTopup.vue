@@ -19,11 +19,11 @@
             <v-subheader>Purchase</v-subheader>
           </v-flex>
           <v-flex sm4 lg4>
-            <v-text-field class="torus-text-input" placeholder="0.0000" suffix="ETH" solo :rules="[rules.required]"></v-text-field>
+            <v-text-field class="torus-text-input" placeholder="0.00" suffix="ETH" v-model="ethValue" solo :rules="[rules.required]"></v-text-field>
             <div class="v-text-field__details">
               <div class="v-messages theme--light">
                 <div class="v-messages__wrapper">
-                  <div class="v-messages__message">Rate : 1 ETH = 260.00 USD</div>
+                  <div class="v-messages__message">Rate : 1 ETH = {{ significantDigits(1 / this.currencyRate) }} {{ this.selectedCurrency }}</div>
                 </div>
               </div>
             </div>
@@ -38,8 +38,9 @@
             <v-text-field
               class="torus-text-input"
               placeholder="0.00 (Min 50.00)"
-              suffix="USD*"
+              :suffix="`${selectedCurrency}*`"
               solo
+              v-model="fiatValue"
               :rules="[rules.required, validatePayRange]"
             ></v-text-field>
             <div class="v-text-field__details">
@@ -76,35 +77,79 @@
             </v-layout>
           </v-flex>
         </v-layout>
-        <v-card-actions text-sm-center>
-          <v-spacer></v-spacer>
-          <v-btn class="torus-button" color="primary" type="submit">Checkout with Simplex</v-btn>
-          <v-spacer></v-spacer>
-        </v-card-actions>
+        <div class="text-xs-center">
+          <v-btn class="torus-button text-xs-center" color="primary" type="submit">Checkout with Simplex</v-btn>
+        </div>
       </v-container>
     </v-form>
   </v-flex>
 </template>
 
 <script>
+import { getQuote } from '../plugins/simplex'
+import throttle from 'lodash.throttle'
+import { significantDigits } from '../utils/utils'
+
+const validSimplexCurrencies = ['USD', 'EUR']
 export default {
   data() {
     return {
+      fiatValue: 0,
+      ethValue: 0,
+      currencyRate: 0,
       rules: {
         required: value => !!value || 'Required'
       }
     }
   },
+  computed: {
+    selectedCurrency() {
+      if (validSimplexCurrencies.includes(this.$store.state.selectedCurrency)) return this.$store.state.selectedCurrency
+      else return 'USD'
+    }
+  },
+  watch: {
+    fiatValue: function(newFiatValue, oldFiatValue) {
+      if (newFiatValue !== oldFiatValue) {
+        this.fetchQuote()
+      }
+    },
+    ethValue: function(newEthValue, oldEthValue) {
+      if (newEthValue !== oldEthValue) {
+        this.fiatValue = this.ethValue / this.currencyRate
+      }
+    }
+  },
   methods: {
     validatePayRange(value) {
-      if (parseFloat(value) > 2000) {
-        return 'Must be lesser than 2000'
+      if (parseFloat(value) > 20000) {
+        return 'Must be lesser than 20000'
       } else if (parseFloat(value) < 50) {
         return 'Must be greater than 50'
       }
-
       return ''
-    }
+    },
+    significantDigits: significantDigits,
+    fetchQuote: throttle(async function() {
+      getQuote({
+        digital_currency: 'ETH',
+        fiat_currency: this.selectedCurrency,
+        requested_currency: this.selectedCurrency,
+        requested_amount: +this.fiatValue
+      })
+        .then(result => {
+          console.log(result)
+          this.fiatValue = result.result.fiat_money.total_amount
+          this.ethValue = result.result.digital_money.amount
+          this.currencyRate = result.result.digital_money.amount / result.result.fiat_money.total_amount
+        })
+        .catch(err => console.log(err))
+    }, 0)
+  },
+  async mounted() {
+    this.fiatValue = 50
+    this.currencyRate = this.$store.state.currencyData[this.selectedCurrency] || 0
+    this.fetchQuote()
   }
 }
 </script>
