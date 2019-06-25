@@ -9,86 +9,95 @@
         <span>{{ username }}'s Wallet</span>
       </div>
     </v-layout>
-    <v-container align-content-center>
-      <v-layout column text-sm-center>
-        <v-flex sm6>
-          <h1 class="page-title">Purchase Cryptocurrency with your credit card via Simplex</h1>
-        </v-flex>
-        <v-flex sm6>
-          <p class="page-description">
-            Simplex is a secure way to buy cryptoccurrency with your credit card.
-            <br>Start by entering an amount to get a quote before making your purchase.
-          </p>
-        </v-flex>
-      </v-layout>
+    <v-form>
+      <v-container align-content-center>
+        <v-layout column text-sm-center>
+          <v-flex sm6>
+            <h1 class="page-title">Purchase Cryptocurrency with your credit card via Simplex</h1>
+          </v-flex>
+          <v-flex sm6>
+            <p class="page-description">
+              Simplex is a secure way to buy cryptoccurrency with your credit card.
+              <br>Start by entering an amount to get a quote before making your purchase.
+            </p>
+          </v-flex>
+        </v-layout>
 
-      <v-layout row justify-center>
-        <v-flex sm1>
-          <v-subheader>Purchase</v-subheader>
-        </v-flex>
-        <v-flex sm4>
-          <v-text-field
-            class="torus-text-input"
-            persistent-hint
-            hint="Rate : 1 ETH = 260.00 USD"
-            value="0.0000"
-            suffix="ETH"
-            solo
-          ></v-text-field>
-        </v-flex>
-      </v-layout>
-
-      <v-layout row justify-center>
-        <v-flex sm1>
-          <v-subheader>Pay</v-subheader>
-        </v-flex>
-        <v-flex sm4>
-          <v-text-field
-            class="torus-text-input"
-            hide-details
-            value="0.00 (Min 50.00)"
-            suffix="USD* "
-            solo
-          ></v-text-field>
-          <div class="v-text-field__details">
-            <div class="v-messages theme--light">
-              <div class="v-messages__wrapper">
-                <div class="v-messages__message">
-                  * Includes 5% Simplex Service Fees
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                      <v-icon color="primary" dark v-on="on">error_outline</v-icon>
-                    </template>
-                    <span>Tooltip</span>
-                  </v-tooltip>
+        <v-layout row justify-center>
+          <v-flex sm1>
+            <v-subheader>Purchase</v-subheader>
+          </v-flex>
+          <v-flex sm4>
+            <v-text-field
+              class="torus-text-input"
+              placeholder="0.0000"
+              suffix="ETH"
+              solo
+              :rules="[rules.required]"
+            ></v-text-field>
+            <div class="v-text-field__details">
+              <div class="v-messages theme--light">
+                <div class="v-messages__wrapper">
+                  <div class="v-messages__message">
+                    Rate : 1 ETH = 260.00 USD
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </v-flex>
-      </v-layout>
+          </v-flex>
+        </v-layout>
 
-      <v-layout column text-sm-center>
-        <v-flex sm6>
-          <p>
-            <img src="/images/clock-regular.svg">
-            The process would take approximately 10 - 15 mins.
-          </p>
-        </v-flex>
-        <v-flex sm6>
-          <p>
-            <img src="/images/address-card-regular.svg">
-            Please prepare your Identity Card/Passport to complete the purchase.
-          </p>
-        </v-flex>
-      </v-layout>
-    </v-container>
+        <v-layout row justify-center>
+          <v-flex sm1>
+            <v-subheader>Pay</v-subheader>
+          </v-flex>
+          <v-flex sm4>
+            <v-text-field
+              class="torus-text-input"
+              placeholder="0.00 (Min 50.00)"
+              suffix="USD*"
+              solo
+              :rules="[rules.required, validatePayRange]"
+            ></v-text-field>
+            <div class="v-text-field__details">
+              <div class="v-messages theme--light">
+                <div class="v-messages__wrapper">
+                  <div class="v-messages__message">
+                    * Includes 5% Simplex Service Fees
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on }">
+                        <v-icon color="primary" dark v-on="on">error_outline</v-icon>
+                      </template>
+                      <span>Tooltip</span>
+                    </v-tooltip>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </v-flex>
+        </v-layout>
 
-    <v-card-actions text-sm-center>
-      <v-spacer></v-spacer>
-      <v-btn color="primary" type="submit">Checkout with Simplex</v-btn>
-      <v-spacer></v-spacer>
-    </v-card-actions>
+        <v-layout column text-sm-center>
+          <v-flex sm6>
+            <p>
+              <img src="/images/clock-regular.svg">
+              The process would take approximately 10 - 15 mins.
+            </p>
+          </v-flex>
+          <v-flex sm6>
+            <p>
+              <img src="/images/address-card-regular.svg">
+              Please prepare your Identity Card/Passport to complete the purchase.
+            </p>
+          </v-flex>
+        </v-layout>
+        <v-card-actions text-sm-center>
+          <v-spacer></v-spacer>
+          <v-btn class="torus-button" color="primary" type="submit">Checkout with Simplex</v-btn>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-container>
+    </v-form>
   </v-flex>
 </template>
 
@@ -96,8 +105,22 @@
 export default {
   data() {
     return {
-      username: "Username"
+      username: "Username",
+      rules: {
+        required: value => !!value || 'Required'
+      }
     };
+  },
+  methods: {
+    validatePayRange(value) {
+      if(parseFloat(value) > 2000) {
+        return 'Must be lesser than 2000';
+      } else if(parseFloat(value) < 50) {
+        return 'Must be greater than 50';
+      }
+      
+      return '';
+    }
   }
 };
 </script>
@@ -133,6 +156,15 @@ export default {
     margin-bottom: 50px;
   }
 
+  .torus-button {
+    border-radius: 5px;
+    background-image: linear-gradient(to right, #5495f7, #295dab);
+    text-transform: none;
+    font-size: 21px;
+    padding: 15px 30px;
+    height: inherit;
+  }
+
   .torus-text-input.v-text-field--solo {
     font-size: 20px;
 
@@ -147,7 +179,10 @@ export default {
       background-color: rgba(255, 255, 255, 0.3);
       border-radius: 4px;
       height: 44px;
-      input {
+      input {       
+        &::placeholder{
+          color: rgba(255, 255, 255, 0.3);;
+        }
         text-align: center;
         color: #ffffff;
       }
@@ -164,8 +199,12 @@ export default {
   }
 
   & /deep/ .v-text-field__details {
-    margin-bottom: 25px;
+    margin-bottom: 0;
     padding: 0 12px;
+  }
+
+  & /deep/ .v-messages {
+    min-height: 0;
   }
 }
 
