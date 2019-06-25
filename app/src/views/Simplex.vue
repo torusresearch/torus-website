@@ -281,4 +281,34 @@ export default {
     max-width: 1185px;
   }
 }
+
+@media only screen and (max-height: 700px) {
+  .simplex-page {
+
+    .header {
+      padding: 45px 50px 0;
+    }
+
+    .page-title {
+      margin-bottom: 0;
+    }
+
+    .page-description {
+      margin-bottom: 20px;
+    }
+
+    .pay-form {
+      margin-bottom: 10px !important;
+    }
+
+    .torus-notes {
+      margin-bottom: 10px !important;
+    }
+
+    .torus-note-icon {
+      margin-right: 15px;
+    }
+  }
+}
+
 </style>
