@@ -24,15 +24,16 @@
         </v-layout>
 
         <v-layout row justify-center>
-          <v-flex sm1>
+          <v-flex sm2 lg1>
             <v-subheader>Purchase</v-subheader>
           </v-flex>
-          <v-flex sm4>
+          <v-flex sm4 lg4>
             <v-text-field
               class="torus-text-input"
               placeholder="0.0000"
               suffix="ETH"
               solo
+              type="number"
               :rules="[rules.required]"
             ></v-text-field>
             <div class="v-text-field__details">
@@ -46,15 +47,16 @@
         </v-layout>
 
         <v-layout row justify-center class="pay-form">
-          <v-flex sm1>
+          <v-flex sm2 lg1>
             <v-subheader>Pay</v-subheader>
           </v-flex>
-          <v-flex sm4>
+          <v-flex sm4 lg4>
             <v-text-field
               class="torus-text-input"
               placeholder="0.00 (Min 50.00)"
               suffix="USD*"
               solo
+              type="number"
               :rules="[rules.required, validatePayRange]"
             ></v-text-field>
             <div class="v-text-field__details">
@@ -150,13 +152,13 @@ export default {
   .page-title {
     font-size: 25px;
     line-height: 30px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
   }
 
   .page-description {
     font-size: 17px;
     line-height: 21px;
-    margin-bottom: 50px;
+    margin-bottom: 40px;
   }
 
   .torus-button {
@@ -169,11 +171,11 @@ export default {
   }
 
   .pay-form {
-    margin-bottom: 60px !important;
+    margin-bottom: 40px !important;
   }
 
   .torus-notes {
-    margin-bottom: 40px !important;
+    margin-bottom: 20px !important;
   }
 
   .torus-note-icon {
