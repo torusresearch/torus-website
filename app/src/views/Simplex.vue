@@ -136,50 +136,52 @@ export default {
   background-position: center bottom;
 
   .header {
-    padding: 45px 50px 30px;
+    padding: 25px 25px;
   }
 
   .header-title {
     display: flex;
     img {
-      margin-right: 20px;
+      margin-right: 10px;
+      width: 25px;
     }
     span {
-      font-size: 25px;
+      font-size: 20px;
     }
   }
 
   .page-title {
     font-size: 25px;
-    line-height: 30px;
+    line-height: 28px;
     margin-bottom: 10px;
   }
 
   .page-description {
-    font-size: 17px;
-    line-height: 21px;
-    margin-bottom: 40px;
+    font-size: 14px;
+    line-height: 17px;
+    margin-bottom: 20px;
   }
+
 
   .torus-button {
     border-radius: 5px;
     background-image: linear-gradient(to right, #5495f7, #295dab);
     text-transform: none;
-    font-size: 21px;
-    padding: 15px 30px;
+    font-size: 16px;
+    padding: 10px 20px;
     height: inherit;
   }
 
   .pay-form {
-    margin-bottom: 40px !important;
-  }
-
-  .torus-notes {
     margin-bottom: 20px !important;
   }
 
+  .torus-notes {
+    margin-bottom: 15px !important;
+  }
+
   .torus-note-icon {
-    margin-right: 15px;
+    margin-right: 10px;
   }
 
   .torus-text-input.v-text-field--solo {
@@ -222,6 +224,51 @@ export default {
 
   & /deep/ .v-messages {
     min-height: 0;
+  }  
+}
+
+@media only screen and (min-width: 600px) {
+  .simplex-page {
+    .header {
+      padding: 45px 50px 30px;
+    }
+
+    .header-title {
+      img {
+        margin-right: 20px;
+      }
+      span {
+        font-size: 25px;
+      }
+    }
+
+    .page-title {
+      font-size: 25px;
+      line-height: 30px;
+    }
+
+    .page-description {
+      font-size: 17px;
+      line-height: 21px;
+      margin-bottom: 40px;
+    }
+
+    .torus-button {
+      font-size: 21px;
+      padding: 15px 30px;
+    }
+
+    .pay-form {
+      margin-bottom: 40px !important;
+    }
+
+    .torus-notes {
+      margin-bottom: 20px !important;
+    }
+
+    .torus-note-icon {
+      margin-right: 15px;
+    }
   }
 }
 
