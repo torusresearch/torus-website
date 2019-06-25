@@ -282,7 +282,7 @@ export default {
   }
 }
 
-@media only screen and (max-height: 700px) {
+@media only screen and (max-height: 750px) {
   .simplex-page {
 
     .header {
