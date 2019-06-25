@@ -1,14 +1,5 @@
 <template>
-  <v-flex fill-height class="simplex-page">
-    <v-layout justify-space-between row class="header">
-      <div>
-        <img src="/images/torus_logo.png">
-      </div>
-      <div class="header-title">
-        <img src="/images/wallet_blue_line.svg">
-        <span>{{ username }}'s Wallet</span>
-      </div>
-    </v-layout>
+  <v-flex fill-height class="simplex-page mt-2">
     <v-form>
       <v-container align-content-center>
         <v-layout column text-sm-center>
@@ -18,7 +9,7 @@
           <v-flex sm6>
             <p class="page-description">
               Simplex is a secure way to buy cryptoccurrency with your credit card.
-              <br>Start by entering an amount to get a quote before making your purchase.
+              <br />Start by entering an amount to get a quote before making your purchase.
             </p>
           </v-flex>
         </v-layout>
@@ -28,14 +19,7 @@
             <v-subheader>Purchase</v-subheader>
           </v-flex>
           <v-flex sm4 lg4>
-            <v-text-field
-              class="torus-text-input"
-              placeholder="0.0000"
-              suffix="ETH"
-              solo
-              type="number"
-              :rules="[rules.required]"
-            ></v-text-field>
+            <v-text-field class="torus-text-input" placeholder="0.0000" suffix="ETH" solo :rules="[rules.required]"></v-text-field>
             <div class="v-text-field__details">
               <div class="v-messages theme--light">
                 <div class="v-messages__wrapper">
@@ -56,7 +40,6 @@
               placeholder="0.00 (Min 50.00)"
               suffix="USD*"
               solo
-              type="number"
               :rules="[rules.required, validatePayRange]"
             ></v-text-field>
             <div class="v-text-field__details">
@@ -66,14 +49,11 @@
                     * Includes 5% Simplex Service Fees
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on }">
-                        <v-icon
-                          class="torus-hint-icon"
-                          color="primary"
-                          small
-                          v-on="on"
-                        >error_outline</v-icon>
+                        <v-icon class="torus-hint-icon" color="primary" small v-on="on">error_outline</v-icon>
                       </template>
-                      <span>Tooltip</span>
+                      <span>
+                        This fee goes entirely to Simplex for their services <br />in credit card processing, fraud detection and mitigation
+                      </span>
                     </v-tooltip>
                   </div>
                 </div>
@@ -85,13 +65,13 @@
         <v-layout class="torus-notes" column text-sm-center>
           <v-flex sm6>
             <v-layout row justify-center>
-              <img class="torus-note-icon" src="/images/clock-regular.svg">
+              <img class="torus-note-icon" src="/images/clock-regular.svg" />
               <span>The process would take approximately 10 - 15 mins.</span>
             </v-layout>
           </v-flex>
           <v-flex sm6>
             <v-layout row justify-center>
-              <img class="torus-note-icon" src="/images/address-card-regular.svg">
+              <img class="torus-note-icon" src="/images/address-card-regular.svg" />
               <span>Please prepare your Identity Card/Passport to complete the purchase.</span>
             </v-layout>
           </v-flex>
@@ -110,30 +90,29 @@
 export default {
   data() {
     return {
-      username: "Username",
       rules: {
-        required: value => !!value || "Required"
+        required: value => !!value || 'Required'
       }
-    };
+    }
   },
   methods: {
     validatePayRange(value) {
       if (parseFloat(value) > 2000) {
-        return "Must be lesser than 2000";
+        return 'Must be lesser than 2000'
       } else if (parseFloat(value) < 50) {
-        return "Must be greater than 50";
+        return 'Must be greater than 50'
       }
 
-      return "";
+      return ''
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
 .simplex-page {
-  background: url("/images/footer_waves.png") no-repeat;
-  background-position: center bottom;
+  // background: url('/images/footer_waves.png') no-repeat;
+  // background-position: center bottom;
 
   .header {
     padding: 25px 25px;
@@ -146,7 +125,7 @@ export default {
       width: 25px;
     }
     span {
-      font-size: 20px;
+      font-size: 14px;
     }
   }
 
@@ -161,7 +140,6 @@ export default {
     line-height: 17px;
     margin-bottom: 20px;
   }
-
 
   .torus-button {
     border-radius: 5px;
@@ -224,13 +202,14 @@ export default {
 
   & /deep/ .v-messages {
     min-height: 0;
-  }  
+  }
 }
 
 @media only screen and (min-width: 600px) {
   .simplex-page {
     .header {
       padding: 45px 50px 30px;
+      align-items: center;
     }
 
     .header-title {
@@ -238,7 +217,7 @@ export default {
         margin-right: 20px;
       }
       span {
-        font-size: 25px;
+        font-size: 14px;
       }
     }
 
@@ -284,7 +263,6 @@ export default {
 
 @media only screen and (max-height: 750px) {
   .simplex-page {
-
     .header {
       padding: 45px 50px 0;
     }
@@ -310,5 +288,4 @@ export default {
     }
   }
 }
-
 </style>
