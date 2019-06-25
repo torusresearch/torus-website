@@ -38,16 +38,14 @@
             <div class="v-text-field__details">
               <div class="v-messages theme--light">
                 <div class="v-messages__wrapper">
-                  <div class="v-messages__message">
-                    Rate : 1 ETH = 260.00 USD
-                  </div>
+                  <div class="v-messages__message">Rate : 1 ETH = 260.00 USD</div>
                 </div>
               </div>
             </div>
           </v-flex>
         </v-layout>
 
-        <v-layout row justify-center>
+        <v-layout row justify-center class="pay-form">
           <v-flex sm1>
             <v-subheader>Pay</v-subheader>
           </v-flex>
@@ -66,7 +64,12 @@
                     * Includes 5% Simplex Service Fees
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on }">
-                        <v-icon color="primary" dark v-on="on">error_outline</v-icon>
+                        <v-icon
+                          class="torus-hint-icon"
+                          color="primary"
+                          small
+                          v-on="on"
+                        >error_outline</v-icon>
                       </template>
                       <span>Tooltip</span>
                     </v-tooltip>
@@ -77,18 +80,18 @@
           </v-flex>
         </v-layout>
 
-        <v-layout column text-sm-center>
+        <v-layout class="torus-notes" column text-sm-center>
           <v-flex sm6>
-            <p>
-              <img src="/images/clock-regular.svg">
-              The process would take approximately 10 - 15 mins.
-            </p>
+            <v-layout row justify-center>
+              <img class="torus-note-icon" src="/images/clock-regular.svg">
+              <span>The process would take approximately 10 - 15 mins.</span>
+            </v-layout>
           </v-flex>
           <v-flex sm6>
-            <p>
-              <img src="/images/address-card-regular.svg">
-              Please prepare your Identity Card/Passport to complete the purchase.
-            </p>
+            <v-layout row justify-center>
+              <img class="torus-note-icon" src="/images/address-card-regular.svg">
+              <span>Please prepare your Identity Card/Passport to complete the purchase.</span>
+            </v-layout>
           </v-flex>
         </v-layout>
         <v-card-actions text-sm-center>
@@ -107,19 +110,19 @@ export default {
     return {
       username: "Username",
       rules: {
-        required: value => !!value || 'Required'
+        required: value => !!value || "Required"
       }
     };
   },
   methods: {
     validatePayRange(value) {
-      if(parseFloat(value) > 2000) {
-        return 'Must be lesser than 2000';
-      } else if(parseFloat(value) < 50) {
-        return 'Must be greater than 50';
+      if (parseFloat(value) > 2000) {
+        return "Must be lesser than 2000";
+      } else if (parseFloat(value) < 50) {
+        return "Must be greater than 50";
       }
-      
-      return '';
+
+      return "";
     }
   }
 };
@@ -165,6 +168,18 @@ export default {
     height: inherit;
   }
 
+  .pay-form {
+    margin-bottom: 60px !important;
+  }
+
+  .torus-notes {
+    margin-bottom: 40px !important;
+  }
+
+  .torus-note-icon {
+    margin-right: 15px;
+  }
+
   .torus-text-input.v-text-field--solo {
     font-size: 20px;
 
@@ -179,9 +194,9 @@ export default {
       background-color: rgba(255, 255, 255, 0.3);
       border-radius: 4px;
       height: 44px;
-      input {       
-        &::placeholder{
-          color: rgba(255, 255, 255, 0.3);;
+      input {
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.3);
         }
         text-align: center;
         color: #ffffff;
