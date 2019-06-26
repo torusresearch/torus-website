@@ -16,22 +16,6 @@
 
         <v-layout row justify-center>
           <v-flex sm2 lg1>
-            <v-subheader>Purchase</v-subheader>
-          </v-flex>
-          <v-flex sm4 lg4>
-            <v-text-field class="torus-text-input" placeholder="0.00" suffix="ETH" v-model="ethValue" solo :rules="[rules.required]"></v-text-field>
-            <div class="v-text-field__details">
-              <div class="v-messages theme--light">
-                <div class="v-messages__wrapper">
-                  <div class="v-messages__message">Rate : 1 ETH = {{ significantDigits(1 / this.currencyRate) }} {{ this.selectedCurrency }}</div>
-                </div>
-              </div>
-            </div>
-          </v-flex>
-        </v-layout>
-
-        <v-layout row justify-center class="pay-form">
-          <v-flex sm2 lg1>
             <v-subheader>Pay</v-subheader>
           </v-flex>
           <v-flex sm4 lg4>
@@ -63,6 +47,30 @@
           </v-flex>
         </v-layout>
 
+        <v-layout row justify-center class="pay-form">
+          <v-flex sm2 lg1>
+            <v-subheader>Receive</v-subheader>
+          </v-flex>
+          <v-flex sm4 lg4>
+            <v-text-field
+              class="torus-text-input-disabled"
+              disabled
+              placeholder="0.00"
+              suffix="ETH"
+              v-model="ethValue"
+              solo
+              :rules="[rules.required]"
+            ></v-text-field>
+            <div class="v-text-field__details">
+              <div class="v-messages theme--light">
+                <div class="v-messages__wrapper">
+                  <div class="v-messages__message">Rate : 1 ETH = {{ significantDigits(1 / this.currencyRate) }} {{ this.selectedCurrency }}</div>
+                </div>
+              </div>
+            </div>
+          </v-flex>
+        </v-layout>
+
         <v-layout class="torus-notes" column text-sm-center>
           <v-flex sm6>
             <v-layout row justify-center>
@@ -86,6 +94,7 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 import { getQuote, getOrder } from '../plugins/simplex'
 import throttle from 'lodash.throttle'
 import { significantDigits } from '../utils/utils'
@@ -111,22 +120,24 @@ export default {
   },
   watch: {
     fiatValue: function(newFiatValue, oldFiatValue) {
-      if (newFiatValue !== oldFiatValue) {
+      const parsedOldFiat = parseFloat(oldFiatValue)
+      const parsedNewFiat = parseFloat(newFiatValue)
+      if (parsedNewFiat !== parsedOldFiat && parsedNewFiat > 50 && parsedNewFiat < 20000) {
         this.fetchQuote()
       }
-    },
-    ethValue: function(newEthValue, oldEthValue) {
-      if (newEthValue !== oldEthValue) {
-        this.fiatValue = this.ethValue / this.currencyRate
-      }
     }
+    // ethValue: function(newEthValue, oldEthValue) {
+    //   if (newEthValue !== oldEthValue) {
+    //     this.fiatValue = this.ethValue / this.currencyRate
+    //   }
+    // }
   },
   methods: {
     validatePayRange(value) {
       if (parseFloat(value) > 20000) {
-        return 'Must be lesser than 20000'
+        return 'Max topup amount is 20,000'
       } else if (parseFloat(value) < 50) {
-        return 'Must be greater than 50'
+        return 'Min topup amount is 50'
       }
       return ''
     },
@@ -139,7 +150,6 @@ export default {
         requested_amount: +this.fiatValue
       })
         .then(result => {
-          console.log(result)
           this.fiatValue = result.result.fiat_money.total_amount
           this.ethValue = result.result.digital_money.amount
           this.currencyRate = result.result.digital_money.amount / result.result.fiat_money.total_amount
@@ -304,6 +314,38 @@ export default {
     }
     & /deep/ .v-text-field__suffix {
       background-color: #295dab;
+      height: 100%;
+      line-height: 42px;
+      color: #ffffff;
+      padding: 0 15px;
+      min-width: 90px;
+      text-align: center;
+    }
+  }
+
+  .torus-text-input-disabled.v-text-field--solo {
+    font-size: 20px;
+
+    & /deep/ .v-input__slot {
+      box-shadow: none;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      background-image: linear-gradient(to right, #5495f7, #295dab);
+      padding: 2px;
+    }
+    & /deep/ .v-text-field__slot {
+      background-image: linear-gradient(to right, #5495f7, #295dab);
+      border-radius: 4px;
+      height: 44px;
+      input {
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.3);
+        }
+        text-align: center;
+        color: #ffffff;
+      }
+    }
+    & /deep/ .v-text-field__suffix {
       height: 100%;
       line-height: 42px;
       color: #ffffff;
