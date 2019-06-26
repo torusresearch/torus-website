@@ -34,7 +34,7 @@ class DetectTokensController {
   }
 
   /**
-   * For each token in eth-contract-metada, find check selectedAddress balance.
+   * For each token in eth-contract-metadata, find check selectedAddress balance.
    *
    */
   async detectNewTokens() {
@@ -149,7 +149,7 @@ class DetectTokensController {
     if (!network) {
       return
     }
-    network._provider.setMaxListeners(20)
+    network._provider.setMaxListeners(100)
     this._network = network
     this.web3 = new Web3(network._provider)
   }
