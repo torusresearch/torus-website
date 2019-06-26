@@ -30,6 +30,7 @@
     "test:unit": "mocha --exit -r esm -r jsdom-global/register -r isomorphic-fetch ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js"
   },
   "dependencies": {
+    "abi-decoder": "^1.2.0",
     "assert": "^2.0.0",
     "backoff": "^2.5.0",
     "broadcast-channel": "^2.1.12",

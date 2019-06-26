@@ -270,7 +270,7 @@ export default class NetworkController extends EventEmitter {
     }
     // set new provider and blockTracker
     this._provider = provider
-    provider.setMaxListeners(50)
+    provider.setMaxListeners(100)
     this._blockTracker = blockTracker
   }
 

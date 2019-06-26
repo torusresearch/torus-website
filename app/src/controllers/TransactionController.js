@@ -3,6 +3,10 @@ const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
 const Transaction = require('ethereumjs-tx')
 const EthQuery = require('ethjs-query')
+const abi = require('human-standard-token-abi')
+const abiDecoder = require('abi-decoder')
+abiDecoder.addABI(abi)
+
 const TransactionStateManager = require('./TransactionStateManager').default
 const TxGasUtil = require('../utils/TxGasUtil').default
 const PendingTransactionTracker = require('./PendingTransactionTracker').default
@@ -10,7 +14,18 @@ const NonceTracker = require('./NonceTracker').default
 const txUtils = require('../utils/txUtils')
 const cleanErrorStack = require('../utils/cleanErrorStack').default
 const log = require('loglevel')
-const { TRANSACTION_TYPE_CANCEL, TRANSACTION_TYPE_RETRY, TRANSACTION_TYPE_STANDARD, TRANSACTION_STATUS_APPROVED } = require('../utils/enums')
+const {
+  TRANSACTION_TYPE_CANCEL,
+  TRANSACTION_TYPE_RETRY,
+  TRANSACTION_TYPE_STANDARD,
+  TRANSACTION_STATUS_APPROVED,
+  TOKEN_METHOD_APPROVE,
+  TOKEN_METHOD_TRANSFER,
+  TOKEN_METHOD_TRANSFER_FROM,
+  SEND_ETHER_ACTION_KEY,
+  DEPLOY_CONTRACT_ACTION_KEY,
+  CONTRACT_INTERACTION_KEY
+} = require('../utils/enums')
 
 const { hexToBn, bnToHex, BnMultiplyByFraction } = require('../utils/utils')
 
@@ -99,9 +114,7 @@ class TransactionController extends EventEmitter {
     this._updatePendingTxsAfterFirstBlock()
   }
 
-  /**
-   * @returns {number} the chainId
-   */
+  /** @returns {number} the chainId */
   getChainId() {
     const networkState = this.networkStore.getState()
     const getChainId = parseInt(networkState)
@@ -113,29 +126,30 @@ class TransactionController extends EventEmitter {
   }
 
   /**
-   * Adds a tx to the txlist
-   * @emits ${txMeta.id}:unapproved
-   * @param {*} txMeta
-   */
+  Adds a tx to the txlist
+  @emits ${txMeta.id}:unapproved
+*/
   addTx(txMeta) {
     this.txStateManager.addTx(txMeta)
     this.emit(`${txMeta.id}:unapproved`, txMeta)
   }
 
   /**
-   * Wipes the transactions for a given account
-   * @param {string} address - hex string of the from address for txs being removed
-   */
+  Wipes the transactions for a given account
+  @param {string} address - hex string of the from address for txs being removed
+  */
   wipeTransactions(address) {
     this.txStateManager.wipeTransactions(address)
   }
 
   /**
-   * Add a new unapproved transaction to the pipeline
-   * @returns {Promise<string>} the hash of the transaction after being submitted to the network
-   * @param txParams {object} - txParams for the transaction
-   * @param opts {object} - with the key origin to put the origin on the txMeta
-   */
+  add a new unapproved transaction to the pipeline
+
+  @returns {Promise<string>} the hash of the transaction after being submitted to the network
+  @param txParams {object} - txParams for the transaction
+  @param opts {object} - with the key origin to put the origin on the txMeta
+  */
+
   async newUnapprovedTransaction(txParams, opts = {}) {
     log.debug(`MetaMaskController newUnapprovedTransaction ${JSON.stringify(txParams)}`)
     const initialTxMeta = await this.addUnapprovedTransaction(txParams)
@@ -159,10 +173,12 @@ class TransactionController extends EventEmitter {
   }
 
   /**
-   * Validates and generates a txMeta with defaults and puts it in txStateManager store
-   * @param {Object} txParams
-   * @returns {txMeta}
-   */
+  Validates and generates a txMeta with defaults and puts it in txStateManager
+  store
+
+  @returns {txMeta}
+  */
+
   async addUnapprovedTransaction(txParams) {
     // validate
     const normalizedTxParams = txUtils.normalizeTxParams(txParams)
@@ -173,16 +189,18 @@ class TransactionController extends EventEmitter {
     }
     txUtils.validateTxParams(normalizedTxParams)
     // construct txMeta
+    const { transactionCategory, getCodeResponse } = await this._determineTransactionCategory(txParams)
     let txMeta = this.txStateManager.generateTxMeta({
       txParams: normalizedTxParams,
-      type: TRANSACTION_TYPE_STANDARD
+      type: TRANSACTION_TYPE_STANDARD,
+      transactionCategory
     })
     this.addTx(txMeta)
     this.emit('newUnapprovedTx', txMeta)
 
     try {
       // add default tx params
-      txMeta = await this.addTxGasDefaults(txMeta)
+      txMeta = await this.addTxGasDefaults(txMeta, getCodeResponse)
     } catch (error) {
       log.warn(error)
       txMeta.loadingDefaults = false
@@ -199,11 +217,11 @@ class TransactionController extends EventEmitter {
   }
 
   /**
-   * adds the tx gas defaults: gas && gasPrice
-   * @param {Object} txMeta - the txMeta object
-   * @returns {Promise<object>} resolves with txMeta
-   */
-  async addTxGasDefaults(txMeta) {
+  adds the tx gas defaults: gas && gasPrice
+  @param txMeta {Object} - the txMeta object
+  @returns {Promise<object>} resolves with txMeta
+*/
+  async addTxGasDefaults(txMeta, getCodeResponse) {
     const txParams = txMeta.txParams
     // ensure value
     txParams.value = txParams.value ? ethUtil.addHexPrefix(txParams.value) : '0x0'
@@ -214,16 +232,20 @@ class TransactionController extends EventEmitter {
     }
     txParams.gasPrice = ethUtil.addHexPrefix(gasPrice.toString(16))
     // set gasLimit
-    return this.txGasUtil.analyzeGasUsage(txMeta)
+    const result = await this.txGasUtil.analyzeGasUsage(txMeta, getCodeResponse)
+    return result
   }
 
   /**
-   * Creates a new txMeta with the same txParams as the original
-   * to allow the user to resign the transaction with a higher gas values
-   * @param {number} originalTxId - the id of the txMeta that you want to attempt to retry
-   * @param {string} gasPrice - Optional gas price to be increased to use as the retry transaction's gas price
-   * @return {txMeta}
-   */
+    Creates a new txMeta with the same txParams as the original
+    to allow the user to resign the transaction with a higher gas values
+    @param  originalTxId {number} - the id of the txMeta that
+    you want to attempt to retry
+    @param  gasPrice {string=} - Optional gas price to be increased to use as the retry
+    transaction's gas price
+    @return {txMeta}
+  */
+
   async retryTransaction(originalTxId, gasPrice) {
     const originalTxMeta = this.txStateManager.getTx(originalTxId)
     const { txParams } = originalTxMeta
@@ -307,31 +329,30 @@ class TransactionController extends EventEmitter {
   }
 
   /**
-   * updates the txMeta in the txStateManager
-   * @param {Object} txMeta - the updated txMeta
-   */
+  updates the txMeta in the txStateManager
+  @param txMeta {Object} - the updated txMeta
+  */
   async updateTransaction(txMeta) {
     this.txStateManager.updateTx(txMeta, 'confTx: user updated transaction')
   }
 
   /**
-   * updates and approves the transaction
-   * @param {Object} txMeta
-   */
+  updates and approves the transaction
+  @param txMeta {Object}
+  */
   async updateAndApproveTransaction(txMeta) {
-    log.info('updateAndApproveTransaction called', txMeta)
     this.txStateManager.updateTx(txMeta, 'confTx: user approved transaction')
     await this.approveTransaction(txMeta.id)
   }
 
   /**
-   * sets the tx status to approved
-   * auto fills the nonce
-   * signs the transaction
-   * publishes the transaction
-   * if any of these steps fails the tx status will be set to failed
-   * @param {number} txId - the tx's Id
-   */
+  sets the tx status to approved
+  auto fills the nonce
+  signs the transaction
+  publishes the transaction
+  if any of these steps fails the tx status will be set to failed
+    @param txId {number} - the tx's Id
+  */
   async approveTransaction(txId) {
     let nonceLock
     try {
@@ -370,10 +391,10 @@ class TransactionController extends EventEmitter {
   }
 
   /**
-   * adds the chain id and signs the transaction and set the status to signed
-   * @param {number} txId - the tx's Id
-   * @returns {string} rawTx
-   */
+    adds the chain id and signs the transaction and set the status to signed
+    @param txId {number} - the tx's Id
+    @returns - rawTx {string}
+  */
   async signTransaction(txId) {
     const txMeta = this.txStateManager.getTx(txId)
     // add network/chain id
@@ -390,11 +411,11 @@ class TransactionController extends EventEmitter {
   }
 
   /**
-   * publishes the raw tx and sets the txMeta to submitted
-   * @param {number} txId - the tx's Id
-   * @param {string} rawTx - the hex string of the serialized signed transaction
-   * @returns {Promise<void>}
-   */
+    publishes the raw tx and sets the txMeta to submitted
+    @param txId {number} - the tx's Id
+    @param rawTx {string} - the hex string of the serialized signed transaction
+    @returns {Promise<void>}
+  */
   async publishTransaction(txId, rawTx) {
     const txMeta = this.txStateManager.getTx(txId)
     txMeta.rawTx = rawTx
@@ -441,10 +462,10 @@ class TransactionController extends EventEmitter {
   }
 
   /**
-   * Convenience method for the ui thats sets the transaction to rejected
-   * @param {number} txId - the tx's Id
-   * @returns {Promise<void>}
-   */
+    Convenience method for the ui thats sets the transaction to rejected
+    @param txId {number} - the tx's Id
+    @returns {Promise<void>}
+  */
   async cancelTransaction(txId) {
     this.txStateManager.setTxStatusRejected(txId)
   }
@@ -461,9 +482,10 @@ class TransactionController extends EventEmitter {
     this.txStateManager.updateTx(txMeta, 'transactions#setTxHash')
   }
 
-  /**
-   * Maps methods for convenience
-   */
+  //
+  //           PRIVATE METHODS
+  //
+  /** maps methods for convenience */
   _mapMethods() {
     /** @returns the state in transaction controller */
     this.getState = () => this.memStore.getState()
@@ -487,9 +509,7 @@ class TransactionController extends EventEmitter {
     this.getFilteredTxList = opts => this.txStateManager.getFilteredTxList(opts)
   }
 
-  /**
-   * called once on startup
-   */
+  // called once on startup
   async _updatePendingTxsAfterFirstBlock() {
     // wait for first block so we know we're ready
     await this.blockTracker.getLatestBlock()
@@ -498,10 +518,11 @@ class TransactionController extends EventEmitter {
   }
 
   /**
-   * If transaction controller was rebooted with transactions that are uncompleted
-   * in steps of the transaction signing or user confirmation process it will either
-   * transition txMetas to a failed state or try to redo those tasks.
-   */
+    If transaction controller was rebooted with transactions that are uncompleted
+    in steps of the transaction signing or user confirmation process it will either
+    transition txMetas to a failed state or try to redo those tasks.
+  */
+
   _onBootCleanUp() {
     this.txStateManager
       .getFilteredTxList({
@@ -532,8 +553,9 @@ class TransactionController extends EventEmitter {
   }
 
   /**
-   * is called in constructor applies the listeners for pendingTxTracker txStateManager and blockTracker
-   */
+    is called in constructor applies the listeners for pendingTxTracker txStateManager
+    and blockTracker
+  */
   _setupListeners() {
     this.txStateManager.on('tx:status-update', this.emit.bind(this, 'tx:status-update'))
     this._setupBlockTrackerListener()
@@ -542,6 +564,7 @@ class TransactionController extends EventEmitter {
     })
     this.pendingTxTracker.on('tx:failed', this.txStateManager.setTxStatusFailed.bind(this.txStateManager))
     this.pendingTxTracker.on('tx:confirmed', txId => this.confirmTransaction(txId))
+    this.pendingTxTracker.on('tx:dropped', this.txStateManager.setTxStatusDropped.bind(this.txStateManager))
     this.pendingTxTracker.on('tx:block-update', (txMeta, latestBlockNumber) => {
       if (!txMeta.firstRetryBlockNumber) {
         txMeta.firstRetryBlockNumber = latestBlockNumber
@@ -556,9 +579,46 @@ class TransactionController extends EventEmitter {
   }
 
   /**
-   * Sets other txMeta statuses to dropped if the txMeta that has been confirmed has other transactions in the list have the same nonce
-   * @param {number} txId - the txId of the transaction that has been confirmed in a block
-   */
+    Returns a "type" for a transaction out of the following list: simpleSend, tokenTransfer, tokenApprove,
+    contractDeployment, contractMethodCall
+  */
+  async _determineTransactionCategory(txParams) {
+    const { data, to } = txParams
+    const { name } = (data && abiDecoder.decodeMethod(data)) || {}
+    const tokenMethodName = [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].find(
+      tokenMethodName => tokenMethodName === name && name.toLowerCase()
+    )
+
+    let result
+    let code
+    if (!txParams.data) {
+      result = SEND_ETHER_ACTION_KEY
+    } else if (tokenMethodName) {
+      result = tokenMethodName
+    } else if (!to) {
+      result = DEPLOY_CONTRACT_ACTION_KEY
+    } else {
+      try {
+        code = await this.query.getCode(to)
+      } catch (e) {
+        code = null
+        log.warn(e)
+      }
+      // For an address with no code, geth will return '0x', and ganache-core v2.2.1 will return '0x0'
+      const codeIsEmpty = !code || code === '0x' || code === '0x0'
+
+      result = codeIsEmpty ? SEND_ETHER_ACTION_KEY : CONTRACT_INTERACTION_KEY
+    }
+
+    return { transactionCategory: result, getCodeResponse: code }
+  }
+
+  /**
+    Sets other txMeta statuses to dropped if the txMeta that has been confirmed has other transactions
+    in the list have the same nonce
+
+    @param txId {Number} - the txId of the transaction that has been confirmed in a block
+  */
   _markNonceDuplicatesDropped(txId) {
     // get the confirmed transactions nonce and from address
     const txMeta = this.txStateManager.getTx(txId)
@@ -574,9 +634,6 @@ class TransactionController extends EventEmitter {
     })
   }
 
-  /**
-   * setup blocktracker listener
-   */
   _setupBlockTrackerListener() {
     let listenersAreActive = false
     const latestBlockHandler = this._onLatestBlock.bind(this)
@@ -612,8 +669,8 @@ class TransactionController extends EventEmitter {
   }
 
   /**
-   * Updates the memStore in transaciton controller
-   */
+    Updates the memStore in transaction controller
+  */
   _updateMemstore() {
     this.pendingTxTracker.updatePendingTxs()
     const unapprovedTxs = this.txStateManager.getUnapprovedTxList()

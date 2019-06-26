@@ -12,6 +12,17 @@ const ObservableStore = require('obs-store')
 const log = require('loglevel')
 const pify = require('pify')
 
+const Web3 = require('web3')
+const SINGLE_CALL_BALANCES_ABI = require('single-call-balance-checker-abi')
+
+const { MAINNET_CODE, RINKEYBY_CODE, ROPSTEN_CODE, KOVAN_CODE, ZERO_ADDRESS } = require('../utils/enums')
+const {
+  SINGLE_CALL_BALANCES_ADDRESS,
+  SINGLE_CALL_BALANCES_ADDRESS_RINKEBY,
+  SINGLE_CALL_BALANCES_ADDRESS_ROPSTEN,
+  SINGLE_CALL_BALANCES_ADDRESS_KOVAN
+} = require('../utils/contractAddresses')
+
 export default class AccountTracker {
   /**
    * This module is responsible for tracking any number of accounts and caching their current balances & transaction
@@ -48,6 +59,9 @@ export default class AccountTracker {
     })
     // bind function for easier listener syntax
     this._updateForBlock = this._updateForBlock.bind(this)
+    this.network = opts.network
+
+    this.web3 = new Web3(this._provider)
   }
 
   start() {
@@ -166,7 +180,29 @@ export default class AccountTracker {
   async _updateAccounts() {
     const accounts = this.store.getState().accounts
     const addresses = Object.keys(accounts)
-    await Promise.all(addresses.map(this._updateAccount.bind(this)))
+    const currentNetwork = parseInt(this.network.getNetworkState())
+    if (addresses.length > 0) {
+      switch (currentNetwork) {
+        case MAINNET_CODE:
+          await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS)
+          break
+
+        case RINKEYBY_CODE:
+          await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_RINKEBY)
+          break
+
+        case ROPSTEN_CODE:
+          await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_ROPSTEN)
+          break
+
+        case KOVAN_CODE:
+          await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_KOVAN)
+          break
+
+        default:
+          await Promise.all(addresses.map(this._updateAccount.bind(this)))
+      }
+    }
   }
 
   /**
@@ -187,5 +223,28 @@ export default class AccountTracker {
     if (!accounts[address]) return
     accounts[address] = result
     this.store.updateState({ accounts })
+  }
+
+  /**
+   * Updates current address balances from balanceChecker deployed contract instance
+   * @param {*} addresses
+   * @param {*} deployedContractAddress
+   */
+  async _updateAccountsViaBalanceChecker(addresses, deployedContractAddress) {
+    const accounts = this.store.getState().accounts
+    const web3Instance = this.web3
+    const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, deployedContractAddress)
+    const zeroAddress = [ZERO_ADDRESS]
+    ethContract.methods.balances(addresses, zeroAddress).call({ from: ZERO_ADDRESS }, (error, result) => {
+      if (error) {
+        log.warn('Torus - Account Tracker single call balance fetch failed', error)
+        return Promise.all(addresses.map(this._updateAccount.bind(this)))
+      }
+      addresses.forEach((address, index) => {
+        const balance = web3Instance.utils.toHex(result[index])
+        accounts[address] = { address, balance }
+      })
+      this.store.updateState({ accounts })
+    })
   }
 }

@@ -23,7 +23,7 @@ const createFilterMiddleware = require('eth-json-rpc-filters')
 const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionManager')
 const createOriginMiddleware = require('../utils/createOriginMiddleware')
 const createLoggerMiddleware = require('../utils/createLoggerMiddleware')
-const createProviderMiddleware = require('../utils/createProviderMiddleware')
+const providerAsMiddleware = require('eth-json-rpc-middleware/providerAsMiddleware')
 const createEngineStream = require('json-rpc-middleware-stream/engineStream')
 const MessageManager = require('./MessageManager').default
 const PersonalMessageManager = require('./PersonalMessageManager').default
@@ -76,7 +76,8 @@ export default class TorusController extends EventEmitter {
 
     // detect tokens controller
     this.detectTokensController = new DetectTokensController({
-      network: this.networkController
+      network: this.networkController,
+      provider: this.provider
     })
 
     this.tokenRatesController = new TokenRatesController({
@@ -96,8 +97,6 @@ export default class TorusController extends EventEmitter {
     // ensure accountTracker updates balances after network change
     this.networkController.on('networkDidChange', () => {
       this.accountTracker._updateAccounts()
-      const currentCurrency = this.currencyController.getCurrentCurrency()
-      this.setCurrentCurrency(currentCurrency, function() {})
       this.detectTokensController.restartTokenDetection()
     })
 
@@ -525,7 +524,7 @@ export default class TorusController extends EventEmitter {
    * @param {string} txId - The ID of the transaction to speed up.
    * @param {Function} cb - The callback function called with a full state update.
    */
-  async retryTransaction(txId, gasPrice, cb) {
+  async retryTransaction(txId, gasPrice) {
     await this.txController.retryTransaction(txId, gasPrice)
     const state = await this.getState()
     return state
@@ -538,7 +537,7 @@ export default class TorusController extends EventEmitter {
    * @param {string=} customGasPrice - the hex value to use for the cancel transaction
    * @returns {object} MetaMask state
    */
-  async createCancelTransaction(originalTxId, customGasPrice, cb) {
+  async createCancelTransaction(originalTxId, customGasPrice) {
     try {
       await this.txController.createCancelTransaction(originalTxId, customGasPrice)
       const state = await this.getState()
@@ -548,7 +547,7 @@ export default class TorusController extends EventEmitter {
     }
   }
 
-  async createSpeedUpTransaction(originalTxId, customGasPrice, cb) {
+  async createSpeedUpTransaction(originalTxId, customGasPrice) {
     await this.txController.createSpeedUpTransaction(originalTxId, customGasPrice)
     const state = await this.getState()
     return state
@@ -657,7 +656,7 @@ export default class TorusController extends EventEmitter {
     // watch asset
     // engine.push(this.preferencesController.requestWatchAsset.bind(this.preferencesController))
     // forward to metamask primary provider
-    engine.push(createProviderMiddleware({ provider }))
+    engine.push(providerAsMiddleware(provider))
 
     // setup connection
     const providerStream = createEngineStream({ engine })
