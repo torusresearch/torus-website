@@ -94,6 +94,7 @@
 </template>
 
 <script>
+/* eslint-disable camelcase */
 import { getQuote, getOrder } from '../plugins/simplex'
 import throttle from 'lodash.throttle'
 import { significantDigits } from '../utils/utils'
