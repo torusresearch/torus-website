@@ -149,7 +149,6 @@ export default {
         requested_amount: +this.fiatValue
       })
         .then(result => {
-          console.log(result)
           this.fiatValue = result.result.fiat_money.total_amount
           this.ethValue = result.result.digital_money.amount
           this.currencyRate = result.result.digital_money.amount / result.result.fiat_money.total_amount
