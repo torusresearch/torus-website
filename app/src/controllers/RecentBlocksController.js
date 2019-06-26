@@ -80,7 +80,6 @@ class RecentBlocksController {
    *
    */
   async processBlock(newBlockNumberHex) {
-    console.log('processing blocks', newBlockNumberHex)
     const newBlockNumber = Number.parseInt(newBlockNumberHex, 16)
     const newBlock = await this.getBlockByNumber(newBlockNumber, true)
     if (!newBlock) return
@@ -178,7 +177,8 @@ class RecentBlocksController {
    */
   async getBlockByNumber(number) {
     const blockNumberHex = '0x' + number.toString(16)
-    return pify(this.ethQuery.getBlockByNumber).call(this.ethQuery, blockNumberHex, true)
+    const result = await pify(this.ethQuery.getBlockByNumber).call(this.ethQuery, blockNumberHex, true)
+    return result
   }
 }
 

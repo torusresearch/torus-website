@@ -1,7 +1,6 @@
 const extend = require('xtend')
 const EventEmitter = require('safe-event-emitter')
 const ObservableStore = require('obs-store')
-// const ethUtil = require('ethereumjs-util')
 const log = require('loglevel')
 const txStateHistoryHelper = require('../utils/tx-state-history-helper').default
 const createId = require('../utils/random-id').default
@@ -136,10 +135,10 @@ class TransactionStateManager extends EventEmitter {
     if (txMeta.txParams) {
       this.normalizeAndValidateTxParams(txMeta.txParams)
     }
-    this.once(`${txMeta.id}:signed`, function(txId) {
+    this.once(`${txMeta.id}:signed`, function() {
       this.removeAllListeners(`${txMeta.id}:rejected`)
     })
-    this.once(`${txMeta.id}:rejected`, function(txId) {
+    this.once(`${txMeta.id}:rejected`, function() {
       this.removeAllListeners(`${txMeta.id}:signed`)
     })
     // initialize history
@@ -403,6 +402,9 @@ class TransactionStateManager extends EventEmitter {
     // Update state
     this._saveTxList(otherAccountTxs)
   }
+  //
+  //           PRIVATE METHODS
+  //
 
   // STATUS METHODS
   // statuses:
@@ -432,7 +434,6 @@ class TransactionStateManager extends EventEmitter {
     txMeta.status = status
     setTimeout(() => {
       try {
-        log.info('UPDATING TX', txMeta)
         this.updateTx(txMeta, `txStateManager: setting status to ${status}`)
         this.emit(`${txMeta.id}:${status}`, txId)
         this.emit('tx:status-update', txId, status)
