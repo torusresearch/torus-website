@@ -1,6 +1,6 @@
 <template>
   <v-flex fill-height class="simplex-page mt-2">
-    <v-form>
+    <v-form ref="inputForm" v-model="formValid" lazy-validation>
       <v-container align-content-center>
         <v-layout column text-sm-center>
           <v-flex sm6>
@@ -24,8 +24,9 @@
               placeholder="0.00 (Min 50.00)"
               :suffix="`${selectedCurrency}*`"
               solo
-              v-model="fiatValue"
-              :rules="[rules.required, validatePayRange]"
+              :value="fiatValue"
+              @input="watchFiatValue"
+              :rules="[rules.required, rules.validNumber, rules.maxValidation, rules.minValidation]"
             ></v-text-field>
             <div class="v-text-field__details">
               <div class="v-messages theme--light">
@@ -52,19 +53,11 @@
             <v-subheader>Receive</v-subheader>
           </v-flex>
           <v-flex sm4 lg4>
-            <v-text-field
-              class="torus-text-input-disabled"
-              disabled
-              placeholder="0.00"
-              suffix="ETH"
-              v-model="ethValue"
-              solo
-              :rules="[rules.required]"
-            ></v-text-field>
+            <v-text-field class="torus-text-input-disabled" disabled placeholder="0.00" suffix="ETH" v-model="ethValue" solo></v-text-field>
             <div class="v-text-field__details">
               <div class="v-messages theme--light">
                 <div class="v-messages__wrapper">
-                  <div class="v-messages__message">Rate : 1 ETH = {{ significantDigits(1 / this.currencyRate) }} {{ this.selectedCurrency }}</div>
+                  <div class="v-messages__message">Rate : 1 ETH = {{ this.displayRateString }} {{ this.selectedCurrency }}</div>
                 </div>
               </div>
             </div>
@@ -86,7 +79,16 @@
           </v-flex>
         </v-layout>
         <div class="text-xs-center">
-          <v-btn class="torus-button text-xs-center" color="primary" type="submit" @click.prevent="sendOrder">Checkout with Simplex</v-btn>
+          <v-tooltip bottom :disabled="formValid">
+            <template v-slot:activator="{ on }">
+              <span v-on="on">
+                <v-btn :disabled="!formValid" class="torus-button text-xs-center" color="primary" type="submit" @click.prevent="sendOrder"
+                  >Checkout with Simplex</v-btn
+                >
+              </span>
+            </template>
+            <span>Resolve the errors</span>
+          </v-tooltip>
         </div>
       </v-container>
     </v-form>
@@ -97,7 +99,10 @@
 /* eslint-disable camelcase */
 import { getQuote, getOrder } from '../plugins/simplex'
 import throttle from 'lodash.throttle'
-import { significantDigits } from '../utils/utils'
+import { significantDigits, formatCurrencyNumber } from '../utils/utils'
+
+const MIN_ORDER_VALUE = 50
+const MAX_ORDER_VALUE = 20000
 
 const validSimplexCurrencies = ['USD', 'EUR']
 export default {
@@ -107,8 +112,12 @@ export default {
       ethValue: 0,
       currencyRate: 0,
       currentOrder: {},
+      formValid: true,
       rules: {
-        required: value => !!value || 'Required'
+        required: value => !!value || 'Required',
+        validNumber: value => !isNaN(parseFloat(value)) || 'Enter a valid number',
+        maxValidation: value => parseFloat(value) <= MAX_ORDER_VALUE || `Max topup amount is ${formatCurrencyNumber(MAX_ORDER_VALUE, 0)}`,
+        minValidation: value => parseFloat(value) >= MIN_ORDER_VALUE || `Min topup amount is ${MIN_ORDER_VALUE}`
       }
     }
   },
@@ -116,41 +125,26 @@ export default {
     selectedCurrency() {
       if (validSimplexCurrencies.includes(this.$store.state.selectedCurrency)) return this.$store.state.selectedCurrency
       else return 'USD'
+    },
+    displayRateString() {
+      if (parseFloat(this.currencyRate) !== 0) return significantDigits(1 / this.currencyRate)
+      else return 0
     }
-  },
-  watch: {
-    fiatValue: function(newFiatValue, oldFiatValue) {
-      const parsedOldFiat = parseFloat(oldFiatValue)
-      const parsedNewFiat = parseFloat(newFiatValue)
-      if (parsedNewFiat !== parsedOldFiat && parsedNewFiat > 50 && parsedNewFiat < 20000) {
-        this.fetchQuote()
-      }
-    }
-    // ethValue: function(newEthValue, oldEthValue) {
-    //   if (newEthValue !== oldEthValue) {
-    //     this.fiatValue = this.ethValue / this.currencyRate
-    //   }
-    // }
   },
   methods: {
-    validatePayRange(value) {
-      if (parseFloat(value) > 20000) {
-        return 'Max topup amount is 20,000'
-      } else if (parseFloat(value) < 50) {
-        return 'Min topup amount is 50'
-      }
-      return ''
-    },
     significantDigits: significantDigits,
+    watchFiatValue: function(newValue) {
+      this.fiatValue = newValue
+      if (parseFloat(newValue) <= 20000 && parseFloat(newValue) >= 50) this.fetchQuote()
+    },
     fetchQuote: throttle(async function() {
       getQuote({
         digital_currency: 'ETH',
         fiat_currency: this.selectedCurrency,
         requested_currency: this.selectedCurrency,
-        requested_amount: +this.fiatValue
+        requested_amount: +parseFloat(this.fiatValue)
       })
         .then(result => {
-          this.fiatValue = result.result.fiat_money.total_amount
           this.ethValue = result.result.digital_money.amount
           this.currencyRate = result.result.digital_money.amount / result.result.fiat_money.total_amount
           this.currentOrder = result.result
@@ -158,58 +152,60 @@ export default {
         .catch(err => console.log(err))
     }, 0),
     sendOrder() {
-      getOrder({
-        'g-recaptcha-response': '',
-        account_details: {
-          app_end_user_id: this.currentOrder.user_id
-        },
-        transaction_details: {
-          payment_details: {
-            fiat_total_amount: {
-              currency: this.currentOrder.fiat_money.currency,
-              amount: this.currentOrder.fiat_money.total_amount
-            },
-            requested_digital_amount: {
-              currency: this.currentOrder.digital_money.currency,
-              amount: this.currentOrder.digital_money.amount
-            },
-            destination_wallet: {
-              currency: this.currentOrder.digital_money.currency,
-              address: this.$store.state.selectedAddress
+      if (this.$refs.inputForm.validate()) {
+        getOrder({
+          'g-recaptcha-response': '',
+          account_details: {
+            app_end_user_id: this.currentOrder.user_id
+          },
+          transaction_details: {
+            payment_details: {
+              fiat_total_amount: {
+                currency: this.currentOrder.fiat_money.currency,
+                amount: this.currentOrder.fiat_money.total_amount
+              },
+              requested_digital_amount: {
+                currency: this.currentOrder.digital_money.currency,
+                amount: this.currentOrder.digital_money.amount
+              },
+              destination_wallet: {
+                currency: this.currentOrder.digital_money.currency,
+                address: this.$store.state.selectedAddress
+              }
             }
           }
-        }
-      }).then(result => {
-        const {
-          version,
-          partner,
-          return_url,
-          quote_id,
-          payment_id,
-          user_id,
-          destination_wallet_address,
-          destination_wallet_currency,
-          fiat_total_amount_amount,
-          fiat_total_amount_currency,
-          digital_total_amount_amount,
-          digital_total_amount_currency
-        } = result.result
-        this.post(result.result.payment_post_url, {
-          payment_flow_type: 'wallet',
-          version: version,
-          partner: partner,
-          return_url: return_url,
-          quote_id: quote_id,
-          payment_id: payment_id,
-          user_id: user_id,
-          'destination_wallet[address]': destination_wallet_address,
-          'destination_wallet[currency]': destination_wallet_currency,
-          'fiat_total_amount[amount]': fiat_total_amount_amount,
-          'fiat_total_amount[currency]': fiat_total_amount_currency,
-          'digital_total_amount[amount]': digital_total_amount_amount,
-          'digital_total_amount[currency]': digital_total_amount_currency
+        }).then(result => {
+          const {
+            version,
+            partner,
+            return_url,
+            quote_id,
+            payment_id,
+            user_id,
+            destination_wallet_address,
+            destination_wallet_currency,
+            fiat_total_amount_amount,
+            fiat_total_amount_currency,
+            digital_total_amount_amount,
+            digital_total_amount_currency
+          } = result.result
+          this.post(result.result.payment_post_url, {
+            payment_flow_type: 'wallet',
+            version: version,
+            partner: partner,
+            return_url: return_url,
+            quote_id: quote_id,
+            payment_id: payment_id,
+            user_id: user_id,
+            'destination_wallet[address]': destination_wallet_address,
+            'destination_wallet[currency]': destination_wallet_currency,
+            'fiat_total_amount[amount]': fiat_total_amount_amount,
+            'fiat_total_amount[currency]': fiat_total_amount_currency,
+            'digital_total_amount[amount]': digital_total_amount_amount,
+            'digital_total_amount[currency]': digital_total_amount_currency
+          })
         })
-      })
+      }
     },
     post(path, params, method = 'post') {
       const form = document.createElement('form')
