@@ -232,7 +232,6 @@ export default class AccountTracker {
    */
   async _updateAccountsViaBalanceChecker(addresses, deployedContractAddress) {
     const accounts = this.store.getState().accounts
-    this.web3.setProvider(this._provider)
     const web3Instance = this.web3
     const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, deployedContractAddress)
     const zeroAddress = [ZERO_ADDRESS]

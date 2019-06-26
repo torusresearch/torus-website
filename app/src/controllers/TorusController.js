@@ -76,7 +76,8 @@ export default class TorusController extends EventEmitter {
 
     // detect tokens controller
     this.detectTokensController = new DetectTokensController({
-      network: this.networkController
+      network: this.networkController,
+      provider: this.provider
     })
 
     this.tokenRatesController = new TokenRatesController({
