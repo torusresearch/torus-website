@@ -80,6 +80,7 @@
                   required
                   v-model="displayAmount"
                   :rules="[rules.required, lesserThan]"
+                  class="remove-padding-right"
                 >
                   <template v-slot:append>
                     <v-btn-toggle v-model="toggle_exclusive" @change="changeSelectedToCurrency" mandatory>
@@ -430,6 +431,17 @@ export default {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.16) !important;
   margin-top: 20px !important;
   margin-bottom: 0px !important;
+}
+
+/deep/.v-text-field.remove-padding-right .v-input__control > .v-input__slot {
+  padding-right: 0;
+  
+  .v-btn-toggle {
+    border-radius: 0 17px 17px 0;
+     .v-btn:last-child{
+        border-radius: 0 17px 17px 0;
+     }
+  }
 }
 
 /deep/.v-text-field.v-text-field--solo .v-input__control {
