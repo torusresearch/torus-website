@@ -100,7 +100,7 @@
             <div class="body-2">Frequently Asked Questions</div>
           </template>
           <v-card flat :color="$vuetify.theme.torus_bcg">
-            <v-card-text>
+            <v-card-text class="pt-0">
               Learn how to
               <a href="https://docs.tor.us" target="_blank" rel="noreferrer noopener">
                 <span class="font-italic" style="text-decoration: underline;">Get Started</span>
@@ -223,6 +223,11 @@ export default {
 
 /deep/.v-expansion-panel__container {
   background-color: var(--v-torus_bcg-base) !important;
+}
+
+/deep/.v-expansion-panel__header {
+  padding-left: 0;
+  padding-right: 10px;
 }
 
 %rounded {
