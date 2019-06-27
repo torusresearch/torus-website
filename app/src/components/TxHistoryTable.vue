@@ -52,10 +52,11 @@
           <v-card flat v-show="props.item.status !== 'rejected'">
             <v-card-text>
               <v-layout row wrap>
-                <v-flex xs6 class="text-xs-center">
+                <v-flex xs6 class="text-xs-left">
                   <v-btn id="flexibtn" class="btnStyle" outline large>
                     <a target="_blank" rel="noopener noreferrer" :href="props.item.etherscanLink">View On Etherscan</a></v-btn
                   >
+
                 </v-flex>
               </v-layout>
             </v-card-text>
@@ -113,13 +114,16 @@ export default {
   color: var(--v-torus_blue-base);
 }
 
-#flexibtn .btnStyle {
-  width: 141px;
+#flexibtn.btnStyle {
   height: 41px;
   border: #fff;
   border-radius: 45px;
   background-color: #fff !important;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  a{
+    text-decoration: none;
+    color: inherit;
+  }
 }
 
 .inline-small {
