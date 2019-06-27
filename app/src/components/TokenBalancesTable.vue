@@ -35,18 +35,6 @@
         <template v-slot:items="props">
           <!-- "props.expanded = !props.expanded" -->
           <tr @click="selectEmit(props.item)" :active="props.selected" :class="{ activeRow: props.selected }">
-            <!-- <td class="text-xs-left unpaddedtd">
-              <v-layout row justify-space-between>
-                <v-flex xs2 sm1 align-self-center>
-                  <img
-                    :src="require(`../../public/images/logos/${props.item.logo}`)"
-                    class="inline-small"
-                    onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
-                  />
-                </v-flex>
-                <v-flex ml-2 xs10 sm11 align-self-center> {{ props.item.name }} </v-flex>
-              </v-layout>
-            </td> -->
             <td class="pr-0">
               <img
                 :src="require(`../../public/images/logos/${props.item.logo}`)"
