@@ -281,6 +281,15 @@ export default class TorusController extends EventEmitter {
     // this.accountTracker._updateAccounts()
   }
 
+  addAccount(key, address) {
+    this.keyringController.addAccount(key)
+    this.accountTracker.addAccounts([address])
+  }
+
+  setSelectedAccount(address) {
+    this.detectTokensController.startTokenDetection(address)
+  }
+
   /**
    * Get an account balance from the AccountTracker or request it directly from the network.
    * @param {string} address - The account address

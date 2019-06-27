@@ -45,7 +45,7 @@ const initialState = {
   currencyData: {},
   tokenData: {}, // Account specific object
   tokenRates: {},
-  transactions: [], // Account specific object
+  transactions: [],
   loginInProgress: false,
   rpcDetails: JSON.parse(localStorage.getItem('torus_custom_rpc')) || {}
 }
@@ -77,8 +77,8 @@ var VuexStore = new Vuex.Store({
         { balance: weiBalance[selectedAddress], decimals: 18, erc20: false, logo: 'eth.svg', name: 'Ethereum', symbol: 'ETH', tokenAddress: '0x' }
       ]
       // because vue/babel is stupid
-      if (Object.keys(tokenData).length > 0) {
-        full = [...full, ...tokenData]
+      if (tokenData && tokenData[selectedAddress] && Object.keys(tokenData[selectedAddress]).length > 0) {
+        full = [...full, ...tokenData[selectedAddress]]
       }
       let totalPortfolioValue = 0
       const finalBalancesArray = full.map(x => {
@@ -197,7 +197,7 @@ var VuexStore = new Vuex.Store({
         `directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=${height},width=${width}`
       )
       if (isTx) {
-        var balance = torus.web3.utils.fromWei(this.state.weiBalance.toString())
+        var balance = torus.web3.utils.fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
         let counter = 0
         let interval
         bc.onmessage = ev => {
@@ -282,8 +282,8 @@ var VuexStore = new Vuex.Store({
     updateTransactions({ commit }, payload) {
       commit('setTransactions', payload.transactions)
     },
-    updateTokenData({ commit }, payload) {
-      commit('setTokenData', payload.tokenData)
+    updateTokenData({ commit, state }, payload) {
+      if (payload.tokenData) commit('setTokenData', { ...state.tokenData, [payload.address]: payload.tokenData })
     },
     updateTokenRates({ commit }, payload) {
       commit('setTokenRates', payload.tokenRates)
@@ -367,7 +367,14 @@ function handleLogin(email, payload) {
 
         torus.torusController.txController.store.subscribe(function({ transactions }) {
           if (transactions) {
-            VuexStore.dispatch('updateTransactions', { transactions })
+            // these transactions have negative index
+            const updatedTransactions = []
+            for (let id in transactions) {
+              if (transactions[id]) {
+                updatedTransactions.push(transactions[id])
+              }
+            }
+            VuexStore.dispatch('updateTransactions', { transactions: updatedTransactions })
           }
         })
 
@@ -375,7 +382,7 @@ function handleLogin(email, payload) {
 
         torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
           if (tokens.length > 0) {
-            VuexStore.dispatch('updateTokenData', { tokenData: tokens })
+            VuexStore.dispatch('updateTokenData', { tokenData: tokens, address: torus.torusController.detectTokensController.selectedAddress })
           }
         })
 

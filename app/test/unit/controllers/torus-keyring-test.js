@@ -12,6 +12,11 @@ const testAccount = {
   address: '0xa12164fed66719297d2cf407bb314d07feb12c02'
 }
 
+const testAccount2 = {
+  key: '357a5188cb0f748f62f59b6eac31b9d386b9f7f2c87f567f0dae5eed8b8a9d9c',
+  address: '0x43ce12056aa1e8372ab4abf0c0cc658d2d41077f'
+}
+
 describe('torus-keyring', () => {
   let keyring
   beforeEach(() => {
@@ -59,6 +64,17 @@ describe('torus-keyring', () => {
     })
   })
 
+  describe('#add account later', () => {
+    it('has the correct addresses', async () => {
+      const keyring = new TorusKeyring([testAccount.key])
+      await keyring.addAccount(testAccount2.key)
+      console.log(await keyring.getAccounts())
+      const accounts = await keyring.getAccounts()
+      const expectedAccounts = [testAccount.address, testAccount2.address]
+      assert.deepStrictEqual(accounts, expectedAccounts, 'accounts match expected')
+    })
+  })
+
   describe('#signTransaction', () => {
     const address = '0x9858e7d8b79fc3e6d989636721584498926da38a'
     const privateKey = '0x7dd98753d7b4394095de7d176c58128e2ed6ee600abe97c9f6d9fd65015d9b18'
@@ -98,7 +114,7 @@ describe('torus-keyring', () => {
       const message = 'hello there!'
       const msgHashHex = ethUtil.bufferToHex(ethUtil.rlphash(message))
       await keyring.deserialize([privateKey])
-      await keyring.addAccounts(9)
+      await keyring.addRandomAccounts(9)
       const addresses = await keyring.getAccounts()
       const signatures = await Promise.all(
         addresses.map(async address => {
@@ -123,14 +139,14 @@ describe('torus-keyring', () => {
   describe('#addAccounts', () => {
     describe('with no arguments', () => {
       it('creates a single wallet', async () => {
-        await keyring.addAccounts()
+        await keyring.addRandomAccounts()
         assert.strictEqual(keyring.wallets.length, 1)
       })
     })
 
     describe('with a numeric argument', () => {
       it('creates that number of wallets', async () => {
-        await keyring.addAccounts(3)
+        await keyring.addRandomAccounts(3)
         assert.strictEqual(keyring.wallets.length, 3)
       })
     })
@@ -155,7 +171,7 @@ describe('torus-keyring', () => {
   describe('#removeAccount', () => {
     describe('if the account exists', () => {
       it('should remove that account', async () => {
-        await keyring.addAccounts()
+        await keyring.addRandomAccounts()
         const addresses = await keyring.getAccounts()
         keyring.removeAccount(addresses[0])
         const addressesAfterRemoval = await keyring.getAccounts()

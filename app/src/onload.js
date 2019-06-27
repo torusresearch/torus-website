@@ -63,13 +63,20 @@ function onloadTorus(torus) {
 
           torus.torusController.txController.store.subscribe(function({ transactions }) {
             if (transactions) {
-              store.dispatch('updateTransactions', { transactions })
+              // these transactions have negative index
+              const updatedTransactions = []
+              for (let id in transactions) {
+                if (transactions[id]) {
+                  updatedTransactions.push(transactions[id])
+                }
+              }
+              store.dispatch('updateTransactions', { transactions: updatedTransactions })
             }
           })
 
           torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
             if (tokens.length > 0) {
-              store.dispatch('updateTokenData', { tokenData: tokens })
+              store.dispatch('updateTokenData', { tokenData: tokens, address: torus.torusController.detectTokensController.selectedAddress })
             }
           })
 
