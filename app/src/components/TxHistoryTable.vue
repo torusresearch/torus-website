@@ -56,7 +56,6 @@
                   <v-btn id="flexibtn" class="btnStyle" outline large>
                     <a target="_blank" rel="noopener noreferrer" :href="props.item.etherscanLink">View On Etherscan</a></v-btn
                   >
-
                 </v-flex>
               </v-layout>
             </v-card-text>
@@ -120,7 +119,7 @@ export default {
   border-radius: 45px;
   background-color: #fff !important;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-  a{
+  a {
     text-decoration: none;
     color: inherit;
   }

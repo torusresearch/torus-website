@@ -435,12 +435,12 @@ export default {
 
 /deep/.v-text-field.remove-padding-right .v-input__control > .v-input__slot {
   padding-right: 0;
-  
+
   .v-btn-toggle {
     border-radius: 0 17px 17px 0;
-     .v-btn:last-child{
-        border-radius: 0 17px 17px 0;
-     }
+    .v-btn:last-child {
+      border-radius: 0 17px 17px 0;
+    }
   }
 }
 

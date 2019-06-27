@@ -42,7 +42,7 @@
                 onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
               />
               {{ props.item.name }}
-            </td>            
+            </td>
             <td class="text-xs-center no-wrap text-bluish">{{ props.item.formattedBalance }}</td>
             <td class="text-xs-right no-wrap">
               <span>{{ props.item.currencyBalance }}</span>
