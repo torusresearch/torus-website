@@ -438,6 +438,9 @@ export default {
   
   .v-btn-toggle {
     border-radius: 0 17px 17px 0;
+     .v-btn:first-child{
+        border-radius: 17px 0 0 17px;
+     }
      .v-btn:last-child{
         border-radius: 0 17px 17px 0;
      }
