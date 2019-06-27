@@ -31,15 +31,15 @@
                     </v-layout>
                   </template>
                   <template v-slot:selection="props">
-                    <v-layout row wrap align-bottom justify-center>
-                      <v-flex xs2>
+                    <v-layout row align-center>
+                      <v-flex xs2 mr-2>
                         <img
                           :src="require(`../../public/images/logos/${props.item.logo}`)"
                           class="inline-small"
                           onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
                         />
                       </v-flex>
-                      <v-flex xs10 align-self-end> {{ props.item.name }} </v-flex>
+                      <v-flex xs10>{{ props.item.name }}</v-flex>
                     </v-layout>
                   </template>
                 </v-select>
