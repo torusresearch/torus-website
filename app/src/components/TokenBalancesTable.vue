@@ -36,12 +36,14 @@
           <!-- "props.expanded = !props.expanded" -->
           <tr @click="selectEmit(props.item)" :active="props.selected" :class="{ activeRow: props.selected }">
             <td class="pr-0">
-              <img
-                :src="require(`../../public/images/logos/${props.item.logo}`)"
-                class="inline-small mr-2"
-                onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
-              />
-              {{ props.item.name }}
+              <v-flex class="set-min-width">
+                <img
+                  :src="require(`../../public/images/logos/${props.item.logo}`)"
+                  class="inline-small mr-2"
+                  onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                />
+                {{ props.item.name }}
+              </v-flex>
             </td>            
             <td class="text-xs-center no-wrap text-bluish">{{ props.item.formattedBalance }}</td>
             <td class="text-xs-right no-wrap">
@@ -144,6 +146,9 @@ export default {
   border-spacing: 0 10px !important;
   margin-top: -10px !important; /* correct offset on first border spacing if desired */
   background: var(--v-torus_bcg-base) !important;
+  .set-min-width {
+    min-width: 100px;
+  }
 }
 
 /deep/.activeRow {
