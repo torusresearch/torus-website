@@ -36,16 +36,16 @@ var walletWindow
 const initialState = {
   email: '',
   idToken: '',
-  wallet: {},
-  weiBalance: 0,
+  wallet: {}, // Account specific object
+  weiBalance: {}, // Account specific object
   selectedAddress: '',
   selectedCurrency: 'USD',
   networkId: 0,
   networkType: localStorage.getItem('torus_network_type') || MAINNET,
   currencyData: {},
-  tokenData: {},
+  tokenData: {}, // Account specific object
   tokenRates: {},
-  transactions: [],
+  transactions: [], // Account specific object
   loginInProgress: false,
   rpcDetails: JSON.parse(localStorage.getItem('torus_custom_rpc')) || {}
 }
@@ -66,14 +66,16 @@ var VuexStore = new Vuex.Store({
       return transactions
     },
     tokenBalances: state => {
-      let { weiBalance, tokenData, tokenRates, currencyData, selectedCurrency, networkType } = state || {}
+      let { weiBalance, tokenData, tokenRates, currencyData, selectedCurrency, networkType, selectedAddress } = state || {}
       if (networkType !== MAINNET) {
         tokenData = {}
         tokenRates = {}
       }
       let currencyMultiplier = 1
       if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
-      let full = [{ balance: weiBalance, decimals: 18, erc20: false, logo: 'eth.svg', name: 'Ethereum', symbol: 'ETH', tokenAddress: '0x' }]
+      let full = [
+        { balance: weiBalance[selectedAddress], decimals: 18, erc20: false, logo: 'eth.svg', name: 'Ethereum', symbol: 'ETH', tokenAddress: '0x' }
+      ]
       // because vue/babel is stupid
       if (Object.keys(tokenData).length > 0) {
         full = [...full, ...tokenData]
@@ -265,15 +267,17 @@ var VuexStore = new Vuex.Store({
         var stateWallet = { ...context.state.wallet }
         delete stateWallet[payload.ethAddress]
         context.commit('setWallet', { ...stateWallet })
-        if (context.state.balance[payload.ethAddress]) {
-          var stateBalance = { ...context.state.balance }
+        if (context.state.weiBalance[payload.ethAddress]) {
+          var stateBalance = { ...context.state.weiBalance }
           delete stateBalance[payload.ethAddress]
           context.commit('setBalance', { ...stateBalance })
         }
       }
     },
     updateWeiBalance({ commit, state }, payload) {
-      if (payload.address === state.selectedAddress) commit('setWeiBalance', payload.balance)
+      if (payload.address) {
+        commit('setWeiBalance', { ...state.weiBalance, [payload.address]: payload.balance })
+      }
     },
     updateTransactions({ commit }, payload) {
       commit('setTransactions', payload.transactions)
@@ -352,9 +356,9 @@ function handleLogin(email, payload) {
         torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
           if (accounts) {
             for (const key in accounts) {
-              if (accounts.hasOwnProperty(key)) {
+              if (Object.prototype.hasOwnProperty.call(accounts, key)) {
                 const account = accounts[key]
-                if (VuexStore.state.weiBalance !== account.balance)
+                if (VuexStore.state.weiBalance[data.ethAddress] !== account.balance)
                   VuexStore.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
               }
             }

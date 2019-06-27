@@ -54,7 +54,7 @@ function onloadTorus(torus) {
               for (const key in accounts) {
                 if (accounts.hasOwnProperty(key)) {
                   const account = accounts[key]
-                  if (store.state.weiBalance !== account.balance)
+                  if (store.state.weiBalance[selectedAddress] !== account.balance)
                     store.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
                 }
               }

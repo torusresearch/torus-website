@@ -186,7 +186,7 @@ export default {
       return this.$store.state.selectedCurrency
     },
     currentEthBalance() {
-      return this.$store.state.weiBalance
+      return this.$store.state.weiBalance[this.$store.state.selectedAddress]
     },
     finalBalancesArray() {
       return this.$store.getters.tokenBalances.finalBalancesArray || []
