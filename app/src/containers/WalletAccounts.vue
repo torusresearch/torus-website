@@ -21,20 +21,50 @@
     </div>
 
     <div class="has-border py-0">
-      <v-btn block small flat class="grey lighten-2 mb-0" @click="showPrivateKey = !showPrivateKey">
+      <v-btn block small flat class="grey lighten-2 mb-0 font-weight-regular" @click="showPrivateKey = !showPrivateKey">
         {{ showPrivateKey ? 'Hide Private Key' : 'Show Private Key' }}
         <v-icon v-if="showPrivateKey" :color="$vuetify.theme.torus_reject">expand_less</v-icon>
         <v-icon v-else :color="$vuetify.theme.torus_reject">expand_more</v-icon>
       </v-btn>
 
-      <div class="d-flex mt-0 mb-1 mx-0 py-1 grey lighten-3" v-if="showPrivateKey">
-        <span class="text-xs-center">
-          {{ this.selectedKey }}
-        </span>
+      <div class="mt-0 mb-1 mx-0 py-1 grey lighten-3 text-xs-center break-word" v-if="showPrivateKey">
+        {{ this.selectedKey }}
       </div>
     </div>
 
-    <a :href="walletJson" :class="[{ disable: !downloadable }]" :download="name">Download wallet</a>
+    <div class="has-border text-xs-right" mt-1>
+      <v-btn class="btnStyle" @click="dialogJson = true">Download JSON</v-btn>
+      <v-btn class="btnStyle" @click="dialogWallet = true">Download wallet</v-btn>
+    </div>
+
+    <v-dialog v-model="dialogJson" max-width="500px">
+      <v-card>
+        <v-card-title>
+          JSON Dialog
+        </v-card-title>
+        <v-card-text>
+          JSON Dialog
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" flat @click="dialogJson = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialogWallet" max-width="500px">
+      <v-card>
+        <v-card-title>
+          Wallet Dialog
+        </v-card-title>
+        <v-card-text>
+          Wallet Dialog
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" flat @click="dialogWallet = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <!-- <a :href="walletJson" :class="[{ disable: !downloadable }]" :download="name">Download wallet</a> -->
   </v-flex>
 </template>
 
@@ -53,7 +83,9 @@ export default {
       walletJson: '',
       name: '',
       downloadable: false,
-      showPrivateKey: false
+      showPrivateKey: false,
+      dialogJson: false,
+      dialogWallet: false
     }
   },
   computed: {
@@ -137,5 +169,9 @@ export default {
   background-color: var(--v-torus_svg_bcg-base);
   cursor: default;
   pointer-events: none;
+}
+
+.break-word {
+  word-wrap: break-word;
 }
 </style>
