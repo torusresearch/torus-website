@@ -3,10 +3,19 @@
     <div class="d-flex has-border">
       <v-layout align-center row wrap>
         <v-flex xs12 sm6 align-self-center>
-          Select Type
+          Select Import Type
         </v-flex>
         <v-flex xs12 sm6>
-          <v-select single-line solo flat :items="options" item-text="name" item-value="value" v-model="selectedType" label="Network"></v-select>
+          <v-select
+            single-line
+            solo
+            flat
+            :items="options"
+            item-text="name"
+            item-value="value"
+            v-model="selectedType"
+            label="Select Import Type"
+          ></v-select>
         </v-flex>
       </v-layout>
     </div>
@@ -75,21 +84,32 @@ export default {
         }
       ],
       privateKey: '',
-      keyStoreFileContents: ''
-    }
-  },
-  computed: {
-    importErrors() {
-      return this.$store.state.importErrors
+      keyStoreFileContents: '',
+      selectedType: 'private',
+      error: {}
     }
   },
   methods: {
     importViaPrivateKey() {
-      this.$store.dispatch('importAccount', { keyData: this.privateKey, strategy: 'Private Key' })
+      this.$store
+        .dispatch('importAccount', { keyData: this.privateKey, strategy: 'Private Key' })
+        .then(() => {
+          this.$router.push({ name: 'walletDefault' })
+        })
+        .catch(err => {
+          this.error = err
+        })
     },
     importViaKeyStoreFile() {
-      const password = document.getElementById('passwordField').value
-      this.$store.dispatch('importAccount', { keyData: [this.keyStoreFileContents, password], strategy: 'JSON File' })
+      const password = document.getElementById('passwordField').value // use refs preferably
+      this.$store
+        .dispatch('importAccount', { keyData: [this.keyStoreFileContents, password], strategy: 'JSON File' })
+        .then(() => {
+          this.$router.push({ name: 'walletDefault' })
+        })
+        .catch(err => {
+          this.error = err
+        })
     }
   }
 }

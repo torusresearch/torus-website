@@ -13,7 +13,6 @@ import WalletTransfer from './containers/WalletTransfer.vue'
 import WalletTopup from './containers/WalletTopup.vue'
 import WalletAccountsHome from './containers/WalletAccountsHome.vue'
 import WalletAccountImport from './containers/WalletAccountImport.vue'
-import WalletAccountExport from './containers/WalletAccountExport.vue'
 
 // const Popup = () => import('./views/Popup.vue')
 // const Confirm = () => import('./views/Confirm.vue')
@@ -85,11 +84,6 @@ const router = new Router({
               path: 'import',
               name: 'walletAccountImport',
               component: WalletAccountImport // Account import
-            },
-            {
-              path: 'export',
-              name: 'walletAccountExport',
-              component: WalletAccountExport // Account export
             }
           ]
         },

@@ -49,8 +49,7 @@ const initialState = {
   tokenRates: {},
   transactions: [],
   loginInProgress: false,
-  rpcDetails: JSON.parse(localStorage.getItem('torus_custom_rpc')) || {},
-  importErrors: {}
+  rpcDetails: JSON.parse(localStorage.getItem('torus_custom_rpc')) || {}
 }
 
 var VuexStore = new Vuex.Store({
@@ -148,9 +147,6 @@ var VuexStore = new Vuex.Store({
     },
     setRPCDetails(state, rpcDetails) {
       state.rpcDetails = rpcDetails
-    },
-    setImportErrors(state, payload) {
-      state.importErrors = payload
     },
     resetStore(state, requiredState) {
       Object.keys(state).forEach(key => {
@@ -285,19 +281,24 @@ var VuexStore = new Vuex.Store({
         commit('setWeiBalance', { ...state.weiBalance, [payload.address]: payload.balance })
       }
     },
-    importAccount({ commit, dispatch }, payload) {
-      accountImporter
-        .importAccount(payload.strategy, payload.keyData)
-        .then(privKey => {
-          const address = torus.generateAddressFromPrivKey(privKey)
-          torus.torusController.addAccount(privKey, address)
-          torus.torusController.setSelectedAccount(address)
-          dispatch('addWallet', { ethAddress: address, privKey: privKey })
-          dispatch('updateSelectedAddress', { selectedAddress: address })
-        })
-        .catch(err => {
-          commit('setImportErrors', err) // To always clear prev errors
-        })
+    importAccount({ dispatch }, payload) {
+      return new Promise((resolve, reject) => {
+        accountImporter
+          .importAccount(payload.strategy, payload.keyData)
+          .then(privKey => {
+            const address = torus.generateAddressFromPrivKey(privKey)
+            torus.torusController.setSelectedAccount(address)
+            dispatch('addWallet', { ethAddress: address, privKey: privKey })
+            dispatch('updateSelectedAddress', { selectedAddress: address })
+            torus.torusController
+              .addAccount(privKey, address)
+              .then(response => resolve())
+              .catch(err => reject(err))
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
     },
     updateTransactions({ commit }, payload) {
       commit('setTransactions', payload.transactions)
@@ -311,6 +312,7 @@ var VuexStore = new Vuex.Store({
     updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
       torus.updateStaticData({ selectedAddress: payload.selectedAddress })
+      torus.torusController.setSelectedAccount(payload.selectedAddress)
     },
     updateNetworkId(context, payload) {
       context.commit('setNetworkId', payload.networkId)

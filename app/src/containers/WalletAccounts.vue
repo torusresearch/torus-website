@@ -1,6 +1,9 @@
 <template>
   <v-flex xs12 sm8 mt-3 mb-3>
     <div class="d-flex has-border">
+      <v-select single-line solo flat :items="accounts" :value="selectedAddress" label="Selected Account" @change="onAccountChange"></v-select>
+    </div>
+    <div class="d-flex has-border">
       <span class="body-2">Public Address</span>
       <span class="text-xs-right">
         <show-tool-tip :address="selectedAddress">
@@ -38,6 +41,14 @@ export default {
     },
     slicedKey() {
       return addressSlicer(this.selectedKey)
+    },
+    accounts() {
+      return Object.keys(this.$store.state.wallet)
+    }
+  },
+  methods: {
+    onAccountChange(newAddress) {
+      this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
     }
   }
 }
