@@ -3,7 +3,7 @@
     <div class="d-flex has-border">
       <v-layout align-center>
         <v-flex xs12 sm6 align-self-center>
-          Select Type
+          Select Import Type
         </v-flex>
         <v-flex xs12 sm6>
           <v-select
@@ -14,7 +14,7 @@
             item-text="name"
             item-value="value"
             v-model="selectedType"
-            label="Network"
+            label="Select Import Type"
           ></v-select>
         </v-flex>
       </v-layout>
@@ -30,14 +30,15 @@ export default {
         {
           name: 'Private Key',
           value: 'private'
-        }, 
+        },
         {
           name: 'Keystore',
           value: 'keystore'
         }
       ],
       privateKey: '',
-      keyStoreFileContents: ''
+      keyStoreFileContents: '',
+      selectedType: 'private'
     }
   },
   computed: {
@@ -50,7 +51,7 @@ export default {
       this.$store.dispatch('importAccount', { keyData: this.privateKey, strategy: 'Private Key' })
     },
     importViaKeyStoreFile() {
-      const password = document.getElementById('passwordField').value
+      const password = document.getElementById('passwordField').value // use refs preferably
       this.$store.dispatch('importAccount', { keyData: [this.keyStoreFileContents, password], strategy: 'JSON File' })
     }
   }
