@@ -28,7 +28,9 @@
       </v-btn>
 
       <div class="mt-0 mb-1 mx-0 py-1 grey lighten-3 text-xs-center break-word" v-if="showPrivateKey">
-        {{ this.selectedKey }}
+        <show-tool-tip :address="selectedKey">
+          {{ selectedKey }}
+        </show-tool-tip>
       </div>
     </div>
 
