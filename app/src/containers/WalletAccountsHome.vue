@@ -8,10 +8,10 @@
     </v-flex>
     <v-flex xs12 sm8 mt-3>
       <v-layout row wrap align-content-space-between>
-        <v-flex xs12 sm8 md4 px-1>
+        <v-flex xs12 sm8 md6 px-1>
           <v-btn block depressed class="grey lighten-3 account-tab" :to="{ name: 'walletAccountsHome' }">Account Management</v-btn>
         </v-flex>
-        <v-flex xs12 sm4 md4 px-1>
+        <v-flex xs12 sm4 md6 px-1>
           <v-btn block depressed class="grey lighten-3 account-tab" :to="{ name: 'walletAccountImport' }">Import</v-btn>
         </v-flex>
       </v-layout>
