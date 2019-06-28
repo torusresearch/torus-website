@@ -311,6 +311,7 @@ var VuexStore = new Vuex.Store({
     updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
       torus.updateStaticData({ selectedAddress: payload.selectedAddress })
+      torus.torusController.setSelectedAccount(payload.selectedAddress)
     },
     updateNetworkId(context, payload) {
       context.commit('setNetworkId', payload.networkId)
