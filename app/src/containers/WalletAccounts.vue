@@ -1,37 +1,22 @@
 <template>
-  <v-layout mt-5 row wrap align-center justify-center align-content-start>
-    <v-flex xs12 sm8>
-      <span>
-        <v-icon alt="Account" :color="$vuetify.theme.torus_blue" size="28">account_circle</v-icon>
-        <span class="text-bluish headline"> My Accounts</span>
+  <v-flex xs12 sm8 mt-3 mb-3>
+    <div class="d-flex has-border">
+      <span class="body-2">Public Address</span>
+      <span class="text-xs-right">
+        <show-tool-tip :address="selectedAddress">
+          {{ slicedAddress }}
+        </show-tool-tip>
       </span>
-    </v-flex>
-    <v-flex xs12 sm8 mt-3 mb-3>
-      <div class="d-flex has-border">
-        <span class="body-2">Public Address</span>
-        <span class="text-xs-right">
-          <show-tool-tip :address="selectedAddress">
-            {{ slicedAddress }}
-          </show-tool-tip>
-        </span>
-      </div>
-      <div class="d-flex has-border">
-        <span class="body-2">Private Key</span>
-        <span class="text-xs-right">
-          <show-tool-tip :address="selectedKey">
-            {{ slicedKey }}
-          </show-tool-tip>
-        </span>
-      </div>
-    </v-flex>
-    <v-flex xs12>
-      <v-layout row wrap>
-        <v-flex offset-xs10 xs2 align-self-center class="hidden-xs-only">
-          <img :src="require('../../public/images/torus_logo.png')" />
-        </v-flex>
-      </v-layout>
-    </v-flex>
-  </v-layout>
+    </div>
+    <div class="d-flex has-border">
+      <span class="body-2">Private Key</span>
+      <span class="text-xs-right">
+        <show-tool-tip :address="selectedKey">
+          {{ slicedKey }}
+        </show-tool-tip>
+      </span>
+    </div>
+  </v-flex>
 </template>
 
 <script>
@@ -58,7 +43,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .selected-account {
   cursor: pointer;
   padding: 5px 15px;
