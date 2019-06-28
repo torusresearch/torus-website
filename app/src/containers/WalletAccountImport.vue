@@ -18,7 +18,8 @@ export default {
       this.$store.dispatch('importAccount', { keyData: this.privateKey, strategy: 'Private Key' })
     },
     importViaKeyStoreFile() {
-      this.$store.dispatch('importAccount', { keyData: this.keyStoreFileContents, strategy: 'JSON File' })
+      const password = document.getElementById('passwordField').value
+      this.$store.dispatch('importAccount', { keyData: [this.keyStoreFileContents, password], strategy: 'JSON File' })
     }
   }
 }
