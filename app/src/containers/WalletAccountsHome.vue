@@ -18,7 +18,7 @@
           <v-btn block depressed class="grey lighten-3 account-tab" :to="{ name: 'walletAccountExport' }">Export</v-btn>
         </v-flex>
       </v-layout>
-    </v-flex>    
+    </v-flex>
     <router-view></router-view>
     <v-flex xs12>
       <v-layout row wrap>
