@@ -19,16 +19,27 @@
         </show-tool-tip>
       </span>
     </div>
+    <a :href="walletJson" :class="[{ disable: !downloadable }]" :download="name">Download wallet</a>
   </v-flex>
 </template>
 
 <script>
 import ShowToolTip from '../components/ShowToolTip.vue'
 import { addressSlicer } from '../utils/utils'
+const Wallet = require('ethereumjs-wallet')
+const ethUtil = require('ethereumjs-util')
 
 export default {
   name: 'walletAccounts',
   components: { ShowToolTip },
+  data() {
+    return {
+      keyStorePassword: '',
+      walletJson: '',
+      name: '',
+      downloadable: true
+    }
+  },
   computed: {
     selectedAddress() {
       return this.$store.state.selectedAddress
@@ -49,7 +60,36 @@ export default {
   methods: {
     onAccountChange(newAddress) {
       this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
+    },
+    exportKeyStoreFile() {
+      const _wallet = this.createWallet(this.keyStorePassword)
+      this.walletJson = this.createBlob('mime', _wallet.walletJson)
+      this.name = _wallet.name.toString()
+    },
+    createWallet(password) {
+      const createdWallet = {}
+      const wallet = this.generateWallet(this.selectedKey)
+      createdWallet.walletJson = wallet.toV3(password)
+      createdWallet.name = wallet.getV3Filename()
+      return createdWallet
+    },
+    generateWallet(privateKey) {
+      const stripped = ethUtil.stripHexPrefix(privateKey)
+      const buffer = Buffer.from(stripped, 'hex')
+      const wallet = Wallet.fromPrivateKey(buffer)
+      return wallet
+    },
+    createBlob(mime, str) {
+      const string = typeof str === 'object' ? JSON.stringify(str) : str
+      if (string === null) return ''
+      const blob = new Blob([string], {
+        type: mime
+      })
+      return window.URL.createObjectURL(blob)
     }
+  },
+  mounted() {
+    this.exportKeyStoreFile()
   }
 }
 </script>
@@ -75,5 +115,11 @@ export default {
   border-radius: 5px;
   padding: 15px;
   margin: 15px;
+}
+
+.disable {
+  background-color: var(--v-torus_svg_bcg-base);
+  cursor: default;
+  pointer-events: none;
 }
 </style>
