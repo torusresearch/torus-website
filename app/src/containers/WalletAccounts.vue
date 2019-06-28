@@ -19,7 +19,76 @@
         </show-tool-tip>
       </span>
     </div>
-    <a :href="walletJson" :class="[{ disable: !downloadable }]" :download="name">Download wallet</a>
+
+    <div class="has-border py-0">
+      <v-btn block small flat class="grey lighten-2 mb-0 font-weight-regular" @click="showPrivateKey = !showPrivateKey">
+        {{ showPrivateKey ? 'Hide Private Key' : 'Show Private Key' }}
+        <v-icon v-if="showPrivateKey" :color="$vuetify.theme.torus_reject">expand_less</v-icon>
+        <v-icon v-else :color="$vuetify.theme.torus_reject">expand_more</v-icon>
+      </v-btn>
+
+      <div class="mt-0 mb-1 mx-0 py-1 grey lighten-3 text-xs-center break-word" v-if="showPrivateKey">
+        <show-tool-tip :address="selectedKey">
+          {{ selectedKey }}
+        </show-tool-tip>
+      </div>
+    </div>
+
+    <div class="has-border text-xs-right" mt-1>
+      <v-btn class="btnStyle" @click="dialogJson = true">Download JSON</v-btn>
+      <v-btn class="btnStyle" @click="dialogWallet = true">Download wallet</v-btn>
+    </div>
+
+    <v-dialog v-model="dialogJson" max-width="400px">
+      <v-card class="grey lighten-3">
+        <v-card-title>
+          <div class="title">Download JSON</div>
+        </v-card-title>
+        <v-divider light></v-divider>
+        <v-card-text>
+          <v-layout row wrap>
+            <v-flex xs12 align-self-center>
+              Enter your password
+            </v-flex>
+            <v-flex xs12>
+              <v-text-field single-line solo flat v-model="userPassword" name="password" type="password"></v-text-field>
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+        <v-divider light></v-divider>
+        <v-card-actions class="px-3">
+          <v-spacer></v-spacer>
+          <v-btn class="btnStyle" @click="dialogJson = false">Close</v-btn>
+          <v-btn class="btnStyle" @click="confirmPassword">Confirm</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="dialogWallet" max-width="400px">
+      <v-card class="grey lighten-3">
+        <v-card-title>
+          <div class="title">Download Paper Wallet</div>
+        </v-card-title>
+        <v-divider light></v-divider>
+        <v-card-text>
+          <v-layout row wrap>
+            <v-flex xs12 align-self-center>
+              Enter your password
+            </v-flex>
+            <v-flex xs12>
+              <v-text-field single-line solo flat v-model="userPassword" name="password" type="password"></v-text-field>
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+        <v-divider light></v-divider>
+        <v-card-actions class="px-3">
+          <v-spacer></v-spacer>
+          <v-btn class="btnStyle" @click="dialogWallet = false">Close</v-btn>
+          <v-btn class="btnStyle" @click="confirmPassword">Confirm</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <!-- <a :href="walletJson" :class="[{ disable: !downloadable }]" :download="name">Download wallet</a> -->
   </v-flex>
 </template>
 
@@ -37,7 +106,11 @@ export default {
       keyStorePassword: '',
       walletJson: '',
       name: '',
-      downloadable: false
+      downloadable: false,
+      showPrivateKey: false,
+      dialogJson: false,
+      dialogWallet: false,
+      allowJsonDownload: false
     }
   },
   computed: {
@@ -58,6 +131,9 @@ export default {
     }
   },
   methods: {
+    confirmPassword() {
+      this.allowJsonDownload = true
+    },
     onAccountChange(newAddress) {
       this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
     },
@@ -121,5 +197,32 @@ export default {
   background-color: var(--v-torus_svg_bcg-base);
   cursor: default;
   pointer-events: none;
+}
+
+.break-word {
+  word-wrap: break-word;
+}
+
+/deep/.v-text-field--solo .v-input__slot,
+.v-text-field--outline .v-input__slot {
+  min-height: auto !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  border-radius: 17px !important;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.16) !important;
+  margin-top: 5px !important;
+  margin-bottom: 0px !important;
+}
+
+/deep/.v-text-field.v-text-field--solo .v-input__control {
+  min-height: auto !important;
+}
+
+.btnStyle {
+  height: 41px;
+  border: #fff;
+  background-color: #fff !important;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  border-radius: 45px;
 }
 </style>
