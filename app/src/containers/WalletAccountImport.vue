@@ -38,21 +38,31 @@ export default {
       ],
       privateKey: '',
       keyStoreFileContents: '',
-      selectedType: 'private'
-    }
-  },
-  computed: {
-    importErrors() {
-      return this.$store.state.importErrors
+      selectedType: 'private',
+      error: {}
     }
   },
   methods: {
     importViaPrivateKey() {
-      this.$store.dispatch('importAccount', { keyData: this.privateKey, strategy: 'Private Key' })
+      this.$store
+        .dispatch('importAccount', { keyData: this.privateKey, strategy: 'Private Key' })
+        .then(() => {
+          this.$router.push({ name: 'walletDefault' })
+        })
+        .catch(err => {
+          this.error = err
+        })
     },
     importViaKeyStoreFile() {
       const password = document.getElementById('passwordField').value // use refs preferably
-      this.$store.dispatch('importAccount', { keyData: [this.keyStoreFileContents, password], strategy: 'JSON File' })
+      this.$store
+        .dispatch('importAccount', { keyData: [this.keyStoreFileContents, password], strategy: 'JSON File' })
+        .then(() => {
+          this.$router.push({ name: 'walletDefault' })
+        })
+        .catch(err => {
+          this.error = err
+        })
     }
   }
 }
