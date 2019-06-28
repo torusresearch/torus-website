@@ -39,30 +39,52 @@
       <v-btn class="btnStyle" @click="dialogWallet = true">Download wallet</v-btn>
     </div>
 
-    <v-dialog v-model="dialogJson" max-width="500px">
-      <v-card>
+    <v-dialog v-model="dialogJson" max-width="400px">
+      <v-card class="grey lighten-3">
         <v-card-title>
-          JSON Dialog
+          <div class="title">Download JSON</div>
         </v-card-title>
+        <v-divider light></v-divider>
         <v-card-text>
-          JSON Dialog
+          <v-layout row wrap>
+            <v-flex xs12 align-self-center>
+              Enter your password
+            </v-flex>
+            <v-flex xs12>
+              <v-text-field single-line solo flat v-model="userPassword" name="password" type="password"></v-text-field>
+            </v-flex>
+          </v-layout>
         </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" flat @click="dialogJson = false">Close</v-btn>
+        <v-divider light></v-divider>
+        <v-card-actions class="px-3">
+          <v-spacer></v-spacer>
+          <v-btn class="btnStyle" @click="dialogJson = false">Close</v-btn>
+          <v-btn class="btnStyle" @click="confirmPassword">Confirm</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="dialogWallet" max-width="500px">
-      <v-card>
+    <v-dialog v-model="dialogWallet" max-width="400px">
+      <v-card class="grey lighten-3">
         <v-card-title>
-          Wallet Dialog
+          <div class="title">Download Paper Wallet</div>
         </v-card-title>
+        <v-divider light></v-divider>
         <v-card-text>
-          Wallet Dialog
+          <v-layout row wrap>
+            <v-flex xs12 align-self-center>
+              Enter your password
+            </v-flex>
+            <v-flex xs12>
+              <v-text-field single-line solo flat v-model="userPassword" name="password" type="password"></v-text-field>
+            </v-flex>
+          </v-layout>
         </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" flat @click="dialogWallet = false">Close</v-btn>
+        <v-divider light></v-divider>
+        <v-card-actions class="px-3">
+          <v-spacer></v-spacer>
+          <v-btn class="btnStyle" @click="dialogWallet = false">Close</v-btn>
+          <v-btn class="btnStyle" @click="confirmPassword">Confirm</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -87,7 +109,8 @@ export default {
       downloadable: false,
       showPrivateKey: false,
       dialogJson: false,
-      dialogWallet: false
+      dialogWallet: false,
+      allowJsonDownload: false
     }
   },
   computed: {
@@ -108,6 +131,9 @@ export default {
     }
   },
   methods: {
+    confirmPassword() {
+      this.allowJsonDownload = true
+    },
     onAccountChange(newAddress) {
       this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
     },
@@ -175,5 +201,28 @@ export default {
 
 .break-word {
   word-wrap: break-word;
+}
+
+/deep/.v-text-field--solo .v-input__slot,
+.v-text-field--outline .v-input__slot {
+  min-height: auto !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  border-radius: 17px !important;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.16) !important;
+  margin-top: 5px !important;
+  margin-bottom: 0px !important;
+}
+
+/deep/.v-text-field.v-text-field--solo .v-input__control {
+  min-height: auto !important;
+}
+
+.btnStyle {
+  height: 41px;
+  border: #fff;
+  background-color: #fff !important;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  border-radius: 45px;
 }
 </style>
