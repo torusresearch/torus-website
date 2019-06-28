@@ -33,7 +33,7 @@
                   Approve
                 </v-btn>
               </v-flex>
-              <v-flex sm4 class="text-xs-center">
+              <v-flex sm4 class="text-xs-center" pt-1>
                 <img src="images/torus_logo.png" class="bcg-logo" />
               </v-flex>
             </v-layout>
@@ -204,7 +204,7 @@
                 Approve
               </v-btn>
             </v-flex>
-            <v-flex sm4 class="text-xs-center">
+            <v-flex sm4 class="text-xs-center" pt-1>
               <img src="images/torus_logo.png" class="bcg-logo" />
             </v-flex>
           </v-layout>
