@@ -6,6 +6,9 @@
         <span class="text-bluish headline"> My Accounts</span>
       </span>
     </v-flex>
+    <router-link :to="{ name: 'walletAccounts' }">Account Management</router-link>
+    <router-link :to="{ name: 'walletAccountImport' }">Import</router-link>
+    <router-link :to="{ name: 'walletAccountExport' }">Export</router-link>
     <router-view></router-view>
     <v-flex xs12>
       <v-layout row wrap>
