@@ -37,7 +37,7 @@ export default {
       keyStorePassword: '',
       walletJson: '',
       name: '',
-      downloadable: true
+      downloadable: false
     }
   },
   computed: {
@@ -89,7 +89,7 @@ export default {
     }
   },
   mounted() {
-    this.exportKeyStoreFile()
+    // this.exportKeyStoreFile()
   }
 }
 </script>

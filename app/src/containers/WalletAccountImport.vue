@@ -72,7 +72,7 @@
 export default {
   data() {
     return {
-      selectedType: '',
+      selectedType: 'private',
       options: [
         {
           name: 'Private Key',
@@ -85,7 +85,6 @@ export default {
       ],
       privateKey: '',
       keyStoreFileContents: '',
-      selectedType: 'private',
       error: {}
     }
   },
