@@ -8,6 +8,8 @@ import { hexToText, significantDigits, formatCurrencyNumber } from '../utils/uti
 import { MAINNET, RPC } from '../utils/enums'
 import BroadcastChannel from 'broadcast-channel'
 
+const accountImporter = require('../utils/accountImporter')
+
 const baseRoute = process.env.BASE_URL
 
 Vue.use(Vuex)
@@ -47,7 +49,8 @@ const initialState = {
   tokenRates: {},
   transactions: [],
   loginInProgress: false,
-  rpcDetails: JSON.parse(localStorage.getItem('torus_custom_rpc')) || {}
+  rpcDetails: JSON.parse(localStorage.getItem('torus_custom_rpc')) || {},
+  importErrors: {}
 }
 
 var VuexStore = new Vuex.Store({
@@ -145,6 +148,9 @@ var VuexStore = new Vuex.Store({
     },
     setRPCDetails(state, rpcDetails) {
       state.rpcDetails = rpcDetails
+    },
+    setImportErrors(state, payload) {
+      state.importErrors = payload
     },
     resetStore(state, requiredState) {
       Object.keys(state).forEach(key => {
@@ -278,6 +284,20 @@ var VuexStore = new Vuex.Store({
       if (payload.address) {
         commit('setWeiBalance', { ...state.weiBalance, [payload.address]: payload.balance })
       }
+    },
+    importAccount({ commit, dispatch }, payload) {
+      accountImporter
+        .importAccount(payload.strategy, payload.keyData)
+        .then(privKey => {
+          const address = torus.generateAddressFromPrivKey(privKey)
+          torus.torusController.addAccount(privKey, address)
+          torus.torusController.setSelectedAccount(address)
+          dispatch('addWallet', { ethAddress: address, privKey: privKey })
+          dispatch('updateSelectedAddress', { selectedAddress: address })
+        })
+        .catch(err => {
+          commit('setImportErrors', err) // To always clear prev errors
+        })
     },
     updateTransactions({ commit }, payload) {
       commit('setTransactions', payload.transactions)
