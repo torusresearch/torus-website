@@ -22,49 +22,81 @@
 
     <template v-if="selectedType === 'private'">
       <div class="d-flex has-border">
-        <v-layout row wrap>
-          <v-flex xs12 sm6 align-self-center>
-            Private Key String
-          </v-flex>
-          <v-flex xs12 sm6>
-            <v-textarea single-line solo flat name="private-key" label="Private Key" v-model="privateKey"></v-textarea>
-          </v-flex>
-        </v-layout>
+        <v-form ref="privateKeyForm" v-model="privateKeyFormValid" lazy-validation>
+          <v-layout row wrap>
+            <v-flex xs12 sm6 align-self-center>
+              Input Private Key
+            </v-flex>
+            <v-flex xs12 sm6>
+              <v-text-field
+                single-line
+                solo
+                flat
+                :type="showPrivateKey ? 'text' : 'password'"
+                :rules="[rules.required]"
+                :append-icon="showPrivateKey ? 'visibility' : 'visibility_off'"
+                name="private-key"
+                label="Private Key"
+                @click:append="togglePrivShow"
+                v-model="privateKey"
+              ></v-text-field>
+            </v-flex>
+          </v-layout>
+        </v-form>
       </div>
 
       <div class="has-border text-xs-right" mt-1>
-        <v-btn class="btnStyle" @click="importViaPrivateKey">Import</v-btn>
+        <v-btn class="btnStyle" :disabled="!privateKeyFormValid" @click.prevent="importViaPrivateKey">Import</v-btn>
       </div>
     </template>
 
     <template v-if="selectedType === 'keystore'">
-      <div class="d-flex has-border">
-        <v-layout row>
-          <v-flex xs6 align-self-center>
-            Keystore
-          </v-flex>
-          <v-flex xs6>
-            <v-btn @click="$refs.keystoreUpload.click()" class="btnStyle"><v-icon left>cloud_upload</v-icon>Upload</v-btn>
-            <input v-show="false" ref="keystoreUpload" type="file" @change="processFile" />
-          </v-flex>
-        </v-layout>
-      </div>
+      <v-form ref="jsonFileForm" v-model="jsonFileFormValid" lazy-validation>
+        <div class="d-flex has-border">
+          <v-layout row>
+            <v-flex xs6 align-self-center>
+              Keystore
+            </v-flex>
+            <v-flex xs6>
+              <v-btn @click.prevent="$refs.keystoreUpload.click()" class="btnStyle"><v-icon left>cloud_upload</v-icon>Upload</v-btn>
+              <input v-show="false" ref="keystoreUpload" multiple="false" type="file" @change="processFile" />
+            </v-flex>
+          </v-layout>
+        </div>
+        <div class="text-xs-right" v-show="selectedFileName !== ''">Selected File: {{ selectedFileName }}</div>
+        <div class="d-flex has-border">
+          <v-layout row wrap>
+            <v-flex xs12 sm6 align-self-center>
+              Password
+            </v-flex>
+            <v-flex xs12 sm6>
+              <v-text-field
+                single-line
+                solo
+                flat
+                name="password"
+                :rules="[rules.required]"
+                :append-icon="showJsonPassword ? 'visibility' : 'visibility_off'"
+                :type="showJsonPassword ? 'text' : 'password'"
+                label="Enter a valid password"
+                v-model="jsonPassword"
+                @click:append="toggleJsonPasswordShow"
+              ></v-text-field>
+            </v-flex>
+          </v-layout>
+        </div>
 
-      <div class="d-flex has-border">
-        <v-layout row wrap>
-          <v-flex xs12 sm6 align-self-center>
-            Password
-          </v-flex>
-          <v-flex xs12 sm6>
-            <v-text-field single-line solo flat id="passwordField" name="password" type="password"></v-text-field>
-          </v-flex>
-        </v-layout>
-      </div>
-
-      <div class="has-border text-xs-right" mt-1>
-        <v-btn class="btnStyle" @click="importViaKeyStoreFile">Import</v-btn>
-      </div>
+        <div class="has-border text-xs-right" mt-1>
+          <v-btn class="btnStyle" :disabled="!jsonFileFormValid" @click.prevent="importViaKeyStoreFile">Import</v-btn>
+        </div>
+      </v-form>
     </template>
+    <v-snackbar v-model="snackbar" color="error">
+      {{ error }}
+      <v-btn dark flat @click="snackbar = false">
+        Close
+      </v-btn>
+    </v-snackbar>
   </v-flex>
 </template>
 
@@ -84,31 +116,67 @@ export default {
         }
       ],
       privateKey: '',
+      jsonPassword: '',
+      privateKeyFormValid: true,
+      jsonFileFormValid: true,
       keyStoreFileContents: '',
-      error: {}
+      error: '',
+      selectedFileName: '',
+      showPrivateKey: false,
+      showJsonPassword: false,
+      snackbar: false,
+      rules: {
+        required: value => !!value || 'Required.'
+      }
     }
   },
   methods: {
     importViaPrivateKey() {
-      this.$store
-        .dispatch('importAccount', { keyData: this.privateKey, strategy: 'Private Key' })
-        .then(() => {
-          this.$router.push({ name: 'walletDefault' })
-        })
-        .catch(err => {
-          this.error = err
-        })
+      if (this.$refs.privateKeyForm.validate()) {
+        this.$store
+          .dispatch('importAccount', { keyData: [this.privateKey], strategy: 'Private Key' })
+          .then(() => {
+            this.$router.push({ path: '/wallet/home' })
+          })
+          .catch(err => {
+            this.error = err
+            this.snackbar = true
+            console.log(err)
+          })
+      }
     },
     importViaKeyStoreFile() {
-      const password = document.getElementById('passwordField').value // use refs preferably
-      this.$store
-        .dispatch('importAccount', { keyData: [this.keyStoreFileContents, password], strategy: 'JSON File' })
-        .then(() => {
-          this.$router.push({ name: 'walletDefault' })
-        })
-        .catch(err => {
-          this.error = err
-        })
+      if (this.$refs.jsonFileForm.validate()) {
+        this.$store
+          .dispatch('importAccount', { keyData: [JSON.parse(this.keyStoreFileContents), this.jsonPassword], strategy: 'JSON File' })
+          .then(() => {
+            this.$router.push({ path: '/wallet/home' })
+          })
+          .catch(err => {
+            this.error = err
+            this.snackbar = true
+            console.log(err)
+          })
+      }
+    },
+    processFile(event) {
+      const file = event.target.files[0]
+      this.selectedFileName = file.name
+      const fileReader = new FileReader()
+      fileReader.onload = function(jsonContent) {
+        return function(e) {
+          this.keyStoreFileContents = e.target.result
+        }.bind(this)
+      }.bind(this)(this.$refs.keyStoreUpload)
+      fileReader.readAsText(file, 'utf-8')
+    },
+    togglePrivShow(event) {
+      event.preventDefault()
+      this.showPrivateKey = !this.showPrivateKey
+    },
+    toggleJsonPasswordShow(event) {
+      event.preventDefault()
+      this.showJsonPassword = !this.showJsonPassword
     }
   }
 }
