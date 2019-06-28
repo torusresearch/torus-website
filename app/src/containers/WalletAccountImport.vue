@@ -33,7 +33,7 @@
       </div>
 
       <div class="has-border text-xs-right" mt-1>
-        <v-btn class="btnStyle" @click="importViaKeyStoreFile">Import</v-btn>
+        <v-btn class="btnStyle" @click="importViaPrivateKey">Import</v-btn>
       </div>
     </template>
 
