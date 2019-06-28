@@ -19,6 +19,21 @@
         </show-tool-tip>
       </span>
     </div>
+
+    <div class="has-border py-0">
+      <v-btn block small flat class="grey lighten-2 mb-0" @click="showPrivateKey = !showPrivateKey">
+        {{ showPrivateKey ? 'Hide Private Key' : 'Show Private Key' }}
+        <v-icon v-if="showPrivateKey" :color="$vuetify.theme.torus_reject">expand_less</v-icon>
+        <v-icon v-else :color="$vuetify.theme.torus_reject">expand_more</v-icon>
+      </v-btn>
+
+      <div class="d-flex mt-0 mb-1 mx-0 py-1 grey lighten-3" v-if="showPrivateKey">
+        <span class="text-xs-center">
+          {{ this.selectedKey }}
+        </span>
+      </div>
+    </div>
+
     <a :href="walletJson" :class="[{ disable: !downloadable }]" :download="name">Download wallet</a>
   </v-flex>
 </template>
@@ -37,7 +52,8 @@ export default {
       keyStorePassword: '',
       walletJson: '',
       name: '',
-      downloadable: false
+      downloadable: false,
+      showPrivateKey: false
     }
   },
   computed: {
