@@ -9,7 +9,6 @@ const fromMyEtherWalletV2 = json => {
   return new Wallet(privKey)
 }
 const getWalletFromPrivKeyFile = (jsonfile, password) => {
-  console.log(jsonfile, password)
   if (jsonfile.encseed != null) return Wallet.fromEthSale(jsonfile, password)
   else if (jsonfile.Crypto != null || jsonfile.crypto != null) return Wallet.fromV3(jsonfile, password, true)
   else if (jsonfile.hash != null) return ThirdPartyWallets.fromEtherWallet(jsonfile, password)
