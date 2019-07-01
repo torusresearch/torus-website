@@ -154,10 +154,7 @@ export default {
             this.isLoadingPrivate = false
           })
           .catch(err => {
-            this.error = err
-            this.snackbar = true
-            console.log(err)
-            this.isLoadingPrivate = false
+            this.setErrorState(err)
           })
       }
     },
@@ -173,10 +170,7 @@ export default {
               this.isLoadingKeystore = false
             })
             .catch(err => {
-              this.error = err
-              this.snackbar = true
-              console.log(err)
-              this.isLoadingKeystore = false
+              this.setErrorState(err)
             })
         } else {
           const worker = new WalletWorker()
@@ -190,20 +184,21 @@ export default {
                 this.isLoadingKeystore = false
               })
               .catch(err => {
-                this.error = err
-                this.snackbar = true
-                console.log(err)
-                this.isLoadingKeystore = false
+                this.setErrorState(err)
               })
           }
           worker.onerror = err => {
-            this.error = err
-            this.snackbar = true
-            console.log(err)
-            this.isLoadingKeystore = false
+            this.setErrorState(err)
           }
         }
       }
+    },
+    setErrorState(err) {
+      this.error = err
+      this.snackbar = true
+      console.log(err)
+      this.isLoadingKeystore = false
+      this.isLoadingPrivate = false
     },
     processFile(event) {
       const file = event.target.files[0]
