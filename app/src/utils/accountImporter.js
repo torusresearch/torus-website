@@ -48,7 +48,7 @@ const accountImporter = {
 
 function walletToPrivateKey(wallet) {
   const privateKeyBuffer = wallet.getPrivateKey()
-  return ethUtil.bufferToHex(privateKeyBuffer)
+  return ethUtil.stripHexPrefix(ethUtil.bufferToHex(privateKeyBuffer))
 }
 
 module.exports = accountImporter

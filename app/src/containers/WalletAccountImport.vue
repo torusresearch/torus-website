@@ -109,7 +109,8 @@
 </template>
 
 <script>
-const WalletWorker = require('../utils/wallet.worker.js')
+// eslint-disable-next-line import/no-webpack-loader-syntax
+const WalletWorker = require('worker-loader!../utils/wallet.worker.js')
 const ethUtil = require('ethereumjs-util')
 export default {
   data() {
@@ -176,7 +177,7 @@ export default {
           const worker = new WalletWorker()
           worker.postMessage({ type: 'unlockWallet', data: [JSON.parse(this.keyStoreFileContents), this.jsonPassword] })
           worker.onmessage = e => {
-            const privKey = ethUtil.bufferToHex(Buffer.from(e.data._privKey))
+            const privKey = ethUtil.stripHexPrefix(ethUtil.bufferToHex(Buffer.from(e.data._privKey)))
             this.$store
               .dispatch('finishImportAccount', { privKey })
               .then(() => {

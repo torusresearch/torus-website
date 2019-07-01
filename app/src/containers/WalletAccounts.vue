@@ -83,7 +83,8 @@ import ShowToolTip from '../components/ShowToolTip.vue'
 import { addressSlicer } from '../utils/utils'
 const Wallet = require('ethereumjs-wallet')
 const ethUtil = require('ethereumjs-util')
-const WalletWorker = require('../utils/wallet.worker.js')
+// eslint-disable-next-line import/no-webpack-loader-syntax
+const WalletWorker = require('worker-loader!../utils/wallet.worker.js')
 
 export default {
   name: 'walletAccounts',
@@ -130,7 +131,6 @@ export default {
           const worker = new WalletWorker()
           worker.postMessage({ type: 'createWallet', data: [this.keyStorePassword, this.selectedKey] })
           worker.onmessage = e => {
-            console.log(e.data)
             const _wallet = e.data
             this.exportKeyStoreFile(_wallet)
             this.isLoadingDownloadWallet = false
