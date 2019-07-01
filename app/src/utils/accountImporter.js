@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-webpack-loader-syntax
 const Wallet = require('ethereumjs-wallet')
 const importers = require('ethereumjs-wallet/thirdparty')
 const ethUtil = require('ethereumjs-util')

@@ -79,7 +79,6 @@
         </v-form>
       </v-card>
     </v-dialog>
-    <!-- <a :href="walletJson" :class="[{ disable: !downloadable }]" :download="name">Download wallet</a> -->
   </v-flex>
 </template>
 
@@ -88,7 +87,6 @@ import ShowToolTip from '../components/ShowToolTip.vue'
 import { addressSlicer } from '../utils/utils'
 const Wallet = require('ethereumjs-wallet')
 const ethUtil = require('ethereumjs-util')
-// eslint-disable-next-line import/no-webpack-loader-syntax
 const WalletWorker = require('../utils/wallet.worker.js')
 
 export default {
