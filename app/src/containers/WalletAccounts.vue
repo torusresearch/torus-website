@@ -46,12 +46,23 @@
         </v-card-title>
         <v-divider light></v-divider>
         <v-card-text>
+          <v-alert :value="errorPassword" color="error" icon="warning" outline class="mb-2"> Your password is incorrect. </v-alert>
           <v-layout row wrap>
             <v-flex xs12 align-self-center>
               Enter your password
             </v-flex>
             <v-flex xs12>
-              <v-text-field single-line solo flat v-model="userPassword" name="password" type="password"></v-text-field>
+              <v-text-field
+                @keyup="errorPassword = false"
+                :rules="[rules.required]"
+                v-model="keyStorePassword"
+                :append-icon="showJsonPassword ? 'visibility' : 'visibility_off'"
+                :type="showJsonPassword ? 'text' : 'password'"
+                @click:append="toggleJsonPasswordShow"
+                single-line
+                solo
+                flat
+              ></v-text-field>
             </v-flex>
           </v-layout>
         </v-card-text>
@@ -59,7 +70,7 @@
         <v-card-actions class="px-3">
           <v-spacer></v-spacer>
           <v-btn class="btnStyle" @click="dialogJson = false">Close</v-btn>
-          <v-btn class="btnStyle" @click="confirmPassword">Confirm</v-btn>
+          <v-btn class="btnStyle" @click="exportKeyStoreFile">Confirm</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -84,7 +95,11 @@ export default {
       downloadable: false,
       showPrivateKey: false,
       dialogJson: false,
-      allowJsonDownload: false
+      showJsonPassword: false,
+      errorPassword: false,
+      rules: {
+        required: value => !!value || 'Required.'
+      }
     }
   },
   computed: {
@@ -105,9 +120,7 @@ export default {
     }
   },
   methods: {
-    confirmPassword() {
-      this.allowJsonDownload = true
-    },
+    downloadWallet() {},
     onAccountChange(newAddress) {
       this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
     },
@@ -136,6 +149,10 @@ export default {
         type: mime
       })
       return window.URL.createObjectURL(blob)
+    },
+    toggleJsonPasswordShow(event) {
+      event.preventDefault()
+      this.showJsonPassword = !this.showJsonPassword
     }
   },
   mounted() {
