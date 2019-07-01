@@ -36,42 +36,42 @@
 
     <div class="has-border text-xs-right" mt-1>
       <v-btn class="btnStyle" @click="dialogJson = true">Download JSON</v-btn>
-      <v-btn class="btnStyle" @click="downloadWallet">Download wallet</v-btn>
+      <v-btn class="btnStyle" @click="downloadPdf">Download wallet</v-btn>
     </div>
 
     <v-dialog v-model="dialogJson" max-width="400px">
       <v-card class="grey lighten-3">
-        <v-card-title>
-          <div class="title">Download JSON</div>
-        </v-card-title>
-        <v-divider light></v-divider>
-        <v-card-text>
-          <v-alert :value="errorPassword" color="error" icon="warning" outline class="mb-2"> Your password is incorrect. </v-alert>
-          <v-layout row wrap>
-            <v-flex xs12 align-self-center>
-              Enter your password
-            </v-flex>
-            <v-flex xs12>
-              <v-text-field
-                @keyup="errorPassword = false"
-                :rules="[rules.required]"
-                v-model="keyStorePassword"
-                :append-icon="showJsonPassword ? 'visibility' : 'visibility_off'"
-                :type="showJsonPassword ? 'text' : 'password'"
-                @click:append="toggleJsonPasswordShow"
-                single-line
-                solo
-                flat
-              ></v-text-field>
-            </v-flex>
-          </v-layout>
-        </v-card-text>
-        <v-divider light></v-divider>
-        <v-card-actions class="px-3">
-          <v-spacer></v-spacer>
-          <v-btn class="btnStyle" @click="dialogJson = false">Close</v-btn>
-          <v-btn class="btnStyle" @click="exportKeyStoreFile">Confirm</v-btn>
-        </v-card-actions>
+        <v-form ref="form" v-model="formValid" lazy-validation>
+          <v-card-title>
+            <div class="title">Download JSON</div>
+          </v-card-title>
+          <v-divider light></v-divider>
+          <v-card-text>
+            <v-layout row wrap>
+              <v-flex xs12 align-self-center>
+                Enter your password
+              </v-flex>
+              <v-flex xs12>
+                <v-text-field
+                  :rules="[rules.required]"
+                  v-model="keyStorePassword"
+                  :append-icon="showJsonPassword ? 'visibility' : 'visibility_off'"
+                  :type="showJsonPassword ? 'text' : 'password'"
+                  @click:append="toggleJsonPasswordShow"
+                  single-line
+                  solo
+                  flat
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-card-text>
+          <v-divider light></v-divider>
+          <v-card-actions class="px-3">
+            <v-spacer></v-spacer>
+            <v-btn class="btnStyle" @click="dialogJson = false">Close</v-btn>
+            <v-btn class="btnStyle" :disabled="!formValid" @click.prevent="downloadWallet">Confirm</v-btn>
+          </v-card-actions>
+        </v-form>
       </v-card>
     </v-dialog>
     <!-- <a :href="walletJson" :class="[{ disable: !downloadable }]" :download="name">Download wallet</a> -->
@@ -83,6 +83,8 @@ import ShowToolTip from '../components/ShowToolTip.vue'
 import { addressSlicer } from '../utils/utils'
 const Wallet = require('ethereumjs-wallet')
 const ethUtil = require('ethereumjs-util')
+// eslint-disable-next-line import/no-webpack-loader-syntax
+const WalletWorker = require('worker-loader!../utils/wallet.worker.js')
 
 export default {
   name: 'walletAccounts',
@@ -96,7 +98,7 @@ export default {
       showPrivateKey: false,
       dialogJson: false,
       showJsonPassword: false,
-      errorPassword: false,
+      formValid: true,
       rules: {
         required: value => !!value || 'Required.'
       }
@@ -120,12 +122,26 @@ export default {
     }
   },
   methods: {
-    downloadWallet() {},
+    downloadWallet() {
+      if (this.$refs.form.validate()) {
+        if (!window.Worker) {
+          const _wallet = this.createWallet(this.keyStorePassword)
+          this.exportKeyStoreFile(_wallet)
+        } else {
+          const worker = new WalletWorker()
+          worker.postMessage({ type: 'createWallet', data: [this.keyStorePassword, this.selectedKey] })
+          worker.onmessage = e => {
+            console.log(e.data)
+            const _wallet = e.data
+            this.exportKeyStoreFile(_wallet)
+          }
+        }
+      }
+    },
     onAccountChange(newAddress) {
       this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
     },
-    exportKeyStoreFile() {
-      const _wallet = this.createWallet(this.keyStorePassword)
+    exportKeyStoreFile(_wallet) {
       this.walletJson = this.createBlob('mime', _wallet.walletJson)
       this.name = _wallet.name.toString()
     },
@@ -153,10 +169,8 @@ export default {
     toggleJsonPasswordShow(event) {
       event.preventDefault()
       this.showJsonPassword = !this.showJsonPassword
-    }
-  },
-  mounted() {
-    // this.exportKeyStoreFile()
+    },
+    downloadPdf() {}
   }
 }
 </script>
