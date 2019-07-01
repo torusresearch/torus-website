@@ -22,7 +22,7 @@
 
     <template v-if="selectedType === 'private'">
       <div class="d-flex has-border">
-        <v-form ref="privateKeyForm" v-model="privateKeyFormValid" lazy-validation>
+        <v-form ref="privateKeyForm" @submit.prevent="" v-model="privateKeyFormValid" lazy-validation>
           <v-layout row wrap>
             <v-flex xs12 sm6 align-self-center>
               Input Private Key
@@ -53,7 +53,7 @@
     </template>
 
     <template v-if="selectedType === 'keystore'">
-      <v-form ref="jsonFileForm" v-model="jsonFileFormValid" lazy-validation>
+      <v-form ref="jsonFileForm" v-model="jsonFileFormValid" @submit.prevent="" lazy-validation>
         <div class="d-flex has-border">
           <v-layout row>
             <v-flex xs6 align-self-center>

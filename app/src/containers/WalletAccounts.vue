@@ -32,7 +32,7 @@
 
     <v-dialog v-model="dialogJson" max-width="400px">
       <v-card class="grey lighten-3">
-        <v-form ref="form" v-model="formValid" lazy-validation>
+        <v-form ref="form" @submit.prevent="" v-model="formValid" lazy-validation>
           <v-card-title>
             <div class="title">Download JSON</div>
           </v-card-title>
