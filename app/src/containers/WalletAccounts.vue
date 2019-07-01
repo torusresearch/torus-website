@@ -11,14 +11,6 @@
         </show-tool-tip>
       </span>
     </div>
-    <div class="d-flex has-border">
-      <span class="body-2">Private Key</span>
-      <span class="text-xs-right">
-        <show-tool-tip :address="selectedKey">
-          {{ slicedKey }}
-        </show-tool-tip>
-      </span>
-    </div>
 
     <div class="has-border py-0">
       <v-btn block small flat class="grey lighten-2 mb-0 font-weight-regular" @click="showPrivateKey = !showPrivateKey">
@@ -113,9 +105,6 @@ export default {
     },
     slicedAddress() {
       return addressSlicer(this.selectedAddress)
-    },
-    slicedKey() {
-      return addressSlicer(this.selectedKey)
     },
     accounts() {
       return Object.keys(this.$store.state.wallet)
