@@ -101,6 +101,9 @@
 </template>
 
 <script>
+// eslint-disable-next-line import/no-webpack-loader-syntax
+const WalletWorker = require('worker-loader!../utils/wallet.worker.js')
+const ethUtil = require('ethereumjs-util')
 export default {
   data() {
     return {
@@ -147,16 +150,39 @@ export default {
     },
     importViaKeyStoreFile() {
       if (this.$refs.jsonFileForm.validate()) {
-        this.$store
-          .dispatch('importAccount', { keyData: [JSON.parse(this.keyStoreFileContents), this.jsonPassword], strategy: 'JSON File' })
-          .then(() => {
-            this.$router.push({ path: '/wallet/home' })
-          })
-          .catch(err => {
+        if (!window.Worker) {
+          this.$store
+            .dispatch('importAccount', { keyData: [JSON.parse(this.keyStoreFileContents), this.jsonPassword], strategy: 'JSON File' })
+            .then(() => {
+              this.$router.push({ path: '/wallet/home' })
+            })
+            .catch(err => {
+              this.error = err
+              this.snackbar = true
+              console.log(err)
+            })
+        } else {
+          const worker = new WalletWorker()
+          worker.postMessage({ type: 'unlockWallet', data: [JSON.parse(this.keyStoreFileContents), this.jsonPassword] })
+          worker.onmessage = e => {
+            const privKey = ethUtil.bufferToHex(Buffer.from(e.data._privKey))
+            this.$store
+              .dispatch('finishImportAccount', { privKey })
+              .then(() => {
+                this.$router.push({ path: '/wallet/home' })
+              })
+              .catch(err => {
+                this.error = err
+                this.snackbar = true
+                console.log(err)
+              })
+          }
+          worker.onerror = err => {
             this.error = err
             this.snackbar = true
             console.log(err)
-          })
+          }
+        }
       }
     },
     processFile(event) {

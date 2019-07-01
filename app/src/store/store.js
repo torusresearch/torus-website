@@ -286,18 +286,26 @@ var VuexStore = new Vuex.Store({
         accountImporter
           .importAccount(payload.strategy, payload.keyData)
           .then(privKey => {
-            const address = torus.generateAddressFromPrivKey(privKey)
-            torus.torusController.setSelectedAccount(address)
-            dispatch('addWallet', { ethAddress: address, privKey: privKey })
-            dispatch('updateSelectedAddress', { selectedAddress: address })
-            torus.torusController
-              .addAccount(privKey, address)
-              .then(response => resolve())
+            dispatch('finishImportAccount', { privKey })
+              .then(() => resolve())
               .catch(err => reject(err))
           })
           .catch(err => {
             reject(err)
           })
+      })
+    },
+    finishImportAccount({ dispatch }, payload) {
+      return new Promise((resolve, reject) => {
+        const { privKey } = payload
+        const address = torus.generateAddressFromPrivKey(privKey)
+        torus.torusController.setSelectedAccount(address)
+        dispatch('addWallet', { ethAddress: address, privKey: privKey })
+        dispatch('updateSelectedAddress', { selectedAddress: address })
+        torus.torusController
+          .addAccount(privKey, address)
+          .then(response => resolve())
+          .catch(err => reject(err))
       })
     },
     updateTransactions({ commit }, payload) {
