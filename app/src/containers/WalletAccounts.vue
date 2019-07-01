@@ -28,7 +28,6 @@
 
     <div class="has-border text-xs-right" mt-1>
       <v-btn class="btnStyle" @click="dialogJson = true">Download JSON</v-btn>
-      <v-btn class="btnStyle" @click="downloadPdf">Download wallet</v-btn>
     </div>
 
     <v-dialog v-model="dialogJson" max-width="400px">
@@ -158,8 +157,7 @@ export default {
     toggleJsonPasswordShow(event) {
       event.preventDefault()
       this.showJsonPassword = !this.showJsonPassword
-    },
-    downloadPdf() {}
+    }
   }
 }
 </script>
