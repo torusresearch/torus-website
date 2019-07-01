@@ -1,5 +1,4 @@
 // eslint-disable-next-line import/no-webpack-loader-syntax
-const WalletWorker = require('worker-loader!./wallet.worker.js')
 const Wallet = require('ethereumjs-wallet')
 const importers = require('ethereumjs-wallet/thirdparty')
 const ethUtil = require('ethereumjs-util')
@@ -32,27 +31,18 @@ const accountImporter = {
       return stripped
     },
     'JSON File': (input, password) => {
-      if (window.Worker) {
-        console.log('working on worker')
-        const worker = new WalletWorker()
-        worker.postMessage({ type: 'unlockWallet', data: [input, password] })
-        worker.onmessage = e => {
-          return walletToPrivateKey(e.data)
-        }
-      } else {
-        let wallet
-        try {
-          wallet = importers.fromEtherWallet(input, password)
-        } catch (e) {
-          console.log('Attempt to import as EtherWallet format failed, trying V3...')
-        }
-
-        if (!wallet) {
-          wallet = Wallet.fromV3(input, password, true)
-        }
-
-        return walletToPrivateKey(wallet)
+      let wallet
+      try {
+        wallet = importers.fromEtherWallet(input, password)
+      } catch (e) {
+        console.log('Attempt to import as EtherWallet format failed, trying V3...')
       }
+
+      if (!wallet) {
+        wallet = Wallet.fromV3(input, password, true)
+      }
+
+      return walletToPrivateKey(wallet)
     }
   }
 }
