@@ -2,7 +2,7 @@ const assert = require('assert')
 const ethUtil = require('ethereumjs-util')
 const sigUtil = require('eth-sig-util')
 const EthereumTx = require('ethereumjs-tx')
-const TorusKeyring = require('../../../src/utils/TorusKeyring').default
+const TorusKeyring = require('../../../src/controllers/TorusKeyring').default
 
 const TYPE_STR = 'Torus Keyring'
 
