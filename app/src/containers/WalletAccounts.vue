@@ -55,13 +55,6 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
-            <v-layout v-if="walletJson">
-              <v-flex xs12 class="text-xs-center">
-                <a :href="walletJson" :download="name" class="download-wallet">
-                  <v-btn class="btnStyle">Download wallet</v-btn>
-                </a>
-              </v-flex>
-            </v-layout>
           </v-card-text>
           <v-divider light></v-divider>
           <v-card-actions class="px-3">
@@ -75,6 +68,9 @@
               @click.prevent="downloadWallet"
               >Confirm</v-btn
             >
+            <a v-if="walletJson" :href="walletJson" :download="name" class="download-wallet">
+              <v-btn class="btnStyle">Download wallet</v-btn>
+            </a>
           </v-card-actions>
         </v-form>
       </v-card>
