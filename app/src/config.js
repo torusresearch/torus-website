@@ -7,5 +7,6 @@ export default {
     'https://etcmain.torusnode.com/jrpc'
   ],
   torusIndexes: [4, 5, 1, 3, 2],
-  supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH']
+  supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH'],
+  simplexHost: 'https://simplex-api.tor.us'
 }

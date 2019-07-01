@@ -21,6 +21,16 @@ const TEST_SEED_ALT = 'setup olympic issue mobile velvet surge alcohol burger ho
 const TEST_ADDRESS_ALT = '0xc42edfcc21ed14dda456aa0756c153f7985d8813'
 const CUSTOM_RPC_URL = 'http://localhost:8545'
 
+const testAccount = {
+  key: '08506248462eadf53f05b6c3577627071757644b3a0547315788357ec93e7b77',
+  address: '0xa12164fed66719297d2cf407bb314d07feb12c02'
+}
+
+const testAccount2 = {
+  key: '357a5188cb0f748f62f59b6eac31b9d386b9f7f2c87f567f0dae5eed8b8a9d9c',
+  address: '0x43ce12056aa1e8372ab4abf0c0cc658d2d41077f'
+}
+
 describe('MetaMaskController', function() {
   let metamaskController
   const sandbox = sinon.createSandbox()
@@ -386,22 +396,20 @@ describe('MetaMaskController', function() {
   //   })
   // })
 
-  // describe('#addNewAccount', function() {
-  //   let addNewAccount
+  describe('#addNewAccount', function() {
+    let addNewAccount
 
-  //   beforeEach(function() {
-  //     addNewAccount = metamaskController.addNewAccount()
-  //   })
+    beforeEach(function() {
+      addNewAccount = metamaskController.addAccount(testAccount.key, testAccount.address)
+    })
 
-  //   it('errors when an primary keyring is does not exist', async function() {
-  //     try {
-  //       await addNewAccount
-  //       assert.strictEqual(1 === 0)
-  //     } catch (e) {
-  //       assert.strictEqual(e.message, 'MetamaskController - No HD Key Tree found')
-  //     }
-  //   })
-  // })
+    it('errors when an primary keyring is does not exist', async function() {
+      await addNewAccount
+      const state = metamaskController.accountTracker.store.getState()
+      assert.deepStrictEqual(await metamaskController.keyringController.getAccounts(), [testAccount.address])
+      assert.deepStrictEqual(await Object.keys(state.accounts), [testAccount.address])
+    })
+  })
 
   // describe('#verifyseedPhrase', function() {
   //   let seedPhrase, getConfigSeed
@@ -754,20 +762,23 @@ describe('MetaMaskController', function() {
       // const getSelectedAddress = sinon.fake.returns('0x42')
       // const setSelectedAddress = sinon.fake()
       const syncWithAddresses = sinon.fake()
-      // sandbox.replace(metamaskController, 'preferencesController', {
-      //   addAddresses,
-      //   getSelectedAddress,
-      //   setSelectedAddress
-      // })
+      const addAccounts = sinon.fake()
+      const deserialize = sinon.fake()
+      const addAccount = sinon.fake()
+      sandbox.replace(metamaskController, 'keyringController', {
+        deserialize,
+        addAccount
+      })
       sandbox.replace(metamaskController, 'accountTracker', {
-        syncWithAddresses
+        syncWithAddresses,
+        addAccounts
       })
 
       const oldState = metamaskController.getState()
-      await metamaskController.initTorusKeyring([], [TEST_ADDRESS, TEST_ADDRESS_2])
+      await metamaskController.initTorusKeyring([testAccount.key], [testAccount.address])
 
       // assert.deepStrictEqual(addAddresses.args, [[['0x1', '0x2']]])
-      assert.deepStrictEqual(syncWithAddresses.args, [[[TEST_ADDRESS, TEST_ADDRESS_2]]])
+      assert.deepStrictEqual(syncWithAddresses.args, [[[testAccount.address]]])
       // assert.deepStrictEqual(setSelectedAddress.args, [['0x1']])
       assert.deepStrictEqual(metamaskController.getState(), oldState)
     })

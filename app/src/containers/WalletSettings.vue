@@ -27,7 +27,7 @@
     <v-flex xs12 sm8>
       <template v-if="isRPCSelected">
         <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height">
-          <v-form ref="form" v-model="formValid" lazy-validation>
+          <v-form ref="form" v-model="formValid" lazy-validation @submit.prevent="">
             <v-container fill-height style="padding: 0px;">
               <v-layout row align-center justify-center align-content-start>
                 <v-flex xs12 sm6 align-self-center>
@@ -100,7 +100,7 @@
             <div class="body-2">Frequently Asked Questions</div>
           </template>
           <v-card flat :color="$vuetify.theme.torus_bcg">
-            <v-card-text>
+            <v-card-text class="pt-0">
               Learn how to
               <a href="https://docs.tor.us" target="_blank" rel="noreferrer noopener">
                 <span class="font-italic" style="text-decoration: underline;">Get Started</span>
@@ -223,6 +223,11 @@ export default {
 
 /deep/.v-expansion-panel__container {
   background-color: var(--v-torus_bcg-base) !important;
+}
+
+/deep/.v-expansion-panel__header {
+  padding-left: 0;
+  padding-right: 10px;
 }
 
 %rounded {

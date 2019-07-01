@@ -8,6 +8,8 @@ import { hexToText, significantDigits, formatCurrencyNumber } from '../utils/uti
 import { MAINNET, RPC } from '../utils/enums'
 import BroadcastChannel from 'broadcast-channel'
 
+const accountImporter = require('../utils/accountImporter')
+
 const baseRoute = process.env.BASE_URL
 
 Vue.use(Vuex)
@@ -36,14 +38,14 @@ var walletWindow
 const initialState = {
   email: '',
   idToken: '',
-  wallet: {},
-  weiBalance: 0,
+  wallet: {}, // Account specific object
+  weiBalance: {}, // Account specific object
   selectedAddress: '',
   selectedCurrency: 'USD',
   networkId: 0,
   networkType: localStorage.getItem('torus_network_type') || MAINNET,
   currencyData: {},
-  tokenData: {},
+  tokenData: {}, // Account specific object
   tokenRates: {},
   transactions: [],
   loginInProgress: false,
@@ -66,17 +68,19 @@ var VuexStore = new Vuex.Store({
       return transactions
     },
     tokenBalances: state => {
-      let { weiBalance, tokenData, tokenRates, currencyData, selectedCurrency, networkType } = state || {}
+      let { weiBalance, tokenData, tokenRates, currencyData, selectedCurrency, networkType, selectedAddress } = state || {}
       if (networkType !== MAINNET) {
         tokenData = {}
         tokenRates = {}
       }
       let currencyMultiplier = 1
       if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
-      let full = [{ balance: weiBalance, decimals: 18, erc20: false, logo: 'eth.svg', name: 'Ethereum', symbol: 'ETH', tokenAddress: '0x' }]
+      let full = [
+        { balance: weiBalance[selectedAddress], decimals: 18, erc20: false, logo: 'eth.svg', name: 'Ethereum', symbol: 'ETH', tokenAddress: '0x' }
+      ]
       // because vue/babel is stupid
-      if (Object.keys(tokenData).length > 0) {
-        full = [...full, ...tokenData]
+      if (tokenData && tokenData[selectedAddress] && Object.keys(tokenData[selectedAddress]).length > 0) {
+        full = [...full, ...tokenData[selectedAddress]]
       }
       let totalPortfolioValue = 0
       const finalBalancesArray = full.map(x => {
@@ -195,7 +199,7 @@ var VuexStore = new Vuex.Store({
         `directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=${height},width=${width}`
       )
       if (isTx) {
-        var balance = torus.web3.utils.fromWei(this.state.weiBalance.toString())
+        var balance = torus.web3.utils.fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
         let counter = 0
         let interval
         bc.onmessage = ev => {
@@ -265,21 +269,50 @@ var VuexStore = new Vuex.Store({
         var stateWallet = { ...context.state.wallet }
         delete stateWallet[payload.ethAddress]
         context.commit('setWallet', { ...stateWallet })
-        if (context.state.balance[payload.ethAddress]) {
-          var stateBalance = { ...context.state.balance }
+        if (context.state.weiBalance[payload.ethAddress]) {
+          var stateBalance = { ...context.state.weiBalance }
           delete stateBalance[payload.ethAddress]
           context.commit('setBalance', { ...stateBalance })
         }
       }
     },
     updateWeiBalance({ commit, state }, payload) {
-      if (payload.address === state.selectedAddress) commit('setWeiBalance', payload.balance)
+      if (payload.address) {
+        commit('setWeiBalance', { ...state.weiBalance, [payload.address]: payload.balance })
+      }
+    },
+    importAccount({ dispatch }, payload) {
+      return new Promise((resolve, reject) => {
+        accountImporter
+          .importAccount(payload.strategy, payload.keyData)
+          .then(privKey => {
+            dispatch('finishImportAccount', { privKey })
+              .then(() => resolve())
+              .catch(err => reject(err))
+          })
+          .catch(err => {
+            reject(err)
+          })
+      })
+    },
+    finishImportAccount({ dispatch }, payload) {
+      return new Promise((resolve, reject) => {
+        const { privKey } = payload
+        const address = torus.generateAddressFromPrivKey(privKey)
+        torus.torusController.setSelectedAccount(address)
+        dispatch('addWallet', { ethAddress: address, privKey: privKey })
+        dispatch('updateSelectedAddress', { selectedAddress: address })
+        torus.torusController
+          .addAccount(privKey, address)
+          .then(response => resolve())
+          .catch(err => reject(err))
+      })
     },
     updateTransactions({ commit }, payload) {
       commit('setTransactions', payload.transactions)
     },
-    updateTokenData({ commit }, payload) {
-      commit('setTokenData', payload.tokenData)
+    updateTokenData({ commit, state }, payload) {
+      if (payload.tokenData) commit('setTokenData', { ...state.tokenData, [payload.address]: payload.tokenData })
     },
     updateTokenRates({ commit }, payload) {
       commit('setTokenRates', payload.tokenRates)
@@ -287,6 +320,7 @@ var VuexStore = new Vuex.Store({
     updateSelectedAddress(context, payload) {
       context.commit('setSelectedAddress', payload.selectedAddress)
       torus.updateStaticData({ selectedAddress: payload.selectedAddress })
+      torus.torusController.setSelectedAccount(payload.selectedAddress)
     },
     updateNetworkId(context, payload) {
       context.commit('setNetworkId', payload.networkId)
@@ -352,9 +386,9 @@ function handleLogin(email, payload) {
         torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
           if (accounts) {
             for (const key in accounts) {
-              if (accounts.hasOwnProperty(key)) {
+              if (Object.prototype.hasOwnProperty.call(accounts, key)) {
                 const account = accounts[key]
-                if (VuexStore.state.weiBalance !== account.balance)
+                if (VuexStore.state.weiBalance[data.ethAddress] !== account.balance)
                   VuexStore.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
               }
             }
@@ -363,7 +397,14 @@ function handleLogin(email, payload) {
 
         torus.torusController.txController.store.subscribe(function({ transactions }) {
           if (transactions) {
-            VuexStore.dispatch('updateTransactions', { transactions })
+            // these transactions have negative index
+            const updatedTransactions = []
+            for (let id in transactions) {
+              if (transactions[id]) {
+                updatedTransactions.push(transactions[id])
+              }
+            }
+            VuexStore.dispatch('updateTransactions', { transactions: updatedTransactions })
           }
         })
 
@@ -371,7 +412,7 @@ function handleLogin(email, payload) {
 
         torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
           if (tokens.length > 0) {
-            VuexStore.dispatch('updateTokenData', { tokenData: tokens })
+            VuexStore.dispatch('updateTokenData', { tokenData: tokens, address: torus.torusController.detectTokensController.selectedAddress })
           }
         })
 

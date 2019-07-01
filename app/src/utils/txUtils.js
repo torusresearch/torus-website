@@ -7,8 +7,8 @@ export { normalizeTxParams, validateTxParams, validateFrom, validateRecipient, g
 
 // functions that handle normalizing of that key in txParams
 const normalizers = {
-  from: from => addHexPrefix(from).toLowerCase(),
-  to: to => addHexPrefix(to).toLowerCase(),
+  from: (from, LowerCase = true) => (LowerCase ? addHexPrefix(from).toLowerCase() : addHexPrefix(from)),
+  to: (to, LowerCase = true) => (LowerCase ? addHexPrefix(to).toLowerCase() : addHexPrefix(to)),
   nonce: nonce => addHexPrefix(nonce),
   value: value => addHexPrefix(value),
   data: data => addHexPrefix(data),
@@ -21,11 +21,11 @@ const normalizers = {
  * @param txParams {object}
  * @returns {object} normalized txParams
  */
-function normalizeTxParams(txParams) {
+function normalizeTxParams(txParams, LowerCase) {
   // apply only keys in the normalizers
   const normalizedTxParams = {}
   for (const key in normalizers) {
-    if (txParams[key]) normalizedTxParams[key] = normalizers[key](txParams[key])
+    if (txParams[key]) normalizedTxParams[key] = normalizers[key](txParams[key], LowerCase)
   }
   return normalizedTxParams
 }

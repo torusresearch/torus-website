@@ -49,6 +49,7 @@ pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
 })
 var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
 bc.onmessage = function(ev) {
+  // TODO: MUST MODIFY AND SIMPLIFY THIS
   if (ev.data.type === 'confirm-transaction') {
     let { torusController } = torus
     let state = torusController.getState()

@@ -38,7 +38,7 @@ class NonceTracker {
    */
 
   /**
-  this will return an object with the `nextNonce` `nonceDetails` of type NonceDetails, and the releaseLock
+  this will return an object with the `nextNonce` `nonceDetails`, and the releaseLock
   Note: releaseLock must be called after adding a signed tx to pending transactions (or discarding).
 
   @param address {string} the hex string for the address whose nonce we are calculating

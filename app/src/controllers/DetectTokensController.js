@@ -27,23 +27,24 @@ class DetectTokensController {
    *
    * @param {Object} [config] - Options to configure controller
    */
-  constructor({ interval = DEFAULT_INTERVAL, network } = {}) {
+  constructor({ interval = DEFAULT_INTERVAL, network, provider } = {}) {
     this.interval = interval
     this.network = network
     this.detectedTokensStore = new ObservableStore({ tokens: [] })
+    this._provider = provider
+    this.web3 = new Web3(this._provider)
   }
 
   /**
-   * For each token in eth-contract-metada, find check selectedAddress balance.
+   * For each token in eth-contract-metadata, find check selectedAddress balance.
    *
    */
   async detectNewTokens() {
-    if (this._network.store.getState().provider.type !== MAINNET) {
+    if (this.network.store.getState().provider.type !== MAINNET) {
       return
     }
     const tokenAddresses = this.detectedTokensStore.getState().tokens.map(x => x.tokenAddress.toLowerCase())
     const tokensToDetect = []
-    this.web3.setProvider(this._network._provider)
     for (const contractAddress in contracts) {
       if (contracts[contractAddress].erc20 && !tokenAddresses.includes(contractAddress.toLowerCase())) {
         tokensToDetect.push(contractAddress)
@@ -140,18 +141,6 @@ class DetectTokensController {
       this.detectNewTokens()
       this.refreshTokenBalances()
     }, interval)
-  }
-
-  /**
-   * @type {Object}
-   */
-  set network(network) {
-    if (!network) {
-      return
-    }
-    network._provider.setMaxListeners(20)
-    this._network = network
-    this.web3 = new Web3(network._provider)
   }
 
   /**

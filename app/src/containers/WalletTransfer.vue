@@ -10,8 +10,8 @@
     </v-flex>
     <v-flex xs12 sm9 class="fill-height">
       <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
-        <v-form ref="form" v-model="formValid" lazy-validation class="fill-height">
-          <v-container fill-height>
+        <v-form ref="form" v-model="formValid" lazy-validation class="fill-height" @submit.prevent="">
+          <v-container fill-height pl-0 pr-0>
             <v-layout row wrap align-center justify-center align-content-start>
               <v-flex xs12 sm6>
                 <span class="body-2">Selected Coin </span>
@@ -31,15 +31,15 @@
                     </v-layout>
                   </template>
                   <template v-slot:selection="props">
-                    <v-layout row wrap align-bottom justify-center>
-                      <v-flex xs2>
+                    <v-layout row align-center>
+                      <v-flex xs2 mr-2>
                         <img
                           :src="require(`../../public/images/logos/${props.item.logo}`)"
                           class="inline-small"
                           onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
                         />
                       </v-flex>
-                      <v-flex xs10 align-self-end> {{ props.item.name }} </v-flex>
+                      <v-flex xs10>{{ props.item.name }}</v-flex>
                     </v-layout>
                   </template>
                 </v-select>
@@ -80,6 +80,7 @@
                   required
                   v-model="displayAmount"
                   :rules="[rules.required, lesserThan]"
+                  class="remove-padding-right"
                 >
                   <template v-slot:append>
                     <v-btn-toggle v-model="toggle_exclusive" @change="changeSelectedToCurrency" mandatory>
@@ -186,7 +187,7 @@ export default {
       return this.$store.state.selectedCurrency
     },
     currentEthBalance() {
-      return this.$store.state.weiBalance
+      return this.$store.state.weiBalance[this.$store.state.selectedAddress]
     },
     finalBalancesArray() {
       return this.$store.getters.tokenBalances.finalBalancesArray || []
@@ -430,6 +431,20 @@ export default {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.16) !important;
   margin-top: 20px !important;
   margin-bottom: 0px !important;
+}
+
+/deep/.v-text-field.remove-padding-right .v-input__control > .v-input__slot {
+  padding-right: 0;
+
+  .v-btn-toggle {
+    border-radius: 0 17px 17px 0;
+    .v-btn:first-child {
+      border-radius: 17px 0 0 17px;
+    }
+    .v-btn:last-child {
+      border-radius: 0 17px 17px 0;
+    }
+  }
 }
 
 /deep/.v-text-field.v-text-field--solo .v-input__control {

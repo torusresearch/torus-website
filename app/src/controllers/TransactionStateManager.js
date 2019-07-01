@@ -1,11 +1,10 @@
 const extend = require('xtend')
 const EventEmitter = require('safe-event-emitter')
 const ObservableStore = require('obs-store')
-const ethUtil = require('ethereumjs-util')
 const log = require('loglevel')
 const txStateHistoryHelper = require('../utils/tx-state-history-helper').default
 const createId = require('../utils/random-id').default
-const { getFinalStates } = require('../utils/txUtils')
+const { getFinalStates, normalizeTxParams } = require('../utils/txUtils')
 /**
   TransactionStateManager is responsible for the state of a transaction and
   storing the transaction
@@ -133,10 +132,13 @@ class TransactionStateManager extends EventEmitter {
     @returns {object} the txMeta
   */
   addTx(txMeta) {
-    this.once(`${txMeta.id}:signed`, function(txId) {
+    if (txMeta.txParams) {
+      this.normalizeAndValidateTxParams(txMeta.txParams)
+    }
+    this.once(`${txMeta.id}:signed`, function() {
       this.removeAllListeners(`${txMeta.id}:rejected`)
     })
-    this.once(`${txMeta.id}:rejected`, function(txId) {
+    this.once(`${txMeta.id}:rejected`, function() {
       this.removeAllListeners(`${txMeta.id}:signed`)
     })
     // initialize history
@@ -184,10 +186,7 @@ class TransactionStateManager extends EventEmitter {
   updateTx(txMeta, note) {
     // validate txParams
     if (txMeta.txParams) {
-      if (typeof txMeta.txParams.data === 'undefined') {
-        delete txMeta.txParams.data
-      }
-      this.validateTxParams(txMeta.txParams)
+      this.normalizeAndValidateTxParams(txMeta.txParams)
     }
 
     // create txMeta snapshot for history
@@ -204,6 +203,14 @@ class TransactionStateManager extends EventEmitter {
     const index = txList.findIndex(txData => txData.id === txId)
     txList[index] = txMeta
     this._saveTxList(txList)
+  }
+
+  normalizeAndValidateTxParams(txParams) {
+    if (typeof txParams.data === 'undefined') {
+      delete txParams.data
+    }
+    const modifiedTxParams = normalizeTxParams(txParams, false)
+    this.validateTxParams(modifiedTxParams)
   }
 
   /**
@@ -233,7 +240,6 @@ class TransactionStateManager extends EventEmitter {
           break
         default:
           if (typeof value !== 'string') throw new Error(`${key} in txParams is not a string. got: (${value})`)
-          if (!ethUtil.isHexPrefixed(value)) throw new Error(`${key} in txParams is not hex prefixed. got: (${value})`)
           break
       }
     })
@@ -396,6 +402,9 @@ class TransactionStateManager extends EventEmitter {
     // Update state
     this._saveTxList(otherAccountTxs)
   }
+  //
+  //           PRIVATE METHODS
+  //
 
   // STATUS METHODS
   // statuses:
@@ -425,7 +434,6 @@ class TransactionStateManager extends EventEmitter {
     txMeta.status = status
     setTimeout(() => {
       try {
-        log.info('UPDATING TX', txMeta)
         this.updateTx(txMeta, `txStateManager: setting status to ${status}`)
         this.emit(`${txMeta.id}:${status}`, txId)
         this.emit('tx:status-update', txId, status)

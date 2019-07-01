@@ -33,7 +33,7 @@
                   Approve
                 </v-btn>
               </v-flex>
-              <v-flex sm4 class="text-xs-center">
+              <v-flex sm4 class="text-xs-center" pt-1>
                 <img src="images/torus_logo.png" class="bcg-logo" />
               </v-flex>
             </v-layout>
@@ -153,6 +153,12 @@
                   :primary-color="color"
                   :size="150"
                   :value-display-function="showGasPrice"
+                  :animation="{
+                    animated: true,
+                    animateValue: true,
+                    animationDuration: '5000',
+                    animationFunction: 'linear'
+                  }"
                 ></v-knob-control>
               </v-flex>
               <v-flex xs12 sm1>
@@ -204,7 +210,7 @@
                 Approve
               </v-btn>
             </v-flex>
-            <v-flex sm4 class="text-xs-center">
+            <v-flex sm4 class="text-xs-center" pt-1>
               <img src="images/torus_logo.png" class="bcg-logo" />
             </v-flex>
           </v-layout>

@@ -15,18 +15,24 @@ export default class TorusKeyring extends EventEmitter {
   }
 
   serialize() {
-    return Promise.resolve(this.wallets.map(w => w.getPrivateKey().toString('hex')))
+    return Promise.resolve(this.wallets.map(this.generatePrivKey))
+  }
+
+  generatePrivKey(wallet) {
+    return wallet.getPrivateKey().toString('hex')
+  }
+
+  generateWallet(privateKey) {
+    const stripped = ethUtil.stripHexPrefix(privateKey)
+    const buffer = Buffer.from(stripped, 'hex')
+    const wallet = Wallet.fromPrivateKey(buffer)
+    return wallet
   }
 
   deserialize(privateKeys = []) {
     return new Promise((resolve, reject) => {
       try {
-        this.wallets = privateKeys.map(privateKey => {
-          const stripped = ethUtil.stripHexPrefix(privateKey)
-          const buffer = Buffer.from(stripped, 'hex')
-          const wallet = Wallet.fromPrivateKey(buffer)
-          return wallet
-        })
+        this.wallets = privateKeys.map(this.generateWallet)
       } catch (e) {
         reject(e)
       }
@@ -34,7 +40,22 @@ export default class TorusKeyring extends EventEmitter {
     })
   }
 
-  addAccounts(n = 1) {
+  addAccount(privKey) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        for (let index = 0; index < this.wallets.length; index++) {
+          const element = this.generatePrivKey(this.wallets[index])
+          if (element === privKey) reject(new Error('Already added'))
+        }
+        this.wallets.push(this.generateWallet(privKey))
+      } catch (error) {
+        reject(error)
+      }
+      resolve()
+    })
+  }
+
+  addRandomAccounts(n = 1) {
     var newWallets = []
     for (var i = 0; i < n; i++) {
       newWallets.push(Wallet.generate())
