@@ -89,7 +89,13 @@
         </div>
 
         <div class="has-border text-xs-right" mt-1>
-          <v-btn class="btnStyle" :disabled="!jsonFileFormValid" @click.prevent="importViaKeyStoreFile">Import</v-btn>
+          <v-btn
+            class="btnStyle"
+            @click.prevent="importViaKeyStoreFile"
+            :loading="isLoadingKeystore"
+            :disabled="!jsonFileFormValid || isLoadingKeystore"
+            >Import</v-btn
+          >
         </div>
       </v-form>
     </template>
@@ -131,6 +137,7 @@ export default {
       showJsonPassword: false,
       snackbar: false,
       isLoadingPrivate: false,
+      isLoadingKeystore: false,
       rules: {
         required: value => !!value || 'Required.'
       }
@@ -157,16 +164,20 @@ export default {
     },
     importViaKeyStoreFile() {
       if (this.$refs.jsonFileForm.validate()) {
+        this.isLoadingKeystore = true
+
         if (!window.Worker) {
           this.$store
             .dispatch('importAccount', { keyData: [JSON.parse(this.keyStoreFileContents), this.jsonPassword], strategy: 'JSON File' })
             .then(() => {
               this.$router.push({ path: '/wallet/home' })
+              this.isLoadingKeystore = false
             })
             .catch(err => {
               this.error = err
               this.snackbar = true
               console.log(err)
+              this.isLoadingKeystore = false
             })
         } else {
           const worker = new WalletWorker()
@@ -177,17 +188,20 @@ export default {
               .dispatch('finishImportAccount', { privKey })
               .then(() => {
                 this.$router.push({ path: '/wallet/home' })
+                this.isLoadingKeystore = false
               })
               .catch(err => {
                 this.error = err
                 this.snackbar = true
                 console.log(err)
+                this.isLoadingKeystore = false
               })
           }
           worker.onerror = err => {
             this.error = err
             this.snackbar = true
             console.log(err)
+            this.isLoadingKeystore = false
           }
         }
       }
