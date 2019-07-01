@@ -110,7 +110,7 @@
 
 <script>
 // eslint-disable-next-line import/no-webpack-loader-syntax
-const WalletWorker = require('worker-loader!../utils/wallet.worker.js')
+const WalletWorker = require('../utils/wallet.worker.js')
 const ethUtil = require('ethereumjs-util')
 export default {
   data() {

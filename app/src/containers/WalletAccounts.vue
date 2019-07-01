@@ -28,7 +28,6 @@
 
     <div class="has-border text-xs-right" mt-1>
       <v-btn class="btnStyle" @click="dialogJson = true">Download JSON</v-btn>
-      <v-btn class="btnStyle" @click="downloadPdf">Download wallet</v-btn>
     </div>
 
     <v-dialog v-model="dialogJson" max-width="400px">
@@ -90,7 +89,7 @@ import { addressSlicer } from '../utils/utils'
 const Wallet = require('ethereumjs-wallet')
 const ethUtil = require('ethereumjs-util')
 // eslint-disable-next-line import/no-webpack-loader-syntax
-const WalletWorker = require('worker-loader!../utils/wallet.worker.js')
+const WalletWorker = require('../utils/wallet.worker.js')
 
 export default {
   name: 'walletAccounts',
@@ -176,8 +175,7 @@ export default {
     toggleJsonPasswordShow(event) {
       event.preventDefault()
       this.showJsonPassword = !this.showJsonPassword
-    },
-    downloadPdf() {}
+    }
   }
 }
 </script>
