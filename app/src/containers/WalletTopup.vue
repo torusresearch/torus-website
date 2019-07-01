@@ -1,6 +1,6 @@
 <template>
   <v-flex fill-height class="simplex-page mt-2">
-    <v-form ref="inputForm" v-model="formValid" lazy-validation>
+    <v-form ref="inputForm" v-model="formValid" lazy-validation @submit.prevent="">
       <v-container align-content-center>
         <v-layout column text-sm-center>
           <v-flex sm6>

@@ -153,6 +153,12 @@
                   :primary-color="color"
                   :size="150"
                   :value-display-function="showGasPrice"
+                  :animation="{
+                    animated: true,
+                    animateValue: true,
+                    animationDuration: '5000',
+                    animationFunction: 'linear'
+                  }"
                 ></v-knob-control>
               </v-flex>
               <v-flex xs12 sm1>
