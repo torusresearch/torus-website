@@ -27,7 +27,7 @@
     <v-flex xs12 sm8>
       <template v-if="isRPCSelected">
         <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height">
-          <v-form ref="form" v-model="formValid" lazy-validation>
+          <v-form ref="form" v-model="formValid" lazy-validation @submit.prevent="">
             <v-container fill-height style="padding: 0px;">
               <v-layout row align-center justify-center align-content-start>
                 <v-flex xs12 sm6 align-self-center>

@@ -90,6 +90,14 @@ module.exports = {
       }
       return pwaPlugin
     })
+    // config.module
+    //   .rule('worker')
+    //   .test(/\.worker\.js$/)
+    //   .use('worker-loader')
+    //   .loader('worker-loader')
+    //   .tap(options => {
+    //     return options
+    //   })
   },
 
   publicPath: process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/` : '/',

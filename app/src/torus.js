@@ -7,7 +7,7 @@ var log = require('loglevel')
 var BN = require('bn.js')
 const setupMultiplex = require('./utils/setupMultiplex').default
 const toChecksumAddress = require('./utils/toChecksumAddress').default
-
+// Make this a class. Use ES6
 var torus = {
   instanceId: randomId(),
   ec: Elliptic('secp256k1'),
@@ -169,13 +169,7 @@ var torus = {
           }
           log.info(shares, nodeIndex)
           var privateKey = torus.lagrangeInterpolation(shares.slice(0, 3), nodeIndex.slice(0, 3))
-          var key = torus.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
-          var publicKey = key
-            .getPublic()
-            .encode('hex')
-            .slice(2)
-          var ethAddressLower = '0x' + torus.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
-          var ethAddress = toChecksumAddress(ethAddressLower)
+          var ethAddress = torus.generateAddressFromPrivKey(privateKey)
           cb(null, {
             ethAddress,
             privKey: privateKey.toString('hex')
@@ -208,6 +202,16 @@ var torus = {
       secret = secret.add(delta)
     }
     return secret.umod(torus.ec.curve.n)
+  },
+  generateAddressFromPrivKey(privateKey) {
+    var key = torus.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
+    var publicKey = key
+      .getPublic()
+      .encode('hex')
+      .slice(2)
+    var ethAddressLower = '0x' + torus.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
+    var ethAddress = toChecksumAddress(ethAddressLower)
+    return ethAddress
   },
   getPubKeyAsync: function(web3, endpoints, email, cb) {
     var promiseArr = []

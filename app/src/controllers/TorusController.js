@@ -30,7 +30,7 @@ const PersonalMessageManager = require('./PersonalMessageManager').default
 const TypedMessageManager = require('./TypedMessageManager').default
 const ObservableStore = require('obs-store')
 const nodeify = require('../utils/nodeify').default
-const KeyringController = require('../utils/TorusKeyring').default
+const KeyringController = require('./TorusKeyring').default
 
 // defaults and constants
 const version = '0.0.1'
@@ -276,9 +276,17 @@ export default class TorusController extends EventEmitter {
   initTorusKeyring(keyArray, addresses) {
     this.keyringController.deserialize(keyArray)
     this.accountTracker.syncWithAddresses(addresses)
-    this.detectTokensController.startTokenDetection(addresses[0])
     // this.setupControllerConnection()
     // this.accountTracker._updateAccounts()
+  }
+
+  async addAccount(key, address) {
+    await this.keyringController.addAccount(key)
+    this.accountTracker.addAccounts([address])
+  }
+
+  setSelectedAccount(address) {
+    this.detectTokensController.startTokenDetection(address)
   }
 
   /**
