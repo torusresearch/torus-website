@@ -46,7 +46,9 @@
       </div>
 
       <div class="has-border text-xs-right" mt-1>
-        <v-btn class="btnStyle" :disabled="!privateKeyFormValid" @click.prevent="importViaPrivateKey">Import</v-btn>
+        <v-btn class="btnStyle" @click.prevent="importViaPrivateKey" :loading="isLoadingPrivate" :disabled="!privateKeyFormValid || isLoadingPrivate"
+          >Import</v-btn
+        >
       </div>
     </template>
 
@@ -125,6 +127,7 @@ export default {
       showPrivateKey: false,
       showJsonPassword: false,
       snackbar: false,
+      isLoadingPrivate: false,
       rules: {
         required: value => !!value || 'Required.'
       }
@@ -133,15 +136,19 @@ export default {
   methods: {
     importViaPrivateKey() {
       if (this.$refs.privateKeyForm.validate()) {
+        this.isLoadingPrivate = true
+
         this.$store
           .dispatch('importAccount', { keyData: [this.privateKey], strategy: 'Private Key' })
           .then(() => {
             this.$router.push({ path: '/wallet/home' })
+            this.isLoadingPrivate = false
           })
           .catch(err => {
             this.error = err
             this.snackbar = true
             console.log(err)
+            this.isLoadingPrivate = false
           })
       }
     },
