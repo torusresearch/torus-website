@@ -56,12 +56,26 @@
                 ></v-text-field>
               </v-flex>
             </v-layout>
+            <v-layout v-if="walletJson">
+              <v-flex xs12 class="text-xs-center">
+                <a :href="walletJson" :download="name" class="download-wallet">
+                  <v-btn class="btnStyle">Download wallet</v-btn>
+                </a>
+              </v-flex>
+            </v-layout>
           </v-card-text>
           <v-divider light></v-divider>
           <v-card-actions class="px-3">
             <v-spacer></v-spacer>
-            <v-btn class="btnStyle" @click="dialogJson = false">Close</v-btn>
-            <v-btn class="btnStyle" :disabled="!formValid" @click.prevent="downloadWallet">Confirm</v-btn>
+            <v-btn class="btnStyle" @click="dialogJson = false" :disabled="isLoadingDownloadWallet">Close</v-btn>
+            <v-btn
+              v-if="!walletJson"
+              :loading="isLoadingDownloadWallet"
+              class="btnStyle"
+              :disabled="!formValid || isLoadingDownloadWallet"
+              @click.prevent="downloadWallet"
+              >Confirm</v-btn
+            >
           </v-card-actions>
         </v-form>
       </v-card>
@@ -86,11 +100,11 @@ export default {
       keyStorePassword: '',
       walletJson: '',
       name: '',
-      downloadable: false,
       showPrivateKey: false,
       dialogJson: false,
       showJsonPassword: false,
       formValid: true,
+      isLoadingDownloadWallet: false,
       rules: {
         required: value => !!value || 'Required.'
       }
@@ -113,9 +127,12 @@ export default {
   methods: {
     downloadWallet() {
       if (this.$refs.form.validate()) {
+        this.isLoadingDownloadWallet = true
+
         if (!window.Worker) {
           const _wallet = this.createWallet(this.keyStorePassword)
           this.exportKeyStoreFile(_wallet)
+          this.isLoadingDownloadWallet = false
         } else {
           const worker = new WalletWorker()
           worker.postMessage({ type: 'createWallet', data: [this.keyStorePassword, this.selectedKey] })
@@ -123,6 +140,7 @@ export default {
             console.log(e.data)
             const _wallet = e.data
             this.exportKeyStoreFile(_wallet)
+            this.isLoadingDownloadWallet = false
           }
         }
       }
@@ -218,5 +236,10 @@ export default {
   background-color: #fff !important;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
   border-radius: 45px;
+}
+
+.download-wallet {
+  background: none;
+  text-decoration: none;
 }
 </style>
