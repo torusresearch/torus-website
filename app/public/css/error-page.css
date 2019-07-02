@@ -1,145 +1,144 @@
 body {
-    margin: 0;
-    padding: 0;
-    font-family: Lato,sans-serif;
-    line-height: 1.2em;
-    color: #4A4A4A;
+  margin: 0;
+  padding: 0;
+  font-family: Lato, sans-serif;
+  line-height: 1.2em;
+  color: #4a4a4a;
 
-    background-image: url('/images/footer_waves.png');
-    background-repeat: no-repeat;
-    background-position: center bottom; 
+  background-image: url('/images/footer_waves.png');
+  background-repeat: no-repeat;
+  background-position: center bottom;
 }
 
 .text-center {
-    text-align: center;
+  text-align: center;
 }
 
 .error-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
 }
 
 .error-header {
-    padding: 24px;
+  padding: 24px;
 }
 
 .error-content {
-    display: flex;
-    flex: 1;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .error-content .error-column {
-    padding: 0 10%;
+  padding: 0 10%;
 }
 
 .error-content .error-row {
-    margin-top: -90px;
+  margin-top: -90px;
 }
 
 .error-content .people {
-    width: 100%;    
+  width: 100%;
 }
 
 .error-content .page-header {
-    font-size: 26px;
-    margin: 0;
-    line-height: 1.2em;
+  font-size: 26px;
+  margin: 0;
+  line-height: 1.2em;
 }
 
 .error-content .page-desc {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 .error-content .home-button {
-    font-family: Roboto,sans-serif;
-    border: 0;
-    background-image: linear-gradient(to right, #5396D5, #295DAB);
-    /* padding: 15px 35px; */
-    padding: 10px 25px;
-    border-radius: 8px;
-    color: white;
-    box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.5);
+  font-family: Roboto, sans-serif;
+  border: 0;
+  background-image: linear-gradient(to right, #5396d5, #295dab);
+  /* padding: 15px 35px; */
+  padding: 10px 25px;
+  border-radius: 8px;
+  color: white;
+  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.5);
 }
-
 
 /* Desktop Small */
 @media only screen and (min-width: 599px) {
-    .error-content {
-        max-width: 900px;
-        margin: auto;
-    }
+  .error-content {
+    max-width: 900px;
+    margin: auto;
+  }
 
-    .error-content .error-row {
-        flex: 1;
-        margin-top: -90px;
-        display: flex;
-        align-items: center;
-    }
+  .error-content .error-row {
+    flex: 1;
+    margin-top: -90px;
+    display: flex;
+    align-items: center;
+  }
 
-    .error-content .error-column {
-        padding: 0 20px;
-        flex: 1;
-    }
+  .error-content .error-column {
+    padding: 0 20px;
+    flex: 1;
+  }
 
-    .error-content .people {
-        width: 100%;    
-    }
+  .error-content .people {
+    width: 100%;
+  }
 
-    .error-content .page-header {
-        font-size: 30px;
-    }
-    
-    .error-content .page-desc {
-        font-size: 20px;
-        line-height: 1.2em;
-    }
+  .error-content .page-header {
+    font-size: 30px;
+  }
 
-    .error-content .home-button {
-        margin-top: 10px;
-        padding: 10px 25px;
-        font-size: 16px;
-    }
+  .error-content .page-desc {
+    font-size: 20px;
+    line-height: 1.2em;
+  }
+
+  .error-content .home-button {
+    margin-top: 10px;
+    padding: 10px 25px;
+    font-size: 16px;
+  }
 }
 
 /* Desktop Medium */
 @media only screen and (min-width: 960px) {
-    .error-header {
-        padding: 50px;
-    }
+  .error-header {
+    padding: 50px;
+  }
 
-    .error-content .error-row {
-        margin-top: -120px;
-    }
+  .error-content .error-row {
+    margin-top: -120px;
+  }
 
-    .error-content .people {
-        width: 90%;    
-    }
+  .error-content .people {
+    width: 90%;
+  }
 
-    .error-content .page-header {
-        font-size: 40px;
-    }
-    
-    .error-content .page-desc {
-        font-size: 28px;    
-    }
+  .error-content .page-header {
+    font-size: 40px;
+  }
 
-    .error-content .home-button {
-        padding: 15px 35px;
-        font-size: 21px;
-    }
+  .error-content .page-desc {
+    font-size: 28px;
+  }
+
+  .error-content .home-button {
+    padding: 15px 35px;
+    font-size: 21px;
+  }
 }
 
 /* Desktop Large */
 @media only screen and (min-width: 1264px) {
-    body {
-        background-size: 100%;
-    }
-    .error-content {
-        max-width: 1185px;
-    }
+  body {
+    background-size: 100%;
+  }
+  .error-content {
+    max-width: 1185px;
+  }
 }

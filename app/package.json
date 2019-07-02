@@ -16,7 +16,8 @@
     "build:staging": "cross-env NODE_ENV=production TORUS_BUILD_ENV=staging npm run build-embed:staging && npm run pre-build && cross-env TORUS_BUILD_ENV=staging vue-cli-service build",
     "build:testing": "npm run build-embed:testing && npm run pre-build && vue-cli-service build --mode development",
     "dev": "cross-env NODE_ENV=development TORUS_BUILD_ENV=development node server.js",
-    "lint:es": "eslint ./src/views/* --fix",
+    "lint:js": "eslint --fix src/**/*.js",
+    "lint:vue": "vue-cli-service lint && eslint --fix src/**/*.vue",
     "pre-build": ". ./scripts/calculateIntegrity.sh",
     "production": "cross-env PORT=443 NODE_ENV=production node server.js",
     "temp": "npm run build-embed:dev && npm run build:dev",
@@ -103,9 +104,11 @@
     "esm": "3.2.25",
     "eth-phishing-detect": "^1.1.13",
     "ganache-core": "^2.5.6",
+    "husky": "^3.0.0",
     "isomorphic-fetch": "^2.2.1",
     "jsdom": "15.1.1",
     "jsdom-global": "3.0.2",
+    "lint-staged": "^9.0.0",
     "luxon": "^1.16.0",
     "mocha": "^6.1.4",
     "mocha-eslint": "^5.0.0",
@@ -139,5 +142,27 @@
   },
   "mocha": {
     "timeout": 0
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run lint:js --",
+      "prettier --write **/*.js",
+      "git add"
+    ],
+    "*.vue": [
+      "npm run lint:vue --",
+      "prettier --write **/*.vue",
+      "git add"
+    ],
+    "*.{json,css}": [
+      "prettier --write **/*.json",
+      "prettier --write **/*.css",
+      "git add"
+    ]
   }
 }
