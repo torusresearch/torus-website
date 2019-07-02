@@ -7,7 +7,7 @@
   border-radius: 25px;
   height: 50px;
   width: 50px;
-  background-image: url("/images/login.png");
+  background-image: url('/images/login.png');
   background-size: 60%;
   background-repeat: no-repeat;
   border-width: 0px;
@@ -23,7 +23,7 @@
   border-radius: 25px;
   height: 50px;
   width: 50px;
-  background-image: url("/images/favicon_inverted.png");
+  background-image: url('/images/favicon_inverted.png');
   background-size: 100%;
   background-repeat: no-repeat;
   border-width: 0px;
@@ -36,7 +36,7 @@
 }
 
 #torusMenuBtn:hover {
-  background-color: #EEEEEE;
+  background-color: #eeeeee;
   transition: background-color, 0.1s ease-in-out;
 }
 
@@ -45,7 +45,7 @@
   border-radius: 20px;
   height: 40px;
   width: 40px;
-  background-image: url("/images/red-x.png");
+  background-image: url('/images/red-x.png');
   background-size: 60%;
   background-repeat: no-repeat;
   border-width: 0px;
@@ -61,7 +61,7 @@
   height: 50px;
   width: 120px;
   background-size: 85%;
-  background-image: url("/images/loginwithgoogle.png");
+  background-image: url('/images/loginwithgoogle.png');
   transition: background-color, background-image, width 0.1s ease-in-out;
 }
 
@@ -73,7 +73,7 @@
   left: 0;
   height: 100%;
   width: 100%;
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
 #torusIframe {
@@ -81,7 +81,6 @@
   width: 100%;
   display: none;
 }
-
 
 /* TORUS MODAL CSS */
 
@@ -99,8 +98,8 @@
   width: 100%; /* Full width */
   height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
 .modalContent {
@@ -129,7 +128,7 @@
 #signTransactionButton {
   display: inline-block;
   border: none;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   padding: 4% 15%;
   font-size: 16px;
   cursor: pointer;
@@ -148,15 +147,15 @@
 
 /* The slider itself */
 #gasSlider {
-  -webkit-appearance: none;  /* Override default CSS styles */
+  -webkit-appearance: none; /* Override default CSS styles */
   appearance: none;
   width: 100%; /* Full-width */
   height: 25px; /* Specified height */
   background: #d3d3d3; /* Grey background */
   outline: none; /* Remove outline */
   opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
-  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
-  transition: opacity .2s;
+  -webkit-transition: 0.2s; /* 0.2 seconds transition on hover */
+  transition: opacity 0.2s;
 }
 
 /* Mouse-over effects */
@@ -164,40 +163,39 @@
   opacity: 1; /* Fully shown on mouse-over */
 }
 
-/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */ 
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
 #gasSlider::-webkit-slider-thumb {
   -webkit-appearance: none; /* Override default look */
   appearance: none;
   width: 25px; /* Set a specific slider handle width */
   height: 25px; /* Slider handle height */
-  background: #4CAF50; /* Green background */
+  background: #4caf50; /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
 
 #gasSlider::-moz-range-thumb {
   width: 25px; /* Set a specific slider handle width */
   height: 25px; /* Slider handle height */
-  background: #4CAF50; /* Green background */
+  background: #4caf50; /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
 
 #buttons {
-  width:100%;
+  width: 100%;
   text-align: center;
 }
 
-
 /* The Overlay (background) */
 .overlay {
-  /* Height & width depends on how you want to reveal the overlay (see JS below) */    
+  /* Height & width depends on how you want to reveal the overlay (see JS below) */
   height: 100%;
   width: 100%;
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
   left: 0;
   top: 0;
-  background-color: rgb(0,0,0); /* Black fallback color */
-  background-color: rgba(0,0,0, 0.9); /* Black w/opacity */
+  background-color: rgb(0, 0, 0); /* Black fallback color */
+  background-color: rgba(0, 0, 0, 0.9); /* Black w/opacity */
   overflow-x: hidden; /* Disable horizontal scroll */
   transition: 0.5s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
 }
@@ -222,7 +220,7 @@
 /* Position the content inside the overlay */
 .overlay-header {
   position: relative;
-  top: 0%; 
+  top: 0%;
   width: 100%; /* 100% width */
   text-align: center; /* Centered text/links */
   margin-top: 30px; /* 30px top margin to avoid conflict with the close button on smaller screens */
@@ -239,7 +237,8 @@
 }
 
 /* When you mouse over the navigation links, change their color */
-.overlay a:hover, .overlay a:focus {
+.overlay a:hover,
+.overlay a:focus {
   color: #f1f1f1;
 }
 
@@ -253,7 +252,9 @@
 
 /* When the height of the screen is less than 450 pixels, change the font-size of the links and position the close button again, so they don't overlap */
 @media screen and (max-height: 450px) {
-  .overlay a {font-size: 20px}
+  .overlay a {
+    font-size: 20px;
+  }
   .overlay .closebtn {
     font-size: 40px;
     top: 15px;
@@ -261,20 +262,17 @@
   }
 }
 
-
-
-
 /* INPUT LABEL
 =====
 LEVEL 1. RESET STYLES
 =====
 */
 
-.field{
+.field {
   --uiFieldPlaceholderColor: var(--fieldPlaceholderColor, #767676);
 }
 
-.field__input{ 
+.field__input {
   background-color: transparent;
   border-radius: 0;
   border: none;
@@ -286,11 +284,11 @@ LEVEL 1. RESET STYLES
   font-size: 1em;
 }
 
-.field__input:focus::-webkit-input-placeholder{
+.field__input:focus::-webkit-input-placeholder {
   color: var(--uiFieldPlaceholderColor);
 }
 
-.field__input:focus::-moz-placeholder{
+.field__input:focus::-moz-placeholder {
   color: var(--uiFieldPlaceholderColor);
   opacity: 1;
 }
@@ -301,18 +299,18 @@ LEVEL 2. CORE STYLES
 =====
 */
 
-.a-field{
+.a-field {
   display: inline-block;
 }
 
-.a-field__input{ 
+.a-field__input {
   display: block;
   box-sizing: border-box;
   width: 100%;
   color: white;
 }
 
-.a-field__input:focus{
+.a-field__input:focus {
   outline: none;
 }
 
@@ -324,8 +322,8 @@ LEVEL 3. PRESENTATION STYLES
 
 /* a-field */
 
-.a-field{
-  --uiFieldHeight: var(--fieldHeight, 40px);  
+.a-field {
+  --uiFieldHeight: var(--fieldHeight, 40px);
   --uiFieldBorderWidth: var(--fieldBorderWidth, 2px);
   --uiFieldBorderColor: var(--fieldBorderColor);
 
@@ -334,49 +332,49 @@ LEVEL 3. PRESENTATION STYLES
 
   --uiFieldPaddingRight: var(--fieldPaddingRight, 15px);
   --uiFieldPaddingBottom: var(--fieldPaddingBottom, 15px);
-  --uiFieldPaddingLeft: var(--fieldPaddingLeft, 15px);   
+  --uiFieldPaddingLeft: var(--fieldPaddingLeft, 15px);
 
   position: relative;
   box-sizing: border-box;
   font-size: var(--uiFieldFontSize);
-  padding-top: 1em;  
+  padding-top: 1em;
 }
 
-.a-field .a-field__input{
+.a-field .a-field__input {
   height: var(--uiFieldHeight);
   padding: 0 var(--uiFieldPaddingRight) 0 var(--uiFieldPaddingLeft);
-  border-bottom: var(--uiFieldBorderWidth) solid var(--uiFieldBorderColor);  
+  border-bottom: var(--uiFieldBorderWidth) solid var(--uiFieldBorderColor);
 }
 
-.a-field .a-field__input::-webkit-input-placeholder{
+.a-field .a-field__input::-webkit-input-placeholder {
   opacity: 0;
-  transition: opacity .2s ease-out;
+  transition: opacity 0.2s ease-out;
 }
 
-.a-field .a-field__input::-moz-placeholder{
+.a-field .a-field__input::-moz-placeholder {
   opacity: 0;
-  transition: opacity .2s ease-out;
+  transition: opacity 0.2s ease-out;
 }
 
-.a-field .a-field__input:not(:placeholder-shown) ~ .a-field__label-wrap .a-field__label{
+.a-field .a-field__input:not(:placeholder-shown) ~ .a-field__label-wrap .a-field__label {
   opacity: 0;
   bottom: var(--uiFieldPaddingBottom);
 }
 
-.a-field .a-field__input:focus::-webkit-input-placeholder{
+.a-field .a-field__input:focus::-webkit-input-placeholder {
   opacity: 1;
-  transition-delay: .2s;
+  transition-delay: 0.2s;
 }
 
-.a-field .a-field__input:focus::-moz-placeholder{
+.a-field .a-field__input:focus::-moz-placeholder {
   opacity: 1;
-  transition-delay: .2s;
+  transition-delay: 0.2s;
 }
 
-.a-field .a-field__label-wrap{
+.a-field .a-field__label-wrap {
   box-sizing: border-box;
   width: 100%;
-  height: var(--uiFieldHeight); 
+  height: var(--uiFieldHeight);
 
   pointer-events: none;
   cursor: text;
@@ -386,32 +384,32 @@ LEVEL 3. PRESENTATION STYLES
   left: 0;
 }
 
-.a-field .a-field__label{
+.a-field .a-field__label {
   position: absolute;
   left: var(--uiFieldPaddingLeft);
-  bottom: calc(50% - .5em);
+  bottom: calc(50% - 0.5em);
 
   line-height: 1;
   font-size: var(--uiFieldHintFontSize);
 
   pointer-events: none;
-  transition: bottom .2s cubic-bezier(0.9,-0.15, 0.1, 1.15), opacity .2s ease-out;
+  transition: bottom 0.2s cubic-bezier(0.9, -0.15, 0.1, 1.15), opacity 0.2s ease-out;
   will-change: bottom, opacity;
 }
 
-.a-field .a-field__input:focus ~ .a-field__label-wrap .a-field__label{
+.a-field .a-field__input:focus ~ .a-field__label-wrap .a-field__label {
   opacity: 1;
   bottom: var(--uiFieldHeight);
 }
 
 /* a-field_a1 */
 
-.a-field_a1 .a-field__input{
-  transition: border-color .2s ease-out;
+.a-field_a1 .a-field__input {
+  transition: border-color 0.2s ease-out;
   will-change: border-color;
 }
 
-.a-field_a1 .a-field__input:focus{
+.a-field_a1 .a-field__input:focus {
   border-color: var(--fieldBorderColorActive);
 }
 
@@ -421,8 +419,8 @@ LEVEL 4. SETTINGS
 =====
 */
 
-.field{
-  --fieldBorderColor: #D1C4E9;
-  --fieldBorderColorActive: #673AB7;
+.field {
+  --fieldBorderColor: #d1c4e9;
+  --fieldBorderColorActive: #673ab7;
   color: white;
 }
