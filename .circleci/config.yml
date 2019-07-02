@@ -8,9 +8,17 @@ step_save_cache: &step_save_cache
     key: dependency-cache-{{ checksum "package.json" }}
     paths:
       - node_modules
+step_save_npm_cache: &step_save_npm_cache
+  save_cache:
+    key: dependency-cache-{{ checksum "package-lock.json" }}
+    paths:
+      - /root/.npm
 step_restore_cache: &step_restore_cache
   restore_cache:
     key: dependency-cache-{{ checksum "package.json" }}
+step_restore_npm_cache: &step_restore_npm_cache
+  restore_cache:
+    key: dependency-cache-{{ checksum "package-lock.json" }}
 step_setup_global_packages: &step_setup_global_packages
   run:
     name: "Set up global packages"
@@ -56,12 +64,14 @@ jobs:
     steps:
       - checkout:
           path: ~/torus-website
+      - <<: *step_restore_npm_cache
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - run:
           name: "Run Tests for torus website"
           command: npm run test:unit
       - <<: *step_save_cache
+      - <<: *step_save_npm_cache
       # Save test results
       - store_test_results:
           path: ~/test-results
@@ -70,6 +80,7 @@ jobs:
     steps:
       - checkout:
           path: ~/torus-website
+      - <<: *step_restore_npm_cache
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - setup_remote_docker
@@ -84,6 +95,7 @@ jobs:
     steps:
       - checkout:
           path: ~/torus-website
+      - <<: *step_restore_npm_cache
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - run:
@@ -95,11 +107,13 @@ jobs:
           paths:
             - .
       - <<: *step_save_cache
+      - <<: *step_save_npm_cache
   build-staging:
     <<: *job_common
     steps:
       - checkout:
           path: ~/torus-website
+      - <<: *step_restore_npm_cache
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - run:
@@ -111,6 +125,7 @@ jobs:
           paths:
             - .
       - <<: *step_save_cache
+      - <<: *step_save_npm_cache
   deploy:
     <<: *deploy_function
   deploy-staging:
@@ -128,6 +143,7 @@ jobs:
     steps:
       - checkout:
           path: ~/torus-website
+      - <<: *step_restore_npm_cache
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
       - run:
