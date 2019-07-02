@@ -30,9 +30,7 @@ class Torus {
     }
   }
   retrieveShares(endpoints, indexes, email, idToken, cb) {
-    var promiseArr = []
-    var responses = []
-    var shareResponses = new Array(endpoints.length)
+    const promiseArr = []
     // CommitmentRequestParams struct {
     //   MessagePrefix      string `json:"messageprefix"`
     //   TokenCommitment    string `json:"tokencommitment"`
@@ -75,15 +73,14 @@ class Torus {
             throw new Error('Could not connect', res)
           }
         })
-        .then(res => responses.push(res))
         .catch(err => {
           console.error(err)
         })
       promiseArr.push(p)
     }
     Promise.all(promiseArr)
-      .then(() => {
-        promiseArr = []
+      .then(responses => {
+        const promiseArrRequest = []
 
         // ShareRequestParams struct {
         //   Item []bijson.RawMessage `json:"item"`
@@ -107,10 +104,9 @@ class Torus {
         // }
         var nodeSigs = []
         for (var i = 0; i < responses.length; i++) {
-          nodeSigs.push(responses[i].result)
+          if (responses[i]) nodeSigs.push(responses[i].result)
         }
         for (i = 0; i < endpoints.length; i++) {
-          let t = i
           var p = fetch(endpoints[i], {
             method: 'POST',
             cache: 'no-cache',
@@ -128,18 +124,14 @@ class Torus {
             })
           })
             .then(res => res.json())
-            .then(res => {
-              console.log('shareresponse here', res)
-              shareResponses[t] = res
-            })
             .catch(err => {
               console.error(err)
             })
-          promiseArr.push(p)
+          promiseArrRequest.push(p)
         }
-        return Promise.all(promiseArr)
+        return Promise.all(promiseArrRequest)
       })
-      .then(() => {
+      .then(shareResponses => {
         try {
           // ShareRequestResult struct {
           //   Keys []KeyAssignment
@@ -214,8 +206,7 @@ class Torus {
     return ethAddress
   }
   getPubKeyAsync(web3, endpoints, email, cb) {
-    var promiseArr = []
-    var shares = []
+    const promiseArr = []
     var p = fetch(endpoints[Math.floor(Math.random() * endpoints.length)], {
       method: 'POST',
       cache: 'no-cache',
@@ -234,19 +225,15 @@ class Torus {
       })
     })
       .then(res => res.json())
-      .then(res => shares.push(res))
-      .catch(err => {
-        console.error(err)
-      })
+      .catch(err => console.error(err))
     promiseArr.push(p)
 
     // set a time out here
     // lets do a retry
 
     Promise.all(promiseArr)
-      .then(() => {
-        promiseArr = []
-        shares = []
+      .then(response => {
+        const lookupPromiseArr = []
         var p = fetch(endpoints[Math.floor(Math.random() * endpoints.length)], {
           method: 'POST',
           cache: 'no-cache',
@@ -265,19 +252,16 @@ class Torus {
           })
         })
           .then(res => res.json())
-          .then(res => shares.push(res))
-          .catch(err => {
-            console.error(err)
-          })
-        promiseArr.push(p)
-        return Promise.all(promiseArr)
+          .catch(err => console.error(err))
+        lookupPromiseArr.push(p)
+        return Promise.all(lookupPromiseArr)
       })
-      .then(() => {
+      .then(lookupShares => {
         try {
           log.info('completed')
-          log.info(shares)
+          log.info(lookupShares)
 
-          var ethAddress = shares[0].result.keys[0].address
+          var ethAddress = lookupShares[0].result.keys[0].address
           log.info(ethAddress)
           cb(null, ethAddress)
         } catch (err) {
