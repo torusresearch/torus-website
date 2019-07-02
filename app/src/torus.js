@@ -8,18 +8,18 @@ var BN = require('bn.js')
 const setupMultiplex = require('./utils/setupMultiplex').default
 const toChecksumAddress = require('./utils/toChecksumAddress').default
 // Make this a class. Use ES6
-var torus = {
-  instanceId: randomId(),
-  ec: Elliptic('secp256k1'),
-  setupMultiplex,
-  continueEnable: function(selectedAddress) {
+class Torus {
+  instanceId = randomId()
+  ec = Elliptic('secp256k1')
+  setupMultiplex = setupMultiplex
+  continueEnable(selectedAddress) {
     log.info('ENABLE WITH: ', selectedAddress)
-    var oauthStream = torus.communicationMux.getStream('oauth')
+    var oauthStream = this.communicationMux.getStream('oauth')
     oauthStream.write({ selectedAddress: selectedAddress })
-  },
-  updateStaticData: function(payload) {
+  }
+  updateStaticData(payload) {
     log.info('STATIC DATA:', payload)
-    var publicConfigOutStream = torus.metamaskMux.getStream('publicConfig')
+    var publicConfigOutStream = this.metamaskMux.getStream('publicConfig')
     // JSON.stringify is used here even though the stream is in object mode
     // because it is parsed in the dapp context, this behavior emulates nonobject mode
     // for compatibility reasons when using pump
@@ -28,8 +28,8 @@ var torus = {
     } else if (payload.networkId) {
       publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
     }
-  },
-  retrieveShares: function(endpoints, indexes, email, idToken, cb) {
+  }
+  retrieveShares(endpoints, indexes, email, idToken, cb) {
     var promiseArr = []
     var responses = []
     var shareResponses = new Array(endpoints.length)
@@ -42,9 +42,9 @@ var torus = {
     //   VerifierIdentifier string `json:"verifieridentifier"`
     // }
     console.log(idToken)
-    var tmpKey = torus.ec.genKeyPair()
+    var tmpKey = this.ec.genKeyPair()
     var pubKey = tmpKey.getPublic()
-    var tokenCommitment = torus.web3.utils.keccak256(idToken)
+    var tokenCommitment = this.web3.utils.keccak256(idToken)
     console.log(tokenCommitment)
     for (var i = 0; i < endpoints.length; i++) {
       var p = fetch(endpoints[i], {
@@ -82,7 +82,7 @@ var torus = {
       promiseArr.push(p)
     }
     Promise.all(promiseArr)
-      .then(function() {
+      .then(() => {
         promiseArr = []
 
         // ShareRequestParams struct {
@@ -139,7 +139,7 @@ var torus = {
         }
         return Promise.all(promiseArr)
       })
-      .then(function() {
+      .then(() => {
         try {
           // ShareRequestResult struct {
           //   Keys []KeyAssignment
@@ -168,8 +168,8 @@ var torus = {
             }
           }
           log.info(shares, nodeIndex)
-          var privateKey = torus.lagrangeInterpolation(shares.slice(0, 3), nodeIndex.slice(0, 3))
-          var ethAddress = torus.generateAddressFromPrivKey(privateKey)
+          var privateKey = this.lagrangeInterpolation(shares.slice(0, 3), nodeIndex.slice(0, 3))
+          var ethAddress = this.generateAddressFromPrivKey(privateKey)
           cb(null, {
             ethAddress,
             privKey: privateKey.toString('hex')
@@ -178,8 +178,8 @@ var torus = {
           cb(err, null)
         }
       })
-  },
-  lagrangeInterpolation: function(shares, nodeIndex) {
+  }
+  lagrangeInterpolation(shares, nodeIndex) {
     if (shares.length !== nodeIndex.length) {
       log.error('Shares do not match up')
       return null
@@ -191,29 +191,29 @@ var torus = {
       for (let j = 0; j < shares.length; j++) {
         if (i !== j) {
           upper = upper.mul(nodeIndex[j].neg())
-          upper = upper.umod(torus.ec.curve.n)
+          upper = upper.umod(this.ec.curve.n)
           let temp = nodeIndex[i].sub(nodeIndex[j])
-          temp = temp.umod(torus.ec.curve.n)
-          lower = lower.mul(temp).umod(torus.ec.curve.n)
+          temp = temp.umod(this.ec.curve.n)
+          lower = lower.mul(temp).umod(this.ec.curve.n)
         }
       }
-      let delta = upper.mul(lower.invm(torus.ec.curve.n)).umod(torus.ec.curve.n)
-      delta = delta.mul(shares[i]).umod(torus.ec.curve.n)
+      let delta = upper.mul(lower.invm(this.ec.curve.n)).umod(this.ec.curve.n)
+      delta = delta.mul(shares[i]).umod(this.ec.curve.n)
       secret = secret.add(delta)
     }
-    return secret.umod(torus.ec.curve.n)
-  },
+    return secret.umod(this.ec.curve.n)
+  }
   generateAddressFromPrivKey(privateKey) {
-    var key = torus.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
+    var key = this.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
     var publicKey = key
       .getPublic()
       .encode('hex')
       .slice(2)
-    var ethAddressLower = '0x' + torus.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
+    var ethAddressLower = '0x' + this.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
     var ethAddress = toChecksumAddress(ethAddressLower)
     return ethAddress
-  },
-  getPubKeyAsync: function(web3, endpoints, email, cb) {
+  }
+  getPubKeyAsync(web3, endpoints, email, cb) {
     var promiseArr = []
     var shares = []
     var p = fetch(endpoints[Math.floor(Math.random() * endpoints.length)], {
@@ -244,7 +244,7 @@ var torus = {
     // lets do a retry
 
     Promise.all(promiseArr)
-      .then(function() {
+      .then(() => {
         promiseArr = []
         shares = []
         var p = fetch(endpoints[Math.floor(Math.random() * endpoints.length)], {
@@ -272,7 +272,7 @@ var torus = {
         promiseArr.push(p)
         return Promise.all(promiseArr)
       })
-      .then(function() {
+      .then(() => {
         try {
           log.info('completed')
           log.info(shares)
@@ -288,6 +288,6 @@ var torus = {
 }
 
 /* Inialize torus object on load */
-onloadTorus(torus)
+const torus = onloadTorus(new Torus())
 
 export default torus
