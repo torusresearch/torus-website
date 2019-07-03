@@ -189,27 +189,29 @@ class Torus {
     return new Promise((resolve, reject) => {
       post(
         endpointUrl,
-        generateJsonRPCObject('KeyAssign', {
+        generateJsonRPCObject('VerifierLookupRequest', {
           verifier: 'google',
           verifier_id: email
         })
       )
         .catch(err => console.error(err))
-        .then(response => {
-          console.log(response, 'mid')
-          return post(
-            endpointUrl,
-            generateJsonRPCObject('VerifierLookupRequest', {
-              verifier: 'google',
-              verifier_id: email
-            })
-          )
+        .then(lookupShare => {
+          if (lookupShare.error) {
+            return post(
+              endpointUrl,
+              generateJsonRPCObject('KeyAssign', {
+                verifier: 'google',
+                verifier_id: email
+              })
+            )
+          } else if (lookupShare.result) {
+            return this.getLookupPromise(lookupShare)
+          }
         })
         .catch(err => console.error(err))
         .then(lookupShare => {
           log.info('completed')
           log.info(lookupShare)
-
           var ethAddress = lookupShare.result.keys[0].address
           log.info(ethAddress)
           resolve(ethAddress)
@@ -219,6 +221,9 @@ class Torus {
           reject(err)
         })
     })
+  }
+  getLookupPromise(lookupShare) {
+    return new Promise((resolve, reject) => resolve(lookupShare))
   }
 }
 
