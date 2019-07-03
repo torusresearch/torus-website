@@ -12,6 +12,9 @@ const accountImporter = require('../utils/accountImporter')
 
 const baseRoute = process.env.BASE_URL
 
+// stream to send logged in status
+const statusStream = torus.communicationMux.getStream('status')
+
 Vue.use(Vuex)
 
 const vuexPersist = new VuexPersistence({
@@ -339,7 +342,7 @@ var VuexStore = new Vuex.Store({
         torus.torusController.networkController.setProviderType(payload.network)
       }
     },
-    triggerLogin: function(context, payload) {
+    triggerLogin: function({ dispatch }, { calledFromEmbed }) {
       // log.error('Could not find window.auth2, might not be loaded yet')
       ;(function gapiLoadCall() {
         if (window.auth2) {
@@ -351,13 +354,15 @@ var VuexStore = new Vuex.Store({
             log.info('Name: ' + profile.getName())
             log.info('Image URL: ' + profile.getImageUrl())
             log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
-            VuexStore.dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
+            dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
             let email = profile.getEmail()
-            VuexStore.dispatch('updateEmail', { email })
+            dispatch('updateEmail', { email })
             window.gapi.auth2
               .getAuthInstance()
               .disconnect()
-              .then(handleLogin(email, payload))
+              .then(() => {
+                dispatch('handleLogin', { email, calledFromEmbed })
+              })
               .catch(function(err) {
                 log.error(err)
               })
@@ -366,98 +371,145 @@ var VuexStore = new Vuex.Store({
           setTimeout(gapiLoadCall, 1000)
         }
       })()
+    },
+    handleLogin({ state, dispatch }, { email, calledFromEmbed }) {
+      dispatch('loginInProgress', true)
+      torus.getPubKeyAsync(torus.web3, config.torusNodeEndpoints, email, (err, res) => {
+        if (err) {
+          log.error(err)
+        } else {
+          log.info('New private key assigned to user at address ', res)
+          const { email, idToken, weiBalance } = state
+          torus.retrieveShares(config.torusNodeEndpoints, config.torusIndexes, email, idToken, (err, data) => {
+            if (err) {
+              log.error(err)
+              return
+            }
+            dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
+            dispatch('addWallet', data)
+            torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
+              if (accounts) {
+                for (const key in accounts) {
+                  if (Object.prototype.hasOwnProperty.call(accounts, key)) {
+                    const account = accounts[key]
+                    if (weiBalance[data.ethAddress] !== account.balance)
+                      dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
+                  }
+                }
+              }
+            })
+
+            torus.torusController.txController.store.subscribe(function({ transactions }) {
+              if (transactions) {
+                // these transactions have negative index
+                const updatedTransactions = []
+                for (let id in transactions) {
+                  if (transactions[id]) {
+                    updatedTransactions.push(transactions[id])
+                  }
+                }
+                dispatch('updateTransactions', { transactions: updatedTransactions })
+              }
+            })
+
+            dispatch('setSelectedCurrency', 'USD')
+
+            torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
+              if (tokens.length > 0) {
+                dispatch('updateTokenData', { tokenData: tokens, address: torus.torusController.detectTokensController.selectedAddress })
+              }
+            })
+
+            torus.torusController.tokenRatesController.store.subscribe(function({ contractExchangeRates }) {
+              if (contractExchangeRates) {
+                dispatch('updateTokenRates', { tokenRates: contractExchangeRates })
+              }
+            })
+
+            // continue enable function
+            var ethAddress = data.ethAddress
+            if (calledFromEmbed) {
+              setTimeout(function() {
+                torus.continueEnable(ethAddress)
+              }, 50)
+            }
+            torus.torusController.initTorusKeyring([data.privKey], [data.ethAddress])
+            statusStream.write({ loggedIn: true })
+            dispatch('loginInProgress', false)
+            // torus.web3.eth.net
+            //   .getId()
+            //   .then(res => {
+            //     VuexStore.dispatch('updateNetworkId', { networkId: res })
+            //     // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+            //   })
+            //   .catch(e => log.error(e))
+          })
+        }
+      })
+    },
+    rehydrate({ state, dispatch }, payload) {
+      let { selectedAddress, wallet, networkType, rpcDetails, weiBalance } = state
+      if (networkType && networkType !== RPC) {
+        dispatch('setProviderType', { network: networkType })
+      } else if (networkType && networkType === RPC && rpcDetails) {
+        dispatch('setProviderType', { network: rpcDetails, type: RPC })
+      }
+      if (selectedAddress && wallet[selectedAddress]) {
+        torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
+        setTimeout(function() {
+          dispatch('updateSelectedAddress', { selectedAddress })
+          torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
+            if (accounts) {
+              for (const key in accounts) {
+                if (accounts.hasOwnProperty(key)) {
+                  const account = accounts[key]
+                  if (weiBalance[selectedAddress] !== account.balance)
+                    dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
+                }
+              }
+            }
+          })
+
+          torus.torusController.txController.store.subscribe(function({ transactions }) {
+            if (transactions) {
+              // these transactions have negative index
+              const updatedTransactions = []
+              for (let id in transactions) {
+                if (transactions[id]) {
+                  updatedTransactions.push(transactions[id])
+                }
+              }
+              dispatch('updateTransactions', { transactions: updatedTransactions })
+            }
+          })
+
+          torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
+            if (tokens.length > 0) {
+              dispatch('updateTokenData', { tokenData: tokens, address: torus.torusController.detectTokensController.selectedAddress })
+            }
+          })
+
+          torus.torusController.tokenRatesController.store.subscribe(function({ contractExchangeRates }) {
+            if (contractExchangeRates) {
+              dispatch('updateTokenRates', { tokenRates: contractExchangeRates })
+            }
+          })
+        }, 50)
+        statusStream.write({ loggedIn: true })
+        log.info('rehydrated wallet')
+        torus.web3.eth.net
+          .getId()
+          .then(res => {
+            setTimeout(function() {
+              dispatch('updateNetworkId', { networkId: res })
+            })
+            // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+          })
+          .catch(e => log.error(e))
+      }
     }
   }
 })
-
-function handleLogin(email, payload) {
-  VuexStore.dispatch('loginInProgress', true)
-  torus.getPubKeyAsync(torus.web3, config.torusNodeEndpoints, email, function(err, res) {
-    if (err) {
-      log.error(err)
-    } else {
-      log.info('New private key assigned to user at address ', res)
-      torus.retrieveShares(config.torusNodeEndpoints, config.torusIndexes, VuexStore.state.email, VuexStore.state.idToken, function(err, data) {
-        if (err) {
-          log.error(err)
-        }
-        VuexStore.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
-        VuexStore.dispatch('addWallet', data)
-        torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
-          if (accounts) {
-            for (const key in accounts) {
-              if (Object.prototype.hasOwnProperty.call(accounts, key)) {
-                const account = accounts[key]
-                if (VuexStore.state.weiBalance[data.ethAddress] !== account.balance)
-                  VuexStore.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
-              }
-            }
-          }
-        })
-
-        torus.torusController.txController.store.subscribe(function({ transactions }) {
-          if (transactions) {
-            // these transactions have negative index
-            const updatedTransactions = []
-            for (let id in transactions) {
-              if (transactions[id]) {
-                updatedTransactions.push(transactions[id])
-              }
-            }
-            VuexStore.dispatch('updateTransactions', { transactions: updatedTransactions })
-          }
-        })
-
-        VuexStore.dispatch('setSelectedCurrency', 'USD')
-
-        torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
-          if (tokens.length > 0) {
-            VuexStore.dispatch('updateTokenData', { tokenData: tokens, address: torus.torusController.detectTokensController.selectedAddress })
-          }
-        })
-
-        torus.torusController.tokenRatesController.store.subscribe(function({ contractExchangeRates }) {
-          if (contractExchangeRates) {
-            VuexStore.dispatch('updateTokenRates', { tokenRates: contractExchangeRates })
-          }
-        })
-
-        // continue enable function
-        var ethAddress = data.ethAddress
-        if (payload.calledFromEmbed) {
-          setTimeout(function() {
-            torus.continueEnable(ethAddress)
-          }, 50)
-        }
-        torus.torusController.initTorusKeyring([data.privKey], [data.ethAddress])
-        const statusStream = torus.communicationMux.getStream('status')
-        statusStream.write({ loggedIn: true })
-        VuexStore.dispatch('loginInProgress', false)
-        // torus.web3.eth.net
-        //   .getId()
-        //   .then(res => {
-        //     VuexStore.dispatch('updateNetworkId', { networkId: res })
-        //     // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-        //   })
-        //   .catch(e => log.error(e))
-      })
-    }
-  })
-}
-
-// function getTransactionParams() {
-//   const { torusController } = torus
-//   const state = torusController.getState()
-//   console.log(torusController.getState(), 'torus state')
-//   const transactions = []
-//   for (let id in state.transactions) {
-//     if (state.transactions[id].status === 'unapproved') {
-//       transactions.push(state.transactions[id])
-//     }
-//   }
-//   const { txParams, simulationFails } = transactions[0] || {}
-//   return { txParams, simulationFails }
-// }
 
 function getLatestMessageParams() {
   const { torusController } = torus
