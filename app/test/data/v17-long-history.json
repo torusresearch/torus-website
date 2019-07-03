@@ -61,10 +61,7 @@
       "phishing": {
         "version": 2,
         "tolerance": 2,
-        "fuzzylist": [
-          "metamask.io",
-          "myetherwallet.com"
-        ],
+        "fuzzylist": ["metamask.io", "myetherwallet.com"],
         "whitelist": [
           "metamask.io",
           "myetherwallet.com",

@@ -8,34 +8,44 @@
 
 ## Project setup
 
-```
+```sh
 npm install
+cd node_modules && find . -name ".git" -type d -exec rm -rf {} +
+cd .. && npm audit fix
 ```
 
 ### Compiles and hot-reloads for development
 
-```
+```sh
 npm run serve
 ```
 
 ### Compiles and minifies for production
 
-```
+```sh
 npm run build
 ```
 
 ### Run your tests
 
-```
+```sh
 npm run test:unit
 ```
 
 ### Lints and fixes files
 
-```
+```sh
 npm run lint
 ```
 
 ### Customize configuration
 
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### Current Issues
+To get rid of the websocket error,
+use the following command in the project root (where package.json lives)
+
+```sh
+cd node_modules && find . -name ".git" -type d -exec rm -rf {} +
+```

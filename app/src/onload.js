@@ -1,7 +1,6 @@
 // import WebsocketSubprovider from './websocket.js'
 import TorusController from './controllers/TorusController'
 import store from './store'
-import { RPC } from './utils/enums'
 var log = require('loglevel')
 var Web3 = require('web3')
 var LocalMessageDuplexStream = require('post-message-stream')
@@ -10,14 +9,14 @@ const stream = require('stream')
 const setupMultiplex = require('./utils/setupMultiplex').default
 const MetamaskInpageProvider = require('@toruslabs/torus-embed/src/inpage-provider')
 const routerStream = require('./utils/routerStream')
-;(function() {
-  var origNextTick = process.nextTick.bind(process)
-  process.nextTick = function() {
-    var args = Array.prototype.slice.call(arguments)
-    var fn = args.shift()
-    origNextTick(fn.bind.apply(fn, [null].concat(args)))
-  }
-})()
+// ;(function() {
+//   var origNextTick = process.nextTick.bind(process)
+//   process.nextTick = function() {
+//     var args = Array.prototype.slice.call(arguments)
+//     var fn = args.shift()
+//     origNextTick(fn.bind.apply(fn, [null].concat(args)))
+//   }
+// })()
 
 function onloadTorus(torus) {
   function triggerUi(type) {
@@ -39,65 +38,7 @@ function onloadTorus(torus) {
       return { selectedAddress, wallet }
     },
     rehydrate: function() {
-      let { selectedAddress, wallet, networkType, rpcDetails } = store.state
-      if (networkType && networkType !== RPC) {
-        store.dispatch('setProviderType', { network: networkType })
-      } else if (networkType && networkType === RPC && rpcDetails) {
-        store.dispatch('setProviderType', { network: rpcDetails, type: RPC })
-      }
-      if (selectedAddress && wallet[selectedAddress]) {
-        torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
-        setTimeout(function() {
-          store.dispatch('updateSelectedAddress', { selectedAddress })
-          torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
-            if (accounts) {
-              for (const key in accounts) {
-                if (accounts.hasOwnProperty(key)) {
-                  const account = accounts[key]
-                  if (store.state.weiBalance[selectedAddress] !== account.balance)
-                    store.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
-                }
-              }
-            }
-          })
-
-          torus.torusController.txController.store.subscribe(function({ transactions }) {
-            if (transactions) {
-              // these transactions have negative index
-              const updatedTransactions = []
-              for (let id in transactions) {
-                if (transactions[id]) {
-                  updatedTransactions.push(transactions[id])
-                }
-              }
-              store.dispatch('updateTransactions', { transactions: updatedTransactions })
-            }
-          })
-
-          torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
-            if (tokens.length > 0) {
-              store.dispatch('updateTokenData', { tokenData: tokens, address: torus.torusController.detectTokensController.selectedAddress })
-            }
-          })
-
-          torus.torusController.tokenRatesController.store.subscribe(function({ contractExchangeRates }) {
-            if (contractExchangeRates) {
-              store.dispatch('updateTokenRates', { tokenRates: contractExchangeRates })
-            }
-          })
-        }, 50)
-        statusStream.write({ loggedIn: true })
-        log.info('rehydrated wallet')
-        torus.web3.eth.net
-          .getId()
-          .then(res => {
-            setTimeout(function() {
-              store.dispatch('updateNetworkId', { networkId: res })
-            })
-            // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-          })
-          .catch(e => log.error(e))
-      }
+      store.dispatch('rehydrate')
     }
   })
 
@@ -137,9 +78,6 @@ function onloadTorus(torus) {
   })
 
   const providerOutStream = torus.metamaskMux.getStream('provider')
-
-  // stream to send logged in status
-  const statusStream = torus.communicationMux.getStream('status')
 
   var iframeMetamaskStream = new stream.Duplex({
     objectMode: true,

@@ -12,7 +12,11 @@ function post(url = '', data = {}, opts = {}) {
     ...opts,
     ...{ method: 'POST' }
   }
-  return fetch(url, options).then(response => response.json())
+  return fetch(url, options).then(response => {
+    if (response.ok) {
+      return response.json()
+    } else throw new Error('Could not connect', response)
+  })
 }
 
 function get(url = '', opts = {}) {
@@ -25,7 +29,20 @@ function get(url = '', opts = {}) {
     ...opts,
     ...{ method: 'GET' }
   }
-  return fetch(url, options).then(response => response.json())
+  return fetch(url, options).then(response => {
+    if (response.ok) {
+      return response.json()
+    } else throw new Error('Could not connect', response)
+  })
 }
 
-export { get, post }
+function generateJsonRPCObject(method, params) {
+  return {
+    jsonrpc: '2.0',
+    method: method,
+    id: 10,
+    params: params
+  }
+}
+
+export { get, post, generateJsonRPCObject }

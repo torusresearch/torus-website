@@ -244,6 +244,10 @@ function extractHostname(url) {
   return hostname
 }
 
+function getRandomNumber(max) {
+  return Math.floor(Math.random() * max)
+}
+
 export {
   removeListeners,
   applyListeners,
@@ -262,5 +266,6 @@ export {
   isSmartContractAddress,
   extractHostname,
   formatCurrencyNumber,
-  getEtherScanHashLink
+  getEtherScanHashLink,
+  getRandomNumber
 }

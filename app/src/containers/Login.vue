@@ -12,7 +12,7 @@
             </v-flex>
             <v-flex xs12 mt-5>
               <div class="text-xs-center">
-                <v-btn id="flexiBtn" class="white--text btnStyle" outline large @click="triggerLogin">Login</v-btn>
+                <v-btn id="flexiBtn" class="white--text btnStyle" outline large @click="triggerLogin({ calledFromEmbed: false })">Login</v-btn>
               </div>
             </v-flex>
           </v-layout>

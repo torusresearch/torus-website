@@ -1,12 +1,12 @@
 export default {
   torusNodeEndpoints: [
-    'https://binancelabsmain.torusnode.com/jrpc',
-    'https://wasedamain.torusnode.com/jrpc',
-    'https://vgrmain.torusnode.com/jrpc',
-    'https://torusmain.torusnode.com/jrpc',
-    'https://etcmain.torusnode.com/jrpc'
+    'https://binancelabs-main-2.tor.us/jrpc',
+    'https://waseda-main-2.tor.us/jrpc',
+    'https://vgr-main-2.torusnode.com/jrpc',
+    'https://torus-main-2.torusnode.com/jrpc',
+    'https://etc-main-2.tor.us/jrpc'
   ],
-  torusIndexes: [4, 5, 1, 3, 2],
+  torusIndexes: [1, 3, 2, 5, 4],
   supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH'],
   simplexHost: 'https://simplex-api.tor.us'
 }

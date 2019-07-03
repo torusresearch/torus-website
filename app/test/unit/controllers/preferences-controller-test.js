@@ -118,7 +118,6 @@
 //         address: '0xda22le',
 //       })
 
-
 //       preferencesController.setAccountLabel('0xda22le', 'Dazzle')
 //       assert.deepEqual(preferencesController.store.getState().identities['0xda22le'], {
 //         name: 'Dazzle',
@@ -470,10 +469,12 @@
 //       try { validateSpyInvalidSymbol({rawAddress: '0xd26114cd6EE289AccF82350c8d8487fedB8A0C07', symbol: 'ABCDEFGHI', decimals: 0}) } catch (e) {}
 //       assert.equal(validateSpyInvalidSymbol.threw(), true, 'options object with invalid symbol')
 //       const validateSpyInvalidDecimals1 = sandbox.spy(preferencesController._validateERC20AssetParams)
-//       try { validateSpyInvalidDecimals1({rawAddress: '0xd26114cd6EE289AccF82350c8d8487fedB8A0C07', symbol: 'ABCDEFGHI', decimals: -1}) } catch (e) {}
+//       try { validateSpyInvalidDecimals1({rawAddress: '0xd26114cd6EE289AccF82350c8d8487fedB8A0C07',
+//       symbol: 'ABCDEFGHI', decimals: -1}) } catch (e) {}
 //       assert.equal(validateSpyInvalidDecimals1.threw(), true, 'options object with decimals less than zero')
 //       const validateSpyInvalidDecimals2 = sandbox.spy(preferencesController._validateERC20AssetParams)
-//       try { validateSpyInvalidDecimals2({rawAddress: '0xd26114cd6EE289AccF82350c8d8487fedB8A0C07', symbol: 'ABCDEFGHI', decimals: 38}) } catch (e) {}
+//       try { validateSpyInvalidDecimals2({rawAddress: '0xd26114cd6EE289AccF82350c8d8487fedB8A0C07',
+//       symbol: 'ABCDEFGHI', decimals: 38}) } catch (e) {}
 //       assert.equal(validateSpyInvalidDecimals2.threw(), true, 'options object with decimals more than 36')
 //       const validateSpyInvalidAddress = sandbox.spy(preferencesController._validateERC20AssetParams)
 //       try { validateSpyInvalidAddress({rawAddress: '0x123', symbol: 'ABC', decimals: 0}) } catch (e) {}
@@ -515,14 +516,17 @@
 //     it('should add custom RPC url to state', function () {
 //       preferencesController.addToFrequentRpcList('rpc_url', 1)
 //       preferencesController.addToFrequentRpcList('http://localhost:8545', 1)
-//       assert.deepEqual(preferencesController.store.getState().frequentRpcListDetail, [{ rpcUrl: 'rpc_url', chainId: 1, ticker: 'ETH', nickname: '' }])
+//       assert.deepEqual(preferencesController.store.getState()
+//       .frequentRpcListDetail, [{ rpcUrl: 'rpc_url', chainId: 1, ticker: 'ETH', nickname: '' }])
 //       preferencesController.addToFrequentRpcList('rpc_url', 1)
-//       assert.deepEqual(preferencesController.store.getState().frequentRpcListDetail, [{ rpcUrl: 'rpc_url', chainId: 1, ticker: 'ETH', nickname: '' }])
+//       assert.deepEqual(preferencesController.store.getState().
+//       frequentRpcListDetail, [{ rpcUrl: 'rpc_url', chainId: 1, ticker: 'ETH', nickname: '' }])
 //     })
 
 //     it('should remove custom RPC url from state', function () {
 //       preferencesController.addToFrequentRpcList('rpc_url', 1)
-//       assert.deepEqual(preferencesController.store.getState().frequentRpcListDetail, [{ rpcUrl: 'rpc_url', chainId: 1, ticker: 'ETH', nickname: '' }])
+//       assert.deepEqual(preferencesController.store.getState().
+//       frequentRpcListDetail, [{ rpcUrl: 'rpc_url', chainId: 1, ticker: 'ETH', nickname: '' }])
 //       preferencesController.removeFromFrequentRpcList('other_rpc_url')
 //       preferencesController.removeFromFrequentRpcList('http://localhost:8545')
 //       preferencesController.removeFromFrequentRpcList('rpc_url')
@@ -530,4 +534,3 @@
 //     })
 //   })
 // })
-

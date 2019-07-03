@@ -19,7 +19,7 @@
         <v-icon v-else :color="$vuetify.theme.torus_reject">expand_more</v-icon>
       </v-btn>
 
-      <div class="mt-0 mb-1 mx-0 py-1 grey lighten-3 text-xs-center break-word" v-if="showPrivateKey">
+      <div class="mt-0 mb-1 mx-0 pa-1 grey lighten-3 text-xs-center break-word" v-if="showPrivateKey">
         <show-tool-tip :address="selectedKey">
           {{ selectedKey }}
         </show-tool-tip>
@@ -216,6 +216,9 @@ export default {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.16) !important;
   margin-top: 5px !important;
   margin-bottom: 0px !important;
+  .v-select__selection {
+    word-break: break-all;
+  }
 }
 
 /deep/.v-text-field.v-text-field--solo .v-input__control {
@@ -233,5 +236,15 @@ export default {
 .download-wallet {
   background: none;
   text-decoration: none;
+}
+
+/* Desktop > Small */
+@media only screen and (min-width: 599px) {
+  /deep/.v-text-field--solo .v-input__slot,
+  .v-text-field--outline .v-input__slot {
+    .v-select__selection {
+      word-break: normal;
+    }
+  }
 }
 </style>
