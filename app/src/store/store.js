@@ -4,7 +4,7 @@ import log from 'loglevel'
 import torus from '../torus'
 import config from '../config'
 import VuexPersistence from 'vuex-persist'
-import { hexToText, significantDigits, formatCurrencyNumber } from '../utils/utils'
+import { hexToText, significantDigits, formatCurrencyNumber, getRandomNumber } from '../utils/utils'
 import { MAINNET, RPC } from '../utils/enums'
 import BroadcastChannel from 'broadcast-channel'
 
@@ -357,11 +357,13 @@ var VuexStore = new Vuex.Store({
             dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
             let email = profile.getEmail()
             dispatch('updateEmail', { email })
+            const { torusNodeEndpoints } = config
             window.gapi.auth2
               .getAuthInstance()
               .disconnect()
               .then(() => {
-                dispatch('handleLogin', { calledFromEmbed })
+                const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
+                dispatch('handleLogin', { calledFromEmbed, endPointNumber })
               })
               .catch(function(err) {
                 log.error(err)
@@ -372,11 +374,10 @@ var VuexStore = new Vuex.Store({
         }
       })()
     },
-    handleLogin({ state, dispatch }, { calledFromEmbed }) {
+    handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
       const { torusNodeEndpoints, torusIndexes } = config
       const { weiBalance, idToken, email } = state
       dispatch('loginInProgress', true)
-      const endPointNumber = Math.floor(Math.random() * torusNodeEndpoints.length)
       torus
         .getPubKeyAsync(torusNodeEndpoints[endPointNumber], email)
         .then(res => {
@@ -443,7 +444,14 @@ var VuexStore = new Vuex.Store({
           //   })
           //   .catch(e => log.error(e))
         })
-        .catch(err => log.error(err))
+        .catch(err => {
+          let newEndPointNumber = endPointNumber
+          while (newEndPointNumber === endPointNumber) {
+            newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
+          }
+          dispatch('handleLogin', { calledFromEmbed, endPointNumber: newEndPointNumber })
+          log.error(err)
+        })
     },
     rehydrate({ state, dispatch }, payload) {
       let { selectedAddress, wallet, networkType, rpcDetails, weiBalance } = state
