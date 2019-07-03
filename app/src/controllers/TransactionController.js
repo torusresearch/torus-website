@@ -185,7 +185,7 @@ class TransactionController extends EventEmitter {
     // Assert the from address is the selected address
     if (normalizedTxParams.from !== this.getSelectedAddress()) {
       // eslint-disable-next-line prettier/prettier
-      throw new Error('Transaction from address isn\'t valid for this account')
+      throw new Error('Transaction from address is not valid for this account')
     }
     txUtils.validateTxParams(normalizedTxParams)
     // construct txMeta

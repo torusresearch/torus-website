@@ -9,15 +9,11 @@ server.key
 ```
 Ask one of the developers for these keys.
 
-To install dependencies and build website, run the following commands from the main project directory:
+To install dependencies and build website,
+see [README here](app/README.md)
 
-```sh
-cd app
-npm install
-npm run serve
-```
 
-To see website, navigate to https://app.tor.us
+To see current production app, navigate to https://app.tor.us
 
 ## Torus Demo
 

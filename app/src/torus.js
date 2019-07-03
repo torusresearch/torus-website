@@ -1,5 +1,6 @@
 import randomId from 'random-id'
 import onloadTorus from './onload.js'
+import { post, generateJsonRPCObject } from './utils/httpHelpers.js'
 
 // import WebsocketSubprovider from './websocket.js'
 var Elliptic = require('elliptic').ec
@@ -8,18 +9,18 @@ var BN = require('bn.js')
 const setupMultiplex = require('./utils/setupMultiplex').default
 const toChecksumAddress = require('./utils/toChecksumAddress').default
 // Make this a class. Use ES6
-var torus = {
-  instanceId: randomId(),
-  ec: Elliptic('secp256k1'),
-  setupMultiplex,
-  continueEnable: function(selectedAddress) {
+class Torus {
+  instanceId = randomId()
+  ec = Elliptic('secp256k1')
+  setupMultiplex = setupMultiplex
+  continueEnable(selectedAddress) {
     log.info('ENABLE WITH: ', selectedAddress)
-    var oauthStream = torus.communicationMux.getStream('oauth')
+    var oauthStream = this.communicationMux.getStream('oauth')
     oauthStream.write({ selectedAddress: selectedAddress })
-  },
-  updateStaticData: function(payload) {
+  }
+  updateStaticData(payload) {
     log.info('STATIC DATA:', payload)
-    var publicConfigOutStream = torus.metamaskMux.getStream('publicConfig')
+    var publicConfigOutStream = this.metamaskMux.getStream('publicConfig')
     // JSON.stringify is used here even though the stream is in object mode
     // because it is parsed in the dapp context, this behavior emulates nonobject mode
     // for compatibility reasons when using pump
@@ -28,135 +29,104 @@ var torus = {
     } else if (payload.networkId) {
       publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
     }
-  },
-  retrieveShares: function(endpoints, indexes, email, idToken, cb) {
-    var promiseArr = []
-    var responses = []
-    var shareResponses = new Array(endpoints.length)
-    // CommitmentRequestParams struct {
-    //   MessagePrefix      string `json:"messageprefix"`
-    //   TokenCommitment    string `json:"tokencommitment"`
-    //   TempPubX           string `json:"temppubx"`
-    //   TempPubY           string `json:"temppuby"`
-    //   Timestamp          string `json:"timestamp"`
-    //   VerifierIdentifier string `json:"verifieridentifier"`
-    // }
-    console.log(idToken)
-    var tmpKey = torus.ec.genKeyPair()
-    var pubKey = tmpKey.getPublic()
-    var tokenCommitment = torus.web3.utils.keccak256(idToken)
-    console.log(tokenCommitment)
-    for (var i = 0; i < endpoints.length; i++) {
-      var p = fetch(endpoints[i], {
-        method: 'POST',
-        cache: 'no-cache',
-        mode: 'cors',
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8'
-        },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          method: 'CommitmentRequest',
-          id: 10,
-          params: {
+  }
+  retrieveShares(endpoints, indexes, email, idToken) {
+    // Swallow individual fetch errors to handle node failures
+    // catch only logic errors
+    return new Promise((resolve, reject) => {
+      const promiseArr = []
+      /* 
+      CommitmentRequestParams struct {
+        MessagePrefix      string `json:"messageprefix"`
+        TokenCommitment    string `json:"tokencommitment"`
+        TempPubX           string `json:"temppubx"`
+        TempPubY           string `json:"temppuby"`
+        Timestamp          string `json:"timestamp"`
+        VerifierIdentifier string `json:"verifieridentifier"`
+      } 
+      */
+      console.log(idToken)
+      var tmpKey = this.ec.genKeyPair()
+      var pubKey = tmpKey.getPublic()
+      var tokenCommitment = this.web3.utils.keccak256(idToken)
+      console.log(tokenCommitment)
+      for (var i = 0; i < endpoints.length; i++) {
+        var p = post(
+          endpoints[i],
+          generateJsonRPCObject('CommitmentRequest', {
             messageprefix: 'mug00',
             tokencommitment: tokenCommitment.slice(2),
             temppubx: pubKey.getX().toString('hex'),
             temppuby: pubKey.getY().toString('hex'),
             timestamp: (Date.now() - 2000).toString().slice(0, 10),
             verifieridentifier: 'google'
-          }
-        })
-      })
-        .then(res => {
-          if (res.ok) {
-            return res.json()
-          } else {
-            throw new Error('Could not connect', res)
-          }
-        })
-        .then(res => responses.push(res))
-        .catch(err => {
+          })
+        ).catch(err => {
           console.error(err)
         })
-      promiseArr.push(p)
-    }
-    Promise.all(promiseArr)
-      .then(function() {
-        promiseArr = []
-
-        // ShareRequestParams struct {
-        //   Item []bijson.RawMessage `json:"item"`
-        // }
-        // ShareRequestItem struct {
-        //   IDToken            string          `json:"idtoken"`
-        //   NodeSignatures     []NodeSignature `json:"nodesignatures"`
-        //   VerifierIdentifier string          `json:"verifieridentifier"`
-        // }
-        // NodeSignature struct {
-        //   Signature   string
-        //   Data        string
-        //   NodePubKeyX string
-        //   NodePubKeyY string
-        // }
-        // CommitmentRequestResult struct {
-        //   Signature string `json:"signature"`
-        //   Data      string `json:"data"`
-        //   NodePubX  string `json:"nodepubx"`
-        //   NodePubY  string `json:"nodepuby"`
-        // }
-        var nodeSigs = []
-        for (var i = 0; i < responses.length; i++) {
-          nodeSigs.push(responses[i].result)
-        }
-        for (i = 0; i < endpoints.length; i++) {
-          let t = i
-          var p = fetch(endpoints[i], {
-            method: 'POST',
-            cache: 'no-cache',
-            mode: 'cors',
-            headers: {
-              'Content-Type': 'application/json; charset=utf-8'
-            },
-            body: JSON.stringify({
-              jsonrpc: '2.0',
-              method: 'ShareRequest',
-              id: 10,
-              params: {
+        promiseArr.push(p)
+      }
+      Promise.all(promiseArr)
+        .then(responses => {
+          const promiseArrRequest = []
+          /*
+          ShareRequestParams struct {
+            Item []bijson.RawMessage `json:"item"`
+          }
+          ShareRequestItem struct {
+            IDToken            string          `json:"idtoken"`
+            NodeSignatures     []NodeSignature `json:"nodesignatures"`
+            VerifierIdentifier string          `json:"verifieridentifier"`
+          }
+          NodeSignature struct {
+            Signature   string
+            Data        string
+            NodePubKeyX string
+            NodePubKeyY string
+          }
+          CommitmentRequestResult struct {
+            Signature string `json:"signature"`
+            Data      string `json:"data"`
+            NodePubX  string `json:"nodepubx"`
+            NodePubY  string `json:"nodepuby"`
+          }
+          */
+          var nodeSigs = []
+          for (var i = 0; i < responses.length; i++) {
+            if (responses[i]) nodeSigs.push(responses[i].result)
+          }
+          for (i = 0; i < endpoints.length; i++) {
+            var p = post(
+              endpoints[i],
+              generateJsonRPCObject('ShareRequest', {
                 item: [{ idtoken: idToken, nodesignatures: nodeSigs, verifieridentifier: 'google', email: email }]
-              }
-            })
-          })
-            .then(res => res.json())
-            .then(res => {
-              console.log('shareresponse here', res)
-              shareResponses[t] = res
-            })
-            .catch(err => {
+              })
+            ).catch(err => {
               console.error(err)
             })
-          promiseArr.push(p)
-        }
-        return Promise.all(promiseArr)
-      })
-      .then(function() {
-        try {
-          // ShareRequestResult struct {
-          //   Keys []KeyAssignment
-          // }
-          //         / KeyAssignmentPublic -
-          // type KeyAssignmentPublic struct {
-          // 	Index     big.Int
-          // 	PublicKey common.Point
-          // 	Threshold int
-          // 	Verifiers map[string][]string // Verifier => VerifierID
-          // }
+            promiseArrRequest.push(p)
+          }
+          return Promise.all(promiseArrRequest)
+        })
+        .then(shareResponses => {
+          /*
+          ShareRequestResult struct {
+            Keys []KeyAssignment
+          }
+                  / KeyAssignmentPublic -
+          type KeyAssignmentPublic struct {
+          	Index     big.Int
+          	PublicKey common.Point
+          	Threshold int
+          	Verifiers map[string][]string // Verifier => VerifierID
+          }
 
-          // // KeyAssignment -
-          // type KeyAssignment struct {
-          // 	KeyAssignmentPublic
-          // 	Share big.Int // Or Si
-          // }
+          // KeyAssignment -
+          type KeyAssignment struct {
+          	KeyAssignmentPublic
+          	Share big.Int // Or Si
+          }
+          */
           log.info('completed')
           var shares = []
           var nodeIndex = []
@@ -168,18 +138,20 @@ var torus = {
             }
           }
           log.info(shares, nodeIndex)
-          var privateKey = torus.lagrangeInterpolation(shares.slice(0, 3), nodeIndex.slice(0, 3))
-          var ethAddress = torus.generateAddressFromPrivKey(privateKey)
-          cb(null, {
+          var privateKey = this.lagrangeInterpolation(shares.slice(0, 3), nodeIndex.slice(0, 3))
+          var ethAddress = this.generateAddressFromPrivKey(privateKey)
+          resolve({
             ethAddress,
             privKey: privateKey.toString('hex')
           })
-        } catch (err) {
-          cb(err, null)
-        }
-      })
-  },
-  lagrangeInterpolation: function(shares, nodeIndex) {
+        })
+        .catch(err => {
+          console.error(err)
+          reject(err)
+        })
+    })
+  }
+  lagrangeInterpolation(shares, nodeIndex) {
     if (shares.length !== nodeIndex.length) {
       log.error('Shares do not match up')
       return null
@@ -191,103 +163,71 @@ var torus = {
       for (let j = 0; j < shares.length; j++) {
         if (i !== j) {
           upper = upper.mul(nodeIndex[j].neg())
-          upper = upper.umod(torus.ec.curve.n)
+          upper = upper.umod(this.ec.curve.n)
           let temp = nodeIndex[i].sub(nodeIndex[j])
-          temp = temp.umod(torus.ec.curve.n)
-          lower = lower.mul(temp).umod(torus.ec.curve.n)
+          temp = temp.umod(this.ec.curve.n)
+          lower = lower.mul(temp).umod(this.ec.curve.n)
         }
       }
-      let delta = upper.mul(lower.invm(torus.ec.curve.n)).umod(torus.ec.curve.n)
-      delta = delta.mul(shares[i]).umod(torus.ec.curve.n)
+      let delta = upper.mul(lower.invm(this.ec.curve.n)).umod(this.ec.curve.n)
+      delta = delta.mul(shares[i]).umod(this.ec.curve.n)
       secret = secret.add(delta)
     }
-    return secret.umod(torus.ec.curve.n)
-  },
+    return secret.umod(this.ec.curve.n)
+  }
   generateAddressFromPrivKey(privateKey) {
-    var key = torus.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
+    var key = this.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
     var publicKey = key
       .getPublic()
       .encode('hex')
       .slice(2)
-    var ethAddressLower = '0x' + torus.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
+    var ethAddressLower = '0x' + this.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
     var ethAddress = toChecksumAddress(ethAddressLower)
     return ethAddress
-  },
-  getPubKeyAsync: function(web3, endpoints, email, cb) {
-    var promiseArr = []
-    var shares = []
-    var p = fetch(endpoints[Math.floor(Math.random() * endpoints.length)], {
-      method: 'POST',
-      cache: 'no-cache',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        method: 'KeyAssign',
-        id: 10,
-        params: {
+  }
+  getPubKeyAsync(endpointUrl, email) {
+    return new Promise((resolve, reject) => {
+      post(
+        endpointUrl,
+        generateJsonRPCObject('VerifierLookupRequest', {
           verifier: 'google',
           verifier_id: email
-        }
-      })
-    })
-      .then(res => res.json())
-      .then(res => shares.push(res))
-      .catch(err => {
-        console.error(err)
-      })
-    promiseArr.push(p)
-
-    // set a time out here
-    // lets do a retry
-
-    Promise.all(promiseArr)
-      .then(function() {
-        promiseArr = []
-        shares = []
-        var p = fetch(endpoints[Math.floor(Math.random() * endpoints.length)], {
-          method: 'POST',
-          cache: 'no-cache',
-          mode: 'cors',
-          headers: {
-            'Content-Type': 'application/json; charset=utf-8'
-          },
-          body: JSON.stringify({
-            jsonrpc: '2.0',
-            method: 'VerifierLookupRequest',
-            id: 10,
-            params: {
-              verifier: 'google',
-              verifier_id: email
-            }
-          })
         })
-          .then(res => res.json())
-          .then(res => shares.push(res))
-          .catch(err => {
-            console.error(err)
-          })
-        promiseArr.push(p)
-        return Promise.all(promiseArr)
-      })
-      .then(function() {
-        try {
+      )
+        .catch(err => console.error(err))
+        .then(lookupShare => {
+          if (lookupShare.error) {
+            return post(
+              endpointUrl,
+              generateJsonRPCObject('KeyAssign', {
+                verifier: 'google',
+                verifier_id: email
+              })
+            )
+          } else if (lookupShare.result) {
+            return this.getLookupPromise(lookupShare)
+          }
+        })
+        .catch(err => console.error(err))
+        .then(lookupShare => {
           log.info('completed')
-          log.info(shares)
-
-          var ethAddress = shares[0].result.keys[0].address
+          log.info(lookupShare)
+          var ethAddress = lookupShare.result.keys[0].address
           log.info(ethAddress)
-          cb(null, ethAddress)
-        } catch (err) {
-          cb(err, null)
-        }
-      })
+          resolve(ethAddress)
+        })
+        .catch(err => {
+          console.error(err)
+          reject(err)
+        })
+    })
+  }
+  getLookupPromise(lookupShare) {
+    return new Promise((resolve, reject) => resolve(lookupShare))
   }
 }
 
 /* Inialize torus object on load */
-onloadTorus(torus)
+const torus = onloadTorus(new Torus())
 
 export default torus

@@ -52,6 +52,11 @@ module.exports = {
           excludeChunks: ['app', 'chunk-vendors']
         })
       )
+
+      // const index = config.module.rules.findIndex(x => x.use && x.use[0].loader === 'eslint-loader')
+      // config.module.rules[index].use[0].options.formatter = function() {
+      //   return require('eslint/lib/cli-engine/formatters/stylish')
+      // }
     }
   },
   chainWebpack: config => {
@@ -98,6 +103,15 @@ module.exports = {
     //   .tap(options => {
     //     return options
     //   })
+    // config.module
+    //   .rule('eslint')
+    //   .use('eslint-loader')
+    //   .loader('eslint-loader')
+    //   .tap(options => {
+    //     const formatter = require('eslint/lib/cli-engine/formatters/stylish')
+    //     return { ...options, formatter: formatter }
+    //   })
+    //   .end()
   },
 
   publicPath: process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/` : '/',

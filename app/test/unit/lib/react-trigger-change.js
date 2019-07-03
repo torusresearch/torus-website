@@ -17,7 +17,7 @@
 
 // Constants and functions are declared inside the closure.
 // In this way, reactTriggerChange can be passed directly to executeScript in Selenium.
-module.exports = function reactTriggerChange (node) {
+module.exports = function reactTriggerChange(node) {
   var supportedInputTypes = {
     color: true,
     date: true,
@@ -33,7 +33,7 @@ module.exports = function reactTriggerChange (node) {
     text: true,
     time: true,
     url: true,
-    week: true,
+    week: true
   }
   var nodeName = node.nodeName.toLowerCase()
   var type = node.type
@@ -45,14 +45,14 @@ module.exports = function reactTriggerChange (node) {
 
   // Do not try to delete non-configurable properties.
   // Value and checked properties on DOM elements are non-configurable in PhantomJS.
-  function deletePropertySafe (elem, prop) {
+  function deletePropertySafe(elem, prop) {
     var desc = Object.getOwnPropertyDescriptor(elem, prop)
     if (desc && desc.configurable) {
       delete elem[prop]
     }
   }
 
-  function getCheckedRadio (radio) {
+  function getCheckedRadio(radio) {
     var name = radio.name
     var radios
     var i
@@ -67,7 +67,7 @@ module.exports = function reactTriggerChange (node) {
     return null
   }
 
-  function preventChecking (e) {
+  function preventChecking(e) {
     e.preventDefault()
     if (!initialChecked) {
       e.target.checked = false
@@ -77,15 +77,13 @@ module.exports = function reactTriggerChange (node) {
     }
   }
 
-  if (nodeName === 'select' ||
-    (nodeName === 'input' && type === 'file')) {
+  if (nodeName === 'select' || (nodeName === 'input' && type === 'file')) {
     // IE9-IE11, non-IE
     // Dispatch change.
     event = document.createEvent('HTMLEvents')
     event.initEvent('change', true, false)
     node.dispatchEvent(event)
-  } else if ((nodeName === 'input' && supportedInputTypes[type]) ||
-    nodeName === 'textarea') {
+  } else if ((nodeName === 'input' && supportedInputTypes[type]) || nodeName === 'textarea') {
     // React 16
     // Cache artificial value property descriptor.
     // Property doesn't exist in React <16, descriptor is undefined.

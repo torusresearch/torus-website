@@ -1,41 +1,40 @@
-const { shallow, mount } = require('enzyme')
 import { BrowserRouter } from 'react-router-dom'
 import { shape } from 'prop-types'
+const { shallow, mount } = require('enzyme')
 
 module.exports = {
   shallowWithStore,
   mountWithStore,
-  mountWithRouter,
+  mountWithRouter
 }
 
-function shallowWithStore (component, store) {
+function shallowWithStore(component, store) {
   const context = {
-    store,
+    store
   }
-  return shallow(component, {context})
+  return shallow(component, { context })
 }
 
-function mountWithStore (component, store) {
+function mountWithStore(component, store) {
   const context = {
-    store,
+    store
   }
-  return mount(component, {context})
+  return mount(component, { context })
 }
 
-function mountWithRouter (node) {
-
+function mountWithRouter(node) {
   // Instantiate router context
   const router = {
     history: new BrowserRouter().history,
     route: {
       location: {},
-      match: {},
-    },
+      match: {}
+    }
   }
 
   const createContext = () => ({
     context: { router, t: () => {} },
-    childContextTypes: { router: shape({}), t: () => {} },
+    childContextTypes: { router: shape({}), t: () => {} }
   })
 
   return mount(node, createContext())
