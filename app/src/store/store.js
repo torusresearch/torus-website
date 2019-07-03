@@ -203,31 +203,18 @@ var VuexStore = new Vuex.Store({
       )
       if (isTx) {
         var balance = torus.web3.utils.fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
-        let counter = 0
-        let interval
         bc.onmessage = ev => {
           if (ev.data === 'popup-loaded') {
-            // dispatch to store that popup has loaded
-            // dispatch transactions when popup loaded
-            // also dispatch transactions if popup loaded + transactions changes. Don't use interval
-            interval = setInterval(() => {
-              // console.log(getters)
-              var txParams = getters.unApprovedTransactions[0]
-              bc.postMessage({
-                data: {
-                  origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-                  type: 'transaction',
-                  txParams: { ...txParams, network: state.networkType },
-                  balance
-                }
-              })
-              if (txParams.txParams.gas || counter > 9) {
-                bc.close()
-                clearInterval(interval)
+            var txParams = getters.unApprovedTransactions[0]
+            bc.postMessage({
+              data: {
+                origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+                type: 'transaction',
+                txParams: { ...txParams, network: state.networkType },
+                balance
               }
-              counter++
-              // console.log(counter, txParams.txParams.gas)
-            }, 500)
+            })
+            bc.close()
           }
         }
       } else {
