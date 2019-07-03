@@ -185,11 +185,10 @@ class Torus {
     var ethAddress = toChecksumAddress(ethAddressLower)
     return ethAddress
   }
-  getPubKeyAsync(endpoints, email) {
+  getPubKeyAsync(endpointUrl, email) {
     return new Promise((resolve, reject) => {
-      const endPointNumber = Math.floor(Math.random() * endpoints.length)
       post(
-        endpoints[endPointNumber],
+        endpointUrl,
         generateJsonRPCObject('KeyAssign', {
           verifier: 'google',
           verifier_id: email
@@ -198,9 +197,8 @@ class Torus {
         .catch(err => console.error(err))
         .then(response => {
           console.log(response, 'mid')
-          const newEndPointNumber = Math.floor(Math.random() * endpoints.length)
           return post(
-            endpoints[newEndPointNumber],
+            endpointUrl,
             generateJsonRPCObject('VerifierLookupRequest', {
               verifier: 'google',
               verifier_id: email
