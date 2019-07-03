@@ -103,15 +103,15 @@ module.exports = {
     //   .tap(options => {
     //     return options
     //   })
-    config.module
-      .rule('eslint')
-      .use('eslint-loader')
-      .loader('eslint-loader')
-      .tap(options => {
-        const formatter = require('eslint/lib/cli-engine/formatters/stylish')
-        return { ...options, formatter: formatter }
-      })
-      .end()
+    // config.module
+    //   .rule('eslint')
+    //   .use('eslint-loader')
+    //   .loader('eslint-loader')
+    //   .tap(options => {
+    //     const formatter = require('eslint/lib/cli-engine/formatters/stylish')
+    //     return { ...options, formatter: formatter }
+    //   })
+    //   .end()
   },
 
   publicPath: process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/` : '/',
