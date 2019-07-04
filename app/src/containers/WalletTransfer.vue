@@ -132,32 +132,7 @@
 <script>
 import torus from '../torus'
 import { significantDigits } from '../utils/utils'
-
-const transferABI = [
-  {
-    constant: false,
-    inputs: [
-      {
-        name: '_to',
-        type: 'address'
-      },
-      {
-        name: '_value',
-        type: 'uint256'
-      }
-    ],
-    name: 'transfer',
-    outputs: [
-      {
-        name: 'success',
-        type: 'bool'
-      }
-    ],
-    payable: false,
-    stateMutability: 'nonpayable',
-    type: 'function'
-  }
-]
+const transferABI = require('human-standard-token-abi')
 
 const MAX_GAS = 6721975
 
