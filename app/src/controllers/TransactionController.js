@@ -1,11 +1,11 @@
+import { addABI, decodeMethod } from '../utils/abiDecoder'
 const EventEmitter = require('safe-event-emitter')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
 const Transaction = require('ethereumjs-tx')
 const EthQuery = require('ethjs-query')
 const abi = require('human-standard-token-abi')
-const abiDecoder = require('abi-decoder')
-abiDecoder.addABI(abi)
+addABI(abi)
 
 const TransactionStateManager = require('./TransactionStateManager').default
 const TxGasUtil = require('../utils/TxGasUtil').default
@@ -584,7 +584,7 @@ class TransactionController extends EventEmitter {
   */
   async _determineTransactionCategory(txParams) {
     const { data, to } = txParams
-    const { name } = (data && abiDecoder.decodeMethod(data)) || {}
+    const { name } = (data && decodeMethod(data)) || {}
     const tokenMethodName = [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].find(
       tokenMethodName => tokenMethodName === name && name.toLowerCase()
     )

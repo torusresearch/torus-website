@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-let routes = ['/', '/popup', '/confirm', '/wallet', '/wallet/home', '/wallet/history', '/wallet/accounts', '/wallet/settings', '/wallet/transfer']
+let routes = ['/']
 
 if (process.env.TORUS_BUILD_ENV !== 'production') {
   routes.push('/login')
@@ -90,6 +90,7 @@ module.exports = {
       }
       return pwaPlugin
     })
+    config.resolve.alias.set('bn.js', 'fork-bn.js')
     // config.module
     //   .rule('worker')
     //   .test(/\.worker\.js$/)
