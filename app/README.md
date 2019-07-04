@@ -10,8 +10,7 @@
 
 ```sh
 npm install
-cd node_modules && find . -name ".git" -type d -exec rm -rf {} +
-cd .. && npm audit fix
+cd node_modules && find . -name ".git" -type d -exec rm -rf {} + && cd .. && npm audit fix
 ```
 
 ### Compiles and hot-reloads for development
