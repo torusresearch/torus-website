@@ -1,6 +1,5 @@
 const fs = require('fs')
 const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 let routes = ['/']
 
@@ -41,56 +40,9 @@ module.exports = {
       // create a fresh pülugin instance with the new options and
       // replace the current one with it
       config.optimization.minimizer[0] = new TerserPlugin(options)
-
-      config.plugins.push(
-        new HtmlWebpackPlugin({
-          // Also generate a test.html
-          filename: 'error-pages/404-notfound.html',
-          template: path.resolve('./public/error-pages/404-notfound.html'),
-          templateParameters: {
-            BASE_URL: `/${version}/`
-          },
-          excludeChunks: ['app', 'chunk-vendors']
-        })
-      )
     }
   },
   chainWebpack: config => {
-    config.plugin('pwa').tap(pwaPlugin => {
-      pwaPlugin[0].name = 'Torus'
-      pwaPlugin[0].short_name = 'Torus'
-      pwaPlugin[0].start_url =
-        process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/index.html` : '/index.html'
-      pwaPlugin[0].display = 'standalone'
-      pwaPlugin[0].theme_color = '#3996ff'
-      pwaPlugin[0].manifestOptions = {
-        name: 'Torus',
-        short_name: 'Torus',
-        start_url:
-          process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/index.html` : '/index.html',
-        display: 'standalone',
-        theme_color: '#3996ff',
-        icons: [
-          {
-            src:
-              process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging'
-                ? `/${version}/img/icons/android-chrome-192x192.png`
-                : './img/icons/android-chrome-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src:
-              process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging'
-                ? `/${version}/img/icons/android-chrome-512x512.png`
-                : './img/icons/android-chrome-192x192.png',
-            sizes: '512x512',
-            type: 'image/png'
-          }
-        ]
-      }
-      return pwaPlugin
-    })
     config.resolve.alias.set('bn.js', 'fork-bn.js')
     // config.module
     //   .rule('worker')
@@ -135,7 +87,25 @@ module.exports = {
       short_name: 'Torus',
       start_url: process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/index.html` : '/index.html',
       display: 'standalone',
-      theme_color: '#3996ff'
+      theme_color: '#3996ff',
+      icons: [
+        {
+          src:
+            process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging'
+              ? `/${version}/img/icons/android-chrome-192x192.png`
+              : './img/icons/android-chrome-192x192.png',
+          sizes: '192x192',
+          type: 'image/png'
+        },
+        {
+          src:
+            process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging'
+              ? `/${version}/img/icons/android-chrome-512x512.png`
+              : './img/icons/android-chrome-192x192.png',
+          sizes: '512x512',
+          type: 'image/png'
+        }
+      ]
     }
   }
 }
