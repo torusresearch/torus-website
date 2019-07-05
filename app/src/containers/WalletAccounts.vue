@@ -1,7 +1,7 @@
 <template>
   <v-flex xs12 sm8 mt-3 mb-3>
     <div class="d-flex has-border">
-      <v-select single-line solo flat :items="accounts" :value="selectedAddress" label="Selected Account" @change="onAccountChange"></v-select>
+      <v-select single-line solo text :items="accounts" :value="selectedAddress" label="Selected Account" @change="onAccountChange"></v-select>
     </div>
     <div class="d-flex has-border">
       <span class="body-2">Public Address</span>
@@ -13,7 +13,7 @@
     </div>
 
     <div class="has-border py-0">
-      <v-btn block small flat class="grey lighten-2 mb-0 font-weight-regular" @click="showPrivateKey = !showPrivateKey">
+      <v-btn block small text class="grey lighten-2 mb-0 font-weight-regular" @click="showPrivateKey = !showPrivateKey">
         {{ showPrivateKey ? 'Hide Private Key' : 'Show Private Key' }}
         <v-icon v-if="showPrivateKey" :color="$vuetify.theme.torus_reject">expand_less</v-icon>
         <v-icon v-else :color="$vuetify.theme.torus_reject">expand_more</v-icon>
@@ -51,7 +51,7 @@
                   @click:append="toggleJsonPasswordShow"
                   single-line
                   solo
-                  flat
+                  text
                 ></v-text-field>
               </v-flex>
             </v-layout>

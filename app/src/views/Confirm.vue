@@ -4,7 +4,7 @@
       <page-loader />
     </template>
     <template v-if="type === 'message'">
-      <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
+      <v-card text :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
         <v-card-text>
           <v-layout row wrap align-start justify-center>
             <v-flex xs12 mt-3 sm7>
@@ -30,7 +30,7 @@
           <div class="hide-xs mt-5">
             <v-layout row wrap align-center justify-center>
               <v-flex xs12 sm4 class="text-xs-center">
-                <v-btn class="btnStyle" :color="$vuetify.theme.torus_reject" large light flat @click="triggerDeny">Reject</v-btn>
+                <v-btn class="btnStyle" :color="$vuetify.theme.torus_reject" large light text @click="triggerDeny">Reject</v-btn>
               </v-flex>
               <v-flex xs12 sm4 class="text-xs-center">
                 <v-btn large light :color="$vuetify.theme.torus_accept" class="btnStyle white--text rounded-btn" @click="triggerSign">Approve</v-btn>
@@ -42,11 +42,11 @@
           </div>
         </v-card-text>
       </v-card>
-      <v-card class="higherZ hidden-sm-and-up" flat :color="$vuetify.theme.torus_bcg">
+      <v-card class="higherZ hidden-sm-and-up" text :color="$vuetify.theme.torus_bcg">
         <v-card-text>
           <v-layout row wrap align-center>
             <v-flex xs6 sm4>
-              <v-btn class="btnStyle" large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
+              <v-btn class="btnStyle" large light :color="$vuetify.theme.torus_reject" text @click="triggerDeny">Reject</v-btn>
             </v-flex>
             <v-flex xs6 sm4>
               <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text btnStyle rounded-btn" @click="triggerSign">Approve</v-btn>
@@ -56,7 +56,7 @@
       </v-card>
     </template>
     <template v-else-if="type === 'transaction'">
-      <v-card flat :color="$vuetify.theme.torus_bcg">
+      <v-card text :color="$vuetify.theme.torus_bcg">
         <v-card-text>
           <v-layout row wrap align-start justify-center>
             <v-flex xs12>
@@ -126,7 +126,7 @@
             </v-flex>
           </v-layout>
           <div class="text-xs-center mb-4">
-            <v-btn @click="openBottom" flat>
+            <v-btn @click="openBottom" text>
               <span class="text-grayish font-weight-bold text-uppercase">More Details</span>
               <v-icon :color="$vuetify.theme.torus_reject">expand_more</v-icon>
             </v-btn>
@@ -186,11 +186,11 @@
           </bottom-sheet>
         </v-card-text>
       </v-card>
-      <v-card class="higherZ" flat :color="$vuetify.theme.torus_bcg" style="width: 100%;">
+      <v-card class="higherZ" text :color="$vuetify.theme.torus_bcg" style="width: 100%;">
         <v-card-text>
           <v-layout row wrap align-center justify-center>
             <v-flex xs6 sm4 class="text-xs-center">
-              <v-btn large light class="btnStyle" :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
+              <v-btn large light class="btnStyle" :color="$vuetify.theme.torus_reject" text @click="triggerDeny">Reject</v-btn>
             </v-flex>
             <v-flex xs6 sm4 class="text-xs-center">
               <v-btn

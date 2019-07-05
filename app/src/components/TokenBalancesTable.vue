@@ -97,14 +97,14 @@
           </tr>
         </template>
         <template v-slot:expand="props">
-          <v-card flat>
+          <v-card text>
             <v-card-text>
               <v-layout row wrap>
                 <v-flex xs6 class="text-xs-center">
-                  <v-btn class="btnStyle" outline large @click="initiateTransfer">Transfer</v-btn>
+                  <v-btn class="btnStyle" outlined large @click="initiateTransfer">Transfer</v-btn>
                 </v-flex>
                 <v-flex xs6 class="text-xs-center">
-                  <v-btn class="btnStyle" outline large @click="initiateTransfer">Topup</v-btn>
+                  <v-btn class="btnStyle" outlined large @click="initiateTransfer">Topup</v-btn>
                 </v-flex>
               </v-layout>
             </v-card-text>

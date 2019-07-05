@@ -17,7 +17,7 @@
             class="select-width d-inline-flex ml-2 spanWrapSvgStyle"
             single-line
             solo
-            flat
+            text
             :items="supportedCurrencies"
             :value="selectedCurrency"
             label=""
