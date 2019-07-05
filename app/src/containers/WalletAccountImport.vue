@@ -9,7 +9,7 @@
           <v-select
             single-line
             solo
-            flat
+            text
             :items="options"
             item-text="name"
             item-value="value"
@@ -31,7 +31,7 @@
               <v-text-field
                 single-line
                 solo
-                flat
+                text
                 :type="showPrivateKey ? 'text' : 'password'"
                 :rules="[rules.required]"
                 :append-icon="showPrivateKey ? 'visibility' : 'visibility_off'"
@@ -75,7 +75,7 @@
               <v-text-field
                 single-line
                 solo
-                flat
+                text
                 name="password"
                 :rules="[rules.required]"
                 :append-icon="showJsonPassword ? 'visibility' : 'visibility_off'"
@@ -101,7 +101,7 @@
     </template>
     <v-snackbar v-model="snackbar" color="error">
       {{ error }}
-      <v-btn dark flat @click="snackbar = false">
+      <v-btn dark text @click="snackbar = false">
         Close
       </v-btn>
     </v-snackbar>

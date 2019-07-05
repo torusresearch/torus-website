@@ -9,7 +9,7 @@
       </span>
     </v-flex>
     <v-flex xs12 sm9 class="fill-height">
-      <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
+      <v-card text :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
         <v-form ref="form" v-model="formValid" lazy-validation class="fill-height" @submit.prevent="">
           <v-container fill-height pl-0 pr-0>
             <v-layout row wrap align-center justify-center align-content-start>
@@ -17,7 +17,7 @@
                 <span class="body-2">Selected Coin </span>
               </v-flex>
               <v-flex xs7 sm4 align-self-center>
-                <v-select single-line solo flat :items="finalBalancesArray" :value="selectedItem" label="Coin" @change="selectedItemChanged">
+                <v-select single-line solo text :items="finalBalancesArray" :value="selectedItem" label="Coin" @change="selectedItemChanged">
                   <template v-slot:item="props">
                     <v-layout row wrap align-center justify-center>
                       <v-flex xs2>
@@ -62,7 +62,7 @@
                   aria-label="To/Wallet Address"
                   v-model="toAddress"
                   solo
-                  flat
+                  text
                   required
                   :rules="[rules.toAddress, rules.required]"
                 ></v-text-field>
@@ -76,7 +76,7 @@
                   placeholder="Enter amount to send"
                   aria-label="quantity"
                   solo
-                  flat
+                  text
                   required
                   v-model="displayAmount"
                   :rules="[rules.required, lesserThan]"
@@ -84,10 +84,10 @@
                 >
                   <template v-slot:append>
                     <v-btn-toggle v-model="toggle_exclusive" @change="changeSelectedToCurrency" mandatory>
-                      <v-btn flat>
+                      <v-btn text>
                         {{ selectedItem && selectedItem.symbol }}
                       </v-btn>
-                      <v-btn flat>
+                      <v-btn text>
                         {{ selectedCurrency }}
                       </v-btn>
                     </v-btn-toggle>
@@ -109,12 +109,12 @@
                     <v-tooltip bottom :disabled="formValid">
                       <template v-slot:activator="{ on }">
                         <span v-on="on">
-                          <v-btn :disabled="!formValid" outline large class="btnStyle" @click="sendCoin">Confirm</v-btn>
+                          <v-btn :disabled="!formValid" outlined large class="btnStyle" @click="sendCoin">Confirm</v-btn>
                         </span>
                       </template>
                       <span>Resolve the errors</span>
                     </v-tooltip>
-                    <v-btn outline large class="btnStyle" @click="goBack">Back</v-btn>
+                    <v-btn outlined large class="btnStyle" @click="goBack">Back</v-btn>
                   </v-flex>
                   <v-flex xs2 align-self-center class="hidden-xs-only">
                     <img :src="require('../../public/images/torus_logo.png')" />

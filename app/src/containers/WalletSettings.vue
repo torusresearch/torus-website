@@ -12,7 +12,7 @@
         <v-select
           single-line
           solo
-          flat
+          text
           :items="networks"
           item-text="name"
           item-value="value"
@@ -26,7 +26,7 @@
     </v-flex>
     <v-flex xs12 sm8>
       <template v-if="isRPCSelected">
-        <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height">
+        <v-card text :color="$vuetify.theme.torus_bcg" class="fill-height">
           <v-form ref="form" v-model="formValid" lazy-validation @submit.prevent="">
             <v-layout row wrap align-center justify-center align-content-start>
               <v-flex xs12 sm6 align-self-center>
@@ -38,7 +38,7 @@
                   aria-label="network name"
                   v-model="rpc.networkName"
                   solo
-                  flat
+                  text
                   required
                   :rules="[rules.required]"
                 ></v-text-field>
@@ -52,7 +52,7 @@
                   placeholder="Enter RPC URL"
                   aria-label="rpc url"
                   solo
-                  flat
+                  text
                   required
                   v-model="rpc.networkUrl"
                   :rules="[rules.required]"
@@ -62,7 +62,7 @@
                 <span class="body-2">Enter Chain Id</span>
               </v-flex>
               <v-flex xs12 sm6>
-                <v-text-field id="amount" placeholder="Enter chain Id" aria-label="chain Id" solo flat required v-model="rpc.chainId"></v-text-field>
+                <v-text-field id="amount" placeholder="Enter chain Id" aria-label="chain Id" solo text required v-model="rpc.chainId"></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <v-layout row wrap>
@@ -70,7 +70,7 @@
                     <v-tooltip bottom :disabled="formValid">
                       <template v-slot:activator="{ on }">
                         <span v-on="on">
-                          <v-btn id="flexibtn" :disabled="!formValid" outline large class="btnStyle" @click="setRPC">Confirm</v-btn>
+                          <v-btn id="flexibtn" :disabled="!formValid" outlined large class="btnStyle" @click="setRPC">Confirm</v-btn>
                         </span>
                       </template>
                       <span>Resolve the errors</span>
@@ -89,7 +89,7 @@
           <template v-slot:header>
             <div class="body-2">Frequently Asked Questions</div>
           </template>
-          <v-card flat :color="$vuetify.theme.torus_bcg">
+          <v-card text :color="$vuetify.theme.torus_bcg">
             <v-card-text class="pt-0">
               Learn how to
               <a href="https://docs.tor.us" target="_blank" rel="noreferrer noopener">

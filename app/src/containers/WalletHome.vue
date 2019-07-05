@@ -104,7 +104,7 @@ export default {
         <div>
           <div class="text-black font-weight-bold headline mb-3">Operations</div>
           <div>
-            <v-btn outline color="primary" class="px-5 py-1" @click="topup">
+            <v-btn outlined color="primary" class="px-5 py-1" @click="topup">
               <v-icon color="primary" class="btn-icon mr-1">send</v-icon>
               Send
             </v-btn>
@@ -154,7 +154,7 @@ export default {
             class="select-width spanWrapSvgStyle d-inline-flex ml-2"
             single-line
             solo
-            flat
+            text
             :items="supportedCurrencies"
             :value="selectedCurrency"
             label=""
@@ -208,12 +208,12 @@ export default {
           <v-tooltip bottom :disabled="!isTransferDisabled">
             <template v-slot:activator="{ on }">
               <span v-on="on">
-                <v-btn :disabled="isTransferDisabled" outline large class="btnStyle" @click="initiateTransfer">Transfer</v-btn>
+                <v-btn :disabled="isTransferDisabled" outlined large class="btnStyle" @click="initiateTransfer">Transfer</v-btn>
               </span>
             </template>
             <span>Please select a coin/token</span>
           </v-tooltip>
-          <v-btn outline large class="btnStyle" @click="topup">Top-up</v-btn>
+          <v-btn outlined large class="btnStyle" @click="topup">Top-up</v-btn>
         </v-flex>
         <v-flex xs2 align-self-center class="hidden-xs-only">
           <img :src="require('../../public/images/torus_logo.png')" />

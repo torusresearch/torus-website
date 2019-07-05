@@ -49,11 +49,11 @@
           </tr>
         </template>
         <template v-slot:expand="props">
-          <v-card flat v-show="props.item.status !== 'rejected'">
+          <v-card text v-show="props.item.status !== 'rejected'">
             <v-card-text>
               <v-layout row wrap>
                 <v-flex xs6 class="text-xs-left">
-                  <v-btn id="flexibtn" class="btnStyle" outline large>
+                  <v-btn id="flexibtn" class="btnStyle" outlined large>
                     <a target="_blank" rel="noopener noreferrer" :href="props.item.etherscanLink">View On Etherscan</a></v-btn
                   >
                 </v-flex>
