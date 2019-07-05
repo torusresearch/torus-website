@@ -11,9 +11,10 @@ export default {
       headerItems: [
         { name: 'home', display: 'Home', route: '/wallet/home' },
         { name: 'transfer', display: 'Transfer', route: '/wallet/transfer' },
-        { name: 'top-up', display: 'Top-up', route: '/wallet/top-up' },
+        // { name: 'top-up', display: 'Top-up', route: '/wallet/top-up' },
         { name: 'activity', display: 'Activity', route: '/wallet/history' },
-        { name: 'settings', display: 'Settings', route: '/wallet/settings' }
+        { name: 'settings', display: 'Settings', route: '/wallet/settings' },
+        { name: 'accounts', display: 'Accounts', route: '/wallet/accounts' }
       ]
       // headerItems: [
       //   { name: 'home', display: 'Home', route: '/wallet/home' },
