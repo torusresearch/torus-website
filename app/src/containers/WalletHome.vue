@@ -26,7 +26,24 @@ export default {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '$ 0'
     },
     finalBalancesArray() {
-      return this.$store.getters.tokenBalances.finalBalancesArray || []
+      // let balances = this.$store.getters.tokenBalances.finalBalancesArray
+      // balances.push({
+      //   balance: '0x0',
+      //   computedBalance: 0,
+      //   currencyBalance: 'USD 0.00',
+      //   currencyRateText: '1 ETH = 285.24 USD',
+      //   decimals: 18,
+      //   erc20: false,
+      //   formattedBalance: 'ETH 0',
+      //   id: 'ETH',
+      //   logo: 'eth.svg',
+      //   name: 'Bit Coin',
+      //   symbol: 'ETH',
+      //   tokenAddress: '0x'
+      // })
+
+      return this.$store.getters.tokenBalances.finalBalancesArray || 0
+      // return balances || []
     },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
@@ -36,6 +53,9 @@ export default {
     },
     isRefreshVisible() {
       return this.$store.state.networkType === MAINNET
+    },
+    isFreshAccount() {
+      return this.finalBalancesArray.length <= 1
     }
   },
   methods: {
@@ -65,28 +85,49 @@ export default {
 </script>
 
 <template>
-  <v-layout mt-5 row wrap align-start justify-center align-content-start>
-    <v-flex xs12>
-      <span>
+  <div>
+    <v-layout mt-5 wrap row>
+      <v-flex xs6 px-3>
         <span class="text-black font-weight-bold headline">My Wallet</span>
-        <!-- <span class="spanWrapSvgStyle" v-show="isRefreshVisible">
+        <v-card class="mx-auto mt-3 py-4 px-3 card-total" color="dark" white>
+          <v-card-title class="font-weight-bold">
+            TOTAL VALUE
+          </v-card-title>
+          <v-card-text class="headline font-weight-bold">
+            <h2>{{ totalPortfolioValue }} <small class="font-weight-light">USD</small></h2>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+
+      <v-flex xs6 px-3 :class="{ 'pt-3': isFreshAccount }" :style="{ order: isFreshAccount ? 2 : 0 }">
+        <div>
+          <div class="headline mb-4">Operations</div>
+          <div>
+            <v-btn outline color="primary" class="px-5 py-1" @click="topup">
+              <v-icon color="primary" class="btn-icon mr-1">send</v-icon>
+              Send
+            </v-btn>
+            <v-btn color="primary" class="px-5 py-1" @click="topup">
+              <v-icon color="white" class="btn-icon mr-1">add</v-icon>
+              Top up
+            </v-btn>
+          </div>
+        </div>
+      </v-flex>
+    </v-layout>
+    <v-layout mt-5 row wrap align-start justify-center align-content-start>
+      <!-- <v-flex xs12>
+        <span>
+          <span class="text-black font-weight-bold headline">My Wallet</span>
+          <span class="spanWrapSvgStyle" v-show="isRefreshVisible">
           <v-btn icon size="18" small @click="refreshBalances">
             <img :src="require('../../public/images/sync-blue.svg')" alt="Wallet" class="svg-setting-tiny" />
           </v-btn>
-        </span> -->
-      </span>
-    </v-flex>
-    <v-flex xs12 class="text-sm-right mb-4">
-      <v-btn outline color="primary" class="px-5 py-1" @click="topup">
-        <v-icon color="primary" class="btn-icon mr-1">send</v-icon>
-        Send
-      </v-btn>
-
-      <v-btn color="primary" class="px-5 py-1" @click="topup">
-        <v-icon color="white" class="btn-icon mr-1">add</v-icon>
-        Top up
-      </v-btn>
-      <!-- <div>Total Portfolio Value</div>
+        </span>
+        </span>
+      </v-flex> -->
+      <!-- <v-flex xs12 class="text-sm-right mb-4">
+        <div>Total Portfolio Value</div>
       <div>
         <span>
           <span class="text-bluish headline spanWrapSvgStyle"> {{ totalPortfolioValue }} </span>
@@ -101,45 +142,45 @@ export default {
             @change="onCurrencyChange"
           ></v-select>
         </span>
-      </div> -->
-    </v-flex>
-    <v-flex xs12 class="mb-4">
-      <v-card class="mx-auto py-4 px-3 card-total" color="dark" white>
-        <v-card-title class="font-weight-bold">
-          TOTAL VALUE
-        </v-card-title>
-        <v-card-text class="headline font-weight-bold">
-          <h2>0.00 <small class="font-weight-light">USD</small></h2>
-        </v-card-text>
-      </v-card>
-    </v-flex>
-
-    <v-flex pa-1 class="mb-4 small-card">
-      <v-card white color="dark" class="py-4 px-3">
-        <v-card-title class="pb-1">
-          COINS / TOKEN
-        </v-card-title>
-        <v-flex>
-          <v-card-text class="font-weight-bold d-flex pl-5">
-            <span>Ethereum</span>
-            <span class="text-sm-right">0.00 ETH</span>
+      </div>
+      </v-flex> -->
+      <!-- <v-flex xs12 class="mb-4">
+        <v-card class="mx-auto py-4 px-3 card-total" color="dark" white>
+          <v-card-title class="font-weight-bold">
+            TOTAL VALUE
+          </v-card-title>
+          <v-card-text class="headline font-weight-bold">
+            <h2>0.00 <small class="font-weight-light">USD</small></h2>
           </v-card-text>
-        </v-flex>
-      </v-card>
-    </v-flex>
-    <v-flex pa-1 class="mb-4 small-card">
-      <v-card white color="dark" class="py-4 px-3">
-        <v-card-title class="font-weight-bold">
-          Welcome to Torus. <br />
-          Learn more about your wallet today.
-        </v-card-title>
-        <v-btn color="primary" class="px-4 py-2" @click="topup">
-          Learn More
-        </v-btn>
-      </v-card>
-    </v-flex>
+        </v-card>
+      </v-flex> -->
+      <!-- 
+      <v-flex pa-1 class="mb-4 small-card">
+        <v-card white color="dark" class="py-4 px-3">
+          <v-card-title class="pb-1">
+            COINS / TOKEN
+          </v-card-title>
+          <v-flex>
+            <v-card-text class="font-weight-bold d-flex pl-5">
+              <span>Ethereum</span>
+              <span class="text-sm-right">0.00 ETH</span>
+            </v-card-text>
+          </v-flex>
+        </v-card>
+      </v-flex>
+      <v-flex pa-1 class="mb-4 small-card">
+        <v-card white color="dark" class="py-4 px-3">
+          <v-card-title class="font-weight-bold">
+            Welcome to Torus. <br />
+            Learn more about your wallet today.
+          </v-card-title>
+          <v-btn color="primary" class="px-4 py-2" @click="topup">
+            Learn More
+          </v-btn>
+        </v-card>
+      </v-flex> -->
 
-    <!-- <v-flex xs12>
+      <!-- <v-flex xs12>
       <token-balances-table :headers="headers" :tokenBalances="finalBalancesArray" @update:select="select" :selected="selected" />
     </v-flex>
     <v-flex xs12>
@@ -160,7 +201,8 @@ export default {
         </v-flex>
       </v-layout>
     </v-flex> -->
-  </v-layout>
+    </v-layout>
+  </div>
 </template>
 
 <style lang="scss" scoped>
