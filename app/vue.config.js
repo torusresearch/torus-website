@@ -2,11 +2,12 @@ const fs = require('fs')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-let routes = ['/', '/popup', '/confirm', '/wallet', '/wallet/home', '/wallet/history', '/wallet/accounts', '/wallet/settings', '/wallet/transfer']
+let routes = ['/']
 
 if (process.env.TORUS_BUILD_ENV !== 'production') {
   routes.push('/login')
 }
+// https://157.230.171.237:8117
 
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
 
@@ -52,11 +53,6 @@ module.exports = {
           excludeChunks: ['app', 'chunk-vendors']
         })
       )
-
-      // const index = config.module.rules.findIndex(x => x.use && x.use[0].loader === 'eslint-loader')
-      // config.module.rules[index].use[0].options.formatter = function() {
-      //   return require('eslint/lib/cli-engine/formatters/stylish')
-      // }
     }
   },
   chainWebpack: config => {
@@ -95,6 +91,7 @@ module.exports = {
       }
       return pwaPlugin
     })
+    config.resolve.alias.set('bn.js', 'fork-bn.js')
     // config.module
     //   .rule('worker')
     //   .test(/\.worker\.js$/)
@@ -103,15 +100,6 @@ module.exports = {
     //   .tap(options => {
     //     return options
     //   })
-    // config.module
-    //   .rule('eslint')
-    //   .use('eslint-loader')
-    //   .loader('eslint-loader')
-    //   .tap(options => {
-    //     const formatter = require('eslint/lib/cli-engine/formatters/stylish')
-    //     return { ...options, formatter: formatter }
-    //   })
-    //   .end()
   },
 
   publicPath: process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/` : '/',

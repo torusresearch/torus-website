@@ -76,11 +76,11 @@
                 <v-flex xs6 sm12 mt-3>
                   <div class="font-weight-medium subheading">My Wallet</div>
                   <div>
-                    <span class="text-bluish">Address:</span>
+                    <span class="text-bluish">Address: </span>
                     <show-tool-tip :address="sender">{{ slicedAddress(sender) }}</show-tool-tip>
                   </div>
                   <div>
-                    <span class="text-bluish">Balance:</span>
+                    <span class="text-bluish">Balance: </span>
                     <span>{{ computedBalance }} ETH</span>
                   </div>
                 </v-flex>
@@ -111,7 +111,7 @@
                 <v-flex xs6 sm12 mt-3>
                   <div class="font-weight-medium subheading">Payee's Wallet</div>
                   <div>
-                    <span class="text-bluish">Address:</span>
+                    <span class="text-bluish">Address: </span>
                     <show-tool-tip :address="receiver">{{ slicedAddress(receiver) }}</show-tool-tip>
                   </div>
                 </v-flex>
@@ -215,13 +215,12 @@
 
 <script>
 import { mapActions } from 'vuex' // Maybe dispatch a bc to show popup from that instance
-import psl from 'psl'
 import BroadcastChannel from 'broadcast-channel'
 import BottomSheet from '../components/BottomSheet.vue'
 import ShowToolTip from '../components/ShowToolTip.vue'
 import PageLoader from '../components/PageLoader.vue'
 import torus from '../torus'
-import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress, extractHostname } from '../utils/utils'
+import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress } from '../utils/utils'
 
 const weiInGwei = 10 ** 9
 
@@ -336,7 +335,13 @@ export default {
     var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
     bc.onmessage = async ev => {
       const { type, msgParams, txParams, origin, balance } = ev.data || {}
-      this.origin = psl.get(extractHostname(origin)) // origin of tx: website url
+      let url = { hostname: '' }
+      try {
+        url = new URL(origin)
+      } catch (err) {
+        console.log(err)
+      }
+      this.origin = url.hostname // origin of tx: website url
       if (type === 'message') {
         const { message, typedMessages } = msgParams || {}
         this.message = message
