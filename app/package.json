@@ -69,7 +69,7 @@
     "vue": "^2.6.10",
     "vue-knob-control": "^1.6.0",
     "vue-router": "^3.0.7",
-    "vuetify": "^1.5.16",
+    "vuetify": "^2.0.0-beta.0",
     "vuex": "^3.1.1",
     "vuex-persist": "^2.0.1",
     "web3": "1.0.0-beta.37",
@@ -118,6 +118,7 @@
     "nyc": "^14.1.1",
     "prerender-spa-plugin": "^3.4.0",
     "puppeteer": "^1.18.1",
+    "sass": "^1.17.4",
     "sass-loader": "^7.1.0",
     "sinon": "^7.3.2",
     "sri-toolbox": "^0.2.0",
@@ -126,7 +127,7 @@
     "through2": "^3.0.1",
     "uglifyify": "^5.0.1",
     "vue-cli-plugin-prerender-spa": "^1.1.5",
-    "vue-cli-plugin-vuetify": "^0.5.0",
+    "vue-cli-plugin-vuetify": "git+https://github.com/vuetifyjs/vue-cli-plugin-vuetify.git#dev",
     "vue-template-compiler": "^2.6.10",
     "vuetify-loader": "^1.2.2",
     "worker-loader": "^2.0.0"
@@ -138,9 +139,6 @@
   ],
   "engines": {
     "node": "10.x"
-  },
-  "mocha": {
-    "timeout": 0
   },
   "husky": {
     "hooks": {
@@ -163,5 +161,8 @@
       "prettier --write **/*.css",
       "git add"
     ]
+  },
+  "mocha": {
+    "timeout": 0
   }
 }
