@@ -27,24 +27,9 @@ export default {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '$ 0'
     },
     finalBalancesArray() {
-      // let balances = this.$store.getters.tokenBalances.finalBalancesArray
-      // balances.push({
-      //   balance: '0x0',
-      //   computedBalance: 0,
-      //   currencyBalance: 'USD 0.00',
-      //   currencyRateText: '1 ETH = 285.24 USD',
-      //   decimals: 18,
-      //   erc20: false,
-      //   formattedBalance: 'ETH 0',
-      //   id: 'ETH',
-      //   logo: 'eth.svg',
-      //   name: 'Bit Coin',
-      //   symbol: 'ETH',
-      //   tokenAddress: '0x'
-      // })
+      let balances = this.$store.getters.tokenBalances.finalBalancesArray
 
-      return this.$store.getters.tokenBalances.finalBalancesArray || 0
-      // return balances || []
+      return balances || []
     },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
@@ -56,7 +41,8 @@ export default {
       return this.$store.state.networkType === MAINNET
     },
     isFreshAccount() {
-      return this.finalBalancesArray.length <= 1
+      return this.finalBalancesArray.length === 1 && this.finalBalancesArray[0].computedBalance === 0
+      // || true
     }
   },
   methods: {
@@ -104,11 +90,11 @@ export default {
         <div>
           <div class="text-black font-weight-bold headline mb-3">Operations</div>
           <div>
-            <v-btn outlined color="primary" class="px-5 py-1" @click="topup">
+            <v-btn outlined large color="primary" class="px-5 py-1 mr-3" @click="topup">
               <v-icon color="primary" class="btn-icon mr-1">send</v-icon>
               Send
             </v-btn>
-            <v-btn color="primary" class="px-5 py-1" @click="topup">
+            <v-btn large color="primary" class="px-5 py-1" @click="topup">
               <v-icon color="white" class="btn-icon mr-1">add</v-icon>
               Top up
             </v-btn>
@@ -116,8 +102,8 @@ export default {
         </div>
       </v-flex>
 
-      <v-flex :class="{ 'px-3': this.isFreshAccount }" :style="{ order: this.isFreshAccount ? 1 : 2 }">
-        <v-layout row align-center justify-end mb-2>
+      <v-flex :class="isFreshAccount ? 'px-3' : 'pt-4'" :style="{ order: isFreshAccount ? 1 : 2 }">
+        <v-layout row align-center justify-end mb-2 :class="isFreshAccount ? '' : 'mr-3'">
           <div class="subheader">CURRENCY:</div>
           <v-select
             class="pt-0 mt-0 ml-2 body-2 currency-selector"
@@ -127,11 +113,17 @@ export default {
             :value="selectedCurrency"
           ></v-select>
         </v-layout>
-        <v-layout row align-center justify-end v-if="!isFreshAccount">
+        <v-layout row align-center mr-3 justify-end v-if="!isFreshAccount">
           <v-text-field class="pt-0 mt-0 mr-3 subheading" height="36px" append-icon="search" style="max-width: 100px"></v-text-field>
           <span class="caption mb-3">Last update 24/06/19, 16:24</span>
         </v-layout>
-        <token-balances-table :headers="headers" :tokenBalances="finalBalancesArray" @update:select="select" :selected="selected" />
+        <token-balances-table
+          :headers="headers"
+          :isFreshAccount="isFreshAccount"
+          :tokenBalances="finalBalancesArray"
+          @update:select="select"
+          :selected="selected"
+        />
       </v-flex>
     </v-layout>
     <v-layout mt-5 row wrap align-start justify-center align-content-start>

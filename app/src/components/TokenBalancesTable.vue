@@ -1,5 +1,5 @@
 <template>
-  <v-layout row wrap align-center mt-4>
+  <v-layout row wrap align-center :class="isFreshAccount ? 'mt-4' : 'mt-0'">
     <v-flex :class="tokenCardLayout" v-for="balance in tokenBalances" :key="balance.name">
       <v-card color="dark" white>
         <v-card-title class="font-weight-bold pt-4 pb-0 px-4">
@@ -120,7 +120,7 @@
 
 <script>
 export default {
-  props: ['headers', 'tokenBalances', 'selected'],
+  props: ['headers', 'tokenBalances', 'selected', 'isFreshAccount'],
   data() {
     return {
       pagination: {
@@ -135,9 +135,6 @@ export default {
     },
     tokenCardLayout() {
       return this.isFreshAccount ? 'xs12' : 'xs6 px-3 my-3'
-    },
-    isFreshAccount() {
-      return this.tokenBalances.length <= 1
     }
   },
   methods: {
@@ -170,8 +167,16 @@ export default {
   color: var(--v-torus_blue-base);
 }
 
+::v-deep .v-text-field.v-text-field--enclosed > .v-input__control > .v-input__slot {
+  margin-top: 0 !important;
+}
+
+::v-deep .v-text-field.v-text-field--solo .v-input__prepend-outer {
+  margin: 2px 0 0;
+}
+
 .inline-small {
-  width: 25px;
+  width: 20px;
   height: 25px;
   display: inline-block;
   vertical-align: middle;
