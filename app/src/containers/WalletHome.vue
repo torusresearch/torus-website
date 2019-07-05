@@ -1,11 +1,12 @@
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
 import config from '../config'
-// import TokenBalancesTable from '../components/TokenBalancesTable.vue'
+import TokenBalancesTable from '../components/TokenBalancesTable.vue'
 import { MAINNET } from '../utils/enums'
 
 export default {
   name: 'walletHome',
+  components: { TokenBalancesTable },
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
@@ -88,12 +89,12 @@ export default {
   <div>
     <v-layout mt-5 wrap row>
       <v-flex xs6 px-3>
-        <span class="text-black font-weight-bold headline">My Wallet</span>
-        <v-card class="mx-auto mt-3 py-4 px-3 card-total" color="dark" white>
-          <v-card-title class="font-weight-bold">
+        <div class="text-black font-weight-bold headline mb-3">My Wallet</div>
+        <v-card class="mx-auto card-total" color="dark" white>
+          <v-card-title class="font-weight-bold pt-4 px-4">
             TOTAL VALUE
           </v-card-title>
-          <v-card-text class="headline font-weight-bold">
+          <v-card-text class="headline font-weight-bold pb-4 px-4">
             <h2>{{ totalPortfolioValue }} <small class="font-weight-light">USD</small></h2>
           </v-card-text>
         </v-card>
@@ -101,7 +102,7 @@ export default {
 
       <v-flex xs6 px-3 :class="{ 'pt-3': isFreshAccount }" :style="{ order: isFreshAccount ? 2 : 0 }">
         <div>
-          <div class="headline mb-4">Operations</div>
+          <div class="text-black font-weight-bold headline mb-3">Operations</div>
           <div>
             <v-btn outline color="primary" class="px-5 py-1" @click="topup">
               <v-icon color="primary" class="btn-icon mr-1">send</v-icon>
@@ -113,6 +114,24 @@ export default {
             </v-btn>
           </div>
         </div>
+      </v-flex>
+
+      <v-flex :class="{ 'px-3': this.isFreshAccount }" :style="{ order: this.isFreshAccount ? 1 : 2 }">
+        <v-layout row align-center justify-end mb-2>
+          <div class="subheader">CURRENCY:</div>
+          <v-select
+            class="pt-0 mt-0 ml-2 body-2 currency-selector"
+            height="25px"
+            hide-details
+            :items="supportedCurrencies"
+            :value="selectedCurrency"
+          ></v-select>
+        </v-layout>
+        <v-layout row align-center justify-end v-if="!isFreshAccount">
+          <v-text-field class="pt-0 mt-0 mr-3 subheading" height="36px" append-icon="search" style="max-width: 100px"></v-text-field>
+          <span class="caption mb-3">Last update 24/06/19, 16:24</span>
+        </v-layout>
+        <token-balances-table :headers="headers" :tokenBalances="finalBalancesArray" @update:select="select" :selected="selected" />
       </v-flex>
     </v-layout>
     <v-layout mt-5 row wrap align-start justify-center align-content-start>
@@ -242,6 +261,10 @@ export default {
   .v-card {
     min-height: 175px;
   }
+}
+
+.currency-selector {
+  max-width: 50px;
 }
 
 .spanWrapSvgStyle {

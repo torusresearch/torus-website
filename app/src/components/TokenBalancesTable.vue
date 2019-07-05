@@ -1,5 +1,43 @@
 <template>
-  <v-layout row wrap>
+  <v-layout row wrap align-center mt-4>
+    <v-flex :class="tokenCardLayout" v-for="balance in tokenBalances" :key="balance.name">
+      <v-card color="dark" white>
+        <v-card-title class="font-weight-bold pt-4 pb-0 px-4">
+          COINS / TOKENS
+        </v-card-title>
+        <v-card-text class="headline font-weight-bold pt-1 pb-4 px-4">
+          <v-flex xs12>
+            <v-text-field single-line solo hide-details disabled type="text" :value="balance.name">
+              <template v-slot:prepend>
+                <img
+                  :src="require(`../../public/images/logos/${balance.logo}`)"
+                  class="inline-small"
+                  onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                />
+              </template>
+              <template v-slot:append>
+                {{ balance.formattedBalance }}
+              </template>
+            </v-text-field>
+            <div class="v-text-field__details">
+              <div class="v-messages theme--light">
+                <div class="v-messages__wrapper">
+                  <div class="v-messages__message pl-4 pt-1">
+                    <span class="left ml-3">{{ balance.currencyRateText }}</span>
+                    <span class="right mr-2">{{ balance.currencyBalance }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </v-flex>
+        </v-card-text>
+      </v-card>
+    </v-flex>
+    <v-flex v-if="isFreshAccount" xs12 pa-3 class="text-xs-right">
+      <span class="caption">Last update 24/06/19, 16:24</span>
+    </v-flex>
+  </v-layout>
+  <!-- <v-layout row wrap v-if="false">
     <v-flex d-flex offset-xs8 xs4 sm4 offset-sm7 align-self-end v-if="showFooter">
       <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
     </v-flex>
@@ -33,7 +71,6 @@
           </tr>
         </template>
         <template v-slot:items="props">
-          <!-- "props.expanded = !props.expanded" -->
           <tr @click="selectEmit(props.item)" :active="props.selected" :class="{ activeRow: props.selected }">
             <td class="pr-0">
               <v-flex class="set-min-width">
@@ -78,7 +115,7 @@
         </template>
       </v-data-table>
     </v-flex>
-  </v-layout>
+  </v-layout> -->
 </template>
 
 <script>
@@ -95,6 +132,12 @@ export default {
   computed: {
     showFooter() {
       return this.tokenBalances.length > 5
+    },
+    tokenCardLayout() {
+      return this.isFreshAccount ? 'xs12' : 'xs6 px-3 my-3'
+    },
+    isFreshAccount() {
+      return this.tokenBalances.length <= 1
     }
   },
   methods: {
