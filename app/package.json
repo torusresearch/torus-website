@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "cross-env NODE_ENV=production TORUS_BUILD_ENV=production npm run build-embed:production && npm run pre-build && cross-env TORUS_BUILD_ENV=production vue-cli-service build",
+    "post-build": ". ./scripts/buildErrorPage.sh",
+    "build": "cross-env NODE_ENV=production TORUS_BUILD_ENV=production npm run build-embed:production && npm run pre-build && cross-env TORUS_BUILD_ENV=production vue-cli-service build && npm run post-build",
     "lint": "vue-cli-service lint",
     "build-embed:dev": "cross-env TORUS_BUILD_ENV=development node ./scripts/createEmbed.js",
     "build-embed:production": "cross-env TORUS_BUILD_ENV=production NODE_ENV=production node ./scripts/createEmbed.js",
@@ -13,7 +14,7 @@
     "build-embed:testing": "cross-env TORUS_BUILD_ENV=testing node ./scripts/createEmbed.js",
     "build:dev": "npm run build-embed:dev && npm run pre-build && vue-cli-service build --mode development",
     "build:report": "vue-cli-service build --report",
-    "build:staging": "cross-env NODE_ENV=production TORUS_BUILD_ENV=staging npm run build-embed:staging && npm run pre-build && cross-env TORUS_BUILD_ENV=staging vue-cli-service build",
+    "build:staging": "cross-env NODE_ENV=production TORUS_BUILD_ENV=staging npm run build-embed:staging && npm run pre-build && cross-env TORUS_BUILD_ENV=staging vue-cli-service build && npm run post-build",
     "build:testing": "npm run build-embed:testing && npm run pre-build && vue-cli-service build --mode development",
     "dev": "cross-env NODE_ENV=development TORUS_BUILD_ENV=development node server.js",
     "lint:js": "eslint --fix src/**/*.js",
@@ -75,10 +76,10 @@
     "xtend": "^4.0.1"
   },
   "devDependencies": {
-    "@toruslabs/torus-embed": "^0.0.15",
+    "@toruslabs/torus-embed": "^0.0.16",
     "@vue/cli-plugin-babel": "^3.9.0",
     "@vue/cli-plugin-eslint": "^3.9.1",
-    "@vue/cli-plugin-pwa": "^4.0.0-alpha.2",
+    "@vue/cli-plugin-pwa": "^4.0.0-alpha.3",
     "@vue/cli-service": "^3.9.0",
     "@vue/eslint-config-standard": "^4.0.0",
     "babel-eslint": "^10.0.2",
