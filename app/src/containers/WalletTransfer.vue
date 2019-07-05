@@ -10,8 +10,8 @@
     </v-flex>
     <v-flex xs12 sm9 class="fill-height">
       <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
-        <v-form ref="form" v-model="formValid" lazy-validation class="fill-height">
-          <v-container fill-height>
+        <v-form ref="form" v-model="formValid" lazy-validation class="fill-height" @submit.prevent="">
+          <v-container fill-height pl-0 pr-0>
             <v-layout row wrap align-center justify-center align-content-start>
               <v-flex xs12 sm6>
                 <span class="body-2">Selected Coin </span>
@@ -31,15 +31,15 @@
                     </v-layout>
                   </template>
                   <template v-slot:selection="props">
-                    <v-layout row wrap align-bottom justify-center>
-                      <v-flex xs2>
+                    <v-layout row align-center>
+                      <v-flex xs2 mr-2>
                         <img
                           :src="require(`../../public/images/logos/${props.item.logo}`)"
                           class="inline-small"
                           onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
                         />
                       </v-flex>
-                      <v-flex xs10 align-self-end> {{ props.item.name }} </v-flex>
+                      <v-flex xs10>{{ props.item.name }}</v-flex>
                     </v-layout>
                   </template>
                 </v-select>
@@ -64,6 +64,8 @@
                   solo
                   flat
                   required
+                  persistent-hint
+                  hint="Please enter an Ethereum address or a valid Google email"
                   :rules="[rules.toAddress, rules.required]"
                 ></v-text-field>
               </v-flex>
@@ -80,6 +82,7 @@
                   required
                   v-model="displayAmount"
                   :rules="[rules.required, lesserThan]"
+                  class="remove-padding-right"
                 >
                   <template v-slot:append>
                     <v-btn-toggle v-model="toggle_exclusive" @change="changeSelectedToCurrency" mandatory>
@@ -130,33 +133,10 @@
 
 <script>
 import torus from '../torus'
-import { significantDigits } from '../utils/utils'
-
-const transferABI = [
-  {
-    constant: false,
-    inputs: [
-      {
-        name: '_to',
-        type: 'address'
-      },
-      {
-        name: '_value',
-        type: 'uint256'
-      }
-    ],
-    name: 'transfer',
-    outputs: [
-      {
-        name: 'success',
-        type: 'bool'
-      }
-    ],
-    payable: false,
-    stateMutability: 'nonpayable',
-    type: 'function'
-  }
-]
+import { significantDigits, getRandomNumber } from '../utils/utils'
+import config from '../config'
+const { torusNodeEndpoints } = config
+const transferABI = require('human-standard-token-abi')
 
 const MAX_GAS = 6721975
 
@@ -176,7 +156,7 @@ export default {
       fastGasPrice: '20',
       isFastChecked: false,
       rules: {
-        toAddress: value => torus.web3.utils.isAddress(value) || 'Invalid Eth Address',
+        toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid eth or email Address',
         required: value => !!value || 'Required'
       }
     }
@@ -186,7 +166,7 @@ export default {
       return this.$store.state.selectedCurrency
     },
     currentEthBalance() {
-      return this.$store.state.weiBalance
+      return this.$store.state.weiBalance[this.$store.state.selectedAddress]
     },
     finalBalancesArray() {
       return this.$store.getters.tokenBalances.finalBalancesArray || []
@@ -292,11 +272,26 @@ export default {
         this.displayAmount = this.displayAmount * currencyRate
       }
     },
-    sendCoin() {
-      const gasPrice = torus.web3.utils.toBN(this.isFastChecked ? (this.fastGasPrice * 10 ** 9).toString() : (this.gasPrice * 10 ** 9).toString())
-      const toAddress = torus.web3.utils.toChecksumAddress(this.toAddress)
-      const selectedAddress = this.$store.state.selectedAddress
+    async sendCoin() {
       if (this.$refs.form.validate()) {
+        const gasPrice = torus.web3.utils.toBN(this.isFastChecked ? (this.fastGasPrice * 10 ** 9).toString() : (this.gasPrice * 10 ** 9).toString())
+        let toAddress
+        if (torus.web3.utils.isAddress(this.toAddress)) {
+          toAddress = torus.web3.utils.toChecksumAddress(this.toAddress)
+        } else {
+          const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
+          try {
+            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[endPointNumber], this.toAddress)
+          } catch (err) {
+            console.log(err)
+            let newEndPointNumber = endPointNumber
+            while (newEndPointNumber === endPointNumber) {
+              newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
+            }
+            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], this.toAddress)
+          }
+        }
+        const selectedAddress = this.$store.state.selectedAddress
         if (this.selectedTokenAddress === '0x')
           torus.web3.eth
             .sendTransaction({
@@ -430,6 +425,20 @@ export default {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.16) !important;
   margin-top: 20px !important;
   margin-bottom: 0px !important;
+}
+
+/deep/.v-text-field.remove-padding-right .v-input__control > .v-input__slot {
+  padding-right: 0;
+
+  .v-btn-toggle {
+    border-radius: 0 17px 17px 0;
+    .v-btn:first-child {
+      border-radius: 17px 0 0 17px;
+    }
+    .v-btn:last-child {
+      border-radius: 0 17px 17px 0;
+    }
+  }
 }
 
 /deep/.v-text-field.v-text-field--solo .v-input__control {

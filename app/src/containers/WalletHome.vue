@@ -81,7 +81,7 @@ export default {
   },
   computed: {
     totalPortfolioValue() {
-      return this.$store.getters.tokenBalances.totalPortfolioValue || '$ 0'
+      return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
     },
     finalBalancesArray() {
       return this.$store.getters.tokenBalances.finalBalancesArray || []
@@ -116,7 +116,7 @@ export default {
       this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
     },
     topup() {
-      window.alert('coming soon')
+      this.$router.push({ path: '/wallet/topup' })
     }
   }
 }

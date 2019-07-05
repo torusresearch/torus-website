@@ -1,5 +1,8 @@
 <template>
   <v-container fill-height>
+    <template v-if="type === 'none'">
+      <page-loader />
+    </template>
     <template v-if="type === 'message'">
       <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
         <v-card-text>
@@ -7,7 +10,8 @@
             <v-flex xs12 mt-3 sm7>
               <div class="headline mb-5">Requesting Signature</div>
               <p class="mb-3 subheading">
-                From: <span class="text-bluish">{{ origin }}</span>
+                From:
+                <span class="text-bluish">{{ origin }}</span>
               </p>
               <div v-if="messageType === 'normal'">{{ message }}</div>
               <div v-else-if="messageType === 'typed'" v-for="typedMessage in typedMessages" :key="typedMessage.name">
@@ -29,11 +33,9 @@
                 <v-btn class="btnStyle" :color="$vuetify.theme.torus_reject" large light flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
               <v-flex xs12 sm4 class="text-xs-center">
-                <v-btn large light :color="$vuetify.theme.torus_accept" class="btnStyle white--text rounded-btn" @click="triggerSign">
-                  Approve
-                </v-btn>
+                <v-btn large light :color="$vuetify.theme.torus_accept" class="btnStyle white--text rounded-btn" @click="triggerSign">Approve</v-btn>
               </v-flex>
-              <v-flex sm4 class="text-xs-center">
+              <v-flex sm4 class="text-xs-center" pt-1>
                 <img src="images/torus_logo.png" class="bcg-logo" />
               </v-flex>
             </v-layout>
@@ -60,7 +62,8 @@
             <v-flex xs12>
               <div class="headline mb-3">{{ header }}</div>
               <p class="mb-3 subheading">
-                From: <span class="text-bluish">{{ origin }}</span>
+                From:
+                <span class="text-bluish">{{ origin }}</span>
               </p>
             </v-flex>
             <v-flex mt-3 xs12 sm4 align-self-top text-sm-center text-xs-left>
@@ -73,13 +76,12 @@
                 <v-flex xs6 sm12 mt-3>
                   <div class="font-weight-medium subheading">My Wallet</div>
                   <div>
-                    <span class="text-bluish">Address:</span>
-                    <show-tool-tip :address="sender">
-                      {{ slicedAddress(sender) }}
-                    </show-tool-tip>
+                    <span class="text-bluish">Address: </span>
+                    <show-tool-tip :address="sender">{{ slicedAddress(sender) }}</show-tool-tip>
                   </div>
                   <div>
-                    <span class="text-bluish"> Balance: </span><span>{{ computedBalance }} ETH</span>
+                    <span class="text-bluish">Balance: </span>
+                    <span>{{ computedBalance }} ETH</span>
                   </div>
                 </v-flex>
               </v-layout>
@@ -93,9 +95,7 @@
                   </div>
                 </v-flex>
                 <v-flex xs6 sm12 mt-2>
-                  <div class="font-weight-medium subheading">
-                    {{ !doesSendEther ? 'Network Fee' : 'Amount' }}
-                  </div>
+                  <div class="font-weight-medium subheading">{{ !doesSendEther ? 'Network Fee' : 'Amount' }}</div>
                   <div class="text-bluish">{{ totalUsdCost }} USD</div>
                   <div class="text-bluish">({{ totalEthCost }} ETH)</div>
                 </v-flex>
@@ -111,10 +111,8 @@
                 <v-flex xs6 sm12 mt-3>
                   <div class="font-weight-medium subheading">Payee's Wallet</div>
                   <div>
-                    <span class="text-bluish">Address:</span>
-                    <show-tool-tip :address="receiver">
-                      {{ slicedAddress(receiver) }}
-                    </show-tool-tip>
+                    <span class="text-bluish">Address: </span>
+                    <show-tool-tip :address="receiver">{{ slicedAddress(receiver) }}</show-tool-tip>
                   </div>
                 </v-flex>
               </v-layout>
@@ -136,9 +134,7 @@
           <bottom-sheet :show.sync="open" :on-close="closeBottom">
             <v-layout row wrap justify-center align-center text-xs-center>
               <v-flex xs12 sm3 v-if="doesSendEther">
-                <div class="font-weight-medium subheading">
-                  Amount To Transfer
-                </div>
+                <div class="font-weight-medium subheading">Amount To Transfer</div>
                 <div class="text-bluish font-weight-medium">$ {{ dollarValue }}</div>
                 <div class="text-bluish font-weight-medium">({{ value }} ETH)</div>
               </v-flex>
@@ -153,6 +149,12 @@
                   :primary-color="color"
                   :size="150"
                   :value-display-function="showGasPrice"
+                  :animation="{
+                    animated: true,
+                    animateValue: true,
+                    animationDuration: '5000',
+                    animationFunction: 'linear'
+                  }"
                 ></v-knob-control>
               </v-flex>
               <v-flex xs12 sm1>
@@ -161,20 +163,18 @@
               </v-flex>
               <v-flex xs12 sm3>
                 <!-- v-if="doesSendEther" -->
-                <div class="font-weight-medium subheading">
-                  Total Cost
-                </div>
+                <div class="font-weight-medium subheading">Total Cost</div>
                 <div class="text-bluish">$ {{ totalUsdCost }}</div>
                 <div class="text-bluish">({{ totalEthCost }} ETH)</div>
               </v-flex>
             </v-layout>
             <v-layout row wrap mt-2>
               <v-flex xs12>
-                <span class="font-weight-medium">Network Used: </span>
-                <span class="text-bluish font-weight-medium text-capitalize">{{ network }} </span>
+                <span class="font-weight-medium">Network Used:</span>
+                <span class="text-bluish font-weight-medium text-capitalize">{{ network }}</span>
               </v-flex>
               <v-flex xs12 v-if="!doesSendEther || isContractInteraction || isDeployContract">
-                <span class="font-weight-medium">Raw Data: </span>
+                <span class="font-weight-medium">Raw Data:</span>
                 <span class="font-weight-medium">
                   {{ slicedAddress(txData) }}
                   <show-tool-tip :address="txData">
@@ -200,11 +200,10 @@
                 :color="$vuetify.theme.torus_accept"
                 class="white--text btnStyle rounded-btn"
                 @click="triggerSign"
+                >Approve</v-btn
               >
-                Approve
-              </v-btn>
             </v-flex>
-            <v-flex sm4 class="text-xs-center">
+            <v-flex sm4 class="text-xs-center" pt-1>
               <img src="images/torus_logo.png" class="bcg-logo" />
             </v-flex>
           </v-layout>
@@ -216,12 +215,12 @@
 
 <script>
 import { mapActions } from 'vuex' // Maybe dispatch a bc to show popup from that instance
-import psl from 'psl'
 import BroadcastChannel from 'broadcast-channel'
 import BottomSheet from '../components/BottomSheet.vue'
 import ShowToolTip from '../components/ShowToolTip.vue'
+import PageLoader from '../components/PageLoader.vue'
 import torus from '../torus'
-import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress, extractHostname } from '../utils/utils'
+import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress } from '../utils/utils'
 
 const weiInGwei = 10 ** 9
 
@@ -229,7 +228,8 @@ export default {
   name: 'confirm',
   components: {
     BottomSheet,
-    ShowToolTip
+    ShowToolTip,
+    PageLoader
   },
   data() {
     return {
@@ -333,11 +333,15 @@ export default {
   },
   mounted() {
     var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
-    let counter = 0
     bc.onmessage = async ev => {
       const { type, msgParams, txParams, origin, balance } = ev.data || {}
-      this.origin = psl.get(extractHostname(origin)) // origin of tx: website url
-      this.type = type // type of tx
+      let url = { hostname: '' }
+      try {
+        url = new URL(origin)
+      } catch (err) {
+        console.log(err)
+      }
+      this.origin = url.hostname // origin of tx: website url
       if (type === 'message') {
         const { message, typedMessages } = msgParams || {}
         this.message = message
@@ -377,12 +381,8 @@ export default {
           this.canApprove = false
         }
       }
-      if (type === 'message' || (txParams.gas && type === 'transaction') || counter > 9) {
-        bc.close()
-        counter = 0
-      } else {
-        counter++
-      }
+      this.type = type // type of tx
+      bc.close()
     }
     bc.postMessage({ data: 'popup-loaded' })
   }

@@ -14,7 +14,7 @@
         ></v-text-field>
       </v-flex>
       <v-flex xs12 sm6 md3>
-        <v-btn color="#75b4fd" class="white--text" @click="triggerLogin" id="googleAuthBtnf">Google</v-btn>
+        <v-btn color="#75b4fd" class="white--text" @click="triggerLogin({ calledFromEmbed: false })" id="googleAuthBtnf">Google</v-btn>
       </v-flex>
     </v-layout>
   </v-container>

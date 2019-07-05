@@ -27,68 +27,58 @@
     <v-flex xs12 sm8>
       <template v-if="isRPCSelected">
         <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height">
-          <v-form ref="form" v-model="formValid" lazy-validation>
-            <v-container fill-height style="padding: 0px;">
-              <v-layout row align-center justify-center align-content-start>
-                <v-flex xs12 sm6 align-self-center>
-                  <span class="body-2">Enter Network Name</span>
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <v-text-field
-                    placeholder="Enter Network Name"
-                    aria-label="network name"
-                    v-model="rpc.networkName"
-                    solo
-                    flat
-                    required
-                    :rules="[rules.required]"
-                  ></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <span class="body-2">Enter RPC URL</span>
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <v-text-field
-                    id="amount"
-                    placeholder="Enter RPC URL"
-                    aria-label="rpc url"
-                    solo
-                    flat
-                    required
-                    v-model="rpc.networkUrl"
-                    :rules="[rules.required]"
-                  ></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <span class="body-2">Enter Chain Id</span>
-                </v-flex>
-                <v-flex xs12 sm6>
-                  <v-text-field
-                    id="amount"
-                    placeholder="Enter chain Id"
-                    aria-label="chain Id"
-                    solo
-                    flat
-                    required
-                    v-model="rpc.chainId"
-                  ></v-text-field>
-                </v-flex>
-                <v-flex xs12>
-                  <v-layout row wrap>
-                    <v-flex class="text-xs-left" id="flexibtn">
-                      <v-tooltip bottom :disabled="formValid">
-                        <template v-slot:activator="{ on }">
-                          <span v-on="on">
-                            <v-btn id="flexibtn" :disabled="!formValid" outline large class="btnStyle" @click="setRPC">Confirm</v-btn>
-                          </span>
-                        </template>
-                        <span>Resolve the errors</span>
-                      </v-tooltip>
-                    </v-flex>
-                  </v-layout>
-                </v-flex>
-              </v-layout>
-            </v-container>
+          <v-form ref="form" v-model="formValid" lazy-validation @submit.prevent="">
+            <v-layout row wrap align-center justify-center align-content-start>
+              <v-flex xs12 sm6 align-self-center>
+                <span class="body-2">Enter Network Name</span>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <v-text-field
+                  placeholder="Enter Network Name"
+                  aria-label="network name"
+                  v-model="rpc.networkName"
+                  solo
+                  flat
+                  required
+                  :rules="[rules.required]"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <span class="body-2">Enter RPC URL</span>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <v-text-field
+                  id="amount"
+                  placeholder="Enter RPC URL"
+                  aria-label="rpc url"
+                  solo
+                  flat
+                  required
+                  v-model="rpc.networkUrl"
+                  :rules="[rules.required]"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <span class="body-2">Enter Chain Id</span>
+              </v-flex>
+              <v-flex xs12 sm6>
+                <v-text-field id="amount" placeholder="Enter chain Id" aria-label="chain Id" solo flat required v-model="rpc.chainId"></v-text-field>
+              </v-flex>
+              <v-flex xs12>
+                <v-layout row wrap>
+                  <v-flex class="text-xs-left" id="flexibtn">
+                    <v-tooltip bottom :disabled="formValid">
+                      <template v-slot:activator="{ on }">
+                        <span v-on="on">
+                          <v-btn id="flexibtn" :disabled="!formValid" outline large class="btnStyle" @click="setRPC">Confirm</v-btn>
+                        </span>
+                      </template>
+                      <span>Resolve the errors</span>
+                    </v-tooltip>
+                  </v-flex>
+                </v-layout>
+              </v-flex>
+            </v-layout>
           </v-form>
         </v-card>
       </template>
@@ -100,7 +90,7 @@
             <div class="body-2">Frequently Asked Questions</div>
           </template>
           <v-card flat :color="$vuetify.theme.torus_bcg">
-            <v-card-text>
+            <v-card-text class="pt-0">
               Learn how to
               <a href="https://docs.tor.us" target="_blank" rel="noreferrer noopener">
                 <span class="font-italic" style="text-decoration: underline;">Get Started</span>
@@ -223,6 +213,11 @@ export default {
 
 /deep/.v-expansion-panel__container {
   background-color: var(--v-torus_bcg-base) !important;
+}
+
+/deep/.v-expansion-panel__header {
+  padding-left: 0;
+  padding-right: 10px;
 }
 
 %rounded {

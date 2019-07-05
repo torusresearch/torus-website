@@ -1,11 +1,13 @@
 const fs = require('fs')
 const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-let routes = ['/', '/popup', '/confirm', '/wallet', '/wallet/home', '/wallet/history', '/wallet/accounts', '/wallet/settings', '/wallet/transfer']
+let routes = ['/']
 
 if (process.env.TORUS_BUILD_ENV !== 'production') {
   routes.push('/login')
 }
+// https://157.230.171.237:8117
 
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
 
@@ -39,6 +41,18 @@ module.exports = {
       // create a fresh pülugin instance with the new options and
       // replace the current one with it
       config.optimization.minimizer[0] = new TerserPlugin(options)
+
+      config.plugins.push(
+        new HtmlWebpackPlugin({
+          // Also generate a test.html
+          filename: 'error-pages/404-notfound.html',
+          template: path.resolve('./public/error-pages/404-notfound.html'),
+          templateParameters: {
+            BASE_URL: `/${version}/`
+          },
+          excludeChunks: ['app', 'chunk-vendors']
+        })
+      )
     }
   },
   chainWebpack: config => {
@@ -77,6 +91,15 @@ module.exports = {
       }
       return pwaPlugin
     })
+    config.resolve.alias.set('bn.js', 'fork-bn.js')
+    // config.module
+    //   .rule('worker')
+    //   .test(/\.worker\.js$/)
+    //   .use('worker-loader')
+    //   .loader('worker-loader')
+    //   .tap(options => {
+    //     return options
+    //   })
   },
 
   publicPath: process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/` : '/',
