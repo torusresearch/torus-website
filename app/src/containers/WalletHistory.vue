@@ -69,7 +69,7 @@ export default {
   },
   computed: {
     totalPortfolioValue() {
-      return this.$store.getters.tokenBalances.totalPortfolioValue || '$ 0'
+      return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
     },
     selectedCurrency() {
       return this.$store.state.selectedCurrency

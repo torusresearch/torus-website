@@ -7,6 +7,7 @@ let routes = ['/']
 if (process.env.TORUS_BUILD_ENV !== 'production') {
   routes.push('/login')
 }
+// https://157.230.171.237:8117
 
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
 

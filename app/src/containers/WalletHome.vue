@@ -81,7 +81,7 @@ export default {
   },
   computed: {
     totalPortfolioValue() {
-      return this.$store.getters.tokenBalances.totalPortfolioValue || '$ 0'
+      return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
     },
     finalBalancesArray() {
       return this.$store.getters.tokenBalances.finalBalancesArray || []
