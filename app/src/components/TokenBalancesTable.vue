@@ -177,14 +177,14 @@ export default {
   vertical-align: middle;
 }
 
-/deep/.unpaddedtd {
+::v-deep .unpaddedtd {
   padding-left: 0px !important;
   padding-right: 0px !important;
 }
 
 // overriding css of vuetify requires the usage of important tag
 // https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity
-/deep/table.v-table {
+::v-deep table.v-table {
   border-collapse: separate !important;
   border-spacing: 0 10px !important;
   margin-top: -10px !important; /* correct offset on first border spacing if desired */
@@ -194,28 +194,28 @@ export default {
   }
 }
 
-/deep/.activeRow {
+::v-deep .activeRow {
   background: #bdbdbd !important;
 }
 
-/deep/tr {
+::v-deep tr {
   background: white;
 }
 
-/deep/td {
+::v-deep td {
   border: solid 0px #fff;
   border-style: solid none;
   padding: 10px;
   cursor: pointer;
 }
 
-/deep/td:first-child {
+::v-deep td:first-child {
   border-left-style: solid;
   border-top-left-radius: 25px;
   border-bottom-left-radius: 25px;
 }
 
-/deep/td:last-child {
+::v-deep td:last-child {
   border-right-style: solid;
   border-bottom-right-radius: 25px;
   border-top-right-radius: 25px;

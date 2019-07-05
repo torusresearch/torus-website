@@ -231,7 +231,7 @@ export default {
   margin: 0 15px;
 }
 
-/deep/.v-text-field--solo .v-input__slot,
+::v-deep .v-text-field--solo .v-input__slot,
 .v-text-field--outline .v-input__slot {
   min-height: auto !important;
   display: flex !important;
@@ -242,7 +242,7 @@ export default {
   margin-bottom: 0px !important;
 }
 
-/deep/.v-text-field.v-text-field--solo .v-input__control {
+::v-deep .v-text-field.v-text-field--solo .v-input__control {
   min-height: auto !important;
 }
 
