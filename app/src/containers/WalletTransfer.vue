@@ -64,6 +64,8 @@
                   solo
                   flat
                   required
+                  persistent-hint
+                  hint="Please enter only a valid google/ethereum address. Otherwise, money can't be recovered"
                   :rules="[rules.toAddress, rules.required]"
                 ></v-text-field>
               </v-flex>
@@ -131,7 +133,9 @@
 
 <script>
 import torus from '../torus'
-import { significantDigits } from '../utils/utils'
+import { significantDigits, getRandomNumber } from '../utils/utils'
+import config from '../config'
+const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
 
 const MAX_GAS = 6721975
@@ -152,7 +156,7 @@ export default {
       fastGasPrice: '20',
       isFastChecked: false,
       rules: {
-        toAddress: value => torus.web3.utils.isAddress(value) || 'Invalid Eth Address',
+        toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid eth or email Address',
         required: value => !!value || 'Required'
       }
     }
@@ -268,11 +272,26 @@ export default {
         this.displayAmount = this.displayAmount * currencyRate
       }
     },
-    sendCoin() {
-      const gasPrice = torus.web3.utils.toBN(this.isFastChecked ? (this.fastGasPrice * 10 ** 9).toString() : (this.gasPrice * 10 ** 9).toString())
-      const toAddress = torus.web3.utils.toChecksumAddress(this.toAddress)
-      const selectedAddress = this.$store.state.selectedAddress
+    async sendCoin() {
       if (this.$refs.form.validate()) {
+        const gasPrice = torus.web3.utils.toBN(this.isFastChecked ? (this.fastGasPrice * 10 ** 9).toString() : (this.gasPrice * 10 ** 9).toString())
+        let toAddress
+        if (torus.web3.utils.isAddress(this.toAddress)) {
+          toAddress = torus.web3.utils.toChecksumAddress(this.toAddress)
+        } else {
+          const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
+          try {
+            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[endPointNumber], this.toAddress)
+          } catch (err) {
+            console.log(err)
+            let newEndPointNumber = endPointNumber
+            while (newEndPointNumber === endPointNumber) {
+              newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
+            }
+            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], this.toAddress)
+          }
+        }
+        const selectedAddress = this.$store.state.selectedAddress
         if (this.selectedTokenAddress === '0x')
           torus.web3.eth
             .sendTransaction({
