@@ -106,7 +106,7 @@ export default {
         <v-layout row align-center justify-end mb-2 :class="isFreshAccount ? '' : 'mr-3'">
           <div class="subheader">CURRENCY:</div>
           <v-select
-            class="pt-0 mt-0 ml-2 body-2 currency-selector"
+            class="pt-0 mt-0 ml-2 subheader currency-selector"
             height="25px"
             hide-details
             :items="supportedCurrencies"
@@ -115,8 +115,8 @@ export default {
           ></v-select>
         </v-layout>
         <v-layout row align-center mr-3 justify-end v-if="!isFreshAccount">
-          <v-text-field class="pt-0 mt-0 mr-3 subheading" height="36px" append-icon="search" style="max-width: 100px"></v-text-field>
-          <span class="caption mb-3">Last update 24/06/19, 16:24</span>
+          <v-text-field outlined hide-details class="mr-3 subheading search-field" append-icon="search" style="max-width: 120px"></v-text-field>
+          <span class="caption">Last update 24/06/19, 16:24</span>
         </v-layout>
         <token-balances-table
           :headers="headers"
@@ -194,10 +194,24 @@ export default {
 
 .currency-selector {
   max-width: 50px;
+  ::v-deep .v-select__selection {
+    color: #5495f7;
+    margin: 0;
+  }
 }
 
 button {
   border-radius: 6px !important;
   box-shadow: none !important;
+}
+
+::v-deep .search-field {
+  .v-input__slot {
+    margin: 0;
+    min-height: 40px;
+  }
+  .v-input__append-inner {
+    margin-top: 9px;
+  }
 }
 </style>
