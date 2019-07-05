@@ -76,11 +76,11 @@
                 <v-flex xs6 sm12 mt-3>
                   <div class="font-weight-medium subheading">My Wallet</div>
                   <div>
-                    <span class="text-bluish">Address:</span>
+                    <span class="text-bluish">Address: </span>
                     <show-tool-tip :address="sender">{{ slicedAddress(sender) }}</show-tool-tip>
                   </div>
                   <div>
-                    <span class="text-bluish">Balance:</span>
+                    <span class="text-bluish">Balance: </span>
                     <span>{{ computedBalance }} ETH</span>
                   </div>
                 </v-flex>
@@ -111,7 +111,7 @@
                 <v-flex xs6 sm12 mt-3>
                   <div class="font-weight-medium subheading">Payee's Wallet</div>
                   <div>
-                    <span class="text-bluish">Address:</span>
+                    <span class="text-bluish">Address: </span>
                     <show-tool-tip :address="receiver">{{ slicedAddress(receiver) }}</show-tool-tip>
                   </div>
                 </v-flex>
