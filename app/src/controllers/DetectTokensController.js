@@ -94,6 +94,9 @@ class DetectTokensController {
   }
 
   async refreshTokenBalances() {
+    if (this.network.store.getState().provider.type !== MAINNET) {
+      return
+    }
     const oldTokens = this.detectedTokensStore.getState().tokens
     const tokenAddresses = oldTokens.map(x => x.tokenAddress)
     if (tokenAddresses.length > 0) {
