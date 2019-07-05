@@ -29,10 +29,10 @@ export default {
 <template>
   <v-container fill-height>
     <v-layout row wrap justify-center fill-height align-content-start>
-      <v-flex class="mb-4">
+      <v-flex class="mb-4 px-3">
         <img :src="require('../../public/images/torus_logo.png')" />
       </v-flex>
-      <v-flex d-flex xs12>
+      <v-flex d-flex xs12 px-3>
         <v-flex fixed-tabs v-model="selectedItem" grow :color="$vuetify.theme.torus_bcg">
           <header-item
             v-for="headerItem in headerItems"
