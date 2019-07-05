@@ -65,7 +65,7 @@
                   flat
                   required
                   persistent-hint
-                  hint="Please enter only a valid google/ethereum address. Otherwise, money can't be recovered"
+                  hint="Please enter an Ethereum address or a valid Google email"
                   :rules="[rules.toAddress, rules.required]"
                 ></v-text-field>
               </v-flex>
