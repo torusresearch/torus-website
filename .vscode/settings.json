@@ -12,6 +12,9 @@
   "prettier.printWidth": 150,
   "workbench.statusBar.feedback.visible": false,
   "eslint.provideLintTask": true,
+  "eslint.workingDirectories": [
+    { "directory": "./app", "changeProcessCWD": true }
+  ],
   "eslint.options": {
     "extends": ["plugin:vue/essential", "@vue/standard", "prettier"],
     "plugins": ["prettier", "vue"],
