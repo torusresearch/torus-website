@@ -289,14 +289,14 @@ export default {
   .torus-text-input.v-text-field--solo {
     font-size: 20px;
 
-    & /deep/ .v-input__slot {
+    & ::v-deep .v-input__slot {
       box-shadow: none;
       margin-bottom: 5px;
       border-radius: 5px;
       background-image: linear-gradient(to right, #5495f7, #295dab);
       padding: 2px;
     }
-    & /deep/ .v-text-field__slot {
+    & ::v-deep .v-text-field__slot {
       background-color: rgba(255, 255, 255, 0.3);
       border-radius: 4px;
       height: 44px;
@@ -308,7 +308,7 @@ export default {
         color: #ffffff;
       }
     }
-    & /deep/ .v-text-field__suffix {
+    & ::v-deep .v-text-field__suffix {
       background-color: #295dab;
       height: 100%;
       line-height: 42px;
@@ -322,14 +322,14 @@ export default {
   .torus-text-input-disabled.v-text-field--solo {
     font-size: 20px;
 
-    & /deep/ .v-input__slot {
+    & ::v-deep .v-input__slot {
       box-shadow: none;
       margin-bottom: 5px;
       border-radius: 5px;
       background-image: linear-gradient(to right, #5495f7, #295dab);
       padding: 2px;
     }
-    & /deep/ .v-text-field__slot {
+    & ::v-deep .v-text-field__slot {
       background-image: linear-gradient(to right, #5495f7, #295dab);
       border-radius: 4px;
       height: 44px;
@@ -341,7 +341,7 @@ export default {
         color: #ffffff;
       }
     }
-    & /deep/ .v-text-field__suffix {
+    & ::v-deep .v-text-field__suffix {
       height: 100%;
       line-height: 42px;
       color: #ffffff;
@@ -351,12 +351,12 @@ export default {
     }
   }
 
-  & /deep/ .v-text-field__details {
+  & ::v-deep .v-text-field__details {
     margin-bottom: 0;
     padding: 0 12px;
   }
 
-  & /deep/ .v-messages {
+  & ::v-deep .v-messages {
     min-height: 0;
   }
 }

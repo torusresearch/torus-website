@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
-import 'vuetify/src/stylus/app.styl'
+// import 'vuetify/src/stylus/app.styl'
 
-Vue.use(Vuetify, {
+Vue.use(Vuetify)
+
+export default new Vuetify({
   theme: {
     primary: '#3996ff',
     secondary: '#b0bec5',
@@ -20,7 +22,10 @@ Vue.use(Vuetify, {
   options: {
     customProperties: true
   },
-  iconfont: 'md'
+  // iconfont: 'md',
+  icons: {
+    iconfont: 'mdi'
+  }
   // breakpoint: {
   //   thresholds: {
   //     xs: 576

@@ -6,6 +6,7 @@ import router from './router'
 import store from './store'
 import log from 'loglevel'
 import './registerServiceWorker'
+import vuetify from './plugins/vuetify'
 // import torus from './torus'
 
 log.setDefaultLevel('info')
@@ -21,6 +22,7 @@ new Vue({
   router,
   store,
   render: h => h(App),
+  vuetify,
   mounted: () => document.dispatchEvent(new Event('x-app-rendered'))
 }).$mount('#app')
 

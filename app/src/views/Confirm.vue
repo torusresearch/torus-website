@@ -503,7 +503,7 @@ hr {
   padding: 0;
 }
 
-/deep/.knob-control__text-display {
+::v-deep .knob-control__text-display {
   font-size: 0.7rem !important;
   font-weight: 500;
   text-align: center;

@@ -207,7 +207,7 @@ export default {
   word-wrap: break-word;
 }
 
-/deep/.v-text-field--solo .v-input__slot,
+::v-deep .v-text-field--solo .v-input__slot,
 .v-text-field--outline .v-input__slot {
   min-height: auto !important;
   display: flex !important;
@@ -221,7 +221,7 @@ export default {
   }
 }
 
-/deep/.v-text-field.v-text-field--solo .v-input__control {
+::v-deep .v-text-field.v-text-field--solo .v-input__control {
   min-height: auto !important;
 }
 
@@ -240,7 +240,7 @@ export default {
 
 /* Desktop > Small */
 @media only screen and (min-width: 599px) {
-  /deep/.v-text-field--solo .v-input__slot,
+  ::v-deep .v-text-field--solo .v-input__slot,
   .v-text-field--outline .v-input__slot {
     .v-select__selection {
       word-break: normal;

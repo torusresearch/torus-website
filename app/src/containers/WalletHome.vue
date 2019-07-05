@@ -298,7 +298,7 @@ button {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
 }
 
-/deep/.v-text-field--solo .v-input__slot,
+::v-deep .v-text-field--solo .v-input__slot,
 .v-text-field--outline .v-input__slot {
   min-height: auto !important;
   display: flex !important;
@@ -309,7 +309,7 @@ button {
   margin-bottom: 0px !important;
 }
 
-/deep/.v-text-field.v-text-field--solo .v-input__control {
+::v-deep .v-text-field.v-text-field--solo .v-input__control {
   min-height: auto !important;
 }
 </style>

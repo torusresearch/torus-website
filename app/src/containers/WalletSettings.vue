@@ -192,7 +192,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/deep/.v-text-field--solo .v-input__slot,
+::v-deep .v-text-field--solo .v-input__slot,
 .v-text-field--outline .v-input__slot {
   min-height: auto !important;
   display: flex !important;
@@ -203,19 +203,19 @@ export default {
   margin-bottom: 0px !important;
 }
 
-/deep/.v-text-field.v-text-field--solo .v-input__control {
+::v-deep .v-text-field.v-text-field--solo .v-input__control {
   min-height: auto !important;
 }
 
-/deep/.v-expansion-panel {
+::v-deep .v-expansion-panel {
   box-shadow: none !important;
 }
 
-/deep/.v-expansion-panel__container {
+::v-deep .v-expansion-panel__container {
   background-color: var(--v-torus_bcg-base) !important;
 }
 
-/deep/.v-expansion-panel__header {
+::v-deep .v-expansion-panel__header {
   padding-left: 0;
   padding-right: 10px;
 }
