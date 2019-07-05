@@ -7,7 +7,7 @@
         </v-card-title>
         <v-card-text class="headline font-weight-bold pt-1 pb-4 px-4">
           <v-flex xs12>
-            <v-text-field single-line solo hide-details disabled type="text" :value="balance.name">
+            <v-text-field hide-details readonly type="text" :value="balance.name">
               <template v-slot:prepend>
                 <img
                   :src="require(`../../public/images/logos/${balance.logo}`)"
@@ -167,62 +167,10 @@ export default {
   color: var(--v-torus_blue-base);
 }
 
-::v-deep .v-text-field.v-text-field--enclosed > .v-input__control > .v-input__slot {
-  margin-top: 0 !important;
-}
-
-::v-deep .v-text-field.v-text-field--solo .v-input__prepend-outer {
-  margin: 2px 0 0;
-}
-
 .inline-small {
   width: 20px;
   height: 25px;
   display: inline-block;
   vertical-align: middle;
-}
-
-::v-deep .unpaddedtd {
-  padding-left: 0px !important;
-  padding-right: 0px !important;
-}
-
-// overriding css of vuetify requires the usage of important tag
-// https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity
-::v-deep table.v-table {
-  border-collapse: separate !important;
-  border-spacing: 0 10px !important;
-  margin-top: -10px !important; /* correct offset on first border spacing if desired */
-  background: var(--v-torus_bcg-base) !important;
-  .set-min-width {
-    min-width: 100px;
-  }
-}
-
-::v-deep .activeRow {
-  background: #bdbdbd !important;
-}
-
-::v-deep tr {
-  background: white;
-}
-
-::v-deep td {
-  border: solid 0px #fff;
-  border-style: solid none;
-  padding: 10px;
-  cursor: pointer;
-}
-
-::v-deep td:first-child {
-  border-left-style: solid;
-  border-top-left-radius: 25px;
-  border-bottom-left-radius: 25px;
-}
-
-::v-deep td:last-child {
-  border-right-style: solid;
-  border-bottom-right-radius: 25px;
-  border-top-right-radius: 25px;
 }
 </style>
