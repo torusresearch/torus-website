@@ -381,12 +381,12 @@ export default {
   @extend %rounded;
 }
 
-/deep/.v-btn--active {
+::v-deep .v-btn--active {
   background: var(--v-torus_blue-base) !important;
   color: #fff !important;
 }
 
-/deep/.v-item-group {
+::v-deep .v-item-group {
   box-shadow: none !important;
 }
 
@@ -397,7 +397,7 @@ export default {
   vertical-align: middle;
 }
 
-/deep/.v-text-field--solo .v-input__slot,
+::v-deep .v-text-field--solo .v-input__slot,
 .v-text-field--outline .v-input__slot {
   min-height: auto !important;
   display: flex !important;
@@ -408,7 +408,7 @@ export default {
   margin-bottom: 0px !important;
 }
 
-/deep/.v-text-field.remove-padding-right .v-input__control > .v-input__slot {
+::v-deep .v-text-field.remove-padding-right .v-input__control > .v-input__slot {
   padding-right: 0;
 
   .v-btn-toggle {
@@ -422,11 +422,11 @@ export default {
   }
 }
 
-/deep/.v-text-field.v-text-field--solo .v-input__control {
+::v-deep .v-text-field.v-text-field--solo .v-input__control {
   min-height: auto !important;
 }
 
-/deep/.v-input__slot .v-label {
+::v-deep .v-input__slot .v-label {
   margin-bottom: 0px !important;
 }
 </style>
