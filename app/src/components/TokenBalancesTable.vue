@@ -2,7 +2,7 @@
   <v-layout row wrap align-center :class="isFreshAccount ? 'mt-4' : 'mt-0'">
     <v-flex :class="tokenCardLayout" v-for="balance in tokenBalances" :key="balance.name">
       <v-card color="dark" white>
-        <v-card-title class="font-weight-bold pt-4 pb-0 px-4">
+        <v-card-title class="font-weight-bold subtitle-2 pt-4 pb-0 px-4">
           COINS / TOKENS
         </v-card-title>
         <v-card-text class="headline font-weight-bold pt-1 pb-4 px-4">
@@ -23,8 +23,8 @@
               <div class="v-messages theme--light">
                 <div class="v-messages__wrapper">
                   <div class="v-messages__message pl-4 pt-1">
-                    <span class="left ml-3">{{ balance.currencyRateText }}</span>
-                    <span class="right mr-2">{{ balance.currencyBalance }}</span>
+                    <span class="left font-weight-regular ml-3">{{ balance.currencyRateText }}</span>
+                    <span class="right font-weight-regular mr-2">{{ balance.currencyBalance }}</span>
                   </div>
                 </div>
               </div>

@@ -77,10 +77,10 @@ export default {
       <v-flex xs6 px-3>
         <div class="text-black font-weight-bold headline mb-3">My Wallet</div>
         <v-card class="mx-auto card-total" color="dark" white>
-          <v-card-title class="font-weight-bold pt-4 px-4">
+          <v-card-title class="font-weight-bold subtitle-2 pt-4 px-4">
             TOTAL VALUE
           </v-card-title>
-          <v-card-text class="headline font-weight-bold pb-4 px-4">
+          <v-card-text class="display-2 font-weight-bold pb-4 px-4">
             <h2>{{ totalPortfolioValue }} <small class="font-weight-light">USD</small></h2>
           </v-card-text>
         </v-card>
@@ -104,9 +104,9 @@ export default {
 
       <v-flex :class="isFreshAccount ? 'px-3' : 'pt-4'" :style="{ order: isFreshAccount ? 1 : 2 }">
         <v-layout row align-center justify-end mb-2 :class="isFreshAccount ? '' : 'mr-3'">
-          <div class="subheader">CURRENCY:</div>
+          <div class="subtitle-2">CURRENCY:</div>
           <v-select
-            class="pt-0 mt-0 ml-2 subheader currency-selector"
+            class="pt-0 mt-0 ml-2 subtitle-2 currency-selector"
             height="25px"
             hide-details
             :items="supportedCurrencies"
@@ -115,7 +115,7 @@ export default {
           ></v-select>
         </v-layout>
         <v-layout row align-center mr-3 justify-end v-if="!isFreshAccount">
-          <v-text-field outlined hide-details class="mr-3 subheading search-field" append-icon="search" style="max-width: 120px"></v-text-field>
+          <v-text-field outlined hide-details class="mr-3 subtitle-2 search-field" append-icon="search" style="max-width: 120px"></v-text-field>
           <span class="caption">Last update 24/06/19, 16:24</span>
         </v-layout>
         <token-balances-table
