@@ -74,31 +74,33 @@ export default {
 <template>
   <div>
     <v-layout mt-5 wrap row>
-      <v-flex xs6 px-3>
+      <v-flex xs12 sm6 px-3 mb-3>
         <div class="text-black font-weight-bold headline mb-3">My Wallet</div>
         <v-card class="mx-auto card-total" color="dark" white>
           <v-card-title class="font-weight-bold subtitle-2 pt-4 px-4">
             TOTAL VALUE
           </v-card-title>
-          <v-card-text class="display-2 font-weight-bold pb-4 px-4">
-            <h2>{{ totalPortfolioValue }} <small class="font-weight-light">USD</small></h2>
+          <v-card-text class="pb-4 px-4">
+            <h2 class="display-2 font-weight-bold">{{ totalPortfolioValue }} <small class="font-weight-light">USD</small></h2>
           </v-card-text>
         </v-card>
       </v-flex>
 
-      <v-flex xs6 px-3 :class="{ 'pt-3': isFreshAccount }" :style="{ order: isFreshAccount ? 2 : 0 }">
+      <v-flex xs12 sm6 px-3 mb-3 :class="{ 'pt-3': isFreshAccount }" :style="{ order: isFreshAccount ? 2 : 0 }">
         <div>
           <div class="text-black font-weight-bold headline mb-3">Operations</div>
-          <div>
-            <v-btn outlined large color="primary" class="px-5 py-1 mr-3" @click="topup">
-              <v-icon color="primary" class="btn-icon mr-1">send</v-icon>
-              Send
-            </v-btn>
-            <v-btn large color="primary" class="px-5 py-1" @click="topup">
-              <v-icon color="white" class="btn-icon mr-1">add</v-icon>
-              Top up
-            </v-btn>
-          </div>
+          <v-layout row wrap>
+            <v-flex>
+              <v-btn outlined large color="primary" class="px-5 py-1 mr-3 mt-3" @click="topup">
+                <v-icon color="primary" class="btn-icon mr-1">send</v-icon>
+                Send
+              </v-btn>
+              <v-btn large color="primary" class="px-5 py-1 mt-3" @click="topup">
+                <v-icon color="white" class="btn-icon mr-1">add</v-icon>
+                Top up
+              </v-btn>
+            </v-flex>
+          </v-layout>
         </div>
       </v-flex>
 
@@ -203,6 +205,10 @@ export default {
 button {
   border-radius: 6px !important;
   box-shadow: none !important;
+}
+
+::v-deep .v-text-field .v-input__append-inner {
+  margin-top: 8px;
 }
 
 ::v-deep .search-field {

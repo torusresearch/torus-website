@@ -134,7 +134,7 @@ export default {
       return this.tokenBalances.length > 5
     },
     tokenCardLayout() {
-      return this.isFreshAccount ? 'xs12' : 'xs6 px-3 my-3'
+      return this.isFreshAccount ? 'xs12' : 'xs12 sm6 px-3 my-3'
     }
   },
   methods: {
