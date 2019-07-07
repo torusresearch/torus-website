@@ -62,7 +62,8 @@ export default {
       this.$store.dispatch('forceFetchTokens')
     },
     initiateTransfer() {
-      this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
+      // this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
+      this.$router.push({ path: '/wallet/transfer' })
     },
     topup() {
       this.$router.push({ path: '/wallet/topup' })
@@ -91,7 +92,7 @@ export default {
           <div class="text-black font-weight-bold headline mb-3">Operations</div>
           <v-layout row wrap>
             <v-flex>
-              <v-btn outlined large color="primary" class="px-5 py-1 mr-3 mt-3" @click="topup">
+              <v-btn outlined large color="primary" class="px-5 py-1 mr-3 mt-3" @click="initiateTransfer">
                 <v-icon color="primary" class="btn-icon mr-1">send</v-icon>
                 Send
               </v-btn>
