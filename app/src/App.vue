@@ -12,4 +12,8 @@
   background: var(--v-torus_bcg-base) !important;
   height: 100%;
 }
+
+.card-shadow {
+  box-shadow: 0 14px 28px 0 rgba(0, 0, 0, 0.06);
+}
 </style>

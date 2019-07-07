@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap align-center :class="isFreshAccount ? 'mt-4' : 'mt-0'">
     <v-flex :class="tokenCardLayout" v-for="balance in tokenBalances" :key="balance.name">
-      <v-card color="dark" white>
+      <v-card color="dark card-shadow" white>
         <v-card-title class="font-weight-bold subtitle-2 pt-4 pb-0 px-4">
           COINS / TOKENS
         </v-card-title>

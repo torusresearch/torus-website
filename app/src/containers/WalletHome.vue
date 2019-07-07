@@ -77,7 +77,7 @@ export default {
     <v-layout mt-5 wrap row>
       <v-flex xs12 sm6 px-3 mb-3>
         <div class="text-black font-weight-bold headline mb-3">My Wallet</div>
-        <v-card class="mx-auto card-total" color="dark" white>
+        <v-card class="mx-auto card-total card-shadow" color="dark" white>
           <v-card-title class="font-weight-bold subtitle-2 pt-4 px-4">
             TOTAL VALUE
           </v-card-title>
