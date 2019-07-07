@@ -125,8 +125,7 @@ export default {
     return {
       pagination: {
         sortBy: 'name'
-      },
-      search: ''
+      }
     }
   },
   computed: {

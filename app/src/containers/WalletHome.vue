@@ -19,7 +19,8 @@ export default {
         { text: 'Balance', value: 'formattedBalance', align: 'center' },
         { text: 'Value', value: 'currencyBalance', align: 'right' }
       ],
-      selected: []
+      selected: [],
+      search: ''
     }
   },
   computed: {
@@ -30,6 +31,12 @@ export default {
       let balances = this.$store.getters.tokenBalances.finalBalancesArray
 
       return balances || []
+    },
+    filteredBalancesArray() {
+      const search = this.search || ''
+      return this.finalBalancesArray.filter(balance => {
+        return balance.name.toLowerCase().indexOf(search.toLowerCase()) >= 0
+      })
     },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
@@ -118,15 +125,23 @@ export default {
           ></v-select>
         </v-layout>
         <v-layout row align-center mr-3 justify-end v-if="!isFreshAccount">
-          <v-text-field outlined hide-details class="mr-3 subtitle-2 search-field" append-icon="search" style="max-width: 120px"></v-text-field>
+          <v-text-field
+            v-model="search"
+            outlined
+            hide-details
+            class="mr-3 subtitle-2 search-field"
+            append-icon="search"
+            style="max-width: 120px"
+          ></v-text-field>
           <span class="caption">Last update 24/06/19, 16:24</span>
         </v-layout>
         <token-balances-table
           :headers="headers"
           :isFreshAccount="isFreshAccount"
-          :tokenBalances="finalBalancesArray"
+          :tokenBalances="filteredBalancesArray"
           @update:select="select"
           :selected="selected"
+          :search="search"
         />
       </v-flex>
     </v-layout>
