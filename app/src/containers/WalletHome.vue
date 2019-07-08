@@ -45,6 +45,7 @@
         </v-layout>
         <v-layout row align-center mr-3 justify-end v-if="!isFreshAccount">
           <v-text-field
+            v-if="this.finalBalancesArray.length > 5"
             v-model="search"
             outlined
             hide-details
