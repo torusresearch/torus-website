@@ -137,7 +137,7 @@
 
 <script>
 export default {
-  props: ['headers', 'tokenBalances', 'selected', 'isFreshAccount'],
+  props: ['headers', 'tokenBalances', 'selected'],
   data() {
     return {
       pagination: {

@@ -8,10 +8,15 @@
             <v-icon color="primary" class="btn-icon mr-1">send</v-icon>
             Send
           </v-btn>
-          <v-btn large color="primary" class="px-5 py-1 mt-3" @click="topup">
-            <v-icon color="white" class="btn-icon mr-1">add</v-icon>
-            Top up
-          </v-btn>
+          <v-tooltip top v-model="isFreshAccount">
+            <template v-slot:activator="{ on }">
+              <v-btn large color="primary" class="px-5 py-1 mt-3" @click="topup" v-on="on">
+                <v-icon color="white" class="btn-icon mr-1">add</v-icon>
+                Top up
+              </v-btn>
+            </template>
+            <span>Get ETH!</span>
+          </v-tooltip>
         </div>
       </v-flex>
 
@@ -57,7 +62,6 @@
       <v-flex xs12>
         <token-balances-table
           :headers="headers"
-          :isFreshAccount="isFreshAccount"
           :tokenBalances="filteredBalancesArray"
           @update:select="select"
           :selected="selected"
@@ -113,7 +117,8 @@ export default {
         { text: 'Value', value: 'currencyBalance', align: 'right' }
       ],
       selected: [],
-      search: ''
+      search: '',
+      isFreshAccount: false
     }
   },
   computed: {
@@ -139,9 +144,6 @@ export default {
     },
     isRefreshVisible() {
       return this.$store.state.networkType === MAINNET
-    },
-    isFreshAccount() {
-      return this.finalBalancesArray.length === 1 && this.finalBalancesArray[0].computedBalance === 0
     },
     showSearch() {
       return this.finalBalancesArray.length > 5
@@ -169,6 +171,11 @@ export default {
     },
     topup() {
       this.$router.push({ path: '/wallet/topup' })
+    }
+  },
+  watch: {
+    finalBalancesArray(value) {
+      this.isFreshAccount = (value.length === 1 && value[0].computedBalance === 0) || true
     }
   }
 }
@@ -245,6 +252,22 @@ button {
   }
   .v-input__append-inner {
     margin-top: 9px;
+  }
+}
+
+.v-tooltip__content {
+  background: #fff;
+  border: 1px solid #2dcc70;
+  color: #2dcc70;
+  &::after {
+    content: ' ';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #2dcc70 transparent transparent transparent;
   }
 }
 </style>
