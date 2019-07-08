@@ -76,11 +76,11 @@
     "xtend": "^4.0.1"
   },
   "devDependencies": {
-    "@toruslabs/torus-embed": "^0.0.17",
-    "@vue/cli-plugin-babel": "^3.9.0",
-    "@vue/cli-plugin-eslint": "^3.9.1",
-    "@vue/cli-plugin-pwa": "^4.0.0-alpha.3",
-    "@vue/cli-service": "^3.9.0",
+    "@toruslabs/torus-embed": "^0.0.19",
+    "@vue/cli-plugin-babel": "^3.9.2",
+    "@vue/cli-plugin-eslint": "^3.9.2",
+    "@vue/cli-plugin-pwa": "^4.0.0-alpha.4",
+    "@vue/cli-service": "^3.9.2",
     "@vue/eslint-config-standard": "^4.0.0",
     "babel-eslint": "^10.0.2",
     "browserify": "^16.2.3",
