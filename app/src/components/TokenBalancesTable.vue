@@ -47,7 +47,7 @@
               </v-btn>
             </v-flex>
             <v-flex xs4 pt-3>
-              <img :src="require(`../../public/images/people_error.svg`)" height="100px" />
+              <img :src="require(`../../public/images/people_error.svg`)" style="width: 100%" />
             </v-flex>
           </v-layout>
         </v-card-text>

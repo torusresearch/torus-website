@@ -30,7 +30,7 @@
         <v-layout justify-space-between row>
           <v-flex xs6>
             <v-text-field
-              v-if="this.finalBalancesArray.length > 5"
+              v-if="showSearch"
               v-model="search"
               outlined
               hide-details
@@ -40,7 +40,7 @@
             ></v-text-field>
             <span class="caption">Last update 24/06/19, 16:24</span>
           </v-flex>
-          <v-flex xs6 class="text-xs-right pt-2">
+          <v-flex xs6 class="text-xs-right" :class="showSearch ? 'pt-2' : ''">
             <span class="subtitle-2">CURRENCY:</span>
             <v-select
               class="pt-0 mt-0 ml-2 subtitle-2 currency-selector"
@@ -142,6 +142,9 @@ export default {
     },
     isFreshAccount() {
       return this.finalBalancesArray.length === 1 && this.finalBalancesArray[0].computedBalance === 0
+    },
+    showSearch() {
+      return this.finalBalancesArray.length > 5
     }
   },
   methods: {
