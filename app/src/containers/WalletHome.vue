@@ -175,7 +175,7 @@ export default {
   },
   watch: {
     finalBalancesArray(value) {
-      this.isFreshAccount = (value.length === 1 && value[0].computedBalance === 0) || true
+      this.isFreshAccount = value.length === 1 && value[0].computedBalance === 0
     }
   }
 }
