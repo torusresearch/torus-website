@@ -233,6 +233,21 @@ var VuexStore = new Vuex.Store({
         }
       }
     },
+    showProviderChangePopup(context, payload) {
+      var bc = new BroadcastChannel('torus_provider_change_channel')
+      window.open(`${baseRoute}providerchange`, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600')
+      bc.onmessage = function(ev) {
+        if (ev.data === 'popup-loaded') {
+          bc.postMessage({
+            data: {
+              origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+              payload: payload
+            }
+          })
+          bc.close()
+        }
+      }
+    },
     showWalletPopup(context, payload) {
       walletWindow =
         walletWindow ||
