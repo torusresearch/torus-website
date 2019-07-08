@@ -101,7 +101,6 @@ export default {
         payload: { network, type },
         origin
       } = ev.data || {}
-      console.log(ev.data.payload)
       this.payload = { network, type }
       let url = { hostname: '' }
       try {
@@ -140,65 +139,6 @@ export default {
   }
 }
 
-.selected-account {
-  cursor: pointer;
-  @extend .text-bluish;
-
-  &:hover {
-    background-color: var(--v-torus_reject_mild-base);
-    opacity: 0.5;
-    color: #fff;
-  }
-
-  &.active {
-    background-color: var(--v-torus_active-base);
-  }
-}
-
-.svg-bcg-color {
-  background-color: var(--v-torus_svg_bcg-base);
-}
-
-@mixin svg-size($args...) {
-  @each $name, $size in keywords($args) {
-    .svg-setting-#{$name} {
-      width: $size;
-      height: $size;
-    }
-  }
-}
-
-@include svg-size($small: 24px, $medium: 38px, $large: 80px);
-
-%justify-align {
-  justify-content: center;
-  align-items: center;
-}
-
-%justify-align-start {
-  justify-content: start;
-  align-items: center;
-}
-
-.divWrap {
-  display: block;
-  @extend %justify-align;
-}
-
-.divWrapSvgStyle {
-  @extend .svg-bcg-color;
-  display: inline-flex;
-  @extend %justify-align;
-  border-radius: 50%;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.16);
-  @extend .svg-setting-large;
-}
-
-.spanWrap {
-  display: inline-flex;
-  @extend %justify-align-start;
-}
-
 .higherZ {
   position: fixed;
   z-index: 100;
@@ -212,21 +152,12 @@ export default {
   color: var(--v-torus_blue-base);
 }
 
-.text-grayish {
-  color: var(--v-torus_reject-base);
-}
-
 .bcg {
   position: relative;
 }
 
 .bcg-logo {
   height: 32px;
-}
-
-.bcg-top10 {
-  right: 20%;
-  bottom: 50%;
 }
 
 hr {
@@ -236,12 +167,6 @@ hr {
   border-top: 1px solid #ccc;
   margin: 0% 35% 0% 15px;
   padding: 0;
-}
-
-/deep/.knob-control__text-display {
-  font-size: 0.7rem !important;
-  font-weight: 500;
-  text-align: center;
 }
 
 .application--wrap {
