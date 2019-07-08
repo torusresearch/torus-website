@@ -1,84 +1,3 @@
-<script>
-// The color of dropdown icon requires half day work in modifying v-select
-import config from '../config'
-import TokenBalancesTable from '../components/TokenBalancesTable.vue'
-import { MAINNET } from '../utils/enums'
-
-export default {
-  name: 'walletHome',
-  components: { TokenBalancesTable },
-  data() {
-    return {
-      supportedCurrencies: ['ETH', ...config.supportedCurrencies],
-      headers: [
-        {
-          text: 'Coin',
-          align: 'left',
-          value: 'name'
-        },
-        { text: 'Balance', value: 'formattedBalance', align: 'center' },
-        { text: 'Value', value: 'currencyBalance', align: 'right' }
-      ],
-      selected: [],
-      search: ''
-    }
-  },
-  computed: {
-    totalPortfolioValue() {
-      return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
-    },
-    finalBalancesArray() {
-      let balances = this.$store.getters.tokenBalances.finalBalancesArray
-
-      return balances || []
-    },
-    filteredBalancesArray() {
-      const search = this.search || ''
-      return this.finalBalancesArray.filter(balance => {
-        return balance.name.toLowerCase().indexOf(search.toLowerCase()) >= 0
-      })
-    },
-    selectedCurrency() {
-      return this.$store.state.selectedCurrency
-    },
-    isTransferDisabled() {
-      return this.selected.length === 0
-    },
-    isRefreshVisible() {
-      return this.$store.state.networkType === MAINNET
-    },
-    isFreshAccount() {
-      return this.finalBalancesArray.length === 1 && this.finalBalancesArray[0].computedBalance === 0
-      // || true
-    }
-  },
-  methods: {
-    select(selectedItem) {
-      // this is so that we don't break their api
-      this.selected = []
-      this.finalBalancesArray.forEach(item => {
-        if (item.id === selectedItem.id) {
-          this.selected.push(item)
-        }
-      })
-    },
-    onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', value)
-    },
-    refreshBalances() {
-      this.$store.dispatch('forceFetchTokens')
-    },
-    initiateTransfer() {
-      // this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
-      this.$router.push({ path: '/wallet/transfer' })
-    },
-    topup() {
-      this.$router.push({ path: '/wallet/topup' })
-    }
-  }
-}
-</script>
-
 <template>
   <div>
     <v-layout mt-5 wrap row>
@@ -170,6 +89,87 @@ export default {
     </v-layout> -->
   </div>
 </template>
+
+<script>
+// The color of dropdown icon requires half day work in modifying v-select
+import config from '../config'
+import TokenBalancesTable from '../components/TokenBalancesTable.vue'
+import { MAINNET } from '../utils/enums'
+
+export default {
+  name: 'walletHome',
+  components: { TokenBalancesTable },
+  data() {
+    return {
+      supportedCurrencies: ['ETH', ...config.supportedCurrencies],
+      headers: [
+        {
+          text: 'Coin',
+          align: 'left',
+          value: 'name'
+        },
+        { text: 'Balance', value: 'formattedBalance', align: 'center' },
+        { text: 'Value', value: 'currencyBalance', align: 'right' }
+      ],
+      selected: [],
+      search: ''
+    }
+  },
+  computed: {
+    totalPortfolioValue() {
+      return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
+    },
+    finalBalancesArray() {
+      let balances = this.$store.getters.tokenBalances.finalBalancesArray
+
+      return balances || []
+    },
+    filteredBalancesArray() {
+      const search = this.search || ''
+      return this.finalBalancesArray.filter(balance => {
+        return balance.name.toLowerCase().indexOf(search.toLowerCase()) >= 0
+      })
+    },
+    selectedCurrency() {
+      return this.$store.state.selectedCurrency
+    },
+    isTransferDisabled() {
+      return this.selected.length === 0
+    },
+    isRefreshVisible() {
+      return this.$store.state.networkType === MAINNET
+    },
+    isFreshAccount() {
+      return this.finalBalancesArray.length === 1 && this.finalBalancesArray[0].computedBalance === 0
+      // || true
+    }
+  },
+  methods: {
+    select(selectedItem) {
+      // this is so that we don't break their api
+      this.selected = []
+      this.finalBalancesArray.forEach(item => {
+        if (item.id === selectedItem.id) {
+          this.selected.push(item)
+        }
+      })
+    },
+    onCurrencyChange(value) {
+      this.$store.dispatch('setSelectedCurrency', value)
+    },
+    refreshBalances() {
+      this.$store.dispatch('forceFetchTokens')
+    },
+    initiateTransfer() {
+      // this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
+      this.$router.push({ path: '/wallet/transfer' })
+    },
+    topup() {
+      this.$router.push({ path: '/wallet/topup' })
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 @mixin svg-size($args...) {
