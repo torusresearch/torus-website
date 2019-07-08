@@ -1,3 +1,10 @@
+<template>
+  <router-link tag="a" :to="to" class="mr-5 pb-1" :class="computedClass">
+    <v-icon>{{ icon }}</v-icon>
+    <slot></slot>
+  </router-link>
+</template>
+
 <script>
 export default {
   name: 'headerItem',
@@ -9,13 +16,6 @@ export default {
   }
 }
 </script>
-
-<template>
-  <router-link tag="a" :to="to" class="mr-5 pb-1" :class="computedClass">
-    <v-icon>{{ icon }}</v-icon>
-    <slot></slot>
-  </router-link>
-</template>
 
 <style lang="scss">
 a {
