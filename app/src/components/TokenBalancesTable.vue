@@ -46,8 +46,8 @@
                 Learn more
               </v-btn>
             </v-flex>
-            <v-flex xs4 pt-3>
-              <img :src="require(`../../public/images/people_error.svg`)" style="width: 100%" />
+            <v-flex xs4 pt-3 class="text-xs-right">
+              <img :src="require(`../../public/images/learn-more.svg`)" style="height: 100px" />
             </v-flex>
           </v-layout>
         </v-card-text>
