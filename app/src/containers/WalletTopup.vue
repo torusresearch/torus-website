@@ -32,7 +32,7 @@
               <div class="v-messages theme--light">
                 <div class="v-messages__wrapper">
                   <div class="v-messages__message">
-                    * Includes 5% Simplex Service Fees
+                    * Includes Simplex Service Fees of 5% or 10 USD, whichever is higher
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on }">
                         <v-icon class="torus-hint-icon" color="primary" small v-on="on">error_outline</v-icon>
