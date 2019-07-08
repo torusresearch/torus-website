@@ -1,60 +1,60 @@
 <template>
   <div>
     <v-layout mt-5 wrap row>
-      <v-flex xs12 sm6 px-3 mb-3>
-        <div class="text-black font-weight-bold headline mb-3">My Wallet</div>
+      <v-flex xs12 px-3 mb-3>
+        <div class="text-black font-weight-bold headline left">My Wallet</div>
+        <div class="right">
+          <v-btn outlined large color="primary" class="px-5 py-1 mr-3 mt-3" @click="initiateTransfer">
+            <v-icon color="primary" class="btn-icon mr-1">send</v-icon>
+            Send
+          </v-btn>
+          <v-btn large color="primary" class="px-5 py-1 mt-3" @click="topup">
+            <v-icon color="white" class="btn-icon mr-1">add</v-icon>
+            Top up
+          </v-btn>
+        </div>
+      </v-flex>
+
+      <v-flex xs12 px-3 mb-4>
         <v-card class="mx-auto card-total card-shadow" color="dark" white>
           <v-card-title class="font-weight-bold subtitle-2 pt-4 px-4">
             TOTAL VALUE
           </v-card-title>
-          <v-card-text class="pb-4 px-4">
+          <v-card-text class="pb-3 px-4">
             <h2 class="display-2 font-weight-bold">{{ totalPortfolioValue }} <small class="font-weight-light">USD</small></h2>
           </v-card-text>
         </v-card>
       </v-flex>
 
-      <v-flex xs12 sm6 px-3 mb-3 :class="{ 'pt-3': isFreshAccount }" :style="{ order: isFreshAccount ? 2 : 0 }">
-        <div>
-          <div class="text-black font-weight-bold headline mb-3">Operations</div>
-          <v-layout row wrap>
-            <v-flex>
-              <v-btn outlined large color="primary" class="px-5 py-1 mr-3 mt-3" @click="initiateTransfer">
-                <v-icon color="primary" class="btn-icon mr-1">send</v-icon>
-                Send
-              </v-btn>
-              <v-btn large color="primary" class="px-5 py-1 mt-3" @click="topup">
-                <v-icon color="white" class="btn-icon mr-1">add</v-icon>
-                Top up
-              </v-btn>
-            </v-flex>
-          </v-layout>
-        </div>
+      <v-flex xs12 px-3>
+        <v-layout justify-space-between row>
+          <v-flex xs6>
+            <v-text-field
+              v-if="this.finalBalancesArray.length > 5"
+              v-model="search"
+              outlined
+              hide-details
+              class="mr-3 subtitle-2 search-field"
+              append-icon="search"
+              style="max-width: 120px"
+            ></v-text-field>
+            <span class="caption">Last update 24/06/19, 16:24</span>
+          </v-flex>
+          <v-flex xs6 class="text-xs-right pt-2">
+            <span class="subtitle-2">CURRENCY:</span>
+            <v-select
+              class="pt-0 mt-0 ml-2 subtitle-2 currency-selector"
+              height="25px"
+              hide-details
+              :items="supportedCurrencies"
+              :value="selectedCurrency"
+              @change="onCurrencyChange"
+            ></v-select>
+          </v-flex>
+        </v-layout>
       </v-flex>
 
-      <v-flex :class="isFreshAccount ? 'px-3' : 'pt-4'" :style="{ order: isFreshAccount ? 1 : 2 }">
-        <v-layout row align-center justify-end mb-2 :class="isFreshAccount ? '' : 'mr-3'">
-          <div class="subtitle-2">CURRENCY:</div>
-          <v-select
-            class="pt-0 mt-0 ml-2 subtitle-2 currency-selector"
-            height="25px"
-            hide-details
-            :items="supportedCurrencies"
-            :value="selectedCurrency"
-            @change="onCurrencyChange"
-          ></v-select>
-        </v-layout>
-        <v-layout row align-center mr-3 justify-end v-if="!isFreshAccount">
-          <v-text-field
-            v-if="this.finalBalancesArray.length > 5"
-            v-model="search"
-            outlined
-            hide-details
-            class="mr-3 subtitle-2 search-field"
-            append-icon="search"
-            style="max-width: 120px"
-          ></v-text-field>
-          <span class="caption">Last update 24/06/19, 16:24</span>
-        </v-layout>
+      <v-flex xs12>
         <token-balances-table
           :headers="headers"
           :isFreshAccount="isFreshAccount"
@@ -142,7 +142,6 @@ export default {
     },
     isFreshAccount() {
       return this.finalBalancesArray.length === 1 && this.finalBalancesArray[0].computedBalance === 0
-      // || true
     }
   },
   methods: {
@@ -213,6 +212,7 @@ export default {
 
 ::v-deep .currency-selector {
   max-width: 50px;
+  display: inline-flex;
   .v-select__selection {
     color: #5495f7;
     margin: 0;
@@ -235,6 +235,7 @@ button {
 }
 
 ::v-deep .search-field {
+  display: inline-flex;
   .v-input__slot {
     margin: 0;
     min-height: 40px;

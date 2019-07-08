@@ -1,6 +1,6 @@
 <template>
-  <v-layout row wrap align-center :class="isFreshAccount ? 'mt-4' : 'mt-0'">
-    <v-flex :class="tokenCardLayout" v-for="balance in tokenBalances" :key="balance.name">
+  <v-layout row wrap align-center>
+    <v-flex class="xs12 sm6 px-3 my-3" v-for="balance in tokenBalances" :key="balance.name">
       <v-card color="dark card-shadow" white>
         <v-card-title class="font-weight-bold subtitle-2 pt-4 pb-0 px-4">
           COINS / TOKENS
@@ -33,8 +33,25 @@
         </v-card-text>
       </v-card>
     </v-flex>
-    <v-flex v-if="isFreshAccount" xs12 pa-3 class="text-xs-right">
-      <span class="caption">Last update 24/06/19, 16:24</span>
+
+    <v-flex class="xs12 sm6 px-3 my-3">
+      <v-card color="dark card-shadow" white>
+        <v-card-text class="pt-1 pb-3 px-4">
+          <v-layout row>
+            <v-flex xs8 class="body-1 pt-3">
+              <span class="font-weight-bold">Welcome to Torus.</span>
+              <br />
+              Learn more about your wallet today.
+              <v-btn color="primary" class="px-5 py-1 mt-3">
+                Learn more
+              </v-btn>
+            </v-flex>
+            <v-flex xs4 pt-3>
+              <img :src="require(`../../public/images/people_error.svg`)" height="100px" />
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+      </v-card>
     </v-flex>
   </v-layout>
   <!-- <v-layout row wrap v-if="false">
@@ -131,9 +148,6 @@ export default {
   computed: {
     showFooter() {
       return this.tokenBalances.length > 5
-    },
-    tokenCardLayout() {
-      return this.isFreshAccount ? 'xs12' : 'xs12 sm6 px-3 my-3'
     }
   },
   methods: {
