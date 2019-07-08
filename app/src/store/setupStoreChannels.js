@@ -44,6 +44,10 @@ torus.communicationMux.getStream('show_wallet').on('data', function(chunk) {
   VuexStore.dispatch('showWalletPopup', { network: chunk.data.calledFromEmbed })
 })
 
+torus.communicationMux.getStream('provider_change').on('data', function(chunk) {
+  VuexStore.dispatch('showProviderChangePopup', { ...chunk.data })
+})
+
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
 })
@@ -158,4 +162,15 @@ bc.onmessage = function(ev) {
     }
   }
 }
+
+var providerChangeChannel = new BroadcastChannel('torus_provider_change_channel')
+providerChangeChannel.onmessage = function(ev) {
+  if (ev.data && ev.data.type === 'confirm-provider-change' && ev.data.approve) {
+    log.info('Provider change approved', ev.data.payload)
+    VuexStore.dispatch('setProviderType', ev.data.payload)
+  } else if (ev.data && ev.data.type === 'deny-provider-change') {
+    log.info('Provider change denied')
+  }
+}
+
 export default VuexStore

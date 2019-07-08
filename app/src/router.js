@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import store from './store'
 import Popup from './views/Popup.vue'
 import Confirm from './views/Confirm.vue'
+import ProviderChange from './views/ProviderChange.vue'
 import Wallet from './views/Wallet.vue'
 import WalletHome from './containers/WalletHome.vue'
 import Login from './containers/Login.vue'
@@ -46,6 +47,11 @@ const router = new Router({
       path: '/confirm',
       name: 'confirm',
       component: Confirm
+    },
+    {
+      path: '/providerchange',
+      name: 'providerchange',
+      component: ProviderChange
     },
     {
       path: '/wallet',
