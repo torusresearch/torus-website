@@ -113,7 +113,7 @@ router.beforeResolve((to, ___, next) => {
     next()
   } else {
     if (store.state.selectedAddress === '') {
-      next({ name: 'login' })
+      next({ name: 'login', query: { redirect: to.path } })
     } else {
       next()
     }
