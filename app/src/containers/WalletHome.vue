@@ -210,11 +210,17 @@ export default {
   }
 }
 
-.currency-selector {
+::v-deep .currency-selector {
   max-width: 50px;
-  ::v-deep .v-select__selection {
+  .v-select__selection {
     color: #5495f7;
     margin: 0;
+  }
+  .v-input__slot:before {
+    border: 0;
+  }
+  &.v-text-field .v-input__append-inner {
+    margin-top: 3px;
   }
 }
 
