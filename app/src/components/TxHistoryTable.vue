@@ -8,10 +8,10 @@
         :headers="headers"
         :items="transactions"
         item-key="id"
-        :pagination.sync="pagination"
-        :hide-actions="!showFooter"
+        :options.sync="pagination"
+        :sort-by.sync="defaultSort"
+        :hide-default-footer="!showFooter"
         :search="search"
-        expand
       >
         <template v-slot:headers="props">
           <tr>
@@ -74,9 +74,8 @@ export default {
   props: ['headers', 'transactions'],
   data() {
     return {
-      pagination: {
-        sortBy: 'name'
-      },
+      pagination: {},
+      defaultSort: 'date',
       search: '',
       expand: false
     }
