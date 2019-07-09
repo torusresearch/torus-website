@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="18px" viewBox="0 0 14 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Bookmark</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-271.000000, -508.000000)">
+            <g id="Icons-/-Bookmark" transform="translate(266.000000, 505.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M6,12 C6,6 7.5,4 12,4 C16.5,4 18,6 18,12 C18,18 17,20 17,20 L12,17 L7,20 C7,20 6,18 6,12 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

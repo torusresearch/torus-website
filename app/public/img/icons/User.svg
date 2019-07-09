@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>User</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-222.000000, -701.000000)">
+            <g id="Icons-/-User" transform="translate(218.000000, 697.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M12,11 C10,11 9,10 9,8 C9,6 10,5 12,5 C14,5 15,6 15,8 C15,10 14,11 12,11 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M5,19 C5,16.2 6,14 12,14 C18,14 19,16.2 19,19" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

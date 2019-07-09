@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Chart pie</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-76.000000, -411.000000)">
+            <g id="Icons-/-Chart-pie" transform="translate(74.000000, 409.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M21,14 C21,18 17,21 13.125,21 L10.875,21 C7,21 3,17 3,13.125 L3,10.875 C3,7 6,3 10,3" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M13,3 C18,3 21,6 21,11 L13,11 L13,3 Z" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

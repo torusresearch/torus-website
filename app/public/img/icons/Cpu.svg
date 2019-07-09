@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Cpu</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-220.000000, -747.000000)">
+            <g id="Icons-/-Cpu" transform="translate(218.000000, 745.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M12,19 C5.933,19 5,17.25 5,12 C5,6.75 5.933,5 12,5 C18.067,5 19,6.75 19,12 C19,17.25 18.067,19 12,19 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M12,14 C10.267,14 10,13.5 10,12 C10,10.5 10.267,10 12,10 C13.733,10 14,10.5 14,12 C14,13.5 13.733,14 12,14 Z" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M10,3 L10,5" id="Stroke-5" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M14,3 L14,5" id="Stroke-7" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M10,19 L10,21" id="Stroke-9" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M14,19 L14,21" id="Stroke-11" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M5,10 L3,10" id="Stroke-13" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M5,14 L3,14" id="Stroke-15" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M21,10 L19,10" id="Stroke-17" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M21,14 L19,14" id="Stroke-19" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

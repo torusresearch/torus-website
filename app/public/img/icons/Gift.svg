@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Gift</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-461.000000, -796.000000)">
+            <g id="Icons-/-Gift" transform="translate(458.000000, 793.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M12,13 C4,13 4,12.167 4,10.5 C4,8.833 4,8 12,8 C20,8 20,8.833 20,10.5 C20,12.167 20,13 12,13 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M18,13 C18,19.125 18,20 12,20 C6,20 6,19.125 6,13" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M12,8 L12,20" id="Stroke-5" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M12,6 C12,7.104 11.104,8 10,8 C8.896,8 8,7.104 8,6 C8,4.896 8.896,4 10,4 C11.104,4 12,4.896 12,6 Z" id="Stroke-7" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M16,6 C16,7.104 15.104,8 14,8 C12.896,8 12,7.104 12,6 C12,4.896 12.896,4 14,4 C15.104,4 16,4.896 16,6 Z" id="Stroke-9" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

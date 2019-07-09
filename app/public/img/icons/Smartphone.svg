@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="20px" viewBox="0 0 16 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Smartphone</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-78.000000, -939.000000)">
+            <g id="Icons-/-Smartphone" transform="translate(74.000000, 937.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M12,21 C5.933,21 5,18.75 5,12 C5,5.25 5.933,3 12,3 C18.067,3 19,5.25 19,12 C19,18.75 18.067,21 12,21 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M13,17 C13,17.553 12.552,18 12,18 C11.448,18 11,17.553 11,17 C11,16.447 11.448,16 12,16 C12.552,16 13,16.447 13,17" id="Fill-3" fill="#333333" fill-rule="evenodd"></path>
+            </g>
+        </g>
+    </g>
+</svg>

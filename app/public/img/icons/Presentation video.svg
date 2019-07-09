@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Presentation video</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-316.000000, -603.000000)">
+            <g id="Icons-/-Presentation-video" transform="translate(314.000000, 601.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M12,18 C4,18 3,17 3,12 C3,7 4,6 12,6 C20,6 21,7 21,12 C21,17 20,18 12,18 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M17,21 L16.12,17.85" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M7.8799,17.8496 L6.9999,20.9996" id="Stroke-5" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <polyline id="Stroke-7" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="11.1699 6.0098 11.9999 2.9998 12.8299 6.0098"></polyline>
+                <path d="M11,9 C10.54,9 10.037,10.629 10,12 C9.957,13.61 10.46,15 11,15 C12,15 15,13 15,12 C15,11 12,9 11,9 Z" id="Stroke-9" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

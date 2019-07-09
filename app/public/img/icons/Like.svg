@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="17px" height="16px" viewBox="0 0 17 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Like</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-510.000000, -845.000000)">
+            <g id="Icons-/-Like" transform="translate(506.000000, 841.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M14.5,19 C9.733,19 9,17.75 9,14 C9,10.25 9.733,9 14.5,9 C19.267,9 20,10.25 20,14 C20,17.75 19.267,19 14.5,19 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M7,18 C5.267,18 5,17.25 5,15 C5,12.75 5.267,12 7,12 C8.733,12 9,12.75 9,15 C9,17.25 8.733,18 7,18 Z" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M10,10 C10,10 12,5 13,5 C13.89,5 13.99,6.57 13.99,9.01" id="Stroke-5" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

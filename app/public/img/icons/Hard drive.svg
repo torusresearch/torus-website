@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Hard drive</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-557.000000, -796.000000)">
+            <g id="Hard-drive" transform="translate(554.000000, 793.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M12,20 C4,20 4,19 4,17 C4,15 4,14 12,14 C20,14 20,15 20,17 C20,19 20,20 12,20 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M4,17 C4,5.083 6,4 12,4 C18,4 20,5.083 20,17" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M9,17 C9,17.553 8.553,18 8,18 C7.447,18 7,17.553 7,17 C7,16.447 7.447,16 8,16 C8.553,16 9,16.447 9,17" id="Fill-5" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M12,17 C12,17.553 11.553,18 11,18 C10.447,18 10,17.553 10,17 C10,16.447 10.447,16 11,16 C11.553,16 12,16.447 12,17" id="Fill-7" fill="#333333" fill-rule="evenodd"></path>
+            </g>
+        </g>
+    </g>
+</svg>

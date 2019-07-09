@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Star</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-269.000000, -940.000000)">
+            <g id="Icons-/-Star" transform="translate(266.000000, 937.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M13.0457065,4.66825 L14.7477065,8.44025 C14.9027065,8.78425 15.2367065,9.01125 15.6137065,9.02825 L19.0187065,9.18525 C19.9477065,9.32725 20.3277065,10.46725 19.6707065,11.14425 L17.0007065,14.00025 L17.3277065,18.64925 C17.4827065,19.60625 16.4737065,20.32125 15.6287065,19.85325 L12.4857065,18.10625 C12.1837065,17.93825 11.8167065,17.93825 11.5147065,18.10625 L8.37170649,19.85325 C7.52670649,20.32125 6.51770649,19.60625 6.67270649,18.64925 L6.96970649,14.43525 C6.98870649,14.15725 6.89270649,13.88525 6.70270649,13.68225 L4.32970649,11.14425 C3.67270649,10.46725 4.05270649,9.32725 4.98270649,9.18525 L8.38670649,9.02825 C8.76370649,9.01125 9.09770649,8.78425 9.25270649,8.44025 L10.9547065,4.66825 C11.3707065,3.77725 12.6297065,3.77725 13.0457065,4.66825 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="17px" viewBox="0 0 18 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Paperclip</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-221.000000, -604.000000)">
+            <g id="Icons-/-Paperclip" transform="translate(218.000000, 601.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M20,9.02290399 C20,9.02290399 19.1115695,11.022904 15.1115695,15.022904 C11.1115695,19.022904 7.11156951,20.022904 5.11156951,18.022904 C3.11156951,16.022904 3.45456951,13.679904 9.11156951,8.02290399 C14.7685695,2.36590399 16.1115695,4.02290399 17.1115695,5.02290399 C18.1115695,6.02290399 19.4015695,6.73290399 15.1115695,11.022904 C10.8215695,15.312904 9.17256951,16.083904 8.11156951,15.022904 C7.05056951,13.961904 7.82156951,13.312904 12.1115695,9.02290399" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

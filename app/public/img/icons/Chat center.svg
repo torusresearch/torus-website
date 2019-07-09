@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="18px" viewBox="0 0 16 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Chat center</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-366.000000, -652.000000)">
+            <g id="Icons-/-Chat-center" transform="translate(362.000000, 649.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M10.3604,17.9404 C5.7594,17.6204 5.0004,15.7404 5.0004,11.0004 C5.0004,5.7504 5.9294,4.0004 12.0004,4.0004 C18.0704,4.0004 19.0004,5.7504 19.0004,11.0004 C19.0004,15.7404 18.2404,17.6204 13.6394,17.9404" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M10,11 C10,11.553 9.553,12 9,12 C8.447,12 8,11.553 8,11 C8,10.447 8.447,10 9,10 C9.553,10 10,10.447 10,11" id="Fill-3" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M13,11 C13,11.553 12.553,12 12,12 C11.447,12 11,11.553 11,11 C11,10.447 11.447,10 12,10 C12.553,10 13,10.447 13,11" id="Fill-5" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M16,11 C16,11.553 15.553,12 15,12 C14.447,12 14,11.553 14,11 C14,10.447 14.447,10 15,10 C15.553,10 16,10.447 16,11" id="Fill-7" fill="#333333" fill-rule="evenodd"></path>
+                <polyline id="Stroke-9" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="10.3496 17.9404 10.3606 17.9404 11.9996 20.0004 13.6396 17.9404 13.6506 17.9404"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>

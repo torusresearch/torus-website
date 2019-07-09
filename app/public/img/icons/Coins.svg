@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="14px" viewBox="0 0 20 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Coins</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-556.000000, -942.000000)">
+            <g id="Icons-/-Coins" transform="translate(554.000000, 937.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M9,18 C5.533,18 5,17.5 5,16 C5,14.5 5.533,14 9,14 C12.467,14 13,14.5 13,16 C13,17.5 12.467,18 9,18 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M7,14 C3.533,14 3,13.5 3,12 C3,10.5 3.533,10 7,10 C10.467,10 11,10.5 11,12 C11,13.5 10.467,14 7,14 Z" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M9,10 C5.533,10 5,9.5 5,8 C5,6.5 5.533,6 9,6 C12.467,6 13,6.5 13,8 C13,9.5 12.467,10 9,10 Z" id="Stroke-5" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M19,18 C18,18 14,14 14,13 C14,12 15,11 16,11 C17,11 21,15 21,16 C21,17 20,18 19,18 Z" id="Stroke-7" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Globe</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-508.000000, -795.000000)">
+            <g id="Icons-/-Globe" transform="translate(506.000000, 793.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M13.125,20.9999 L10.875,20.9999 C6.525,20.9999 3,17.4749 3,13.1249 L3,10.8749 C3,6.5249 6.525,2.9999 10.875,2.9999 L13.125,2.9999 C17.475,2.9999 21,6.5249 21,10.8749 L21,13.1249 C21,17.4749 17.475,20.9999 13.125,20.9999 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M12.3516,21.0019 C9.7596,19.5979 7.9996,16.8539 7.9996,13.6989 L7.9996,10.3009 C7.9996,7.1489 9.7566,4.4069 12.3436,3.0019" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M11,21.0019 C13.592,19.5979 15.352,16.8539 15.352,13.6989 L15.352,10.3009 C15.352,7.1489 13.595,4.4069 11.007,3.0019" id="Stroke-5" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M21,11.9999 L3,11.9999" id="Stroke-7" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

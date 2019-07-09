@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Chart circles</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-365.000000, -364.000000)">
+            <g id="Icons-/-Chart-circles" transform="translate(362.000000, 361.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <polyline id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="4 4 4 20 20 20"></polyline>
+                <path d="M12,9 C12,10.104 11.104,11 10,11 C8.896,11 8,10.104 8,9 C8,7.896 8.896,7 10,7 C11.104,7 12,7.896 12,9 Z" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M19,6 C19,7.104 18.104,8 17,8 C15.896,8 15,7.104 15,6 C15,4.896 15.896,4 17,4 C18.104,4 19,4.896 19,6 Z" id="Stroke-5" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M20,13 C20,14.104 19.104,15 18,15 C16.896,15 16,14.104 16,13 C16,11.896 16.896,11 18,11 C19.104,11 20,11.896 20,13 Z" id="Stroke-7" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M15.1602,6.79 L11.8402,8.21" id="Stroke-9" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M17.7197,11.0195 L17.2807,7.9805" id="Stroke-11" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

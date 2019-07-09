@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="18px" viewBox="0 0 16 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Location user</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-558.000000, -700.000000)">
+            <g id="Icons-/-Location-user" transform="translate(554.000000, 697.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M12,11 C10.667,11 10,10.333 10,9 C10,7.667 10.667,7 12,7 C13.333,7 14,7.667 14,9 C14,10.333 13.333,11 12,11" id="Fill-1" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M9,14 C9,14 9.75,13 12,13 C14.25,13 15,14 15,14" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M10.3604,17.9404 C5.7594,17.6204 5.0004,15.7404 5.0004,11.0004 C5.0004,5.7504 5.9294,4.0004 12.0004,4.0004 C18.0704,4.0004 19.0004,5.7504 19.0004,11.0004 C19.0004,15.7404 18.2404,17.6204 13.6394,17.9404" id="Stroke-5" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <polyline id="Stroke-7" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="10.3496 17.9404 10.3606 17.9404 11.9996 20.0004 13.6396 17.9404 13.6506 17.9404"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>

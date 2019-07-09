@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="14px" viewBox="0 0 20 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Gamepad</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-268.000000, -606.000000)">
+            <g id="Icons-/-Gamepad" transform="translate(266.000000, 601.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M12,18 C5.25,18 3,16.5 3,12 C3,7.5 5.25,6 12,6 C18.75,6 21,7.5 21,12 C21,16.5 18.75,18 12,18 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M6,12 L10,12" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M8,10 L8,14" id="Stroke-5" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M17,10 C17,10.553 16.552,11 16,11 C15.448,11 15,10.553 15,10 C15,9.447 15.448,9 16,9 C16.552,9 17,9.447 17,10" id="Fill-7" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M15,12 C15,12.553 14.552,13 14,13 C13.448,13 13,12.553 13,12 C13,11.447 13.448,11 14,11 C14.552,11 15,11.447 15,12" id="Fill-9" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M17,14 C17,14.553 16.552,15 16,15 C15.448,15 15,14.553 15,14 C15,13.447 15.448,13 16,13 C16.552,13 17,13.447 17,14" id="Fill-11" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M19,12 C19,12.553 18.552,13 18,13 C17.448,13 17,12.553 17,12 C17,11.447 17.448,11 18,11 C18.552,11 19,11.447 19,12" id="Fill-13" fill="#333333" fill-rule="evenodd"></path>
+            </g>
+        </g>
+    </g>
+</svg>

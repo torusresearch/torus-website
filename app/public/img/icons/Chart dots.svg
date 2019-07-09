@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Chart dots</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-269.000000, -364.000000)">
+            <g id="Icons-/-Chart-dots" transform="translate(266.000000, 361.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <polyline id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="4 4 4 20 20 20"></polyline>
+                <path d="M11,12 C11,12.553 10.552,13 10,13 C9.448,13 9,12.553 9,12 C9,11.447 9.448,11 10,11 C10.552,11 11,11.447 11,12" id="Fill-3" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M12,7 C12,7.553 11.552,8 11,8 C10.448,8 10,7.553 10,7 C10,6.447 10.448,6 11,6 C11.552,6 12,6.447 12,7" id="Fill-5" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M15,9 C15,9.553 14.552,10 14,10 C13.448,10 13,9.553 13,9 C13,8.447 13.448,8 14,8 C14.552,8 15,8.447 15,9" id="Fill-7" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M19,10 C19,10.553 18.552,11 18,11 C17.448,11 17,10.553 17,10 C17,9.447 17.448,9 18,9 C18.552,9 19,9.447 19,10" id="Fill-9" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M21,7 C21,7.553 20.552,8 20,8 C19.448,8 19,7.553 19,7 C19,6.447 19.448,6 20,6 C20.552,6 21,6.447 21,7" id="Fill-11" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M9,15 C9,15.553 8.552,16 8,16 C7.448,16 7,15.553 7,15 C7,14.447 7.448,14 8,14 C8.552,14 9,14.447 9,15" id="Fill-13" fill="#333333" fill-rule="evenodd"></path>
+            </g>
+        </g>
+    </g>
+</svg>

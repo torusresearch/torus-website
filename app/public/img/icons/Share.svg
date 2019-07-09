@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Share</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-413.000000, -988.000000)">
+            <g id="Icons-/-Share" transform="translate(410.000000, 985.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M17,10 C14.4,10 14,9.25 14,7 C14,4.75 14.4,4 17,4 C19.6,4 20,4.75 20,7 C20,9.25 19.6,10 17,10 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M17,20 C14.4,20 14,19.25 14,17 C14,14.75 14.4,14 17,14 C19.6,14 20,14.75 20,17 C20,19.25 19.6,20 17,20 Z" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M7,15 C4.4,15 4,14.25 4,12 C4,9.75 4.4,9 7,9 C9.6,9 10,9.75 10,12 C10,14.25 9.6,15 7,15 Z" id="Stroke-5" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M14.1104,8.4502 L9.8894,10.5502" id="Stroke-7" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M14.1104,15.5498 L9.8894,13.4498" id="Stroke-9" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

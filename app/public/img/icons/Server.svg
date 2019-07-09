@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="17px" viewBox="0 0 18 17" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Server</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-317.000000, -989.000000)">
+            <g id="Icons-/-Server" transform="translate(314.000000, 985.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M12,20 C4,20 4,19 4,17 C4,15 4,14 12,14 C20,14 20,15 20,17 C20,19 20,20 12,20 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M9,17 C9,17.553 8.552,18 8,18 C7.448,18 7,17.553 7,17 C7,16.447 7.448,16 8,16 C8.552,16 9,16.447 9,17" id="Fill-3" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M12,11 C4,11 4,10 4,8 C4,6 4,5 12,5 C20,5 20,6 20,8 C20,10 20,11 12,11 Z" id="Stroke-5" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M9,8 C9,8.553 8.552,9 8,9 C7.448,9 7,8.553 7,8 C7,7.447 7.448,7 8,7 C8.552,7 9,7.447 9,8" id="Fill-7" fill="#333333" fill-rule="evenodd"></path>
+            </g>
+        </g>
+    </g>
+</svg>

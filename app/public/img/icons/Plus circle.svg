@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Plus circle</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-364.000000, -411.000000)">
+            <g id="Icons-/-Plus-circle" transform="translate(362.000000, 409.000000)">
+                <rect id="Rectangle" fill="#000000" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <g id="Group-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" transform="translate(3.000000, 3.000000)" stroke="#333333">
+                    <path d="M10.125,18 L7.875,18 C3.525,18 0,14.475 0,10.125 L0,7.875 C0,3.525 3.525,0 7.875,0 L10.125,0 C14.475,0 18,3.525 18,7.875 L18,10.125 C18,14.475 14.475,18 10.125,18 Z" id="Stroke-1" stroke-width="2"></path>
+                    <path d="M6,9 L12,9" id="Stroke-3" stroke-width="2"></path>
+                    <path d="M9,6 L9,12" id="Stroke-5" stroke-width="2"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

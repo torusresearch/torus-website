@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="18px" viewBox="0 0 20 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Airplay</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-172.000000, -748.000000)">
+            <g id="Icons-/-Airplay" transform="translate(170.000000, 745.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M6,18 C5.988,17.998 5.976,17.995 5.963,17.993 C4.809,17.774 3,16 3,12 C3,8 3,4 12,4 C21,4 21,7 21,12 C21,17 19.192,17.773 18.038,17.993 C18.025,17.995 18.013,17.998 18,18" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <polyline id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="14 20 12 18 10 20"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>

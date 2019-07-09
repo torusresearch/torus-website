@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Crown</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-413.000000, -939.000000)">
+            <g id="Icons-/-Crown" transform="translate(410.000000, 937.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M12.1592,20 C6.0932,20 5.1592,19.375 5.1592,17.5 C5.1592,15.625 6.0932,15 12.1592,15 C18.2252,15 19.1592,15.625 19.1592,17.5 C19.1592,19.375 18.2252,20 12.1592,20 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M17.6992,15.46 C18.7692,12.43 20.9192,6 20.1592,6 C19.1592,6 15.1592,9 15.1592,9 C15.1592,9 13.1592,3 12.1592,3 C11.1592,3 9.1592,9 9.1592,9 C9.1592,9 5.1592,6 4.1592,6 C3.3992,6 5.5492,12.43 6.6192,15.46" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M13.1592,11 C13.1592,11.553 12.7122,12 12.1592,12 C11.6062,12 11.1592,11.553 11.1592,11 C11.1592,10.447 11.6062,10 12.1592,10 C12.7122,10 13.1592,10.447 13.1592,11" id="Fill-5" fill="#333333" fill-rule="evenodd"></path>
+            </g>
+        </g>
+    </g>
+</svg>

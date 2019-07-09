@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="16px" viewBox="0 0 18 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Truck</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-77.000000, -989.000000)">
+            <g id="Icons-/-Truck" transform="translate(74.000000, 985.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M15,15 C15,15 15,9.2 14.99,9 L15,9 C20,9 20,11 20,14 C20,14.615 19.514,15 18.899,15 L9,15 C4,15 4,15 4,9.62 C4,6 4.917,5 9.5,5 C14.083,5 14.981,6 14.99,9" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M9,18.5 C9,19.328 8.329,20 7.5,20 C6.671,20 6,19.328 6,18.5 C6,17.672 6.671,17 7.5,17 C8.329,17 9,17.672 9,18.5" id="Fill-3" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M17,18.5 C17,19.328 16.329,20 15.5,20 C14.671,20 14,19.328 14,18.5 C14,17.672 14.671,17 15.5,17 C16.329,17 17,17.672 17,18.5" id="Fill-5" fill="#333333" fill-rule="evenodd"></path>
+            </g>
+        </g>
+    </g>
+</svg>

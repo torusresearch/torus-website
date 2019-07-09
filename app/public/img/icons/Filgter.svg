@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="18px" viewBox="0 0 16 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Filgter</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-222.000000, -1036.000000)">
+            <g id="Icons-/-Filgter" transform="translate(218.000000, 1033.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M5.01576956,5.161 C5.32476956,6.876 6.482,10.185 10,13 L10,17 L14,20 L14,13 C17.518,10.185 18.6950469,6.876 19.0030469,5.161 C19.1130469,4.554 18.618,4 18,4 L6.00276956,4 C5.38576956,4 4.90576956,4.554 5.01576956,5.161 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

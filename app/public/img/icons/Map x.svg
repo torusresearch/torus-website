@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Map x</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-605.000000, -700.000000)">
+            <g id="Icons-/-Map-x" transform="translate(602.000000, 697.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <polygon id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="4 6 9 4 15 6 20 4 20 18 15 20 9 18 4 20"></polygon>
+                <path d="M13,13 L17,9" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M13,9 L17,13" id="Stroke-4" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M12,11 C12,11.553 11.553,12 11,12 C10.447,12 10,11.553 10,11 C10,10.447 10.447,10 11,10 C11.553,10 12,10.447 12,11" id="Fill-5" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M9,12 C9,12.553 8.553,13 8,13 C7.447,13 7,12.553 7,12 C7,11.447 7.447,11 8,11 C8.553,11 9,11.447 9,12" id="Fill-7" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M8,15 C8,15.553 7.553,16 7,16 C6.447,16 6,15.553 6,15 C6,14.447 6.447,14 7,14 C7.553,14 8,14.447 8,15" id="Fill-9" fill="#333333" fill-rule="evenodd"></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="17px" height="16px" viewBox="0 0 17 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Dislike</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-558.000000, -845.000000)">
+            <g id="Icons-/-Dislike" transform="translate(554.000000, 841.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M10.5,5 C15.267,5 16,6.25 16,10 C16,13.75 15.267,15 10.5,15 C5.733,15 5,13.75 5,10 C5,6.25 5.733,5 10.5,5 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M18,6 C19.733,6 20,6.75 20,9 C20,11.25 19.733,12 18,12 C16.267,12 16,11.25 16,9 C16,6.75 16.267,6 18,6 Z" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M15,14 C15,14 13,19 12,19 C11.11,19 11.01,17.43 11.01,14.99" id="Stroke-5" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

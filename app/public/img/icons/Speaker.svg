@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="20px" viewBox="0 0 16 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Speaker</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-222.000000, -939.000000)">
+            <g id="Icons-/-Speaker" transform="translate(218.000000, 937.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M12,21 C5.933,21 5,18.75 5,12 C5,5.25 5.933,3 12,3 C18.067,3 19,5.25 19,12 C19,18.75 18.067,21 12,21 Z" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M13,7 C13,7.553 12.552,8 12,8 C11.448,8 11,7.553 11,7 C11,6.447 11.448,6 12,6 C12.552,6 13,6.447 13,7" id="Fill-3" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M15,14 C15,15.657 13.657,17 12,17 C10.343,17 9,15.657 9,14 C9,12.343 10.343,11 12,11 C13.657,11 15,12.343 15,14 Z" id="Stroke-5" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

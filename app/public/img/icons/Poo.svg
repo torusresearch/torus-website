@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="19px" viewBox="0 0 18 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Poo</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Faticons" transform="translate(-461.000000, -1036.000000)">
+            <g id="Icons-/-Poo" transform="translate(458.000000, 1033.000000)">
+                <rect id="Rectangle" fill="#000000" fill-rule="evenodd" opacity="0" x="0" y="0" width="24" height="24"></rect>
+                <path d="M6.01,13.54 C6.031,11.57 6.45,9 12,9 C14.362,9 15,6 12,4 C18.1,4 18.12,11.6 18.031,13.55 L18.029,13.557 C20,14.18 20,15.328 20,17 C20,19.667 20,21 12,21 C4,21 4,19.667 4,17 C4,14.333 4,13 12,13" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>
