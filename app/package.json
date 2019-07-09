@@ -22,14 +22,14 @@
     "pre-build": ". ./scripts/calculateIntegrity.sh",
     "production": "cross-env PORT=443 NODE_ENV=production node server.js",
     "temp": "npm run build-embed:dev && npm run build:dev",
-    "test:build-embed": "mocha --exit ./test/compile/Web3Test.js",
+    "test:build-embed": "mocha ./test/compile/Web3Test.js",
     "test:codecov-upload": "if [ $CODECOV_TOKEN ]; then nyc report --reporter=text-lcov > coverage.lcov && codecov; fi",
     "test:coverage-codecov": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:codecov-upload",
     "test:coverage-coveralls": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:coveralls-upload",
     "test:coveralls-upload": "if [ $COVERALLS_REPO_TOKEN ]; then nyc report --reporter=text-lcov | coveralls; fi",
     "test:e2e": "node ./test/e2e/puppeteer.js",
     "test:e2e:headful": "node ./test/e2e/puppeteer.js false",
-    "test:unit": "mocha --exit -r esm -r jsdom-global/register -r isomorphic-fetch ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js"
+    "test:unit": "mocha ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js"
   },
   "dependencies": {
     "assert": "^2.0.0",
@@ -138,9 +138,6 @@
   ],
   "engines": {
     "node": "10.x"
-  },
-  "mocha": {
-    "timeout": 0
   },
   "husky": {
     "hooks": {
