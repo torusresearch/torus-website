@@ -14,6 +14,7 @@ import WalletTransfer from './containers/WalletTransfer.vue'
 import WalletTopup from './containers/WalletTopup.vue'
 import WalletAccountsHome from './containers/WalletAccountsHome.vue'
 import WalletAccountImport from './containers/WalletAccountImport.vue'
+import PageNotFound from './views/PageNotFound.vue'
 
 // const Popup = () => import('./views/Popup.vue')
 // const Confirm = () => import('./views/Confirm.vue')
@@ -110,7 +111,8 @@ const router = new Router({
           component: WalletTopup
         }
       ]
-    }
+    },
+    { path: '*', component: PageNotFound }
   ]
 })
 
