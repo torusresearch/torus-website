@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -73,7 +73,7 @@
     "vuex": "^3.1.1",
     "vuex-persist": "^2.0.1",
     "web3": "1.0.0-beta.37",
-    "xtend": "^4.0.1"
+    "xtend": "^4.0.2"
   },
   "devDependencies": {
     "@toruslabs/torus-embed": "^0.0.19",
