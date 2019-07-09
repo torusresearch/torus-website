@@ -21,11 +21,11 @@ export default new Vuetify({
   },
   options: {
     customProperties: true
-  },
-  // iconfont: 'md',
-  icons: {
-    iconfont: 'mdi'
   }
+  // iconfont: 'md',
+  // icons: {
+  //   iconfont: 'mdi'
+  // }
   // breakpoint: {
   //   thresholds: {
   //     xs: 576

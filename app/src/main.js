@@ -1,13 +1,11 @@
 import Vue from 'vue'
 import './reset.css'
-import './plugins'
+import { vuetify } from './plugins'
 import App from './App.vue'
 import router from './router'
 import store from './store'
 import log from 'loglevel'
 import './registerServiceWorker'
-import vuetify from './plugins/vuetify'
-// import torus from './torus'
 
 log.setDefaultLevel('info')
 console.log('NODE_ENV', process.env.NODE_ENV)

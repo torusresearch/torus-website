@@ -1,2 +1,4 @@
 import './vueKnobControl'
-import './vuetify'
+import vuetify from './vuetify'
+
+export { vuetify }
