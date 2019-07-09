@@ -4,14 +4,14 @@
       <v-flex xs12 px-3 mb-3>
         <div class="text-black font-weight-bold headline left">My Wallet</div>
         <div class="right">
-          <v-btn outlined large color="primary" class="px-5 py-1 mr-3 mt-3" @click="initiateTransfer">
-            <v-icon color="primary" class="btn-icon mr-1">send</v-icon>
+          <v-btn outlined large color="grey" class="px-5 py-1 mr-3 mt-3" @click="initiateTransfer">
+            <img :src="require('../../public/images/icons/indent-increse-grey.svg')" class="btn-icon mr-1" />
             Send
           </v-btn>
           <v-tooltip top v-model="isFreshAccount">
             <template v-slot:activator="{ on }">
               <v-btn large color="primary" class="px-5 py-1 mt-3" @click="topup" v-on="on">
-                <v-icon color="white" class="btn-icon mr-1">add</v-icon>
+                <img :src="require('../../public/images/icons/add.svg')" class="btn-icon mr-1" />
                 Top up
               </v-btn>
             </template>
