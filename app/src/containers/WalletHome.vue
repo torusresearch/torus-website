@@ -117,8 +117,7 @@ export default {
         { text: 'Value', value: 'currencyBalance', align: 'right' }
       ],
       selected: [],
-      search: '',
-      isFreshAccount: false
+      search: ''
     }
   },
   computed: {
@@ -147,6 +146,9 @@ export default {
     },
     showSearch() {
       return this.finalBalancesArray.length > 10
+    },
+    isFreshAccount() {
+      return this.filteredBalancesArray.length === 1 && this.filteredBalancesArray[0].computedBalance === 0
     }
   },
   methods: {
@@ -171,11 +173,6 @@ export default {
     },
     topup() {
       this.$router.push({ path: '/wallet/topup' })
-    }
-  },
-  watch: {
-    finalBalancesArray(value) {
-      this.isFreshAccount = value.length === 1 && value[0].computedBalance === 0
     }
   }
 }
