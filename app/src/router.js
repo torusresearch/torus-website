@@ -110,7 +110,8 @@ const router = new Router({
           component: WalletTopup
         }
       ]
-    }
+    },
+    { path: '*', component: Login }
   ]
 })
 
