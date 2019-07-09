@@ -134,9 +134,7 @@ export default {
       const search = this.search || ''
       var regEx = new RegExp(search, 'i')
 
-      return this.finalBalancesArray.filter(balance => {
-        return balance.name.match(regEx)
-      })
+      return this.finalBalancesArray.filter(balance => balance.name.match(regEx))
     },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
@@ -148,7 +146,7 @@ export default {
       return this.$store.state.networkType === MAINNET
     },
     showSearch() {
-      return this.finalBalancesArray.length > 5 || true
+      return this.finalBalancesArray.length > 10
     }
   },
   methods: {
