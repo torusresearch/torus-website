@@ -132,8 +132,10 @@ export default {
     },
     filteredBalancesArray() {
       const search = this.search || ''
+      var regEx = new RegExp(search, 'i')
+
       return this.finalBalancesArray.filter(balance => {
-        return balance.name.toLowerCase().indexOf(search.toLowerCase()) >= 0
+        return balance.name.match(regEx)
       })
     },
     selectedCurrency() {
@@ -146,7 +148,7 @@ export default {
       return this.$store.state.networkType === MAINNET
     },
     showSearch() {
-      return this.finalBalancesArray.length > 5
+      return this.finalBalancesArray.length > 5 || true
     }
   },
   methods: {
