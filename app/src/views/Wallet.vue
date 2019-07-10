@@ -10,9 +10,8 @@
             :href="`#${headerItem.name}`"
             :icon="headerItem.icon"
             :to="headerItem.route"
+            >{{ headerItem.display }}</header-item
           >
-            {{ headerItem.display }}
-          </header-item>
         </v-tabs>
       </v-flex>
       <v-flex xs12>
@@ -35,8 +34,9 @@ export default {
       headerItems: [
         { name: 'home', icon: 'home', display: 'Home', route: '/wallet/home' },
         { name: 'history', icon: 'history', display: 'History', route: '/wallet/history' },
+        { name: 'accounts', icon: 'account_circle', display: 'Accounts', route: '/wallet/accounts' },
         { name: 'settings', icon: 'settings', display: 'Settings', route: '/wallet/settings' },
-        { name: 'accounts', icon: 'account_circle', display: 'Accounts', route: '/wallet/accounts' }
+        { name: 'Activity', icon: '', display: 'Activity', route: '/wallet/activity' }
       ]
     }
   }
