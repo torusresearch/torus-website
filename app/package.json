@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -22,14 +22,14 @@
     "pre-build": ". ./scripts/calculateIntegrity.sh",
     "production": "cross-env PORT=443 NODE_ENV=production node server.js",
     "temp": "npm run build-embed:dev && npm run build:dev",
-    "test:build-embed": "mocha --exit ./test/compile/Web3Test.js",
+    "test:build-embed": "mocha ./test/compile/Web3Test.js",
     "test:codecov-upload": "if [ $CODECOV_TOKEN ]; then nyc report --reporter=text-lcov > coverage.lcov && codecov; fi",
     "test:coverage-codecov": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:codecov-upload",
     "test:coverage-coveralls": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:coveralls-upload",
     "test:coveralls-upload": "if [ $COVERALLS_REPO_TOKEN ]; then nyc report --reporter=text-lcov | coveralls; fi",
     "test:e2e": "node ./test/e2e/puppeteer.js",
     "test:e2e:headful": "node ./test/e2e/puppeteer.js false",
-    "test:unit": "mocha --exit -r esm -r jsdom-global/register -r isomorphic-fetch ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js"
+    "test:unit": "mocha ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js"
   },
   "dependencies": {
     "assert": "^2.0.0",
@@ -73,7 +73,7 @@
     "vuex": "^3.1.1",
     "vuex-persist": "^2.0.1",
     "web3": "1.0.0-beta.37",
-    "xtend": "^4.0.1"
+    "xtend": "^4.0.2"
   },
   "devDependencies": {
     "@toruslabs/torus-embed": "^0.0.19",
@@ -83,7 +83,7 @@
     "@vue/cli-service": "^3.9.2",
     "@vue/eslint-config-standard": "^4.0.0",
     "babel-eslint": "^10.0.2",
-    "browserify": "^16.2.3",
+    "browserify": "^16.3.0",
     "codecov": "^3.5.0",
     "cross-env": "^5.2.0",
     "envify": "^4.1.0",
@@ -91,7 +91,7 @@
     "eslint-config-airbnb-base": "^13.2.0",
     "eslint-config-prettier": "^6.0.0",
     "eslint-config-standard": "^12.0.0",
-    "eslint-loader": "^2.2.0",
+    "eslint-loader": "^2.2.1",
     "eslint-plugin-flowtype": "^3.11.1",
     "eslint-plugin-html": "^6.0.0",
     "eslint-plugin-import": "^2.18.0",
@@ -107,7 +107,7 @@
     "isomorphic-fetch": "^2.2.1",
     "jsdom": "15.1.1",
     "jsdom-global": "3.0.2",
-    "lint-staged": "^9.0.2",
+    "lint-staged": "^9.1.0",
     "luxon": "^1.16.1",
     "mocha": "^6.1.4",
     "mocha-eslint": "^5.0.0",

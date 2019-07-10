@@ -54,7 +54,7 @@ export default {
   }),
   watch: {
     selectedAddress: function(newAddress, oldAddress) {
-      if (newAddress !== oldAddress && newAddress !== '') this.$router.push('wallet')
+      if (newAddress !== oldAddress && newAddress !== '') this.$router.push(this.$route.query.redirect || 'wallet')
     }
   },
   mounted() {
@@ -71,7 +71,7 @@ export default {
       }
     }, 2000)
 
-    if (this.selectedAddress !== '') this.$router.push('wallet')
+    if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || 'wallet')
   }
 }
 </script>
