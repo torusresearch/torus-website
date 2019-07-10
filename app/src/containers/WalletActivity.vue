@@ -165,14 +165,16 @@ export default {
         :key="index"
       >
         <v-flex class="d-flex align-items-center justify-content-between card-row">
-          <v-container>{{ item.action }}</v-container>
+          <v-container>
+            <p class="text-gray">{{ item.action }}</p>
+          </v-container>
           <v-container class="text-xs-right">
             <p :class="'text-' + transactions[index].status.toLowerCase()">{{ item.status }}</p>
           </v-container>
         </v-flex>
         <v-flex class="d-flex align-items-center justify-content-between card-row">
           <v-container>
-            <p>Date:</p>
+            <p class="text-gray">Date:</p>
           </v-container>
           <v-container class="text-xs-right">
             <p>{{ item.date }}</p>
@@ -181,15 +183,17 @@ export default {
 
         <v-flex class="d-flex align-items-center justify-content-between card-row">
           <v-container>
-            <p>Amount</p>
+            <p class="text-gray">Amount</p>
           </v-container>
-          <v-container class="text-xs-right">
+          <v-container class="text-xs-right font-weight-bold">
             <p>{{ item.amount }}</p>
           </v-container>
         </v-flex>
 
         <v-flex class="d-flex align-items-center justify-content-between card-row mb-3">
-          <v-container>To:</v-container>
+          <v-container>
+            <p class="text-gray">To:</p>
+          </v-container>
           <v-container class="text-sm-right">
             <small>{{ item.to }}</small>
           </v-container>
@@ -256,5 +260,9 @@ export default {
 
 .text-pending {
   color: #b3c0ce;
+}
+
+.text-gray {
+  color: #5c6c7f;
 }
 </style>
