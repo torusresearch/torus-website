@@ -1,6 +1,86 @@
 <template>
-  <v-container fill-height>
-    <template v-if="type === 'none'">
+  <v-container py-4 px-0>
+    <template v-if="type === 'transaction'">
+      <v-layout align-center mx-4 mb-4>
+        <div class="text-black font-weight-bold headline left">{{ header }}</div>
+        <img :src="require('../../public/images/icons/indent-increse-grey.svg')" class="ml-2" />
+      </v-layout>
+      <v-layout wrap mb-4>
+        <v-flex xs12 mb-4 mx-4>
+          <div class="subtitle-2 grey--text">You are transacting with:</div>
+
+          <v-card flat class="grey lighten-3">
+            <v-card-text>
+              <div class="subtitle-2 blue--text">Payee</div>
+              <div class="caption grey--text">{{ origin }}</div>
+            </v-card-text>
+            <img :src="require('../../public/images/icons/indent-increse-grey.svg')" class="card-upper-icon" />
+          </v-card>
+        </v-flex>
+        <v-flex xs12 mb-3 mx-4>
+          <div class="subtitle-2">Amount</div>
+          <v-divider></v-divider>
+          <div>
+            <span class="subtitle-2 left grey--text">Ethereum</span>
+            <span class="subtitle-2 right">{{ totalEthCost }} ETH</span>
+          </div>
+          <div class="caption right clearfix">{{ totalUsdCost }} USD</div>
+        </v-flex>
+        <v-flex xs12 mb-3 mx-4>
+          <div class="subtitle-2">Your Wallet Balance</div>
+          <v-divider></v-divider>
+          <div>
+            <span class="caption left key-item grey--text">{{ sender }}</span>
+            <span class="subtitle-2 right">{{ computedBalance }} ETH</span>
+          </div>
+          <div class="caption right clearfix">2.45 USD</div>
+        </v-flex>
+        <v-flex xs12 mb-2>
+          <div class="subtitle-2 mx-4 mb-1">Select your Transaction Speed</div>
+          <v-layout class="px-3 mb-2">
+            <v-btn outlined class="button-speed flex mx-2 primary theme--dark">
+              <span>~ 30 Mins</span>
+              <span class="font-weight-light">0.02 USD</span>
+            </v-btn>
+            <v-btn outlined class="button-speed flex mx-2">
+              <span>~ 10 Mins</span>
+              <span class="font-weight-light">0.06 USD</span>
+            </v-btn>
+            <v-btn outlined class="button-speed flex mx-2">
+              <span>~ 2 Mins</span>
+              <span class="font-weight-light">0.12 USD</span>
+            </v-btn>
+          </v-layout>
+          <div class="subtitle-2 right blue--text mx-4">Advanced Options</div>
+        </v-flex>
+        <v-flex xs12 px-4 mb-1>
+          <div class="subtitle-1 font-weight-bold">Total</div>
+          <v-divider></v-divider>
+          <div>
+            <span class="subtitle-2">Cost of Transaction</span>
+            <span class="subtitle-1 right blue--text font-weight-bold">1.00021 ETH</span>
+          </div>
+          <div class="caption right clearfix">245.062 USD</div>
+        </v-flex>
+        <v-flex xs12 mb-4>
+          <div class="subtitle-2 right blue--text mx-4">More Details</div>
+        </v-flex>
+        <v-layout px-4>
+          <v-flex xs6>
+            <v-btn block text large class="grey--text">
+              Cancel
+            </v-btn>
+          </v-flex>
+          <v-flex xs6>
+            <v-btn block depressed large color="primary" class="ml-2">
+              Confirm
+            </v-btn>
+          </v-flex>
+        </v-layout>
+        <v-flex xs12></v-flex>
+      </v-layout>
+    </template>
+    <template v-if="type === 'none' && false">
       <page-loader />
     </template>
     <template v-if="type === 'message'">
@@ -519,5 +599,40 @@ hr {
   border: #fff;
   border-radius: 45px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+}
+
+/* NEW UI */
+.v-card__text {
+  padding: 12px;
+}
+.card-upper-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 12px;
+  height: 12px;
+}
+
+.v-divider {
+  margin: 0 0 12px;
+}
+
+.key-item {
+  max-width: 200px;
+  word-break: break-all;
+  line-height: 1em;
+  margin-top: 2px;
+}
+
+::v-deep .button-speed {
+  &.v-btn {
+    height: inherit;
+    border: 1px solid #a7b3bf;
+  }
+  .v-btn__content {
+    flex-direction: column;
+    padding: 12px 0;
+    line-height: 1em;
+  }
 }
 </style>
