@@ -39,10 +39,10 @@
             </v-flex>
             <v-flex xs12 px-3 sm6>
               <div>
-                <span class="subtitle-2">Recipient gets</span>
-                <span v-if="convertedRecipientGets" class="right caption">~{{ convertedRecipientGets }} {{ selectedCurrency }}</span>
+                <span class="subtitle-2">Total Cost</span>
+                <span v-if="convertedTotalCost" class="right caption">~{{ convertedTotalCost }} {{ selectedCurrency }}</span>
               </div>
-              <v-text-field outlined readonly :value="recipientGets"></v-text-field>
+              <v-text-field outlined readonly :value="totalCost"></v-text-field>
             </v-flex>
           </v-layout>
           <v-layout row wrap>
@@ -266,9 +266,8 @@ export default {
       fastestGasPriceSpeed: '',
       isFastChecked: false,
       speedSelected: '',
-      recipientGets: '',
-      convertedRecipientGets: '',
-      speedOptions: [],
+      totalCost: '',
+      convertedTotalCost: '',
       rules: {
         toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid eth or email Address',
         required: value => !!value || 'Required'
@@ -336,7 +335,7 @@ export default {
 
       this.convertedAmount = (this.displayAmount * this.getCurrencyTokenRate).toFixed(5)
 
-      this.updateRecipientGets()
+      this.updateTotalCost()
     }
   },
   methods: {
@@ -457,20 +456,20 @@ export default {
         this.activeGasPrice = price
       }
 
-      this.updateRecipientGets()
+      this.updateTotalCost()
     },
-    updateRecipientGets() {
+    updateTotalCost() {
       if (!this.displayAmount || this.speedSelected === '') {
-        this.recipientGets = ''
-        this.convertedRecipientGets = ''
+        this.totalCost = ''
+        this.convertedTotalCost = ''
         return
       }
-      console.log(this.getCurrencyTokenRate)
+
       const speedCostInEth = this.activeGasPrice / this.getCurrencyTokenRate
 
       // Convert speed cost to eth
-      this.recipientGets = (this.displayAmount - speedCostInEth).toFixed(5)
-      this.convertedRecipientGets = (this.recipientGets * this.getCurrencyTokenRate).toFixed(5)
+      this.totalCost = (parseFloat(this.displayAmount) + speedCostInEth).toFixed(5)
+      this.convertedTotalCost = (this.totalCost * this.getCurrencyTokenRate).toFixed(5)
     }
   },
   created() {
