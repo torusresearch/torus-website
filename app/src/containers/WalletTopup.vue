@@ -97,7 +97,7 @@
 
 <script>
 /* eslint-disable camelcase */
-import { getQuote, getOrder } from '../plugins/simplex'
+import { postQuote, postOrder } from '../plugins/simplex'
 import throttle from 'lodash.throttle'
 import { significantDigits, formatCurrencyNumber } from '../utils/utils'
 
@@ -138,7 +138,7 @@ export default {
       if (parseFloat(newValue) <= 20000 && parseFloat(newValue) >= 50) this.fetchQuote()
     },
     fetchQuote: throttle(async function() {
-      getQuote({
+      postQuote({
         digital_currency: 'ETH',
         fiat_currency: this.selectedCurrency,
         requested_currency: this.selectedCurrency,
@@ -153,7 +153,7 @@ export default {
     }, 0),
     sendOrder() {
       if (this.$refs.inputForm.validate()) {
-        getOrder({
+        postOrder({
           'g-recaptcha-response': '',
           account_details: {
             app_end_user_id: this.currentOrder.user_id
