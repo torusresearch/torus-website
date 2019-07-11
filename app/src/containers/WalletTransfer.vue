@@ -58,7 +58,7 @@
                     large
                     outlined
                     class="button-speed"
-                    :class="speedSelected === 'average' ? 'success theme--dark' : ''"
+                    :class="speedSelected === 'average' ? 'primary theme--dark' : ''"
                     @click="selectSpeed('average', averageGasPrice)"
                   >
                     <span>~ {{ averageGasPriceSpeed }} Mins</span>
@@ -71,11 +71,11 @@
                     large
                     outlined
                     class="button-speed"
-                    :class="speedSelected === 'average' ? 'success theme--dark' : ''"
-                    @click="selectSpeed('average', fastGasPrice)"
+                    :class="speedSelected === 'fast' ? 'primary theme--dark' : ''"
+                    @click="selectSpeed('fast', fastGasPrice)"
                   >
                     <span>~ {{ fastGasPriceSpeed }} Mins</span>
-                    <span class="font-weight-light">{{ getGasDisplayString('average', fastGasPrice) }}</span>
+                    <span class="font-weight-light">{{ getGasDisplayString('fast', fastGasPrice) }}</span>
                   </v-btn>
                 </v-flex>
                 <v-flex xs12 sm4 px-3 mb-1>
@@ -84,11 +84,11 @@
                     large
                     outlined
                     class="button-speed"
-                    :class="speedSelected === 'fast' ? 'success theme--dark' : ''"
-                    @click="selectSpeed('fast', fastestGasPrice)"
+                    :class="speedSelected === 'fastest' ? 'primary theme--dark' : ''"
+                    @click="selectSpeed('fastest', fastestGasPrice)"
                   >
                     <span>~ {{ fastestGasPriceSpeed }} Mins</span>
-                    <span class="font-weight-light">{{ getGasDisplayString('fast', fastestGasPrice) }}</span>
+                    <span class="font-weight-light">{{ getGasDisplayString('fastest', fastestGasPrice) }}</span>
                   </v-btn>
                 </v-flex>
               </v-layout>
@@ -449,7 +449,6 @@ export default {
       this.$router.go(-1)
     },
     selectSpeed(targetSpeed, price) {
-      console.log(targetSpeed, price)
       if (this.speedSelected === targetSpeed) {
         this.speedSelected = ''
         this.activeGasPrice = ''
