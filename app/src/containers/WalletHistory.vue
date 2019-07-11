@@ -5,14 +5,14 @@
         <span class="spanWrapSvgStyle">
           <img :src="require('../../public/images/coins.svg')" alt="Wallet" class="svg-setting-small" />
         </span>
-        <span class="text-bluish headline"> My Transactions</span>
+        <span class="text-bluish headline">My Transactions</span>
       </span>
     </v-flex>
     <v-flex xs12 sm5 class="text-sm-right">
       <div>Total Portfolio Value</div>
       <div>
         <span>
-          <span class="text-bluish headline spanWrapSvgStyle"> {{ totalPortfolioValue }} </span>
+          <span class="text-bluish headline spanWrapSvgStyle">{{ totalPortfolioValue }}</span>
           <v-select
             class="select-width d-inline-flex ml-2 spanWrapSvgStyle"
             single-line
@@ -20,7 +20,7 @@
             text
             :items="supportedCurrencies"
             :value="selectedCurrency"
-            label=""
+            label
             @change="onCurrencyChange"
           ></v-select>
         </span>
@@ -43,7 +43,8 @@
 // The color of dropdown icon requires half day work in modifying v-select
 import config from '../config'
 import TxHistoryTable from '../components/TxHistoryTable.vue'
-import { addressSlicer, significantDigits, getEtherScanHashLink } from '../utils/utils'
+import { getPastOrders } from '../plugins/simplex'
+import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus } from '../utils/utils'
 import torus from '../torus'
 const web3Utils = torus.web3.utils
 
@@ -64,7 +65,8 @@ export default {
         { text: 'Amount', value: 'totalAmountString', align: 'center' },
         { text: 'Value', value: 'currencyAmountString', align: 'center' },
         { text: 'Status', value: 'status', align: 'center' }
-      ]
+      ],
+      pastOrders: []
     }
   },
   computed: {
@@ -109,8 +111,35 @@ export default {
           finalTransactions.push(txObj)
         }
       }
+      if (this.pastOrders.length > 0) finalTransactions.push(...this.pastOrders)
       return finalTransactions
     }
+  },
+  mounted() {
+    const publicAddress = this.$store.state.selectedAddress
+    getPastOrders({}, { public_address: publicAddress })
+      .then(response => {
+        this.pastOrders = response.result.reduce((acc, x) => {
+          if (!(x.status === 'SENT_TO_SIMPLEX' && new Date() - new Date(x.createdAt) > 86400 * 1000))
+            acc.push({
+              id: x.createdAt,
+              date: new Date(x.createdAt).toDateString().substring(4),
+              from: 'Simplex',
+              slicedFrom: 'Simplex',
+              to: publicAddress,
+              slicedTo: addressSlicer(publicAddress),
+              totalAmount: x.requested_digital_amount.amount,
+              totalAmountString: `${significantDigits(x.requested_digital_amount.amount)} ${x.requested_digital_amount.currency}`,
+              currencyAmount: x.fiat_total_amount.amount,
+              currencyAmountString: `${significantDigits(x.fiat_total_amount.amount)} ${x.fiat_total_amount.currency}`,
+              status: getStatus(x.status),
+              etherscanLink: ''
+            })
+          return acc
+          // }
+        }, [])
+      })
+      .catch(err => console.log(err))
   }
 }
 </script>

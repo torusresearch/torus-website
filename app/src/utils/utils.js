@@ -226,6 +226,17 @@ function getEtherScanHashLink(txHash, network = null) {
   return network === 'mainnet' ? `https://etherscan.io/tx/${txHash}` : `https://${localNetwork}.etherscan.io/tx/${txHash}`
 }
 
+const statusObj = {
+  SENT_TO_SIMPLEX: 'pending',
+  DENIED_SIMPLEX: 'rejected',
+  PROCESSING_SIMPPLEX: 'processing',
+  SUCCESS_SIMPLEX: 'success'
+}
+
+function getStatus(status) {
+  return statusObj[status] || 'pending'
+}
+
 function extractHostname(url) {
   var hostname
   // find & remove protocol (http, ftp, etc.) and get hostname
@@ -267,5 +278,6 @@ export {
   extractHostname,
   formatCurrencyNumber,
   getEtherScanHashLink,
-  getRandomNumber
+  getRandomNumber,
+  getStatus
 }
