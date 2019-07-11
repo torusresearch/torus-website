@@ -35,7 +35,8 @@
         {
           "printWidth": 150,
           "semi": false,
-          "singleQuote": true
+          "singleQuote": true,
+          "htmlWhitespaceSensitivity": "ignore"
         }
       ],
       "quotes": [2, "single"],

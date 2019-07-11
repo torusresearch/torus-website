@@ -5,7 +5,7 @@
         <span class="spanWrapSvgStyle">
           <img :src="require('../../public/images/coins.svg')" alt="Wallet" class="svg-setting-small" />
         </span>
-        <span class="headline"> Transaction Request</span>
+        <span class="headline">Transaction Request</span>
       </span>
     </v-flex>
     <v-flex xs12 sm9 class="fill-height">
@@ -14,7 +14,7 @@
           <v-container fill-height pl-0 pr-0>
             <v-layout row wrap align-center justify-center align-content-start>
               <v-flex xs12 sm6>
-                <span class="body-2">Selected Coin </span>
+                <span class="body-2">Selected Coin</span>
               </v-flex>
               <v-flex xs7 sm4 align-self-center>
                 <v-select single-line solo flat :items="finalBalancesArray" :value="selectedItem" label="Coin" @change="selectedItemChanged">
@@ -27,7 +27,7 @@
                           onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
                         />
                       </v-flex>
-                      <v-flex xs10 align-self-center> {{ props.item.name }} </v-flex>
+                      <v-flex xs10 align-self-center>{{ props.item.name }}</v-flex>
                     </v-layout>
                   </template>
                   <template v-slot:selection="props">
@@ -51,7 +51,7 @@
                 <span class="body-2">Current Balance</span>
               </v-flex>
               <v-flex xs12 sm6>
-                <span class="body-2">{{ remainingBalanceString }} </span>
+                <span class="body-2">{{ remainingBalanceString }}</span>
               </v-flex>
               <v-flex xs12 sm6>
                 <span class="body-2">Enter To/Wallet Address</span>
@@ -102,7 +102,7 @@
               <v-flex xs12 sm6>
                 <span class="body-2">
                   <div>{{ gasDisplayString }}</div>
-                  <v-checkbox v-model="isFastChecked" :color="$vuetify.theme.torus_blue" :label="fastGasDisplayString"> </v-checkbox>
+                  <v-checkbox v-model="isFastChecked" :color="$vuetify.theme.torus_blue" :label="fastGasDisplayString"></v-checkbox>
                 </span>
               </v-flex>
               <v-flex xs12>
