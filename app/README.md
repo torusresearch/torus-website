@@ -10,7 +10,7 @@
 
 ```sh
 npm install
-cd node_modules && find . -name ".git" -type d -exec rm -rf {} + && cd .. && npm audit fix
+find ./node_modules -name ".git" -type d -exec rm -rf {} +
 ```
 
 ### Compiles and hot-reloads for development
@@ -46,5 +46,5 @@ To get rid of the websocket error,
 use the following command in the project root (where package.json lives)
 
 ```sh
-cd node_modules && find . -name ".git" -type d -exec rm -rf {} +
+find ./node_modules -name ".git" -type d -exec rm -rf {} +
 ```
