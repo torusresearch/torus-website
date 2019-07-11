@@ -12,7 +12,7 @@
           <v-card flat class="grey lighten-3">
             <v-card-text>
               <div class="subtitle-2 blue--text">Payee</div>
-              <div class="caption grey--text">{{ origin }}</div>
+              <div class="caption grey--text">{{ receiver }}</div>
             </v-card-text>
             <img :src="require('../../public/images/icons/indent-increse-grey.svg')" class="card-upper-icon" />
           </v-card>
@@ -38,17 +38,15 @@
         <v-flex xs12 mb-2>
           <div class="subtitle-2 mx-4 mb-1">Select your Transaction Speed</div>
           <v-layout class="px-3 mb-2">
-            <v-btn outlined class="button-speed flex mx-2 primary theme--dark">
-              <span>~ 30 Mins</span>
-              <span class="font-weight-light">0.02 USD</span>
-            </v-btn>
-            <v-btn outlined class="button-speed flex mx-2">
-              <span>~ 10 Mins</span>
-              <span class="font-weight-light">0.06 USD</span>
-            </v-btn>
-            <v-btn outlined class="button-speed flex mx-2">
-              <span>~ 2 Mins</span>
-              <span class="font-weight-light">0.12 USD</span>
+            <v-btn
+              v-for="speedOption in speedOptions"
+              :key="speedOption.type"
+              outlined
+              class="button-speed flex mx-2"
+              :class="speedOption.type === selectedSpeed ? 'primary theme--dark' : ''"
+            >
+              <span>~ {{ speedOption.speed }} Mins</span>
+              <span class="font-weight-light">{{ getGasDisplayString(speedOption.type, speedOption.price) }}</span>
             </v-btn>
           </v-layout>
           <div class="subtitle-2 right blue--text mx-4">Advanced Options</div>
@@ -338,7 +336,9 @@ export default {
       network: '',
       dollarValue: 0,
       canApprove: true,
-      canShowError: false
+      canShowError: false,
+      speedOptions: [],
+      selectedSpeed: ''
     }
   },
   computed: {
@@ -357,6 +357,12 @@ export default {
     },
     imageType() {
       return this.isDeployContract || this.isContractInteraction ? 'images/file-signature.svg' : 'images/user.svg'
+    },
+    getCurrencyMultiplier() {
+      const { selectedCurrency, currencyData } = this.$store.state || {}
+      let currencyMultiplier = 1
+      if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+      return currencyMultiplier
     }
   },
   watch: {
@@ -408,6 +414,24 @@ export default {
     },
     showGasPrice(val) {
       return `Fee: $ ${significantDigits(parseFloat(this.txFees).toFixed(3))}`
+    },
+    getGasDisplayString(speed, fastGasPrice) {
+      const currencyMultiplier = this.getCurrencyMultiplier
+      const ethFee = this.gasEstimate * fastGasPrice * 10 ** -9
+      const currencyFee = ethFee * currencyMultiplier
+      return `${significantDigits(currencyFee)} ${this.$store.state.selectedCurrency}`
+    },
+    getSelectedSpeed() {
+      let selectedType = ''
+      let nearest = 1000
+      this.speedOptions.reverse().forEach(speed => {
+        const delta = Math.abs(speed.price - this.gasPrice)
+        if (delta < nearest) {
+          nearest = delta
+          selectedType = speed.type
+        }
+      })
+      return selectedType
     },
     ...mapActions({})
   },
@@ -465,6 +489,56 @@ export default {
       bc.close()
     }
     bc.postMessage({ data: 'popup-loaded' })
+
+    // Fetch gas prices
+    fetch('https://ethgasstation.info/json/ethgasAPI.json', {
+      headers: {},
+      referrer: 'http://ethgasstation.info/json/',
+      referrerPolicy: 'no-referrer-when-downgrade',
+      body: null,
+      method: 'GET',
+      mode: 'cors'
+    })
+      .then(resp => resp.json())
+      .then(
+        ({
+          average: averageTimes10,
+          avgWait,
+          block_time: blockTime,
+          blockNum,
+          fast: fastTimes10,
+          fastest: fastestTimes10,
+          fastestWait,
+          fastWait,
+          safeLow: safeLowTimes10,
+          safeLowWait,
+          speed
+        }) => {
+          const [average, fast, fastest] = [averageTimes10, fastTimes10, fastestTimes10].map(price => parseFloat(price) / 10)
+          this.speedOptions = [
+            {
+              type: 'average',
+              speed: avgWait,
+              price: average
+            },
+            {
+              type: 'fast',
+              speed: fastWait,
+              price: fast
+            },
+            {
+              type: 'fastest',
+              speed: fastestWait,
+              price: fastest
+            }
+          ]
+
+          this.selectedSpeed = this.getSelectedSpeed()
+        }
+      )
+      .catch(err => {
+        console.log(err)
+      })
   }
 }
 </script>
