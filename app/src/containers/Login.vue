@@ -76,7 +76,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #flexiBtn.btnStyle {
   width: 172px;
   height: 48px;
