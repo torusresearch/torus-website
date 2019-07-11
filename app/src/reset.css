@@ -1,7 +1,13 @@
-.container.fill-height {
-  /* overflow-y: auto;
-  overflow-x: hidden; */
+body,
+html {
+  height: inherit !important;
+  overflow-y: auto !important;
 }
+
+/* .container.fill-height {
+  overflow-y: auto;
+  overflow-x: hidden;
+} */
 
 .clearfix {
   clear: both;
