@@ -1,6 +1,6 @@
 body,
 html {
-  height: inherit !important;
+  height: inherit;
   overflow-y: auto !important;
 }
 
