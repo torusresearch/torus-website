@@ -58,11 +58,11 @@
                     large
                     outlined
                     class="button-speed"
-                    :class="speedSelected === 'safeLow' ? 'success theme--dark' : ''"
-                    @click="selectSpeed('safeLow', safeLowGasPrice)"
+                    :class="speedSelected === 'average' ? 'success theme--dark' : ''"
+                    @click="selectSpeed('average', averageGasPrice)"
                   >
-                    <span>~ {{ safeLowGasPriceSpeed }} Mins</span>
-                    <span class="font-weight-light">{{ getGasDisplayString('safeLow', safeLowGasPrice) }}</span>
+                    <span>~ {{ averageGasPriceSpeed }} Mins</span>
+                    <span class="font-weight-light">{{ getGasDisplayString('average', averageGasPrice) }}</span>
                   </v-btn>
                 </v-flex>
                 <v-flex xs12 sm4 px-3 mb-1>
@@ -257,11 +257,11 @@ export default {
       formValid: true,
       toggle_exclusive: 0,
       gas: 21000,
-      safeLowGasPrice: '5',
+      averageGasPrice: '5',
       fastGasPrice: '10', // 10 gwei
       fastestGasPrice: '20',
       activeGasPrice: '',
-      safeLowGasPriceSpeed: '',
+      averageGasPriceSpeed: '',
       fastGasPriceSpeed: '',
       fastestGasPriceSpeed: '',
       isFastChecked: false,
@@ -417,7 +417,7 @@ export default {
               to: toAddress,
               value: torus.web3.utils.toWei(this.amount.toString()),
               gas: this.gas.toString(),
-              fastGasPrice
+              gasPrice: fastGasPrice
             })
             .on('transactionHash', () => {
               this.$router.push('/wallet/history')
@@ -499,13 +499,13 @@ export default {
           safeLowWait,
           speed
         }) => {
-          const [safeLow, fast, fastest] = [safeLowTimes10, fastTimes10, fastestTimes10].map(price => parseFloat(price) / 10)
-          this.safeLowGasPrice = safeLow
+          const [average, fast, fastest] = [averageTimes10, fastTimes10, fastestTimes10].map(price => parseFloat(price) / 10)
+          this.averageGasPrice = average
           this.fastGasPrice = fast
           this.fastestGasPrice = fastest
 
-          this.safeLowGasPriceSpeed = safeLowWait
-          this.fastGasPriceSpeed = avgWait
+          this.averageGasPriceSpeed = avgWait
+          this.fastGasPriceSpeed = fastWait
           this.fastestGasPriceSpeed = fastestWait
         }
       )
