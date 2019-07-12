@@ -65,12 +65,12 @@
         </v-flex>
         <v-layout px-4>
           <v-flex xs6>
-            <v-btn block text large class="grey--text">
+            <v-btn block text large class="grey--text" @click="triggerDeny">
               Cancel
             </v-btn>
           </v-flex>
           <v-flex xs6>
-            <v-btn block depressed large color="primary" class="ml-2">
+            <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">
               Confirm
             </v-btn>
           </v-flex>
@@ -133,7 +133,8 @@
         </v-card-text>
       </v-card>
     </template>
-    <template v-else-if="type === 'transaction'">
+    <!-- Disabled old implementation -->
+    <template v-else-if="type === 'transaction' && false">
       <v-card text :color="$vuetify.theme.torus_bcg">
         <v-card-text>
           <v-layout row wrap align-start justify-center>
