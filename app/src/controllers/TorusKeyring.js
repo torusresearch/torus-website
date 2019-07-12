@@ -19,7 +19,7 @@ export default class TorusKeyring extends EventEmitter {
   }
 
   generatePrivKey(wallet) {
-    return wallet.getPrivateKey().toString('hex')
+    return wallet.getPrivateKey().toString('hex', 64)
   }
 
   generateWallet(privateKey) {
@@ -107,7 +107,7 @@ export default class TorusKeyring extends EventEmitter {
   // exportAccount should return a hex-encoded private key:
   exportAccount(address) {
     const wallet = this._getWalletForAccount(address)
-    return Promise.resolve(wallet.getPrivateKey().toString('hex'))
+    return Promise.resolve(wallet.getPrivateKey().toString('hex', 64))
   }
 
   removeAccount(address) {

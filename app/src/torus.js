@@ -142,7 +142,7 @@ class Torus {
           var ethAddress = this.generateAddressFromPrivKey(privateKey)
           resolve({
             ethAddress,
-            privKey: privateKey.toString('hex')
+            privKey: privateKey.toString('hex', 64)
           })
         })
         .catch(err => {
@@ -176,7 +176,7 @@ class Torus {
     return secret.umod(this.ec.curve.n)
   }
   generateAddressFromPrivKey(privateKey) {
-    var key = this.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
+    var key = this.ec.keyFromPrivate(privateKey.toString('hex', 64), 'hex')
     var publicKey = key
       .getPublic()
       .encode('hex')
