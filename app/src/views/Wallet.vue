@@ -34,19 +34,16 @@ export default {
         <img :src="require('../../public/images/torus_logo.png')" />
       </v-flex>
       <v-flex d-flex xs12 px-3>
-        <v-flex fixed-tabs v-model="selectedItem" grow :color="$vuetify.theme.torus_bcg">
+        <v-tabs fixed-tabs v-model="selectedItem" grow :color="$vuetify.theme.torus_bcg">
           <header-item
             v-for="headerItem in headerItems"
             :key="headerItem.name"
             :isSelected="selectedItem === headerItem.route"
             :href="`#${headerItem.name}`"
             :to="headerItem.route"
-          >
-            <span class="font-weight-bold">
-              {{ headerItem.display }}
-            </span>
+            >{{ headerItem.display }}
           </header-item>
-        </v-flex>
+        </v-tabs>
       </v-flex>
       <v-flex xs12>
         <router-view></router-view>
