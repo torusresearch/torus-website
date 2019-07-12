@@ -22,9 +22,9 @@
           <v-divider></v-divider>
           <div>
             <span class="subtitle-2 left grey--text">Ethereum</span>
-            <span class="subtitle-2 right">{{ totalEthCost }} ETH</span>
+            <span class="subtitle-2 right">{{ value }} ETH</span>
           </div>
-          <div class="caption right clearfix">{{ totalUsdCost }} USD</div>
+          <div class="caption right clearfix">{{ dollarValue }} USD</div>
         </v-flex>
         <v-flex xs12 mb-3 mx-4>
           <div class="subtitle-2">Your Wallet Balance</div>
@@ -56,9 +56,9 @@
           <v-divider></v-divider>
           <div>
             <span class="subtitle-2">Cost of Transaction</span>
-            <span class="subtitle-1 right blue--text font-weight-bold">1.00021 ETH</span>
+            <span class="subtitle-1 right blue--text font-weight-bold">{{ totalEthCost }} ETH</span>
           </div>
-          <div class="caption right clearfix">245.062 USD</div>
+          <div class="caption right clearfix">{{ totalUsdCost }} USD</div>
         </v-flex>
         <v-flex xs12 mb-4>
           <div class="subtitle-2 right blue--text mx-4">More Details</div>
@@ -424,7 +424,8 @@ export default {
     getSelectedSpeed() {
       let selectedType = ''
       let nearest = 1000
-      this.speedOptions.reverse().forEach(speed => {
+      const speedOptions = [...this.speedOptions]
+      speedOptions.reverse().forEach(speed => {
         const delta = Math.abs(speed.price - this.gasPrice)
         if (delta < nearest) {
           nearest = delta
