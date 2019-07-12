@@ -10,18 +10,9 @@ export default new Vuetify({
     themes: {
       light: lightBlue,
       dark: ceruleanBlue
+    },
+    options: {
+      customProperties: true
     }
-  },
-  options: {
-    customProperties: true
   }
-  // iconfont: 'md',
-  // icons: {
-  //   iconfont: 'mdi'
-  // }
-  // breakpoint: {
-  //   thresholds: {
-  //     xs: 576
-  //   }
-  // }
 })

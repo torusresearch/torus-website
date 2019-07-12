@@ -11,6 +11,7 @@
 #app {
   background: var(--v-torus_bcg-base) !important;
   height: 100%;
+  color: #0f1222;
 }
 
 .card-shadow {

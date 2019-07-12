@@ -179,6 +179,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '../scss/nav-selector.mixin';
+
 @mixin svg-size($args...) {
   @each $name, $size in keywords($args) {
     .svg-setting-#{$name} {
@@ -218,17 +220,10 @@ export default {
 }
 
 ::v-deep .currency-selector {
+  @include navSelector();
   max-width: 50px;
-  display: inline-flex;
   .v-select__selection {
-    color: #5495f7;
-    margin: 0;
-  }
-  .v-input__slot:before {
-    border: 0;
-  }
-  &.v-text-field .v-input__append-inner {
-    margin-top: 3px;
+    color: var(--v-primary-base) !important;
   }
 }
 
@@ -254,8 +249,8 @@ button {
 
 .v-tooltip__content {
   background: #fff;
-  border: 1px solid #2dcc70;
-  color: #2dcc70;
+  border: 1px solid var(--v-primary-base);
+  color: var(--v-primary-base);
   &::after {
     content: ' ';
     position: absolute;
@@ -264,7 +259,7 @@ button {
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: #2dcc70 transparent transparent transparent;
+    border-color: var(--v-primary-base) transparent transparent transparent;
   }
 }
 </style>

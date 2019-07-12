@@ -1,0 +1,12 @@
+@mixin navSelector() {
+  display: inline-flex;
+  .v-select__selection {
+    margin: 0;
+  }
+  .v-input__slot:before {
+    border: 0;
+  }
+  &.v-text-field .v-input__append-inner {
+    margin-top: 3px;
+  }
+}

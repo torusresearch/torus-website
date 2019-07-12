@@ -1,5 +1,5 @@
 export default {
-  primary: '#5495F7',
+  primary: '#5495f7',
   secondary: '#b0bec5',
   accent: '#8c9eff',
   error: '#b71c1c',
@@ -10,5 +10,5 @@ export default {
   torus_svg_bcg: '#3996ff',
   torus_blue: '#3996ff',
   torus_bcg: '#f7f7f7',
-  torus_icon: '#CCCACA'
+  torus_icon: '#cccaca'
 }
