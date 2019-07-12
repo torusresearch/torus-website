@@ -5,13 +5,13 @@
         <div class="text-black font-weight-bold headline left">My Wallet</div>
         <div class="right">
           <v-btn outlined large color="grey" class="px-5 py-1 mr-3 mt-3" @click="initiateTransfer">
-            <img :src="require('../../public/images/icons/indent-increse-grey.svg')" class="btn-icon mr-1" />
+            <img :src="require('../../public/img/icons/indent-increse-grey.svg')" class="btn-icon mr-1" />
             Send
           </v-btn>
           <v-tooltip top v-model="isFreshAccount">
             <template v-slot:activator="{ on }">
               <v-btn large color="primary" class="px-5 py-1 mt-3" @click="topup" v-on="on">
-                <img :src="require('../../public/images/icons/add.svg')" class="btn-icon mr-1" />
+                <img :src="require('../../public/img/icons/add.svg')" class="btn-icon mr-1" />
                 Top up
               </v-btn>
             </template>
@@ -249,8 +249,8 @@ button {
 
 .v-tooltip__content {
   background: #fff;
-  border: 1px solid var(--v-primary-base);
-  color: var(--v-primary-base);
+  border: 1px solid var(--v-torus_accept-base);
+  color: var(--v-torus_accept-base);
   &::after {
     content: ' ';
     position: absolute;
@@ -259,7 +259,7 @@ button {
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: var(--v-primary-base) transparent transparent transparent;
+    border-color: var(--v-torus_accept-base) transparent transparent transparent;
   }
 }
 </style>
