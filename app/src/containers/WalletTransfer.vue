@@ -62,7 +62,7 @@
                     @click="selectSpeed('average', averageGasPrice)"
                   >
                     <span>~ {{ averageGasPriceSpeed }} Mins</span>
-                    <span class="font-weight-light">{{ getGasDisplayString('average', averageGasPrice) }}</span>
+                    <span class="font-weight-light">{{ getGasDisplayString(averageGasPrice) }}</span>
                   </v-btn>
                 </v-flex>
                 <v-flex xs12 sm4 px-3 mb-1>
@@ -75,7 +75,7 @@
                     @click="selectSpeed('fast', fastGasPrice)"
                   >
                     <span>~ {{ fastGasPriceSpeed }} Mins</span>
-                    <span class="font-weight-light">{{ getGasDisplayString('fast', fastGasPrice) }}</span>
+                    <span class="font-weight-light">{{ getGasDisplayString(fastGasPrice) }}</span>
                   </v-btn>
                 </v-flex>
                 <v-flex xs12 sm4 px-3 mb-1>
@@ -88,7 +88,7 @@
                     @click="selectSpeed('fastest', fastestGasPrice)"
                   >
                     <span>~ {{ fastestGasPriceSpeed }} Mins</span>
-                    <span class="font-weight-light">{{ getGasDisplayString('fastest', fastestGasPrice) }}</span>
+                    <span class="font-weight-light">{{ getGasDisplayString(fastestGasPrice) }}</span>
                   </v-btn>
                 </v-flex>
               </v-layout>
@@ -333,7 +333,7 @@ export default {
         this.amount = this.displayAmount / this.getCurrencyTokenRate
       }
 
-      this.convertedAmount = (this.displayAmount * this.getCurrencyTokenRate).toFixed(5)
+      this.convertedAmount = significantDigits(this.displayAmount * this.getCurrencyTokenRate)
 
       this.updateTotalCost()
     }
@@ -438,11 +438,16 @@ export default {
         }
       }
     },
-    getGasDisplayString(speed, fastGasPrice) {
+    getGasDisplayString(fastGasPrice) {
+      const currencyFee = this.getGasAmount(fastGasPrice)
+      return `${significantDigits(currencyFee)} ${this.selectedCurrency}`
+    },
+    getGasAmount(fastGasPrice) {
       const currencyMultiplier = this.getCurrencyMultiplier
       const ethFee = this.gas * fastGasPrice * 10 ** -9
       const currencyFee = ethFee * currencyMultiplier
-      return `${significantDigits(currencyFee)} ${this.selectedCurrency}`
+
+      return currencyFee
     },
     goBack() {
       this.$router.go(-1)
@@ -465,11 +470,8 @@ export default {
         return
       }
 
-      const speedCostInEth = this.activeGasPrice / this.getCurrencyTokenRate
-
-      // Convert speed cost to eth
-      this.totalCost = (parseFloat(this.displayAmount) + speedCostInEth).toFixed(5)
-      this.convertedTotalCost = (this.totalCost * this.getCurrencyTokenRate).toFixed(5)
+      this.convertedTotalCost = this.convertedAmount + this.getGasAmount(this.activeGasPrice)
+      this.totalCost = this.convertedTotalCost / this.getCurrencyTokenRate
     }
   },
   created() {
