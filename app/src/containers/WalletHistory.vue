@@ -1,42 +1,70 @@
 <template>
-  <v-layout mt-5 row wrap align-start justify-center align-content-start>
-    <v-flex xs12 sm5>
-      <span>
-        <span class="spanWrapSvgStyle">
-          <img :src="require('../../public/images/coins.svg')" alt="Wallet" class="svg-setting-small" />
-        </span>
-        <span class="text-bluish headline">My Transactions</span>
-      </span>
-    </v-flex>
-    <v-flex xs12 sm5 class="text-sm-right">
-      <div>Total Portfolio Value</div>
-      <div>
-        <span>
-          <span class="text-bluish headline spanWrapSvgStyle">{{ totalPortfolioValue }}</span>
+  <div>
+    <v-layout mt-5 wrap row>
+      <v-flex xs12 px-3 mb-3>
+        <div class="text-black font-weight-bold headline left">Transaction Activities</div>
+        <div class="right">
           <v-select
-            class="select-width d-inline-flex ml-2 spanWrapSvgStyle"
-            single-line
-            solo
-            text
-            :items="supportedCurrencies"
-            :value="selectedCurrency"
-            label
-            @change="onCurrencyChange"
-          ></v-select>
+            class="pt-0 mt-0 ml-2 subtitle-2 nav-selector transaction"
+            height="25px"
+            hide-details
+            :items="transtionTypes"
+            :value="selectedType"
+            @change="onSelectType"
+          />
+          <v-select
+            class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period"
+            height="25px"
+            hide-details
+            :items="periods"
+            :value="selectedPeriod"
+            @change="onSelectPeriod"
+          />
+        </div>
+      </v-flex>
+      <v-flex xs12>
+        <tx-history-table :headers="headers" :transactions="getTransactions()" />
+      </v-flex>
+    </v-layout>
+    <v-layout mt-5 row wrap align-start justify-center align-content-start>
+      <v-flex xs12 sm5>
+        <span>
+          <span class="spanWrapSvgStyle">
+            <img :src="require('../../public/images/coins.svg')" alt="Wallet" class="svg-setting-small" />
+          </span>
+          <span class="text-bluish headline">My Transactions</span>
         </span>
-      </div>
-    </v-flex>
-    <v-flex xs12>
-      <tx-history-table :headers="headers" :transactions="getTransactions()" />
-    </v-flex>
-    <v-flex xs12 mt-5>
-      <v-layout row wrap>
-        <v-flex offset-xs10 xs2 align-self-center class="hidden-xs-only">
-          <img :src="require('../../public/images/torus_logo.png')" />
-        </v-flex>
-      </v-layout>
-    </v-flex>
-  </v-layout>
+      </v-flex>
+      <v-flex xs12 sm5 class="text-sm-right">
+        <div>Total Portfolio Value</div>
+        <div>
+          <span>
+            <span class="text-bluish headline spanWrapSvgStyle">{{ totalPortfolioValue }}</span>
+            <v-select
+              class="select-width d-inline-flex ml-2 spanWrapSvgStyle"
+              single-line
+              solo
+              text
+              :items="supportedCurrencies"
+              :value="selectedCurrency"
+              label
+              @change="onCurrencyChange"
+            ></v-select>
+          </span>
+        </div>
+      </v-flex>
+      <v-flex xs12>
+        <!-- <tx-history-table :headers="headers" :transactions="getTransactions()" /> -->
+      </v-flex>
+      <v-flex xs12 mt-5>
+        <v-layout row wrap>
+          <v-flex offset-xs10 xs2 align-self-center class="hidden-xs-only">
+            <img :src="require('../../public/images/torus_logo.png')" />
+          </v-flex>
+        </v-layout>
+      </v-flex>
+    </v-layout>
+  </div>
 </template>
 
 <script>
@@ -66,7 +94,11 @@ export default {
         { text: 'Value', value: 'currencyAmountString', align: 'center' },
         { text: 'Status', value: 'status', align: 'center' }
       ],
-      pastOrders: []
+      pastOrders: [],
+      transtionTypes: ['All Transactions', 'Top-up', 'Sending', 'Received'],
+      selectedType: 'All Transactions',
+      periods: ['Period', 'Last Week', 'Last Month', 'Last Year'],
+      selectedPeriod: 'Period'
     }
   },
   computed: {
@@ -84,6 +116,8 @@ export default {
     }
   },
   methods: {
+    onSelectType() {},
+    onSelectPeriod() {},
     onCurrencyChange(value) {
       this.$store.dispatch('setSelectedCurrency', value)
     },
@@ -145,6 +179,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '../scss/nav-selector.mixin';
 @mixin svg-size($args...) {
   @each $name, $size in keywords($args) {
     .svg-setting-#{$name} {
@@ -187,5 +222,16 @@ export default {
 
 ::v-deep .v-text-field.v-text-field--solo .v-input__control {
   min-height: auto !important;
+}
+
+/* NEW UI */
+::v-deep .nav-selector {
+  @include navSelector();
+  &.transaction {
+    max-width: 150px;
+  }
+  &.period {
+    max-width: 100px;
+  }
 }
 </style>
