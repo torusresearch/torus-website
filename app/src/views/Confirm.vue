@@ -3,7 +3,7 @@
     <template v-if="type === 'transaction'">
       <v-layout align-center mx-4 mb-4>
         <div class="text-black font-weight-bold headline left">{{ header }}</div>
-        <img :src="require('../../public/images/icons/indent-increse-grey.svg')" class="ml-2" />
+        <img :src="require('../../public/img/icons/indent-increse-grey.svg')" class="ml-2" />
       </v-layout>
       <v-layout wrap mb-4>
         <v-flex xs12 mb-4 mx-4>
@@ -14,7 +14,7 @@
               <div class="subtitle-2 blue--text">Payee</div>
               <div class="caption grey--text">{{ receiver }}</div>
             </v-card-text>
-            <img :src="require('../../public/images/icons/indent-increse-grey.svg')" class="card-upper-icon" />
+            <img :src="require('../../public/img/icons/indent-increse-grey.svg')" class="card-upper-icon" />
           </v-card>
         </v-flex>
         <v-flex xs12 mb-3 mx-4>
