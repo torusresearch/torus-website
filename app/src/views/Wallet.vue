@@ -41,7 +41,8 @@ export default {
             :isSelected="selectedItem === headerItem.route"
             :href="`#${headerItem.name}`"
             :to="headerItem.route"
-            >{{ headerItem.display }}
+          >
+            {{ headerItem.display }}
           </header-item>
         </v-tabs>
       </v-flex>
