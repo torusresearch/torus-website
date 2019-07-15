@@ -1,21 +1,58 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="transactions">
-      <template v-slot:body="{ items }">
-        <tr v-for="item in items" :key="item.id">
-          <td>{{ item.action }}</td>
-          <td>
-            <span style="word-break: break-all">{{ item.from }}</span>
-          </td>
-          <td>
-            <span style="word-break: break-all">{{ item.to }}</span>
-          </td>
-          <td class="text-xs-right">{{ item.amount }}</td>
-          <td class="text-xs-right">{{ item.date }}</td>
-          <td class="text-xs-center">
-            <span :class="`text-${item.status.toLowerCase()}`">{{ item.status }}</span>
-          </td>
-        </tr>
+    <v-data-table
+      class="activity-table"
+      :headers="headers"
+      :items="transactions"
+      :expanded.sync="expanded"
+      item-key="id"
+      single-expand
+      @click:row="rowClicked"
+      hide-default-footer
+    >
+      <template v-slot:item.from="{ item }">
+        <span style="word-break: break-all">{{ item.from }}</span>
+      </template>
+      <template v-slot:item.to="{ item }">
+        <span style="word-break: break-all">{{ item.to }}</span>
+      </template>
+      <template v-slot:item.status="{ item }">
+        <span :class="`text-${item.status.toLowerCase()}`">{{ item.status }}</span>
+      </template>
+      <template v-slot:expanded-item="{ headers, item }">
+        <td :colspan="headers.length" class="pa-0 ma-0" style="height: inherit">
+          <v-flex xs12 white class="card-shadow dark pa-3">
+            <v-layout row wrap>
+              <v-flex xs1 pr-2>
+                Rate
+                <span class="right">:</span>
+              </v-flex>
+              <v-flex xs11>1 ETH = 240.00 USD @ 12:34:20 PM</v-flex>
+              <v-flex xs1 pr-2>
+                Network
+                <span class="right">:</span>
+              </v-flex>
+              <v-flex xs11>Main Ethereum Network</v-flex>
+              <v-flex xs1 pr-2>
+                Type
+                <span class="right">:</span>
+              </v-flex>
+              <v-flex xs11>Contract Interaction</v-flex>
+              <v-flex xs1 pr-2>
+                Data
+                <span class="right">:</span>
+              </v-flex>
+              <v-flex xs11>
+                <v-card flat class="grey lighten-3">
+                  <v-card-text></v-card-text>
+                </v-card>
+              </v-flex>
+              <v-flex xs12 class="text-xs-right">
+                <v-btn text small color="primary" :href="item.etherscanLink" target="_blank">View On Etherscan</v-btn>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+        </td>
       </template>
     </v-data-table>
     <v-layout row wrap v-if="false">
@@ -145,7 +182,7 @@ export default {
           from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
           to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
           status: 'Pending',
-          expanded: false
+          etherscanLink: ''
         },
         {
           id: 2,
@@ -155,7 +192,7 @@ export default {
           from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
           to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
           status: 'Successful',
-          expanded: false
+          etherscanLink: ''
         },
         {
           id: 3,
@@ -165,7 +202,7 @@ export default {
           from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
           to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
           status: 'Denied',
-          expanded: false
+          etherscanLink: ''
         },
         {
           id: 4,
@@ -175,7 +212,7 @@ export default {
           from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
           to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
           status: 'Pending',
-          expanded: false
+          etherscanLink: ''
         },
         {
           id: 5,
@@ -185,7 +222,7 @@ export default {
           from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
           to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
           status: 'Successful',
-          expanded: false
+          etherscanLink: ''
         }
         // },
         // {
@@ -285,6 +322,13 @@ export default {
         this.pagination.sortBy = column
         this.pagination.descending = false
       }
+    },
+    rowClicked(item) {
+      if (this.expanded.indexOf(item) >= 0) {
+        this.expanded = []
+      } else {
+        this.expanded = [item]
+      }
     }
   },
   created() {
@@ -294,21 +338,26 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.text-successful,
-.text-confirmed {
-  color: #2dcc70;
-}
+.activity-table {
+  .text-successful,
+  .text-confirmed {
+    color: #2dcc70;
+  }
 
-.text-denied {
-  color: #e20d0d;
-}
+  .text-denied {
+    color: #e20d0d;
+  }
 
-.text-pending,
-.text-submitted {
-  color: #b3c0ce;
-}
+  .text-pending,
+  .text-submitted {
+    color: #b3c0ce;
+  }
 
-.text-gray {
-  color: #5c6c7f;
+  .text-gray {
+    color: #5c6c7f;
+  }
+  ::v-deep .expanded__content {
+    box-shadow: none !important;
+  }
 }
 </style>

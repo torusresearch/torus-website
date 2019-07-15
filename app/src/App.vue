@@ -25,4 +25,8 @@
 .v-text-field.v-text-field--enclosed .v-text-field__details {
   margin-bottom: 0;
 }
+
+.v-btn {
+  text-transform: inherit;
+}
 </style>
