@@ -53,45 +53,23 @@ pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
 })
 var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
 bc.onmessage = function(ev) {
-  // TODO: MUST MODIFY AND SIMPLIFY THIS
   if (ev.data.type === 'confirm-transaction') {
     let { torusController } = torus
-    let state = torusController.getState()
+    let state = VuexStore.state
     if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
-      let unapprovedPersonalMsgs = []
-      for (let id in state.unapprovedPersonalMsgs) {
-        unapprovedPersonalMsgs.push(state.unapprovedPersonalMsgs[id])
-      }
-      unapprovedPersonalMsgs = unapprovedPersonalMsgs.sort((a, b) => {
-        return a.time - b.time
-      })
-      let msgParams = unapprovedPersonalMsgs[0].msgParams
+      let msgParams = state.unapprovedPersonalMsgs[ev.data.id].msgParams
       log.info('PERSONAL MSG PARAMS:', msgParams)
-      msgParams.metamaskId = parseInt(unapprovedPersonalMsgs[0].id)
+      msgParams.metamaskId = parseInt(ev.data.id, 10)
       torusController.signPersonalMessage(msgParams)
     } else if (Object.keys(state.unapprovedMsgs).length > 0) {
-      let unapprovedMsgs = []
-      for (let id in state.unapprovedMsgs) {
-        unapprovedMsgs.push(state.unapprovedMsgs[id])
-      }
-      unapprovedMsgs = unapprovedMsgs.sort((a, b) => {
-        return a.time - b.time
-      })
-      let msgParams = unapprovedMsgs[0].msgParams
+      let msgParams = state.unapprovedMsgs[ev.data.id].msgParams
       log.info(' MSG PARAMS:', msgParams)
-      msgParams.metamaskId = parseInt(unapprovedMsgs[0].id)
+      msgParams.metamaskId = parseInt(ev.data.id, 10)
       torusController.signMessage(msgParams)
     } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
-      let unapprovedTypedMessages = []
-      for (let id in state.unapprovedTypedMessages) {
-        unapprovedTypedMessages.push(state.unapprovedTypedMessages[id])
-      }
-      unapprovedTypedMessages = unapprovedTypedMessages.sort((a, b) => {
-        return a.time - b.time
-      })
-      let msgParams = unapprovedTypedMessages[0].msgParams
+      let msgParams = state.unapprovedTypedMessages[ev.data.id].msgParams
       log.info('TYPED MSG PARAMS:', msgParams)
-      msgParams.metamaskId = parseInt(unapprovedTypedMessages[0].id)
+      msgParams.metamaskId = parseInt(ev.data.id, 10)
       torusController.signTypedMessage(msgParams)
     } else if (Object.keys(state.transactions).length > 0) {
       const unApprovedTransactions = VuexStore.getters.unApprovedTransactions
@@ -112,42 +90,15 @@ bc.onmessage = function(ev) {
     }
   } else if (ev.data.type === 'deny-transaction') {
     let { torusController } = torus
-    let state = torusController.getState()
+    let state = VuexStore.state
     if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
-      let unapprovedPersonalMsgs = []
-      for (let id in state.unapprovedPersonalMsgs) {
-        unapprovedPersonalMsgs.push(state.unapprovedPersonalMsgs[id])
-      }
-      unapprovedPersonalMsgs = unapprovedPersonalMsgs.sort((a, b) => {
-        return a.time - b.time
-      })
-      let msgParams = unapprovedPersonalMsgs[0].msgParams
-      msgParams.metamaskId = parseInt(unapprovedPersonalMsgs[0].id)
-      torusController.cancelPersonalMessage(msgParams.metamaskId)
+      torusController.cancelPersonalMessage(parseInt(ev.data.id, 10))
     } else if (Object.keys(state.unapprovedMsgs).length > 0) {
-      let unapprovedMsgs = []
-      for (let id in state.unapprovedMsgs) {
-        unapprovedMsgs.push(state.unapprovedMsgs[id])
-      }
-      unapprovedMsgs = unapprovedMsgs.sort((a, b) => {
-        return a.time - b.time
-      })
-      let msgParams = unapprovedMsgs[0].msgParams
-      msgParams.metamaskId = parseInt(unapprovedMsgs[0].id)
-      torusController.cancelMessage(msgParams.metamaskId)
+      torusController.cancelMessage(parseInt(ev.data.id, 10))
     } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
-      let unapprovedTypedMessages = []
-      for (let id in state.unapprovedTypedMessages) {
-        unapprovedTypedMessages.push(state.unapprovedTypedMessages[id])
-      }
-      unapprovedTypedMessages = unapprovedTypedMessages.sort((a, b) => {
-        return a.time - b.time
-      })
-      let msgParams = unapprovedTypedMessages[0].msgParams
-      msgParams.metamaskId = parseInt(unapprovedTypedMessages[0].id)
-      torusController.cancelTypedMessage(msgParams.metamaskId)
+      torusController.cancelTypedMessage(parseInt(ev.data.id, 10))
     } else if (Object.keys(state.transactions).length > 0) {
-      torusController.cancelTransaction(ev.data.id)
+      torusController.cancelTransaction(parseInt(ev.data.id, 10))
     }
   }
 }

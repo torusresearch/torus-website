@@ -345,7 +345,9 @@ export default {
       }
       this.origin = url.hostname // origin of tx: website url
       if (type === 'message') {
-        const { message, typedMessages } = msgParams || {}
+        const { message, typedMessages } = msgParams.msgParams || {}
+        const { id } = msgParams || {}
+        this.id = id
         this.message = message
         this.typedMessages = typedMessages
         this.messageType = typedMessages ? 'typed' : 'normal'
