@@ -129,7 +129,8 @@ export default {
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
           const txObj = {}
           txObj.id = txOld.time
-          txObj.date = new Date(txOld.time).toDateString().substring(4)
+          txObj.action = 'Sending'
+          txObj.date = new Date(txOld.time).toDateString().substring(4, 10)
           txObj.from = txOld.txParams.from
           txObj.slicedFrom = addressSlicer(txOld.txParams.from)
           txObj.to = txOld.txParams.to
@@ -140,6 +141,7 @@ export default {
           txObj.totalAmountString = `${significantDigits(txObj.totalAmount)} ETH`
           txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount
           txObj.currencyAmountString = `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`
+          txObj.amount = `${txObj.totalAmountString} / ${txObj.currencyAmountString}`
           txObj.status = txOld.status
           txObj.etherscanLink = getEtherScanHashLink(txOld.hash, networkType)
           finalTransactions.push(txObj)

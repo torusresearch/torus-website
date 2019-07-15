@@ -1,13 +1,14 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="transactions" hide-actions>
-      <template v-slot:items="props">
-        <td>{{ props.item.action }}</td>
-        <td class="text-xs-left">{{ props.item.from }}</td>
-        <td class="text-xs-left">{{ props.item.to }}</td>
-        <td class="text-xs-left">{{ props.item.amount }}</td>
-        <td class="text-xs-left">{{ props.item.date }}</td>
-        <td class="text-xs-left" :class="'text-' + props.item.status.toLowerCase()">{{ props.item.status }}</td>
+    <v-data-table :headers="headers" :items="transactions" hide-actions hide-default-footer="true">
+      <template v-slot:item.from="{ item }">
+        <span style="word-break: break-all">{{ item.from }}</span>
+      </template>
+      <template v-slot:item.to="{ item }">
+        <span style="word-break: break-all">{{ item.to }}</span>
+      </template>
+      <template v-slot:item.status="{ item }">
+        <span :class="`text-${item.status.toLowerCase()}`">{{ item.status }}</span>
       </template>
     </v-data-table>
     <v-layout row wrap v-if="false">
@@ -84,6 +85,7 @@
 <script>
 export default {
   // props: ['headers', 'transactions'],
+  props: ['transactions'],
   data() {
     return {
       pagination: {},
@@ -93,145 +95,153 @@ export default {
       headers: [
         {
           text: 'Transaction',
-          align: 'left',
-          sortable: false,
-          value: 'action'
+          value: 'action',
+          align: 'left'
         },
         {
           text: 'From',
-          value: 'from'
+          value: 'from',
+          align: 'left',
+          width: '400px'
         },
         {
           text: 'To',
-          value: 'to'
+          value: 'to',
+          align: 'left',
+          width: '400px'
         },
         {
           text: 'Amount',
-          value: 'amount'
+          value: 'amount',
+          align: 'right',
+          width: '150px'
         },
         {
           text: 'Date',
-          value: 'date'
+          value: 'date',
+          align: 'right',
+          width: '150px'
         },
         {
           text: 'Status',
-          value: 'status'
-        }
-      ],
-      transactions: [
-        {
-          action: 'Sending',
-          date: '10 Jun',
-          amount: '4TH / 1086.40USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Pending'
-        },
-        {
-          action: 'Received',
-          date: '10 Jun',
-          amount: '2TH / 543.20 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Successful'
-        },
-        {
-          action: 'Top-Up',
-          date: '8 Jun',
-          amount: '1TH / 271.60 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Denied'
-        },
-        {
-          action: 'Sending',
-          date: '10 Jun',
-          amount: '1TH / 271.60 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Pending'
-        },
-        {
-          action: 'Received',
-          date: '10 Jun',
-          amount: '2TH / 543.20 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Successful'
-        },
-        {
-          action: 'Top-Up',
-          date: '10 Jun',
-          amount: '1TH / 271.60 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Denied'
-        },
-        {
-          action: 'Received',
-          date: '10 Jun',
-          amount: '2TH / 543.20 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Successful'
-        },
-        {
-          action: 'Top-Up',
-          date: '10 Jun',
-          amount: '1TH / 271.60 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Denied'
-        },
-        {
-          action: 'Sending',
-          date: '10 Jun',
-          amount: '2TH / 543.20 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Pending'
-        },
-        {
-          action: 'Received',
-          date: '10 Jun',
-          amount: '4TH / 1086.40USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Successful'
-        },
-        {
-          action: 'Sending',
-          date: '10 Jun',
-          amount: '2TH / 543.20 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Pending'
-        },
-        {
-          action: 'Received',
-          date: '10 Jun',
-          amount: '1TH / 271.60 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Successful'
-        },
-        {
-          action: 'Top-Up',
-          date: '8 Jun',
-          amount: '2TH / 543.20 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Denied'
-        },
-        {
-          action: 'Sending',
-          date: '10 Jun',
-          amount: '1TH / 271.60 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Pending'
+          value: 'status',
+          align: 'center'
         }
       ]
+      // transactions: [
+      //   {
+      //     action: 'Sending',
+      //     date: '10 Jun',
+      //     amount: '4TH / 1086.40USD',
+      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     status: 'Pending'
+      //   },
+      //   {
+      //     action: 'Received',
+      //     date: '10 Jun',
+      //     amount: '2TH / 543.20 USD',
+      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     status: 'Successful'
+      //   },
+      //   {
+      //     action: 'Top-Up',
+      //     date: '8 Jun',
+      //     amount: '1TH / 271.60 USD',
+      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     status: 'Denied'
+      //   },
+      //   {
+      //     action: 'Sending',
+      //     date: '10 Jun',
+      //     amount: '1TH / 271.60 USD',
+      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     status: 'Pending'
+      //   },
+      //   {
+      //     action: 'Received',
+      //     date: '10 Jun',
+      //     amount: '2TH / 543.20 USD',
+      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     status: 'Successful'
+      //   },
+      //   {
+      //     action: 'Top-Up',
+      //     date: '10 Jun',
+      //     amount: '1TH / 271.60 USD',
+      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     status: 'Denied'
+      //   },
+      //   {
+      //     action: 'Received',
+      //     date: '10 Jun',
+      //     amount: '2TH / 543.20 USD',
+      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     status: 'Successful'
+      //   },
+      //   {
+      //     action: 'Top-Up',
+      //     date: '10 Jun',
+      //     amount: '1TH / 271.60 USD',
+      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     status: 'Denied'
+      //   },
+      //   {
+      //     action: 'Sending',
+      //     date: '10 Jun',
+      //     amount: '2TH / 543.20 USD',
+      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     status: 'Pending'
+      //   },
+      //   {
+      //     action: 'Received',
+      //     date: '10 Jun',
+      //     amount: '4TH / 1086.40USD',
+      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     status: 'Successful'
+      //   },
+      //   {
+      //     action: 'Sending',
+      //     date: '10 Jun',
+      //     amount: '2TH / 543.20 USD',
+      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     status: 'Pending'
+      //   },
+      //   {
+      //     action: 'Received',
+      //     date: '10 Jun',
+      //     amount: '1TH / 271.60 USD',
+      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     status: 'Successful'
+      //   },
+      //   {
+      //     action: 'Top-Up',
+      //     date: '8 Jun',
+      //     amount: '2TH / 543.20 USD',
+      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     status: 'Denied'
+      //   },
+      //   {
+      //     action: 'Sending',
+      //     date: '10 Jun',
+      //     amount: '1TH / 271.60 USD',
+      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+      //     status: 'Pending'
+      //   }
+      // ]
     }
   },
   computed: {
@@ -248,76 +258,29 @@ export default {
         this.pagination.descending = false
       }
     }
+  },
+  created() {
+    console.log(this.transactions)
   }
 }
 </script>
 
 <style lang="scss" scoped>
-@media (max-width: 598px) {
-  .bcg-logo {
-    display: none;
-  }
-}
-.background-grey {
-  background: var(--v-torus_bcg-base);
+.text-successful,
+.text-confirmed {
+  color: #2dcc70;
 }
 
-.text-bluish {
-  color: var(--v-torus_blue-base);
+.text-denied {
+  color: #e20d0d;
 }
 
-#flexibtn.btnStyle {
-  height: 41px;
-  border: #fff;
-  border-radius: 45px;
-  background-color: #fff !important;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-  a {
-    text-decoration: none;
-    color: inherit;
-  }
+.text-pending,
+.text-submitted {
+  color: #b3c0ce;
 }
 
-.inline-small {
-  width: 25px;
-  height: 25px;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-// overriding css of vuetify requires the usage of important tag
-// https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity
-::v-deep table.v-table {
-  border-collapse: separate !important;
-  border-spacing: 0 10px !important;
-  margin-top: -10px !important; /* correct offset on first border spacing if desired */
-  background: var(--v-torus_bcg-base) !important;
-}
-
-::v-deep .activeRow {
-  background: #bdbdbd !important;
-}
-
-::v-deep tr {
-  background: white;
-}
-
-::v-deep td {
-  border: solid 0px #fff;
-  border-style: solid none;
-  padding: 10px;
-  cursor: pointer;
-}
-
-::v-deep td:first-child {
-  border-left-style: solid;
-  border-top-left-radius: 25px;
-  border-bottom-left-radius: 25px;
-}
-
-::v-deep td:last-child {
-  border-right-style: solid;
-  border-bottom-right-radius: 25px;
-  border-top-right-radius: 25px;
+.text-gray {
+  color: #5c6c7f;
 }
 </style>
