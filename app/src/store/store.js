@@ -51,6 +51,9 @@ const initialState = {
   tokenData: {}, // Account specific object
   tokenRates: {},
   transactions: [],
+  unapprovedTypedMessages: {},
+  unapprovedPersonalMsgs: {},
+  unapprovedMsgs: {},
   loginInProgress: false,
   rpcDetails: JSON.parse(localStorage.getItem('torus_custom_rpc')) || {}
 }
@@ -151,6 +154,15 @@ var VuexStore = new Vuex.Store({
     setRPCDetails(state, rpcDetails) {
       state.rpcDetails = rpcDetails
     },
+    setTypedMessages(state, unapprovedTypedMessages) {
+      state.unapprovedTypedMessages = unapprovedTypedMessages
+    },
+    setPersonalMessages(state, unapprovedPersonalMsgs) {
+      state.unapprovedPersonalMsgs = unapprovedPersonalMsgs
+    },
+    setMessages(state, unapprovedMsgs) {
+      state.unapprovedMsgs = unapprovedMsgs
+    },
     resetStore(state, requiredState) {
       Object.keys(state).forEach(key => {
         state[key] = initialState[key] // or = initialState[key]
@@ -205,7 +217,7 @@ var VuexStore = new Vuex.Store({
         var balance = torus.web3.utils.fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
         bc.onmessage = ev => {
           if (ev.data === 'popup-loaded') {
-            var txParams = getters.unApprovedTransactions[0]
+            var txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
             bc.postMessage({
               data: {
                 origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
@@ -218,14 +230,14 @@ var VuexStore = new Vuex.Store({
           }
         }
       } else {
-        var msgParams = getLatestMessageParams()
+        var { msgParams, id } = getLatestMessageParams()
         bc.onmessage = function(ev) {
           if (ev.data === 'popup-loaded') {
             bc.postMessage({
               data: {
                 origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
                 type: 'message',
-                msgParams
+                msgParams: { msgParams, id }
               }
             })
             bc.close()
@@ -316,6 +328,15 @@ var VuexStore = new Vuex.Store({
     updateTransactions({ commit }, payload) {
       commit('setTransactions', payload.transactions)
     },
+    updateTypedMessages({ commit }, payload) {
+      commit('setTypedMessages', payload.unapprovedTypedMessages)
+    },
+    updatePersonalMessages({ commit }, payload) {
+      commit('setPersonalMessages', payload.unapprovedPersonalMsgs)
+    },
+    updateMessages({ commit }, payload) {
+      commit('setMessages', payload.unapprovedMsgs)
+    },
     updateTokenData({ commit, state }, payload) {
       if (payload.tokenData) commit('setTokenData', { ...state.tokenData, [payload.address]: payload.tokenData })
     },
@@ -401,6 +422,19 @@ var VuexStore = new Vuex.Store({
           dispatch('updateTransactions', { transactions: updatedTransactions })
         }
       })
+
+      torus.torusController.typedMessageManager.store.subscribe(function({ unapprovedTypedMessages }) {
+        dispatch('updateTypedMessages', { unapprovedTypedMessages: unapprovedTypedMessages })
+      })
+
+      torus.torusController.personalMessageManager.store.subscribe(function({ unapprovedPersonalMsgs }) {
+        dispatch('updatePersonalMessages', { unapprovedPersonalMsgs: unapprovedPersonalMsgs })
+      })
+
+      torus.torusController.messageManager.store.subscribe(function({ unapprovedMsgs }) {
+        dispatch('updateMessages', { unapprovedMsgs: unapprovedMsgs })
+      })
+
       dispatch('setSelectedCurrency', 'USD')
       torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
         if (tokens.length > 0) {
@@ -482,23 +516,24 @@ var VuexStore = new Vuex.Store({
 })
 
 function getLatestMessageParams() {
-  const { torusController } = torus
-  const state = torusController.getState()
   let time = 0
   let msg = null
-  for (let id in state.unapprovedMsgs) {
-    const msgTime = state.unapprovedMsgs[id].time
+  let finalId = 0
+  for (let id in VuexStore.state.unapprovedMsgs) {
+    const msgTime = VuexStore.state.unapprovedMsgs[id].time
     if (msgTime > time) {
-      msg = state.unapprovedMsgs[id]
+      msg = VuexStore.state.unapprovedMsgs[id]
       time = msgTime
+      finalId = id
     }
   }
 
-  for (let id in state.unapprovedPersonalMsgs) {
-    const msgTime = state.unapprovedPersonalMsgs[id].time
+  for (let id in VuexStore.state.unapprovedPersonalMsgs) {
+    const msgTime = VuexStore.state.unapprovedPersonalMsgs[id].time
     if (msgTime > time) {
-      msg = state.unapprovedPersonalMsgs[id]
+      msg = VuexStore.state.unapprovedPersonalMsgs[id]
       time = msgTime
+      finalId = id
     }
   }
 
@@ -508,32 +543,27 @@ function getLatestMessageParams() {
   }
 
   // handle typed messages
-  for (let id in state.unapprovedTypedMessages) {
-    const msgTime = state.unapprovedTypedMessages[id].time
+  for (let id in VuexStore.state.unapprovedTypedMessages) {
+    const msgTime = VuexStore.state.unapprovedTypedMessages[id].time
     if (msgTime > time) {
       time = msgTime
-      msg = state.unapprovedTypedMessages[id]
+      msg = VuexStore.state.unapprovedTypedMessages[id]
       msg.msgParams.typedMessages = msg.msgParams.data // TODO: use for differentiating msgs later on
+      finalId = id
     }
   }
-  return msg ? msg.msgParams : {}
+  return msg ? { msgParams: msg.msgParams, id: finalId } : {}
 }
 
 function isTorusTransaction() {
-  let { torusController } = torus
-  let state = torusController.getState()
-  if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
+  if (Object.keys(VuexStore.state.unapprovedPersonalMsgs).length > 0) {
     return false
-  } else if (Object.keys(state.unapprovedMsgs).length > 0) {
+  } else if (Object.keys(VuexStore.state.unapprovedMsgs).length > 0) {
     return false
-  } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
+  } else if (Object.keys(VuexStore.state.unapprovedTypedMessages).length > 0) {
     return false
-  } else if (Object.keys(state.transactions).length > 0) {
-    for (let id in state.transactions) {
-      if (state.transactions[id].status === 'unapproved') {
-        return true
-      }
-    }
+  } else if (VuexStore.getters.unApprovedTransactions.length > 0) {
+    return true
   } else {
     throw new Error('No new transactions.')
   }

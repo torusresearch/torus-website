@@ -66,8 +66,9 @@
               class="btnStyle"
               :disabled="!formValid || isLoadingDownloadWallet"
               @click.prevent="downloadWallet"
-              >Confirm</v-btn
             >
+              Confirm
+            </v-btn>
             <a v-if="walletJson" :href="walletJson" :download="name" class="download-wallet">
               <v-btn class="btnStyle">Download wallet</v-btn>
             </a>

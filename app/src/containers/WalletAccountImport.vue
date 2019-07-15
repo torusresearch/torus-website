@@ -46,9 +46,9 @@
       </div>
 
       <div class="has-border text-xs-right" mt-1>
-        <v-btn class="btnStyle" @click.prevent="importViaPrivateKey" :loading="isLoadingPrivate" :disabled="!privateKeyFormValid || isLoadingPrivate"
-          >Import</v-btn
-        >
+        <v-btn class="btnStyle" @click.prevent="importViaPrivateKey" :loading="isLoadingPrivate" :disabled="!privateKeyFormValid || isLoadingPrivate">
+          Import
+        </v-btn>
       </div>
     </template>
 
@@ -60,7 +60,10 @@
               Keystore
             </v-flex>
             <v-flex xs6>
-              <v-btn @click.prevent="$refs.keystoreUpload.click()" class="btnStyle"><v-icon left>cloud_upload</v-icon>Upload</v-btn>
+              <v-btn @click.prevent="$refs.keystoreUpload.click()" class="btnStyle">
+                <v-icon left>cloud_upload</v-icon>
+                Upload
+              </v-btn>
               <input v-show="false" ref="keystoreUpload" multiple="false" type="file" @change="processFile" />
             </v-flex>
           </v-layout>
@@ -94,8 +97,9 @@
             @click.prevent="importViaKeyStoreFile"
             :loading="isLoadingKeystore"
             :disabled="!jsonFileFormValid || isLoadingKeystore"
-            >Import</v-btn
           >
+            Import
+          </v-btn>
         </div>
       </v-form>
     </template>

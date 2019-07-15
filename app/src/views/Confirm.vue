@@ -155,11 +155,11 @@
                 <v-flex xs6 sm12 mt-3>
                   <div class="font-weight-medium subheading">My Wallet</div>
                   <div>
-                    <span class="text-bluish">Address: </span>
+                    <span class="text-bluish">Address:</span>
                     <show-tool-tip :address="sender">{{ slicedAddress(sender) }}</show-tool-tip>
                   </div>
                   <div>
-                    <span class="text-bluish">Balance: </span>
+                    <span class="text-bluish">Balance:</span>
                     <span>{{ computedBalance }} ETH</span>
                   </div>
                 </v-flex>
@@ -190,7 +190,7 @@
                 <v-flex xs6 sm12 mt-3>
                   <div class="font-weight-medium subheading">Payee's Wallet</div>
                   <div>
-                    <span class="text-bluish">Address: </span>
+                    <span class="text-bluish">Address:</span>
                     <show-tool-tip :address="receiver">{{ slicedAddress(receiver) }}</show-tool-tip>
                   </div>
                 </v-flex>
@@ -279,8 +279,9 @@
                 :color="$vuetify.theme.torus_accept"
                 class="white--text btnStyle rounded-btn"
                 @click="triggerSign"
-                >Approve</v-btn
               >
+                Approve
+              </v-btn>
             </v-flex>
             <v-flex sm4 class="text-xs-center" pt-1>
               <img src="images/torus_logo.png" class="bcg-logo" />
@@ -339,7 +340,8 @@ export default {
       canApprove: true,
       canShowError: false,
       speedOptions: [],
-      selectedSpeed: ''
+      selectedSpeed: '',
+      id: 0
     }
   },
   computed: {
@@ -399,14 +401,14 @@ export default {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
       var gasHex = torus.web3.utils.numberToHex(this.gasPrice * weiInGwei)
       bc.postMessage({
-        data: { type: 'confirm-transaction', gasPrice: gasHex }
+        data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id }
       })
       bc.close()
       window.close()
     },
     triggerDeny(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
-      bc.postMessage({ data: { type: 'deny-transaction' } })
+      bc.postMessage({ data: { type: 'deny-transaction', id: this.id } })
       bc.close()
       window.close()
     },
@@ -449,7 +451,9 @@ export default {
       }
       this.origin = url.hostname // origin of tx: website url
       if (type === 'message') {
-        const { message, typedMessages } = msgParams || {}
+        const { message, typedMessages } = msgParams.msgParams || {}
+        const { id } = msgParams || {}
+        this.id = id
         this.message = message
         this.typedMessages = typedMessages
         this.messageType = typedMessages ? 'typed' : 'normal'
@@ -457,11 +461,12 @@ export default {
         const web3Utils = torus.web3.utils
         let finalValue = 0
         const { value, to, data, from: sender, gas, gasPrice } = txParams.txParams || {}
-        const { simulationFails, network } = txParams || {}
+        const { simulationFails, network, id } = txParams || {}
         const { reason } = simulationFails || {}
         if (value) {
           finalValue = web3Utils.fromWei(value.toString())
         }
+        this.id = id
         this.network = network
         var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
         this.receiver = to // address of receiver

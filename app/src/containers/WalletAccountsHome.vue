@@ -3,7 +3,7 @@
     <v-flex xs12 sm8>
       <span>
         <v-icon alt="Account" :color="$vuetify.theme.torus_blue" size="28">account_circle</v-icon>
-        <span class="text-bluish headline"> My Accounts</span>
+        <span class="text-bluish headline">My Accounts</span>
       </span>
     </v-flex>
     <v-flex xs12 sm8 mt-3>

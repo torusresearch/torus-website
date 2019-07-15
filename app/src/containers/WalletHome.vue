@@ -26,7 +26,10 @@
             TOTAL VALUE
           </v-card-title>
           <v-card-text class="pb-3 px-4">
-            <h2 class="display-2 font-weight-bold">{{ totalPortfolioValue }} <small class="font-weight-light">USD</small></h2>
+            <h2 class="display-2 font-weight-bold">
+              {{ totalPortfolioValue }}
+              <small class="font-weight-light">USD</small>
+            </h2>
           </v-card-text>
         </v-card>
       </v-flex>
