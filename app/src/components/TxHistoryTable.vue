@@ -54,15 +54,15 @@
               <v-layout row wrap>
                 <v-flex xs6 class="text-xs-left">
                   <v-btn id="flexibtn" class="btnStyle" outline large>
-                    <a target="_blank" rel="noopener noreferrer" :href="props.item.etherscanLink">View On Etherscan</a></v-btn
-                  >
+                    <a target="_blank" rel="noopener noreferrer" :href="props.item.etherscanLink">View On Etherscan</a>
+                  </v-btn>
                 </v-flex>
               </v-layout>
             </v-card-text>
           </v-card>
         </template>
         <template v-slot:no-results>
-          <v-alert :value="true" color="error" icon="warning"> Your search for "{{ search }}" found no results. </v-alert>
+          <v-alert :value="true" color="error" icon="warning">Your search for "{{ search }}" found no results.</v-alert>
         </template>
       </v-data-table>
     </v-flex>

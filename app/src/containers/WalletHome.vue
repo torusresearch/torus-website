@@ -5,7 +5,7 @@
         <span class="spanWrapSvgStyle">
           <img :src="require('../../public/images/wallet-blue.svg')" alt="Wallet" class="svg-setting-small" />
         </span>
-        <span class="text-bluish headline"> My Portfolio</span>
+        <span class="text-bluish headline">My Portfolio</span>
         <span class="spanWrapSvgStyle" v-show="isRefreshVisible">
           <v-btn icon size="18" small @click="refreshBalances">
             <img :src="require('../../public/images/sync-blue.svg')" alt="Wallet" class="svg-setting-tiny" />
@@ -17,7 +17,7 @@
       <div>Total Portfolio Value</div>
       <div>
         <span>
-          <span class="text-bluish headline spanWrapSvgStyle"> {{ totalPortfolioValue }} </span>
+          <span class="text-bluish headline spanWrapSvgStyle">{{ totalPortfolioValue }}</span>
           <v-select
             class="select-width spanWrapSvgStyle d-inline-flex ml-2"
             single-line

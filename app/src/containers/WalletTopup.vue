@@ -9,7 +9,8 @@
           <v-flex sm6>
             <p class="page-description">
               Simplex is a secure way to buy cryptoccurrency with your credit card.
-              <br />Start by entering an amount to get a quote before making your purchase.
+              <br />
+              Start by entering an amount to get a quote before making your purchase.
             </p>
           </v-flex>
         </v-layout>
@@ -38,7 +39,9 @@
                         <v-icon class="torus-hint-icon" color="primary" small v-on="on">error_outline</v-icon>
                       </template>
                       <span>
-                        This fee goes entirely to Simplex for their services <br />in credit card processing, fraud detection and mitigation
+                        This fee goes entirely to Simplex for their services
+                        <br />
+                        in credit card processing, fraud detection and mitigation
                       </span>
                     </v-tooltip>
                   </div>
@@ -82,9 +85,9 @@
           <v-tooltip bottom :disabled="formValid">
             <template v-slot:activator="{ on }">
               <span v-on="on">
-                <v-btn :disabled="!formValid" class="torus-button text-xs-center" color="primary" type="submit" @click.prevent="sendOrder"
-                  >Checkout with Simplex</v-btn
-                >
+                <v-btn :disabled="!formValid" class="torus-button text-xs-center" color="primary" type="submit" @click.prevent="sendOrder">
+                  Checkout with Simplex
+                </v-btn>
               </span>
             </template>
             <span>Resolve the errors</span>
