@@ -1,83 +1,237 @@
 <template>
-  <v-layout row wrap>
-    <v-flex d-flex offset-xs8 xs4 sm4 offset-sm7 align-self-end v-if="showFooter">
-      <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
-    </v-flex>
-    <v-flex xs12 sm10 offset-sm1>
-      <v-data-table
-        :headers="headers"
-        :items="transactions"
-        item-key="id"
-        :options.sync="pagination"
-        :sort-by.sync="defaultSort"
-        :hide-default-footer="!showFooter"
-        :search="search"
-      >
-        <template v-slot:headers="props">
-          <tr>
-            <th
-              v-for="header in props.headers"
-              :key="header.text"
-              :class="[
-                'column sortable',
-                'background-grey',
-                pagination.descending ? 'desc' : 'asc',
-                header.value === pagination.sortBy ? 'active' : '',
-                header.align !== '' ? `text-xs-${header.align}` : ''
-              ]"
-              @click="changeSort(header.value)"
-            >
-              <v-icon small>arrow_upward</v-icon>
-              {{ header.text }}
-            </th>
-          </tr>
-        </template>
-        <template v-slot:items="props">
-          <tr @click="props.expanded = !props.expanded" :class="{ activeRow: props.expanded }">
-            <td class="text-xs-center">
-              <v-layout row wrap>
-                <v-flex xs11 align-self-center>
-                  {{ props.item.date }}
-                </v-flex>
-              </v-layout>
-            </td>
-            <td class="text-xs-center no-wrap">{{ props.item.slicedFrom }}</td>
-            <td class="text-xs-center no-wrap">{{ props.item.slicedTo }}</td>
-            <td class="text-xs-center no-wrap">{{ props.item.totalAmountString }}</td>
-            <td class="text-xs-center no-wrap">{{ props.item.currencyAmountString }}</td>
-            <td class="text-xs-center no-wrap">{{ props.item.status }}</td>
-          </tr>
-        </template>
-        <template v-slot:expand="props">
-          <v-card flat v-show="props.item.status !== 'rejected' && props.item.etherscanLink !== ''">
-            <v-card-text>
-              <v-layout row wrap>
-                <v-flex xs6 class="text-xs-left">
-                  <v-btn id="flexibtn" class="btnStyle" outline large>
-                    <a target="_blank" rel="noopener noreferrer" :href="props.item.etherscanLink">View On Etherscan</a>
-                  </v-btn>
-                </v-flex>
-              </v-layout>
-            </v-card-text>
-          </v-card>
-        </template>
-        <template v-slot:no-results>
-          <v-alert :value="true" color="error" icon="warning">Your search for "{{ search }}" found no results.</v-alert>
-        </template>
-      </v-data-table>
-    </v-flex>
-  </v-layout>
+  <div>
+    <v-data-table :headers="headers" :items="transactions" hide-actions>
+      <template v-slot:items="props">
+        <td>{{ props.item.action }}</td>
+        <td class="text-xs-left">{{ props.item.from }}</td>
+        <td class="text-xs-left">{{ props.item.to }}</td>
+        <td class="text-xs-left">{{ props.item.amount }}</td>
+        <td class="text-xs-left">{{ props.item.date }}</td>
+        <td class="text-xs-left" :class="'text-' + props.item.status.toLowerCase()">{{ props.item.status }}</td>
+      </template>
+    </v-data-table>
+    <v-layout row wrap v-if="false">
+      <v-flex d-flex offset-xs8 xs4 sm4 offset-sm7 align-self-end v-if="showFooter">
+        <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
+      </v-flex>
+      <v-flex xs12 sm10 offset-sm1>
+        <v-data-table
+          :headers="headers"
+          :items="transactions"
+          item-key="id"
+          :options.sync="pagination"
+          :sort-by.sync="defaultSort"
+          :hide-default-footer="!showFooter"
+          :search="search"
+        >
+          <template v-slot:headers="props">
+            <tr>
+              <th
+                v-for="header in props.headers"
+                :key="header.text"
+                :class="[
+                  'column sortable',
+                  'background-grey',
+                  pagination.descending ? 'desc' : 'asc',
+                  header.value === pagination.sortBy ? 'active' : '',
+                  header.align !== '' ? `text-xs-${header.align}` : ''
+                ]"
+                @click="changeSort(header.value)"
+              >
+                <v-icon small>arrow_upward</v-icon>
+                {{ header.text }}
+              </th>
+            </tr>
+          </template>
+          <template v-slot:items="props">
+            <tr @click="props.expanded = !props.expanded" :class="{ activeRow: props.expanded }">
+              <td class="text-xs-center">
+                <v-layout row wrap>
+                  <v-flex xs11 align-self-center>
+                    {{ props.item.date }}
+                  </v-flex>
+                </v-layout>
+              </td>
+              <td class="text-xs-center no-wrap">{{ props.item.slicedFrom }}</td>
+              <td class="text-xs-center no-wrap">{{ props.item.slicedTo }}</td>
+              <td class="text-xs-center no-wrap">{{ props.item.totalAmountString }}</td>
+              <td class="text-xs-center no-wrap">{{ props.item.currencyAmountString }}</td>
+              <td class="text-xs-center no-wrap">{{ props.item.status }}</td>
+            </tr>
+          </template>
+          <template v-slot:expand="props">
+            <v-card flat v-show="props.item.status !== 'rejected' && props.item.etherscanLink !== ''">
+              <v-card-text>
+                <v-layout row wrap>
+                  <v-flex xs6 class="text-xs-left">
+                    <v-btn id="flexibtn" class="btnStyle" outlined large>
+                      <a target="_blank" rel="noopener noreferrer" :href="props.item.etherscanLink">View On Etherscan</a>
+                    </v-btn>
+                  </v-flex>
+                </v-layout>
+              </v-card-text>
+            </v-card>
+          </template>
+          <template v-slot:no-results>
+            <v-alert :value="true" color="error" icon="warning">Your search for "{{ search }}" found no results.</v-alert>
+          </template>
+        </v-data-table>
+      </v-flex>
+    </v-layout>
+  </div>
 </template>
 
 <script>
 export default {
-  props: ['headers', 'transactions'],
+  // props: ['headers', 'transactions'],
   data() {
     return {
       pagination: {},
       defaultSort: 'date',
       search: '',
-      expand: false
+      expand: false,
+      headers: [
+        {
+          text: 'Transaction',
+          align: 'left',
+          sortable: false,
+          value: 'action'
+        },
+        {
+          text: 'From',
+          value: 'from'
+        },
+        {
+          text: 'To',
+          value: 'to'
+        },
+        {
+          text: 'Amount',
+          value: 'amount'
+        },
+        {
+          text: 'Date',
+          value: 'date'
+        },
+        {
+          text: 'Status',
+          value: 'status'
+        }
+      ],
+      transactions: [
+        {
+          action: 'Sending',
+          date: '10 Jun',
+          amount: '4TH / 1086.40USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Pending'
+        },
+        {
+          action: 'Received',
+          date: '10 Jun',
+          amount: '2TH / 543.20 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Successful'
+        },
+        {
+          action: 'Top-Up',
+          date: '8 Jun',
+          amount: '1TH / 271.60 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Denied'
+        },
+        {
+          action: 'Sending',
+          date: '10 Jun',
+          amount: '1TH / 271.60 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Pending'
+        },
+        {
+          action: 'Received',
+          date: '10 Jun',
+          amount: '2TH / 543.20 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Successful'
+        },
+        {
+          action: 'Top-Up',
+          date: '10 Jun',
+          amount: '1TH / 271.60 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Denied'
+        },
+        {
+          action: 'Received',
+          date: '10 Jun',
+          amount: '2TH / 543.20 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Successful'
+        },
+        {
+          action: 'Top-Up',
+          date: '10 Jun',
+          amount: '1TH / 271.60 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Denied'
+        },
+        {
+          action: 'Sending',
+          date: '10 Jun',
+          amount: '2TH / 543.20 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Pending'
+        },
+        {
+          action: 'Received',
+          date: '10 Jun',
+          amount: '4TH / 1086.40USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Successful'
+        },
+        {
+          action: 'Sending',
+          date: '10 Jun',
+          amount: '2TH / 543.20 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Pending'
+        },
+        {
+          action: 'Received',
+          date: '10 Jun',
+          amount: '1TH / 271.60 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Successful'
+        },
+        {
+          action: 'Top-Up',
+          date: '8 Jun',
+          amount: '2TH / 543.20 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Denied'
+        },
+        {
+          action: 'Sending',
+          date: '10 Jun',
+          amount: '1TH / 271.60 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Pending'
+        }
+      ]
     }
   },
   computed: {

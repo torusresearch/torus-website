@@ -22,11 +22,11 @@
           />
         </div>
       </v-flex>
-      <v-flex xs12>
+      <v-flex xs12 px-3 mb-3>
         <tx-history-table :headers="headers" :transactions="getTransactions()" />
       </v-flex>
     </v-layout>
-    <v-layout mt-5 row wrap align-start justify-center align-content-start>
+    <v-layout mt-5 row wrap align-start justify-center align-content-start v-if="false">
       <v-flex xs12 sm5>
         <span>
           <span class="spanWrapSvgStyle">
