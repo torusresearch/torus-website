@@ -94,13 +94,8 @@ bc.onmessage = function(ev) {
       msgParams.metamaskId = parseInt(unapprovedTypedMessages[0].id)
       torusController.signTypedMessage(msgParams)
     } else if (Object.keys(state.transactions).length > 0) {
-      let transactions = []
-      for (let id in state.transactions) {
-        if (state.transactions[id].status === 'unapproved') {
-          transactions.push(state.transactions[id])
-        }
-      }
-      var txMeta = transactions[0]
+      const unApprovedTransactions = VuexStore.getters.unApprovedTransactions
+      var txMeta = unApprovedTransactions.find(x => x.id === ev.data.id)
       log.info('STANDARD TX PARAMS:', txMeta)
 
       if (ev.data.gasPrice) {
@@ -152,13 +147,7 @@ bc.onmessage = function(ev) {
       msgParams.metamaskId = parseInt(unapprovedTypedMessages[0].id)
       torusController.cancelTypedMessage(msgParams.metamaskId)
     } else if (Object.keys(state.transactions).length > 0) {
-      let transactions = []
-      for (let id in state.transactions) {
-        if (state.transactions[id].status === 'unapproved') {
-          transactions.push(state.transactions[id])
-        }
-      }
-      torusController.cancelTransaction(transactions[0].id)
+      torusController.cancelTransaction(ev.data.id)
     }
   }
 }

@@ -259,7 +259,8 @@ export default {
       network: '',
       dollarValue: 0,
       canApprove: true,
-      canShowError: false
+      canShowError: false,
+      id: 0
     }
   },
   computed: {
@@ -313,14 +314,14 @@ export default {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
       var gasHex = torus.web3.utils.numberToHex(this.gasPrice * weiInGwei)
       bc.postMessage({
-        data: { type: 'confirm-transaction', gasPrice: gasHex }
+        data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id }
       })
       bc.close()
       window.close()
     },
     triggerDeny(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
-      bc.postMessage({ data: { type: 'deny-transaction' } })
+      bc.postMessage({ data: { type: 'deny-transaction', id: this.id } })
       bc.close()
       window.close()
     },
@@ -352,11 +353,12 @@ export default {
         const web3Utils = torus.web3.utils
         let finalValue = 0
         const { value, to, data, from: sender, gas, gasPrice } = txParams.txParams || {}
-        const { simulationFails, network } = txParams || {}
+        const { simulationFails, network, id } = txParams || {}
         const { reason } = simulationFails || {}
         if (value) {
           finalValue = web3Utils.fromWei(value.toString())
         }
+        this.id = id
         this.network = network
         var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
         this.receiver = to // address of receiver

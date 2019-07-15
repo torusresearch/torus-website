@@ -205,7 +205,7 @@ var VuexStore = new Vuex.Store({
         var balance = torus.web3.utils.fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
         bc.onmessage = ev => {
           if (ev.data === 'popup-loaded') {
-            var txParams = getters.unApprovedTransactions[0]
+            var txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
             bc.postMessage({
               data: {
                 origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
