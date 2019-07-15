@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-data-table :headers="headers" :items="transactions" hide-actions hide-default-footer="true">
+    <v-data-table :headers="headers" :items="transactions" :single-expand="expand" :expanded.sync="expanded" show-expand item-key="id">
       <template v-slot:item.from="{ item }">
         <span style="word-break: break-all">{{ item.from }}</span>
       </template>
@@ -9,6 +9,9 @@
       </template>
       <template v-slot:item.status="{ item }">
         <span :class="`text-${item.status.toLowerCase()}`">{{ item.status }}</span>
+      </template>
+      <template v-slot:expanded-item="{ headers }">
+        <td :colspan="headers.length">Peek-a-boo!</td>
       </template>
     </v-data-table>
     <v-layout row wrap v-if="false">
@@ -85,13 +88,14 @@
 <script>
 export default {
   // props: ['headers', 'transactions'],
-  props: ['transactions'],
+  // props: ['transactions'],
   data() {
     return {
+      expanded: [],
+      expand: false,
       pagination: {},
       defaultSort: 'date',
       search: '',
-      expand: false,
       headers: [
         {
           text: 'Transaction',
@@ -102,146 +106,160 @@ export default {
           text: 'From',
           value: 'from',
           align: 'left',
-          width: '400px'
+          width: '350px'
         },
         {
           text: 'To',
           value: 'to',
           align: 'left',
-          width: '400px'
+          width: '350px'
         },
         {
           text: 'Amount',
           value: 'amount',
           align: 'right',
-          width: '150px'
+          width: '200px'
         },
         {
           text: 'Date',
           value: 'date',
           align: 'right',
-          width: '150px'
+          width: '80px'
         },
         {
           text: 'Status',
           value: 'status',
           align: 'center'
         }
+      ],
+      transactions: [
+        {
+          id: 1,
+          action: 'Sending',
+          date: '10 Jun',
+          amount: '4TH / 1086.40USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Pending'
+        },
+        {
+          id: 2,
+          action: 'Received',
+          date: '10 Jun',
+          amount: '2TH / 543.20 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Successful'
+        },
+        {
+          id: 3,
+          action: 'Top-Up',
+          date: '8 Jun',
+          amount: '1TH / 271.60 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Denied'
+        },
+        {
+          id: 4,
+          action: 'Sending',
+          date: '10 Jun',
+          amount: '1TH / 271.60 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Pending'
+        },
+        {
+          id: 5,
+          action: 'Received',
+          date: '10 Jun',
+          amount: '2TH / 543.20 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Successful'
+        },
+        {
+          id: 6,
+          action: 'Top-Up',
+          date: '10 Jun',
+          amount: '1TH / 271.60 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Denied'
+        },
+        {
+          id: 7,
+          action: 'Received',
+          date: '10 Jun',
+          amount: '2TH / 543.20 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Successful'
+        },
+        {
+          id: 8,
+          action: 'Top-Up',
+          date: '10 Jun',
+          amount: '1TH / 271.60 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Denied'
+        },
+        {
+          id: 9,
+          action: 'Sending',
+          date: '10 Jun',
+          amount: '2TH / 543.20 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Pending'
+        },
+        {
+          id: 10,
+          action: 'Received',
+          date: '10 Jun',
+          amount: '4TH / 1086.40USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Successful'
+        },
+        {
+          id: 11,
+          action: 'Sending',
+          date: '10 Jun',
+          amount: '2TH / 543.20 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Pending'
+        },
+        {
+          id: 12,
+          action: 'Received',
+          date: '10 Jun',
+          amount: '1TH / 271.60 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Successful'
+        },
+        {
+          id: 13,
+          action: 'Top-Up',
+          date: '8 Jun',
+          amount: '2TH / 543.20 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Denied'
+        },
+        {
+          id: 14,
+          action: 'Sending',
+          date: '10 Jun',
+          amount: '1TH / 271.60 USD',
+          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
+          status: 'Pending'
+        }
       ]
-      // transactions: [
-      //   {
-      //     action: 'Sending',
-      //     date: '10 Jun',
-      //     amount: '4TH / 1086.40USD',
-      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     status: 'Pending'
-      //   },
-      //   {
-      //     action: 'Received',
-      //     date: '10 Jun',
-      //     amount: '2TH / 543.20 USD',
-      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     status: 'Successful'
-      //   },
-      //   {
-      //     action: 'Top-Up',
-      //     date: '8 Jun',
-      //     amount: '1TH / 271.60 USD',
-      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     status: 'Denied'
-      //   },
-      //   {
-      //     action: 'Sending',
-      //     date: '10 Jun',
-      //     amount: '1TH / 271.60 USD',
-      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     status: 'Pending'
-      //   },
-      //   {
-      //     action: 'Received',
-      //     date: '10 Jun',
-      //     amount: '2TH / 543.20 USD',
-      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     status: 'Successful'
-      //   },
-      //   {
-      //     action: 'Top-Up',
-      //     date: '10 Jun',
-      //     amount: '1TH / 271.60 USD',
-      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     status: 'Denied'
-      //   },
-      //   {
-      //     action: 'Received',
-      //     date: '10 Jun',
-      //     amount: '2TH / 543.20 USD',
-      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     status: 'Successful'
-      //   },
-      //   {
-      //     action: 'Top-Up',
-      //     date: '10 Jun',
-      //     amount: '1TH / 271.60 USD',
-      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     status: 'Denied'
-      //   },
-      //   {
-      //     action: 'Sending',
-      //     date: '10 Jun',
-      //     amount: '2TH / 543.20 USD',
-      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     status: 'Pending'
-      //   },
-      //   {
-      //     action: 'Received',
-      //     date: '10 Jun',
-      //     amount: '4TH / 1086.40USD',
-      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     status: 'Successful'
-      //   },
-      //   {
-      //     action: 'Sending',
-      //     date: '10 Jun',
-      //     amount: '2TH / 543.20 USD',
-      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     status: 'Pending'
-      //   },
-      //   {
-      //     action: 'Received',
-      //     date: '10 Jun',
-      //     amount: '1TH / 271.60 USD',
-      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     status: 'Successful'
-      //   },
-      //   {
-      //     action: 'Top-Up',
-      //     date: '8 Jun',
-      //     amount: '2TH / 543.20 USD',
-      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     status: 'Denied'
-      //   },
-      //   {
-      //     action: 'Sending',
-      //     date: '10 Jun',
-      //     amount: '1TH / 271.60 USD',
-      //     from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-      //     status: 'Pending'
-      //   }
-      // ]
     }
   },
   computed: {
