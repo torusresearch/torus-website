@@ -1,27 +1,69 @@
 <template>
-  <v-flex fill-height class="simplex-page mt-2">
-    <v-form ref="inputForm" v-model="formValid" lazy-validation @submit.prevent="">
-      <v-container align-content-center>
-        <v-layout column text-sm-center>
-          <v-flex sm6>
-            <h1 class="page-title">Purchase Cryptocurrency with your credit card via Simplex</h1>
-          </v-flex>
-          <v-flex sm6>
-            <p class="page-description">
-              Simplex is a secure way to buy cryptoccurrency with your credit card.
-              <br />
-              Start by entering an amount to get a quote before making your purchase.
-            </p>
-          </v-flex>
-        </v-layout>
+  <div class="wallet-topup-view">
+    <v-layout mt-5 wrap row>
+      <v-flex xs12>
+        <div class="text-black font-weight-bold headline px-3 mb-3">Select a Provider</div>
+      </v-flex>
+      <v-flex xs12 sm6 mb-3 px-3>
+        <v-card>
+          <v-container fluid>
+            <v-layout row wrap>
+              <div class="provider">
+                <div class="provider-checkbox">
+                  <input type="radio" v-model="provider" value="simplex" name="test-radio" id="test-simplex" />
+                  <img :src="require(`../../public/images/logos/simplex-logo.png`)" class="provider-logo" />
+                </div>
+                <div class="provider-description">
+                  <small class="d-block">Pay with Credit Card</small>
+                  <small class="d-block">
+                    <span class="font-weight-bold">Simplex Servcice Fee:</span>
+                    5% or 10 USD
+                  </small>
+                  <small class="d-block">(whichever higher)</small>
+                </div>
+              </div>
+            </v-layout>
+          </v-container>
+        </v-card>
+      </v-flex>
 
-        <v-layout row justify-center>
-          <v-flex sm2 lg1>
-            <v-subheader>Pay</v-subheader>
-          </v-flex>
-          <v-flex sm4 lg4>
+      <v-flex xs12 sm6 mb-3 px-3>
+        <v-card>
+          <v-container fluid>
+            <v-layout row wrap>
+              <div class="provider">
+                <div class="provider-checkbox">
+                  <input type="radio" v-model="provider" value="wyre" name="test-radio" id="test-simplex" />
+                  <img :src="require(`../../public/images/logos/wyre-logo.png`)" class="provider-logo wyre-logo" />
+                </div>
+                <div class="provider-description">
+                  <small class="d-block">Pay with Credit Card or Wire Transfer</small>
+                  <small class="d-block">
+                    <span class="font-weight-bold">Wyre Service Fee :</span>
+                    Varies
+                  </small>
+                </div>
+              </div>
+            </v-layout>
+          </v-container>
+        </v-card>
+      </v-flex>
+    </v-layout>
+    <v-layout mt-5 wrap row>
+      <div class="text-black font-weight-bold headline px-3 mb-3">Purchase Cryptocurrency with your credit card via Simplex</div>
+      <v-flex xs12>
+        <p class="page-description px-3">
+          Simplex is a secure way to buy cryptoccurrency with your credit card. Start by entering an amount to get a quote before making your
+          purchase.
+        </p>
+      </v-flex>
+
+      <v-flex xs12>
+        <v-form ref="inputForm" v-model="formValid" lazy-validation @submit.prevent class="px-3">
+          <small class="mb-2 d-block">Pay</small>
+          <v-flex sm6>
             <v-text-field
-              class="torus-text-input"
+              class="pay-text-input"
               placeholder="0.00 (Min 50.00)"
               :suffix="`${selectedCurrency}*`"
               solo
@@ -29,15 +71,19 @@
               @input="watchFiatValue"
               :rules="[rules.required, rules.validNumber, rules.maxValidation, rules.minValidation]"
             ></v-text-field>
-            <div class="v-text-field__details">
+
+            <div class="v-text-field__details mb-4">
               <div class="v-messages theme--light">
                 <div class="v-messages__wrapper">
                   <div class="v-messages__message">
-                    * Includes Simplex Service Fees of 5% or 10 USD, whichever is higher
+                    <div class="d-flex input-notes">
+                      <div>
+                        <small>* Includes 5% Simplex Service Fees or 10 USD (whichever higher)</small>
+                        <img :src="require(`../../public/img/icons/help-circle.svg`)" class="inline-small ml-2 help-icon" />
+                      </div>
+                      <small class="text-right">min 50 USD*</small>
+                    </div>
                     <v-tooltip bottom>
-                      <template v-slot:activator="{ on }">
-                        <v-icon class="torus-hint-icon" color="primary" small v-on="on">error_outline</v-icon>
-                      </template>
                       <span>
                         This fee goes entirely to Simplex for their services
                         <br />
@@ -49,14 +95,11 @@
               </div>
             </div>
           </v-flex>
-        </v-layout>
 
-        <v-layout row justify-center class="pay-form">
-          <v-flex sm2 lg1>
-            <v-subheader>Receive</v-subheader>
-          </v-flex>
-          <v-flex sm4 lg4>
-            <v-text-field class="torus-text-input-disabled" disabled placeholder="0.00" suffix="ETH" v-model="ethValue" solo></v-text-field>
+          <small class="mb-2 d-block">Receive</small>
+          <v-flex sm6>
+            <v-text-field class="receive-text-input" disabled placeholder="0.00" suffix="ETH" v-model="ethValue" solo></v-text-field>
+
             <div class="v-text-field__details">
               <div class="v-messages theme--light">
                 <div class="v-messages__wrapper">
@@ -65,37 +108,47 @@
               </div>
             </div>
           </v-flex>
-        </v-layout>
+        </v-form>
+      </v-flex>
 
-        <v-layout class="torus-notes" column text-sm-center>
-          <v-flex sm6>
-            <v-layout row justify-center>
-              <img class="torus-note-icon" src="/images/clock-regular.svg" />
-              <span>The process would take approximately 10 - 15 mins.</span>
-            </v-layout>
-          </v-flex>
-          <v-flex sm6>
-            <v-layout row justify-center>
-              <img class="torus-note-icon" src="/images/address-card-regular.svg" />
-              <span>Please prepare your Identity Card/Passport to complete the purchase.</span>
-            </v-layout>
-          </v-flex>
-        </v-layout>
-        <div class="text-xs-center">
-          <v-tooltip bottom :disabled="formValid">
-            <template v-slot:activator="{ on }">
-              <span v-on="on">
-                <v-btn :disabled="!formValid" class="torus-button text-xs-center" color="primary" type="submit" @click.prevent="sendOrder">
-                  Checkout with Simplex
-                </v-btn>
-              </span>
-            </template>
-            <span>Resolve the errors</span>
-          </v-tooltip>
+      <v-flex xs-12>
+        <div class="px-3 mt-5 mb-4 info-notes">
+          <div>
+            <img :src="require(`../../public/img/icons/info-circle.svg`)" class="inline-small help-icon" />
+            <small class="d-inline ml-2">The process would take approximately 10 - 15 mins.</small>
+          </div>
+
+          <div>
+            <img :src="require(`../../public/img/icons/info-circle.svg`)" class="inline-small help-icon" />
+            <small class="d-inline ml-2">Please prepare your Identity Card/Passport to complete the purchase.</small>
+          </div>
         </div>
-      </v-container>
-    </v-form>
-  </v-flex>
+      </v-flex>
+    </v-layout>
+    <v-flex xs-12>
+      <div class="text-xs-center text-sm-right">
+        <v-tooltip bottom :disabled="formValid">
+          <template v-slot:activator="{ on }">
+            <span v-on="on">
+              <v-btn
+                :disabled="!formValid"
+                class="torus-button text-xs-center px-5 py-3 mb-2"
+                color="primary"
+                type="submit"
+                @click.prevent="sendOrder"
+              >
+                Continue
+              </v-btn>
+            </span>
+          </template>
+          <span>Resolve the errors</span>
+        </v-tooltip>
+        <p>
+          <small class="text-gray">You will be redirected to Simplex Page</small>
+        </p>
+      </div>
+    </v-flex>
+  </div>
 </template>
 
 <script>
@@ -121,7 +174,8 @@ export default {
         validNumber: value => !isNaN(parseFloat(value)) || 'Enter a valid number',
         maxValidation: value => parseFloat(value) <= MAX_ORDER_VALUE || `Max topup amount is ${formatCurrencyNumber(MAX_ORDER_VALUE, 0)}`,
         minValidation: value => parseFloat(value) >= MIN_ORDER_VALUE || `Min topup amount is ${MIN_ORDER_VALUE}`
-      }
+      },
+      provider: 'simplex'
     }
   },
   computed: {
@@ -236,214 +290,93 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-.simplex-page {
-  // background: url('/images/footer_waves.png') no-repeat;
-  // background-position: center bottom;
-
-  .header {
-    padding: 25px 25px;
+<style lang="scss">
+.wallet-topup-view {
+  .help-icon {
+    height: 13px;
+    vertical-align: middle;
+  }
+  .v-text-field__suffix {
+    color: #5495f7;
   }
 
-  .header-title {
-    display: flex;
-    img {
-      margin-right: 10px;
-      width: 25px;
-    }
-    span {
-      font-size: 14px;
-    }
+  .info-notes {
+    color: #5c6c7f;
   }
 
-  .page-title {
-    font-size: 25px;
-    line-height: 28px;
-    margin-bottom: 10px;
-  }
+  .input-notes {
+    color: #5c6c7f;
+    align-items: center;
+    justify-content: space-between;
 
-  .page-description {
-    font-size: 14px;
-    line-height: 17px;
-    margin-bottom: 20px;
-  }
-
-  .torus-button {
-    border-radius: 5px;
-    background-image: linear-gradient(to right, #5495f7, #295dab);
-    text-transform: none;
-    font-size: 16px;
-    padding: 10px 20px;
-    height: inherit;
-  }
-
-  .pay-form {
-    margin-bottom: 20px !important;
-  }
-
-  .torus-notes {
-    margin-bottom: 15px !important;
-  }
-
-  .torus-note-icon {
-    margin-right: 10px;
-  }
-
-  .torus-text-input.v-text-field--solo {
-    font-size: 20px;
-
-    & ::v-deep .v-input__slot {
-      box-shadow: none;
-      margin-bottom: 5px;
-      border-radius: 5px;
-      background-image: linear-gradient(to right, #5495f7, #295dab);
-      padding: 2px;
-    }
-    & ::v-deep .v-text-field__slot {
-      background-color: rgba(255, 255, 255, 0.3);
-      border-radius: 4px;
-      height: 44px;
-      input {
-        &::placeholder {
-          color: rgba(255, 255, 255, 0.3);
-        }
-        text-align: center;
-        color: #ffffff;
-      }
-    }
-    & ::v-deep .v-text-field__suffix {
-      background-color: #295dab;
-      height: 100%;
-      line-height: 42px;
-      color: #ffffff;
-      padding: 0 15px;
-      min-width: 90px;
-      text-align: center;
+    small {
+      font-size: 12px;
     }
   }
 
-  .torus-text-input-disabled.v-text-field--solo {
-    font-size: 20px;
-
-    & ::v-deep .v-input__slot {
-      box-shadow: none;
-      margin-bottom: 5px;
-      border-radius: 5px;
-      background-image: linear-gradient(to right, #5495f7, #295dab);
-      padding: 2px;
-    }
-    & ::v-deep .v-text-field__slot {
-      background-image: linear-gradient(to right, #5495f7, #295dab);
-      border-radius: 4px;
-      height: 44px;
-      input {
-        &::placeholder {
-          color: rgba(255, 255, 255, 0.3);
-        }
-        text-align: center;
-        color: #ffffff;
-      }
-    }
-    & ::v-deep .v-text-field__suffix {
-      height: 100%;
-      line-height: 42px;
-      color: #ffffff;
-      padding: 0 15px;
-      min-width: 90px;
-      text-align: center;
+  .pay-text-input {
+    .v-input__slot {
+      background: transparent !important;
+      box-shadow: none !important;
+      border: 1px solid #d3d5e2 !important;
     }
   }
 
-  & ::v-deep .v-text-field__details {
-    margin-bottom: 0;
-    padding: 0 12px;
+  .receive-text-input {
+    .v-input__slot {
+      background: #eef2f4 !important;
+      box-shadow: none !important;
+      border: 1px solid #d3d5e2 !important;
+    }
   }
 
-  & ::v-deep .v-messages {
-    min-height: 0;
+  .text-right {
+    text-align: right;
   }
-}
 
-@media only screen and (min-width: 600px) {
-  .simplex-page {
-    .header {
-      padding: 45px 50px 30px;
+  .text-gray {
+    color: #5c6c7f;
+  }
+
+  .provider {
+    min-height: 63px;
+    width: 100%;
+    color: #5c6c7f;
+
+    &-checkbox {
+      display: flex;
       align-items: center;
     }
 
-    .header-title {
-      img {
-        margin-right: 20px;
-      }
-      span {
-        font-size: 14px;
-      }
+    &-description {
+      padding-left: 3rem;
     }
 
-    .page-title {
-      font-size: 25px;
-      line-height: 30px;
-    }
-
-    .page-description {
-      font-size: 17px;
-      line-height: 21px;
-      margin-bottom: 40px;
-    }
-
-    .torus-button {
-      font-size: 21px;
-      padding: 15px 30px;
-    }
-
-    .pay-form {
-      margin-bottom: 40px !important;
-    }
-
-    .torus-notes {
-      margin-bottom: 20px !important;
-    }
-
-    .torus-note-icon {
-      margin-right: 15px;
-    }
-  }
-}
-
-@media only screen and (min-width: 1264px) {
-  .simplex-page {
-    background-size: 100%;
-  }
-
-  .container {
-    max-width: 1185px;
-  }
-}
-
-@media only screen and (max-height: 750px) {
-  .simplex-page {
-    .header {
-      padding: 45px 50px 0;
-    }
-
-    .page-title {
-      margin-bottom: 0;
-    }
-
-    .page-description {
+    &-logo {
+      height: 43px;
       margin-bottom: 20px;
+      margin-left: 10px;
     }
+  }
 
-    .pay-form {
-      margin-bottom: 10px !important;
-    }
+  .torus-button {
+    height: auto !important;
+  }
 
-    .torus-notes {
-      margin-bottom: 10px !important;
-    }
+  @media screen and (min-width: 768px) {
+    .provider {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
 
-    .torus-note-icon {
-      margin-right: 15px;
+      &-description {
+        text-align: right;
+        padding-left: 0;
+      }
+
+      &-logo {
+        margin-bottom: 0;
+      }
     }
   }
 }
