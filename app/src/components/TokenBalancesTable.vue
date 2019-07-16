@@ -2,9 +2,7 @@
   <v-layout row wrap align-center>
     <v-flex class="xs12 sm6 px-3 my-3" v-for="balance in tokenBalances" :key="balance.name">
       <v-card color="dark card-shadow" white>
-        <v-card-title class="font-weight-bold subtitle-2 pt-4 pb-0 px-4">
-          COINS / TOKENS
-        </v-card-title>
+        <v-card-title class="font-weight-bold subtitle-2 pt-4 pb-0 px-4">COINS / TOKENS</v-card-title>
         <v-card-text class="headline font-weight-bold pt-1 pb-4 px-4">
           <v-flex xs12>
             <v-text-field hide-details readonly type="text" :value="balance.name">
@@ -42,9 +40,12 @@
               <span class="font-weight-bold">Welcome to Torus.</span>
               <br />
               Learn more about your wallet today.
-              <v-btn color="primary" class="px-5 py-1 mt-3">
-                Learn more
-              </v-btn>
+              <v-dialog v-model="dialog" max-width="700">
+                <template v-slot:activator="{ on }">
+                  <v-btn color="primary" class="px-5 py-1 mt-3" v-on="on">Learn more</v-btn>
+                </template>
+                <LearnMore @onClose="dialog = false" />
+              </v-dialog>
             </v-flex>
             <v-flex xs4 pt-3 class="text-xs-right">
               <img :src="require(`../../public/images/learn-more.svg`)" style="height: 100px" />
@@ -132,18 +133,24 @@
         </template>
       </v-data-table>
     </v-flex>
-  </v-layout> -->
+  </v-layout>-->
 </template>
 
 <script>
+import LearnMore from '../components/LearnMore'
+
 export default {
   props: ['headers', 'tokenBalances', 'selected'],
   data() {
     return {
       pagination: {
         sortBy: 'name'
-      }
+      },
+      dialog: false
     }
+  },
+  components: {
+    LearnMore
   },
   computed: {
     showFooter() {
