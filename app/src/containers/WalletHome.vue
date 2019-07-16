@@ -42,11 +42,18 @@
               v-model="search"
               outlined
               hide-details
-              class="mr-3 subtitle-2 search-field"
-              append-icon="search"
-              style="max-width: 120px"
-            ></v-text-field>
-            <span class="caption">Last update 24/06/19, 16:24</span>
+              class="mr-3 caption search-field"
+              placeholder="Search"
+              style="max-width: 200px"
+            >
+              <template v-slot:append>
+                <img width="12" height="12" class="mt-1" :src="require('../../public/img/icons/search-grey.svg')" />
+              </template>
+            </v-text-field>
+            <v-btn text icon @click="refreshBalances()">
+              <img width="12" height="12" :src="require('../../public/img/icons/refresh-primary.svg')" />
+            </v-btn>
+            <span class="caption">Last update {{ lastUpdated }}</span>
           </v-flex>
           <v-flex xs6 class="text-xs-right" :class="showSearch ? 'pt-2' : ''">
             <span class="subtitle-2">CURRENCY:</span>
@@ -98,7 +105,8 @@ export default {
         { text: 'Value', value: 'currencyBalance', align: 'right' }
       ],
       selected: [],
-      search: ''
+      search: '',
+      lastUpdated: ''
     }
   },
   computed: {
@@ -143,6 +151,7 @@ export default {
     },
     refreshBalances() {
       this.$store.dispatch('forceFetchTokens')
+      this.setDateUpdated()
     },
     initiateTransfer() {
       // this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
@@ -150,7 +159,19 @@ export default {
     },
     topup() {
       this.$router.push({ path: '/wallet/topup' })
+    },
+    setDateUpdated() {
+      const currentDateTime = new Date()
+      const date = `${currentDateTime.getDate()}/${currentDateTime.getMonth() + 1}/${currentDateTime
+        .getFullYear()
+        .toString()
+        .substring(2, 4)}`
+      const time = `${currentDateTime.getHours()}:${currentDateTime.getMinutes()}`
+      this.lastUpdated = `${date} ${time}`
     }
+  },
+  created() {
+    this.setDateUpdated()
   }
 }
 </script>
