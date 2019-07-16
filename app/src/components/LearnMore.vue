@@ -33,7 +33,7 @@
             </v-list-item>
           </v-list-item-group>
         </v-list>
-        <v-layout fill-height align-end justify-end>
+        <v-layout>
           <v-flex xs12 class="pa-5 text-xs-right">
             <v-btn @click="nextStep(content.step)" depressed large class="primary px-5">Next</v-btn>
           </v-flex>
@@ -112,6 +112,7 @@ export default {
 
   .v-stepper__content {
     padding: 0;
+    height: 550px;
   }
 }
 </style>
