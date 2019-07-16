@@ -8,25 +8,17 @@
             class="pt-0 mt-0 ml-2 subtitle-2 nav-selector transaction"
             height="25px"
             hide-details
-            :items="transtionTypes"
-            :value="selectedType"
-            @change="onSelectType"
+            :items="actionTypes"
+            v-model="selectedAction"
           />
-          <v-select
-            class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period"
-            height="25px"
-            hide-details
-            :items="periods"
-            :value="selectedPeriod"
-            @change="onSelectPeriod"
-          />
+          <v-select class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period" height="25px" hide-details :items="periods" v-model="selectedPeriod" />
         </div>
       </v-flex>
       <v-flex xs12 px-3 mb-3>
-        <tx-history-table :headers="headers" :transactions="getTransactions()" />
+        <tx-history-table :headers="headers" :selectedAction="selectedAction" :selectedPeriod="selectedPeriod" :transactions="getTransactions()" />
       </v-flex>
     </v-layout>
-    <v-layout mt-5 row wrap align-start justify-center align-content-start v-if="false">
+    <!-- <v-layout mt-5 row wrap align-start justify-center align-content-start>
       <v-flex xs12 sm5>
         <span>
           <span class="spanWrapSvgStyle">
@@ -54,7 +46,7 @@
         </div>
       </v-flex>
       <v-flex xs12>
-        <!-- <tx-history-table :headers="headers" :transactions="getTransactions()" /> -->
+        <tx-history-table :headers="headers" :transactions="getTransactions()" />
       </v-flex>
       <v-flex xs12 mt-5>
         <v-layout row wrap>
@@ -63,7 +55,7 @@
           </v-flex>
         </v-layout>
       </v-flex>
-    </v-layout>
+    </v-layout> -->
   </div>
 </template>
 
@@ -95,9 +87,9 @@ export default {
         { text: 'Status', value: 'status', align: 'center' }
       ],
       pastOrders: [],
-      transtionTypes: ['All Transactions', 'Top-up', 'Sending', 'Received'],
-      selectedType: 'All Transactions',
-      periods: ['Period', 'Last Week', 'Last Month', 'Last Year'],
+      actionTypes: ['All Transactions', 'Top-up', 'Sending', 'Received'],
+      selectedAction: 'All Transactions',
+      periods: ['Period', 'Last Week', 'Last Month'],
       selectedPeriod: 'Period'
     }
   },
@@ -130,7 +122,7 @@ export default {
           const txObj = {}
           txObj.id = txOld.time
           txObj.action = 'Sending'
-          txObj.date = new Date(txOld.time).toDateString().substring(4, 10)
+          txObj.date = new Date(txOld.time).toDateString().substring(4)
           txObj.from = txOld.txParams.from
           txObj.slicedFrom = addressSlicer(txOld.txParams.from)
           txObj.to = txOld.txParams.to

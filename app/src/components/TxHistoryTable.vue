@@ -3,7 +3,7 @@
     <v-data-table
       class="activity-table"
       :headers="headers"
-      :items="transactions"
+      :items="filteredTransactions"
       :expanded.sync="expanded"
       item-key="id"
       single-expand
@@ -15,6 +15,9 @@
       </template>
       <template v-slot:item.to="{ item }">
         <span style="word-break: break-all">{{ item.to }}</span>
+      </template>
+      <template v-slot:item.date="{ item }">
+        <span>{{ formatDate(item.date) }}</span>
       </template>
       <template v-slot:item.status="{ item }">
         <span :class="`text-${item.status.toLowerCase()}`">{{ item.status }}</span>
@@ -53,6 +56,9 @@
             </v-layout>
           </v-flex>
         </td>
+      </template>
+      <template v-slot:no-data>
+        <v-flex xs12 class="text-xs-center">No data found!</v-flex>
       </template>
     </v-data-table>
     <v-layout row wrap v-if="false">
@@ -128,8 +134,7 @@
 
 <script>
 export default {
-  // props: ['headers', 'transactions'],
-  // props: ['transactions'],
+  props: ['transactions', 'selectedAction', 'selectedPeriod'],
   data() {
     return {
       expanded: [],
@@ -172,146 +177,35 @@ export default {
           value: 'status',
           align: 'center'
         }
-      ],
-      transactions: [
-        {
-          id: 1,
-          action: 'Sending',
-          date: '10 Jun',
-          amount: '4TH / 1086.40USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Pending',
-          etherscanLink: ''
-        },
-        {
-          id: 2,
-          action: 'Received',
-          date: '10 Jun',
-          amount: '2TH / 543.20 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Successful',
-          etherscanLink: ''
-        },
-        {
-          id: 3,
-          action: 'Top-Up',
-          date: '8 Jun',
-          amount: '1TH / 271.60 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Denied',
-          etherscanLink: ''
-        },
-        {
-          id: 4,
-          action: 'Sending',
-          date: '10 Jun',
-          amount: '1TH / 271.60 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Pending',
-          etherscanLink: ''
-        },
-        {
-          id: 5,
-          action: 'Received',
-          date: '10 Jun',
-          amount: '2TH / 543.20 USD',
-          from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-          status: 'Successful',
-          etherscanLink: ''
-        }
-        // },
-        // {
-        //   id: 6,
-        //   action: 'Top-Up',
-        //   date: '10 Jun',
-        //   amount: '1TH / 271.60 USD',
-        //   from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   status: 'Denied'
-        // },
-        // {
-        //   id: 7,
-        //   action: 'Received',
-        //   date: '10 Jun',
-        //   amount: '2TH / 543.20 USD',
-        //   from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   status: 'Successful'
-        // },
-        // {
-        //   id: 8,
-        //   action: 'Top-Up',
-        //   date: '10 Jun',
-        //   amount: '1TH / 271.60 USD',
-        //   from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   status: 'Denied'
-        // },
-        // {
-        //   id: 9,
-        //   action: 'Sending',
-        //   date: '10 Jun',
-        //   amount: '2TH / 543.20 USD',
-        //   from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   status: 'Pending'
-        // },
-        // {
-        //   id: 10,
-        //   action: 'Received',
-        //   date: '10 Jun',
-        //   amount: '4TH / 1086.40USD',
-        //   from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   status: 'Successful'
-        // },
-        // {
-        //   id: 11,
-        //   action: 'Sending',
-        //   date: '10 Jun',
-        //   amount: '2TH / 543.20 USD',
-        //   from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   status: 'Pending'
-        // },
-        // {
-        //   id: 12,
-        //   action: 'Received',
-        //   date: '10 Jun',
-        //   amount: '1TH / 271.60 USD',
-        //   from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   status: 'Successful'
-        // },
-        // {
-        //   id: 13,
-        //   action: 'Top-Up',
-        //   date: '8 Jun',
-        //   amount: '2TH / 543.20 USD',
-        //   from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   status: 'Denied'
-        // },
-        // {
-        //   id: 14,
-        //   action: 'Sending',
-        //   date: '10 Jun',
-        //   amount: '1TH / 271.60 USD',
-        //   from: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   to: '0xdbb59a63bf5d4d0c32a20dc33e04008',
-        //   status: 'Pending'
-        // }
       ]
     }
   },
   computed: {
     showFooter() {
       return this.transactions && this.transactions.length > 5
+    },
+    filteredTransactions() {
+      const selectedAction = this.selectedAction === 'All Transactions' ? '' : this.selectedAction
+      var regExAction = new RegExp(selectedAction, 'i')
+
+      return this.transactions.filter(item => {
+        // GET Date Scope
+        let isScoped = false
+        if (this.selectedPeriod === 'Period') {
+          isScoped = true
+        } else {
+          let minDate = new Date()
+          let itemDate = new Date(item.date)
+          if (this.selectedPeriod === 'Last Week') {
+            minDate.setDate(minDate.getDate() - 7)
+          } else {
+            minDate.setMonth(minDate.getMonth() - 1)
+          }
+
+          isScoped = minDate.getTime() <= itemDate.getTime()
+        }
+        return item.action.match(regExAction) && isScoped
+      })
     }
   },
   methods: {
@@ -329,10 +223,10 @@ export default {
       } else {
         this.expanded = [item]
       }
+    },
+    formatDate(date) {
+      return date.substring(0, 6)
     }
-  },
-  created() {
-    console.log(this.transactions)
   }
 }
 </script>
@@ -356,6 +250,11 @@ export default {
   .text-gray {
     color: #5c6c7f;
   }
+
+  ::v-deep tr > td {
+    cursor: pointer;
+  }
+
   ::v-deep .expanded__content {
     box-shadow: none !important;
   }
