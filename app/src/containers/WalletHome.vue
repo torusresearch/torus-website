@@ -64,6 +64,7 @@
               :items="supportedCurrencies"
               :value="selectedCurrency"
               @change="onCurrencyChange"
+              append-icon="$vuetify.icons.select"
             ></v-select>
           </v-flex>
         </v-layout>
