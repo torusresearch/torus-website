@@ -49,7 +49,7 @@
         </v-card>
       </v-flex>
     </v-layout>
-    <v-layout mt-5 wrap row>
+    <v-layout mt-5 wrap row v-if="provider">
       <div class="text-black font-weight-bold headline px-3 mb-3">Purchase Cryptocurrency with your credit card via Simplex</div>
       <v-flex xs12>
         <p class="page-description px-3">
@@ -111,7 +111,7 @@
         </v-form>
       </v-flex>
 
-      <v-flex xs-12>
+      <v-flex xs12>
         <div class="px-3 mt-5 mb-4 info-notes">
           <div>
             <img :src="require(`../../public/img/icons/info-circle.svg`)" class="inline-small help-icon" />
@@ -125,7 +125,7 @@
         </div>
       </v-flex>
     </v-layout>
-    <v-flex xs-12>
+    <v-flex xs12 v-if="provider">
       <div class="text-xs-center text-sm-right">
         <v-tooltip bottom :disabled="formValid">
           <template v-slot:activator="{ on }">
@@ -175,7 +175,7 @@ export default {
         maxValidation: value => parseFloat(value) <= MAX_ORDER_VALUE || `Max topup amount is ${formatCurrencyNumber(MAX_ORDER_VALUE, 0)}`,
         minValidation: value => parseFloat(value) >= MIN_ORDER_VALUE || `Min topup amount is ${MIN_ORDER_VALUE}`
       },
-      provider: 'simplex'
+      provider: ''
     }
   },
   computed: {
