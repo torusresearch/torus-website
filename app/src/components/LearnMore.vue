@@ -33,11 +33,7 @@
             </v-list-item>
           </v-list-item-group>
         </v-list>
-        <v-layout>
-          <v-flex xs12 class="pa-5 text-xs-right">
-            <v-btn @click="nextStep(content.step)" depressed large class="primary px-5">Next</v-btn>
-          </v-flex>
-        </v-layout>
+        <v-btn @click="nextStep(content.step)" depressed large class="primary px-5 next-btn">Next</v-btn>
       </v-stepper-content>
     </v-stepper-items>
   </v-stepper>
@@ -108,11 +104,21 @@ export default {
 
 <style lang="scss" scoped>
 .learn-more {
+  background-image: url('/images/footer_waves.png');
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: 100%;
   border-radius: 15px;
 
   .v-stepper__content {
     padding: 0;
     height: 550px;
+  }
+
+  .next-btn {
+    position: absolute;
+    bottom: 48px;
+    right: 48px;
   }
 }
 </style>
