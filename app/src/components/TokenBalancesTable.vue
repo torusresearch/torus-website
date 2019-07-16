@@ -32,7 +32,7 @@
       </v-card>
     </v-flex>
 
-    <v-flex class="xs12 sm6 px-3 my-3">
+    <v-flex class="xs12 sm6 px-3 my-3" v-if="isFreshAccount">
       <v-card color="dark card-shadow" white>
         <v-card-text class="pt-1 pb-3 px-4">
           <v-layout row>
@@ -140,7 +140,7 @@
 import LearnMore from '../components/LearnMore'
 
 export default {
-  props: ['headers', 'tokenBalances', 'selected'],
+  props: ['headers', 'tokenBalances', 'selected', 'isFreshAccount'],
   data() {
     return {
       pagination: {

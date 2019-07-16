@@ -4,8 +4,8 @@
       <v-flex xs12 px-3 mb-3>
         <div class="text-black font-weight-bold headline left">My Wallet</div>
         <div class="right">
-          <v-btn outlined large color="grey" class="px-5 py-1 mr-3 mt-3" @click="initiateTransfer">
-            <img :src="require('../../public/img/icons/indent-increse-grey.svg')" class="btn-icon mr-1" />
+          <v-btn outlined large :color="isFreshAccount ? 'grey' : 'primary'" class="px-5 py-1 mr-3 mt-3" @click="initiateTransfer">
+            <img :src="require(`../../public/img/icons/indent-increse-${isFreshAccount ? 'grey' : 'primary'}.svg`)" class="btn-icon mr-1" />
             Send
           </v-btn>
           <v-tooltip top v-model="isFreshAccount">
@@ -69,6 +69,7 @@
           @update:select="select"
           :selected="selected"
           :search="search"
+          :isFreshAccount="isFreshAccount"
         />
       </v-flex>
     </v-layout>
