@@ -35,7 +35,7 @@
       </v-flex>
 
       <v-flex xs12 px-3>
-        <v-layout justify-space-between row>
+        <v-layout justify-space-between align-center row>
           <v-flex xs6>
             <v-text-field
               v-if="showSearch"
