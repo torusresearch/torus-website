@@ -73,29 +73,6 @@
         />
       </v-flex>
     </v-layout>
-    <!-- <v-layout mt-5 row wrap align-start justify-center align-content-start>
-      <v-flex xs12>
-        <token-balances-table :headers="headers" :tokenBalances="finalBalancesArray" @update:select="select" :selected="selected" />
-      </v-flex>
-      <v-flex xs12>
-        <v-layout row wrap>
-          <v-flex offset-xs1 class="text-xs-left" id="flexibtn">
-            <v-tooltip bottom :disabled="!isTransferDisabled">
-              <template v-slot:activator="{ on }">
-                <span v-on="on">
-                  <v-btn :disabled="isTransferDisabled" outlined large class="btnStyle" @click="initiateTransfer">Transfer</v-btn>
-                </span>
-              </template>
-              <span>Please select a coin/token</span>
-            </v-tooltip>
-            <v-btn outlined large class="btnStyle" @click="topup">Top-up</v-btn>
-          </v-flex>
-          <v-flex xs2 align-self-center class="hidden-xs-only">
-            <img :src="require('../../public/images/torus_logo.png')" />
-          </v-flex>
-        </v-layout>
-      </v-flex>
-    </v-layout> -->
   </div>
 </template>
 
@@ -142,14 +119,11 @@ export default {
     selectedCurrency() {
       return this.$store.state.selectedCurrency
     },
-    isTransferDisabled() {
-      return this.selected.length === 0
-    },
     isRefreshVisible() {
       return this.$store.state.networkType === MAINNET
     },
     showSearch() {
-      return this.finalBalancesArray.length > 10
+      return this.finalBalancesArray.length > 5
     },
     isFreshAccount() {
       return this.filteredBalancesArray.length === 1 && this.filteredBalancesArray[0].computedBalance === 0
