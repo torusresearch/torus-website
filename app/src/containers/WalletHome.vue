@@ -107,7 +107,6 @@ export default {
     },
     finalBalancesArray() {
       let balances = this.$store.getters.tokenBalances.finalBalancesArray
-
       return balances || []
     },
     filteredBalancesArray() {
