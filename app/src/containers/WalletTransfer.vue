@@ -11,9 +11,9 @@
           <v-flex xs12 sm6 px-3 pt-4 v-if="selectedItem">
             <div>
               <span class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
-              <span class="caption grey--text">{{ selectedCurrency }}</span>
+              <span class="caption torus_text--text text--lighten-4">{{ selectedItem.currencyBalance }}</span>
             </div>
-            <div class="caption font-weight-regular grey--text">{{ selectedItem.currencyRateText }}</div>
+            <div class="caption font-weight-regular torus_text--text text--lighten-4">{{ selectedItem.currencyRateText }}</div>
           </v-flex>
         </v-layout>
         <v-layout row wrap>
@@ -100,7 +100,22 @@
         </v-layout>
         <v-layout mt-3 pr-2 row wrap>
           <v-spacer></v-spacer>
-          <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" type="submit">Confirm</v-btn>
+          <v-dialog v-model="confirmDialog" max-width="550" persistent>
+            <template v-slot:activator="{ on }">
+              <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" class="px-4" v-on="on">Continue</v-btn>
+            </template>
+            <transfer-confirm
+              :toAddress="toAddress"
+              :selectedCoin="selectedItem.name"
+              :convertedAmount="convertedAmount"
+              :displayAmount="displayAmount"
+              :speedSelected="getGasSpeed(speedSelected)"
+              :activeGasPrice="getGasAmount(activeGasPrice)"
+              @onClose="confirmDialog = false"
+              @onConfirm="sendCoin"
+            ></transfer-confirm>
+          </v-dialog>
+          <!-- <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" type="submit">Confirm</v-btn> -->
         </v-layout>
       </v-form>
     </v-flex>
@@ -243,6 +258,7 @@ import torus from '../torus'
 import { significantDigits, getRandomNumber } from '../utils/utils'
 import config from '../config'
 import TransferAdvanceOption from '../components/TransferAdvanceOption'
+import TransferConfirm from '../components/TransferConfirm'
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
 
@@ -252,11 +268,13 @@ export default {
   name: 'walletTransfer',
   props: ['address'],
   components: {
-    TransferAdvanceOption
+    TransferAdvanceOption,
+    TransferConfirm
   },
   data() {
     return {
       dialog: false,
+      confirmDialog: false,
       tokenAddress: '0x',
       amount: 0,
       displayAmount: '',
@@ -470,6 +488,15 @@ export default {
       }
 
       this.updateTotalCost()
+    },
+    getGasSpeed() {
+      if (this.speedSelected === 'average') {
+        return this.averageGasPriceSpeed
+      } else if (this.speedSelected === 'fast') {
+        return this.fastGasPriceSpeed
+      } else if (this.speedSelected === 'fastest') {
+        return this.fastestGasPriceSpeed
+      }
     },
     updateTotalCost() {
       if (!this.displayAmount || this.speedSelected === '') {
