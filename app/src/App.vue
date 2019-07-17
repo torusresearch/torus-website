@@ -1,15 +1,27 @@
 <template>
   <v-app>
+    <Navbar />
     <div id="app" style="width:100%; height:100%">
       <router-view />
     </div>
   </v-app>
 </template>
+
+<script>
+import Navbar from './components/Navbar'
+
+export default {
+  components: {
+    Navbar
+  }
+}
+</script>
+
 <style src="../public/css/circles.css"></style>
 
 <style lang="scss">
 #app {
-  background: var(--v-torus_bcg-base) !important;
+  background: #ffffff !important;
   height: 100%;
   color: #0f1222;
 }

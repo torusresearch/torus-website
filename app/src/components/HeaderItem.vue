@@ -1,6 +1,5 @@
 <template>
   <router-link tag="a" :to="to" class="mr-5 pb-1" :class="computedClass">
-    <v-icon>{{ icon }}</v-icon>
     <slot></slot>
   </router-link>
 </template>
@@ -17,7 +16,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 a {
   color: #b3c0ce !important;
   font-size: 1.2rem;
