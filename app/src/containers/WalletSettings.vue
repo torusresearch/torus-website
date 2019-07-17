@@ -1,115 +1,108 @@
 <template>
-  <v-layout mt-5 row wrap align-start justify-center align-content-start>
-    <v-flex xs12 sm8>
-      <span>
-        <v-icon alt="Account" :color="$vuetify.theme.torus_blue" size="28">settings</v-icon>
-        <span class="text-bluish headline">Settings</span>
-      </span>
-    </v-flex>
-    <v-flex xs12 sm8 mt-3 mb-3>
-      <div class="d-flex" style="align-items:center;">
-        <span class="body-2">Selected Network</span>
-        <v-select
-          single-line
-          solo
-          text
-          :items="networks"
-          item-text="name"
-          item-value="value"
-          id="selectBox"
-          class="set-size setheight"
-          v-model="selectedNetwork"
-          @change="changeNetwork"
-          label="Network"
-        ></v-select>
-      </div>
-    </v-flex>
-    <v-flex xs12 sm8>
-      <template v-if="isRPCSelected">
-        <v-card text :color="$vuetify.theme.torus_bcg" class="fill-height">
-          <v-form ref="form" v-model="formValid" lazy-validation @submit.prevent="">
-            <v-layout row wrap align-center justify-center align-content-start>
-              <v-flex xs12 sm6 align-self-center>
-                <span class="body-2">Enter Network Name</span>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field
-                  placeholder="Enter Network Name"
-                  aria-label="network name"
-                  v-model="rpc.networkName"
+  <v-layout mt-5 row wrap class="wallet-settings">
+    <v-flex xs12 sm8 px-3>
+      <!-- Privacy and security settings -->
+      <v-expansion-panels>
+        <v-expansion-panel>
+          <v-expansion-panel-header>
+            <div class="expasion-header-content">
+              <div class="title">
+                <img :src="require(`../../public/img/icons/lock.svg`)" class="inline-small collpase-icon" />
+                <div class="d-inline ml-4 text-black font-weight-bold headline">Privacy and Security</div>
+              </div>
+
+              <img :src="require(`../../public/img/icons/chevron-big-down.svg`)" class="inline-small chevron-icon" />
+            </div>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content class="py-4 px-5">
+            <v-btn flat class="icon-button py-2 d-block mt-2 mb-3">
+              <img :src="require(`../../public/img/icons/key.svg`)" class="inline-small mr-3" />
+              Private Key
+            </v-btn>
+            <v-btn flat class="icon-button py-2 d-block mb-3">
+              <img :src="require(`../../public/img/icons/list.svg`)" class="inline-small mr-3" />
+              Deep Permission
+            </v-btn>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
+
+      <!-- Network Settigs -->
+      <v-expansion-panels>
+        <v-expansion-panel>
+          <v-expansion-panel-header>
+            <div class="expasion-header-content">
+              <div class="title">
+                <img :src="require(`../../public/img/icons/globe.svg`)" class="inline-small collpase-icon" />
+                <div class="d-inline ml-4 text-black font-weight-bold headline">Network</div>
+              </div>
+
+              <img :src="require(`../../public/img/icons/chevron-big-down.svg`)" class="inline-small chevron-icon" />
+            </div>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content class="py-4 px-5">
+            <v-form ref="inputForm" class="px-3">
+              <v-flex mb-5>
+                <v-select
+                  class="custom-text-input"
+                  single-line
                   solo
                   text
-                  required
-                  :rules="[rules.required]"
-                ></v-text-field>
+                  :items="networks"
+                  item-text="name"
+                  item-value="value"
+                  v-model="selectedNetwork"
+                  label="Select Import Type"
+                  append-icon="$vuetify.icons.dropdown"
+                ></v-select>
               </v-flex>
-              <v-flex xs12 sm6>
-                <span class="body-2">Enter RPC URL</span>
+
+              <v-flex xs12 mb-3>
+                <v-text-field class="custom-text-input" placeholder="Enter Network Name" solo v-model="networkName"></v-text-field>
               </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field
-                  id="amount"
-                  placeholder="Enter RPC URL"
-                  aria-label="rpc url"
-                  solo
-                  text
-                  required
-                  v-model="rpc.networkUrl"
-                  :rules="[rules.required]"
-                ></v-text-field>
+
+              <v-flex xs12 mb-3>
+                <v-text-field class="custom-text-input" placeholder="Enter RPC URL" solo v-model="rpcValue"></v-text-field>
               </v-flex>
-              <v-flex xs12 sm6>
-                <span class="body-2">Enter Chain Id</span>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field id="amount" placeholder="Enter chain Id" aria-label="chain Id" solo text required v-model="rpc.chainId"></v-text-field>
-              </v-flex>
-              <v-flex xs12>
-                <v-layout row wrap>
-                  <v-flex class="text-xs-left" id="flexibtn">
-                    <v-tooltip bottom :disabled="formValid">
-                      <template v-slot:activator="{ on }">
-                        <span v-on="on">
-                          <v-btn id="flexibtn" :disabled="!formValid" outlined large class="btnStyle" @click="setRPC">Confirm</v-btn>
-                        </span>
-                      </template>
-                      <span>Resolve the errors</span>
-                    </v-tooltip>
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-            </v-layout>
-          </v-form>
-        </v-card>
-      </template>
-    </v-flex>
-    <v-flex xs12 sm8 mb-5>
-      <v-expansion-panel>
-        <v-expansion-panel-content class="bodyBackground">
-          <template v-slot:header>
-            <div class="body-2">Frequently Asked Questions</div>
-          </template>
-          <v-card text :color="$vuetify.theme.torus_bcg">
-            <v-card-text class="pt-0">
-              Learn how to
-              <a href="https://docs.tor.us" target="_blank" rel="noreferrer noopener">
-                <span class="font-italic" style="text-decoration: underline;">Get Started</span>
-              </a>
-            </v-card-text>
-          </v-card>
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-    </v-flex>
-    <v-flex xs12>
-      <v-layout row wrap>
-        <v-flex offset-xs10 xs2 align-self-center class="hidden-xs-only">
-          <img :src="require('../../public/images/torus_logo.png')" />
-        </v-flex>
-      </v-layout>
+            </v-form>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
+
+      <!-- Display Settings -->
+      <v-expansion-panels>
+        <v-expansion-panel>
+          <v-expansion-panel-header>
+            <div class="expasion-header-content">
+              <div class="title">
+                <img :src="require(`../../public/img/icons/server.svg`)" class="inline-small collpase-icon" />
+                <div class="d-inline ml-4 text-black font-weight-bold headline">Display</div>
+              </div>
+
+              <img :src="require(`../../public/img/icons/chevron-big-down.svg`)" class="inline-small chevron-icon" />
+            </div>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content class="py-4 px-5">
+            <p>Select Theme</p>
+            <div class="theme-options mb-5">
+              <v-btn class="btn-theme btn-default" @click.prevent="seletecTheme('default')">Default</v-btn>
+
+              <v-btn class="btn-theme btn-cerulean" @click.prevent="seletecTheme('cerulean')">Cerulean Blue</v-btn>
+
+              <v-btn class="btn-theme btn-shuttle-grey" @click.prevent="seletecTheme('grey')">Shuttle Grey</v-btn>
+            </div>
+
+            <v-flex class="pt-5 save-container">
+              <v-btn color="primary" class="px-5 py-1 mt-3">Save</v-btn>
+            </v-flex>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </v-flex>
   </v-layout>
 </template>
 
+//
 <script>
 const {
   ROPSTEN,
@@ -133,6 +126,8 @@ export default {
   data() {
     return {
       selectedNetwork: '',
+      networkName: '',
+      rpcValue: '',
       networks: [
         {
           name: MAINNET_DISPLAY_NAME,
@@ -167,7 +162,8 @@ export default {
       formValid: true,
       rules: {
         required: value => !!value || 'Required'
-      }
+      },
+      themeSelected: ''
     }
   },
   computed: {
@@ -182,6 +178,9 @@ export default {
     setRPC() {
       this.selectedNetwork = RPC
       this.$store.dispatch('setProviderType', { network: this.rpc, type: RPC })
+    },
+    seletecTheme(value) {
+      this.themeSelected = value
     }
   },
   mounted() {
@@ -189,51 +188,99 @@ export default {
     this.rpc = this.$store.state.rpcDetails
   }
 }
+//
 </script>
 
-<style lang="scss" scoped>
-::v-deep .v-text-field--solo .v-input__slot,
-.v-text-field--outline .v-input__slot {
-  min-height: auto !important;
-  display: flex !important;
-  align-items: flex-end !important;
-  border-radius: 17px !important;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.16) !important;
-  margin-top: 20px !important;
-  margin-bottom: 0px !important;
-}
+<style lang="scss">
+.wallet-settings {
+  .chevron-icon {
+    transition: ease 0.2s;
+  }
 
-::v-deep .v-text-field.v-text-field--solo .v-input__control {
-  min-height: auto !important;
-}
+  .v-expansion-panel--active {
+    .chevron-icon {
+      transform: rotate(180deg);
+      transition: ease 0.2s;
+    }
+  }
 
-::v-deep .v-expansion-panel {
-  box-shadow: none !important;
-}
+  .v-expansion-panel {
+    background-color: transparent !important;
+    border-radius: 0;
 
-::v-deep .v-expansion-panel__container {
-  background-color: var(--v-torus_bcg-base) !important;
-}
+    &::before {
+      box-shadow: none !important;
+      border-bottom: 1px solid #979797;
+      border-radius: 0;
+    }
+  }
 
-::v-deep .v-expansion-panel__header {
-  padding-left: 0;
-  padding-right: 10px;
-}
+  .expasion-header-content {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
 
-%rounded {
-  border-radius: 45px;
-}
+    .title {
+      align-items: center;
+      display: flex;
+    }
+  }
 
-.set-size {
-  max-width: 400px;
-}
+  .icon-button {
+    background-color: transparent;
+    box-shadow: none !important;
+    height: auto !important;
+  }
 
-#flexibtn .btnStyle {
-  width: 141px;
-  height: 41px;
-  border: #fff;
-  background-color: #fff !important;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-  @extend %rounded;
+  .custom-text-input {
+    .v-input__slot {
+      background: transparent !important;
+      box-shadow: none !important;
+      border: 1px solid #d3d5e2 !important;
+    }
+  }
+
+  .btn-theme {
+    border-radius: 3px;
+    box-shadow: none !important;
+    height: 43px !important;
+    width: 163px;
+  }
+  .btn-default {
+    color: #5495f7;
+    background-color: white;
+    border: 1px solid #5495f7;
+  }
+
+  .btn-cerulean {
+    background-color: #295dab !important;
+    border: 1px solid #295dab;
+
+    .v-btn__content {
+      color: white;
+    }
+  }
+
+  .btn-shuttle-grey {
+    background-color: #5c6c7f !important;
+    border: 1px solid #5c6c7f;
+
+    .v-btn__content {
+      color: white;
+    }
+  }
+
+  .theme-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .save-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
 }
 </style>
