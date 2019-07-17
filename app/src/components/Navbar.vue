@@ -58,7 +58,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-::v-deep .v-tab.v-tab--active {
-  border-bottom: 0;
+::v-deep .v-tab {
+  text-transform: inherit;
+  font-size: 16px;
+  &.v-tab--active {
+    border-bottom: 0;
+  }
 }
 </style>
