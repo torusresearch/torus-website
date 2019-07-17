@@ -1,32 +1,3 @@
-<script>
-import HeaderItem from '../components/HeaderItem.vue'
-
-export default {
-  components: {
-    HeaderItem
-  },
-  data() {
-    return {
-      selectedItem: 'home',
-      headerItems: [
-        { name: 'home', display: 'Home', route: '/wallet/home' },
-        { name: 'transfer', display: 'Transfer', route: '/wallet/transfer' },
-        { name: 'top-up', display: 'Top-up', route: '/wallet/topup' },
-        { name: 'activity', display: 'Activity', route: '/wallet/history' },
-        { name: 'settings', display: 'Settings', route: '/wallet/settings' },
-        { name: 'accounts', display: 'Accounts', route: '/wallet/accounts' }
-      ]
-      // headerItems: [
-      //   { name: 'home', display: 'Home', route: '/wallet/home' },
-      //   { name: 'history', display: 'History', route: '/wallet/history' },
-      //   { name: 'settings', display: 'Settings', route: '/wallet/settings' },
-      //   { name: 'accounts', display: 'Accounts', route: '/wallet/accounts' }
-      // ]
-    }
-  }
-}
-</script>
-
 <template>
   <v-container fill-height>
     <v-layout row wrap justify-center fill-height align-content-start>
@@ -52,6 +23,29 @@ export default {
     </v-layout>
   </v-container>
 </template>
+
+<script>
+import HeaderItem from '../components/HeaderItem.vue'
+
+export default {
+  components: {
+    HeaderItem
+  },
+  data() {
+    return {
+      selectedItem: 'home',
+      headerItems: [
+        { name: 'home', display: 'Home', route: '/wallet/home' },
+        { name: 'transfer', display: 'Transfer', route: '/wallet/transfer' },
+        { name: 'top-up', display: 'Top-up', route: '/wallet/topup' },
+        { name: 'activity', display: 'Activity', route: '/wallet/history' },
+        { name: 'settings', display: 'Settings', route: '/wallet/settings' },
+        { name: 'accounts', display: 'Accounts', route: '/wallet/accounts' }
+      ]
+    }
+  }
+}
+</script>
 
 <style lang="scss">
 body {
