@@ -10,52 +10,22 @@
             hide-details
             :items="actionTypes"
             v-model="selectedAction"
+            append-icon="$vuetify.icons.select"
           />
-          <v-select class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period" height="25px" hide-details :items="periods" v-model="selectedPeriod" />
+          <v-select
+            class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period"
+            height="25px"
+            hide-details
+            :items="periods"
+            v-model="selectedPeriod"
+            append-icon="$vuetify.icons.select"
+          />
         </div>
       </v-flex>
       <v-flex xs12 px-3 mb-3>
         <tx-history-table :headers="headers" :selectedAction="selectedAction" :selectedPeriod="selectedPeriod" :transactions="getTransactions()" />
       </v-flex>
     </v-layout>
-    <!-- <v-layout mt-5 row wrap align-start justify-center align-content-start>
-      <v-flex xs12 sm5>
-        <span>
-          <span class="spanWrapSvgStyle">
-            <img :src="require('../../public/images/coins.svg')" alt="Wallet" class="svg-setting-small" />
-          </span>
-          <span class="text-bluish headline">My Transactions</span>
-        </span>
-      </v-flex>
-      <v-flex xs12 sm5 class="text-sm-right">
-        <div>Total Portfolio Value</div>
-        <div>
-          <span>
-            <span class="text-bluish headline spanWrapSvgStyle">{{ totalPortfolioValue }}</span>
-            <v-select
-              class="select-width d-inline-flex ml-2 spanWrapSvgStyle"
-              single-line
-              solo
-              text
-              :items="supportedCurrencies"
-              :value="selectedCurrency"
-              label
-              @change="onCurrencyChange"
-            ></v-select>
-          </span>
-        </div>
-      </v-flex>
-      <v-flex xs12>
-        <tx-history-table :headers="headers" :transactions="getTransactions()" />
-      </v-flex>
-      <v-flex xs12 mt-5>
-        <v-layout row wrap>
-          <v-flex offset-xs10 xs2 align-self-center class="hidden-xs-only">
-            <img :src="require('../../public/images/torus_logo.png')" />
-          </v-flex>
-        </v-layout>
-      </v-flex>
-    </v-layout> -->
   </div>
 </template>
 
@@ -225,7 +195,7 @@ export default {
     max-width: 150px;
   }
   &.period {
-    max-width: 100px;
+    max-width: 110px;
   }
 }
 </style>
