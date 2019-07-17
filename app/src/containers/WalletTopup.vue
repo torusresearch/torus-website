@@ -1,6 +1,6 @@
 <template>
   <div class="wallet-topup-view">
-    <v-layout mt-5 wrap row>
+    <v-layout mt-4 wrap row>
       <v-flex xs12>
         <div class="text-black font-weight-bold headline px-3 mb-3">Select a Provider</div>
       </v-flex>

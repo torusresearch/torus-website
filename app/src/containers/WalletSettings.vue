@@ -1,5 +1,5 @@
 <template>
-  <v-layout mt-5 row wrap class="wallet-settings">
+  <v-layout mt-3 row wrap class="wallet-settings">
     <v-flex xs12 sm8 px-3>
       <!-- Privacy and security settings -->
       <v-expansion-panels>

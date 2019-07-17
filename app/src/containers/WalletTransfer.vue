@@ -1,5 +1,5 @@
 <template>
-  <v-layout mt-5 wrap row>
+  <v-layout mt-4 wrap row>
     <div class="text-black font-weight-bold headline px-3 mb-3">Transfer Details</div>
     <v-flex xs12 mb-3>
       <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation>

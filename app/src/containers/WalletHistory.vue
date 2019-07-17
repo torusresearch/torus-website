@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-layout mt-5 wrap row>
+    <v-layout mt-4 wrap row>
       <v-flex xs12 px-3 mb-3>
         <div class="text-black font-weight-bold headline left">Transaction Activities</div>
         <div class="right">

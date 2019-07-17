@@ -1,12 +1,8 @@
 <template>
   <div>
     <Navbar />
-    <v-container fill-height>
-      <v-layout row wrap justify-center fill-height align-content-start>
-        <v-flex xs12>
-          <router-view></router-view>
-        </v-flex>
-      </v-layout>
+    <v-container>
+      <router-view></router-view>
     </v-container>
   </div>
 </template>

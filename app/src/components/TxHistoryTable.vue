@@ -238,7 +238,8 @@ export default {
     color: #2dcc70;
   }
 
-  .text-denied {
+  .text-denied,
+  .text-rejected {
     color: #e20d0d;
   }
 
