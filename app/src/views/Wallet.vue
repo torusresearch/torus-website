@@ -23,10 +23,6 @@ export default {
 </script>
 
 <style lang="scss">
-body {
-  background-color: var(--v-torus_bcg-base);
-}
-
 .v-window__container {
   height: 100% !important;
 }
