@@ -1,20 +1,11 @@
 <template>
   <v-app>
-    <Navbar />
-    <div id="app" style="width:100%; height:100%">
-      <router-view />
-    </div>
+    <router-view />
   </v-app>
 </template>
 
 <script>
-import Navbar from './components/Navbar'
-
-export default {
-  components: {
-    Navbar
-  }
-}
+export default {}
 </script>
 
 <style src="../public/css/circles.css"></style>
