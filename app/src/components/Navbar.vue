@@ -9,15 +9,7 @@
         <v-btn class="hidden-sm-and-up" text @click="drawer = !drawer">
           <img :src="require('../../public/img/icons/menu-primary.svg')" />
         </v-btn>
-        <v-menu offset-y>
-          <template v-slot:activator="{ on }">
-            <v-btn class="hidden-xs-only" small text v-on="on">
-              <span>Satoshi Nakamoto</span>
-              <v-icon class="ml-2 mt-1">$vuetify.icons.select</v-icon>
-            </v-btn>
-          </template>
-          <span>Profile Settings</span>
-        </v-menu>
+        <account-menu></account-menu>
       </v-toolbar>
 
       <v-navigation-drawer v-model="drawer" disable-resize-watcher app right>
@@ -41,7 +33,12 @@
 </template>
 
 <script>
+import AccountMenu from '../components/AccountMenu'
+
 export default {
+  components: {
+    AccountMenu
+  },
   data() {
     return {
       drawer: false,
