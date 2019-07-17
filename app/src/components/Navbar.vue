@@ -20,15 +20,17 @@
         </v-menu>
       </v-toolbar>
 
-      <v-navigation-drawer v-model="drawer" disable-resize-watcher app right class="primary">
+      <v-navigation-drawer v-model="drawer" disable-resize-watcher app right>
         <v-list>
-          <v-list-tile v-for="headerItem in headerItems" :key="headerItem.name" router :to="headerItem.route">
-            <v-list-tile-content>{{ headerItem.name }}</v-list-tile-content>
-          </v-list-tile>
+          <v-list-item v-for="headerItem in headerItems" :key="headerItem.name" link router :to="headerItem.route">
+            <v-list-item-content>
+              <v-list-item-title>{{ headerItem.display }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
       </v-navigation-drawer>
     </nav>
-    <v-container class="py-0">
+    <v-container class="py-0 hidden-xs-only">
       <v-tabs>
         <v-tab v-for="headerItem in headerItems" :key="headerItem.name" :to="headerItem.route" class="black--text">
           {{ headerItem.display }}
