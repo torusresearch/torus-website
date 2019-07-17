@@ -15,11 +15,11 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="py-4 px-5">
-            <v-btn flat class="icon-button py-2 d-block mt-2 mb-3">
+            <v-btn text class="icon-button py-2 d-block mt-2 mb-3">
               <img :src="require(`../../public/img/icons/key.svg`)" class="inline-small mr-3" />
               Private Key
             </v-btn>
-            <v-btn flat class="icon-button py-2 d-block mb-3">
+            <v-btn text class="icon-button py-2 d-block mb-3">
               <img :src="require(`../../public/img/icons/list.svg`)" class="inline-small mr-3" />
               Deep Permission
             </v-btn>

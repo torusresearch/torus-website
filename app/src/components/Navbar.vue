@@ -1,7 +1,7 @@
 <template>
   <div>
     <nav class="container pb-0">
-      <v-toolbar flat app>
+      <v-app-bar>
         <v-toolbar-title>
           <img :src="require('../../public/images/torus_logo.png')" />
         </v-toolbar-title>
@@ -10,7 +10,7 @@
           <img :src="require('../../public/img/icons/menu-primary.svg')" />
         </v-btn>
         <account-menu></account-menu>
-      </v-toolbar>
+      </v-app-bar>
 
       <v-navigation-drawer v-model="drawer" disable-resize-watcher app right>
         <v-list>
@@ -23,7 +23,7 @@
       </v-navigation-drawer>
     </nav>
     <v-container class="py-0 hidden-xs-only">
-      <v-tabs>
+      <v-tabs class="mx-3">
         <v-tab v-for="headerItem in headerItems" :key="headerItem.name" :to="headerItem.route" class="black--text">
           {{ headerItem.display }}
         </v-tab>
@@ -57,6 +57,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.v-toolbar {
+  box-shadow: none;
+}
+
 ::v-deep .v-tab {
   text-transform: inherit;
   font-size: 16px;
