@@ -21,7 +21,7 @@
             <span class="subtitle-2">Recipient Address</span>
             <v-text-field
               v-model="toAddress"
-              placeholder="ETH Address here"
+              placeholder="ETH Address / Google Address here"
               required
               :rules="[rules.toAddress, rules.required]"
               outlined
