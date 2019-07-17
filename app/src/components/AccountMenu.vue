@@ -11,7 +11,7 @@
       <v-list>
         <v-list-item>
           <v-list-item-avatar class="mr-2">
-            <img :src="require('../../public/images/logos/eth.svg')" />
+            <img src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50" />
           </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-subtitle>{{ userEmail }}</v-list-item-subtitle>
