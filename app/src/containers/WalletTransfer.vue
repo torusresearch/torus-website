@@ -111,6 +111,7 @@
               :displayAmount="displayAmount"
               :speedSelected="getGasSpeed(speedSelected)"
               :activeGasPrice="getGasAmount(activeGasPrice)"
+              :selectedCurrency="selectedCurrency"
               @onClose="confirmDialog = false"
               @onConfirm="sendCoin"
             ></transfer-confirm>

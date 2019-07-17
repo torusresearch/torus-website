@@ -18,8 +18,8 @@
               <div>
                 <div class="left torus_text--text text--lighten-4">{{ selectedCoin }}</div>
                 <div class="right text-xs-right">
-                  <div class="body-1 font-weight-bold">{{ displayAmount }}</div>
-                  <div class="caption torus_text--text text--lighten-4">{{ convertedAmount }}</div>
+                  <div class="body-1 font-weight-bold">{{ displayAmount }} ETH</div>
+                  <div class="caption torus_text--text text--lighten-4">{{ convertedAmount }} {{ selectedCurrency }}</div>
                 </div>
               </div>
             </v-flex>
@@ -28,8 +28,8 @@
               <v-divider class="my-1" />
               <div>
                 <div class="right text-xs-right">
-                  <div class="body-1 font-weight-bold">{{ speedSelected }}</div>
-                  <div class="caption torus_text--text text--lighten-4">{{ activeGasPrice }}</div>
+                  <div class="body-1 font-weight-bold">{{ speedSelected }} ETH</div>
+                  <div class="caption torus_text--text text--lighten-4">{{ activeGasPrice }} {{ selectedCurrency }}</div>
                 </div>
               </div>
             </v-flex>
@@ -47,7 +47,7 @@
 
 <script>
 export default {
-  props: ['toAddress', 'selectedCoin', 'convertedAmount', 'displayAmount', 'speedSelected', 'activeGasPrice'],
+  props: ['toAddress', 'selectedCoin', 'selectedCurrency', 'convertedAmount', 'displayAmount', 'speedSelected', 'activeGasPrice'],
   methods: {
     onCancel(step) {
       this.$emit('onClose')
