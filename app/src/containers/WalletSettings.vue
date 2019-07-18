@@ -16,7 +16,7 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content class="py-4 px-5">
             <div class="mt-2">
-              <v-dialog v-model="privateKeyDialog" max-width="550">
+              <v-dialog v-model="privateKeyDialog" max-width="800">
                 <template v-slot:activator="{ on }">
                   <v-btn text class="icon-button py-2" v-on="on">
                     <img :src="require(`../../public/img/icons/key.svg`)" class="inline-small mr-3" />
