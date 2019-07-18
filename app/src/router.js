@@ -100,7 +100,7 @@ const router = new Router({
           component: WalletSettings
         },
         {
-          path: 'dapp-ermision',
+          path: 'dapp-permision',
           name: 'WalletDappPermision',
           component: WalletDappPermision
         },
