@@ -46,7 +46,7 @@ export default {
   cursor: pointer;
 
   &:hover {
-    background-color: var(--v-torus_reject_mild-base);
+    /* background-color: var(--v-torus_reject_mild-base); */
     opacity: 0.5;
     color: #fff;
   }
