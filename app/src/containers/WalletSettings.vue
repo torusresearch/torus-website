@@ -52,6 +52,7 @@
                   item-text="name"
                   item-value="value"
                   v-model="selectedNetwork"
+                  @change="changeNetwork"
                   label="Select Import Type"
                   append-icon="$vuetify.icons.dropdown"
                 ></v-select>

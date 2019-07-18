@@ -14,7 +14,7 @@
               <div class="subtitle-2 blue--text">Payee</div>
               <div class="caption grey--text">{{ receiver }}</div>
             </v-card-text>
-            <img :src="require('../../public/img/icons/indent-increse-grey.svg')" class="card-upper-icon" />
+            <img :src="require('../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
           </v-card>
         </v-flex>
         <v-flex xs12 mb-3 mx-4>

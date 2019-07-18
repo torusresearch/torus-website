@@ -49,7 +49,7 @@
         </v-card>
       </v-flex>
     </v-layout>
-    <v-layout mt-5 wrap row v-if="provider">
+    <v-layout mt-5 wrap row v-if="provider === 'simplex'">
       <div class="text-black font-weight-bold headline px-3 mb-3">Purchase Cryptocurrency with your credit card via Simplex</div>
       <v-flex xs12>
         <p class="page-description px-3">
