@@ -87,7 +87,12 @@ export default {
                 <v-flex xs4>
                   <div class="mb-4">
                     <div>
-                      <input type="checkbox" v-model="type.deployment" name="ontractDeployment" id="test-simplex" />
+                      <input
+                        type="checkbox"
+                        v-model="type.deployment"
+                        name="ontractDeployment"
+                        id="test-simplex"
+                      />
                       <label for="contractDeployment" class="ml-2">
                         <small>Contract Deployment</small>
                       </label>
@@ -95,7 +100,12 @@ export default {
                   </div>
                   <div class="mb-4">
                     <div>
-                      <input type="checkbox" v-model="type.interaction" name="ontractDeployment" id="test-simplex" />
+                      <input
+                        type="checkbox"
+                        v-model="type.interaction"
+                        name="ontractDeployment"
+                        id="test-simplex"
+                      />
                       <label for="contractDeployment" class="ml-2">
                         <small>Contract Interaction</small>
                       </label>
@@ -106,7 +116,12 @@ export default {
                 <v-flex xs4>
                   <div class="mb-4">
                     <div>
-                      <input type="checkbox" v-model="type.ercTransaction" name="ontractDeployment" id="test-simplex" />
+                      <input
+                        type="checkbox"
+                        v-model="type.ercTransaction"
+                        name="ontractDeployment"
+                        id="test-simplex"
+                      />
                       <label for="contractDeployment" class="ml-2">
                         <small>ERC 20 Transactions</small>
                       </label>
@@ -114,7 +129,12 @@ export default {
                   </div>
                   <div class="mb-4">
                     <div>
-                      <input type="checkbox" v-model="type.changeNetwork" name="ontractDeployment" id="test-simplex" />
+                      <input
+                        type="checkbox"
+                        v-model="type.changeNetwork"
+                        name="ontractDeployment"
+                        id="test-simplex"
+                      />
                       <label for="contractDeployment" class="ml-2">
                         <small>Change of Network</small>
                       </label>
@@ -125,7 +145,12 @@ export default {
                 <v-flex xs4>
                   <div class="mb-4">
                     <div>
-                      <input type="checkbox" v-model="type.sendEth" name="ontractDeployment" id="test-simplex" />
+                      <input
+                        type="checkbox"
+                        v-model="type.sendEth"
+                        name="ontractDeployment"
+                        id="test-simplex"
+                      />
                       <label for="contractDeployment" class="ml-2">
                         <small>Send ETH</small>
                       </label>
@@ -153,7 +178,12 @@ export default {
                 <v-flex xs4>
                   <div class="mb-0">
                     <div>
-                      <input type="checkbox" v-model="amount.maxTenUsd" name="ontractDeployment" id="test-simplex" />
+                      <input
+                        type="checkbox"
+                        v-model="amount.maxTenUsd"
+                        name="ontractDeployment"
+                        id="test-simplex"
+                      />
                       <label for="contractDeployment" class="ml-2">
                         <small>Max 10.00 USD</small>
                       </label>
@@ -161,7 +191,12 @@ export default {
                   </div>
                   <div class="mb-4">
                     <div class="other-input">
-                      <input type="checkbox" v-model="amount.other" name="ontractDeployment" id="test-simplex" />
+                      <input
+                        type="checkbox"
+                        v-model="amount.other"
+                        name="ontractDeployment"
+                        id="test-simplex"
+                      />
                       <label for="contractDeployment" class="mx-2">
                         <small>Others:</small>
                       </label>
@@ -183,7 +218,12 @@ export default {
                 <v-flex xs4>
                   <div class="mb-4">
                     <div>
-                      <input type="checkbox" v-model="amount.maxHundredThousandUsd" name="ontractDeployment" id="test-simplex" />
+                      <input
+                        type="checkbox"
+                        v-model="amount.maxHundredThousandUsd"
+                        name="ontractDeployment"
+                        id="test-simplex"
+                      />
                       <label for="contractDeployment" class="ml-2">
                         <small>Max 100.00 USD</small>
                       </label>
@@ -211,7 +251,12 @@ export default {
                 <v-flex xs4>
                   <div class="mb-4">
                     <div>
-                      <input type="checkbox" v-model="validity.oneHour" name="ontractDeployment" id="test-simplex" />
+                      <input
+                        type="checkbox"
+                        v-model="validity.oneHour"
+                        name="ontractDeployment"
+                        id="test-simplex"
+                      />
                       <label for="contractDeployment" class="ml-2">
                         <small>Within 1 Hour</small>
                       </label>
@@ -219,7 +264,13 @@ export default {
                   </div>
                   <div class="mb-4">
                     <div class="other-input">
-                      <input type="checkbox" v-model="validity.oneMonth" value name="ontractDeployment" id="test-simplex" />
+                      <input
+                        type="checkbox"
+                        v-model="validity.oneMonth"
+                        value
+                        name="ontractDeployment"
+                        id="test-simplex"
+                      />
                       <label for="contractDeployment" class="mx-2">
                         <small>Within 1 Month</small>
                       </label>
@@ -230,7 +281,12 @@ export default {
                 <v-flex xs4>
                   <div class="mb-4">
                     <div>
-                      <input type="checkbox" v-model="validity.oneWeek" name="ontractDeployment" id="test-simplex" />
+                      <input
+                        type="checkbox"
+                        v-model="validity.oneWeek"
+                        name="ontractDeployment"
+                        id="test-simplex"
+                      />
                       <label for="contractDeployment" class="ml-2">
                         <small>Within 1 Week</small>
                       </label>
@@ -238,7 +294,13 @@ export default {
                   </div>
                   <div class="mb-4">
                     <div class="other-input">
-                      <input type="checkbox" v-model="validity.oneYear" value name="ontractDeployment" id="test-simplex" />
+                      <input
+                        type="checkbox"
+                        v-model="validity.oneYear"
+                        value
+                        name="ontractDeployment"
+                        id="test-simplex"
+                      />
                       <label for="contractDeployment" class="mx-2">
                         <small>Within 1 Year</small>
                       </label>
