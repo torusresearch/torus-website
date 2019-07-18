@@ -15,14 +15,23 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="py-4 px-5">
-            <v-btn text class="icon-button py-2 d-block mt-2 mb-3">
-              <img :src="require(`../../public/img/icons/key.svg`)" class="inline-small mr-3" />
-              Private Key
-            </v-btn>
-            <v-btn text class="icon-button py-2 d-block mb-3">
-              <img :src="require(`../../public/img/icons/list.svg`)" class="inline-small mr-3" />
-              Deep Permission
-            </v-btn>
+            <div class="mt-2">
+              <v-dialog v-model="privateKeyDialog" max-width="550">
+                <template v-slot:activator="{ on }">
+                  <v-btn text class="icon-button py-2" v-on="on">
+                    <img :src="require(`../../public/img/icons/key.svg`)" class="inline-small mr-3" />
+                    Private Key
+                  </v-btn>
+                </template>
+                <private-keys @onClose="privateKeyDialog = false" />
+              </v-dialog>
+            </div>
+            <div class="mb-3">
+              <v-btn text class="icon-button py-2">
+                <img :src="require(`../../public/img/icons/list.svg`)" class="inline-small mr-3" />
+                Deep Permission
+              </v-btn>
+            </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -105,6 +114,8 @@
 
 //
 <script>
+import PrivateKeys from '../components/PrivateKeys'
+
 const {
   ROPSTEN,
   RINKEBY,
@@ -124,8 +135,12 @@ const {
 
 export default {
   name: 'walletSettings',
+  components: {
+    PrivateKeys
+  },
   data() {
     return {
+      privateKeyDialog: false,
       selectedNetwork: '',
       networkName: '',
       rpcValue: '',
