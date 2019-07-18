@@ -14,6 +14,7 @@ import WalletTransfer from './containers/WalletTransfer.vue'
 import WalletTopup from './containers/WalletTopup.vue'
 import WalletAccountsHome from './containers/WalletAccountsHome.vue'
 import WalletAccountImport from './containers/WalletAccountImport.vue'
+import WalletDappPermission from './containers/WalletDappPermission.vue'
 
 // const Popup = () => import('./views/Popup.vue')
 // const Confirm = () => import('./views/Confirm.vue')
@@ -97,6 +98,11 @@ const router = new Router({
           path: 'settings',
           name: 'walletSettings',
           component: WalletSettings
+        },
+        {
+          path: 'dapp-permission',
+          name: 'WalletDappPermission',
+          component: WalletDappPermission
         },
         {
           path: 'transfer',
