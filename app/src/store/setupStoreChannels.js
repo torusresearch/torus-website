@@ -1,10 +1,10 @@
-import log from 'loglevel'
-import torus from '../torus'
-import stream from 'stream'
-import pump from 'pump'
-import VuexStore from './store'
 import BroadcastChannel from 'broadcast-channel'
-import { RPC, MAINNET } from '../utils/enums'
+import log from 'loglevel'
+import pump from 'pump'
+import stream from 'stream'
+import torus from '../torus'
+import { MAINNET, RPC } from '../utils/enums'
+import VuexStore from './store'
 
 /* 
 Edited to change networkId => network state. Has an implication of changing neworkVersion 

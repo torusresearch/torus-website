@@ -1,12 +1,12 @@
+import BroadcastChannel from 'broadcast-channel'
+import log from 'loglevel'
 import Vue from 'vue'
 import Vuex from 'vuex'
-import log from 'loglevel'
-import torus from '../torus'
-import config from '../config'
 import VuexPersistence from 'vuex-persist'
-import { hexToText, significantDigits, formatCurrencyNumber, getRandomNumber } from '../utils/utils'
+import config from '../config'
+import torus from '../torus'
 import { MAINNET, RPC } from '../utils/enums'
-import BroadcastChannel from 'broadcast-channel'
+import { formatCurrencyNumber, getRandomNumber, hexToText, significantDigits } from '../utils/utils'
 
 const accountImporter = require('../utils/accountImporter')
 

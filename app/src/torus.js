@@ -1,6 +1,6 @@
 import randomId from 'random-id'
 import onloadTorus from './onload.js'
-import { post, generateJsonRPCObject } from './utils/httpHelpers.js'
+import { generateJsonRPCObject, post } from './utils/httpHelpers.js'
 
 // import WebsocketSubprovider from './websocket.js'
 var Elliptic = require('elliptic').ec
