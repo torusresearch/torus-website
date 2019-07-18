@@ -48,8 +48,7 @@ export default {
         { name: 'transfer', display: 'Transfer', route: '/wallet/transfer' },
         { name: 'top-up', display: 'Top-up', route: '/wallet/topup' },
         { name: 'activity', display: 'Activity', route: '/wallet/history' },
-        { name: 'settings', display: 'Settings', route: '/wallet/settings' },
-        { name: 'accounts', display: 'Accounts', route: '/wallet/accounts' }
+        { name: 'settings', display: 'Settings', route: '/wallet/settings' }
       ]
     }
   }
