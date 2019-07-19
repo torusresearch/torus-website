@@ -10,7 +10,7 @@
     </v-flex>
     <v-flex xs12 sm9 class="fill-height">
       <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
-        <v-form ref="form" v-model="formValid" lazy-validation class="fill-height" @submit.prevent="">
+        <v-form ref="form" v-model="formValid" lazy-validation class="fill-height" @submit.prevent>
           <v-container fill-height pl-0 pr-0>
             <v-layout row wrap align-center justify-center align-content-start>
               <v-flex xs12 sm6>
@@ -86,12 +86,8 @@
                 >
                   <template v-slot:append>
                     <v-btn-toggle v-model="toggle_exclusive" @change="changeSelectedToCurrency" mandatory>
-                      <v-btn flat>
-                        {{ selectedItem && selectedItem.symbol }}
-                      </v-btn>
-                      <v-btn flat>
-                        {{ selectedCurrency }}
-                      </v-btn>
+                      <v-btn flat>{{ selectedItem && selectedItem.symbol }}</v-btn>
+                      <v-btn flat>{{ selectedCurrency }}</v-btn>
                     </v-btn-toggle>
                   </template>
                 </v-text-field>
@@ -135,6 +131,7 @@
 import torus from '../torus'
 import { significantDigits, getRandomNumber } from '../utils/utils'
 import config from '../config'
+import { get } from '../utils/httpHelpers'
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
 
@@ -327,15 +324,10 @@ export default {
   },
   created() {
     this.tokenAddress = this.address
-    fetch('https://ethgasstation.info/json/ethgasAPI.json', {
-      headers: {},
+    get('https://ethgasstation.info/json/ethgasAPI.json', {
       referrer: 'http://ethgasstation.info/json/',
-      referrerPolicy: 'no-referrer-when-downgrade',
-      body: null,
-      method: 'GET',
-      mode: 'cors'
+      referrerPolicy: 'no-referrer-when-downgrade'
     })
-      .then(resp => resp.json())
       .then(
         ({
           average: averageTimes10,

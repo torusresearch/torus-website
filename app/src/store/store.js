@@ -7,10 +7,13 @@ import config from '../config'
 import torus from '../torus'
 import { MAINNET, RPC } from '../utils/enums'
 import { formatCurrencyNumber, getRandomNumber, hexToText, significantDigits } from '../utils/utils'
+import { post, get } from '../utils/httpHelpers.js'
 
 const accountImporter = require('../utils/accountImporter')
 
 const baseRoute = process.env.BASE_URL
+
+let totalFailCount = 0
 
 // stream to send logged in status
 const statusStream = torus.communicationMux.getStream('status')
@@ -31,7 +34,8 @@ const vuexPersist = new VuexPersistence({
       currencyData: state.currencyData,
       // tokenData: state.tokenData,
       tokenRates: state.tokenRates,
-      selectedCurrency: state.selectedCurrency
+      selectedCurrency: state.selectedCurrency,
+      jwtToken: state.jwtToken
     }
   }
 })
@@ -55,7 +59,8 @@ const initialState = {
   unapprovedPersonalMsgs: {},
   unapprovedMsgs: {},
   loginInProgress: false,
-  rpcDetails: JSON.parse(localStorage.getItem('torus_custom_rpc')) || {}
+  rpcDetails: JSON.parse(localStorage.getItem('torus_custom_rpc')) || {},
+  jwtToken: ''
 }
 
 var VuexStore = new Vuex.Store({
@@ -163,6 +168,9 @@ var VuexStore = new Vuex.Store({
     setMessages(state, unapprovedMsgs) {
       state.unapprovedMsgs = unapprovedMsgs
     },
+    setJwtToken(state, payload) {
+      state.jwtToken = payload
+    },
     resetStore(state, requiredState) {
       Object.keys(state).forEach(key => {
         state[key] = initialState[key] // or = initialState[key]
@@ -186,22 +194,24 @@ var VuexStore = new Vuex.Store({
         })
       }
     },
-    forceFetchTokens({ commit, state }, payload) {
+    async forceFetchTokens({ state }, payload) {
       torus.torusController.detectTokensController.refreshTokenBalances()
-      fetch(`https://api.tor.us/tokenbalances?address=${state.selectedAddress}`)
-        .then(inter => inter.json())
-        .then(response => {
-          response.forEach(obj => {
-            torus.torusController.detectTokensController.detectEtherscanTokenBalance(obj.contractAddress, {
-              decimals: obj.tokenDecimal,
-              erc20: true,
-              logo: '',
-              name: obj.name,
-              balance: obj.balance,
-              symbol: obj.ticker
-            })
+      try {
+        const response = await get(`${config.api}/tokenbalances?address=${state.selectedAddress}`)
+        const { data } = response
+        data.forEach(obj => {
+          torus.torusController.detectTokensController.detectEtherscanTokenBalance(obj.contractAddress, {
+            decimals: obj.tokenDecimal,
+            erc20: true,
+            logo: '',
+            name: obj.name,
+            balance: obj.balance,
+            symbol: obj.ticker
           })
         })
+      } catch (error) {
+        log.error('etherscan balance fetch failed')
+      }
     },
     showPopup({ state, getters }, payload) {
       var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
@@ -455,13 +465,18 @@ var VuexStore = new Vuex.Store({
         .getPubKeyAsync(torusNodeEndpoints[endPointNumber], email)
         .then(res => {
           log.info('New private key assigned to user at address ', res)
-          return torus.retrieveShares(torusNodeEndpoints, torusIndexes, email, idToken)
+          const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, email, idToken)
+          const p2 = torus.getMessageForSigning(res)
+          return Promise.all([p1, p2])
         })
-        .then(data => {
+        .then(async response => {
+          const data = response[0]
+          const message = response[1]
           dispatch('addWallet', data)
           dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
           dispatch('subscribeToControllers')
-          torus.torusController.initTorusKeyring([data.privKey], [data.ethAddress])
+          await torus.torusController.initTorusKeyring([data.privKey], [data.ethAddress])
+          await dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress })
           // continue enable function
           var ethAddress = data.ethAddress
           if (calledFromEmbed) {
@@ -471,45 +486,62 @@ var VuexStore = new Vuex.Store({
           }
           statusStream.write({ loggedIn: true })
           dispatch('loginInProgress', false)
-          // torus.web3.eth.net
-          //   .getId()
-          //   .then(res => {
-          //     VuexStore.dispatch('updateNetworkId', { networkId: res })
-          //     // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-          //   })
-          //   .catch(e => log.error(e))
         })
         .catch(err => {
+          totalFailCount += 1
           let newEndPointNumber = endPointNumber
           while (newEndPointNumber === endPointNumber) {
             newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
           }
-          dispatch('handleLogin', { calledFromEmbed, endPointNumber: newEndPointNumber })
+          if (totalFailCount < 3) dispatch('handleLogin', { calledFromEmbed, endPointNumber: newEndPointNumber })
           log.error(err)
         })
     },
-    rehydrate({ state, dispatch }, payload) {
-      let { selectedAddress, wallet, networkType, rpcDetails } = state
-      if (networkType && networkType !== RPC) {
-        dispatch('setProviderType', { network: networkType })
-      } else if (networkType && networkType === RPC && rpcDetails) {
-        dispatch('setProviderType', { network: rpcDetails, type: RPC })
-      }
-      if (selectedAddress && wallet[selectedAddress]) {
-        dispatch('updateSelectedAddress', { selectedAddress })
-        setTimeout(() => dispatch('subscribeToControllers'), 50)
-        torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
-        statusStream.write({ loggedIn: true })
-        log.info('rehydrated wallet')
-        torus.web3.eth.net
-          .getId()
-          .then(res => {
-            setTimeout(function() {
-              dispatch('updateNetworkId', { networkId: res })
-            })
-            // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+    processAuthMessage({ commit }, payload) {
+      return new Promise(async (resolve, reject) => {
+        try {
+          // make this a promise and resolve it to dispatch loginInProgress as false
+          const { message, selectedAddress } = payload
+          const hashedMessage = torus.hashMessage(message)
+          const signedMessage = await torus.torusController.keyringController.signMessage(selectedAddress, hashedMessage)
+          const response = await post(`${config.api}/auth/verify`, {
+            public_address: selectedAddress,
+            signed_message: signedMessage
           })
-          .catch(e => log.error(e))
+          commit('setJwtToken', response.token)
+          resolve()
+        } catch (error) {
+          log.error('Failed Communication with backend', error)
+          reject(error)
+        }
+      })
+    },
+    async rehydrate({ state, dispatch }, payload) {
+      let { selectedAddress, wallet, networkType, rpcDetails } = state
+      try {
+        if (networkType && networkType !== RPC) {
+          dispatch('setProviderType', { network: networkType })
+        } else if (networkType && networkType === RPC && rpcDetails) {
+          dispatch('setProviderType', { network: rpcDetails, type: RPC })
+        }
+        if (selectedAddress && wallet[selectedAddress]) {
+          dispatch('updateSelectedAddress', { selectedAddress })
+          setTimeout(() => dispatch('subscribeToControllers'), 50)
+          await torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
+          statusStream.write({ loggedIn: true })
+          log.info('rehydrated wallet')
+          torus.web3.eth.net
+            .getId()
+            .then(res => {
+              setTimeout(function() {
+                dispatch('updateNetworkId', { networkId: res })
+              })
+              // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+            })
+            .catch(e => log.error(e))
+        }
+      } catch (error) {
+        log.error('Failed to rehydrate')
       }
     }
   }
