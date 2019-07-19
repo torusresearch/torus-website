@@ -16,7 +16,7 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content class="py-4 px-5">
             <div class="mt-2">
-              <v-dialog v-model="privateKeyDialog" max-width="800">
+              <v-dialog v-model="privateKeyDialog" max-width="1000">
                 <template v-slot:activator="{ on }">
                   <v-btn text class="icon-button py-2" v-on="on">
                     <img :src="require(`../../public/img/icons/key.svg`)" class="inline-small mr-3" />
@@ -27,14 +27,14 @@
               </v-dialog>
             </div>
             <div class="mb-3">
-              <v-dialog v-model="dappPermissionDialog" max-width="1200">
+              <v-dialog v-model="dappPermissionDialog" max-width="1000">
                 <template v-slot:activator="{ on }">
                   <v-btn text class="icon-button py-2" v-on="on">
                     <img :src="require(`../../public/img/icons/list.svg`)" class="inline-small mr-3" />
                     Deep Permission
                   </v-btn>
                 </template>
-                <dapp-permision @onClose="dappPermissionDialog = false" />
+                <wallet-settings-permission @onClose="dappPermissionDialog = false" />
               </v-dialog>
             </div>
           </v-expansion-panel-content>
@@ -120,7 +120,7 @@
 //
 <script>
 import PrivateKeys from '../components/PrivateKeys'
-import DappPermision from '../components/DappPermision'
+import WalletSettingsPermission from './WalletSettingsPermission'
 
 const {
   ROPSTEN,
@@ -143,7 +143,7 @@ export default {
   name: 'walletSettings',
   components: {
     PrivateKeys,
-    DappPermision
+    WalletSettingsPermission
   },
   data() {
     return {

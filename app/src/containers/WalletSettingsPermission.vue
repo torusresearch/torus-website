@@ -236,6 +236,10 @@
             </v-card>
           </v-flex>
         </v-layout>
+        <v-layout mt-3 pr-3 row>
+          <v-spacer></v-spacer>
+          <v-btn large text @click="onClose">Close</v-btn>
+        </v-layout>
       </v-container>
     </v-card-text>
   </v-card>
@@ -267,6 +271,11 @@ export default {
         oneMonth: false,
         oneYear: false
       }
+    }
+  },
+  methods: {
+    onClose() {
+      this.$emit('onClose')
     }
   }
 }
