@@ -27,10 +27,15 @@
               </v-dialog>
             </div>
             <div class="mb-3">
-              <v-btn text class="icon-button py-2">
-                <img :src="require(`../../public/img/icons/list.svg`)" class="inline-small mr-3" />
-                Deep Permission
-              </v-btn>
+              <v-dialog v-model="dappPermissionDialog" max-width="1200">
+                <template v-slot:activator="{ on }">
+                  <v-btn text class="icon-button py-2" v-on="on">
+                    <img :src="require(`../../public/img/icons/list.svg`)" class="inline-small mr-3" />
+                    Deep Permission
+                  </v-btn>
+                </template>
+                <dapp-permision @onClose="dappPermissionDialog = false" />
+              </v-dialog>
             </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
@@ -115,6 +120,7 @@
 //
 <script>
 import PrivateKeys from '../components/PrivateKeys'
+import DappPermision from '../components/DappPermision'
 
 const {
   ROPSTEN,
@@ -136,11 +142,13 @@ const {
 export default {
   name: 'walletSettings',
   components: {
-    PrivateKeys
+    PrivateKeys,
+    DappPermision
   },
   data() {
     return {
       privateKeyDialog: false,
+      dappPermissionDialog: false,
       selectedNetwork: '',
       networkName: '',
       rpcValue: '',
