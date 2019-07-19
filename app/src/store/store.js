@@ -198,7 +198,7 @@ var VuexStore = new Vuex.Store({
     async forceFetchTokens({ state }, payload) {
       torus.torusController.detectTokensController.refreshTokenBalances()
       try {
-        const response = await get(`${config.api}/tokenbalances?address=${state.selectedAddress}`, {
+        const response = await get(`${config.api}/tokenbalances`, {
           headers: {
             'Content-Type': 'application/json; charset=utf-8',
             Authorization: `Bearer ${state.jwtToken}`
@@ -526,10 +526,12 @@ var VuexStore = new Vuex.Store({
       let { selectedAddress, wallet, networkType, rpcDetails, jwtToken } = state
       try {
         // if jwtToken expires, logout
-        const decoded = jwtDecode(jwtToken)
-        if (Date.now() / 1000 > decoded.exp) {
-          dispatch('logOut')
-          return
+        if (jwtToken) {
+          const decoded = jwtDecode(jwtToken)
+          if (Date.now() / 1000 > decoded.exp) {
+            dispatch('logOut')
+            return
+          }
         }
         if (networkType && networkType !== RPC) {
           dispatch('setProviderType', { network: networkType })
