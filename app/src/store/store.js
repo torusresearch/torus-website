@@ -8,6 +8,7 @@ import torus from '../torus'
 import { MAINNET, RPC } from '../utils/enums'
 import { formatCurrencyNumber, getRandomNumber, hexToText, significantDigits } from '../utils/utils'
 import { post, get } from '../utils/httpHelpers.js'
+import jwtDecode from 'jwt-decode'
 
 const accountImporter = require('../utils/accountImporter')
 
@@ -171,15 +172,15 @@ var VuexStore = new Vuex.Store({
     setJwtToken(state, payload) {
       state.jwtToken = payload
     },
-    resetStore(state, requiredState) {
+    logOut(state, requiredState) {
       Object.keys(state).forEach(key => {
         state[key] = initialState[key] // or = initialState[key]
       })
     }
   },
   actions: {
-    resetStore(context, payload) {
-      context.commit('resetStore', initialState)
+    logOut(context, payload) {
+      context.commit('logOut', initialState)
       window.sessionStorage.clear()
     },
     loginInProgress(context, payload) {
@@ -197,7 +198,12 @@ var VuexStore = new Vuex.Store({
     async forceFetchTokens({ state }, payload) {
       torus.torusController.detectTokensController.refreshTokenBalances()
       try {
-        const response = await get(`${config.api}/tokenbalances?address=${state.selectedAddress}`)
+        const response = await get(`${config.api}/tokenbalances?address=${state.selectedAddress}`, {
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            Authorization: `Bearer ${state.jwtToken}`
+          }
+        })
         const { data } = response
         data.forEach(obj => {
           torus.torusController.detectTokensController.detectEtherscanTokenBalance(obj.contractAddress, {
@@ -517,8 +523,14 @@ var VuexStore = new Vuex.Store({
       })
     },
     async rehydrate({ state, dispatch }, payload) {
-      let { selectedAddress, wallet, networkType, rpcDetails } = state
+      let { selectedAddress, wallet, networkType, rpcDetails, jwtToken } = state
       try {
+        // if jwtToken expires, logout
+        const decoded = jwtDecode(jwtToken)
+        if (Date.now() / 1000 > decoded.exp) {
+          dispatch('logOut')
+          return
+        }
         if (networkType && networkType !== RPC) {
           dispatch('setProviderType', { network: networkType })
         } else if (networkType && networkType === RPC && rpcDetails) {
