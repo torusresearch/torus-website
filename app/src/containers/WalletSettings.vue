@@ -31,7 +31,7 @@
                 <template v-slot:activator="{ on }">
                   <v-btn text class="icon-button py-2" v-on="on">
                     <img :src="require(`../../public/img/icons/list.svg`)" class="inline-small mr-3" />
-                    Deep Permission
+                    Daap Permission
                   </v-btn>
                 </template>
                 <wallet-settings-permission @onClose="dappPermissionDialog = false" />
