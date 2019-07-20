@@ -11,12 +11,6 @@ export default {}
 <style src="../public/css/circles.css"></style>
 
 <style lang="scss">
-#app {
-  background: #ffffff !important;
-  height: 100%;
-  color: #0f1222;
-}
-
 .card-shadow {
   box-shadow: 0 14px 28px 0 rgba(0, 0, 0, 0.06);
 }

@@ -23,6 +23,22 @@ export default {
 </script>
 
 <style lang="scss">
+.theme--light,
+.theme--dark {
+  &.v-application {
+    background: var(--v-background-base);
+  }
+  &.v-sheet {
+    background: var(--v-background-base);
+  }
+  &.v-tabs .v-tabs-bar {
+    background: var(--v-background-base);
+  }
+  &.v-data-table {
+    background: var(--v-background-base);
+  }
+}
+
 .v-window__container {
   height: 100% !important;
 }

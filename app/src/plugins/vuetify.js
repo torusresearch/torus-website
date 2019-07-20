@@ -9,8 +9,8 @@ export default new Vuetify({
   theme: {
     dark: false,
     themes: {
-      light: lightBlue,
-      dark: ceruleanBlue
+      light: { ...lightBlue },
+      dark: { ...ceruleanBlue }
     },
     options: {
       customProperties: true

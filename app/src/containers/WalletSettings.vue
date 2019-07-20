@@ -98,17 +98,20 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content class="py-4 px-5">
-            <p>Select Theme</p>
-            <div class="theme-options mb-5">
-              <v-btn class="btn-theme btn-default" @click.prevent="seletecTheme('default')">Default</v-btn>
-
-              <v-btn class="btn-theme btn-cerulean" @click.prevent="seletecTheme('cerulean')">Cerulean Blue</v-btn>
-
-              <v-btn class="btn-theme btn-shuttle-grey" @click.prevent="seletecTheme('grey')">Shuttle Grey</v-btn>
-            </div>
-
+            <div class="body-2 mb-1 px-1">Select Theme</div>
+            <v-layout row wrap>
+              <v-flex xs4 px-1>
+                <v-btn light outlined block color="primary" class="btn-default" @click="selectTheme('default')">Default</v-btn>
+              </v-flex>
+              <v-flex xs4 px-1>
+                <v-btn dark depressed block class="btn-cerulean" @click="selectTheme('cerulean-blue')">Cerulean Blue</v-btn>
+              </v-flex>
+              <v-flex xs4 px-1>
+                <v-btn dark depressed block class="btn-shuttle-grey" @click="selectTheme('shuttle-grey')">Shuttle Grey</v-btn>
+              </v-flex>
+            </v-layout>
             <v-flex class="pt-5 save-container">
-              <v-btn color="primary" class="px-5 py-1 mt-3">Save</v-btn>
+              <v-btn color="primary" depressed class="px-5 py-1 mt-3">Save</v-btn>
             </v-flex>
           </v-expansion-panel-content>
         </v-expansion-panel>
@@ -119,6 +122,7 @@
 
 //
 <script>
+import { lightBlue, ceruleanBlue, shuttleGrey } from '../plugins/themes'
 import PrivateKeys from '../components/PrivateKeys'
 import WalletSettingsPermission from './WalletSettingsPermission'
 
@@ -203,8 +207,25 @@ export default {
       this.selectedNetwork = RPC
       this.$store.dispatch('setProviderType', { network: this.rpc, type: RPC })
     },
-    seletecTheme(value) {
-      this.themeSelected = value
+    selectTheme(value) {
+      let selectedTheme = lightBlue
+      let isDark = false
+      if (value === 'cerulean-blue') {
+        selectedTheme = ceruleanBlue
+        isDark = true
+      } else if (value === 'shuttle-grey') {
+        selectedTheme = shuttleGrey
+        isDark = true
+      }
+
+      this.$vuetify.theme.dark = isDark
+      if (isDark) {
+        this.$vuetify.theme.themes.dark.background = selectedTheme.background
+        console.log(this.$vuetify.theme.themes.dark)
+      } else {
+        this.$vuetify.theme.themes.light.background = selectedTheme.background
+        console.log(this.$vuetify.theme.themes.light)
+      }
     }
   },
   mounted() {
