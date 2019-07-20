@@ -60,10 +60,13 @@ export default {
   box-shadow: none;
 }
 
+.v-tab {
+  text-transform: inherit;
+  font-size: 16px;
+}
+
 .theme--light {
   .v-tab {
-    text-transform: inherit;
-    font-size: 16px;
     &.v-tab--active {
       color: var(--v-secondary-darken3);
     }
