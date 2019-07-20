@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 import { ceruleanBlue, lightBlue } from './themes'
-import SelectIcon from '../components/SelectIcon'
+import { SelectIcon, SendIcon, AddIcon } from '../icons'
 
 Vue.use(Vuetify)
 
@@ -19,10 +19,13 @@ export default new Vuetify({
   icons: {
     values: {
       select: {
-        component: SelectIcon,
-        props: {
-          name: 'select'
-        }
+        component: SelectIcon
+      },
+      send: {
+        component: SendIcon
+      },
+      add: {
+        component: AddIcon
       }
     }
   }

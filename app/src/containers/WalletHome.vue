@@ -2,16 +2,16 @@
   <div>
     <v-layout mt-4 wrap row>
       <v-flex xs12 px-3 mb-3>
-        <div class="text-black font-weight-bold headline left">My Wallet</div>
+        <div class="font-weight-bold headline left">My Wallet</div>
         <div class="right">
-          <v-btn outlined large :color="isFreshAccount ? 'grey' : 'primary'" class="px-5 py-1 mr-3 mt-3" @click="initiateTransfer">
-            <img :src="require(`../../public/img/icons/indent-increse-${isFreshAccount ? 'grey' : 'primary'}.svg`)" class="btn-icon mr-1" />
+          <v-btn outlined large color="primary" :disabled="isFreshAccount" class="px-5 py-1 mr-3 mt-3" @click="initiateTransfer">
+            <v-icon left>$vuetify.icons.send</v-icon>
             Send
           </v-btn>
           <v-tooltip top v-model="isFreshAccount">
             <template v-slot:activator="{ on }">
               <v-btn large color="primary" class="px-5 py-1 mt-3" @click="topup" v-on="on">
-                <img :src="require('../../public/img/icons/add.svg')" class="btn-icon mr-1" />
+                <v-icon left>$vuetify.icons.add</v-icon>
                 Top up
               </v-btn>
             </template>
@@ -248,8 +248,8 @@ button {
 
 .v-tooltip__content {
   background: #fff;
-  border: 1px solid var(--v-torus_accept-base);
-  color: var(--v-torus_accept-base);
+  border: 1px solid var(--v-primary-base);
+  color: var(--v-primary-base);
   &::after {
     content: ' ';
     position: absolute;
@@ -258,7 +258,7 @@ button {
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: var(--v-torus_accept-base) transparent transparent transparent;
+    border-color: var(--v-primary-base) transparent transparent transparent;
   }
 }
 </style>
