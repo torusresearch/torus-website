@@ -10,7 +10,7 @@
             <rect id="Rectangle" fill="#000000" opacity="0" x="0" y="0" width="16" height="16" />
             <polyline
               id="Stroke-1"
-              stroke="#A2A5B5"
+              stroke="currentColor"
               stroke-width="2"
               stroke-linecap="round"
               stroke-linejoin="round"

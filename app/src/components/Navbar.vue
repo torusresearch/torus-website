@@ -3,7 +3,7 @@
     <nav class="container pb-0">
       <v-app-bar>
         <v-toolbar-title>
-          <img :src="require('../../public/images/torus_logo.png')" />
+          <img width="135" height="30" :src="require(`../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn class="hidden-sm-and-up" text @click="drawer = !drawer">
@@ -24,7 +24,7 @@
     </nav>
     <v-container class="py-0 hidden-xs-only">
       <v-tabs class="mx-3">
-        <v-tab v-for="headerItem in headerItems" :key="headerItem.name" :to="headerItem.route" class="black--text">
+        <v-tab v-for="headerItem in headerItems" :key="headerItem.name" :to="headerItem.route">
           {{ headerItem.display }}
         </v-tab>
       </v-tabs>
@@ -60,11 +60,13 @@ export default {
   box-shadow: none;
 }
 
-::v-deep .v-tab {
-  text-transform: inherit;
-  font-size: 16px;
-  &.v-tab--active {
-    border-bottom: 0;
+.theme--light {
+  .v-tab {
+    text-transform: inherit;
+    font-size: 16px;
+    &.v-tab--active {
+      color: var(--v-secondary-darken3);
+    }
   }
 }
 </style>
