@@ -21,7 +21,7 @@
       </v-flex>
 
       <v-flex xs12 px-3 mb-4>
-        <v-card class="mx-auto card-total card-shadow" color="dark" white>
+        <v-card class="card-total card-shadow">
           <v-card-title class="font-weight-bold subtitle-2 pt-4 px-4">
             TOTAL VALUE
           </v-card-title>
@@ -45,11 +45,8 @@
               class="mr-3 caption search-field"
               placeholder="Search"
               style="max-width: 200px"
-            >
-              <template v-slot:append>
-                <img width="12" height="12" class="mt-1" :src="require('../../public/img/icons/search-grey.svg')" />
-              </template>
-            </v-text-field>
+              append-icon="$vuetify.icons.search"
+            ></v-text-field>
             <v-btn text icon @click="refreshBalances()">
               <img width="12" height="12" :src="require('../../public/img/icons/refresh-primary.svg')" />
             </v-btn>
@@ -196,13 +193,8 @@ export default {
   align-items: center;
 }
 
-.btn-icon {
-  font-size: 1.2rem;
-}
-
 .card-total {
   h2 {
-    color: #5c6c7f;
     font-size: 3.5rem;
 
     small {
@@ -238,11 +230,7 @@ button {
 ::v-deep .search-field {
   display: inline-flex;
   .v-input__slot {
-    margin: 0;
     min-height: 40px;
-  }
-  .v-input__append-inner {
-    margin-top: 9px;
   }
 }
 

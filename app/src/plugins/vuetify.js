@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 import { ceruleanBlue, lightBlue } from './themes'
-import { SelectIcon, SendIcon, AddIcon } from '../icons'
+import { SelectIcon, SendIcon, AddIcon, SearchIcon } from '../icons'
 
 Vue.use(Vuetify)
 
@@ -26,6 +26,9 @@ export default new Vuetify({
       },
       add: {
         component: AddIcon
+      },
+      search: {
+        component: SearchIcon
       }
     }
   }
