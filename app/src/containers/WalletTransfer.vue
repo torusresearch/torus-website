@@ -314,7 +314,7 @@ export default {
         required: value => !!value || 'Required'
       },
       showModalMessage: false,
-      modalMessageSuccess: true
+      modalMessageSuccess: null
     }
   },
   computed: {
