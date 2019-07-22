@@ -37,6 +37,9 @@ export default {
   &.v-data-table {
     background: var(--v-background-base);
   }
+  &.v-stepper {
+    background: var(--v-background-base);
+  }
 }
 
 .v-window__container {

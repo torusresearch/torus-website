@@ -2,29 +2,31 @@
   <v-stepper v-model="e1" class="learn-more">
     <v-stepper-items>
       <v-stepper-content step="1">
-        <v-img class="white--text" :src="require(`../../public/images/learn-more-intro.png`)">
-          <v-layout fill-height align-end justify-end>
-            <v-flex xs12 color="grey" class="mb-5 mx-5 text-xs-right">
-              <v-btn @click="e1 = 2" depressed large class="primary--text px-5">Next</v-btn>
+        <v-img :src="require(`../../public/images/learn-more-intro.svg`)">
+          <v-layout>
+            <v-flex xs12 class="mt-5 ml-5">
+              <div class="display-1 primary--text text--darken-4 font-weight-bold mb-2">Welcome to</div>
+              <img width="150" :src="require(`../../public/images/torus-logo-blue.svg`)" />
             </v-flex>
           </v-layout>
         </v-img>
+        <v-btn @click="e1 = 2" depressed large color="white" class="primary--text px-5 next-btn">Next</v-btn>
       </v-stepper-content>
       <v-stepper-content v-for="content in contents" :step="content.step" :key="content.title">
         <v-layout align-center>
           <v-flex xs8 class="mt-5 ml-5">
-            <div class="display-1 primary--text text--darken-2 font-weight-bold">{{ content.title }}</div>
+            <div class="display-1 font-weight-bold">{{ content.title }}</div>
             <div class="caption torus_text--text text--lighten-3">{{ content.subtitle }}</div>
           </v-flex>
           <v-flex xs4 class="mt-5 mr-5 text-xs-right">
-            <img :src="require('../../public/images/torus_logo.png')" />
+            <img width="110" :src="require(`../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
           </v-flex>
         </v-layout>
         <v-list class="mx-5 mt-3">
           <v-list-item-group color="primary px-0">
             <v-list-item v-for="contentItem in content.list" :key="contentItem.name">
               <v-list-item-icon>
-                <img :src="require(`../../public/images/${contentItem.icon}`)" width="40" />
+                <img :src="require(`../../public/img/icons/${contentItem.icon}`)" width="35" />
               </v-list-item-icon>
               <v-list-item-content>
                 <v-list-item-title class=".subtitle-1 font-weight-bold">{{ contentItem.name }}</v-list-item-title>
@@ -51,13 +53,13 @@ export default {
           step: 2,
           list: [
             {
-              icon: 'torus_logo.png',
+              icon: 'key_large.svg',
               name: 'Private Key',
               content: `This is your password to verify account ownership. Only you are able to access it.
                 If you lose this, you potentially lose ownership of your account and ALL your money.`
             },
             {
-              icon: 'torus_logo.png',
+              icon: 'password.svg',
               name: 'Account Recovery',
               content: 'Torus uses Google/Facebook 2 Factor-Authentication for account recovery.'
             }
@@ -69,18 +71,18 @@ export default {
           step: 3,
           list: [
             {
-              icon: 'torus_logo.png',
+              icon: 't.svg',
               name: 'What is Torus?',
               content: 'Torus is a key management solution that aims to provide an easy access to services running on Blockchain.'
             },
             {
-              icon: 'torus_logo.png',
+              icon: 'wallet.svg',
               name: 'Know your Wallet Address',
               content: `A wallet address is similar to a bank account number. 
                 It's a unique combination of letters and numbers that looks like this: 0x09438E46Ea66647EA65E4b104C125c82076FDcE5`
             },
             {
-              icon: 'torus_logo.png',
+              icon: 'money.svg',
               name: 'Get Digital Currency and Tokens',
               content: 'You can share your wallet address with others to receive digital currency and tokens.'
             }
