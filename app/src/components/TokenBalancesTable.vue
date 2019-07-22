@@ -1,33 +1,30 @@
 <template>
   <v-layout row wrap align-center>
     <v-flex class="xs12 sm6 px-3 my-3" v-for="(balance, index) in tokenBalances" :key="index" :style="`order: ${index > 0 ? index + 1 : index}`">
-      <v-card color="card-shadow">
-        <v-card-title class="font-weight-bold subtitle-2 pt-4 pb-0 px-4">COINS / TOKENS</v-card-title>
-        <v-card-text class="headline font-weight-bold pt-1 pb-4 px-4">
-          <v-flex xs12>
-            <v-text-field hide-details readonly type="text" :value="balance.name">
-              <template v-slot:prepend>
-                <img
-                  :src="require(`../../public/images/logos/${balance.logo}`)"
-                  class="inline-small"
-                  onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
-                />
-              </template>
-              <template v-slot:append>
-                {{ balance.formattedBalance }}
-              </template>
-            </v-text-field>
-            <div class="v-text-field__details">
-              <div class="v-messages">
-                <div class="v-messages__wrapper">
-                  <div class="v-messages__message pl-4 pt-1">
-                    <span class="left font-weight-regular ml-3">{{ balance.currencyRateText }}</span>
-                    <span class="right font-weight-regular mr-2">{{ balance.currencyBalance }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </v-flex>
+      <v-card color="card-shadow pb-4 pt-1">
+        <v-card-text class="torus_text--text py-4 px-4">
+          <v-layout>
+            <v-flex xs6>
+              <img
+                :src="require(`../../public/images/logos/${balance.logo}`)"
+                class="inline-small d-inline-flex"
+                onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+              />
+              <span class="subtitle-1 ml-2 d-inline-flex">{{ balance.name }}</span>
+            </v-flex>
+            <v-flex xs6 class="text-xs-right">
+              {{ balance.formattedBalance }}
+            </v-flex>
+          </v-layout>
+          <v-divider class="my-1"></v-divider>
+          <v-layout class="font-weight-regular torus_text--text text--lighten-4">
+            <v-flex xs6>
+              {{ balance.currencyRateText }}
+            </v-flex>
+            <v-flex xs6 class="text-xs-right">
+              {{ balance.currencyBalance }}
+            </v-flex>
+          </v-layout>
         </v-card-text>
       </v-card>
     </v-flex>
