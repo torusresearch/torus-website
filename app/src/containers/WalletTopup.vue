@@ -8,7 +8,7 @@
         <v-card>
           <v-container fluid>
             <v-layout row wrap>
-              <div class="provider">
+              <div class="provider torus_text--text text--lighten-4">
                 <div class="provider-checkbox">
                   <input type="radio" v-model="provider" value="simplex" name="test-radio" id="test-simplex" />
                   <img :src="require(`../../public/images/logos/simplex-logo.png`)" class="provider-logo" />
@@ -73,10 +73,10 @@
             ></v-text-field>
 
             <div class="v-text-field__details mb-4">
-              <div class="v-messages theme--light">
+              <div class="v-messages">
                 <div class="v-messages__wrapper">
                   <div class="v-messages__message">
-                    <div class="d-flex input-notes">
+                    <div class="d-flex torus_text--text text--lighten-4">
                       <div>
                         <small>* Includes 5% Simplex Service Fees or 10 USD (whichever higher)</small>
                         <img :src="require(`../../public/img/icons/help-circle.svg`)" class="inline-small ml-2 help-icon" />
@@ -101,7 +101,7 @@
             <v-text-field class="receive-text-input" disabled placeholder="0.00" suffix="ETH" v-model="ethValue" solo></v-text-field>
 
             <div class="v-text-field__details">
-              <div class="v-messages theme--light">
+              <div class="v-messages">
                 <div class="v-messages__wrapper">
                   <div class="v-messages__message">Rate : 1 ETH = {{ this.displayRateString }} {{ this.selectedCurrency }}</div>
                 </div>
@@ -112,7 +112,7 @@
       </v-flex>
 
       <v-flex xs12>
-        <div class="px-3 mt-5 mb-4 info-notes">
+        <div class="px-3 mt-5 mb-4 torus_text--text text--lighten-4">
           <div>
             <img :src="require(`../../public/img/icons/info-circle.svg`)" class="inline-small help-icon" />
             <small class="d-inline ml-2">The process would take approximately 10 - 15 mins.</small>
@@ -125,7 +125,7 @@
         </div>
       </v-flex>
     </v-layout>
-    <v-flex xs12 v-if="provider">
+    <v-flex xs12 v-if="provider === 'simplex'">
       <div class="text-xs-center text-sm-right">
         <v-tooltip bottom :disabled="formValid">
           <template v-slot:activator="{ on }">
@@ -305,7 +305,6 @@ export default {
   }
 
   .input-notes {
-    color: #5c6c7f;
     align-items: center;
     justify-content: space-between;
 
@@ -324,7 +323,7 @@ export default {
 
   .receive-text-input {
     .v-input__slot {
-      background: #eef2f4 !important;
+      background: transparent !important;
       box-shadow: none !important;
       border: 1px solid #d3d5e2 !important;
     }
@@ -334,14 +333,9 @@ export default {
     text-align: right;
   }
 
-  .text-gray {
-    color: #5c6c7f;
-  }
-
   .provider {
     min-height: 63px;
     width: 100%;
-    color: #5c6c7f;
 
     &-checkbox {
       display: flex;
