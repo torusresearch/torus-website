@@ -1,5 +1,10 @@
 <template>
   <v-container py-4 px-0>
+    <v-layout mx-3 mb-4>
+      <v-flex x12>
+        <img :src="require('../../public/img/icons/t-fill.svg')" width="30" />
+      </v-flex>
+    </v-layout>
     <template v-if="type === 'transaction'">
       <v-layout align-center mx-4 mb-4>
         <div class="text-black font-weight-bold headline left">{{ header }}</div>
@@ -11,7 +16,7 @@
 
           <v-card flat class="grey lighten-3">
             <v-card-text>
-              <div class="subtitle-2 blue--text">Payee</div>
+              <div class="subtitle-2 blue--text">{{ origin }}</div>
               <div class="caption grey--text">{{ receiver }}</div>
             </v-card-text>
             <img :src="require('../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
@@ -75,13 +80,47 @@
             </v-btn>
           </v-flex>
         </v-layout>
-        <v-flex xs12></v-flex>
+      </v-layout>
+    </template>
+
+    <template v-if="type === 'message'">
+      <v-layout align-center mx-4 mb-4>
+        <div class="text-black font-weight-bold headline left">Signature</div>
+        <img :src="require('../../public/img/icons/pen-solid-grey.svg')" width="16" class="ml-2" />
+      </v-layout>
+      <v-layout wrap mb-4>
+        <v-flex xs12 mb-4 mx-4>
+          <div class="subtitle-2 grey--text">You are getting a signature from:</div>
+
+          <v-card flat class="grey lighten-3">
+            <v-card-text>
+              <div class="subtitle-2 blue--text">{{ origin }}</div>
+            </v-card-text>
+            <img :src="require('../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
+          </v-card>
+        </v-flex>
+
+        <v-flex xs12 mb-3 mx-4>
+          <v-textarea outlined auto-grow rows="3" placeholder="To authenticate you are are owner."></v-textarea>
+        </v-flex>
+        <v-layout px-4>
+          <v-flex xs6>
+            <v-btn block text large class="grey--text" @click="triggerDeny">
+              Cancel
+            </v-btn>
+          </v-flex>
+          <v-flex xs6>
+            <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">
+              Confirm
+            </v-btn>
+          </v-flex>
+        </v-layout>
       </v-layout>
     </template>
     <template v-if="type === 'none' && false">
       <page-loader />
     </template>
-    <template v-if="type === 'message'">
+    <template v-if="type === 'message' && false">
       <v-card text :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
         <v-card-text>
           <v-layout row wrap align-start justify-center>
@@ -134,7 +173,7 @@
       </v-card>
     </template>
     <!-- Disabled old implementation -->
-    <template v-else-if="type === 'transaction' && false">
+    <template v-else-if="type === 'transaction'">
       <v-card text :color="$vuetify.theme.torus_bcg">
         <v-card-text>
           <v-layout row wrap align-start justify-center>
