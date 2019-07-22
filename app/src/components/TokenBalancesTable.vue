@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap align-center>
     <v-flex class="xs12 sm6 px-3 my-3" v-for="(balance, index) in tokenBalances" :key="index" :style="`order: ${index > 0 ? index + 1 : index}`">
-      <v-card color="dark card-shadow" white>
+      <v-card color="card-shadow">
         <v-card-title class="font-weight-bold subtitle-2 pt-4 pb-0 px-4">COINS / TOKENS</v-card-title>
         <v-card-text class="headline font-weight-bold pt-1 pb-4 px-4">
           <v-flex xs12>
@@ -18,7 +18,7 @@
               </template>
             </v-text-field>
             <div class="v-text-field__details">
-              <div class="v-messages theme--light">
+              <div class="v-messages">
                 <div class="v-messages__wrapper">
                   <div class="v-messages__message pl-4 pt-1">
                     <span class="left font-weight-regular ml-3">{{ balance.currencyRateText }}</span>
