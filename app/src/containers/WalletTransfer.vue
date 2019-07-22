@@ -116,7 +116,19 @@
               @onConfirm="sendCoin"
             ></transfer-confirm>
           </v-dialog>
-          <!-- <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" type="submit">Confirm</v-btn> -->
+          <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" type="submit">Confirm</v-btn>
+        </v-layout>
+
+        <v-layout mt-3 pr-2 row wrap>
+          <v-spacer></v-spacer>
+          <v-dialog v-model="modalMessage" max-width="550" persistent>
+            <message-modal
+              @onClose="modalMessage = false"
+              :modal-type="modalMessageSuccess"
+              :title="modalMessageSuccess ? 'Your transfer is being processed' : 'Your transfer cannot be processed'"
+              :detail-text="modalMessageSuccess ? 'Your transaction will be completed in approximately [ time ] min' : 'Please try again later'"
+            />
+          </v-dialog>
         </v-layout>
       </v-form>
     </v-flex>
@@ -251,7 +263,7 @@
         </v-form>
       </v-card>
     </v-flex>
-  </v-layout> -->
+  </v-layout>-->
 </template>
 
 <script>
@@ -260,6 +272,7 @@ import { significantDigits, getRandomNumber } from '../utils/utils'
 import config from '../config'
 import TransferAdvanceOption from '../components/TransferAdvanceOption'
 import TransferConfirm from '../components/TransferConfirm'
+import MessageModal from '../components/MessageModal'
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
 
@@ -270,7 +283,8 @@ export default {
   props: ['address'],
   components: {
     TransferAdvanceOption,
-    TransferConfirm
+    TransferConfirm,
+    MessageModal
   },
   data() {
     return {
@@ -298,7 +312,9 @@ export default {
       rules: {
         toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid eth or email Address',
         required: value => !!value || 'Required'
-      }
+      },
+      modalMessage: false,
+      modalMessageSuccess: false
     }
   },
   computed: {
@@ -446,9 +462,13 @@ export default {
               gasPrice: fastGasPrice
             })
             .on('transactionHash', () => {
-              this.$router.push('/wallet/history')
+              this.modalMessageSuccess = 'true'
+              // this.$router.push('/wallet/history')
             })
-            .on('error', err => console.log(err))
+            .on('error', err => {
+              this.modalMessageSuccess = 'false'
+              console.log(err)
+            })
         else {
           const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
           contractInstance.methods
@@ -459,9 +479,13 @@ export default {
               fastGasPrice
             })
             .on('transactionHash', () => {
-              this.$router.push('/wallet/history')
+              this.modalMessageSuccess = 'true'
+              // this.$router.push('/wallet/history')
             })
-            .on('error', err => console.log(err))
+            .on('error', err => {
+              this.modalMessageSuccess = 'false'
+              console.log(err)
+            })
         }
       }
     },
