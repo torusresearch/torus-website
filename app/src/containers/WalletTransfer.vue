@@ -116,14 +116,14 @@
               @onConfirm="sendCoin"
             ></transfer-confirm>
           </v-dialog>
-          <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" type="submit">Confirm</v-btn>
+          <!-- <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" type="submit">Confirm</v-btn> -->
         </v-layout>
 
         <v-layout mt-3 pr-2 row wrap>
           <v-spacer></v-spacer>
-          <v-dialog v-model="modalMessage" max-width="550" persistent>
+          <v-dialog v-model="showModalMessage" max-width="550" persistent>
             <message-modal
-              @onClose="modalMessage = false"
+              @onClose="showModalMessage = false"
               :modal-type="modalMessageSuccess"
               :title="modalMessageSuccess ? 'Your transfer is being processed' : 'Your transfer cannot be processed'"
               :detail-text="modalMessageSuccess ? 'Your transaction will be completed in approximately [ time ] min' : 'Please try again later'"
@@ -313,8 +313,8 @@ export default {
         toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid eth or email Address',
         required: value => !!value || 'Required'
       },
-      modalMessage: false,
-      modalMessageSuccess: false
+      showModalMessage: false,
+      modalMessageSuccess: true
     }
   },
   computed: {
@@ -452,7 +452,7 @@ export default {
           }
         }
         const selectedAddress = this.$store.state.selectedAddress
-        if (this.selectedTokenAddress === '0x')
+        if (this.selectedTokenAddress === '0x') {
           torus.web3.eth
             .sendTransaction({
               from: selectedAddress,
@@ -462,14 +462,16 @@ export default {
               gasPrice: fastGasPrice
             })
             .on('transactionHash', () => {
-              this.modalMessageSuccess = 'true'
+              this.showModalMessage = true
+              this.modalMessageSuccess = true
               // this.$router.push('/wallet/history')
             })
             .on('error', err => {
-              this.modalMessageSuccess = 'false'
+              this.showModalMessage = true
+              this.modalMessageSuccess = false
               console.log(err)
             })
-        else {
+        } else {
           const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
           contractInstance.methods
             .transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString())
@@ -479,11 +481,13 @@ export default {
               fastGasPrice
             })
             .on('transactionHash', () => {
-              this.modalMessageSuccess = 'true'
+              this.showModalMessage = true
+              this.modalMessageSuccess = true
               // this.$router.push('/wallet/history')
             })
             .on('error', err => {
-              this.modalMessageSuccess = 'false'
+              this.showModalMessage = true
+              this.modalMessageSuccess = false
               console.log(err)
             })
         }
