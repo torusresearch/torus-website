@@ -48,14 +48,21 @@
           <v-flex xs12 sm6>
             <div class="subtitle-2 mb-1 px-3">
               <span>Select your Transaction Speed</span>
-              <v-dialog v-model="dialog" persistent>
+              <v-dialog v-model="advanceOptionDialog" persistent>
                 <template v-slot:activator="{ on }">
                   <span class="right primary--text advance-option" v-on="on">Advance Options</span>
                 </template>
-                <TransferAdvanceOption @onClose="dialog = false" />
+                <TransferAdvanceOption
+                  :dialog="advanceOptionDialog"
+                  :displayAmount="displayAmount"
+                  :gas="gas"
+                  :activeGasPrice="activeGasPrice"
+                  @onClose="advanceOptionDialog = false"
+                  @onSave="onSaveAdvanceOptions"
+                />
               </v-dialog>
             </div>
-            <v-layout xs12 justify-space-between wrap>
+            <v-layout xs12 justify-space-between wrap v-if="!isAdvanceOption">
               <v-flex xs12 sm4 px-3 mb-1>
                 <v-btn
                   block
@@ -96,6 +103,17 @@
                 </v-btn>
               </v-flex>
             </v-layout>
+            <v-layout v-if="isAdvanceOption" align-center>
+              <v-flex xs6 px-4 mb-1>
+                <div class="subtitle-2 font-weight-bold">
+                  {{ getEthAmount(gas, activeGasPrice) }} ETH
+                  <span class="caption torus_text--text text--lighten-3">( ~ {{ getGasDisplayString(activeGasPrice) }} )</span>
+                </div>
+              </v-flex>
+              <v-flex xs6 px-3 class="text-xs-right">
+                <v-btn outlined color="primary" @click="resetAdvanceOption">Reset</v-btn>
+              </v-flex>
+            </v-layout>
           </v-flex>
         </v-layout>
         <v-layout mt-3 pr-2 row wrap>
@@ -133,137 +151,6 @@
       </v-form>
     </v-flex>
   </v-layout>
-  <!-- Hide original design for now -->
-  <!-- <v-layout mt-5 row wrap align-start align-content-start justify-center v-if="false">
-    <v-flex xs12 sm9>
-      <span>
-        <span class="spanWrapSvgStyle">
-          <img :src="require('../../public/images/coins.svg')" alt="Wallet" class="svg-setting-small" />
-        </span>
-        <span class="headline"> Transaction Request</span>
-      </span>
-    </v-flex>
-    <v-flex xs12 sm9 class="fill-height">
-      <v-card text :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
-        <v-form ref="form" v-model="formValid" lazy-validation class="fill-height" @submit.prevent="">
-          <v-container fill-height pl-0 pr-0>
-            <v-layout row wrap align-center justify-center align-content-start>
-              <v-flex xs12 sm6>
-                <span class="body-2">Selected Coin </span>
-              </v-flex>
-              <v-flex xs7 sm4 align-self-center>
-                <v-select single-line solo text :items="finalBalancesArray" :value="selectedItem" label="Coin" @change="selectedItemChanged">
-                  <template v-slot:item="props">
-                    <v-layout row wrap align-center justify-center>
-                      <v-flex xs2>
-                        <img
-                          :src="require(`../../public/images/logos/${props.item.logo}`)"
-                          class="inline-small"
-                          onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
-                        />
-                      </v-flex>
-                      <v-flex xs10 align-self-center> {{ props.item.name }} </v-flex>
-                    </v-layout>
-                  </template>
-                  <template v-slot:selection="props">
-                    <v-layout row align-center>
-                      <v-flex xs2 mr-2>
-                        <img
-                          :src="require(`../../public/images/logos/${props.item.logo}`)"
-                          class="inline-small"
-                          onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
-                        />
-                      </v-flex>
-                      <v-flex xs10>{{ props.item.name }}</v-flex>
-                    </v-layout>
-                  </template>
-                </v-select>
-              </v-flex>
-              <v-flex xs5 sm2>
-                <span style="margin-left: 5px;">{{ selectedItem && selectedItem.currencyRateText }}</span>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <span class="body-2">Current Balance</span>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <span class="body-2">{{ remainingBalanceString }} </span>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <span class="body-2">Enter To/Wallet Address</span>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field
-                  placeholder="Enter address to send coin to"
-                  aria-label="To/Wallet Address"
-                  v-model="toAddress"
-                  solo
-                  text
-                  required
-                  persistent-hint
-                  hint="Please enter an Ethereum address or a valid Google email"
-                  :rules="[rules.toAddress, rules.required]"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <span class="body-2">Enter Amount To Transfer</span>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field
-                  id="amount"
-                  placeholder="Enter amount to send"
-                  aria-label="quantity"
-                  solo
-                  text
-                  required
-                  v-model="displayAmount"
-                  :rules="[rules.required, lesserThan]"
-                  class="remove-padding-right"
-                >
-                  <template v-slot:append>
-                    <v-btn-toggle v-model="toggle_exclusive" @change="changeSelectedToCurrency" mandatory>
-                      <v-btn text>
-                        {{ selectedItem && selectedItem.symbol }}
-                      </v-btn>
-                      <v-btn text>
-                        {{ selectedCurrency }}
-                      </v-btn>
-                    </v-btn-toggle>
-                  </template>
-                </v-text-field>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <span class="body-2">Transaction Fee</span>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <span class="body-2">
-                  <div>{{ gasDisplayString }}</div>
-                  <v-checkbox v-model="isFastChecked" :color="$vuetify.theme.torus_blue" :label="fastGasDisplayString"> </v-checkbox>
-                </span>
-              </v-flex>
-              <v-flex xs12>
-                <v-layout row wrap>
-                  <v-flex class="text-xs-left" id="flexibtn">
-                    <v-tooltip bottom :disabled="formValid">
-                      <template v-slot:activator="{ on }">
-                        <span v-on="on">
-                          <v-btn :disabled="!formValid" outlined large class="btnStyle" @click="sendCoin">Confirm</v-btn>
-                        </span>
-                      </template>
-                      <span>Resolve the errors</span>
-                    </v-tooltip>
-                    <v-btn outlined large class="btnStyle" @click="goBack">Back</v-btn>
-                  </v-flex>
-                  <v-flex xs2 align-self-center class="hidden-xs-only">
-                    <img :src="require('../../public/images/torus_logo.png')" />
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-form>
-      </v-card>
-    </v-flex>
-  </v-layout>-->
 </template>
 
 <script>
@@ -288,14 +175,15 @@ export default {
   },
   data() {
     return {
-      dialog: false,
+      advanceOptionDialog: false,
       confirmDialog: false,
+      isAdvanceOption: false,
       tokenAddress: '0x',
       amount: 0,
       displayAmount: '',
       convertedAmount: '',
       toAddress: '',
-      formValid: true,
+      formValid: false,
       toggle_exclusive: 0,
       gas: 21000,
       averageGasPrice: '5',
@@ -499,10 +387,13 @@ export default {
     },
     getGasAmount(fastGasPrice) {
       const currencyMultiplier = this.getCurrencyMultiplier
-      const ethFee = this.gas * fastGasPrice * 10 ** -9
+      const ethFee = this.getEthAmount(this.gas, fastGasPrice)
       const currencyFee = ethFee * currencyMultiplier
 
       return currencyFee
+    },
+    getEthAmount(gas, gasPrice) {
+      return gas * gasPrice * 10 ** -9
     },
     goBack() {
       this.$router.go(-1)
@@ -536,6 +427,28 @@ export default {
 
       this.convertedTotalCost = this.convertedAmount + this.getGasAmount(this.activeGasPrice)
       this.totalCost = this.convertedTotalCost / this.getCurrencyTokenRate
+    },
+    onSaveAdvanceOptions(details) {
+      this.gas = parseFloat(details.advancedGas)
+      this.activeGasPrice = parseFloat(details.advancedActiveGasPrice)
+
+      this.isAdvanceOption = true
+      this.updateTotalCost()
+
+      this.advanceOptionDialog = false
+    },
+    resetAdvanceOption() {
+      this.calculateGas()
+
+      if (this.speedSelected === 'average') {
+        this.activeGasPrice = this.averageGasPrice
+      } else if (this.speedSelected === 'fast') {
+        this.activeGasPrice = this.fastGasPrice
+      } else if (this.speedSelected === 'fastest') {
+        this.activeGasPrice = this.fastestGasPrice
+      }
+
+      this.isAdvanceOption = false
     }
   },
   created() {
