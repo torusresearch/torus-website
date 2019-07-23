@@ -8,7 +8,7 @@
     <template v-if="type === 'transaction'">
       <v-layout align-center mx-4 mb-4>
         <div class="text-black font-weight-bold headline left">{{ header }}</div>
-        <img :src="require('../../public/img/icons/indent-increse-grey.svg')" class="ml-2" />
+        <img :src="require('../../public/img/icons/transaction.svg')" class="ml-2" />
       </v-layout>
       <v-layout wrap mb-4>
         <v-flex xs12 mb-4 mx-4>
@@ -54,7 +54,14 @@
               <span class="font-weight-light">{{ getGasDisplayString(speedOption.type, speedOption.price) }}</span>
             </v-btn>
           </v-layout>
-          <div class="subtitle-2 right blue--text mx-4">Advanced Options</div>
+          <div class="subtitle-2 right blue--text mx-4">
+            <v-dialog v-model="dialogAdvanceOptions" persistent>
+              <template v-slot:activator="{ on }">
+                <span class="right primary--text dialog-launcher" v-on="on">Advance Options</span>
+              </template>
+              <ConfirmAdvanceOption @onClose="dialogAdvanceOptions = false" />
+            </v-dialog>
+          </div>
         </v-flex>
         <v-flex xs12 px-4 mb-1>
           <div class="subtitle-1 font-weight-bold">Total</div>
@@ -338,6 +345,7 @@ import BroadcastChannel from 'broadcast-channel'
 import BottomSheet from '../components/BottomSheet.vue'
 import ShowToolTip from '../components/ShowToolTip.vue'
 import PageLoader from '../components/PageLoader.vue'
+import ConfirmAdvanceOption from '../components/ConfirmAdvanceOption'
 import torus from '../torus'
 import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress } from '../utils/utils'
 
@@ -348,10 +356,12 @@ export default {
   components: {
     BottomSheet,
     ShowToolTip,
-    PageLoader
+    PageLoader,
+    ConfirmAdvanceOption
   },
   data() {
     return {
+      dialogAdvanceOptions: false,
       open: false,
       type: 'none',
       origin: 'unknown',
@@ -505,6 +515,9 @@ export default {
         if (value) {
           finalValue = web3Utils.fromWei(value.toString())
         }
+
+        this.origin = this.origin.trim().length === 0 ? 'Account Address' : this.origin
+
         this.id = id
         this.network = network
         var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
@@ -754,5 +767,9 @@ hr {
     padding: 12px 0;
     line-height: 1em;
   }
+}
+
+.dialog-launcher {
+  cursor: pointer;
 }
 </style>
