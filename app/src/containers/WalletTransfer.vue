@@ -45,76 +45,7 @@
           </v-flex>
         </v-layout>
         <v-layout row wrap>
-          <v-flex xs12 sm6>
-            <div class="subtitle-2 mb-1 px-3">
-              <span>Select your Transaction Speed</span>
-              <v-dialog v-model="advanceOptionDialog" persistent>
-                <template v-slot:activator="{ on }">
-                  <span class="right primary--text advance-option" v-on="on">Advance Options</span>
-                </template>
-                <TransferAdvanceOption
-                  :dialog="advanceOptionDialog"
-                  :displayAmount="displayAmount"
-                  :gas="gas"
-                  :activeGasPrice="activeGasPrice"
-                  @onClose="advanceOptionDialog = false"
-                  @onSave="onSaveAdvanceOptions"
-                />
-              </v-dialog>
-            </div>
-            <v-layout xs12 justify-space-between wrap v-if="!isAdvanceOption">
-              <v-flex xs12 sm4 px-3 mb-1>
-                <v-btn
-                  block
-                  large
-                  outlined
-                  class="button-speed"
-                  :class="speedSelected === 'average' ? 'primary theme--dark' : ''"
-                  @click="selectSpeed('average', averageGasPrice)"
-                >
-                  <span>~ {{ averageGasPriceSpeed }} Mins</span>
-                  <span class="font-weight-light">{{ getGasDisplayString(averageGasPrice) }}</span>
-                </v-btn>
-              </v-flex>
-              <v-flex xs12 sm4 px-3 mb-1>
-                <v-btn
-                  block
-                  large
-                  outlined
-                  class="button-speed"
-                  :class="speedSelected === 'fast' ? 'primary theme--dark' : ''"
-                  @click="selectSpeed('fast', fastGasPrice)"
-                >
-                  <span>~ {{ fastGasPriceSpeed }} Mins</span>
-                  <span class="font-weight-light">{{ getGasDisplayString(fastGasPrice) }}</span>
-                </v-btn>
-              </v-flex>
-              <v-flex xs12 sm4 px-3 mb-1>
-                <v-btn
-                  block
-                  large
-                  outlined
-                  class="button-speed"
-                  :class="speedSelected === 'fastest' ? 'primary theme--dark' : ''"
-                  @click="selectSpeed('fastest', fastestGasPrice)"
-                >
-                  <span>~ {{ fastestGasPriceSpeed }} Mins</span>
-                  <span class="font-weight-light">{{ getGasDisplayString(fastestGasPrice) }}</span>
-                </v-btn>
-              </v-flex>
-            </v-layout>
-            <v-layout v-if="isAdvanceOption" align-center>
-              <v-flex xs6 px-4 mb-1>
-                <div class="subtitle-2 font-weight-bold">
-                  {{ getEthAmount(gas, activeGasPrice) }} ETH
-                  <span class="caption torus_text--text text--lighten-3">( ~ {{ getGasDisplayString(activeGasPrice) }} )</span>
-                </div>
-              </v-flex>
-              <v-flex xs6 px-3 class="text-xs-right">
-                <v-btn outlined color="primary" @click="resetAdvanceOption">Reset</v-btn>
-              </v-flex>
-            </v-layout>
-          </v-flex>
+          <TransactionSpeedSelect :gas="gas" :displayAmount="displayAmount" @onSelectSpeed="onSelectSpeed" />
         </v-layout>
         <v-layout mt-3 pr-2 row wrap>
           <v-spacer></v-spacer>
@@ -157,7 +88,7 @@
 import torus from '../torus'
 import { significantDigits, getRandomNumber } from '../utils/utils'
 import config from '../config'
-import TransferAdvanceOption from '../components/TransferAdvanceOption'
+import TransactionSpeedSelect from '../components/TransactionSpeedSelect'
 import TransferConfirm from '../components/TransferConfirm'
 import MessageModal from '../components/MessageModal'
 const { torusNodeEndpoints } = config
@@ -169,15 +100,13 @@ export default {
   name: 'walletTransfer',
   props: ['address'],
   components: {
-    TransferAdvanceOption,
+    TransactionSpeedSelect,
     TransferConfirm,
     MessageModal
   },
   data() {
     return {
-      advanceOptionDialog: false,
       confirmDialog: false,
-      isAdvanceOption: false,
       tokenAddress: '0x',
       amount: 0,
       displayAmount: '',
@@ -186,13 +115,7 @@ export default {
       formValid: false,
       toggle_exclusive: 0,
       gas: 21000,
-      averageGasPrice: '5',
-      fastGasPrice: '10', // 10 gwei
-      fastestGasPrice: '20',
       activeGasPrice: '',
-      averageGasPriceSpeed: '',
-      fastGasPriceSpeed: '',
-      fastestGasPriceSpeed: '',
       isFastChecked: false,
       speedSelected: '',
       totalCost: '',
@@ -398,17 +321,6 @@ export default {
     goBack() {
       this.$router.go(-1)
     },
-    selectSpeed(targetSpeed, price) {
-      if (this.speedSelected === targetSpeed) {
-        this.speedSelected = ''
-        this.activeGasPrice = ''
-      } else {
-        this.speedSelected = targetSpeed
-        this.activeGasPrice = price
-      }
-
-      this.updateTotalCost()
-    },
     getGasSpeed() {
       if (this.speedSelected === 'average') {
         return this.averageGasPriceSpeed
@@ -428,67 +340,18 @@ export default {
       this.convertedTotalCost = this.convertedAmount + this.getGasAmount(this.activeGasPrice)
       this.totalCost = this.convertedTotalCost / this.getCurrencyTokenRate
     },
-    onSaveAdvanceOptions(details) {
-      this.gas = parseFloat(details.advancedGas)
-      this.activeGasPrice = parseFloat(details.advancedActiveGasPrice)
+    onSelectSpeed(data) {
+      this.speedSelected = data.speedSelected
+      this.activeGasPrice = data.activeGasPrice
 
-      this.isAdvanceOption = true
-      this.updateTotalCost()
-
-      this.advanceOptionDialog = false
-    },
-    resetAdvanceOption() {
-      this.calculateGas()
-
-      if (this.speedSelected === 'average') {
-        this.activeGasPrice = this.averageGasPrice
-      } else if (this.speedSelected === 'fast') {
-        this.activeGasPrice = this.fastGasPrice
-      } else if (this.speedSelected === 'fastest') {
-        this.activeGasPrice = this.fastestGasPrice
+      if (data.isReset) {
+        this.calculateGas()
       }
-
-      this.isAdvanceOption = false
+      this.updateTotalCost()
     }
   },
   created() {
     this.tokenAddress = this.address
-    fetch('https://ethgasstation.info/json/ethgasAPI.json', {
-      headers: {},
-      referrer: 'http://ethgasstation.info/json/',
-      referrerPolicy: 'no-referrer-when-downgrade',
-      body: null,
-      method: 'GET',
-      mode: 'cors'
-    })
-      .then(resp => resp.json())
-      .then(
-        ({
-          average: averageTimes10,
-          avgWait,
-          block_time: blockTime,
-          blockNum,
-          fast: fastTimes10,
-          fastest: fastestTimes10,
-          fastestWait,
-          fastWait,
-          safeLow: safeLowTimes10,
-          safeLowWait,
-          speed
-        }) => {
-          const [average, fast, fastest] = [averageTimes10, fastTimes10, fastestTimes10].map(price => parseFloat(price) / 10)
-          this.averageGasPrice = average
-          this.fastGasPrice = fast
-          this.fastestGasPrice = fastest
-
-          this.averageGasPriceSpeed = avgWait
-          this.fastGasPriceSpeed = fastWait
-          this.fastestGasPriceSpeed = fastestWait
-        }
-      )
-      .catch(err => {
-        console.log(err)
-      })
   }
 }
 </script>
@@ -579,21 +442,5 @@ export default {
 
 ::v-deep .v-input__slot .v-label {
   margin-bottom: 0px !important;
-}
-
-::v-deep .button-speed {
-  &.v-btn {
-    height: inherit;
-    border: 1px solid #a7b3bf;
-  }
-  .v-btn__content {
-    flex-direction: column;
-    padding: 12px 0;
-    line-height: 1em;
-  }
-}
-
-.advance-option {
-  cursor: pointer;
 }
 </style>
