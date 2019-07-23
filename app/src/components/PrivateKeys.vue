@@ -59,10 +59,10 @@
                 <v-expand-transition>
                   <v-layout row align-center justify-space-between v-if="isShowPrivateKey" class="mt-2">
                     <v-flex>
-                      <div style="word-break: break-all">{{ selectedAddress }}</div>
+                      <div style="word-break: break-all">{{ selectedKey }}</div>
                     </v-flex>
                     <v-flex>
-                      <show-tool-tip :address="selectedAddress">
+                      <show-tool-tip :address="selectedKey">
                         <v-btn text class="primary--text">
                           <img :src="require('../../public/img/icons/copy-primary.svg')" class="mr-1" width="20" />
                           Click to copy
