@@ -5,12 +5,10 @@
         <template v-if="!loginInProgress">
           <v-layout row wrap align-center justify-center align-content-center>
             <v-flex xs12 m-0>
-              <div class="text-xs-center text-capitalize login-title">Welcome to Torus</div>
+              <div class="text-xs-center login-title">Welcome to Torus</div>
             </v-flex>
             <v-flex d-flex xs12>
-              <div class="text-xs-center text-capitalize login-subtitle">
-                You are just one step away from getting your digital wallet for your cryptocurrencies
-              </div>
+              <div class="text-xs-center login-subtitle">You are just one step away from getting your digital wallet for your cryptocurrencies</div>
             </v-flex>
             <v-flex xs12 mt-5>
               <div class="text-xs-center">
