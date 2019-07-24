@@ -53,7 +53,69 @@
           <div class="caption right clearfix">{{ totalUsdCost }} USD</div>
         </v-flex>
         <v-flex xs12 mb-4>
-          <div class="subtitle-2 right blue--text mx-4">More Details</div>
+          <v-dialog v-model="detailsDialog" width="600px">
+            <template v-slot:activator="{ on }">
+              <div class="subtitle-2 right blue--text mx-4" v-on="on">More Details</div>
+            </template>
+            <v-card class="pa-3" color="background_2">
+              <v-card-text class="torus_text--text">
+                <v-layout row wrap>
+                  <v-flex xs2>
+                    Rate
+                    <span class="right mr-3">:</span>
+                  </v-flex>
+                  <v-flex xs10 class="torus_text--text text--lighten-4">
+                    1 ETH = 240.00 USD @ 12:34:20 PM
+                  </v-flex>
+                  <v-flex xs2>
+                    Network
+                    <span class="right mr-3">:</span>
+                  </v-flex>
+                  <v-flex xs10 class="torus_text--text text--lighten-4">
+                    <span class="text-capitalize">{{ networkName }}</span>
+                  </v-flex>
+                  <v-flex xs2>
+                    Type
+                    <span class="right mr-3">:</span>
+                  </v-flex>
+                  <v-flex xs10 class="torus_text--text text--lighten-4">
+                    {{ header }}
+                  </v-flex>
+                  <v-flex xs2>
+                    Data
+                    <span class="right mr-3">:</span>
+                  </v-flex>
+                  <v-flex xs12 mt-1>
+                    <v-card flat color="background_3">
+                      <v-card-text>
+                        <pre>
+  Parameters
+  [
+    {
+      "type": "address"
+    },
+    {
+      "type": "unit256"
+    }
+  ]
+                        </pre>
+                      </v-card-text>
+                    </v-card>
+                  </v-flex>
+                  <v-flex x12 mt-3>
+                    <div class="mb-1">HEX DATA: 68 BYTES</div>
+                    <v-card flat color="background_3" style="word-break: break-all">
+                      <v-card-text>0x81821c71e3971fA0394211e7ad27d9038696cC920x81821c71e3971fA0394211e7ad27d9038696cC92</v-card-text>
+                    </v-card>
+                  </v-flex>
+                </v-layout>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn primary text @click="detailsDialog = false">Less Details</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-flex>
         <v-layout px-4>
           <v-flex xs6>
@@ -107,6 +169,7 @@
     <template v-if="type === 'none' && false">
       <page-loader />
     </template>
+    <!-- Disabled old implementation -->
     <template v-if="type === 'message' && false">
       <v-card text :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
         <v-card-text>
@@ -159,7 +222,6 @@
         </v-card-text>
       </v-card>
     </template>
-    <!-- Disabled old implementation -->
     <template v-else-if="type === 'transaction' && false">
       <v-card text :color="$vuetify.theme.torus_bcg">
         <v-card-text>
@@ -329,6 +391,23 @@ import TransactionSpeedSelect from '../components/TransactionSpeedSelect'
 import torus from '../torus'
 import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress } from '../utils/utils'
 
+const {
+  ROPSTEN,
+  RINKEBY,
+  KOVAN,
+  MAINNET,
+  LOCALHOST,
+  GOERLI,
+  RPC,
+  ROPSTEN_DISPLAY_NAME,
+  RINKEBY_DISPLAY_NAME,
+  KOVAN_DISPLAY_NAME,
+  MAINNET_DISPLAY_NAME,
+  LOCALHOST_DISPLAY_NAME,
+  GOERLI_DISPLAY_NAME,
+  RPC_DISPLAY_NAME
+} = require('../utils/enums')
+
 const weiInGwei = 10 ** 9
 
 export default {
@@ -341,6 +420,7 @@ export default {
   },
   data() {
     return {
+      detailsDialog: false,
       dialogAdvanceOptions: false,
       open: false,
       type: 'none',
@@ -365,11 +445,42 @@ export default {
       isContractInteraction: false,
       doesSendEther: false,
       network: '',
+      networkName: '',
       dollarValue: 0,
       canApprove: true,
       canShowError: false,
       selectedSpeed: '',
-      id: 0
+      id: 0,
+      networks: [
+        {
+          name: MAINNET_DISPLAY_NAME,
+          value: MAINNET
+        },
+        {
+          name: ROPSTEN_DISPLAY_NAME,
+          value: ROPSTEN
+        },
+        {
+          name: RINKEBY_DISPLAY_NAME,
+          value: RINKEBY
+        },
+        {
+          name: KOVAN_DISPLAY_NAME,
+          value: KOVAN
+        },
+        {
+          name: GOERLI_DISPLAY_NAME,
+          value: GOERLI
+        },
+        {
+          name: LOCALHOST_DISPLAY_NAME,
+          value: LOCALHOST
+        },
+        {
+          name: RPC_DISPLAY_NAME,
+          value: RPC
+        }
+      ]
     }
   },
   computed: {
@@ -460,6 +571,13 @@ export default {
         this.gasPrice = calculateGasPrice(this.gasPrice)
       }
     },
+    getNetworkName(targetNetwork) {
+      const networkName = this.networks.find(network => {
+        return network.value === targetNetwork
+      })
+
+      return networkName.name
+    },
     ...mapActions({})
   },
   mounted() {
@@ -494,6 +612,7 @@ export default {
 
         this.id = id
         this.network = network
+        this.networkName = this.getNetworkName(network)
         var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
         this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
