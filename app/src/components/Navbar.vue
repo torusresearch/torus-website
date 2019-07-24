@@ -2,9 +2,14 @@
   <div>
     <nav class="container pb-0">
       <v-app-bar>
-        <v-toolbar-title>
-          <img width="135" height="30" :src="require(`../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
-        </v-toolbar-title>
+        <v-badge right>
+          <template v-slot:badge>
+            <span>Beta</span>
+          </template>
+          <v-toolbar-title class="mr-4">
+            <img width="135" height="30" :src="require(`../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
+          </v-toolbar-title>
+        </v-badge>
         <v-spacer></v-spacer>
         <v-btn class="hidden-sm-and-up" text @click="drawer = !drawer">
           <img :src="require('../../public/img/icons/menu-primary.svg')" />
@@ -63,6 +68,15 @@ export default {
 .v-tab {
   text-transform: inherit;
   font-size: 16px;
+}
+
+::v-deep .v-badge__badge.primary {
+  background-color: #ffffff !important;
+  color: var(--v-primary-base);
+  border: 1px solid var(--v-primary-base);
+  border-radius: 3px;
+  padding: 0 10px;
+  right: -30px;
 }
 
 .theme--light {
