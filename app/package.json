@@ -72,7 +72,7 @@
     "vuetify": "^2.0.0-beta.7",
     "vuex": "^3.1.1",
     "vuex-persist": "^2.0.1",
-    "web3": "1.0.0-beta.37",
+    "web3": "1.2.0",
     "xtend": "^4.0.2"
   },
   "devDependencies": {
