@@ -1,153 +1,124 @@
 <template>
   <div class="wallet-topup-view">
     <v-layout mt-4 wrap row>
-      <v-flex xs12>
-        <div class="text-black font-weight-bold headline px-3 mb-3">Select a Provider</div>
-      </v-flex>
-      <v-flex xs12 sm6 mb-3 px-3>
-        <v-card>
-          <v-container fluid>
-            <v-layout row wrap>
-              <div class="provider torus_text--text text--lighten-4">
-                <div class="provider-checkbox">
-                  <input type="radio" v-model="provider" value="simplex" name="test-radio" id="test-simplex" />
-                  <img :src="require(`../../public/images/logos/simplex-logo.png`)" class="provider-logo" />
-                </div>
-                <div class="provider-description">
-                  <small class="d-block">Pay with Credit Card</small>
-                  <small class="d-block">
-                    <span class="font-weight-bold">Simplex Servcice Fee:</span>
-                    5% or 10 USD
-                  </small>
-                  <small class="d-block">(whichever higher)</small>
-                </div>
-              </div>
-            </v-layout>
-          </v-container>
-        </v-card>
-      </v-flex>
-
-      <v-flex xs12 sm6 mb-3 px-3>
-        <v-card>
-          <v-container fluid>
-            <v-layout row wrap>
-              <div class="provider">
-                <div class="provider-checkbox">
-                  <input type="radio" v-model="provider" value="wyre" name="test-radio" id="test-simplex" />
-                  <img :src="require(`../../public/images/logos/wyre-logo.png`)" class="provider-logo wyre-logo" />
-                </div>
-                <div class="provider-description">
-                  <small class="d-block">Pay with Credit Card or Wire Transfer</small>
-                  <small class="d-block">
-                    <span class="font-weight-bold">Wyre Service Fee :</span>
-                    Varies
-                  </small>
-                </div>
-              </div>
-            </v-layout>
-          </v-container>
-        </v-card>
-      </v-flex>
-    </v-layout>
-    <v-layout mt-5 wrap row v-if="provider === 'simplex'">
-      <div class="text-black font-weight-bold headline px-3 mb-3">Purchase Cryptocurrency with your credit card via Simplex</div>
-      <v-flex xs12>
-        <p class="page-description px-3">
-          Simplex is a secure way to buy cryptoccurrency with your credit card. Start by entering an amount to get a quote before making your
-          purchase.
-        </p>
-      </v-flex>
-
-      <v-flex xs12>
-        <v-form ref="inputForm" v-model="formValid" lazy-validation @submit.prevent class="px-3">
-          <small class="mb-2 d-block">Pay</small>
-          <v-flex sm6>
-            <v-text-field
-              class="pay-text-input"
-              placeholder="0.00 (Min 50.00)"
-              :suffix="`${selectedCurrency}*`"
-              solo
-              :value="fiatValue"
-              @input="watchFiatValue"
-              :rules="[rules.required, rules.validNumber, rules.maxValidation, rules.minValidation]"
-            ></v-text-field>
-
-            <div class="v-text-field__details mb-4">
-              <div class="v-messages">
-                <div class="v-messages__wrapper">
-                  <div class="v-messages__message">
-                    <div class="d-flex torus_text--text text--lighten-4">
-                      <div>
-                        <small>* Includes 5% Simplex Service Fees or 10 USD (whichever higher)</small>
-                        <img :src="require(`../../public/img/icons/help-circle.svg`)" class="inline-small ml-2 help-icon" />
-                      </div>
-                      <small class="text-right">min 50 USD*</small>
-                    </div>
-                    <v-tooltip bottom>
-                      <span>
-                        This fee goes entirely to Simplex for their services
-                        <br />
-                        in credit card processing, fraud detection and mitigation
-                      </span>
-                    </v-tooltip>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </v-flex>
-
-          <small class="mb-2 d-block">Receive</small>
-          <v-flex sm6>
-            <v-text-field class="receive-text-input" disabled placeholder="0.00" suffix="ETH" v-model="ethValue" solo></v-text-field>
-
-            <div class="v-text-field__details">
-              <div class="v-messages">
-                <div class="v-messages__wrapper">
-                  <div class="v-messages__message">Rate : 1 ETH = {{ this.displayRateString }} {{ this.selectedCurrency }}</div>
-                </div>
-              </div>
-            </div>
-          </v-flex>
-        </v-form>
-      </v-flex>
-
-      <v-flex xs12>
-        <div class="px-3 mt-5 mb-4 torus_text--text text--lighten-4">
-          <div>
-            <img :src="require(`../../public/img/icons/info-circle.svg`)" class="inline-small help-icon" />
-            <small class="d-inline ml-2">The process would take approximately 10 - 15 mins.</small>
-          </div>
-
-          <div>
-            <img :src="require(`../../public/img/icons/info-circle.svg`)" class="inline-small help-icon" />
-            <small class="d-inline ml-2">Please prepare your Identity Card/Passport to complete the purchase.</small>
-          </div>
+      <v-flex xs12 mb-2>
+        <div class="text-black font-weight-bold headline px-3 mb-3">
+          <span v-if="provider">
+            Purchase Cryptocurrency with your credit card via
+            <span class="text-capitalize">{{ provider }}</span>
+          </span>
+          <span v-else>Select a Provider</span>
         </div>
       </v-flex>
+      <TopupProviders
+        @onSelectProvider="
+          selected => {
+            provider = selected
+          }
+        "
+      />
+
+      <v-flex xs12 sm6 mb-3 px-3>
+        <v-layout wrap row v-if="provider === 'simplex'">
+          <v-flex xs12>
+            <p class="body-2 px-3">
+              Simplex is a secure way to buy cryptoccurrency with your credit card. Start by entering an amount to get a quote before making your
+              purchase.
+            </p>
+          </v-flex>
+
+          <v-flex xs12>
+            <v-form ref="inputForm" v-model="formValid" lazy-validation @submit.prevent class="px-3">
+              <small class="mb-2 d-block">Pay</small>
+              <v-flex xs12>
+                <v-text-field
+                  class="pay-text-input"
+                  placeholder="0.00 (Min 50.00)"
+                  :suffix="`${selectedCurrency}*`"
+                  solo
+                  :value="fiatValue"
+                  @input="watchFiatValue"
+                  :rules="[rules.required, rules.validNumber, rules.maxValidation, rules.minValidation]"
+                ></v-text-field>
+
+                <div class="v-text-field__details mb-4">
+                  <div class="v-messages">
+                    <div class="v-messages__wrapper">
+                      <div class="v-messages__message">
+                        <div class="d-flex torus_text--text text--lighten-4">
+                          <div>
+                            <small>* Includes 5% Simplex Service Fees or 10 USD (whichever higher)</small>
+                            <img :src="require(`../../public/img/icons/help-circle.svg`)" class="inline-small ml-2 help-icon" />
+                          </div>
+                          <small class="text-right">min 50 USD*</small>
+                        </div>
+                        <v-tooltip bottom>
+                          <span>
+                            This fee goes entirely to Simplex for their services
+                            <br />
+                            in credit card processing, fraud detection and mitigation
+                          </span>
+                        </v-tooltip>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </v-flex>
+
+              <small class="mb-2 d-block">Receive</small>
+              <v-flex xs12>
+                <v-text-field class="receive-text-input" disabled placeholder="0.00" suffix="ETH" v-model="ethValue" solo></v-text-field>
+
+                <div class="v-text-field__details">
+                  <div class="v-messages">
+                    <div class="v-messages__wrapper">
+                      <div class="v-messages__message">Rate : 1 ETH = {{ this.displayRateString }} {{ this.selectedCurrency }}</div>
+                    </div>
+                  </div>
+                </div>
+              </v-flex>
+            </v-form>
+          </v-flex>
+
+          <v-flex xs12>
+            <div class="px-3 mt-5 mb-4 torus_text--text text--lighten-4">
+              <div>
+                <img :src="require(`../../public/img/icons/info-circle.svg`)" class="inline-small help-icon" />
+                <small class="d-inline ml-2">The process would take approximately 10 - 15 mins.</small>
+              </div>
+
+              <div>
+                <img :src="require(`../../public/img/icons/info-circle.svg`)" class="inline-small help-icon" />
+                <small class="d-inline ml-2">Please prepare your Identity Card/Passport to complete the purchase.</small>
+              </div>
+            </div>
+          </v-flex>
+          <v-flex xs12>
+            <div class="text-xs-center text-sm-right">
+              <v-tooltip bottom :disabled="formValid">
+                <template v-slot:activator="{ on }">
+                  <span v-on="on">
+                    <v-btn
+                      :disabled="!formValid"
+                      class="torus-button text-xs-center px-5 py-3 mb-2"
+                      color="primary"
+                      type="submit"
+                      @click.prevent="sendOrder"
+                    >
+                      Continue
+                    </v-btn>
+                  </span>
+                </template>
+                <span>Resolve the errors</span>
+              </v-tooltip>
+              <p>
+                <small class="text-gray">You will be redirected to Simplex Page</small>
+              </p>
+            </div>
+          </v-flex>
+        </v-layout>
+      </v-flex>
     </v-layout>
-    <v-flex xs12 v-if="provider === 'simplex'">
-      <div class="text-xs-center text-sm-right">
-        <v-tooltip bottom :disabled="formValid">
-          <template v-slot:activator="{ on }">
-            <span v-on="on">
-              <v-btn
-                :disabled="!formValid"
-                class="torus-button text-xs-center px-5 py-3 mb-2"
-                color="primary"
-                type="submit"
-                @click.prevent="sendOrder"
-              >
-                Continue
-              </v-btn>
-            </span>
-          </template>
-          <span>Resolve the errors</span>
-        </v-tooltip>
-        <p>
-          <small class="text-gray">You will be redirected to Simplex Page</small>
-        </p>
-      </div>
-    </v-flex>
   </div>
 </template>
 
@@ -157,11 +128,16 @@ import { postQuote, postOrder } from '../plugins/simplex'
 import throttle from 'lodash.throttle'
 import { significantDigits, formatCurrencyNumber } from '../utils/utils'
 
+import TopupProviders from '../components/TopupProviders'
+
 const MIN_ORDER_VALUE = 50
 const MAX_ORDER_VALUE = 20000
 
 const validSimplexCurrencies = ['USD', 'EUR']
 export default {
+  components: {
+    TopupProviders
+  },
   data() {
     return {
       fiatValue: 0,
@@ -347,7 +323,7 @@ export default {
     }
 
     &-logo {
-      height: 43px;
+      max-height: 40px;
       margin-bottom: 20px;
       margin-left: 10px;
     }
