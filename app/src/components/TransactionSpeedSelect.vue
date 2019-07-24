@@ -1,5 +1,5 @@
 <template>
-  <v-flex xs12 sm6>
+  <v-flex xs12 md6>
     <div class="subtitle-2 mb-1 px-3">
       <span>Select your Transaction Speed</span>
       <v-dialog v-model="advanceOptionDialog" persistent>
@@ -60,7 +60,7 @@
     <v-layout v-if="isAdvanceOption" align-center>
       <v-flex xs6 px-4 mb-1>
         <div class="subtitle-2 font-weight-bold">
-          {{ getEthAmount(gas, activeGasPrice) }} ETH
+          {{ getEthAmountDisplay(gas, activeGasPrice) }}
           <span class="caption torus_text--text text--lighten-3">( ~ {{ getGasDisplayString(activeGasPrice) }} )</span>
         </div>
       </v-flex>
@@ -79,7 +79,7 @@ export default {
   components: {
     TransferAdvanceOption
   },
-  props: ['gas', 'displayAmount'],
+  props: ['gas', 'displayAmount', 'activeGasPriceConfirm'],
   data() {
     return {
       advanceOptionDialog: false,
@@ -138,13 +138,13 @@ export default {
 
       this.updateCosts()
     },
-    getGasDisplayString(fastGasPrice) {
-      const currencyFee = this.getGasAmount(fastGasPrice)
-      return `${significantDigits(currencyFee)} ${this.selectedCurrency}`
+    getGasDisplayString(gasPrice) {
+      const currencyFee = this.getGasAmount(gasPrice)
+      return `${significantDigits(currencyFee)} ${this.selectedCurrency} ${gasPrice}`
     },
-    getGasAmount(fastGasPrice) {
+    getGasAmount(gasPrice) {
       const currencyMultiplier = this.getCurrencyMultiplier
-      const ethFee = this.getEthAmount(this.gas, fastGasPrice)
+      const ethFee = this.getEthAmount(this.gas, gasPrice)
       const currencyFee = ethFee * currencyMultiplier
 
       return currencyFee
@@ -152,12 +152,40 @@ export default {
     getEthAmount(gas, gasPrice) {
       return gas * gasPrice * 10 ** -9
     },
+    getEthAmountDisplay(gas, gasPrice) {
+      return `${significantDigits(this.getEthAmount(gas, gasPrice))} ETH`
+    },
     updateCosts(isReset) {
       this.$emit('onSelectSpeed', {
         speedSelected: this.speedSelected,
         activeGasPrice: this.activeGasPrice,
         isReset: !!isReset
       })
+    },
+    setSelectedSpeed() {
+      let selectedType = ''
+      let nearest = 1200
+      let delta = 0
+
+      this.activeGasPrice = this.activeGasPriceConfirm
+
+      delta = Math.abs(this.fastestGasPrice - this.activeGasPrice)
+      if (delta < nearest) {
+        nearest = delta
+        selectedType = 'fastest'
+      }
+      delta = Math.abs(this.fastGasPrice - this.activeGasPrice)
+      if (delta < nearest) {
+        nearest = delta
+        selectedType = 'fast'
+      }
+      delta = Math.abs(this.averageGasPrice - this.activeGasPrice)
+      if (delta < nearest) {
+        nearest = delta
+        selectedType = 'average'
+      }
+
+      this.speedSelected = selectedType
     }
   },
   created() {
@@ -192,6 +220,11 @@ export default {
           this.averageGasPriceSpeed = avgWait
           this.fastGasPriceSpeed = fastWait
           this.fastestGasPriceSpeed = fastestWait
+
+          // Set selected gas price from confirm
+          if (this.activeGasPriceConfirm) {
+            this.setSelectedSpeed()
+          }
         }
       )
       .catch(err => {

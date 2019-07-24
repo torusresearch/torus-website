@@ -40,30 +40,10 @@
           </div>
           <div class="caption right clearfix">2.45 USD</div>
         </v-flex>
-        <v-flex xs12 mb-2>
-          <div class="subtitle-2 mx-4 mb-1">Select your Transaction Speed</div>
-          <v-layout class="px-3 mb-2">
-            <v-btn
-              v-for="speedOption in speedOptions"
-              :key="speedOption.type"
-              outlined
-              class="button-speed flex mx-2"
-              :class="speedOption.type === selectedSpeed ? 'primary theme--dark' : ''"
-            >
-              <span>~ {{ speedOption.speed }} Mins</span>
-              <span class="font-weight-light">{{ getGasDisplayString(speedOption.type, speedOption.price) }}</span>
-            </v-btn>
-          </v-layout>
-          <div class="subtitle-2 right blue--text mx-4">
-            <v-dialog v-model="dialogAdvanceOptions" persistent>
-              <template v-slot:activator="{ on }">
-                <span class="right primary--text dialog-launcher" v-on="on">Advance Options</span>
-              </template>
-              <ConfirmAdvanceOption @onClose="dialogAdvanceOptions = false" />
-            </v-dialog>
-          </div>
+        <v-flex px-2>
+          <TransactionSpeedSelect :gas="gasEstimate" :displayAmount="value" :activeGasPriceConfirm="gasPrice" @onSelectSpeed="onSelectSpeed" />
         </v-flex>
-        <v-flex xs12 px-4 mb-1>
+        <v-flex xs12 px-4 mt-3 mb-1>
           <div class="subtitle-1 font-weight-bold">Total</div>
           <v-divider></v-divider>
           <div>
@@ -180,7 +160,7 @@
       </v-card>
     </template>
     <!-- Disabled old implementation -->
-    <template v-else-if="type === 'transaction'">
+    <template v-else-if="type === 'transaction' && false">
       <v-card text :color="$vuetify.theme.torus_bcg">
         <v-card-text>
           <v-layout row wrap align-start justify-center>
@@ -345,7 +325,7 @@ import BroadcastChannel from 'broadcast-channel'
 import BottomSheet from '../components/BottomSheet.vue'
 import ShowToolTip from '../components/ShowToolTip.vue'
 import PageLoader from '../components/PageLoader.vue'
-import ConfirmAdvanceOption from '../components/ConfirmAdvanceOption'
+import TransactionSpeedSelect from '../components/TransactionSpeedSelect'
 import torus from '../torus'
 import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress } from '../utils/utils'
 
@@ -357,7 +337,7 @@ export default {
     BottomSheet,
     ShowToolTip,
     PageLoader,
-    ConfirmAdvanceOption
+    TransactionSpeedSelect
   },
   data() {
     return {
@@ -388,7 +368,6 @@ export default {
       dollarValue: 0,
       canApprove: true,
       canShowError: false,
-      speedOptions: [],
       selectedSpeed: '',
       id: 0
     }
@@ -473,18 +452,13 @@ export default {
       const currencyFee = ethFee * currencyMultiplier
       return `${significantDigits(currencyFee)} ${this.$store.state.selectedCurrency}`
     },
-    getSelectedSpeed() {
-      let selectedType = ''
-      let nearest = 1000
-      const speedOptions = [...this.speedOptions]
-      speedOptions.reverse().forEach(speed => {
-        const delta = Math.abs(speed.price - this.gasPrice)
-        if (delta < nearest) {
-          nearest = delta
-          selectedType = speed.type
-        }
-      })
-      return selectedType
+    onSelectSpeed(data) {
+      this.speedSelected = data.speedSelected
+      this.gasPrice = data.activeGasPrice
+
+      if (data.isReset) {
+        this.gasPrice = calculateGasPrice(this.gasPrice)
+      }
     },
     ...mapActions({})
   },
@@ -548,56 +522,6 @@ export default {
       bc.close()
     }
     bc.postMessage({ data: 'popup-loaded' })
-
-    // Fetch gas prices
-    fetch('https://ethgasstation.info/json/ethgasAPI.json', {
-      headers: {},
-      referrer: 'http://ethgasstation.info/json/',
-      referrerPolicy: 'no-referrer-when-downgrade',
-      body: null,
-      method: 'GET',
-      mode: 'cors'
-    })
-      .then(resp => resp.json())
-      .then(
-        ({
-          average: averageTimes10,
-          avgWait,
-          block_time: blockTime,
-          blockNum,
-          fast: fastTimes10,
-          fastest: fastestTimes10,
-          fastestWait,
-          fastWait,
-          safeLow: safeLowTimes10,
-          safeLowWait,
-          speed
-        }) => {
-          const [average, fast, fastest] = [averageTimes10, fastTimes10, fastestTimes10].map(price => parseFloat(price) / 10)
-          this.speedOptions = [
-            {
-              type: 'average',
-              speed: avgWait,
-              price: average
-            },
-            {
-              type: 'fast',
-              speed: fastWait,
-              price: fast
-            },
-            {
-              type: 'fastest',
-              speed: fastestWait,
-              price: fastest
-            }
-          ]
-
-          this.selectedSpeed = this.getSelectedSpeed()
-        }
-      )
-      .catch(err => {
-        console.log(err)
-      })
   }
 }
 </script>
@@ -755,18 +679,6 @@ hr {
   word-break: break-all;
   line-height: 1em;
   margin-top: 2px;
-}
-
-::v-deep .button-speed {
-  &.v-btn {
-    height: inherit;
-    border: 1px solid #a7b3bf;
-  }
-  .v-btn__content {
-    flex-direction: column;
-    padding: 12px 0;
-    line-height: 1em;
-  }
 }
 
 .dialog-launcher {
