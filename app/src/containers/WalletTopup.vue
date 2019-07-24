@@ -48,17 +48,19 @@
                         <div class="d-flex torus_text--text text--lighten-4">
                           <div>
                             <small>* Includes 5% Simplex Service Fees or 10 USD (whichever higher)</small>
-                            <img :src="require(`../../public/img/icons/help-circle.svg`)" class="inline-small ml-2 help-icon" />
+                            <v-tooltip bottom>
+                              <template v-slot:activator="{ on }">
+                                <img v-on="on" :src="require(`../../public/img/icons/help-circle.svg`)" class="inline-small ml-2 help-icon" />
+                              </template>
+                              <span class="caption">
+                                This fee goes entirely to Simplex for their services
+                                <br />
+                                in credit card processing, fraud detection and mitigation
+                              </span>
+                            </v-tooltip>
                           </div>
                           <small class="text-right">min 50 USD*</small>
                         </div>
-                        <v-tooltip bottom>
-                          <span>
-                            This fee goes entirely to Simplex for their services
-                            <br />
-                            in credit card processing, fraud detection and mitigation
-                          </span>
-                        </v-tooltip>
                       </div>
                     </div>
                   </div>
