@@ -64,9 +64,7 @@
                     Rate
                     <span class="right mr-3">:</span>
                   </v-flex>
-                  <v-flex xs10 class="torus_text--text text--lighten-4">
-                    1 ETH = 240.00 USD @ 12:34:20 PM
-                  </v-flex>
+                  <v-flex xs10 class="torus_text--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
                   <v-flex xs2>
                     Network
                     <span class="right mr-3">:</span>
@@ -112,7 +110,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn primary text @click="detailsDialog = false">Less Details</v-btn>
+                <v-btn color="primary" text @click="detailsDialog = false">Less Details</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -446,6 +444,7 @@ export default {
       doesSendEther: false,
       network: '',
       networkName: '',
+      transactionCategory: '',
       dollarValue: 0,
       canApprove: true,
       canShowError: false,
@@ -505,6 +504,23 @@ export default {
       let currencyMultiplier = 1
       if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
       return currencyMultiplier
+    },
+    finalBalancesArray() {
+      return this.$store.getters.tokenBalances.finalBalancesArray || []
+    },
+    getCurrencyRate() {
+      const targetBalance = this.finalBalancesArray.find(balance => {
+        if (this.transactionCategory === 'sentEther') {
+          return balance.id === 'ETH'
+        }
+        return false
+      })
+
+      if (targetBalance) return `${targetBalance.currencyRateText} @ ${this.getDate()}`
+
+      return ''
+      // console.log(txParams)
+      // console.log(this.finalBalancesArray)
     }
   },
   watch: {
@@ -578,6 +594,17 @@ export default {
 
       return networkName.name
     },
+    getDate() {
+      const currentDateTime = new Date()
+      let hours = currentDateTime.getHours()
+      let minutes = currentDateTime.getMinutes()
+      let seconds = currentDateTime.getSeconds()
+      const ampm = hours >= 12 ? 'PM' : 'AM'
+
+      hours = hours % 12
+      hours = hours || 12
+      return `${hours}:${minutes}:${seconds} ${ampm}`
+    },
     ...mapActions({})
   },
   mounted() {
@@ -602,7 +629,7 @@ export default {
         const web3Utils = torus.web3.utils
         let finalValue = 0
         const { value, to, data, from: sender, gas, gasPrice } = txParams.txParams || {}
-        const { simulationFails, network, id } = txParams || {}
+        const { simulationFails, network, id, transactionCategory } = txParams || {}
         const { reason } = simulationFails || {}
         if (value) {
           finalValue = web3Utils.fromWei(value.toString())
@@ -613,6 +640,7 @@ export default {
         this.id = id
         this.network = network
         this.networkName = this.getNetworkName(network)
+        this.transactionCategory = transactionCategory
         var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
         this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
