@@ -1,10 +1,10 @@
 <template>
   <div :class="[{ 'background-login': !loggedIn }, 'default']">
-    <v-container>
+    <v-container fill-height align-content-center>
       <template v-if="gapiLoaded">
         <template v-if="!loginInProgress">
-          <v-layout row wrap align-center justify-center align-content-center mt-5>
-            <v-flex xs12 mt-3>
+          <v-layout row wrap align-center justify-center align-content-center>
+            <v-flex xs12 m-0>
               <div class="text-xs-center text-capitalize login-title">Welcome to Torus</div>
             </v-flex>
             <v-flex d-flex xs12>
