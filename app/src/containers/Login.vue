@@ -1,19 +1,47 @@
 <template>
   <div :class="[{ 'background-login': !loggedIn }, 'default']">
-    <v-container fill-height align-content-center>
+    <v-container>
       <template v-if="gapiLoaded">
         <template v-if="!loginInProgress">
-          <v-layout row wrap align-center justify-center align-content-center>
-            <v-flex d-flex xs12 class="fix-size">
-              <img :src="require('../../public/images/torus-logo-white.svg')" alt="logo" />
-            </v-flex>
+          <v-layout row wrap align-center justify-center align-content-center mt-5>
             <v-flex xs12 mt-3>
-              <div class="text-xs-center headline text-capitalize white--text">The decentralized web awaits</div>
+              <div class="text-xs-center text-capitalize login-title">Welcome to Torus</div>
+            </v-flex>
+            <v-flex d-flex xs12>
+              <div class="text-xs-center text-capitalize login-subtitle">
+                You are just one step away from getting your digital wallet for your cryptocurrencies
+              </div>
             </v-flex>
             <v-flex xs12 mt-5>
               <div class="text-xs-center">
-                <v-btn id="flexiBtn" class="white--text btnStyle" outlined large @click="triggerLogin({ calledFromEmbed: false })">Login</v-btn>
+                <v-btn id="flexiBtn" large color="primary" class="flexiBtn px-5" type="button" @click="triggerLogin({ calledFromEmbed: false })">
+                  Login
+                </v-btn>
+                <small class="d-block text-gray mt-2">
+                  By clicking Login, you accept our
+                  <br />
+                  <a href="#">
+                    <span class="text-primary">Terms and Conditions</span>
+                  </a>
+                </small>
               </div>
+            </v-flex>
+            <v-flex xs12 mt-5>
+              <small class="text-gray text-xs-center d-block">
+                Note : For first time users, kindly
+                <a href="#">
+                  <span class="text-primary">enable Pop-ups</span>
+                </a>
+                to
+                <br />
+                gain access to your Torus Wallet
+              </small>
+            </v-flex>
+            <v-flex mt-5 text-xs-center>
+              <img width="224px" height="auto" :src="require('../../public/images/torus-people.png')" class="ml-2" />
+              <p class="m-0">
+                <small class="text-gray">The Decentralized Web Awaits</small>
+              </p>
             </v-flex>
           </v-layout>
         </template>
@@ -77,6 +105,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+a {
+  text-decoration: none;
+}
 #flexiBtn.btnStyle {
   width: 172px;
   height: 48px;
@@ -85,14 +116,36 @@ export default {
 
 .background-login {
   position: relative;
-  background-image: url(../assets/background_login.png);
+  background-image: url(../assets/login-footer.png);
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: center bottom;
   @extend .default;
+}
+
+.text-primary {
+  color: #5495f7;
+}
+
+.text-gray {
+  color: #5c6c7f;
 }
 
 .fix-size {
   height: 69px;
+}
+
+.login {
+  &-title {
+    color: #5495f7;
+    font-size: 3rem !important;
+    font-weight: bold;
+  }
+  &-subtitle {
+    font-size: 1.5rem !important;
+    font-weight: bold;
+    margin: 0 auto;
+    max-width: 514px;
+  }
 }
 
 .default {
