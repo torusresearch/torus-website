@@ -33,11 +33,12 @@
       <v-card color="dark card-shadow" white>
         <v-card-text class="pt-1 pb-4 px-6">
           <v-layout align-center>
-            <v-flex xs8 class="body-1 pt-4">
-              <span class="font-weight-bold">Check out the latest Dapp</span>
-              <br />
-              Visit Etheremon and start using ETH.
-              <v-btn color="primary" depressed class="px-12 py-1 mt-4 white--text" href="https://www.etheremon.com" target="_blank">Play Now</v-btn>
+            <v-flex xs8 class="pt-4">
+              <div class="body-1 font-weight-bold">Check out the latest Dapp</div>
+              <div class="body-2">Visit Etheremon and start using ETH.</div>
+              <div>
+                <v-btn color="primary" depressed class="px-12 py-1 mt-4 white--text" href="https://www.etheremon.com" target="_blank">Play Now</v-btn>
+              </div>
             </v-flex>
             <v-flex xs4 pt-4 class="text-right">
               <img :src="require(`../../public/images/etheremon.png`)" style="width: 100%" />
@@ -51,10 +52,10 @@
       <v-card color="dark card-shadow" white>
         <v-card-text class="pt-1 pb-4 px-6">
           <v-layout>
-            <v-flex xs8 class="body-1 pt-4">
-              <span class="font-weight-bold">Welcome to Torus.</span>
+            <v-flex xs8 class="pt-4">
+              <span class="body-1 font-weight-bold">Welcome to Torus.</span>
               <br />
-              Learn more about your wallet today.
+              <span class="body-2">Learn more about your wallet today.</span>
               <v-dialog v-model="dialog" max-width="700">
                 <template v-slot:activator="{ on }">
                   <v-btn color="primary" depressed class="px-12 py-1 mt-4" v-on="on">Learn more</v-btn>

@@ -2,7 +2,7 @@
   <div>
     <nav class="container pb-0">
       <v-app-bar>
-        <v-badge right>
+        <v-badge right class="hidden-xs-only">
           <template v-slot:badge>
             <span>Beta</span>
           </template>
@@ -10,21 +10,37 @@
             <img width="135" height="30" :src="require(`../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
           </v-toolbar-title>
         </v-badge>
+        <v-toolbar-title class="mt-8 hidden-sm-and-up">
+          <img :src="require('../../public/img/icons/t-fill.svg')" width="35" />
+          <div class="primary--text subtitle-2 beta-text">Beta</div>
+        </v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn class="hidden-sm-and-up" text @click="drawer = !drawer">
+        <v-btn class="hidden-sm-and-up" icon @click="drawer = !drawer">
           <img :src="require('../../public/img/icons/menu-primary.svg')" />
         </v-btn>
-        <account-menu></account-menu>
+
+        <v-menu offset-y>
+          <template v-slot:activator="{ on }">
+            <v-btn class="hidden-xs-only" small text v-on="on">
+              <span>Satoshi Nakamoto</span>
+              <v-icon class="ml-2 mt-1" small>$vuetify.icons.select</v-icon>
+            </v-btn>
+          </template>
+
+          <account-menu></account-menu>
+        </v-menu>
       </v-app-bar>
 
       <v-navigation-drawer v-model="drawer" disable-resize-watcher app right>
-        <v-list>
+        <account-menu :headerItems="headerItems"></account-menu>
+        <!-- <v-list>
           <v-list-item v-for="headerItem in headerItems" :key="headerItem.name" link router :to="headerItem.route">
             <v-list-item-content>
               <v-list-item-title>{{ headerItem.display }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-        </v-list>
+        </v-list> -->
+        <account-menu></account-menu>
       </v-navigation-drawer>
     </nav>
     <v-container class="py-0 hidden-xs-only">
@@ -68,6 +84,10 @@ export default {
 .v-tab {
   text-transform: inherit;
   font-size: 16px;
+}
+
+.beta-text {
+  line-height: 1em;
 }
 
 ::v-deep .v-badge__badge.primary {
