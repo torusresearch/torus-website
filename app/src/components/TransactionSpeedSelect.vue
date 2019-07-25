@@ -1,7 +1,15 @@
 <template>
   <v-flex xs12 md6>
     <div class="subtitle-2 mb-1 px-4">
-      <span>Select your Transaction Speed</span>
+      <span>
+        Select your Transaction Speed
+        <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
+          </template>
+          <span>Transaction Speed Info</span>
+        </v-tooltip>
+      </span>
       <v-dialog v-model="advanceOptionDialog" persistent>
         <template v-slot:activator="{ on }">
           <span class="float-right primary--text advance-option" v-on="on">Advance Options</span>
@@ -23,7 +31,7 @@
           large
           outlined
           class="button-speed"
-          :class="speedSelected === 'average' ? 'primary theme--dark' : ''"
+          :color="speedSelected === 'average' ? 'primary' : 'grey'"
           @click="selectSpeed('average', averageGasPrice)"
         >
           <span>~ {{ averageGasPriceSpeed }} Mins</span>
@@ -36,7 +44,7 @@
           large
           outlined
           class="button-speed"
-          :class="speedSelected === 'fastest' ? 'primary theme--dark' : ''"
+          :color="speedSelected === 'fastest' ? 'primary' : 'grey'"
           @click="selectSpeed('fastest', fastestGasPrice)"
         >
           <span>~ {{ fastestGasPriceSpeed }} Mins</span>
@@ -123,7 +131,7 @@ export default {
     },
     getGasDisplayString(gasPrice) {
       const currencyFee = this.getGasAmount(gasPrice)
-      return `${significantDigits(currencyFee)} ${this.selectedCurrency}`
+      return `Pay ${significantDigits(currencyFee)} ${this.selectedCurrency}`
     },
     getGasAmount(gasPrice) {
       const currencyMultiplier = this.getCurrencyMultiplier
@@ -212,7 +220,6 @@ export default {
 ::v-deep .button-speed {
   &.v-btn {
     height: inherit;
-    border: 1px solid #a7b3bf;
   }
   .v-btn__content {
     flex-direction: column;

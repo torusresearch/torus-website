@@ -54,6 +54,17 @@ export default {
   text-transform: inherit;
 }
 
+.v-input.v-input--is-readonly {
+  .v-input__slot {
+    background: var(--v-background_2-base) !important;
+  }
+}
+
+.v-text-field__suffix {
+  color: var(--v-torus_text-lighten5);
+  font-size: 14px;
+}
+
 body,
 html {
   height: 100%;

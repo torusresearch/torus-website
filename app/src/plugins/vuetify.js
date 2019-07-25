@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 import { ceruleanBlue, lightBlue } from './themes'
-import { SelectIcon, SendIcon, AddIcon, SearchIcon, RefreshIcon } from '../icons'
+import { SelectIcon, SendIcon, AddIcon, SearchIcon, RefreshIcon, EthIcon, QuestionIcon } from '../icons'
 
 Vue.use(Vuetify)
 
@@ -32,6 +32,12 @@ export default new Vuetify({
       },
       refresh: {
         component: RefreshIcon
+      },
+      eth: {
+        component: EthIcon
+      },
+      question: {
+        component: QuestionIcon
       }
     }
   }
