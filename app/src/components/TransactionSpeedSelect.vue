@@ -17,7 +17,7 @@
       </v-dialog>
     </div>
     <v-layout xs12 justify-space-between wrap v-if="!isAdvanceOption">
-      <v-flex xs12 sm4 px-4 mb-1>
+      <v-flex xs6 px-4 mb-1>
         <v-btn
           block
           large
@@ -30,20 +30,7 @@
           <span class="font-weight-light">{{ getGasDisplayString(averageGasPrice) }}</span>
         </v-btn>
       </v-flex>
-      <v-flex xs12 sm4 px-4 mb-1>
-        <v-btn
-          block
-          large
-          outlined
-          class="button-speed"
-          :class="speedSelected === 'fast' ? 'primary theme--dark' : ''"
-          @click="selectSpeed('fast', fastGasPrice)"
-        >
-          <span>~ {{ fastGasPriceSpeed }} Mins</span>
-          <span class="font-weight-light">{{ getGasDisplayString(fastGasPrice) }}</span>
-        </v-btn>
-      </v-flex>
-      <v-flex xs12 sm4 px-4 mb-1>
+      <v-flex xs6 px-4 mb-1>
         <v-btn
           block
           large
@@ -86,11 +73,9 @@ export default {
       isAdvanceOption: false,
       speedSelected: '',
       averageGasPrice: '5',
-      fastGasPrice: '10', // 10 gwei
       fastestGasPrice: '20',
       activeGasPrice: '',
       averageGasPriceSpeed: '',
-      fastGasPriceSpeed: '',
       fastestGasPriceSpeed: ''
     }
   },
@@ -118,8 +103,6 @@ export default {
     resetAdvanceOption() {
       if (this.speedSelected === 'average') {
         this.activeGasPrice = this.averageGasPrice
-      } else if (this.speedSelected === 'fast') {
-        this.activeGasPrice = this.fastGasPrice
       } else if (this.speedSelected === 'fastest') {
         this.activeGasPrice = this.fastestGasPrice
       }
@@ -174,11 +157,6 @@ export default {
         nearest = delta
         selectedType = 'fastest'
       }
-      delta = Math.abs(this.fastGasPrice - this.activeGasPrice)
-      if (delta < nearest) {
-        nearest = delta
-        selectedType = 'fast'
-      }
       delta = Math.abs(this.averageGasPrice - this.activeGasPrice)
       if (delta < nearest) {
         nearest = delta
@@ -204,21 +182,17 @@ export default {
           avgWait,
           block_time: blockTime,
           blockNum,
-          fast: fastTimes10,
           fastest: fastestTimes10,
           fastestWait,
-          fastWait,
           safeLow: safeLowTimes10,
           safeLowWait,
           speed
         }) => {
-          const [average, fast, fastest] = [averageTimes10, fastTimes10, fastestTimes10].map(price => parseFloat(price) / 10)
+          const [average, fastest] = [averageTimes10, fastestTimes10].map(price => parseFloat(price) / 10)
           this.averageGasPrice = average
-          this.fastGasPrice = fast
           this.fastestGasPrice = fastest
 
           this.averageGasPriceSpeed = avgWait
-          this.fastGasPriceSpeed = fastWait
           this.fastestGasPriceSpeed = fastestWait
 
           // Set selected gas price from confirm
