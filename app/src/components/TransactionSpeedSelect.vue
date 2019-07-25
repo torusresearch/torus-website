@@ -15,6 +15,7 @@
           <span class="float-right primary--text advance-option" v-on="on">Advance Options</span>
         </template>
         <TransferAdvanceOption
+          :symbol="symbol"
           :dialog="advanceOptionDialog"
           :displayAmount="displayAmount"
           :gas="gas"
@@ -74,7 +75,7 @@ export default {
   components: {
     TransferAdvanceOption
   },
-  props: ['gas', 'displayAmount', 'activeGasPriceConfirm'],
+  props: ['gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol'],
   data() {
     return {
       advanceOptionDialog: false,

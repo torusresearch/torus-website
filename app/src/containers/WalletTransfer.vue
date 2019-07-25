@@ -56,7 +56,7 @@
           </v-flex>
         </v-layout>
         <v-layout wrap>
-          <TransactionSpeedSelect :gas="gas" :displayAmount="displayAmount" @onSelectSpeed="onSelectSpeed" />
+          <TransactionSpeedSelect :symbol="selectedItem.symbol" :gas="gas" :displayAmount="displayAmount" @onSelectSpeed="onSelectSpeed" />
           <v-flex xs12 px-4 sm6>
             <div>
               <span class="subtitle-2">Total Cost</span>
