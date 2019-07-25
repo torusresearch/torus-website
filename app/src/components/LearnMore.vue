@@ -23,19 +23,17 @@
           </v-flex>
         </v-layout>
         <v-list class="mx-5 mt-3">
-          <v-list-item-group color="primary px-0">
-            <v-list-item v-for="contentItem in content.list" :key="contentItem.name">
-              <v-list-item-icon>
-                <img :src="require(`../../public/img/icons/${contentItem.icon}`)" width="35" />
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title class=".subtitle-1 font-weight-bold">{{ contentItem.name }}</v-list-item-title>
-                <div class="caption torus_text--text text--lighten-3">{{ contentItem.content }}</div>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-item-group>
+          <v-list-item v-for="contentItem in content.list" :key="contentItem.name">
+            <v-list-item-icon>
+              <img :src="require(`../../public/img/icons/${contentItem.icon}`)" width="35" />
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title class=".subtitle-1 font-weight-bold">{{ contentItem.name }}</v-list-item-title>
+              <div class="caption torus_text--text text--lighten-3">{{ contentItem.content }}</div>
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
-        <v-btn @click="nextStep(content.step)" depressed large class="primary px-5 next-btn">Next</v-btn>
+        <v-btn @click="nextStep(content.step)" depressed large class="primary px-5 next-btn">{{ content.step > 2 ? 'Done' : 'Next' }}</v-btn>
       </v-stepper-content>
     </v-stepper-items>
   </v-stepper>
@@ -48,27 +46,9 @@ export default {
       e1: 1,
       contents: [
         {
-          title: 'Privacy and Security',
-          subtitle: 'Your Privacy are our top priority',
-          step: 2,
-          list: [
-            {
-              icon: 'key_large.svg',
-              name: 'Private Key',
-              content: `This is your password to verify account ownership. Only you are able to access it.
-                If you lose this, you potentially lose ownership of your account and ALL your money.`
-            },
-            {
-              icon: 'password.svg',
-              name: 'Account Recovery',
-              content: 'Torus uses Google/Facebook 2 Factor-Authentication for account recovery.'
-            }
-          ]
-        },
-        {
           title: 'Getting Started',
           subtitle: 'Here are some key terms to guide you along',
-          step: 3,
+          step: 2,
           list: [
             {
               icon: 't.svg',
@@ -85,6 +65,24 @@ export default {
               icon: 'money.svg',
               name: 'Get Digital Currency and Tokens',
               content: 'You can share your wallet address with others to receive digital currency and tokens.'
+            }
+          ]
+        },
+        {
+          title: 'Privacy and Security',
+          subtitle: 'Your Privacy are our top priority',
+          step: 3,
+          list: [
+            {
+              icon: 'key_large.svg',
+              name: 'Private Key',
+              content: `This is your password to verify account ownership. Only you are able to access it.
+                If you lose this, you potentially lose ownership of your account and ALL your money.`
+            },
+            {
+              icon: 'password.svg',
+              name: 'Account Recovery',
+              content: 'Torus uses Google/Facebook 2 Factor-Authentication for account recovery.'
             }
           ]
         }
@@ -115,6 +113,7 @@ export default {
   .v-stepper__content {
     padding: 0;
     height: 550px;
+    transition: none;
   }
 
   .next-btn {

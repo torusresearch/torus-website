@@ -55,7 +55,7 @@
               <span class="font-weight-bold">Welcome to Torus.</span>
               <br />
               Learn more about your wallet today.
-              <v-dialog v-model="dialog" max-width="700" persistent>
+              <v-dialog v-model="dialog" max-width="700">
                 <template v-slot:activator="{ on }">
                   <v-btn color="primary" depressed class="px-5 py-1 mt-3" v-on="on">Learn more</v-btn>
                 </template>

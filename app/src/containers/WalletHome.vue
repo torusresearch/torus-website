@@ -6,7 +6,7 @@
         <div class="right">
           <v-btn outlined large color="primary" :disabled="isFreshAccount" class="px-5 py-1 mr-3 mt-3" @click="initiateTransfer">
             <v-icon left>$vuetify.icons.send</v-icon>
-            Send
+            Transfer
           </v-btn>
           <v-tooltip top v-model="isFreshAccount">
             <template v-slot:activator="{ on }">
@@ -160,12 +160,26 @@ export default {
     },
     setDateUpdated() {
       const currentDateTime = new Date()
-      const date = `${currentDateTime.getDate()}/${currentDateTime.getMonth() + 1}/${currentDateTime
+      const day = currentDateTime
+        .getDate()
+        .toString()
+        .padStart(2, '0')
+      const month = (currentDateTime.getMonth() + 1).toString().padStart(2, '0')
+      const date = `${day}/${month}/${currentDateTime
         .getFullYear()
         .toString()
         .substring(2, 4)}`
-      const time = `${currentDateTime.getHours()}:${currentDateTime.getMinutes()}`
-      this.lastUpdated = `${date} ${time}`
+
+      const hours = currentDateTime
+        .getHours()
+        .toString()
+        .padStart(2, '0')
+      const mins = currentDateTime
+        .getMinutes()
+        .toString()
+        .padStart(2, '0')
+      const time = `${hours}:${mins}`
+      this.lastUpdated = `${date}, ${time}`
     }
   },
   created() {

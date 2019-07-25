@@ -50,6 +50,10 @@ export default {
   min-height: 0px !important;
 }
 
+.v-btn {
+  text-transform: inherit;
+}
+
 body,
 html {
   height: 100%;
