@@ -1,11 +1,12 @@
 <template>
   <v-flex xs12 sm6 mb-4 px-4>
-    <v-card class="mb-2">
+    <v-card class="mb-2" @click="provider = 'simplex'">
       <v-container fluid class="py-2">
         <v-layout wrap>
           <div class="provider torus_text--text text--lighten-4">
             <div class="provider-checkbox">
-              <input type="radio" v-model="provider" value="simplex" name="test-radio" id="test-simplex" />
+              <v-icon color="primary" v-if="provider === 'simplex'">$vuetify.icons.radio_checked</v-icon>
+              <v-icon color="grey" v-else>$vuetify.icons.radio_unchecked</v-icon>
               <img :src="require(`../../public/images/logos/simplex-logo.png`)" class="provider-logo" />
             </div>
             <div class="provider-description">
@@ -28,7 +29,7 @@
             <v-layout wrap>
               <div class="provider">
                 <div class="provider-checkbox">
-                  <input type="radio" disabled v-model="provider" value="wyre" name="test-radio" id="test-simplex" />
+                  <input type="radio" disabled v-model="provider" value="wyre" name="test-radio" />
                   <img :src="require(`../../public/images/logos/wyre-logo.svg`)" class="provider-logo" />
                 </div>
                 <div class="provider-description">
@@ -53,7 +54,7 @@
             <v-layout wrap>
               <div class="provider">
                 <div class="provider-checkbox">
-                  <input type="radio" disabled v-model="provider" value="wyre" name="test-radio" id="test-simplex" />
+                  <input type="radio" disabled v-model="provider" value="wyre" name="test-radio" />
                   <img :src="require(`../../public/images/logos/crypto-logo.png`)" class="provider-logo" />
                 </div>
                 <div class="provider-description">
@@ -78,7 +79,7 @@
             <v-layout wrap>
               <div class="provider">
                 <div class="provider-checkbox">
-                  <input type="radio" disabled v-model="provider" value="wyre" name="test-radio" id="test-simplex" />
+                  <input type="radio" disabled v-model="provider" value="wyre" name="test-radio" />
                   <img :src="require(`../../public/images/logos/moon-pay-logo.svg`)" class="provider-logo" />
                 </div>
                 <div class="provider-description">

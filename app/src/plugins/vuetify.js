@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 import { ceruleanBlue, lightBlue } from './themes'
-import { SelectIcon, SendIcon, AddIcon, SearchIcon, RefreshIcon, EthIcon, QuestionIcon } from '../icons'
+import { SelectIcon, SendIcon, AddIcon, SearchIcon, RefreshIcon, EthIcon, QuestionIcon, RadioCheckedIcon, RadioUncheckedIcon } from '../icons'
 
 Vue.use(Vuetify)
 
@@ -38,6 +38,12 @@ export default new Vuetify({
       },
       question: {
         component: QuestionIcon
+      },
+      radio_checked: {
+        component: RadioCheckedIcon
+      },
+      radio_unchecked: {
+        component: RadioUncheckedIcon
       }
     }
   }
