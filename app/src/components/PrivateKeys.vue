@@ -12,7 +12,7 @@
                 <img :src="require('../../public/img/icons/file-text-grey.svg')" />
               </v-list-item-icon>
               <v-list-item-content>
-                <div class="subtitle-1 d-flex font-weight-bold">Download soft copy (JSON)</div>
+                <div class="subtitle-1 flex-grow-1 font-weight-bold">Download soft copy (JSON)</div>
                 <v-expand-transition>
                   <v-layout align-center justify-space-between v-if="isShowGetPassword" class="mt-2">
                     <v-flex>
@@ -55,7 +55,7 @@
                 <img :src="require(`../../public/img/icons/key.svg`)" />
               </v-list-item-icon>
               <v-list-item-content>
-                <div class="subtitle-1 d-flex font-weight-bold">Show Private Key</div>
+                <div class="subtitle-1 flex-grow-1 font-weight-bold">Show Private Key</div>
                 <v-expand-transition>
                   <v-layout align-center justify-space-between v-if="isShowPrivateKey" class="mt-2">
                     <v-flex>

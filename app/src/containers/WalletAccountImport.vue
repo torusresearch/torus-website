@@ -1,6 +1,6 @@
 <template>
   <v-flex xs12 sm8 mb-4 mt-4>
-    <div class="d-flex has-border">
+    <div class="flex-grow-1 has-border">
       <v-layout align-center wrap>
         <v-flex xs12 sm6 align-self-center>
           Select Import Type
@@ -21,7 +21,7 @@
     </div>
 
     <template v-if="selectedType === 'private'">
-      <div class="d-flex has-border">
+      <div class="flex-grow-1 has-border">
         <v-form ref="privateKeyForm" @submit.prevent="" v-model="privateKeyFormValid" lazy-validation>
           <v-layout wrap>
             <v-flex xs12 sm6 align-self-center>
@@ -54,7 +54,7 @@
 
     <template v-if="selectedType === 'keystore'">
       <v-form ref="jsonFileForm" v-model="jsonFileFormValid" @submit.prevent="" lazy-validation>
-        <div class="d-flex has-border">
+        <div class="flex-grow-1 has-border">
           <v-layout>
             <v-flex xs6 align-self-center>
               Keystore
@@ -69,7 +69,7 @@
           </v-layout>
         </div>
         <div class="text-right" v-show="selectedFileName !== ''">Selected File: {{ selectedFileName }}</div>
-        <div class="d-flex has-border">
+        <div class="flex-grow-1 has-border">
           <v-layout wrap>
             <v-flex xs12 sm6 align-self-center>
               Password

@@ -7,7 +7,7 @@
             <v-flex xs12 m-0>
               <div class="text-center login-title">Welcome to Torus</div>
             </v-flex>
-            <v-flex d-flex xs12>
+            <v-flex flex-grow-1 xs12>
               <div class="text-center login-subtitle">You are just one step away from getting your digital wallet for your cryptocurrencies</div>
             </v-flex>
             <v-flex xs12 mt-12>

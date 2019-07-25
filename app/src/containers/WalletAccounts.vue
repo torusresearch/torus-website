@@ -1,9 +1,9 @@
 <template>
   <v-flex xs12 sm8 mt-4 mb-4>
-    <div class="d-flex has-border">
+    <div class="flex-grow-1 has-border">
       <v-select single-line solo text :items="accounts" :value="selectedAddress" label="Selected Account" @change="onAccountChange"></v-select>
     </div>
-    <div class="d-flex has-border">
+    <div class="flex-grow-1 has-border">
       <span class="body-2">Public Address</span>
       <span class="text-right">
         <show-tool-tip :address="selectedAddress">

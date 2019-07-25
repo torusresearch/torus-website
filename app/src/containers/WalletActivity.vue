@@ -166,8 +166,8 @@ export default {
       <v-container class="mb-1 p-0">
         <span class="headline font-weight-bold">Transaction Activities</span>
       </v-container>
-      <v-container class="d-flex alignt-items-center filters-container py-0 mb-4">
-        <v-flex xs12 md2 d-flex class="mr-2">
+      <v-container class="flex-grow-1 alignt-items-center filters-container py-0 mb-4">
+        <v-flex xs12 md2 flex-grow-1 class="mr-2">
           <!-- <v-select :items="items" label="All Transactions"></v-select> -->
           <div class="select-container">
             <select>
@@ -180,7 +180,7 @@ export default {
             </select>
           </div>
         </v-flex>
-        <v-flex xs12 md2 d-flex>
+        <v-flex xs12 md2 flex-grow-1>
           <div class="select-container">
             <select>
               <option value>Period</option>
@@ -236,7 +236,7 @@ export default {
         v-for="(item, index) in transactions"
         :key="index"
       >
-        <v-flex class="d-flex align-items-center justify-content-between card-row">
+        <v-flex class="flex-grow-1 align-items-center justify-content-between card-row">
           <v-container>
             <img
               v-if="transactions[index].status == 'Successful'"
@@ -259,7 +259,7 @@ export default {
             <p class="font-weight-bold" :class="'text-' + transactions[index].status.toLowerCase()">{{ item.status }}</p>
           </v-container>
         </v-flex>
-        <v-flex class="d-flex align-items-center justify-content-between card-row">
+        <v-flex class="flex-grow-1 align-items-center justify-content-between card-row">
           <v-container>
             <p class="text-gray">Date:</p>
           </v-container>
@@ -268,7 +268,7 @@ export default {
           </v-container>
         </v-flex>
 
-        <v-flex class="d-flex align-items-center justify-content-between card-row">
+        <v-flex class="flex-grow-1 align-items-center justify-content-between card-row">
           <v-container>
             <p class="text-gray">Amount</p>
           </v-container>
@@ -277,7 +277,7 @@ export default {
           </v-container>
         </v-flex>
 
-        <v-flex class="d-flex align-items-center justify-content-between card-row mb-4">
+        <v-flex class="flex-grow-1 align-items-center justify-content-between card-row mb-4">
           <v-container>
             <p class="text-gray">To:</p>
           </v-container>

@@ -45,7 +45,7 @@
                   <div class="v-messages">
                     <div class="v-messages__wrapper">
                       <div class="v-messages__message">
-                        <div class="d-flex torus_text--text text--lighten-4">
+                        <div class="flex-grow-1 torus_text--text text--lighten-4">
                           <div>
                             <small>* Includes 5% Simplex Service Fees or 10 USD (whichever higher)</small>
                             <v-tooltip bottom>
