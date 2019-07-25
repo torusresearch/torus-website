@@ -1,5 +1,5 @@
 <template>
-  <router-link tag="a" :to="to" class="mr-5 pb-1" :class="computedClass">
+  <router-link tag="a" :to="to" class="mr-12 pb-1" :class="computedClass">
     <slot></slot>
   </router-link>
 </template>

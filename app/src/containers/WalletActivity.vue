@@ -161,12 +161,12 @@ export default {
 }
 </script>
 <template>
-  <v-layout mt-5 row wrap align-start align-content-start justify-center class="wallet-transactions-activity">
+  <v-layout mt-12 wrap align-start align-content-start justify-center class="wallet-transactions-activity">
     <v-flex xs12>
       <v-container class="mb-1 p-0">
         <span class="headline font-weight-bold">Transaction Activities</span>
       </v-container>
-      <v-container class="d-flex alignt-items-center filters-container py-0 mb-3">
+      <v-container class="d-flex alignt-items-center filters-container py-0 mb-4">
         <v-flex xs12 md2 d-flex class="mr-2">
           <!-- <v-select :items="items" label="All Transactions"></v-select> -->
           <div class="select-container">
@@ -217,21 +217,21 @@ export default {
               </small>
               {{ props.item.action }}
             </td>
-            <td class="text-xs-left">{{ props.item.from }}</td>
-            <td class="text-xs-left">{{ props.item.to }}</td>
-            <td class="text-xs-left">{{ props.item.amount }}</td>
-            <td class="text-xs-left">{{ props.item.date }}</td>
-            <td class="text-xs-left" :class="'text-' + props.item.status.toLowerCase()">{{ props.item.status }}</td>
+            <td class="text-left">{{ props.item.from }}</td>
+            <td class="text-left">{{ props.item.to }}</td>
+            <td class="text-left">{{ props.item.amount }}</td>
+            <td class="text-left">{{ props.item.date }}</td>
+            <td class="text-left" :class="'text-' + props.item.status.toLowerCase()">{{ props.item.status }}</td>
           </template>
         </v-data-table>
-        <div class="text-xs-center pt-2 activity-pagination mt-4">
+        <div class="text-center pt-2 activity-pagination mt-6">
           <v-pagination v-model="pagination.page" :length="pages"></v-pagination>
         </div>
       </v-card>
       <v-card
         flat
         :color="'white'"
-        class="fill-height hidden-md-and-up mb-4 px-2 card-mobile"
+        class="fill-height hidden-md-and-up mb-6 px-2 card-mobile"
         style="width: 100%;"
         v-for="(item, index) in transactions"
         :key="index"
@@ -255,7 +255,7 @@ export default {
             />
             <p class="text-gray d-inline">{{ item.action }}</p>
           </v-container>
-          <v-container class="text-xs-right">
+          <v-container class="text-right">
             <p class="font-weight-bold" :class="'text-' + transactions[index].status.toLowerCase()">{{ item.status }}</p>
           </v-container>
         </v-flex>
@@ -263,7 +263,7 @@ export default {
           <v-container>
             <p class="text-gray">Date:</p>
           </v-container>
-          <v-container class="text-xs-right">
+          <v-container class="text-right">
             <p>{{ item.date }}</p>
           </v-container>
         </v-flex>
@@ -272,12 +272,12 @@ export default {
           <v-container>
             <p class="text-gray">Amount</p>
           </v-container>
-          <v-container class="text-xs-right font-weight-bold">
+          <v-container class="text-right font-weight-bold">
             <p>{{ item.amount }}</p>
           </v-container>
         </v-flex>
 
-        <v-flex class="d-flex align-items-center justify-content-between card-row mb-3">
+        <v-flex class="d-flex align-items-center justify-content-between card-row mb-4">
           <v-container>
             <p class="text-gray">To:</p>
           </v-container>

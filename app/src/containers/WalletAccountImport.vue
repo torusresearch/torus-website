@@ -1,7 +1,7 @@
 <template>
-  <v-flex xs12 sm8 mb-3 mt-3>
+  <v-flex xs12 sm8 mb-4 mt-4>
     <div class="d-flex has-border">
-      <v-layout align-center row wrap>
+      <v-layout align-center wrap>
         <v-flex xs12 sm6 align-self-center>
           Select Import Type
         </v-flex>
@@ -23,7 +23,7 @@
     <template v-if="selectedType === 'private'">
       <div class="d-flex has-border">
         <v-form ref="privateKeyForm" @submit.prevent="" v-model="privateKeyFormValid" lazy-validation>
-          <v-layout row wrap>
+          <v-layout wrap>
             <v-flex xs12 sm6 align-self-center>
               Input Private Key
             </v-flex>
@@ -45,7 +45,7 @@
         </v-form>
       </div>
 
-      <div class="has-border text-xs-right" mt-1>
+      <div class="has-border text-right" mt-1>
         <v-btn class="btnStyle" @click.prevent="importViaPrivateKey" :loading="isLoadingPrivate" :disabled="!privateKeyFormValid || isLoadingPrivate">
           Import
         </v-btn>
@@ -55,7 +55,7 @@
     <template v-if="selectedType === 'keystore'">
       <v-form ref="jsonFileForm" v-model="jsonFileFormValid" @submit.prevent="" lazy-validation>
         <div class="d-flex has-border">
-          <v-layout row>
+          <v-layout>
             <v-flex xs6 align-self-center>
               Keystore
             </v-flex>
@@ -68,9 +68,9 @@
             </v-flex>
           </v-layout>
         </div>
-        <div class="text-xs-right" v-show="selectedFileName !== ''">Selected File: {{ selectedFileName }}</div>
+        <div class="text-right" v-show="selectedFileName !== ''">Selected File: {{ selectedFileName }}</div>
         <div class="d-flex has-border">
-          <v-layout row wrap>
+          <v-layout wrap>
             <v-flex xs12 sm6 align-self-center>
               Password
             </v-flex>
@@ -91,7 +91,7 @@
           </v-layout>
         </div>
 
-        <div class="has-border text-xs-right" mt-1>
+        <div class="has-border text-right" mt-1>
           <v-btn
             class="btnStyle"
             @click.prevent="importViaKeyStoreFile"

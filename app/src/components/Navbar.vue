@@ -6,7 +6,7 @@
           <template v-slot:badge>
             <span>Beta</span>
           </template>
-          <v-toolbar-title class="mr-4">
+          <v-toolbar-title class="mr-6">
             <img width="135" height="30" :src="require(`../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
           </v-toolbar-title>
         </v-badge>
@@ -28,7 +28,7 @@
       </v-navigation-drawer>
     </nav>
     <v-container class="py-0 hidden-xs-only">
-      <v-tabs class="mx-3">
+      <v-tabs class="mx-4">
         <v-tab v-for="headerItem in headerItems" :key="headerItem.name" :to="headerItem.route">
           {{ headerItem.display }}
         </v-tab>

@@ -1,10 +1,10 @@
 <template>
   <v-flex xs12 md6>
-    <div class="subtitle-2 mb-1 px-3">
+    <div class="subtitle-2 mb-1 px-4">
       <span>Select your Transaction Speed</span>
       <v-dialog v-model="advanceOptionDialog" persistent>
         <template v-slot:activator="{ on }">
-          <span class="right primary--text advance-option" v-on="on">Advance Options</span>
+          <span class="float-right primary--text advance-option" v-on="on">Advance Options</span>
         </template>
         <TransferAdvanceOption
           :dialog="advanceOptionDialog"
@@ -17,7 +17,7 @@
       </v-dialog>
     </div>
     <v-layout xs12 justify-space-between wrap v-if="!isAdvanceOption">
-      <v-flex xs12 sm4 px-3 mb-1>
+      <v-flex xs12 sm4 px-4 mb-1>
         <v-btn
           block
           large
@@ -30,7 +30,7 @@
           <span class="font-weight-light">{{ getGasDisplayString(averageGasPrice) }}</span>
         </v-btn>
       </v-flex>
-      <v-flex xs12 sm4 px-3 mb-1>
+      <v-flex xs12 sm4 px-4 mb-1>
         <v-btn
           block
           large
@@ -43,7 +43,7 @@
           <span class="font-weight-light">{{ getGasDisplayString(fastGasPrice) }}</span>
         </v-btn>
       </v-flex>
-      <v-flex xs12 sm4 px-3 mb-1>
+      <v-flex xs12 sm4 px-4 mb-1>
         <v-btn
           block
           large
@@ -58,13 +58,13 @@
       </v-flex>
     </v-layout>
     <v-layout v-if="isAdvanceOption" align-center>
-      <v-flex xs6 px-4 mb-1>
+      <v-flex xs6 px-6 mb-1>
         <div class="subtitle-2 font-weight-bold">
           {{ getEthAmountDisplay(gas, activeGasPrice) }}
           <span class="caption torus_text--text text--lighten-3">( ~ {{ getGasDisplayString(activeGasPrice) }} )</span>
         </div>
       </v-flex>
-      <v-flex xs6 px-3 class="text-xs-right">
+      <v-flex xs6 px-4 class="text-right">
         <v-btn outlined color="primary" @click="resetAdvanceOption">Reset</v-btn>
       </v-flex>
     </v-layout>

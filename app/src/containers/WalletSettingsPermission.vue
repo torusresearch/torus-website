@@ -2,8 +2,8 @@
   <v-card class="advance-option">
     <v-card-text class="torus_text--text">
       <v-container>
-        <v-layout mt-3 row wrap class="wallet-dapp-permission">
-          <v-flex xs12 px-3 class="title-container mb-3">
+        <v-layout mt-4 wrap class="wallet-dapp-permission">
+          <v-flex xs12 px-4 class="title-container mb-4">
             <div class="title">
               <div class="d-inline font-weight-bold headline">Dapp Permission</div>
               <p class="text">
@@ -19,7 +19,7 @@
               Add a new List
             </v-btn>
           </v-flex>
-          <v-flex xs12 class="px-3">
+          <v-flex xs12 class="px-4">
             <template v-for="(permission, index) in permissions">
               <v-slide-y-transition :key="index">
                 <dapp-permission-edit v-if="permission.isEdit" @onCancel="permission.isEdit = false" />
@@ -30,7 +30,7 @@
             </template>
           </v-flex>
         </v-layout>
-        <v-layout mt-3 pr-3 row>
+        <v-layout mt-4 pr-4>
           <v-spacer></v-spacer>
           <v-btn large text @click="onClose">Close</v-btn>
         </v-layout>

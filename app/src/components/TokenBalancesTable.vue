@@ -1,8 +1,8 @@
 <template>
-  <v-layout row wrap align-center>
-    <v-flex class="xs12 sm6 px-3 my-3" v-for="(balance, index) in tokenBalances" :key="index" :style="`order: ${index > 0 ? index + 1 : index}`">
-      <v-card color="card-shadow pb-4 pt-1">
-        <v-card-text class="torus_text--text py-4 px-4">
+  <v-layout wrap align-center>
+    <v-flex class="xs12 sm6 px-4 my-4" v-for="(balance, index) in tokenBalances" :key="index" :style="`order: ${index > 0 ? index + 1 : index}`">
+      <v-card color="card-shadow pb-6 pt-1">
+        <v-card-text class="torus_text--text py-6 px-6">
           <v-layout>
             <v-flex xs6>
               <img
@@ -12,7 +12,7 @@
               />
               <span class="subtitle-1 ml-2 d-inline-flex">{{ balance.name }}</span>
             </v-flex>
-            <v-flex xs6 class="text-xs-right">
+            <v-flex xs6 class="text-right">
               {{ balance.formattedBalance }}
             </v-flex>
           </v-layout>
@@ -21,7 +21,7 @@
             <v-flex xs6>
               {{ balance.currencyRateText }}
             </v-flex>
-            <v-flex xs6 class="text-xs-right">
+            <v-flex xs6 class="text-right">
               {{ balance.currencyBalance }}
             </v-flex>
           </v-layout>
@@ -29,17 +29,17 @@
       </v-card>
     </v-flex>
 
-    <v-flex class="xs12 sm6 px-3 my-3" v-if="!isFreshAccount" style="order: 1">
+    <v-flex class="xs12 sm6 px-4 my-4" v-if="!isFreshAccount" style="order: 1">
       <v-card color="dark card-shadow" white>
-        <v-card-text class="pt-1 pb-3 px-4">
-          <v-layout row align-center>
-            <v-flex xs8 class="body-1 pt-3">
+        <v-card-text class="pt-1 pb-4 px-6">
+          <v-layout align-center>
+            <v-flex xs8 class="body-1 pt-4">
               <span class="font-weight-bold">Check out the latest Dapp</span>
               <br />
               Visit Etheremon and start using ETH.
-              <v-btn color="primary" depressed class="px-5 py-1 mt-3 white--text" href="https://www.etheremon.com" target="_blank">Play Now</v-btn>
+              <v-btn color="primary" depressed class="px-12 py-1 mt-4 white--text" href="https://www.etheremon.com" target="_blank">Play Now</v-btn>
             </v-flex>
-            <v-flex xs4 pt-3 class="text-xs-right">
+            <v-flex xs4 pt-4 class="text-right">
               <img :src="require(`../../public/images/etheremon.png`)" style="width: 100%" />
             </v-flex>
           </v-layout>
@@ -47,22 +47,22 @@
       </v-card>
     </v-flex>
 
-    <v-flex class="xs12 sm6 px-3 my-3" v-if="isFreshAccount">
+    <v-flex class="xs12 sm6 px-4 my-4" v-if="isFreshAccount">
       <v-card color="dark card-shadow" white>
-        <v-card-text class="pt-1 pb-3 px-4">
-          <v-layout row>
-            <v-flex xs8 class="body-1 pt-3">
+        <v-card-text class="pt-1 pb-4 px-6">
+          <v-layout>
+            <v-flex xs8 class="body-1 pt-4">
               <span class="font-weight-bold">Welcome to Torus.</span>
               <br />
               Learn more about your wallet today.
               <v-dialog v-model="dialog" max-width="700">
                 <template v-slot:activator="{ on }">
-                  <v-btn color="primary" depressed class="px-5 py-1 mt-3" v-on="on">Learn more</v-btn>
+                  <v-btn color="primary" depressed class="px-12 py-1 mt-4" v-on="on">Learn more</v-btn>
                 </template>
                 <LearnMore @onClose="dialog = false" />
               </v-dialog>
             </v-flex>
-            <v-flex xs4 pt-3 class="text-xs-right">
+            <v-flex xs4 pt-4 class="text-right">
               <img :src="require(`../../public/images/learn-more.svg`)" style="height: 100px" />
             </v-flex>
           </v-layout>

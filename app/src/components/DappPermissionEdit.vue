@@ -1,12 +1,12 @@
 <template>
-  <v-card class="mb-3">
+  <v-card class="mb-4">
     <v-container fluid>
       <v-layout>
         <v-flex xs2>
           <img width="34" height="34" :src="require('../../public/img/icons/tag.svg')" />
         </v-flex>
         <v-flex xs9>
-          <v-layout row wrap>
+          <v-layout wrap>
             <v-flex xs8>
               <v-text-field
                 class="custom-text-input"
@@ -18,21 +18,21 @@
           </v-layout>
         </v-flex>
 
-        <v-flex xs2 class="text-xs-right">
+        <v-flex xs2 class="text-right">
           <small class="section-note text-gray">Now</small>
         </v-flex>
       </v-layout>
 
-      <hr class="mt-2 mb-4" />
+      <hr class="mt-2 mb-6" />
 
       <v-layout>
         <v-flex xs2>
           <small class="font-weight-bold text-gray">Type:</small>
         </v-flex>
         <v-flex xs9>
-          <v-layout row wrap>
+          <v-layout wrap>
             <v-flex xs4>
-              <div class="mb-4">
+              <div class="mb-6">
                 <div>
                   <input type="checkbox" v-model="type.deployment" name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
@@ -40,7 +40,7 @@
                   </label>
                 </div>
               </div>
-              <div class="mb-4">
+              <div class="mb-6">
                 <div>
                   <input type="checkbox" v-model="type.interaction" name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
@@ -51,7 +51,7 @@
             </v-flex>
 
             <v-flex xs4>
-              <div class="mb-4">
+              <div class="mb-6">
                 <div>
                   <input type="checkbox" v-model="type.ercTransaction" name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
@@ -59,7 +59,7 @@
                   </label>
                 </div>
               </div>
-              <div class="mb-4">
+              <div class="mb-6">
                 <div>
                   <input type="checkbox" v-model="type.changeNetwork" name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
@@ -70,7 +70,7 @@
             </v-flex>
 
             <v-flex xs4>
-              <div class="mb-4">
+              <div class="mb-6">
                 <div>
                   <input type="checkbox" v-model="type.sendEth" name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
@@ -82,19 +82,19 @@
           </v-layout>
         </v-flex>
 
-        <v-flex xs2 class="text-xs-right">
+        <v-flex xs2 class="text-right">
           <small class="section-note">Please choose the type(s)</small>
         </v-flex>
       </v-layout>
 
-      <hr class="mt-2 mb-4" />
+      <hr class="mt-2 mb-6" />
 
       <v-layout>
         <v-flex xs2>
           <small class="font-weight-bold text-gray">Amount:</small>
         </v-flex>
         <v-flex xs9>
-          <v-layout row wrap>
+          <v-layout wrap>
             <v-flex xs4>
               <div class="mb-0">
                 <div>
@@ -104,7 +104,7 @@
                   </label>
                 </div>
               </div>
-              <div class="mb-4">
+              <div class="mb-6">
                 <div class="other-input">
                   <input type="checkbox" v-model="amount.other" name="contractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="mx-2">
@@ -126,7 +126,7 @@
             </v-flex>
 
             <v-flex xs4>
-              <div class="mb-4">
+              <div class="mb-6">
                 <div>
                   <input type="checkbox" v-model="amount.maxHundredThousandUsd" name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
@@ -138,21 +138,21 @@
           </v-layout>
         </v-flex>
 
-        <v-flex xs2 class="text-xs-right">
+        <v-flex xs2 class="text-right">
           <small class="font-weight-bold">10.00 USD</small>
         </v-flex>
       </v-layout>
 
-      <hr class="mt-2 mb-4" />
+      <hr class="mt-2 mb-6" />
 
       <v-layout>
         <v-flex xs2>
           <small class="font-weight-bold section-note text-gray">Period of Validity:</small>
         </v-flex>
         <v-flex xs9>
-          <v-layout row wrap>
+          <v-layout wrap>
             <v-flex xs4>
-              <div class="mb-4">
+              <div class="mb-6">
                 <div>
                   <input type="checkbox" v-model="validity.oneHour" name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
@@ -160,7 +160,7 @@
                   </label>
                 </div>
               </div>
-              <div class="mb-4">
+              <div class="mb-6">
                 <div class="other-input">
                   <input type="checkbox" v-model="validity.oneMonth" value name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="mx-2">
@@ -171,7 +171,7 @@
             </v-flex>
 
             <v-flex xs4>
-              <div class="mb-4">
+              <div class="mb-6">
                 <div>
                   <input type="checkbox" v-model="validity.oneWeek" name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
@@ -179,7 +179,7 @@
                   </label>
                 </div>
               </div>
-              <div class="mb-4">
+              <div class="mb-6">
                 <div class="other-input">
                   <input type="checkbox" v-model="validity.oneYear" value name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="mx-2">
@@ -191,16 +191,16 @@
           </v-layout>
         </v-flex>
 
-        <v-flex xs2 class="text-xs-right">
+        <v-flex xs2 class="text-right">
           <small class="section-note">Please select a period</small>
         </v-flex>
       </v-layout>
 
-      <hr class="mt-2 mb-4" />
+      <hr class="mt-2 mb-6" />
 
       <v-flex class="save-container">
-        <v-btn color="white" class="px-5 py-1 mt-3 mr-3 btn-cancel text-gray" @click="onCancel">Cancel</v-btn>
-        <v-btn color="primary" class="px-5 py-1 mt-3">Save</v-btn>
+        <v-btn color="white" class="px-12 py-1 mt-4 mr-4 btn-cancel text-gray" @click="onCancel">Cancel</v-btn>
+        <v-btn color="primary" class="px-12 py-1 mt-4">Save</v-btn>
       </v-flex>
     </v-container>
   </v-card>

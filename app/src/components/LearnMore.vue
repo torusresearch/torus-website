@@ -4,25 +4,25 @@
       <v-stepper-content step="1">
         <v-img :src="require(`../../public/images/learn-more-intro.svg`)">
           <v-layout>
-            <v-flex xs12 class="mt-5 ml-5">
+            <v-flex xs12 class="mt-12 ml-12">
               <div class="display-1 primary--text text--darken-4 font-weight-bold mb-2">Welcome to</div>
               <img width="150" :src="require(`../../public/images/torus-logo-blue.svg`)" />
             </v-flex>
           </v-layout>
         </v-img>
-        <v-btn @click="e1 = 2" depressed large color="white" class="primary--text px-5 next-btn">Next</v-btn>
+        <v-btn @click="e1 = 2" depressed large color="white" class="primary--text px-12 next-btn">Next</v-btn>
       </v-stepper-content>
       <v-stepper-content v-for="content in contents" :step="content.step" :key="content.title">
         <v-layout align-center>
-          <v-flex xs8 class="mt-5 ml-5">
+          <v-flex xs8 class="mt-12 ml-12">
             <div class="display-1 font-weight-bold">{{ content.title }}</div>
             <div class="caption torus_text--text text--lighten-3">{{ content.subtitle }}</div>
           </v-flex>
-          <v-flex xs4 class="mt-5 mr-5 text-xs-right">
+          <v-flex xs4 class="mt-12 mr-12 text-right">
             <img width="110" :src="require(`../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
           </v-flex>
         </v-layout>
-        <v-list class="mx-5 mt-3">
+        <v-list class="mx-12 mt-4">
           <v-list-item v-for="contentItem in content.list" :key="contentItem.name">
             <v-list-item-icon>
               <img :src="require(`../../public/img/icons/${contentItem.icon}`)" width="35" />
@@ -33,7 +33,7 @@
             </v-list-item-content>
           </v-list-item>
         </v-list>
-        <v-btn @click="nextStep(content.step)" depressed large class="primary px-5 next-btn">{{ content.step > 2 ? 'Done' : 'Next' }}</v-btn>
+        <v-btn @click="nextStep(content.step)" depressed large class="primary px-12 next-btn">{{ content.step > 2 ? 'Done' : 'Next' }}</v-btn>
       </v-stepper-content>
     </v-stepper-items>
   </v-stepper>

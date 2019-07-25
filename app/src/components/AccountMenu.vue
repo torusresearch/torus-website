@@ -56,7 +56,7 @@
       </v-list>
 
       <v-card-actions>
-        <v-btn text class="torus_text--text text--lighten-4 font-weight-bold mb-4 ml-2">Log Out</v-btn>
+        <v-btn text class="torus_text--text text--lighten-4 font-weight-bold mb-6 ml-2">Log Out</v-btn>
         <v-spacer></v-spacer>
       </v-card-actions>
     </v-card>

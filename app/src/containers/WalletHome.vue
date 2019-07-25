@@ -1,16 +1,16 @@
 <template>
   <div>
-    <v-layout mt-4 wrap row>
-      <v-flex xs12 px-3 mb-3>
-        <div class="font-weight-bold headline left">My Wallet</div>
-        <div class="right">
-          <v-btn outlined large color="primary" :disabled="isFreshAccount" class="px-5 py-1 mr-3 mt-3" @click="initiateTransfer">
+    <v-layout mt-6 wrap>
+      <v-flex xs12 px-4 mb-4>
+        <div class="font-weight-bold headline float-left">My Wallet</div>
+        <div class="float-right">
+          <v-btn outlined large color="primary" :disabled="isFreshAccount" class="px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
             <v-icon left>$vuetify.icons.send</v-icon>
             Transfer
           </v-btn>
           <v-tooltip top v-model="isFreshAccount">
             <template v-slot:activator="{ on }">
-              <v-btn large color="primary" class="px-5 py-1 mt-3" @click="topup" v-on="on">
+              <v-btn large color="primary" class="px-12 py-1 mt-4" @click="topup" v-on="on">
                 <v-icon left>$vuetify.icons.add</v-icon>
                 Top up
               </v-btn>
@@ -20,12 +20,12 @@
         </div>
       </v-flex>
 
-      <v-flex xs12 px-3 mb-4>
+      <v-flex xs12 px-4 mb-6>
         <v-card class="card-total card-shadow">
-          <v-card-title class="font-weight-bold subtitle-2 pt-4 px-4">
+          <v-card-title class="font-weight-bold subtitle-2 pt-6 px-6">
             TOTAL VALUE
           </v-card-title>
-          <v-card-text class="pb-3 px-4">
+          <v-card-text class="pb-4 px-6">
             <h2 class="display-2 font-weight-bold">
               {{ totalPortfolioValue }}
               <small class="font-weight-light">{{ selectedCurrency }}</small>
@@ -34,15 +34,15 @@
         </v-card>
       </v-flex>
 
-      <v-flex xs12 px-3>
-        <v-layout justify-space-between align-center row>
+      <v-flex xs12 px-4>
+        <v-layout justify-space-between align-center>
           <v-flex xs6>
             <v-text-field
               v-if="showSearch"
               v-model="search"
               outlined
               hide-details
-              class="mr-3 caption search-field"
+              class="mr-4 caption search-field"
               placeholder="Search"
               style="max-width: 200px"
               append-icon="$vuetify.icons.search"
@@ -52,7 +52,7 @@
             </v-btn>
             <span class="caption">Last update {{ lastUpdated }}</span>
           </v-flex>
-          <v-flex xs6 class="text-xs-right" :class="showSearch ? 'pt-2' : ''">
+          <v-flex xs6 class="text-right" :class="showSearch ? 'pt-2' : ''">
             <span class="subtitle-2">CURRENCY:</span>
             <v-select
               class="pt-0 mt-0 ml-2 subtitle-2 currency-selector"

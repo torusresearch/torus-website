@@ -1,5 +1,5 @@
 <template>
-  <v-card class="px-3 py-1 mb-3">
+  <v-card class="px-4 py-1 mb-4">
     <v-list dense>
       <v-list-item>
         <v-list-item-icon class="mr-1">

@@ -1,6 +1,6 @@
 <template>
-  <v-layout mt-3 row wrap class="wallet-settings">
-    <v-flex xs12 sm8 px-3>
+  <v-layout mt-4 wrap class="wallet-settings">
+    <v-flex xs12 sm8 px-4>
       <!-- Privacy and security settings -->
       <v-expansion-panels>
         <v-expansion-panel>
@@ -8,29 +8,29 @@
             <div class="expasion-header-content">
               <div class="title">
                 <img :src="require(`../../public/img/icons/lock.svg`)" class="inline-small collpase-icon" />
-                <div class="d-inline ml-4 text-black font-weight-bold headline">Privacy and Security</div>
+                <div class="d-inline ml-6 text-black font-weight-bold headline">Privacy and Security</div>
               </div>
 
               <img :src="require(`../../public/img/icons/chevron-big-down.svg`)" class="inline-small chevron-icon" />
             </div>
           </v-expansion-panel-header>
-          <v-expansion-panel-content class="py-4 px-5">
+          <v-expansion-panel-content class="py-6 px-12">
             <div class="mt-2">
               <v-dialog v-model="privateKeyDialog" max-width="1000">
                 <template v-slot:activator="{ on }">
                   <v-btn text class="icon-button py-2" v-on="on">
-                    <img :src="require(`../../public/img/icons/key.svg`)" class="inline-small mr-3" />
+                    <img :src="require(`../../public/img/icons/key.svg`)" class="inline-small mr-4" />
                     Private Key
                   </v-btn>
                 </template>
                 <private-keys @onClose="privateKeyDialog = false" />
               </v-dialog>
             </div>
-            <div class="mb-3">
+            <div class="mb-4">
               <v-dialog v-model="dappPermissionDialog" max-width="1000">
                 <template v-slot:activator="{ on }">
                   <v-btn text class="icon-button py-2" v-on="on">
-                    <img :src="require(`../../public/img/icons/list.svg`)" class="inline-small mr-3" />
+                    <img :src="require(`../../public/img/icons/list.svg`)" class="inline-small mr-4" />
                     Daap Permission
                   </v-btn>
                 </template>
@@ -48,15 +48,15 @@
             <div class="expasion-header-content">
               <div class="title">
                 <img :src="require(`../../public/img/icons/globe.svg`)" class="inline-small collpase-icon" />
-                <div class="d-inline ml-4 text-black font-weight-bold headline">Network</div>
+                <div class="d-inline ml-6 text-black font-weight-bold headline">Network</div>
               </div>
 
               <img :src="require(`../../public/img/icons/chevron-big-down.svg`)" class="inline-small chevron-icon" />
             </div>
           </v-expansion-panel-header>
-          <v-expansion-panel-content class="py-4 px-5">
-            <v-form ref="inputForm" class="px-3">
-              <v-flex mb-5>
+          <v-expansion-panel-content class="py-6 px-12">
+            <v-form ref="inputForm" class="px-4">
+              <v-flex mb-12>
                 <v-select
                   class="custom-text-input"
                   single-line
@@ -72,11 +72,11 @@
                 ></v-select>
               </v-flex>
 
-              <v-flex xs12 mb-3>
+              <v-flex xs12 mb-4>
                 <v-text-field class="custom-text-input" placeholder="Enter Network Name" solo v-model="networkName"></v-text-field>
               </v-flex>
 
-              <v-flex xs12 mb-3>
+              <v-flex xs12 mb-4>
                 <v-text-field class="custom-text-input" placeholder="Enter RPC URL" solo v-model="rpcValue"></v-text-field>
               </v-flex>
             </v-form>
@@ -91,15 +91,15 @@
             <div class="expasion-header-content">
               <div class="title">
                 <img :src="require(`../../public/img/icons/server.svg`)" class="inline-small collpase-icon" />
-                <div class="d-inline ml-4 text-black font-weight-bold headline">Display</div>
+                <div class="d-inline ml-6 text-black font-weight-bold headline">Display</div>
               </div>
 
               <img :src="require(`../../public/img/icons/chevron-big-down.svg`)" class="inline-small chevron-icon" />
             </div>
           </v-expansion-panel-header>
-          <v-expansion-panel-content class="py-4 px-5">
+          <v-expansion-panel-content class="py-6 px-12">
             <div class="body-2 mb-1 px-1">Select Theme</div>
-            <v-layout row wrap>
+            <v-layout wrap>
               <v-flex xs4 px-1>
                 <v-btn light outlined block color="primary" class="btn-default" @click="selectTheme('default')">Default</v-btn>
               </v-flex>
@@ -110,8 +110,8 @@
                 <v-btn dark depressed block class="btn-shuttle-grey" @click="selectTheme('shuttle-grey')">Shuttle Grey</v-btn>
               </v-flex>
             </v-layout>
-            <v-flex class="pt-5 save-container">
-              <v-btn color="primary" depressed class="px-5 py-1 mt-3">Save</v-btn>
+            <v-flex class="pt-12 save-container">
+              <v-btn color="primary" depressed class="px-12 py-1 mt-4">Save</v-btn>
             </v-flex>
           </v-expansion-panel-content>
         </v-expansion-panel>

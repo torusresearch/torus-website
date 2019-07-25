@@ -1,8 +1,8 @@
 <template>
-  <v-flex xs12 sm6 mb-3 px-3>
+  <v-flex xs12 sm6 mb-4 px-4>
     <v-card class="mb-2">
       <v-container fluid class="py-2">
-        <v-layout row wrap>
+        <v-layout wrap>
           <div class="provider torus_text--text text--lighten-4">
             <div class="provider-checkbox">
               <input type="radio" v-model="provider" value="simplex" name="test-radio" id="test-simplex" />
@@ -25,7 +25,7 @@
       <template v-slot:activator="{ on }">
         <v-card class="coming-soon mb-2" v-on="on">
           <v-container fluid class="py-2">
-            <v-layout row wrap>
+            <v-layout wrap>
               <div class="provider">
                 <div class="provider-checkbox">
                   <input type="radio" disabled v-model="provider" value="wyre" name="test-radio" id="test-simplex" />
@@ -50,7 +50,7 @@
       <template v-slot:activator="{ on }">
         <v-card class="coming-soon mb-2" v-on="on">
           <v-container fluid class="py-2">
-            <v-layout row wrap>
+            <v-layout wrap>
               <div class="provider">
                 <div class="provider-checkbox">
                   <input type="radio" disabled v-model="provider" value="wyre" name="test-radio" id="test-simplex" />
@@ -75,7 +75,7 @@
       <template v-slot:activator="{ on }">
         <v-card class="coming-soon mb-2" v-on="on">
           <v-container fluid class="py-2">
-            <v-layout row wrap>
+            <v-layout wrap>
               <div class="provider">
                 <div class="provider-checkbox">
                   <input type="radio" disabled v-model="provider" value="wyre" name="test-radio" id="test-simplex" />
@@ -96,7 +96,7 @@
       <span>Coming Soon</span>
     </v-tooltip>
 
-    <div class="mt-3 py-3 px-1 text-gray caption">
+    <div class="mt-4 py-4 px-1 text-gray caption">
       <div>Prefer other mode of payment?</div>
       <div>
         <a mailto="">Write to us</a>

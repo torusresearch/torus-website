@@ -24,33 +24,33 @@
       </template>
       <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length" class="pa-0 ma-0" style="height: inherit">
-          <v-flex xs12 white class="card-shadow dark pa-3">
-            <v-layout row wrap>
+          <v-flex xs12 white class="card-shadow dark pa-4">
+            <v-layout wrap>
               <v-flex xs1 pr-2>
                 Rate
-                <span class="right">:</span>
+                <span class="float-right">:</span>
               </v-flex>
               <v-flex xs11>1 ETH = 240.00 USD @ 12:34:20 PM</v-flex>
               <v-flex xs1 pr-2>
                 Network
-                <span class="right">:</span>
+                <span class="float-right">:</span>
               </v-flex>
               <v-flex xs11>Main Ethereum Network</v-flex>
               <v-flex xs1 pr-2>
                 Type
-                <span class="right">:</span>
+                <span class="float-right">:</span>
               </v-flex>
               <v-flex xs11>Contract Interaction</v-flex>
               <v-flex xs1 pr-2>
                 Data
-                <span class="right">:</span>
+                <span class="float-right">:</span>
               </v-flex>
               <v-flex xs11>
                 <v-card flat class="grey lighten-3">
                   <v-card-text></v-card-text>
                 </v-card>
               </v-flex>
-              <v-flex xs12 class="text-xs-right">
+              <v-flex xs12 class="text-right">
                 <v-btn text small color="primary" :href="item.etherscanLink" target="_blank">View On Etherscan</v-btn>
               </v-flex>
             </v-layout>
@@ -58,10 +58,10 @@
         </td>
       </template>
       <template v-slot:no-data>
-        <v-flex xs12 class="text-xs-center">No data found!</v-flex>
+        <v-flex xs12 class="text-center">No data found!</v-flex>
       </template>
     </v-data-table>
-    <v-layout row wrap v-if="false">
+    <v-layout wrap v-if="false">
       <v-flex d-flex offset-xs8 xs4 sm4 offset-sm7 align-self-end v-if="showFooter">
         <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
       </v-flex>
@@ -96,25 +96,25 @@
           </template>
           <template v-slot:items="props">
             <tr @click="props.expanded = !props.expanded" :class="{ activeRow: props.expanded }">
-              <td class="text-xs-center">
-                <v-layout row wrap>
+              <td class="text-center">
+                <v-layout wrap>
                   <v-flex xs11 align-self-center>
                     {{ props.item.date }}
                   </v-flex>
                 </v-layout>
               </td>
-              <td class="text-xs-center no-wrap">{{ props.item.slicedFrom }}</td>
-              <td class="text-xs-center no-wrap">{{ props.item.slicedTo }}</td>
-              <td class="text-xs-center no-wrap">{{ props.item.totalAmountString }}</td>
-              <td class="text-xs-center no-wrap">{{ props.item.currencyAmountString }}</td>
-              <td class="text-xs-center no-wrap">{{ props.item.status }}</td>
+              <td class="text-center text-no-wrap">{{ props.item.slicedFrom }}</td>
+              <td class="text-center text-no-wrap">{{ props.item.slicedTo }}</td>
+              <td class="text-center text-no-wrap">{{ props.item.totalAmountString }}</td>
+              <td class="text-center text-no-wrap">{{ props.item.currencyAmountString }}</td>
+              <td class="text-center text-no-wrap">{{ props.item.status }}</td>
             </tr>
           </template>
           <template v-slot:expand="props">
             <v-card flat v-show="props.item.status !== 'rejected' && props.item.etherscanLink !== ''">
               <v-card-text>
-                <v-layout row wrap>
-                  <v-flex xs6 class="text-xs-left">
+                <v-layout wrap>
+                  <v-flex xs6 class="text-left">
                     <v-btn id="flexibtn" class="btnStyle" outlined large>
                       <a target="_blank" rel="noopener noreferrer" :href="props.item.etherscanLink">View On Etherscan</a>
                     </v-btn>

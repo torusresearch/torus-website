@@ -1,14 +1,14 @@
 <template>
-  <v-layout mt-4 wrap row>
-    <div class="text-black font-weight-bold headline px-3 mb-3">Transfer Details</div>
-    <v-flex xs12 mb-3>
+  <v-layout mt-6 wrap>
+    <div class="text-black font-weight-bold headline px-4 mb-4">Transfer Details</div>
+    <v-flex xs12 mb-4>
       <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation>
-        <v-layout row wrap>
-          <v-flex xs12 px-3 sm6>
+        <v-layout wrap>
+          <v-flex xs12 px-4 sm6>
             <span class="subtitle-2">Select your Coin</span>
             <v-select :items="finalBalancesArray" :value="selectedItem" @change="selectedItemChanged" item-text="name" outlined></v-select>
           </v-flex>
-          <v-flex xs12 sm6 px-3 pt-4 v-if="selectedItem">
+          <v-flex xs12 sm6 px-4 pt-6 v-if="selectedItem">
             <div>
               <span class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
               <span class="caption torus_text--text text--lighten-4">{{ selectedItem.currencyBalance }}</span>
@@ -16,8 +16,8 @@
             <div class="caption font-weight-regular torus_text--text text--lighten-4">{{ selectedItem.currencyRateText }}</div>
           </v-flex>
         </v-layout>
-        <v-layout row wrap>
-          <v-flex xs12 px-3 sm6>
+        <v-layout wrap>
+          <v-flex xs12 px-4 sm6>
             <span class="subtitle-2">Recipient Address</span>
             <v-text-field
               v-model="toAddress"
@@ -28,30 +28,30 @@
             ></v-text-field>
           </v-flex>
         </v-layout>
-        <v-layout row wrap>
-          <v-flex xs12 px-3 sm6>
+        <v-layout wrap>
+          <v-flex xs12 px-4 sm6>
             <div>
               <span class="subtitle-2">You send</span>
-              <span v-if="convertedAmount" class="right caption">~{{ convertedAmount }} {{ selectedCurrency }}</span>
+              <span v-if="convertedAmount" class="float-right caption">~{{ convertedAmount }} {{ selectedCurrency }}</span>
             </div>
             <v-text-field type="number" outlined required v-model="displayAmount" :rules="[rules.required, lesserThan]"></v-text-field>
           </v-flex>
-          <v-flex xs12 px-3 sm6>
+          <v-flex xs12 px-4 sm6>
             <div>
               <span class="subtitle-2">Total Cost</span>
-              <span v-if="convertedTotalCost" class="right caption">~{{ convertedTotalCost }} {{ selectedCurrency }}</span>
+              <span v-if="convertedTotalCost" class="float-right caption">~{{ convertedTotalCost }} {{ selectedCurrency }}</span>
             </div>
             <v-text-field outlined readonly :value="totalCost"></v-text-field>
           </v-flex>
         </v-layout>
-        <v-layout row wrap>
+        <v-layout wrap>
           <TransactionSpeedSelect :gas="gas" :displayAmount="displayAmount" @onSelectSpeed="onSelectSpeed" />
         </v-layout>
-        <v-layout mt-3 pr-2 row wrap>
+        <v-layout mt-4 pr-2 wrap>
           <v-spacer></v-spacer>
           <v-dialog v-model="confirmDialog" max-width="550" persistent>
             <template v-slot:activator="{ on }">
-              <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" class="px-4" v-on="on">Continue</v-btn>
+              <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" class="px-6" v-on="on">Continue</v-btn>
             </template>
             <transfer-confirm
               :toAddress="toAddress"
@@ -68,7 +68,7 @@
           <!-- <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" type="submit">Confirm</v-btn> -->
         </v-layout>
 
-        <v-layout mt-3 pr-2 row wrap>
+        <v-layout mt-4 pr-2 wrap>
           <v-spacer></v-spacer>
           <v-dialog v-model="showModalMessage" max-width="550" persistent>
             <message-modal

@@ -1,11 +1,11 @@
 <template>
   <v-card class="advance-option">
-    <v-card-text class="torus_text--text py-4">
-      <v-layout wrap row>
-        <v-flex xs12 px-3>
+    <v-card-text class="torus_text--text py-6">
+      <v-layout wrap>
+        <v-flex xs12 px-4>
           <div class="font-weight-bold headline">Private Key</div>
         </v-flex>
-        <v-flex xs12 mt-3 px-3>
+        <v-flex xs12 mt-4 px-4>
           <v-list>
             <v-list-item>
               <v-list-item-icon>
@@ -14,7 +14,7 @@
               <v-list-item-content>
                 <div class="subtitle-1 d-flex font-weight-bold">Download soft copy (JSON)</div>
                 <v-expand-transition>
-                  <v-layout row align-center justify-space-between v-if="isShowGetPassword" class="mt-2">
+                  <v-layout align-center justify-space-between v-if="isShowGetPassword" class="mt-2">
                     <v-flex>
                       <v-form ref="downloadForm" @submit.prevent="downloadWallet" v-model="downloadFormValid" lazy-validation>
                         <v-text-field small :rules="[rules.required]" v-model="keyStorePassword" :type="showJsonPassword ? 'text' : 'password'">
@@ -57,7 +57,7 @@
               <v-list-item-content>
                 <div class="subtitle-1 d-flex font-weight-bold">Show Private Key</div>
                 <v-expand-transition>
-                  <v-layout row align-center justify-space-between v-if="isShowPrivateKey" class="mt-2">
+                  <v-layout align-center justify-space-between v-if="isShowPrivateKey" class="mt-2">
                     <v-flex>
                       <div style="word-break: break-all">{{ selectedKey }}</div>
                     </v-flex>
@@ -81,7 +81,7 @@
           </v-list>
         </v-flex>
       </v-layout>
-      <v-layout mt-3 pr-3 row>
+      <v-layout mt-4 pr-4>
         <v-spacer></v-spacer>
         <v-btn large text @click="onClose">Close</v-btn>
       </v-layout>

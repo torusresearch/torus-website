@@ -1,11 +1,11 @@
 <template>
-  <v-flex xs12 sm8 mt-3 mb-3>
+  <v-flex xs12 sm8 mt-4 mb-4>
     <div class="d-flex has-border">
       <v-select single-line solo text :items="accounts" :value="selectedAddress" label="Selected Account" @change="onAccountChange"></v-select>
     </div>
     <div class="d-flex has-border">
       <span class="body-2">Public Address</span>
-      <span class="text-xs-right">
+      <span class="text-right">
         <show-tool-tip :address="selectedAddress">
           {{ slicedAddress }}
         </show-tool-tip>
@@ -19,14 +19,14 @@
         <v-icon v-else :color="$vuetify.theme.torus_reject">expand_more</v-icon>
       </v-btn>
 
-      <div class="mt-0 mb-1 mx-0 pa-1 grey lighten-3 text-xs-center break-word" v-if="showPrivateKey">
+      <div class="mt-0 mb-1 mx-0 pa-1 grey lighten-3 text-center break-word" v-if="showPrivateKey">
         <show-tool-tip :address="selectedKey">
           {{ selectedKey }}
         </show-tool-tip>
       </div>
     </div>
 
-    <div class="has-border text-xs-right" mt-1>
+    <div class="has-border text-right" mt-1>
       <v-btn class="btnStyle" @click="dialogJson = true">Download JSON</v-btn>
     </div>
 
@@ -38,7 +38,7 @@
           </v-card-title>
           <v-divider light></v-divider>
           <v-card-text>
-            <v-layout row wrap>
+            <v-layout wrap>
               <v-flex xs12 align-self-center>
                 Enter your password
               </v-flex>
@@ -57,7 +57,7 @@
             </v-layout>
           </v-card-text>
           <v-divider light></v-divider>
-          <v-card-actions class="px-3">
+          <v-card-actions class="px-4">
             <v-spacer></v-spacer>
             <v-btn class="btnStyle" @click="dialogJson = false" :disabled="isLoadingDownloadWallet">Close</v-btn>
             <v-btn

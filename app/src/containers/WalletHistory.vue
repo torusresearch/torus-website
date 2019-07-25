@@ -1,9 +1,9 @@
 <template>
   <div>
-    <v-layout mt-4 wrap row>
-      <v-flex xs12 px-3 mb-3>
-        <div class="text-black font-weight-bold headline left">Transaction Activities</div>
-        <div class="right">
+    <v-layout mt-6 wrap>
+      <v-flex xs12 px-4 mb-4>
+        <div class="text-black font-weight-bold headline float-left">Transaction Activities</div>
+        <div class="float-right">
           <v-select
             class="pt-0 mt-0 ml-2 subtitle-2 nav-selector transaction"
             height="25px"
@@ -22,7 +22,7 @@
           />
         </div>
       </v-flex>
-      <v-flex xs12 px-3 mb-3>
+      <v-flex xs12 px-4 mb-4>
         <tx-history-table :headers="headers" :selectedAction="selectedAction" :selectedPeriod="selectedPeriod" :transactions="getTransactions()" />
       </v-flex>
     </v-layout>

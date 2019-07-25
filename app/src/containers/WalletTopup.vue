@@ -1,8 +1,8 @@
 <template>
   <div class="wallet-topup-view">
-    <v-layout mt-4 wrap row>
+    <v-layout mt-6 wrap>
       <v-flex xs12 mb-2>
-        <div class="text-black font-weight-bold headline px-3 mb-3">
+        <div class="text-black font-weight-bold headline px-4 mb-4">
           <span v-if="provider">
             Purchase Cryptocurrency with your credit card via
             <span class="text-capitalize">{{ provider }}</span>
@@ -18,17 +18,17 @@
         "
       />
 
-      <v-flex xs12 sm6 mb-3 px-3>
-        <v-layout wrap row v-if="provider === 'simplex'">
+      <v-flex xs12 sm6 mb-4 px-4>
+        <v-layout wrap v-if="provider === 'simplex'">
           <v-flex xs12>
-            <p class="body-2 px-3">
+            <p class="body-2 px-4">
               Simplex is a secure way to buy cryptoccurrency with your credit card. Start by entering an amount to get a quote before making your
               purchase.
             </p>
           </v-flex>
 
           <v-flex xs12>
-            <v-form ref="inputForm" v-model="formValid" lazy-validation @submit.prevent class="px-3">
+            <v-form ref="inputForm" v-model="formValid" lazy-validation @submit.prevent class="px-4">
               <small class="mb-2 d-block">Pay</small>
               <v-flex xs12>
                 <v-text-field
@@ -41,7 +41,7 @@
                   :rules="[rules.required, rules.validNumber, rules.maxValidation, rules.minValidation]"
                 ></v-text-field>
 
-                <div class="v-text-field__details mb-4">
+                <div class="v-text-field__details mb-6">
                   <div class="v-messages">
                     <div class="v-messages__wrapper">
                       <div class="v-messages__message">
@@ -83,7 +83,7 @@
           </v-flex>
 
           <v-flex xs12>
-            <div class="px-3 mt-5 mb-4 torus_text--text text--lighten-4">
+            <div class="px-4 mt-12 mb-6 torus_text--text text--lighten-4">
               <div>
                 <img :src="require(`../../public/img/icons/info-circle.svg`)" class="inline-small help-icon" />
                 <small class="d-inline ml-2">The process would take approximately 10 - 15 mins.</small>
@@ -96,13 +96,13 @@
             </div>
           </v-flex>
           <v-flex xs12>
-            <div class="text-xs-center text-sm-right">
+            <div class="text-center text-sm-right">
               <v-tooltip bottom :disabled="formValid">
                 <template v-slot:activator="{ on }">
                   <span v-on="on">
                     <v-btn
                       :disabled="!formValid"
-                      class="torus-button text-xs-center px-5 py-3 mb-2"
+                      class="torus-button text-center px-12 py-4 mb-2"
                       color="primary"
                       type="submit"
                       @click.prevent="sendOrder"

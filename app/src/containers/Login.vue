@@ -3,16 +3,16 @@
     <v-container fill-height align-content-center>
       <template v-if="gapiLoaded">
         <template v-if="!loginInProgress">
-          <v-layout row wrap align-center justify-center align-content-center>
+          <v-layout wrap align-center justify-center align-content-center>
             <v-flex xs12 m-0>
-              <div class="text-xs-center login-title">Welcome to Torus</div>
+              <div class="text-center login-title">Welcome to Torus</div>
             </v-flex>
             <v-flex d-flex xs12>
-              <div class="text-xs-center login-subtitle">You are just one step away from getting your digital wallet for your cryptocurrencies</div>
+              <div class="text-center login-subtitle">You are just one step away from getting your digital wallet for your cryptocurrencies</div>
             </v-flex>
-            <v-flex xs12 mt-5>
-              <div class="text-xs-center">
-                <v-btn id="flexiBtn" large color="primary" class="flexiBtn px-5" type="button" @click="triggerLogin({ calledFromEmbed: false })">
+            <v-flex xs12 mt-12>
+              <div class="text-center">
+                <v-btn id="flexiBtn" large color="primary" class="flexiBtn px-12" type="button" @click="triggerLogin({ calledFromEmbed: false })">
                   Login
                 </v-btn>
                 <small class="d-block text-gray mt-2">
@@ -24,8 +24,8 @@
                 </small>
               </div>
             </v-flex>
-            <v-flex xs12 mt-5>
-              <small class="text-gray text-xs-center d-block">
+            <v-flex xs12 mt-12>
+              <small class="text-gray text-center d-block">
                 Note : For first time users, kindly
                 <a href="#">
                   <span class="text-primary">enable Pop-ups</span>
@@ -35,7 +35,7 @@
                 gain access to your Torus Wallet
               </small>
             </v-flex>
-            <v-flex mt-5 text-xs-center>
+            <v-flex mt-12 text-center>
               <img width="224px" height="auto" :src="require('../../public/images/torus-people.png')" class="ml-2" />
               <p class="m-0">
                 <small class="text-gray">The Decentralized Web Awaits</small>
