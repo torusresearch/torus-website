@@ -1,5 +1,5 @@
 <template>
-  <v-flex xs12 md6>
+  <v-flex xs12 md6 mb-5>
     <div class="subtitle-2 mb-1 px-4">
       <span>
         Select your Transaction Speed

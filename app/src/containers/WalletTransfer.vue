@@ -4,11 +4,12 @@
     <v-flex xs12 mb-4>
       <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation>
         <v-layout wrap>
-          <v-flex xs12 px-4 sm6>
+          <v-flex xs12 px-4 mb-5 sm6>
             <span class="subtitle-2">Select your Coin</span>
             <v-select
               prepend-inner-icon="$vuetify.icons.eth"
               append-icon="$vuetify.icons.select"
+              hide-details
               :items="finalBalancesArray"
               :value="selectedItem"
               @change="selectedItemChanged"
@@ -16,7 +17,8 @@
               outlined
             ></v-select>
           </v-flex>
-          <v-flex xs12 sm6 px-4 :class="{ 'pt-0': $vuetify.breakpoint.xsAndDown, 'pt-6': $vuetify.breakpoint.smAndUp }" v-if="selectedItem">
+          <v-flex xs12 sm6 mb-5 px-4 v-if="selectedItem">
+            <span class="subtitle-2">Account Balance</span>
             <div>
               <span class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
               <span class="caption torus_text--text text--lighten-4">{{ currencyBalanceDisplay }}</span>
@@ -52,6 +54,9 @@
               :rules="[rules.required, lesserThan]"
             ></v-text-field>
           </v-flex>
+        </v-layout>
+        <v-layout wrap>
+          <TransactionSpeedSelect :gas="gas" :displayAmount="displayAmount" @onSelectSpeed="onSelectSpeed" />
           <v-flex xs12 px-4 sm6>
             <div>
               <span class="subtitle-2">Total Cost</span>
@@ -65,9 +70,6 @@
               :value="totalCost"
             ></v-text-field>
           </v-flex>
-        </v-layout>
-        <v-layout wrap>
-          <TransactionSpeedSelect :gas="gas" :displayAmount="displayAmount" @onSelectSpeed="onSelectSpeed" />
         </v-layout>
         <v-layout mt-4 pr-2 wrap>
           <v-spacer></v-spacer>
@@ -197,7 +199,7 @@ export default {
       return ''
     },
     convertedTotalCostDisplay() {
-      return `${significantDigits(this.convertedTotalCost)} ${this.selectedCurrency}`
+      return `~ ${significantDigits(this.convertedTotalCost)} ${this.selectedCurrency}`
     },
     currencyBalanceDisplay() {
       // = 390.00 USD
