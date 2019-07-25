@@ -36,7 +36,8 @@ const vuexPersist = new VuexPersistence({
       // tokenData: state.tokenData,
       tokenRates: state.tokenRates,
       selectedCurrency: state.selectedCurrency,
-      jwtToken: state.jwtToken
+      jwtToken: state.jwtToken,
+      pastTransactions: state.pastTransactions
     }
   }
 })
@@ -61,7 +62,9 @@ const initialState = {
   unapprovedMsgs: {},
   loginInProgress: false,
   rpcDetails: JSON.parse(localStorage.getItem('torus_custom_rpc')) || {},
-  jwtToken: ''
+  jwtToken: '',
+  pastTransactions: [],
+  isNewUser: false
 }
 
 var VuexStore = new Vuex.Store({
@@ -171,6 +174,12 @@ var VuexStore = new Vuex.Store({
     },
     setJwtToken(state, payload) {
       state.jwtToken = payload
+    },
+    setNewUser(state, payload) {
+      state.isNewUser = payload
+    },
+    setPastTransactions(state, payload) {
+      state.pastTransactions = payload
     },
     logOut(state, requiredState) {
       Object.keys(state).forEach(key => {
@@ -503,7 +512,7 @@ var VuexStore = new Vuex.Store({
           log.error(err)
         })
     },
-    processAuthMessage({ commit }, payload) {
+    processAuthMessage({ commit, dispatch }, payload) {
       return new Promise(async (resolve, reject) => {
         try {
           // make this a promise and resolve it to dispatch loginInProgress as false
@@ -515,9 +524,47 @@ var VuexStore = new Vuex.Store({
             signed_message: signedMessage
           })
           commit('setJwtToken', response.token)
+          await dispatch('setUserInfo', response)
           resolve()
         } catch (error) {
           log.error('Failed Communication with backend', error)
+          reject(error)
+        }
+      })
+    },
+    setUserInfo({ commit, dispatch, state }, payload) {
+      return new Promise(async (resolve, reject) => {
+        try {
+          get(`${config.api}/user`, {
+            headers: {
+              Authorization: `Bearer ${payload.token}`
+            }
+          })
+            .then(user => {
+              if (user.data) {
+                const { transactions, default_currency } = user.data || {}
+                commit('setPastTransactions', transactions)
+                dispatch('setSelectedCurrency', default_currency)
+                resolve()
+              }
+            })
+            .catch(async error => {
+              await post(
+                `${config.api}/user`,
+                {
+                  default_currency: 'USD'
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${payload.token}`,
+                    'Content-Type': 'application/json; charset=utf-8'
+                  }
+                }
+              )
+              commit('setNewUser', true)
+              resolve()
+            })
+        } catch (error) {
           reject(error)
         }
       })
