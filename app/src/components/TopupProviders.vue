@@ -1,5 +1,5 @@
 <template>
-  <v-flex xs12 sm6 mb-4 px-4>
+  <v-flex xs12 sm6 mb-4 px-4 class="topup-providers">
     <v-card class="mb-2" @click="provider = 'simplex'">
       <v-container fluid class="py-2">
         <v-layout wrap>
@@ -123,7 +123,64 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.coming-soon {
-  opacity: 0.4;
+.topup-providers {
+  .coming-soon {
+    opacity: 0.4;
+  }
+
+  .provider {
+    min-height: 63px;
+    width: 100%;
+
+    &-checkbox {
+      display: flex;
+      align-items: center;
+    }
+
+    &-description {
+      padding-left: 3rem;
+    }
+
+    &-logo {
+      max-height: 40px;
+      margin-bottom: 20px;
+      margin-left: 10px;
+    }
+  }
+
+  @media screen and (min-width: 768px) {
+    .provider {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      &-description {
+        text-align: right;
+        padding-left: 0;
+      }
+
+      &-logo {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.v-tooltip__content {
+  background: #fff;
+  border: 1px solid var(--v-primary-base);
+  color: var(--v-primary-base);
+  &::after {
+    content: ' ';
+    position: absolute;
+    transform: rotate(90deg);
+    top: 50%;
+    left: 0%;
+    margin-left: -10px;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--v-primary-base) transparent transparent transparent;
+  }
 }
 </style>

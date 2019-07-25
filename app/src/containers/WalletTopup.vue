@@ -29,37 +29,40 @@
 
           <v-flex xs12>
             <v-form ref="inputForm" v-model="formValid" lazy-validation @submit.prevent class="px-4">
-              <small class="mb-2 d-block">Pay</small>
               <v-flex xs12>
+                <div class="subtitle-2">You send</div>
                 <v-text-field
-                  class="pay-text-input"
+                  class="unique-hint"
                   placeholder="0.00 (Min 50.00)"
-                  :suffix="`${selectedCurrency}*`"
-                  solo
+                  outlined
                   :value="fiatValue"
                   @input="watchFiatValue"
                   :rules="[rules.required, rules.validNumber, rules.maxValidation, rules.minValidation]"
-                ></v-text-field>
+                >
+                  <template v-slot:append>
+                    <v-btn outlined small color="primary" @click="watchFiatValue(100)">100</v-btn>
+                    <v-btn outlined small color="primary" @click="watchFiatValue(200)" class="ml-2">200</v-btn>
+                    <div class="primary--text font-weight-medium subtitle-2 pt-1 ml-2">{{ selectedCurrency }}*</div>
+                  </template>
+                </v-text-field>
 
-                <div class="v-text-field__details mb-6">
+                <div class="v-text-field__details torus-hint mb-6">
                   <div class="v-messages">
                     <div class="v-messages__wrapper">
                       <div class="v-messages__message">
-                        <div class="flex-grow-1 torus_text--text text--lighten-4">
-                          <div>
-                            <small>* Includes 5% Simplex Service Fees or 10 USD (whichever higher)</small>
-                            <v-tooltip bottom>
-                              <template v-slot:activator="{ on }">
-                                <img v-on="on" :src="require(`../../public/img/icons/help-circle.svg`)" class="inline-small ml-2 help-icon" />
-                              </template>
-                              <span class="caption">
-                                This fee goes entirely to Simplex for their services
-                                <br />
-                                in credit card processing, fraud detection and mitigation
-                              </span>
-                            </v-tooltip>
-                          </div>
-                          <small class="text-right">min 50 USD*</small>
+                        <div class="flex-grow-1 torus_text--text text--lighten-4 px-3">
+                          * Includes 5% Simplex Service Fees or 10 USD (whichever higher)
+                          <v-tooltip bottom>
+                            <template v-slot:activator="{ on }">
+                              <img v-on="on" :src="require(`../../public/img/icons/help-circle.svg`)" class="help-icon" />
+                            </template>
+                            <span class="caption">
+                              This fee goes entirely to Simplex for their services
+                              <br />
+                              in credit card processing, fraud detection and mitigation
+                            </span>
+                          </v-tooltip>
+                          <span class="float-right">min 50 USD*</span>
                         </div>
                       </div>
                     </div>
@@ -67,17 +70,17 @@
                 </div>
               </v-flex>
 
-              <small class="mb-2 d-block">Receive</small>
               <v-flex xs12>
-                <v-text-field class="receive-text-input" disabled placeholder="0.00" suffix="ETH" v-model="ethValue" solo></v-text-field>
-
-                <div class="v-text-field__details">
-                  <div class="v-messages">
-                    <div class="v-messages__wrapper">
-                      <div class="v-messages__message">Rate : 1 ETH = {{ this.displayRateString }} {{ this.selectedCurrency }}</div>
-                    </div>
-                  </div>
-                </div>
+                <div class="subtitle-2">Receive</div>
+                <v-text-field
+                  readonly
+                  placeholder="0.00"
+                  suffix="ETH"
+                  v-model="ethValue"
+                  :hint="`Rate : 1 ETH = ${displayRateString} ${selectedCurrency}`"
+                  persistent-hint
+                  outlined
+                ></v-text-field>
               </v-flex>
             </v-form>
           </v-flex>
@@ -85,12 +88,12 @@
           <v-flex xs12>
             <div class="px-4 mt-12 mb-6 torus_text--text text--lighten-4">
               <div>
-                <img :src="require(`../../public/img/icons/info-circle.svg`)" class="inline-small help-icon" />
+                <img :src="require(`../../public/img/icons/info-circle.svg`)" class="help-icon" />
                 <small class="d-inline ml-2">The process would take approximately 10 - 15 mins.</small>
               </div>
 
               <div>
-                <img :src="require(`../../public/img/icons/info-circle.svg`)" class="inline-small help-icon" />
+                <img :src="require(`../../public/img/icons/info-circle.svg`)" class="help-icon" />
                 <small class="d-inline ml-2">Please prepare your Identity Card/Passport to complete the purchase.</small>
               </div>
             </div>
@@ -100,22 +103,14 @@
               <v-tooltip bottom :disabled="formValid">
                 <template v-slot:activator="{ on }">
                   <span v-on="on">
-                    <v-btn
-                      :disabled="!formValid"
-                      class="torus-button text-center px-12 py-4 mb-2"
-                      color="primary"
-                      type="submit"
-                      @click.prevent="sendOrder"
-                    >
+                    <v-btn :disabled="!formValid" depressed color="primary" type="submit" @click.prevent="sendOrder">
                       Continue
                     </v-btn>
                   </span>
                 </template>
                 <span>Resolve the errors</span>
               </v-tooltip>
-              <p>
-                <small class="text-gray">You will be redirected to Simplex Page</small>
-              </p>
+              <div class="caption torus_text--text text--lighten-4">You will be redirected to Simplex Page</div>
             </div>
           </v-flex>
         </v-layout>
@@ -153,7 +148,7 @@ export default {
         maxValidation: value => parseFloat(value) <= MAX_ORDER_VALUE || `Max topup amount is ${formatCurrencyNumber(MAX_ORDER_VALUE, 0)}`,
         minValidation: value => parseFloat(value) >= MIN_ORDER_VALUE || `Min topup amount is ${MIN_ORDER_VALUE}`
       },
-      provider: ''
+      provider: 'simplex'
     }
   },
   computed: {
@@ -268,7 +263,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .wallet-topup-view {
   .help-icon {
     height: 13px;
@@ -291,14 +286,6 @@ export default {
     }
   }
 
-  .pay-text-input {
-    .v-input__slot {
-      background: transparent !important;
-      box-shadow: none !important;
-      border: 1px solid #d3d5e2 !important;
-    }
-  }
-
   .receive-text-input {
     .v-input__slot {
       background: transparent !important;
@@ -311,44 +298,23 @@ export default {
     text-align: right;
   }
 
-  .provider {
-    min-height: 63px;
-    width: 100%;
-
-    &-checkbox {
-      display: flex;
-      align-items: center;
-    }
-
-    &-description {
-      padding-left: 3rem;
-    }
-
-    &-logo {
-      max-height: 40px;
-      margin-bottom: 20px;
-      margin-left: 10px;
-    }
-  }
-
   .torus-button {
     height: auto !important;
   }
 
-  @media screen and (min-width: 768px) {
-    .provider {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+  .unique-hint {
+    ::v-deep .v-text-field__details {
+      display: none;
+    }
 
-      &-description {
-        text-align: right;
-        padding-left: 0;
+    ::v-deep .error--text {
+      .v-text-field__details {
+        display: inherit;
       }
+    }
 
-      &-logo {
-        margin-bottom: 0;
-      }
+    .v-btn {
+      border-style: dashed;
     }
   }
 }
