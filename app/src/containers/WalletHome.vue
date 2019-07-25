@@ -47,8 +47,8 @@
               style="max-width: 200px"
               append-icon="$vuetify.icons.search"
             ></v-text-field>
-            <v-btn text icon color="primary" @click="refreshBalances()">
-              <v-icon>$vuetify.icons.refresh</v-icon>
+            <v-btn text icon small color="primary" @click="refreshBalances()">
+              <v-icon small>$vuetify.icons.refresh</v-icon>
             </v-btn>
             <span class="caption">Last update {{ lastUpdated }}</span>
           </v-flex>

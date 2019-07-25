@@ -3,7 +3,7 @@
     <template v-slot:activator="{ on }">
       <v-btn class="hidden-xs-only" small text v-on="on">
         <span>Satoshi Nakamoto</span>
-        <v-icon class="ml-2 mt-1">$vuetify.icons.select</v-icon>
+        <v-icon class="ml-2 mt-1" small>$vuetify.icons.select</v-icon>
       </v-btn>
     </template>
 

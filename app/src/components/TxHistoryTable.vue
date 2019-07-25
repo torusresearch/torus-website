@@ -103,11 +103,11 @@
                   </v-flex>
                 </v-layout>
               </td>
-              <td class="text-center text-no-wrap">{{ props.item.slicedFrom }}</td>
-              <td class="text-center text-no-wrap">{{ props.item.slicedTo }}</td>
-              <td class="text-center text-no-wrap">{{ props.item.totalAmountString }}</td>
-              <td class="text-center text-no-wrap">{{ props.item.currencyAmountString }}</td>
-              <td class="text-center text-no-wrap">{{ props.item.status }}</td>
+              <td class="text-center text-text-no-wrap">{{ props.item.slicedFrom }}</td>
+              <td class="text-center text-text-no-wrap">{{ props.item.slicedTo }}</td>
+              <td class="text-center text-text-no-wrap">{{ props.item.totalAmountString }}</td>
+              <td class="text-center text-text-no-wrap">{{ props.item.currencyAmountString }}</td>
+              <td class="text-center text-text-no-wrap">{{ props.item.status }}</td>
             </tr>
           </template>
           <template v-slot:expand="props">
