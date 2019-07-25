@@ -58,7 +58,7 @@
         </td>
       </template>
       <template v-slot:no-data>
-        <v-flex xs12 class="text-center">No data found!</v-flex>
+        <v-flex xs12 class="text-center">No Transaction Activity!</v-flex>
       </template>
     </v-data-table>
     <v-layout wrap v-if="false">
