@@ -42,6 +42,10 @@ export default {
   }
 }
 
+.card-shadow {
+  box-shadow: 0 14px 28px 0 rgba(0, 0, 0, 0.06);
+}
+
 .v-window__container {
   height: 100% !important;
 }

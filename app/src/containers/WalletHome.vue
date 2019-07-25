@@ -1,26 +1,26 @@
 <template>
-  <div>
-    <v-layout mt-6 wrap>
+  <div class="wallet-home">
+    <v-layout mt-6 wrap align-center>
       <v-flex xs12 px-4 mb-4>
         <div class="font-weight-bold headline float-left">My Wallet</div>
-        <div class="float-right">
-          <v-btn outlined large color="primary" :disabled="isFreshAccount" class="px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
-            <v-icon left>$vuetify.icons.send</v-icon>
-            Transfer
-          </v-btn>
-          <v-tooltip top v-model="isFreshAccount">
-            <template v-slot:activator="{ on }">
-              <v-btn large color="primary" class="px-12 py-1 mt-4" @click="topup" v-on="on">
-                <v-icon left>$vuetify.icons.add</v-icon>
-                Top up
-              </v-btn>
-            </template>
-            <span>Get ETH!</span>
-          </v-tooltip>
-        </div>
+      </v-flex>
+      <v-flex xs12 px-4 mb-4 class="text-right hidden-xs-only">
+        <v-btn outlined large color="primary" :disabled="isFreshAccount" class="px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
+          <v-icon left>$vuetify.icons.send</v-icon>
+          Transfer
+        </v-btn>
+        <v-tooltip top v-model="isFreshAccount">
+          <template v-slot:activator="{ on }">
+            <v-btn depressed large color="primary" class="px-12 py-1 mt-4" @click="topup" v-on="on">
+              <v-icon left>$vuetify.icons.add</v-icon>
+              Top up
+            </v-btn>
+          </template>
+          <span>Get ETH!</span>
+        </v-tooltip>
       </v-flex>
 
-      <v-flex xs12 px-4 mb-6>
+      <v-flex xs12 px-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'mb-6'">
         <v-card class="card-total card-shadow">
           <v-card-title class="font-weight-bold subtitle-2 pt-6 px-6">
             TOTAL VALUE
@@ -28,41 +28,76 @@
           <v-card-text class="pb-4 px-6">
             <h2 class="display-2 font-weight-bold">
               {{ totalPortfolioValue }}
-              <small class="font-weight-light">{{ selectedCurrency }}</small>
+              <span class="body-2 font-weight-light">{{ selectedCurrency }}</span>
             </h2>
           </v-card-text>
         </v-card>
       </v-flex>
 
-      <v-flex xs12 px-4>
-        <v-layout justify-space-between align-center>
-          <v-flex xs6>
-            <v-text-field
-              v-if="showSearch"
-              v-model="search"
-              outlined
-              hide-details
-              class="mr-4 caption search-field"
-              placeholder="Search"
-              style="max-width: 200px"
-              append-icon="$vuetify.icons.search"
-            ></v-text-field>
-            <v-btn text icon small color="primary" @click="refreshBalances()">
-              <v-icon small>$vuetify.icons.refresh</v-icon>
+      <v-flex xs12 px-4 class="hidden-sm-and-up mb-3">
+        <v-layout>
+          <v-flex xs6 class="pr-1">
+            <v-btn outlined large block color="primary" :disabled="isFreshAccount" class="px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
+              <v-icon left>$vuetify.icons.send</v-icon>
+              Transfer
             </v-btn>
-            <span class="caption">Last update {{ lastUpdated }}</span>
           </v-flex>
-          <v-flex xs6 class="text-right" :class="showSearch ? 'pt-2' : ''">
-            <span class="subtitle-2">CURRENCY:</span>
-            <v-select
-              class="pt-0 mt-0 ml-2 subtitle-2 currency-selector"
-              height="25px"
-              hide-details
-              :items="supportedCurrencies"
-              :value="selectedCurrency"
-              @change="onCurrencyChange"
-              append-icon="$vuetify.icons.select"
-            ></v-select>
+          <v-flex xs6 class="pl-1">
+            <v-tooltip top v-model="isFreshAccount">
+              <template v-slot:activator="{ on }">
+                <v-btn depressed large block color="primary" class="px-12 py-1 mt-4" @click="topup" v-on="on">
+                  <v-icon left>$vuetify.icons.add</v-icon>
+                  Top up
+                </v-btn>
+              </template>
+              <span>Get ETH!</span>
+            </v-tooltip>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+
+      <v-flex xs12 px-4>
+        <v-layout wrap justify-space-between align-center>
+          <v-flex xs12 sm6>
+            <v-layout wrap>
+              <v-flex xs12 sm6>
+                <v-text-field
+                  v-if="showSearch"
+                  v-model="search"
+                  outlined
+                  hide-details
+                  class="caption search-field"
+                  placeholder="Search"
+                  append-icon="$vuetify.icons.search"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6 class="hidden-xs-only">
+                <v-btn text icon small class="refresh-button" color="primary" @click="refreshBalances()">
+                  <v-icon small>$vuetify.icons.refresh</v-icon>
+                </v-btn>
+                <span class="caption">Last update {{ lastUpdated }}</span>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+          <v-flex xs12 sm6 class="balance-filter" :class="showSearch ? 'pt-2' : ''">
+            <v-layout>
+              <v-flex xs7 class="hidden-sm-and-up">
+                <v-icon color="primary" @click="refreshBalances()" small>$vuetify.icons.refresh</v-icon>
+                <span class="caption">Last update {{ lastUpdated }}</span>
+              </v-flex>
+              <v-flex xs5 sm12 class="text-right">
+                <span class="subtitle-2">CURRENCY:</span>
+                <v-select
+                  class="pt-0 mt-0 ml-2 subtitle-2 currency-selector"
+                  height="25px"
+                  hide-details
+                  :items="supportedCurrencies"
+                  :value="selectedCurrency"
+                  @change="onCurrencyChange"
+                  append-icon="$vuetify.icons.select"
+                ></v-select>
+              </v-flex>
+            </v-layout>
           </v-flex>
         </v-layout>
       </v-flex>
@@ -191,76 +226,49 @@ export default {
 <style lang="scss" scoped>
 @import '../scss/nav-selector.mixin';
 
-@mixin svg-size($args...) {
-  @each $name, $size in keywords($args) {
-    .svg-setting-#{$name} {
-      width: $size;
-      height: $size;
+.wallet-home {
+  ::v-deep .currency-selector {
+    @include navSelector();
+    max-width: 50px;
+    .v-select__selection {
+      color: var(--v-primary-base) !important;
     }
   }
-}
 
-@include svg-size($tiny: 18px, $small: 24px, $medium: 38px, $large: 80px);
+  ::v-deep .search-field {
+    .v-input__slot {
+      min-height: 40px;
+    }
 
-%justify-align {
-  justify-content: start;
-  align-items: center;
-}
+    .v-input__append-inner {
+      margin-top: 8px;
+    }
 
-.card-total {
-  h2 {
-    font-size: 3.5rem;
-
-    small {
-      font-size: 0.9rem !important;
-      letter-spacing: 0.09px;
+    .v-icon.v-icon {
+      width: 12px;
     }
   }
-}
 
-.small-card {
-  .v-card {
-    min-height: 175px;
+  .refresh-button {
+    .v-icon {
+      width: 12px;
+    }
   }
-}
 
-::v-deep .currency-selector {
-  @include navSelector();
-  max-width: 50px;
-  .v-select__selection {
-    color: var(--v-primary-base) !important;
-  }
-}
-
-button {
-  border-radius: 6px !important;
-  box-shadow: none !important;
-}
-
-::v-deep .v-text-field .v-input__append-inner {
-  margin-top: 8px;
-}
-
-::v-deep .search-field {
-  display: inline-flex;
-  .v-input__slot {
-    min-height: 40px;
-  }
-}
-
-.v-tooltip__content {
-  background: #fff;
-  border: 1px solid var(--v-primary-base);
-  color: var(--v-primary-base);
-  &::after {
-    content: ' ';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: var(--v-primary-base) transparent transparent transparent;
+  .v-tooltip__content {
+    background: #fff;
+    border: 1px solid var(--v-primary-base);
+    color: var(--v-primary-base);
+    &::after {
+      content: ' ';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: var(--v-primary-base) transparent transparent transparent;
+    }
   }
 }
 </style>

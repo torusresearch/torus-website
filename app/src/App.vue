@@ -11,10 +11,6 @@ export default {}
 <style src="../public/css/circles.css"></style>
 
 <style lang="scss">
-.card-shadow {
-  box-shadow: 0 14px 28px 0 rgba(0, 0, 0, 0.06);
-}
-
 .v-input__slot {
   margin-bottom: 2px;
 }
