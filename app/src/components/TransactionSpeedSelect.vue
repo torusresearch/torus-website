@@ -55,7 +55,7 @@
       <v-flex xs12 px-4 class="text-right hidden-sm-and-up">
         <v-dialog v-model="advanceOptionDialog" persistent>
           <template v-slot:activator="{ on }">
-            <span class="float-right primary--text advance-option" v-on="on">Advance Options</span>
+            <span class="float-right primary--text advance-option subtitle-2" v-on="on">Advance Options</span>
           </template>
           <TransferAdvanceOption
             :symbol="symbol"

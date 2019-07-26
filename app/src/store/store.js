@@ -206,8 +206,10 @@ var VuexStore = new Vuex.Store({
     showPopup({ state, getters }, payload) {
       var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
       const isTx = isTorusTransaction()
-      const width = isTx ? 650 : 600
-      const height = isTx ? 470 : 350
+      // const width = isTx ? 650 : 600
+      // const height = isTx ? 470 : 350
+      const width = 500
+      const height = 600
       window.open(
         `${baseRoute}confirm?instanceId=${torus.instanceId}`,
         '_blank',

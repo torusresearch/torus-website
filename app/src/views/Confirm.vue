@@ -6,7 +6,7 @@
         <img :src="require('../../public/img/icons/transaction.svg')" class="ml-2" />
       </v-layout>
       <v-layout wrap mb-6>
-        <v-flex xs12 mb-6 mx-6>
+        <!-- <v-flex xs12 mb-6 mx-6>
           <div class="subtitle-2 grey--text">You are transacting with:</div>
 
           <v-card flat class="grey lighten-3">
@@ -16,8 +16,8 @@
             </v-card-text>
             <img :src="require('../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
           </v-card>
-        </v-flex>
-        <v-flex xs12 mb-4 mx-6>
+        </v-flex> -->
+        <!-- <v-flex xs12 mb-4 mx-6>
           <div class="subtitle-2">Amount</div>
           <v-divider></v-divider>
           <div>
@@ -25,16 +25,25 @@
             <span class="subtitle-2 float-right">{{ value }} ETH</span>
           </div>
           <div class="caption float-right clearfix">{{ dollarValue }} USD</div>
-        </v-flex>
+        </v-flex> -->
         <v-flex xs12 mb-4 mx-6>
+          <div class="subtitle-2">Amount</div>
+          <v-divider></v-divider>
+          <div>
+            <span class="subtitle-2 float-left grey--text">To: {{ slicedAddress(receiver) }}</span>
+            <span class="subtitle-2 float-right">{{ amountDisplay(value) }} ETH</span>
+          </div>
+          <div class="caption float-right clearfix">~ {{ dollarValue }} USD</div>
+        </v-flex>
+        <!-- <v-flex xs12 mb-4 mx-6>
           <div class="subtitle-2">Your Wallet Balance</div>
           <v-divider></v-divider>
           <div>
             <span class="caption float-left key-item grey--text">{{ sender }}</span>
-            <span class="subtitle-2 float-right">{{ computedBalance }} ETH</span>
+            <span class="subtitle-2 float-right">{{ amountDisplay(computedBalance) }} ETH</span>
           </div>
-          <div class="caption float-right clearfix">2.45 USD</div>
-        </v-flex>
+          <div class="caption float-right clearfix">{{ balanceUsd }} USD</div>
+        </v-flex> -->
         <v-flex px-2>
           <TransactionSpeedSelect :gas="gasEstimate" :displayAmount="value" :activeGasPriceConfirm="gasPrice" @onSelectSpeed="onSelectSpeed" />
         </v-flex>
@@ -45,9 +54,9 @@
             <span class="subtitle-2">Cost of Transaction</span>
             <span class="subtitle-1 float-right blue--text font-weight-bold">{{ totalEthCost }} ETH</span>
           </div>
-          <div class="caption float-right clearfix">{{ totalUsdCost }} USD</div>
+          <div class="caption float-right clearfix">~ {{ totalUsdCost }} USD</div>
         </v-flex>
-        <v-flex xs12 mb-6>
+        <v-flex xs12 mb-6 mt-3>
           <v-dialog v-model="detailsDialog" width="600px">
             <template v-slot:activator="{ on }">
               <div class="subtitle-2 float-right blue--text mx-6" v-on="on">More Details</div>
@@ -72,7 +81,7 @@
                     <span class="float-right mr-4">:</span>
                   </v-flex>
                   <v-flex xs10 class="torus_text--text text--lighten-4">
-                    {{ header }}
+                    {{ contractType }}
                   </v-flex>
                   <v-flex xs2>
                     Data
@@ -117,6 +126,22 @@
             </v-btn>
           </v-flex>
           <v-flex xs6>
+            <!-- <v-dialog v-model="confirmDialog" max-width="550" persistent>
+              <template v-slot:activator="{ on }">
+                <v-btn block depressed large color="primary" class="ml-2" v-on="on">Confirm</v-btn>
+              </template>
+              <transfer-confirm
+                :toAddress="receiver"
+                :selectedCoin="selectedItem.name"
+                :convertedAmount="convertedAmount"
+                :displayAmount="displayAmount"
+                :speedSelected="getGasSpeed(speedSelected)"
+                :activeGasPrice="getGasAmount(activeGasPrice)"
+                :selectedCurrency="selectedCurrency"
+                @onClose="confirmDialog = false"
+                @onConfirm="triggerSign"
+              ></transfer-confirm>
+            </v-dialog> -->
             <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">
               Confirm
             </v-btn>
@@ -413,6 +438,7 @@ export default {
   },
   data() {
     return {
+      confirmDialog: false,
       detailsDialog: false,
       dialogAdvanceOptions: false,
       open: false,
@@ -489,6 +515,9 @@ export default {
       return significantDigits(parseFloat(this.balance).toFixed(5)) || 0
     },
     header() {
+      return this.isDeployContract ? 'Contract Deployment' : this.isContractInteraction ? 'Contract Interaction' : 'Transfer'
+    },
+    contractType() {
       return this.isDeployContract ? 'Contract Deployment' : this.isContractInteraction ? 'Contract Interaction' : 'Transaction Request'
     },
     imageType() {
@@ -600,6 +629,9 @@ export default {
       hours = hours || 12
       return `${hours}:${minutes}:${seconds} ${ampm}`
     },
+    amountDisplay(amount) {
+      return parseFloat(amount).toFixed(2)
+    },
     ...mapActions({})
   },
   mounted() {
@@ -643,6 +675,7 @@ export default {
         this.gasPrice = gweiGasPrice // gas price in gwei
         this.gasKnob = calculateGasKnob(gweiGasPrice)
         this.balance = balance // in eth
+        this.balanceUsd = significantDigits(parseFloat(balance) * this.$store.state.currencyData['usd']) // in usd
         this.gasEstimate = web3Utils.hexToNumber(gas) // gas number
         this.txData = data // data hex
         this.sender = sender // address of sender

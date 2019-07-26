@@ -73,22 +73,7 @@
         </v-layout>
         <v-layout mt-4 pr-2 wrap>
           <v-spacer></v-spacer>
-          <v-dialog v-model="confirmDialog" max-width="550" persistent>
-            <template v-slot:activator="{ on }">
-              <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" class="px-6" v-on="on">Continue</v-btn>
-            </template>
-            <transfer-confirm
-              :toAddress="toAddress"
-              :selectedCoin="selectedItem.name"
-              :convertedAmount="convertedAmount"
-              :displayAmount="displayAmount"
-              :speedSelected="getGasSpeed(speedSelected)"
-              :activeGasPrice="getGasAmount(activeGasPrice)"
-              :selectedCurrency="selectedCurrency"
-              @onClose="confirmDialog = false"
-              @onConfirm="sendCoin"
-            ></transfer-confirm>
-          </v-dialog>
+          <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" class="px-6" type="submit">Continue</v-btn>
         </v-layout>
 
         <v-layout mt-4 pr-2 wrap>
@@ -112,7 +97,7 @@ import torus from '../torus'
 import { significantDigits, getRandomNumber } from '../utils/utils'
 import config from '../config'
 import TransactionSpeedSelect from '../components/TransactionSpeedSelect'
-import TransferConfirm from '../components/TransferConfirm'
+// import TransferConfirm from '../components/TransferConfirm'
 import MessageModal from '../components/MessageModal'
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
@@ -124,12 +109,11 @@ export default {
   props: ['address'],
   components: {
     TransactionSpeedSelect,
-    TransferConfirm,
+    // TransferConfirm,
     MessageModal
   },
   data() {
     return {
-      confirmDialog: false,
       tokenAddress: '0x',
       amount: 0,
       displayAmount: '',
