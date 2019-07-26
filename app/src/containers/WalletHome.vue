@@ -162,7 +162,7 @@ export default {
       return this.$store.state.networkType === MAINNET
     },
     showSearch() {
-      return this.finalBalancesArray.length > 5 || true
+      return this.finalBalancesArray.length > 5
     },
     isFreshAccount() {
       return this.filteredBalancesArray.length === 1 && this.filteredBalancesArray[0].computedBalance === 0

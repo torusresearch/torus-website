@@ -33,14 +33,14 @@
       <v-card color="dark card-shadow" white>
         <v-card-text class="pt-1 pb-4 px-6">
           <v-layout align-center>
-            <v-flex xs8 class="pt-4">
+            <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : 'xs8'">
               <div class="body-1 font-weight-bold">Check out the latest Dapp</div>
               <div class="body-2">Visit Etheremon and start using ETH.</div>
               <div>
                 <v-btn color="primary" depressed class="px-12 py-1 mt-4 white--text" href="https://www.etheremon.com" target="_blank">Play Now</v-btn>
               </div>
             </v-flex>
-            <v-flex xs4 pt-4 class="text-right">
+            <v-flex xs4 pt-4 class="text-right hidden-xs-only">
               <img :src="require(`../../public/images/etheremon.png`)" style="width: 100%" />
             </v-flex>
           </v-layout>
@@ -52,7 +52,7 @@
       <v-card color="dark card-shadow" white>
         <v-card-text class="pt-1 pb-4 px-6">
           <v-layout>
-            <v-flex xs8 class="pt-4">
+            <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : 'xs8'">
               <span class="body-1 font-weight-bold">Welcome to Torus.</span>
               <br />
               <span class="body-2">Learn more about your wallet today.</span>
@@ -63,7 +63,7 @@
                 <LearnMore @onClose="dialog = false" />
               </v-dialog>
             </v-flex>
-            <v-flex xs4 pt-4 class="text-right">
+            <v-flex xs4 pt-4 class="text-right hidden-xs-only">
               <img :src="require(`../../public/images/learn-more.svg`)" style="height: 100px" />
             </v-flex>
           </v-layout>
