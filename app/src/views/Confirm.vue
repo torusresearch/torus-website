@@ -152,12 +152,12 @@
 
     <template v-if="type === 'message'">
       <v-layout align-center mx-6 mb-6>
-        <div class="text-black font-weight-bold headline float-left">Signature</div>
-        <img :src="require('../../public/img/icons/pen-solid-grey.svg')" width="16" class="ml-2" />
+        <div class="text-black font-weight-bold headline float-left">Permission</div>
+        <img :src="require('../../public/img/icons/lock.svg')" width="16" class="ml-2" />
       </v-layout>
       <v-layout wrap mb-6>
         <v-flex xs12 mb-6 mx-6>
-          <div class="subtitle-2 grey--text">You are getting a signature from:</div>
+          <div class="subtitle-2 grey--text">Request from:</div>
 
           <v-card flat class="grey lighten-3">
             <v-card-text>
@@ -168,9 +168,31 @@
         </v-flex>
 
         <v-flex xs12 mb-4 mx-6>
-          <v-textarea outlined auto-grow rows="3" placeholder="To authenticate you are are owner."></v-textarea>
+          <v-list class="note-list">
+            <v-list-item class="pa-0">
+              <v-list-item-icon class="ma-1">
+                <img :src="require(`../../public/img/icons/check-circle-primary.svg`)" width="12" />
+              </v-list-item-icon>
+              <v-list-item-content class="pa-1">
+                <div class="caption torus_text--text text--lighten-3">To sign and authenticate you are the owner</div>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item class="pa-0">
+              <v-list-item-icon class="ma-1">
+                <img :src="require(`../../public/img/icons/check-circle-primary.svg`)" width="12" />
+              </v-list-item-icon>
+              <v-list-item-content class="pa-1">
+                <div class="caption torus_text--text text--lighten-3">Sample Text Here</div>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
         </v-flex>
-        <v-layout px-6>
+        <v-flex xs12 mt-12 mb-5 mx-7>
+          <div class="caption torus_text--text text--lighten-3">
+            Note : You may re-adjust the dapp permission later under ‘Settings > Dapp Permission’
+          </div>
+        </v-flex>
+        <v-layout px-6 mx-3>
           <v-flex xs6>
             <v-btn block text large class="grey--text" @click="triggerDeny">
               Cancel
@@ -858,5 +880,11 @@ hr {
 
 .dialog-launcher {
   cursor: pointer;
+}
+
+.note-list {
+  .v-list-item {
+    min-height: inherit;
+  }
 }
 </style>
