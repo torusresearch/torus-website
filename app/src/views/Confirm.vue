@@ -1,10 +1,5 @@
 <template>
   <v-container py-6 px-0>
-    <v-layout mx-4 mb-6>
-      <v-flex x12>
-        <img :src="require('../../public/img/icons/t-fill.svg')" width="30" />
-      </v-flex>
-    </v-layout>
     <template v-if="type === 'transaction'">
       <v-layout align-center mx-6 mb-6>
         <div class="text-black font-weight-bold headline float-left">{{ header }}</div>
