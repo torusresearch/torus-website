@@ -19,7 +19,7 @@
           <img :src="require('../../public/img/icons/menu-primary.svg')" />
         </v-btn>
 
-        <v-menu offset-y>
+        <v-menu offset-y bottom left>
           <template v-slot:activator="{ on }">
             <v-btn class="hidden-xs-only" small text v-on="on">
               <span>Satoshi Nakamoto</span>
