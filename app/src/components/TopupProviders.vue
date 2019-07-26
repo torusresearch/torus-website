@@ -1,129 +1,116 @@
 <template>
   <v-flex xs12 sm6 mb-4 px-4 class="topup-providers">
-    <v-card class="mb-2" @click="provider = 'simplex'">
-      <v-container fluid class="py-2">
-        <v-layout wrap>
-          <div class="provider torus_text--text text--lighten-4">
-            <div class="provider-checkbox">
-              <v-icon color="primary" v-if="provider === 'simplex'">$vuetify.icons.radio_checked</v-icon>
-              <v-icon color="grey" v-else>$vuetify.icons.radio_unchecked</v-icon>
-              <img :src="require(`../../public/images/logos/simplex-logo.png`)" class="provider-logo" />
-            </div>
-            <div class="provider-description">
-              <small class="d-block">Pay with Credit Card</small>
-              <small class="d-block">
-                <span class="font-weight-bold">Simplex Servcice Fee:</span>
-                5% or 10 USD
-              </small>
-              <small class="d-block">(whichever higher)</small>
-            </div>
-          </div>
-        </v-layout>
-      </v-container>
+    <v-card class="mb-4" v-for="targetProvider in providers" @click="innerProvider = targetProvider.name" :key="targetProvider.name">
+      <v-list-item three-line>
+        <v-list-item-icon class="mr-2 align-self-center">
+          <v-icon color="primary" v-if="innerProvider === targetProvider.name">$vuetify.icons.radio_checked</v-icon>
+          <v-icon color="grey" v-else>$vuetify.icons.radio_unchecked</v-icon>
+        </v-list-item-icon>
+        <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
+          <img :src="require(`../../public/images/logos/${targetProvider.logo}`)" />
+        </v-list-item-avatar>
+        <v-list-item-content class="align-self-center text-right caption">
+          <div>{{ targetProvider.line1 }}</div>
+          <div v-html="targetProvider.line2"></div>
+          <div>{{ targetProvider.line3 }}</div>
+        </v-list-item-content>
+      </v-list-item>
     </v-card>
 
-    <v-tooltip right>
-      <template v-slot:activator="{ on }">
-        <v-card class="coming-soon mb-2" v-on="on">
-          <v-container fluid class="py-2">
-            <v-layout wrap>
-              <div class="provider">
-                <div class="provider-checkbox">
-                  <input type="radio" disabled v-model="provider" value="wyre" name="test-radio" />
-                  <img :src="require(`../../public/images/logos/wyre-logo.svg`)" class="provider-logo" />
-                </div>
-                <div class="provider-description">
-                  <small class="d-block">Pay with Credit Card or Wire Transfer</small>
-                  <small class="d-block">
-                    <span class="font-weight-bold">Wyre Service Fee :</span>
-                    Varies
-                  </small>
-                </div>
-              </div>
-            </v-layout>
-          </v-container>
-        </v-card>
-      </template>
-      <span>Coming Soon</span>
-    </v-tooltip>
+    <template v-if="innerProvider === ''">
+      <v-tooltip right v-for="targetProvider in providersInactive" :key="targetProvider.name">
+        <template v-slot:activator="{ on }">
+          <v-card class="mb-4 coming-soon" v-on="on">
+            <v-list-item three-line>
+              <v-list-item-icon class="mr-2 align-self-center">
+                <v-icon color="grey">$vuetify.icons.radio_unchecked</v-icon>
+              </v-list-item-icon>
+              <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
+                <img :src="require(`../../public/images/logos/${targetProvider.logo}`)" />
+              </v-list-item-avatar>
+              <v-list-item-content class="align-self-center text-right caption">
+                <div>{{ targetProvider.line1 }}</div>
+                <div v-html="targetProvider.line2"></div>
+                <div>{{ targetProvider.line3 }}</div>
+              </v-list-item-content>
+            </v-list-item>
+          </v-card>
+        </template>
+        <span>Coming Soon</span>
+      </v-tooltip>
 
-    <v-tooltip right>
-      <template v-slot:activator="{ on }">
-        <v-card class="coming-soon mb-2" v-on="on">
-          <v-container fluid class="py-2">
-            <v-layout wrap>
-              <div class="provider">
-                <div class="provider-checkbox">
-                  <input type="radio" disabled v-model="provider" value="wyre" name="test-radio" />
-                  <img :src="require(`../../public/images/logos/crypto-logo.png`)" class="provider-logo" />
-                </div>
-                <div class="provider-description">
-                  <small class="d-block">Pay with Credit Card or Wire Transfer</small>
-                  <small class="d-block">
-                    <span class="font-weight-bold">crypto.com Service Fee :</span>
-                    Varies
-                  </small>
-                </div>
-              </div>
-            </v-layout>
-          </v-container>
-        </v-card>
-      </template>
-      <span>Coming Soon</span>
-    </v-tooltip>
-
-    <v-tooltip right>
-      <template v-slot:activator="{ on }">
-        <v-card class="coming-soon mb-2" v-on="on">
-          <v-container fluid class="py-2">
-            <v-layout wrap>
-              <div class="provider">
-                <div class="provider-checkbox">
-                  <input type="radio" disabled v-model="provider" value="wyre" name="test-radio" />
-                  <img :src="require(`../../public/images/logos/moon-pay-logo.svg`)" class="provider-logo" />
-                </div>
-                <div class="provider-description">
-                  <small class="d-block">Pay with Credit Card</small>
-                  <small class="d-block">
-                    <span class="font-weight-bold">MoonPay Service Fee :</span>
-                    4.5% or 5 USD
-                  </small>
-                </div>
-              </div>
-            </v-layout>
-          </v-container>
-        </v-card>
-      </template>
-      <span>Coming Soon</span>
-    </v-tooltip>
-
-    <div class="mt-4 py-4 px-1 text-gray caption">
-      <div>Prefer other mode of payment?</div>
-      <div>
-        <a mailto="">Write to us</a>
-        and we would try out best to improve and serve you better
+      <div class="mt-4 py-4 px-1 text-gray caption">
+        <div>Prefer other mode of payment?</div>
+        <div>
+          <a mailto="">Write to us</a>
+          and we would try out best to improve and serve you better
+        </div>
       </div>
-    </div>
+    </template>
   </v-flex>
 </template>
 
 <script>
 export default {
+  props: ['provider'],
   data() {
     return {
-      provider: ''
+      innerProvider: '',
+      providers: [
+        {
+          name: 'simplex',
+          logo: 'simplex-logo.png',
+          line1: 'Pay with Credit Card',
+          line2: '<span class="font-weight-medium">Simplex Service Fee</span> : 5% or 10 USD',
+          line3: '(whichever is higher)'
+        }
+      ],
+      providersInactive: [
+        {
+          name: 'wyre',
+          logo: 'wyre-logo.svg',
+          line1: 'Pay with Credit Card or Wire Transfer',
+          line2: '<span class="font-weight-medium">Wyre Service Fee</span> : Varies',
+          line3: ''
+        },
+        {
+          name: 'crypto',
+          logo: 'crypto-logo.png',
+          line1: 'Pay with Credit Card or Wire Transfer',
+          line2: '<span class="font-weight-medium">crypto.com Service Fee</span> : Varies',
+          line3: ''
+        },
+        {
+          name: 'moonpay',
+          logo: 'moon-pay-logo.svg',
+          line1: 'Pay with Credit Card',
+          line2: '<span class="font-weight-medium">Moonpay Service Fee</span> : 4.5% or 5 USD',
+          line3: '(whichever is higher)'
+        }
+      ]
     }
   },
   watch: {
+    innerProvider() {
+      this.$emit('onSelectProvider', this.innerProvider)
+    },
     provider() {
-      this.$emit('onSelectProvider', this.provider)
+      this.innerProvider = this.provider
     }
+  },
+  created() {
+    this.innerProvider = this.provider
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .topup-providers {
+  .coming-soon {
+    opacity: 0.4;
+  }
+}
+/* .topup-providers {
   .coming-soon {
     opacity: 0.4;
   }
@@ -148,7 +135,7 @@ export default {
     }
   }
 
-  @media screen and (min-width: 768px) {
+  @media screen and (max-width: 768px) {
     .provider {
       display: flex;
       align-items: center;
@@ -164,7 +151,7 @@ export default {
       }
     }
   }
-}
+} */
 
 .v-tooltip__content {
   background: #fff;

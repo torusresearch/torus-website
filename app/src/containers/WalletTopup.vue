@@ -3,7 +3,7 @@
     <v-layout mt-6 wrap>
       <v-flex xs12 mb-2>
         <div class="text-black font-weight-bold headline px-4 mb-4">
-          <span v-if="provider">
+          <span v-if="provider && !$vuetify.breakpoint.xsOnly">
             Purchase Cryptocurrency with your credit card via
             <span class="text-capitalize">{{ provider }}</span>
           </span>
@@ -11,6 +11,7 @@
         </div>
       </v-flex>
       <TopupProviders
+        :provider="provider"
         @onSelectProvider="
           selected => {
             provider = selected
@@ -18,17 +19,26 @@
         "
       />
 
+      <v-flex xs12 mb-2 v-if="provider && $vuetify.breakpoint.xsOnly">
+        <div class="text-black font-weight-bold headline px-4 mb-4">
+          <span>
+            Purchase Cryptocurrency with your credit card via
+            <span class="text-capitalize">{{ provider }}</span>
+          </span>
+        </div>
+      </v-flex>
+
       <v-flex xs12 sm6 mb-4 px-4>
         <v-layout wrap v-if="provider === 'simplex'">
           <v-flex xs12>
-            <p class="body-2 px-4">
+            <p class="body-2">
               Simplex is a secure way to buy cryptoccurrency with your credit card. Start by entering an amount to get a quote before making your
               purchase.
             </p>
           </v-flex>
 
           <v-flex xs12>
-            <v-form ref="inputForm" v-model="formValid" lazy-validation @submit.prevent class="px-4">
+            <v-form ref="inputForm" v-model="formValid" lazy-validation @submit.prevent>
               <v-flex xs12>
                 <div class="subtitle-2">You send</div>
                 <v-text-field
@@ -49,8 +59,8 @@
                 <div class="v-text-field__details torus-hint mb-6">
                   <div class="v-messages">
                     <div class="v-messages__wrapper">
-                      <div class="v-messages__message">
-                        <div class="flex-grow-1 torus_text--text text--lighten-4 px-3">
+                      <div class="v-messages__message d-flex torus_text--text text--lighten-4">
+                        <v-flex class="px-3">
                           * Includes 5% Simplex Service Fees or 10 USD (whichever higher)
                           <v-tooltip bottom>
                             <template v-slot:activator="{ on }">
@@ -62,8 +72,10 @@
                               in credit card processing, fraud detection and mitigation
                             </span>
                           </v-tooltip>
-                          <span class="float-right">min 50 USD*</span>
-                        </div>
+                        </v-flex>
+                        <v-flex grow-shrink-0>
+                          <span>min 50 USD*</span>
+                        </v-flex>
                       </div>
                     </div>
                   </div>
@@ -86,7 +98,7 @@
           </v-flex>
 
           <v-flex xs12>
-            <div class="px-4 mt-12 mb-6 torus_text--text text--lighten-4">
+            <div class="mt-12 mb-6 torus_text--text text--lighten-4">
               <div>
                 <img :src="require(`../../public/img/icons/info-circle.svg`)" class="help-icon" />
                 <small class="d-inline ml-2">The process would take approximately 10 - 15 mins.</small>
@@ -99,7 +111,8 @@
             </div>
           </v-flex>
           <v-flex xs12>
-            <div class="text-center text-sm-right">
+            <div class="text-right">
+              <v-btn class="mr-3" text @click.prevent="provider = ''">Back</v-btn>
               <v-tooltip bottom :disabled="formValid">
                 <template v-slot:activator="{ on }">
                   <span v-on="on">
@@ -148,7 +161,7 @@ export default {
         maxValidation: value => parseFloat(value) <= MAX_ORDER_VALUE || `Max topup amount is ${formatCurrencyNumber(MAX_ORDER_VALUE, 0)}`,
         minValidation: value => parseFloat(value) >= MIN_ORDER_VALUE || `Min topup amount is ${MIN_ORDER_VALUE}`
       },
-      provider: 'simplex'
+      provider: ''
     }
   },
   computed: {
