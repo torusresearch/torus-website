@@ -1,68 +1,88 @@
 <template>
   <v-card class="advance-option">
-    <v-card-text class="torus_text--text">
-      <v-container>
-        <v-form ref="advanceOptionForm" :value="advanceOptionFormValid" @submit.prevent="saveOptions" lazy-validation>
-          <v-layout wrap>
-            <v-flex xs12 px-4>
-              <div class="font-weight-bold headline">Transfer Details</div>
-              <div class="font-weight-bold subtitle-2">AdjustGas</div>
-            </v-flex>
-            <v-flex xs12 mt-4>
-              <v-layout wrap>
-                <v-flex xs12 sm6 px-4>
-                  <span class="subtitle-2">
-                    Gas Price (GWEI)
-                    <v-tooltip top>
-                      <template v-slot:activator="{ on }">
-                        <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
-                      </template>
-                      <span>Gas Price Info</span>
-                    </v-tooltip>
-                  </span>
-                  <v-text-field placeholder="Enter Value" outlined v-model="advancedActiveGasPrice" required type="number"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 px-4>
-                  <span class="subtitle-2">Gas Value</span>
-                  <v-text-field outlined v-model="advancedGas" required type="number"></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 px-4>
-                  <span class="subtitle-2">Send Amount</span>
-                  <v-text-field
-                    :suffix="symbol"
-                    outlined
-                    readonly
-                    :value="displayAmount"
-                    persistent-hint
-                    :hint="displayAmountConverted"
-                  ></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 px-4>
-                  <span class="subtitle-2">Transaction Fee</span>
-                  <v-text-field
-                    :suffix="symbol"
-                    outlined
-                    readonly
-                    :value="gasAmountDisplay"
-                    persistent-hint
-                    :hint="gasAmountConverted"
-                  ></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 px-4>
-                  <span class="subtitle-2">New Total</span>
-                  <v-text-field :suffix="symbol" outlined readonly :value="totalCost" persistent-hint :hint="totalCostConverted"></v-text-field>
-                </v-flex>
-              </v-layout>
-            </v-flex>
-          </v-layout>
-          <v-layout mt-4 pr-4>
-            <v-spacer></v-spacer>
-            <v-btn large text @click="onCancel">Cancel</v-btn>
-            <v-btn large color="primary" class="ml-4" type="submit" :disabled="!advanceOptionFormValid">Save</v-btn>
-          </v-layout>
-        </v-form>
-      </v-container>
-    </v-card-text>
+    <v-container>
+      <v-form ref="advanceOptionForm" :value="advanceOptionFormValid" @submit.prevent="saveOptions" lazy-validation>
+        <v-layout wrap>
+          <v-flex xs12 px-4>
+            <div class="font-weight-bold headline">Transfer Details</div>
+            <div class="font-weight-bold subtitle-2">Customize Gas</div>
+          </v-flex>
+          <v-flex xs12 mt-4>
+            <v-layout wrap>
+              <v-flex xs12 sm6 px-4>
+                <span class="subtitle-2">
+                  Gas Price (GWEI)
+                  <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                      <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
+                    </template>
+                    <span>Gas Price Info</span>
+                  </v-tooltip>
+                </span>
+                <v-text-field placeholder="Enter Value" outlined v-model="advancedActiveGasPrice" required type="number"></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6 px-4>
+                <span class="subtitle-2">
+                  Gas Value
+                  <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                      <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
+                    </template>
+                    <span>Gas Value Info</span>
+                  </v-tooltip>
+                </span>
+                <v-text-field outlined v-model="advancedGas" required type="number"></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6 px-4>
+                <span class="subtitle-2">Send Amount</span>
+                <template v-if="$vuetify.breakpoint.xsOnly">
+                  <span class="float-right">{{ displayAmount }} {{ symbol }}</span>
+                  <v-divider class="mt-1 mb-2"></v-divider>
+                </template>
+                <v-text-field
+                  v-else
+                  :suffix="symbol"
+                  outlined
+                  readonly
+                  :value="displayAmount"
+                  persistent-hint
+                  :hint="displayAmountConverted"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6 px-4>
+                <span class="subtitle-2">Transaction Fee</span>
+                <template v-if="$vuetify.breakpoint.xsOnly">
+                  <span class="float-right">{{ gasAmountDisplay }} {{ symbol }}</span>
+                  <v-divider class="mt-1 mb-2"></v-divider>
+                </template>
+                <v-text-field
+                  v-else
+                  :suffix="symbol"
+                  outlined
+                  readonly
+                  :value="gasAmountDisplay"
+                  persistent-hint
+                  :hint="gasAmountConverted"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6 px-4 :class="$vuetify.breakpoint.xsOnly ? 'mt-5' : ''">
+                <span class="subtitle-2">New Total</span>
+                <template v-if="$vuetify.breakpoint.xsOnly">
+                  <span class="float-right subtitle-1 font-weight-bold primary--text">{{ totalCost }} {{ symbol }}</span>
+                  <v-divider class="mt-1 mb-2"></v-divider>
+                </template>
+                <v-text-field v-else :suffix="symbol" outlined readonly :value="totalCost" persistent-hint :hint="totalCostConverted"></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+        </v-layout>
+        <v-layout mt-4 pr-4>
+          <v-spacer></v-spacer>
+          <v-btn large text @click="onCancel">Cancel</v-btn>
+          <v-btn large color="primary" class="ml-4" type="submit" :disabled="!advanceOptionFormValid">Save</v-btn>
+        </v-layout>
+      </v-form>
+    </v-container>
   </v-card>
 </template>
 
