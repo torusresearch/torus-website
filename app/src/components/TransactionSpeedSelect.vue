@@ -12,7 +12,7 @@
       </span>
       <v-dialog v-model="advanceOptionDialog" persistent>
         <template v-slot:activator="{ on }">
-          <span class="float-right primary--text advance-option" v-on="on">Advance Options</span>
+          <span class="float-right primary--text advance-option hidden-xs-only" v-on="on">Advance Options</span>
         </template>
         <TransferAdvanceOption
           :symbol="symbol"
@@ -36,7 +36,7 @@
           @click="selectSpeed('average', averageGasPrice)"
         >
           <span>~ {{ averageGasPriceSpeed }} Mins</span>
-          <span class="font-weight-light">{{ getGasDisplayString(averageGasPrice) }}</span>
+          <span class="font-weight-light body-2">{{ getGasDisplayString(averageGasPrice) }}</span>
         </v-btn>
       </v-flex>
       <v-flex xs6 px-4 mb-1>
@@ -49,8 +49,24 @@
           @click="selectSpeed('fastest', fastestGasPrice)"
         >
           <span>~ {{ fastestGasPriceSpeed }} Mins</span>
-          <span class="font-weight-light">{{ getGasDisplayString(fastestGasPrice) }}</span>
+          <span class="font-weight-light body-2">{{ getGasDisplayString(fastestGasPrice) }}</span>
         </v-btn>
+      </v-flex>
+      <v-flex xs12 px-4 class="text-right hidden-sm-and-up">
+        <v-dialog v-model="advanceOptionDialog" persistent>
+          <template v-slot:activator="{ on }">
+            <span class="float-right primary--text advance-option" v-on="on">Advance Options</span>
+          </template>
+          <TransferAdvanceOption
+            :symbol="symbol"
+            :dialog="advanceOptionDialog"
+            :displayAmount="displayAmount"
+            :gas="gas"
+            :activeGasPrice="activeGasPrice"
+            @onClose="advanceOptionDialog = false"
+            @onSave="onSaveAdvanceOptions"
+          />
+        </v-dialog>
       </v-flex>
     </v-layout>
     <v-layout v-if="isAdvanceOption" align-center>
