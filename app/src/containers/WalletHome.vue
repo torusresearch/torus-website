@@ -1,6 +1,6 @@
 <template>
   <div class="wallet-home">
-    <v-layout mt-6 wrap align-center>
+    <v-layout wrap align-center :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-6'">
       <v-flex xs12 px-4 mb-4>
         <div class="font-weight-bold headline float-left">My Wallet</div>
       </v-flex>
@@ -60,9 +60,8 @@
         <v-layout wrap justify-space-between align-center>
           <v-flex xs12 sm6>
             <v-layout wrap>
-              <v-flex xs12 sm6>
+              <v-flex xs12 sm6 v-if="showSearch">
                 <v-text-field
-                  v-if="showSearch"
                   v-model="search"
                   outlined
                   hide-details
@@ -81,14 +80,14 @@
           </v-flex>
           <v-flex xs12 sm6 class="balance-filter" :class="showSearch ? 'pt-2' : ''">
             <v-layout>
-              <v-flex xs7 class="hidden-sm-and-up">
+              <v-flex xs8 class="hidden-sm-and-up refresh">
                 <v-icon color="primary" @click="refreshBalances()" small>$vuetify.icons.refresh</v-icon>
                 <span class="caption">Last update {{ lastUpdated }}</span>
               </v-flex>
-              <v-flex xs5 sm12 class="text-right">
-                <span class="subtitle-2">CURRENCY:</span>
+              <v-flex xs4 sm12 class="text-right currency">
+                <span class="caption">CURRENCY:</span>
                 <v-select
-                  class="pt-0 mt-0 ml-2 subtitle-2 currency-selector"
+                  class="pt-0 mt-0 ml-1 caption currency-selector"
                   height="25px"
                   hide-details
                   :items="supportedCurrencies"
@@ -163,7 +162,7 @@ export default {
       return this.$store.state.networkType === MAINNET
     },
     showSearch() {
-      return this.finalBalancesArray.length > 5
+      return this.finalBalancesArray.length > 5 || true
     },
     isFreshAccount() {
       return this.filteredBalancesArray.length === 1 && this.filteredBalancesArray[0].computedBalance === 0
@@ -232,6 +231,7 @@ export default {
     max-width: 50px;
     .v-select__selection {
       color: var(--v-primary-base) !important;
+      width: 25px;
     }
   }
 
@@ -270,5 +270,18 @@ export default {
       border-color: var(--v-primary-base) transparent transparent transparent;
     }
   }
+
+  /* .balance-filter {
+    .refresh {
+      flex-basis: 67%;
+      flex-grow: 0;
+      max-width: 67%;
+    }
+    .currency {
+      flex-basis: 33%;
+      flex-grow: 0;
+      max-width: 33%;
+    }
+  } */
 }
 </style>

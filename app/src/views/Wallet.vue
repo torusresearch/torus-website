@@ -44,6 +44,8 @@ export default {
 
 .card-shadow {
   box-shadow: 0 14px 28px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid #f5f5f5;
+  border-radius: 3px;
 }
 
 .v-window__container {
@@ -72,5 +74,11 @@ export default {
 body,
 html {
   height: 100%;
+}
+
+@media only screen and (max-width: 599px) {
+  .container {
+    padding: 12px 0;
+  }
 }
 </style>
