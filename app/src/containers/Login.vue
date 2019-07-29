@@ -10,7 +10,7 @@
             <v-flex flex-grow-1 xs12>
               <div class="text-center login-subtitle">You are just one step away from getting your digital wallet for your cryptocurrencies</div>
             </v-flex>
-            <v-flex xs12 mt-12>
+            <v-flex xs12 mt-10>
               <div class="text-center">
                 <v-btn id="flexiBtn" large color="primary" class="flexiBtn px-12" type="button" @click="triggerLogin({ calledFromEmbed: false })">
                   Login
@@ -24,7 +24,7 @@
                 </small>
               </div>
             </v-flex>
-            <v-flex xs12 mt-12>
+            <v-flex xs12 mt-10>
               <small class="text-gray text-center d-block">
                 Note : For first time users, kindly
                 <a href="#">
@@ -35,8 +35,8 @@
                 gain access to your Torus Wallet
               </small>
             </v-flex>
-            <v-flex mt-12 text-center>
-              <img width="224px" height="auto" :src="require('../../public/images/torus-people.png')" class="ml-2" />
+            <v-flex mt-10 text-center>
+              <img width="200px" height="auto" :src="require('../../public/images/torus-people.png')" class="ml-2" />
               <p class="m-0">
                 <small class="text-gray">The Decentralized Web Awaits</small>
               </p>
@@ -114,7 +114,7 @@ a {
 
 .background-login {
   position: relative;
-  background-image: url(../assets/login-footer.png);
+  background-image: url('/images/footer_waves.png');
   background-repeat: no-repeat;
   background-position: center bottom;
   @extend .default;
