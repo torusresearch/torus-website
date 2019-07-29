@@ -1,7 +1,19 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 import { ceruleanBlue, lightBlue } from './themes'
-import { SelectIcon, SendIcon, AddIcon, SearchIcon, RefreshIcon, EthIcon, QuestionIcon, RadioCheckedIcon, RadioUncheckedIcon } from '../icons'
+import {
+  SelectIcon,
+  SendIcon,
+  AddIcon,
+  SearchIcon,
+  RefreshIcon,
+  EthIcon,
+  QuestionIcon,
+  RadioCheckedIcon,
+  RadioUncheckedIcon,
+  VisibilityOnIcon,
+  VisibilityOffIcon
+} from '../icons'
 
 Vue.use(Vuetify)
 
@@ -44,6 +56,12 @@ export default new Vuetify({
       },
       radio_unchecked: {
         component: RadioUncheckedIcon
+      },
+      visibility_on: {
+        component: VisibilityOnIcon
+      },
+      visibility_off: {
+        component: VisibilityOffIcon
       }
     }
   }
