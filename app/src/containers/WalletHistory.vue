@@ -124,6 +124,7 @@ export default {
               date: new Date(x.createdAt).toDateString().substring(4),
               from: 'Simplex',
               slicedFrom: 'Simplex',
+              action: 'Top-up',
               to: publicAddress,
               slicedTo: addressSlicer(publicAddress),
               totalAmount: x.requested_digital_amount.amount,

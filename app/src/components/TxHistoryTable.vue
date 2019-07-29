@@ -184,7 +184,11 @@ export default {
 
           isScoped = minDate.getTime() <= itemDate.getTime()
         }
-        return item.action.match(regExAction) && isScoped
+        if (item.action) {
+          return item.action.match(regExAction) && isScoped
+        } else {
+          return isScoped
+        }
       })
     }
   },
