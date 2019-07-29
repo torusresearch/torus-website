@@ -57,34 +57,24 @@
         </v-card>
       </v-flex>
 
-      <v-list-item>
+      <v-list-item @click="accountImportDialog = true">
         <v-list-item-action class="mr-2">
           <img :src="require('../../public/img/icons/import-grey.svg')" />
         </v-list-item-action>
-        <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
-          <template v-slot:activator="{ on }">
-            <v-list-item-content class="font-weight-bold" v-on="on">Import Account</v-list-item-content>
-          </template>
-          <AccountImport @onClose="accountImportDialog = false" />
-        </v-dialog>
+        <v-list-item-content class="font-weight-bold">Import Account</v-list-item-content>
       </v-list-item>
-      <!-- <v-dialog v-model="accountImportDialog" class="import-dialog">
-        <template v-slot:activator="{ on }">
-          <v-list-item v-on="on">
-            <v-list-item-action class="mr-2">
-              <img :src="require('../../public/img/icons/import-grey.svg')" />
-            </v-list-item-action>
-            <v-list-item-content class="font-weight-bold">Import Account</v-list-item-content>
-          </v-list-item>
-        </template>
-        <AccountImport />
-      </v-dialog> -->
+      <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
+        <AccountImport @onClose="accountImportDialog = false" />
+      </v-dialog>
     </v-list>
 
     <v-divider></v-divider>
 
     <v-list>
-      <v-list-item v-for="headerItem in headerItems" :key="headerItem.name" link router :to="headerItem.route">
+      <v-list-item v-for="headerItem in filteredMenu" :key="headerItem.name" link router :to="headerItem.route">
+        <v-list-item-action class="mr-2">
+          <img :src="require(`../../public/img/icons/${headerItem.icon}`)" />
+        </v-list-item-action>
         <v-list-item-content>
           <v-list-item-title>{{ headerItem.display }}</v-list-item-title>
         </v-list-item-content>
@@ -152,6 +142,11 @@ export default {
     },
     totalPortfolioEthValue() {
       return significantDigits(parseFloat(this.totalPortfolioValue.replace(',', '')) / this.getCurrencyMultiplier)
+    },
+    filteredMenu() {
+      return this.headerItems.filter(item => {
+        return item.name !== 'home'
+      })
     }
   }
 }
@@ -162,9 +157,5 @@ export default {
   .v-input__slot {
     background: white !important;
   }
-}
-
-.import-dialog.v-dialog__container {
-  display: none;
 }
 </style>

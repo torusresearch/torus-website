@@ -33,7 +33,6 @@
 
       <v-navigation-drawer v-model="drawer" disable-resize-watcher app right>
         <account-menu :headerItems="headerItems"></account-menu>
-        <account-menu></account-menu>
       </v-navigation-drawer>
     </nav>
     <v-container class="py-0 hidden-xs-only">
@@ -58,11 +57,11 @@ export default {
       drawer: false,
       selectedItem: 'home',
       headerItems: [
-        { name: 'home', display: 'Home', route: '/wallet/home' },
-        { name: 'transfer', display: 'Transfer', route: '/wallet/transfer' },
-        { name: 'top-up', display: 'Top up', route: '/wallet/topup' },
-        { name: 'activity', display: 'Activity', route: '/wallet/history' },
-        { name: 'settings', display: 'Settings', route: '/wallet/settings' }
+        { name: 'home', display: 'Home', route: '/wallet/home', icon: 'settings.svg' },
+        { name: 'transfer', display: 'Transfer', route: '/wallet/transfer', icon: 'transaction.svg' },
+        { name: 'top-up', display: 'Top up', route: '/wallet/topup', icon: 'topup.svg' },
+        { name: 'activity', display: 'Activity', route: '/wallet/history', icon: 'activities.svg' },
+        { name: 'settings', display: 'Settings', route: '/wallet/settings', icon: 'settings.svg' }
       ]
     }
   },
