@@ -22,7 +22,7 @@
                 @click="isShowPrivateKey = !isShowPrivateKey"
               />
             </div>
-            <div class="caption">{{ selectedAddress }}</div>
+            <div v-if="isShowPrivateKey" class="caption">{{ selectedAddress }}</div>
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
