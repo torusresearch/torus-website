@@ -2,7 +2,57 @@
   <v-layout mt-4 wrap class="wallet-settings">
     <v-flex xs12 sm8 px-4>
       <!-- Privacy and security settings -->
-      <v-expansion-panels>
+
+      <v-expansion-panels v-model="panel" :disabled="disabled" multiple>
+        <v-expansion-panel>
+          <v-expansion-panel-header expand-icon="$vuetify.icons.select">
+            <img class="d-inline-flex mr-4 shrink inline-small collpase-icon" :src="require(`../../public/img/icons/lock.svg`)" />
+            <div class="grow text-black font-weight-bold headline">
+              Privacy and Security
+            </div>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <div class="mt-2">
+              <v-dialog v-model="privateKeyDialog" max-width="1000">
+                <template v-slot:activator="{ on }">
+                  <v-btn text class="icon-button py-2" v-on="on">
+                    <img :src="require(`../../public/img/icons/key.svg`)" class="inline-small mr-4" />
+                    Private Key
+                  </v-btn>
+                </template>
+                <private-keys @onClose="privateKeyDialog = false" />
+              </v-dialog>
+            </div>
+
+            <div class="mb-4">
+              <v-dialog v-model="dappPermissionDialog" max-width="1000">
+                <template v-slot:activator="{ on }">
+                  <v-btn text class="icon-button py-2" v-on="on">
+                    <img :src="require(`../../public/img/icons/list.svg`)" class="inline-small mr-4" />
+                    Daap Permission
+                  </v-btn>
+                </template>
+                <wallet-settings-permission @onClose="dappPermissionDialog = false" />
+              </v-dialog>
+            </div>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+
+        <v-expansion-panel>
+          <v-expansion-panel-header>Panel 2</v-expansion-panel-header>
+          <v-expansion-panel-content>
+            Some content
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+
+        <v-expansion-panel>
+          <v-expansion-panel-header>Panel 3</v-expansion-panel-header>
+          <v-expansion-panel-content>
+            Some content
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
+      <!-- <v-expansion-panels>
         <v-expansion-panel>
           <v-expansion-panel-header>
             <div class="expasion-header-content">
@@ -39,7 +89,7 @@
             </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
-      </v-expansion-panels>
+      </v-expansion-panels> -->
 
       <!-- Network Settigs -->
       <v-expansion-panels>
