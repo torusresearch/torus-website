@@ -128,10 +128,10 @@
           </v-flex>
         </v-layout>
         <v-layout wrap v-if="provider === 'moonpay'">
-          <p>
+          <span>
             Moonpay is a secure way to buy cryptocurrency with your credit card. Start by entering a amount below to get a quote before making a
             purchase
-          </p>
+          </span>
 
           <div style="height:500px; width:100%">
             <iframe v-if="moonPay.loaded" :src="moonPay.url" height="100%" width="100%" style="border:none"></iframe>
@@ -299,7 +299,10 @@ export default {
       '&currencyCode=' +
       this.moonPay.currencyCode +
       '&walletAddress=' +
-      this.$store.state.selectedAddress
+      this.$store.state.selectedAddress +
+      '&email=' +
+      this.$store.state.email
+
     this.moonPay.loaded = true
     console.log('this.moonpay is', this.moonPay)
 
