@@ -1,9 +1,8 @@
 <template>
   <v-layout mt-4 wrap class="wallet-settings">
     <v-flex xs12 sm8 px-4>
-      <!-- Privacy and security settings -->
-
-      <v-expansion-panels v-model="panel" :disabled="disabled" multiple>
+      <v-expansion-panels multiple>
+        <!-- Privacy and security settings -->
         <v-expansion-panel>
           <v-expansion-panel-header expand-icon="$vuetify.icons.select">
             <img class="d-inline-flex mr-4 shrink inline-small collpase-icon" :src="require(`../../public/img/icons/lock.svg`)" />
@@ -12,157 +11,111 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <div class="mt-2">
-              <v-dialog v-model="privateKeyDialog" max-width="1000">
-                <template v-slot:activator="{ on }">
-                  <v-btn text class="icon-button py-2" v-on="on">
+            <div class="py-6 px-12">
+              <v-list>
+                <v-list-item @click="privateKeyDialog = true">
+                  <v-list-item-avatar class="mr-4">
                     <img :src="require(`../../public/img/icons/key.svg`)" class="inline-small mr-4" />
-                    Private Key
-                  </v-btn>
-                </template>
+                  </v-list-item-avatar>
+                  <v-list-item-content>
+                    <v-list-item-title>Private Key</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item @click="dappPermissionDialog = true">
+                  <v-list-item-avatar class="mr-4">
+                    <img :src="require(`../../public/img/icons/list.svg`)" class="inline-small mr-4" />
+                  </v-list-item-avatar>
+                  <v-list-item-content>
+                    <v-list-item-title>Daap Permission</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+
+              <v-dialog v-model="privateKeyDialog" max-width="1000">
                 <private-keys @onClose="privateKeyDialog = false" />
               </v-dialog>
-            </div>
-
-            <div class="mb-4">
               <v-dialog v-model="dappPermissionDialog" max-width="1000">
-                <template v-slot:activator="{ on }">
-                  <v-btn text class="icon-button py-2" v-on="on">
-                    <img :src="require(`../../public/img/icons/list.svg`)" class="inline-small mr-4" />
-                    Daap Permission
-                  </v-btn>
-                </template>
                 <wallet-settings-permission @onClose="dappPermissionDialog = false" />
               </v-dialog>
             </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
 
+        <!-- Network Settigs -->
         <v-expansion-panel>
-          <v-expansion-panel-header>Panel 2</v-expansion-panel-header>
+          <v-expansion-panel-header expand-icon="$vuetify.icons.select">
+            <img class="d-inline-flex mr-4 shrink inline-small collpase-icon" :src="require(`../../public/img/icons/globe.svg`)" />
+            <div class="grow text-black font-weight-bold headline">
+              Network
+            </div>
+          </v-expansion-panel-header>
           <v-expansion-panel-content>
-            Some content
+            <div class="py-6 px-12">
+              <v-form ref="form" v-model="formValid" lazy-validation @submit.prevent="">
+                <span class="subtitle-2">Select Network</span>
+                <v-flex>
+                  <v-select
+                    outlined
+                    :items="networks"
+                    item-text="name"
+                    item-value="value"
+                    v-model="selectedNetwork"
+                    @change="changeNetwork"
+                    append-icon="$vuetify.icons.select"
+                  ></v-select>
+                </v-flex>
+
+                <template v-if="isRPCSelected">
+                  <v-flex xs12>
+                    <v-text-field class="custom-text-input" placeholder="Enter Network Name" solo v-model="networkName"></v-text-field>
+                  </v-flex>
+
+                  <v-flex xs12>
+                    <v-text-field class="custom-text-input" placeholder="Enter RPC URL" solo v-model="rpcValue"></v-text-field>
+                  </v-flex>
+
+                  <v-flex xs12 class="text-right">
+                    <v-tooltip bottom :disabled="formValid">
+                      <template v-slot:activator="{ on }">
+                        <span v-on="on">
+                          <v-btn :disabled="!formValid" depressed color="primary" @click="setRPC">Save</v-btn>
+                        </span>
+                      </template>
+                      <span>Resolve the errors</span>
+                    </v-tooltip>
+                  </v-flex>
+                </template>
+              </v-form>
+            </div>
           </v-expansion-panel-content>
         </v-expansion-panel>
 
+        <!-- Display Settings -->
         <v-expansion-panel>
-          <v-expansion-panel-header>Panel 3</v-expansion-panel-header>
+          <v-expansion-panel-header expand-icon="$vuetify.icons.select">
+            <img class="d-inline-flex mr-4 shrink inline-small collpase-icon" :src="require(`../../public/img/icons/server.svg`)" />
+            <div class="grow text-black font-weight-bold headline">
+              Display
+            </div>
+          </v-expansion-panel-header>
           <v-expansion-panel-content>
-            Some content
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
-      <!-- <v-expansion-panels>
-        <v-expansion-panel>
-          <v-expansion-panel-header>
-            <div class="expasion-header-content">
-              <div class="title">
-                <img :src="require(`../../public/img/icons/lock.svg`)" class="inline-small collpase-icon" />
-                <div class="d-inline ml-6 text-black font-weight-bold headline">Privacy and Security</div>
-              </div>
-
-              <img :src="require(`../../public/img/icons/chevron-big-down.svg`)" class="inline-small chevron-icon" />
+            <div class="py-6 px-12">
+              <div class="body-2 mb-1 px-1">Select Theme</div>
+              <v-layout wrap>
+                <v-flex xs4 px-1>
+                  <v-btn light outlined block color="primary" class="btn-default" @click="selectTheme('default')">Default</v-btn>
+                </v-flex>
+                <v-flex xs4 px-1>
+                  <v-btn dark depressed block class="btn-cerulean" @click="selectTheme('cerulean-blue')">Cerulean Blue</v-btn>
+                </v-flex>
+                <v-flex xs4 px-1>
+                  <v-btn dark depressed block class="btn-shuttle-grey" @click="selectTheme('shuttle-grey')">Shuttle Grey</v-btn>
+                </v-flex>
+              </v-layout>
+              <v-flex class="pt-12 save-container">
+                <v-btn color="primary" depressed class="px-12 py-1 mt-4">Save</v-btn>
+              </v-flex>
             </div>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content class="py-6 px-12">
-            <div class="mt-2">
-              <v-dialog v-model="privateKeyDialog" max-width="1000">
-                <template v-slot:activator="{ on }">
-                  <v-btn text class="icon-button py-2" v-on="on">
-                    <img :src="require(`../../public/img/icons/key.svg`)" class="inline-small mr-4" />
-                    Private Key
-                  </v-btn>
-                </template>
-                <private-keys @onClose="privateKeyDialog = false" />
-              </v-dialog>
-            </div>
-            <div class="mb-4">
-              <v-dialog v-model="dappPermissionDialog" max-width="1000">
-                <template v-slot:activator="{ on }">
-                  <v-btn text class="icon-button py-2" v-on="on">
-                    <img :src="require(`../../public/img/icons/list.svg`)" class="inline-small mr-4" />
-                    Daap Permission
-                  </v-btn>
-                </template>
-                <wallet-settings-permission @onClose="dappPermissionDialog = false" />
-              </v-dialog>
-            </div>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels> -->
-
-      <!-- Network Settigs -->
-      <v-expansion-panels>
-        <v-expansion-panel>
-          <v-expansion-panel-header>
-            <div class="expasion-header-content">
-              <div class="title">
-                <img :src="require(`../../public/img/icons/globe.svg`)" class="inline-small collpase-icon" />
-                <div class="d-inline ml-6 text-black font-weight-bold headline">Network</div>
-              </div>
-
-              <img :src="require(`../../public/img/icons/chevron-big-down.svg`)" class="inline-small chevron-icon" />
-            </div>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content class="py-6 px-12">
-            <v-form ref="inputForm" class="px-4">
-              <v-flex mb-12>
-                <v-select
-                  class="custom-text-input"
-                  single-line
-                  solo
-                  text
-                  :items="networks"
-                  item-text="name"
-                  item-value="value"
-                  v-model="selectedNetwork"
-                  @change="changeNetwork"
-                  label="Select Import Type"
-                  append-icon="$vuetify.icons.dropdown"
-                ></v-select>
-              </v-flex>
-
-              <v-flex xs12 mb-4>
-                <v-text-field class="custom-text-input" placeholder="Enter Network Name" solo v-model="networkName"></v-text-field>
-              </v-flex>
-
-              <v-flex xs12 mb-4>
-                <v-text-field class="custom-text-input" placeholder="Enter RPC URL" solo v-model="rpcValue"></v-text-field>
-              </v-flex>
-            </v-form>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
-
-      <!-- Display Settings -->
-      <v-expansion-panels>
-        <v-expansion-panel>
-          <v-expansion-panel-header>
-            <div class="expasion-header-content">
-              <div class="title">
-                <img :src="require(`../../public/img/icons/server.svg`)" class="inline-small collpase-icon" />
-                <div class="d-inline ml-6 text-black font-weight-bold headline">Display</div>
-              </div>
-
-              <img :src="require(`../../public/img/icons/chevron-big-down.svg`)" class="inline-small chevron-icon" />
-            </div>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content class="py-6 px-12">
-            <div class="body-2 mb-1 px-1">Select Theme</div>
-            <v-layout wrap>
-              <v-flex xs4 px-1>
-                <v-btn light outlined block color="primary" class="btn-default" @click="selectTheme('default')">Default</v-btn>
-              </v-flex>
-              <v-flex xs4 px-1>
-                <v-btn dark depressed block class="btn-cerulean" @click="selectTheme('cerulean-blue')">Cerulean Blue</v-btn>
-              </v-flex>
-              <v-flex xs4 px-1>
-                <v-btn dark depressed block class="btn-shuttle-grey" @click="selectTheme('shuttle-grey')">Shuttle Grey</v-btn>
-              </v-flex>
-            </v-layout>
-            <v-flex class="pt-12 save-container">
-              <v-btn color="primary" depressed class="px-12 py-1 mt-4">Save</v-btn>
-            </v-flex>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
