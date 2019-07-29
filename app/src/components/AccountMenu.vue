@@ -47,7 +47,7 @@
       <v-flex xs12 class="mx-4" v-if="showAddAccount">
         <v-card flat color="background_2 px-4 py-2">
           <span class="body-2">Enter Account Name</span>
-          <v-textarea outlined hide-details></v-textarea>
+          <v-textarea outlined hide-details class="enter-account-field"></v-textarea>
 
           <v-card-actions class="mt-2 pr-0">
             <v-spacer></v-spacer>
@@ -137,7 +137,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.break-word {
-  word-break: break-word;
+.enter-account-field {
+  .v-input__slot {
+    background: white !important;
+  }
 }
 </style>
