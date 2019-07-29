@@ -2,28 +2,28 @@
   <v-card class="advance-option">
     <v-card-text class="torus_text--text py-6">
       <v-layout wrap>
-        <v-flex xs12 px-4>
+        <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
           <div class="font-weight-bold headline">Private Key</div>
         </v-flex>
-        <v-flex xs12 mt-4 px-4>
+        <v-flex xs12 mt-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
           <v-list>
-            <v-list-item>
-              <v-list-item-icon>
-                <img :src="require('../../public/img/icons/file-text-grey.svg')" />
+            <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
+              <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
+                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require('../../public/img/icons/file-text-grey.svg')" />
               </v-list-item-icon>
               <v-list-item-content>
                 <div class="subtitle-1 flex-grow-1 font-weight-bold">Download soft copy (JSON)</div>
                 <v-expand-transition>
-                  <v-layout align-center justify-space-between v-if="isShowGetPassword" class="mt-2">
+                  <v-layout wrap align-center justify-space-between v-if="isShowGetPassword" class="mt-2">
                     <v-flex>
                       <v-form ref="downloadForm" @submit.prevent="downloadWallet" v-model="downloadFormValid" lazy-validation>
                         <v-text-field small :rules="[rules.required]" v-model="keyStorePassword" :type="showJsonPassword ? 'text' : 'password'">
                           <template v-slot:append>
-                            <v-btn icon @click="showJsonPassword = !showJsonPassword">
+                            <v-btn icon small @click="showJsonPassword = !showJsonPassword">
                               <img :src="require(`../../public/img/icons/eye${showJsonPassword ? '-off' : ''}-grey.svg`)" />
                             </v-btn>
                           </template>
-                          <template v-slot:append-outer>
+                          <template v-slot:append-outer v-if="!$vuetify.breakpoint.xsOnly">
                             <v-btn
                               color="primary"
                               :disabled="!downloadFormValid || isLoadingDownloadWallet"
@@ -38,33 +38,55 @@
                         </v-text-field>
                       </v-form>
                     </v-flex>
+                    <v-flex v-if="$vuetify.breakpoint.xsOnly" class="text-right">
+                      <v-btn
+                        color="primary"
+                        :disabled="!downloadFormValid || isLoadingDownloadWallet"
+                        v-if="!walletJson"
+                        :loading="isLoadingDownloadWallet"
+                        @click="downloadWallet"
+                      >
+                        Confirm
+                      </v-btn>
+                      <v-btn color="primary" v-if="walletJson" :href="walletJson" :download="name">Download wallet</v-btn>
+                    </v-flex>
                   </v-layout>
                 </v-expand-transition>
               </v-list-item-content>
-              <v-list-item-icon>
-                <v-btn icon @click="isShowGetPassword = true">
-                  <img :src="require('../../public/img/icons/download-primary.svg')" />
+              <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'ma-1' : ''">
+                <v-btn icon small @click="isShowGetPassword = true">
+                  <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require('../../public/img/icons/download-primary.svg')" />
                 </v-btn>
               </v-list-item-icon>
             </v-list-item>
 
             <v-divider></v-divider>
 
-            <v-list-item>
-              <v-list-item-icon>
-                <img :src="require(`../../public/img/icons/key.svg`)" />
+            <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
+              <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
+                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require(`../../public/img/icons/key.svg`)" />
               </v-list-item-icon>
               <v-list-item-content>
                 <div class="subtitle-1 flex-grow-1 font-weight-bold">Show Private Key</div>
                 <v-expand-transition>
-                  <v-layout align-center justify-space-between v-if="isShowPrivateKey" class="mt-2">
-                    <v-flex>
-                      <div style="word-break: break-all">{{ selectedKey }}</div>
+                  <v-layout wrap align-center justify-space-between v-if="isShowPrivateKey" class="mt-2">
+                    <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12' : ''">
+                      <div
+                        class="torus_text--text text--lighten-4"
+                        :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
+                        style="word-break: break-all"
+                      >
+                        {{ selectedKey }}
+                      </div>
                     </v-flex>
-                    <v-flex>
+                    <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : ''">
                       <show-tool-tip :address="selectedKey">
-                        <v-btn text class="primary--text">
-                          <img :src="require('../../public/img/icons/copy-primary.svg')" class="mr-1" width="20" />
+                        <v-btn text small class="primary--text" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'caption'">
+                          <img
+                            :src="require('../../public/img/icons/copy-primary.svg')"
+                            class="mr-1"
+                            :width="$vuetify.breakpoint.xsOnly ? '12' : '20'"
+                          />
                           Click to copy
                         </v-btn>
                       </show-tool-tip>
@@ -72,9 +94,12 @@
                   </v-layout>
                 </v-expand-transition>
               </v-list-item-content>
-              <v-list-item-icon>
-                <v-btn icon @click="isShowPrivateKey = !isShowPrivateKey">
-                  <img :src="require(`../../public/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)" />
+              <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'ma-1' : ''">
+                <v-btn icon small @click="isShowPrivateKey = !isShowPrivateKey">
+                  <img
+                    :width="$vuetify.breakpoint.xsOnly ? '20' : ''"
+                    :src="require(`../../public/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)"
+                  />
                 </v-btn>
               </v-list-item-icon>
             </v-list-item>

@@ -4,18 +4,22 @@
       <v-expansion-panels multiple>
         <!-- Privacy and security settings -->
         <v-expansion-panel>
-          <v-expansion-panel-header expand-icon="$vuetify.icons.select">
-            <img class="d-inline-flex mr-4 shrink inline-small collpase-icon" :src="require(`../../public/img/icons/lock.svg`)" />
-            <div class="grow text-black font-weight-bold headline">
+          <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
+            <img
+              :width="$vuetify.breakpoint.xsOnly ? '16' : ''"
+              class="d-inline-flex mr-4 shrink"
+              :src="require(`../../public/img/icons/lock.svg`)"
+            />
+            <div class="grow font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'headline'">
               Privacy and Security
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <div class="py-6 px-12">
+            <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-6 px-12'">
               <v-list>
                 <v-list-item @click="privateKeyDialog = true">
                   <v-list-item-avatar class="mr-4">
-                    <img :src="require(`../../public/img/icons/key.svg`)" class="inline-small mr-4" />
+                    <img :src="require(`../../public/img/icons/key.svg`)" class=" mr-4" />
                   </v-list-item-avatar>
                   <v-list-item-content>
                     <v-list-item-title>Private Key</v-list-item-title>
@@ -23,7 +27,7 @@
                 </v-list-item>
                 <v-list-item @click="dappPermissionDialog = true">
                   <v-list-item-avatar class="mr-4">
-                    <img :src="require(`../../public/img/icons/list.svg`)" class="inline-small mr-4" />
+                    <img :src="require(`../../public/img/icons/list.svg`)" class=" mr-4" />
                   </v-list-item-avatar>
                   <v-list-item-content>
                     <v-list-item-title>Daap Permission</v-list-item-title>
@@ -31,10 +35,10 @@
                 </v-list-item>
               </v-list>
 
-              <v-dialog v-model="privateKeyDialog" max-width="1000">
+              <v-dialog v-model="privateKeyDialog" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly">
                 <private-keys @onClose="privateKeyDialog = false" />
               </v-dialog>
-              <v-dialog v-model="dappPermissionDialog" max-width="1000">
+              <v-dialog v-model="dappPermissionDialog" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly">
                 <wallet-settings-permission @onClose="dappPermissionDialog = false" />
               </v-dialog>
             </div>
@@ -43,14 +47,18 @@
 
         <!-- Network Settigs -->
         <v-expansion-panel>
-          <v-expansion-panel-header expand-icon="$vuetify.icons.select">
-            <img class="d-inline-flex mr-4 shrink inline-small collpase-icon" :src="require(`../../public/img/icons/globe.svg`)" />
-            <div class="grow text-black font-weight-bold headline">
+          <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
+            <img
+              :width="$vuetify.breakpoint.xsOnly ? '16' : ''"
+              class="d-inline-flex mr-4 shrink collpase-icon"
+              :src="require(`../../public/img/icons/globe.svg`)"
+            />
+            <div class="grow font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'headline'">
               Network
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <div class="py-6 px-12">
+            <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-6 px-12'">
               <v-form ref="form" v-model="formValid" lazy-validation @submit.prevent="">
                 <span class="subtitle-2">Select Network</span>
                 <v-flex>
@@ -67,11 +75,11 @@
 
                 <template v-if="isRPCSelected">
                   <v-flex xs12>
-                    <v-text-field class="custom-text-input" placeholder="Enter Network Name" solo v-model="networkName"></v-text-field>
+                    <v-text-field placeholder="Enter Network Name" outlined v-model="networkName"></v-text-field>
                   </v-flex>
 
                   <v-flex xs12>
-                    <v-text-field class="custom-text-input" placeholder="Enter RPC URL" solo v-model="rpcValue"></v-text-field>
+                    <v-text-field placeholder="Enter RPC URL" outlined v-model="rpcValue"></v-text-field>
                   </v-flex>
 
                   <v-flex xs12 class="text-right">
@@ -92,27 +100,31 @@
 
         <!-- Display Settings -->
         <v-expansion-panel>
-          <v-expansion-panel-header expand-icon="$vuetify.icons.select">
-            <img class="d-inline-flex mr-4 shrink inline-small collpase-icon" :src="require(`../../public/img/icons/server.svg`)" />
-            <div class="grow text-black font-weight-bold headline">
+          <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
+            <img
+              :width="$vuetify.breakpoint.xsOnly ? '16' : ''"
+              class="d-inline-flex mr-4 shrink collpase-icon"
+              :src="require(`../../public/img/icons/server.svg`)"
+            />
+            <div class="grow font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'headline'">
               Display
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <div class="py-6 px-12">
+            <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-6 px-12'">
               <div class="body-2 mb-1 px-1">Select Theme</div>
               <v-layout wrap>
-                <v-flex xs4 px-1>
+                <v-flex xs12 sm4 px-1 mb-1>
                   <v-btn light outlined block color="primary" class="btn-default" @click="selectTheme('default')">Default</v-btn>
                 </v-flex>
-                <v-flex xs4 px-1>
+                <v-flex xs12 sm4 px-1 mb-1>
                   <v-btn dark depressed block class="btn-cerulean" @click="selectTheme('cerulean-blue')">Cerulean Blue</v-btn>
                 </v-flex>
-                <v-flex xs4 px-1>
+                <v-flex xs12 sm4 px-1 mb-1>
                   <v-btn dark depressed block class="btn-shuttle-grey" @click="selectTheme('shuttle-grey')">Shuttle Grey</v-btn>
                 </v-flex>
               </v-layout>
-              <v-flex class="pt-12 save-container">
+              <v-flex class="pt-12 text-right">
                 <v-btn color="primary" depressed class="px-12 py-1 mt-4">Save</v-btn>
               </v-flex>
             </div>
@@ -241,17 +253,6 @@ export default {
 
 <style lang="scss">
 .wallet-settings {
-  .chevron-icon {
-    transition: ease 0.2s;
-  }
-
-  .v-expansion-panel--active {
-    .chevron-icon {
-      transform: rotate(180deg);
-      transition: ease 0.2s;
-    }
-  }
-
   .v-expansion-panel {
     background-color: transparent !important;
     border-radius: 0;
@@ -263,38 +264,11 @@ export default {
     }
   }
 
-  .expasion-header-content {
-    align-items: center;
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-
-    .title {
-      align-items: center;
-      display: flex;
-    }
+  .v-expansion-panel--active:not(:first-child),
+  .v-expansion-panel--active + .v-expansion-panel {
+    margin-top: 0;
   }
 
-  .icon-button {
-    background-color: transparent;
-    box-shadow: none !important;
-    height: auto !important;
-  }
-
-  .custom-text-input {
-    .v-input__slot {
-      background: transparent !important;
-      box-shadow: none !important;
-      border: 1px solid #d3d5e2 !important;
-    }
-  }
-
-  .btn-theme {
-    border-radius: 3px;
-    box-shadow: none !important;
-    height: 43px !important;
-    width: 163px;
-  }
   .btn-default {
     color: #5495f7;
     background-color: white;
@@ -317,18 +291,6 @@ export default {
     .v-btn__content {
       color: white;
     }
-  }
-
-  .theme-options {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .save-container {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
   }
 }
 </style>
