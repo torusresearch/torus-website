@@ -1,135 +1,65 @@
 <template>
-  <div>
-    <v-data-table
-      class="activity-table"
-      :headers="headers"
-      :items="filteredTransactions"
-      :expanded.sync="expanded"
-      item-key="id"
-      single-expand
-      @click:row="rowClicked"
-      hide-default-footer
-    >
-      <template v-slot:item.from="{ item }">
-        <span style="word-break: break-all">{{ item.from }}</span>
-      </template>
-      <template v-slot:item.to="{ item }">
-        <span style="word-break: break-all">{{ item.to }}</span>
-      </template>
-      <template v-slot:item.date="{ item }">
-        <span>{{ formatDate(item.date) }}</span>
-      </template>
-      <template v-slot:item.status="{ item }">
-        <span :class="`text-${item.status.toLowerCase()}`">{{ item.status }}</span>
-      </template>
-      <template v-slot:expanded-item="{ headers, item }">
-        <td :colspan="headers.length" class="pa-0 ma-0" style="height: inherit">
-          <v-flex xs12 white class="card-shadow dark pa-4">
-            <v-layout wrap>
-              <v-flex xs1 pr-2>
-                Rate
-                <span class="float-right">:</span>
-              </v-flex>
-              <v-flex xs11>1 ETH = 240.00 USD @ 12:34:20 PM</v-flex>
-              <v-flex xs1 pr-2>
-                Network
-                <span class="float-right">:</span>
-              </v-flex>
-              <v-flex xs11>Main Ethereum Network</v-flex>
-              <v-flex xs1 pr-2>
-                Type
-                <span class="float-right">:</span>
-              </v-flex>
-              <v-flex xs11>Contract Interaction</v-flex>
-              <v-flex xs1 pr-2>
-                Data
-                <span class="float-right">:</span>
-              </v-flex>
-              <v-flex xs11>
-                <v-card flat class="grey lighten-3">
-                  <v-card-text></v-card-text>
-                </v-card>
-              </v-flex>
-              <v-flex xs12 class="text-right">
-                <v-btn text small color="primary" :href="item.etherscanLink" target="_blank">View On Etherscan</v-btn>
-              </v-flex>
-            </v-layout>
-          </v-flex>
-        </td>
-      </template>
-      <template v-slot:no-data>
-        <v-flex xs12 class="text-center">No Transaction Activity!</v-flex>
-      </template>
-    </v-data-table>
-    <v-layout wrap v-if="false">
-      <v-flex flex-grow-1 offset-xs8 xs4 sm4 offset-sm7 align-self-end v-if="showFooter">
-        <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
-      </v-flex>
-      <v-flex xs12 sm10 offset-sm1>
-        <v-data-table
-          :headers="headers"
-          :items="transactions"
-          item-key="id"
-          :options.sync="pagination"
-          :sort-by.sync="defaultSort"
-          :hide-default-footer="!showFooter"
-          :search="search"
-        >
-          <template v-slot:headers="props">
-            <tr>
-              <th
-                v-for="header in props.headers"
-                :key="header.text"
-                :class="[
-                  'column sortable',
-                  'background-grey',
-                  pagination.descending ? 'desc' : 'asc',
-                  header.value === pagination.sortBy ? 'active' : '',
-                  header.align !== '' ? `text-xs-${header.align}` : ''
-                ]"
-                @click="changeSort(header.value)"
-              >
-                <v-icon small>arrow_upward</v-icon>
-                {{ header.text }}
-              </th>
-            </tr>
-          </template>
-          <template v-slot:items="props">
-            <tr @click="props.expanded = !props.expanded" :class="{ activeRow: props.expanded }">
-              <td class="text-center">
-                <v-layout wrap>
-                  <v-flex xs11 align-self-center>
-                    {{ props.item.date }}
-                  </v-flex>
-                </v-layout>
-              </td>
-              <td class="text-center text-text-no-wrap">{{ props.item.slicedFrom }}</td>
-              <td class="text-center text-text-no-wrap">{{ props.item.slicedTo }}</td>
-              <td class="text-center text-text-no-wrap">{{ props.item.totalAmountString }}</td>
-              <td class="text-center text-text-no-wrap">{{ props.item.currencyAmountString }}</td>
-              <td class="text-center text-text-no-wrap">{{ props.item.status }}</td>
-            </tr>
-          </template>
-          <template v-slot:expand="props">
-            <v-card flat v-show="props.item.status !== 'rejected' && props.item.etherscanLink !== ''">
-              <v-card-text>
-                <v-layout wrap>
-                  <v-flex xs6 class="text-left">
-                    <v-btn id="flexibtn" class="btnStyle" outlined large>
-                      <a target="_blank" rel="noopener noreferrer" :href="props.item.etherscanLink">View On Etherscan</a>
-                    </v-btn>
-                  </v-flex>
-                </v-layout>
-              </v-card-text>
-            </v-card>
-          </template>
-          <template v-slot:no-results>
-            <v-alert :value="true" color="error" icon="warning">Your search for "{{ search }}" found no results.</v-alert>
-          </template>
-        </v-data-table>
-      </v-flex>
-    </v-layout>
-  </div>
+  <v-data-table
+    class="activity-table"
+    :headers="headers"
+    :items="filteredTransactions"
+    :expanded.sync="expanded"
+    item-key="id"
+    single-expand
+    @click:row="rowClicked"
+    hide-default-footer
+  >
+    <template v-slot:item.from="{ item }">
+      <span style="word-break: break-all">{{ item.from }}</span>
+    </template>
+    <template v-slot:item.to="{ item }">
+      <span style="word-break: break-all">{{ item.to }}</span>
+    </template>
+    <template v-slot:item.date="{ item }">
+      <span>{{ formatDate(item.date) }}</span>
+    </template>
+    <template v-slot:item.status="{ item }">
+      <span :class="`text-${item.status.toLowerCase()}`">{{ item.status }}</span>
+    </template>
+    <template v-slot:expanded-item="{ headers, item }">
+      <td :colspan="headers.length" class="pa-0 ma-0" style="height: inherit">
+        <v-flex xs12 white class="card-shadow dark pa-4">
+          <v-layout wrap>
+            <v-flex xs1 pr-2>
+              Rate
+              <span class="float-right">:</span>
+            </v-flex>
+            <v-flex xs11>1 ETH = 240.00 USD @ 12:34:20 PM</v-flex>
+            <v-flex xs1 pr-2>
+              Network
+              <span class="float-right">:</span>
+            </v-flex>
+            <v-flex xs11>Main Ethereum Network</v-flex>
+            <v-flex xs1 pr-2>
+              Type
+              <span class="float-right">:</span>
+            </v-flex>
+            <v-flex xs11>Contract Interaction</v-flex>
+            <v-flex xs1 pr-2>
+              Data
+              <span class="float-right">:</span>
+            </v-flex>
+            <v-flex xs11>
+              <v-card flat class="grey lighten-3">
+                <v-card-text></v-card-text>
+              </v-card>
+            </v-flex>
+            <v-flex xs12 class="text-right">
+              <v-btn text small color="primary" :href="item.etherscanLink" target="_blank">View On Etherscan</v-btn>
+            </v-flex>
+          </v-layout>
+        </v-flex>
+      </td>
+    </template>
+    <template v-slot:no-data>
+      <v-flex xs12 class="text-center">No Transaction Activity!</v-flex>
+    </template>
+  </v-data-table>
 </template>
 
 <script>
@@ -185,6 +115,56 @@ export default {
       return this.transactions && this.transactions.length > 5
     },
     filteredTransactions() {
+      // return [
+      //   {
+      //     id: 1564128667760,
+      //     action: 'Sending',
+      //     date: 'Jul 26 2019',
+      //     from: '0xbefd01a53ef873feb20bb61be64952d4485ab3c9',
+      //     slicedFrom: '0xbefd...b3c9',
+      //     to: '0x61bedca714985f4b71d2f62d278eab0c31c62ef3',
+      //     slicedTo: '0x61be...2ef3',
+      //     totalAmount: '0.0100546',
+      //     totalAmountString: '0.01 ETH',
+      //     currencyAmount: 2.1688576568,
+      //     currencyAmountString: '2.17 USD',
+      //     amount: '0.01 ETH / 2.17 USD',
+      //     status: 'confirmed',
+      //     etherscanLink: 'https://rinkeby.etherscan.io/tx/0xcf7bd7a598e183ee25229c692aea0fdeb9351d5d32a05679b498bbb6e7393f61'
+      //   },
+      //   {
+      //     id: 1564128667761,
+      //     action: 'Sending',
+      //     date: 'Jul 26 2019',
+      //     from: '0xbefd01a53ef873feb20bb61be64952d4485ab3c9',
+      //     slicedFrom: '0xbefd...b3c9',
+      //     to: '0x61bedca714985f4b71d2f62d278eab0c31c62ef3',
+      //     slicedTo: '0x61be...2ef3',
+      //     totalAmount: '0.0100546',
+      //     totalAmountString: '0.01 ETH',
+      //     currencyAmount: 2.1688576568,
+      //     currencyAmountString: '2.17 USD',
+      //     amount: '0.01 ETH / 2.17 USD',
+      //     status: 'confirmed',
+      //     etherscanLink: 'https://rinkeby.etherscan.io/tx/0xcf7bd7a598e183ee25229c692aea0fdeb9351d5d32a05679b498bbb6e7393f61'
+      //   },
+      //   {
+      //     id: 1564128667762,
+      //     action: 'Sending',
+      //     date: 'Jul 26 2019',
+      //     from: '0xbefd01a53ef873feb20bb61be64952d4485ab3c9',
+      //     slicedFrom: '0xbefd...b3c9',
+      //     to: '0x61bedca714985f4b71d2f62d278eab0c31c62ef3',
+      //     slicedTo: '0x61be...2ef3',
+      //     totalAmount: '0.0100546',
+      //     totalAmountString: '0.01 ETH',
+      //     currencyAmount: 2.1688576568,
+      //     currencyAmountString: '2.17 USD',
+      //     amount: '0.01 ETH / 2.17 USD',
+      //     status: 'confirmed',
+      //     etherscanLink: 'https://rinkeby.etherscan.io/tx/0xcf7bd7a598e183ee25229c692aea0fdeb9351d5d32a05679b498bbb6e7393f61'
+      //   }
+      // ]
       const selectedAction = this.selectedAction === 'All Transactions' ? '' : this.selectedAction
       var regExAction = new RegExp(selectedAction, 'i')
 
