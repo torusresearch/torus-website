@@ -14,6 +14,7 @@
               <show-tool-tip :address="slicedSelectedAddress">
                 {{ slicedSelectedAddress }}
               </show-tool-tip>
+              <v-icon>{{ isShowPrivateKey ? $vuetify.icons.visibility_off : $vuetify.icons.visibility_on }}</v-icon>
               <img
                 class="float-right mr-5"
                 width="16"
@@ -21,7 +22,7 @@
                 @click="isShowPrivateKey = !isShowPrivateKey"
               />
             </div>
-            <div class="caption">{{ selectedAddress }}</div>
+            <div v-if="isShowPrivateKey" class="caption">{{ selectedAddress }}</div>
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
@@ -47,7 +48,7 @@
       <v-flex xs12 class="mx-4" v-if="showAddAccount">
         <v-card flat color="background_2 px-4 py-2">
           <span class="body-2">Enter Account Name</span>
-          <v-textarea outlined hide-details></v-textarea>
+          <v-textarea outlined hide-details class="enter-account-field"></v-textarea>
 
           <v-card-actions class="mt-2 pr-0">
             <v-spacer></v-spacer>
@@ -55,12 +56,29 @@
           </v-card-actions>
         </v-card>
       </v-flex>
+
       <v-list-item>
         <v-list-item-action class="mr-2">
           <img :src="require('../../public/img/icons/import-grey.svg')" />
         </v-list-item-action>
-        <v-list-item-content class="font-weight-bold">Import Account</v-list-item-content>
+        <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
+          <template v-slot:activator="{ on }">
+            <v-list-item-content class="font-weight-bold" v-on="on">Import Account</v-list-item-content>
+          </template>
+          <AccountImport @onClose="accountImportDialog = false" />
+        </v-dialog>
       </v-list-item>
+      <!-- <v-dialog v-model="accountImportDialog" class="import-dialog">
+        <template v-slot:activator="{ on }">
+          <v-list-item v-on="on">
+            <v-list-item-action class="mr-2">
+              <img :src="require('../../public/img/icons/import-grey.svg')" />
+            </v-list-item-action>
+            <v-list-item-content class="font-weight-bold">Import Account</v-list-item-content>
+          </v-list-item>
+        </template>
+        <AccountImport />
+      </v-dialog> -->
     </v-list>
 
     <v-divider></v-divider>
@@ -89,14 +107,17 @@
 <script>
 import { significantDigits, addressSlicer } from '../utils/utils'
 import ShowToolTip from '../components/ShowToolTip.vue'
+import AccountImport from '../components/AccountImport.vue'
 
 export default {
   props: ['headerItems'],
   components: {
-    ShowToolTip
+    ShowToolTip,
+    AccountImport
   },
   data() {
     return {
+      accountImportDialog: false,
       isShowPrivateKey: false,
       showAddAccount: false
     }
@@ -137,7 +158,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.break-word {
-  word-break: break-word;
+.enter-account-field {
+  .v-input__slot {
+    background: white !important;
+  }
+}
+
+.import-dialog.v-dialog__container {
+  display: none;
 }
 </style>
