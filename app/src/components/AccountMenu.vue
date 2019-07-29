@@ -2,37 +2,35 @@
   <v-card width="400">
     <v-list>
       <v-list-item>
-        <v-list-item-avatar class="mr-2">
-          <img :src="profileImage" />
+        <v-list-item-avatar class="mr-2 mt-4">
+          <img :src="profileImage" class="align-start" />
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title>
             <div class="font-weight-bold headline">{{ userName }}'s Account</div>
           </v-list-item-title>
           <v-list-item-subtitle>
-            <v-layout>
-              <v-flex xs10>
-                <div class="caption">{{ slicedSelectedAddress }}</div>
-                <div class="caption">
-                  <show-tool-tip :address="selectedAddress">
-                    {{ selectedAddress }}
-                  </show-tool-tip>
-                </div>
-              </v-flex>
-              <v-flex xs2 grow-shrink-0>
-                <v-btn icon small @click="isShowPrivateKey = !isShowPrivateKey">
-                  <img width="16" :src="require(`../../public/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)" />
-                </v-btn>
-              </v-flex>
-            </v-layout>
+            <div class="caption">
+              <show-tool-tip :address="slicedSelectedAddress">
+                {{ slicedSelectedAddress }}
+              </show-tool-tip>
+              <img
+                class="float-right mr-5"
+                width="16"
+                :src="require(`../../public/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)"
+                @click="isShowPrivateKey = !isShowPrivateKey"
+              />
+            </div>
+            <div class="caption">{{ selectedAddress }}</div>
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
-          <div class="font-weight-bold headline mt-2">Personal Wallet</div>
-          <div class="subtitle-2 mb-0">{{ totalPortfolioEthValue }} ETH / {{ `${totalPortfolioValue} ${selectedCurrency}` }}</div>
-          <div class="caption torus_text--text text--lighten-4">{{ selectedAddress }}</div>
+          <div class="subtitle-2 mb-0">
+            <img :src="require(`../../public/img/icons/account-balance.svg`)" class="mr-2" />
+            {{ totalPortfolioEthValue }} ETH / {{ `${totalPortfolioValue} ${selectedCurrency}` }}
+          </div>
         </v-list-item-content>
       </v-list-item>
     </v-list>
@@ -40,18 +38,28 @@
     <v-divider></v-divider>
 
     <v-list>
+      <v-list-item @click="showAddAccount = !showAddAccount">
+        <v-list-item-action class="mr-2">
+          <img :src="require(`../../public/img/icons/plus-circle-${showAddAccount ? 'primary' : 'grey'}.svg`)" />
+        </v-list-item-action>
+        <v-list-item-content class="font-weight-bold">Add Account</v-list-item-content>
+      </v-list-item>
+      <v-flex xs12 class="mx-4" v-if="showAddAccount">
+        <v-card flat color="background_2 px-4 py-2">
+          <span class="body-2">Enter Account Name</span>
+          <v-textarea outlined hide-details></v-textarea>
+
+          <v-card-actions class="mt-2 pr-0">
+            <v-spacer></v-spacer>
+            <v-btn class="primary" depressed>Confirm</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-flex>
       <v-list-item>
         <v-list-item-action class="mr-2">
           <img :src="require('../../public/img/icons/import-grey.svg')" />
         </v-list-item-action>
-        <v-list-item-content>Add Account</v-list-item-content>
-      </v-list-item>
-
-      <v-list-item>
-        <v-list-item-action class="mr-2">
-          <img :src="require('../../public/img/icons/plus-circle-grey.svg')" />
-        </v-list-item-action>
-        <v-list-item-content>Import Account</v-list-item-content>
+        <v-list-item-content class="font-weight-bold">Import Account</v-list-item-content>
       </v-list-item>
     </v-list>
 
@@ -67,7 +75,7 @@
         <v-list-item-action class="mr-2">
           <img :src="require('../../public/img/icons/info-grey.svg')" />
         </v-list-item-action>
-        <v-list-item-content>Info and Support</v-list-item-content>
+        <v-list-item-content class="font-weight-bold">Info and Support</v-list-item-content>
       </v-list-item>
     </v-list>
 
@@ -89,7 +97,8 @@ export default {
   },
   data() {
     return {
-      isShowPrivateKey: false
+      isShowPrivateKey: false,
+      showAddAccount: false
     }
   },
   computed: {
