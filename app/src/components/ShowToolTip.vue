@@ -45,12 +45,6 @@ export default {
 .selected-account {
   cursor: pointer;
 
-  &:hover {
-    /* background-color: var(--v-torus_reject_mild-base); */
-    opacity: 0.5;
-    color: #fff;
-  }
-
   &.active {
     background-color: var(--v-torus_active-base);
   }

@@ -6,7 +6,26 @@
           <img :src="profileImage" />
         </v-list-item-avatar>
         <v-list-item-content>
-          <v-list-item-subtitle>{{ userEmail }}</v-list-item-subtitle>
+          <v-list-item-title>
+            <div class="font-weight-bold headline">{{ userName }}'s Account</div>
+          </v-list-item-title>
+          <v-list-item-subtitle>
+            <v-layout>
+              <v-flex xs10>
+                <div class="caption">{{ slicedSelectedAddress }}</div>
+                <div class="caption">
+                  <show-tool-tip :address="selectedAddress">
+                    {{ selectedAddress }}
+                  </show-tool-tip>
+                </div>
+              </v-flex>
+              <v-flex xs2 grow-shrink-0>
+                <v-btn icon small @click="isShowPrivateKey = !isShowPrivateKey">
+                  <img width="16" :src="require(`../../public/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)" />
+                </v-btn>
+              </v-flex>
+            </v-layout>
+          </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
       <v-list-item>
@@ -60,19 +79,34 @@
 </template>
 
 <script>
-import { significantDigits } from '../utils/utils'
+import { significantDigits, addressSlicer } from '../utils/utils'
+import ShowToolTip from '../components/ShowToolTip.vue'
 
 export default {
   props: ['headerItems'],
+  components: {
+    ShowToolTip
+  },
+  data() {
+    return {
+      isShowPrivateKey: false
+    }
+  },
   computed: {
     userEmail() {
       return this.$store.state.email
+    },
+    userName() {
+      return this.$store.state.name
     },
     profileImage() {
       return this.$store.state.profileImage
     },
     selectedAddress() {
       return this.$store.state.selectedAddress
+    },
+    slicedSelectedAddress() {
+      return addressSlicer(this.$store.state.selectedAddress)
     },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
@@ -92,3 +126,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.break-word {
+  word-break: break-word;
+}
+</style>
