@@ -23,6 +23,8 @@ const vuexPersist = new VuexPersistence({
   reducer: state => {
     return {
       email: state.email,
+      name: state.name,
+      profileImage: state.profileImage,
       idToken: state.idToken,
       wallet: state.wallet,
       // weiBalance: state.weiBalance,
@@ -40,6 +42,8 @@ var walletWindow
 
 const initialState = {
   email: '',
+  name: '',
+  profileImage: '',
   idToken: '',
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
@@ -114,6 +118,12 @@ var VuexStore = new Vuex.Store({
   mutations: {
     setEmail(state, email) {
       state.email = email
+    },
+    setName(state, name) {
+      state.name = name
+    },
+    setProfileImage(state, profileImage) {
+      state.profileImage = profileImage
     },
     setIdToken(state, idToken) {
       state.idToken = idToken
@@ -275,6 +285,12 @@ var VuexStore = new Vuex.Store({
     updateEmail(context, payload) {
       context.commit('setEmail', payload.email)
     },
+    updateName(context, payload) {
+      context.commit('setName', payload.name)
+    },
+    updateProfileImage(context, payload) {
+      context.commit('setProfileImage', payload.profileImage)
+    },
     updateIdToken(context, payload) {
       context.commit('setIdToken', payload.idToken)
     },
@@ -382,6 +398,10 @@ var VuexStore = new Vuex.Store({
             dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
             let email = profile.getEmail()
             dispatch('updateEmail', { email })
+            let name = profile.getName()
+            dispatch('updateName', { name })
+            let profileImage = profile.getImageUrl()
+            dispatch('updateProfileImage', { profileImage })
             const { torusNodeEndpoints } = config
             window.gapi.auth2
               .getAuthInstance()

@@ -368,7 +368,6 @@ export default {
   },
   created() {
     this.tokenAddress = this.address
-    console.log(this.selectedItem)
   }
 }
 </script>

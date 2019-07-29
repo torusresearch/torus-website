@@ -22,7 +22,7 @@
         <v-menu offset-y bottom left>
           <template v-slot:activator="{ on }">
             <v-btn class="hidden-xs-only" small text v-on="on">
-              <span>Satoshi Nakamoto</span>
+              <span>{{ userName }}</span>
               <v-icon class="ml-2 mt-1" small>$vuetify.icons.select</v-icon>
             </v-btn>
           </template>
@@ -64,6 +64,11 @@ export default {
         { name: 'activity', display: 'Activity', route: '/wallet/history' },
         { name: 'settings', display: 'Settings', route: '/wallet/settings' }
       ]
+    }
+  },
+  computed: {
+    userName() {
+      return this.$store.state.name
     }
   }
 }
