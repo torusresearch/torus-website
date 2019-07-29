@@ -144,9 +144,13 @@ export default {
       return significantDigits(parseFloat(this.totalPortfolioValue.replace(',', '')) / this.getCurrencyMultiplier)
     },
     filteredMenu() {
-      return this.headerItems.filter(item => {
-        return item.name !== 'home'
-      })
+      if (this.headerItems) {
+        return this.headerItems.filter(item => {
+          return item.name !== 'home'
+        })
+      } else {
+        return []
+      }
     }
   }
 }
