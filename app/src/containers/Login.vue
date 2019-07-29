@@ -18,7 +18,7 @@
                 <small class="d-block text-gray mt-2">
                   By clicking Login, you accept our
                   <br />
-                  <a href="#">
+                  <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
                     <span class="text-primary">Terms and Conditions</span>
                   </a>
                 </small>
