@@ -45,7 +45,13 @@
           <div class="caption float-right clearfix">{{ balanceUsd }} USD</div>
         </v-flex> -->
         <v-flex px-2>
-          <TransactionSpeedSelect :gas="gasEstimate" :displayAmount="value" :activeGasPriceConfirm="gasPrice" @onSelectSpeed="onSelectSpeed" />
+          <TransactionSpeedSelect
+            :gas="gasEstimate"
+            :displayAmount="value"
+            :activeGasPriceConfirm="gasPrice"
+            @onSelectSpeed="onSelectSpeed"
+            :symbol="'ETH'"
+          />
         </v-flex>
         <v-flex xs12 px-6 mt-4 mb-1>
           <div class="subtitle-1 font-weight-bold">Total</div>
