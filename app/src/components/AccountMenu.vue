@@ -11,18 +11,18 @@
           </v-list-item-title>
           <v-list-item-subtitle>
             <div class="caption">
-              <show-tool-tip :address="slicedSelectedAddress">
+              <show-tool-tip :address="selectedAddress">
                 {{ slicedSelectedAddress }}
               </show-tool-tip>
-              <v-icon>{{ isShowPrivateKey ? $vuetify.icons.visibility_off : $vuetify.icons.visibility_on }}</v-icon>
+              <v-icon>{{ isShowSelectedAddress ? $vuetify.icons.visibility_off : $vuetify.icons.visibility_on }}</v-icon>
               <img
                 class="float-right mr-5"
                 width="16"
-                :src="require(`../../public/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)"
-                @click="isShowPrivateKey = !isShowPrivateKey"
+                :src="require(`../../public/img/icons/eye${isShowSelectedAddress ? '-off' : ''}-primary.svg`)"
+                @click="isShowSelectedAddress = !isShowSelectedAddress"
               />
             </div>
-            <div v-if="isShowPrivateKey" class="caption">{{ selectedAddress }}</div>
+            <div v-if="isShowSelectedAddress" class="caption">{{ selectedAddress }}</div>
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
@@ -108,7 +108,7 @@ export default {
   data() {
     return {
       accountImportDialog: false,
-      isShowPrivateKey: false,
+      isShowSelectedAddress: false,
       showAddAccount: false
     }
   },
