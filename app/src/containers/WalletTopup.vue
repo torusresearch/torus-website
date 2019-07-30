@@ -270,6 +270,20 @@ export default {
         })
       }
     },
+    runMoonPaySafariFix() {
+      var isSafari = navigator.userAgent.indexOf('Safari') > -1
+      if (!isSafari) {
+        return
+      }
+      var isChrome = navigator.userAgent.indexOf('Chrome') > -1
+      if (isChrome) {
+        return
+      }
+      if (!document.cookie.match(/^(.*;)?\s*moonpay-fixed\s*=\s*[^;]+(.*)?$/)) {
+        document.cookie = 'moonpay-fixed=fixed; expires=Tue, 19 Jan 2038 03:14:07 UTC; path=/'
+        window.location.replace('https://buy.moonpay.io/safari_fix')
+      }
+    },
     post(path, params, method = 'post') {
       const form = document.createElement('form')
       form.method = method
@@ -291,6 +305,8 @@ export default {
   async mounted() {
     this.fiatValue = 50
     this.currencyRate = this.$store.state.currencyData[this.selectedCurrency] || 0
+
+    this.runMoonPaySafariFix()
 
     /**
      * iframe init for moon pay.
