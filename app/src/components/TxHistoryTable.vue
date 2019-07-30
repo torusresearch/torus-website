@@ -122,56 +122,6 @@ export default {
       return this.transactions && this.transactions.length > 5
     },
     filteredTransactions() {
-      // return [
-      //   {
-      //     id: 1564128667760,
-      //     action: 'Sending',
-      //     date: 'Jul 26 2019',
-      //     from: '0xbefd01a53ef873feb20bb61be64952d4485ab3c9',
-      //     slicedFrom: '0xbefd...b3c9',
-      //     to: '0x61bedca714985f4b71d2f62d278eab0c31c62ef3',
-      //     slicedTo: '0x61be...2ef3',
-      //     totalAmount: '0.0100546',
-      //     totalAmountString: '0.01 ETH',
-      //     currencyAmount: 2.1688576568,
-      //     currencyAmountString: '2.17 USD',
-      //     amount: '0.01 ETH / 2.17 USD',
-      //     status: 'confirmed',
-      //     etherscanLink: 'https://rinkeby.etherscan.io/tx/0xcf7bd7a598e183ee25229c692aea0fdeb9351d5d32a05679b498bbb6e7393f61'
-      //   },
-      //   {
-      //     id: 1564128667761,
-      //     action: 'Sending',
-      //     date: 'Jul 26 2019',
-      //     from: '0xbefd01a53ef873feb20bb61be64952d4485ab3c9',
-      //     slicedFrom: '0xbefd...b3c9',
-      //     to: '0x61bedca714985f4b71d2f62d278eab0c31c62ef3',
-      //     slicedTo: '0x61be...2ef3',
-      //     totalAmount: '0.0100546',
-      //     totalAmountString: '0.01 ETH',
-      //     currencyAmount: 2.1688576568,
-      //     currencyAmountString: '2.17 USD',
-      //     amount: '0.01 ETH / 2.17 USD',
-      //     status: 'confirmed',
-      //     etherscanLink: 'https://rinkeby.etherscan.io/tx/0xcf7bd7a598e183ee25229c692aea0fdeb9351d5d32a05679b498bbb6e7393f61'
-      //   },
-      //   {
-      //     id: 1564128667762,
-      //     action: 'Sending',
-      //     date: 'Jul 26 2019',
-      //     from: '0xbefd01a53ef873feb20bb61be64952d4485ab3c9',
-      //     slicedFrom: '0xbefd...b3c9',
-      //     to: '0x61bedca714985f4b71d2f62d278eab0c31c62ef3',
-      //     slicedTo: '0x61be...2ef3',
-      //     totalAmount: '0.0100546',
-      //     totalAmountString: '0.01 ETH',
-      //     currencyAmount: 2.1688576568,
-      //     currencyAmountString: '2.17 USD',
-      //     amount: '0.01 ETH / 2.17 USD',
-      //     status: 'confirmed',
-      //     etherscanLink: 'https://rinkeby.etherscan.io/tx/0xcf7bd7a598e183ee25229c692aea0fdeb9351d5d32a05679b498bbb6e7393f61'
-      //   }
-      // ]
       const selectedAction = this.selectedAction === 'All Transactions' ? '' : this.selectedAction
       var regExAction = new RegExp(selectedAction, 'i')
 
@@ -222,9 +172,9 @@ export default {
       if (action === 'Top-up') {
         return '$vuetify.icons.arrow_up_circle'
       } else if (action === 'Sending') {
-        return '$vuetify.icons.arrow_right_circle'
-      } else if (action === 'Received') {
         return '$vuetify.icons.arrow_left_circle'
+      } else if (action === 'Received') {
+        return '$vuetify.icons.arrow_right_circle'
       }
     }
   }

@@ -30,6 +30,13 @@
           :selectedPeriod="selectedPeriod"
           :transactions="getTransactions()"
         />
+        <tx-history-table-mobile
+          v-if="$vuetify.breakpoint.xsOnly"
+          :headers="headers"
+          :selectedAction="selectedAction"
+          :selectedPeriod="selectedPeriod"
+          :transactions="getTransactions()"
+        />
       </v-flex>
     </v-layout>
   </div>
@@ -39,6 +46,7 @@
 // The color of dropdown icon requires half day work in modifying v-select
 import config from '../config'
 import TxHistoryTable from '../components/TxHistoryTable.vue'
+import TxHistoryTableMobile from '../components/TxHistoryTableMobile.vue'
 import { getPastOrders } from '../plugins/simplex'
 import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus } from '../utils/utils'
 import torus from '../torus'
@@ -46,7 +54,7 @@ const web3Utils = torus.web3.utils
 
 export default {
   name: 'walletHistory',
-  components: { TxHistoryTable },
+  components: { TxHistoryTable, TxHistoryTableMobile },
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
