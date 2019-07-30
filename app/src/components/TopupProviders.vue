@@ -1,6 +1,6 @@
 <template>
   <v-flex xs12 sm6 mb-4 px-4 class="topup-providers">
-    <v-card class="mb-4" v-for="targetProvider in providers" @click="innerProvider = targetProvider.name" :key="targetProvider.name">
+    <v-card class="mb-4" v-for="targetProvider in providersFiltered" @click="innerProvider = targetProvider.name" :key="targetProvider.name">
       <v-list-item three-line>
         <v-list-item-icon class="mr-2 align-self-center">
           <v-icon color="primary" v-if="innerProvider === targetProvider.name">$vuetify.icons.radio_checked</v-icon>
@@ -88,6 +88,13 @@ export default {
           line3: ''
         }
       ]
+    }
+  },
+  computed: {
+    providersFiltered() {
+      return this.providers.filter(provider => {
+        return this.innerProvider === '' || (this.innerProvider && this.innerProvider === provider.name)
+      })
     }
   },
   watch: {

@@ -7,11 +7,20 @@
             <span>Beta</span>
           </template>
           <v-toolbar-title class="mr-6">
-            <img width="135" height="30" :src="require(`../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
+            <router-link :to="{ name: 'walletHome' }">
+              <img
+                class="home-link"
+                width="135"
+                height="30"
+                :src="require(`../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+              />
+            </router-link>
           </v-toolbar-title>
         </v-badge>
         <v-toolbar-title class="mt-8 hidden-sm-and-up">
-          <img :src="require('../../public/img/icons/t-fill.svg')" width="35" />
+          <router-link :to="{ name: 'walletHome' }">
+            <img :src="require('../../public/img/icons/t-fill.svg')" width="35" />
+          </router-link>
           <div class="primary--text subtitle-2 beta-text">Beta</div>
         </v-toolbar-title>
         <v-spacer></v-spacer>
@@ -102,5 +111,9 @@ export default {
       color: var(--v-secondary-darken3);
     }
   }
+}
+
+.home-link {
+  cursor: pointer;
 }
 </style>

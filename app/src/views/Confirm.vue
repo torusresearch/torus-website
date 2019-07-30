@@ -64,23 +64,23 @@
             <v-card class="pa-4" color="background_2">
               <v-card-text class="torus_text--text">
                 <v-layout wrap>
-                  <v-flex xs2>
+                  <v-flex xs4 sm2>
                     Rate
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex xs10 class="torus_text--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
-                  <v-flex xs2>
+                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
+                  <v-flex xs4 sm2>
                     Network
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex xs10 class="torus_text--text text--lighten-4">
+                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">
                     <span class="text-capitalize">{{ networkName }}</span>
                   </v-flex>
-                  <v-flex xs2>
+                  <v-flex xs4 sm2>
                     Type
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex xs10 class="torus_text--text text--lighten-4">
+                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">
                     {{ contractType }}
                   </v-flex>
                   <v-flex xs2>
@@ -126,25 +126,22 @@
             </v-btn>
           </v-flex>
           <v-flex xs6>
-            <!-- <v-dialog v-model="confirmDialog" max-width="550" persistent>
+            <v-dialog v-model="confirmDialog" max-width="550" persistent>
               <template v-slot:activator="{ on }">
                 <v-btn block depressed large color="primary" class="ml-2" v-on="on">Confirm</v-btn>
               </template>
               <transfer-confirm
                 :toAddress="receiver"
-                :selectedCoin="selectedItem.name"
-                :convertedAmount="convertedAmount"
-                :displayAmount="displayAmount"
-                :speedSelected="getGasSpeed(speedSelected)"
-                :activeGasPrice="getGasAmount(activeGasPrice)"
+                :selectedCoin="'ETH'"
+                :convertedAmount="dollarValue"
+                :displayAmount="amountDisplay(value)"
+                :speedSelected="speed"
+                :activeGasPrice="gasPrice"
                 :selectedCurrency="selectedCurrency"
                 @onClose="confirmDialog = false"
                 @onConfirm="triggerSign"
               ></transfer-confirm>
-            </v-dialog> -->
-            <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">
-              Confirm
-            </v-btn>
+            </v-dialog>
           </v-flex>
         </v-layout>
       </v-layout>
@@ -428,6 +425,7 @@ import BottomSheet from '../components/BottomSheet.vue'
 import ShowToolTip from '../components/ShowToolTip.vue'
 import PageLoader from '../components/PageLoader.vue'
 import TransactionSpeedSelect from '../components/TransactionSpeedSelect'
+import TransferConfirm from '../components/TransferConfirm'
 import torus from '../torus'
 import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress } from '../utils/utils'
 
@@ -456,7 +454,8 @@ export default {
     BottomSheet,
     ShowToolTip,
     PageLoader,
-    TransactionSpeedSelect
+    TransactionSpeedSelect,
+    TransferConfirm
   },
   data() {
     return {
@@ -492,6 +491,7 @@ export default {
       canApprove: true,
       canShowError: false,
       selectedSpeed: '',
+      speed: '',
       id: 0,
       networks: [
         {
@@ -526,6 +526,9 @@ export default {
     }
   },
   computed: {
+    selectedCurrency() {
+      return this.$store.state.selectedCurrency
+    },
     color() {
       if (this.gasPrice < 5) return 'indigo'
       if (this.gasPrice < 10) return 'teal'
@@ -537,7 +540,15 @@ export default {
       return significantDigits(parseFloat(this.balance).toFixed(5)) || 0
     },
     header() {
-      return this.isDeployContract ? 'Contract Deployment' : this.isContractInteraction ? 'Contract Interaction' : 'Transfer'
+      if (this.isDeployContract) {
+        return 'Contract Deployment'
+      } else {
+        if (this.isContractInteraction) {
+          return 'Contract Interactions'
+        } else {
+          return 'Transfer'
+        }
+      }
     },
     contractType() {
       return this.isDeployContract ? 'Contract Deployment' : this.isContractInteraction ? 'Contract Interaction' : 'Transaction Request'
@@ -574,7 +585,7 @@ export default {
       const gasCost = newGasPrice * this.gasEstimate * 10 ** -9
       this.txFees = gasCost * this.$store.state.currencyData['usd']
       const ethCost = parseFloat(this.value) + gasCost
-      this.totalEthCost = significantDigits(ethCost.toFixed(5), false, 3) || 0
+      this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
       this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData['usd'] || 0)
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
@@ -628,6 +639,7 @@ export default {
     onSelectSpeed(data) {
       this.speedSelected = data.speedSelected
       this.gasPrice = data.activeGasPrice
+      this.speed = data.speed
 
       if (data.isReset) {
         this.gasPrice = calculateGasPrice(this.gasPrice)
@@ -704,7 +716,7 @@ export default {
         const gasCost = gweiGasPrice * this.gasEstimate * 10 ** -9
         this.txFees = gasCost * this.$store.state.currencyData['usd']
         const ethCost = parseFloat(finalValue) + gasCost
-        this.totalEthCost = significantDigits(ethCost.toFixed(5), false, 3) || 0
+        this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
         this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData['usd'] || 0)
         if (reason) this.errorMsg = reason
         if (!to) this.isDeployContract = true

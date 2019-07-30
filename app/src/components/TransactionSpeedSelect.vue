@@ -164,9 +164,12 @@ export default {
       return `${significantDigits(this.getEthAmount(gas, gasPrice))} ETH`
     },
     updateCosts(isReset) {
+      const speed = this.speedSelected === 'average' ? this.averageGasPriceSpeed : this.fastestGasPriceSpeed
+
       this.$emit('onSelectSpeed', {
         speedSelected: this.speedSelected,
         activeGasPrice: this.activeGasPrice,
+        speed: speed,
         isReset: !!isReset
       })
     },
