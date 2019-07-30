@@ -107,7 +107,7 @@
                   <v-flex x12 mt-4>
                     <div class="mb-1">HEX DATA: 68 BYTES</div>
                     <v-card flat color="background_3" style="word-break: break-all">
-                      <v-card-text>0x81821c71e3971fA0394211e7ad27d9038696cC920x81821c71e3971fA0394211e7ad27d9038696cC92</v-card-text>
+                      <v-card-text>{{ txData }}</v-card-text>
                     </v-card>
                   </v-flex>
                 </v-layout>
@@ -697,6 +697,8 @@ export default {
         }
 
         this.origin = this.origin.trim().length === 0 ? 'Account Address' : this.origin
+
+        console.log('data', data)
 
         this.id = id
         this.network = network
