@@ -25,26 +25,26 @@
       <td :colspan="headers.length" class="pa-0 ma-0" style="height: inherit">
         <v-flex xs12 white class="card-shadow dark pa-4">
           <v-layout wrap>
-            <v-flex xs1 pr-2>
+            <v-flex xs4 sm1 pr-2>
               Rate
               <span class="float-right">:</span>
             </v-flex>
-            <v-flex xs11>1 ETH = 240.00 USD @ 12:34:20 PM</v-flex>
-            <v-flex xs1 pr-2>
+            <v-flex xs8 sm11>1 ETH = 240.00 USD @ 12:34:20 PM</v-flex>
+            <v-flex xs4 sm1 pr-2>
               Network
               <span class="float-right">:</span>
             </v-flex>
-            <v-flex xs11>Main Ethereum Network</v-flex>
-            <v-flex xs1 pr-2>
+            <v-flex xs8 sm11>Main Ethereum Network</v-flex>
+            <v-flex xs4 sm1 pr-2>
               Type
               <span class="float-right">:</span>
             </v-flex>
-            <v-flex xs11>Contract Interaction</v-flex>
-            <v-flex xs1 pr-2>
+            <v-flex xs8 sm11>Contract Interaction</v-flex>
+            <v-flex xs4 sm1 pr-2>
               Data
               <span class="float-right">:</span>
             </v-flex>
-            <v-flex xs11>
+            <v-flex xs8 sm11>
               <v-card flat class="grey lighten-3">
                 <v-card-text></v-card-text>
               </v-card>
