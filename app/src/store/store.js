@@ -17,6 +17,8 @@ const statusStream = torus.communicationMux.getStream('status')
 
 Vue.use(Vuex)
 
+let totalFailCount = 0
+
 const vuexPersist = new VuexPersistence({
   key: 'my-app',
   storage: window.sessionStorage,
@@ -502,11 +504,12 @@ var VuexStore = new Vuex.Store({
           //   .catch(e => log.error(e))
         })
         .catch(err => {
+          totalFailCount += 1
           let newEndPointNumber = endPointNumber
           while (newEndPointNumber === endPointNumber) {
             newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
           }
-          dispatch('handleLogin', { calledFromEmbed, endPointNumber: newEndPointNumber })
+          if (totalFailCount < 3) dispatch('handleLogin', { calledFromEmbed, endPointNumber: newEndPointNumber })
           log.error(err)
         })
     },
