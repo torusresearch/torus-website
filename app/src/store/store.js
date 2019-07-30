@@ -9,7 +9,14 @@ import { MAINNET, RPC } from '../utils/enums'
 import { formatCurrencyNumber, getRandomNumber, hexToText, significantDigits } from '../utils/utils'
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
+const web3Utils = torus.web3.utils
 
+function getCurrencyMultiplier() {
+  const { selectedCurrency, currencyData } = VuexStore.state || {}
+  let currencyMultiplier = 1
+  if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+  return currencyMultiplier
+}
 const accountImporter = require('../utils/accountImporter')
 
 const baseRoute = process.env.BASE_URL
@@ -195,13 +202,33 @@ var VuexStore = new Vuex.Store({
     loginInProgress(context, payload) {
       context.commit('setLoginInProgress', payload)
     },
-    setSelectedCurrency({ commit }, payload) {
+    setSelectedCurrency({ commit, state }, payload) {
       commit('setCurrency', payload)
       if (payload !== 'ETH') {
         torus.torusController.setCurrentCurrency(payload.toLowerCase(), function(err, data) {
           if (err) console.error('currency fetch failed')
           commit('setCurrencyData', data)
         })
+      }
+      if (state.jwtToken !== '') {
+        patch(
+          `${config.api}/user`,
+          {
+            default_currency: payload
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${state.jwtToken}`,
+              'Content-Type': 'application/json; charset=utf-8'
+            }
+          }
+        )
+          .then(response => {
+            log.info('successfully patched', response)
+          })
+          .catch(err => {
+            log.error(err, 'unable to patch currency info')
+          })
       }
     },
     async forceFetchTokens({ state }, payload) {
@@ -553,7 +580,7 @@ var VuexStore = new Vuex.Store({
               await post(
                 `${config.api}/user`,
                 {
-                  default_currency: 'USD'
+                  default_currency: state.selectedCurrency
                 },
                 {
                   headers: {
@@ -590,6 +617,7 @@ var VuexStore = new Vuex.Store({
           dispatch('updateSelectedAddress', { selectedAddress })
           setTimeout(() => dispatch('subscribeToControllers'), 50)
           await torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
+          await dispatch('setUserInfo', { token: jwtToken })
           statusStream.write({ loggedIn: true })
           log.info('rehydrated wallet')
           torus.web3.eth.net
@@ -665,26 +693,40 @@ function isTorusTransaction() {
 
 VuexStore.subscribe((mutation, state) => {
   // will rewrite later
-  if (mutation.type === 'setCurrency' && state.jwtToken) {
-    // Make a post request
-    patch(
-      `${config.api}/user`,
-      {
-        default_currency: mutation.payload
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${state.jwtToken}`,
-          'Content-Type': 'application/json; charset=utf-8'
+  if (mutation.type === 'setTransactions' && state.jwtToken) {
+    const txs = mutation.payload
+    for (let id in txs) {
+      const txMeta = txs[id]
+      if (txMeta.status === 'submitted' && id >= 0) {
+        // insert into db here
+        const totalAmount = web3Utils.fromWei(
+          web3Utils.toBN(txMeta.txParams.value).add(web3Utils.toBN(txMeta.txParams.gas).mul(web3Utils.toBN(txMeta.txParams.gasPrice)))
+        )
+        const txObj = {
+          created_at: new Date(txMeta.time),
+          from: web3Utils.toChecksumAddress(txMeta.txParams.from),
+          to: web3Utils.toChecksumAddress(txMeta.txParams.to),
+          total_amount: totalAmount,
+          currency_amount: (getCurrencyMultiplier() * totalAmount).toString(),
+          selected_currency: state.selectedCurrency,
+          status: 'submitted',
+          network: state.networkType,
+          transaction_hash: txMeta.hash
+        }
+        if (state.pastTransactions.findIndex(x => x.transaction_hash === txObj.transaction_hash && x.network === txObj.networkType) === -1) {
+          post(`${config.api}/transaction`, txObj, {
+            headers: {
+              Authorization: `Bearer ${state.jwtToken}`,
+              'Content-Type': 'application/json; charset=utf-8'
+            }
+          })
+            .then(response => {
+              log.info('successfully added', response)
+            })
+            .catch(err => log.error(err, 'unable to insert transaction'))
         }
       }
-    )
-      .then(response => {
-        log.info('successfully patched', response)
-      })
-      .catch(err => {
-        log.error(err, 'unable to patch currency info')
-      })
+    }
   }
 })
 
