@@ -12,7 +12,7 @@
       </span>
       <v-dialog v-model="advanceOptionDialog" persistent>
         <template v-slot:activator="{ on }">
-          <span class="float-right primary--text advance-option hidden-xs-only" v-on="on">Advance Options</span>
+          <span class="float-right primary--text advance-option hidden-xs-only" v-show="displayAmount" v-on="on">Advance Options</span>
         </template>
         <TransferAdvanceOption
           :symbol="symbol"
