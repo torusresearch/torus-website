@@ -207,8 +207,8 @@ export default {
     }
   },
   watch: {
-    toAddress: function(newValue, oldValue) {
-      this.calculateGas()
+    toAddress: async function(newValue, oldValue) {
+      if (newValue !== oldValue) this.gas = await this.calculateGas(newValue)
     },
     displayAmount: function(newValue, oldValue) {
       if (this.toggle_exclusive === 0) {
@@ -229,37 +229,41 @@ export default {
       }
       return ''
     },
-    calculateGas() {
-      if (torus.web3.utils.isAddress(this.toAddress)) {
-        if (this.selectedTokenAddress === '0x') {
-          torus.web3.eth
-            .estimateGas({ to: this.toAddress })
-            .then(response => {
-              this.gas = response
-            })
-            .catch(err => {
-              console.log(err)
-              this.gas = MAX_GAS
-            })
-        } else {
-          const selectedAddress = this.$store.state.selectedAddress
-          const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
-          contractInstance.methods
-            .transfer(this.toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString())
-            .estimateGas({ from: selectedAddress })
-            .then(response => {
-              this.gas = response
-            })
-            .catch(err => {
-              console.log(err)
-              this.gas = MAX_GAS
-            })
-        }
+    async calculateGas(toAddress) {
+      if (torus.web3.utils.isAddress(toAddress)) {
+        return new Promise((resolve, reject) => {
+          if (this.selectedTokenAddress === '0x') {
+            torus.web3.eth
+              .estimateGas({ to: toAddress })
+              .then(response => {
+                resolve(response)
+              })
+              .catch(err => {
+                console.log(err)
+                resolve(MAX_GAS)
+              })
+          } else {
+            const selectedAddress = this.$store.state.selectedAddress
+            const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
+            contractInstance.methods
+              .transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString())
+              .estimateGas({ from: selectedAddress })
+              .then(response => {
+                resolve(response)
+              })
+              .catch(err => {
+                console.log(err)
+                resolve(MAX_GAS)
+              })
+          }
+        })
+      } else {
+        return 21000
       }
     },
-    selectedItemChanged(value) {
+    async selectedItemChanged(value) {
       this.tokenAddress = value.tokenAddress
-      this.calculateGas()
+      this.gas = await this.calculateGas(this.toAddress)
     },
     changeSelectedToCurrency(value) {
       const currencyRate = this.getCurrencyTokenRate
@@ -288,6 +292,7 @@ export default {
             toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], this.toAddress)
           }
         }
+        this.gas = await this.calculateGas(toAddress)
         const selectedAddress = this.$store.state.selectedAddress
         if (this.selectedTokenAddress === '0x')
           torus.web3.eth
