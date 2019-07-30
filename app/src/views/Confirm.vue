@@ -64,23 +64,23 @@
             <v-card class="pa-4" color="background_2">
               <v-card-text class="torus_text--text">
                 <v-layout wrap>
-                  <v-flex xs2>
+                  <v-flex xs4 sm2>
                     Rate
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex xs10 class="torus_text--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
-                  <v-flex xs2>
+                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
+                  <v-flex xs4 sm2>
                     Network
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex xs10 class="torus_text--text text--lighten-4">
+                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">
                     <span class="text-capitalize">{{ networkName }}</span>
                   </v-flex>
-                  <v-flex xs2>
+                  <v-flex xs4 sm2>
                     Type
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex xs10 class="torus_text--text text--lighten-4">
+                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">
                     {{ contractType }}
                   </v-flex>
                   <v-flex xs2>
