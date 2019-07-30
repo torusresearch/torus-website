@@ -81,6 +81,7 @@ var VuexStore = new Vuex.Store({
     },
     tokenBalances: state => {
       let { weiBalance, tokenData, tokenRates, currencyData, selectedCurrency, networkType, selectedAddress } = state || {}
+      console.log('vue state is', state)
       if (networkType !== MAINNET) {
         tokenData = {}
         tokenRates = {}
@@ -94,6 +95,8 @@ var VuexStore = new Vuex.Store({
       if (tokenData && tokenData[selectedAddress] && Object.keys(tokenData[selectedAddress]).length > 0) {
         full = [...full, ...tokenData[selectedAddress]]
       }
+      console.log('full', full)
+
       let totalPortfolioValue = 0
       const finalBalancesArray = full.map(x => {
         const computedBalance = parseFloat(torus.web3.utils.hexToNumberString(x.balance)) / 10 ** parseFloat(x.decimals) || 0
