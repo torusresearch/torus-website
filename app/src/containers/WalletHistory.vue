@@ -3,7 +3,7 @@
     <v-layout mt-6 wrap>
       <v-flex xs12 px-4 mb-4>
         <div class="text-black font-weight-bold headline float-left">Transaction Activities</div>
-        <div class="float-right">
+        <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
           <v-select
             class="pt-0 mt-0 ml-2 subtitle-2 nav-selector transaction"
             height="25px"
@@ -23,7 +23,13 @@
         </div>
       </v-flex>
       <v-flex xs12 px-4 mb-4>
-        <tx-history-table :headers="headers" :selectedAction="selectedAction" :selectedPeriod="selectedPeriod" :transactions="getTransactions()" />
+        <tx-history-table
+          v-if="!$vuetify.breakpoint.xsOnly"
+          :headers="headers"
+          :selectedAction="selectedAction"
+          :selectedPeriod="selectedPeriod"
+          :transactions="getTransactions()"
+        />
       </v-flex>
     </v-layout>
   </div>

@@ -82,7 +82,8 @@ export default {
         {
           text: 'Transaction',
           value: 'action',
-          align: 'left'
+          align: 'left',
+          width: '150px'
         },
         {
           text: 'From',
