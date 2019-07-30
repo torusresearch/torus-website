@@ -188,6 +188,9 @@ var VuexStore = new Vuex.Store({
     setPastTransactions(state, payload) {
       state.pastTransactions = payload
     },
+    patchPastTransactions(state, payload) {
+      state.pastTransactions = [...state.pastTransactions, payload]
+    },
     logOut(state, requiredState) {
       Object.keys(state).forEach(key => {
         state[key] = initialState[key] // or = initialState[key]
@@ -713,7 +716,8 @@ VuexStore.subscribe((mutation, state) => {
           network: state.networkType,
           transaction_hash: txMeta.hash
         }
-        if (state.pastTransactions.findIndex(x => x.transaction_hash === txObj.transaction_hash && x.network === txObj.networkType) === -1) {
+        if (state.pastTransactions.findIndex(x => x.transaction_hash === txObj.transaction_hash && x.network === txObj.network) === -1) {
+          VuexStore.commit('patchPastTransactions', txObj)
           post(`${config.api}/transaction`, txObj, {
             headers: {
               Authorization: `Bearer ${state.jwtToken}`,
