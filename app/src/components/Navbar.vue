@@ -31,7 +31,7 @@
         </v-menu>
       </v-app-bar>
 
-      <v-navigation-drawer v-model="drawer" disable-resize-watcher app right>
+      <v-navigation-drawer v-model="drawer" disable-resize-watcher app right :width="$vuetify.breakpoint.xsOnly ? '80%' : ''">
         <account-menu :headerItems="headerItems"></account-menu>
       </v-navigation-drawer>
     </nav>

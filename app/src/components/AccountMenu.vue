@@ -76,7 +76,7 @@
           <img :src="require(`../../public/img/icons/${headerItem.icon}`)" />
         </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-title>{{ headerItem.display }}</v-list-item-title>
+          <v-list-item-title class="font-weight-bold">{{ headerItem.display }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
       <v-list-item>
