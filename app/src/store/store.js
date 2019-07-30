@@ -206,18 +206,18 @@ var VuexStore = new Vuex.Store({
       context.commit('setLoginInProgress', payload)
     },
     setSelectedCurrency({ commit, state }, payload) {
-      commit('setCurrency', payload)
-      if (payload !== 'ETH') {
-        torus.torusController.setCurrentCurrency(payload.toLowerCase(), function(err, data) {
+      commit('setCurrency', payload.selectedCurrency)
+      if (payload.selectedCurrency !== 'ETH') {
+        torus.torusController.setCurrentCurrency(payload.selectedCurrency.toLowerCase(), function(err, data) {
           if (err) console.error('currency fetch failed')
           commit('setCurrencyData', data)
         })
       }
-      if (state.jwtToken !== '') {
+      if (state.jwtToken !== '' && payload.origin && payload.origin !== 'store') {
         patch(
           `${config.api}/user`,
           {
-            default_currency: payload
+            default_currency: payload.selectedCurrency
           },
           {
             headers: {
@@ -491,7 +491,7 @@ var VuexStore = new Vuex.Store({
         dispatch('updateMessages', { unapprovedMsgs: unapprovedMsgs })
       })
 
-      dispatch('setSelectedCurrency', state.selectedCurrency)
+      dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
       torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
         if (tokens.length > 0) {
           dispatch('updateTokenData', { tokenData: tokens, address: torus.torusController.detectTokensController.selectedAddress })
@@ -575,7 +575,7 @@ var VuexStore = new Vuex.Store({
               if (user.data) {
                 const { transactions, default_currency } = user.data || {}
                 commit('setPastTransactions', transactions)
-                dispatch('setSelectedCurrency', default_currency)
+                dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
                 resolve()
               }
             })

@@ -88,7 +88,7 @@ export default {
   },
   methods: {
     onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', value)
+      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value })
     },
     getTransactions() {
       const { networkId, transactions, networkType } = this.$store.state || {}
