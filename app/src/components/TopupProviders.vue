@@ -63,6 +63,13 @@ export default {
           line1: 'Pay with Credit Card',
           line2: '<span class="font-weight-medium">Simplex Service Fee</span> : 5% or 10 USD',
           line3: '(whichever is higher)'
+        },
+        {
+          name: 'moonpay',
+          logo: 'moon-pay-logo.svg',
+          line1: 'Pay with Credit Card',
+          line2: '<span class="font-weight-medium">Moonpay Service Fee</span> : 4.5% or 5 USD',
+          line3: '(whichever is higher)'
         }
       ],
       providersInactive: [
@@ -79,13 +86,6 @@ export default {
           line1: 'Pay with Credit Card or Wire Transfer',
           line2: '<span class="font-weight-medium">crypto.com Service Fee</span> : Varies',
           line3: ''
-        },
-        {
-          name: 'moonpay',
-          logo: 'moon-pay-logo.svg',
-          line1: 'Pay with Credit Card',
-          line2: '<span class="font-weight-medium">Moonpay Service Fee</span> : 4.5% or 5 USD',
-          line3: '(whichever is higher)'
         }
       ]
     }

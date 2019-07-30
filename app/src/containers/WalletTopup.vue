@@ -127,6 +127,16 @@
             </div>
           </v-flex>
         </v-layout>
+        <v-layout wrap v-if="provider === 'moonpay'">
+          <span>
+            Moonpay is a secure way to buy cryptocurrency with your credit card. Start by entering a amount below to get a quote before making a
+            purchase
+          </span>
+
+          <div style="height:500px; width:100%">
+            <iframe v-if="moonPay.loaded" :src="moonPay.url" height="100%" width="100%" style="border:none"></iframe>
+          </div>
+        </v-layout>
       </v-flex>
     </v-layout>
   </div>
@@ -155,6 +165,13 @@ export default {
       currencyRate: 0,
       currentOrder: {},
       formValid: true,
+      moonPay: {
+        url: '',
+        loaded: false,
+        currencyCode: 'eth',
+        path: 'https://buy-staging.moonpay.io?',
+        apiKey: 'pk_test_j6AnwGJD0XTJDg3bTO37OczjFsddYpS'
+      },
       rules: {
         required: value => !!value || 'Required',
         validNumber: value => !isNaN(parseFloat(value)) || 'Enter a valid number',
@@ -271,6 +288,24 @@ export default {
   async mounted() {
     this.fiatValue = 50
     this.currencyRate = this.$store.state.currencyData[this.selectedCurrency] || 0
+
+    /**
+     * iframe init for moon pay.
+     */
+    this.moonPay.url =
+      this.moonPay.path +
+      'apiKey=' +
+      this.moonPay.apiKey +
+      '&currencyCode=' +
+      this.moonPay.currencyCode +
+      '&walletAddress=' +
+      this.$store.state.selectedAddress +
+      '&email=' +
+      this.$store.state.email
+
+    this.moonPay.loaded = true
+    console.log('this.moonpay is', this.moonPay)
+
     this.fetchQuote()
   }
 }
