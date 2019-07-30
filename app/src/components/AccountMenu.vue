@@ -39,24 +39,6 @@
     <v-divider></v-divider>
 
     <v-list>
-      <v-list-item @click="showAddAccount = !showAddAccount">
-        <v-list-item-action class="mr-2">
-          <img :src="require(`../../public/img/icons/plus-circle-${showAddAccount ? 'primary' : 'grey'}.svg`)" />
-        </v-list-item-action>
-        <v-list-item-content class="font-weight-bold">Add Account</v-list-item-content>
-      </v-list-item>
-      <v-flex xs12 class="mx-4" v-if="showAddAccount">
-        <v-card flat color="background_2 px-4 py-2">
-          <span class="body-2">Enter Account Name</span>
-          <v-textarea outlined hide-details class="enter-account-field"></v-textarea>
-
-          <v-card-actions class="mt-2 pr-0">
-            <v-spacer></v-spacer>
-            <v-btn class="primary" depressed>Confirm</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-flex>
-
       <v-list-item @click="accountImportDialog = true">
         <v-list-item-action class="mr-2">
           <img :src="require('../../public/img/icons/import-grey.svg')" />
@@ -108,8 +90,7 @@ export default {
   data() {
     return {
       accountImportDialog: false,
-      isShowSelectedAddress: false,
-      showAddAccount: false
+      isShowSelectedAddress: false
     }
   },
   computed: {
