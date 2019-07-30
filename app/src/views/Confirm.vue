@@ -90,17 +90,7 @@
                   <v-flex xs12 mt-1>
                     <v-card flat color="background_3">
                       <v-card-text>
-                        <pre>
-  Parameters
-  [
-    {
-      "type": "address"
-    },
-    {
-      "type": "unit256"
-    }
-  ]
-                        </pre>
+                        <pre>{{ txDataParams }}</pre>
                       </v-card-text>
                     </v-card>
                   </v-flex>
@@ -428,6 +418,7 @@ import TransactionSpeedSelect from '../components/TransactionSpeedSelect'
 import TransferConfirm from '../components/TransferConfirm'
 import torus from '../torus'
 import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress } from '../utils/utils'
+const abi = require('human-standard-token-abi')
 
 const {
   ROPSTEN,
@@ -476,6 +467,7 @@ export default {
       message: '',
       gasEstimate: 0,
       txData: '',
+      txDataParams: '',
       sender: '',
       totalUsdCost: 0,
       totalEthCost: 0,
@@ -698,7 +690,8 @@ export default {
 
         this.origin = this.origin.trim().length === 0 ? 'Account Address' : this.origin
 
-        console.log('data', data)
+        // GET data params
+        const txDataParams = abi.find(item => item.name && item.name.toLowerCase() === 'transfer') || ''
 
         this.id = id
         this.network = network
@@ -714,6 +707,7 @@ export default {
         this.balanceUsd = significantDigits(parseFloat(balance) * this.$store.state.currencyData['usd']) // in usd
         this.gasEstimate = web3Utils.hexToNumber(gas) // gas number
         this.txData = data // data hex
+        this.txDataParams = JSON.stringify(txDataParams, null, 2)
         this.sender = sender // address of sender
         const gasCost = gweiGasPrice * this.gasEstimate * 10 ** -9
         this.txFees = gasCost * this.$store.state.currencyData['usd']

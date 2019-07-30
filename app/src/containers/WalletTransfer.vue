@@ -97,7 +97,6 @@ import torus from '../torus'
 import { significantDigits, getRandomNumber } from '../utils/utils'
 import config from '../config'
 import TransactionSpeedSelect from '../components/TransactionSpeedSelect'
-// import TransferConfirm from '../components/TransferConfirm'
 import MessageModal from '../components/MessageModal'
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
@@ -109,7 +108,6 @@ export default {
   props: ['address'],
   components: {
     TransactionSpeedSelect,
-    // TransferConfirm,
     MessageModal
   },
   data() {
