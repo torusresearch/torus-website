@@ -170,7 +170,10 @@ export default {
         loaded: false,
         currencyCode: 'eth',
         path: 'https://buy-staging.moonpay.io?',
-        apiKey: 'pk_test_j6AnwGJD0XTJDg3bTO37OczjFsddYpS'
+        apiKey: 'pk_test_j6AnwGJD0XTJDg3bTO37OczjFsddYpS',
+
+        // Modify before deploying.
+        redirectURL: ''
       },
       rules: {
         required: value => !!value || 'Required',
@@ -292,6 +295,7 @@ export default {
     /**
      * iframe init for moon pay.
      */
+    this.moonPay.redirectURL = 'javascript:window.top.location.href="' + window.location.origin + '/wallet/history"'
     this.moonPay.url =
       this.moonPay.path +
       'apiKey=' +
@@ -301,10 +305,12 @@ export default {
       '&walletAddress=' +
       this.$store.state.selectedAddress +
       '&email=' +
-      this.$store.state.email
+      this.$store.state.email +
+      '&redirectURL=' +
+      this.moonPay.redirectURL
 
     this.moonPay.loaded = true
-    console.log('this.moonpay is', this.moonPay)
+    // console.log('this.moonpay is', this.moonPay)
 
     this.fetchQuote()
   }
