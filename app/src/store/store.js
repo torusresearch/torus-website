@@ -7,7 +7,7 @@ import config from '../config'
 import torus from '../torus'
 import { MAINNET, RPC } from '../utils/enums'
 import { formatCurrencyNumber, getRandomNumber, hexToText, significantDigits } from '../utils/utils'
-import { post, get } from '../utils/httpHelpers.js'
+import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 
 const accountImporter = require('../utils/accountImporter')
@@ -444,6 +444,7 @@ var VuexStore = new Vuex.Store({
               updatedTransactions.push(transactions[id])
             }
           }
+          // console.log(updatedTransactions, 'txs')
           dispatch('updateTransactions', { transactions: updatedTransactions })
         }
       })
@@ -460,7 +461,7 @@ var VuexStore = new Vuex.Store({
         dispatch('updateMessages', { unapprovedMsgs: unapprovedMsgs })
       })
 
-      dispatch('setSelectedCurrency', 'USD')
+      dispatch('setSelectedCurrency', state.selectedCurrency)
       torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
         if (tokens.length > 0) {
           dispatch('updateTokenData', { tokenData: tokens, address: torus.torusController.detectTokensController.selectedAddress })
@@ -661,5 +662,30 @@ function isTorusTransaction() {
     throw new Error('No new transactions.')
   }
 }
+
+VuexStore.subscribe((mutation, state) => {
+  // will rewrite later
+  if (mutation.type === 'setCurrency' && state.jwtToken) {
+    // Make a post request
+    patch(
+      `${config.api}/user`,
+      {
+        default_currency: mutation.payload
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${state.jwtToken}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      }
+    )
+      .then(response => {
+        log.info('successfully patched', response)
+      })
+      .catch(err => {
+        log.error(err, 'unable to patch currency info')
+      })
+  }
+})
 
 export default VuexStore
