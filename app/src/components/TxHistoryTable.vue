@@ -223,7 +223,8 @@ export default {
   }
 
   .text-denied,
-  .text-rejected {
+  .text-rejected,
+  .text-unapproved {
     color: #e20d0d;
   }
 
