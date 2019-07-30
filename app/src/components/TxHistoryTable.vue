@@ -9,6 +9,12 @@
     @click:row="rowClicked"
     hide-default-footer
   >
+    <template v-slot:item.action="{ item }">
+      <span>
+        <v-icon>{{ getIcon(item.action) }}</v-icon>
+        {{ item.action }}
+      </span>
+    </template>
     <template v-slot:item.from="{ item }">
       <span style="word-break: break-all">{{ item.from }}</span>
     </template>
@@ -19,7 +25,7 @@
       <span>{{ formatDate(item.date) }}</span>
     </template>
     <template v-slot:item.status="{ item }">
-      <span :class="`text-${item.status.toLowerCase()}`">{{ item.status }}</span>
+      <span class="text-capitalize" :class="`text-${item.status.toLowerCase()}`">{{ item.status }}</span>
     </template>
     <template v-slot:expanded-item="{ headers, item }">
       <td :colspan="headers.length" class="pa-0 ma-0" style="height: inherit">
@@ -210,6 +216,15 @@ export default {
     },
     formatDate(date) {
       return date.substring(0, 6)
+    },
+    getIcon(action) {
+      if (action === 'Top-up') {
+        return '$vuetify.icons.arrow_up_circle'
+      } else if (action === 'Sending') {
+        return '$vuetify.icons.arrow_right_circle'
+      } else if (action === 'Received') {
+        return '$vuetify.icons.arrow_left_circle'
+      }
     }
   }
 }

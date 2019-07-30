@@ -118,7 +118,9 @@ export default {
     getPastOrders({}, { public_address: publicAddress })
       .then(response => {
         this.pastOrders = response.result.reduce((acc, x) => {
-          if (!(x.status === 'SENT_TO_SIMPLEX' && new Date() - new Date(x.createdAt) > 86400 * 1000))
+          if (!(x.status === 'SENT_TO_SIMPLEX' && new Date() - new Date(x.createdAt) > 86400 * 1000)) {
+            const totalAmountString = `${significantDigits(x.requested_digital_amount.amount)} ${x.requested_digital_amount.currency}`
+            const currencyAmountString = `${significantDigits(x.fiat_total_amount.amount)} ${x.fiat_total_amount.currency}`
             acc.push({
               id: x.createdAt,
               date: new Date(x.createdAt).toDateString().substring(4),
@@ -128,12 +130,15 @@ export default {
               to: publicAddress,
               slicedTo: addressSlicer(publicAddress),
               totalAmount: x.requested_digital_amount.amount,
-              totalAmountString: `${significantDigits(x.requested_digital_amount.amount)} ${x.requested_digital_amount.currency}`,
+              totalAmountString,
               currencyAmount: x.fiat_total_amount.amount,
-              currencyAmountString: `${significantDigits(x.fiat_total_amount.amount)} ${x.fiat_total_amount.currency}`,
+              currencyAmountString,
+              amount: `${totalAmountString} / ${currencyAmountString}`,
               status: getStatus(x.status),
               etherscanLink: ''
             })
+          }
+
           return acc
           // }
         }, [])
