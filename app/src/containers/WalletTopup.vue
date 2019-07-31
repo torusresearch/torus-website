@@ -62,14 +62,16 @@
                       <div class="v-messages__message d-flex torus_text--text text--lighten-4">
                         <v-flex class="px-3">
                           * Includes 5% Simplex Service Fees or 10 USD (whichever higher)
-                          <v-tooltip bottom>
+                          <v-tooltip class="torus-tooltip" bottom>
                             <template v-slot:activator="{ on }">
                               <img v-on="on" :src="require(`../../public/img/icons/help-circle.svg`)" class="help-icon" />
                             </template>
-                            <span class="caption">
-                              This fee goes entirely to Simplex for their services
-                              <br />
-                              in credit card processing, fraud detection and mitigation
+                            <span>
+                              <div class="primary--text subtitle-2">Simplex Service Fee</div>
+                              <v-divider class="my-2"></v-divider>
+                              <div class="body-2">
+                                This fee goes entirely to Simplex for their services in credit card processing, mitigation and fraud detection.
+                              </div>
                             </span>
                           </v-tooltip>
                         </v-flex>
@@ -334,6 +336,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '../scss/_card-tooltip.mixin';
+
 .wallet-topup-view {
   .help-icon {
     height: 13px;
@@ -387,5 +391,8 @@ export default {
       border-style: dashed;
     }
   }
+}
+.v-tooltip__content {
+  @include cardTooltip();
 }
 </style>

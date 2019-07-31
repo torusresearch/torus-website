@@ -31,7 +31,7 @@
         <v-menu offset-y bottom left :close-on-content-click="false">
           <template v-slot:activator="{ on }">
             <v-btn class="hidden-xs-only" small text v-on="on">
-              <span>{{ userName }}</span>
+              <span class="text-capitalize">{{ userName }}</span>
               <v-icon class="ml-2 mt-1" small>$vuetify.icons.select</v-icon>
             </v-btn>
           </template>
@@ -115,5 +115,9 @@ export default {
 
 .home-link {
   cursor: pointer;
+}
+
+.v-tabs-bar.v-tabs-bar--is-mobile:not(.v-tabs-bar--show-arrows) > .v-slide-group__wrapper > .v-tabs-bar__content > .v-tab:first-of-type {
+  margin-left: 0;
 }
 </style>

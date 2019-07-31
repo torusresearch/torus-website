@@ -763,7 +763,7 @@ describe('MetaMaskController', function() {
       // const setSelectedAddress = sinon.fake()
       const syncWithAddresses = sinon.fake()
       const addAccounts = sinon.fake()
-      const deserialize = sinon.fake()
+      const deserialize = sinon.fake.resolves()
       const addAccount = sinon.fake()
       sandbox.replace(metamaskController, 'keyringController', {
         deserialize,

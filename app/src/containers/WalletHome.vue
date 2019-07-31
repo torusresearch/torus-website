@@ -9,7 +9,7 @@
           <v-icon left>$vuetify.icons.send</v-icon>
           Transfer
         </v-btn>
-        <v-tooltip top v-model="isFreshAccount">
+        <v-tooltip top :value="isFreshAccount">
           <template v-slot:activator="{ on }">
             <v-btn depressed large color="primary" class="px-12 py-1 mt-4" @click="topup" v-on="on">
               <v-icon left>$vuetify.icons.add</v-icon>
@@ -43,7 +43,7 @@
             </v-btn>
           </v-flex>
           <v-flex xs6 class="pl-1">
-            <v-tooltip top v-model="isFreshAccount">
+            <v-tooltip top :value="isFreshAccount">
               <template v-slot:activator="{ on }">
                 <v-btn depressed large block color="primary" class="px-12 py-1 mt-4" @click="topup" v-on="on">
                   <v-icon left>$vuetify.icons.add</v-icon>
@@ -165,7 +165,7 @@ export default {
       return this.finalBalancesArray.length > 5
     },
     isFreshAccount() {
-      return this.filteredBalancesArray.length === 1 && this.filteredBalancesArray[0].computedBalance === 0
+      return this.$store.state.isNewUser
     }
   },
   methods: {
@@ -179,7 +179,7 @@ export default {
       })
     },
     onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', value)
+      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value })
     },
     refreshBalances() {
       this.$store.dispatch('forceFetchTokens')

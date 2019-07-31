@@ -66,7 +66,13 @@
                         <template v-slot:activator="{ on }">
                           <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
                         </template>
-                        <span>Gas Price Info</span>
+                        <span>
+                          <div class="primary--text subtitle-2">JSON File</div>
+                          <v-divider class="my-2"></v-divider>
+                          <div class="body-2">
+                            This is a type of file format that your stores information on your Private Key.
+                          </div>
+                        </span>
                       </v-tooltip>
                     </v-flex>
                     <v-flex shrink>
@@ -273,7 +279,6 @@
 </template>
 
 <script>
-// eslint-disable-next-line import/no-webpack-loader-syntax
 const WalletWorker = require('worker-loader!../utils/wallet.worker.js')
 const ethUtil = require('ethereumjs-util')
 export default {
@@ -392,7 +397,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '../scss/_card-tooltip.mixin';
+
 .upload-button.v-btn {
   border-style: dashed;
+}
+
+.v-tooltip__content {
+  @include cardTooltip();
 }
 </style>

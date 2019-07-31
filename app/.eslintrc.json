@@ -1,5 +1,5 @@
 {
-  "extends": ["plugin:vue/essential", "@vue/standard", "prettier"],
+  "extends": ["plugin:vue/essential", "prettier"],
   "plugins": ["prettier", "vue"],
   "parserOptions": {
     "parser": "babel-eslint",

@@ -7,8 +7,10 @@
             <v-flex xs12 m-0>
               <div class="text-center login-title">Welcome to Torus</div>
             </v-flex>
-            <v-flex flex-grow-1 xs12>
-              <div class="text-center login-subtitle">You are just one step away from getting your digital wallet for your cryptocurrencies</div>
+            <v-flex xs12>
+              <div class="text-center login-subtitle">
+                You are just one step away from getting your digital wallet for your cryptocurrencies
+              </div>
             </v-flex>
             <v-flex xs12 mt-10>
               <div class="text-center">
@@ -117,6 +119,7 @@ a {
   background-image: url('/images/footer_waves.png');
   background-repeat: no-repeat;
   background-position: center bottom;
+  background-size: contain;
   @extend .default;
 }
 
@@ -140,7 +143,7 @@ a {
   }
   &-subtitle {
     font-size: 1.5rem !important;
-    font-weight: bold;
+    font-weight: 500;
     margin: 0 auto;
     max-width: 514px;
   }

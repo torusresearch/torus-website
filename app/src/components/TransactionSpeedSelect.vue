@@ -3,11 +3,18 @@
     <div class="subtitle-2 mb-1 px-4">
       <span>
         Select your Transaction Speed
-        <v-tooltip top>
+        <v-tooltip class="torus-tooltip" top>
           <template v-slot:activator="{ on }">
             <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
           </template>
-          <span>Transaction Speed Info</span>
+          <span>
+            <div class="primary--text subtitle-2">Transaction Fee</div>
+            <v-divider class="my-2"></v-divider>
+            <div class="body-2">
+              This is a mandatory processing fee users pay to the Ethereum Blockchain for each transaction. A higher fee will speed up the transaction
+              process.
+            </div>
+          </span>
         </v-tooltip>
       </span>
       <v-dialog v-model="advanceOptionDialog" persistent>
@@ -237,6 +244,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '../scss/_card-tooltip.mixin';
+
 ::v-deep .button-speed {
   &.v-btn {
     height: inherit;
@@ -250,5 +259,9 @@ export default {
 
 .advance-option {
   cursor: pointer;
+}
+
+.v-tooltip__content {
+  @include cardTooltip();
 }
 </style>

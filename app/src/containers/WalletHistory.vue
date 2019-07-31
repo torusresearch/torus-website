@@ -44,12 +44,14 @@
 
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
+import log from 'loglevel'
 import config from '../config'
 import TxHistoryTable from '../components/TxHistoryTable.vue'
 import TxHistoryTableMobile from '../components/TxHistoryTableMobile.vue'
 import { getPastOrders } from '../plugins/simplex'
-import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus } from '../utils/utils'
+import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getEthTxStatus } from '../utils/utils'
 import torus from '../torus'
+import { patch } from '../utils/httpHelpers'
 const web3Utils = torus.web3.utils
 
 export default {
@@ -74,7 +76,8 @@ export default {
       actionTypes: ['All Transactions', 'Top-up', 'Sending', 'Received'],
       selectedAction: 'All Transactions',
       periods: ['Period', 'Last Week', 'Last Month'],
-      selectedPeriod: 'Period'
+      selectedPeriod: 'Period',
+      pastTx: []
     }
   },
   computed: {
@@ -95,7 +98,7 @@ export default {
     onSelectType() {},
     onSelectPeriod() {},
     onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', value)
+      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value })
     },
     getTransactions() {
       const { networkId, transactions, networkType } = this.$store.state || {}
@@ -124,11 +127,12 @@ export default {
         }
       }
       if (this.pastOrders.length > 0) finalTransactions.push(...this.pastOrders)
+      if (this.pastTx.length > 0) finalTransactions.push(...this.pastTx)
       return finalTransactions
     }
   },
   mounted() {
-    const publicAddress = this.$store.state.selectedAddress
+    const { selectedAddress: publicAddress, pastTransactions, jwtToken } = this.$store.state
     getPastOrders({}, { public_address: publicAddress })
       .then(response => {
         this.pastOrders = response.result.reduce((acc, x) => {
@@ -158,6 +162,43 @@ export default {
         }, [])
       })
       .catch(err => console.log(err))
+    pastTransactions.forEach(async x => {
+      let status = x.status
+      if (x.status !== 'confirmed') {
+        status = await getEthTxStatus(x.transaction_hash, torus.web3)
+        // patch tx
+        patch(
+          `${config.api}/transaction`,
+          {
+            id: x.id,
+            status: status
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+              'Content-Type': 'application/json; charset=utf-8'
+            }
+          }
+        )
+          .then(response => log.info('successfully patched', response))
+          .catch(err => log.error('unable to patch tx', err))
+      }
+      const finalObj = {
+        id: x.created_at,
+        date: new Date(x.created_at).toDateString().substring(4),
+        from: x.from,
+        slicedFrom: addressSlicer(x.from),
+        to: x.to,
+        slicedTo: addressSlicer(x.to),
+        totalAmount: x.total_amount,
+        totalAmountString: `${significantDigits(parseFloat(x.total_amount))} ETH`,
+        currencyAmount: x.currency_amount,
+        currencyAmountString: `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`,
+        status: status,
+        etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network)
+      }
+      this.pastTx.push(finalObj)
+    })
   }
 }
 </script>
