@@ -99,7 +99,7 @@
                     </v-card>
                   </v-flex>
                   <v-flex x12 mt-4 v-if="txData">
-                    <div class="mb-1">HEX DATA:</div>
+                    <div class="mb-1">Hex Data:</div>
                     <v-card flat color="background_3" style="word-break: break-all">
                       <v-card-text>{{ txData }}</v-card-text>
                     </v-card>
