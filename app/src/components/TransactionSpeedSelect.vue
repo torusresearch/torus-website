@@ -3,7 +3,7 @@
     <div class="subtitle-2 mb-1 px-4">
       <span>
         Select your Transaction Speed
-        <v-tooltip class="torus-tooltip" top v-model="speedTooltip">
+        <v-tooltip class="torus-tooltip" top>
           <template v-slot:activator="{ on }">
             <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
           </template>
@@ -101,7 +101,6 @@ export default {
   props: ['gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol'],
   data() {
     return {
-      speedTooltip: false,
       advanceOptionDialog: false,
       isAdvanceOption: false,
       speedSelected: '',

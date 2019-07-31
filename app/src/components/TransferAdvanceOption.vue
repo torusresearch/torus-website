@@ -16,19 +16,41 @@
                     <template v-slot:activator="{ on }">
                       <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
                     </template>
-                    <span>Gas Price Info</span>
+                    <span>
+                      <div class="primary--text subtitle-2">Gas Price</div>
+                      <v-divider class="my-2"></v-divider>
+                      <div class="body-2">
+                        <span class="font-weight-medium">Gas</span>
+                        is needed to power blockchain transactions.
+                        <span class="font-weight-medium">Gas Price</span>
+                        is the amount per unit Gas to pay for a transaction. It is measured in ‘Gwei’.
+                      </div>
+                      <div class="caption mt-1">
+                        1 Gwei=10
+                        <sup>-9</sup>
+                        ETH
+                        <small>(very small USD value)</small>
+                      </div>
+                    </span>
                   </v-tooltip>
                 </span>
                 <v-text-field placeholder="Enter Value" outlined v-model="advancedActiveGasPrice" required type="number"></v-text-field>
               </v-flex>
               <v-flex xs12 sm6 px-4>
                 <span class="subtitle-2">
-                  Gas Value
+                  Gas Limit
                   <v-tooltip top>
                     <template v-slot:activator="{ on }">
                       <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
                     </template>
-                    <span>Gas Value Info</span>
+                    <span>
+                      <div class="primary--text subtitle-2">Gas Limit</div>
+                      <v-divider class="my-2"></v-divider>
+                      <div class="body-2">
+                        This is the maximum amount of gas you're willing to spend on a transaction. A standard ETH transfer requires a gas limit of
+                        21,000 units of gas.
+                      </div>
+                    </span>
                   </v-tooltip>
                 </span>
                 <v-text-field outlined v-model="advancedGas" required type="number"></v-text-field>
@@ -165,6 +187,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '../scss/nav-selector.mixin';
+@import '../scss/_card-tooltip.mixin';
 
 .advance-option {
   .form-selector {
@@ -175,5 +198,9 @@ export default {
   ::v-deep .v-messages {
     text-align: right;
   }
+}
+
+.v-tooltip__content {
+  @include cardTooltip();
 }
 </style>
