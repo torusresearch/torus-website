@@ -209,9 +209,9 @@ var VuexStore = new Vuex.Store({
     patchPastTransactions(state, payload) {
       state.pastTransactions = [...state.pastTransactions, payload]
     },
-    logOut(state, requiredState) {
+    logOut(state, payload) {
       Object.keys(state).forEach(key => {
-        state[key] = initialState[key] // or = initialState[key]
+        state[key] = payload[key] // or = initialState[key]
       })
     }
   },

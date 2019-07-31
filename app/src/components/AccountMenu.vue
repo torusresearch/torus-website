@@ -102,6 +102,7 @@
 </template>
 
 <script>
+import BroadcastChannel from 'broadcast-channel'
 import { significantDigits, addressSlicer } from '../utils/utils'
 import ShowToolTip from '../components/ShowToolTip.vue'
 import AccountImport from '../components/AccountImport.vue'
@@ -164,6 +165,10 @@ export default {
   },
   methods: {
     logout() {
+      console.log("log out called")
+      var bc = new BroadcastChannel('torus_logout_channel')
+      bc.postMessage({ data: { type: 'logout' }})
+      bc.close()
       this.$store.dispatch('logOut')
       location.reload()
     },

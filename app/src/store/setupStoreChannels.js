@@ -113,4 +113,14 @@ providerChangeChannel.onmessage = function(ev) {
   }
 }
 
+console.log('setup logging channel')
+var logoutChannel = new BroadcastChannel('torus_logout_channel')
+logoutChannel.onmessage = function(ev) {
+  log.info('received logging message', ev)
+  if (ev.data && ev.data.type === 'logout') {
+    log.info('Logging Out', ev.data)
+    VuexStore.dispatch('logOut')
+  }
+}
+
 export default VuexStore
