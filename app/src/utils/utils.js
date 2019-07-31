@@ -237,6 +237,13 @@ function getStatus(status) {
   return statusObj[status] || 'pending'
 }
 
+async function getEthTxStatus(hash, web3) {
+  const receipt = await web3.eth.getTransactionReceipt(hash)
+  if (receipt === null) return 'pending'
+  else if (receipt && receipt.status) return 'confirmed'
+  else if (receipt && !receipt.status) return 'rejected'
+}
+
 function extractHostname(url) {
   var hostname
   // find & remove protocol (http, ftp, etc.) and get hostname
@@ -279,5 +286,6 @@ export {
   formatCurrencyNumber,
   getEtherScanHashLink,
   getRandomNumber,
-  getStatus
+  getStatus,
+  getEthTxStatus
 }

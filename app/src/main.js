@@ -9,7 +9,7 @@ import store from './store'
 // import torus from './torus'
 
 log.setDefaultLevel('info')
-console.log('NODE_ENV', process.env.NODE_ENV)
+log.info('NODE_ENV', process.env.NODE_ENV)
 
 Vue.config.productionTip = false
 
