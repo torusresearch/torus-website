@@ -61,7 +61,7 @@
           <v-list-item-title class="font-weight-bold">{{ headerItem.display }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item>
+      <v-list-item href="https://docs.tor.us/#users" target="_blank">
         <v-list-item-action class="mr-2">
           <img :src="require('../../public/img/icons/info-grey.svg')" />
         </v-list-item-action>
