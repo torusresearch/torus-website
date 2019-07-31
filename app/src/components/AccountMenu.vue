@@ -136,7 +136,7 @@ export default {
   },
   methods: {
     logout() {
-      this.$store.dispatch('resetStore')
+      this.$store.dispatch('logOut')
       location.reload()
     }
   }
