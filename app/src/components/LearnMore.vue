@@ -74,7 +74,7 @@ export default {
           step: 3,
           list: [
             {
-              icon: 'key_large.svg',
+              icon: 'key-large.svg',
               name: 'Private Key',
               content: `This is your password to verify account ownership. Only you are able to access it.
                 If you lose this, you potentially lose ownership of your account and ALL your money.`
