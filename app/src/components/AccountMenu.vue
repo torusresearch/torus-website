@@ -11,9 +11,7 @@
           </v-list-item-title>
           <v-list-item-subtitle>
             <div class="caption">
-              <show-tool-tip :address="selectedAddress">
-                {{ slicedSelectedAddress }}
-              </show-tool-tip>
+              <show-tool-tip :address="selectedAddress">{{ slicedSelectedAddress }}</show-tool-tip>
               <v-icon>{{ isShowSelectedAddress ? $vuetify.icons.visibility_off : $vuetify.icons.visibility_on }}</v-icon>
               <img
                 class="float-right mr-5"
@@ -23,9 +21,7 @@
               />
             </div>
             <div v-if="isShowSelectedAddress" class="caption">
-              <show-tool-tip :address="selectedAddress">
-                {{ selectedAddress }}
-              </show-tool-tip>
+              <show-tool-tip :address="selectedAddress">{{ selectedAddress }}</show-tool-tip>
             </div>
           </v-list-item-subtitle>
         </v-list-item-content>
@@ -43,25 +39,18 @@
     <v-divider></v-divider>
 
     <v-list>
-        
-        <v-list-item v-for=" (acc, index) in getWallets" v-if="acc!=selectedAddress" :key="acc" @click="changeAccount(acc)">
-            <v-list-item-content class="font-weight-bold">
-        
-                <v-list-item-title>
-                    <div class="font-weight-bold headline text-capitalize text--lighten-4">Account #{{index+1}}</div>
-                </v-list-item-title>
-                
-                <v-list-item-subtitle>
-                    {{acc}}
-                </v-list-item-subtitle>
-            </v-list-item-content>
-            
-        </v-list-item>
+      <v-list-item v-for="(acc, index) in getWallets" :key="acc" @click="changeAccount(acc)">
+        <v-list-item-content class="font-weight-bold">
+          <v-list-item-title>
+            <div class="font-weight-bold headline text-capitalize text--lighten-4">Account #{{ index + 1 }}</div>
+          </v-list-item-title>
 
-
+          <v-list-item-subtitle>{{ acc }}</v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
     </v-list>
 
-    <v-divider></v-divider>
+    <v-divider v-if="getWallets.length > 0"></v-divider>
 
     <v-list>
       <v-list-item @click="accountImportDialog = true">
@@ -138,8 +127,8 @@ export default {
     selectedCurrency() {
       return this.$store.state.selectedCurrency
     },
-    getWallets(){
-        return Object.keys(this.$store.state.wallet)
+    getWallets() {
+      return Object.keys(this.$store.state.wallet).filter(acc => acc !== this.selectedAddress)
     },
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
@@ -165,20 +154,15 @@ export default {
   },
   methods: {
     logout() {
-      console.log("log out called")
       var bc = new BroadcastChannel('torus_logout_channel')
-      bc.postMessage({ data: { type: 'logout' }})
+      bc.postMessage({ data: { type: 'logout' } })
       bc.close()
       this.$store.dispatch('logOut')
       this.$router.push({ path: '/logout' })
     },
-    changeAccount(newAddress){
-        console.log(newAddress);
-        this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
+    changeAccount(newAddress) {
+      this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
     }
-  },
-  mounted(){
-      console.log("addresses are", this.$store.state);
   }
 }
 </script>
