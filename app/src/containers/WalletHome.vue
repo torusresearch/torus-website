@@ -60,7 +60,7 @@
         <v-layout wrap justify-space-between align-center>
           <v-flex xs12 sm6>
             <v-layout wrap>
-              <v-flex xs12 sm6 v-if="showSearch">
+              <v-flex xs12 sm3 v-if="showSearch">
                 <v-text-field
                   v-model="search"
                   outlined
@@ -70,7 +70,7 @@
                   append-icon="$vuetify.icons.search"
                 ></v-text-field>
               </v-flex>
-              <v-flex xs12 sm6 class="hidden-xs-only">
+              <v-flex xs12 sm9 class="hidden-xs-only">
                 <v-btn text icon small class="refresh-button" color="primary" @click="refreshBalances()">
                   <v-icon small>$vuetify.icons.refresh</v-icon>
                 </v-btn>
