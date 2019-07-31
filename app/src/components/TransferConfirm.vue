@@ -58,7 +58,7 @@ export default {
       this.$emit('onConfirm')
       this.$emit('onClose')
     },
-    significantDigits:significantDigits
+    significantDigits: significantDigits
   }
 }
 </script>
