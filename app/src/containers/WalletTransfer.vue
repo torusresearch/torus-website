@@ -84,7 +84,7 @@
               @onClose="showModalMessage = false"
               :modal-type="modalMessageSuccess"
               :title="modalMessageSuccess ? 'Your transfer is being processed' : 'Your transfer cannot be processed'"
-              :detail-text="modalMessageSuccess ? 'Your transaction will be completed in approximately [ time ] min' : 'Please try again later'"
+              :detail-text="modalMessageSuccess ? `Your transaction will be completed in approximately ${timeTaken} min` : 'Please try again later'"
             />
           </v-dialog>
         </v-layout>
@@ -126,6 +126,7 @@ export default {
       isFastChecked: false,
       speedSelected: '',
       totalCost: '',
+      timeTaken: '',
       convertedTotalCost: '',
       rules: {
         toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid eth or email Address',
@@ -365,6 +366,7 @@ export default {
     onSelectSpeed(data) {
       this.speedSelected = data.speedSelected
       this.activeGasPrice = data.activeGasPrice
+      this.timeTaken = data.speed
 
       if (data.isReset) {
         this.calculateGas()
