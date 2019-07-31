@@ -24,7 +24,9 @@
               <span class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
               <span class="caption torus_text--text text--lighten-4">{{ currencyBalanceDisplay }}</span>
             </div>
-            <div class="caption font-weight-regular torus_text--text text--lighten-4">{{ selectedItem.currencyRateText }}</div>
+            <div
+              class="caption font-weight-regular torus_text--text text--lighten-4"
+            >{{ selectedItem.currencyRateText }}</div>
           </v-flex>
         </v-layout>
         <v-layout wrap>
@@ -57,7 +59,12 @@
           </v-flex>
         </v-layout>
         <v-layout wrap>
-          <TransactionSpeedSelect :symbol="selectedItem.symbol" :gas="gas" :displayAmount="displayAmount" @onSelectSpeed="onSelectSpeed" />
+          <TransactionSpeedSelect
+            :symbol="selectedItem.symbol"
+            :gas="gas"
+            :displayAmount="displayAmount"
+            @onSelectSpeed="onSelectSpeed"
+          />
           <v-flex xs12 px-4 sm6>
             <div>
               <span class="subtitle-2">Total Cost</span>
@@ -74,7 +81,13 @@
         </v-layout>
         <v-layout mt-4 pr-2 wrap>
           <v-spacer></v-spacer>
-          <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" class="px-6" type="submit">Continue</v-btn>
+          <v-btn
+            large
+            color="primary"
+            :disabled="!formValid || speedSelected === ''"
+            class="px-6"
+            type="submit"
+          >Continue</v-btn>
         </v-layout>
 
         <v-layout mt-4 pr-2 wrap>
@@ -285,43 +298,44 @@ export default {
         this.gas = await this.calculateGas(toAddress)
         const selectedAddress = this.$store.state.selectedAddress
         if (this.selectedTokenAddress === '0x') {
-          torus.web3.eth
-            .sendTransaction({
+          torus.web3.eth.sendTransaction(
+            {
               from: selectedAddress,
               to: toAddress,
               value: torus.web3.utils.toWei(this.amount.toString()),
               gas: this.gas.toString(),
               gasPrice: fastGasPrice
-            })
-            .on('transactionHash', () => {
-              this.showModalMessage = true
-              this.modalMessageSuccess = true
-              // this.$router.push('/wallet/history')
-            })
-            .on('error', err => {
-              this.showModalMessage = true
-              this.modalMessageSuccess = false
-              console.log(err)
-            })
+            },
+            (err, transactionHash) => {
+              if (err) {
+                this.showModalMessage = true
+                this.modalMessageSuccess = false
+                console.log(err)
+              } else {
+                this.showModalMessage = true
+                this.modalMessageSuccess = true
+              }
+            }
+          )
         } else {
           const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
-          contractInstance.methods
-            .transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString())
-            .send({
+          contractInstance.methods.transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()).send(
+            {
               from: selectedAddress,
               gas: this.gas.toString(),
               fastGasPrice
-            })
-            .on('transactionHash', () => {
-              this.showModalMessage = true
-              this.modalMessageSuccess = true
-              // this.$router.push('/wallet/history')
-            })
-            .on('error', err => {
-              this.showModalMessage = true
-              this.modalMessageSuccess = false
-              console.log(err)
-            })
+            },
+            (err, transactionHash) => {
+              if (err) {
+                this.showModalMessage = true
+                this.modalMessageSuccess = false
+                console.log(err)
+              } else {
+                this.showModalMessage = true
+                this.modalMessageSuccess = true
+              }
+            }
+          )
         }
       }
     },
