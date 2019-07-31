@@ -145,7 +145,7 @@
 
     <template v-if="type === 'message'">
       <v-layout align-center mx-6 mb-6>
-        <div class="text-black font-weight-bold headline float-left">Permission</div>
+        <div class="text-black font-weight-bold headline float-left">Permissions</div>
         <img :src="require('../../public/img/icons/lock.svg')" width="16" class="ml-2" />
       </v-layout>
       <v-layout wrap mb-6>
@@ -167,28 +167,22 @@
                 <img :src="require(`../../public/img/icons/check-circle-primary.svg`)" width="12" />
               </v-list-item-icon>
               <v-list-item-content class="pa-1">
-                <div class="caption torus_text--text text--lighten-3">To sign and authenticate you are the owner</div>
+                <div class="caption torus_text--text text--lighten-3">This application is requesting for your digital signature.</div>
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="pa-0">
-              <v-list-item-icon class="ma-1">
-                <img :src="require(`../../public/img/icons/check-circle-primary.svg`)" width="12" />
-              </v-list-item-icon>
-              <v-list-item-content class="pa-1">
-                <div v-if="messageType === 'normal'" class="caption torus_text--text text--lighten-3">{{ message }}</div>
-                <div
-                  class="caption torus_text--text text--lighten-3"
-                  v-else-if="messageType === 'typed'"
-                  v-for="typedMessage in typedMessages"
-                  :key="typedMessage.name"
-                >
-                  Type: {{ typedMessage.type }}
-                  <br />
-                  Name: {{ typedMessage.name }}
-                  <br />
-                  Message: {{ typedMessage.value }}
-                  <br />
-                </div>
+              <v-list-item-content flat class="pa-1 grey lighten-3">
+                <v-card flat color="background_3" class="body-2 text-left pa-2 ma-3">
+                  <div v-if="messageType === 'normal'">{{ message }}</div>
+                  <div v-else-if="messageType === 'typed'" v-for="typedMessage in typedMessages" :key="typedMessage.name">
+                    Type: {{ typedMessage.type }}
+                    <br />
+                    Name: {{ typedMessage.name }}
+                    <br />
+                    Message: {{ typedMessage.value }}
+                    <br />
+                  </div>
+                </v-card>
               </v-list-item-content>
             </v-list-item>
           </v-list>
