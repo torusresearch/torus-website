@@ -5,40 +5,49 @@
         <template v-if="!loginInProgress">
           <v-layout v-if="!isLogout" wrap align-center justify-center align-content-center>
             <v-flex xs12 m-0>
-              <div class="text-center login-title">Welcome to Torus</div>
+              <div class="text-center font-weight-bold primary--text" :class="$vuetify.breakpoint.xsOnly ? 'display-1' : 'display-2'">
+                Welcome to Torus
+              </div>
             </v-flex>
             <v-flex xs12>
-              <div class="text-center login-subtitle">
+              <div class="text-center login-subtitle font-weight-medium" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1 pa-2' : 'headline'">
                 You are just one step away from getting your digital wallet for your cryptocurrencies
               </div>
             </v-flex>
-            <v-flex xs12 mt-10>
+            <v-flex xs12 mt-5>
               <div class="text-center">
-                <v-btn id="flexiBtn" large color="primary" class="flexiBtn px-12" type="button" @click="triggerLogin({ calledFromEmbed: false })">
+                <v-btn
+                  :large="!$vuetify.breakpoint.xsOnly"
+                  depressed
+                  color="primary"
+                  class="flexiBtn px-12"
+                  type="button"
+                  @click="triggerLogin({ calledFromEmbed: false })"
+                >
                   Login
                 </v-btn>
                 <small class="d-block text-gray mt-2">
                   By clicking Login, you accept our
                   <br />
                   <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
-                    <span class="text-primary">Terms and Conditions</span>
+                    <span class="primary--text">Terms and Conditions</span>
                   </a>
                 </small>
               </div>
             </v-flex>
-            <v-flex xs12 mt-10>
+            <v-flex xs12 mt-5>
               <small class="text-gray text-center d-block">
                 Note : For first time users, kindly
                 <a href="#">
-                  <span class="text-primary">enable Pop-ups</span>
+                  <span class="primary--text">enable Pop-ups</span>
                 </a>
                 to
                 <br />
                 gain access to your Torus Wallet
               </small>
             </v-flex>
-            <v-flex mt-10 text-center>
-              <img width="200px" height="auto" :src="require('../../public/images/torus-people.png')" class="ml-2" />
+            <v-flex mt-5 text-center>
+              <img :width="$vuetify.breakpoint.xsOnly ? '150px' : '200px'" height="auto" :src="require('../../public/images/torus-people.png')" />
               <p class="m-0">
                 <small class="text-gray">The Decentralized Web Awaits</small>
               </p>
@@ -134,7 +143,8 @@ export default {
 a {
   text-decoration: none;
 }
-#flexiBtn.btnStyle {
+
+.flexiBtn.btnStyle {
   width: 172px;
   height: 48px;
   border-radius: 12px;
@@ -152,30 +162,13 @@ a {
   }
 }
 
-.text-primary {
-  color: #5495f7;
-}
-
 .text-gray {
-  color: #5c6c7f;
+  color: var(--v-torus_text-lighten4);
 }
 
-.fix-size {
-  height: 69px;
-}
-
-.login {
-  &-title {
-    color: #5495f7;
-    font-size: 3rem !important;
-    font-weight: bold;
-  }
-  &-subtitle {
-    font-size: 1.5rem !important;
-    font-weight: 500;
-    margin: 0 auto;
-    max-width: 514px;
-  }
+.login-subtitle {
+  max-width: 514px;
+  margin: 0 auto;
 }
 
 .default {
