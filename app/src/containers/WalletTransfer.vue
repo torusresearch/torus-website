@@ -24,9 +24,7 @@
               <span class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
               <span class="caption torus_text--text text--lighten-4">{{ currencyBalanceDisplay }}</span>
             </div>
-            <div
-              class="caption font-weight-regular torus_text--text text--lighten-4"
-            >{{ selectedItem.currencyRateText }}</div>
+            <div class="caption font-weight-regular torus_text--text text--lighten-4">{{ selectedItem.currencyRateText }}</div>
           </v-flex>
         </v-layout>
         <v-layout wrap>
@@ -59,12 +57,7 @@
           </v-flex>
         </v-layout>
         <v-layout wrap>
-          <TransactionSpeedSelect
-            :symbol="selectedItem.symbol"
-            :gas="gas"
-            :displayAmount="displayAmount"
-            @onSelectSpeed="onSelectSpeed"
-          />
+          <TransactionSpeedSelect :symbol="selectedItem.symbol" :gas="gas" :displayAmount="displayAmount" @onSelectSpeed="onSelectSpeed" />
           <v-flex xs12 px-4 sm6>
             <div>
               <span class="subtitle-2">Total Cost</span>
@@ -81,13 +74,7 @@
         </v-layout>
         <v-layout mt-4 pr-2 wrap>
           <v-spacer></v-spacer>
-          <v-btn
-            large
-            color="primary"
-            :disabled="!formValid || speedSelected === ''"
-            class="px-6"
-            type="submit"
-          >Continue</v-btn>
+          <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" class="px-6" type="submit">Continue</v-btn>
         </v-layout>
 
         <v-layout mt-4 pr-2 wrap>
