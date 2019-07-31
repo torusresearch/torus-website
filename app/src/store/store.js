@@ -484,13 +484,11 @@ var VuexStore = new Vuex.Store({
     },
     subscribeToControllers({ dispatch, state }, payload) {
       torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
-        const { weiBalance } = state
         if (accounts) {
           for (const key in accounts) {
             if (Object.prototype.hasOwnProperty.call(accounts, key)) {
               const account = accounts[key]
-              if (weiBalance[account.address] !== account.balance)
-                dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
+              dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
             }
           }
         }
