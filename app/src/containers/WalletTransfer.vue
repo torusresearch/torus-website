@@ -14,6 +14,7 @@
               :value="selectedItem"
               @change="selectedItemChanged"
               item-text="name"
+              item-value="tokenAddress"
               outlined
             ></v-select>
           </v-flex>
@@ -250,8 +251,8 @@ export default {
         return 21000
       }
     },
-    async selectedItemChanged(value) {
-      this.tokenAddress = value.tokenAddress
+    async selectedItemChanged(tokenAddress) {
+      this.tokenAddress = tokenAddress
       this.gas = await this.calculateGas(this.toAddress)
     },
     changeSelectedToCurrency(value) {
@@ -371,6 +372,7 @@ export default {
     }
   },
   created() {
+    console.log(this.finalBalancesArray)
     this.tokenAddress = this.address
   }
 }
