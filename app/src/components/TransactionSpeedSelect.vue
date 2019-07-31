@@ -11,7 +11,7 @@
             <div class="primary--text subtitle-2">Transaction Fee</div>
             <v-divider class="my-2"></v-divider>
             <div class="body-2">
-              This is a mandatory processing fee users pay to the Ethereum Blockchain for each transaction. A higher fee will speed up the transaction
+              This is a mandatory processing fee users pay to the Ethereum network for each transaction. A higher fee will speed up the transaction
               process.
             </div>
           </span>
@@ -19,7 +19,7 @@
       </span>
       <v-dialog v-model="advanceOptionDialog" persistent>
         <template v-slot:activator="{ on }">
-          <span class="float-right primary--text advance-option hidden-xs-only" v-show="displayAmount" v-on="on">Advance Options</span>
+          <span class="float-right primary--text advance-option hidden-xs-only" v-show="displayAmount" v-on="on">Advanced Options</span>
         </template>
         <TransferAdvanceOption
           :symbol="symbol"
@@ -199,6 +199,10 @@ export default {
       }
 
       this.speedSelected = selectedType
+
+      if (this.activeGasPriceConfirm) {
+        this.updateCosts()
+      }
     }
   },
   created() {

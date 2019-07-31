@@ -285,43 +285,44 @@ export default {
         this.gas = await this.calculateGas(toAddress)
         const selectedAddress = this.$store.state.selectedAddress
         if (this.selectedTokenAddress === '0x') {
-          torus.web3.eth
-            .sendTransaction({
+          torus.web3.eth.sendTransaction(
+            {
               from: selectedAddress,
               to: toAddress,
               value: torus.web3.utils.toWei(this.amount.toString()),
               gas: this.gas.toString(),
               gasPrice: fastGasPrice
-            })
-            .on('transactionHash', () => {
-              this.showModalMessage = true
-              this.modalMessageSuccess = true
-              // this.$router.push('/wallet/history')
-            })
-            .on('error', err => {
-              this.showModalMessage = true
-              this.modalMessageSuccess = false
-              console.log(err)
-            })
+            },
+            (err, transactionHash) => {
+              if (err) {
+                this.showModalMessage = true
+                this.modalMessageSuccess = false
+                console.log(err)
+              } else {
+                this.showModalMessage = true
+                this.modalMessageSuccess = true
+              }
+            }
+          )
         } else {
           const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
-          contractInstance.methods
-            .transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString())
-            .send({
+          contractInstance.methods.transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()).send(
+            {
               from: selectedAddress,
               gas: this.gas.toString(),
               fastGasPrice
-            })
-            .on('transactionHash', () => {
-              this.showModalMessage = true
-              this.modalMessageSuccess = true
-              // this.$router.push('/wallet/history')
-            })
-            .on('error', err => {
-              this.showModalMessage = true
-              this.modalMessageSuccess = false
-              console.log(err)
-            })
+            },
+            (err, transactionHash) => {
+              if (err) {
+                this.showModalMessage = true
+                this.modalMessageSuccess = false
+                console.log(err)
+              } else {
+                this.showModalMessage = true
+                this.modalMessageSuccess = true
+              }
+            }
+          )
         }
       }
     },

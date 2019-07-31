@@ -132,7 +132,11 @@ export default class TorusKeyring extends EventEmitter {
       try {
         const wallet = this._getWalletForAccount(withAccount)
         const privKey = ethUtil.toBuffer(wallet.getPrivateKey())
-        const sig = sigUtil.signTypedData(privKey, { data: typedData })
+        let parsedData = typedData
+        if (typeof parsedData === 'string') {
+          parsedData = JSON.parse(parsedData)
+        }
+        const sig = sigUtil.signTypedData(privKey, { data: parsedData })
         resolve(sig)
       } catch (error) {
         reject(error)
