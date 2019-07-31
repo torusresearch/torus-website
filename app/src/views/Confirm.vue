@@ -132,7 +132,7 @@
                 :convertedAmount="dollarValue"
                 :displayAmount="amountDisplay(value)"
                 :speedSelected="speed"
-                :activeGasPrice="gasPrice"
+                :transactionFee="txFees"
                 :selectedCurrency="selectedCurrency"
                 @onClose="confirmDialog = false"
                 @onConfirm="triggerSign"

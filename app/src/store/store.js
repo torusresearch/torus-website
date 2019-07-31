@@ -653,7 +653,7 @@ var VuexStore = new Vuex.Store({
         if (selectedAddress && wallet[selectedAddress]) {
           dispatch('updateSelectedAddress', { selectedAddress })
           setTimeout(() => dispatch('subscribeToControllers'), 50)
-          await torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
+          await torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet))
           await dispatch('setUserInfo', { token: jwtToken })
           statusStream.write({ loggedIn: true })
           log.info('rehydrated wallet')
