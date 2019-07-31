@@ -131,7 +131,8 @@ export default {
       return this.$store.state.selectedCurrency
     },
     totalCost() {
-      return parseFloat(this.displayAmount) + parseFloat(this.gasAmount)
+      const maxLength = Math.max(this.gasAmountDisplay.toString().length, this.displayAmount.toString().length)
+      return significantDigits(parseFloat(this.displayAmount) + parseFloat(this.gasAmount), false, maxLength - 2)
     },
     gasAmount() {
       return this.advancedGas * this.advancedActiveGasPrice * 10 ** -9
