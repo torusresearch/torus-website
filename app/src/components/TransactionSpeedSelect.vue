@@ -199,6 +199,10 @@ export default {
       }
 
       this.speedSelected = selectedType
+
+      if (this.activeGasPriceConfirm) {
+        this.updateCosts()
+      }
     }
   },
   created() {
