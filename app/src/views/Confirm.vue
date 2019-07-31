@@ -175,16 +175,29 @@
                 <img :src="require(`../../public/img/icons/check-circle-primary.svg`)" width="12" />
               </v-list-item-icon>
               <v-list-item-content class="pa-1">
-                <div class="caption torus_text--text text--lighten-3">Sample Text Here</div>
+                <div v-if="messageType === 'normal'" class="caption torus_text--text text--lighten-3">{{ message }}</div>
+                <div
+                  class="caption torus_text--text text--lighten-3"
+                  v-else-if="messageType === 'typed'"
+                  v-for="typedMessage in typedMessages"
+                  :key="typedMessage.name"
+                >
+                  Type: {{ typedMessage.type }}
+                  <br />
+                  Name: {{ typedMessage.name }}
+                  <br />
+                  Message: {{ typedMessage.value }}
+                  <br />
+                </div>
               </v-list-item-content>
             </v-list-item>
           </v-list>
         </v-flex>
-        <v-flex xs12 mt-12 mb-5 mx-7>
+        <!-- <v-flex xs12 mt-12 mb-5 mx-7>
           <div class="caption torus_text--text text--lighten-3">
             Note : You may re-adjust the dapp permission later under ‘Settings > Dapp Permission’
           </div>
-        </v-flex>
+        </v-flex> -->
         <v-layout px-6 mx-3>
           <v-flex xs6>
             <v-btn block text large class="grey--text" @click="triggerDeny">
