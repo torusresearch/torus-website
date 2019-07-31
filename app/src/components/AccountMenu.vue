@@ -22,7 +22,11 @@
                 @click="isShowSelectedAddress = !isShowSelectedAddress"
               />
             </div>
-            <div v-if="isShowSelectedAddress" class="caption">{{ selectedAddress }}</div>
+            <div v-if="isShowSelectedAddress" class="caption">
+              <show-tool-tip :address="selectedAddress">
+                {{ selectedAddress }}
+              </show-tool-tip>
+            </div>
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
