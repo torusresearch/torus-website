@@ -484,13 +484,11 @@ var VuexStore = new Vuex.Store({
     },
     subscribeToControllers({ dispatch, state }, payload) {
       torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
-        const { weiBalance } = state
         if (accounts) {
           for (const key in accounts) {
             if (Object.prototype.hasOwnProperty.call(accounts, key)) {
               const account = accounts[key]
-              if (weiBalance[account.address] !== account.balance)
-                dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
+              dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
             }
           }
         }
@@ -655,7 +653,7 @@ var VuexStore = new Vuex.Store({
         if (selectedAddress && wallet[selectedAddress]) {
           dispatch('updateSelectedAddress', { selectedAddress })
           setTimeout(() => dispatch('subscribeToControllers'), 50)
-          await torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
+          await torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet))
           await dispatch('setUserInfo', { token: jwtToken })
           statusStream.write({ loggedIn: true })
           log.info('rehydrated wallet')
