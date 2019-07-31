@@ -28,6 +28,8 @@ const statusStream = torus.communicationMux.getStream('status')
 
 Vue.use(Vuex)
 
+let totalFailCount = 0
+
 const vuexPersist = new VuexPersistence({
   key: 'my-app',
   storage: window.sessionStorage,
