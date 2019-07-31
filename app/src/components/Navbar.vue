@@ -116,4 +116,8 @@ export default {
 .home-link {
   cursor: pointer;
 }
+
+.v-tabs-bar.v-tabs-bar--is-mobile:not(.v-tabs-bar--show-arrows) > .v-slide-group__wrapper > .v-tabs-bar__content > .v-tab:first-of-type {
+  margin-left: 0;
+}
 </style>
