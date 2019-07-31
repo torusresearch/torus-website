@@ -24,12 +24,12 @@
               </div>
             </v-flex>
             <v-flex xs12 px-4 pb-4>
-              <div class="subtitle-2">Transaction Speed:</div>
+              <div class="subtitle-2">Transaction Fee:</div>
               <v-divider class="my-1" />
               <div>
                 <div class="float-right text-right">
-                  <div class="body-1 font-weight-bold">{{ speedSelected }} ETH</div>
-                  <div class="caption torus_text--text text--lighten-4">{{ activeGasPrice }} {{ selectedCurrency }}</div>
+                  <div class="body-1 font-weight-bold">~ {{ speedSelected }} Mins</div>
+                  <div class="caption torus_text--text text--lighten-4">{{ significantDigits(transactionFee) }} {{ selectedCurrency }}</div>
                 </div>
               </div>
             </v-flex>
@@ -46,8 +46,10 @@
 </template>
 
 <script>
+import { significantDigits } from '../utils/utils'
+
 export default {
-  props: ['toAddress', 'selectedCoin', 'selectedCurrency', 'convertedAmount', 'displayAmount', 'speedSelected', 'activeGasPrice'],
+  props: ['toAddress', 'selectedCoin', 'selectedCurrency', 'convertedAmount', 'displayAmount', 'speedSelected', 'transactionFee'],
   methods: {
     onCancel(step) {
       this.$emit('onClose')
@@ -55,7 +57,8 @@ export default {
     onConfirm() {
       this.$emit('onConfirm')
       this.$emit('onClose')
-    }
+    },
+    significantDigits:significantDigits
   }
 }
 </script>
