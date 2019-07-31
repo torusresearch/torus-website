@@ -30,7 +30,7 @@
                     <img :src="require(`../../public/img/icons/list.svg`)" class=" mr-4" />
                   </v-list-item-avatar>
                   <v-list-item-content>
-                    <v-list-item-title>Daap Permission</v-list-item-title>
+                    <v-list-item-title>DApp Permission</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>

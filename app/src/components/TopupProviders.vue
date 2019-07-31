@@ -42,7 +42,7 @@
       <div class="mt-4 py-4 px-1 text-gray caption">
         <div>Prefer other mode of payment?</div>
         <div>
-          <a mailto="">Write to us</a>
+          <a href="mailto:hello@tor.us?Subject=Add%20Payment%20Method" target="_blank">Write to us</a>
           and we would try out best to improve and serve you better
         </div>
       </div>
