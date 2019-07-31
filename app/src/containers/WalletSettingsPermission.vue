@@ -15,7 +15,7 @@
             </div>
 
             <v-btn depressed color="primary" @click="addPermission">
-              <img width="20" height="20" :src="require('../../public/img/icons/add.svg')" class="mr-1" />
+              <v-icon left>$vuetify.icons.add</v-icon>
               Add a new List
             </v-btn>
           </v-flex>

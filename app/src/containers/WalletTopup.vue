@@ -64,7 +64,7 @@
                           * Includes 5% Simplex Service Fees or 10 USD (whichever higher)
                           <v-tooltip class="torus-tooltip" bottom>
                             <template v-slot:activator="{ on }">
-                              <img v-on="on" :src="require(`../../public/img/icons/help-circle.svg`)" class="help-icon" />
+                              <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
                             </template>
                             <span>
                               <div class="primary--text subtitle-2">Simplex Service Fee</div>

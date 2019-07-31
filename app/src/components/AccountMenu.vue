@@ -43,6 +43,27 @@
     <v-divider></v-divider>
 
     <v-list>
+        
+        <v-list-item v-for=" (acc, index) in getWallets" v-if="acc!=selectedAddress" :key="acc" @click="changeAccount(acc)">
+            <v-list-item-content class="font-weight-bold">
+        
+                <v-list-item-title>
+                    <div class="font-weight-bold headline text-capitalize text--lighten-4">Account #{{index+1}}</div>
+                </v-list-item-title>
+                
+                <v-list-item-subtitle>
+                    {{acc}}
+                </v-list-item-subtitle>
+            </v-list-item-content>
+            
+        </v-list-item>
+
+
+    </v-list>
+
+    <v-divider></v-divider>
+
+    <v-list>
       <v-list-item @click="accountImportDialog = true">
         <v-list-item-action class="mr-2">
           <img :src="require('../../public/img/icons/import-grey.svg')" />
@@ -117,6 +138,9 @@ export default {
     selectedCurrency() {
       return this.$store.state.selectedCurrency
     },
+    getWallets(){
+        return Object.keys(this.$store.state.wallet)
+    },
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
       let currencyMultiplier = 1
@@ -147,7 +171,14 @@ export default {
       bc.close()
       this.$store.dispatch('logOut')
       location.reload()
+    },
+    changeAccount(newAddress){
+        console.log(newAddress);
+        this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
     }
+  },
+  mounted(){
+      console.log("addresses are", this.$store.state);
   }
 }
 </script>
