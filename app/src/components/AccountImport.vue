@@ -7,7 +7,7 @@
         </v-flex>
         <v-flex xs12 px-4>
           <v-flex xs12 mt-4>
-            <span class="subtitle-2">Select you type:</span>
+            <span class="subtitle-2">Select Import type:</span>
             <v-select
               outlined
               append-icon="$vuetify.icons.select"
@@ -83,6 +83,7 @@
                       <input v-show="false" ref="keystoreUpload" multiple="false" type="file" @change="processFile" />
                     </v-flex>
                   </v-layout>
+                  <div class="text-right" v-show="selectedFileName !== ''">Selected File: {{ selectedFileName }}</div>
                 </v-flex>
                 <v-flex xs12 px-4>
                   <span class="subtitle-2">Enter your password:</span>
@@ -336,7 +337,7 @@ export default {
           this.$store
             .dispatch('importAccount', { keyData: [JSON.parse(this.keyStoreFileContents), this.jsonPassword], strategy: 'JSON File' })
             .then(() => {
-              this.$router.push({ path: '/wallet/home' })
+              this.onClose()
               this.isLoadingKeystore = false
             })
             .catch(err => {
@@ -350,7 +351,7 @@ export default {
             this.$store
               .dispatch('finishImportAccount', { privKey })
               .then(() => {
-                this.$router.push({ path: '/wallet/home' })
+                this.onClose()
                 this.isLoadingKeystore = false
               })
               .catch(err => {
