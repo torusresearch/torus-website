@@ -13,7 +13,7 @@ const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).
 module.exports = {
   devServer: {
     // open: process.platform === 'darwin',
-    https: true,
+    https: false,
     host: 'localhost',
     port: 3000, // CHANGE YOUR PORT HERE!
     // https: {
