@@ -10,9 +10,9 @@
                 <path d="M10,7 L15,7" id="Stroke-1" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                 <path d="M10,12 L20,12" id="Stroke-3" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
                 <path d="M10,17 L18,17" id="Stroke-5" stroke="#A2A5B5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                <path d="M7,7 C7,7.552 6.553,8 6,8 C5.447,8 5,7.552 5,7 C5,6.448 5.447,6 6,6 C6.553,6 7,6.448 7,7" id="Fill-7" fill="#333333" fill-rule="evenodd"></path>
-                <path d="M7,17 C7,17.552 6.553,18 6,18 C5.447,18 5,17.552 5,17 C5,16.448 5.447,16 6,16 C6.553,16 7,16.448 7,17" id="Fill-9" fill="#333333" fill-rule="evenodd"></path>
-                <path d="M7,12 C7,12.552 6.553,13 6,13 C5.447,13 5,12.552 5,12 C5,11.448 5.447,11 6,11 C6.553,11 7,11.448 7,12" id="Fill-11" fill="#333333" fill-rule="evenodd"></path>
+                <path d="M7,7 C7,7.552 6.553,8 6,8 C5.447,8 5,7.552 5,7 C5,6.448 5.447,6 6,6 C6.553,6 7,6.448 7,7" id="Fill-7" fill="#A2A5B5" fill-rule="evenodd"></path>
+                <path d="M7,17 C7,17.552 6.553,18 6,18 C5.447,18 5,17.552 5,17 C5,16.448 5.447,16 6,16 C6.553,16 7,16.448 7,17" id="Fill-9" fill="#A2A5B5" fill-rule="evenodd"></path>
+                <path d="M7,12 C7,12.552 6.553,13 6,13 C5.447,13 5,12.552 5,12 C5,11.448 5.447,11 6,11 C6.553,11 7,11.448 7,12" id="Fill-11" fill="#A2A5B5" fill-rule="evenodd"></path>
             </g>
         </g>
     </g>
