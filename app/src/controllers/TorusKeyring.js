@@ -11,11 +11,21 @@ export default class TorusKeyring extends EventEmitter {
     this.type = type
     this.wallets = []
     this.deserialize(opts)
-    log.info('wallet initialised')
+      .then(() => {
+        log.info('wallet initialised')
+      })
+      .catch(err => log.error('unable to deserialize', err))
   }
 
   serialize() {
-    return Promise.resolve(this.wallets.map(this.generatePrivKey))
+    return new Promise((resolve, reject) => {
+      try {
+        const keys = this.wallets.map(this.generatePrivKey)
+        resolve(keys)
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
 
   generatePrivKey(wallet) {
@@ -33,10 +43,10 @@ export default class TorusKeyring extends EventEmitter {
     return new Promise((resolve, reject) => {
       try {
         this.wallets = privateKeys.map(this.generateWallet)
+        resolve()
       } catch (e) {
         reject(e)
       }
-      resolve()
     })
   }
 
@@ -48,13 +58,14 @@ export default class TorusKeyring extends EventEmitter {
           if (element === privKey) reject(new Error('Already added'))
         }
         this.wallets.push(this.generateWallet(privKey))
+        resolve()
       } catch (error) {
         reject(error)
       }
-      resolve()
     })
   }
 
+  // Not using
   addRandomAccounts(n = 1) {
     var newWallets = []
     for (var i = 0; i < n; i++) {
@@ -65,51 +76,77 @@ export default class TorusKeyring extends EventEmitter {
     return Promise.resolve(hexWallets)
   }
 
+  // Not using
   getAccounts() {
     return Promise.resolve(this.wallets.map(w => ethUtil.bufferToHex(w.getAddress())))
   }
 
   // tx is an instance of the ethereumjs-transaction class.
   signTransaction(tx, address) {
-    const wallet = this._getWalletForAccount(address)
-    var privKey = wallet.getPrivateKey()
-    tx.sign(privKey)
-    return Promise.resolve(tx)
+    return new Promise((resolve, reject) => {
+      try {
+        const wallet = this._getWalletForAccount(address)
+        var privKey = wallet.getPrivateKey()
+        tx.sign(privKey)
+        resolve(tx)
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
 
   // For eth_sign, we need to sign arbitrary data:
   signMessage(withAccount, data) {
-    const wallet = this._getWalletForAccount(withAccount)
-    const message = ethUtil.stripHexPrefix(data)
-    var privKey = wallet.getPrivateKey()
-    var msgSig = ethUtil.ecsign(Buffer.from(message, 'hex'), privKey)
-    var rawMsgSig = ethUtil.bufferToHex(sigUtil.concatSig(msgSig.v, msgSig.r, msgSig.s))
-    return Promise.resolve(rawMsgSig)
+    return new Promise((resolve, reject) => {
+      try {
+        const wallet = this._getWalletForAccount(withAccount)
+        const message = ethUtil.stripHexPrefix(data)
+        var privKey = wallet.getPrivateKey()
+        var msgSig = ethUtil.ecsign(Buffer.from(message, 'hex'), privKey)
+        var rawMsgSig = ethUtil.bufferToHex(sigUtil.concatSig(msgSig.v, msgSig.r, msgSig.s))
+        resolve(rawMsgSig)
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
 
   // For personal_sign, we need to prefix the message:
   signPersonalMessage(withAccount, msgHex) {
-    const wallet = this._getWalletForAccount(withAccount)
-    const privKey = ethUtil.stripHexPrefix(wallet.getPrivateKey())
-    const privKeyBuffer = Buffer.from(privKey, 'hex')
-    const sig = sigUtil.personalSign(privKeyBuffer, { data: msgHex })
-    return Promise.resolve(sig)
+    return new Promise((resolve, reject) => {
+      try {
+        const wallet = this._getWalletForAccount(withAccount)
+        const privKey = ethUtil.stripHexPrefix(wallet.getPrivateKey())
+        const privKeyBuffer = Buffer.from(privKey, 'hex')
+        const sig = sigUtil.personalSign(privKeyBuffer, { data: msgHex })
+        resolve(sig)
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
 
   // personal_signTypedData, signs data along with the schema
   signTypedData(withAccount, typedData) {
-    const wallet = this._getWalletForAccount(withAccount)
-    const privKey = ethUtil.toBuffer(wallet.getPrivateKey())
-    const sig = sigUtil.signTypedData(privKey, { data: typedData })
-    return Promise.resolve(sig)
+    return new Promise((resolve, reject) => {
+      try {
+        const wallet = this._getWalletForAccount(withAccount)
+        const privKey = ethUtil.toBuffer(wallet.getPrivateKey())
+        const sig = sigUtil.signTypedData(privKey, { data: typedData })
+        resolve(sig)
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
 
+  // not using
   // exportAccount should return a hex-encoded private key:
   exportAccount(address) {
     const wallet = this._getWalletForAccount(address)
     return Promise.resolve(wallet.getPrivateKey().toString('hex'))
   }
-
+  // not using
   removeAccount(address) {
     if (!this.wallets.map(w => ethUtil.bufferToHex(w.getAddress()).toLowerCase()).includes(address.toLowerCase())) {
       throw new Error(`Address ${address} not found in this keyring`)

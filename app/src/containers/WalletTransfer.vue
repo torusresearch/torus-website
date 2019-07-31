@@ -10,7 +10,7 @@
     </v-flex>
     <v-flex xs12 sm9 class="fill-height">
       <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
-        <v-form ref="form" v-model="formValid" lazy-validation class="fill-height" @submit.prevent="">
+        <v-form ref="form" v-model="formValid" lazy-validation class="fill-height" @submit.prevent>
           <v-container fill-height pl-0 pr-0>
             <v-layout row wrap align-center justify-center align-content-start>
               <v-flex xs12 sm6>
@@ -86,12 +86,8 @@
                 >
                   <template v-slot:append>
                     <v-btn-toggle v-model="toggle_exclusive" @change="changeSelectedToCurrency" mandatory>
-                      <v-btn flat>
-                        {{ selectedItem && selectedItem.symbol }}
-                      </v-btn>
-                      <v-btn flat>
-                        {{ selectedCurrency }}
-                      </v-btn>
+                      <v-btn flat>{{ selectedItem && selectedItem.symbol }}</v-btn>
+                      <v-btn flat>{{ selectedCurrency }}</v-btn>
                     </v-btn-toggle>
                   </template>
                 </v-text-field>
@@ -135,6 +131,7 @@
 import torus from '../torus'
 import { significantDigits, getRandomNumber } from '../utils/utils'
 import config from '../config'
+import { get } from '../utils/httpHelpers'
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
 
@@ -210,8 +207,8 @@ export default {
     }
   },
   watch: {
-    toAddress: function(newValue, oldValue) {
-      this.calculateGas()
+    toAddress: async function(newValue, oldValue) {
+      if (newValue !== oldValue) this.gas = await this.calculateGas(newValue)
     },
     displayAmount: function(newValue, oldValue) {
       if (this.toggle_exclusive === 0) {
@@ -232,37 +229,41 @@ export default {
       }
       return ''
     },
-    calculateGas() {
-      if (torus.web3.utils.isAddress(this.toAddress)) {
-        if (this.selectedTokenAddress === '0x') {
-          torus.web3.eth
-            .estimateGas({ to: this.toAddress })
-            .then(response => {
-              this.gas = response
-            })
-            .catch(err => {
-              console.log(err)
-              this.gas = MAX_GAS
-            })
-        } else {
-          const selectedAddress = this.$store.state.selectedAddress
-          const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
-          contractInstance.methods
-            .transfer(this.toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString())
-            .estimateGas({ from: selectedAddress })
-            .then(response => {
-              this.gas = response
-            })
-            .catch(err => {
-              console.log(err)
-              this.gas = MAX_GAS
-            })
-        }
+    async calculateGas(toAddress) {
+      if (torus.web3.utils.isAddress(toAddress)) {
+        return new Promise((resolve, reject) => {
+          if (this.selectedTokenAddress === '0x') {
+            torus.web3.eth
+              .estimateGas({ to: toAddress })
+              .then(response => {
+                resolve(response)
+              })
+              .catch(err => {
+                console.log(err)
+                resolve(MAX_GAS)
+              })
+          } else {
+            const selectedAddress = this.$store.state.selectedAddress
+            const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
+            contractInstance.methods
+              .transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString())
+              .estimateGas({ from: selectedAddress })
+              .then(response => {
+                resolve(response)
+              })
+              .catch(err => {
+                console.log(err)
+                resolve(MAX_GAS)
+              })
+          }
+        })
+      } else {
+        return 21000
       }
     },
-    selectedItemChanged(value) {
+    async selectedItemChanged(value) {
       this.tokenAddress = value.tokenAddress
-      this.calculateGas()
+      this.gas = await this.calculateGas(this.toAddress)
     },
     changeSelectedToCurrency(value) {
       const currencyRate = this.getCurrencyTokenRate
@@ -291,6 +292,7 @@ export default {
             toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], this.toAddress)
           }
         }
+        this.gas = await this.calculateGas(toAddress)
         const selectedAddress = this.$store.state.selectedAddress
         if (this.selectedTokenAddress === '0x')
           torus.web3.eth
@@ -327,15 +329,10 @@ export default {
   },
   created() {
     this.tokenAddress = this.address
-    fetch('https://ethgasstation.info/json/ethgasAPI.json', {
-      headers: {},
+    get('https://ethgasstation.info/json/ethgasAPI.json', {
       referrer: 'http://ethgasstation.info/json/',
-      referrerPolicy: 'no-referrer-when-downgrade',
-      body: null,
-      method: 'GET',
-      mode: 'cors'
+      referrerPolicy: 'no-referrer-when-downgrade'
     })
-      .then(resp => resp.json())
       .then(
         ({
           average: averageTimes10,

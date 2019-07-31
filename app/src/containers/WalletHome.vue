@@ -107,7 +107,7 @@ export default {
       })
     },
     onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', value)
+      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value })
     },
     refreshBalances() {
       this.$store.dispatch('forceFetchTokens')
