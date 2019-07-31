@@ -6,7 +6,6 @@ import Confirm from './views/Confirm.vue'
 import ProviderChange from './views/ProviderChange.vue'
 import Wallet from './views/Wallet.vue'
 import Login from './views/Login.vue'
-import Logout from './views/Logout.vue'
 import WalletHome from './containers/WalletHome.vue'
 import WalletHistory from './containers/WalletHistory.vue'
 import WalletSettings from './containers/WalletSettings.vue'
@@ -41,7 +40,7 @@ const router = new Router({
     {
       path: '/logout',
       name: 'logout',
-      component: Logout,
+      component: Login,
       meta: { requiresAuth: false }
     },
     {

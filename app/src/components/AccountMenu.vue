@@ -170,7 +170,7 @@ export default {
       bc.postMessage({ data: { type: 'logout' }})
       bc.close()
       this.$store.dispatch('logOut')
-      location.reload()
+      this.$router.push({ path: '/logout' })
     },
     changeAccount(newAddress){
         console.log(newAddress);

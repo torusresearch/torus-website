@@ -3,7 +3,7 @@
     <v-container fill-height align-content-center>
       <template v-if="gapiLoaded">
         <template v-if="!loginInProgress">
-          <v-layout wrap align-center justify-center align-content-center>
+          <v-layout v-if="!isLogout" wrap align-center justify-center align-content-center>
             <v-flex xs12 m-0>
               <div class="text-center login-title">Welcome to Torus</div>
             </v-flex>
@@ -44,6 +44,24 @@
               </p>
             </v-flex>
           </v-layout>
+          <v-layout v-else wrap align-center justify-center align-content-center>
+            <v-flex text-center>
+              <img width="200px" height="auto" :src="require('../../public/images/torus-people-colored.svg')" />
+            </v-flex>
+            <v-flex xs12 mt-10>
+              <div class="text-center headline font-weight-bold">You have been logged out</div>
+            </v-flex>
+            <v-flex xs12 mt-8>
+              <div class="text-center">
+                <v-btn large depressed color="primary" class="px-12 title" type="button" @click="returnHome">
+                  Return Home
+                </v-btn>
+              </div>
+              <div class="text-center torus_text--text text--lighten-4 body-2 mt-6" @click="triggerLogin({ calledFromEmbed: false })">
+                Login Again
+              </div>
+            </v-flex>
+          </v-layout>
         </template>
         <template v-else>
           <page-loader />
@@ -65,13 +83,18 @@ export default {
   components: { PageLoader },
   data() {
     return {
-      gapiLoaded: false
+      gapiLoaded: false,
+      isLogout: false
     }
   },
   methods: {
     ...mapActions({
       triggerLogin: 'triggerLogin'
-    })
+    }),
+    returnHome() {
+      this.$router.push({ path: '/' })
+      this.isLogout = false
+    }
   },
   computed: mapState({
     selectedAddress: 'selectedAddress',
@@ -100,6 +123,9 @@ export default {
     }, 2000)
 
     if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || 'wallet')
+  },
+  created() {
+    this.isLogout = this.$route.name !== 'login'
   }
 }
 </script>
@@ -119,8 +145,11 @@ a {
   background-image: url('/images/footer_waves.png');
   background-repeat: no-repeat;
   background-position: center bottom;
-  background-size: contain;
   @extend .default;
+
+  @media only screen and (min-width: 1264px) {
+    background-size: 100%;
+  }
 }
 
 .text-primary {
