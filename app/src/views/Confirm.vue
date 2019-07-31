@@ -214,6 +214,7 @@ import TransactionSpeedSelect from '../components/TransactionSpeedSelect'
 import TransferConfirm from '../components/TransferConfirm'
 import torus from '../torus'
 import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress } from '../utils/utils'
+const abiDecoder = require('../utils/abiDecoder')
 const abi = require('human-standard-token-abi')
 
 const {
@@ -333,9 +334,6 @@ export default {
       switch (this.transactionCategory) {
         case DEPLOY_CONTRACT_ACTION_KEY:
           return 'Contract Deployment'
-          break
-        case CONTRACT_INTERACTION_KEY:
-          return 'Contract Interaction'
           break
         case CONTRACT_INTERACTION_KEY:
           return 'Contract Interaction'
@@ -499,7 +497,7 @@ export default {
         const web3Utils = torus.web3.utils
         let finalValue = 0
         const { value, to, data, from: sender, gas, gasPrice } = txParams.txParams || {}
-        const { simulationFails, network, id, transactionCategory } = txParams || {}
+        const { simulationFails, network, id, transactionCategory, methodParams } = txParams || {}
         const { reason } = simulationFails || {}
         if (value) {
           finalValue = web3Utils.fromWei(value.toString())
@@ -508,7 +506,7 @@ export default {
         this.origin = this.origin.trim().length === 0 ? 'Wallet' : this.origin
         // GET data params
         const txDataParams = abi.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
-
+        console.log(methodParams, 'params')
         this.id = id
         this.network = network
         this.networkName = this.getNetworkName(network)
