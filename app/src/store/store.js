@@ -102,7 +102,15 @@ var VuexStore = new Vuex.Store({
       let currencyMultiplier = 1
       if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
       let full = [
-        { balance: weiBalance[selectedAddress], decimals: 18, erc20: false, logo: 'eth.svg', name: 'Ethereum', symbol: 'ETH', tokenAddress: '0x' }
+        {
+          balance: weiBalance[selectedAddress],
+          decimals: 18,
+          erc20: false,
+          logo: 'eth.svg',
+          name: 'Ethereum',
+          symbol: 'ETH',
+          tokenAddress: '0x'
+        }
       ]
       // because vue/babel is stupid
       if (tokenData && tokenData[selectedAddress] && Object.keys(tokenData[selectedAddress]).length > 0) {
@@ -516,7 +524,10 @@ var VuexStore = new Vuex.Store({
       dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
       torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
         if (tokens.length > 0) {
-          dispatch('updateTokenData', { tokenData: tokens, address: torus.torusController.detectTokensController.selectedAddress })
+          dispatch('updateTokenData', {
+            tokenData: tokens,
+            address: torus.torusController.detectTokensController.selectedAddress
+          })
         }
       })
       torus.torusController.tokenRatesController.store.subscribe(function({ contractExchangeRates }) {
@@ -524,6 +535,9 @@ var VuexStore = new Vuex.Store({
           dispatch('updateTokenRates', { tokenRates: contractExchangeRates })
         }
       })
+    },
+    initTorusKeyring({ state, dispatch }, payload) {
+      return torus.torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
     },
     handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
       const { torusNodeEndpoints, torusIndexes } = config
@@ -543,7 +557,7 @@ var VuexStore = new Vuex.Store({
           dispatch('addWallet', data)
           dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
           dispatch('subscribeToControllers')
-          await torus.torusController.initTorusKeyring([data.privKey], [data.ethAddress])
+          await dispatch('initTorusKeyring', data)
           await dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress })
           // continue enable function
           var ethAddress = data.ethAddress
