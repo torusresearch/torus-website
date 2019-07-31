@@ -373,7 +373,6 @@ export default {
     }
   },
   created() {
-    console.log(this.finalBalancesArray)
     this.tokenAddress = this.address
   }
 }
