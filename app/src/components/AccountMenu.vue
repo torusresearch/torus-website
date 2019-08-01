@@ -11,7 +11,7 @@
           </v-list-item-title>
           <v-list-item-subtitle>
             <div class="caption">
-              <show-tool-tip :address="selectedAddress">{{ slicedSelectedAddress }}</show-tool-tip>
+              <span>{{ userEmail }}</span>
               <v-icon>{{ isShowSelectedAddress ? $vuetify.icons.visibility_off : $vuetify.icons.visibility_on }}</v-icon>
               <img
                 class="float-right mr-5"
