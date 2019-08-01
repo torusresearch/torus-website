@@ -52,7 +52,7 @@
               outlined
               required
               v-model="displayAmount"
-              :rules="[rules.required, lesserThan]"
+              :rules="[rules.required, lesserThan, moreThanZero]"
             ></v-text-field>
           </v-flex>
         </v-layout>
@@ -210,6 +210,12 @@ export default {
     }
   },
   methods: {
+    moreThanZero: function(value) {
+      if (this.selectedItem) {
+        return parseFloat(value) > 0 ? '' : 'Invalid amount'
+      }
+      return ''
+    },
     lesserThan: function(value) {
       if (this.selectedItem) {
         let amount = value
