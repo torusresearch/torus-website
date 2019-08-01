@@ -28,7 +28,7 @@
           <img :src="require('../../public/img/icons/menu-primary.svg')" />
         </v-btn>
 
-        <v-menu offset-y bottom left :close-on-content-click="false">
+        <v-menu offset-y bottom left z-index="20" :close-on-content-click="false">
           <template v-slot:activator="{ on }">
             <v-btn class="hidden-xs-only" small text v-on="on">
               <span class="text-capitalize">{{ userName }}</span>

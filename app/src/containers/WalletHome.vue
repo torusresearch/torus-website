@@ -259,6 +259,7 @@ export default {
     background: #fff;
     border: 1px solid var(--v-primary-base);
     color: var(--v-primary-base);
+    z-index: 0;
     &::after {
       content: ' ';
       position: absolute;
@@ -270,18 +271,5 @@ export default {
       border-color: var(--v-primary-base) transparent transparent transparent;
     }
   }
-
-  /* .balance-filter {
-    .refresh {
-      flex-basis: 67%;
-      flex-grow: 0;
-      max-width: 67%;
-    }
-    .currency {
-      flex-basis: 33%;
-      flex-grow: 0;
-      max-width: 33%;
-    }
-  } */
 }
 </style>
