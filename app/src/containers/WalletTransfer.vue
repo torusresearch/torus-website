@@ -216,7 +216,7 @@ export default {
         if (this.toggle_exclusive === 1) {
           amount = amount / this.getCurrencyTokenRate
         }
-        return parseFloat(amount) < this.selectedItem.computedBalance || 'Insufficient balance for transaction'
+        return parseFloat(amount) <= this.selectedItem.computedBalance || 'Insufficient balance for transaction'
       }
       return ''
     },

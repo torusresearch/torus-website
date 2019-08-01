@@ -142,15 +142,11 @@ export default {
       this.updateCosts(true)
     },
     selectSpeed(targetSpeed, price) {
-      if (this.speedSelected === targetSpeed) {
-        this.speedSelected = ''
-        this.activeGasPrice = ''
-      } else {
+      if (this.speedSelected !== targetSpeed) {
         this.speedSelected = targetSpeed
         this.activeGasPrice = price
+        this.updateCosts()
       }
-
-      this.updateCosts()
     },
     getGasDisplayString(gasPrice) {
       const currencyFee = this.getGasAmount(gasPrice)
