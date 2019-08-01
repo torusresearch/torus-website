@@ -470,7 +470,7 @@ export default {
       return `${hours}:${minutes}:${seconds} ${ampm}`
     },
     amountDisplay(amount) {
-      return parseFloat(amount).toFixed(2)
+      return significantDigits(parseFloat(amount).toFixed(5))
     },
     significantDigits: significantDigits,
     ...mapActions({})
