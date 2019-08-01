@@ -290,10 +290,10 @@ export default {
             toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], this.toAddress)
           }
         }
-        // this.gas = await this.calculateGas(toAddress)
+        this.gas = await this.calculateGas(toAddress)
         const selectedAddress = this.$store.state.selectedAddress
         if (this.selectedTokenAddress === '0x') {
-          console.log('TX SENT: ',             {
+          console.log('TX SENT: ', {
             from: selectedAddress,
             to: toAddress,
             value: torus.web3.utils.toWei(this.amount.toString()),

@@ -471,7 +471,7 @@ export default {
       return `${hours}:${minutes}:${seconds} ${ampm}`
     },
     amountDisplay(amount) {
-      return significantDigits(parseFloat(amount).toFixed(5)) ? significantDigits(parseFloat(amount).toFixed(5)) : parseFloat("0.00").toFixed(2)
+      return significantDigits(parseFloat(amount).toFixed(5)) ? significantDigits(parseFloat(amount).toFixed(5)) : parseFloat('0.00').toFixed(2)
     },
     significantDigits: significantDigits,
     ...mapActions({})
@@ -504,7 +504,6 @@ export default {
         if (value) {
           finalValue = web3Utils.fromWei(value.toString())
         }
-    
 
         this.origin = this.origin.trim().length === 0 ? 'Wallet' : this.origin
         // GET data params

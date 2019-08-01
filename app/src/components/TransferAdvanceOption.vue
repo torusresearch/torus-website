@@ -53,7 +53,7 @@
                     </span>
                   </v-tooltip>
                 </span>
-                <v-text-field outlined v-model="advancedGas" required type="number"></v-text-field>
+                <v-text-field readonly outlined v-model="advancedGas" required type="number"></v-text-field>
               </v-flex>
               <v-flex xs12 sm6 px-4>
                 <span class="subtitle-2">Send Amount</span>

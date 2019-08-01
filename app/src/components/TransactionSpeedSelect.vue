@@ -127,7 +127,7 @@ export default {
       this.activeGasPrice = parseFloat(details.advancedActiveGasPrice)
 
       this.isAdvanceOption = true
-      this.updateCosts(false, parseFloat(details.advancedGas) )
+      this.updateCosts(false, parseFloat(details.advancedGas))
 
       this.advanceOptionDialog = false
     },
