@@ -159,7 +159,7 @@ function addressSlicer(address = '') {
   if (address.length < 11) {
     return address
   }
-  return `${address.slice(0, 6)}...${address.slice(-4)}`
+  return `${address.slice(0, 5)}...${address.slice(-5)}`
 }
 
 function significantDigits(number, perc = false, len = 2) {
@@ -226,6 +226,24 @@ function getEtherScanHashLink(txHash, network = null) {
   return network === 'mainnet' ? `https://etherscan.io/tx/${txHash}` : `https://${localNetwork}.etherscan.io/tx/${txHash}`
 }
 
+const statusObj = {
+  SENT_TO_SIMPLEX: 'pending',
+  DENIED_SIMPLEX: 'rejected',
+  PROCESSING_SIMPPLEX: 'processing',
+  SUCCESS_SIMPLEX: 'success'
+}
+
+function getStatus(status) {
+  return statusObj[status] || 'pending'
+}
+
+async function getEthTxStatus(hash, web3) {
+  const receipt = await web3.eth.getTransactionReceipt(hash)
+  if (receipt === null) return 'pending'
+  else if (receipt && receipt.status) return 'confirmed'
+  else if (receipt && !receipt.status) return 'rejected'
+}
+
 function extractHostname(url) {
   var hostname
   // find & remove protocol (http, ftp, etc.) and get hostname
@@ -267,5 +285,7 @@ export {
   extractHostname,
   formatCurrencyNumber,
   getEtherScanHashLink,
-  getRandomNumber
+  getRandomNumber,
+  getStatus,
+  getEthTxStatus
 }

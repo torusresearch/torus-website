@@ -1,15 +1,15 @@
+import log from 'loglevel'
 import Vue from 'vue'
-import './reset.css'
-import './plugins'
 import App from './App.vue'
+import { vuetify } from './plugins'
+import './registerServiceWorker'
+import './reset.css'
 import router from './router'
 import store from './store'
-import log from 'loglevel'
-import './registerServiceWorker'
 // import torus from './torus'
 
 log.setDefaultLevel('info')
-console.log('NODE_ENV', process.env.NODE_ENV)
+log.info('NODE_ENV', process.env.NODE_ENV)
 
 Vue.config.productionTip = false
 
@@ -21,6 +21,7 @@ new Vue({
   router,
   store,
   render: h => h(App),
+  vuetify,
   mounted: () => document.dispatchEvent(new Event('x-app-rendered'))
 }).$mount('#app')
 

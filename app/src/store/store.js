@@ -1,16 +1,27 @@
+import BroadcastChannel from 'broadcast-channel'
+import log from 'loglevel'
 import Vue from 'vue'
 import Vuex from 'vuex'
-import log from 'loglevel'
-import torus from '../torus'
-import config from '../config'
 import VuexPersistence from 'vuex-persist'
-import { hexToText, significantDigits, formatCurrencyNumber, getRandomNumber } from '../utils/utils'
+import config from '../config'
+import torus from '../torus'
 import { MAINNET, RPC } from '../utils/enums'
-import BroadcastChannel from 'broadcast-channel'
+import { formatCurrencyNumber, getRandomNumber, hexToText, significantDigits } from '../utils/utils'
+import { post, get, patch } from '../utils/httpHelpers.js'
+import jwtDecode from 'jwt-decode'
+const web3Utils = torus.web3.utils
 
+function getCurrencyMultiplier() {
+  const { selectedCurrency, currencyData } = VuexStore.state || {}
+  let currencyMultiplier = 1
+  if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+  return currencyMultiplier
+}
 const accountImporter = require('../utils/accountImporter')
 
 const baseRoute = process.env.BASE_URL
+
+let totalFailCount = 0
 
 // stream to send logged in status
 const statusStream = torus.communicationMux.getStream('status')
@@ -23,6 +34,8 @@ const vuexPersist = new VuexPersistence({
   reducer: state => {
     return {
       email: state.email,
+      name: state.name,
+      profileImage: state.profileImage,
       idToken: state.idToken,
       wallet: state.wallet,
       // weiBalance: state.weiBalance,
@@ -31,7 +44,9 @@ const vuexPersist = new VuexPersistence({
       currencyData: state.currencyData,
       // tokenData: state.tokenData,
       tokenRates: state.tokenRates,
-      selectedCurrency: state.selectedCurrency
+      selectedCurrency: state.selectedCurrency,
+      jwtToken: state.jwtToken,
+      pastTransactions: state.pastTransactions
     }
   }
 })
@@ -40,6 +55,8 @@ var walletWindow
 
 const initialState = {
   email: '',
+  name: '',
+  profileImage: '',
   idToken: '',
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
@@ -51,8 +68,14 @@ const initialState = {
   tokenData: {}, // Account specific object
   tokenRates: {},
   transactions: [],
+  unapprovedTypedMessages: {},
+  unapprovedPersonalMsgs: {},
+  unapprovedMsgs: {},
   loginInProgress: false,
-  rpcDetails: JSON.parse(localStorage.getItem('torus_custom_rpc')) || {}
+  rpcDetails: JSON.parse(localStorage.getItem('torus_custom_rpc')) || {},
+  jwtToken: '',
+  pastTransactions: [],
+  isNewUser: false
 }
 
 var VuexStore = new Vuex.Store({
@@ -79,7 +102,15 @@ var VuexStore = new Vuex.Store({
       let currencyMultiplier = 1
       if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
       let full = [
-        { balance: weiBalance[selectedAddress], decimals: 18, erc20: false, logo: 'eth.svg', name: 'Ethereum', symbol: 'ETH', tokenAddress: '0x' }
+        {
+          balance: weiBalance[selectedAddress],
+          decimals: 18,
+          erc20: false,
+          logo: 'eth.svg',
+          name: 'Ethereum',
+          symbol: 'ETH',
+          tokenAddress: '0x'
+        }
       ]
       // because vue/babel is stupid
       if (tokenData && tokenData[selectedAddress] && Object.keys(tokenData[selectedAddress]).length > 0) {
@@ -111,6 +142,12 @@ var VuexStore = new Vuex.Store({
   mutations: {
     setEmail(state, email) {
       state.email = email
+    },
+    setName(state, name) {
+      state.name = name
+    },
+    setProfileImage(state, profileImage) {
+      state.profileImage = profileImage
     },
     setIdToken(state, idToken) {
       state.idToken = idToken
@@ -151,51 +188,101 @@ var VuexStore = new Vuex.Store({
     setRPCDetails(state, rpcDetails) {
       state.rpcDetails = rpcDetails
     },
-    resetStore(state, requiredState) {
+    setTypedMessages(state, unapprovedTypedMessages) {
+      state.unapprovedTypedMessages = unapprovedTypedMessages
+    },
+    setPersonalMessages(state, unapprovedPersonalMsgs) {
+      state.unapprovedPersonalMsgs = unapprovedPersonalMsgs
+    },
+    setMessages(state, unapprovedMsgs) {
+      state.unapprovedMsgs = unapprovedMsgs
+    },
+    setJwtToken(state, payload) {
+      state.jwtToken = payload
+    },
+    setNewUser(state, payload) {
+      state.isNewUser = payload
+    },
+    setPastTransactions(state, payload) {
+      state.pastTransactions = payload
+    },
+    patchPastTransactions(state, payload) {
+      state.pastTransactions = [...state.pastTransactions, payload]
+    },
+    logOut(state, payload) {
       Object.keys(state).forEach(key => {
-        state[key] = initialState[key] // or = initialState[key]
+        state[key] = payload[key] // or = initialState[key]
       })
     }
   },
   actions: {
-    resetStore(context, payload) {
-      context.commit('resetStore', initialState)
+    logOut(context, payload) {
+      context.commit('logOut', initialState)
       window.sessionStorage.clear()
     },
     loginInProgress(context, payload) {
       context.commit('setLoginInProgress', payload)
     },
-    setSelectedCurrency({ commit }, payload) {
-      commit('setCurrency', payload)
-      if (payload !== 'ETH') {
-        torus.torusController.setCurrentCurrency(payload.toLowerCase(), function(err, data) {
+    setSelectedCurrency({ commit, state }, payload) {
+      commit('setCurrency', payload.selectedCurrency)
+      if (payload.selectedCurrency !== 'ETH') {
+        torus.torusController.setCurrentCurrency(payload.selectedCurrency.toLowerCase(), function(err, data) {
           if (err) console.error('currency fetch failed')
           commit('setCurrencyData', data)
         })
       }
+      if (state.jwtToken !== '' && payload.origin && payload.origin !== 'store') {
+        patch(
+          `${config.api}/user`,
+          {
+            default_currency: payload.selectedCurrency
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${state.jwtToken}`,
+              'Content-Type': 'application/json; charset=utf-8'
+            }
+          }
+        )
+          .then(response => {
+            log.info('successfully patched', response)
+          })
+          .catch(err => {
+            log.error(err, 'unable to patch currency info')
+          })
+      }
     },
-    forceFetchTokens({ commit, state }, payload) {
+    async forceFetchTokens({ state }, payload) {
       torus.torusController.detectTokensController.refreshTokenBalances()
-      fetch(`https://api.tor.us/tokenbalances?address=${state.selectedAddress}`)
-        .then(inter => inter.json())
-        .then(response => {
-          response.forEach(obj => {
-            torus.torusController.detectTokensController.detectEtherscanTokenBalance(obj.contractAddress, {
-              decimals: obj.tokenDecimal,
-              erc20: true,
-              logo: '',
-              name: obj.name,
-              balance: obj.balance,
-              symbol: obj.ticker
-            })
+      try {
+        const response = await get(`${config.api}/tokenbalances`, {
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            Authorization: `Bearer ${state.jwtToken}`
+          }
+        })
+        const { data } = response
+        data.forEach(obj => {
+          torus.torusController.detectTokensController.detectEtherscanTokenBalance(obj.contractAddress, {
+            decimals: obj.tokenDecimal,
+            erc20: true,
+            logo: '',
+            name: obj.name,
+            balance: obj.balance,
+            symbol: obj.ticker
           })
         })
+      } catch (error) {
+        log.error('etherscan balance fetch failed')
+      }
     },
     showPopup({ state, getters }, payload) {
       var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
       const isTx = isTorusTransaction()
-      const width = isTx ? 650 : 600
-      const height = isTx ? 470 : 350
+      const width = 500
+      const height = isTx ? 600 : 400
+      // const width = 500
+      // const height = 600
       window.open(
         `${baseRoute}confirm?instanceId=${torus.instanceId}`,
         '_blank',
@@ -205,7 +292,7 @@ var VuexStore = new Vuex.Store({
         var balance = torus.web3.utils.fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
         bc.onmessage = ev => {
           if (ev.data === 'popup-loaded') {
-            var txParams = getters.unApprovedTransactions[0]
+            var txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
             bc.postMessage({
               data: {
                 origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
@@ -218,18 +305,33 @@ var VuexStore = new Vuex.Store({
           }
         }
       } else {
-        var msgParams = getLatestMessageParams()
+        var { msgParams, id } = getLatestMessageParams()
         bc.onmessage = function(ev) {
           if (ev.data === 'popup-loaded') {
             bc.postMessage({
               data: {
                 origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
                 type: 'message',
-                msgParams
+                msgParams: { msgParams, id }
               }
             })
             bc.close()
           }
+        }
+      }
+    },
+    showProviderChangePopup(context, payload) {
+      var bc = new BroadcastChannel('torus_provider_change_channel')
+      window.open(`${baseRoute}providerchange`, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600')
+      bc.onmessage = function(ev) {
+        if (ev.data === 'popup-loaded') {
+          bc.postMessage({
+            data: {
+              origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+              payload: payload
+            }
+          })
+          bc.close()
         }
       }
     },
@@ -245,6 +347,12 @@ var VuexStore = new Vuex.Store({
     },
     updateEmail(context, payload) {
       context.commit('setEmail', payload.email)
+    },
+    updateName(context, payload) {
+      context.commit('setName', payload.name)
+    },
+    updateProfileImage(context, payload) {
+      context.commit('setProfileImage', payload.profileImage)
     },
     updateIdToken(context, payload) {
       context.commit('setIdToken', payload.idToken)
@@ -301,6 +409,15 @@ var VuexStore = new Vuex.Store({
     updateTransactions({ commit }, payload) {
       commit('setTransactions', payload.transactions)
     },
+    updateTypedMessages({ commit }, payload) {
+      commit('setTypedMessages', payload.unapprovedTypedMessages)
+    },
+    updatePersonalMessages({ commit }, payload) {
+      commit('setPersonalMessages', payload.unapprovedPersonalMsgs)
+    },
+    updateMessages({ commit }, payload) {
+      commit('setMessages', payload.unapprovedMsgs)
+    },
     updateTokenData({ commit, state }, payload) {
       if (payload.tokenData) commit('setTokenData', { ...state.tokenData, [payload.address]: payload.tokenData })
     },
@@ -344,6 +461,10 @@ var VuexStore = new Vuex.Store({
             dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
             let email = profile.getEmail()
             dispatch('updateEmail', { email })
+            let name = profile.getName()
+            dispatch('updateName', { name })
+            let profileImage = profile.getImageUrl()
+            dispatch('updateProfileImage', { profileImage })
             const { torusNodeEndpoints } = config
             window.gapi.auth2
               .getAuthInstance()
@@ -363,13 +484,11 @@ var VuexStore = new Vuex.Store({
     },
     subscribeToControllers({ dispatch, state }, payload) {
       torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
-        const { weiBalance } = state
         if (accounts) {
           for (const key in accounts) {
             if (Object.prototype.hasOwnProperty.call(accounts, key)) {
               const account = accounts[key]
-              if (weiBalance[account.address] !== account.balance)
-                dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
+              dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
             }
           }
         }
@@ -383,13 +502,30 @@ var VuexStore = new Vuex.Store({
               updatedTransactions.push(transactions[id])
             }
           }
+          // console.log(updatedTransactions, 'txs')
           dispatch('updateTransactions', { transactions: updatedTransactions })
         }
       })
-      dispatch('setSelectedCurrency', 'USD')
+
+      torus.torusController.typedMessageManager.store.subscribe(function({ unapprovedTypedMessages }) {
+        dispatch('updateTypedMessages', { unapprovedTypedMessages: unapprovedTypedMessages })
+      })
+
+      torus.torusController.personalMessageManager.store.subscribe(function({ unapprovedPersonalMsgs }) {
+        dispatch('updatePersonalMessages', { unapprovedPersonalMsgs: unapprovedPersonalMsgs })
+      })
+
+      torus.torusController.messageManager.store.subscribe(function({ unapprovedMsgs }) {
+        dispatch('updateMessages', { unapprovedMsgs: unapprovedMsgs })
+      })
+
+      dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
       torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
         if (tokens.length > 0) {
-          dispatch('updateTokenData', { tokenData: tokens, address: torus.torusController.detectTokensController.selectedAddress })
+          dispatch('updateTokenData', {
+            tokenData: tokens,
+            address: torus.torusController.detectTokensController.selectedAddress
+          })
         }
       })
       torus.torusController.tokenRatesController.store.subscribe(function({ contractExchangeRates }) {
@@ -397,6 +533,9 @@ var VuexStore = new Vuex.Store({
           dispatch('updateTokenRates', { tokenRates: contractExchangeRates })
         }
       })
+    },
+    initTorusKeyring({ state, dispatch }, payload) {
+      return torus.torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
     },
     handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
       const { torusNodeEndpoints, torusIndexes } = config
@@ -406,13 +545,18 @@ var VuexStore = new Vuex.Store({
         .getPubKeyAsync(torusNodeEndpoints[endPointNumber], email)
         .then(res => {
           log.info('New private key assigned to user at address ', res)
-          return torus.retrieveShares(torusNodeEndpoints, torusIndexes, email, idToken)
+          const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, email, idToken)
+          const p2 = torus.getMessageForSigning(res)
+          return Promise.all([p1, p2])
         })
-        .then(data => {
+        .then(async response => {
+          const data = response[0]
+          const message = response[1]
           dispatch('addWallet', data)
           dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
           dispatch('subscribeToControllers')
-          torus.torusController.initTorusKeyring([data.privKey], [data.ethAddress])
+          await dispatch('initTorusKeyring', data)
+          await dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress })
           // continue enable function
           var ethAddress = data.ethAddress
           if (calledFromEmbed) {
@@ -422,68 +566,133 @@ var VuexStore = new Vuex.Store({
           }
           statusStream.write({ loggedIn: true })
           dispatch('loginInProgress', false)
-          // torus.web3.eth.net
-          //   .getId()
-          //   .then(res => {
-          //     VuexStore.dispatch('updateNetworkId', { networkId: res })
-          //     // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-          //   })
-          //   .catch(e => log.error(e))
         })
         .catch(err => {
+          totalFailCount += 1
           let newEndPointNumber = endPointNumber
           while (newEndPointNumber === endPointNumber) {
             newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
           }
-          dispatch('handleLogin', { calledFromEmbed, endPointNumber: newEndPointNumber })
+          if (totalFailCount < 3) dispatch('handleLogin', { calledFromEmbed, endPointNumber: newEndPointNumber })
           log.error(err)
         })
     },
-    rehydrate({ state, dispatch }, payload) {
-      let { selectedAddress, wallet, networkType, rpcDetails } = state
-      if (networkType && networkType !== RPC) {
-        dispatch('setProviderType', { network: networkType })
-      } else if (networkType && networkType === RPC && rpcDetails) {
-        dispatch('setProviderType', { network: rpcDetails, type: RPC })
-      }
-      if (selectedAddress && wallet[selectedAddress]) {
-        dispatch('updateSelectedAddress', { selectedAddress })
-        setTimeout(() => dispatch('subscribeToControllers'), 50)
-        torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
-        statusStream.write({ loggedIn: true })
-        log.info('rehydrated wallet')
-        torus.web3.eth.net
-          .getId()
-          .then(res => {
-            setTimeout(function() {
-              dispatch('updateNetworkId', { networkId: res })
-            })
-            // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+    processAuthMessage({ commit, dispatch }, payload) {
+      return new Promise(async (resolve, reject) => {
+        try {
+          // make this a promise and resolve it to dispatch loginInProgress as false
+          const { message, selectedAddress } = payload
+          const hashedMessage = torus.hashMessage(message)
+          const signedMessage = await torus.torusController.keyringController.signMessage(selectedAddress, hashedMessage)
+          const response = await post(`${config.api}/auth/verify`, {
+            public_address: selectedAddress,
+            signed_message: signedMessage
           })
-          .catch(e => log.error(e))
+          commit('setJwtToken', response.token)
+          await dispatch('setUserInfo', response)
+          resolve()
+        } catch (error) {
+          log.error('Failed Communication with backend', error)
+          reject(error)
+        }
+      })
+    },
+    setUserInfo({ commit, dispatch, state }, payload) {
+      return new Promise(async (resolve, reject) => {
+        try {
+          get(`${config.api}/user`, {
+            headers: {
+              Authorization: `Bearer ${payload.token}`
+            }
+          })
+            .then(user => {
+              if (user.data) {
+                const { transactions, default_currency } = user.data || {}
+                commit('setPastTransactions', transactions)
+                dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
+                resolve()
+              }
+            })
+            .catch(async error => {
+              await post(
+                `${config.api}/user`,
+                {
+                  default_currency: state.selectedCurrency
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${payload.token}`,
+                    'Content-Type': 'application/json; charset=utf-8'
+                  }
+                }
+              )
+              commit('setNewUser', true)
+              resolve()
+            })
+        } catch (error) {
+          reject(error)
+        }
+      })
+    },
+    async rehydrate({ state, dispatch }, payload) {
+      let { selectedAddress, wallet, networkType, rpcDetails, jwtToken } = state
+      try {
+        // if jwtToken expires, logout
+        if (jwtToken) {
+          const decoded = jwtDecode(jwtToken)
+          if (Date.now() / 1000 > decoded.exp) {
+            dispatch('logOut')
+            return
+          }
+        }
+        if (networkType && networkType !== RPC) {
+          dispatch('setProviderType', { network: networkType })
+        } else if (networkType && networkType === RPC && rpcDetails) {
+          dispatch('setProviderType', { network: rpcDetails, type: RPC })
+        }
+        if (selectedAddress && wallet[selectedAddress]) {
+          dispatch('updateSelectedAddress', { selectedAddress })
+          setTimeout(() => dispatch('subscribeToControllers'), 50)
+          await torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet))
+          await dispatch('setUserInfo', { token: jwtToken })
+          statusStream.write({ loggedIn: true })
+          log.info('rehydrated wallet')
+          torus.web3.eth.net
+            .getId()
+            .then(res => {
+              setTimeout(function() {
+                dispatch('updateNetworkId', { networkId: res })
+              })
+              // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+            })
+            .catch(e => log.error(e))
+        }
+      } catch (error) {
+        log.error('Failed to rehydrate')
       }
     }
   }
 })
 
 function getLatestMessageParams() {
-  const { torusController } = torus
-  const state = torusController.getState()
   let time = 0
   let msg = null
-  for (let id in state.unapprovedMsgs) {
-    const msgTime = state.unapprovedMsgs[id].time
+  let finalId = 0
+  for (let id in VuexStore.state.unapprovedMsgs) {
+    const msgTime = VuexStore.state.unapprovedMsgs[id].time
     if (msgTime > time) {
-      msg = state.unapprovedMsgs[id]
+      msg = VuexStore.state.unapprovedMsgs[id]
       time = msgTime
+      finalId = id
     }
   }
 
-  for (let id in state.unapprovedPersonalMsgs) {
-    const msgTime = state.unapprovedPersonalMsgs[id].time
+  for (let id in VuexStore.state.unapprovedPersonalMsgs) {
+    const msgTime = VuexStore.state.unapprovedPersonalMsgs[id].time
     if (msgTime > time) {
-      msg = state.unapprovedPersonalMsgs[id]
+      msg = VuexStore.state.unapprovedPersonalMsgs[id]
       time = msgTime
+      finalId = id
     }
   }
 
@@ -493,35 +702,70 @@ function getLatestMessageParams() {
   }
 
   // handle typed messages
-  for (let id in state.unapprovedTypedMessages) {
-    const msgTime = state.unapprovedTypedMessages[id].time
+  for (let id in VuexStore.state.unapprovedTypedMessages) {
+    const msgTime = VuexStore.state.unapprovedTypedMessages[id].time
     if (msgTime > time) {
       time = msgTime
-      msg = state.unapprovedTypedMessages[id]
+      msg = VuexStore.state.unapprovedTypedMessages[id]
       msg.msgParams.typedMessages = msg.msgParams.data // TODO: use for differentiating msgs later on
+      finalId = id
     }
   }
-  return msg ? msg.msgParams : {}
+  return msg ? { msgParams: msg.msgParams, id: finalId } : {}
 }
 
 function isTorusTransaction() {
-  let { torusController } = torus
-  let state = torusController.getState()
-  if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
+  if (Object.keys(VuexStore.state.unapprovedPersonalMsgs).length > 0) {
     return false
-  } else if (Object.keys(state.unapprovedMsgs).length > 0) {
+  } else if (Object.keys(VuexStore.state.unapprovedMsgs).length > 0) {
     return false
-  } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
+  } else if (Object.keys(VuexStore.state.unapprovedTypedMessages).length > 0) {
     return false
-  } else if (Object.keys(state.transactions).length > 0) {
-    for (let id in state.transactions) {
-      if (state.transactions[id].status === 'unapproved') {
-        return true
-      }
-    }
+  } else if (VuexStore.getters.unApprovedTransactions.length > 0) {
+    return true
   } else {
     throw new Error('No new transactions.')
   }
 }
+
+VuexStore.subscribe((mutation, state) => {
+  // will rewrite later
+  if (mutation.type === 'setTransactions' && state.jwtToken) {
+    const txs = mutation.payload
+    for (let id in txs) {
+      const txMeta = txs[id]
+      if (txMeta.status === 'submitted' && id >= 0) {
+        // insert into db here
+        const totalAmount = web3Utils.fromWei(
+          web3Utils.toBN(txMeta.txParams.value).add(web3Utils.toBN(txMeta.txParams.gas).mul(web3Utils.toBN(txMeta.txParams.gasPrice)))
+        )
+        const txObj = {
+          created_at: new Date(txMeta.time),
+          from: web3Utils.toChecksumAddress(txMeta.txParams.from),
+          to: web3Utils.toChecksumAddress(txMeta.txParams.to),
+          total_amount: totalAmount,
+          currency_amount: (getCurrencyMultiplier() * totalAmount).toString(),
+          selected_currency: state.selectedCurrency,
+          status: 'submitted',
+          network: state.networkType,
+          transaction_hash: txMeta.hash
+        }
+        if (state.pastTransactions.findIndex(x => x.transaction_hash === txObj.transaction_hash && x.network === txObj.network) === -1) {
+          VuexStore.commit('patchPastTransactions', txObj)
+          post(`${config.api}/transaction`, txObj, {
+            headers: {
+              Authorization: `Bearer ${state.jwtToken}`,
+              'Content-Type': 'application/json; charset=utf-8'
+            }
+          })
+            .then(response => {
+              log.info('successfully added', response)
+            })
+            .catch(err => log.error(err, 'unable to insert transaction'))
+        }
+      }
+    }
+  }
+})
 
 export default VuexStore

@@ -1,51 +1,51 @@
 <template>
-  <v-container fill-height>
-    <v-layout row wrap justify-center fill-height align-content-start>
-      <v-flex d-flex xs12>
-        <v-tabs fixed-tabs v-model="selectedItem" grow :color="$vuetify.theme.torus_bcg">
-          <header-item
-            v-for="headerItem in headerItems"
-            :key="headerItem.name"
-            :isSelected="selectedItem === headerItem.route"
-            :href="`#${headerItem.name}`"
-            :icon="headerItem.icon"
-            :to="headerItem.route"
-          >
-            {{ headerItem.display }}
-          </header-item>
-        </v-tabs>
-      </v-flex>
-      <v-flex xs12>
-        <router-view></router-view>
-      </v-flex>
-    </v-layout>
-  </v-container>
+  <div>
+    <Navbar />
+    <v-container>
+      <router-view></router-view>
+    </v-container>
+  </div>
 </template>
 
 <script>
-import HeaderItem from '../components/HeaderItem.vue'
+import Navbar from '../components/Navbar'
 
 export default {
   components: {
-    HeaderItem
+    Navbar
   },
   data() {
     return {
-      selectedItem: 'home',
-      headerItems: [
-        { name: 'home', icon: 'home', display: 'Home', route: '/wallet/home' },
-        { name: 'history', icon: 'history', display: 'History', route: '/wallet/history' },
-        { name: 'settings', icon: 'settings', display: 'Settings', route: '/wallet/settings' },
-        { name: 'accounts', icon: 'account_circle', display: 'Accounts', route: '/wallet/accounts' }
-      ]
+      selectedItem: 'home'
     }
   }
 }
 </script>
 
 <style lang="scss">
-body {
-  background-color: var(--v-torus_bcg-base);
+.theme--light,
+.theme--dark {
+  &.v-application {
+    background: var(--v-background-base);
+  }
+  &.v-sheet {
+    background: var(--v-background-base);
+  }
+  &.v-tabs .v-tabs-bar {
+    background: var(--v-background-base);
+  }
+  &.v-data-table {
+    background: var(--v-background-base);
+  }
+  &.v-stepper {
+    background: var(--v-background-base);
+  }
+}
+
+.card-shadow {
+  box-shadow: 0 14px 28px 0 rgba(0, 0, 0, 0.06);
+  border: 1px solid #f5f5f5;
+  border-radius: 3px;
 }
 
 .v-window__container {
@@ -56,8 +56,29 @@ body {
   min-height: 0px !important;
 }
 
+.v-btn {
+  text-transform: inherit;
+}
+
+.v-input.v-input--is-readonly {
+  .v-input__slot {
+    background: var(--v-background_2-base) !important;
+  }
+}
+
+.v-text-field__suffix {
+  color: var(--v-torus_text-lighten5);
+  font-size: 14px;
+}
+
 body,
 html {
   height: 100%;
+}
+
+@media only screen and (max-width: 599px) {
+  .container {
+    padding: 12px 0;
+  }
 }
 </style>

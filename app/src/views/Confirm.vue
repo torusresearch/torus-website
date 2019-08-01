@@ -1,214 +1,205 @@
 <template>
-  <v-container fill-height>
+  <v-container py-6 px-0>
+    <template v-if="type === 'transaction'">
+      <v-layout align-center mx-6 mb-6>
+        <div class="text-black font-weight-bold headline float-left">{{ header }}</div>
+        <img :src="require('../../public/img/icons/transaction.svg')" class="ml-2" />
+      </v-layout>
+      <v-layout wrap mb-6>
+        <!-- <v-flex xs12 mb-6 mx-6>
+          <div class="subtitle-2 grey--text">You are transacting with:</div>
+
+          <v-card flat class="grey lighten-3">
+            <v-card-text>
+              <div class="subtitle-2 blue--text">{{ origin }}</div>
+              <div class="caption grey--text">{{ receiver }}</div>
+            </v-card-text>
+            <img :src="require('../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
+          </v-card>
+        </v-flex>-->
+        <!-- <v-flex xs12 mb-4 mx-6>
+          <div class="subtitle-2">Amount</div>
+          <v-divider></v-divider>
+          <div>
+            <span class="subtitle-2 float-left grey--text">Ethereum</span>
+            <span class="subtitle-2 float-right">{{ value }} ETH</span>
+          </div>
+          <div class="caption float-right clearfix">{{ dollarValue }} USD</div>
+        </v-flex>-->
+        <v-flex xs12 mb-4 mx-6>
+          <div class="subtitle-2">Amount</div>
+          <v-divider></v-divider>
+          <div>
+            <span class="subtitle-2 float-left grey--text">To: {{ slicedAddress(receiver) }}</span>
+            <span class="subtitle-2 float-right">{{ amountDisplay(value) }} ETH</span>
+          </div>
+          <div class="caption float-right clearfix">~ {{ dollarValue }} USD</div>
+        </v-flex>
+        <!-- <v-flex xs12 mb-4 mx-6>
+          <div class="subtitle-2">Your Wallet Balance</div>
+          <v-divider></v-divider>
+          <div>
+            <span class="caption float-left key-item grey--text">{{ sender }}</span>
+            <span class="subtitle-2 float-right">{{ amountDisplay(computedBalance) }} ETH</span>
+          </div>
+          <div class="caption float-right clearfix">{{ balanceUsd }} USD</div>
+        </v-flex>-->
+        <v-flex px-2>
+          <TransactionSpeedSelect
+            :gas="gasEstimate"
+            :displayAmount="value"
+            :activeGasPriceConfirm="gasPrice"
+            @onSelectSpeed="onSelectSpeed"
+            :symbol="'ETH'"
+          />
+        </v-flex>
+        <v-flex xs12 px-6 mt-4 mb-1>
+          <div class="subtitle-1 font-weight-bold">Total</div>
+          <v-divider></v-divider>
+          <div>
+            <span class="subtitle-2">Cost of Transaction</span>
+            <span class="subtitle-1 float-right blue--text font-weight-bold">{{ totalEthCostDisplay }} ETH</span>
+          </div>
+          <div class="caption float-right clearfix">~ {{ totalUsdCost }} USD</div>
+        </v-flex>
+        <v-flex xs12 mb-6 mt-3>
+          <v-dialog v-model="detailsDialog" width="600px">
+            <template v-slot:activator="{ on }">
+              <div class="subtitle-2 float-right blue--text mx-6" v-on="on">More Details</div>
+            </template>
+            <v-card class="pa-4" color="background_2">
+              <v-card-text class="torus_text--text">
+                <v-layout wrap>
+                  <v-flex xs4 sm2>
+                    Rate
+                    <span class="float-right mr-4">:</span>
+                  </v-flex>
+                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
+                  <v-flex xs4 sm2>
+                    Network
+                    <span class="float-right mr-4">:</span>
+                  </v-flex>
+                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">
+                    <span class="text-capitalize">{{ networkName }}</span>
+                  </v-flex>
+                  <v-flex xs4 sm2>
+                    Type
+                    <span class="float-right mr-4">:</span>
+                  </v-flex>
+                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">{{ header }}</v-flex>
+                  <v-flex xs2 v-if="txData || txDataParams !== ''">
+                    Data
+                    <span class="float-right mr-4">:</span>
+                  </v-flex>
+                  <v-flex xs12 mt-1>
+                    <v-card flat color="background_3" v-if="txDataParams !== ''">
+                      <v-card-text>
+                        <pre>{{ txDataParams }}</pre>
+                      </v-card-text>
+                    </v-card>
+                  </v-flex>
+                  <v-flex x12 mt-4 v-if="txData">
+                    <div class="mb-1">Hex Data:</div>
+                    <v-card flat color="background_3" style="word-break: break-all">
+                      <v-card-text>{{ txData }}</v-card-text>
+                    </v-card>
+                  </v-flex>
+                </v-layout>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" text @click="detailsDialog = false">Less Details</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-flex>
+        <v-layout px-6>
+          <v-flex xs6>
+            <v-btn block text large class="grey--text" @click="triggerDeny">Cancel</v-btn>
+          </v-flex>
+          <v-flex xs6>
+            <v-dialog v-model="confirmDialog" max-width="550" persistent>
+              <template v-slot:activator="{ on }">
+                <v-btn block depressed large color="primary" class="ml-2" v-on="on">Confirm</v-btn>
+              </template>
+              <transfer-confirm
+                :toAddress="receiver"
+                :selectedCoin="'ETH'"
+                :convertedAmount="dollarValue"
+                :displayAmount="amountDisplay(value)"
+                :speedSelected="speed"
+                :transactionFee="txFees"
+                :selectedCurrency="selectedCurrency"
+                @onClose="confirmDialog = false"
+                @onConfirm="triggerSign"
+              ></transfer-confirm>
+            </v-dialog>
+          </v-flex>
+        </v-layout>
+      </v-layout>
+    </template>
+
+    <template v-if="type === 'message'">
+      <v-layout align-center mx-6 mb-6>
+        <div class="text-black font-weight-bold headline float-left">Permissions</div>
+        <img :src="require('../../public/img/icons/lock.svg')" width="16" class="ml-2" />
+      </v-layout>
+      <v-layout wrap mb-6>
+        <v-flex xs12 mb-6 mx-6>
+          <div class="subtitle-2 grey--text">Request from:</div>
+
+          <v-card flat class="grey lighten-3">
+            <v-card-text>
+              <div class="subtitle-2 blue--text">{{ origin }}</div>
+            </v-card-text>
+            <img :src="require('../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
+          </v-card>
+        </v-flex>
+
+        <v-flex xs12 mb-4 mx-6>
+          <v-list class="note-list">
+            <v-list-item class="pa-0">
+              <v-list-item-icon class="ma-1">
+                <img :src="require(`../../public/img/icons/check-circle-primary.svg`)" width="12" />
+              </v-list-item-icon>
+              <v-list-item-content class="pa-1">
+                <div class="caption torus_text--text text--lighten-3">This application is requesting for your digital signature.</div>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item class="pa-0">
+              <v-list-item-content flat class="pa-1 grey lighten-3">
+                <v-card flat color="background_3" class="body-2 text-left pa-2 ma-3">
+                  <div v-if="messageType === 'normal'">{{ message }}</div>
+                  <div v-else-if="messageType === 'typed'" v-for="typedMessage in typedMessages" :key="typedMessage.name">
+                    Type: {{ typedMessage.type }}
+                    <br />
+                    Name: {{ typedMessage.name }}
+                    <br />
+                    Message: {{ typedMessage.value }}
+                    <br />
+                  </div>
+                </v-card>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-flex>
+        <!-- <v-flex xs12 mt-12 mb-5 mx-7>
+          <div class="caption torus_text--text text--lighten-3">
+            Note : You may re-adjust the dapp permission later under ‘Settings > Dapp Permission’
+          </div>
+        </v-flex>-->
+        <v-layout px-6 mx-3>
+          <v-flex xs6>
+            <v-btn block text large class="grey--text" @click="triggerDeny">Cancel</v-btn>
+          </v-flex>
+          <v-flex xs6>
+            <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">Confirm</v-btn>
+          </v-flex>
+        </v-layout>
+      </v-layout>
+    </template>
     <template v-if="type === 'none'">
       <page-loader />
-    </template>
-    <template v-if="type === 'message'">
-      <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
-        <v-card-text>
-          <v-layout row wrap align-start justify-center>
-            <v-flex xs12 mt-3 sm7>
-              <div class="headline mb-5">Requesting Signature</div>
-              <p class="mb-3 subheading">
-                From:
-                <span class="text-bluish">{{ origin }}</span>
-              </p>
-              <div v-if="messageType === 'normal'">{{ message }}</div>
-              <div v-else-if="messageType === 'typed'" v-for="typedMessage in typedMessages" :key="typedMessage.name">
-                Type: {{ typedMessage.type }}
-                <br />
-                Name: {{ typedMessage.name }}
-                <br />
-                Message: {{ typedMessage.value }}
-                <br />
-              </div>
-            </v-flex>
-            <v-flex xs12 sm5 class="bcg">
-              <img src="images/signature.png" />
-            </v-flex>
-          </v-layout>
-          <div class="hide-xs mt-5">
-            <v-layout row wrap align-center justify-center>
-              <v-flex xs12 sm4 class="text-xs-center">
-                <v-btn class="btnStyle" :color="$vuetify.theme.torus_reject" large light flat @click="triggerDeny">Reject</v-btn>
-              </v-flex>
-              <v-flex xs12 sm4 class="text-xs-center">
-                <v-btn large light :color="$vuetify.theme.torus_accept" class="btnStyle white--text rounded-btn" @click="triggerSign">Approve</v-btn>
-              </v-flex>
-              <v-flex sm4 class="text-xs-center" pt-1>
-                <img src="images/torus_logo.png" class="bcg-logo" />
-              </v-flex>
-            </v-layout>
-          </div>
-        </v-card-text>
-      </v-card>
-      <v-card class="higherZ hidden-sm-and-up" flat :color="$vuetify.theme.torus_bcg">
-        <v-card-text>
-          <v-layout row wrap align-center>
-            <v-flex xs6 sm4>
-              <v-btn class="btnStyle" large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
-            </v-flex>
-            <v-flex xs6 sm4>
-              <v-btn large light :color="$vuetify.theme.torus_accept" class="white--text btnStyle rounded-btn" @click="triggerSign">Approve</v-btn>
-            </v-flex>
-          </v-layout>
-        </v-card-text>
-      </v-card>
-    </template>
-    <template v-else-if="type === 'transaction'">
-      <v-card flat :color="$vuetify.theme.torus_bcg">
-        <v-card-text>
-          <v-layout row wrap align-start justify-center>
-            <v-flex xs12>
-              <div class="headline mb-3">{{ header }}</div>
-              <p class="mb-3 subheading">
-                From:
-                <span class="text-bluish">{{ origin }}</span>
-              </p>
-            </v-flex>
-            <v-flex mt-3 xs12 sm4 align-self-top text-sm-center text-xs-left>
-              <v-layout row wrap>
-                <v-flex xs6 sm12>
-                  <div class="divWrapSvgStyle">
-                    <img src="images/wallet.svg" alt="Wallet" class="svg-setting-medium" />
-                  </div>
-                </v-flex>
-                <v-flex xs6 sm12 mt-3>
-                  <div class="font-weight-medium subheading">My Wallet</div>
-                  <div>
-                    <span class="text-bluish">Address: </span>
-                    <show-tool-tip :address="sender">{{ slicedAddress(sender) }}</show-tool-tip>
-                  </div>
-                  <div>
-                    <span class="text-bluish">Balance: </span>
-                    <span>{{ computedBalance }} ETH</span>
-                  </div>
-                </v-flex>
-              </v-layout>
-            </v-flex>
-            <v-flex mt-3 xs12 sm4 align-self-top text-sm-center text-xs-left>
-              <v-layout row wrap>
-                <v-flex xs6 sm12>
-                  <div class="divWrap">
-                    <img src="images/blue_arrow_right.svg" alt="Arrow" class="svg-setting-large hidden-xs-only" />
-                    <img src="images/blue_arrow_down.svg" alt="Arrow" class="svg-setting-large hidden-sm-and-up" />
-                  </div>
-                </v-flex>
-                <v-flex xs6 sm12 mt-2>
-                  <div class="font-weight-medium subheading">{{ !doesSendEther ? 'Network Fee' : 'Amount' }}</div>
-                  <div class="text-bluish">{{ totalUsdCost }} USD</div>
-                  <div class="text-bluish">({{ totalEthCost }} ETH)</div>
-                </v-flex>
-              </v-layout>
-            </v-flex>
-            <v-flex mt-3 xs12 sm4 align-self-top text-sm-center text-xs-left>
-              <v-layout row wrap>
-                <v-flex xs6 sm12>
-                  <div class="divWrapSvgStyle">
-                    <img :src="imageType" alt="User" class="svg-setting-medium" />
-                  </div>
-                </v-flex>
-                <v-flex xs6 sm12 mt-3>
-                  <div class="font-weight-medium subheading">Payee's Wallet</div>
-                  <div>
-                    <span class="text-bluish">Address: </span>
-                    <show-tool-tip :address="receiver">{{ slicedAddress(receiver) }}</show-tool-tip>
-                  </div>
-                </v-flex>
-              </v-layout>
-            </v-flex>
-          </v-layout>
-          <v-layout row wrap fill-height>
-            <v-flex text-xs-left mb-1 mt-2>
-              <template v-if="canShowError">
-                <span class="red--text">Error: {{ errorMsg }}</span>
-              </template>
-            </v-flex>
-          </v-layout>
-          <div class="text-xs-center mb-4">
-            <v-btn @click="openBottom" flat>
-              <span class="text-grayish font-weight-bold text-uppercase">More Details</span>
-              <v-icon :color="$vuetify.theme.torus_reject">expand_more</v-icon>
-            </v-btn>
-          </div>
-          <bottom-sheet :show.sync="open" :on-close="closeBottom">
-            <v-layout row wrap justify-center align-center text-xs-center>
-              <v-flex xs12 sm3 v-if="doesSendEther">
-                <div class="font-weight-medium subheading">Amount To Transfer</div>
-                <div class="text-bluish font-weight-medium">$ {{ dollarValue }}</div>
-                <div class="text-bluish font-weight-medium">({{ value }} ETH)</div>
-              </v-flex>
-              <v-flex xs12 sm1 v-if="doesSendEther">
-                <img src="images/plus.svg" alt="Add" class="svg-setting-small" />
-              </v-flex>
-              <v-flex mt-3 xs12 sm4 align-self-top text-xs-center>
-                <v-knob-control
-                  v-model="gasKnob"
-                  :min="min"
-                  :max="max"
-                  :primary-color="color"
-                  :size="150"
-                  :value-display-function="showGasPrice"
-                  :animation="{
-                    animated: true,
-                    animateValue: true,
-                    animationDuration: '5000',
-                    animationFunction: 'linear'
-                  }"
-                ></v-knob-control>
-              </v-flex>
-              <v-flex xs12 sm1>
-                <!-- v-if="doesSendEther" -->
-                <img src="images/equal.svg" alt="Equals" class="svg-setting-small" />
-              </v-flex>
-              <v-flex xs12 sm3>
-                <!-- v-if="doesSendEther" -->
-                <div class="font-weight-medium subheading">Total Cost</div>
-                <div class="text-bluish">$ {{ totalUsdCost }}</div>
-                <div class="text-bluish">({{ totalEthCost }} ETH)</div>
-              </v-flex>
-            </v-layout>
-            <v-layout row wrap mt-2>
-              <v-flex xs12>
-                <span class="font-weight-medium">Network Used:</span>
-                <span class="text-bluish font-weight-medium text-capitalize">{{ network }}</span>
-              </v-flex>
-              <v-flex xs12 v-if="!doesSendEther || isContractInteraction || isDeployContract">
-                <span class="font-weight-medium">Raw Data:</span>
-                <span class="font-weight-medium">
-                  {{ slicedAddress(txData) }}
-                  <show-tool-tip :address="txData">
-                    <v-icon :color="$vuetify.theme.torus_reject" size="18">file_copy</v-icon>
-                  </show-tool-tip>
-                </span>
-              </v-flex>
-            </v-layout>
-          </bottom-sheet>
-        </v-card-text>
-      </v-card>
-      <v-card class="higherZ" flat :color="$vuetify.theme.torus_bcg" style="width: 100%;">
-        <v-card-text>
-          <v-layout row wrap align-center justify-center>
-            <v-flex xs6 sm4 class="text-xs-center">
-              <v-btn large light class="btnStyle" :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
-            </v-flex>
-            <v-flex xs6 sm4 class="text-xs-center">
-              <v-btn
-                light
-                large
-                :disabled="!canApprove"
-                :color="$vuetify.theme.torus_accept"
-                class="white--text btnStyle rounded-btn"
-                @click="triggerSign"
-                >Approve</v-btn
-              >
-            </v-flex>
-            <v-flex sm4 class="text-xs-center" pt-1>
-              <img src="images/torus_logo.png" class="bcg-logo" />
-            </v-flex>
-          </v-layout>
-        </v-card-text>
-      </v-card>
     </template>
   </v-container>
 </template>
@@ -219,20 +210,50 @@ import BroadcastChannel from 'broadcast-channel'
 import BottomSheet from '../components/BottomSheet.vue'
 import ShowToolTip from '../components/ShowToolTip.vue'
 import PageLoader from '../components/PageLoader.vue'
+import TransactionSpeedSelect from '../components/TransactionSpeedSelect'
+import TransferConfirm from '../components/TransferConfirm'
 import torus from '../torus'
 import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress } from '../utils/utils'
+const abiDecoder = require('../utils/abiDecoder')
+const abi = require('human-standard-token-abi')
+
+const {
+  ROPSTEN,
+  RINKEBY,
+  KOVAN,
+  MAINNET,
+  LOCALHOST,
+  GOERLI,
+  RPC,
+  ROPSTEN_DISPLAY_NAME,
+  RINKEBY_DISPLAY_NAME,
+  KOVAN_DISPLAY_NAME,
+  MAINNET_DISPLAY_NAME,
+  LOCALHOST_DISPLAY_NAME,
+  GOERLI_DISPLAY_NAME,
+  RPC_DISPLAY_NAME,
+  CONTRACT_INTERACTION_KEY,
+  DEPLOY_CONTRACT_ACTION_KEY,
+  TOKEN_METHOD_APPROVE,
+  TOKEN_METHOD_TRANSFER,
+  TOKEN_METHOD_TRANSFER_FROM,
+  SEND_ETHER_ACTION_KEY
+} = require('../utils/enums')
 
 const weiInGwei = 10 ** 9
 
 export default {
   name: 'confirm',
   components: {
-    BottomSheet,
-    ShowToolTip,
-    PageLoader
+    PageLoader,
+    TransactionSpeedSelect,
+    TransferConfirm
   },
   data() {
     return {
+      confirmDialog: false,
+      detailsDialog: false,
+      dialogAdvanceOptions: false,
       open: false,
       type: 'none',
       origin: 'unknown',
@@ -247,21 +268,58 @@ export default {
       message: '',
       gasEstimate: 0,
       txData: '',
+      txDataParams: '',
       sender: '',
       totalUsdCost: 0,
       totalEthCost: 0,
+      totalEthCostDisplay: '',
       errorMsg: '',
       txFees: 0,
-      isDeployContract: false,
-      isContractInteraction: false,
-      doesSendEther: false,
       network: '',
+      networkName: '',
+      transactionCategory: '',
       dollarValue: 0,
       canApprove: true,
-      canShowError: false
+      canShowError: false,
+      selectedSpeed: '',
+      speed: '',
+      id: 0,
+      networks: [
+        {
+          name: MAINNET_DISPLAY_NAME,
+          value: MAINNET
+        },
+        {
+          name: ROPSTEN_DISPLAY_NAME,
+          value: ROPSTEN
+        },
+        {
+          name: RINKEBY_DISPLAY_NAME,
+          value: RINKEBY
+        },
+        {
+          name: KOVAN_DISPLAY_NAME,
+          value: KOVAN
+        },
+        {
+          name: GOERLI_DISPLAY_NAME,
+          value: GOERLI
+        },
+        {
+          name: LOCALHOST_DISPLAY_NAME,
+          value: LOCALHOST
+        },
+        {
+          name: RPC_DISPLAY_NAME,
+          value: RPC
+        }
+      ]
     }
   },
   computed: {
+    selectedCurrency() {
+      return this.$store.state.selectedCurrency
+    },
     color() {
       if (this.gasPrice < 5) return 'indigo'
       if (this.gasPrice < 10) return 'teal'
@@ -273,10 +331,57 @@ export default {
       return significantDigits(parseFloat(this.balance).toFixed(5)) || 0
     },
     header() {
-      return this.isDeployContract ? 'Contract Deployment' : this.isContractInteraction ? 'Contract Interaction' : 'Transaction Request'
+      switch (this.transactionCategory) {
+        case DEPLOY_CONTRACT_ACTION_KEY:
+          return 'Contract Deployment'
+          break
+        case CONTRACT_INTERACTION_KEY:
+          return 'Contract Interaction'
+          break
+        case TOKEN_METHOD_APPROVE:
+          return 'ERC20 Approve'
+          break
+        case TOKEN_METHOD_TRANSFER:
+          return 'ERC2O Transfer'
+          break
+        case TOKEN_METHOD_TRANSFER_FROM:
+          return 'ERC2O Transfer From'
+          break
+        case SEND_ETHER_ACTION_KEY:
+          return 'Send Ether'
+          break
+        default:
+          return 'Transaction Request'
+          break
+      }
     },
     imageType() {
-      return this.isDeployContract || this.isContractInteraction ? 'images/file-signature.svg' : 'images/user.svg'
+      return this.transactionCategory === DEPLOY_CONTRACT_ACTION_KEY || this.transactionCategory === CONTRACT_INTERACTION_KEY
+        ? 'images/file-signature.svg'
+        : 'images/user.svg'
+    },
+    getCurrencyMultiplier() {
+      const { selectedCurrency, currencyData } = this.$store.state || {}
+      let currencyMultiplier = 1
+      if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+      return currencyMultiplier
+    },
+    finalBalancesArray() {
+      return this.$store.getters.tokenBalances.finalBalancesArray || []
+    },
+    getCurrencyRate() {
+      const targetBalance = this.finalBalancesArray.find(balance => {
+        if (this.transactionCategory === SEND_ETHER_ACTION_KEY) {
+          return balance.id === 'ETH'
+        }
+        return false
+      })
+
+      if (targetBalance) return `${targetBalance.currencyRateText} @ ${this.getDate()}`
+
+      return ''
+      // console.log(txParams)
+      // console.log(this.finalBalancesArray)
     }
   },
   watch: {
@@ -284,7 +389,9 @@ export default {
       const gasCost = newGasPrice * this.gasEstimate * 10 ** -9
       this.txFees = gasCost * this.$store.state.currencyData['usd']
       const ethCost = parseFloat(this.value) + gasCost
-      this.totalEthCost = significantDigits(ethCost.toFixed(5), false, 3) || 0
+      this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
+      const gasCostLength = Math.max(significantDigits(gasCost).toString().length, significantDigits(ethCost).toString().length)
+      this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
       this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData['usd'] || 0)
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
@@ -312,14 +419,14 @@ export default {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
       var gasHex = torus.web3.utils.numberToHex(this.gasPrice * weiInGwei)
       bc.postMessage({
-        data: { type: 'confirm-transaction', gasPrice: gasHex }
+        data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id }
       })
       bc.close()
       window.close()
     },
     triggerDeny(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
-      bc.postMessage({ data: { type: 'deny-transaction' } })
+      bc.postMessage({ data: { type: 'deny-transaction', id: this.id } })
       bc.close()
       window.close()
     },
@@ -329,6 +436,44 @@ export default {
     showGasPrice(val) {
       return `Fee: $ ${significantDigits(parseFloat(this.txFees).toFixed(3))}`
     },
+    getGasDisplayString(speed, fastGasPrice) {
+      const currencyMultiplier = this.getCurrencyMultiplier
+      const ethFee = this.gasEstimate * fastGasPrice * 10 ** -9
+      const currencyFee = ethFee * currencyMultiplier
+      return `${significantDigits(currencyFee)} ${this.$store.state.selectedCurrency}`
+    },
+    onSelectSpeed(data) {
+      this.speedSelected = data.speedSelected
+      this.gasPrice = data.activeGasPrice
+      this.speed = data.speed
+      this.gas = data.gas
+
+      if (data.isReset) {
+        this.gasPrice = calculateGasPrice(this.gasPrice)
+      }
+    },
+    getNetworkName(targetNetwork) {
+      const networkName = this.networks.find(network => {
+        return network.value === targetNetwork
+      })
+
+      return networkName.name
+    },
+    getDate() {
+      const currentDateTime = new Date()
+      let hours = currentDateTime.getHours()
+      let minutes = currentDateTime.getMinutes()
+      let seconds = currentDateTime.getSeconds()
+      const ampm = hours >= 12 ? 'PM' : 'AM'
+
+      hours = hours % 12
+      hours = hours || 12
+      return `${hours}:${minutes}:${seconds} ${ampm}`
+    },
+    amountDisplay(amount) {
+      return significantDigits(parseFloat(amount).toFixed(5)) ? significantDigits(parseFloat(amount).toFixed(5)) : parseFloat('0.00').toFixed(2)
+    },
+    significantDigits: significantDigits,
     ...mapActions({})
   },
   mounted() {
@@ -341,9 +486,12 @@ export default {
       } catch (err) {
         console.log(err)
       }
+      console.log(txParams)
       this.origin = url.hostname // origin of tx: website url
       if (type === 'message') {
-        const { message, typedMessages } = msgParams || {}
+        const { message, typedMessages } = msgParams.msgParams || {}
+        const { id } = msgParams || {}
+        this.id = id
         this.message = message
         this.typedMessages = typedMessages
         this.messageType = typedMessages ? 'typed' : 'normal'
@@ -351,12 +499,20 @@ export default {
         const web3Utils = torus.web3.utils
         let finalValue = 0
         const { value, to, data, from: sender, gas, gasPrice } = txParams.txParams || {}
-        const { simulationFails, network } = txParams || {}
+        const { simulationFails, network, id, transactionCategory, methodParams } = txParams || {}
         const { reason } = simulationFails || {}
         if (value) {
           finalValue = web3Utils.fromWei(value.toString())
         }
+
+        this.origin = this.origin.trim().length === 0 ? 'Wallet' : this.origin
+        // GET data params
+        const txDataParams = abi.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
+        console.log(methodParams, 'params')
+        this.id = id
         this.network = network
+        this.networkName = this.getNetworkName(network)
+        this.transactionCategory = transactionCategory
         var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
         this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
@@ -364,18 +520,19 @@ export default {
         this.gasPrice = gweiGasPrice // gas price in gwei
         this.gasKnob = calculateGasKnob(gweiGasPrice)
         this.balance = balance // in eth
+        this.balanceUsd = significantDigits(parseFloat(balance) * this.$store.state.currencyData['usd']) // in usd
         this.gasEstimate = web3Utils.hexToNumber(gas) // gas number
         this.txData = data // data hex
+        this.txDataParams = txDataParams !== '' ? JSON.stringify(txDataParams, null, 2) : ''
         this.sender = sender // address of sender
         const gasCost = gweiGasPrice * this.gasEstimate * 10 ** -9
         this.txFees = gasCost * this.$store.state.currencyData['usd']
         const ethCost = parseFloat(finalValue) + gasCost
-        this.totalEthCost = significantDigits(ethCost.toFixed(5), false, 3) || 0
+        this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
+        const gasCostLength = Math.max(significantDigits(gasCost).toString().length, significantDigits(ethCost).toString().length)
+        this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
         this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData['usd'] || 0)
         if (reason) this.errorMsg = reason
-        if (!to) this.isDeployContract = true
-        else this.isContractInteraction = await isSmartContractAddress(to, torus.web3)
-        this.doesSendEther = parseFloat(finalValue) !== 0
         if (parseFloat(this.balance) < ethCost && !this.canShowError) {
           this.errorMsg = 'Insufficient Funds'
           this.canApprove = false
@@ -503,7 +660,7 @@ hr {
   padding: 0;
 }
 
-/deep/.knob-control__text-display {
+::v-deep .knob-control__text-display {
   font-size: 0.7rem !important;
   font-weight: 500;
   text-align: center;
@@ -519,5 +676,38 @@ hr {
   border: #fff;
   border-radius: 45px;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+}
+
+/* NEW UI */
+.v-card__text {
+  padding: 12px;
+}
+.card-upper-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 12px;
+  height: 12px;
+}
+
+.v-divider {
+  margin: 0 0 12px;
+}
+
+.key-item {
+  max-width: 200px;
+  word-break: break-all;
+  line-height: 1em;
+  margin-top: 2px;
+}
+
+.dialog-launcher {
+  cursor: pointer;
+}
+
+.note-list {
+  .v-list-item {
+    min-height: inherit;
+  }
 }
 </style>

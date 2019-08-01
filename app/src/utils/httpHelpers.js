@@ -36,6 +36,27 @@ function get(url = '', opts = {}) {
   })
 }
 
+function patch(url = '', data = {}, opts = {}) {
+  const defaultOptions = {
+    mode: 'cors',
+    cache: 'no-cache',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+    },
+    body: JSON.stringify(data)
+  }
+  const options = {
+    ...defaultOptions,
+    ...opts,
+    ...{ method: 'PATCH' }
+  }
+  return fetch(url, options).then(response => {
+    if (response.ok) {
+      return response.json()
+    } else throw new Error('Could not connect', response)
+  })
+}
+
 function generateJsonRPCObject(method, params) {
   return {
     jsonrpc: '2.0',
@@ -45,4 +66,4 @@ function generateJsonRPCObject(method, params) {
   }
 }
 
-export { get, post, generateJsonRPCObject }
+export { get, post, patch, generateJsonRPCObject }
