@@ -255,6 +255,7 @@ export default {
     async selectedItemChanged(tokenAddress) {
       this.tokenAddress = tokenAddress
       this.gas = await this.calculateGas(this.toAddress)
+      this.updateTotalCost()
     },
     changeSelectedToCurrency(value) {
       const currencyRate = this.getCurrencyTokenRate
@@ -361,7 +362,12 @@ export default {
       }
 
       this.convertedTotalCost = this.convertedAmount + this.getGasAmount(this.activeGasPrice)
-      this.totalCost = this.convertedTotalCost / this.getCurrencyTokenRate
+
+      if (this.selectedTokenAddress === '0x') {
+        this.totalCost = this.convertedTotalCost / this.getCurrencyTokenRate
+      } else {
+        this.totalCost = `${this.displayAmount} ${this.selectedItem.symbol} + ${this.getGasAmount(this.activeGasPrice)} ETH`
+      }
     },
     onSelectSpeed(data) {
       this.speedSelected = data.speedSelected
