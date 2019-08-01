@@ -63,7 +63,7 @@
               <span class="subtitle-2">Total Cost</span>
             </div>
             <v-text-field
-              :suffix="selectedItem.symbol"
+              :suffix="selectedTokenAddress === '0x' ? selectedItem.symbol : ''"
               :hint="convertedTotalCost ? convertedTotalCostDisplay : ''"
               persistent-hint
               outlined
