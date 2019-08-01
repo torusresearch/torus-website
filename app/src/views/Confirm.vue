@@ -446,6 +446,7 @@ export default {
       this.speedSelected = data.speedSelected
       this.gasPrice = data.activeGasPrice
       this.speed = data.speed
+      this.gas = data.gas
 
       if (data.isReset) {
         this.gasPrice = calculateGasPrice(this.gasPrice)
@@ -485,6 +486,7 @@ export default {
       } catch (err) {
         console.log(err)
       }
+      console.log(txParams)
       this.origin = url.hostname // origin of tx: website url
       if (type === 'message') {
         const { message, typedMessages } = msgParams.msgParams || {}
@@ -502,6 +504,7 @@ export default {
         if (value) {
           finalValue = web3Utils.fromWei(value.toString())
         }
+    
 
         this.origin = this.origin.trim().length === 0 ? 'Wallet' : this.origin
         // GET data params

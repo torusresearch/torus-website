@@ -284,9 +284,16 @@ export default {
             toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], this.toAddress)
           }
         }
-        this.gas = await this.calculateGas(toAddress)
+        // this.gas = await this.calculateGas(toAddress)
         const selectedAddress = this.$store.state.selectedAddress
         if (this.selectedTokenAddress === '0x') {
+          console.log("TX SENT: ",             {
+              from: selectedAddress,
+              to: toAddress,
+              value: torus.web3.utils.toWei(this.amount.toString()),
+              gas: this.gas.toString(),
+              gasPrice: fastGasPrice
+            } )
           torus.web3.eth.sendTransaction(
             {
               from: selectedAddress,
@@ -370,9 +377,11 @@ export default {
       }
     },
     onSelectSpeed(data) {
+      console.log("SET DATA: ", data)
       this.speedSelected = data.speedSelected
       this.activeGasPrice = data.activeGasPrice
       this.timeTaken = data.speed
+      this.gas = data.gas
 
       if (data.isReset) {
         this.calculateGas()

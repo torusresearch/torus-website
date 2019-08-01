@@ -124,11 +124,10 @@ export default {
   },
   methods: {
     onSaveAdvanceOptions(details) {
-      this.gas = parseFloat(details.advancedGas)
       this.activeGasPrice = parseFloat(details.advancedActiveGasPrice)
 
       this.isAdvanceOption = true
-      this.updateCosts()
+      this.updateCosts(false, parseFloat(details.advancedGas) )
 
       this.advanceOptionDialog = false
     },
@@ -170,14 +169,15 @@ export default {
     getEthAmountDisplay(gas, gasPrice) {
       return `${significantDigits(this.getEthAmount(gas, gasPrice))} ETH`
     },
-    updateCosts(isReset) {
+    updateCosts(isReset, updatedGas) {
       const speed = this.speedSelected === 'average' ? this.averageGasPriceSpeed : this.fastestGasPriceSpeed
 
       this.$emit('onSelectSpeed', {
         speedSelected: this.speedSelected,
         activeGasPrice: this.activeGasPrice,
         speed: speed,
-        isReset: !!isReset
+        isReset: !!isReset,
+        gas: updatedGas ? updatedGas : this.gas
       })
     },
     setSelectedSpeed() {
