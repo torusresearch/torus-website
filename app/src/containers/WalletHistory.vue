@@ -134,7 +134,7 @@ export default {
       }
       if (this.pastOrders.length > 0) finalTransactions.push(...this.pastOrders)
       if (this.pastTx.length > 0) finalTransactions.push(...this.pastTx)
-      return finalTransactions
+      return finalTransactions.sort((a, b) => b.date - a.date)
     }
   },
   mounted() {
