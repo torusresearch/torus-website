@@ -171,7 +171,7 @@ export default {
     pastTransactions.forEach(async x => {
       if (x.network !== networkType) return
       let status = x.status
-      if (x.status !== 'confirmed') {
+      if (x.status !== 'confirmed' && publicAddress.toLowerCase() === x.from.toLowerCase()) {
         status = await getEthTxStatus(x.transaction_hash, torus.web3)
         // patch tx
         patch(
