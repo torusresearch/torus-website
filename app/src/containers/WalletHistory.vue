@@ -113,9 +113,9 @@ export default {
           txObj.id = txOld.time
           txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? 'Received' : 'Sending'
           txObj.date = new Date(txOld.time)
-          txObj.from = toChecksumAddress(txOld.txParams.from)
+          txObj.from = web3Utils.toChecksumAddress(txOld.txParams.from)
           txObj.slicedFrom = addressSlicer(txOld.txParams.from)
-          txObj.to = toChecksumAddress(txOld.txParams.to)
+          txObj.to = web3Utils.toChecksumAddress(txOld.txParams.to)
           txObj.slicedTo = addressSlicer(txOld.txParams.to)
           txObj.totalAmount = web3Utils.fromWei(
             web3Utils.toBN(txOld.txParams.value).add(web3Utils.toBN(txOld.txParams.gas).mul(web3Utils.toBN(txOld.txParams.gasPrice)))
@@ -134,7 +134,10 @@ export default {
       }
       if (this.pastOrders.length > 0) finalTransactions.push(...this.pastOrders)
       if (this.pastTx.length > 0) finalTransactions.push(...this.pastTx)
-      const finalTx = [...new Set(finalTransactions.map(x => x.etherscanLink))]
+      const finalTx = finalTransactions.reduce((acc, x) => {
+        if (acc.findIndex(y => y.etherscanLink === x.etherscanLink) === -1) acc.push(x)
+        return acc
+      }, [])
       return finalTx.sort((a, b) => b.date - a.date)
     }
   },
