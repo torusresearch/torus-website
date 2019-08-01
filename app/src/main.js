@@ -1,7 +1,7 @@
 import log from 'loglevel'
 import Vue from 'vue'
 import App from './App.vue'
-import './plugins'
+import { vuetify } from './plugins'
 import './registerServiceWorker'
 import './reset.css'
 import router from './router'
@@ -21,6 +21,7 @@ new Vue({
   router,
   store,
   render: h => h(App),
+  vuetify,
   mounted: () => document.dispatchEvent(new Event('x-app-rendered'))
 }).$mount('#app')
 

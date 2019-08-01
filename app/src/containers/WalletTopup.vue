@@ -1,101 +1,147 @@
 <template>
-  <v-flex fill-height class="simplex-page mt-2">
-    <v-form ref="inputForm" v-model="formValid" lazy-validation @submit.prevent="">
-      <v-container align-content-center>
-        <v-layout column text-sm-center>
-          <v-flex sm6>
-            <h1 class="page-title">Purchase Cryptocurrency with your credit card via Simplex</h1>
-          </v-flex>
-          <v-flex sm6>
-            <p class="page-description">
-              Simplex is a secure way to buy cryptoccurrency with your credit card.
-              <br />
-              Start by entering an amount to get a quote before making your purchase.
+  <div class="wallet-topup-view">
+    <v-layout mt-6 wrap>
+      <v-flex xs12 mb-2>
+        <div class="text-black font-weight-bold headline px-4 mb-4">
+          <span v-if="provider && !$vuetify.breakpoint.xsOnly">
+            Purchase Cryptocurrency with your credit card via
+            <span class="text-capitalize">{{ provider }}</span>
+          </span>
+          <span v-else>Select a Provider</span>
+        </div>
+      </v-flex>
+      <TopupProviders
+        :provider="provider"
+        @onSelectProvider="
+          selected => {
+            provider = selected
+          }
+        "
+      />
+
+      <v-flex xs12 mb-2 v-if="provider && $vuetify.breakpoint.xsOnly">
+        <div class="text-black font-weight-bold headline px-4 mb-4">
+          <span>
+            Purchase Cryptocurrency with your credit card via
+            <span class="text-capitalize">{{ provider }}</span>
+          </span>
+        </div>
+      </v-flex>
+
+      <v-flex xs12 sm6 mb-4 px-4>
+        <v-layout wrap v-if="provider === 'simplex'">
+          <v-flex xs12>
+            <p class="body-2">
+              Simplex is a secure way to buy cryptoccurrency with your credit card. Start by entering an amount to get a quote before making your
+              purchase.
             </p>
           </v-flex>
-        </v-layout>
 
-        <v-layout row justify-center>
-          <v-flex sm2 lg1>
-            <v-subheader>Pay</v-subheader>
-          </v-flex>
-          <v-flex sm4 lg4>
-            <v-text-field
-              class="torus-text-input"
-              placeholder="0.00 (Min 50.00)"
-              :suffix="`${selectedCurrency}*`"
-              solo
-              :value="fiatValue"
-              @input="watchFiatValue"
-              :rules="[rules.required, rules.validNumber, rules.maxValidation, rules.minValidation]"
-            ></v-text-field>
-            <div class="v-text-field__details">
-              <div class="v-messages theme--light">
-                <div class="v-messages__wrapper">
-                  <div class="v-messages__message">
-                    * Includes Simplex Service Fees of 5% or 10 USD, whichever is higher
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on }">
-                        <v-icon class="torus-hint-icon" color="primary" small v-on="on">error_outline</v-icon>
-                      </template>
-                      <span>
-                        This fee goes entirely to Simplex for their services
-                        <br />
-                        in credit card processing, fraud detection and mitigation
-                      </span>
-                    </v-tooltip>
+          <v-flex xs12>
+            <v-form ref="inputForm" v-model="formValid" lazy-validation @submit.prevent>
+              <v-flex xs12>
+                <div class="subtitle-2">You send</div>
+                <v-text-field
+                  class="unique-hint"
+                  placeholder="0.00 (Min 50.00)"
+                  outlined
+                  :value="fiatValue"
+                  @input="watchFiatValue"
+                  :rules="[rules.required, rules.validNumber, rules.maxValidation, rules.minValidation]"
+                >
+                  <template v-slot:append>
+                    <v-btn outlined small color="primary" @click="watchFiatValue(100)">100</v-btn>
+                    <v-btn outlined small color="primary" @click="watchFiatValue(200)" class="ml-2">200</v-btn>
+                    <div class="primary--text font-weight-medium subtitle-2 pt-1 ml-2">{{ selectedCurrency }}*</div>
+                  </template>
+                </v-text-field>
+
+                <div class="v-text-field__details torus-hint mb-6">
+                  <div class="v-messages">
+                    <div class="v-messages__wrapper">
+                      <div class="v-messages__message d-flex torus_text--text text--lighten-4">
+                        <v-flex class="px-3">
+                          * Includes 5% Simplex Service Fees or 10 USD (whichever higher)
+                          <v-tooltip class="torus-tooltip" bottom>
+                            <template v-slot:activator="{ on }">
+                              <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
+                            </template>
+                            <span>
+                              <div class="primary--text subtitle-2">Simplex Service Fee</div>
+                              <v-divider class="my-2"></v-divider>
+                              <div class="body-2">
+                                This fee goes entirely to Simplex for their services in credit card processing, mitigation and fraud detection.
+                              </div>
+                            </span>
+                          </v-tooltip>
+                        </v-flex>
+                        <v-flex grow-shrink-0>
+                          <span>min 50 USD*</span>
+                        </v-flex>
+                      </div>
+                    </div>
                   </div>
                 </div>
+              </v-flex>
+
+              <v-flex xs12>
+                <div class="subtitle-2">Receive</div>
+                <v-text-field
+                  readonly
+                  placeholder="0.00"
+                  suffix="ETH"
+                  v-model="ethValue"
+                  :hint="`Rate : 1 ETH = ${displayRateString} ${selectedCurrency}`"
+                  persistent-hint
+                  outlined
+                ></v-text-field>
+              </v-flex>
+            </v-form>
+          </v-flex>
+
+          <v-flex xs12>
+            <div class="mt-12 mb-6 torus_text--text text--lighten-4">
+              <div>
+                <img :src="require(`../../public/img/icons/info-circle.svg`)" class="help-icon" />
+                <small class="d-inline ml-2">The process would take approximately 10 - 15 mins.</small>
+              </div>
+
+              <div>
+                <img :src="require(`../../public/img/icons/info-circle.svg`)" class="help-icon" />
+                <small class="d-inline ml-2">Please prepare your Identity Card/Passport to complete the purchase.</small>
               </div>
             </div>
           </v-flex>
-        </v-layout>
-
-        <v-layout row justify-center class="pay-form">
-          <v-flex sm2 lg1>
-            <v-subheader>Receive</v-subheader>
-          </v-flex>
-          <v-flex sm4 lg4>
-            <v-text-field class="torus-text-input-disabled" disabled placeholder="0.00" suffix="ETH" v-model="ethValue" solo></v-text-field>
-            <div class="v-text-field__details">
-              <div class="v-messages theme--light">
-                <div class="v-messages__wrapper">
-                  <div class="v-messages__message">Rate : 1 ETH = {{ this.displayRateString }} {{ this.selectedCurrency }}</div>
-                </div>
-              </div>
+          <v-flex xs12>
+            <div class="text-right">
+              <v-btn class="mr-3" text @click.prevent="provider = ''">Back</v-btn>
+              <v-tooltip bottom :disabled="formValid">
+                <template v-slot:activator="{ on }">
+                  <span v-on="on">
+                    <v-btn :disabled="!formValid" depressed color="primary" type="submit" @click.prevent="sendOrder">
+                      Continue
+                    </v-btn>
+                  </span>
+                </template>
+                <span>Resolve the errors</span>
+              </v-tooltip>
+              <div class="caption torus_text--text text--lighten-4">You will be redirected to Simplex Page</div>
             </div>
           </v-flex>
         </v-layout>
+        <v-layout wrap v-if="provider === 'moonpay'">
+          <span>
+            Moonpay is a secure way to buy cryptocurrency with your credit card. Start by entering a amount below to get a quote before making a
+            purchase
+          </span>
 
-        <v-layout class="torus-notes" column text-sm-center>
-          <v-flex sm6>
-            <v-layout row justify-center>
-              <img class="torus-note-icon" src="/images/clock-regular.svg" />
-              <span>The process would take approximately 10 - 15 mins.</span>
-            </v-layout>
-          </v-flex>
-          <v-flex sm6>
-            <v-layout row justify-center>
-              <img class="torus-note-icon" src="/images/address-card-regular.svg" />
-              <span>Please prepare your Identity Card/Passport to complete the purchase.</span>
-            </v-layout>
-          </v-flex>
+          <div style="height:500px; width:100%">
+            <iframe v-if="moonPay.loaded" :src="moonPay.url" height="100%" width="100%" style="border:none"></iframe>
+          </div>
         </v-layout>
-        <div class="text-xs-center">
-          <v-tooltip bottom :disabled="formValid">
-            <template v-slot:activator="{ on }">
-              <span v-on="on">
-                <v-btn :disabled="!formValid" class="torus-button text-xs-center" color="primary" type="submit" @click.prevent="sendOrder">
-                  Checkout with Simplex
-                </v-btn>
-              </span>
-            </template>
-            <span>Resolve the errors</span>
-          </v-tooltip>
-        </div>
-      </v-container>
-    </v-form>
-  </v-flex>
+      </v-flex>
+    </v-layout>
+  </div>
 </template>
 
 <script>
@@ -104,11 +150,16 @@ import { postQuote, postOrder } from '../plugins/simplex'
 import throttle from 'lodash.throttle'
 import { significantDigits, formatCurrencyNumber } from '../utils/utils'
 
+import TopupProviders from '../components/TopupProviders'
+
 const MIN_ORDER_VALUE = 50
 const MAX_ORDER_VALUE = 20000
 
 const validSimplexCurrencies = ['USD', 'EUR']
 export default {
+  components: {
+    TopupProviders
+  },
   data() {
     return {
       fiatValue: 0,
@@ -116,12 +167,23 @@ export default {
       currencyRate: 0,
       currentOrder: {},
       formValid: true,
+      moonPay: {
+        url: '',
+        loaded: false,
+        currencyCode: 'eth',
+        path: 'https://buy-staging.moonpay.io?',
+        apiKey: 'pk_test_j6AnwGJD0XTJDg3bTO37OczjFsddYpS',
+
+        // Modify before deploying.
+        redirectURL: ''
+      },
       rules: {
         required: value => !!value || 'Required',
         validNumber: value => !isNaN(parseFloat(value)) || 'Enter a valid number',
         maxValidation: value => parseFloat(value) <= MAX_ORDER_VALUE || `Max topup amount is ${formatCurrencyNumber(MAX_ORDER_VALUE, 0)}`,
         minValidation: value => parseFloat(value) >= MIN_ORDER_VALUE || `Min topup amount is ${MIN_ORDER_VALUE}`
-      }
+      },
+      provider: ''
     }
   },
   computed: {
@@ -210,6 +272,20 @@ export default {
         })
       }
     },
+    runMoonPaySafariFix() {
+      var isSafari = navigator.userAgent.indexOf('Safari') > -1
+      if (!isSafari) {
+        return
+      }
+      var isChrome = navigator.userAgent.indexOf('Chrome') > -1
+      if (isChrome) {
+        return
+      }
+      if (!document.cookie.match(/^(.*;)?\s*moonpay-fixed\s*=\s*[^;]+(.*)?$/)) {
+        document.cookie = 'moonpay-fixed=fixed; expires=Tue, 19 Jan 2038 03:14:07 UTC; path=/'
+        window.location.replace('https://buy.moonpay.io/safari_fix')
+      }
+    },
     post(path, params, method = 'post') {
       const form = document.createElement('form')
       form.method = method
@@ -231,220 +307,92 @@ export default {
   async mounted() {
     this.fiatValue = 50
     this.currencyRate = this.$store.state.currencyData[this.selectedCurrency] || 0
+
+    this.runMoonPaySafariFix()
+
+    /**
+     * iframe init for moon pay.
+     */
+    this.moonPay.redirectURL = 'javascript:window.top.location.href="' + window.location.origin + '/wallet/history"'
+    this.moonPay.url =
+      this.moonPay.path +
+      'apiKey=' +
+      this.moonPay.apiKey +
+      '&currencyCode=' +
+      this.moonPay.currencyCode +
+      '&walletAddress=' +
+      this.$store.state.selectedAddress +
+      '&email=' +
+      this.$store.state.email +
+      '&redirectURL=' +
+      this.moonPay.redirectURL
+
+    this.moonPay.loaded = true
+    // console.log('this.moonpay is', this.moonPay)
+
     this.fetchQuote()
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.simplex-page {
-  // background: url('/images/footer_waves.png') no-repeat;
-  // background-position: center bottom;
+@import '../scss/_card-tooltip.mixin';
 
-  .header {
-    padding: 25px 25px;
+.wallet-topup-view {
+  .help-icon {
+    height: 13px;
+    vertical-align: middle;
+  }
+  .v-text-field__suffix {
+    color: #5495f7;
   }
 
-  .header-title {
-    display: flex;
-    img {
-      margin-right: 10px;
-      width: 25px;
+  .info-notes {
+    color: #5c6c7f;
+  }
+
+  .input-notes {
+    align-items: center;
+    justify-content: space-between;
+
+    small {
+      font-size: 12px;
     }
-    span {
-      font-size: 14px;
+  }
+
+  .receive-text-input {
+    .v-input__slot {
+      background: transparent !important;
+      box-shadow: none !important;
+      border: 1px solid #d3d5e2 !important;
     }
   }
 
-  .page-title {
-    font-size: 25px;
-    line-height: 28px;
-    margin-bottom: 10px;
-  }
-
-  .page-description {
-    font-size: 14px;
-    line-height: 17px;
-    margin-bottom: 20px;
+  .text-right {
+    text-align: right;
   }
 
   .torus-button {
-    border-radius: 5px;
-    background-image: linear-gradient(to right, #5495f7, #295dab);
-    text-transform: none;
-    font-size: 16px;
-    padding: 10px 20px;
-    height: inherit;
+    height: auto !important;
   }
 
-  .pay-form {
-    margin-bottom: 20px !important;
-  }
-
-  .torus-notes {
-    margin-bottom: 15px !important;
-  }
-
-  .torus-note-icon {
-    margin-right: 10px;
-  }
-
-  .torus-text-input.v-text-field--solo {
-    font-size: 20px;
-
-    & /deep/ .v-input__slot {
-      box-shadow: none;
-      margin-bottom: 5px;
-      border-radius: 5px;
-      background-image: linear-gradient(to right, #5495f7, #295dab);
-      padding: 2px;
-    }
-    & /deep/ .v-text-field__slot {
-      background-color: rgba(255, 255, 255, 0.3);
-      border-radius: 4px;
-      height: 44px;
-      input {
-        &::placeholder {
-          color: rgba(255, 255, 255, 0.3);
-        }
-        text-align: center;
-        color: #ffffff;
-      }
-    }
-    & /deep/ .v-text-field__suffix {
-      background-color: #295dab;
-      height: 100%;
-      line-height: 42px;
-      color: #ffffff;
-      padding: 0 15px;
-      min-width: 90px;
-      text-align: center;
-    }
-  }
-
-  .torus-text-input-disabled.v-text-field--solo {
-    font-size: 20px;
-
-    & /deep/ .v-input__slot {
-      box-shadow: none;
-      margin-bottom: 5px;
-      border-radius: 5px;
-      background-image: linear-gradient(to right, #5495f7, #295dab);
-      padding: 2px;
-    }
-    & /deep/ .v-text-field__slot {
-      background-image: linear-gradient(to right, #5495f7, #295dab);
-      border-radius: 4px;
-      height: 44px;
-      input {
-        &::placeholder {
-          color: rgba(255, 255, 255, 0.3);
-        }
-        text-align: center;
-        color: #ffffff;
-      }
-    }
-    & /deep/ .v-text-field__suffix {
-      height: 100%;
-      line-height: 42px;
-      color: #ffffff;
-      padding: 0 15px;
-      min-width: 90px;
-      text-align: center;
-    }
-  }
-
-  & /deep/ .v-text-field__details {
-    margin-bottom: 0;
-    padding: 0 12px;
-  }
-
-  & /deep/ .v-messages {
-    min-height: 0;
-  }
-}
-
-@media only screen and (min-width: 600px) {
-  .simplex-page {
-    .header {
-      padding: 45px 50px 30px;
-      align-items: center;
+  .unique-hint {
+    ::v-deep .v-text-field__details {
+      display: none;
     }
 
-    .header-title {
-      img {
-        margin-right: 20px;
-      }
-      span {
-        font-size: 14px;
+    ::v-deep .error--text {
+      .v-text-field__details {
+        display: inherit;
       }
     }
 
-    .page-title {
-      font-size: 25px;
-      line-height: 30px;
-    }
-
-    .page-description {
-      font-size: 17px;
-      line-height: 21px;
-      margin-bottom: 40px;
-    }
-
-    .torus-button {
-      font-size: 21px;
-      padding: 15px 30px;
-    }
-
-    .pay-form {
-      margin-bottom: 40px !important;
-    }
-
-    .torus-notes {
-      margin-bottom: 20px !important;
-    }
-
-    .torus-note-icon {
-      margin-right: 15px;
+    .v-btn {
+      border-style: dashed;
     }
   }
 }
-
-@media only screen and (min-width: 1264px) {
-  .simplex-page {
-    background-size: 100%;
-  }
-
-  .container {
-    max-width: 1185px;
-  }
-}
-
-@media only screen and (max-height: 750px) {
-  .simplex-page {
-    .header {
-      padding: 45px 50px 0;
-    }
-
-    .page-title {
-      margin-bottom: 0;
-    }
-
-    .page-description {
-      margin-bottom: 20px;
-    }
-
-    .pay-form {
-      margin-bottom: 10px !important;
-    }
-
-    .torus-notes {
-      margin-bottom: 10px !important;
-    }
-
-    .torus-note-icon {
-      margin-right: 15px;
-    }
-  }
+.v-tooltip__content {
+  @include cardTooltip();
 }
 </style>

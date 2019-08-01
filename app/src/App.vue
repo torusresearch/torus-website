@@ -1,15 +1,25 @@
 <template>
   <v-app>
-    <div id="app" style="width:100%; height:100%">
-      <router-view />
-    </div>
+    <router-view />
   </v-app>
 </template>
+
+<script>
+export default {}
+</script>
+
 <style src="../public/css/circles.css"></style>
 
 <style lang="scss">
-#app {
-  background: var(--v-torus_bcg-base) !important;
-  height: 100%;
+.v-input__slot {
+  margin-bottom: 2px;
+}
+
+.v-text-field.v-text-field--enclosed .v-text-field__details {
+  margin-bottom: 0;
+}
+
+.v-btn {
+  text-transform: inherit;
 }
 </style>

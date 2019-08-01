@@ -6,10 +6,10 @@
     <template v-else>
       <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
         <v-card-text>
-          <v-layout row wrap align-start justify-center>
-            <v-flex xs12 mt-3 sm7>
-              <div class="headline mb-5">Confirm Provider Change</div>
-              <p class="mb-3 subheading">
+          <v-layout wrap align-start justify-center>
+            <v-flex xs12 mt-4 sm7>
+              <div class="headline mb-12">Confirm Provider Change</div>
+              <p class="mb-4 subheading">
                 From:
                 <span class="text-bluish">{{ origin }}</span>
               </p>
@@ -28,15 +28,15 @@
               <img src="images/signature.png" />
             </v-flex>
           </v-layout>
-          <div class="hide-xs mt-5">
-            <v-layout row wrap align-center justify-center>
-              <v-flex xs12 sm4 class="text-xs-center">
+          <div class="hide-xs mt-12">
+            <v-layout wrap align-center justify-center>
+              <v-flex xs12 sm4 class="text-center">
                 <v-btn class="btnStyle" :color="$vuetify.theme.torus_reject" large light flat @click="triggerDeny">Reject</v-btn>
               </v-flex>
-              <v-flex xs12 sm4 class="text-xs-center">
+              <v-flex xs12 sm4 class="text-center">
                 <v-btn large light :color="$vuetify.theme.torus_accept" class="btnStyle white--text rounded-btn" @click="triggerSign">Approve</v-btn>
               </v-flex>
-              <v-flex sm4 class="text-xs-center" pt-1>
+              <v-flex sm4 class="text-center" pt-1>
                 <img src="images/torus_logo.png" class="bcg-logo" />
               </v-flex>
             </v-layout>
@@ -45,7 +45,7 @@
       </v-card>
       <v-card class="higherZ hidden-sm-and-up" flat :color="$vuetify.theme.torus_bcg">
         <v-card-text>
-          <v-layout row wrap align-center>
+          <v-layout wrap align-center>
             <v-flex xs6 sm4>
               <v-btn class="btnStyle" large light :color="$vuetify.theme.torus_reject" flat @click="triggerDeny">Reject</v-btn>
             </v-flex>

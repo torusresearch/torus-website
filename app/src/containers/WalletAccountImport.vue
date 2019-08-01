@@ -1,7 +1,7 @@
 <template>
-  <v-flex xs12 sm8 mb-3 mt-3>
-    <div class="d-flex has-border">
-      <v-layout align-center row wrap>
+  <v-flex xs12 sm8 mb-4 mt-4>
+    <div class="flex-grow-1 has-border">
+      <v-layout align-center wrap>
         <v-flex xs12 sm6 align-self-center>
           Select Import Type
         </v-flex>
@@ -9,7 +9,7 @@
           <v-select
             single-line
             solo
-            flat
+            text
             :items="options"
             item-text="name"
             item-value="value"
@@ -21,9 +21,9 @@
     </div>
 
     <template v-if="selectedType === 'private'">
-      <div class="d-flex has-border">
+      <div class="flex-grow-1 has-border">
         <v-form ref="privateKeyForm" @submit.prevent="" v-model="privateKeyFormValid" lazy-validation>
-          <v-layout row wrap>
+          <v-layout wrap>
             <v-flex xs12 sm6 align-self-center>
               Input Private Key
             </v-flex>
@@ -31,7 +31,7 @@
               <v-text-field
                 single-line
                 solo
-                flat
+                text
                 :type="showPrivateKey ? 'text' : 'password'"
                 :rules="[rules.required]"
                 :append-icon="showPrivateKey ? 'visibility' : 'visibility_off'"
@@ -45,7 +45,7 @@
         </v-form>
       </div>
 
-      <div class="has-border text-xs-right" mt-1>
+      <div class="has-border text-right" mt-1>
         <v-btn class="btnStyle" @click.prevent="importViaPrivateKey" :loading="isLoadingPrivate" :disabled="!privateKeyFormValid || isLoadingPrivate">
           Import
         </v-btn>
@@ -54,8 +54,8 @@
 
     <template v-if="selectedType === 'keystore'">
       <v-form ref="jsonFileForm" v-model="jsonFileFormValid" @submit.prevent="" lazy-validation>
-        <div class="d-flex has-border">
-          <v-layout row>
+        <div class="flex-grow-1 has-border">
+          <v-layout>
             <v-flex xs6 align-self-center>
               Keystore
             </v-flex>
@@ -68,9 +68,9 @@
             </v-flex>
           </v-layout>
         </div>
-        <div class="text-xs-right" v-show="selectedFileName !== ''">Selected File: {{ selectedFileName }}</div>
-        <div class="d-flex has-border">
-          <v-layout row wrap>
+        <div class="text-right" v-show="selectedFileName !== ''">Selected File: {{ selectedFileName }}</div>
+        <div class="flex-grow-1 has-border">
+          <v-layout wrap>
             <v-flex xs12 sm6 align-self-center>
               Password
             </v-flex>
@@ -78,7 +78,7 @@
               <v-text-field
                 single-line
                 solo
-                flat
+                text
                 name="password"
                 :rules="[rules.required]"
                 :append-icon="showJsonPassword ? 'visibility' : 'visibility_off'"
@@ -91,7 +91,7 @@
           </v-layout>
         </div>
 
-        <div class="has-border text-xs-right" mt-1>
+        <div class="has-border text-right" mt-1>
           <v-btn
             class="btnStyle"
             @click.prevent="importViaKeyStoreFile"
@@ -105,7 +105,7 @@
     </template>
     <v-snackbar v-model="snackbar" color="error">
       {{ error }}
-      <v-btn dark flat @click="snackbar = false">
+      <v-btn dark text @click="snackbar = false">
         Close
       </v-btn>
     </v-snackbar>
@@ -234,7 +234,7 @@ export default {
   margin: 0 15px;
 }
 
-/deep/.v-text-field--solo .v-input__slot,
+::v-deep .v-text-field--solo .v-input__slot,
 .v-text-field--outline .v-input__slot {
   min-height: auto !important;
   display: flex !important;
@@ -245,7 +245,7 @@ export default {
   margin-bottom: 0px !important;
 }
 
-/deep/.v-text-field.v-text-field--solo .v-input__control {
+::v-deep .v-text-field.v-text-field--solo .v-input__control {
   min-height: auto !important;
 }
 

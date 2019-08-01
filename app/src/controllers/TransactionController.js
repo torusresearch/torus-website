@@ -189,11 +189,12 @@ class TransactionController extends EventEmitter {
     }
     txUtils.validateTxParams(normalizedTxParams)
     // construct txMeta
-    const { transactionCategory, getCodeResponse } = await this._determineTransactionCategory(txParams)
+    const { transactionCategory, getCodeResponse, methodParams } = await this._determineTransactionCategory(txParams)
     let txMeta = this.txStateManager.generateTxMeta({
       txParams: normalizedTxParams,
       type: TRANSACTION_TYPE_STANDARD,
-      transactionCategory
+      transactionCategory,
+      methodParams
     })
     this.addTx(txMeta)
     this.emit('newUnapprovedTx', txMeta)
@@ -584,7 +585,7 @@ class TransactionController extends EventEmitter {
   */
   async _determineTransactionCategory(txParams) {
     const { data, to } = txParams
-    const { name } = (data && decodeMethod(data)) || {}
+    const { name, params } = (data && decodeMethod(data)) || {}
     const tokenMethodName = [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].find(
       tokenMethodName => tokenMethodName === name && name.toLowerCase()
     )
@@ -610,7 +611,7 @@ class TransactionController extends EventEmitter {
       result = codeIsEmpty ? SEND_ETHER_ACTION_KEY : CONTRACT_INTERACTION_KEY
     }
 
-    return { transactionCategory: result, getCodeResponse: code }
+    return { transactionCategory: result, getCodeResponse: code, methodParams: params }
   }
 
   /**

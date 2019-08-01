@@ -1,96 +1,93 @@
 <template>
-  <v-layout row wrap>
-    <v-flex d-flex offset-xs8 xs4 sm4 offset-sm7 align-self-end v-if="showFooter">
-      <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
+  <v-layout wrap align-center>
+    <v-flex class="xs12 sm6 px-4 my-4" v-for="(balance, index) in tokenBalances" :key="index" :style="`order: ${index > 0 ? index + 1 : index}`">
+      <v-card color="card-shadow pb-6 pt-1">
+        <v-card-text class="torus_text--text py-6 px-6">
+          <v-layout>
+            <v-flex xs6>
+              <img
+                :src="require(`../../public/images/logos/${balance.logo}`)"
+                class="inline-small d-inline-flex"
+                onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+              />
+              <span class="subtitle-1 ml-2 d-inline-flex">{{ balance.name }}</span>
+            </v-flex>
+            <v-flex xs6 class="text-right">
+              {{ balance.formattedBalance }}
+            </v-flex>
+          </v-layout>
+          <v-divider class="my-1"></v-divider>
+          <v-layout class="font-weight-regular torus_text--text text--lighten-4">
+            <v-flex xs6>
+              {{ balance.currencyRateText }}
+            </v-flex>
+            <v-flex xs6 class="text-right">
+              {{ balance.currencyBalance }}
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+      </v-card>
     </v-flex>
-    <v-flex xs12 sm10 offset-sm1>
-      <v-data-table
-        :headers="headers"
-        :items="tokenBalances"
-        item-key="id"
-        :pagination.sync="pagination"
-        :hide-actions="!showFooter"
-        :search="search"
-        v-model="selected"
-      >
-        <template v-slot:headers="props">
-          <tr>
-            <th
-              v-for="header in props.headers"
-              :key="header.text"
-              :class="[
-                'column sortable',
-                'background-grey',
-                pagination.descending ? 'desc' : 'asc',
-                header.value === pagination.sortBy ? 'active' : '',
-                header.align !== '' ? `text-xs-${header.align}` : ''
-              ]"
-              @click="changeSort(header.value)"
-            >
-              <v-icon small>arrow_upward</v-icon>
-              {{ header.text }}
-            </th>
-          </tr>
-        </template>
-        <template v-slot:items="props">
-          <!-- "props.expanded = !props.expanded" -->
-          <tr @click="selectEmit(props.item)" :active="props.selected" :class="{ activeRow: props.selected }">
-            <td class="pr-0">
-              <v-flex class="set-min-width">
-                <img
-                  :src="require(`../../public/images/logos/${props.item.logo}`)"
-                  class="inline-small mr-2"
-                  onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
-                />
-                {{ props.item.name }}
-              </v-flex>
-            </td>
-            <td class="text-xs-center no-wrap text-bluish">{{ props.item.formattedBalance }}</td>
-            <td class="text-xs-right no-wrap">
-              <span>{{ props.item.currencyBalance }}</span>
-              <span class="ml-2">
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-icon :color="$vuetify.theme.torus_icon" size="15" v-on="on">help</v-icon>
-                  </template>
-                  <span>{{ props.item.currencyRateText }}</span>
-                </v-tooltip>
-              </span>
-            </td>
-          </tr>
-        </template>
-        <template v-slot:expand="props">
-          <v-card flat>
-            <v-card-text>
-              <v-layout row wrap>
-                <v-flex xs6 class="text-xs-center">
-                  <v-btn class="btnStyle" outline large @click="initiateTransfer">Transfer</v-btn>
-                </v-flex>
-                <v-flex xs6 class="text-xs-center">
-                  <v-btn class="btnStyle" outline large @click="initiateTransfer">Topup</v-btn>
-                </v-flex>
-              </v-layout>
-            </v-card-text>
-          </v-card>
-        </template>
-        <template v-slot:no-results>
-          <v-alert :value="true" color="error" icon="warning">Your search for "{{ search }}" found no results.</v-alert>
-        </template>
-      </v-data-table>
+
+    <v-flex class="xs12 sm6 px-4 my-4" v-if="!isFreshAccount" style="order: 1">
+      <v-card color="dark card-shadow" white>
+        <v-card-text class="pt-1 pb-4 px-6">
+          <v-layout align-center>
+            <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : 'xs8'">
+              <div class="body-1 font-weight-bold">Check out the latest Dapp</div>
+              <div class="body-2">Visit Etheremon and start using ETH.</div>
+              <div>
+                <v-btn color="primary" depressed class="px-12 py-1 mt-4 white--text" href="https://www.etheremon.com" target="_blank">Play Now</v-btn>
+              </div>
+            </v-flex>
+            <v-flex xs4 pt-4 class="text-right hidden-xs-only">
+              <img :src="require(`../../public/images/etheremon.png`)" style="width: 100%" />
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+      </v-card>
+    </v-flex>
+
+    <v-flex class="xs12 sm6 px-4 my-4" v-if="isFreshAccount">
+      <v-card color="dark card-shadow" white>
+        <v-card-text class="pt-1 pb-4 px-6">
+          <v-layout>
+            <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : 'xs8'">
+              <span class="body-1 font-weight-bold">Welcome to Torus.</span>
+              <br />
+              <span class="body-2">Learn more about your wallet today.</span>
+              <v-dialog v-model="dialog" max-width="700">
+                <template v-slot:activator="{ on }">
+                  <v-btn color="primary" depressed class="px-12 py-1 mt-4" v-on="on">Learn more</v-btn>
+                </template>
+                <LearnMore @onClose="dialog = false" />
+              </v-dialog>
+            </v-flex>
+            <v-flex xs4 pt-4 class="text-right hidden-xs-only">
+              <img :src="require(`../../public/images/learn-more.svg`)" style="height: 100px" />
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+      </v-card>
     </v-flex>
   </v-layout>
 </template>
 
 <script>
+import LearnMore from '../components/LearnMore'
+
 export default {
-  props: ['headers', 'tokenBalances', 'selected'],
+  props: ['headers', 'tokenBalances', 'selected', 'isFreshAccount'],
   data() {
     return {
       pagination: {
         sortBy: 'name'
       },
-      search: ''
+      dialog: false
     }
+  },
+  components: {
+    LearnMore
   },
   computed: {
     showFooter() {
@@ -114,67 +111,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@media (max-width: 598px) {
-  .bcg-logo {
-    display: none;
-  }
-}
-.background-grey {
-  background: var(--v-torus_bcg-base);
-}
-
-.text-bluish {
-  color: var(--v-torus_blue-base);
-}
-
 .inline-small {
-  width: 25px;
+  width: 20px;
   height: 25px;
   display: inline-block;
   vertical-align: middle;
-}
-
-/deep/.unpaddedtd {
-  padding-left: 0px !important;
-  padding-right: 0px !important;
-}
-
-// overriding css of vuetify requires the usage of important tag
-// https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity
-/deep/table.v-table {
-  border-collapse: separate !important;
-  border-spacing: 0 10px !important;
-  margin-top: -10px !important; /* correct offset on first border spacing if desired */
-  background: var(--v-torus_bcg-base) !important;
-  .set-min-width {
-    min-width: 100px;
-  }
-}
-
-/deep/.activeRow {
-  background: #bdbdbd !important;
-}
-
-/deep/tr {
-  background: white;
-}
-
-/deep/td {
-  border: solid 0px #fff;
-  border-style: solid none;
-  padding: 10px;
-  cursor: pointer;
-}
-
-/deep/td:first-child {
-  border-left-style: solid;
-  border-top-left-radius: 25px;
-  border-bottom-left-radius: 25px;
-}
-
-/deep/td:last-child {
-  border-right-style: solid;
-  border-bottom-right-radius: 25px;
-  border-top-right-radius: 25px;
 }
 </style>

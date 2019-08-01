@@ -1,11 +1,11 @@
 <template>
-  <v-flex xs12 sm8 mt-3 mb-3>
-    <div class="d-flex has-border">
-      <v-select single-line solo flat :items="accounts" :value="selectedAddress" label="Selected Account" @change="onAccountChange"></v-select>
+  <v-flex xs12 sm8 mt-4 mb-4>
+    <div class="flex-grow-1 has-border">
+      <v-select single-line solo text :items="accounts" :value="selectedAddress" label="Selected Account" @change="onAccountChange"></v-select>
     </div>
-    <div class="d-flex has-border">
+    <div class="flex-grow-1 has-border">
       <span class="body-2">Public Address</span>
-      <span class="text-xs-right">
+      <span class="text-right">
         <show-tool-tip :address="selectedAddress">
           {{ slicedAddress }}
         </show-tool-tip>
@@ -13,20 +13,20 @@
     </div>
 
     <div class="has-border py-0">
-      <v-btn block small flat class="grey lighten-2 mb-0 font-weight-regular" @click="showPrivateKey = !showPrivateKey">
+      <v-btn block small text class="grey lighten-2 mb-0 font-weight-regular" @click="showPrivateKey = !showPrivateKey">
         {{ showPrivateKey ? 'Hide Private Key' : 'Show Private Key' }}
         <v-icon v-if="showPrivateKey" :color="$vuetify.theme.torus_reject">expand_less</v-icon>
         <v-icon v-else :color="$vuetify.theme.torus_reject">expand_more</v-icon>
       </v-btn>
 
-      <div class="mt-0 mb-1 mx-0 pa-1 grey lighten-3 text-xs-center break-word" v-if="showPrivateKey">
+      <div class="mt-0 mb-1 mx-0 pa-1 grey lighten-3 text-center break-word" v-if="showPrivateKey">
         <show-tool-tip :address="selectedKey">
           {{ selectedKey }}
         </show-tool-tip>
       </div>
     </div>
 
-    <div class="has-border text-xs-right" mt-1>
+    <div class="has-border text-right" mt-1>
       <v-btn class="btnStyle" @click="dialogJson = true">Download JSON</v-btn>
     </div>
 
@@ -38,7 +38,7 @@
           </v-card-title>
           <v-divider light></v-divider>
           <v-card-text>
-            <v-layout row wrap>
+            <v-layout wrap>
               <v-flex xs12 align-self-center>
                 Enter your password
               </v-flex>
@@ -51,13 +51,13 @@
                   @click:append="toggleJsonPasswordShow"
                   single-line
                   solo
-                  flat
+                  text
                 ></v-text-field>
               </v-flex>
             </v-layout>
           </v-card-text>
           <v-divider light></v-divider>
-          <v-card-actions class="px-3">
+          <v-card-actions class="px-4">
             <v-spacer></v-spacer>
             <v-btn class="btnStyle" @click="dialogJson = false" :disabled="isLoadingDownloadWallet">Close</v-btn>
             <v-btn
@@ -207,7 +207,7 @@ export default {
   word-wrap: break-word;
 }
 
-/deep/.v-text-field--solo .v-input__slot,
+::v-deep .v-text-field--solo .v-input__slot,
 .v-text-field--outline .v-input__slot {
   min-height: auto !important;
   display: flex !important;
@@ -221,7 +221,7 @@ export default {
   }
 }
 
-/deep/.v-text-field.v-text-field--solo .v-input__control {
+::v-deep .v-text-field.v-text-field--solo .v-input__control {
   min-height: auto !important;
 }
 
@@ -240,7 +240,7 @@ export default {
 
 /* Desktop > Small */
 @media only screen and (min-width: 599px) {
-  /deep/.v-text-field--solo .v-input__slot,
+  ::v-deep .v-text-field--solo .v-input__slot,
   .v-text-field--outline .v-input__slot {
     .v-select__selection {
       word-break: normal;

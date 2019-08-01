@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer')
+const assert = require('assert')
 
 class TorusUI {
   constructor(page) {
@@ -24,9 +25,15 @@ class TorusUI {
       document.querySelector(`[href='${href}']`).click()
     })
   }
-  async goToAccountsTab() {
+  async goToTopupTab() {
     return this.page.evaluate(async () => {
-      const href = '/wallet/accounts'
+      const href = '/wallet/topup'
+      document.querySelector(`[href='${href}']`).click()
+    })
+  }
+  async goToTransferTab() {
+    return this.page.evaluate(async () => {
+      const href = '/wallet/transfer'
       document.querySelector(`[href='${href}']`).click()
     })
   }
@@ -81,18 +88,23 @@ function switchToNetwork(page, network = 'rinkeby') {}
  */
 const runPuppeteer = async () => {
   let headless = false
-
-  const browser = await puppeteer.launch({ headless })
-  const page = await prepareTorusPuppeteerPage(browser)
-  const torusUI = new TorusUI(page)
-  await torusUI.goToHistoryTab()
-  await sleep(500)
-  await torusUI.goToAccountsTab()
-  await sleep(500)
-  await torusUI.goToSettingsTab()
-  await sleep(500)
-
-  await browser.close()
+  try {
+    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] })
+    const page = await prepareTorusPuppeteerPage(browser)
+    const torusUI = new TorusUI(page)
+    await torusUI.goToHistoryTab()
+    await sleep(500)
+    await torusUI.goToTopupTab()
+    await sleep(500)
+    await torusUI.goToSettingsTab()
+    await sleep(500)
+    await torusUI.goToTransferTab()
+    await sleep(500)
+    await browser.close()
+    assert.ok('passed')
+  } catch (error) {
+    assert.fail('Failed' + error)
+  }
 }
 
 runPuppeteer()

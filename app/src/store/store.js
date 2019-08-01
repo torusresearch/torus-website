@@ -34,6 +34,8 @@ const vuexPersist = new VuexPersistence({
   reducer: state => {
     return {
       email: state.email,
+      name: state.name,
+      profileImage: state.profileImage,
       idToken: state.idToken,
       wallet: state.wallet,
       // weiBalance: state.weiBalance,
@@ -53,6 +55,8 @@ var walletWindow
 
 const initialState = {
   email: '',
+  name: '',
+  profileImage: '',
   idToken: '',
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
@@ -139,6 +143,12 @@ var VuexStore = new Vuex.Store({
     setEmail(state, email) {
       state.email = email
     },
+    setName(state, name) {
+      state.name = name
+    },
+    setProfileImage(state, profileImage) {
+      state.profileImage = profileImage
+    },
     setIdToken(state, idToken) {
       state.idToken = idToken
     },
@@ -199,9 +209,9 @@ var VuexStore = new Vuex.Store({
     patchPastTransactions(state, payload) {
       state.pastTransactions = [...state.pastTransactions, payload]
     },
-    logOut(state, requiredState) {
+    logOut(state, payload) {
       Object.keys(state).forEach(key => {
-        state[key] = initialState[key] // or = initialState[key]
+        state[key] = payload[key] // or = initialState[key]
       })
     }
   },
@@ -269,8 +279,10 @@ var VuexStore = new Vuex.Store({
     showPopup({ state, getters }, payload) {
       var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
       const isTx = isTorusTransaction()
-      const width = isTx ? 650 : 600
-      const height = isTx ? 470 : 350
+      const width = 500
+      const height = isTx ? 600 : 400
+      // const width = 500
+      // const height = 600
       window.open(
         `${baseRoute}confirm?instanceId=${torus.instanceId}`,
         '_blank',
@@ -335,6 +347,12 @@ var VuexStore = new Vuex.Store({
     },
     updateEmail(context, payload) {
       context.commit('setEmail', payload.email)
+    },
+    updateName(context, payload) {
+      context.commit('setName', payload.name)
+    },
+    updateProfileImage(context, payload) {
+      context.commit('setProfileImage', payload.profileImage)
     },
     updateIdToken(context, payload) {
       context.commit('setIdToken', payload.idToken)
@@ -443,6 +461,10 @@ var VuexStore = new Vuex.Store({
             dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
             let email = profile.getEmail()
             dispatch('updateEmail', { email })
+            let name = profile.getName()
+            dispatch('updateName', { name })
+            let profileImage = profile.getImageUrl()
+            dispatch('updateProfileImage', { profileImage })
             const { torusNodeEndpoints } = config
             window.gapi.auth2
               .getAuthInstance()
@@ -462,13 +484,11 @@ var VuexStore = new Vuex.Store({
     },
     subscribeToControllers({ dispatch, state }, payload) {
       torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
-        const { weiBalance } = state
         if (accounts) {
           for (const key in accounts) {
             if (Object.prototype.hasOwnProperty.call(accounts, key)) {
               const account = accounts[key]
-              if (weiBalance[account.address] !== account.balance)
-                dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
+              dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
             }
           }
         }
@@ -633,7 +653,7 @@ var VuexStore = new Vuex.Store({
         if (selectedAddress && wallet[selectedAddress]) {
           dispatch('updateSelectedAddress', { selectedAddress })
           setTimeout(() => dispatch('subscribeToControllers'), 50)
-          await torus.torusController.initTorusKeyring([wallet[selectedAddress]], [selectedAddress])
+          await torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet))
           await dispatch('setUserInfo', { token: jwtToken })
           statusStream.write({ loggedIn: true })
           log.info('rehydrated wallet')
