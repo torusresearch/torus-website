@@ -112,7 +112,7 @@ export default {
           const txObj = {}
           txObj.id = txOld.time
           txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? 'Received' : 'Sending'
-          txObj.date = new Date(txOld.time).toDateString().substring(4)
+          txObj.date = new Date(txOld.time)
           txObj.from = txOld.txParams.from
           txObj.slicedFrom = addressSlicer(txOld.txParams.from)
           txObj.to = txOld.txParams.to
@@ -126,6 +126,9 @@ export default {
           txObj.amount = `${txObj.totalAmountString} / ${txObj.currencyAmountString}`
           txObj.status = txOld.status
           txObj.etherscanLink = getEtherScanHashLink(txOld.hash, networkType)
+          txObj.networkType = networkType
+          txObj.ethRate = significantDigits(parseFloat(txObj.currencyAmount) / parseFloat(txObj.totalAmount))
+          txObj.currencyUsed = this.selectedCurrency
           finalTransactions.push(txObj)
         }
       }
@@ -135,7 +138,7 @@ export default {
     }
   },
   mounted() {
-    const { selectedAddress: publicAddress, pastTransactions, jwtToken } = this.$store.state
+    const { selectedAddress: publicAddress, pastTransactions, jwtToken, networkType } = this.$store.state
     getPastOrders({}, { public_address: publicAddress })
       .then(response => {
         this.pastOrders = response.result.reduce((acc, x) => {
@@ -144,7 +147,7 @@ export default {
             const currencyAmountString = `${significantDigits(x.fiat_total_amount.amount)} ${x.fiat_total_amount.currency}`
             acc.push({
               id: x.createdAt,
-              date: new Date(x.createdAt).toDateString().substring(4),
+              date: new Date(x.createdAt),
               from: 'Simplex',
               slicedFrom: 'Simplex',
               action: 'Top-up',
@@ -166,6 +169,7 @@ export default {
       })
       .catch(err => console.log(err))
     pastTransactions.forEach(async x => {
+      if (x.network !== networkType) return
       let status = x.status
       if (x.status !== 'confirmed') {
         status = await getEthTxStatus(x.transaction_hash, torus.web3)
@@ -191,7 +195,7 @@ export default {
       const currencyAmountString = `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
       const finalObj = {
         id: x.created_at,
-        date: new Date(x.created_at).toDateString().substring(4),
+        date: new Date(x.created_at),
         from: x.from,
         slicedFrom: addressSlicer(x.from),
         to: x.to,
@@ -203,7 +207,10 @@ export default {
         currencyAmountString: currencyAmountString,
         amount: `${totalAmountString} / ${currencyAmountString}`,
         status: status,
-        etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network)
+        etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network),
+        networkType: x.network,
+        ethRate: significantDigits(parseFloat(x.currency_amount) / parseFloat(x.total_amount)),
+        currencyUsed: x.selected_currency
       }
       this.pastTx.push(finalObj)
     })

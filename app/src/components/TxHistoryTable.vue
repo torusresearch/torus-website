@@ -28,25 +28,25 @@
       <span class="text-capitalize" :class="`text-${item.status.toLowerCase()}`">{{ item.status }}</span>
     </template>
     <template v-slot:expanded-item="{ headers, item }">
-      <td :colspan="headers.length" class="pa-0 ma-0" style="height: inherit">
+      <td :colspan="headers.length" class="pa-0 ma-0" style="height: inherit" v-show="item.etherscanLink !== ''">
         <v-flex xs12 white class="card-shadow dark pa-4">
           <v-layout wrap>
             <v-flex xs4 sm1 pr-2>
               Rate
               <span class="float-right">:</span>
             </v-flex>
-            <v-flex xs8 sm11>1 ETH = 240.00 USD @ 12:34:20 PM</v-flex>
+            <v-flex xs8 sm11>1 ETH = {{ item.ethRate }} {{ item.currencyUsed }} @ {{ formatTime(item.date) }}</v-flex>
             <v-flex xs4 sm1 pr-2>
               Network
               <span class="float-right">:</span>
             </v-flex>
-            <v-flex xs8 sm11>Main Ethereum Network</v-flex>
-            <v-flex xs4 sm1 pr-2>
+            <v-flex xs8 sm11>{{ mapper[item.networkType] || '' }}</v-flex>
+            <!-- <v-flex xs4 sm1 pr-2>
               Type
               <span class="float-right">:</span>
             </v-flex>
-            <v-flex xs8 sm11>Contract Interaction</v-flex>
-            <v-flex xs4 sm1 pr-2>
+            <v-flex xs8 sm11>Contract Interaction</v-flex> -->
+            <!-- <v-flex xs4 sm1 pr-2>
               Data
               <span class="float-right">:</span>
             </v-flex>
@@ -54,9 +54,9 @@
               <v-card flat class="grey lighten-3">
                 <v-card-text></v-card-text>
               </v-card>
-            </v-flex>
+            </v-flex> -->
             <v-flex xs12 class="text-right">
-              <v-btn text small color="primary" :href="item.etherscanLink" target="_blank">View On Etherscan</v-btn>
+              <a class="v-btn" color="primary" :href="item.etherscanLink" target="_blank">View On Etherscan</a>
             </v-flex>
           </v-layout>
         </v-flex>
@@ -69,6 +69,33 @@
 </template>
 
 <script>
+const {
+  ROPSTEN,
+  RINKEBY,
+  KOVAN,
+  MAINNET,
+  LOCALHOST,
+  GOERLI,
+  RPC,
+  ROPSTEN_DISPLAY_NAME,
+  RINKEBY_DISPLAY_NAME,
+  KOVAN_DISPLAY_NAME,
+  MAINNET_DISPLAY_NAME,
+  LOCALHOST_DISPLAY_NAME,
+  GOERLI_DISPLAY_NAME,
+  RPC_DISPLAY_NAME
+} = require('../utils/enums')
+
+const mapper = {
+  [ROPSTEN]: ROPSTEN_DISPLAY_NAME,
+  [RINKEBY]: RINKEBY_DISPLAY_NAME,
+  [KOVAN]: KOVAN_DISPLAY_NAME,
+  [MAINNET]: MAINNET_DISPLAY_NAME,
+  [LOCALHOST]: LOCALHOST_DISPLAY_NAME,
+  [GOERLI]: GOERLI_DISPLAY_NAME,
+  [RPC]: RPC_DISPLAY_NAME
+}
+
 export default {
   props: ['transactions', 'selectedAction', 'selectedPeriod'],
   data() {
@@ -114,7 +141,8 @@ export default {
           value: 'status',
           align: 'center'
         }
-      ]
+      ],
+      mapper: mapper
     }
   },
   computed: {
@@ -166,7 +194,13 @@ export default {
       }
     },
     formatDate(date) {
-      return date.substring(0, 6)
+      return date
+        .toString()
+        .substring(4)
+        .substring(0, 20)
+    },
+    formatTime(time) {
+      return time.toTimeString().substring(0, 8)
     },
     getIcon(action) {
       if (action === 'Top-up') {
