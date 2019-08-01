@@ -7,7 +7,7 @@
             <v-layout>
               <v-flex xs6 my-2 class="subtitle-2">
                 <v-icon small>{{ getIcon(transaction.action) }}</v-icon>
-                {{ item.action === 'Sending' && item.status === 'confirmed' ? 'Sent' : item.action }}
+                {{ transaction.action === 'Sending' && transaction.status === 'confirmed' ? 'Sent' : transaction.action }}
               </v-flex>
               <v-flex xs6 my-2 class="body-2 text-right torus_text--text text--lighten-4 text-capitalize">
                 {{ transaction.status }}
