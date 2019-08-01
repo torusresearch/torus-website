@@ -1,6 +1,7 @@
 import randomId from 'random-id'
+import config from './config.js'
 import onloadTorus from './onload.js'
-import { post, generateJsonRPCObject } from './utils/httpHelpers.js'
+import { generateJsonRPCObject, post } from './utils/httpHelpers.js'
 
 // import WebsocketSubprovider from './websocket.js'
 var Elliptic = require('elliptic').ec
@@ -8,6 +9,7 @@ var log = require('loglevel')
 var BN = require('bn.js')
 const setupMultiplex = require('./utils/setupMultiplex').default
 const toChecksumAddress = require('./utils/toChecksumAddress').default
+const ethUtil = require('ethereumjs-util')
 // Make this a class. Use ES6
 class Torus {
   instanceId = randomId()
@@ -142,7 +144,7 @@ class Torus {
           var ethAddress = this.generateAddressFromPrivKey(privateKey)
           resolve({
             ethAddress,
-            privKey: privateKey.toString('hex')
+            privKey: privateKey.toString('hex', 64)
           })
         })
         .catch(err => {
@@ -176,7 +178,7 @@ class Torus {
     return secret.umod(this.ec.curve.n)
   }
   generateAddressFromPrivKey(privateKey) {
-    var key = this.ec.keyFromPrivate(privateKey.toString('hex'), 'hex')
+    var key = this.ec.keyFromPrivate(privateKey.toString('hex', 64), 'hex')
     var publicKey = key
       .getPublic()
       .encode('hex')
@@ -217,13 +219,34 @@ class Torus {
           resolve(ethAddress)
         })
         .catch(err => {
-          console.error(err)
+          log.error(err)
           reject(err)
         })
     })
   }
   getLookupPromise(lookupShare) {
     return new Promise((resolve, reject) => resolve(lookupShare))
+  }
+
+  getMessageForSigning(publicAddress) {
+    return new Promise((resolve, reject) => {
+      post(`${config.api}/auth/message`, {
+        public_address: publicAddress
+      })
+        .then(response => {
+          const { message } = response || {}
+          resolve(message)
+        })
+        .catch(err => {
+          log.error(err)
+          reject(err)
+        })
+    })
+  }
+
+  hashMessage(message) {
+    const bufferedMessage = ethUtil.toBuffer(message)
+    return ethUtil.hashPersonalMessage(bufferedMessage)
   }
 }
 

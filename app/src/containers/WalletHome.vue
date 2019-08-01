@@ -1,58 +1,118 @@
 <template>
-  <v-layout mt-5 row wrap align-start justify-center align-content-start>
-    <v-flex xs12 sm5>
-      <span>
-        <span class="spanWrapSvgStyle">
-          <img :src="require('../../public/images/wallet-blue.svg')" alt="Wallet" class="svg-setting-small" />
-        </span>
-        <span class="text-bluish headline"> My Portfolio</span>
-        <span class="spanWrapSvgStyle" v-show="isRefreshVisible">
-          <v-btn icon size="18" small @click="refreshBalances">
-            <img :src="require('../../public/images/sync-blue.svg')" alt="Wallet" class="svg-setting-tiny" />
-          </v-btn>
-        </span>
-      </span>
-    </v-flex>
-    <v-flex xs12 sm5 class="text-sm-right">
-      <div>Total Portfolio Value</div>
-      <div>
-        <span>
-          <span class="text-bluish headline spanWrapSvgStyle"> {{ totalPortfolioValue }} </span>
-          <v-select
-            class="select-width spanWrapSvgStyle d-inline-flex ml-2"
-            single-line
-            solo
-            flat
-            :items="supportedCurrencies"
-            :value="selectedCurrency"
-            label=""
-            @change="onCurrencyChange"
-          ></v-select>
-        </span>
-      </div>
-    </v-flex>
-    <v-flex xs12>
-      <token-balances-table :headers="headers" :tokenBalances="finalBalancesArray" @update:select="select" :selected="selected" />
-    </v-flex>
-    <v-flex xs12>
-      <v-layout row wrap>
-        <v-flex offset-xs1 class="text-xs-left" id="flexibtn">
-          <v-tooltip bottom :disabled="!isTransferDisabled">
-            <template v-slot:activator="{ on }">
-              <span v-on="on">
-                <v-btn :disabled="isTransferDisabled" outline large class="btnStyle" @click="initiateTransfer">Transfer</v-btn>
-              </span>
-            </template>
-            <span>Please select a coin/token</span>
-          </v-tooltip>
-          <v-btn outline large class="btnStyle" @click="topup">Top-up</v-btn>
-        </v-flex>
-        <v-flex xs2 align-self-center class="hidden-xs-only">
-          <img :src="require('../../public/images/torus_logo.png')" />
-        </v-flex>
-      </v-layout>
-    </v-flex>
-  </v-layout>
+  <div class="wallet-home">
+    <v-layout wrap align-center :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-6'">
+      <v-flex xs12 px-4 mb-4>
+        <div class="font-weight-bold headline float-left">My Wallet</div>
+      </v-flex>
+      <v-flex xs12 px-4 mb-4 class="text-right hidden-xs-only">
+        <v-btn outlined large color="primary" :disabled="isFreshAccount" class="px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
+          <v-icon left>$vuetify.icons.send</v-icon>
+          Transfer
+        </v-btn>
+        <v-tooltip top :value="isFreshAccount">
+          <template v-slot:activator="{ on }">
+            <v-btn depressed large color="primary" class="px-12 py-1 mt-4" @click="topup" v-on="on">
+              <v-icon left>$vuetify.icons.add</v-icon>
+              Top up
+            </v-btn>
+          </template>
+          <span>Get ETH!</span>
+        </v-tooltip>
+      </v-flex>
+
+      <v-flex xs12 px-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'mb-6'">
+        <v-card class="card-total card-shadow">
+          <v-card-title class="font-weight-bold subtitle-2 pt-6 px-6">
+            TOTAL VALUE
+          </v-card-title>
+          <v-card-text class="pb-4 px-6">
+            <h2 class="display-2 font-weight-bold">
+              {{ totalPortfolioValue }}
+              <span class="body-2 font-weight-light">{{ selectedCurrency }}</span>
+            </h2>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+
+      <v-flex xs12 px-4 class="hidden-sm-and-up mb-3">
+        <v-layout>
+          <v-flex xs6 class="pr-1">
+            <v-btn outlined large block color="primary" :disabled="isFreshAccount" class="px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
+              <v-icon left>$vuetify.icons.send</v-icon>
+              Transfer
+            </v-btn>
+          </v-flex>
+          <v-flex xs6 class="pl-1">
+            <v-tooltip top :value="isFreshAccount">
+              <template v-slot:activator="{ on }">
+                <v-btn depressed large block color="primary" class="px-12 py-1 mt-4" @click="topup" v-on="on">
+                  <v-icon left>$vuetify.icons.add</v-icon>
+                  Top up
+                </v-btn>
+              </template>
+              <span>Get ETH!</span>
+            </v-tooltip>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+
+      <v-flex xs12 px-4>
+        <v-layout wrap justify-space-between align-center>
+          <v-flex xs12 sm6>
+            <v-layout wrap>
+              <v-flex xs12 sm3 v-if="showSearch">
+                <v-text-field
+                  v-model="search"
+                  outlined
+                  hide-details
+                  class="caption search-field"
+                  placeholder="Search"
+                  append-icon="$vuetify.icons.search"
+                ></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm9 class="hidden-xs-only">
+                <v-btn text icon small class="refresh-button" color="primary" @click="refreshBalances()">
+                  <v-icon small>$vuetify.icons.refresh</v-icon>
+                </v-btn>
+                <span class="caption">Last update {{ lastUpdated }}</span>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+          <v-flex xs12 sm6 class="balance-filter" :class="showSearch ? 'pt-2' : ''">
+            <v-layout>
+              <v-flex xs8 class="hidden-sm-and-up refresh">
+                <v-icon color="primary" @click="refreshBalances()" small>$vuetify.icons.refresh</v-icon>
+                <span class="caption">Last update {{ lastUpdated }}</span>
+              </v-flex>
+              <v-flex xs4 sm12 class="text-right currency">
+                <span class="caption">CURRENCY:</span>
+                <v-select
+                  class="pt-0 mt-0 ml-1 caption currency-selector"
+                  height="25px"
+                  hide-details
+                  :items="supportedCurrencies"
+                  :value="selectedCurrency"
+                  @change="onCurrencyChange"
+                  append-icon="$vuetify.icons.select"
+                ></v-select>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+
+      <v-flex xs12>
+        <token-balances-table
+          :headers="headers"
+          :tokenBalances="filteredBalancesArray"
+          @update:select="select"
+          :selected="selected"
+          :search="search"
+          :isFreshAccount="isFreshAccount"
+        />
+      </v-flex>
+    </v-layout>
+  </div>
 </template>
 
 <script>
@@ -76,7 +136,9 @@ export default {
         { text: 'Balance', value: 'formattedBalance', align: 'center' },
         { text: 'Value', value: 'currencyBalance', align: 'right' }
       ],
-      selected: []
+      selected: [],
+      search: '',
+      lastUpdated: ''
     }
   },
   computed: {
@@ -84,16 +146,26 @@ export default {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
     },
     finalBalancesArray() {
-      return this.$store.getters.tokenBalances.finalBalancesArray || []
+      let balances = this.$store.getters.tokenBalances.finalBalancesArray
+      return balances || []
+    },
+    filteredBalancesArray() {
+      const search = this.search || ''
+      var regEx = new RegExp(search, 'i')
+
+      return this.finalBalancesArray.filter(balance => balance.name.match(regEx))
     },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
     },
-    isTransferDisabled() {
-      return this.selected.length === 0
-    },
     isRefreshVisible() {
       return this.$store.state.networkType === MAINNET
+    },
+    showSearch() {
+      return this.finalBalancesArray.length > 5
+    },
+    isFreshAccount() {
+      return this.$store.state.isNewUser
     }
   },
   methods: {
@@ -107,76 +179,97 @@ export default {
       })
     },
     onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', value)
+      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value })
     },
     refreshBalances() {
       this.$store.dispatch('forceFetchTokens')
+      this.setDateUpdated()
     },
     initiateTransfer() {
-      this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
+      // this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
+      this.$router.push({ path: '/wallet/transfer' })
     },
     topup() {
       this.$router.push({ path: '/wallet/topup' })
+    },
+    setDateUpdated() {
+      const currentDateTime = new Date()
+      const day = currentDateTime
+        .getDate()
+        .toString()
+        .padStart(2, '0')
+      const month = (currentDateTime.getMonth() + 1).toString().padStart(2, '0')
+      const date = `${day}/${month}/${currentDateTime
+        .getFullYear()
+        .toString()
+        .substring(2, 4)}`
+
+      const hours = currentDateTime
+        .getHours()
+        .toString()
+        .padStart(2, '0')
+      const mins = currentDateTime
+        .getMinutes()
+        .toString()
+        .padStart(2, '0')
+      const time = `${hours}:${mins}`
+      this.lastUpdated = `${date}, ${time}`
     }
+  },
+  created() {
+    this.setDateUpdated()
   }
 }
 </script>
 
 <style lang="scss" scoped>
-@mixin svg-size($args...) {
-  @each $name, $size in keywords($args) {
-    .svg-setting-#{$name} {
-      width: $size;
-      height: $size;
+@import '../scss/nav-selector.mixin';
+
+.wallet-home {
+  ::v-deep .currency-selector {
+    @include navSelector();
+    max-width: 100px;
+    .v-select__selection {
+      color: var(--v-primary-base) !important;
+      width: 1vw;
     }
   }
-}
 
-@include svg-size($tiny: 18px, $small: 24px, $medium: 38px, $large: 80px);
+  ::v-deep .search-field {
+    .v-input__slot {
+      min-height: 40px;
+    }
 
-%justify-align {
-  justify-content: start;
-  align-items: center;
-}
+    .v-input__append-inner {
+      margin-top: 8px;
+    }
 
-.spanWrapSvgStyle {
-  display: inline-flex;
-  @extend %justify-align;
-}
+    .v-icon.v-icon {
+      width: 12px;
+    }
+  }
 
-.svg-bcg-color {
-  background-color: var(--v-torus_svg_bcg-base);
-}
+  .refresh-button {
+    .v-icon {
+      width: 12px;
+    }
+  }
 
-.text-bluish {
-  color: var(--v-torus_blue-base);
-}
-
-.select-width {
-  width: 80px;
-}
-
-#flexibtn .btnStyle {
-  width: 141px;
-  height: 41px;
-  border: #fff;
-  border-radius: 45px;
-  background-color: #fff !important;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-}
-
-/deep/.v-text-field--solo .v-input__slot,
-.v-text-field--outline .v-input__slot {
-  min-height: auto !important;
-  display: flex !important;
-  align-items: flex-end !important;
-  border-radius: 17px !important;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.16) !important;
-  margin-top: 20px !important;
-  margin-bottom: 0px !important;
-}
-
-/deep/.v-text-field.v-text-field--solo .v-input__control {
-  min-height: auto !important;
+  .v-tooltip__content {
+    background: #fff;
+    border: 1px solid var(--v-primary-base);
+    color: var(--v-primary-base);
+    z-index: 0;
+    &::after {
+      content: ' ';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: var(--v-primary-base) transparent transparent transparent;
+    }
+  }
 }
 </style>

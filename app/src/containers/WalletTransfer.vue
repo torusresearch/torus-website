@@ -1,132 +1,94 @@
 <template>
-  <v-layout mt-5 row wrap align-start align-content-start justify-center>
-    <v-flex xs12 sm9>
-      <span>
-        <span class="spanWrapSvgStyle">
-          <img :src="require('../../public/images/coins.svg')" alt="Wallet" class="svg-setting-small" />
-        </span>
-        <span class="headline"> Transaction Request</span>
-      </span>
-    </v-flex>
-    <v-flex xs12 sm9 class="fill-height">
-      <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
-        <v-form ref="form" v-model="formValid" lazy-validation class="fill-height" @submit.prevent="">
-          <v-container fill-height pl-0 pr-0>
-            <v-layout row wrap align-center justify-center align-content-start>
-              <v-flex xs12 sm6>
-                <span class="body-2">Selected Coin </span>
-              </v-flex>
-              <v-flex xs7 sm4 align-self-center>
-                <v-select single-line solo flat :items="finalBalancesArray" :value="selectedItem" label="Coin" @change="selectedItemChanged">
-                  <template v-slot:item="props">
-                    <v-layout row wrap align-center justify-center>
-                      <v-flex xs2>
-                        <img
-                          :src="require(`../../public/images/logos/${props.item.logo}`)"
-                          class="inline-small"
-                          onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
-                        />
-                      </v-flex>
-                      <v-flex xs10 align-self-center> {{ props.item.name }} </v-flex>
-                    </v-layout>
-                  </template>
-                  <template v-slot:selection="props">
-                    <v-layout row align-center>
-                      <v-flex xs2 mr-2>
-                        <img
-                          :src="require(`../../public/images/logos/${props.item.logo}`)"
-                          class="inline-small"
-                          onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
-                        />
-                      </v-flex>
-                      <v-flex xs10>{{ props.item.name }}</v-flex>
-                    </v-layout>
-                  </template>
-                </v-select>
-              </v-flex>
-              <v-flex xs5 sm2>
-                <span style="margin-left: 5px;">{{ selectedItem && selectedItem.currencyRateText }}</span>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <span class="body-2">Current Balance</span>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <span class="body-2">{{ remainingBalanceString }} </span>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <span class="body-2">Enter To/Wallet Address</span>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field
-                  placeholder="Enter address to send coin to"
-                  aria-label="To/Wallet Address"
-                  v-model="toAddress"
-                  solo
-                  flat
-                  required
-                  persistent-hint
-                  hint="Please enter an Ethereum address or a valid Google email"
-                  :rules="[rules.toAddress, rules.required]"
-                ></v-text-field>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <span class="body-2">Enter Amount To Transfer</span>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <v-text-field
-                  id="amount"
-                  placeholder="Enter amount to send"
-                  aria-label="quantity"
-                  solo
-                  flat
-                  required
-                  v-model="displayAmount"
-                  :rules="[rules.required, lesserThan]"
-                  class="remove-padding-right"
-                >
-                  <template v-slot:append>
-                    <v-btn-toggle v-model="toggle_exclusive" @change="changeSelectedToCurrency" mandatory>
-                      <v-btn flat>
-                        {{ selectedItem && selectedItem.symbol }}
-                      </v-btn>
-                      <v-btn flat>
-                        {{ selectedCurrency }}
-                      </v-btn>
-                    </v-btn-toggle>
-                  </template>
-                </v-text-field>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <span class="body-2">Transaction Fee</span>
-              </v-flex>
-              <v-flex xs12 sm6>
-                <span class="body-2">
-                  <div>{{ gasDisplayString }}</div>
-                  <v-checkbox v-model="isFastChecked" :color="$vuetify.theme.torus_blue" :label="fastGasDisplayString"> </v-checkbox>
-                </span>
-              </v-flex>
-              <v-flex xs12>
-                <v-layout row wrap>
-                  <v-flex class="text-xs-left" id="flexibtn">
-                    <v-tooltip bottom :disabled="formValid">
-                      <template v-slot:activator="{ on }">
-                        <span v-on="on">
-                          <v-btn :disabled="!formValid" outline large class="btnStyle" @click="sendCoin">Confirm</v-btn>
-                        </span>
-                      </template>
-                      <span>Resolve the errors</span>
-                    </v-tooltip>
-                    <v-btn outline large class="btnStyle" @click="goBack">Back</v-btn>
-                  </v-flex>
-                  <v-flex xs2 align-self-center class="hidden-xs-only">
-                    <img :src="require('../../public/images/torus_logo.png')" />
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-form>
-      </v-card>
+  <v-layout wrap class="wallet-transfer" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-6'">
+    <div class="text-black font-weight-bold headline px-4 mb-4">Transfer Details</div>
+    <v-flex xs12 mb-4>
+      <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation>
+        <v-layout wrap>
+          <v-flex xs12 px-4 mb-5 sm6>
+            <span class="subtitle-2">Select your Coin</span>
+            <v-select
+              prepend-inner-icon="$vuetify.icons.eth"
+              append-icon="$vuetify.icons.select"
+              hide-details
+              :items="finalBalancesArray"
+              :value="selectedItem"
+              @change="selectedItemChanged"
+              item-text="name"
+              item-value="tokenAddress"
+              outlined
+            ></v-select>
+          </v-flex>
+          <v-flex xs12 sm6 mb-5 px-4 v-if="selectedItem">
+            <span class="subtitle-2">Account Balance</span>
+            <div>
+              <span class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
+              <span class="caption torus_text--text text--lighten-4">{{ currencyBalanceDisplay }}</span>
+            </div>
+            <div class="caption font-weight-regular torus_text--text text--lighten-4">{{ selectedItem.currencyRateText }}</div>
+          </v-flex>
+        </v-layout>
+        <v-layout wrap>
+          <v-flex xs12 px-4 sm6>
+            <span class="subtitle-2">Recipient Address</span>
+            <v-text-field
+              v-model="toAddress"
+              placeholder="ETH Address / Google Address here"
+              required
+              :rules="[rules.toAddress, rules.required]"
+              outlined
+            ></v-text-field>
+          </v-flex>
+        </v-layout>
+        <v-layout wrap>
+          <v-flex xs12 px-4 sm6>
+            <div>
+              <span class="subtitle-2">You send</span>
+            </div>
+            <v-text-field
+              :suffix="selectedItem.symbol"
+              :hint="convertedAmount ? `~ ${convertedAmount} ${selectedCurrency}` : ''"
+              persistent-hint
+              type="number"
+              outlined
+              required
+              v-model="displayAmount"
+              :rules="[rules.required, lesserThan, moreThanZero]"
+            ></v-text-field>
+          </v-flex>
+        </v-layout>
+        <v-layout wrap>
+          <TransactionSpeedSelect :symbol="selectedItem.symbol" :gas="gas" :displayAmount="displayAmount" @onSelectSpeed="onSelectSpeed" />
+          <v-flex xs12 px-4 sm6>
+            <div>
+              <span class="subtitle-2">Total Cost</span>
+            </div>
+            <v-text-field
+              :suffix="selectedTokenAddress === '0x' ? selectedItem.symbol : ''"
+              :hint="convertedTotalCost ? convertedTotalCostDisplay : ''"
+              persistent-hint
+              outlined
+              readonly
+              :value="totalCost"
+            ></v-text-field>
+          </v-flex>
+        </v-layout>
+        <v-layout mt-4 pr-2 wrap>
+          <v-spacer></v-spacer>
+          <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" class="px-6" type="submit">Continue</v-btn>
+        </v-layout>
+
+        <v-layout mt-4 pr-2 wrap>
+          <v-spacer></v-spacer>
+          <v-dialog v-model="showModalMessage" max-width="550" persistent>
+            <message-modal
+              @onClose="showModalMessage = false"
+              :modal-type="modalMessageSuccess"
+              :title="modalMessageSuccess ? 'Your transfer is being processed' : 'Your transfer cannot be processed'"
+              :detail-text="modalMessageSuccess ? `Your transaction will be completed in approximately ${timeTaken} min` : 'Please try again later'"
+            />
+          </v-dialog>
+        </v-layout>
+      </v-form>
     </v-flex>
   </v-layout>
 </template>
@@ -135,6 +97,9 @@
 import torus from '../torus'
 import { significantDigits, getRandomNumber } from '../utils/utils'
 import config from '../config'
+import TransactionSpeedSelect from '../components/TransactionSpeedSelect'
+import MessageModal from '../components/MessageModal'
+import { get } from '../utils/httpHelpers'
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
 
@@ -143,22 +108,32 @@ const MAX_GAS = 6721975
 export default {
   name: 'walletTransfer',
   props: ['address'],
+  components: {
+    TransactionSpeedSelect,
+    MessageModal
+  },
   data() {
     return {
       tokenAddress: '0x',
       amount: 0,
       displayAmount: '',
+      convertedAmount: '',
       toAddress: '',
-      formValid: true,
+      formValid: false,
       toggle_exclusive: 0,
       gas: 21000,
-      gasPrice: '10', // 10 gwei
-      fastGasPrice: '20',
+      activeGasPrice: '',
       isFastChecked: false,
+      speedSelected: '',
+      totalCost: '',
+      timeTaken: '',
+      convertedTotalCost: '',
       rules: {
-        toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid eth or email Address',
+        toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid ETH or Email Address',
         required: value => !!value || 'Required'
-      }
+      },
+      showModalMessage: false,
+      modalMessageSuccess: null
     }
   },
   computed: {
@@ -194,24 +169,33 @@ export default {
     },
     gasDisplayString() {
       const currencyMultiplier = this.getCurrencyMultiplier
-      const ethFee = this.gas * this.gasPrice * 10 ** -9
+      const ethFee = this.gas * this.fastGasPrice * 10 ** -9
       const currencyFee = ethFee * currencyMultiplier
       return `${significantDigits(currencyFee)} ${this.selectedCurrency} / ${significantDigits(ethFee)} ETH`
     },
     fastGasDisplayString() {
       const currencyMultiplier = this.getCurrencyMultiplier
-      const ethFee = this.gas * this.fastGasPrice * 10 ** -9
+      const ethFee = this.gas * this.fastestGasPrice * 10 ** -9
       const currencyFee = ethFee * currencyMultiplier
       return `Faster with ${significantDigits(currencyFee)} ${this.selectedCurrency} / ${significantDigits(ethFee)} ETH`
     },
     remainingBalanceString() {
       if (this.selectedItem) return `${this.selectedItem.currencyBalance} / ${this.selectedItem.formattedBalance}`
       return ''
+    },
+    convertedTotalCostDisplay() {
+      return `~ ${significantDigits(this.convertedTotalCost)} ${this.selectedCurrency}`
+    },
+    currencyBalanceDisplay() {
+      // = 390.00 USD
+      // USD 4,138.16
+      const getNumber = this.selectedItem.currencyBalance.split(' ')[1].replace(',', '')
+      return `= ${getNumber} ${this.selectedCurrency}`
     }
   },
   watch: {
-    toAddress: function(newValue, oldValue) {
-      this.calculateGas()
+    toAddress: async function(newValue, oldValue) {
+      if (newValue !== oldValue) this.gas = await this.calculateGas(newValue)
     },
     displayAmount: function(newValue, oldValue) {
       if (this.toggle_exclusive === 0) {
@@ -219,50 +203,65 @@ export default {
       } else {
         this.amount = this.displayAmount / this.getCurrencyTokenRate
       }
+
+      this.convertedAmount = significantDigits(this.displayAmount * this.getCurrencyTokenRate)
+
+      this.updateTotalCost()
     }
   },
   methods: {
+    moreThanZero: function(value) {
+      if (this.selectedItem) {
+        return parseFloat(value) > 0 || 'Invalid amount'
+      }
+      return ''
+    },
     lesserThan: function(value) {
       if (this.selectedItem) {
         let amount = value
         if (this.toggle_exclusive === 1) {
           amount = amount / this.getCurrencyTokenRate
         }
-        return parseFloat(amount) < this.selectedItem.computedBalance || 'Must be lesser than current balance'
+        return parseFloat(amount) <= this.selectedItem.computedBalance || 'Insufficient balance for transaction'
       }
       return ''
     },
-    calculateGas() {
-      if (torus.web3.utils.isAddress(this.toAddress)) {
-        if (this.selectedTokenAddress === '0x') {
-          torus.web3.eth
-            .estimateGas({ to: this.toAddress })
-            .then(response => {
-              this.gas = response
-            })
-            .catch(err => {
-              console.log(err)
-              this.gas = MAX_GAS
-            })
-        } else {
-          const selectedAddress = this.$store.state.selectedAddress
-          const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
-          contractInstance.methods
-            .transfer(this.toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString())
-            .estimateGas({ from: selectedAddress })
-            .then(response => {
-              this.gas = response
-            })
-            .catch(err => {
-              console.log(err)
-              this.gas = MAX_GAS
-            })
-        }
+    async calculateGas(toAddress) {
+      if (torus.web3.utils.isAddress(toAddress)) {
+        return new Promise((resolve, reject) => {
+          if (this.selectedTokenAddress === '0x') {
+            torus.web3.eth
+              .estimateGas({ to: toAddress })
+              .then(response => {
+                resolve(response)
+              })
+              .catch(err => {
+                console.log(err)
+                resolve(MAX_GAS)
+              })
+          } else {
+            const selectedAddress = this.$store.state.selectedAddress
+            const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
+            contractInstance.methods
+              .transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString())
+              .estimateGas({ from: selectedAddress })
+              .then(response => {
+                resolve(response)
+              })
+              .catch(err => {
+                console.log(err)
+                resolve(MAX_GAS)
+              })
+          }
+        })
+      } else {
+        return 21000
       }
     },
-    selectedItemChanged(value) {
-      this.tokenAddress = value.tokenAddress
-      this.calculateGas()
+    async selectedItemChanged(tokenAddress) {
+      this.tokenAddress = tokenAddress
+      this.gas = await this.calculateGas(this.toAddress)
+      this.updateTotalCost()
     },
     changeSelectedToCurrency(value) {
       const currencyRate = this.getCurrencyTokenRate
@@ -274,7 +273,7 @@ export default {
     },
     async sendCoin() {
       if (this.$refs.form.validate()) {
-        const gasPrice = torus.web3.utils.toBN(this.isFastChecked ? (this.fastGasPrice * 10 ** 9).toString() : (this.gasPrice * 10 ** 9).toString())
+        const fastGasPrice = torus.web3.utils.toBN((this.activeGasPrice * 10 ** 9).toString())
         let toAddress
         if (torus.web3.utils.isAddress(this.toAddress)) {
           toAddress = torus.web3.utils.toChecksumAddress(this.toAddress)
@@ -291,161 +290,124 @@ export default {
             toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], this.toAddress)
           }
         }
+        this.gas = await this.calculateGas(toAddress)
         const selectedAddress = this.$store.state.selectedAddress
-        if (this.selectedTokenAddress === '0x')
-          torus.web3.eth
-            .sendTransaction({
+        if (this.selectedTokenAddress === '0x') {
+          console.log('TX SENT: ', {
+            from: selectedAddress,
+            to: toAddress,
+            value: torus.web3.utils.toWei(this.amount.toString()),
+            gas: this.gas.toString(),
+            gasPrice: fastGasPrice
+          })
+          torus.web3.eth.sendTransaction(
+            {
               from: selectedAddress,
               to: toAddress,
               value: torus.web3.utils.toWei(this.amount.toString()),
               gas: this.gas.toString(),
-              gasPrice
-            })
-            .on('transactionHash', () => {
-              this.$router.push('/wallet/history')
-            })
-            .on('error', err => console.log(err))
-        else {
+              gasPrice: fastGasPrice
+            },
+            (err, transactionHash) => {
+              if (err) {
+                this.showModalMessage = true
+                this.modalMessageSuccess = false
+                console.log(err)
+              } else {
+                this.showModalMessage = true
+                this.modalMessageSuccess = true
+              }
+            }
+          )
+        } else {
           const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
-          contractInstance.methods
-            .transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString())
-            .send({
+          contractInstance.methods.transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()).send(
+            {
               from: selectedAddress,
               gas: this.gas.toString(),
-              gasPrice
-            })
-            .on('transactionHash', () => {
-              this.$router.push('/wallet/history')
-            })
-            .on('error', err => console.log(err))
+              fastGasPrice
+            },
+            (err, transactionHash) => {
+              if (err) {
+                this.showModalMessage = true
+                this.modalMessageSuccess = false
+                console.log(err)
+              } else {
+                this.showModalMessage = true
+                this.modalMessageSuccess = true
+              }
+            }
+          )
         }
       }
     },
+    getGasDisplayString(fastGasPrice) {
+      const currencyFee = this.getGasAmount(fastGasPrice)
+      return `${significantDigits(currencyFee)} ${this.selectedCurrency}`
+    },
+    getGasAmount(fastGasPrice) {
+      const currencyMultiplier = this.getCurrencyMultiplier
+      const ethFee = this.getEthAmount(this.gas, fastGasPrice)
+      const currencyFee = ethFee * currencyMultiplier
+
+      return currencyFee
+    },
+    getEthAmount(gas, gasPrice) {
+      return gas * gasPrice * 10 ** -9
+    },
     goBack() {
       this.$router.go(-1)
+    },
+    getGasSpeed() {
+      if (this.speedSelected === 'average') {
+        return this.averageGasPriceSpeed
+      } else if (this.speedSelected === 'fast') {
+        return this.fastGasPriceSpeed
+      } else if (this.speedSelected === 'fastest') {
+        return this.fastestGasPriceSpeed
+      }
+    },
+    updateTotalCost() {
+      if (!this.displayAmount || this.speedSelected === '') {
+        this.totalCost = ''
+        this.convertedTotalCost = ''
+        return
+      }
+
+      this.convertedTotalCost = this.convertedAmount + this.getGasAmount(this.activeGasPrice)
+
+      if (this.selectedTokenAddress === '0x') {
+        this.totalCost = this.convertedTotalCost / this.getCurrencyTokenRate
+      } else {
+        this.totalCost = `${this.displayAmount} ${this.selectedItem.symbol} + ${this.getGasAmount(this.activeGasPrice)} ETH`
+      }
+    },
+    onSelectSpeed(data) {
+      console.log('SET DATA: ', data)
+      this.speedSelected = data.speedSelected
+      this.activeGasPrice = data.activeGasPrice
+      this.timeTaken = data.speed
+      this.gas = data.gas
+
+      if (data.isReset) {
+        this.calculateGas()
+      }
+      this.updateTotalCost()
     }
   },
   created() {
     this.tokenAddress = this.address
-    fetch('https://ethgasstation.info/json/ethgasAPI.json', {
-      headers: {},
-      referrer: 'http://ethgasstation.info/json/',
-      referrerPolicy: 'no-referrer-when-downgrade',
-      body: null,
-      method: 'GET',
-      mode: 'cors'
-    })
-      .then(resp => resp.json())
-      .then(
-        ({
-          average: averageTimes10,
-          block_time: blockTime,
-          blockNum,
-          fast: fastTimes10,
-          fastest: fastestTimes10,
-          fastestWait,
-          fastWait,
-          safeLow: safeLowTimes10,
-          safeLowWait,
-          speed
-        }) => {
-          const [average, fastest] = [averageTimes10, fastestTimes10].map(price => parseFloat(price) / 10)
-          this.gasPrice = average
-          this.fastGasPrice = fastest
-        }
-      )
-      .catch(err => {
-        console.log(err)
-      })
   }
 }
 </script>
 
 <style lang="scss" scoped>
-@mixin svg-size($args...) {
-  @each $name, $size in keywords($args) {
-    .svg-setting-#{$name} {
-      width: $size;
-      height: $size;
+.wallet-transfer {
+  ::v-deep .v-messages {
+    text-align: right;
+    &.error--text {
+      text-align: left;
     }
   }
-}
-
-@include svg-size($tiny: 18px, $small: 24px, $medium: 38px, $large: 80px);
-
-.spanWrapSvgStyle {
-  display: inline-flex;
-  @extend %justify-align;
-}
-
-%justify-align {
-  justify-content: start;
-  align-items: center;
-}
-
-.text-bluish {
-  color: var(--v-torus_blue-base);
-}
-
-%rounded {
-  border-radius: 45px;
-}
-
-#flexibtn .btnStyle {
-  width: 141px;
-  height: 41px;
-  border: #fff;
-  background-color: #fff !important;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-  @extend %rounded;
-}
-
-/deep/.v-btn--active {
-  background: var(--v-torus_blue-base) !important;
-  color: #fff !important;
-}
-
-/deep/.v-item-group {
-  box-shadow: none !important;
-}
-
-.inline-small {
-  width: 25px;
-  height: 25px;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-/deep/.v-text-field--solo .v-input__slot,
-.v-text-field--outline .v-input__slot {
-  min-height: auto !important;
-  display: flex !important;
-  align-items: flex-end !important;
-  border-radius: 17px !important;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.16) !important;
-  margin-top: 20px !important;
-  margin-bottom: 0px !important;
-}
-
-/deep/.v-text-field.remove-padding-right .v-input__control > .v-input__slot {
-  padding-right: 0;
-
-  .v-btn-toggle {
-    border-radius: 0 17px 17px 0;
-    .v-btn:first-child {
-      border-radius: 17px 0 0 17px;
-    }
-    .v-btn:last-child {
-      border-radius: 0 17px 17px 0;
-    }
-  }
-}
-
-/deep/.v-text-field.v-text-field--solo .v-input__control {
-  min-height: auto !important;
-}
-
-/deep/.v-input__slot .v-label {
-  margin-bottom: 0px !important;
 }
 </style>

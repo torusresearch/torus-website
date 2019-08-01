@@ -2,8 +2,8 @@
   <div class="bottomsheet">
     <div class="glass" :class="{ open: show }" @click="close"></div>
     <div class="bottomsheet-body" :class="{ open: show }">
-      <div class="bottomsheet-header text-xs-center">
-        <v-btn fab flat color="white" @click="close">
+      <div class="bottomsheet-header text-center">
+        <v-btn fab text color="white" @click="close">
           <v-icon color="grey">expand_more</v-icon>
         </v-btn>
       </div>

@@ -274,8 +274,20 @@ export default class TorusController extends EventEmitter {
   // =============================================================================
 
   initTorusKeyring(keyArray, addresses) {
-    this.keyringController.deserialize(keyArray)
-    this.accountTracker.syncWithAddresses(addresses)
+    return new Promise((resolve, reject) => {
+      this.keyringController
+        .deserialize(keyArray)
+        .then(resp => {
+          log.info('keyring deserialized')
+          resolve()
+        })
+        .catch(err => {
+          reject(err)
+          log.error('unable to deserialize keyring', err)
+        })
+      this.accountTracker.syncWithAddresses(addresses)
+    })
+
     // this.setupControllerConnection()
     // this.accountTracker._updateAccounts()
   }
@@ -644,6 +656,29 @@ export default class TorusController extends EventEmitter {
    * @param {string} origin - The URI of the requesting resource.
    */
   setupProviderConnection(inStream, outStream, origin) {
+    const engine = this.setupProviderEngine(origin)
+
+    // setup connection
+    const providerStream = createEngineStream({ engine })
+
+    inStream
+      .pipe(providerStream)
+      .pipe(outStream)
+      .on('error', err => {
+        // cleanup filter polyfill middleware
+        engine._middleware.forEach(mid => {
+          if (mid.destroy && typeof mid.destroy === 'function') {
+            mid.destroy()
+          }
+        })
+        if (err) log.error(err)
+      })
+  }
+
+  /**
+   * A method for creating a provider that is safely restricted for the requesting domain.
+   **/
+  setupProviderEngine(origin, getSiteMetadata) {
     // setup json rpc engine stack
     const engine = new RpcEngine()
     const provider = this.provider
@@ -665,18 +700,7 @@ export default class TorusController extends EventEmitter {
     // engine.push(this.preferencesController.requestWatchAsset.bind(this.preferencesController))
     // forward to metamask primary provider
     engine.push(providerAsMiddleware(provider))
-
-    // setup connection
-    const providerStream = createEngineStream({ engine })
-
-    inStream
-      .pipe(providerStream)
-      .pipe(outStream)
-      .on('error', err => {
-        // cleanup filter polyfill middleware
-        filterMiddleware.destroy()
-        if (err) log.error(err)
-      })
+    return engine
   }
 
   /**

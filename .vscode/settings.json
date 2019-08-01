@@ -1,39 +1,29 @@
 {
-  "git.autofetch": true,
-  "editor.formatOnSave": false,
-  "eslint.autoFixOnSave": true,
-  "window.zoomLevel": 0,
-  "javascript.updateImportsOnFileMove.enabled": "always",
-  "git.confirmSync": false,
-  "git.enableSmartCommit": true,
-  "prettier.eslintIntegration": true,
-  "eslint.alwaysShowStatus": true,
-  "prettier.jsxBracketSameLine": true,
-  "prettier.printWidth": 150,
-  "workbench.statusBar.feedback.visible": false,
-  "eslint.provideLintTask": true,
   "eslint.options": {
-    "extends": ["plugin:vue/essential", "@vue/standard", "prettier"],
-    "plugins": ["prettier", "vue"],
-    "parserOptions": {
-      "parser": "babel-eslint",
-      "ecmaVersion": 6
+    "env": {
+      "browser": true,
+      "es6": true,
+      "node": true
     },
+    "extends": ["@vue/standard", "plugin:vue/essential", "prettier"],
+    "parserOptions": {
+      "ecmaVersion": 6,
+      "parser": "babel-eslint"
+    },
+    "plugins": ["prettier", "vue"],
     "rules": {
-      "quotes": [2, "single"],
+      "import/prefer-default-export": 0,
+      "jsx-a11y/label-has-for": 0,
+      "linebreak-style": 0,
       "max-len": [
         2,
         {
           "code": 150
         }
       ],
-      "react/jsx-filename-extension": 0,
-      "jsx-a11y/label-has-for": 0,
-      "no-console": 0,
-      "import/prefer-default-export": 0,
-      "no-nested-ternary": 0,
       "no-confusing-arrow": 0,
-      "linebreak-style": 0,
+      "no-console": 0,
+      "no-nested-ternary": 0,
       "no-param-reassign": [
         "error",
         {
@@ -43,20 +33,32 @@
       "prettier/prettier": [
         "error",
         {
-          "singleQuote": true,
           "printWidth": 150,
-          "semi": false
+          "semi": false,
+          "singleQuote": true,
+          "htmlWhitespaceSensitivity": "ignore"
         }
-      ]
-    },
-    "env": {
-      "es6": true,
-      "browser": true,
-      "node": true
+      ],
+      "quotes": [2, "single"],
+      "react/jsx-filename-extension": 0
     }
   },
-  "eslint.validate": ["javascript", "javascriptreact", { "language": "vue", "autoFix": true }],
-  "sync.gist": "b9c42095e8085914126265fb8800f605",
-  "latex-workshop.view.pdf.viewer": "browser",
-  "workbench.iconTheme": "material-icon-theme"
+  "eslint.provideLintTask": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    {
+      "autoFix": true,
+      "language": "vue"
+    }
+  ],
+  "eslint.workingDirectories": [
+    {
+      "changeProcessCWD": true,
+      "directory": "./app"
+    }
+  ],
+  "prettier.eslintIntegration": true,
+  "prettier.jsxBracketSameLine": true,
+  "prettier.printWidth": 150
 }

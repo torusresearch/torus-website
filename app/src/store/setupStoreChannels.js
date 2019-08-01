@@ -1,10 +1,10 @@
-import log from 'loglevel'
-import torus from '../torus'
-import stream from 'stream'
-import pump from 'pump'
-import VuexStore from './store'
 import BroadcastChannel from 'broadcast-channel'
-import { RPC, MAINNET } from '../utils/enums'
+import log from 'loglevel'
+import pump from 'pump'
+import stream from 'stream'
+import torus from '../torus'
+import { MAINNET, RPC } from '../utils/enums'
+import VuexStore from './store'
 
 /* 
 Edited to change networkId => network state. Has an implication of changing neworkVersion 
@@ -44,59 +44,36 @@ torus.communicationMux.getStream('show_wallet').on('data', function(chunk) {
   VuexStore.dispatch('showWalletPopup', { network: chunk.data.calledFromEmbed })
 })
 
+torus.communicationMux.getStream('provider_change').on('data', function(chunk) {
+  VuexStore.dispatch('showProviderChangePopup', { ...chunk.data })
+})
+
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
 })
 var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
 bc.onmessage = function(ev) {
-  // TODO: MUST MODIFY AND SIMPLIFY THIS
   if (ev.data.type === 'confirm-transaction') {
     let { torusController } = torus
-    let state = torusController.getState()
+    let state = VuexStore.state
     if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
-      let unapprovedPersonalMsgs = []
-      for (let id in state.unapprovedPersonalMsgs) {
-        unapprovedPersonalMsgs.push(state.unapprovedPersonalMsgs[id])
-      }
-      unapprovedPersonalMsgs = unapprovedPersonalMsgs.sort((a, b) => {
-        return a.time - b.time
-      })
-      let msgParams = unapprovedPersonalMsgs[0].msgParams
+      let msgParams = state.unapprovedPersonalMsgs[ev.data.id].msgParams
       log.info('PERSONAL MSG PARAMS:', msgParams)
-      msgParams.metamaskId = parseInt(unapprovedPersonalMsgs[0].id)
+      msgParams.metamaskId = parseInt(ev.data.id, 10)
       torusController.signPersonalMessage(msgParams)
     } else if (Object.keys(state.unapprovedMsgs).length > 0) {
-      let unapprovedMsgs = []
-      for (let id in state.unapprovedMsgs) {
-        unapprovedMsgs.push(state.unapprovedMsgs[id])
-      }
-      unapprovedMsgs = unapprovedMsgs.sort((a, b) => {
-        return a.time - b.time
-      })
-      let msgParams = unapprovedMsgs[0].msgParams
+      let msgParams = state.unapprovedMsgs[ev.data.id].msgParams
       log.info(' MSG PARAMS:', msgParams)
-      msgParams.metamaskId = parseInt(unapprovedMsgs[0].id)
+      msgParams.metamaskId = parseInt(ev.data.id, 10)
       torusController.signMessage(msgParams)
     } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
-      let unapprovedTypedMessages = []
-      for (let id in state.unapprovedTypedMessages) {
-        unapprovedTypedMessages.push(state.unapprovedTypedMessages[id])
-      }
-      unapprovedTypedMessages = unapprovedTypedMessages.sort((a, b) => {
-        return a.time - b.time
-      })
-      let msgParams = unapprovedTypedMessages[0].msgParams
+      let msgParams = state.unapprovedTypedMessages[ev.data.id].msgParams
       log.info('TYPED MSG PARAMS:', msgParams)
-      msgParams.metamaskId = parseInt(unapprovedTypedMessages[0].id)
+      msgParams.metamaskId = parseInt(ev.data.id, 10)
       torusController.signTypedMessage(msgParams)
     } else if (Object.keys(state.transactions).length > 0) {
-      let transactions = []
-      for (let id in state.transactions) {
-        if (state.transactions[id].status === 'unapproved') {
-          transactions.push(state.transactions[id])
-        }
-      }
-      var txMeta = transactions[0]
+      const unApprovedTransactions = VuexStore.getters.unApprovedTransactions
+      var txMeta = unApprovedTransactions.find(x => x.id === ev.data.id)
       log.info('STANDARD TX PARAMS:', txMeta)
 
       if (ev.data.gasPrice) {
@@ -113,49 +90,37 @@ bc.onmessage = function(ev) {
     }
   } else if (ev.data.type === 'deny-transaction') {
     let { torusController } = torus
-    let state = torusController.getState()
+    let state = VuexStore.state
     if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
-      let unapprovedPersonalMsgs = []
-      for (let id in state.unapprovedPersonalMsgs) {
-        unapprovedPersonalMsgs.push(state.unapprovedPersonalMsgs[id])
-      }
-      unapprovedPersonalMsgs = unapprovedPersonalMsgs.sort((a, b) => {
-        return a.time - b.time
-      })
-      let msgParams = unapprovedPersonalMsgs[0].msgParams
-      msgParams.metamaskId = parseInt(unapprovedPersonalMsgs[0].id)
-      torusController.cancelPersonalMessage(msgParams.metamaskId)
+      torusController.cancelPersonalMessage(parseInt(ev.data.id, 10))
     } else if (Object.keys(state.unapprovedMsgs).length > 0) {
-      let unapprovedMsgs = []
-      for (let id in state.unapprovedMsgs) {
-        unapprovedMsgs.push(state.unapprovedMsgs[id])
-      }
-      unapprovedMsgs = unapprovedMsgs.sort((a, b) => {
-        return a.time - b.time
-      })
-      let msgParams = unapprovedMsgs[0].msgParams
-      msgParams.metamaskId = parseInt(unapprovedMsgs[0].id)
-      torusController.cancelMessage(msgParams.metamaskId)
+      torusController.cancelMessage(parseInt(ev.data.id, 10))
     } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
-      let unapprovedTypedMessages = []
-      for (let id in state.unapprovedTypedMessages) {
-        unapprovedTypedMessages.push(state.unapprovedTypedMessages[id])
-      }
-      unapprovedTypedMessages = unapprovedTypedMessages.sort((a, b) => {
-        return a.time - b.time
-      })
-      let msgParams = unapprovedTypedMessages[0].msgParams
-      msgParams.metamaskId = parseInt(unapprovedTypedMessages[0].id)
-      torusController.cancelTypedMessage(msgParams.metamaskId)
+      torusController.cancelTypedMessage(parseInt(ev.data.id, 10))
     } else if (Object.keys(state.transactions).length > 0) {
-      let transactions = []
-      for (let id in state.transactions) {
-        if (state.transactions[id].status === 'unapproved') {
-          transactions.push(state.transactions[id])
-        }
-      }
-      torusController.cancelTransaction(transactions[0].id)
+      torusController.cancelTransaction(parseInt(ev.data.id, 10))
     }
   }
 }
+
+var providerChangeChannel = new BroadcastChannel('torus_provider_change_channel')
+providerChangeChannel.onmessage = function(ev) {
+  if (ev.data && ev.data.type === 'confirm-provider-change' && ev.data.approve) {
+    log.info('Provider change approved', ev.data.payload)
+    VuexStore.dispatch('setProviderType', ev.data.payload)
+  } else if (ev.data && ev.data.type === 'deny-provider-change') {
+    log.info('Provider change denied')
+  }
+}
+
+console.log('setup logging channel')
+var logoutChannel = new BroadcastChannel('torus_logout_channel')
+logoutChannel.onmessage = function(ev) {
+  log.info('received logging message', ev)
+  if (ev.data && ev.data.type === 'logout') {
+    log.info('Logging Out', ev.data)
+    VuexStore.dispatch('logOut')
+  }
+}
+
 export default VuexStore

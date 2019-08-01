@@ -3,9 +3,10 @@ import Router from 'vue-router'
 import store from './store'
 import Popup from './views/Popup.vue'
 import Confirm from './views/Confirm.vue'
+import ProviderChange from './views/ProviderChange.vue'
 import Wallet from './views/Wallet.vue'
+import Login from './views/Login.vue'
 import WalletHome from './containers/WalletHome.vue'
-import Login from './containers/Login.vue'
 import WalletHistory from './containers/WalletHistory.vue'
 import WalletSettings from './containers/WalletSettings.vue'
 import WalletAccounts from './containers/WalletAccounts.vue'
@@ -37,6 +38,12 @@ const router = new Router({
       meta: { requiresAuth: false }
     },
     {
+      path: '/logout',
+      name: 'logout',
+      component: Login,
+      meta: { requiresAuth: false }
+    },
+    {
       path: '/popup',
       name: 'popup',
       component: Popup,
@@ -46,6 +53,11 @@ const router = new Router({
       path: '/confirm',
       name: 'confirm',
       component: Confirm
+    },
+    {
+      path: '/providerchange',
+      name: 'providerchange',
+      component: ProviderChange
     },
     {
       path: '/wallet',
@@ -104,7 +116,8 @@ const router = new Router({
           component: WalletTopup
         }
       ]
-    }
+    },
+    { path: '*', component: Login }
   ]
 })
 
@@ -113,7 +126,7 @@ router.beforeResolve((to, ___, next) => {
     next()
   } else {
     if (store.state.selectedAddress === '') {
-      next({ name: 'login' })
+      next({ name: 'login', query: { redirect: to.path } })
     } else {
       next()
     }

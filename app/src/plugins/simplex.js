@@ -1,7 +1,7 @@
 import config from '../config'
 import { post, get } from '../utils/httpHelpers'
 
-const getQuote = reqObj => {
+const postQuote = reqObj => {
   try {
     const options = {
       mode: 'cors',
@@ -15,7 +15,7 @@ const getQuote = reqObj => {
     console.error(e)
   }
 }
-const getOrder = reqObj => {
+const postOrder = reqObj => {
   try {
     const options = {
       mode: 'cors',
@@ -30,6 +30,23 @@ const getOrder = reqObj => {
   }
 }
 
+const getPastOrders = (reqObj, params = {}) => {
+  try {
+    const options = {
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      }
+    }
+    const url = new URL(`${config.simplexHost}/pastorders`)
+    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
+    return get(url, reqObj, options)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 const getStatus = userId => {
   try {
     return get(`${config.simplexHost}/status/${userId}`)
@@ -37,4 +54,4 @@ const getStatus = userId => {
     console.error(e)
   }
 }
-export { getQuote, getOrder, getStatus }
+export { postQuote, postOrder, getStatus, getPastOrders }
