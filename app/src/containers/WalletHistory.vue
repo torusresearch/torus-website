@@ -186,6 +186,9 @@ export default {
           .then(response => log.info('successfully patched', response))
           .catch(err => log.error('unable to patch tx', err))
       }
+
+      const totalAmountString = `${significantDigits(parseFloat(x.total_amount))} ETH`
+      const currencyAmountString = `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
       const finalObj = {
         id: x.created_at,
         date: new Date(x.created_at).toDateString().substring(4),
@@ -195,9 +198,10 @@ export default {
         slicedTo: addressSlicer(x.to),
         action: this.wallets.indexOf(x.to) >= 0 ? 'Received' : 'Sending',
         totalAmount: x.total_amount,
-        totalAmountString: `${significantDigits(parseFloat(x.total_amount))} ETH`,
+        totalAmountString: totalAmountString,
         currencyAmount: x.currency_amount,
-        currencyAmountString: `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`,
+        currencyAmountString: currencyAmountString,
+        amount: `${totalAmountString} / ${currencyAmountString}`,
         status: status,
         etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network)
       }
