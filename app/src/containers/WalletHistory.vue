@@ -92,6 +92,9 @@ export default {
       let currencyMultiplier = 1
       if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
       return currencyMultiplier
+    },
+    wallets() {
+      return Object.keys(this.$store.state.wallet).filter(acc => acc !== this.selectedAddress)
     }
   },
   methods: {
@@ -108,7 +111,7 @@ export default {
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
           const txObj = {}
           txObj.id = txOld.time
-          txObj.action = 'Sending'
+          txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? 'Received' : 'Sending'
           txObj.date = new Date(txOld.time).toDateString().substring(4)
           txObj.from = txOld.txParams.from
           txObj.slicedFrom = addressSlicer(txOld.txParams.from)
@@ -190,6 +193,7 @@ export default {
         slicedFrom: addressSlicer(x.from),
         to: x.to,
         slicedTo: addressSlicer(x.to),
+        action: this.wallets.indexOf(x.to) >= 0 ? 'Received' : 'Sending',
         totalAmount: x.total_amount,
         totalAmountString: `${significantDigits(parseFloat(x.total_amount))} ETH`,
         currencyAmount: x.currency_amount,

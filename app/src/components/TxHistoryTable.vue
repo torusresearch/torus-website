@@ -12,7 +12,7 @@
     <template v-slot:item.action="{ item }">
       <span>
         <v-icon>{{ getIcon(item.action) }}</v-icon>
-        {{ item.action }}
+        {{ item.action === 'Sending' && item.status === 'confirmed' ? 'Sent' : item.action }}
       </span>
     </template>
     <template v-slot:item.from="{ item }">
