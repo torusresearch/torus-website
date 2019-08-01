@@ -129,7 +129,7 @@ export default {
       timeTaken: '',
       convertedTotalCost: '',
       rules: {
-        toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid eth or email Address',
+        toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid ETH or Email Address',
         required: value => !!value || 'Required'
       },
       showModalMessage: false,
