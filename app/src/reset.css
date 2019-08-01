@@ -3,7 +3,7 @@ html {
   height: inherit;
   overflow-y: auto !important;
   max-width: 100%;
-  overflow-x: hidden;  
+  overflow-x: hidden;
 }
 
 /* .container.fill-height {
