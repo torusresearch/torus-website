@@ -46,7 +46,7 @@
     </nav>
     <v-container class="py-0 hidden-xs-only">
       <v-tabs class="mx-4">
-        <v-tab v-for="headerItem in headerItems" :key="headerItem.name" :to="headerItem.route">
+        <v-tab v-for="headerItem in headerItems" :key="headerItem.name" :to="headerItem.route" class="mr-4">
           {{ headerItem.display }}
         </v-tab>
       </v-tabs>
@@ -90,6 +90,7 @@ export default {
 .v-tab {
   text-transform: inherit;
   font-size: 16px;
+  min-width: 50px;
 }
 
 .beta-text {
