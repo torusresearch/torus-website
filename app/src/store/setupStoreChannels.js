@@ -113,7 +113,6 @@ providerChangeChannel.onmessage = function(ev) {
   }
 }
 
-console.log('setup logging channel')
 var logoutChannel = new BroadcastChannel('torus_logout_channel')
 logoutChannel.onmessage = function(ev) {
   log.info('received logging message', ev)

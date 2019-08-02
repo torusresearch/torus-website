@@ -219,6 +219,7 @@ var VuexStore = new Vuex.Store({
     logOut(context, payload) {
       context.commit('logOut', initialState)
       window.sessionStorage.clear()
+      statusStream.write({ loggedIn: false })
     },
     loginInProgress(context, payload) {
       context.commit('setLoginInProgress', payload)
