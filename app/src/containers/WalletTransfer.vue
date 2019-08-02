@@ -7,7 +7,6 @@
           <v-flex xs12 px-4 mb-5 sm6>
             <span class="subtitle-2">Select your Coin</span>
             <v-select
-              prepend-inner-icon="$vuetify.icons.eth"
               append-icon="$vuetify.icons.select"
               hide-details
               :items="finalBalancesArray"
@@ -16,7 +15,15 @@
               item-text="name"
               item-value="tokenAddress"
               outlined
-            ></v-select>
+            >
+              <template v-slot:prepend-inner>
+                <img
+                  :src="require(`../../public/images/logos/${selectedItem.logo}`)"
+                  height="24px"
+                  onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                />
+              </template>
+            </v-select>
           </v-flex>
           <v-flex xs12 sm6 mb-5 px-4 v-if="selectedItem">
             <span class="subtitle-2">Account Balance</span>
