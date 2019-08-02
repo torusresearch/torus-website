@@ -310,8 +310,11 @@ export default {
             },
             (err, transactionHash) => {
               if (err) {
-                this.showModalMessage = true
-                this.modalMessageSuccess = false
+                var regEx = new RegExp('User denied transaction signature', 'i')
+                if (!err.message.match(regEx)) {
+                  this.showModalMessage = true
+                  this.modalMessageSuccess = false
+                }
                 console.log(err)
               } else {
                 this.showModalMessage = true
