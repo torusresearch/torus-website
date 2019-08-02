@@ -317,7 +317,7 @@ export default {
             },
             (err, transactionHash) => {
               if (err) {
-                var regEx = new RegExp('User denied transaction signature', 'i')
+                const regEx = new RegExp('User denied transaction signature', 'i')
                 if (!err.message.match(regEx)) {
                   this.showModalMessage = true
                   this.modalMessageSuccess = false
@@ -339,8 +339,11 @@ export default {
             },
             (err, transactionHash) => {
               if (err) {
-                this.showModalMessage = true
-                this.modalMessageSuccess = false
+                const regEx = new RegExp('User denied transaction signature', 'i')
+                if (!err.message.match(regEx)) {
+                  this.showModalMessage = true
+                  this.modalMessageSuccess = false
+                }
                 console.log(err)
               } else {
                 this.showModalMessage = true
