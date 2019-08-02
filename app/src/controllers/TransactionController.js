@@ -197,7 +197,6 @@ class TransactionController extends EventEmitter {
       methodParams
     })
     this.addTx(txMeta)
-    this.emit('newUnapprovedTx', txMeta)
 
     try {
       // add default tx params
@@ -208,6 +207,8 @@ class TransactionController extends EventEmitter {
       this.txStateManager.updateTx(txMeta, 'Failed to calculate gas defaults.')
       throw error
     }
+
+    this.emit('newUnapprovedTx', txMeta)
 
     txMeta.loadingDefaults = false
 
