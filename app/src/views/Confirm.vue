@@ -5,7 +5,7 @@
         <div class="text-black font-weight-bold headline float-left">{{ header }}</div>
         <img :src="require('../../public/img/icons/transaction.svg')" class="ml-2" />
       </v-layout>
-      <v-layout wrap mb-6>
+      <v-layout wrap>
         <!-- <v-flex xs12 mb-6 mx-6>
           <div class="subtitle-2 grey--text">You are transacting with:</div>
 
@@ -144,7 +144,7 @@
         <div class="text-black font-weight-bold headline float-left">Permissions</div>
         <img :src="require('../../public/img/icons/lock.svg')" width="16" class="ml-2" />
       </v-layout>
-      <v-layout wrap mb-6>
+      <v-layout wrap>
         <v-flex xs12 mb-6 mx-6>
           <div class="subtitle-2 grey--text">Request from:</div>
 
