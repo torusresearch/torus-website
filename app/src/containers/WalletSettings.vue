@@ -75,11 +75,15 @@
 
                 <template v-if="isRPCSelected">
                   <v-flex xs12>
-                    <v-text-field placeholder="Enter Network Name" outlined v-model="networkName"></v-text-field>
+                    <v-text-field placeholder="Enter Network Name" :rules="[rules.required]" outlined v-model="rpc.networkName"></v-text-field>
                   </v-flex>
 
                   <v-flex xs12>
-                    <v-text-field placeholder="Enter RPC URL" outlined v-model="rpcValue"></v-text-field>
+                    <v-text-field placeholder="Enter RPC URL" :rules="[rules.required]" outlined v-model="rpc.networkUrl"></v-text-field>
+                  </v-flex>
+
+                  <v-flex xs12>
+                    <v-text-field placeholder="Enter Chain id" outlined v-model="rpc.chainId"></v-text-field>
                   </v-flex>
 
                   <v-flex xs12 class="text-right">
@@ -169,8 +173,6 @@ export default {
       privateKeyDialog: false,
       dappPermissionDialog: false,
       selectedNetwork: '',
-      networkName: '',
-      rpcValue: '',
       networks: [
         {
           name: MAINNET_DISPLAY_NAME,
