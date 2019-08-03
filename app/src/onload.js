@@ -4,19 +4,8 @@ import store from './store'
 var log = require('loglevel')
 var Web3 = require('web3')
 var LocalMessageDuplexStream = require('post-message-stream')
-const pump = require('pump')
 const stream = require('stream')
 const setupMultiplex = require('./utils/setupMultiplex').default
-const MetamaskInpageProvider = require('@toruslabs/torus-embed/src/inpage-provider')
-const routerStream = require('./utils/routerStream')
-// ;(function() {
-//   var origNextTick = process.nextTick.bind(process)
-//   process.nextTick = function() {
-//     var args = Array.prototype.slice.call(arguments)
-//     var fn = args.shift()
-//     origNextTick(fn.bind.apply(fn, [null].concat(args)))
-//   }
-// })()
 
 function onloadTorus(torus) {
   function triggerUi(type) {
@@ -80,41 +69,7 @@ function onloadTorus(torus) {
 
   const providerOutStream = torus.metamaskMux.getStream('provider')
 
-  var iframeMetamaskStream = new stream.Duplex({
-    objectMode: true,
-    read: function() {},
-    write: function(obj, enc, cb) {
-      cb()
-    }
-  })
-  iframeMetamaskStream.setMaxListeners(100)
-  var iframeMetamask = new MetamaskInpageProvider(iframeMetamaskStream, { skipStatic: true })
-  iframeMetamask.setMaxListeners(100)
-  iframeMetamask.mux.setMaxListeners(100)
-  var reverseStream = new stream.Duplex({
-    objectMode: true,
-    read: function() {},
-    write: function(obj, enc, cb) {
-      cb()
-    }
-  })
-  reverseStream.setMaxListeners(100)
-  var reverseMux = setupMultiplex(reverseStream)
-  reverseMux.setMaxListeners(100)
-
-  pump(iframeMetamask.mux, reverseMux, iframeMetamask.mux)
-  var rStream = routerStream(providerOutStream, reverseMux.createStream('provider'))
-  torusController.setupTrustedCommunication(rStream.mergeSteam, rStream.splitStream, 'metamask')
-
-  // also need to set autoreload in embed.js upon network change
-  // rStream.mergeSteam
-  //   .pipe(sendPassThroughStream)
-  //   .pipe(providerStream)
-  //   .pipe(receivePassThroughStream)
-  //   .pipe(rStream.splitStream)
-  //   .pipe(statusStream)
-
-  /* Stream setup block */
+  torusController.setupTrustedCommunication(providerOutStream, 'metamask')
 
   return torus
 }
