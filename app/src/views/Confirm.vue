@@ -62,7 +62,7 @@
           </div>
           <div class="caption float-right clearfix">~ {{ totalUsdCost }} USD</div>
         </v-flex>
-        <v-flex xs12 mb-6 mt-3>
+        <v-flex xs12 mb-3 mt-3>
           <v-dialog v-model="detailsDialog" width="600px">
             <template v-slot:activator="{ on }">
               <div class="subtitle-2 float-right blue--text mx-6" v-on="on">More Details</div>
@@ -113,6 +113,9 @@
             </v-card>
           </v-dialog>
         </v-flex>
+        <v-flex xs12 px-6 mb-6 v-if="canShowError">
+          <div class="red--text">Error: {{ errorMsg }}</div>
+        </v-flex>
         <v-layout px-6>
           <v-flex xs6>
             <v-btn block text large class="grey--text" @click="triggerDeny">Cancel</v-btn>
@@ -120,7 +123,7 @@
           <v-flex xs6>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
               <template v-slot:activator="{ on }">
-                <v-btn block depressed large color="primary" class="ml-2" v-on="on">Confirm</v-btn>
+                <v-btn :disabled="!canApprove" block depressed large color="primary" class="ml-2" v-on="on">Confirm</v-btn>
               </template>
               <transfer-confirm
                 :toAddress="receiver"
