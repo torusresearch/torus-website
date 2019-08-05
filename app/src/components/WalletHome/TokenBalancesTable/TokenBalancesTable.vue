@@ -77,7 +77,7 @@
 import LearnMore from '../LearnMore'
 
 export default {
-  props: ['headers', 'tokenBalances', 'selected', 'isFreshAccount'],
+  props: ['tokenBalances', 'selected', 'isFreshAccount'],
   data() {
     return {
       pagination: {
