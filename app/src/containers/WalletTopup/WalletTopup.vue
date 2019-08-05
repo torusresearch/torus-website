@@ -150,7 +150,7 @@ import { postQuote, postOrder } from '../../plugins/simplex'
 import throttle from 'lodash.throttle'
 import { significantDigits, formatCurrencyNumber } from '../../utils/utils'
 
-import TopupProviders from '../../components/TopupProviders'
+import TopupProviders from '../../components/WalletTopup/TopupProviders'
 
 const MIN_ORDER_VALUE = 50
 const MAX_ORDER_VALUE = 20000
