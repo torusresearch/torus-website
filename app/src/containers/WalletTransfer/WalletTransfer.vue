@@ -18,7 +18,7 @@
             >
               <template v-slot:prepend-inner>
                 <img
-                  :src="require(`../../public/images/logos/${selectedItem.logo}`)"
+                  :src="require(`../../../public/images/logos/${selectedItem.logo}`)"
                   height="24px"
                   onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
                 />
@@ -101,12 +101,12 @@
 </template>
 
 <script>
-import torus from '../torus'
-import { significantDigits, getRandomNumber } from '../utils/utils'
-import config from '../config'
-import TransactionSpeedSelect from '../components/TransactionSpeedSelect'
-import MessageModal from '../components/MessageModal'
-import { get } from '../utils/httpHelpers'
+import torus from '../../torus'
+import { significantDigits, getRandomNumber } from '../../utils/utils'
+import config from '../../config'
+import TransactionSpeedSelect from '../../components/TransactionSpeedSelect'
+import MessageModal from '../../components/MessageModal'
+import { get } from '../../utils/httpHelpers'
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
 
@@ -415,12 +415,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.wallet-transfer {
-  ::v-deep .v-messages {
-    text-align: right;
-    &.error--text {
-      text-align: left;
-    }
-  }
-}
+@import 'WalletTransfer.scss';
 </style>
