@@ -105,7 +105,7 @@ import torus from '../../torus'
 import { significantDigits, getRandomNumber } from '../../utils/utils'
 import config from '../../config'
 import TransactionSpeedSelect from '../../components/TransactionSpeedSelect'
-import MessageModal from '../../components/MessageModal'
+import MessageModal from '../../components/WalletTransfer/MessageModal'
 import { get } from '../../utils/httpHelpers'
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
