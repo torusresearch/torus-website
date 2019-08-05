@@ -1,5 +1,6 @@
 
 @import '../../scss/nav-selector.mixin';
+@import '../../scss/outline-tooltip.mixin';
 
 .wallet-home {
   ::v-deep .currency-selector {
@@ -30,21 +31,14 @@
       width: 12px;
     }
   }
+}
 
-  .v-tooltip__content {
-    background: #fff;
-    border: 1px solid var(--v-primary-base);
-    color: var(--v-primary-base);
-    z-index: 0;
-    &::after {
-      content: ' ';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      margin-left: -5px;
-      border-width: 5px;
-      border-style: solid;
-      border-color: var(--v-primary-base) transparent transparent transparent;
-    }
+.v-tooltip__content {
+  @include outlineTooltip();
+  &::after {
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
   }
 }
