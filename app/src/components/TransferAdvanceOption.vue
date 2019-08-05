@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="dialog" persistent :retain-focus="false">
+  <v-dialog v-model="dialog" persistent>
     <template v-slot:activator="{ on }">
       <span class="float-right primary--text advance-option subtitle-2" v-show="displayAmount" v-on="on">Advanced Options</span>
     </template>
