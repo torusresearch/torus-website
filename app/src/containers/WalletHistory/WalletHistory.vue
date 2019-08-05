@@ -45,13 +45,13 @@
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
 import log from 'loglevel'
-import config from '../config'
-import TxHistoryTable from '../components/TxHistoryTable.vue'
-import TxHistoryTableMobile from '../components/TxHistoryTableMobile.vue'
-import { getPastOrders } from '../plugins/simplex'
-import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getEthTxStatus } from '../utils/utils'
-import torus from '../torus'
-import { patch } from '../utils/httpHelpers'
+import config from '../../config'
+import TxHistoryTable from '../../components/TxHistoryTable.vue'
+import TxHistoryTableMobile from '../../components/TxHistoryTableMobile.vue'
+import { getPastOrders } from '../../plugins/simplex'
+import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getEthTxStatus } from '../../utils/utils'
+import torus from '../../torus'
+import { patch } from '../../utils/httpHelpers'
 const web3Utils = torus.web3.utils
 
 export default {
@@ -223,59 +223,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../scss/nav-selector.mixin';
-@mixin svg-size($args...) {
-  @each $name, $size in keywords($args) {
-    .svg-setting-#{$name} {
-      width: $size;
-      height: $size;
-    }
-  }
-}
-
-@include svg-size($tiny: 18px, $small: 24px, $medium: 38px, $large: 80px);
-
-%justify-align {
-  justify-content: start;
-  align-items: center;
-}
-
-.spanWrapSvgStyle {
-  display: inline-flex;
-  @extend %justify-align;
-}
-
-.text-bluish {
-  color: var(--v-torus_blue-base);
-}
-
-.select-width {
-  width: 80px;
-}
-
-::v-deep .v-text-field--solo .v-input__slot,
-.v-text-field--outline .v-input__slot {
-  min-height: auto !important;
-  display: flex !important;
-  align-items: flex-end !important;
-  border-radius: 17px !important;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.16) !important;
-  margin-top: 20px !important;
-  margin-bottom: 0px !important;
-}
-
-::v-deep .v-text-field.v-text-field--solo .v-input__control {
-  min-height: auto !important;
-}
-
-/* NEW UI */
-::v-deep .nav-selector {
-  @include navSelector();
-  &.transaction {
-    max-width: 150px;
-  }
-  &.period {
-    max-width: 110px;
-  }
-}
+@import 'WalletHistory.scss';
 </style>
