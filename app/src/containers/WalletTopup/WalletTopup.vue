@@ -102,12 +102,12 @@
           <v-flex xs12>
             <div class="mt-12 mb-6 torus_text--text text--lighten-4">
               <div>
-                <img :src="require(`../../public/img/icons/info-circle.svg`)" class="help-icon" />
+                <img :src="require(`../../../public/img/icons/info-circle.svg`)" class="help-icon" />
                 <small class="d-inline ml-2">The process would take approximately 10 - 15 mins.</small>
               </div>
 
               <div>
-                <img :src="require(`../../public/img/icons/info-circle.svg`)" class="help-icon" />
+                <img :src="require(`../../../public/img/icons/info-circle.svg`)" class="help-icon" />
                 <small class="d-inline ml-2">Please prepare your Identity Card/Passport to complete the purchase.</small>
               </div>
             </div>
@@ -146,11 +146,11 @@
 
 <script>
 /* eslint-disable camelcase */
-import { postQuote, postOrder } from '../plugins/simplex'
+import { postQuote, postOrder } from '../../plugins/simplex'
 import throttle from 'lodash.throttle'
-import { significantDigits, formatCurrencyNumber } from '../utils/utils'
+import { significantDigits, formatCurrencyNumber } from '../../utils/utils'
 
-import TopupProviders from '../components/TopupProviders'
+import TopupProviders from '../../components/TopupProviders'
 
 const MIN_ORDER_VALUE = 50
 const MAX_ORDER_VALUE = 20000
@@ -336,63 +336,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../scss/_card-tooltip.mixin';
-
-.wallet-topup-view {
-  .help-icon {
-    height: 13px;
-    vertical-align: middle;
-  }
-  .v-text-field__suffix {
-    color: #5495f7;
-  }
-
-  .info-notes {
-    color: #5c6c7f;
-  }
-
-  .input-notes {
-    align-items: center;
-    justify-content: space-between;
-
-    small {
-      font-size: 12px;
-    }
-  }
-
-  .receive-text-input {
-    .v-input__slot {
-      background: transparent !important;
-      box-shadow: none !important;
-      border: 1px solid #d3d5e2 !important;
-    }
-  }
-
-  .text-right {
-    text-align: right;
-  }
-
-  .torus-button {
-    height: auto !important;
-  }
-
-  .unique-hint {
-    ::v-deep .v-text-field__details {
-      display: none;
-    }
-
-    ::v-deep .error--text {
-      .v-text-field__details {
-        display: inherit;
-      }
-    }
-
-    .v-btn {
-      border-style: dashed;
-    }
-  }
-}
-.v-tooltip__content {
-  @include cardTooltip();
-}
+@import 'WalletTopup.scss';
 </style>

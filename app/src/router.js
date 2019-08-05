@@ -6,12 +6,12 @@ import Confirm from './views/Confirm.vue'
 import ProviderChange from './views/ProviderChange.vue'
 import Wallet from './views/Wallet.vue'
 import Login from './views/Login.vue'
+const WalletTopup = () => import('./containers/WalletTopup')
 import WalletHome from './containers/WalletHome.vue'
 import WalletHistory from './containers/WalletHistory.vue'
 import WalletSettings from './containers/WalletSettings.vue'
 import WalletAccounts from './containers/WalletAccounts.vue'
 import WalletTransfer from './containers/WalletTransfer.vue'
-import WalletTopup from './containers/WalletTopup.vue'
 import WalletAccountsHome from './containers/WalletAccountsHome.vue'
 import WalletAccountImport from './containers/WalletAccountImport.vue'
 
