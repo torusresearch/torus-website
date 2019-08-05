@@ -118,7 +118,7 @@
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
 import config from '../../config'
-import TokenBalancesTable from '../../components/TokenBalancesTable.vue'
+import TokenBalancesTable from '../../components/WalletHome/TokenBalancesTable'
 import { MAINNET } from '../../utils/enums'
 
 export default {
