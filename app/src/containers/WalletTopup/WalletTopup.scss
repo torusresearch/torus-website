@@ -1,0 +1,59 @@
+@import '../../scss/_card-tooltip.mixin';
+
+.wallet-topup-view {
+  .help-icon {
+    height: 13px;
+    vertical-align: middle;
+  }
+  .v-text-field__suffix {
+    color: #5495f7;
+  }
+
+  .info-notes {
+    color: #5c6c7f;
+  }
+
+  .input-notes {
+    align-items: center;
+    justify-content: space-between;
+
+    small {
+      font-size: 12px;
+    }
+  }
+
+  .receive-text-input {
+    .v-input__slot {
+      background: transparent !important;
+      box-shadow: none !important;
+      border: 1px solid #d3d5e2 !important;
+    }
+  }
+
+  .text-right {
+    text-align: right;
+  }
+
+  .torus-button {
+    height: auto !important;
+  }
+
+  .unique-hint {
+    ::v-deep .v-text-field__details {
+      display: none;
+    }
+
+    ::v-deep .error--text {
+      .v-text-field__details {
+        display: inherit;
+      }
+    }
+
+    .v-btn {
+      border-style: dashed;
+    }
+  }
+}
+.v-tooltip__content {
+  @include cardTooltip();
+}
