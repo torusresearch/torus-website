@@ -111,10 +111,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.inline-small {
-  width: 20px;
-  height: 25px;
-  display: inline-block;
-  vertical-align: middle;
-}
+@import 'TokenBalancesTable.scss';
 </style>
