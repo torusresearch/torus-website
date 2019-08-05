@@ -103,7 +103,6 @@
 
       <v-flex xs12>
         <token-balances-table
-          :headers="headers"
           :tokenBalances="filteredBalancesArray"
           @update:select="select"
           :selected="selected"
@@ -127,15 +126,6 @@ export default {
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
-      headers: [
-        {
-          text: 'Coin',
-          align: 'left',
-          value: 'name'
-        },
-        { text: 'Balance', value: 'formattedBalance', align: 'center' },
-        { text: 'Value', value: 'currencyBalance', align: 'right' }
-      ],
       selected: [],
       search: '',
       lastUpdated: ''
