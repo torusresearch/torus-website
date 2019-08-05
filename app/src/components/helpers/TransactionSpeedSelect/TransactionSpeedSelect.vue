@@ -91,8 +91,8 @@
 </template>
 
 <script>
-import { significantDigits } from '../utils/utils'
-import TransferAdvanceOption from './TransferAdvanceOption'
+import { significantDigits } from '../../../utils/utils'
+import TransferAdvanceOption from '../../TransferAdvanceOption'
 
 export default {
   components: {
@@ -244,24 +244,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../scss/_card-tooltip.mixin';
-
-::v-deep .button-speed {
-  &.v-btn {
-    height: inherit;
-  }
-  .v-btn__content {
-    flex-direction: column;
-    padding: 12px 0;
-    line-height: 1em;
-  }
-}
-
-.advance-option {
-  cursor: pointer;
-}
-
-.v-tooltip__content {
-  @include cardTooltip();
-}
+@import 'TransactionSpeedSelect.scss';
 </style>
