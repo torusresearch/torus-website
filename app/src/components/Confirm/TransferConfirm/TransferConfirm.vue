@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { significantDigits } from '../utils/utils'
+import { significantDigits } from '../../../utils/utils'
 
 export default {
   props: ['toAddress', 'selectedCoin', 'selectedCurrency', 'convertedAmount', 'displayAmount', 'speedSelected', 'transactionFee'],

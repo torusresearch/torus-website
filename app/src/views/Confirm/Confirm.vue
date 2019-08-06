@@ -213,7 +213,7 @@ import BroadcastChannel from 'broadcast-channel'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
 import PageLoader from '../../components/helpers/PageLoader'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
-import TransferConfirm from '../../components/TransferConfirm'
+import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import torus from '../../torus'
 import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress } from '../../utils/utils'
 const abiDecoder = require('../../utils/abiDecoder')
