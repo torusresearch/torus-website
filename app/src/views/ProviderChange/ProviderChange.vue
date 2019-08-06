@@ -61,7 +61,7 @@
 
 <script>
 import BroadcastChannel from 'broadcast-channel'
-import PageLoader from '../components/PageLoader.vue'
+import PageLoader from '../../components/PageLoader.vue'
 
 export default {
   name: 'confirm',
@@ -124,60 +124,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* Portrait phones and smaller */
-@media (max-width: 598px) {
-  .bcg-logo {
-    display: none;
-  }
-
-  .bcg {
-    display: none;
-  }
-
-  .hide-xs {
-    display: none;
-  }
-}
-
-.higherZ {
-  position: fixed;
-  z-index: 100;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 75px;
-}
-
-.text-bluish {
-  color: var(--v-torus_blue-base);
-}
-
-.bcg {
-  position: relative;
-}
-
-.bcg-logo {
-  height: 32px;
-}
-
-hr {
-  display: block;
-  height: 1px;
-  border: 0;
-  border-top: 1px solid #ccc;
-  margin: 0% 35% 0% 15px;
-  padding: 0;
-}
-
-.application--wrap {
-  min-height: 0px !important;
-}
-
-.btnStyle {
-  width: 141px;
-  height: 41px;
-  border: #fff;
-  border-radius: 45px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-}
+@import 'ProviderChange.scss';
 </style>
