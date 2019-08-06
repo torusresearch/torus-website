@@ -210,8 +210,7 @@
 <script>
 import { mapActions } from 'vuex' // Maybe dispatch a bc to show popup from that instance
 import BroadcastChannel from 'broadcast-channel'
-import BottomSheet from '../../components/BottomSheet.vue'
-import ShowToolTip from '../../components/ShowToolTip.vue'
+import ShowToolTip from '../../components/helpers/ShowToolTip'
 import PageLoader from '../../components/PageLoader.vue'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import TransferConfirm from '../../components/TransferConfirm'

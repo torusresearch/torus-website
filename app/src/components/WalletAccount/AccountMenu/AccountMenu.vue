@@ -93,7 +93,7 @@
 <script>
 import BroadcastChannel from 'broadcast-channel'
 import { significantDigits, addressSlicer } from '../../../utils/utils'
-import ShowToolTip from '../../ShowToolTip.vue'
+import ShowToolTip from '../../helpers/ShowToolTip'
 import AccountImport from '../AccountImport'
 
 export default {

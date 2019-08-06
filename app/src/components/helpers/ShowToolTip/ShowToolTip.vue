@@ -37,16 +37,6 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.text-bluish {
-  color: var(--v-torus_blue-base);
-}
-
-.selected-account {
-  cursor: pointer;
-
-  &.active {
-    background-color: var(--v-torus_active-base);
-  }
-}
+<style lang="scss" scoped>
+@import 'ShowToolTip.scss';
 </style>

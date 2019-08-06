@@ -115,7 +115,7 @@
 </template>
 
 <script>
-import ShowToolTip from '../components/ShowToolTip.vue'
+import ShowToolTip from '../components/helpers/ShowToolTip'
 const Wallet = require('ethereumjs-wallet')
 const ethUtil = require('ethereumjs-util')
 const WalletWorker = require('worker-loader!../utils/wallet.worker.js')
