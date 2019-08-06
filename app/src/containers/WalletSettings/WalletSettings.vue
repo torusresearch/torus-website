@@ -39,7 +39,7 @@
                 <private-keys @onClose="privateKeyDialog = false" />
               </v-dialog>
               <v-dialog v-model="dappPermissionDialog" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly">
-                <wallet-settings-permission @onClose="dappPermissionDialog = false" />
+                <dapp-permissions @onClose="dappPermissionDialog = false" />
               </v-dialog>
             </div>
           </v-expansion-panel-content>
@@ -142,8 +142,8 @@
 //
 <script>
 import { lightBlue, ceruleanBlue, shuttleGrey } from '../../plugins/themes'
-import PrivateKeys from '../../components/PrivateKeys'
-import WalletSettingsPermission from '../WalletSettingsPermission'
+import PrivateKeys from '../../components/WalletSettings/PrivateKeys'
+import DappPermissions from '../../components/WalletSettings/DappPermissions'
 
 const {
   ROPSTEN,
@@ -166,7 +166,7 @@ export default {
   name: 'walletSettings',
   components: {
     PrivateKeys,
-    WalletSettingsPermission
+    DappPermissions
   },
   data() {
     return {
