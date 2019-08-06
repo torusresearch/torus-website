@@ -4,10 +4,10 @@ import store from './store'
 import Popup from './views/Popup.vue'
 import Confirm from './views/Confirm.vue'
 import ProviderChange from './views/ProviderChange.vue'
-const Wallet = () => import('./views/Wallet')
-const WalletHome = () => import('./containers/WalletHome')
+import Wallet from './views/Wallet'
 import Login from './views/Login.vue'
 import WalletHistory from './containers/WalletHistory.vue'
+import WalletHome from './containers/WalletHome.vue'
 import WalletSettings from './containers/WalletSettings.vue'
 import WalletAccounts from './containers/WalletAccounts.vue'
 import WalletTransfer from './containers/WalletTransfer.vue'

@@ -11,7 +11,7 @@
   >
     <template v-slot:item.action="{ item }">
       <span>
-        <v-icon>{{ getIcon(item.action) }}</v-icon>
+        <v-icon>{{ item.actionIcon }}</v-icon>
         {{ item.action === 'Sending' && item.status === 'confirmed' ? 'Sent' : item.action }}
       </span>
     </template>
@@ -22,7 +22,7 @@
       <span style="word-break: break-all">{{ item.to }}</span>
     </template>
     <template v-slot:item.date="{ item }">
-      <span>{{ formatDate(item.date) }}</span>
+      <span>{{ item.dateFormatted }}</span>
     </template>
     <template v-slot:item.status="{ item }">
       <span class="text-capitalize" :class="`text-${item.status.toLowerCase()}`">{{ item.status }}</span>
@@ -35,7 +35,7 @@
               Rate
               <span class="float-right">:</span>
             </v-flex>
-            <v-flex xs8 sm11>1 ETH = {{ item.ethRate }} {{ item.currencyUsed }} @ {{ formatTime(item.date) }}</v-flex>
+            <v-flex xs8 sm11>1 ETH = {{ item.ethRate }} {{ item.currencyUsed }} @ {{ item.timeFormatted }}</v-flex>
             <v-flex xs4 sm1 pr-2>
               Network
               <span class="float-right">:</span>
@@ -69,42 +69,15 @@
 </template>
 
 <script>
-const {
-  ROPSTEN,
-  RINKEBY,
-  KOVAN,
-  MAINNET,
-  LOCALHOST,
-  GOERLI,
-  RPC,
-  ROPSTEN_DISPLAY_NAME,
-  RINKEBY_DISPLAY_NAME,
-  KOVAN_DISPLAY_NAME,
-  MAINNET_DISPLAY_NAME,
-  LOCALHOST_DISPLAY_NAME,
-  GOERLI_DISPLAY_NAME,
-  RPC_DISPLAY_NAME
-} = require('../utils/enums')
-
-const mapper = {
-  [ROPSTEN]: ROPSTEN_DISPLAY_NAME,
-  [RINKEBY]: RINKEBY_DISPLAY_NAME,
-  [KOVAN]: KOVAN_DISPLAY_NAME,
-  [MAINNET]: MAINNET_DISPLAY_NAME,
-  [LOCALHOST]: LOCALHOST_DISPLAY_NAME,
-  [GOERLI]: GOERLI_DISPLAY_NAME,
-  [RPC]: RPC_DISPLAY_NAME
-}
+import TxHistoryMixin from '../TxHistoryMixin'
 
 export default {
-  props: ['transactions', 'selectedAction', 'selectedPeriod'],
+  mixins: [TxHistoryMixin],
   data() {
     return {
       expanded: [],
-      expand: false,
       pagination: {},
       defaultSort: 'date',
-      search: '',
       headers: [
         {
           text: 'Transaction',
@@ -141,40 +114,12 @@ export default {
           value: 'status',
           align: 'center'
         }
-      ],
-      mapper: mapper
+      ]
     }
   },
   computed: {
     showFooter() {
       return this.transactions && this.transactions.length > 5
-    },
-    filteredTransactions() {
-      const selectedAction = this.selectedAction === 'All Transactions' ? '' : this.selectedAction
-      var regExAction = new RegExp(selectedAction, 'i')
-
-      return this.transactions.filter(item => {
-        // GET Date Scope
-        let isScoped = false
-        if (this.selectedPeriod === 'Period') {
-          isScoped = true
-        } else {
-          let minDate = new Date()
-          let itemDate = new Date(item.date)
-          if (this.selectedPeriod === 'Last Week') {
-            minDate.setDate(minDate.getDate() - 7)
-          } else {
-            minDate.setMonth(minDate.getMonth() - 1)
-          }
-
-          isScoped = minDate.getTime() <= itemDate.getTime()
-        }
-        if (item.action) {
-          return item.action.match(regExAction) && isScoped
-        } else {
-          return isScoped
-        }
-      })
     }
   },
   methods: {
@@ -192,57 +137,11 @@ export default {
       } else {
         this.expanded = [item]
       }
-    },
-    formatDate(date) {
-      return date
-        .toString()
-        .substring(4)
-        .substring(0, 20)
-    },
-    formatTime(time) {
-      return time.toTimeString().substring(0, 8)
-    },
-    getIcon(action) {
-      if (action === 'Top-up') {
-        return '$vuetify.icons.arrow_up_circle'
-      } else if (action === 'Sending') {
-        return '$vuetify.icons.arrow_left_circle'
-      } else if (action === 'Received') {
-        return '$vuetify.icons.arrow_right_circle'
-      }
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.activity-table {
-  .text-successful,
-  .text-confirmed {
-    color: #2dcc70;
-  }
-
-  .text-denied,
-  .text-rejected,
-  .text-unapproved {
-    color: #e20d0d;
-  }
-
-  .text-pending,
-  .text-submitted {
-    color: #b3c0ce;
-  }
-
-  .text-gray {
-    color: #5c6c7f;
-  }
-
-  ::v-deep tr > td {
-    cursor: pointer;
-  }
-
-  ::v-deep .expanded__content {
-    box-shadow: none !important;
-  }
-}
+@import 'TxHistoryTable.scss';
 </style>
