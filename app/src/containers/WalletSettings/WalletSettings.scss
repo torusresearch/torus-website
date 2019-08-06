@@ -5,7 +5,7 @@
 
     &::before {
       box-shadow: none !important;
-      border-bottom: 1px solid #979797;
+      border-bottom: 1px solid var(--v-background_3-base);
       border-radius: 0;
     }
   }
