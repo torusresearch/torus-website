@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import AccountMenu from '../../AccountMenu'
+import AccountMenu from '../../WalletAccount/AccountMenu'
 
 export default {
   components: {
