@@ -17,20 +17,14 @@
           </span>
         </v-tooltip>
       </span>
-      <v-dialog v-model="advanceOptionDialog" persistent>
-        <template v-slot:activator="{ on }">
-          <span class="float-right primary--text advance-option hidden-xs-only" v-show="displayAmount" v-on="on">Advanced Options</span>
-        </template>
-        <TransferAdvanceOption
-          :symbol="symbol"
-          :dialog="advanceOptionDialog"
-          :displayAmount="displayAmount"
-          :gas="gas"
-          :activeGasPrice="activeGasPrice"
-          @onClose="advanceOptionDialog = false"
-          @onSave="onSaveAdvanceOptions"
-        />
-      </v-dialog>
+      <TransferAdvanceOption
+        v-if="!$vuetify.breakpoint.xsOnly"
+        :symbol="symbol"
+        :displayAmount="displayAmount"
+        :gas="gas"
+        :activeGasPrice="activeGasPrice"
+        @onSave="onSaveAdvanceOptions"
+      />
     </div>
     <v-layout xs12 justify-space-between wrap v-if="!isAdvanceOption">
       <v-flex xs6 px-4 mb-1>
@@ -59,22 +53,6 @@
           <span class="font-weight-light body-2">{{ getGasDisplayString(fastestGasPrice) }}</span>
         </v-btn>
       </v-flex>
-      <v-flex xs12 px-4 class="text-right hidden-sm-and-up">
-        <v-dialog v-model="advanceOptionDialog" persistent>
-          <template v-slot:activator="{ on }">
-            <span class="float-right primary--text advance-option subtitle-2" v-on="on">Advanced Options</span>
-          </template>
-          <TransferAdvanceOption
-            :symbol="symbol"
-            :dialog="advanceOptionDialog"
-            :displayAmount="displayAmount"
-            :gas="gas"
-            :activeGasPrice="activeGasPrice"
-            @onClose="advanceOptionDialog = false"
-            @onSave="onSaveAdvanceOptions"
-          />
-        </v-dialog>
-      </v-flex>
     </v-layout>
     <v-layout v-if="isAdvanceOption" align-center>
       <v-flex xs6 px-6 mb-1>
@@ -87,12 +65,24 @@
         <v-btn outlined color="primary" @click="resetAdvanceOption">Reset</v-btn>
       </v-flex>
     </v-layout>
+    <v-layout>
+      <v-flex xs12 px-4 class="text-right">
+        <TransferAdvanceOption
+          v-if="$vuetify.breakpoint.xsOnly"
+          :symbol="symbol"
+          :displayAmount="displayAmount"
+          :gas="gas"
+          :activeGasPrice="activeGasPrice"
+          @onSave="onSaveAdvanceOptions"
+        />
+      </v-flex>
+    </v-layout>
   </v-flex>
 </template>
 
 <script>
-import { significantDigits } from '../utils/utils'
-import TransferAdvanceOption from './TransferAdvanceOption'
+import { significantDigits } from '../../../utils/utils'
+import TransferAdvanceOption from '../TransferAdvanceOption'
 
 export default {
   components: {
@@ -101,7 +91,6 @@ export default {
   props: ['gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol'],
   data() {
     return {
-      advanceOptionDialog: false,
       isAdvanceOption: false,
       speedSelected: '',
       averageGasPrice: '5',
@@ -128,8 +117,6 @@ export default {
 
       this.isAdvanceOption = true
       this.updateCosts(false, parseFloat(details.advancedGas))
-
-      this.advanceOptionDialog = false
     },
     resetAdvanceOption() {
       if (this.speedSelected === 'average') {
@@ -244,24 +231,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../scss/_card-tooltip.mixin';
-
-::v-deep .button-speed {
-  &.v-btn {
-    height: inherit;
-  }
-  .v-btn__content {
-    flex-direction: column;
-    padding: 12px 0;
-    line-height: 1em;
-  }
-}
-
-.advance-option {
-  cursor: pointer;
-}
-
-.v-tooltip__content {
-  @include cardTooltip();
-}
+@import 'TransactionSpeedSelect.scss';
 </style>

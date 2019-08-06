@@ -3,11 +3,11 @@
     <v-card-text class="torus_text--text p-0">
       <v-layout wrap class="image-container text-center" :class="modalType ? 'image-container-success' : 'image-container-danger'">
         <v-flex xs12 px-4>
-          <img @click="onCancel" height="6px" width="6px" class="close-icon" :src="require('../../public/img/icons/close.svg')" />
+          <img @click="onCancel" height="6px" width="6px" class="close-icon" :src="require('../../../../public/img/icons/close.svg')" />
 
-          <img v-if="modalType" height="87px" width="87px" :src="require('../../public/img/icons/check-circle-white.svg')" />
+          <img v-if="modalType" height="87px" width="87px" :src="require('../../../../public/img/icons/check-circle-white.svg')" />
 
-          <img v-if="!modalType" height="87px" width="87px" :src="require('../../public/img/icons/error-circle.svg')" />
+          <img v-if="!modalType" height="87px" width="87px" :src="require('../../../../public/img/icons/error-circle.svg')" />
         </v-flex>
       </v-layout>
       <v-layout wrap py-6>
@@ -41,34 +41,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.message-modal {
-  .close-icon {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-  }
-  .image-container {
-    background-color: #2dcc70;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 180px;
-    position: relative;
-
-    &-success {
-      background-color: #2dcc70;
-    }
-
-    &-danger {
-      background-color: #e20d0d;
-    }
-  }
-  .modal-button {
-    height: auto;
-    text-transform: initial;
-  }
-  .torus_text--text {
-    padding: 0 !important;
-  }
-}
+@import 'MessageModal.scss';
 </style>
