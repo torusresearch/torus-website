@@ -84,7 +84,7 @@ const {
   LOCALHOST_DISPLAY_NAME,
   GOERLI_DISPLAY_NAME,
   RPC_DISPLAY_NAME
-} = require('../utils/enums')
+} = require('../../../utils/enums')
 
 const mapper = {
   [ROPSTEN]: ROPSTEN_DISPLAY_NAME,
@@ -216,33 +216,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.activity-table {
-  .text-successful,
-  .text-confirmed {
-    color: #2dcc70;
-  }
-
-  .text-denied,
-  .text-rejected,
-  .text-unapproved {
-    color: #e20d0d;
-  }
-
-  .text-pending,
-  .text-submitted {
-    color: #b3c0ce;
-  }
-
-  .text-gray {
-    color: #5c6c7f;
-  }
-
-  ::v-deep tr > td {
-    cursor: pointer;
-  }
-
-  ::v-deep .expanded__content {
-    box-shadow: none !important;
-  }
-}
+@import 'TxHistoryTable.scss';
 </style>
