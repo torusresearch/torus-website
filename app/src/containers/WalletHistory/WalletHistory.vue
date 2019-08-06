@@ -46,8 +46,8 @@
 // The color of dropdown icon requires half day work in modifying v-select
 import log from 'loglevel'
 import config from '../../config'
-import TxHistoryTable from '../../components/TxHistoryTable.vue'
-import TxHistoryTableMobile from '../../components/TxHistoryTableMobile.vue'
+import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
+import TxHistoryTableMobile from '../../components/WalletHistory/TxHistoryTableMobile'
 import { getPastOrders } from '../../plugins/simplex'
 import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getEthTxStatus } from '../../utils/utils'
 import torus from '../../torus'
