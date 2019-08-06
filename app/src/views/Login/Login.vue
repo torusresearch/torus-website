@@ -47,7 +47,7 @@
               </small>
             </v-flex>
             <v-flex mt-5 text-center>
-              <img :width="$vuetify.breakpoint.xsOnly ? '150px' : '200px'" height="auto" :src="require('../../public/images/torus-people.png')" />
+              <img :width="$vuetify.breakpoint.xsOnly ? '150px' : '200px'" height="auto" :src="require('../../../public/images/torus-people.png')" />
               <p class="m-0">
                 <small class="text-gray">The Decentralized Web Awaits</small>
               </p>
@@ -55,7 +55,7 @@
           </v-layout>
           <v-layout v-else wrap align-center justify-center align-content-center>
             <v-flex text-center>
-              <img width="200px" height="auto" :src="require('../../public/images/torus-people-colored.svg')" />
+              <img width="200px" height="auto" :src="require('../../../public/images/torus-people-colored.svg')" />
             </v-flex>
             <v-flex xs12 mt-10>
               <div class="text-center headline font-weight-bold">You have been logged out</div>
@@ -85,7 +85,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import PageLoader from '../components/PageLoader.vue'
+import PageLoader from '../../components/PageLoader.vue'
 
 export default {
   name: 'login',
@@ -140,44 +140,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-a {
-  text-decoration: none;
-}
-
-.flexiBtn.btnStyle {
-  width: 172px;
-  height: 48px;
-  border-radius: 12px;
-}
-
-.background-login {
-  position: relative;
-  background-image: url('/images/footer_waves.png');
-  background-repeat: no-repeat;
-  background-position: center bottom;
-  @extend .default;
-
-  @media only screen and (min-width: 1264px) {
-    background-size: 100%;
-  }
-}
-
-.text-gray {
-  color: var(--v-torus_text-lighten4);
-}
-
-.login-subtitle {
-  max-width: 514px;
-  margin: 0 auto;
-}
-
-.default {
-  height: 100%;
-}
-
-body,
-html {
-  height: 100%;
-  overflow-y: hidden;
-}
+@import 'Login.scss';
 </style>
