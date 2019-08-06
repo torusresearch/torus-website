@@ -3,7 +3,7 @@
     <template v-if="type === 'transaction'">
       <v-layout align-center mx-6 mb-6>
         <div class="text-black font-weight-bold headline float-left">{{ header }}</div>
-        <img :src="require('../../public/img/icons/transaction.svg')" class="ml-2" />
+        <img :src="require('../../../public/img/icons/transaction.svg')" class="ml-2" />
       </v-layout>
       <v-layout wrap>
         <!-- <v-flex xs12 mb-6 mx-6>
@@ -14,7 +14,7 @@
               <div class="subtitle-2 blue--text">{{ origin }}</div>
               <div class="caption grey--text">{{ receiver }}</div>
             </v-card-text>
-            <img :src="require('../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
+            <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
           </v-card>
         </v-flex>-->
         <!-- <v-flex xs12 mb-4 mx-6>
@@ -145,7 +145,7 @@
     <template v-if="type === 'message'">
       <v-layout align-center mx-6 mb-6>
         <div class="text-black font-weight-bold headline float-left">Permissions</div>
-        <img :src="require('../../public/img/icons/lock.svg')" width="16" class="ml-2" />
+        <img :src="require('../../../public/img/icons/lock.svg')" width="16" class="ml-2" />
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-6 mx-6>
@@ -155,7 +155,7 @@
             <v-card-text>
               <div class="subtitle-2 blue--text">{{ origin }}</div>
             </v-card-text>
-            <img :src="require('../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
+            <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
           </v-card>
         </v-flex>
 
@@ -163,7 +163,7 @@
           <v-list class="note-list">
             <v-list-item class="pa-0">
               <v-list-item-icon class="ma-1">
-                <img :src="require(`../../public/img/icons/check-circle-primary.svg`)" width="12" />
+                <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
               </v-list-item-icon>
               <v-list-item-content class="pa-1">
                 <div class="caption torus_text--text text--lighten-3">This application is requesting for your digital signature.</div>
@@ -210,14 +210,14 @@
 <script>
 import { mapActions } from 'vuex' // Maybe dispatch a bc to show popup from that instance
 import BroadcastChannel from 'broadcast-channel'
-import BottomSheet from '../components/BottomSheet.vue'
-import ShowToolTip from '../components/ShowToolTip.vue'
-import PageLoader from '../components/PageLoader.vue'
-import TransactionSpeedSelect from '../components/helpers/TransactionSpeedSelect'
-import TransferConfirm from '../components/TransferConfirm'
-import torus from '../torus'
-import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress } from '../utils/utils'
-const abiDecoder = require('../utils/abiDecoder')
+import BottomSheet from '../../components/BottomSheet.vue'
+import ShowToolTip from '../../components/ShowToolTip.vue'
+import PageLoader from '../../components/PageLoader.vue'
+import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
+import TransferConfirm from '../../components/TransferConfirm'
+import torus from '../../torus'
+import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress } from '../../utils/utils'
+const abiDecoder = require('../../utils/abiDecoder')
 const abi = require('human-standard-token-abi')
 
 const {
@@ -241,7 +241,7 @@ const {
   TOKEN_METHOD_TRANSFER,
   TOKEN_METHOD_TRANSFER_FROM,
   SEND_ETHER_ACTION_KEY
-} = require('../utils/enums')
+} = require('../../utils/enums')
 
 const weiInGwei = 10 ** 9
 
@@ -550,167 +550,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* Portrait phones and smaller */
-@media (max-width: 598px) {
-  .bcg-logo {
-    display: none;
-  }
-
-  .bcg {
-    display: none;
-  }
-
-  .hide-xs {
-    display: none;
-  }
-}
-
-.selected-account {
-  cursor: pointer;
-  @extend .text-bluish;
-
-  &:hover {
-    background-color: var(--v-torus_reject_mild-base);
-    opacity: 0.5;
-    color: #fff;
-  }
-
-  &.active {
-    background-color: var(--v-torus_active-base);
-  }
-}
-
-.svg-bcg-color {
-  background-color: var(--v-torus_svg_bcg-base);
-}
-
-@mixin svg-size($args...) {
-  @each $name, $size in keywords($args) {
-    .svg-setting-#{$name} {
-      width: $size;
-      height: $size;
-    }
-  }
-}
-
-@include svg-size($small: 24px, $medium: 38px, $large: 80px);
-
-%justify-align {
-  justify-content: center;
-  align-items: center;
-}
-
-%justify-align-start {
-  justify-content: start;
-  align-items: center;
-}
-
-.divWrap {
-  display: block;
-  @extend %justify-align;
-}
-
-.divWrapSvgStyle {
-  @extend .svg-bcg-color;
-  display: inline-flex;
-  @extend %justify-align;
-  border-radius: 50%;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.16);
-  @extend .svg-setting-large;
-}
-
-.spanWrap {
-  display: inline-flex;
-  @extend %justify-align-start;
-}
-
-.higherZ {
-  position: fixed;
-  z-index: 100;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 75px;
-}
-
-.text-bluish {
-  color: var(--v-torus_blue-base);
-}
-
-.text-grayish {
-  color: var(--v-torus_reject-base);
-}
-
-.bcg {
-  position: relative;
-}
-
-.bcg-logo {
-  height: 32px;
-}
-
-.bcg-top10 {
-  right: 20%;
-  bottom: 50%;
-}
-
-hr {
-  display: block;
-  height: 1px;
-  border: 0;
-  border-top: 1px solid #ccc;
-  margin: 0% 35% 0% 15px;
-  padding: 0;
-}
-
-::v-deep .knob-control__text-display {
-  font-size: 0.7rem !important;
-  font-weight: 500;
-  text-align: center;
-}
-
-.application--wrap {
-  min-height: 0px !important;
-}
-
-.btnStyle {
-  width: 141px;
-  height: 41px;
-  border: #fff;
-  border-radius: 45px;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-}
-
-/* NEW UI */
-.v-card__text {
-  padding: 12px;
-}
-.card-upper-icon {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 12px;
-  height: 12px;
-}
-
-.v-divider {
-  margin: 0 0 12px;
-}
-
-.key-item {
-  max-width: 200px;
-  word-break: break-all;
-  line-height: 1em;
-  margin-top: 2px;
-}
-
-.dialog-launcher {
-  cursor: pointer;
-}
-
-.note-list {
-  .v-list-item {
-    min-height: inherit;
-  }
-}
+@import 'Confirm.scss';
 </style>
