@@ -16,7 +16,7 @@
               <img
                 class="float-right mr-5"
                 width="16"
-                :src="require(`../../public/img/icons/eye${isShowSelectedAddress ? '-off' : ''}-primary.svg`)"
+                :src="require(`../../../../public/img/icons/eye${isShowSelectedAddress ? '-off' : ''}-primary.svg`)"
                 @click="isShowSelectedAddress = !isShowSelectedAddress"
               />
             </div>
@@ -29,7 +29,7 @@
       <v-list-item>
         <v-list-item-content>
           <div class="subtitle-2 mb-0">
-            <img :src="require(`../../public/img/icons/account-balance.svg`)" class="mr-2" />
+            <img :src="require(`../../../../public/img/icons/account-balance.svg`)" class="mr-2" />
             {{ totalPortfolioEthValue }} ETH / {{ `${totalPortfolioValue} ${selectedCurrency}` }}
           </div>
         </v-list-item-content>
@@ -55,12 +55,12 @@
     <v-list>
       <v-list-item @click="accountImportDialog = true">
         <v-list-item-action class="mr-2">
-          <img :src="require('../../public/img/icons/import-grey.svg')" />
+          <img :src="require('../../../../public/img/icons/import-grey.svg')" />
         </v-list-item-action>
         <v-list-item-content class="font-weight-bold">Import Account</v-list-item-content>
       </v-list-item>
       <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
-        <AccountImport @onClose="accountImportDialog = false" />
+        <account-import @onClose="accountImportDialog = false" />
       </v-dialog>
     </v-list>
 
@@ -69,7 +69,7 @@
     <v-list>
       <v-list-item v-for="headerItem in filteredMenu" :key="headerItem.name" link router :to="headerItem.route">
         <v-list-item-action class="mr-2">
-          <img :src="require(`../../public/img/icons/${headerItem.icon}`)" />
+          <img :src="require(`../../../../public/img/icons/${headerItem.icon}`)" />
         </v-list-item-action>
         <v-list-item-content>
           <v-list-item-title class="font-weight-bold">{{ headerItem.display }}</v-list-item-title>
@@ -77,7 +77,7 @@
       </v-list-item>
       <v-list-item href="https://docs.tor.us/#users" target="_blank">
         <v-list-item-action class="mr-2">
-          <img :src="require('../../public/img/icons/info-grey.svg')" />
+          <img :src="require('../../../../public/img/icons/info-grey.svg')" />
         </v-list-item-action>
         <v-list-item-content class="font-weight-bold">Info and Support</v-list-item-content>
       </v-list-item>
@@ -92,9 +92,9 @@
 
 <script>
 import BroadcastChannel from 'broadcast-channel'
-import { significantDigits, addressSlicer } from '../utils/utils'
-import ShowToolTip from '../components/ShowToolTip.vue'
-import AccountImport from '../components/AccountImport.vue'
+import { significantDigits, addressSlicer } from '../../../utils/utils'
+import ShowToolTip from '../../ShowToolTip.vue'
+import AccountImport from '../AccountImport'
 
 export default {
   props: ['headerItems'],
@@ -168,9 +168,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.enter-account-field {
-  .v-input__slot {
-    background: white !important;
-  }
-}
+@import 'AccountMenu.scss';
 </style>
