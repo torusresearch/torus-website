@@ -11,7 +11,7 @@
   >
     <template v-slot:item.action="{ item }">
       <span>
-        <v-icon>{{ getIcon(item.action) }}</v-icon>
+        <v-icon>{{ item.actionIcon }}</v-icon>
         {{ item.action === 'Sending' && item.status === 'confirmed' ? 'Sent' : item.action }}
       </span>
     </template>
@@ -22,7 +22,7 @@
       <span style="word-break: break-all">{{ item.to }}</span>
     </template>
     <template v-slot:item.date="{ item }">
-      <span>{{ formatDate(item.date) }}</span>
+      <span>{{ item.dateFormatted }}</span>
     </template>
     <template v-slot:item.status="{ item }">
       <span class="text-capitalize" :class="`text-${item.status.toLowerCase()}`">{{ item.status }}</span>
@@ -35,7 +35,7 @@
               Rate
               <span class="float-right">:</span>
             </v-flex>
-            <v-flex xs8 sm11>1 ETH = {{ item.ethRate }} {{ item.currencyUsed }} @ {{ formatTime(item.date) }}</v-flex>
+            <v-flex xs8 sm11>1 ETH = {{ item.ethRate }} {{ item.currencyUsed }} @ {{ item.timeFormatted }}</v-flex>
             <v-flex xs4 sm1 pr-2>
               Network
               <span class="float-right">:</span>
@@ -136,24 +136,6 @@ export default {
         this.expanded = []
       } else {
         this.expanded = [item]
-      }
-    },
-    formatDate(date) {
-      return date
-        .toString()
-        .substring(4)
-        .substring(0, 20)
-    },
-    formatTime(time) {
-      return time.toTimeString().substring(0, 8)
-    },
-    getIcon(action) {
-      if (action === 'Top-up') {
-        return '$vuetify.icons.arrow_up_circle'
-      } else if (action === 'Sending') {
-        return '$vuetify.icons.arrow_left_circle'
-      } else if (action === 'Received') {
-        return '$vuetify.icons.arrow_right_circle'
       }
     }
   }

@@ -6,7 +6,7 @@
           <div>
             <v-layout>
               <v-flex xs6 my-2 class="subtitle-2">
-                <v-icon small>{{ getIcon(transaction.action) }}</v-icon>
+                <v-icon small>{{ transaction.actionIcon }}</v-icon>
                 {{ transaction.action === 'Sending' && transaction.status === 'confirmed' ? 'Sent' : transaction.action }}
               </v-flex>
               <v-flex xs6 my-2 class="body-2 text-right torus_text--text text--lighten-4 text-capitalize">
@@ -19,7 +19,7 @@
                 Date:
               </v-flex>
               <v-flex xs6 my-2 class="caption text-right">
-                {{ formatDate(transaction.date) }}
+                {{ transaction.dateFormatted }}
               </v-flex>
             </v-layout>
             <v-divider></v-divider>
@@ -49,7 +49,7 @@
                 Rate
                 <span class="float-right">:</span>
               </v-flex>
-              <v-flex xs8 sm11>1 ETH = {{ transaction.ethRate }} {{ transaction.currencyUsed }} @ {{ formatTime(transaction.date) }}</v-flex>
+              <v-flex xs8 sm11>1 ETH = {{ transaction.ethRate }} {{ transaction.currencyUsed }} @ {{ transaction.timeFormatted }}</v-flex>
               <v-flex xs4 sm1 pr-2>
                 Network
                 <span class="float-right">:</span>
@@ -105,24 +105,6 @@ export default {
       } else {
         this.pagination.sortBy = column
         this.pagination.descending = false
-      }
-    },
-    formatDate(date) {
-      return date
-        .toString()
-        .substring(4)
-        .substring(0, 20)
-    },
-    formatTime(time) {
-      return time.toTimeString().substring(0, 8)
-    },
-    getIcon(action) {
-      if (action === 'Top-up') {
-        return '$vuetify.icons.arrow_up_circle'
-      } else if (action === 'Sending') {
-        return '$vuetify.icons.arrow_left_circle'
-      } else if (action === 'Received') {
-        return '$vuetify.icons.arrow_right_circle'
       }
     }
   }
