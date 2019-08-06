@@ -171,8 +171,8 @@ export default {
         url: '',
         loaded: false,
         currencyCode: 'eth',
-        path: 'https://buy-staging.moonpay.io?',
-        apiKey: 'pk_test_j6AnwGJD0XTJDg3bTO37OczjFsddYpS',
+        path: 'https://buy.moonpay.io?',
+        apiKey: 'pk_live_Wg90NLnFst3ms7tiqnMDDO0yjlypMzYK',
 
         // Modify before deploying.
         redirectURL: ''

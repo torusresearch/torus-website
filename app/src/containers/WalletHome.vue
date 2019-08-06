@@ -228,7 +228,7 @@ export default {
 .wallet-home {
   ::v-deep .currency-selector {
     @include navSelector();
-    max-width: 100px;
+    max-width: 50px;
     .v-select__selection {
       color: var(--v-primary-base) !important;
       width: 1vw;
