@@ -61,7 +61,7 @@
 
 <script>
 import BroadcastChannel from 'broadcast-channel'
-import PageLoader from '../../components/PageLoader.vue'
+import PageLoader from '../../components/helpers/PageLoader'
 
 export default {
   name: 'confirm',
