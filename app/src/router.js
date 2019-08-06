@@ -23,7 +23,6 @@ import WalletAccountImport from './containers/WalletAccountImport.vue'
 // const WalletHistory = () => import('./containers/WalletHistory.vue')
 // const WalletSettings = () => import('./containers/WalletSettings.vue')
 // const WalletAccounts = () => import('./containers/WalletAccounts.vue')
-// const WalletTransfer = () => import('./containers/WalletTransfer.vue')
 
 Vue.use(Router)
 
