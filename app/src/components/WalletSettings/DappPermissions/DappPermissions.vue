@@ -25,7 +25,7 @@
                 <dapp-permission-edit v-if="permission.isEdit" @onCancel="permission.isEdit = false" />
               </v-slide-y-transition>
               <v-slide-y-transition :key="index">
-                <dapp-permission v-if="!permission.isEdit" @onDelete="onDeletePermission(permission)" @onEdit="permission.isEdit = true" />
+                <dapp-permission-view v-if="!permission.isEdit" @onDelete="onDeletePermission(permission)" @onEdit="permission.isEdit = true" />
               </v-slide-y-transition>
             </template>
           </v-flex>
@@ -40,8 +40,8 @@
 </template>
 
 <script>
-import DappPermission from '../../DappPermission'
-import DappPermissionEdit from '../../DappPermissionEdit'
+import DappPermissionView from '../DappPermissionView'
+import DappPermissionEdit from '../DappPermissionEdit'
 
 export default {
   data() {
@@ -51,7 +51,7 @@ export default {
     }
   },
   components: {
-    DappPermission,
+    DappPermissionView,
     DappPermissionEdit
   },
   methods: {
