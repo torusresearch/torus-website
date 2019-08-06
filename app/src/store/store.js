@@ -454,6 +454,8 @@ var VuexStore = new Vuex.Store({
           window.auth2.signIn().then(function(googleUser) {
             log.info('GOOGLE USER: ', googleUser)
             let profile = googleUser.getBasicProfile()
+            let domain = googleUser.getHostedDomain()
+            log.info('Domain: ', domain)
             // console.log(googleUser)
             log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
             log.info('Name: ' + profile.getName())
