@@ -6,7 +6,7 @@
           <v-layout>
             <v-flex xs6>
               <img
-                :src="require(`../../public/images/logos/${balance.logo}`)"
+                :src="require(`../../../../public/images/logos/${balance.logo}`)"
                 class="inline-small d-inline-flex"
                 onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
               />
@@ -41,7 +41,7 @@
               </div>
             </v-flex>
             <v-flex pt-4 class="text-right hidden-xs-only" :class="$vuetify.breakpoint.lgAndUp ? 'xs4' : 'xs3'">
-              <img :src="require(`../../public/images/etheremon.png`)" style="width: 100%" />
+              <img :src="require(`../../../../public/images/etheremon.png`)" style="width: 100%" />
             </v-flex>
           </v-layout>
         </v-card-text>
@@ -64,7 +64,7 @@
               </v-dialog>
             </v-flex>
             <v-flex xs4 pt-4 class="text-right hidden-xs-only">
-              <img :src="require(`../../public/images/learn-more.svg`)" style="height: 100px" />
+              <img :src="require(`../../../../public/images/learn-more.svg`)" style="height: 100px" />
             </v-flex>
           </v-layout>
         </v-card-text>
@@ -74,10 +74,10 @@
 </template>
 
 <script>
-import LearnMore from '../components/LearnMore'
+import LearnMore from '../LearnMore'
 
 export default {
-  props: ['headers', 'tokenBalances', 'selected', 'isFreshAccount'],
+  props: ['tokenBalances', 'selected', 'isFreshAccount'],
   data() {
     return {
       pagination: {
@@ -111,10 +111,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.inline-small {
-  width: 20px;
-  height: 25px;
-  display: inline-block;
-  vertical-align: middle;
-}
+@import 'TokenBalancesTable.scss';
 </style>

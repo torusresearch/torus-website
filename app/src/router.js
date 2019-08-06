@@ -4,9 +4,9 @@ import store from './store'
 import Popup from './views/Popup.vue'
 import Confirm from './views/Confirm.vue'
 import ProviderChange from './views/ProviderChange.vue'
-import Wallet from './views/Wallet.vue'
+const Wallet = () => import('./views/Wallet')
+const WalletHome = () => import('./containers/WalletHome')
 import Login from './views/Login.vue'
-import WalletHome from './containers/WalletHome.vue'
 import WalletHistory from './containers/WalletHistory.vue'
 import WalletSettings from './containers/WalletSettings.vue'
 import WalletAccounts from './containers/WalletAccounts.vue'

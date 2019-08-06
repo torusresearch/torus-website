@@ -103,7 +103,6 @@
 
       <v-flex xs12>
         <token-balances-table
-          :headers="headers"
           :tokenBalances="filteredBalancesArray"
           @update:select="select"
           :selected="selected"
@@ -117,9 +116,9 @@
 
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
-import config from '../config'
-import TokenBalancesTable from '../components/TokenBalancesTable.vue'
-import { MAINNET } from '../utils/enums'
+import config from '../../config'
+import TokenBalancesTable from '../../components/WalletHome/TokenBalancesTable'
+import { MAINNET } from '../../utils/enums'
 
 export default {
   name: 'walletHome',
@@ -127,15 +126,6 @@ export default {
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
-      headers: [
-        {
-          text: 'Coin',
-          align: 'left',
-          value: 'name'
-        },
-        { text: 'Balance', value: 'formattedBalance', align: 'center' },
-        { text: 'Value', value: 'currencyBalance', align: 'right' }
-      ],
       selected: [],
       search: '',
       lastUpdated: ''
@@ -223,53 +213,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../scss/nav-selector.mixin';
-
-.wallet-home {
-  ::v-deep .currency-selector {
-    @include navSelector();
-    max-width: 50px;
-    .v-select__selection {
-      color: var(--v-primary-base) !important;
-      width: 1vw;
-    }
-  }
-
-  ::v-deep .search-field {
-    .v-input__slot {
-      min-height: 40px;
-    }
-
-    .v-input__append-inner {
-      margin-top: 8px;
-    }
-
-    .v-icon.v-icon {
-      width: 12px;
-    }
-  }
-
-  .refresh-button {
-    .v-icon {
-      width: 12px;
-    }
-  }
-
-  .v-tooltip__content {
-    background: #fff;
-    border: 1px solid var(--v-primary-base);
-    color: var(--v-primary-base);
-    z-index: 0;
-    &::after {
-      content: ' ';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      margin-left: -5px;
-      border-width: 5px;
-      border-style: solid;
-      border-color: var(--v-primary-base) transparent transparent transparent;
-    }
-  }
-}
+@import 'WalletHome.scss';
 </style>

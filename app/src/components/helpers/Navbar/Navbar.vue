@@ -12,20 +12,20 @@
                 class="home-link"
                 width="135"
                 height="30"
-                :src="require(`../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+                :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
               />
             </router-link>
           </v-toolbar-title>
         </v-badge>
         <v-toolbar-title class="mt-8 hidden-sm-and-up">
           <router-link :to="{ name: 'walletHome' }">
-            <img :src="require('../../public/img/icons/t-fill.svg')" width="35" />
+            <img :src="require('../../../../public/img/icons/t-fill.svg')" width="35" />
           </router-link>
           <div class="primary--text subtitle-2 beta-text">Beta</div>
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn class="hidden-sm-and-up" icon @click="drawer = !drawer">
-          <img :src="require('../../public/img/icons/menu-primary.svg')" />
+          <img :src="require('../../../../public/img/icons/menu-primary.svg')" />
         </v-btn>
 
         <v-menu offset-y bottom left z-index="20" :close-on-content-click="false">
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import AccountMenu from '../components/AccountMenu'
+import AccountMenu from '../../AccountMenu'
 
 export default {
   components: {
@@ -83,42 +83,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.v-toolbar {
-  box-shadow: none;
-}
-
-.v-tab {
-  text-transform: inherit;
-  font-size: 16px;
-  min-width: 50px;
-}
-
-.beta-text {
-  line-height: 1em;
-}
-
-::v-deep .v-badge__badge.primary {
-  background-color: #ffffff !important;
-  color: var(--v-primary-base);
-  border: 1px solid var(--v-primary-base);
-  border-radius: 3px;
-  padding: 0 10px;
-  right: -30px;
-}
-
-.theme--light {
-  .v-tab {
-    &.v-tab--active {
-      color: var(--v-secondary-darken3);
-    }
-  }
-}
-
-.home-link {
-  cursor: pointer;
-}
-
-.v-tabs-bar.v-tabs-bar--is-mobile:not(.v-tabs-bar--show-arrows) > .v-slide-group__wrapper > .v-tabs-bar__content > .v-tab:first-of-type {
-  margin-left: 0;
-}
+@import 'Navbar.scss';
 </style>
