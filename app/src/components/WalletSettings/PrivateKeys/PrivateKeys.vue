@@ -9,7 +9,7 @@
           <v-list>
             <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
-                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require('../../public/img/icons/file-text-grey.svg')" />
+                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require('../../../../public/img/icons/file-text-grey.svg')" />
               </v-list-item-icon>
               <v-list-item-content>
                 <div class="subtitle-1 flex-grow-1 font-weight-bold">Download soft copy (JSON)</div>
@@ -20,7 +20,7 @@
                         <v-text-field small :rules="[rules.required]" v-model="keyStorePassword" :type="showJsonPassword ? 'text' : 'password'">
                           <template v-slot:append>
                             <v-btn icon small @click="showJsonPassword = !showJsonPassword">
-                              <img :src="require(`../../public/img/icons/eye${showJsonPassword ? '-off' : ''}-grey.svg`)" />
+                              <img :src="require(`../../../../public/img/icons/eye${showJsonPassword ? '-off' : ''}-grey.svg`)" />
                             </v-btn>
                           </template>
                           <template v-slot:append-outer v-if="!$vuetify.breakpoint.xsOnly">
@@ -55,7 +55,7 @@
               </v-list-item-content>
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'ma-1' : ''">
                 <v-btn icon small @click="isShowGetPassword = true">
-                  <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require('../../public/img/icons/download-primary.svg')" />
+                  <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require('../../../../public/img/icons/download-primary.svg')" />
                 </v-btn>
               </v-list-item-icon>
             </v-list-item>
@@ -64,7 +64,7 @@
 
             <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
-                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require(`../../public/img/icons/key.svg`)" />
+                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require(`../../../../public/img/icons/key.svg`)" />
               </v-list-item-icon>
               <v-list-item-content>
                 <div class="subtitle-1 flex-grow-1 font-weight-bold">Show Private Key</div>
@@ -83,7 +83,7 @@
                       <show-tool-tip :address="selectedKey">
                         <v-btn text small class="primary--text" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'caption'">
                           <img
-                            :src="require('../../public/img/icons/copy-primary.svg')"
+                            :src="require('../../../../public/img/icons/copy-primary.svg')"
                             class="mr-1"
                             :width="$vuetify.breakpoint.xsOnly ? '12' : '20'"
                           />
@@ -98,7 +98,7 @@
                 <v-btn icon small @click="isShowPrivateKey = !isShowPrivateKey">
                   <img
                     :width="$vuetify.breakpoint.xsOnly ? '20' : ''"
-                    :src="require(`../../public/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)"
+                    :src="require(`../../../../public/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)"
                   />
                 </v-btn>
               </v-list-item-icon>
@@ -115,10 +115,10 @@
 </template>
 
 <script>
-import ShowToolTip from '../components/helpers/ShowToolTip'
+import ShowToolTip from '../../ShowToolTip.vue'
 const Wallet = require('ethereumjs-wallet')
 const ethUtil = require('ethereumjs-util')
-const WalletWorker = require('worker-loader!../utils/wallet.worker.js')
+const WalletWorker = require('worker-loader!../../../utils/wallet.worker.js')
 
 export default {
   components: { ShowToolTip },

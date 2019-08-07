@@ -3,7 +3,7 @@
     <v-list dense>
       <v-list-item>
         <v-list-item-icon class="mr-1">
-          <img width="14" height="14" :src="require('../../public/img/icons/tag.svg')" />
+          <img width="14" height="14" :src="require('../../../../public/img/icons/tag.svg')" />
         </v-list-item-icon>
         <v-list-item-content class="subtitle-2 py-0">Etheremon.com</v-list-item-content>
         <v-spacer></v-spacer>
@@ -59,8 +59,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.v-list-item--dense,
-.v-list--dense .v-list-item {
-  min-height: 30px;
-}
+@import 'DappPermissionView.scss';
 </style>

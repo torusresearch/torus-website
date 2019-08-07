@@ -9,7 +9,7 @@ import Wallet from './views/Wallet'
 import WalletTopup from './containers/WalletTopup'
 import WalletHome from './containers/WalletHome'
 import WalletHistory from './containers/WalletHistory'
-import WalletSettings from './containers/WalletSettings.vue'
+import WalletSettings from './containers/WalletSettings'
 import WalletTransfer from './containers/WalletTransfer'
 
 // const Popup = () => import('./views/Popup.vue')

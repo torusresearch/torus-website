@@ -25,7 +25,7 @@
                 <dapp-permission-edit v-if="permission.isEdit" @onCancel="permission.isEdit = false" />
               </v-slide-y-transition>
               <v-slide-y-transition :key="index">
-                <dapp-permission v-if="!permission.isEdit" @onDelete="onDeletePermission(permission)" @onEdit="permission.isEdit = true" />
+                <dapp-permission-view v-if="!permission.isEdit" @onDelete="onDeletePermission(permission)" @onEdit="permission.isEdit = true" />
               </v-slide-y-transition>
             </template>
           </v-flex>
@@ -40,8 +40,8 @@
 </template>
 
 <script>
-import DappPermission from '../components/DappPermission'
-import DappPermissionEdit from '../components/DappPermissionEdit'
+import DappPermissionView from '../DappPermissionView'
+import DappPermissionEdit from '../DappPermissionEdit'
 
 export default {
   data() {
@@ -51,7 +51,7 @@ export default {
     }
   },
   components: {
-    DappPermission,
+    DappPermissionView,
     DappPermissionEdit
   },
   methods: {
@@ -72,67 +72,5 @@ export default {
 </script>
 
 <style lang="scss">
-.wallet-dapp-permission {
-  .btn-cancel {
-    box-shadow: none;
-  }
-  .title-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    .title {
-      max-width: 70%;
-    }
-  }
-  .text {
-    font-size: 1rem;
-    line-height: 20px;
-    font-weight: normal;
-  }
-  .chevron-icon {
-    transition: ease 0.2s;
-  }
-
-  .icon-button {
-    background-color: transparent;
-    box-shadow: none !important;
-    height: auto !important;
-  }
-
-  .custom-text-input {
-    font-size: 0.7rem;
-    .v-input__slot {
-      background: transparent !important;
-      box-shadow: none !important;
-      border: 1px solid #d3d5e2 !important;
-    }
-  }
-
-  .other-input {
-    display: flex;
-    align-items: center;
-
-    .max-transaction-input {
-      font-size: 0.7rem;
-      label {
-        font-size: 0.7rem;
-      }
-    }
-  }
-
-  .section-note {
-    font-size: 0.7rem;
-  }
-
-  .text-gray {
-    color: #5c6c7f;
-  }
-
-  .save-container {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
-}
+@import 'DappPermissions.scss';
 </style>
