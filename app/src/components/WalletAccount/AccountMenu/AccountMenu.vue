@@ -110,13 +110,16 @@ export default {
   },
   computed: {
     userEmail() {
-      return this.$store.state.email
+      return this.userInfo.email
     },
     userName() {
-      return this.$store.state.name
+      return this.userInfo.name
     },
     profileImage() {
-      return this.$store.state.profileImage
+      return this.userInfo.profileImage
+    },
+    userInfo() {
+      return this.$store.state.userInfo
     },
     selectedAddress() {
       return this.$store.state.selectedAddress

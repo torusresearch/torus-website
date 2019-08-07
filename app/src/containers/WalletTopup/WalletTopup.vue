@@ -323,7 +323,7 @@ export default {
       '&walletAddress=' +
       this.$store.state.selectedAddress +
       '&email=' +
-      this.$store.state.email +
+      this.$store.state.userInfo.email +
       '&redirectURL=' +
       this.moonPay.redirectURL
 

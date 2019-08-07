@@ -229,8 +229,12 @@ function getEtherScanHashLink(txHash, network = null) {
 const statusObj = {
   SENT_TO_SIMPLEX: 'pending',
   DENIED_SIMPLEX: 'rejected',
+  payment_request_submitted: 'processing',
+  pending_simplexcc_approval: 'processing',
   PROCESSING_SIMPPLEX: 'processing',
-  SUCCESS_SIMPLEX: 'success'
+  SUCCESS_SIMPLEX: 'success',
+  payment_simplexcc_approved: 'success',
+  pending_simplexcc_payment_to_partner: 'success'
 }
 
 function getStatus(status) {

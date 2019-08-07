@@ -35,9 +35,7 @@ const vuexPersist = new VuexPersistence({
   storage: window.sessionStorage,
   reducer: state => {
     return {
-      email: state.email,
-      name: state.name,
-      profileImage: state.profileImage,
+      userInfo: state.userInfo,
       idToken: state.idToken,
       wallet: state.wallet,
       // weiBalance: state.weiBalance,
@@ -56,9 +54,11 @@ const vuexPersist = new VuexPersistence({
 var walletWindow
 
 const initialState = {
-  email: '',
-  name: '',
-  profileImage: '',
+  userInfo: {
+    email: '',
+    name: '',
+    profileImage: ''
+  },
   idToken: '',
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
@@ -142,14 +142,8 @@ var VuexStore = new Vuex.Store({
     }
   },
   mutations: {
-    setEmail(state, email) {
-      state.email = email
-    },
-    setName(state, name) {
-      state.name = name
-    },
-    setProfileImage(state, profileImage) {
-      state.profileImage = profileImage
+    setUserInfo(state, userInfo) {
+      state.userInfo = userInfo
     },
     setIdToken(state, idToken) {
       state.idToken = idToken
@@ -338,6 +332,26 @@ var VuexStore = new Vuex.Store({
         }
       }
     },
+    showUserInfoRequestPopup(context, payload) {
+      var bc = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`)
+      window.open(
+        `${baseRoute}userinforequest?instanceId=${torus.instanceId}`,
+        '_blank',
+        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
+      )
+      bc.onmessage = function(ev) {
+        if (ev.data === 'popup-loaded') {
+          console.log('loaded popup')
+          bc.postMessage({
+            data: {
+              origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+              payload: payload
+            }
+          })
+          bc.close()
+        }
+      }
+    },
     showWalletPopup(context, payload) {
       walletWindow =
         walletWindow ||
@@ -348,14 +362,8 @@ var VuexStore = new Vuex.Store({
         walletWindow = undefined
       }
     },
-    updateEmail(context, payload) {
-      context.commit('setEmail', payload.email)
-    },
-    updateName(context, payload) {
-      context.commit('setName', payload.name)
-    },
-    updateProfileImage(context, payload) {
-      context.commit('setProfileImage', payload.profileImage)
+    updateUserInfo(context, payload) {
+      context.commit('setUserInfo', payload.userInfo)
     },
     updateIdToken(context, payload) {
       context.commit('setIdToken', payload.idToken)
@@ -456,6 +464,8 @@ var VuexStore = new Vuex.Store({
           window.auth2.signIn().then(function(googleUser) {
             log.info('GOOGLE USER: ', googleUser)
             let profile = googleUser.getBasicProfile()
+            let domain = googleUser.getHostedDomain()
+            log.info('Domain: ', domain)
             // console.log(googleUser)
             log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
             log.info('Name: ' + profile.getName())
@@ -463,11 +473,9 @@ var VuexStore = new Vuex.Store({
             log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
             dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
             let email = profile.getEmail()
-            dispatch('updateEmail', { email })
             let name = profile.getName()
-            dispatch('updateName', { name })
             let profileImage = profile.getImageUrl()
-            dispatch('updateProfileImage', { profileImage })
+            dispatch('updateUserInfo', { userInfo: { profileImage, name, email } })
             const { torusNodeEndpoints } = config
             window.gapi.auth2
               .getAuthInstance()
@@ -542,7 +550,8 @@ var VuexStore = new Vuex.Store({
     },
     handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
       const { torusNodeEndpoints, torusIndexes } = config
-      const { idToken, email } = state
+      const { idToken, userInfo } = state
+      const { email } = userInfo
       dispatch('loginInProgress', true)
       torus
         .getPubKeyAsync(torusNodeEndpoints[endPointNumber], email)
