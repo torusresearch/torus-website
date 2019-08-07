@@ -280,7 +280,7 @@
 </template>
 
 <script>
-const WalletWorker = require('worker-loader!../utils/wallet.worker.js')
+const WalletWorker = require('worker-loader!../../../utils/wallet.worker.js')
 const ethUtil = require('ethereumjs-util')
 export default {
   data() {
@@ -398,13 +398,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '../scss/_card-tooltip.mixin';
-
-.upload-button.v-btn {
-  border-style: dashed;
-}
-
-.v-tooltip__content {
-  @include cardTooltip();
-}
+@import 'AccountImport.scss';
 </style>

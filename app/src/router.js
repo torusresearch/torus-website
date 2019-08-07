@@ -1,19 +1,16 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from './store'
-import Popup from './views/Popup.vue'
-import Confirm from './views/Confirm.vue'
-import ProviderChange from './views/ProviderChange.vue'
-import Login from './views/Login.vue'
+import Popup from './views/Popup'
+import ProviderChange from './views/ProviderChange'
+import Login from './views/Login'
+import Confirm from './views/Confirm'
 import Wallet from './views/Wallet'
 import WalletTopup from './containers/WalletTopup'
 import WalletHome from './containers/WalletHome'
 import WalletHistory from './containers/WalletHistory'
 import WalletSettings from './containers/WalletSettings.vue'
-import WalletAccounts from './containers/WalletAccounts.vue'
 import WalletTransfer from './containers/WalletTransfer'
-import WalletAccountsHome from './containers/WalletAccountsHome.vue'
-import WalletAccountImport from './containers/WalletAccountImport.vue'
 
 // const Popup = () => import('./views/Popup.vue')
 // const Confirm = () => import('./views/Confirm.vue')
@@ -76,27 +73,6 @@ const router = new Router({
           path: 'history',
           name: 'walletHistory',
           component: WalletHistory
-        },
-        {
-          path: 'accounts',
-          component: WalletAccountsHome, // tabs
-          children: [
-            {
-              path: '',
-              name: 'walletAccountsDefault',
-              component: WalletAccounts // Account switcher
-            },
-            {
-              path: 'home',
-              name: 'walletAccountsHome',
-              component: WalletAccounts // Account switcher
-            },
-            {
-              path: 'import',
-              name: 'walletAccountImport',
-              component: WalletAccountImport // Account import
-            }
-          ]
         },
         {
           path: 'settings',
