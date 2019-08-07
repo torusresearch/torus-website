@@ -67,7 +67,6 @@ export default {
       type: 'none'
     }
   },
-  computed: {},
   methods: {
     triggerSign(event) {
       var bc = new BroadcastChannel(`user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
@@ -96,7 +95,6 @@ export default {
       }
       this.origin = url.hostname // origin of tx: website url
       this.type = 'userInfo'
-      console.log('info received')
       bc.close()
     }
     bc.postMessage({ data: 'popup-loaded' })
