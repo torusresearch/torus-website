@@ -1,9 +1,52 @@
 <template>
-  <v-container fill-height>
+  <v-container py-6 px-0>
     <template v-if="type === 'none'">
       <page-loader />
     </template>
     <template v-else>
+      <v-layout align-center mx-6 mb-6>
+        <div class="text-black font-weight-bold headline float-left">Permission</div>
+        <img :src="require('../../../public/img/icons/lock.svg')" width="16" class="ml-2" />
+      </v-layout>
+      <v-layout wrap>
+        <v-flex xs12 mb-2 mx-6>
+          <div class="subtitle-2 grey--text">Request from:</div>
+
+          <v-card flat class="grey lighten-3">
+            <v-card-text>
+              <div class="subtitle-2 blue--text">{{ origin }}</div>
+            </v-card-text>
+            <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
+          </v-card>
+        </v-flex>
+
+        <v-flex xs12 mb-4 mx-6>
+          <v-list class="note-list">
+            <v-list-item class="pa-0">
+              <v-list-item-icon class="mr-1">
+                <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
+              </v-list-item-icon>
+              <v-list-item-content class="pa-1">
+                <div class="caption torus_text--text text--lighten-3">
+                  To change you network to
+                  <span class="text-capitalize">{{ type && type === 'rpc' ? rpcNetwork.networkName : network }}</span>
+                </div>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-flex>
+
+        <v-layout px-6 mx-3>
+          <v-flex xs6>
+            <v-btn block text large class="grey--text" @click="triggerDeny">Cancel</v-btn>
+          </v-flex>
+          <v-flex xs6>
+            <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">Confirm</v-btn>
+          </v-flex>
+        </v-layout>
+      </v-layout>
+    </template>
+    <!-- <template>
       <v-card flat :color="$vuetify.theme.torus_bcg" class="fill-height" style="width: 100%;">
         <v-card-text>
           <v-layout wrap align-start justify-center>
@@ -55,7 +98,7 @@
           </v-layout>
         </v-card-text>
       </v-card>
-    </template>
+    </template> -->
   </v-container>
 </template>
 
