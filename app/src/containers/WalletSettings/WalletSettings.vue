@@ -8,7 +8,7 @@
             <img
               :width="$vuetify.breakpoint.xsOnly ? '16' : ''"
               class="d-inline-flex mr-4 shrink"
-              :src="require(`../../public/img/icons/lock.svg`)"
+              :src="require(`../../../public/img/icons/lock.svg`)"
             />
             <div class="grow font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'headline'">
               Privacy and Security
@@ -19,7 +19,7 @@
               <v-list>
                 <v-list-item @click="privateKeyDialog = true">
                   <v-list-item-avatar class="mr-4">
-                    <img :src="require(`../../public/img/icons/key.svg`)" class=" mr-4" />
+                    <img :src="require(`../../../public/img/icons/key.svg`)" class=" mr-4" />
                   </v-list-item-avatar>
                   <v-list-item-content>
                     <v-list-item-title>Private Key</v-list-item-title>
@@ -27,7 +27,7 @@
                 </v-list-item>
                 <v-list-item @click="dappPermissionDialog = true">
                   <v-list-item-avatar class="mr-4">
-                    <img :src="require(`../../public/img/icons/list.svg`)" class=" mr-4" />
+                    <img :src="require(`../../../public/img/icons/list.svg`)" class=" mr-4" />
                   </v-list-item-avatar>
                   <v-list-item-content>
                     <v-list-item-title>DApp Permission</v-list-item-title>
@@ -39,7 +39,7 @@
                 <private-keys @onClose="privateKeyDialog = false" />
               </v-dialog>
               <v-dialog v-model="dappPermissionDialog" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly">
-                <wallet-settings-permission @onClose="dappPermissionDialog = false" />
+                <dapp-permissions @onClose="dappPermissionDialog = false" />
               </v-dialog>
             </div>
           </v-expansion-panel-content>
@@ -51,7 +51,7 @@
             <img
               :width="$vuetify.breakpoint.xsOnly ? '16' : ''"
               class="d-inline-flex mr-4 shrink collpase-icon"
-              :src="require(`../../public/img/icons/globe.svg`)"
+              :src="require(`../../../public/img/icons/globe.svg`)"
             />
             <div class="grow font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'headline'">
               Network
@@ -108,7 +108,7 @@
             <img
               :width="$vuetify.breakpoint.xsOnly ? '16' : ''"
               class="d-inline-flex mr-4 shrink collpase-icon"
-              :src="require(`../../public/img/icons/server.svg`)"
+              :src="require(`../../../public/img/icons/server.svg`)"
             />
             <div class="grow font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'headline'">
               Display
@@ -141,9 +141,9 @@
 
 //
 <script>
-import { lightBlue, ceruleanBlue, shuttleGrey } from '../plugins/themes'
-import PrivateKeys from '../components/PrivateKeys'
-import WalletSettingsPermission from './WalletSettingsPermission'
+import { lightBlue, ceruleanBlue, shuttleGrey } from '../../plugins/themes'
+import PrivateKeys from '../../components/WalletSettings/PrivateKeys'
+import DappPermissions from '../../components/WalletSettings/DappPermissions'
 
 const {
   ROPSTEN,
@@ -160,13 +160,13 @@ const {
   LOCALHOST_DISPLAY_NAME,
   GOERLI_DISPLAY_NAME,
   RPC_DISPLAY_NAME
-} = require('../utils/enums')
+} = require('../../utils/enums')
 
 export default {
   name: 'walletSettings',
   components: {
     PrivateKeys,
-    WalletSettingsPermission
+    DappPermissions
   },
   data() {
     return {
@@ -253,46 +253,6 @@ export default {
 //
 </script>
 
-<style lang="scss">
-.wallet-settings {
-  .v-expansion-panel {
-    background-color: transparent !important;
-    border-radius: 0;
-
-    &::before {
-      box-shadow: none !important;
-      border-bottom: 1px solid #979797;
-      border-radius: 0;
-    }
-  }
-
-  .v-expansion-panel--active:not(:first-child),
-  .v-expansion-panel--active + .v-expansion-panel {
-    margin-top: 0;
-  }
-
-  .btn-default {
-    color: #5495f7;
-    background-color: white;
-    border: 1px solid #5495f7;
-  }
-
-  .btn-cerulean {
-    background-color: #295dab !important;
-    border: 1px solid #295dab;
-
-    .v-btn__content {
-      color: white;
-    }
-  }
-
-  .btn-shuttle-grey {
-    background-color: #5c6c7f !important;
-    border: 1px solid #5c6c7f;
-
-    .v-btn__content {
-      color: white;
-    }
-  }
-}
+<style lang="scss" scoped>
+@import 'WalletSettings.scss';
 </style>

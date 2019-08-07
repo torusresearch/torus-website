@@ -3,7 +3,7 @@
     <v-container fluid>
       <v-layout>
         <v-flex xs2>
-          <img width="34" height="34" :src="require('../../public/img/icons/tag.svg')" />
+          <img width="34" height="34" :src="require('../../../../public/img/icons/tag.svg')" />
         </v-flex>
         <v-flex xs9>
           <v-layout wrap>
