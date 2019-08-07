@@ -48,6 +48,11 @@ torus.communicationMux.getStream('provider_change').on('data', function(chunk) {
   VuexStore.dispatch('showProviderChangePopup', { ...chunk.data })
 })
 
+const userInfoStream = torus.communicationMux.getStream('user_info')
+userInfoStream.on('data', function(chunk) {
+  if (chunk.name === 'user_info_request') VuexStore.dispatch('showUserInfoRequestPopup', { ...chunk.data })
+})
+
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
 })
@@ -119,6 +124,17 @@ logoutChannel.onmessage = function(ev) {
   if (ev.data && ev.data.type === 'logout') {
     log.info('Logging Out', ev.data)
     VuexStore.dispatch('logOut')
+  }
+}
+
+var userInfoRequestChannel = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`)
+userInfoRequestChannel.onmessage = function(ev) {
+  if (ev.data && ev.data.type === 'confirm-user-info-request' && ev.data.approve) {
+    log.info('User Info Request approved')
+    userInfoStream.write({ name: 'user_info_response', data: { payload: VuexStore.state.userInfo, approved: true } })
+  } else if (ev.data && ev.data.tyep === 'deny-user-info-request') {
+    log.info('User Info Request deined')
+    userInfoStream.write({ name: 'user_info_response', data: { payload: VuexStore.state.userInfo, approved: false } })
   }
 }
 
