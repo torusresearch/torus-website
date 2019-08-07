@@ -6,9 +6,11 @@ import VuexPersistence from 'vuex-persist'
 import config from '../config'
 import torus from '../torus'
 import { MAINNET, RPC } from '../utils/enums'
-import { formatCurrencyNumber, getRandomNumber, hexToText, significantDigits } from '../utils/utils'
+import { formatCurrencyNumber, getRandomNumber, hexToText, significantDigits, getEtherScanHashLink } from '../utils/utils'
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
+import { notifyUser } from '../utils/notifications'
+
 const web3Utils = torus.web3.utils
 
 function getCurrencyMultiplier() {
@@ -737,6 +739,9 @@ VuexStore.subscribe((mutation, state) => {
       const txMeta = txs[id]
       if (txMeta.status === 'submitted' && id >= 0) {
         // insert into db here
+
+        const txHash = txMeta.hash
+
         const totalAmount = web3Utils.fromWei(
           web3Utils.toBN(txMeta.txParams.value).add(web3Utils.toBN(txMeta.txParams.gas).mul(web3Utils.toBN(txMeta.txParams.gasPrice)))
         )
@@ -752,6 +757,10 @@ VuexStore.subscribe((mutation, state) => {
           transaction_hash: txMeta.hash
         }
         if (state.pastTransactions.findIndex(x => x.transaction_hash === txObj.transaction_hash && x.network === txObj.network) === -1) {
+          // User notification
+          notifyUser(getEtherScanHashLink(txHash, state.networkType))
+          console.log(state)
+
           VuexStore.commit('patchPastTransactions', txObj)
           post(`${config.api}/transaction`, txObj, {
             headers: {
