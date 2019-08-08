@@ -368,6 +368,9 @@ export default {
           break
       }
     },
+    isLightHeader() {
+      return [DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].indexOf(this.transactionCategory) >= 0
+    },
     imageType() {
       return this.transactionCategory === DEPLOY_CONTRACT_ACTION_KEY || this.transactionCategory === CONTRACT_INTERACTION_KEY
         ? 'images/file-signature.svg'
