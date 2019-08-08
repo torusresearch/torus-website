@@ -113,8 +113,13 @@
             </v-card>
           </v-dialog>
         </v-flex>
-        <v-flex xs12 px-6 mb-6 v-if="canShowError">
-          <div class="red--text">Error: {{ errorMsg }}</div>
+        <v-flex xs12 px-6 mb-6 class="text-right" v-if="canShowError">
+          <div class="caption error--text">{{ errorMsg }}</div>
+          <div class="caption mt-1">
+            Please
+            <v-btn color="primary" class="mx-1 px-2 caption" small outlined @click="topUp">Top up</v-btn>
+            your wallet
+          </div>
         </v-flex>
         <v-layout px-6>
           <v-flex xs6>
@@ -265,6 +270,8 @@ export default {
       max: 4000,
       balance: 0,
       value: 0,
+      amountTo: '',
+      amountValue: '',
       receiver: 'unknown',
       dialog: true,
       message: '',
@@ -341,10 +348,12 @@ export default {
           return 'Contract Interaction'
           break
         case TOKEN_METHOD_APPROVE:
-          return 'ERC20 Approve'
+          // return 'ERC20 Approve'
+          return 'Approve'
           break
         case TOKEN_METHOD_TRANSFER:
-          return 'ERC2O Transfer'
+          // return 'ERC2O Transfer'
+          return 'Transfer'
           break
         case TOKEN_METHOD_TRANSFER_FROM:
           return 'ERC2O Transfer From'
@@ -432,6 +441,9 @@ export default {
       bc.close()
       window.close()
     },
+    topUp() {
+      console.log('Trigger Topup')
+    },
     openWallet() {
       this.$store.dispatch('showWalletPopup')
     },
@@ -510,12 +522,17 @@ export default {
         this.origin = this.origin.trim().length === 0 ? 'Wallet' : this.origin
         // GET data params
         const txDataParams = abi.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
+        const [amountTo, amountValue] = []
         console.log(methodParams, 'params')
+        console.log(amountTo, amountValue, 'params')
+
         this.id = id
         this.network = network
         this.networkName = this.getNetworkName(network)
         this.transactionCategory = transactionCategory
         var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
+        this.amountTo = amountTo ? amountTo.value : ''
+        this.amountValue = amountValue ? amountValue.value : ''
         this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
         this.dollarValue = significantDigits(parseFloat(finalValue) * this.$store.state.currencyData['usd'])
