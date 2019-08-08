@@ -60,6 +60,9 @@
             <span class="subtitle-2">Cost of Transaction</span>
             <span class="subtitle-1 float-right blue--text font-weight-bold">{{ costOfTransaction }}</span>
           </div>
+          <div v-if="showCostOfTransactionGas" class="clearfix">
+            <span class="subtitle-1 float-right blue--text font-weight-bold">+ {{ significantDigits(this.gasCost) }} ETH</span>
+          </div>
           <div class="caption float-right clearfix">{{ costOfTransactionConverted }}</div>
         </v-flex>
         <v-flex xs12 mb-3 mt-3>
@@ -418,10 +421,14 @@ export default {
     },
     costOfTransaction() {
       if ([TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(this.transactionCategory) >= 0) {
-        return `${this.displayAmountTo} + ${significantDigits(this.gasCost)}`
+        return `${this.displayAmountTo}`
       } else {
         return `${this.totalEthCostDisplay} ETH`
       }
+    },
+    showCostOfTransactionGas() {
+      return [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(this.transactionCategory) >= 0
+      //`+ ${significantDigits(this.gasCost)}`
     },
     costOfTransactionConverted() {
       return `~ ${this.totalUsdCost} USD`
