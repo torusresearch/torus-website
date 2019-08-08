@@ -2,7 +2,7 @@
   <v-container py-6 px-0>
     <template v-if="type === 'transaction'">
       <v-layout align-center mx-6 mb-6>
-        <div class="text-black font-weight-bold headline float-left">{{ header }}</div>
+        <div class="torus_text--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-4' : ''">{{ header }}</div>
         <img :src="require('../../../public/img/icons/transaction.svg')" class="ml-2" />
       </v-layout>
       <v-layout wrap>
@@ -342,27 +342,29 @@ export default {
     header() {
       switch (this.transactionCategory) {
         case DEPLOY_CONTRACT_ACTION_KEY:
-          return 'Contract Deployment'
+          // return 'Contract Deployment'
+          return 'Deploy'
           break
         case CONTRACT_INTERACTION_KEY:
-          return 'Contract Interaction'
+          return this.getHeaderByDapp()
           break
         case TOKEN_METHOD_APPROVE:
           // return 'ERC20 Approve'
           return 'Approve'
           break
         case TOKEN_METHOD_TRANSFER:
+        case SEND_ETHER_ACTION_KEY:
           // return 'ERC2O Transfer'
+          // return 'Send Ether'
           return 'Transfer'
           break
         case TOKEN_METHOD_TRANSFER_FROM:
-          return 'ERC2O Transfer From'
-          break
-        case SEND_ETHER_ACTION_KEY:
-          return 'Send Ether'
+          // return 'ERC2O Transfer From'
+          return 'Transfer From'
           break
         default:
-          return 'Transaction Request'
+          // return 'Transaction Request'
+          return 'Transaction'
           break
       }
     },
@@ -488,6 +490,12 @@ export default {
       return significantDigits(parseFloat(amount).toFixed(5)) ? significantDigits(parseFloat(amount).toFixed(5)) : parseFloat('0.00').toFixed(2)
     },
     significantDigits: significantDigits,
+    getHeaderByDapp() {
+      if (this.origin === 'www.etheremon.com') {
+        return 'Claim a Mon'
+      }
+      return 'Contract Interaction'
+    },
     ...mapActions({})
   },
   mounted() {
@@ -522,9 +530,9 @@ export default {
         this.origin = this.origin.trim().length === 0 ? 'Wallet' : this.origin
         // GET data params
         const txDataParams = abi.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
-        const [amountTo, amountValue] = []
+        const [amountTo, amountValue] = methodParams || []
         console.log(methodParams, 'params')
-        console.log(amountTo, amountValue, 'params')
+        console.log(txParams, 'txParams')
 
         this.id = id
         this.network = network
