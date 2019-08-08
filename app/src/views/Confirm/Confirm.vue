@@ -27,7 +27,7 @@
           <div class="caption float-right clearfix">{{ dollarValue }} USD</div>
         </v-flex>-->
         <v-flex xs12 mb-4 mx-6>
-          <div class="subtitle-2">Amount {{ transactionCategory }} {{ origin }}</div>
+          <div class="subtitle-2">Amount</div>
           <v-divider></v-divider>
           <div>
             <span class="subtitle-2 float-left grey--text">{{ displayAmountTo }}</span>
@@ -58,9 +58,9 @@
           <v-divider></v-divider>
           <div>
             <span class="subtitle-2">Cost of Transaction</span>
-            <span class="subtitle-1 float-right blue--text font-weight-bold">{{ totalEthCostDisplay }} ETH</span>
+            <span class="subtitle-1 float-right blue--text font-weight-bold">{{ costOfTransaction }}</span>
           </div>
-          <div class="caption float-right clearfix">~ {{ totalUsdCost }} USD</div>
+          <div class="caption float-right clearfix">{{ costOfTransactionConverted }}</div>
         </v-flex>
         <v-flex xs12 mb-3 mt-3>
           <v-dialog v-model="detailsDialog" width="600px">
@@ -120,6 +120,9 @@
             <v-btn color="primary" class="mx-1 px-2 caption" small outlined @click="topUp">Top up</v-btn>
             your wallet
           </div>
+        </v-flex>
+        <v-flex xs12 px-6 mb-6 v-if="showConfirmMessage">
+          <div class="caption error--text">By confirming this, you grant permission for this contract to spend up to 1,000 of your tokens.</div>
         </v-flex>
         <v-layout px-6>
           <v-flex xs6>
@@ -275,6 +278,7 @@ export default {
       receiver: 'unknown',
       dialog: true,
       message: '',
+      gasCost: 0,
       gasEstimate: 0,
       txData: '',
       txDataParams: '',
@@ -409,6 +413,19 @@ export default {
           break
       }
     },
+    showConfirmMessage() {
+      return this.transactionCategory === TOKEN_METHOD_APPROVE
+    },
+    costOfTransaction() {
+      if ([TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(this.transactionCategory) >= 0) {
+        return `${this.displayAmountTo} + ${significantDigits(this.gasCost)}`
+      } else {
+        return `${this.totalEthCostDisplay} ETH`
+      }
+    },
+    costOfTransactionConverted() {
+      return `~ ${this.totalUsdCost} USD`
+    },
     imageType() {
       return this.transactionCategory === DEPLOY_CONTRACT_ACTION_KEY || this.transactionCategory === CONTRACT_INTERACTION_KEY
         ? 'images/file-signature.svg'
@@ -440,11 +457,11 @@ export default {
   },
   watch: {
     gasPrice: function(newGasPrice, oldGasPrice) {
-      const gasCost = newGasPrice * this.gasEstimate * 10 ** -9
-      this.txFees = gasCost * this.$store.state.currencyData['usd']
-      const ethCost = parseFloat(this.value) + gasCost
+      this.gasCost = newGasPrice * this.gasEstimate * 10 ** -9
+      this.txFees = this.gasCost * this.$store.state.currencyData['usd']
+      const ethCost = parseFloat(this.value) + this.gasCost
       this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
-      const gasCostLength = Math.max(significantDigits(gasCost).toString().length, significantDigits(ethCost).toString().length)
+      const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
       this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
       this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData['usd'] || 0)
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
@@ -593,11 +610,11 @@ export default {
         this.txData = data // data hex
         this.txDataParams = txDataParams !== '' ? JSON.stringify(txDataParams, null, 2) : ''
         this.sender = sender // address of sender
-        const gasCost = gweiGasPrice * this.gasEstimate * 10 ** -9
-        this.txFees = gasCost * this.$store.state.currencyData['usd']
-        const ethCost = parseFloat(finalValue) + gasCost
+        this.gasCost = gweiGasPrice * this.gasEstimate * 10 ** -9
+        this.txFees = this.gasCost * this.$store.state.currencyData['usd']
+        const ethCost = parseFloat(finalValue) + this.gasCost
         this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
-        const gasCostLength = Math.max(significantDigits(gasCost).toString().length, significantDigits(ethCost).toString().length)
+        const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
         this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
         this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData['usd'] || 0)
         if (reason) this.errorMsg = reason
