@@ -27,11 +27,11 @@
           <div class="caption float-right clearfix">{{ dollarValue }} USD</div>
         </v-flex>-->
         <v-flex xs12 mb-4 mx-6>
-          <div class="subtitle-2">Amount</div>
+          <div class="subtitle-2">Amount {{ transactionCategory }} {{ origin }}</div>
           <v-divider></v-divider>
           <div>
-            <span class="subtitle-2 float-left grey--text">To: {{ slicedAddress(receiver) }}</span>
-            <span class="subtitle-2 float-right">{{ amountDisplay(value) }} ETH</span>
+            <span class="subtitle-2 float-left grey--text">{{ displayAmountTo }}</span>
+            <span class="subtitle-2 float-right">{{ displayAmountValue }}</span>
           </div>
           <div class="caption float-right clearfix">~ {{ dollarValue }} USD</div>
         </v-flex>
@@ -370,6 +370,44 @@ export default {
     },
     isLightHeader() {
       return [DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].indexOf(this.transactionCategory) >= 0
+    },
+    displayAmountTo() {
+      switch (this.transactionCategory) {
+        case TOKEN_METHOD_APPROVE:
+        case TOKEN_METHOD_TRANSFER:
+        case TOKEN_METHOD_TRANSFER_FROM:
+        case CONTRACT_INTERACTION_KEY:
+          return this.amountTo
+          break
+        case SEND_ETHER_ACTION_KEY:
+          return `To: ${this.slicedAddress(this.receiver)}`
+          break
+        case DEPLOY_CONTRACT_ACTION_KEY:
+          return 'New Contract'
+          break
+        default:
+          return 'Transaction Request'
+          break
+      }
+    },
+    displayAmountValue() {
+      switch (this.transactionCategory) {
+        case TOKEN_METHOD_APPROVE:
+        case TOKEN_METHOD_TRANSFER:
+        case TOKEN_METHOD_TRANSFER_FROM:
+        case CONTRACT_INTERACTION_KEY:
+          return this.amountValue
+          break
+        case SEND_ETHER_ACTION_KEY:
+          return `${this.amountDisplay(this.value)} ETH`
+          break
+        case DEPLOY_CONTRACT_ACTION_KEY:
+          return 'Not Applicable'
+          break
+        default:
+          return 'Transaction Request'
+          break
+      }
     },
     imageType() {
       return this.transactionCategory === DEPLOY_CONTRACT_ACTION_KEY || this.transactionCategory === CONTRACT_INTERACTION_KEY
