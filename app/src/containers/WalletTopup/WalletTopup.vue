@@ -149,6 +149,8 @@
 import { postQuote, postOrder } from '../../plugins/simplex'
 import throttle from 'lodash.throttle'
 import { significantDigits, formatCurrencyNumber } from '../../utils/utils'
+import config from '../../config.js'
+const { moonpayLiveAPIKEY, moonpayHost } = config
 
 import TopupProviders from '../../components/WalletTopup/TopupProviders'
 
@@ -171,8 +173,8 @@ export default {
         url: '',
         loaded: false,
         currencyCode: 'eth',
-        path: 'https://buy.moonpay.io?',
-        apiKey: 'pk_live_Wg90NLnFst3ms7tiqnMDDO0yjlypMzYK',
+        path: moonpayHost,
+        apiKey: moonpayLiveAPIKEY,
 
         // Modify before deploying.
         redirectURL: ''
