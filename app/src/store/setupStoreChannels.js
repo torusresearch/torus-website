@@ -48,6 +48,10 @@ torus.communicationMux.getStream('provider_change').on('data', function(chunk) {
   VuexStore.dispatch('showProviderChangePopup', { ...chunk.data })
 })
 
+torus.communicationMux.getStream('logout').on('data', function(chunk) {
+  if (chunk.name === 'logOut') VuexStore.dispatch('logOut')
+})
+
 const userInfoStream = torus.communicationMux.getStream('user_info')
 userInfoStream.on('data', function(chunk) {
   if (chunk.name === 'user_info_request') VuexStore.dispatch('showUserInfoRequestPopup', { ...chunk.data })

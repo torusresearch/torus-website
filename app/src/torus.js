@@ -12,9 +12,11 @@ const toChecksumAddress = require('./utils/toChecksumAddress').default
 const ethUtil = require('ethereumjs-util')
 // Make this a class. Use ES6
 class Torus {
-  instanceId = randomId()
-  ec = Elliptic('secp256k1')
-  setupMultiplex = setupMultiplex
+  constructor() {
+    this.instanceId = randomId()
+    this.ec = Elliptic('secp256k1')
+    this.setupMultiplex = setupMultiplex
+  }
   continueEnable(selectedAddress) {
     log.info('ENABLE WITH: ', selectedAddress)
     var oauthStream = this.communicationMux.getStream('oauth')
@@ -193,7 +195,7 @@ class Torus {
         endpointUrl,
         generateJsonRPCObject('VerifierLookupRequest', {
           verifier: 'google',
-          verifier_id: email
+          verifier_id: email.toLowerCase()
         })
       )
         .catch(err => console.error(err))
@@ -203,7 +205,7 @@ class Torus {
               endpointUrl,
               generateJsonRPCObject('KeyAssign', {
                 verifier: 'google',
-                verifier_id: email
+                verifier_id: email.toLowerCase()
               })
             )
           } else if (lookupShare.result) {
