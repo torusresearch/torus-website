@@ -78,7 +78,7 @@
     "xtend": "^4.0.2"
   },
   "devDependencies": {
-    "@toruslabs/torus-embed": "^0.0.24",
+    "@toruslabs/torus-embed": "^0.0.25",
     "@vue/cli-plugin-babel": "^3.10.0",
     "@vue/cli-plugin-eslint": "^3.10.0",
     "@vue/cli-plugin-pwa": "^4.0.0-beta.2",
@@ -90,11 +90,11 @@
     "cross-env": "^5.2.0",
     "envify": "^4.1.0",
     "eslint": "^6.1.0",
-    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-prettier": "^6.0.0",
     "eslint-config-standard": "^13.0.1",
     "eslint-loader": "^2.2.1",
-    "eslint-plugin-flowtype": "^3.13.0",
+    "eslint-plugin-flowtype": "^4.0.0",
     "eslint-plugin-html": "^6.0.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-node": "^9.1.0",
