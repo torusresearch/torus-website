@@ -231,6 +231,7 @@ import { get } from '../../utils/httpHelpers'
 const abiDecoder = require('../../utils/abiDecoder')
 const abi = require('human-standard-token-abi')
 const contracts = require('eth-contract-metadata')
+const log = require('loglevel')
 
 const {
   ROPSTEN,
@@ -528,7 +529,7 @@ export default {
       window.close()
     },
     topUp() {
-      console.log('Trigger Topup')
+      this.openWallet()
     },
     openWallet() {
       this.$store.dispatch('showWalletPopup')
@@ -591,9 +592,9 @@ export default {
       try {
         url = new URL(origin)
       } catch (err) {
-        console.log(err)
+        log.info(err)
       }
-      console.log(txParams)
+      log.info(txParams)
       this.origin = url.hostname // origin of tx: website url
       if (type === 'message') {
         const { message, typedMessages } = msgParams.msgParams || {}
@@ -616,8 +617,7 @@ export default {
         // GET data params
         const txDataParams = abi.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
         const [amountTo, amountValue] = methodParams || []
-        console.log(methodParams, 'params')
-        console.log(txParams, 'txParams')
+        log.info(methodParams, 'params')
         const checkSummedTo = web3Utils.toChecksumAddress(to)
 
         const tokenObj = Object.prototype.hasOwnProperty.call(contracts, checkSummedTo) ? contracts[web3Utils.toChecksumAddress(to)] : {}
@@ -636,14 +636,11 @@ export default {
           const query = `contract_addresses=${pairs}&vs_currencies=eth`
           const prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
           const tokenPrice = prices[checkSummedTo.toLowerCase()].eth //token price in eth
-          console.log(tokenPrice, 'prices')
-
           this.tokenPrice = tokenPrice
           this.amountTokenValueConverted =
             tokenPrice * parseFloat(this.amountValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
-          this.currencyRateDate = this.getDate()
         }
-
+        this.currencyRateDate = this.getDate()
         this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
         this.dollarValue = significantDigits(parseFloat(finalValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()])
