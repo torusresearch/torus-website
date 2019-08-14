@@ -32,7 +32,7 @@ class Torus {
       publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
     }
   }
-  async commitmentRequest(endpoints, idToken) {
+  commitmentRequest(endpoints, idToken) {
     /* 
     CommitmentRequestParams struct {
       MessagePrefix      string `json:"messageprefix"`
@@ -43,30 +43,40 @@ class Torus {
       VerifierIdentifier string `json:"verifieridentifier"`
     } 
     */
-    console.log(idToken)
-    var tmpKey = this.ec.genKeyPair()
-    var pubKey = tmpKey.getPublic()
-    var tokenCommitment = this.web3.utils.keccak256(idToken)
-    console.log(tokenCommitment)
-    let promiseArr = []
-    for (var i = 0; i < endpoints.length; i++) {
-      var p = post(
-        endpoints[i],
-        generateJsonRPCObject('CommitmentRequest', {
-          messageprefix: 'mug00',
-          tokencommitment: tokenCommitment.slice(2),
-          temppubx: pubKey.getX().toString('hex'),
-          temppuby: pubKey.getY().toString('hex'),
-          timestamp: (Date.now() - 2000).toString().slice(0, 10),
-          verifieridentifier: 'google'
+    return new Promise((resolve, reject) => {
+      console.log(idToken)
+      var tmpKey = this.ec.genKeyPair()
+      var pubKey = tmpKey.getPublic()
+      var tokenCommitment = this.web3.utils.keccak256(idToken)
+      console.log(tokenCommitment)
+      let promiseArr = []
+      for (var i = 0; i < endpoints.length; i++) {
+        var p = post(
+          endpoints[i],
+          generateJsonRPCObject('CommitmentRequest', {
+            messageprefix: 'mug00',
+            tokencommitment: tokenCommitment.slice(2),
+            temppubx: pubKey.getX().toString('hex'),
+            temppuby: pubKey.getY().toString('hex'),
+            timestamp: (Date.now() - 2000).toString().slice(0, 10),
+            verifieridentifier: 'google'
+          })
+        ).catch(err => {
+          console.error(err)
         })
-      ).catch(err => {
-        console.error(err)
-      })
-      promiseArr.push(p)
-    }
+        promiseArr.push(p)
+      }
 
-    this.nodeSigs = (await Promise.all(promiseArr)).map(response => response.result)
+      Promise.all(promiseArr)
+        .then(responses => {
+          this.nodeSigs = responses.map(response => response.result)
+          resolve()
+        })
+        .catch(err => {
+          console.error(err)
+          reject(err)
+        })
+    })
   }
   retrieveShares(endpoints, indexes, email, idToken) {
     // Swallow individual fetch errors to handle node failures
