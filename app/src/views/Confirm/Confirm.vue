@@ -484,12 +484,12 @@ export default {
   watch: {
     gasPrice: function(newGasPrice, oldGasPrice) {
       this.gasCost = newGasPrice * this.gasEstimate * 10 ** -9
-      this.txFees = this.gasCost * this.$store.state.currencyData['usd']
+      this.txFees = this.gasCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
       const ethCost = parseFloat(this.value) + this.gasCost
       this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
       const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
       this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
-      this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData['usd'] || 0)
+      this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()] || 0)
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
         this.canApprove = false
@@ -646,22 +646,22 @@ export default {
 
         this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
-        this.dollarValue = significantDigits(parseFloat(finalValue) * this.$store.state.currencyData['usd'])
+        this.dollarValue = significantDigits(parseFloat(finalValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()])
         this.gasPrice = gweiGasPrice // gas price in gwei
         this.gasKnob = calculateGasKnob(gweiGasPrice)
         this.balance = balance // in eth
-        this.balanceUsd = significantDigits(parseFloat(balance) * this.$store.state.currencyData['usd']) // in usd
+        this.balanceUsd = significantDigits(parseFloat(balance) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]) // in usd
         this.gasEstimate = web3Utils.hexToNumber(gas) // gas number
         this.txData = data // data hex
         this.txDataParams = txDataParams !== '' ? JSON.stringify(txDataParams, null, 2) : ''
         this.sender = sender // address of sender
         this.gasCost = gweiGasPrice * this.gasEstimate * 10 ** -9
-        this.txFees = this.gasCost * this.$store.state.currencyData['usd']
+        this.txFees = this.gasCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
         const ethCost = parseFloat(finalValue) + this.gasCost
         this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
         const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
         this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
-        this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData['usd'] || 0)
+        this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()] || 0)
         if (reason) this.errorMsg = reason
         if (parseFloat(this.balance) < ethCost && !this.canShowError) {
           this.errorMsg = 'Insufficient Funds'
