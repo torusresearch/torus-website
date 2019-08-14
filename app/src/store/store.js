@@ -477,7 +477,7 @@ var VuexStore = new Vuex.Store({
             let profileImage = profile.getImageUrl()
             dispatch('updateUserInfo', { userInfo: { profileImage, name, email } })
             const { torusNodeEndpoints } = config
-            torus.commitment(torusNodeEndpoints, googleUser.getAuthResponse().id_token).then(() => {
+            torus.commitmentRequest(torusNodeEndpoints, googleUser.getAuthResponse().id_token).then(() => {
               window.gapi.auth2
                 .getAuthInstance()
                 .disconnect()

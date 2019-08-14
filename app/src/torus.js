@@ -32,7 +32,7 @@ class Torus {
       publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
     }
   }
-  async commitment(endpoints, idToken) {
+  async commitmentRequest(endpoints, idToken) {
     /* 
     CommitmentRequestParams struct {
       MessagePrefix      string `json:"messageprefix"`
