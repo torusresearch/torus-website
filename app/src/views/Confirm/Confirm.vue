@@ -125,7 +125,9 @@
           </div>
         </v-flex>
         <v-flex xs12 px-6 mb-6 v-if="showConfirmMessage">
-          <div class="caption error--text">By confirming this, you grant permission for this contract to spend up to 1,000 of your tokens.</div>
+          <div class="caption error--text">
+            By confirming this, you grant permission for this contract to spend up to {{ displayAmountValue }} of your tokens.
+          </div>
         </v-flex>
         <v-layout px-6>
           <v-flex xs6>
@@ -616,7 +618,9 @@ export default {
         this.origin = this.origin.trim().length === 0 ? 'Wallet' : this.origin
         // GET data params
         const txDataParams = abi.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
-        const [amountTo, amountValue] = methodParams || []
+        let amountTo, amountValue, amountFrom
+        if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM) [amountTo, amountValue] = methodParams || []
+        else [amountFrom, amountTo, amountValue] = methodParams || []
         log.info(methodParams, 'params')
         const checkSummedTo = web3Utils.toChecksumAddress(to)
 
