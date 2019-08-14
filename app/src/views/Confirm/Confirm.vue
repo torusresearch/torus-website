@@ -33,7 +33,7 @@
             <span class="subtitle-2 float-left grey--text">{{ displayAmountTo }}</span>
             <span class="subtitle-2 float-right">{{ displayAmountValue }}</span>
           </div>
-          <div class="caption float-right clearfix">~ {{ dollarValue }} USD</div>
+          <div class="caption float-right clearfix">{{ displayAmountConverted }}</div>
         </v-flex>
         <!-- <v-flex xs12 mb-4 mx-6>
           <div class="subtitle-2">Your Wallet Balance</div>
@@ -60,7 +60,7 @@
             <span class="subtitle-2">Cost of Transaction</span>
             <span class="subtitle-1 float-right blue--text font-weight-bold">{{ costOfTransaction }}</span>
           </div>
-          <div v-if="showCostOfTransactionGas" class="clearfix">
+          <div v-if="isOtherToken" class="clearfix">
             <span class="subtitle-1 float-right blue--text font-weight-bold">+ {{ significantDigits(this.gasCost) }} ETH</span>
           </div>
           <div class="caption float-right clearfix">{{ costOfTransactionConverted }}</div>
@@ -423,6 +423,25 @@ export default {
           break
       }
     },
+    displayAmountConverted() {
+      switch (this.transactionCategory) {
+        case TOKEN_METHOD_APPROVE:
+        case TOKEN_METHOD_TRANSFER:
+        case TOKEN_METHOD_TRANSFER_FROM:
+          return `~ ${significantDigits(this.amountTokenValueConverted)} ${this.selectedCurrency}`
+          break
+        case SEND_ETHER_ACTION_KEY:
+          return `~ ${this.dollarValue} ${this.selectedCurrency}`
+          break
+        case CONTRACT_INTERACTION_KEY:
+        case DEPLOY_CONTRACT_ACTION_KEY:
+          return ''
+          break
+        default:
+          return ''
+          break
+      }
+    },
     showConfirmMessage() {
       return this.transactionCategory === TOKEN_METHOD_APPROVE
     },
@@ -433,12 +452,13 @@ export default {
         return `${this.totalEthCostDisplay} ETH`
       }
     },
-    showCostOfTransactionGas() {
+    isOtherToken() {
       return [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(this.transactionCategory) >= 0
       //`+ ${significantDigits(this.gasCost)}`
     },
     costOfTransactionConverted() {
-      return `~ ${this.totalUsdCost} USD`
+      const totalCost = this.isOtherToken ? significantDigits(this.totalUsdCost + this.amountTokenValueConverted, false, 5) : this.totalUsdCost
+      return `~ ${totalCost} ${this.selectedCurrency}`
     },
     imageType() {
       return this.transactionCategory === DEPLOY_CONTRACT_ACTION_KEY || this.transactionCategory === CONTRACT_INTERACTION_KEY
@@ -607,13 +627,7 @@ export default {
         console.log(methodParams, 'params')
         console.log(txParams, 'txParams')
         const checkSummedTo = web3Utils.toChecksumAddress(to)
-        if (methodParams) {
-          const pairs = checkSummedTo
-          const query = `contract_addresses=${pairs}&vs_currencies=eth`
-          const prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
-          const tokenPrice = prices[checkSummedTo.toLowerCase()].eth //token price in eth
-          console.log(tokenPrice, 'prices')
-        }
+
         const tokenObj = Object.prototype.hasOwnProperty.call(contracts, checkSummedTo) ? contracts[web3Utils.toChecksumAddress(to)] : {}
         const decimals = tokenObj.decimals || 0
         this.selectedToken = tokenObj.symbol || 'ERC20'
@@ -624,6 +638,18 @@ export default {
         var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
         this.amountTo = amountTo ? amountTo.value : checkSummedTo
         this.amountValue = amountValue ? parseFloat(amountValue.value) / 10 ** parseFloat(decimals) : ''
+
+        if (methodParams) {
+          const pairs = checkSummedTo
+          const query = `contract_addresses=${pairs}&vs_currencies=eth`
+          const prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
+          const tokenPrice = prices[checkSummedTo.toLowerCase()].eth //token price in eth
+          console.log(tokenPrice, 'prices')
+
+          this.amountTokenValueConverted =
+            tokenPrice * parseFloat(this.amountValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+        }
+
         this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
         this.dollarValue = significantDigits(parseFloat(finalValue) * this.$store.state.currencyData['usd'])
