@@ -280,6 +280,9 @@ export default {
       value: 0,
       amountTo: '',
       amountValue: '',
+      tokenPrice: 0,
+      amountTokenValueConverted: 0,
+      currencyRateDate: '',
       receiver: 'unknown',
       dialog: true,
       message: '',
@@ -471,22 +474,11 @@ export default {
       if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
       return currencyMultiplier
     },
-    finalBalancesArray() {
-      return this.$store.getters.tokenBalances.finalBalancesArray || []
-    },
     getCurrencyRate() {
-      const targetBalance = this.finalBalancesArray.find(balance => {
-        if (this.transactionCategory === SEND_ETHER_ACTION_KEY) {
-          return balance.id === 'ETH'
-        }
-        return false
-      })
-
-      if (targetBalance) return `${targetBalance.currencyRateText} @ ${this.getDate()}`
-
-      return ''
-      // console.log(txParams)
-      // console.log(this.finalBalancesArray)
+      const ethConverted = this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+      const tokenPriceConverted = this.isOtherToken ? this.tokenPrice * ethConverted : ethConverted
+      const selectedToken = this.isOtherToken ? this.selectedToken : 'ETH'
+      return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
     }
   },
   watch: {
@@ -646,8 +638,10 @@ export default {
           const tokenPrice = prices[checkSummedTo.toLowerCase()].eth //token price in eth
           console.log(tokenPrice, 'prices')
 
+          this.tokenPrice = tokenPrice
           this.amountTokenValueConverted =
             tokenPrice * parseFloat(this.amountValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+          this.currencyRateDate = this.getDate()
         }
 
         this.receiver = to // address of receiver
