@@ -227,8 +227,10 @@ import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSel
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import torus from '../../torus'
 import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress } from '../../utils/utils'
+import { get } from '../../utils/httpHelpers'
 const abiDecoder = require('../../utils/abiDecoder')
 const abi = require('human-standard-token-abi')
+const contracts = require('eth-contract-metadata')
 
 const {
   ROPSTEN,
@@ -281,6 +283,7 @@ export default {
       receiver: 'unknown',
       dialog: true,
       message: '',
+      selectedToken: '',
       gasCost: 0,
       gasEstimate: 0,
       txData: '',
@@ -383,11 +386,13 @@ export default {
         case TOKEN_METHOD_APPROVE:
         case TOKEN_METHOD_TRANSFER:
         case TOKEN_METHOD_TRANSFER_FROM:
-        case CONTRACT_INTERACTION_KEY:
-          return this.amountTo
+          return `To: ${this.slicedAddress(this.amountTo)}`
           break
         case SEND_ETHER_ACTION_KEY:
           return `To: ${this.slicedAddress(this.receiver)}`
+          break
+        case CONTRACT_INTERACTION_KEY:
+          return this.amountTo
           break
         case DEPLOY_CONTRACT_ACTION_KEY:
           return 'New Contract'
@@ -402,11 +407,13 @@ export default {
         case TOKEN_METHOD_APPROVE:
         case TOKEN_METHOD_TRANSFER:
         case TOKEN_METHOD_TRANSFER_FROM:
-        case CONTRACT_INTERACTION_KEY:
-          return this.amountValue
+          return `${this.amountDisplay(this.amountValue)} ${this.selectedToken}`
           break
         case SEND_ETHER_ACTION_KEY:
           return `${this.amountDisplay(this.value)} ETH`
+          break
+        case CONTRACT_INTERACTION_KEY:
+          return ''
           break
         case DEPLOY_CONTRACT_ACTION_KEY:
           return 'Not Applicable'
@@ -421,7 +428,7 @@ export default {
     },
     costOfTransaction() {
       if ([TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(this.transactionCategory) >= 0) {
-        return `${this.displayAmountTo}`
+        return `${this.displayAmountValue}`
       } else {
         return `${this.totalEthCostDisplay} ETH`
       }
@@ -556,6 +563,7 @@ export default {
     },
     significantDigits: significantDigits,
     getHeaderByDapp() {
+      // For partner integration
       if (this.origin === 'www.etheremon.com') {
         return 'Claim a Mon'
       }
@@ -598,14 +606,24 @@ export default {
         const [amountTo, amountValue] = methodParams || []
         console.log(methodParams, 'params')
         console.log(txParams, 'txParams')
-
+        const checkSummedTo = web3Utils.toChecksumAddress(to)
+        if (methodParams) {
+          const pairs = checkSummedTo
+          const query = `contract_addresses=${pairs}&vs_currencies=eth`
+          const prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
+          const tokenPrice = prices[checkSummedTo.toLowerCase()].eth //token price in eth
+          console.log(tokenPrice, 'prices')
+        }
+        const tokenObj = Object.prototype.hasOwnProperty.call(contracts, checkSummedTo) ? contracts[web3Utils.toChecksumAddress(to)] : {}
+        const decimals = tokenObj.decimals || 0
+        this.selectedToken = tokenObj.symbol || 'ERC20'
         this.id = id
         this.network = network
         this.networkName = this.getNetworkName(network)
         this.transactionCategory = transactionCategory
         var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
-        this.amountTo = amountTo ? amountTo.value : ''
-        this.amountValue = amountValue ? amountValue.value : ''
+        this.amountTo = amountTo ? amountTo.value : checkSummedTo
+        this.amountValue = amountValue ? parseFloat(amountValue.value) / 10 ** parseFloat(decimals) : ''
         this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
         this.dollarValue = significantDigits(parseFloat(finalValue) * this.$store.state.currencyData['usd'])
