@@ -19,6 +19,7 @@
                 <v-btn
                   :large="!$vuetify.breakpoint.xsOnly"
                   depressed
+                  id="loginBtn"
                   color="primary"
                   class="flexiBtn px-12"
                   type="button"
