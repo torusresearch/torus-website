@@ -477,16 +477,18 @@ var VuexStore = new Vuex.Store({
             let profileImage = profile.getImageUrl()
             dispatch('updateUserInfo', { userInfo: { profileImage, name, email } })
             const { torusNodeEndpoints } = config
-            window.gapi.auth2
-              .getAuthInstance()
-              .disconnect()
-              .then(() => {
-                const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
-                dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-              })
-              .catch(function(err) {
-                log.error(err)
-              })
+            torus.commitment(torusNodeEndpoints, googleUser.getAuthResponse().id_token).then(() => {
+              window.gapi.auth2
+                .getAuthInstance()
+                .disconnect()
+                .then(() => {
+                  const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
+                  dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+                })
+                .catch(function(err) {
+                  log.error(err)
+                })
+            })
           })
         } else {
           setTimeout(gapiLoadCall, 1000)

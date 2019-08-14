@@ -32,101 +32,98 @@ class Torus {
       publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
     }
   }
+  async commitment(endpoints, idToken) {
+    /* 
+    CommitmentRequestParams struct {
+      MessagePrefix      string `json:"messageprefix"`
+      TokenCommitment    string `json:"tokencommitment"`
+      TempPubX           string `json:"temppubx"`
+      TempPubY           string `json:"temppuby"`
+      Timestamp          string `json:"timestamp"`
+      VerifierIdentifier string `json:"verifieridentifier"`
+    } 
+    */
+    console.log(idToken)
+    var tmpKey = this.ec.genKeyPair()
+    var pubKey = tmpKey.getPublic()
+    var tokenCommitment = this.web3.utils.keccak256(idToken)
+    console.log(tokenCommitment)
+    let promiseArr = []
+    for (var i = 0; i < endpoints.length; i++) {
+      var p = post(
+        endpoints[i],
+        generateJsonRPCObject('CommitmentRequest', {
+          messageprefix: 'mug00',
+          tokencommitment: tokenCommitment.slice(2),
+          temppubx: pubKey.getX().toString('hex'),
+          temppuby: pubKey.getY().toString('hex'),
+          timestamp: (Date.now() - 2000).toString().slice(0, 10),
+          verifieridentifier: 'google'
+        })
+      ).catch(err => {
+        console.error(err)
+      })
+      promiseArr.push(p)
+    }
+
+    this.nodeSigs = (await Promise.all(promiseArr)).map(response => response.result)
+  }
   retrieveShares(endpoints, indexes, email, idToken) {
     // Swallow individual fetch errors to handle node failures
     // catch only logic errors
     return new Promise((resolve, reject) => {
-      const promiseArr = []
-      /* 
-      CommitmentRequestParams struct {
-        MessagePrefix      string `json:"messageprefix"`
-        TokenCommitment    string `json:"tokencommitment"`
-        TempPubX           string `json:"temppubx"`
-        TempPubY           string `json:"temppuby"`
-        Timestamp          string `json:"timestamp"`
-        VerifierIdentifier string `json:"verifieridentifier"`
-      } 
+      const promiseArrRequest = []
+      /*
+      ShareRequestParams struct {
+        Item []bijson.RawMessage `json:"item"`
+      }
+      ShareRequestItem struct {
+        IDToken            string          `json:"idtoken"`
+        NodeSignatures     []NodeSignature `json:"nodesignatures"`
+        VerifierIdentifier string          `json:"verifieridentifier"`
+      }
+      NodeSignature struct {
+        Signature   string
+        Data        string
+        NodePubKeyX string
+        NodePubKeyY string
+      }
+      CommitmentRequestResult struct {
+        Signature string `json:"signature"`
+        Data      string `json:"data"`
+        NodePubX  string `json:"nodepubx"`
+        NodePubY  string `json:"nodepuby"`
+      }
       */
-      console.log(idToken)
-      var tmpKey = this.ec.genKeyPair()
-      var pubKey = tmpKey.getPublic()
-      var tokenCommitment = this.web3.utils.keccak256(idToken)
-      console.log(tokenCommitment)
-      for (var i = 0; i < endpoints.length; i++) {
+      for (let i = 0; i < endpoints.length; i++) {
         var p = post(
           endpoints[i],
-          generateJsonRPCObject('CommitmentRequest', {
-            messageprefix: 'mug00',
-            tokencommitment: tokenCommitment.slice(2),
-            temppubx: pubKey.getX().toString('hex'),
-            temppuby: pubKey.getY().toString('hex'),
-            timestamp: (Date.now() - 2000).toString().slice(0, 10),
-            verifieridentifier: 'google'
+          generateJsonRPCObject('ShareRequest', {
+            item: [{ idtoken: idToken, nodesignatures: this.nodeSigs, verifieridentifier: 'google', email: email }]
           })
         ).catch(err => {
           console.error(err)
         })
-        promiseArr.push(p)
+        promiseArrRequest.push(p)
       }
-      Promise.all(promiseArr)
-        .then(responses => {
-          const promiseArrRequest = []
-          /*
-          ShareRequestParams struct {
-            Item []bijson.RawMessage `json:"item"`
-          }
-          ShareRequestItem struct {
-            IDToken            string          `json:"idtoken"`
-            NodeSignatures     []NodeSignature `json:"nodesignatures"`
-            VerifierIdentifier string          `json:"verifieridentifier"`
-          }
-          NodeSignature struct {
-            Signature   string
-            Data        string
-            NodePubKeyX string
-            NodePubKeyY string
-          }
-          CommitmentRequestResult struct {
-            Signature string `json:"signature"`
-            Data      string `json:"data"`
-            NodePubX  string `json:"nodepubx"`
-            NodePubY  string `json:"nodepuby"`
-          }
-          */
-          var nodeSigs = []
-          for (var i = 0; i < responses.length; i++) {
-            if (responses[i]) nodeSigs.push(responses[i].result)
-          }
-          for (i = 0; i < endpoints.length; i++) {
-            var p = post(
-              endpoints[i],
-              generateJsonRPCObject('ShareRequest', {
-                item: [{ idtoken: idToken, nodesignatures: nodeSigs, verifieridentifier: 'google', email: email }]
-              })
-            ).catch(err => {
-              console.error(err)
-            })
-            promiseArrRequest.push(p)
-          }
-          return Promise.all(promiseArrRequest)
-        })
+      Promise.all(promiseArrRequest)
         .then(shareResponses => {
           /*
           ShareRequestResult struct {
             Keys []KeyAssignment
           }
-                  / KeyAssignmentPublic -
+          // KeyAssignmentPublic -
           type KeyAssignmentPublic struct {
-          	Index     big.Int
-          	PublicKey common.Point
-          	Threshold int
-          	Verifiers map[string][]string // Verifier => VerifierID
+            Index     big.Int
+            PublicKey common.Point
+            Threshold int
+            Verifiers map[string][]string // Verifier => VerifierID
           }
 
           // KeyAssignment -
           type KeyAssignment struct {
-          	KeyAssignmentPublic
-          	Share big.Int // Or Si
+            KeyAssignmentPublic
+            Share big.Int // Or Si
           }
           */
           log.info('completed')
