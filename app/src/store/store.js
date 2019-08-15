@@ -6,7 +6,7 @@ import VuexPersistence from 'vuex-persist'
 import config from '../config'
 import torus from '../torus'
 import { MAINNET, RPC } from '../utils/enums'
-import { formatCurrencyNumber, getRandomNumber, hexToText, significantDigits, getEtherScanHashLink } from '../utils/utils'
+import { formatCurrencyNumber, getRandomNumber, significantDigits, getEtherScanHashLink } from '../utils/utils'
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import { notifyUser } from '../utils/notifications'
@@ -710,7 +710,13 @@ function getLatestMessageParams() {
 
   // handle hex-based messages and convert to text
   if (msg) {
-    msg.msgParams.message = hexToText(msg.msgParams.data)
+    let finalMsg
+    try {
+      finalMsg = torus.web3.utils.hexToUtf8(msg.msgParams.data)
+    } catch (error) {
+      finalMsg = msg.msgParams.data
+    }
+    msg.msgParams.message = finalMsg
   }
 
   // handle typed messages
