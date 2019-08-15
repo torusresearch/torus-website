@@ -392,7 +392,7 @@ export default {
       if (this.selectedTokenAddress === '0x') {
         this.totalCost = this.convertedTotalCost / this.getCurrencyTokenRate
       } else {
-        this.totalCost = `${this.displayAmount} ${this.selectedItem.symbol} + ${this.getGasAmount(this.activeGasPrice)} ETH`
+        this.totalCost = `${this.displayAmount} ${this.selectedItem.symbol} + ${this.getEthAmount(this.gas, this.activeGasPrice)} ETH`
       }
     },
     onSelectSpeed(data) {

@@ -165,23 +165,25 @@ export default {
     },
     setSelectedSpeed() {
       let selectedType = ''
+      let selectedGasPrice = 0
       let nearest = 1200
       let delta = 0
 
-      this.activeGasPrice = this.activeGasPriceConfirm
-
-      delta = Math.abs(this.fastestGasPrice - this.activeGasPrice)
+      delta = Math.abs(this.fastestGasPrice - this.activeGasPriceConfirm)
       if (delta < nearest) {
         nearest = delta
         selectedType = 'fastest'
+        selectedGasPrice = this.fastestGasPrice
       }
-      delta = Math.abs(this.averageGasPrice - this.activeGasPrice)
+      delta = Math.abs(this.averageGasPrice - this.activeGasPriceConfirm)
       if (delta < nearest) {
         nearest = delta
         selectedType = 'average'
+        selectedGasPrice = this.averageGasPrice
       }
 
       this.speedSelected = selectedType
+      this.activeGasPrice = selectedGasPrice
 
       if (this.activeGasPriceConfirm) {
         this.updateCosts()
