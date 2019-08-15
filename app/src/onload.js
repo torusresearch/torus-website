@@ -13,7 +13,7 @@ function onloadTorus(torus) {
     store.dispatch('showPopup')
   }
 
-  const localStorageCachedNetwork = localStorage.getItem('torus_network_type')
+  const localStorageCachedNetwork = localStorage.getItem('torus_network_type') || 'MAINNET'
 
   const torusController = new TorusController({
     localStorageCachedNetwork,
