@@ -52,15 +52,35 @@
               <span class="subtitle-2">You send</span>
             </div>
             <v-text-field
-              :suffix="selectedItem.symbol"
-              :hint="convertedAmount ? `~ ${convertedAmount} ${selectedCurrency}` : ''"
+              :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
               persistent-hint
               type="number"
               outlined
               required
               v-model="displayAmount"
               :rules="[rules.required, lesserThan, moreThanZero]"
-            ></v-text-field>
+            >
+              <template v-slot:append>
+                <v-btn
+                  small
+                  :outlined="!toggle_exclusive"
+                  :text="!!toggle_exclusive"
+                  :color="!toggle_exclusive ? 'primary' : 'grey'"
+                  @click="changeSelectedToCurrency(0)"
+                >
+                  {{ selectedItem && selectedItem.symbol }}
+                </v-btn>
+                <v-btn
+                  small
+                  :outlined="!!toggle_exclusive"
+                  :text="!toggle_exclusive"
+                  :color="toggle_exclusive ? 'primary' : 'grey'"
+                  @click="changeSelectedToCurrency(1)"
+                >
+                  {{ selectedCurrency }}
+                </v-btn>
+              </template>
+            </v-text-field>
           </v-flex>
         </v-layout>
         <v-layout wrap>
@@ -70,7 +90,7 @@
               <span class="subtitle-2">Total Cost</span>
             </div>
             <v-text-field
-              :suffix="selectedTokenAddress === '0x' ? selectedItem.symbol : ''"
+              :suffix="totalCostSuffix"
               :hint="convertedTotalCost ? convertedTotalCostDisplay : ''"
               persistent-hint
               outlined
@@ -198,6 +218,9 @@ export default {
       // USD 4,138.16
       const getNumber = this.selectedItem.currencyBalance.split(' ')[1].replace(',', '')
       return `= ${getNumber} ${this.selectedCurrency}`
+    },
+    totalCostSuffix() {
+      return this.selectedTokenAddress === '0x' ? (this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency) : ''
     }
   },
   watch: {
@@ -208,10 +231,12 @@ export default {
       if (this.toggle_exclusive === 0) {
         this.amount = this.displayAmount
       } else {
-        this.amount = this.displayAmount / this.getCurrencyTokenRate
+        this.amount = this.getCurrencyTokenRate > 0 ? this.displayAmount / this.getCurrencyTokenRate : this.displayAmount * this.getCurrencyTokenRate
       }
 
-      this.convertedAmount = significantDigits(this.displayAmount * this.getCurrencyTokenRate)
+      this.convertedAmount = this.toggle_exclusive
+        ? significantDigits(this.displayAmount / this.getCurrencyTokenRate)
+        : significantDigits(this.displayAmount * this.getCurrencyTokenRate)
 
       this.updateTotalCost()
     }
@@ -271,6 +296,7 @@ export default {
       this.updateTotalCost()
     },
     changeSelectedToCurrency(value) {
+      this.toggle_exclusive = value
       const currencyRate = this.getCurrencyTokenRate
       if (value === 0) {
         this.displayAmount = this.displayAmount / currencyRate
@@ -387,13 +413,26 @@ export default {
         return
       }
 
-      this.convertedTotalCost = this.convertedAmount + this.getGasAmount(this.activeGasPrice)
+      this.totalCost = ''
+      this.convertedTotalCost = ''
+
+      const gasPriceInCurrency = this.getGasAmount(this.activeGasPrice)
+      const gasPriceInEth = gasPriceInCurrency / this.getCurrencyMultiplier
+      const toSend = parseFloat(this.amount)
+      const toSendConverted = toSend * this.getCurrencyTokenRate
 
       if (this.selectedTokenAddress === '0x') {
-        this.totalCost = this.convertedTotalCost / this.getCurrencyTokenRate
+        this.totalCost = this.toggle_exclusive === 0 ? toSend + gasPriceInEth : toSendConverted + gasPriceInCurrency
       } else {
-        this.totalCost = `${this.displayAmount} ${this.selectedItem.symbol} + ${this.getEthAmount(this.gas, this.activeGasPrice)} ETH`
+        const displayedCurrency = this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency
+        this.totalCost = `${this.displayAmount} ${displayedCurrency} + ${significantDigits(
+          this.getEthAmount(this.gas, this.activeGasPrice),
+          false,
+          5
+        )} ETH`
       }
+
+      this.convertedTotalCost = gasPriceInCurrency + toSendConverted
     },
     onSelectSpeed(data) {
       console.log('SET DATA: ', data)
