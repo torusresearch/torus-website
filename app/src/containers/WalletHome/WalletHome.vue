@@ -1,6 +1,6 @@
 <template>
   <div class="wallet-home">
-    <v-layout wrap align-center :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-6'">
+    <v-layout wrap align-center :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
       <v-flex xs12 px-4 mb-4>
         <div class="font-weight-bold headline float-left">My Wallet</div>
       </v-flex>

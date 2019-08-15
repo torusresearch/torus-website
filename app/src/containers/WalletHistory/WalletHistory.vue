@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-layout mt-6 wrap>
+    <v-layout mt-3 wrap>
       <v-flex xs12 px-4 mb-4>
         <div class="text-black font-weight-bold headline float-left">Transaction Activities</div>
         <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
