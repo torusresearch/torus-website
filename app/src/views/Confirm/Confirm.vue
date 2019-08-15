@@ -615,8 +615,8 @@ export default {
         // GET data params
         const txDataParams = abi.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
         let amountTo, amountValue, amountFrom
-        if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM) [amountTo, amountValue] = methodParams || []
-        else [amountFrom, amountTo, amountValue] = methodParams || []
+        if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM) [amountFrom, amountTo, amountValue] = methodParams || []
+        else [amountTo, amountValue] = methodParams || []
         log.info(methodParams, 'params')
         const checkSummedTo = web3Utils.toChecksumAddress(to)
 
