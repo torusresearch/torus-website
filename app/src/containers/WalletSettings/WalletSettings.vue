@@ -153,13 +153,15 @@ const {
   LOCALHOST,
   GOERLI,
   RPC,
+  MATIC,
   ROPSTEN_DISPLAY_NAME,
   RINKEBY_DISPLAY_NAME,
   KOVAN_DISPLAY_NAME,
   MAINNET_DISPLAY_NAME,
   LOCALHOST_DISPLAY_NAME,
   GOERLI_DISPLAY_NAME,
-  RPC_DISPLAY_NAME
+  RPC_DISPLAY_NAME,
+  MATIC_DISPLAY_NAME
 } = require('../../utils/enums')
 
 export default {
@@ -201,6 +203,10 @@ export default {
         {
           name: RPC_DISPLAY_NAME,
           value: RPC
+        },
+        {
+          name: MATIC_DISPLAY_NAME,
+          value: MATIC
         }
       ],
       rpc: { chainId: '', networkName: '', networkUrl: '' },
