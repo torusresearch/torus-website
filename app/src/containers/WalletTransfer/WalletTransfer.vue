@@ -421,7 +421,12 @@ export default {
       if (this.selectedTokenAddress === '0x') {
         this.totalCost = toSend + gasPriceInEth
       } else {
-        this.totalCost = `${this.displayAmount} ${this.selectedItem.symbol} + ${this.getEthAmount(this.gas, this.activeGasPrice)} ETH`
+        const displayedCurrency = this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency
+        this.totalCost = `${this.displayAmount} ${displayedCurrency} + ${significantDigits(
+          this.getEthAmount(this.gas, this.activeGasPrice),
+          false,
+          5
+        )} ETH`
       }
 
       this.convertedTotalCost = gasPriceInCurrency + toSendConverted
