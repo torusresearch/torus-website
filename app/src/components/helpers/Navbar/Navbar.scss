@@ -1,0 +1,41 @@
+.header-container{
+  .v-toolbar {
+    box-shadow: none;
+  }
+  
+  .v-tab {
+    text-transform: inherit;
+    font-size: 14px;
+    min-width: 50px;
+    &:first-of-type {
+      margin-left: auto !important
+    }
+  }
+  
+  .beta-text {
+    line-height: 1em;
+    margin-bottom: -10px;
+    margin-left: 5px;
+  }
+  
+  .beta-text-mobile {
+    line-height: 1em;
+    margin-top: -5px;
+  }
+  
+  .theme--light {
+    .v-tab {
+      &.v-tab--active {
+        color: var(--v-secondary-darken3);
+      }
+    }
+  }
+  
+  .home-link {
+    cursor: pointer;
+  }
+  
+  .v-tabs-bar.v-tabs-bar--is-mobile:not(.v-tabs-bar--show-arrows) > .v-slide-group__wrapper > .v-tabs-bar__content > .v-tab:first-of-type {
+    margin-left: 0;
+  }
+}

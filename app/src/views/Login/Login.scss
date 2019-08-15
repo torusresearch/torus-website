@@ -1,0 +1,40 @@
+a {
+  text-decoration: none;
+}
+
+.flexiBtn.btnStyle {
+  width: 172px;
+  height: 48px;
+  border-radius: 12px;
+}
+
+.background-login {
+  position: relative;
+  background-image: url('/images/footer_waves.png');
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  @extend .default;
+
+  @media only screen and (min-width: 1264px) {
+    background-size: 100%;
+  }
+}
+
+.text-gray {
+  color: var(--v-torus_text-lighten4);
+}
+
+.login-subtitle {
+  max-width: 514px;
+  margin: 0 auto;
+}
+
+.default {
+  height: 100%;
+}
+
+body,
+html {
+  height: 100%;
+  overflow-y: hidden;
+}

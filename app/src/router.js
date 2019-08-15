@@ -1,19 +1,17 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from './store'
-import Popup from './views/Popup.vue'
-import Confirm from './views/Confirm.vue'
-import ProviderChange from './views/ProviderChange.vue'
-import Wallet from './views/Wallet.vue'
-import Login from './views/Login.vue'
-import WalletHome from './containers/WalletHome.vue'
-import WalletHistory from './containers/WalletHistory.vue'
-import WalletSettings from './containers/WalletSettings.vue'
-import WalletAccounts from './containers/WalletAccounts.vue'
-import WalletTransfer from './containers/WalletTransfer.vue'
-import WalletTopup from './containers/WalletTopup.vue'
-import WalletAccountsHome from './containers/WalletAccountsHome.vue'
-import WalletAccountImport from './containers/WalletAccountImport.vue'
+import Popup from './views/Popup'
+import ProviderChange from './views/ProviderChange'
+import UserInfoRequest from './views/UserInfoRequest'
+import Login from './views/Login'
+import Confirm from './views/Confirm'
+import Wallet from './views/Wallet'
+import WalletTopup from './containers/WalletTopup'
+import WalletHome from './containers/WalletHome'
+import WalletHistory from './containers/WalletHistory'
+import WalletSettings from './containers/WalletSettings'
+import WalletTransfer from './containers/WalletTransfer'
 
 // const Popup = () => import('./views/Popup.vue')
 // const Confirm = () => import('./views/Confirm.vue')
@@ -23,7 +21,6 @@ import WalletAccountImport from './containers/WalletAccountImport.vue'
 // const WalletHistory = () => import('./containers/WalletHistory.vue')
 // const WalletSettings = () => import('./containers/WalletSettings.vue')
 // const WalletAccounts = () => import('./containers/WalletAccounts.vue')
-// const WalletTransfer = () => import('./containers/WalletTransfer.vue')
 
 Vue.use(Router)
 
@@ -60,6 +57,11 @@ const router = new Router({
       component: ProviderChange
     },
     {
+      path: '/userinforequest',
+      name: 'userInfoRequest',
+      component: UserInfoRequest
+    },
+    {
       path: '/wallet',
       component: Wallet,
       children: [
@@ -77,27 +79,6 @@ const router = new Router({
           path: 'history',
           name: 'walletHistory',
           component: WalletHistory
-        },
-        {
-          path: 'accounts',
-          component: WalletAccountsHome, // tabs
-          children: [
-            {
-              path: '',
-              name: 'walletAccountsDefault',
-              component: WalletAccounts // Account switcher
-            },
-            {
-              path: 'home',
-              name: 'walletAccountsHome',
-              component: WalletAccounts // Account switcher
-            },
-            {
-              path: 'import',
-              name: 'walletAccountImport',
-              component: WalletAccountImport // Account import
-            }
-          ]
         },
         {
           path: 'settings',

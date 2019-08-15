@@ -1,0 +1,9 @@
+@import '../../../scss/_card-tooltip.mixin';
+
+.upload-button.v-btn {
+  border-style: dashed;
+}
+
+.v-tooltip__content {
+  @include cardTooltip();
+}

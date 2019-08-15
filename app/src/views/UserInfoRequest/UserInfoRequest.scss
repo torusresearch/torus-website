@@ -1,0 +1,32 @@
+/* NEW UI */
+.v-card__text {
+  padding: 12px;
+}
+.card-upper-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 12px;
+  height: 12px;
+}
+
+.v-divider {
+  margin: 0 0 12px;
+}
+
+.key-item {
+  max-width: 200px;
+  word-break: break-all;
+  line-height: 1em;
+  margin-top: 2px;
+}
+
+.dialog-launcher {
+  cursor: pointer;
+}
+
+.note-list {
+  .v-list-item {
+    min-height: inherit;
+  }
+}

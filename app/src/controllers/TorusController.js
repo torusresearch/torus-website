@@ -614,13 +614,13 @@ export default class TorusController extends EventEmitter {
    * @param {string} originDomain - The domain requesting the connection,
    * used in logging and error reporting.
    */
-  setupTrustedCommunication(inStream, outStream, originDomain) {
+  setupTrustedCommunication(outStream, originDomain) {
     // setup multiplexing
     // const mux = setupMultiplex(connectionStream)
     // connect features
     this.setupControllerConnection(outStream)
     // to fix test cases
-    this.setupProviderConnection(inStream, outStream, originDomain)
+    this.setupProviderConnection(outStream, originDomain)
   }
 
   /**
@@ -655,13 +655,13 @@ export default class TorusController extends EventEmitter {
    * @param {*} outStream - The stream to provide over.
    * @param {string} origin - The URI of the requesting resource.
    */
-  setupProviderConnection(inStream, outStream, origin) {
+  setupProviderConnection(outStream, origin) {
     const engine = this.setupProviderEngine(origin)
 
     // setup connection
     const providerStream = createEngineStream({ engine })
 
-    inStream
+    outStream
       .pipe(providerStream)
       .pipe(outStream)
       .on('error', err => {

@@ -1,0 +1,8 @@
+.wallet-transfer {
+  ::v-deep .v-messages {
+    text-align: right;
+    &.error--text {
+      text-align: left;
+    }
+  }
+}

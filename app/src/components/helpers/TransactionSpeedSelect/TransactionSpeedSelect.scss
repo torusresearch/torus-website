@@ -1,0 +1,20 @@
+@import '../../../scss/_card-tooltip.mixin';
+
+::v-deep .button-speed {
+  &.v-btn {
+    height: inherit;
+  }
+  .v-btn__content {
+    flex-direction: column;
+    padding: 12px 0;
+    line-height: 1em;
+  }
+}
+
+.advance-option {
+  cursor: pointer;
+}
+
+.v-tooltip__content {
+  @include cardTooltip();
+}

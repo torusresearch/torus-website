@@ -1,0 +1,41 @@
+.wallet-settings {
+  .v-expansion-panel {
+    background-color: transparent !important;
+    border-radius: 0;
+
+    &::before {
+      box-shadow: none !important;
+      border-bottom: 1px solid var(--v-background_3-base);
+      border-radius: 0;
+    }
+  }
+
+  .v-expansion-panel--active:not(:first-child),
+  .v-expansion-panel--active + .v-expansion-panel {
+    margin-top: 0;
+  }
+
+  .btn-default {
+    color: #5495f7;
+    background-color: white;
+    border: 1px solid #5495f7;
+  }
+
+  .btn-cerulean {
+    background-color: #295dab !important;
+    border: 1px solid #295dab;
+
+    .v-btn__content {
+      color: white;
+    }
+  }
+
+  .btn-shuttle-grey {
+    background-color: #5c6c7f !important;
+    border: 1px solid #5c6c7f;
+
+    .v-btn__content {
+      color: white;
+    }
+  }
+}
