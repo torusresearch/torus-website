@@ -1,6 +1,6 @@
 <template>
   <div class="wallet-topup-view">
-    <v-layout mt-6 wrap>
+    <v-layout mt-3 wrap>
       <v-flex xs12 mb-2>
         <div class="text-black font-weight-bold headline px-4 mb-4">
           <span v-if="provider && !$vuetify.breakpoint.xsOnly">
