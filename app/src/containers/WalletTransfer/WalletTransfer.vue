@@ -90,7 +90,7 @@
               <span class="subtitle-2">Total Cost</span>
             </div>
             <v-text-field
-              :suffix="selectedTokenAddress === '0x' ? selectedItem.symbol : ''"
+              :suffix="totalCostSuffix"
               :hint="convertedTotalCost ? convertedTotalCostDisplay : ''"
               persistent-hint
               outlined
@@ -218,6 +218,9 @@ export default {
       // USD 4,138.16
       const getNumber = this.selectedItem.currencyBalance.split(' ')[1].replace(',', '')
       return `= ${getNumber} ${this.selectedCurrency}`
+    },
+    totalCostSuffix() {
+      return this.selectedTokenAddress === '0x' ? (this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency) : ''
     }
   },
   watch: {
@@ -419,7 +422,7 @@ export default {
       const toSendConverted = toSend * this.getCurrencyTokenRate
 
       if (this.selectedTokenAddress === '0x') {
-        this.totalCost = toSend + gasPriceInEth
+        this.totalCost = this.toggle_exclusive === 0 ? toSend + gasPriceInEth : toSendConverted + gasPriceInCurrency
       } else {
         const displayedCurrency = this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency
         this.totalCost = `${this.displayAmount} ${displayedCurrency} + ${significantDigits(
