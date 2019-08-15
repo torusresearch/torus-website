@@ -1,10 +1,10 @@
 <template>
   <div class="wallet-home">
     <v-layout wrap align-center :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
-      <v-flex xs12 px-4 mb-4>
+      <v-flex xs6 px-4 mb-4>
         <div class="font-weight-bold headline float-left">My Wallet</div>
       </v-flex>
-      <v-flex xs12 px-4 mb-4 class="text-right hidden-xs-only">
+      <v-flex xs6 px-4 mb-4 class="text-right hidden-xs-only">
         <v-btn outlined large color="primary" :disabled="isFreshAccount" class="px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
           <v-icon left>$vuetify.icons.send</v-icon>
           Transfer
