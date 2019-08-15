@@ -15,20 +15,22 @@ torus.torusController.networkController.networkStore.subscribe(function(state) {
   VuexStore.dispatch('updateNetworkId', { networkId: state })
 })
 
-// listen to changes on localstorage
-window.addEventListener(
-  'storage',
-  function() {
-    const network = localStorage.getItem('torus_network_type') || MAINNET
-    if (network !== RPC && network !== VuexStore.state.networkType) {
-      VuexStore.dispatch('setProviderType', { network })
-    }
-    if (network === RPC && localStorage.getItem('torus_custom_rpc') !== VuexStore.state.rpcDetails) {
-      VuexStore.dispatch('setProviderType', { network: JSON.parse(localStorage.getItem('torus_custom_rpc')), type: RPC })
-    }
-  },
-  false
-)
+if (window.localStorage) {
+  // listen to changes on localstorage
+  window.addEventListener(
+    'storage',
+    function() {
+      const network = localStorage.getItem('torus_network_type') || MAINNET
+      if (network !== RPC && network !== VuexStore.state.networkType) {
+        VuexStore.dispatch('setProviderType', { network })
+      }
+      if (network === RPC && localStorage.getItem('torus_custom_rpc') !== VuexStore.state.rpcDetails) {
+        VuexStore.dispatch('setProviderType', { network: JSON.parse(localStorage.getItem('torus_custom_rpc')), type: RPC })
+      }
+    },
+    false
+  )
+}
 
 // setup handlers for communicationStream
 var passthroughStream = new stream.PassThrough({ objectMode: true })
@@ -46,6 +48,15 @@ torus.communicationMux.getStream('show_wallet').on('data', function(chunk) {
 
 torus.communicationMux.getStream('provider_change').on('data', function(chunk) {
   VuexStore.dispatch('showProviderChangePopup', { ...chunk.data })
+})
+
+torus.communicationMux.getStream('logout').on('data', function(chunk) {
+  if (chunk.name === 'logOut') VuexStore.dispatch('logOut')
+})
+
+const userInfoStream = torus.communicationMux.getStream('user_info')
+userInfoStream.on('data', function(chunk) {
+  if (chunk.name === 'user_info_request') VuexStore.dispatch('showUserInfoRequestPopup', { ...chunk.data })
 })
 
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
@@ -119,6 +130,17 @@ logoutChannel.onmessage = function(ev) {
   if (ev.data && ev.data.type === 'logout') {
     log.info('Logging Out', ev.data)
     VuexStore.dispatch('logOut')
+  }
+}
+
+var userInfoRequestChannel = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`)
+userInfoRequestChannel.onmessage = function(ev) {
+  if (ev.data && ev.data.type === 'confirm-user-info-request' && ev.data.approve) {
+    log.info('User Info Request approved')
+    userInfoStream.write({ name: 'user_info_response', data: { payload: VuexStore.state.userInfo, approved: true } })
+  } else if (ev.data && ev.data.tyep === 'deny-user-info-request') {
+    log.info('User Info Request deined')
+    userInfoStream.write({ name: 'user_info_response', data: { payload: VuexStore.state.userInfo, approved: false } })
   }
 }
 
