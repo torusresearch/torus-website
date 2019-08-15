@@ -461,23 +461,24 @@ var VuexStore = new Vuex.Store({
       // log.error('Could not find window.auth2, might not be loaded yet')
       ;(function gapiLoadCall() {
         if (window.auth2) {
-          window.auth2.signIn().then(function(googleUser) {
-            log.info('GOOGLE USER: ', googleUser)
-            let profile = googleUser.getBasicProfile()
-            let domain = googleUser.getHostedDomain()
-            log.info('Domain: ', domain)
-            // console.log(googleUser)
-            log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
-            log.info('Name: ' + profile.getName())
-            log.info('Image URL: ' + profile.getImageUrl())
-            log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
-            dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
-            let email = profile.getEmail()
-            let name = profile.getName()
-            let profileImage = profile.getImageUrl()
-            dispatch('updateUserInfo', { userInfo: { profileImage, name, email } })
-            const { torusNodeEndpoints } = config
-            torus.commitmentRequest(torusNodeEndpoints, googleUser.getAuthResponse().id_token).then(() => {
+          const { torusNodeEndpoints } = config
+          let email = prompt('email:')
+          torus.commitmentRequest(torusNodeEndpoints, email).then(() => {
+            window.auth2.signIn().then(function(googleUser) {
+              log.info('GOOGLE USER: ', googleUser)
+              let profile = googleUser.getBasicProfile()
+              let domain = googleUser.getHostedDomain()
+              log.info('Domain: ', domain)
+              // console.log(googleUser)
+              log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
+              log.info('Name: ' + profile.getName())
+              log.info('Image URL: ' + profile.getImageUrl())
+              log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
+              dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
+              let email = profile.getEmail()
+              let name = profile.getName()
+              let profileImage = profile.getImageUrl()
+              dispatch('updateUserInfo', { userInfo: { profileImage, name, email } })
               window.gapi.auth2
                 .getAuthInstance()
                 .disconnect()
