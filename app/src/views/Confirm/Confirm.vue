@@ -155,7 +155,7 @@
             </v-list-item>
             <v-list-item class="pa-0">
               <v-list-item-content flat class="pa-1 grey lighten-3">
-                <v-card flat color="background_3" class="body-2 text-left pa-2 ma-3">
+                <v-card flat color="background_3" class="body-2 text-left pa-2 ma-3 word-break">
                   <div v-if="messageType === 'normal'">{{ message }}</div>
                   <div v-else-if="messageType === 'typed'" v-for="typedMessage in typedMessages" :key="typedMessage.name">
                     Type: {{ typedMessage.type }}
