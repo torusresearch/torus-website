@@ -5,12 +5,14 @@ const MAINNET = 'mainnet'
 const LOCALHOST = 'localhost'
 const GOERLI = 'goerli'
 const RPC = 'rpc'
+const MATIC = 'matic'
 
 const MAINNET_CODE = 1
 const ROPSTEN_CODE = 3
 const RINKEYBY_CODE = 4
 const KOVAN_CODE = 42
 const GOERLI_CODE = 5
+const MATIC_CODE = 1
 
 const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
 const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
@@ -19,6 +21,9 @@ const MAINNET_DISPLAY_NAME = 'Main Ethereum Network'
 const GOERLI_DISPLAY_NAME = 'Goerli Test Network'
 const RPC_DISPLAY_NAME = 'RPC'
 const LOCALHOST_DISPLAY_NAME = 'localhost:8545'
+const MATIC_DISPLAY_NAME = 'Matic Alpha-Mainnet'
+
+const MATIC_URL = 'https://alpha.ethereum.matic.network'
 
 const TRANSACTION_TYPE_CANCEL = 'cancel'
 const TRANSACTION_TYPE_RETRY = 'retry'
@@ -68,5 +73,9 @@ module.exports = {
   TOKEN_METHOD_TRANSFER_FROM,
   SEND_ETHER_ACTION_KEY,
   DEPLOY_CONTRACT_ACTION_KEY,
-  CONTRACT_INTERACTION_KEY
+  CONTRACT_INTERACTION_KEY,
+  MATIC_URL,
+  MATIC_DISPLAY_NAME,
+  MATIC,
+  MATIC_CODE
 }
