@@ -10,7 +10,7 @@
     "build-embed:dev": "cross-env TORUS_BUILD_ENV=development node ./scripts/createEmbed.js",
     "build-embed:production": "cross-env TORUS_BUILD_ENV=production NODE_ENV=production node ./scripts/createEmbed.js",
     "build-embed:report": "npm run build-embed:production && discify ./public/embed.min.js > disc.html",
-    "build-embed:staging": "cross-env TORUS_BUILD_ENV=staging node ./scripts/createEmbed.js && npm run test:build-embed",
+    "build-embed:staging": "cross-env TORUS_BUILD_ENV=staging node ./scripts/createEmbed.js",
     "build-embed:testing": "cross-env TORUS_BUILD_ENV=testing node ./scripts/createEmbed.js",
     "build:dev": "npm run build-embed:dev && npm run pre-build && vue-cli-service build --mode development",
     "build:report": "vue-cli-service build --report",
