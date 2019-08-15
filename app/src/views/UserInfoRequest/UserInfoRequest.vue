@@ -19,7 +19,6 @@
             <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
           </v-card>
         </v-flex>
-
         <v-flex xs12 mb-4 mx-6>
           <v-list class="note-list">
             <v-list-item class="pa-0">
@@ -27,10 +26,7 @@
                 <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
               </v-list-item-icon>
               <v-list-item-content class="pa-1">
-                <div class="caption torus_text--text text--lighten-3">
-                  To change your network to
-                  <span class="text-capitalize">{{ type && type === 'rpc' ? `${rpcNetwork.networkName} : ${rpcNetwork.networkUrl}` : network }}</span>
-                </div>
+                <div class="caption torus_text--text text--lighten-3">To access your Google Email, Photo and Name</div>
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -54,44 +50,36 @@ import BroadcastChannel from 'broadcast-channel'
 import PageLoader from '../../components/helpers/PageLoader'
 
 export default {
-  name: 'confirm',
+  name: 'userInfoRequest',
   components: {
     PageLoader
   },
   data() {
     return {
       origin: '',
-      type: 'none',
-      network: '',
-      rpcNetwork: {},
-      payload: {}
+      type: 'none'
     }
   },
-  computed: {},
   methods: {
     triggerSign(event) {
-      var bc = new BroadcastChannel('torus_provider_change_channel')
+      var bc = new BroadcastChannel(`user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
       bc.postMessage({
-        data: { type: 'confirm-provider-change', payload: this.payload, approve: true }
+        data: { type: 'confirm-user-info-request', approve: true }
       })
       bc.close()
       window.close()
     },
     triggerDeny(event) {
-      var bc = new BroadcastChannel('torus_provider_change_channel')
-      bc.postMessage({ data: { type: 'deny-provider-change', approve: false } })
+      var bc = new BroadcastChannel(`user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
+      bc.postMessage({ data: { type: 'deny-user-info-request', approve: false } })
       bc.close()
       window.close()
     }
   },
   mounted() {
-    var bc = new BroadcastChannel('torus_provider_change_channel')
+    var bc = new BroadcastChannel(`user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
     bc.onmessage = async ev => {
-      const {
-        payload: { network, type },
-        origin
-      } = ev.data || {}
-      this.payload = { network, type }
+      const { payload, origin } = ev.data || {}
       let url = { hostname: '' }
       try {
         url = new URL(origin)
@@ -99,13 +87,7 @@ export default {
         console.log(err)
       }
       this.origin = url.hostname // origin of tx: website url
-      if (type && type === 'rpc') {
-        this.rpcNetwork = network
-        this.type = type
-      } else {
-        this.network = network
-        this.type = 'non-rpc'
-      }
+      this.type = 'userInfo'
       bc.close()
     }
     bc.postMessage({ data: 'popup-loaded' })
@@ -114,5 +96,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'ProviderChange.scss';
+@import 'UserInfoRequest.scss';
 </style>

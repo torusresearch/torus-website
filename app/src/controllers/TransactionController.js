@@ -65,7 +65,7 @@ class TransactionController extends EventEmitter {
     this.blockTracker = opts.blockTracker
     this.signEthTx = opts.signTransaction
     this.getGasPrice = opts.getGasPrice
-
+    this.inProcessOfSigning = new Set()
     this.memStore = new ObservableStore({})
     this.query = new EthQuery(this.provider)
     this.txGasUtil = new TxGasUtil(this.provider)
@@ -358,6 +358,10 @@ class TransactionController extends EventEmitter {
   async approveTransaction(txId) {
     let nonceLock
     try {
+      if (this.inProcessOfSigning.has(txId)) {
+        return
+      }
+      this.inProcessOfSigning.add(txId)
       // approve
       this.txStateManager.setTxStatusApproved(txId)
       // get next nonce
@@ -389,6 +393,8 @@ class TransactionController extends EventEmitter {
       if (nonceLock) nonceLock.releaseLock()
       // continue with error chain
       throw err
+    } finally {
+      this.inProcessOfSigning.delete(txId)
     }
   }
 

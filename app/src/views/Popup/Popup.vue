@@ -46,7 +46,6 @@ export default {
   },
   methods: {
     ...mapActions({
-      updateEmail: 'updateEmail',
       updateIdToken: 'updateIdToken',
       addWallet: 'addWallet',
       removeWallet: 'removeWallet',

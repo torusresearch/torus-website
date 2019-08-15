@@ -3,7 +3,7 @@ var fs = require('fs')
 var envify = require('envify/custom')
 
 try {
-  var bundler = browserify(require.resolve('@toruslabs/torus-embed'), {
+  var bundler = browserify(require.resolve('@toruslabs/torus-embed/public/index.js'), {
     fullPaths: true
   })
 

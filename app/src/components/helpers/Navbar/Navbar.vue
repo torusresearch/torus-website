@@ -76,7 +76,7 @@ export default {
   },
   computed: {
     userName() {
-      return this.$store.state.name
+      return this.$store.state.userInfo.name
     }
   }
 }
