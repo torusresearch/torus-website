@@ -395,10 +395,8 @@ export default {
           return `To: ${this.slicedAddress(this.amountTo)}`
           break
         case SEND_ETHER_ACTION_KEY:
-          return `To: ${this.slicedAddress(this.receiver)}`
-          break
         case CONTRACT_INTERACTION_KEY:
-          return this.amountTo
+          return `To: ${this.slicedAddress(this.receiver)}`
           break
         case DEPLOY_CONTRACT_ACTION_KEY:
           return 'New Contract'
@@ -416,10 +414,8 @@ export default {
           return `${this.amountDisplay(this.amountValue)} ${this.selectedToken}`
           break
         case SEND_ETHER_ACTION_KEY:
-          return `${this.amountDisplay(this.value)} ETH`
-          break
         case CONTRACT_INTERACTION_KEY:
-          return ''
+          return `${this.amountDisplay(this.value)} ETH`
           break
         case DEPLOY_CONTRACT_ACTION_KEY:
           return 'Not Applicable'
@@ -437,9 +433,9 @@ export default {
           return `~ ${significantDigits(this.amountTokenValueConverted)} ${this.selectedCurrency}`
           break
         case SEND_ETHER_ACTION_KEY:
+        case CONTRACT_INTERACTION_KEY:
           return `~ ${this.dollarValue} ${this.selectedCurrency}`
           break
-        case CONTRACT_INTERACTION_KEY:
         case DEPLOY_CONTRACT_ACTION_KEY:
           return ''
           break
