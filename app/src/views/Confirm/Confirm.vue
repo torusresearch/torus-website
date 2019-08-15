@@ -6,26 +6,6 @@
         <img :src="require('../../../public/img/icons/transaction.svg')" class="ml-2" />
       </v-layout>
       <v-layout wrap>
-        <!-- <v-flex xs12 mb-6 mx-6>
-          <div class="subtitle-2 grey--text">You are transacting with:</div>
-
-          <v-card flat class="grey lighten-3">
-            <v-card-text>
-              <div class="subtitle-2 blue--text">{{ origin }}</div>
-              <div class="caption grey--text">{{ receiver }}</div>
-            </v-card-text>
-            <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
-          </v-card>
-        </v-flex>-->
-        <!-- <v-flex xs12 mb-4 mx-6>
-          <div class="subtitle-2">Amount</div>
-          <v-divider></v-divider>
-          <div>
-            <span class="subtitle-2 float-left grey--text">Ethereum</span>
-            <span class="subtitle-2 float-right">{{ value }} ETH</span>
-          </div>
-          <div class="caption float-right clearfix">{{ dollarValue }} USD</div>
-        </v-flex>-->
         <v-flex xs12 mb-4 mx-6>
           <div class="subtitle-2">Amount</div>
           <v-divider></v-divider>
@@ -35,15 +15,6 @@
           </div>
           <div class="caption float-right clearfix">{{ displayAmountConverted }}</div>
         </v-flex>
-        <!-- <v-flex xs12 mb-4 mx-6>
-          <div class="subtitle-2">Your Wallet Balance</div>
-          <v-divider></v-divider>
-          <div>
-            <span class="caption float-left key-item grey--text">{{ sender }}</span>
-            <span class="subtitle-2 float-right">{{ amountDisplay(computedBalance) }} ETH</span>
-          </div>
-          <div class="caption float-right clearfix">{{ balanceUsd }} USD</div>
-        </v-flex>-->
         <v-flex px-2>
           <TransactionSpeedSelect
             :gas="gasEstimate"
@@ -184,7 +155,7 @@
             </v-list-item>
             <v-list-item class="pa-0">
               <v-list-item-content flat class="pa-1 grey lighten-3">
-                <v-card flat color="background_3" class="body-2 text-left pa-2 ma-3">
+                <v-card flat color="background_3" class="body-2 text-left pa-2 ma-3 word-break">
                   <div v-if="messageType === 'normal'">{{ message }}</div>
                   <div v-else-if="messageType === 'typed'" v-for="typedMessage in typedMessages" :key="typedMessage.name">
                     Type: {{ typedMessage.type }}

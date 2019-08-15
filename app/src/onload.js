@@ -1,6 +1,7 @@
 // import WebsocketSubprovider from './websocket.js'
 import TorusController from './controllers/TorusController'
 import store from './store'
+import { MAINNET } from './utils/enums'
 var log = require('loglevel')
 var Web3 = require('web3')
 var LocalMessageDuplexStream = require('post-message-stream')
@@ -13,7 +14,7 @@ function onloadTorus(torus) {
     store.dispatch('showPopup')
   }
 
-  const localStorageCachedNetwork = localStorage.getItem('torus_network_type')
+  const localStorageCachedNetwork = localStorage.getItem('torus_network_type') || MAINNET
 
   const torusController = new TorusController({
     localStorageCachedNetwork,

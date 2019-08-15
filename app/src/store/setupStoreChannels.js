@@ -15,20 +15,22 @@ torus.torusController.networkController.networkStore.subscribe(function(state) {
   VuexStore.dispatch('updateNetworkId', { networkId: state })
 })
 
-// listen to changes on localstorage
-window.addEventListener(
-  'storage',
-  function() {
-    const network = localStorage.getItem('torus_network_type') || MAINNET
-    if (network !== RPC && network !== VuexStore.state.networkType) {
-      VuexStore.dispatch('setProviderType', { network })
-    }
-    if (network === RPC && localStorage.getItem('torus_custom_rpc') !== VuexStore.state.rpcDetails) {
-      VuexStore.dispatch('setProviderType', { network: JSON.parse(localStorage.getItem('torus_custom_rpc')), type: RPC })
-    }
-  },
-  false
-)
+if (window.localStorage) {
+  // listen to changes on localstorage
+  window.addEventListener(
+    'storage',
+    function() {
+      const network = localStorage.getItem('torus_network_type') || MAINNET
+      if (network !== RPC && network !== VuexStore.state.networkType) {
+        VuexStore.dispatch('setProviderType', { network })
+      }
+      if (network === RPC && localStorage.getItem('torus_custom_rpc') !== VuexStore.state.rpcDetails) {
+        VuexStore.dispatch('setProviderType', { network: JSON.parse(localStorage.getItem('torus_custom_rpc')), type: RPC })
+      }
+    },
+    false
+  )
+}
 
 // setup handlers for communicationStream
 var passthroughStream = new stream.PassThrough({ objectMode: true })
