@@ -2,7 +2,7 @@
   <v-container py-6 px-0>
     <template v-if="type === 'transaction'">
       <v-layout align-center mx-6 mb-6>
-        <div class="text-black font-weight-bold headline float-left">{{ header }}</div>
+        <div class="torus_text--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-4' : ''">{{ header }}</div>
         <img :src="require('../../../public/img/icons/transaction.svg')" class="ml-2" />
       </v-layout>
       <v-layout wrap>
@@ -30,10 +30,10 @@
           <div class="subtitle-2">Amount</div>
           <v-divider></v-divider>
           <div>
-            <span class="subtitle-2 float-left grey--text">To: {{ slicedAddress(receiver) }}</span>
-            <span class="subtitle-2 float-right">{{ amountDisplay(value) }} ETH</span>
+            <span class="subtitle-2 float-left grey--text">{{ displayAmountTo }}</span>
+            <span class="subtitle-2 float-right">{{ displayAmountValue }}</span>
           </div>
-          <div class="caption float-right clearfix">~ {{ dollarValue }} USD</div>
+          <div class="caption float-right clearfix">{{ displayAmountConverted }}</div>
         </v-flex>
         <!-- <v-flex xs12 mb-4 mx-6>
           <div class="subtitle-2">Your Wallet Balance</div>
@@ -58,9 +58,12 @@
           <v-divider></v-divider>
           <div>
             <span class="subtitle-2">Cost of Transaction</span>
-            <span class="subtitle-1 float-right blue--text font-weight-bold">{{ totalEthCostDisplay }} ETH</span>
+            <span class="subtitle-1 float-right blue--text font-weight-bold">{{ costOfTransaction }}</span>
           </div>
-          <div class="caption float-right clearfix">~ {{ totalUsdCost }} USD</div>
+          <div v-if="isOtherToken" class="clearfix">
+            <span class="subtitle-1 float-right blue--text font-weight-bold">+ {{ significantDigits(this.gasCost) }} ETH</span>
+          </div>
+          <div class="caption float-right clearfix">{{ costOfTransactionConverted }}</div>
         </v-flex>
         <v-flex xs12 mb-3 mt-3>
           <v-dialog v-model="detailsDialog" width="600px">
@@ -113,8 +116,18 @@
             </v-card>
           </v-dialog>
         </v-flex>
-        <v-flex xs12 px-6 mb-6 v-if="canShowError">
-          <div class="red--text">Error: {{ errorMsg }}</div>
+        <v-flex xs12 px-6 mb-6 class="text-right" v-if="canShowError">
+          <div class="caption error--text">{{ errorMsg }}</div>
+          <div class="caption mt-1">
+            Please
+            <v-btn color="primary" class="mx-1 px-2 caption" small outlined @click="topUp">Top up</v-btn>
+            your wallet
+          </div>
+        </v-flex>
+        <v-flex xs12 px-6 mb-6 v-if="showConfirmMessage">
+          <div class="caption error--text">
+            By confirming this, you grant permission for this contract to spend up to {{ displayAmountValue }} of your tokens.
+          </div>
         </v-flex>
         <v-layout px-6>
           <v-flex xs6>
@@ -216,8 +229,11 @@ import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSel
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import torus from '../../torus'
 import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress } from '../../utils/utils'
+import { get } from '../../utils/httpHelpers'
 const abiDecoder = require('../../utils/abiDecoder')
 const abi = require('human-standard-token-abi')
+const contracts = require('eth-contract-metadata')
+const log = require('loglevel')
 
 const {
   ROPSTEN,
@@ -265,9 +281,16 @@ export default {
       max: 4000,
       balance: 0,
       value: 0,
+      amountTo: '',
+      amountValue: '',
+      tokenPrice: 0,
+      amountTokenValueConverted: 0,
+      currencyRateDate: '',
       receiver: 'unknown',
       dialog: true,
       message: '',
+      selectedToken: '',
+      gasCost: 0,
       gasEstimate: 0,
       txData: '',
       txDataParams: '',
@@ -335,27 +358,109 @@ export default {
     header() {
       switch (this.transactionCategory) {
         case DEPLOY_CONTRACT_ACTION_KEY:
-          return 'Contract Deployment'
+          // return 'Contract Deployment'
+          return 'Deploy'
           break
         case CONTRACT_INTERACTION_KEY:
-          return 'Contract Interaction'
+          return this.getHeaderByDapp()
           break
         case TOKEN_METHOD_APPROVE:
-          return 'ERC20 Approve'
+          // return 'ERC20 Approve'
+          return 'Approve'
           break
         case TOKEN_METHOD_TRANSFER:
-          return 'ERC2O Transfer'
+        case SEND_ETHER_ACTION_KEY:
+          // return 'ERC2O Transfer'
+          // return 'Send Ether'
+          return 'Transfer'
           break
         case TOKEN_METHOD_TRANSFER_FROM:
-          return 'ERC2O Transfer From'
+          // return 'ERC2O Transfer From'
+          return 'Transfer From'
+          break
+        default:
+          // return 'Transaction Request'
+          return 'Transaction'
+          break
+      }
+    },
+    isLightHeader() {
+      return [DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].indexOf(this.transactionCategory) >= 0
+    },
+    displayAmountTo() {
+      switch (this.transactionCategory) {
+        case TOKEN_METHOD_APPROVE:
+        case TOKEN_METHOD_TRANSFER:
+        case TOKEN_METHOD_TRANSFER_FROM:
+          return `To: ${this.slicedAddress(this.amountTo)}`
           break
         case SEND_ETHER_ACTION_KEY:
-          return 'Send Ether'
+        case CONTRACT_INTERACTION_KEY:
+          return `To: ${this.slicedAddress(this.receiver)}`
+          break
+        case DEPLOY_CONTRACT_ACTION_KEY:
+          return 'New Contract'
           break
         default:
           return 'Transaction Request'
           break
       }
+    },
+    displayAmountValue() {
+      switch (this.transactionCategory) {
+        case TOKEN_METHOD_APPROVE:
+        case TOKEN_METHOD_TRANSFER:
+        case TOKEN_METHOD_TRANSFER_FROM:
+          return `${this.amountDisplay(this.amountValue)} ${this.selectedToken}`
+          break
+        case SEND_ETHER_ACTION_KEY:
+        case CONTRACT_INTERACTION_KEY:
+          return `${this.amountDisplay(this.value)} ETH`
+          break
+        case DEPLOY_CONTRACT_ACTION_KEY:
+          return 'Not Applicable'
+          break
+        default:
+          return 'Transaction Request'
+          break
+      }
+    },
+    displayAmountConverted() {
+      switch (this.transactionCategory) {
+        case TOKEN_METHOD_APPROVE:
+        case TOKEN_METHOD_TRANSFER:
+        case TOKEN_METHOD_TRANSFER_FROM:
+          return `~ ${significantDigits(this.amountTokenValueConverted)} ${this.selectedCurrency}`
+          break
+        case SEND_ETHER_ACTION_KEY:
+        case CONTRACT_INTERACTION_KEY:
+          return `~ ${this.dollarValue} ${this.selectedCurrency}`
+          break
+        case DEPLOY_CONTRACT_ACTION_KEY:
+          return ''
+          break
+        default:
+          return ''
+          break
+      }
+    },
+    showConfirmMessage() {
+      return this.transactionCategory === TOKEN_METHOD_APPROVE
+    },
+    costOfTransaction() {
+      if ([TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(this.transactionCategory) >= 0) {
+        return `${this.displayAmountValue}`
+      } else {
+        return `${this.totalEthCostDisplay} ETH`
+      }
+    },
+    isOtherToken() {
+      return [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(this.transactionCategory) >= 0
+      //`+ ${significantDigits(this.gasCost)}`
+    },
+    costOfTransactionConverted() {
+      const totalCost = this.isOtherToken ? significantDigits(this.totalUsdCost + this.amountTokenValueConverted, false, 5) : this.totalUsdCost
+      return `~ ${totalCost} ${this.selectedCurrency}`
     },
     imageType() {
       return this.transactionCategory === DEPLOY_CONTRACT_ACTION_KEY || this.transactionCategory === CONTRACT_INTERACTION_KEY
@@ -368,33 +473,22 @@ export default {
       if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
       return currencyMultiplier
     },
-    finalBalancesArray() {
-      return this.$store.getters.tokenBalances.finalBalancesArray || []
-    },
     getCurrencyRate() {
-      const targetBalance = this.finalBalancesArray.find(balance => {
-        if (this.transactionCategory === SEND_ETHER_ACTION_KEY) {
-          return balance.id === 'ETH'
-        }
-        return false
-      })
-
-      if (targetBalance) return `${targetBalance.currencyRateText} @ ${this.getDate()}`
-
-      return ''
-      // console.log(txParams)
-      // console.log(this.finalBalancesArray)
+      const ethConverted = this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+      const tokenPriceConverted = this.isOtherToken ? this.tokenPrice * ethConverted : ethConverted
+      const selectedToken = this.isOtherToken ? this.selectedToken : 'ETH'
+      return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
     }
   },
   watch: {
     gasPrice: function(newGasPrice, oldGasPrice) {
-      const gasCost = newGasPrice * this.gasEstimate * 10 ** -9
-      this.txFees = gasCost * this.$store.state.currencyData['usd']
-      const ethCost = parseFloat(this.value) + gasCost
+      this.gasCost = newGasPrice * this.gasEstimate * 10 ** -9
+      this.txFees = this.gasCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+      const ethCost = parseFloat(this.value) + this.gasCost
       this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
-      const gasCostLength = Math.max(significantDigits(gasCost).toString().length, significantDigits(ethCost).toString().length)
+      const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
       this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
-      this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData['usd'] || 0)
+      this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()] || 0)
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
         this.canApprove = false
@@ -431,6 +525,9 @@ export default {
       bc.postMessage({ data: { type: 'deny-transaction', id: this.id } })
       bc.close()
       window.close()
+    },
+    topUp() {
+      this.openWallet()
     },
     openWallet() {
       this.$store.dispatch('showWalletPopup')
@@ -476,6 +573,13 @@ export default {
       return significantDigits(parseFloat(amount).toFixed(5)) ? significantDigits(parseFloat(amount).toFixed(5)) : parseFloat('0.00').toFixed(2)
     },
     significantDigits: significantDigits,
+    getHeaderByDapp() {
+      // For partner integration
+      if (this.origin === 'www.etheremon.com') {
+        return 'Claim a Mon'
+      }
+      return 'Contract Interaction'
+    },
     ...mapActions({})
   },
   mounted() {
@@ -486,9 +590,9 @@ export default {
       try {
         url = new URL(origin)
       } catch (err) {
-        console.log(err)
+        log.info(err)
       }
-      console.log(txParams)
+      log.info(txParams)
       this.origin = url.hostname // origin of tx: website url
       if (type === 'message') {
         const { message, typedMessages } = msgParams.msgParams || {}
@@ -510,30 +614,51 @@ export default {
         this.origin = this.origin.trim().length === 0 ? 'Wallet' : this.origin
         // GET data params
         const txDataParams = abi.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
-        console.log(methodParams, 'params')
+        let amountTo, amountValue, amountFrom
+        if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM) [amountTo, amountValue] = methodParams || []
+        else [amountFrom, amountTo, amountValue] = methodParams || []
+        log.info(methodParams, 'params')
+        const checkSummedTo = web3Utils.toChecksumAddress(to)
+
+        const tokenObj = Object.prototype.hasOwnProperty.call(contracts, checkSummedTo) ? contracts[web3Utils.toChecksumAddress(to)] : {}
+        const decimals = tokenObj.decimals || 0
+        this.selectedToken = tokenObj.symbol || 'ERC20'
         this.id = id
         this.network = network
         this.networkName = this.getNetworkName(network)
         this.transactionCategory = transactionCategory
         var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
+        this.amountTo = amountTo ? amountTo.value : checkSummedTo
+        this.amountValue = amountValue ? parseFloat(amountValue.value) / 10 ** parseFloat(decimals) : ''
+
+        if (methodParams) {
+          const pairs = checkSummedTo
+          const query = `contract_addresses=${pairs}&vs_currencies=eth`
+          const prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
+          const tokenPrice = prices[checkSummedTo.toLowerCase()].eth //token price in eth
+          this.tokenPrice = tokenPrice
+          this.amountTokenValueConverted =
+            tokenPrice * parseFloat(this.amountValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+        }
+        this.currencyRateDate = this.getDate()
         this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
-        this.dollarValue = significantDigits(parseFloat(finalValue) * this.$store.state.currencyData['usd'])
+        this.dollarValue = significantDigits(parseFloat(finalValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()])
         this.gasPrice = gweiGasPrice // gas price in gwei
         this.gasKnob = calculateGasKnob(gweiGasPrice)
         this.balance = balance // in eth
-        this.balanceUsd = significantDigits(parseFloat(balance) * this.$store.state.currencyData['usd']) // in usd
+        this.balanceUsd = significantDigits(parseFloat(balance) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]) // in usd
         this.gasEstimate = web3Utils.hexToNumber(gas) // gas number
         this.txData = data // data hex
         this.txDataParams = txDataParams !== '' ? JSON.stringify(txDataParams, null, 2) : ''
         this.sender = sender // address of sender
-        const gasCost = gweiGasPrice * this.gasEstimate * 10 ** -9
-        this.txFees = gasCost * this.$store.state.currencyData['usd']
-        const ethCost = parseFloat(finalValue) + gasCost
+        this.gasCost = gweiGasPrice * this.gasEstimate * 10 ** -9
+        this.txFees = this.gasCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+        const ethCost = parseFloat(finalValue) + this.gasCost
         this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
-        const gasCostLength = Math.max(significantDigits(gasCost).toString().length, significantDigits(ethCost).toString().length)
+        const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
         this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
-        this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData['usd'] || 0)
+        this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()] || 0)
         if (reason) this.errorMsg = reason
         if (parseFloat(this.balance) < ethCost && !this.canShowError) {
           this.errorMsg = 'Insufficient Funds'
