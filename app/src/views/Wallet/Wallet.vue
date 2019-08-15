@@ -1,6 +1,7 @@
 <template>
   <div>
     <navbar />
+    <hr class="navbar-line" />
     <v-container>
       <router-view></router-view>
     </v-container>
