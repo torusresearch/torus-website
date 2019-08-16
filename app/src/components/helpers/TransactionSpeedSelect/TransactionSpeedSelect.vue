@@ -55,13 +55,13 @@
       </v-flex>
     </v-layout>
     <v-layout v-if="isAdvanceOption" align-center>
-      <v-flex xs6 px-6 mb-1>
+      <v-flex xs8 px-6 mb-1>
         <div class="subtitle-2 font-weight-bold">
           {{ getEthAmountDisplay(gas, activeGasPrice) }}
           <span class="caption torus_text--text text--lighten-3">( ~ {{ getGasDisplayString(activeGasPrice) }} )</span>
         </div>
       </v-flex>
-      <v-flex xs6 px-4 class="text-right">
+      <v-flex xs4 px-4 class="text-right">
         <v-btn outlined color="primary" @click="resetAdvanceOption">Reset</v-btn>
       </v-flex>
     </v-layout>
@@ -119,10 +119,11 @@ export default {
       this.updateCosts(false, parseFloat(details.advancedGas))
     },
     resetAdvanceOption() {
-      if (this.speedSelected === 'average') {
-        this.activeGasPrice = this.averageGasPrice
-      } else if (this.speedSelected === 'fastest') {
+      if (this.speedSelected === 'fastest') {
         this.activeGasPrice = this.fastestGasPrice
+      } else {
+        this.activeGasPrice = this.averageGasPrice
+        this.speedSelected = 'average'
       }
 
       this.isAdvanceOption = false
@@ -166,20 +167,16 @@ export default {
     setSelectedSpeed() {
       let selectedType = ''
       let selectedGasPrice = 0
-      let nearest = 1200
-      let delta = 0
 
-      delta = Math.abs(this.fastestGasPrice - this.activeGasPriceConfirm)
-      if (delta < nearest) {
-        nearest = delta
+      if (this.fastestGasPrice === this.activeGasPriceConfirm) {
         selectedType = 'fastest'
         selectedGasPrice = this.fastestGasPrice
-      }
-      delta = Math.abs(this.averageGasPrice - this.activeGasPriceConfirm)
-      if (delta < nearest) {
-        nearest = delta
+      } else if (this.averageGasPrice === this.activeGasPriceConfirm) {
         selectedType = 'average'
         selectedGasPrice = this.averageGasPrice
+      } else {
+        selectedGasPrice = this.activeGasPriceConfirm
+        this.isAdvanceOption = true
       }
 
       this.speedSelected = selectedType
