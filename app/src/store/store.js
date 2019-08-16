@@ -602,7 +602,7 @@ var VuexStore = new Vuex.Store({
             signed_message: signedMessage
           })
           commit('setJwtToken', response.token)
-          await dispatch('setUserInfo', { info: response, calledFromEmbed: calledFromEmbed })
+          await dispatch('setUserInfo', { token: response.token, calledFromEmbed: calledFromEmbed })
 
           resolve()
         } catch (error) {
@@ -631,11 +631,11 @@ var VuexStore = new Vuex.Store({
     },
     setUserInfo({ commit, dispatch, state }, payload) {
       return new Promise(async (resolve, reject) => {
-        const { info, calledFromEmbed } = payload
+        const { token, calledFromEmbed } = payload
         try {
           get(`${config.api}/user`, {
             headers: {
-              Authorization: `Bearer ${info.token}`
+              Authorization: `Bearer ${token}`
             }
           })
             .then(user => {
@@ -655,7 +655,7 @@ var VuexStore = new Vuex.Store({
                 },
                 {
                   headers: {
-                    Authorization: `Bearer ${info.token}`,
+                    Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json; charset=utf-8'
                   }
                 }
@@ -689,7 +689,7 @@ var VuexStore = new Vuex.Store({
           dispatch('updateSelectedAddress', { selectedAddress })
           setTimeout(() => dispatch('subscribeToControllers'), 50)
           await torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet))
-          await dispatch('setUserInfo', { token: jwtToken })
+          await dispatch('setUserInfo', { token: jwtToken, calledFromEmbed: false })
           statusStream.write({ loggedIn: true })
           log.info('rehydrated wallet')
           torus.web3.eth.net
@@ -703,7 +703,7 @@ var VuexStore = new Vuex.Store({
             .catch(e => log.error(e))
         }
       } catch (error) {
-        log.error('Failed to rehydrate')
+        log.error('Failed to rehydrate', error)
       }
     }
   }
