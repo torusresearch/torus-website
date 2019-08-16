@@ -222,6 +222,8 @@ export default {
           // Set selected gas price from confirm
           if (this.activeGasPriceConfirm) {
             this.setSelectedSpeed()
+          } else {
+            this.selectSpeed('average', average)
           }
         }
       )
