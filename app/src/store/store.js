@@ -10,7 +10,6 @@ import { formatCurrencyNumber, getRandomNumber, significantDigits, getEtherScanH
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import { notifyUser } from '../utils/notifications'
-import { stat } from 'fs'
 
 const web3Utils = torus.web3.utils
 
@@ -569,7 +568,7 @@ var VuexStore = new Vuex.Store({
           dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
           dispatch('subscribeToControllers')
           await dispatch('initTorusKeyring', data)
-          await dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress })
+          await dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
 
           // continue enable function
           var ethAddress = data.ethAddress
@@ -595,7 +594,7 @@ var VuexStore = new Vuex.Store({
       return new Promise(async (resolve, reject) => {
         try {
           // make this a promise and resolve it to dispatch loginInProgress as false
-          const { message, selectedAddress } = payload
+          const { message, selectedAddress, calledFromEmbed } = payload
           const hashedMessage = torus.hashMessage(message)
           const signedMessage = await torus.torusController.keyringController.signMessage(selectedAddress, hashedMessage)
           const response = await post(`${config.api}/auth/verify`, {
@@ -603,7 +602,7 @@ var VuexStore = new Vuex.Store({
             signed_message: signedMessage
           })
           commit('setJwtToken', response.token)
-          await dispatch('setUserInfo', response)
+          await dispatch('setUserInfo', { info: response, calledFromEmbed: calledFromEmbed })
 
           resolve()
         } catch (error) {
@@ -613,12 +612,14 @@ var VuexStore = new Vuex.Store({
       })
     },
     storeUserLogin({ state }, payload) {
-      console.log(state.jwtToken)
-
+      let userOrigin = ''
+      if (payload) {
+        userOrigin = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
+      } else userOrigin = window.location.origin
       post(
         `${config.api}/user/recordLogin`,
         {
-          hostname: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
+          hostname: userOrigin
         },
         {
           headers: {
@@ -630,10 +631,11 @@ var VuexStore = new Vuex.Store({
     },
     setUserInfo({ commit, dispatch, state }, payload) {
       return new Promise(async (resolve, reject) => {
+        const { info, calledFromEmbed } = payload
         try {
           get(`${config.api}/user`, {
             headers: {
-              Authorization: `Bearer ${payload.token}`
+              Authorization: `Bearer ${info.token}`
             }
           })
             .then(user => {
@@ -641,7 +643,7 @@ var VuexStore = new Vuex.Store({
                 const { transactions, default_currency } = user.data || {}
                 commit('setPastTransactions', transactions)
                 dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
-                dispatch('storeUserLogin')
+                dispatch('storeUserLogin', calledFromEmbed)
                 resolve()
               }
             })
@@ -653,13 +655,13 @@ var VuexStore = new Vuex.Store({
                 },
                 {
                   headers: {
-                    Authorization: `Bearer ${payload.token}`,
+                    Authorization: `Bearer ${info.token}`,
                     'Content-Type': 'application/json; charset=utf-8'
                   }
                 }
               )
               commit('setNewUser', true)
-              dispatch('storeUserLogin')
+              dispatch('storeUserLogin', calledFromEmbed)
               resolve()
             })
         } catch (error) {
