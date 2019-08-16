@@ -568,7 +568,8 @@ var VuexStore = new Vuex.Store({
           dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
           dispatch('subscribeToControllers')
           await dispatch('initTorusKeyring', data)
-          await dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress })
+          await dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
+
           // continue enable function
           var ethAddress = data.ethAddress
           if (calledFromEmbed) {
@@ -593,7 +594,7 @@ var VuexStore = new Vuex.Store({
       return new Promise(async (resolve, reject) => {
         try {
           // make this a promise and resolve it to dispatch loginInProgress as false
-          const { message, selectedAddress } = payload
+          const { message, selectedAddress, calledFromEmbed } = payload
           const hashedMessage = torus.hashMessage(message)
           const signedMessage = await torus.torusController.keyringController.signMessage(selectedAddress, hashedMessage)
           const response = await post(`${config.api}/auth/verify`, {
@@ -601,7 +602,8 @@ var VuexStore = new Vuex.Store({
             signed_message: signedMessage
           })
           commit('setJwtToken', response.token)
-          await dispatch('setUserInfo', response)
+          await dispatch('setUserInfo', { info: response, calledFromEmbed: calledFromEmbed })
+
           resolve()
         } catch (error) {
           log.error('Failed Communication with backend', error)
@@ -609,12 +611,31 @@ var VuexStore = new Vuex.Store({
         }
       })
     },
+    storeUserLogin({ state }, payload) {
+      let userOrigin = ''
+      if (payload) {
+        userOrigin = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
+      } else userOrigin = window.location.origin
+      post(
+        `${config.api}/user/recordLogin`,
+        {
+          hostname: userOrigin
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }
+      )
+    },
     setUserInfo({ commit, dispatch, state }, payload) {
       return new Promise(async (resolve, reject) => {
+        const { info, calledFromEmbed } = payload
         try {
           get(`${config.api}/user`, {
             headers: {
-              Authorization: `Bearer ${payload.token}`
+              Authorization: `Bearer ${info.token}`
             }
           })
             .then(user => {
@@ -622,6 +643,7 @@ var VuexStore = new Vuex.Store({
                 const { transactions, default_currency } = user.data || {}
                 commit('setPastTransactions', transactions)
                 dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
+                dispatch('storeUserLogin', calledFromEmbed)
                 resolve()
               }
             })
@@ -633,12 +655,13 @@ var VuexStore = new Vuex.Store({
                 },
                 {
                   headers: {
-                    Authorization: `Bearer ${payload.token}`,
+                    Authorization: `Bearer ${info.token}`,
                     'Content-Type': 'application/json; charset=utf-8'
                   }
                 }
               )
               commit('setNewUser', true)
+              dispatch('storeUserLogin', calledFromEmbed)
               resolve()
             })
         } catch (error) {
