@@ -407,7 +407,7 @@ export default {
       }
     },
     updateTotalCost() {
-      if (!this.displayAmount || this.speedSelected === '') {
+      if (!this.displayAmount || this.activeGasPrice === '') {
         this.totalCost = ''
         this.convertedTotalCost = ''
         return
@@ -442,6 +442,7 @@ export default {
       this.gas = data.gas
 
       if (data.isReset) {
+        this.activeGasPrice = this.speedSelected === '' ? '' : this.activeGasPrice
         this.calculateGas()
       }
       this.updateTotalCost()
