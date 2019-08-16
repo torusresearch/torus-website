@@ -9,14 +9,14 @@
           <v-icon left>$vuetify.icons.send</v-icon>
           Transfer
         </v-btn>
-        <v-tooltip top :value="isFreshAccount">
+        <v-tooltip top :value="isFreshAccount" class="hidden-xs-only">
           <template v-slot:activator="{ on }">
-            <v-btn depressed large color="primary" class="px-12 py-1 mt-4" @click="topup" v-on="on">
+            <v-btn depressed large color="primary" class="px-12 py-1 mt-4 hidden-xs-only" @click="topup" v-on="on">
               <v-icon left>$vuetify.icons.add</v-icon>
               Top up
             </v-btn>
           </template>
-          <span>Get ETH!</span>
+          <span class="hidden-xs-only">Get ETH!</span>
         </v-tooltip>
       </v-flex>
 
@@ -43,14 +43,14 @@
             </v-btn>
           </v-flex>
           <v-flex xs6 class="pl-1">
-            <v-tooltip top :value="isFreshAccount">
+            <v-tooltip top :value="isFreshAccount" class="hidden-sm-and-up">
               <template v-slot:activator="{ on }">
-                <v-btn depressed large block color="primary" class="px-12 py-1 mt-4" @click="topup" v-on="on">
+                <v-btn depressed large block color="primary" class="px-12 py-1 mt-4 hidden-sm-and-up" @click="topup" v-on="on">
                   <v-icon left>$vuetify.icons.add</v-icon>
                   Top up
                 </v-btn>
               </template>
-              <span>Get ETH!</span>
+              <span class="hidden-sm-and-up">Get ETH!</span>
             </v-tooltip>
           </v-flex>
         </v-layout>
