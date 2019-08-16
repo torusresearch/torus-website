@@ -10,6 +10,7 @@ import { formatCurrencyNumber, getRandomNumber, significantDigits, getEtherScanH
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import { notifyUser } from '../utils/notifications'
+import { stat } from 'fs'
 
 const web3Utils = torus.web3.utils
 
@@ -569,6 +570,7 @@ var VuexStore = new Vuex.Store({
           dispatch('subscribeToControllers')
           await dispatch('initTorusKeyring', data)
           await dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress })
+
           // continue enable function
           var ethAddress = data.ethAddress
           if (calledFromEmbed) {
@@ -602,12 +604,29 @@ var VuexStore = new Vuex.Store({
           })
           commit('setJwtToken', response.token)
           await dispatch('setUserInfo', response)
+
           resolve()
         } catch (error) {
           log.error('Failed Communication with backend', error)
           reject(error)
         }
       })
+    },
+    storeUserLogin({ state }, payload) {
+      console.log(state.jwtToken)
+
+      post(
+        `${config.api}/user/recordLogin`,
+        {
+          hostname: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }
+      )
     },
     setUserInfo({ commit, dispatch, state }, payload) {
       return new Promise(async (resolve, reject) => {
@@ -622,6 +641,7 @@ var VuexStore = new Vuex.Store({
                 const { transactions, default_currency } = user.data || {}
                 commit('setPastTransactions', transactions)
                 dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
+                dispatch('storeUserLogin')
                 resolve()
               }
             })
@@ -639,6 +659,7 @@ var VuexStore = new Vuex.Store({
                 }
               )
               commit('setNewUser', true)
+              dispatch('storeUserLogin')
               resolve()
             })
         } catch (error) {
