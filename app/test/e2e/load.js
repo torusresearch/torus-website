@@ -61,7 +61,6 @@ describe('Loads application', () => {
     await click(page, '#expansion-network')
 
     await click(page, '#select-network')
-    await page.waitFor(2000)
     await page.evaluate(() => {
       let options = [...document.querySelectorAll('.v-list-item__title')]
       options.forEach(function(option) {
@@ -75,6 +74,41 @@ describe('Loads application', () => {
   it('Should go to wallet transfer page', async () => {
     await click(page, '#transfer-link')
     await shouldExist(page, '.wallet-transfer')
-    await page.waitFor(5000)
+  })
+
+  it('Should fill initial fields', async () => {
+    await click(page, '#select-coin')
+    await page.evaluate(() => {
+      let options = [...document.querySelectorAll('.v-list-item__title')]
+      options.forEach(function(option) {
+        if (option.innerText == 'Ethereum') option.click()
+      })
+    })
+
+    await typeText(page, 'sinlin@tor.us', '#recipient-address')
+  })
+
+  it('Should show you send conversion ', async () => {
+    const youSendValue = 0.001
+    await typeText(page, youSendValue.toString(), '#you-send')
+    await shouldValueNotBeEmpty(page, '.you-send-container .v-messages__message')
+  })
+  it('Should click transaction speed', async () => {
+    await click(page, '#average-speed-btn')
+  })
+
+  it('Should show total cost', async () => {
+    await shouldValueNotBeEmpty(page, '#total-cost')
+  })
+
+  it('Should submit and load confirm', async () => {
+    const pageTarget = page.target()
+
+    // Get the confirm page
+    await click(page, '#wallet-transfer-submit')
+    const confirmPageTarget = await browser.waitForTarget(target => target.opener() === pageTarget)
+    const confirmPage = await confirmPageTarget.page()
+
+    await shouldExist(confirmPage, '.confirm-container')
   })
 })
