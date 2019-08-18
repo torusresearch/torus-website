@@ -6,6 +6,6 @@ module.exports = {
   isDevTools: false,
   launchTimeout: 10000,
   waitingTimeout: 30000,
-  viewportWidth: 800,
-  viewportHeight: 600
+  viewportWidth: 1200,
+  viewportHeight: 900
 }
