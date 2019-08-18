@@ -27,7 +27,6 @@ const generateWallet = privateKey => {
 const create = (password, privateKey) => {
   const createdWallet = {}
   const wallet = generateWallet(privateKey)
-  console.log(wallet, password, privateKey)
   createdWallet.walletJson = wallet.toV3(password)
   createdWallet.name = wallet.getV3Filename()
   return createdWallet

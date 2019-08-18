@@ -95,6 +95,7 @@ import BroadcastChannel from 'broadcast-channel'
 import { significantDigits, addressSlicer } from '../../../utils/utils'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import AccountImport from '../AccountImport'
+import { broadcastChannelOptions } from '../../../utils/utils'
 
 export default {
   props: ['headerItems'],
@@ -157,7 +158,7 @@ export default {
   },
   methods: {
     logout() {
-      var bc = new BroadcastChannel('torus_logout_channel')
+      var bc = new BroadcastChannel('torus_logout_channel', broadcastChannelOptions)
       bc.postMessage({ data: { type: 'logout' } })
       bc.close()
       this.$store.dispatch('logOut')

@@ -6,7 +6,7 @@ import VuexPersistence from 'vuex-persist'
 import config from '../config'
 import torus from '../torus'
 import { MAINNET, RPC } from '../utils/enums'
-import { formatCurrencyNumber, getRandomNumber, significantDigits, getEtherScanHashLink } from '../utils/utils'
+import { formatCurrencyNumber, getRandomNumber, significantDigits, getEtherScanHashLink, broadcastChannelOptions } from '../utils/utils'
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import { notifyUser } from '../utils/notifications'
@@ -274,7 +274,7 @@ var VuexStore = new Vuex.Store({
       }
     },
     showPopup({ state, getters }, payload) {
-      var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
+      var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`, broadcastChannelOptions)
       const isTx = isTorusTransaction()
       const width = 500
       const height = isTx ? 650 : 400
@@ -318,7 +318,7 @@ var VuexStore = new Vuex.Store({
       }
     },
     showProviderChangePopup(context, payload) {
-      var bc = new BroadcastChannel('torus_provider_change_channel')
+      var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
       window.open(`${baseRoute}providerchange`, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600')
       bc.onmessage = function(ev) {
         if (ev.data === 'popup-loaded') {
@@ -333,7 +333,7 @@ var VuexStore = new Vuex.Store({
       }
     },
     showUserInfoRequestPopup(context, payload) {
-      var bc = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`)
+      var bc = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`, broadcastChannelOptions)
       window.open(
         `${baseRoute}userinforequest?instanceId=${torus.instanceId}`,
         '_blank',
