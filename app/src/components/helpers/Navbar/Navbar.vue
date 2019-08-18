@@ -18,7 +18,7 @@
       </v-toolbar-title>
       <v-spacer class="hidden-sm-and-up"></v-spacer>
       <v-tabs centered class="hidden-xs-only">
-        <v-tab v-for="headerItem in headerItems" :key="headerItem.name" :to="headerItem.route">
+        <v-tab v-for="headerItem in headerItems" :key="headerItem.name" :id="`${headerItem.name}-link`" :to="headerItem.route">
           {{ headerItem.display }}
         </v-tab>
       </v-tabs>
