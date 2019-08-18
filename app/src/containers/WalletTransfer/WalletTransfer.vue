@@ -7,6 +7,7 @@
           <v-flex xs12 px-4 mb-5 sm6>
             <span class="subtitle-2">Select your Coin</span>
             <v-select
+              id="select-coin"
               append-icon="$vuetify.icons.select"
               hide-details
               :items="finalBalancesArray"
@@ -38,6 +39,7 @@
           <v-flex xs12 px-4 sm6>
             <span class="subtitle-2">Recipient Address</span>
             <v-text-field
+              id="recipient-address"
               v-model="toAddress"
               placeholder="ETH Address / Google Address here"
               required
@@ -47,11 +49,12 @@
           </v-flex>
         </v-layout>
         <v-layout wrap>
-          <v-flex xs12 px-4 sm6>
+          <v-flex xs12 px-4 sm6 class="you-send-container">
             <div>
               <span class="subtitle-2">You send</span>
             </div>
             <v-text-field
+              id="you-send"
               :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
               persistent-hint
               type="number"
@@ -90,6 +93,7 @@
               <span class="subtitle-2">Total Cost</span>
             </div>
             <v-text-field
+              id="total-cost"
               :suffix="totalCostSuffix"
               :hint="convertedTotalCost ? convertedTotalCostDisplay : ''"
               persistent-hint
@@ -101,7 +105,9 @@
         </v-layout>
         <v-layout mt-4 pr-2 wrap>
           <v-spacer></v-spacer>
-          <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" class="px-6" type="submit">Continue</v-btn>
+          <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" class="px-6" type="submit" id="wallet-transfer-submit">
+            Continue
+          </v-btn>
         </v-layout>
 
         <v-layout mt-4 pr-2 wrap>
