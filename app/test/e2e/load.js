@@ -25,6 +25,10 @@ describe('Loads application', () => {
 
     page = await browser.newPage()
     await page.setDefaultTimeout(config.waitingTimeout)
+    await page.setViewport({
+      width: config.viewportWidth,
+      height: config.viewportHeight
+    })
   })
 
   after(async function() {
@@ -49,5 +53,28 @@ describe('Loads application', () => {
     await click(loginPage, '#passwordNext')
 
     await waitForText(page, '.wallet-home .headline', 'My Wallet')
+  })
+
+  it('Should change network to rinkeby', async () => {
+    await click(page, '#settings-link')
+    await shouldExist(page, '.wallet-settings')
+    await click(page, '#expansion-network')
+
+    await click(page, '#select-network')
+    await page.waitFor(2000)
+    await page.evaluate(() => {
+      let options = [...document.querySelectorAll('.v-list-item__title')]
+      options.forEach(function(option) {
+        if (option.innerText == 'Rinkeby Test Network') option.click()
+      })
+    })
+
+    await waitForText(page, '.v-select__selection.v-select__selection--comma', 'Rinkeby Test Network')
+  })
+
+  it('Should go to wallet transfer page', async () => {
+    await click(page, '#transfer-link')
+    await shouldExist(page, '.wallet-transfer')
+    await page.waitFor(5000)
   })
 })
