@@ -1,45 +1,43 @@
 <template>
-  <div>
-    <v-layout mt-3 wrap>
-      <v-flex xs12 px-4 mb-4>
-        <div class="text-black font-weight-bold headline float-left">Transaction Activities</div>
-        <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
-          <v-select
-            class="pt-0 mt-0 ml-2 subtitle-2 nav-selector transaction"
-            height="25px"
-            hide-details
-            :items="actionTypes"
-            v-model="selectedAction"
-            append-icon="$vuetify.icons.select"
-          />
-          <v-select
-            class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period"
-            height="25px"
-            hide-details
-            :items="periods"
-            v-model="selectedPeriod"
-            append-icon="$vuetify.icons.select"
-          />
-        </div>
-      </v-flex>
-      <v-flex xs12 px-4 mb-4>
-        <tx-history-table
-          v-if="!$vuetify.breakpoint.xsOnly"
-          :headers="headers"
-          :selectedAction="selectedAction"
-          :selectedPeriod="selectedPeriod"
-          :transactions="getTransactions()"
+  <v-layout mt-3 wrap class="wallet-activity">
+    <v-flex xs12 px-4 mb-4>
+      <div class="text-black font-weight-bold headline float-left">Transaction Activities</div>
+      <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
+        <v-select
+          class="pt-0 mt-0 ml-2 subtitle-2 nav-selector transaction"
+          height="25px"
+          hide-details
+          :items="actionTypes"
+          v-model="selectedAction"
+          append-icon="$vuetify.icons.select"
         />
-        <tx-history-table-mobile
-          v-if="$vuetify.breakpoint.xsOnly"
-          :headers="headers"
-          :selectedAction="selectedAction"
-          :selectedPeriod="selectedPeriod"
-          :transactions="getTransactions()"
+        <v-select
+          class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period"
+          height="25px"
+          hide-details
+          :items="periods"
+          v-model="selectedPeriod"
+          append-icon="$vuetify.icons.select"
         />
-      </v-flex>
-    </v-layout>
-  </div>
+      </div>
+    </v-flex>
+    <v-flex xs12 px-4 mb-4>
+      <tx-history-table
+        v-if="!$vuetify.breakpoint.xsOnly"
+        :headers="headers"
+        :selectedAction="selectedAction"
+        :selectedPeriod="selectedPeriod"
+        :transactions="getTransactions()"
+      />
+      <tx-history-table-mobile
+        v-if="$vuetify.breakpoint.xsOnly"
+        :headers="headers"
+        :selectedAction="selectedAction"
+        :selectedPeriod="selectedPeriod"
+        :transactions="getTransactions()"
+      />
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>

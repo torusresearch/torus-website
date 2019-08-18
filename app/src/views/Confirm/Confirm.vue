@@ -107,7 +107,7 @@
           <v-flex xs6>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
               <template v-slot:activator="{ on }">
-                <v-btn :disabled="!canApprove" block depressed large color="primary" class="ml-2" v-on="on">Confirm</v-btn>
+                <v-btn id="confirm-btn" :disabled="!canApprove" block depressed large color="primary" class="ml-2" v-on="on">Confirm</v-btn>
               </template>
               <transfer-confirm
                 :toAddress="receiver"
