@@ -46,7 +46,7 @@
         </v-expansion-panel>
 
         <!-- Network Settigs -->
-        <v-expansion-panel>
+        <v-expansion-panel id="expansion-network">
           <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
             <img
               :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
@@ -63,6 +63,7 @@
                 <span class="subtitle-2">Select Network</span>
                 <v-flex>
                   <v-select
+                    id="select-network"
                     outlined
                     :items="networks"
                     item-text="name"
