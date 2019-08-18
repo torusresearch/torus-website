@@ -39,7 +39,7 @@
       <v-layout mt-4 pr-4>
         <v-spacer></v-spacer>
         <v-btn large text @click="onCancel">Cancel</v-btn>
-        <v-btn large color="primary" class="ml-4" type="button" @click="onConfirm">Confirm</v-btn>
+        <v-btn id="confirm-transfer-btn" large color="primary" class="ml-4" type="button" @click="onConfirm">Confirm</v-btn>
       </v-layout>
     </v-card-text>
   </v-card>
