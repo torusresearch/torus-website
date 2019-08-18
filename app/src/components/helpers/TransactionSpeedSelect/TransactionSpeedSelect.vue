@@ -29,6 +29,7 @@
     <v-layout xs12 justify-space-between wrap v-if="!isAdvanceOption">
       <v-flex xs6 px-4 mb-1>
         <v-btn
+          id="average-speed-btn"
           block
           large
           outlined
@@ -42,6 +43,7 @@
       </v-flex>
       <v-flex xs6 px-4 mb-1>
         <v-btn
+          id="fastest-speed-btn"
           block
           large
           outlined

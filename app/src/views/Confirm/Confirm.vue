@@ -1,5 +1,5 @@
 <template>
-  <v-container py-6 px-0>
+  <v-container py-6 px-0 class="confirm-container">
     <template v-if="type === 'transaction'">
       <v-layout align-center mx-6 mb-6>
         <div class="torus_text--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-4' : ''">{{ header }}</div>
