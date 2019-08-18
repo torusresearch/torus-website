@@ -13,6 +13,7 @@ const shouldValueNotBeEmpty = require('./lib/helpers').shouldValueNotBeEmpty
 describe('Loads application', () => {
   let browser
   let page
+  let confirmPage
 
   before(async function() {
     browser = await puppeteer.launch({
@@ -86,6 +87,7 @@ describe('Loads application', () => {
     })
 
     await typeText(page, 'sinlin@tor.us', '#recipient-address')
+    await page.waitFor(500)
   })
 
   it('Should show you send conversion ', async () => {
@@ -107,8 +109,25 @@ describe('Loads application', () => {
     // Get the confirm page
     await click(page, '#wallet-transfer-submit')
     const confirmPageTarget = await browser.waitForTarget(target => target.opener() === pageTarget)
-    const confirmPage = await confirmPageTarget.page()
+    confirmPage = await confirmPageTarget.page()
 
     await shouldExist(confirmPage, '.confirm-container')
+  })
+
+  it('Should submit confirm', async () => {
+    await click(confirmPage, '#confirm-btn')
+    await waitForText(confirmPage, '.headline', 'Confirm your Transfer')
+    await click(confirmPage, '#confirm-transfer-btn')
+  })
+
+  it('Should show success alert', async () => {
+    await shouldExist(page, '.message-modal')
+    await click(page, '.message-modal #continue-link')
+    await page.waitFor(3000)
+  })
+
+  it('Should show on wallet activity page', async () => {
+    await shouldExist(page, '.wallet-activity')
+    await page.waitFor(3000)
   })
 })
