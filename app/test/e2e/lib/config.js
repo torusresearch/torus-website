@@ -1,7 +1,7 @@
 module.exports = {
   baseUrl: 'https://localhost:3000', // https://dev.to
   ignoreHTTPSErrors: true,
-  isHeadless: false,
+  isHeadless: true,
   slowMo: 0,
   isDevTools: false,
   launchTimeout: 10000,

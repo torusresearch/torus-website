@@ -4,12 +4,15 @@ const config = require('./lib/config')
 
 const loadUrl = require('./lib/helpers').loadUrl
 const click = require('./lib/helpers').click
+const typeText = require('./lib/helpers').typeText
 const waitForText = require('./lib/helpers').waitForText
+const shouldExist = require('./lib/helpers').shouldExist
+const shouldTextNotBeEmpty = require('./lib/helpers').shouldTextNotBeEmpty
+const shouldValueNotBeEmpty = require('./lib/helpers').shouldValueNotBeEmpty
 
 describe('Loads application', () => {
   let browser
   let page
-  let count = 0
 
   before(async function() {
     browser = await puppeteer.launch({
@@ -28,30 +31,23 @@ describe('Loads application', () => {
     await browser.close()
   })
 
-  it('My first test step', async () => {
+  it('Should Login User', async () => {
     await loadUrl(page, config.baseUrl)
+
+    // Used for getting the newly opened window
+    const pageTarget = page.target()
+
+    // Get the loginPage
     await click(page, '#loginBtn')
+    const loginPageTarget = await browser.waitForTarget(target => target.opener() === pageTarget)
+    const loginPage = await loginPageTarget.page()
 
-    await browser.on('targetcreated', async () => {
-      const pageList = await browser.pages()
-      const newPage = await pageList[pageList.length - 1]
-      const newPageTitle = await newPage.title()
+    // Login user
+    await typeText(loginPage, 'toruspuppeteer@gmail.com', '#identifierId')
+    await click(loginPage, '#identifierNext')
+    await typeText(loginPage, 'toruse2e', 'input[type="password"]')
+    await click(loginPage, '#passwordNext')
 
-      if (newPageTitle.indexOf('- Google Accounts') >= 0 && count === 0) {
-        count = ++count
-        await newPage.waitForSelector('#identifierId')
-        await newPage.type('#identifierId', 'llenoil@gmail.com')
-        await newPage.click('#identifierNext')
-
-        await newPage.waitForSelector('input[type="password"]', { visible: true })
-        await newPage.type('input[type="password"]', 'eLen@8892710')
-
-        await newPage.waitForSelector('#passwordNext', { visible: true })
-        await newPage.click('#passwordNext')
-      }
-    })
-
-    await page.waitForSelector('.wallet-home', { visible: true })
     await waitForText(page, '.wallet-home .headline', 'My Wallet')
   })
 })
