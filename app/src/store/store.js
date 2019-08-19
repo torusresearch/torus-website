@@ -6,7 +6,7 @@ import VuexPersistence from 'vuex-persist'
 import config from '../config'
 import torus from '../torus'
 import { MAINNET, RPC } from '../utils/enums'
-import { formatCurrencyNumber, getRandomNumber, significantDigits, getEtherScanHashLink } from '../utils/utils'
+import { formatCurrencyNumber, getRandomNumber, significantDigits, getEtherScanHashLink, broadcastChannelOptions } from '../utils/utils'
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import { notifyUser } from '../utils/notifications'
@@ -274,7 +274,7 @@ var VuexStore = new Vuex.Store({
       }
     },
     showPopup({ state, getters }, payload) {
-      var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
+      var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`, broadcastChannelOptions)
       const isTx = isTorusTransaction()
       const width = 500
       const height = isTx ? 650 : 400
@@ -287,10 +287,10 @@ var VuexStore = new Vuex.Store({
       )
       if (isTx) {
         var balance = torus.web3.utils.fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
-        bc.onmessage = ev => {
+        bc.onmessage = async ev => {
           if (ev.data === 'popup-loaded') {
             var txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
-            bc.postMessage({
+            await bc.postMessage({
               data: {
                 origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
                 type: 'transaction',
@@ -303,9 +303,9 @@ var VuexStore = new Vuex.Store({
         }
       } else {
         var { msgParams, id } = getLatestMessageParams()
-        bc.onmessage = function(ev) {
+        bc.onmessage = async ev => {
           if (ev.data === 'popup-loaded') {
-            bc.postMessage({
+            await bc.postMessage({
               data: {
                 origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
                 type: 'message',
@@ -318,11 +318,11 @@ var VuexStore = new Vuex.Store({
       }
     },
     showProviderChangePopup(context, payload) {
-      var bc = new BroadcastChannel('torus_provider_change_channel')
+      var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
       window.open(`${baseRoute}providerchange`, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600')
-      bc.onmessage = function(ev) {
+      bc.onmessage = async ev => {
         if (ev.data === 'popup-loaded') {
-          bc.postMessage({
+          await bc.postMessage({
             data: {
               origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
               payload: payload
@@ -333,15 +333,15 @@ var VuexStore = new Vuex.Store({
       }
     },
     showUserInfoRequestPopup(context, payload) {
-      var bc = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`)
+      var bc = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`, broadcastChannelOptions)
       window.open(
         `${baseRoute}userinforequest?instanceId=${torus.instanceId}`,
         '_blank',
         'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
       )
-      bc.onmessage = function(ev) {
+      bc.onmessage = async ev => {
         if (ev.data === 'popup-loaded') {
-          bc.postMessage({
+          await bc.postMessage({
             data: {
               origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
               payload: payload

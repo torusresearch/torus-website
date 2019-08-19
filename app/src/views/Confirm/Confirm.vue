@@ -199,7 +199,14 @@ import PageLoader from '../../components/helpers/PageLoader'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import torus from '../../torus'
-import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, isSmartContractAddress } from '../../utils/utils'
+import {
+  significantDigits,
+  calculateGasKnob,
+  calculateGasPrice,
+  addressSlicer,
+  isSmartContractAddress,
+  broadcastChannelOptions
+} from '../../utils/utils'
 import { get } from '../../utils/httpHelpers'
 const abiDecoder = require('../../utils/abiDecoder')
 const abi = require('human-standard-token-abi')
@@ -482,18 +489,18 @@ export default {
     openBottom() {
       this.open = true
     },
-    triggerSign(event) {
-      var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
+    async triggerSign(event) {
+      var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
       var gasHex = torus.web3.utils.numberToHex(this.gasPrice * weiInGwei)
-      bc.postMessage({
+      await bc.postMessage({
         data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id }
       })
       bc.close()
       window.close()
     },
-    triggerDeny(event) {
-      var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
-      bc.postMessage({ data: { type: 'deny-transaction', id: this.id } })
+    async triggerDeny(event) {
+      var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
+      await bc.postMessage({ data: { type: 'deny-transaction', id: this.id } })
       bc.close()
       window.close()
     },
@@ -554,7 +561,7 @@ export default {
     ...mapActions({})
   },
   mounted() {
-    var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
+    var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
     bc.onmessage = async ev => {
       const { type, msgParams, txParams, origin, balance } = ev.data || {}
       let url = { hostname: '' }

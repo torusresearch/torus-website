@@ -33,6 +33,7 @@
                     label="Private Key"
                     @click:append="togglePrivShow"
                     v-model="privateKey"
+                    single-line
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs12 px-4 class="text-right">
