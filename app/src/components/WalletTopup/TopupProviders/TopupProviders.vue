@@ -45,7 +45,7 @@
         <div>Prefer other mode of payment?</div>
         <div>
           <a href="mailto:hello@tor.us?Subject=Add%20Payment%20Method" target="_blank">Write to us</a>
-          and we would try out best to improve and serve you better
+          and we would try our best to improve and serve you better
         </div>
       </div>
     </template>
