@@ -1,24 +1,26 @@
 <template>
   <v-flex xs12 sm6 mb-4 px-4 class="topup-providers">
-    <v-card class="mb-4" v-for="targetProvider in providers" @click="innerProvider = targetProvider.name" :key="targetProvider.name">
-      <v-list-item three-line>
-        <v-list-item-icon class="mr-2 align-self-center">
-          <v-icon color="primary" v-if="innerProvider === targetProvider.name">$vuetify.icons.radio_checked</v-icon>
-          <v-icon color="grey" v-else>$vuetify.icons.radio_unchecked</v-icon>
-        </v-list-item-icon>
-        <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
-          <img :src="require(`../../../../public/images/logos/${targetProvider.logo}`)" />
-        </v-list-item-avatar>
-        <v-list-item-content class="align-self-center text-right caption">
-          <div>{{ targetProvider.line1 }}</div>
-          <div v-html="targetProvider.line2"></div>
-          <div>{{ targetProvider.line3 }}</div>
-        </v-list-item-content>
-      </v-list-item>
+    <v-card class="mb-4" v-for="targetProvider in activeProviders" @click="innerProvider = targetProvider.name" :key="targetProvider.name">
+      <router-link :to="targetProvider.link">
+        <v-list-item three-line>
+          <v-list-item-icon class="mr-2 align-self-center">
+            <v-icon color="primary" v-if="innerProvider === targetProvider.name">$vuetify.icons.radio_checked</v-icon>
+            <v-icon color="grey" v-else>$vuetify.icons.radio_unchecked</v-icon>
+          </v-list-item-icon>
+          <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
+            <img :src="require(`../../../../public/images/logos/${targetProvider.logo}`)" />
+          </v-list-item-avatar>
+          <v-list-item-content class="align-self-center text-right caption">
+            <div>{{ targetProvider.line1 }}</div>
+            <div v-html="targetProvider.line2"></div>
+            <div>{{ targetProvider.line3 }}</div>
+          </v-list-item-content>
+        </v-list-item>
+      </router-link>
     </v-card>
 
     <template>
-      <v-tooltip right v-for="targetProvider in providersInactive" :key="targetProvider.name">
+      <v-tooltip right v-for="targetProvider in inactiveProviders" :key="targetProvider.name">
         <template v-slot:activator="{ on }">
           <v-card class="mb-4 coming-soon" v-on="on">
             <v-list-item three-line>
@@ -51,46 +53,22 @@
 </template>
 
 <script>
+import { ACTIVE, INACTIVE } from '../../../utils/enums'
+
 export default {
-  props: ['provider'],
+  props: ['selectedProvider', 'providers'],
   data() {
     return {
-      innerProvider: '',
-      providers: [
-        {
-          name: 'simplex',
-          logo: 'simplex-logo.png',
-          line1: 'Pay with Credit Card',
-          line2: '<span class="font-weight-medium">Simplex Service Fee</span> : 5% or 10 USD',
-          line3: '(whichever is higher)'
-        },
-        {
-          name: 'moonpay',
-          logo: 'moon-pay-logo.svg',
-          line1: 'Pay with Credit Card',
-          line2: '<span class="font-weight-medium">Moonpay Service Fee</span> : 4.5% or 5 USD',
-          line3: '(whichever is higher)'
-        }
-      ],
-      providersInactive: [
-        {
-          name: 'wyre',
-          logo: 'wyre-logo.svg',
-          line1: 'Pay with Credit Card or Wire Transfer',
-          line2: '<span class="font-weight-medium">Wyre Service Fee</span> : Varies',
-          line3: ''
-        },
-        {
-          name: 'crypto',
-          logo: 'crypto-logo.png',
-          line1: 'Pay with Credit Card or Wire Transfer',
-          line2: '<span class="font-weight-medium">crypto.com Service Fee</span> : Varies',
-          line3: ''
-        }
-      ]
+      innerProvider: ''
     }
   },
   computed: {
+    activeProviders() {
+      return this.providers.filter(provider => provider.status === ACTIVE)
+    },
+    inactiveProviders() {
+      return this.providers.filter(provider => provider.status === INACTIVE)
+    },
     providersFiltered() {
       return this.providers.filter(provider => {
         return this.innerProvider === '' || (this.innerProvider && this.innerProvider === provider.name)
@@ -98,15 +76,15 @@ export default {
     }
   },
   watch: {
-    innerProvider() {
-      this.$emit('onSelectProvider', this.innerProvider)
+    innerProvider(newVal, oldVal) {
+      if (oldVal !== newVal) this.$emit('onSelectProvider', this.innerProvider)
     },
-    provider() {
-      this.innerProvider = this.provider
+    selectedProvider(newVal, oldVal) {
+      if (oldVal !== newVal) this.innerProvider = newVal
     }
   },
-  created() {
-    this.innerProvider = this.provider
+  mounted() {
+    this.innerProvider = this.selectedProvider
   }
 }
 </script>
