@@ -341,7 +341,6 @@ var VuexStore = new Vuex.Store({
       )
       bc.onmessage = function(ev) {
         if (ev.data === 'popup-loaded') {
-          console.log('loaded popup')
           bc.postMessage({
             data: {
               origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,

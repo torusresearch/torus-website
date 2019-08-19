@@ -2,7 +2,7 @@
   <v-layout wrap>
     <v-flex xs12>
       <p class="body-2">
-        Simplex is a secure way to buy CryptoCurrency with your credit card. Start by entering an amount to get a quote before making your purchase.
+        Simplex is a secure way to buy CryptoCurrency with your credit card. Start by entering an amount to get a quote before making your purchase
       </p>
     </v-flex>
 
