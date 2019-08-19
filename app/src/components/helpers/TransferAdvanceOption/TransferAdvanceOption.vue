@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" persistent>
     <template v-slot:activator="{ on }">
-      <span class="float-right primary--text advance-option subtitle-2" v-show="displayAmount" v-on="on">Advanced Options</span>
+      <span id="advance-option-link" class="float-right primary--text subtitle-2" v-show="displayAmount" v-on="on">Advanced Options</span>
     </template>
     <v-card class="advance-option">
       <v-container>
@@ -38,7 +38,14 @@
                       </span>
                     </v-tooltip>
                   </span>
-                  <v-text-field placeholder="Enter Value" outlined v-model="advancedActiveGasPrice" required type="number"></v-text-field>
+                  <v-text-field
+                    id="gas-price"
+                    placeholder="Enter Value"
+                    outlined
+                    v-model="advancedActiveGasPrice"
+                    required
+                    type="number"
+                  ></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
                   <span class="subtitle-2">
@@ -82,6 +89,7 @@
                     <v-divider class="mt-1 mb-2"></v-divider>
                   </template>
                   <v-text-field
+                    id="transaction-fee"
                     v-else
                     :suffix="symbol"
                     outlined
@@ -113,7 +121,7 @@
           <v-layout mt-4 pr-4>
             <v-spacer></v-spacer>
             <v-btn large text @click="onCancel">Cancel</v-btn>
-            <v-btn large color="primary" class="ml-4" type="submit" :disabled="!advanceOptionFormValid">Save</v-btn>
+            <v-btn id="adv-opt-submit-btn" large color="primary" class="ml-4" type="submit" :disabled="!advanceOptionFormValid">Save</v-btn>
           </v-layout>
         </v-form>
       </v-container>

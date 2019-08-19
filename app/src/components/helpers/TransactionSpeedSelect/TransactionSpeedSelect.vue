@@ -64,7 +64,7 @@
         </div>
       </v-flex>
       <v-flex xs4 px-4 class="text-right">
-        <v-btn outlined color="primary" @click="resetAdvanceOption">Reset</v-btn>
+        <v-btn id="adv-reset-btn" outlined color="primary" @click="resetAdvanceOption">Reset</v-btn>
       </v-flex>
     </v-layout>
     <v-layout>
