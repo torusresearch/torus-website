@@ -50,6 +50,7 @@
           <v-flex xs12 px-4 sm6>
             <div>
               <span class="subtitle-2">You send</span>
+              <a class="float-right primary--text subtitle-2" @click="sendAll">Send All</a>
             </div>
             <v-text-field
               :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
@@ -127,6 +128,7 @@ import config from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import { get } from '../../utils/httpHelpers'
+import { parse } from 'path'
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
 
@@ -304,6 +306,18 @@ export default {
         this.displayAmount = this.displayAmount * currencyRate
       }
     },
+    sendAll() {
+      const ethBalance = this.selectedItem.computedBalance
+      const currencyBalance = ethBalance * this.getCurrencyTokenRate
+      const ethGasPrice = this.getEthAmount(this.gas, this.activeGasPrice)
+      const currencyGasPrice = ethGasPrice * this.getCurrencyTokenRate
+
+      if (this.toggle_exclusive === 0) {
+        this.displayAmount = ethBalance - ethGasPrice
+      } else {
+        this.displayAmount = currencyBalance - currencyGasPrice
+      }
+    },
     async sendCoin() {
       if (this.$refs.form.validate()) {
         const fastGasPrice = torus.web3.utils.toBN((this.activeGasPrice * 10 ** 9).toString())
@@ -416,8 +430,8 @@ export default {
       this.totalCost = ''
       this.convertedTotalCost = ''
 
-      const gasPriceInCurrency = this.getGasAmount(this.activeGasPrice)
-      const gasPriceInEth = gasPriceInCurrency / this.getCurrencyMultiplier
+      const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
+      const gasPriceInCurrency = gasPriceInEth * this.getCurrencyTokenRate
       const toSend = parseFloat(this.amount)
       const toSendConverted = toSend * this.getCurrencyTokenRate
 
