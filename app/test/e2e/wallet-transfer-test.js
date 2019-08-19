@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer')
+const assert = require('assert')
 
 const config = require('./lib/config')
 
@@ -112,8 +113,34 @@ describe('Loads application', () => {
     await shouldValueNotBeEmpty(page, '.you-send-container .v-messages__message')
   })
 
-  it('Should click transaction speed', async () => {
-    await click(page, '#average-speed-btn')
+  it('Should load advanced options', async () => {
+    await click(page, '#advance-option-link')
+    await waitForText(page, '.advance-option .subtitle-2', 'Customize Gas')
+  })
+
+  it('Should updated transaction fee', async () => {
+    const transactionFee = await page.$eval('#transaction-fee', el => el.value)
+    let gasPrice = await page.$eval('#gas-price', el => el.value)
+    gasPrice = parseFloat(gasPrice) + 4
+    await page.waitFor(500)
+
+    // overwrite content
+    await page.click('#gas-price', { clickCount: 3 })
+    await page.waitFor(500)
+    await typeText(page, gasPrice.toString(), '#gas-price')
+    const newTransactionFee = await page.$eval('#transaction-fee', el => el.value)
+    assert.notEqual(transactionFee, newTransactionFee)
+  })
+
+  it('Should submit advanced option', async () => {
+    await click(page, '#adv-opt-submit-btn')
+    await shouldExist(page, '#adv-reset-btn')
+    await page.waitFor(500)
+  })
+
+  it('Should reset advanced option', async () => {
+    await click(page, '#adv-reset-btn')
+    await shouldExist(page, '#average-speed-btn')
   })
 
   it('Should show total cost', async () => {
@@ -131,20 +158,18 @@ describe('Loads application', () => {
     await shouldExist(confirmPage, '.confirm-container')
   })
 
-  // it('Should submit confirm', async () => {
-  //   await click(confirmPage, '#confirm-btn')
-  //   await waitForText(confirmPage, '.headline', 'Confirm your Transfer')
-  //   await click(confirmPage, '#confirm-transfer-btn')
-  // })
+  it('Should submit confirm', async () => {
+    await click(confirmPage, '#confirm-btn')
+    await waitForText(confirmPage, '.headline', 'Confirm your Transfer')
+    await click(confirmPage, '#confirm-transfer-btn')
+  })
 
-  // it('Should show success alert', async () => {
-  //   await shouldExist(page, '.message-modal')
-  //   await click(page, '.message-modal #continue-link')
-  //   await page.waitFor(3000)
-  // })
+  it('Should show success alert', async () => {
+    await shouldExist(page, '.message-modal')
+    await click(page, '.message-modal #continue-link')
+  })
 
-  // it('Should show on wallet activity page', async () => {
-  //   await shouldExist(page, '.wallet-activity')
-  //   await page.waitFor(3000)
-  // })
+  it('Should show on wallet activity page', async () => {
+    await shouldExist(page, '.wallet-activity')
+  })
 })
