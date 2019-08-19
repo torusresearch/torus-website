@@ -11,7 +11,7 @@ const shouldExist = require('./lib/helpers').shouldExist
 const shouldTextNotBeEmpty = require('./lib/helpers').shouldTextNotBeEmpty
 const shouldValueNotBeEmpty = require('./lib/helpers').shouldValueNotBeEmpty
 
-describe('Loads application', () => {
+describe('Tests Wallet Transfer Transaction', () => {
   let browser
   let page
   let confirmPage
@@ -37,7 +37,7 @@ describe('Loads application', () => {
     await browser.close()
   })
 
-  it('Should Login User', async () => {
+  it('Should load page', async () => {
     await loadUrl(page, config.baseUrl)
 
     // Used for getting the newly opened window
@@ -91,7 +91,7 @@ describe('Loads application', () => {
   })
 
   it('Should error on invalid input', async () => {
-    await typeText(page, 'sinlin', '#recipient-address')
+    await typeText(page, 'lionell', '#recipient-address')
     await waitForText(page, '.recipient-address-container .v-messages__message', 'Invalid ETH or Email Address')
 
     await typeText(page, '@tor.us', '#recipient-address')
@@ -156,6 +156,17 @@ describe('Loads application', () => {
     confirmPage = await confirmPageTarget.page()
 
     await shouldExist(confirmPage, '.confirm-container')
+  })
+
+  it('Should load more details', async () => {
+    await click(confirmPage, '#more-details-link')
+    await shouldExist(confirmPage, '.more-details-container')
+
+    await shouldTextNotBeEmpty(confirmPage, '.more-details-container #currency-rate')
+    await shouldTextNotBeEmpty(confirmPage, '.more-details-container #network')
+    await shouldTextNotBeEmpty(confirmPage, '.more-details-container #type')
+
+    await click(confirmPage, '#less-details-link')
   })
 
   it('Should submit confirm', async () => {
