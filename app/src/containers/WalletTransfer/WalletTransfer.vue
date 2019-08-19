@@ -29,14 +29,14 @@
           <v-flex xs12 sm6 mb-5 px-4 v-if="selectedItem">
             <span class="subtitle-2">Account Balance</span>
             <div>
-              <span class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
+              <span id="account-balance" class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
               <span class="caption torus_text--text text--lighten-4">{{ currencyBalanceDisplay }}</span>
             </div>
             <div class="caption font-weight-regular torus_text--text text--lighten-4">{{ selectedItem.currencyRateText }}</div>
           </v-flex>
         </v-layout>
         <v-layout wrap>
-          <v-flex xs12 px-4 sm6>
+          <v-flex xs12 px-4 sm6 class="recipient-address-container">
             <span class="subtitle-2">Recipient Address</span>
             <v-text-field
               id="recipient-address"

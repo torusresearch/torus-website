@@ -77,7 +77,7 @@ describe('Loads application', () => {
     await shouldExist(page, '.wallet-transfer')
   })
 
-  it('Should fill initial fields', async () => {
+  it('Should select coin', async () => {
     await click(page, '#select-coin')
     await page.evaluate(() => {
       let options = [...document.querySelectorAll('.v-list-item__title')]
@@ -86,15 +86,32 @@ describe('Loads application', () => {
       })
     })
 
-    await typeText(page, 'sinlin@tor.us', '#recipient-address')
     await page.waitFor(500)
+  })
+
+  it('Should error on invalid input', async () => {
+    await typeText(page, 'sinlin', '#recipient-address')
+    await waitForText(page, '.recipient-address-container .v-messages__message', 'Invalid ETH or Email Address')
+
+    await typeText(page, '@tor.us', '#recipient-address')
+  })
+
+  it('Should error on invalid you send input', async () => {
+    let accountBalance = await page.$eval('#account-balance', el => el.textContent)
+    accountBalance = parseFloat(accountBalance.split(' ')[1]) + 10
+    await typeText(page, accountBalance.toString(), '#you-send')
+    await waitForText(page, '.you-send-container .v-messages__message', 'Insufficient balance for transaction')
   })
 
   it('Should show you send conversion ', async () => {
     const youSendValue = 0.001
+    // overwrite content
+    await page.click('#you-send', { clickCount: 3 })
+    await page.waitFor(500)
     await typeText(page, youSendValue.toString(), '#you-send')
     await shouldValueNotBeEmpty(page, '.you-send-container .v-messages__message')
   })
+
   it('Should click transaction speed', async () => {
     await click(page, '#average-speed-btn')
   })
@@ -114,20 +131,20 @@ describe('Loads application', () => {
     await shouldExist(confirmPage, '.confirm-container')
   })
 
-  it('Should submit confirm', async () => {
-    await click(confirmPage, '#confirm-btn')
-    await waitForText(confirmPage, '.headline', 'Confirm your Transfer')
-    await click(confirmPage, '#confirm-transfer-btn')
-  })
+  // it('Should submit confirm', async () => {
+  //   await click(confirmPage, '#confirm-btn')
+  //   await waitForText(confirmPage, '.headline', 'Confirm your Transfer')
+  //   await click(confirmPage, '#confirm-transfer-btn')
+  // })
 
-  it('Should show success alert', async () => {
-    await shouldExist(page, '.message-modal')
-    await click(page, '.message-modal #continue-link')
-    await page.waitFor(3000)
-  })
+  // it('Should show success alert', async () => {
+  //   await shouldExist(page, '.message-modal')
+  //   await click(page, '.message-modal #continue-link')
+  //   await page.waitFor(3000)
+  // })
 
-  it('Should show on wallet activity page', async () => {
-    await shouldExist(page, '.wallet-activity')
-    await page.waitFor(3000)
-  })
+  // it('Should show on wallet activity page', async () => {
+  //   await shouldExist(page, '.wallet-activity')
+  //   await page.waitFor(3000)
+  // })
 })
