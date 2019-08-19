@@ -39,28 +39,28 @@
         <v-flex xs12 mb-3 mt-3>
           <v-dialog v-model="detailsDialog" width="600px">
             <template v-slot:activator="{ on }">
-              <div class="subtitle-2 float-right blue--text mx-6" v-on="on">More Details</div>
+              <div id="more-details-link" class="subtitle-2 float-right blue--text mx-6" v-on="on">More Details</div>
             </template>
-            <v-card class="pa-4" color="background_2">
+            <v-card class="pa-4 more-details-container" color="background_2">
               <v-card-text class="torus_text--text">
                 <v-layout wrap>
                   <v-flex xs4 sm2>
                     Rate
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
+                  <v-flex id="currency-rate" xs8 sm10 class="torus_text--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
                   <v-flex xs4 sm2>
                     Network
                     <span class="float-right mr-4">:</span>
                   </v-flex>
                   <v-flex xs8 sm10 class="torus_text--text text--lighten-4">
-                    <span class="text-capitalize">{{ networkName }}</span>
+                    <span id="network" class="text-capitalize">{{ networkName }}</span>
                   </v-flex>
                   <v-flex xs4 sm2>
                     Type
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">{{ header }}</v-flex>
+                  <v-flex id="type" xs8 sm10 class="torus_text--text text--lighten-4">{{ header }}</v-flex>
                   <v-flex xs2 v-if="txData || txDataParams !== ''">
                     Data
                     <span class="float-right mr-4">:</span>
@@ -82,7 +82,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" text @click="detailsDialog = false">Less Details</v-btn>
+                <v-btn id="less-details-link" color="primary" text @click="detailsDialog = false">Less Details</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>

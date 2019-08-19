@@ -33,20 +33,20 @@ module.exports = {
       throw new Error(`Selector ${selector} does not exist`)
     }
   },
-  shouldTextNotBeEmpty: async function(page, selector, text) {
+  shouldTextNotBeEmpty: async function(page, selector) {
     try {
       await page.waitForSelector(selector)
       await page.waitForFunction(selector => document.querySelector(selector).innerText !== '', {}, selector)
     } catch (error) {
-      throw new Error(`Text ${text} not found for selector: ${selector}`)
+      throw new Error(`Inner text empty for selector: ${selector}`)
     }
   },
-  shouldValueNotBeEmpty: async function(page, selector, text) {
+  shouldValueNotBeEmpty: async function(page, selector) {
     try {
       await page.waitForSelector(selector)
       await page.waitForFunction(selector => document.querySelector(selector).value !== '', {}, selector)
     } catch (error) {
-      throw new Error(`Text ${text} not found for selector: ${selector}`)
+      throw new Error(`Value text empty for for selector: ${selector}`)
     }
   }
 }
