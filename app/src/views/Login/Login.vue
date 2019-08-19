@@ -131,7 +131,7 @@ export default {
       }
     }, 2000)
 
-    if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || 'wallet')
+    if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet')
   },
   created() {
     this.isLogout = this.$route.name !== 'login'

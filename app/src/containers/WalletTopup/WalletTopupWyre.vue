@@ -144,7 +144,6 @@ export default {
       if (window.Wyre) {
         this.isWyreLoaded = true
         clearInterval(interval)
-        console.log('wyre loaded')
       }
     }, 1000)
   }
