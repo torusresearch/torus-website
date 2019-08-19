@@ -5,6 +5,7 @@ import stream from 'stream'
 import torus from '../torus'
 import { MAINNET, RPC } from '../utils/enums'
 import VuexStore from './store'
+import { broadcastChannelOptions } from '../utils/utils'
 
 /* 
 Edited to change networkId => network state. Has an implication of changing neworkVersion 
@@ -62,7 +63,7 @@ userInfoStream.on('data', function(chunk) {
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
 })
-var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`)
+var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`, broadcastChannelOptions)
 bc.onmessage = function(ev) {
   if (ev.data.type === 'confirm-transaction') {
     let { torusController } = torus
@@ -114,7 +115,7 @@ bc.onmessage = function(ev) {
   }
 }
 
-var providerChangeChannel = new BroadcastChannel('torus_provider_change_channel')
+var providerChangeChannel = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
 providerChangeChannel.onmessage = function(ev) {
   if (ev.data && ev.data.type === 'confirm-provider-change' && ev.data.approve) {
     log.info('Provider change approved', ev.data.payload)
@@ -124,7 +125,7 @@ providerChangeChannel.onmessage = function(ev) {
   }
 }
 
-var logoutChannel = new BroadcastChannel('torus_logout_channel')
+var logoutChannel = new BroadcastChannel('torus_logout_channel', broadcastChannelOptions)
 logoutChannel.onmessage = function(ev) {
   log.info('received logging message', ev)
   if (ev.data && ev.data.type === 'logout') {
@@ -133,7 +134,7 @@ logoutChannel.onmessage = function(ev) {
   }
 }
 
-var userInfoRequestChannel = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`)
+var userInfoRequestChannel = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`, broadcastChannelOptions)
 userInfoRequestChannel.onmessage = function(ev) {
   if (ev.data && ev.data.type === 'confirm-user-info-request' && ev.data.approve) {
     log.info('User Info Request approved')
