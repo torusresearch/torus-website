@@ -62,23 +62,23 @@ export default {
     }
   },
   methods: {
-    triggerSign(event) {
+    async triggerSign(event) {
       var bc = new BroadcastChannel(
         `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
         broadcastChannelOptions
       )
-      bc.postMessage({
+      await bc.postMessage({
         data: { type: 'confirm-user-info-request', approve: true }
       })
       bc.close()
       window.close()
     },
-    triggerDeny(event) {
+    async triggerDeny(event) {
       var bc = new BroadcastChannel(
         `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
         broadcastChannelOptions
       )
-      bc.postMessage({ data: { type: 'deny-user-info-request', approve: false } })
+      await bc.postMessage({ data: { type: 'deny-user-info-request', approve: false } })
       bc.close()
       window.close()
     }

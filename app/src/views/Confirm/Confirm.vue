@@ -489,18 +489,18 @@ export default {
     openBottom() {
       this.open = true
     },
-    triggerSign(event) {
+    async triggerSign(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
       var gasHex = torus.web3.utils.numberToHex(this.gasPrice * weiInGwei)
-      bc.postMessage({
+      await bc.postMessage({
         data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id }
       })
       bc.close()
       window.close()
     },
-    triggerDeny(event) {
+    async triggerDeny(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
-      bc.postMessage({ data: { type: 'deny-transaction', id: this.id } })
+      await bc.postMessage({ data: { type: 'deny-transaction', id: this.id } })
       bc.close()
       window.close()
     },

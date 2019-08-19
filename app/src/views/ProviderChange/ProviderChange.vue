@@ -70,17 +70,17 @@ export default {
   },
   computed: {},
   methods: {
-    triggerSign(event) {
+    async triggerSign(event) {
       var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
-      bc.postMessage({
+      await bc.postMessage({
         data: { type: 'confirm-provider-change', payload: this.payload, approve: true }
       })
       bc.close()
       window.close()
     },
-    triggerDeny(event) {
+    async triggerDeny(event) {
       var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
-      bc.postMessage({ data: { type: 'deny-provider-change', approve: false } })
+      await bc.postMessage({ data: { type: 'deny-provider-change', approve: false } })
       bc.close()
       window.close()
     }

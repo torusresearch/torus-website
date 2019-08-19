@@ -157,9 +157,9 @@ export default {
     }
   },
   methods: {
-    logout() {
+    async logout() {
       var bc = new BroadcastChannel('torus_logout_channel', broadcastChannelOptions)
-      bc.postMessage({ data: { type: 'logout' } })
+      await bc.postMessage({ data: { type: 'logout' } })
       bc.close()
       this.$store.dispatch('logOut')
       this.$router.push({ path: '/logout' })

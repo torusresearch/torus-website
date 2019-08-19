@@ -287,10 +287,10 @@ var VuexStore = new Vuex.Store({
       )
       if (isTx) {
         var balance = torus.web3.utils.fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
-        bc.onmessage = ev => {
+        bc.onmessage = async ev => {
           if (ev.data === 'popup-loaded') {
             var txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
-            bc.postMessage({
+            await bc.postMessage({
               data: {
                 origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
                 type: 'transaction',
@@ -303,9 +303,9 @@ var VuexStore = new Vuex.Store({
         }
       } else {
         var { msgParams, id } = getLatestMessageParams()
-        bc.onmessage = function(ev) {
+        bc.onmessage = async ev => {
           if (ev.data === 'popup-loaded') {
-            bc.postMessage({
+            await bc.postMessage({
               data: {
                 origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
                 type: 'message',
@@ -320,9 +320,9 @@ var VuexStore = new Vuex.Store({
     showProviderChangePopup(context, payload) {
       var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
       window.open(`${baseRoute}providerchange`, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600')
-      bc.onmessage = function(ev) {
+      bc.onmessage = async ev => {
         if (ev.data === 'popup-loaded') {
-          bc.postMessage({
+          await bc.postMessage({
             data: {
               origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
               payload: payload
@@ -339,10 +339,9 @@ var VuexStore = new Vuex.Store({
         '_blank',
         'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
       )
-      bc.onmessage = function(ev) {
+      bc.onmessage = async ev => {
         if (ev.data === 'popup-loaded') {
-          console.log('loaded popup')
-          bc.postMessage({
+          await bc.postMessage({
             data: {
               origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
               payload: payload
