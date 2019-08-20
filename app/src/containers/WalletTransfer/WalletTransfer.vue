@@ -59,7 +59,7 @@
               outlined
               required
               v-model="displayAmount"
-              @change="isSendAll = false"
+              :readonly="isSendAll"
               :rules="[rules.required, lesserThan, moreThanZero]"
             >
               <template v-slot:append>
