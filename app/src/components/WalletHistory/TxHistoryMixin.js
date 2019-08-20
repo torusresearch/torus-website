@@ -76,6 +76,8 @@ export default {
     getStatusText(status) {
       switch (status) {
         case 'rejected':
+        case 'denied':
+        case 'unapproved':
           return 'Unsuccessful'
         case 'confirmed':
           return 'Successful'
