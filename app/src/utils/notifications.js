@@ -1,4 +1,5 @@
 // request permission on page load
+const log = require('loglevel')
 
 function initNotifications() {
   document.addEventListener('DOMContentLoaded', function() {

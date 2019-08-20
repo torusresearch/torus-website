@@ -144,6 +144,7 @@
 import { lightBlue, ceruleanBlue, shuttleGrey } from '../../plugins/themes'
 import PrivateKeys from '../../components/WalletSettings/PrivateKeys'
 import DappPermissions from '../../components/WalletSettings/DappPermissions'
+import log from 'loglevel'
 
 const {
   ROPSTEN,
