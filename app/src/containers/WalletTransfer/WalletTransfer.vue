@@ -103,6 +103,7 @@
         </v-layout>
         <v-layout mt-4 pr-2 wrap>
           <v-spacer></v-spacer>
+          <v-btn large outlined class="grey--text px-6 mr-2" v-if="isSendAll" @click="resetForm" type="button">Reset</v-btn>
           <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" class="px-6" type="submit">Continue</v-btn>
         </v-layout>
 
@@ -321,6 +322,14 @@ export default {
       } else {
         this.displayAmount = currencyBalance - currencyGasPrice
       }
+    },
+    resetForm() {
+      const defaultTokenAddress = this.finalBalancesArray[0].tokenAddress
+
+      this.selectedItemChanged(defaultTokenAddress)
+      this.toAddress = ''
+      this.displayAmount = ''
+      this.isSendAll = false
     },
     async sendCoin() {
       if (this.$refs.form.validate()) {
