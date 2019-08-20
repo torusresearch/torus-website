@@ -168,7 +168,6 @@ export default {
       let selectedType = ''
       let selectedGasPrice = 0
 
-      console.log(this.averageGasPrice, this.fastestGasPrice, this.activeGasPriceConfirm)
       if (this.fastestGasPrice === this.activeGasPriceConfirm) {
         selectedType = 'fastest'
         selectedGasPrice = this.fastestGasPrice
