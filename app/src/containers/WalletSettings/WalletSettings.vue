@@ -244,10 +244,10 @@ export default {
       this.$vuetify.theme.dark = isDark
       if (isDark) {
         this.$vuetify.theme.themes.dark.background = selectedTheme.background
-        console.log(this.$vuetify.theme.themes.dark)
+        log.info(this.$vuetify.theme.themes.dark)
       } else {
         this.$vuetify.theme.themes.light.background = selectedTheme.background
-        console.log(this.$vuetify.theme.themes.light)
+        log.info(this.$vuetify.theme.themes.light)
       }
     }
   },

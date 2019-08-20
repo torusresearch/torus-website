@@ -30,9 +30,9 @@ module.exports = function() {
   return { mergeSteam: output, splitStream: split }
 
   function route(obj) {
-    console.log('ROUTING..', obj)
+    log.info('ROUTING..', obj)
     if (obj.id && routerMapping[obj.id]) {
-      console.log('FOUND STREAM:', obj)
+      log.info('FOUND STREAM:', obj)
       routerMapping[obj.id].write(obj)
       delete routerMapping[obj.id]
     }
@@ -45,7 +45,7 @@ module.exports = function() {
     }
     var mapperPassthrough = new PassThrough({ objectMode: true })
     mapperPassthrough.on('data', function(obj) {
-      console.log('MAPPER MAPPING OBJ', obj)
+      log.info('MAPPER MAPPING OBJ', obj)
       if (obj.id) {
         routerMapping[obj.id] = source
       }

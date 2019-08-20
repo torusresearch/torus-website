@@ -52,13 +52,13 @@ app.get('*', (req, res) => {
 // app.use(express.static('public'))
 
 https.createServer(certOptions, app).listen(APP_PORT)
-console.log('listening to port ' + APP_PORT)
+log.info('listening to port ' + APP_PORT)
 
 if (process.env.NODE_ENV === 'production') {
   var redirectApp = express()
   redirectApp.get('*', (req, res) => {
     res.redirect(301, 'https://app.tor.us')
   })
-  console.log('listening to port 80')
+  log.info('listening to port 80')
   http.createServer(redirectApp).listen(80)
 }

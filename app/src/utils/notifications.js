@@ -13,11 +13,11 @@ function notifyUser(url) {
   }
 
   if (Notification.permission !== 'granted') {
-    console.log('Notification permission not granted.')
+    log.info('Notification permission not granted.')
     Notification.requestPermission()
   } else {
-    //console.log(url)
-    console.log('notification permission granted.')
+    //log.info(url)
+    log.info('notification permission granted.')
     var notification = new Notification('Confirmed trasaction', {
       body: 'View of etherscan'
     })
