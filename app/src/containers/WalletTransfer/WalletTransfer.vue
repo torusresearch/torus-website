@@ -50,7 +50,7 @@
           <v-flex xs12 px-4 sm6>
             <div>
               <span class="subtitle-2">You send</span>
-              <a class="float-right primary--text subtitle-2" @click="sendAll">Send All</a>
+              <a class="float-right primary--text subtitle-2" v-if="!isSendAll" @click="sendAll">Send All</a>
             </div>
             <v-text-field
               :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
@@ -59,6 +59,7 @@
               outlined
               required
               v-model="displayAmount"
+              @change="isSendAll = false"
               :rules="[rules.required, lesserThan, moreThanZero]"
             >
               <template v-slot:append>
@@ -162,7 +163,8 @@ export default {
         required: value => !!value || 'Required'
       },
       showModalMessage: false,
-      modalMessageSuccess: null
+      modalMessageSuccess: null,
+      isSendAll: false
     }
   },
   computed: {
@@ -312,6 +314,8 @@ export default {
       const ethGasPrice = this.getEthAmount(this.gas, this.activeGasPrice)
       const currencyGasPrice = ethGasPrice * this.getCurrencyTokenRate
 
+      this.isSendAll = true
+
       if (this.toggle_exclusive === 0) {
         this.displayAmount = ethBalance - ethGasPrice
       } else {
@@ -430,6 +434,11 @@ export default {
       this.totalCost = ''
       this.convertedTotalCost = ''
 
+      // Updated you send value if send all
+      if (this.isSendAll) {
+        this.sendAll()
+      }
+
       const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
       const gasPriceInCurrency = gasPriceInEth * this.getCurrencyTokenRate
       const toSend = parseFloat(this.amount)
@@ -459,6 +468,7 @@ export default {
         this.activeGasPrice = this.speedSelected === '' ? '' : this.activeGasPrice
         this.calculateGas()
       }
+
       this.updateTotalCost()
     }
   },
