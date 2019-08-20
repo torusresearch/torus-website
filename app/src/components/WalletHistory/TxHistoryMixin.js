@@ -43,6 +43,7 @@ export default {
       return this.transactions
         .map(item => {
           item.actionIcon = this.getIcon(item.action)
+          item.statusText = this.getStatusText(item.status)
           item.dateFormatted = this.formatDate(item.date)
           item.timeFormatted = this.formatTime(item.date)
           return item
@@ -72,6 +73,19 @@ export default {
     }
   },
   methods: {
+    getStatusText(status) {
+      switch (status) {
+        case 'rejected':
+          return 'Unsuccessful'
+        case 'confirmed':
+          return 'Successful'
+        case 'pending':
+        case 'submitted':
+          return 'Pending'
+        default:
+          return ''
+      }
+    },
     getIcon(action) {
       if (action === 'Topup') {
         return '$vuetify.icons.coins_topup'

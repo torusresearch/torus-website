@@ -25,7 +25,7 @@
       <span>{{ item.dateFormatted }}</span>
     </template>
     <template v-slot:item.status="{ item }">
-      <span class="text-capitalize" :class="`text-${item.status.toLowerCase()}`">{{ item.status }}</span>
+      <span class="text-capitalize" :class="`text-${item.status.toLowerCase()}`">{{ item.statusText }}</span>
     </template>
     <template v-slot:expanded-item="{ headers, item }">
       <td :colspan="headers.length" class="pa-0 ma-0" style="height: inherit" v-show="item.etherscanLink !== ''">
