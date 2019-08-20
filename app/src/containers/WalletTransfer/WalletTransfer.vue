@@ -86,7 +86,13 @@
           </v-flex>
         </v-layout>
         <v-layout wrap>
-          <TransactionSpeedSelect :symbol="selectedItem.symbol" :gas="gas" :displayAmount="displayAmount" @onSelectSpeed="onSelectSpeed" />
+          <TransactionSpeedSelect
+            :resetSpeed="resetSpeed"
+            :symbol="selectedItem.symbol"
+            :gas="gas"
+            :displayAmount="displayAmount"
+            @onSelectSpeed="onSelectSpeed"
+          />
           <v-flex xs12 px-4 sm6>
             <div>
               <span class="subtitle-2">Total Cost</span>
@@ -159,6 +165,7 @@ export default {
       totalCost: '',
       timeTaken: '',
       convertedTotalCost: '',
+      resetSpeed: false,
       rules: {
         toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid ETH or Email Address',
         required: value => !!value || 'Required'
@@ -329,6 +336,7 @@ export default {
       this.selectedItemChanged(defaultTokenAddress)
       this.toAddress = ''
       this.displayAmount = ''
+      this.resetSpeed = true
       this.isSendAll = false
     },
     async sendCoin() {
@@ -479,6 +487,8 @@ export default {
       }
 
       this.updateTotalCost()
+
+      this.resetSpeed = false
     }
   },
   created() {

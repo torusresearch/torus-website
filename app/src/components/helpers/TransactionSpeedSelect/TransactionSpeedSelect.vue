@@ -88,7 +88,7 @@ export default {
   components: {
     TransferAdvanceOption
   },
-  props: ['gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol'],
+  props: ['gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol', 'resetSpeed'],
   data() {
     return {
       isAdvanceOption: false,
@@ -168,6 +168,7 @@ export default {
       let selectedType = ''
       let selectedGasPrice = 0
 
+      console.log(this.averageGasPrice, this.fastestGasPrice, this.activeGasPriceConfirm)
       if (this.fastestGasPrice === this.activeGasPriceConfirm) {
         selectedType = 'fastest'
         selectedGasPrice = this.fastestGasPrice
@@ -184,6 +185,13 @@ export default {
 
       if (this.activeGasPriceConfirm) {
         this.updateCosts()
+      }
+    }
+  },
+  watch: {
+    resetSpeed(value) {
+      if (value) {
+        this.selectSpeed('average', this.averageGasPriceSpeed)
       }
     }
   },
