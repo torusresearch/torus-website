@@ -73,11 +73,11 @@ export default {
   },
   methods: {
     getIcon(action) {
-      if (action === 'Top-up') {
+      if (action === 'Topup') {
         return '$vuetify.icons.arrow_up_circle'
-      } else if (action === 'Sending') {
+      } else if (action === 'Send') {
         return '$vuetify.icons.arrow_left_circle'
-      } else if (action === 'Received') {
+      } else if (action === 'Receive') {
         return '$vuetify.icons.arrow_right_circle'
       }
     },

@@ -12,7 +12,7 @@
     <template v-slot:item.action="{ item }">
       <span>
         <v-icon>{{ item.actionIcon }}</v-icon>
-        {{ item.action === 'Sending' && item.status === 'confirmed' ? 'Sent' : item.action }}
+        {{ item.action }}
       </span>
     </template>
     <template v-slot:item.from="{ item }">
@@ -89,13 +89,13 @@ export default {
           text: 'From',
           value: 'from',
           align: 'left',
-          width: '350px'
+          width: '300px'
         },
         {
           text: 'To',
           value: 'to',
           align: 'left',
-          width: '350px'
+          width: '300px'
         },
         {
           text: 'Amount',
