@@ -204,7 +204,7 @@ export default {
         slicedFrom: addressSlicer(x.from),
         to: x.to,
         slicedTo: addressSlicer(x.to),
-        action: this.wallets.indexOf(x.to) >= 0 ? 'Receive' : 'Topup',
+        action: this.wallets.indexOf(x.to) >= 0 ? 'Receive' : 'Send',
         totalAmount: x.total_amount,
         totalAmountString: totalAmountString,
         currencyAmount: x.currency_amount,

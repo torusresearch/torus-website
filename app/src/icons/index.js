@@ -13,6 +13,9 @@ import ArrowUpCircleIcon from './ArrowUpCircleIcon'
 import ArrowDownCircleIcon from './ArrowDownCircleIcon'
 import ArrowLeftCircleIcon from './ArrowLeftCircleIcon'
 import ArrowRightCircleIcon from './ArrowRightCircleIcon'
+import CoinsSendIcon from './CoinsSendIcon'
+import CoinsReceiveIcon from './CoinsReceiveIcon'
+import CoinsTopupIcon from './CoinsTopupIcon'
 
 export default {
   select: {
@@ -59,5 +62,14 @@ export default {
   },
   arrow_right_circle: {
     component: ArrowRightCircleIcon
+  },
+  coins_send: {
+    component: CoinsSendIcon
+  },
+  coins_receive: {
+    component: CoinsReceiveIcon
+  },
+  coins_topup: {
+    component: CoinsTopupIcon
   }
 }

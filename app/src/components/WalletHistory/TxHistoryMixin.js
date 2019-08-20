@@ -74,11 +74,11 @@ export default {
   methods: {
     getIcon(action) {
       if (action === 'Topup') {
-        return '$vuetify.icons.arrow_up_circle'
+        return '$vuetify.icons.coins_topup'
       } else if (action === 'Send') {
-        return '$vuetify.icons.arrow_left_circle'
+        return '$vuetify.icons.coins_send'
       } else if (action === 'Receive') {
-        return '$vuetify.icons.arrow_right_circle'
+        return '$vuetify.icons.coins_receive'
       }
     },
     formatDate(date) {
