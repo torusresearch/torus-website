@@ -10,7 +10,6 @@ import store from './store'
 
 log.enableAll()
 log.setDefaultLevel('info')
-log.info('NODE_ENV', process.env.NODE_ENV)
 Vue.config.productionTip = false
 
 // Loglevel init
@@ -35,6 +34,7 @@ switch (buildEnv) {
     log.disableAll()
     break
 }
+log.info('NODE_ENV', process.env.NODE_ENV)
 
 // Object.defineProperty(Vue.prototype, 'torus', { value: torus })
 // Object.defineProperty(Vue.prototype, 'Buffer', { value: Buffer })
