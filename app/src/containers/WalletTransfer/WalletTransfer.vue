@@ -136,7 +136,8 @@ import config from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import { get } from '../../utils/httpHelpers'
-import { parse } from 'path'
+import log from 'loglevel'
+
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
 
@@ -280,7 +281,7 @@ export default {
                 resolve(response)
               })
               .catch(err => {
-                console.log(err)
+                log.error(err)
                 resolve(MAX_GAS)
               })
           } else {
@@ -293,7 +294,7 @@ export default {
                 resolve(response)
               })
               .catch(err => {
-                console.log(err)
+                log.error(err)
                 resolve(MAX_GAS)
               })
           }
@@ -347,7 +348,7 @@ export default {
           try {
             toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[endPointNumber], this.toAddress)
           } catch (err) {
-            console.log(err)
+            log.error(err)
             let newEndPointNumber = endPointNumber
             while (newEndPointNumber === endPointNumber) {
               newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
@@ -358,7 +359,7 @@ export default {
         this.gas = await this.calculateGas(toAddress)
         const selectedAddress = this.$store.state.selectedAddress
         if (this.selectedTokenAddress === '0x') {
-          console.log('TX SENT: ', {
+          log.info('TX SENT: ', {
             from: selectedAddress,
             to: toAddress,
             value: torus.web3.utils.toWei(this.amount.toString()),
@@ -380,7 +381,7 @@ export default {
                   this.showModalMessage = true
                   this.modalMessageSuccess = false
                 }
-                console.log(err)
+                log.error(err)
               } else {
                 this.showModalMessage = true
                 this.modalMessageSuccess = true
@@ -402,7 +403,7 @@ export default {
                   this.showModalMessage = true
                   this.modalMessageSuccess = false
                 }
-                console.log(err)
+                log.error(err)
               } else {
                 this.showModalMessage = true
                 this.modalMessageSuccess = true
@@ -472,7 +473,7 @@ export default {
       this.convertedTotalCost = gasPriceInCurrency + toSendConverted
     },
     onSelectSpeed(data) {
-      console.log('SET DATA: ', data)
+      log.info('SET DATA: ', data)
       this.speedSelected = data.speedSelected
       this.activeGasPrice = data.activeGasPrice
       this.timeTaken = data.speed

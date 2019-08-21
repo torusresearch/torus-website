@@ -3,6 +3,7 @@ const ethUtil = require('ethereumjs-util')
 const sigUtil = require('eth-sig-util')
 const EthereumTx = require('ethereumjs-tx')
 const TorusKeyring = require('../../../src/controllers/TorusKeyring').default
+const log = require('loglevel')
 
 const TYPE_STR = 'Torus Keyring'
 
@@ -68,7 +69,7 @@ describe('torus-keyring', () => {
     it('has the correct addresses', async () => {
       const keyring = new TorusKeyring([testAccount.key])
       await keyring.addAccount(testAccount2.key)
-      console.log(await keyring.getAccounts())
+      log.info(await keyring.getAccounts())
       const accounts = await keyring.getAccounts()
       const expectedAccounts = [testAccount.address, testAccount2.address]
       assert.deepStrictEqual(accounts, expectedAccounts, 'accounts match expected')
@@ -234,10 +235,10 @@ describe('torus-keyring', () => {
   //     }
 
   //     await keyring.deserialize([privKeyHex])
-  //     console.log('working')
+  //     log.info('working')
   //     const sig = await keyring.signTypedData(address, typedData)
-  //     console.log('original sig ' + sig)
-  //     console.log('expected sig ' + expectedSignature)
+  //     log.info('original sig ' + sig)
+  //     log.info('expected sig ' + expectedSignature)
   //     assert.strictEqual(sig, expectedSignature, 'signature matches')
   //     const restored = sigUtil.recoverTypedSignature({ data: typedData, sig: sig })
   //     assert.strictEqual(restored, address, 'recovered address')

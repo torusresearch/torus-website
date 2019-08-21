@@ -5,6 +5,8 @@ const fs = require('fs')
 const path = require('path')
 const https = require('https')
 const http = require('http')
+const log = require('loglevel')
+
 // const UAParser = require('ua-parser-js')
 const APP_PORT = process.env.PORT || 3000
 var certOptions = {
@@ -52,13 +54,13 @@ app.get('*', (req, res) => {
 // app.use(express.static('public'))
 
 https.createServer(certOptions, app).listen(APP_PORT)
-console.log('listening to port ' + APP_PORT)
+log.info('listening to port ' + APP_PORT)
 
 if (process.env.NODE_ENV === 'production') {
   var redirectApp = express()
   redirectApp.get('*', (req, res) => {
     res.redirect(301, 'https://app.tor.us')
   })
-  console.log('listening to port 80')
+  log.info('listening to port 80')
   http.createServer(redirectApp).listen(80)
 }

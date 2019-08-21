@@ -1,5 +1,6 @@
 import config from '../config'
 import { post, get } from '../utils/httpHelpers'
+import log from 'loglevel'
 
 const postQuote = reqObj => {
   try {
@@ -12,7 +13,7 @@ const postQuote = reqObj => {
     }
     return post(`${config.simplexHost}/quote`, reqObj, options)
   } catch (e) {
-    console.error(e)
+    log.error(e)
   }
 }
 const postOrder = reqObj => {
@@ -26,7 +27,7 @@ const postOrder = reqObj => {
     }
     return post(`${config.simplexHost}/order`, reqObj, options)
   } catch (e) {
-    console.error(e)
+    log.error(e)
   }
 }
 
@@ -43,7 +44,7 @@ const getPastOrders = (reqObj, params = {}) => {
     Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
     return get(url, reqObj, options)
   } catch (e) {
-    console.error(e)
+    log.error(e)
   }
 }
 
@@ -51,7 +52,7 @@ const getStatus = userId => {
   try {
     return get(`${config.simplexHost}/status/${userId}`)
   } catch (e) {
-    console.error(e)
+    log.error(e)
   }
 }
 export { postQuote, postOrder, getStatus, getPastOrders }

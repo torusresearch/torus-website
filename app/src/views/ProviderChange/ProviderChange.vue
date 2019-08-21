@@ -53,6 +53,7 @@
 import BroadcastChannel from 'broadcast-channel'
 import PageLoader from '../../components/helpers/PageLoader'
 import { broadcastChannelOptions } from '../../utils/utils'
+import log from 'loglevel'
 
 export default {
   name: 'confirm',
@@ -97,7 +98,7 @@ export default {
       try {
         url = new URL(origin)
       } catch (err) {
-        console.log(err)
+        log.error(err)
       }
       this.origin = url.hostname // origin of tx: website url
       if (type && type === 'rpc') {

@@ -83,6 +83,7 @@
 <script>
 import { significantDigits } from '../../../utils/utils'
 import TransferAdvanceOption from '../TransferAdvanceOption'
+import log from 'loglevel'
 
 export default {
   components: {
@@ -233,7 +234,7 @@ export default {
         }
       )
       .catch(err => {
-        console.log(err)
+        log.error(err)
       })
   }
 }
