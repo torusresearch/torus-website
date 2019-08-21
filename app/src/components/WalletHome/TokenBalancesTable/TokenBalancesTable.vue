@@ -30,51 +30,39 @@
     </v-flex>
 
     <v-flex class="xs12 sm6 px-4 my-4" v-if="!isFreshAccount" style="order: 1">
-      <v-card color="dark card-shadow" white>
-        <v-card-text class="pt-1 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-4' : 'pb-5'">
-          <v-layout align-center>
-            <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
-              <div class="body-1 font-weight-bold">Check out the latest Dapp</div>
-              <div :class="$vuetify.breakpoint.lgAndUp ? 'body-2' : 'caption'">Visit Etheremon and start using ETH.</div>
-              <div>
-                <v-btn color="primary" depressed class="px-12 py-1 mt-4 white--text" href="https://www.etheremon.com" target="_blank">Play Now</v-btn>
-              </div>
-            </v-flex>
-            <v-flex pt-4 class="text-right hidden-xs-only" :class="$vuetify.breakpoint.lgAndUp ? 'xs4' : 'xs3'">
-              <img :src="require(`../../../../public/images/etheremon.png`)" style="width: 100%" />
-            </v-flex>
-          </v-layout>
-        </v-card-text>
-      </v-card>
+      <PromotionCard
+        title="Check out the latest Dapp"
+        subtitle="Visit Etheremon and start using ETH."
+        link-text="Play Now"
+        link-target="https://www.etheremon.com"
+        image-path="learn-more.svg"
+      >
+        <template v-slot:image>
+          <v-flex pt-4 class="text-right hidden-xs-only" :class="$vuetify.breakpoint.lgAndUp ? 'xs4' : 'xs3'">
+            <img :src="require(`../../../../public/images/etheremon.png`)" style="width: 100%" />
+          </v-flex>
+        </template>
+      </PromotionCard>
     </v-flex>
 
-    <v-flex class="xs12 sm6 px-4 my-4" v-if="isFreshAccount">
-      <v-card color="dark card-shadow" white>
-        <v-card-text class="pt-1 pb-4 px-6">
-          <v-layout>
-            <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : 'xs8'">
-              <span class="body-1 font-weight-bold">Welcome to Torus.</span>
-              <br />
-              <span class="body-2">Learn more about your wallet today.</span>
-              <v-dialog v-model="dialog" max-width="700">
-                <template v-slot:activator="{ on }">
-                  <v-btn color="primary" depressed class="px-12 py-1 mt-4" v-on="on">Learn more</v-btn>
-                </template>
-                <LearnMore @onClose="dialog = false" />
-              </v-dialog>
-            </v-flex>
-            <v-flex xs4 pt-4 class="text-right hidden-xs-only">
-              <img :src="require(`../../../../public/images/learn-more.svg`)" style="height: 100px" />
-            </v-flex>
-          </v-layout>
-        </v-card-text>
-      </v-card>
+    <v-flex class="xs12 sm6 px-4 my-4" v-if="isFreshAccount" style="order: 1">
+      <PromotionCard title="Welcome to Torusss." subtitle="Learn more about your wallet today." image-path="learn-more.svg">
+        <template v-slot:link>
+          <v-dialog v-model="dialog" max-width="700">
+            <template v-slot:activator="{ on }">
+              <v-btn color="primary" depressed class="px-12 py-1 mt-4" v-on="on">Learn more</v-btn>
+            </template>
+            <LearnMore @onClose="dialog = false" />
+          </v-dialog>
+        </template>
+      </PromotionCard>
     </v-flex>
   </v-layout>
 </template>
 
 <script>
 import LearnMore from '../LearnMore'
+import PromotionCard from '../PromotionCard'
 
 export default {
   props: ['tokenBalances', 'selected', 'isFreshAccount'],
@@ -87,7 +75,8 @@ export default {
     }
   },
   components: {
-    LearnMore
+    LearnMore,
+    PromotionCard
   },
   computed: {
     showFooter() {
