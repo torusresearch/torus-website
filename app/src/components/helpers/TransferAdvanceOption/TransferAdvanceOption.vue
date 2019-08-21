@@ -16,14 +16,9 @@
                 <v-flex xs12 sm6 px-4>
                   <span class="subtitle-2">
                     Gas Price (GWEI)
-                    <v-tooltip top>
-                      <template v-slot:activator="{ on }">
-                        <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
-                      </template>
-                      <span>
-                        <div class="primary--text subtitle-2">Gas Price</div>
-                        <v-divider class="my-2"></v-divider>
-                        <div class="body-2">
+                    <HelpTooltip title="Gas Price">
+                      <template v-slot:description>
+                        <div class="body-2 text-justify">
                           <span class="font-weight-medium">Gas</span>
                           is needed to power blockchain transactions.
                           <span class="font-weight-medium">Gas Price</span>
@@ -35,27 +30,19 @@
                           ETH
                           <small>(very small USD value)</small>
                         </div>
-                      </span>
-                    </v-tooltip>
+                      </template>
+                    </HelpTooltip>
                   </span>
                   <v-text-field placeholder="Enter Value" outlined v-model="advancedActiveGasPrice" required type="number"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
                   <span class="subtitle-2">
                     Gas Limit
-                    <v-tooltip top>
-                      <template v-slot:activator="{ on }">
-                        <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
-                      </template>
-                      <span>
-                        <div class="primary--text subtitle-2">Gas Limit</div>
-                        <v-divider class="my-2"></v-divider>
-                        <div class="body-2">
-                          This is the maximum amount of gas you're willing to spend on a transaction. A standard ETH transfer requires a gas limit of
-                          21,000 units of gas.
-                        </div>
-                      </span>
-                    </v-tooltip>
+                    <HelpTooltip
+                      title="Gas Limit"
+                      description="This is the maximum amount of gas you're willing to spend on a transaction.
+                      A standard ETH transfer requires a gas limit of 21,000 units of gas."
+                    ></HelpTooltip>
                   </span>
                   <v-text-field readonly outlined :value="advancedGas" required type="number"></v-text-field>
                 </v-flex>
@@ -123,8 +110,12 @@
 
 <script>
 import { significantDigits } from '../../../utils/utils'
+import HelpTooltip from '../HelpTooltip'
 
 export default {
+  components: {
+    HelpTooltip
+  },
   props: ['activeGasPrice', 'gas', 'displayAmount', 'symbol'],
   data() {
     return {

@@ -1,5 +1,3 @@
-@import '../../scss/_card-tooltip.mixin';
-
 .wallet-topup-view {
   .help-icon {
     height: 13px;
@@ -53,7 +51,4 @@
       border-style: dashed;
     }
   }
-}
-.v-tooltip__content {
-  @include cardTooltip();
 }
