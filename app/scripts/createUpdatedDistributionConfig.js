@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const log = require('loglevel')
 try {
   const cfConfig = JSON.parse(fs.readFileSync(path.resolve('./cf_config.json'), 'utf8'))
   if (Object.prototype.hasOwnProperty.call(cfConfig, 'DistributionConfig')) {
@@ -13,5 +14,5 @@ try {
     fs.writeFileSync(path.resolve('./updated_cf_config.json'), JSON.stringify(newConfig, null, 2), 'utf8')
   }
 } catch (error) {
-  console.log(error)
+  log.error(error)
 }

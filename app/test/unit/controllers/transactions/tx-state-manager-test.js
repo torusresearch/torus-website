@@ -1,6 +1,7 @@
 const assert = require('assert')
 const TxStateManager = require('../../../../src/controllers/TransactionStateManager').default
 const txStateHistoryHelper = require('../../../../src/utils/tx-state-history-helper').default
+const log = require('loglevel')
 const noop = () => true
 
 describe('TransactionStateManager', function() {
@@ -56,7 +57,7 @@ describe('TransactionStateManager', function() {
       txStateManager.addTx(tx)
       const noop = function(err, txId) {
         if (err) {
-          console.log('Error: ', err)
+          log.error('Error: ', err)
         }
         assert(true, 'event listener has been triggered and noop executed')
         done()

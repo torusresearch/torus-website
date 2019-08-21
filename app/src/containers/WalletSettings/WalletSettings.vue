@@ -144,6 +144,7 @@
 import { lightBlue, ceruleanBlue, shuttleGrey } from '../../plugins/themes'
 import PrivateKeys from '../../components/WalletSettings/PrivateKeys'
 import DappPermissions from '../../components/WalletSettings/DappPermissions'
+import log from 'loglevel'
 
 const {
   ROPSTEN,
@@ -244,10 +245,10 @@ export default {
       this.$vuetify.theme.dark = isDark
       if (isDark) {
         this.$vuetify.theme.themes.dark.background = selectedTheme.background
-        console.log(this.$vuetify.theme.themes.dark)
+        log.info(this.$vuetify.theme.themes.dark)
       } else {
         this.$vuetify.theme.themes.light.background = selectedTheme.background
-        console.log(this.$vuetify.theme.themes.light)
+        log.info(this.$vuetify.theme.themes.light)
       }
     }
   },

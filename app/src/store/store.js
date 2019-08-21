@@ -224,7 +224,7 @@ var VuexStore = new Vuex.Store({
       commit('setCurrency', payload.selectedCurrency)
       if (payload.selectedCurrency !== 'ETH') {
         torus.torusController.setCurrentCurrency(payload.selectedCurrency.toLowerCase(), function(err, data) {
-          if (err) console.error('currency fetch failed')
+          if (err) log.error('currency fetch failed')
           commit('setCurrencyData', data)
         })
       }
@@ -465,7 +465,7 @@ var VuexStore = new Vuex.Store({
             let profile = googleUser.getBasicProfile()
             let domain = googleUser.getHostedDomain()
             log.info('Domain: ', domain)
-            // console.log(googleUser)
+            // log.info(googleUser)
             log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
             log.info('Name: ' + profile.getName())
             log.info('Image URL: ' + profile.getImageUrl())
@@ -512,7 +512,7 @@ var VuexStore = new Vuex.Store({
               updatedTransactions.push(transactions[id])
             }
           }
-          // console.log(updatedTransactions, 'txs')
+          // log.info(updatedTransactions, 'txs')
           dispatch('updateTransactions', { transactions: updatedTransactions })
         }
       })

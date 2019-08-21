@@ -1,6 +1,7 @@
 var browserify = require('browserify')
 var fs = require('fs')
 var envify = require('envify/custom')
+var log = require('loglevel')
 
 try {
   var bundler = browserify(require.resolve('@toruslabs/torus-embed/public/index.js'), {
@@ -18,5 +19,5 @@ try {
 
   bundler.bundle().pipe(fs.createWriteStream(__dirname + '/../public/embed.min.js'))
 } catch (e) {
-  console.log(e)
+  log.error(e)
 }
