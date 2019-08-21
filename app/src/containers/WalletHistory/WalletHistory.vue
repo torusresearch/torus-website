@@ -73,7 +73,7 @@ export default {
         { text: 'Status', value: 'status', align: 'center' }
       ],
       pastOrders: [],
-      actionTypes: ['All Transactions', 'Top-up', 'Sending', 'Received'],
+      actionTypes: ['All Transactions', 'Topup', 'Send', 'Receive'],
       selectedAction: 'All Transactions',
       periods: ['Period', 'Last Week', 'Last Month'],
       selectedPeriod: 'Period',
@@ -111,7 +111,7 @@ export default {
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
           const txObj = {}
           txObj.id = txOld.time
-          txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? 'Received' : 'Sending'
+          txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? 'Receive' : 'Send'
           txObj.date = new Date(txOld.time)
           txObj.from = web3Utils.toChecksumAddress(txOld.txParams.from)
           txObj.slicedFrom = addressSlicer(txOld.txParams.from)
@@ -138,6 +138,7 @@ export default {
         if (acc.findIndex(y => y.etherscanLink === x.etherscanLink) === -1) acc.push(x)
         return acc
       }, [])
+      log.info('this.pastTx', finalTx)
       return finalTx.sort((a, b) => b.date - a.date)
     }
   },
@@ -154,7 +155,7 @@ export default {
               date: new Date(x.createdAt),
               from: 'Simplex',
               slicedFrom: 'Simplex',
-              action: 'Top-up',
+              action: 'Topup',
               to: publicAddress,
               slicedTo: addressSlicer(publicAddress),
               totalAmount: x.requested_digital_amount.amount,
@@ -204,7 +205,7 @@ export default {
         slicedFrom: addressSlicer(x.from),
         to: x.to,
         slicedTo: addressSlicer(x.to),
-        action: this.wallets.indexOf(x.to) >= 0 ? 'Received' : 'Sending',
+        action: this.wallets.indexOf(x.to) >= 0 ? 'Receive' : 'Send',
         totalAmount: x.total_amount,
         totalAmountString: totalAmountString,
         currencyAmount: x.currency_amount,
