@@ -50,6 +50,8 @@
           <v-flex xs12 px-4 sm6>
             <div>
               <span class="subtitle-2">You send</span>
+              <a class="float-right primary--text subtitle-2" v-if="!isSendAll" @click="sendAll">Send All</a>
+              <a class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">Reset</a>
             </div>
             <v-text-field
               :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
@@ -58,6 +60,7 @@
               outlined
               required
               v-model="displayAmount"
+              :readonly="isSendAll"
               :rules="[rules.required, lesserThan, moreThanZero]"
             >
               <template v-slot:append>
@@ -84,7 +87,13 @@
           </v-flex>
         </v-layout>
         <v-layout wrap>
-          <TransactionSpeedSelect :symbol="selectedItem.symbol" :gas="gas" :displayAmount="displayAmount" @onSelectSpeed="onSelectSpeed" />
+          <TransactionSpeedSelect
+            :resetSpeed="resetSpeed"
+            :symbol="selectedItem.symbol"
+            :gas="gas"
+            :displayAmount="displayAmount"
+            @onSelectSpeed="onSelectSpeed"
+          />
           <v-flex xs12 px-4 sm6>
             <div>
               <span class="subtitle-2">Total Cost</span>
@@ -157,12 +166,14 @@ export default {
       totalCost: '',
       timeTaken: '',
       convertedTotalCost: '',
+      resetSpeed: false,
       rules: {
         toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid ETH or Email Address',
         required: value => !!value || 'Required'
       },
       showModalMessage: false,
-      modalMessageSuccess: null
+      modalMessageSuccess: null,
+      isSendAll: false
     }
   },
   computed: {
@@ -306,6 +317,26 @@ export default {
         this.displayAmount = this.displayAmount * currencyRate
       }
     },
+    sendAll() {
+      const ethBalance = this.selectedItem.computedBalance
+      const currencyBalance = ethBalance * this.getCurrencyTokenRate
+      const ethGasPrice = this.getEthAmount(this.gas, this.activeGasPrice)
+      const currencyGasPrice = ethGasPrice * this.getCurrencyTokenRate
+
+      this.isSendAll = true
+
+      if (this.toggle_exclusive === 0) {
+        this.displayAmount = ethBalance - ethGasPrice
+      } else {
+        this.displayAmount = currencyBalance - currencyGasPrice
+      }
+    },
+    resetSendAll() {
+      this.displayAmount = ''
+      this.resetSpeed = true
+      this.isSendAll = false
+      this.changeSelectedToCurrency(0)
+    },
     async sendCoin() {
       if (this.$refs.form.validate()) {
         const fastGasPrice = torus.web3.utils.toBN((this.activeGasPrice * 10 ** 9).toString())
@@ -418,8 +449,13 @@ export default {
       this.totalCost = ''
       this.convertedTotalCost = ''
 
-      const gasPriceInCurrency = this.getGasAmount(this.activeGasPrice)
-      const gasPriceInEth = gasPriceInCurrency / this.getCurrencyMultiplier
+      // Updated you send value if send all
+      if (this.isSendAll) {
+        this.sendAll()
+      }
+
+      const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
+      const gasPriceInCurrency = gasPriceInEth * this.getCurrencyTokenRate
       const toSend = parseFloat(this.amount)
       const toSendConverted = toSend * this.getCurrencyTokenRate
 
@@ -447,7 +483,10 @@ export default {
         this.activeGasPrice = this.speedSelected === '' ? '' : this.activeGasPrice
         this.calculateGas()
       }
+
       this.updateTotalCost()
+
+      this.resetSpeed = false
     }
   },
   created() {

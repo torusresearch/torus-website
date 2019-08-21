@@ -89,7 +89,7 @@ export default {
   components: {
     TransferAdvanceOption
   },
-  props: ['gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol'],
+  props: ['gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol', 'resetSpeed'],
   data() {
     return {
       isAdvanceOption: false,
@@ -185,6 +185,14 @@ export default {
 
       if (this.activeGasPriceConfirm) {
         this.updateCosts()
+      }
+    }
+  },
+  watch: {
+    resetSpeed(value) {
+      if (value) {
+        this.speedSelected = 'average'
+        this.resetAdvanceOption()
       }
     }
   },
