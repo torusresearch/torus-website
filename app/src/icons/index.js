@@ -16,6 +16,8 @@ import ArrowRightCircleIcon from './ArrowRightCircleIcon'
 import CoinsSendIcon from './CoinsSendIcon'
 import CoinsReceiveIcon from './CoinsReceiveIcon'
 import CoinsTopupIcon from './CoinsTopupIcon'
+import ChevronLeftIcon from './ChevronLeftIcon'
+import ChevronRightIcon from './ChevronRightIcon'
 
 export default {
   select: {
@@ -71,5 +73,11 @@ export default {
   },
   coins_topup: {
     component: CoinsTopupIcon
+  },
+  page_prev: {
+    component: ChevronLeftIcon
+  },
+  page_next: {
+    component: ChevronRightIcon
   }
 }
