@@ -1,6 +1,7 @@
 const assert = require('assert')
 const TxStateManager = require('../../../../src/controllers/TransactionStateManager').default
 const txStateHistoryHelper = require('../../../../src/utils/tx-state-history-helper').default
+const log = require('loglevel')
 const noop = () => true
 
 describe('TransactionStateManager', function() {

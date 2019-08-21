@@ -3,6 +3,7 @@ const ethUtil = require('ethereumjs-util')
 const sigUtil = require('eth-sig-util')
 const EthereumTx = require('ethereumjs-tx')
 const TorusKeyring = require('../../../src/controllers/TorusKeyring').default
+const log = require('loglevel')
 
 const TYPE_STR = 'Torus Keyring'
 
