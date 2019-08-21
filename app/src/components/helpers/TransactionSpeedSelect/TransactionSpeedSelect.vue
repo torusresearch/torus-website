@@ -190,7 +190,8 @@ export default {
   watch: {
     resetSpeed(value) {
       if (value) {
-        this.selectSpeed('average', this.averageGasPriceSpeed)
+        this.speedSelected = 'average'
+        this.resetAdvanceOption()
       }
     }
   },
