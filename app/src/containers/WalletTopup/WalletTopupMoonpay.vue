@@ -63,7 +63,7 @@ export default {
       this.redirectURL
 
     this.loaded = true
-    // console.log('this is', this)
+    // log.info('this is', this)
   }
 }
 </script>

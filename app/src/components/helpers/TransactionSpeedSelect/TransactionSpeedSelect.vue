@@ -83,12 +83,13 @@
 <script>
 import { significantDigits } from '../../../utils/utils'
 import TransferAdvanceOption from '../TransferAdvanceOption'
+import log from 'loglevel'
 
 export default {
   components: {
     TransferAdvanceOption
   },
-  props: ['gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol'],
+  props: ['gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol', 'resetSpeed'],
   data() {
     return {
       isAdvanceOption: false,
@@ -187,6 +188,14 @@ export default {
       }
     }
   },
+  watch: {
+    resetSpeed(value) {
+      if (value) {
+        this.speedSelected = 'average'
+        this.resetAdvanceOption()
+      }
+    }
+  },
   created() {
     fetch('https://ethgasstation.info/json/ethgasAPI.json', {
       headers: {},
@@ -225,7 +234,7 @@ export default {
         }
       )
       .catch(err => {
-        console.log(err)
+        log.error(err)
       })
   }
 }

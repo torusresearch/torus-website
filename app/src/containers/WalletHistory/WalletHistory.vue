@@ -172,7 +172,7 @@ export default {
           // }
         }, [])
       })
-      .catch(err => console.log(err))
+      .catch(err => log.error(err))
     pastTransactions.forEach(async x => {
       if (x.network !== networkType) return
       let status = x.status
