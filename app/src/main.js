@@ -14,7 +14,7 @@ Vue.config.productionTip = false
 
 // Loglevel init
 const buildEnv = process.env.TORUS_BUILD_ENV
-let loglevel
+let logLevel
 switch (buildEnv) {
   case 'staging':
     logLevel = 'info'
@@ -25,7 +25,7 @@ switch (buildEnv) {
     log.setDefaultLevel(logLevel)
     break
   case 'development':
-    let logLevel = 'debug'
+    logLevel = 'debug'
     log.setDefaultLevel(logLevel)
     break
   default:

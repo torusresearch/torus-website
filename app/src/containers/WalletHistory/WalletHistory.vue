@@ -138,7 +138,7 @@ export default {
         if (acc.findIndex(y => y.etherscanLink === x.etherscanLink) === -1) acc.push(x)
         return acc
       }, [])
-      console.log('this.pastTx', finalTx)
+      log.info('this.pastTx', finalTx)
       return finalTx.sort((a, b) => b.date - a.date)
     }
   },
