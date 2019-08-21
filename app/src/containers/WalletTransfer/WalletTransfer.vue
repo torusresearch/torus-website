@@ -51,6 +51,7 @@
             <div>
               <span class="subtitle-2">You send</span>
               <a class="float-right primary--text subtitle-2" v-if="!isSendAll" @click="sendAll">Send All</a>
+              <a class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">Reset</a>
             </div>
             <v-text-field
               :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
@@ -109,7 +110,6 @@
         </v-layout>
         <v-layout mt-4 pr-2 wrap>
           <v-spacer></v-spacer>
-          <v-btn large outlined class="grey--text px-6 mr-2" v-if="isSendAll" @click="resetForm" type="button">Reset</v-btn>
           <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" class="px-6" type="submit">Continue</v-btn>
         </v-layout>
 
@@ -330,14 +330,11 @@ export default {
         this.displayAmount = currencyBalance - currencyGasPrice
       }
     },
-    resetForm() {
-      const defaultTokenAddress = this.finalBalancesArray[0].tokenAddress
-
-      this.selectedItemChanged(defaultTokenAddress)
-      this.toAddress = ''
+    resetSendAll() {
       this.displayAmount = ''
       this.resetSpeed = true
       this.isSendAll = false
+      this.changeSelectedToCurrency(0)
     },
     async sendCoin() {
       if (this.$refs.form.validate()) {
