@@ -1,9 +1,9 @@
 <template>
   <v-dialog v-model="dialog" persistent>
     <template v-slot:activator="{ on }">
-      <span class="float-right primary--text advance-option subtitle-2" v-show="displayAmount" v-on="on">Advanced Options</span>
+      <a class="float-right primary--text advance-option subtitle-2" v-show="displayAmount" v-on="on">Advanced Options</a>
     </template>
-    <v-card class="advance-option">
+    <v-card class="advance-option py-4">
       <v-container>
         <v-form ref="advanceOptionForm" :value="advanceOptionFormValid" @submit.prevent="saveOptions" lazy-validation>
           <v-layout wrap>
@@ -113,7 +113,7 @@
           <v-layout mt-4 pr-4>
             <v-spacer></v-spacer>
             <v-btn large text @click="onCancel">Cancel</v-btn>
-            <v-btn large color="primary" class="ml-4" type="submit" :disabled="!advanceOptionFormValid">Save</v-btn>
+            <v-btn large depressed color="primary" class="ml-4" type="submit" :disabled="!advanceOptionFormValid">Save</v-btn>
           </v-layout>
         </v-form>
       </v-container>
