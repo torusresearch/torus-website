@@ -1,19 +1,13 @@
+import BroadcastChannel from 'broadcast-channel'
 import log from 'loglevel'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
 import config from '../config'
 import torus from '../torus'
-import { RPC } from '../utils/enums'
-import { getRandomNumber, getEtherScanHashLink, broadcastChannelOptions } from '../utils/utils'
-import { post, get, patch } from '../utils/httpHelpers.js'
-import jwtDecode from 'jwt-decode'
+import { getEtherScanHashLink, broadcastChannelOptions } from '../utils/utils'
+import { post } from '../utils/httpHelpers.js'
 import { notifyUser } from '../utils/notifications'
-
-import initialState from './state'
-import getters from './getters'
-import mutations from './mutations'
-import actions from './actions'
 
 const web3Utils = torus.web3.utils
 
@@ -23,14 +17,8 @@ function getCurrencyMultiplier() {
   if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
   return currencyMultiplier
 }
-const accountImporter = require('../utils/accountImporter')
 
 const baseRoute = process.env.BASE_URL
-
-let totalFailCount = 0
-
-// stream to send logged in status
-const statusStream = torus.communicationMux.getStream('status')
 
 Vue.use(Vuex)
 

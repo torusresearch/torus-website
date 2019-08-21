@@ -3,7 +3,9 @@ import log from 'loglevel'
 import config from '../config'
 import torus from '../torus'
 import { RPC } from '../utils/enums'
-import { getRandomNumber, getEtherScanHashLink, broadcastChannelOptions } from '../utils/utils'
+import { getRandomNumber, broadcastChannelOptions } from '../utils/utils'
+import { post, get, patch } from '../utils/httpHelpers.js'
+import jwtDecode from 'jwt-decode'
 
 const accountImporter = require('../utils/accountImporter')
 
