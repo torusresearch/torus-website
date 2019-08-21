@@ -13,7 +13,7 @@ log.setDefaultLevel('info')
 Vue.config.productionTip = false
 
 // Loglevel init
-const buildEnv = process.env.NODE_ENV
+const buildEnv = process.env.TORUS_BUILD_ENV
 let loglevel
 switch (buildEnv) {
   case 'staging':
@@ -34,7 +34,7 @@ switch (buildEnv) {
     log.disableAll()
     break
 }
-log.info('NODE_ENV', process.env.NODE_ENV)
+log.info('TORUS_BUILD_ENV', process.env.TORUS_BUILD_ENV)
 
 // Object.defineProperty(Vue.prototype, 'torus', { value: torus })
 // Object.defineProperty(Vue.prototype, 'Buffer', { value: Buffer })
