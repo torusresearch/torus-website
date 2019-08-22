@@ -1,71 +1,84 @@
 <template>
-  <v-data-table
-    class="activity-table"
-    :headers="headers"
-    :items="filteredTransactions"
-    :expanded.sync="expanded"
-    item-key="id"
-    single-expand
-    @click:row="rowClicked"
-    hide-default-footer
-  >
-    <template v-slot:item.action="{ item }">
-      <span>
-        <v-icon>{{ item.actionIcon }}</v-icon>
-        {{ item.action === 'Sending' && item.status === 'confirmed' ? 'Sent' : item.action }}
-      </span>
-    </template>
-    <template v-slot:item.from="{ item }">
-      <span style="word-break: break-all">{{ item.from }}</span>
-    </template>
-    <template v-slot:item.to="{ item }">
-      <span style="word-break: break-all">{{ item.to }}</span>
-    </template>
-    <template v-slot:item.date="{ item }">
-      <span>{{ item.dateFormatted }}</span>
-    </template>
-    <template v-slot:item.status="{ item }">
-      <span class="text-capitalize" :class="`text-${item.status.toLowerCase()}`">{{ item.status }}</span>
-    </template>
-    <template v-slot:expanded-item="{ headers, item }">
-      <td :colspan="headers.length" class="pa-0 ma-0" style="height: inherit" v-show="item.etherscanLink !== ''">
-        <v-flex xs12 white class="card-shadow dark pa-4">
-          <v-layout wrap>
-            <v-flex xs4 sm1 pr-2>
-              Rate
-              <span class="float-right">:</span>
-            </v-flex>
-            <v-flex xs8 sm11>1 ETH = {{ item.ethRate }} {{ item.currencyUsed }} @ {{ item.timeFormatted }}</v-flex>
-            <v-flex xs4 sm1 pr-2>
-              Network
-              <span class="float-right">:</span>
-            </v-flex>
-            <v-flex xs8 sm11>{{ mapper[item.networkType] || '' }}</v-flex>
-            <!-- <v-flex xs4 sm1 pr-2>
-              Type
-              <span class="float-right">:</span>
-            </v-flex>
-            <v-flex xs8 sm11>Contract Interaction</v-flex> -->
-            <!-- <v-flex xs4 sm1 pr-2>
-              Data
-              <span class="float-right">:</span>
-            </v-flex>
-            <v-flex xs8 sm11>
-              <v-card flat class="grey lighten-3">
-                <v-card-text></v-card-text>
-              </v-card>
-            </v-flex> -->
-            <v-flex xs12 class="text-right">
-              <a class="v-btn" color="primary" :href="item.etherscanLink" target="_blank">View On Etherscan</a>
-            </v-flex>
-          </v-layout>
-        </v-flex>
-      </td>
-    </template>
-    <template v-slot:no-data>
-      <v-flex xs12 class="text-center">No Transaction Activity!</v-flex>
-    </template>
-  </v-data-table>
+  <div class="activity-table">
+    <v-data-table
+      :headers="headers"
+      :items="filteredTransactions"
+      :expanded.sync="expanded"
+      item-key="id"
+      single-expand
+      @click:row="rowClicked"
+      hide-default-footer
+      :page.sync="page"
+      :items-per-page="itemsPerPage"
+      @page-count="pageCount = $event"
+    >
+      <template v-slot:item.action="{ item }">
+        <span>
+          <v-icon>{{ item.actionIcon }}</v-icon>
+          {{ item.action }}
+        </span>
+      </template>
+      <template v-slot:item.from="{ item }">
+        <span style="word-break: break-all">{{ item.from }}</span>
+      </template>
+      <template v-slot:item.to="{ item }">
+        <span style="word-break: break-all">{{ item.to }}</span>
+      </template>
+      <template v-slot:item.date="{ item }">
+        <span>{{ item.dateFormatted }}</span>
+      </template>
+      <template v-slot:item.status="{ item }">
+        <span class="text-capitalize" :class="`text-${item.status.toLowerCase()}`">{{ item.statusText }}</span>
+      </template>
+      <template v-slot:expanded-item="{ headers, item }">
+        <td :colspan="headers.length" class="pa-0 ma-0" style="height: inherit" v-show="item.etherscanLink !== ''">
+          <v-flex xs12 white class="card-shadow dark pa-4">
+            <v-layout wrap>
+              <v-flex xs4 sm1 pr-2>
+                Rate
+                <span class="float-right">:</span>
+              </v-flex>
+              <v-flex xs8 sm11>1 ETH = {{ item.ethRate }} {{ item.currencyUsed }} @ {{ item.timeFormatted }}</v-flex>
+              <v-flex xs4 sm1 pr-2>
+                Network
+                <span class="float-right">:</span>
+              </v-flex>
+              <v-flex xs8 sm11>{{ mapper[item.networkType] || '' }}</v-flex>
+              <!-- <v-flex xs4 sm1 pr-2>
+                Type
+                <span class="float-right">:</span>
+              </v-flex>
+              <v-flex xs8 sm11>Contract Interaction</v-flex> -->
+              <!-- <v-flex xs4 sm1 pr-2>
+                Data
+                <span class="float-right">:</span>
+              </v-flex>
+              <v-flex xs8 sm11>
+                <v-card flat class="grey lighten-3">
+                  <v-card-text></v-card-text>
+                </v-card>
+              </v-flex> -->
+              <v-flex xs12 class="text-right">
+                <a class="v-btn" color="primary" :href="item.etherscanLink" target="_blank">View On Etherscan</a>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+        </td>
+      </template>
+      <template v-slot:no-data>
+        <v-flex xs12 class="text-center">No Transaction Activity!</v-flex>
+      </template>
+    </v-data-table>
+    <div class="text-center pt-6" v-if="pageCount > 1">
+      <v-pagination
+        class="activity-pagination"
+        prev-icon="$vuetify.icons.page_prev"
+        next-icon="$vuetify.icons.page_next"
+        v-model="page"
+        :length="pageCount"
+      ></v-pagination>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -75,6 +88,9 @@ export default {
   mixins: [TxHistoryMixin],
   data() {
     return {
+      page: 1,
+      pageCount: 0,
+      itemsPerPage: 8,
       expanded: [],
       pagination: {},
       defaultSort: 'date',
@@ -89,13 +105,13 @@ export default {
           text: 'From',
           value: 'from',
           align: 'left',
-          width: '350px'
+          width: '300px'
         },
         {
           text: 'To',
           value: 'to',
           align: 'left',
-          width: '350px'
+          width: '300px'
         },
         {
           text: 'Amount',

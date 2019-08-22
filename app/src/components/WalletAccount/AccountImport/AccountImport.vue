@@ -283,6 +283,7 @@
 <script>
 const WalletWorker = require('worker-loader!../../../utils/wallet.worker.js')
 const ethUtil = require('ethereumjs-util')
+const log = require('loglevel')
 export default {
   data() {
     return {
@@ -368,7 +369,7 @@ export default {
     setErrorState(err) {
       this.error = err
       this.snackbar = true
-      console.log(err)
+      log.error(err)
       this.isLoadingKeystore = false
       this.isLoadingPrivate = false
     },

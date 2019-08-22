@@ -8,15 +8,36 @@ import router from './router'
 import store from './store'
 // import torus from './torus'
 
+log.enableAll()
 log.setDefaultLevel('info')
-log.info('NODE_ENV', process.env.NODE_ENV)
-
 Vue.config.productionTip = false
+
+// Loglevel init
+const buildEnv = process.env.TORUS_BUILD_ENV
+let logLevel
+switch (buildEnv) {
+  case 'staging':
+    logLevel = 'info'
+    log.setDefaultLevel(logLevel)
+    break
+  case 'testing':
+    logLevel = 'debug'
+    log.setDefaultLevel(logLevel)
+    break
+  case 'development':
+    logLevel = 'debug'
+    log.setDefaultLevel(logLevel)
+    break
+  default:
+    logLevel = 'error'
+    log.setDefaultLevel(logLevel)
+    log.disableAll()
+    break
+}
+log.info('TORUS_BUILD_ENV', process.env.TORUS_BUILD_ENV)
 
 // Object.defineProperty(Vue.prototype, 'torus', { value: torus })
 // Object.defineProperty(Vue.prototype, 'Buffer', { value: Buffer })
-
-// var vue =
 new Vue({
   router,
   store,

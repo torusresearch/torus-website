@@ -4,7 +4,7 @@ const pump = require('pump')
 function setupMultiplex(connectionStream) {
   const mux = new ObjectMultiplex()
   pump(connectionStream, mux, connectionStream, err => {
-    if (err) console.error(err)
+    if (err) log.error(err)
   })
   // bind helper method to get previously created streams
   mux.getStream = function(name) {

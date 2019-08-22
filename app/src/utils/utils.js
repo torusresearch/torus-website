@@ -201,7 +201,7 @@ function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', thousands
             .slice(2)
         : '')}`
   } catch (e) {
-    console.log(e)
+    log.error(e)
   }
   return null
 }

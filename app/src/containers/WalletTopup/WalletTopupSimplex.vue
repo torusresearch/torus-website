@@ -154,7 +154,7 @@ export default {
           this.currencyRate = result.result.digital_money.amount / result.result.fiat_money.total_amount
           this.currentOrder = result.result
         })
-        .catch(err => console.log(err))
+        .catch(err => log.error(err))
     }, 0),
     post(path, params, method = 'post') {
       const form = document.createElement('form')
