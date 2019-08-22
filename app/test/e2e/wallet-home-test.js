@@ -8,8 +8,7 @@ const click = require('./lib/helpers').click
 const typeText = require('./lib/helpers').typeText
 const waitForText = require('./lib/helpers').waitForText
 const shouldExist = require('./lib/helpers').shouldExist
-const shouldTextNotBeEmpty = require('./lib/helpers').shouldTextNotBeEmpty
-const shouldValueNotBeEmpty = require('./lib/helpers').shouldValueNotBeEmpty
+const selectItem = require('./lib/helpers').selectItem
 
 describe('Tests Wallet Home', () => {
   let browser
@@ -98,5 +97,16 @@ describe('Tests Wallet Home', () => {
     if (isFreshAccount) {
       await shouldExist(page, '.outline-tooltip')
     }
+  })
+
+  it('Should update currency', async () => {
+    let currency = 'AUD'
+    await selectItem(page, '#currency-selector', currency)
+    await waitForText(page, '#selected-currency', currency)
+
+    currency = 'USD'
+    await selectItem(page, '#currency-selector', currency)
+    await waitForText(page, '#selected-currency', currency)
+    await page.waitFor(4000)
   })
 })

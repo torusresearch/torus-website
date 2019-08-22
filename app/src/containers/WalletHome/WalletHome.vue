@@ -30,7 +30,7 @@
           <v-card-text class="pb-4 px-6">
             <h2 class="display-2 font-weight-bold">
               {{ totalPortfolioValue }}
-              <span class="body-2 font-weight-light">{{ selectedCurrency }}</span>
+              <span id="selected-currency" class="body-2 font-weight-light">{{ selectedCurrency }}</span>
             </h2>
           </v-card-text>
         </v-card>
@@ -99,6 +99,7 @@
               <v-flex xs4 sm12 class="text-right currency">
                 <span class="caption">CURRENCY:</span>
                 <v-select
+                  id="currency-selector"
                   class="pt-0 mt-0 ml-1 caption currency-selector"
                   height="25px"
                   hide-details
