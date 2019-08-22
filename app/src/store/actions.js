@@ -6,6 +6,7 @@ import { RPC } from '../utils/enums'
 import { getRandomNumber, broadcastChannelOptions } from '../utils/utils'
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
+import initialState from './state'
 
 const accountImporter = require('../utils/accountImporter')
 
@@ -15,6 +16,8 @@ let totalFailCount = 0
 
 // stream to send logged in status
 const statusStream = torus.communicationMux.getStream('status')
+
+var walletWindow
 
 export default {
   logOut(context, payload) {

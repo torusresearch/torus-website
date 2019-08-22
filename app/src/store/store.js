@@ -8,6 +8,10 @@ import torus from '../torus'
 import { getEtherScanHashLink, broadcastChannelOptions } from '../utils/utils'
 import { post } from '../utils/httpHelpers.js'
 import { notifyUser } from '../utils/notifications'
+import state from './state'
+import actions from './actions'
+import getters from './getters'
+import mutations from './mutations'
 
 const web3Utils = torus.web3.utils
 
@@ -37,22 +41,16 @@ const vuexPersist = new VuexPersistence({
       // tokenData: state.tokenData,
       tokenRates: state.tokenRates,
       selectedCurrency: state.selectedCurrency,
-      jwtToken: state.jwtToken,
-      pastTransactions: state.pastTransactions
+      jwtToken: state.jwtToken
+      // pastTransactions: state.pastTransactions
     }
   }
 })
 
-var walletWindow
-
 var VuexStore = new Vuex.Store({
   plugins: [vuexPersist.plugin],
-  state: {
-    ...initialState
-  },
-  getters: {
-    ...getters
-  },
+  state,
+  getters,
   mutations,
   actions: {
     ...actions,
@@ -192,7 +190,6 @@ VuexStore.subscribe((mutation, state) => {
           // User notification
           notifyUser(getEtherScanHashLink(txHash, state.networkType))
 
-          VuexStore.commit('patchPastTransactions', txObj)
           post(`${config.api}/transaction`, txObj, {
             headers: {
               Authorization: `Bearer ${state.jwtToken}`,
@@ -200,6 +197,7 @@ VuexStore.subscribe((mutation, state) => {
             }
           })
             .then(response => {
+              if (response.response.length > 0) VuexStore.commit('patchPastTransactions', { ...txObj, id: response.response[0] })
               log.info('successfully added', response)
             })
             .catch(err => log.error(err, 'unable to insert transaction'))

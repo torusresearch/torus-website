@@ -1,6 +1,6 @@
 import { MAINNET } from '../utils/enums'
 
-const state = {
+const initialState = {
   userInfo: {
     email: '',
     name: '',
@@ -27,4 +27,4 @@ const state = {
   isNewUser: false
 }
 
-export default state
+export default initialState
