@@ -37,8 +37,8 @@
 </template>
 
 <script>
-import TopupProviders from '../../components/WalletTopup/TopupProviders'
-import { ACTIVE, INACTIVE } from '../../utils/enums'
+import TopupProviders from '../../../components/WalletTopup/TopupProviders'
+import { ACTIVE, INACTIVE } from '../../../utils/enums'
 
 export default {
   components: {
@@ -96,5 +96,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'WalletTopup.scss';
+@import 'WalletTopupHome.scss';
 </style>

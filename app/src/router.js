@@ -7,13 +7,13 @@ import UserInfoRequest from './views/UserInfoRequest'
 import Login from './views/Login'
 import Confirm from './views/Confirm'
 import Wallet from './views/Wallet'
-import WalletTopup from './containers/WalletTopup'
 import WalletHome from './containers/WalletHome'
 import WalletHistory from './containers/WalletHistory'
 import WalletSettings from './containers/WalletSettings'
 import WalletTransfer from './containers/WalletTransfer'
-import WalletTopupSimplex from './containers/WalletTopup/WalletTopupSimplex.vue'
-import WalletTopupMoonpay from './containers/WalletTopup/WalletTopupMoonpay.vue'
+import WalletTopup from './containers/WalletTopup/WalletTopupHome'
+import WalletTopupSimplex from './containers/WalletTopup/WalletTopupSimplex'
+import WalletTopupMoonpay from './containers/WalletTopup/WalletTopupMoonpay'
 
 // const Popup = () => import('./views/Popup.vue')
 // const Confirm = () => import('./views/Confirm.vue')

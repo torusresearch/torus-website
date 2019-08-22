@@ -1,5 +1,5 @@
 <template>
-  <v-layout wrap>
+  <v-layout wrap class="wallet-topup-simplex">
     <v-flex xs12>
       <p class="body-2">
         Simplex is a secure way to buy CryptoCurrency with your credit card. Start by entering an amount to get a quote before making your purchase.
@@ -63,12 +63,12 @@
     <v-flex xs12>
       <div class="mt-12 mb-6 torus_text--text text--lighten-4">
         <div>
-          <img :src="require(`../../../public/img/icons/info-circle.svg`)" class="help-icon" />
+          <img :src="require(`../../../../public/img/icons/info-circle.svg`)" class="help-icon" />
           <small class="d-inline ml-2">The process would take approximately 10 - 15 mins.</small>
         </div>
 
         <div>
-          <img :src="require(`../../../public/img/icons/info-circle.svg`)" class="help-icon" />
+          <img :src="require(`../../../../public/img/icons/info-circle.svg`)" class="help-icon" />
           <small class="d-inline ml-2">Please prepare your Identity Card/Passport to complete the purchase.</small>
         </div>
       </div>
@@ -94,9 +94,9 @@
 
 <script>
 import throttle from 'lodash.throttle'
-import { significantDigits, formatCurrencyNumber } from '../../utils/utils'
-import { postQuote, postOrder } from '../../plugins/simplex'
-import HelpTooltip from '../../components/helpers/HelpTooltip'
+import { significantDigits, formatCurrencyNumber } from '../../../utils/utils'
+import { postQuote, postOrder } from '../../../plugins/simplex'
+import HelpTooltip from '../../../components/helpers/HelpTooltip'
 
 const MIN_ORDER_VALUE = 50
 const MAX_ORDER_VALUE = 20000
@@ -235,5 +235,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'WalletTopup.scss';
+@import 'WalletTopupSimplex.scss';
 </style>
