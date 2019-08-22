@@ -51,15 +51,17 @@ export default {
         .filter(item => {
           // GET Date Scope
           let isScoped = false
-          if (this.selectedPeriod === 'Period') {
+          if (this.selectedPeriod === 'All') {
             isScoped = true
           } else {
             let minDate = new Date()
             let itemDate = new Date(item.date)
-            if (this.selectedPeriod === 'Last Week') {
+            if (this.selectedPeriod === 'Last 1 Week') {
               minDate.setDate(minDate.getDate() - 7)
-            } else {
+            } else if (this.selectedPeriod === 'Last 1 Month') {
               minDate.setMonth(minDate.getMonth() - 1)
+            } else {
+              minDate.setMonth(minDate.getMonth() - 6)
             }
 
             isScoped = minDate.getTime() <= itemDate.getTime()
@@ -89,7 +91,7 @@ export default {
       }
     },
     getIcon(action) {
-      if (action === 'Topup') {
+      if (action === 'Top up') {
         return '$vuetify.icons.coins_topup'
       } else if (action === 'Send') {
         return '$vuetify.icons.coins_send'
