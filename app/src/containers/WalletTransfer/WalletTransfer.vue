@@ -114,7 +114,15 @@
         </v-layout>
         <v-layout mt-4 pr-2 wrap>
           <v-spacer></v-spacer>
-          <v-btn large color="primary" :disabled="!formValid || speedSelected === ''" class="px-6" type="submit" id="wallet-transfer-submit">
+          <v-btn
+            large
+            depressed
+            color="primary"
+            :disabled="!formValid || speedSelected === ''"
+            class="px-6"
+            type="submit"
+            id="wallet-transfer-submit"
+          >
             Continue
           </v-btn>
         </v-layout>

@@ -1,5 +1,4 @@
 @import '../../../scss/nav-selector.mixin';
-@import '../../../scss/card-tooltip.mixin';
 
 .advance-option {
   .form-selector {
@@ -10,8 +9,4 @@
   ::v-deep .v-messages {
     text-align: right;
   }
-}
-
-.v-tooltip__content {
-  @include cardTooltip();
 }

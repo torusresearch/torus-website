@@ -1,43 +1,45 @@
 <template>
-  <v-layout mt-3 wrap class="wallet-activity">
-    <v-flex xs12 px-4 mb-4>
-      <div class="text-black font-weight-bold headline float-left">Transaction Activities</div>
-      <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
-        <v-select
-          class="pt-0 mt-0 ml-2 subtitle-2 nav-selector transaction"
-          height="25px"
-          hide-details
-          :items="actionTypes"
-          v-model="selectedAction"
-          append-icon="$vuetify.icons.select"
+  <div class="wallet-activity">
+    <v-layout mt-3 wrap>
+      <v-flex xs12 px-4 mb-4>
+        <div class="text-black font-weight-bold headline float-left">Transaction Activities</div>
+        <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
+          <v-select
+            class="pt-0 mt-0 ml-2 subtitle-2 nav-selector transaction"
+            height="25px"
+            hide-details
+            :items="actionTypes"
+            v-model="selectedAction"
+            append-icon="$vuetify.icons.select"
+          />
+          <v-select
+            class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period"
+            height="25px"
+            hide-details
+            :items="periods"
+            v-model="selectedPeriod"
+            append-icon="$vuetify.icons.select"
+          />
+        </div>
+      </v-flex>
+      <v-flex xs12 px-4 mb-4>
+        <tx-history-table
+          v-if="!$vuetify.breakpoint.xsOnly"
+          :headers="headers"
+          :selectedAction="selectedAction"
+          :selectedPeriod="selectedPeriod"
+          :transactions="calculateFinalTransactions()"
         />
-        <v-select
-          class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period"
-          height="25px"
-          hide-details
-          :items="periods"
-          v-model="selectedPeriod"
-          append-icon="$vuetify.icons.select"
+        <tx-history-table-mobile
+          v-if="$vuetify.breakpoint.xsOnly"
+          :headers="headers"
+          :selectedAction="selectedAction"
+          :selectedPeriod="selectedPeriod"
+          :transactions="calculateFinalTransactions()"
         />
-      </div>
-    </v-flex>
-    <v-flex xs12 px-4 mb-4>
-      <tx-history-table
-        v-if="!$vuetify.breakpoint.xsOnly"
-        :headers="headers"
-        :selectedAction="selectedAction"
-        :selectedPeriod="selectedPeriod"
-        :transactions="getTransactions()"
-      />
-      <tx-history-table-mobile
-        v-if="$vuetify.breakpoint.xsOnly"
-        :headers="headers"
-        :selectedAction="selectedAction"
-        :selectedPeriod="selectedPeriod"
-        :transactions="getTransactions()"
-      />
-    </v-flex>
-  </v-layout>
+      </v-flex>
+    </v-layout>
+  </div>
 </template>
 
 <script>
@@ -71,10 +73,11 @@ export default {
         { text: 'Status', value: 'status', align: 'center' }
       ],
       pastOrders: [],
-      actionTypes: ['All Transactions', 'Topup', 'Send', 'Receive'],
+      actionTypes: ['All Transactions', 'Send', 'Receive', 'Top up'],
       selectedAction: 'All Transactions',
-      periods: ['Period', 'Last Week', 'Last Month'],
-      selectedPeriod: 'Period',
+      periods: ['All', 'Last 1 Week', 'Last 1 Month', 'Last 6 Months'],
+      selectedPeriod: 'All',
+      paymentTx: [],
       pastTx: []
     }
   },
@@ -93,15 +96,70 @@ export default {
     },
     wallets() {
       return Object.keys(this.$store.state.wallet).filter(acc => acc !== this.selectedAddress)
+    },
+    pastTransactions() {
+      return this.$store.state.pastTransactions
+    }
+  },
+  watch: {
+    pastTransactions() {
+      this.calculatePastTransactions()
     }
   },
   methods: {
-    onSelectType() {},
-    onSelectPeriod() {},
     onCurrencyChange(value) {
       this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value })
     },
-    getTransactions() {
+    calculateFinalTransactions() {
+      let finalTx = this.paymentTx
+      const pastTx = this.pastTx
+      const transactions = this.calculateTransactions()
+      finalTx = [...transactions, ...finalTx, ...pastTx]
+      finalTx = finalTx.reduce((acc, x) => {
+        if (acc.findIndex(y => y.etherscanLink === x.etherscanLink) === -1) acc.push(x)
+        return acc
+      }, [])
+      // log.info('this.pastTx', finalTx)
+      const sortedTx = finalTx.sort((a, b) => b.date - a.date) || []
+      return sortedTx
+    },
+    async calculatePastTransactions() {
+      const { selectedAddress: publicAddress, pastTransactions, jwtToken, networkType } = this.$store.state
+      const pastTx = []
+      for (let index = 0; index < pastTransactions.length; index++) {
+        const x = pastTransactions[index]
+        if (x.network !== networkType) continue
+        let status = x.status
+        if (x.status !== 'confirmed' && x.status !== 'rejected' && publicAddress.toLowerCase() === x.from.toLowerCase()) {
+          status = await getEthTxStatus(x.transaction_hash, torus.web3)
+          this.patchTx(x, status, jwtToken)
+        }
+        const totalAmountString = `${significantDigits(parseFloat(x.total_amount))} ETH`
+        const currencyAmountString = `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
+        const finalObj = {
+          id: x.created_at,
+          date: new Date(x.created_at),
+          from: x.from,
+          slicedFrom: addressSlicer(x.from),
+          to: x.to,
+          slicedTo: addressSlicer(x.to),
+          action: this.wallets.indexOf(x.to) >= 0 ? 'Receive' : 'Send',
+          totalAmount: x.total_amount,
+          totalAmountString: totalAmountString,
+          currencyAmount: x.currency_amount,
+          currencyAmountString: currencyAmountString,
+          amount: `${totalAmountString} / ${currencyAmountString}`,
+          status: status,
+          etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network),
+          networkType: x.network,
+          ethRate: significantDigits(parseFloat(x.currency_amount) / parseFloat(x.total_amount)),
+          currencyUsed: x.selected_currency
+        }
+        pastTx.push(finalObj)
+      }
+      this.pastTx = pastTx
+    },
+    calculateTransactions() {
       const { networkId, transactions, networkType } = this.$store.state || {}
       const finalTransactions = []
       for (let tx in transactions) {
@@ -130,21 +188,32 @@ export default {
           finalTransactions.push(txObj)
         }
       }
-      if (this.pastOrders.length > 0) finalTransactions.push(...this.pastOrders)
-      if (this.pastTx.length > 0) finalTransactions.push(...this.pastTx)
-      const finalTx = finalTransactions.reduce((acc, x) => {
-        if (acc.findIndex(y => y.etherscanLink === x.etherscanLink) === -1) acc.push(x)
-        return acc
-      }, [])
-      log.info('this.pastTx', finalTx)
-      return finalTx.sort((a, b) => b.date - a.date)
+      return finalTransactions
+    },
+    patchTx(x, status, jwtToken) {
+      // patch tx
+      patch(
+        `${config.api}/transaction`,
+        {
+          id: x.id,
+          status: status
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }
+      )
+        .then(response => log.info('successfully patched', response))
+        .catch(err => log.error('unable to patch tx', err))
     }
   },
   mounted() {
-    const { selectedAddress: publicAddress, pastTransactions, jwtToken, networkType } = this.$store.state
+    const { selectedAddress: publicAddress } = this.$store.state
     getPastOrders({}, { public_address: publicAddress })
       .then(response => {
-        this.pastOrders = response.result.reduce((acc, x) => {
+        this.paymentTx = response.result.reduce((acc, x) => {
           if (!(x.status === 'SENT_TO_SIMPLEX' && new Date() - new Date(x.createdAt) > 86400 * 1000)) {
             const totalAmountString = `${significantDigits(x.requested_digital_amount.amount)} ${x.requested_digital_amount.currency}`
             const currencyAmountString = `${significantDigits(x.fiat_total_amount.amount)} ${x.fiat_total_amount.currency}`
@@ -153,7 +222,7 @@ export default {
               date: new Date(x.createdAt),
               from: 'Simplex',
               slicedFrom: 'Simplex',
-              action: 'Topup',
+              action: 'Top up',
               to: publicAddress,
               slicedTo: addressSlicer(publicAddress),
               totalAmount: x.requested_digital_amount.amount,
@@ -171,52 +240,7 @@ export default {
         }, [])
       })
       .catch(err => log.error(err))
-    pastTransactions.forEach(async x => {
-      if (x.network !== networkType) return
-      let status = x.status
-      if (x.status !== 'confirmed' && x.status !== 'rejected' && publicAddress.toLowerCase() === x.from.toLowerCase()) {
-        status = await getEthTxStatus(x.transaction_hash, torus.web3)
-        // patch tx
-        patch(
-          `${config.api}/transaction`,
-          {
-            id: x.id,
-            status: status
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${jwtToken}`,
-              'Content-Type': 'application/json; charset=utf-8'
-            }
-          }
-        )
-          .then(response => log.info('successfully patched', response))
-          .catch(err => log.error('unable to patch tx', err))
-      }
-
-      const totalAmountString = `${significantDigits(parseFloat(x.total_amount))} ETH`
-      const currencyAmountString = `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
-      const finalObj = {
-        id: x.created_at,
-        date: new Date(x.created_at),
-        from: x.from,
-        slicedFrom: addressSlicer(x.from),
-        to: x.to,
-        slicedTo: addressSlicer(x.to),
-        action: this.wallets.indexOf(x.to) >= 0 ? 'Receive' : 'Send',
-        totalAmount: x.total_amount,
-        totalAmountString: totalAmountString,
-        currencyAmount: x.currency_amount,
-        currencyAmountString: currencyAmountString,
-        amount: `${totalAmountString} / ${currencyAmountString}`,
-        status: status,
-        etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network),
-        networkType: x.network,
-        ethRate: significantDigits(parseFloat(x.currency_amount) / parseFloat(x.total_amount)),
-        currencyUsed: x.selected_currency
-      }
-      this.pastTx.push(finalObj)
-    })
+    this.calculatePastTransactions()
   }
 }
 </script>

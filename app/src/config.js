@@ -11,6 +11,6 @@ export default {
   simplexHost: 'https://simplex-api.tor.us',
   moonpayHost: 'https://buy.moonpay.io?',
   moonpayLiveAPIKEY: 'pk_live_Wg90NLnFst3ms7tiqnMDDO0yjlypMzYK',
-  //api: 'http://localhost:8080'
+  // api: 'http://localhost:2030'
   api: 'https://api.tor.us'
 }

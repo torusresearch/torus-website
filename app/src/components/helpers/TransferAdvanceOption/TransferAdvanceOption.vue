@@ -1,9 +1,9 @@
 <template>
   <v-dialog v-model="dialog" persistent>
     <template v-slot:activator="{ on }">
-      <span id="advance-option-link" class="float-right primary--text subtitle-2" v-show="displayAmount" v-on="on">Advanced Options</span>
+      <a id="advance-option-link" class="float-right primary--text advance-option subtitle-2" v-show="displayAmount" v-on="on">Advanced Options</a>
     </template>
-    <v-card class="advance-option">
+    <v-card class="advance-option py-4">
       <v-container>
         <v-form ref="advanceOptionForm" :value="advanceOptionFormValid" @submit.prevent="saveOptions" lazy-validation>
           <v-layout wrap>
@@ -16,14 +16,9 @@
                 <v-flex xs12 sm6 px-4>
                   <span class="subtitle-2">
                     Gas Price (GWEI)
-                    <v-tooltip top>
-                      <template v-slot:activator="{ on }">
-                        <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
-                      </template>
-                      <span>
-                        <div class="primary--text subtitle-2">Gas Price</div>
-                        <v-divider class="my-2"></v-divider>
-                        <div class="body-2">
+                    <HelpTooltip title="Gas Price">
+                      <template v-slot:description>
+                        <div class="body-2 text-justify">
                           <span class="font-weight-medium">Gas</span>
                           is needed to power blockchain transactions.
                           <span class="font-weight-medium">Gas Price</span>
@@ -35,8 +30,8 @@
                           ETH
                           <small>(very small USD value)</small>
                         </div>
-                      </span>
-                    </v-tooltip>
+                      </template>
+                    </HelpTooltip>
                   </span>
                   <v-text-field
                     id="gas-price"
@@ -50,19 +45,11 @@
                 <v-flex xs12 sm6 px-4>
                   <span class="subtitle-2">
                     Gas Limit
-                    <v-tooltip top>
-                      <template v-slot:activator="{ on }">
-                        <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
-                      </template>
-                      <span>
-                        <div class="primary--text subtitle-2">Gas Limit</div>
-                        <v-divider class="my-2"></v-divider>
-                        <div class="body-2">
-                          This is the maximum amount of gas you're willing to spend on a transaction. A standard ETH transfer requires a gas limit of
-                          21,000 units of gas.
-                        </div>
-                      </span>
-                    </v-tooltip>
+                    <HelpTooltip
+                      title="Gas Limit"
+                      description="This is the maximum amount of gas you're willing to spend on a transaction.
+                      A standard ETH transfer requires a gas limit of 21,000 units of gas."
+                    ></HelpTooltip>
                   </span>
                   <v-text-field readonly outlined :value="advancedGas" required type="number"></v-text-field>
                 </v-flex>
@@ -121,7 +108,7 @@
           <v-layout mt-4 pr-4>
             <v-spacer></v-spacer>
             <v-btn large text @click="onCancel">Cancel</v-btn>
-            <v-btn id="adv-opt-submit-btn" large color="primary" class="ml-4" type="submit" :disabled="!advanceOptionFormValid">Save</v-btn>
+            <v-btn id="adv-opt-submit-btn" large depressed color="primary" class="ml-4" type="submit" :disabled="!advanceOptionFormValid">Save</v-btn>
           </v-layout>
         </v-form>
       </v-container>
@@ -131,8 +118,12 @@
 
 <script>
 import { significantDigits } from '../../../utils/utils'
+import HelpTooltip from '../HelpTooltip'
 
 export default {
+  components: {
+    HelpTooltip
+  },
   props: ['activeGasPrice', 'gas', 'displayAmount', 'symbol'],
   data() {
     return {
