@@ -5,13 +5,13 @@
         <div class="font-weight-bold headline float-left">My Wallet</div>
       </v-flex>
       <v-flex xs6 px-4 mb-4 class="text-right hidden-xs-only">
-        <v-btn outlined large color="primary" :disabled="isFreshAccount" class="px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
+        <v-btn id="transfer-btn" outlined large color="primary" :disabled="isFreshAccount" class="px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
           <v-icon left>$vuetify.icons.send</v-icon>
           Transfer
         </v-btn>
         <v-tooltip top :value="isFreshAccount" class="hidden-xs-only">
           <template v-slot:activator="{ on }">
-            <v-btn depressed large color="primary" class="px-12 py-1 mt-4 hidden-xs-only" @click="topup" v-on="on">
+            <v-btn if="topup-btn" depressed large color="primary" class="px-12 py-1 mt-4 hidden-xs-only" @click="topup" v-on="on">
               <v-icon left>$vuetify.icons.add</v-icon>
               Top up
             </v-btn>
