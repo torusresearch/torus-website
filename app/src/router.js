@@ -11,9 +11,7 @@ import WalletHome from './containers/WalletHome'
 import WalletHistory from './containers/WalletHistory'
 import WalletSettings from './containers/WalletSettings'
 import WalletTransfer from './containers/WalletTransfer'
-import WalletTopup from './containers/WalletTopup/WalletTopupHome'
-import WalletTopupSimplex from './containers/WalletTopup/WalletTopupSimplex'
-import WalletTopupMoonpay from './containers/WalletTopup/WalletTopupMoonpay'
+import { WalletTopupHome, WalletTopupSimplex, WalletTopupMoonpay } from './containers/WalletTopup'
 
 // const Popup = () => import('./views/Popup.vue')
 // const Confirm = () => import('./views/Confirm.vue')
@@ -96,7 +94,7 @@ const router = new Router({
         {
           path: 'topup',
           name: 'walletTopup',
-          component: WalletTopup,
+          component: WalletTopupHome,
           children: [
             {
               path: 'simplex',
