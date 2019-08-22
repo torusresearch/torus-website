@@ -30,20 +30,44 @@
     </v-flex>
 
     <v-flex class="xs12 sm6 px-4 my-4" v-if="!isFreshAccount" style="order: 1">
-      <PromotionCard
-        title="Check out the latest Dapp"
-        subtitle="Visit Etheremon and start using ETH."
-        link-text="Play Now"
-        link-target="https://www.etheremon.com"
-        image-path="learn-more.svg"
-      >
-        <template v-slot:image>
-          <v-flex pt-4 class="text-right hidden-xs-only" :class="$vuetify.breakpoint.lgAndUp ? 'xs4' : 'xs3'">
-            <img :src="require(`../../../../public/images/etheremon.png`)" style="width: 100%" />
-          </v-flex>
-        </template>
-      </PromotionCard>
+      <v-card color="dark card-shadow" white>
+        <v-card-text class="pt-1 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-4' : 'pb-5'">
+          <v-layout align-center>
+            <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
+              <div class="body-1 font-weight-bold">Welcome to Torus</div>
+              <div :class="$vuetify.breakpoint.lgAndUp ? 'body-2' : 'caption'">Win up to 10,000 USD at our online hackathon!</div>
+              <div>
+                <v-btn color="primary" depressed class="px-12 py-1 mt-4 white--text" href="http://torus4everyone2019.devpost.com" target="_blank">
+                  Register Now
+                </v-btn>
+              </div>
+            </v-flex>
+            <v-flex xs4 pt-4 class="text-right hidden-xs-only">
+              <img :src="require(`../../../../public/images/learn-more.svg`)" style="height: 100px" />
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+      </v-card>
     </v-flex>
+
+    <!-- <v-flex class="xs12 sm6 px-4 my-4" v-if="!isFreshAccount" style="order: 1">
+      <v-card color="dark card-shadow" white>
+        <v-card-text class="pt-1 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-4' : 'pb-5'">
+          <v-layout align-center>
+            <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
+              <div class="body-1 font-weight-bold">Check out the latest Dapp</div>
+              <div :class="$vuetify.breakpoint.lgAndUp ? 'body-2' : 'caption'">Visit Etheremon and start using ETH.</div>
+              <div>
+                <v-btn color="primary" depressed class="px-12 py-1 mt-4 white--text" href="https://www.etheremon.com" target="_blank">Play Now</v-btn>
+              </div>
+            </v-flex>
+            <v-flex pt-4 class="text-right hidden-xs-only" :class="$vuetify.breakpoint.lgAndUp ? 'xs4' : 'xs3'">
+              <img :src="require(`../../../../public/images/etheremon.png`)" style="width: 100%" />
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+      </v-card>
+    </v-flex> -->
 
     <v-flex class="xs12 sm6 px-4 my-4" v-if="isFreshAccount" style="order: 1">
       <PromotionCard title="Welcome to Torusss." subtitle="Learn more about your wallet today." image-path="learn-more.svg">
