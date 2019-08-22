@@ -79,16 +79,24 @@ describe('Tests Wallet Home', () => {
     await shouldExist(page, '.wallet-home')
   })
 
-  it('Should go to transfer page', async () => {
-    await click(page, '.transfer-btn')
-    await shouldExist(page, '.wallet-transfer')
-    await click(page, '#home-link')
+  it('Should go to transfer page is not fresh account', async () => {
+    isFreshAccount = (await page.$('.transfer-btn[disabled]')) !== null
+    if (!isFreshAccount) {
+      await click(page, '.transfer-btn')
+      await shouldExist(page, '.wallet-transfer')
+      await click(page, '#home-link')
+    }
   })
 
   it('Should go to topup page', async () => {
     await click(page, '.topup-btn')
     await shouldExist(page, '.wallet-topup-view')
     await click(page, '#home-link')
-    await page.waitFor(3000)
+  })
+
+  it('Should show getEth tooltip if fresh account', async () => {
+    if (isFreshAccount) {
+      await shouldExist(page, '.outline-tooltip')
+    }
   })
 })
