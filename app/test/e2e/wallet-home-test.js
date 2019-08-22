@@ -22,7 +22,8 @@ describe('Tests Wallet Home', () => {
       slowMo: config.slowMo,
       devtools: config.isDevTools,
       timeout: config.launchTimeout,
-      ignoreHTTPSErrors: config.ignoreHTTPSErrors
+      ignoreHTTPSErrors: config.ignoreHTTPSErrors,
+      args: ['--start-fullscreen']
     })
 
     page = await browser.newPage()
@@ -79,14 +80,15 @@ describe('Tests Wallet Home', () => {
   })
 
   it('Should go to transfer page', async () => {
-    await click(page, '#transfer-btn')
+    await click(page, '.transfer-btn')
     await shouldExist(page, '.wallet-transfer')
     await click(page, '#home-link')
   })
 
   it('Should go to topup page', async () => {
-    await click(page, '#topup-btn')
+    await click(page, '.topup-btn')
     await shouldExist(page, '.wallet-topup-view')
     await click(page, '#home-link')
+    await page.waitFor(3000)
   })
 })
