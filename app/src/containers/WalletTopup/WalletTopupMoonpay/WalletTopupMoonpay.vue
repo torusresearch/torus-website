@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import config from '../../config.js'
+import config from '../../../config'
 const { moonpayLiveAPIKEY, moonpayHost } = config
 
 export default {
