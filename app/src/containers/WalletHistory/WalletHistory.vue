@@ -73,10 +73,10 @@ export default {
         { text: 'Status', value: 'status', align: 'center' }
       ],
       pastOrders: [],
-      actionTypes: ['All Transactions', 'Topup', 'Send', 'Receive'],
+      actionTypes: ['All Transactions', 'Send', 'Receive', 'Top up'],
       selectedAction: 'All Transactions',
-      periods: ['Period', 'Last Week', 'Last Month'],
-      selectedPeriod: 'Period',
+      periods: ['All', 'Last 1 Week', 'Last 1 Month', 'Last 6 Months'],
+      selectedPeriod: 'All',
       pastTx: []
     }
   },
@@ -155,7 +155,7 @@ export default {
               date: new Date(x.createdAt),
               from: 'Simplex',
               slicedFrom: 'Simplex',
-              action: 'Topup',
+              action: 'Top up',
               to: publicAddress,
               slicedTo: addressSlicer(publicAddress),
               totalAmount: x.requested_digital_amount.amount,
