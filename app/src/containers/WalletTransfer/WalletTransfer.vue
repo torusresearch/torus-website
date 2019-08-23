@@ -394,7 +394,7 @@ export default {
             {
               from: selectedAddress,
               gas: this.gas.toString(),
-              fastGasPrice
+              gasPrice: fastGasPrice
             },
             (err, transactionHash) => {
               if (err) {
