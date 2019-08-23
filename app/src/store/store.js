@@ -6,7 +6,6 @@ import VuexPersistence from 'vuex-persist'
 import config from '../config'
 import torus from '../torus'
 import { getEtherScanHashLink, broadcastChannelOptions } from '../utils/utils'
-import { NORMAL, PERSONAL, TYPED } from '../utils/enums'
 import { post } from '../utils/httpHelpers.js'
 import { notifyUser } from '../utils/notifications'
 import state from './state'
@@ -62,7 +61,7 @@ var VuexStore = new Vuex.Store({
       const height = isTx ? 650 : 400
       // const width = 500
       // const height = 600
-      const confirmWindow = window.open(
+      window.open(
         `${baseRoute}confirm?instanceId=${torus.instanceId}`,
         '_blank',
         `directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=${height},width=${width}`
@@ -81,13 +80,10 @@ var VuexStore = new Vuex.Store({
               }
             })
             bc.close()
-            confirmWindow.onbeforeunload = function() {
-              torus.torusController.cancelTransaction(txParams.id)
-            }
           }
         }
       } else {
-        var { msgParams, id, type } = getLatestMessageParams()
+        var { msgParams, id } = getLatestMessageParams()
         bc.onmessage = async ev => {
           if (ev.data === 'popup-loaded') {
             await bc.postMessage({
@@ -98,21 +94,6 @@ var VuexStore = new Vuex.Store({
               }
             })
             bc.close()
-            confirmWindow.onbeforeunload = function() {
-              switch (type) {
-                case NORMAL:
-                  torus.torusController.cancelMessage(parseInt(id, 10))
-                  break
-                case TYPED:
-                  torus.torusController.cancelTypedMessage(parseInt(id, 10))
-                  break
-                case PERSONAL:
-                  torus.torusController.cancelPersonalMessage(parseInt(id, 10))
-                  break
-                default:
-                  break
-              }
-            }
           }
         }
       }
@@ -124,14 +105,12 @@ function getLatestMessageParams() {
   let time = 0
   let msg = null
   let finalId = 0
-  let type = ''
   for (let id in VuexStore.state.unapprovedMsgs) {
     const msgTime = VuexStore.state.unapprovedMsgs[id].time
     if (msgTime > time) {
       msg = VuexStore.state.unapprovedMsgs[id]
       time = msgTime
       finalId = id
-      type = NORMAL
     }
   }
 
@@ -141,7 +120,6 @@ function getLatestMessageParams() {
       msg = VuexStore.state.unapprovedPersonalMsgs[id]
       time = msgTime
       finalId = id
-      type = PERSONAL
     }
   }
 
@@ -164,10 +142,9 @@ function getLatestMessageParams() {
       msg = VuexStore.state.unapprovedTypedMessages[id]
       msg.msgParams.typedMessages = msg.msgParams.data // TODO: use for differentiating msgs later on
       finalId = id
-      type = TYPED
     }
   }
-  return msg ? { msgParams: msg.msgParams, id: finalId, type: type } : {}
+  return msg ? { msgParams: msg.msgParams, id: finalId } : {}
 }
 
 function isTorusTransaction() {
