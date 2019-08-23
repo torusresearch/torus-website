@@ -114,7 +114,11 @@ export default {
   }),
   watch: {
     selectedAddress: function(newAddress, oldAddress) {
-      if (newAddress !== oldAddress && newAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet')
+      if (newAddress !== oldAddress && newAddress !== '') {
+        let redirectPath = this.$route.query.redirect
+        if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet'
+        this.$router.push(redirectPath)
+      }
     }
   },
   mounted() {
