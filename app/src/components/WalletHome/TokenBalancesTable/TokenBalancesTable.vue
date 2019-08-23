@@ -74,7 +74,7 @@
         <template v-slot:link>
           <v-dialog v-model="dialog" max-width="700">
             <template v-slot:activator="{ on }">
-              <v-btn color="primary" depressed class="px-12 py-1 mt-4" v-on="on">Learn more</v-btn>
+              <v-btn id="learn-more-btn" color="primary" depressed class="px-12 py-1 mt-4" v-on="on">Learn more</v-btn>
             </template>
             <LearnMore @onClose="dialog = false" />
           </v-dialog>

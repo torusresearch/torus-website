@@ -109,4 +109,16 @@ describe('Tests Wallet Home', () => {
     await waitForText(page, '#selected-currency', currency)
     await page.waitFor(4000)
   })
+
+  it('Should show learn more if fresh account', async () => {
+    await click(page, '#learn-more-btn')
+    await shouldExist(page, '.learn-more')
+
+    // Navigate learn more
+    await click(page, '#get-started-btn')
+    await click(page, '#next-step-btn')
+
+    // Should close learn more
+    await click(page, '#next-step-btn')
+  })
 })
