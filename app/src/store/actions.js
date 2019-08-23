@@ -159,7 +159,18 @@ export default {
         .importAccount(payload.strategy, payload.keyData)
         .then(privKey => {
           dispatch('finishImportAccount', { privKey })
-            .then(() => resolve())
+            .then(() => {
+              const accountImportChannel = new BroadcastChannel('account_import_channel', broadcastChannelOptions)
+              accountImportChannel
+                .postMessage({
+                  data: {
+                    name: 'imported_account',
+                    payload: { privKey }
+                  }
+                })
+                .then(() => resolve())
+                .catch(err => reject(err))
+            })
             .catch(err => reject(err))
         })
         .catch(err => {

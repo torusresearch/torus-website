@@ -35,7 +35,7 @@
           <v-layout align-center>
             <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
               <div class="body-1 font-weight-bold">Welcome to Torus</div>
-              <div :class="$vuetify.breakpoint.lgAndUp ? 'body-2' : 'caption'">Win up to 10,000 USD at our online hackathon!</div>
+              <div :class="$vuetify.breakpoint.lgAndUp ? 'body-2' : 'caption'">Torus Online Hackathon Live Now!</div>
               <div>
                 <v-btn color="primary" depressed class="px-12 py-1 mt-4 white--text" href="http://torus4everyone2019.devpost.com" target="_blank">
                   Register Now
