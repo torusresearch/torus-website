@@ -7,10 +7,10 @@
             <v-layout>
               <v-flex xs6 my-2 class="subtitle-2">
                 <v-icon small>{{ transaction.actionIcon }}</v-icon>
-                {{ transaction.action === 'Sending' && transaction.status === 'confirmed' ? 'Sent' : transaction.action }}
+                {{ transaction.action }}
               </v-flex>
-              <v-flex xs6 my-2 class="body-2 text-right torus_text--text text--lighten-4 text-capitalize">
-                {{ transaction.status }}
+              <v-flex xs6 my-2 class="body-2 text-right text-capitalize" :class="`text-${transaction.status.toLowerCase()}`">
+                {{ transaction.statusText }}
               </v-flex>
             </v-layout>
             <v-divider></v-divider>

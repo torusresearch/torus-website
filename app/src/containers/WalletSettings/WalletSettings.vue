@@ -6,16 +6,16 @@
         <v-expansion-panel>
           <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
             <img
-              :width="$vuetify.breakpoint.xsOnly ? '16' : ''"
+              :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
               class="d-inline-flex mr-4 shrink"
               :src="require(`../../../public/img/icons/lock.svg`)"
             />
-            <div class="grow font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'headline'">
+            <div class="grow font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'title'">
               Privacy and Security
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-6 px-12'">
+            <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-0 px-12'">
               <v-list>
                 <v-list-item @click="privateKeyDialog = true">
                   <v-list-item-avatar class="mr-4">
@@ -49,16 +49,16 @@
         <v-expansion-panel>
           <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
             <img
-              :width="$vuetify.breakpoint.xsOnly ? '16' : ''"
+              :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
               class="d-inline-flex mr-4 shrink collpase-icon"
               :src="require(`../../../public/img/icons/globe.svg`)"
             />
-            <div class="grow font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'headline'">
+            <div class="grow font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'title'">
               Network
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-6 px-12'">
+            <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
               <v-form ref="form" v-model="formValid" lazy-validation @submit.prevent="">
                 <span class="subtitle-2">Select Network</span>
                 <v-flex>
@@ -106,16 +106,16 @@
         <v-expansion-panel>
           <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
             <img
-              :width="$vuetify.breakpoint.xsOnly ? '16' : ''"
+              :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
               class="d-inline-flex mr-4 shrink collpase-icon"
               :src="require(`../../../public/img/icons/server.svg`)"
             />
-            <div class="grow font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'headline'">
+            <div class="grow font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'title'">
               Display
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-6 px-12'">
+            <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
               <div class="body-2 mb-1 px-1">Select Theme</div>
               <v-layout wrap>
                 <v-flex xs12 sm4 px-1 mb-1>
@@ -144,6 +144,7 @@
 import { lightBlue, ceruleanBlue, shuttleGrey } from '../../plugins/themes'
 import PrivateKeys from '../../components/WalletSettings/PrivateKeys'
 import DappPermissions from '../../components/WalletSettings/DappPermissions'
+import log from 'loglevel'
 
 const {
   ROPSTEN,
@@ -244,10 +245,10 @@ export default {
       this.$vuetify.theme.dark = isDark
       if (isDark) {
         this.$vuetify.theme.themes.dark.background = selectedTheme.background
-        console.log(this.$vuetify.theme.themes.dark)
+        log.info(this.$vuetify.theme.themes.dark)
       } else {
         this.$vuetify.theme.themes.light.background = selectedTheme.background
-        console.log(this.$vuetify.theme.themes.light)
+        log.info(this.$vuetify.theme.themes.light)
       }
     }
   },

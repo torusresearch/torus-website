@@ -1,5 +1,6 @@
 // import config from '../config'
 // import { post, get } from '../utils/httpHelpers'
+//import log from 'loglevel'
 
 // const getTransactions = token => {
 //   try {
@@ -12,6 +13,6 @@
 //     }
 //     return get(config.moonpayHost, options)
 //   } catch (e) {
-//     console.log(e)
+//     log.info(e)
 //   }
 // }
