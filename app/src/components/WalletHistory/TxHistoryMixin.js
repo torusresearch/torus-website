@@ -43,6 +43,7 @@ export default {
       return this.transactions
         .map(item => {
           item.actionIcon = this.getIcon(item.action)
+          item.statusText = this.getStatusText(item.status)
           item.dateFormatted = this.formatDate(item.date)
           item.timeFormatted = this.formatTime(item.date)
           return item
@@ -50,15 +51,17 @@ export default {
         .filter(item => {
           // GET Date Scope
           let isScoped = false
-          if (this.selectedPeriod === 'Period') {
+          if (this.selectedPeriod === 'All') {
             isScoped = true
           } else {
             let minDate = new Date()
             let itemDate = new Date(item.date)
-            if (this.selectedPeriod === 'Last Week') {
+            if (this.selectedPeriod === 'Last 1 Week') {
               minDate.setDate(minDate.getDate() - 7)
-            } else {
+            } else if (this.selectedPeriod === 'Last 1 Month') {
               minDate.setMonth(minDate.getMonth() - 1)
+            } else {
+              minDate.setMonth(minDate.getMonth() - 6)
             }
 
             isScoped = minDate.getTime() <= itemDate.getTime()
@@ -72,13 +75,28 @@ export default {
     }
   },
   methods: {
+    getStatusText(status) {
+      switch (status) {
+        case 'rejected':
+        case 'denied':
+        case 'unapproved':
+          return 'Unsuccessful'
+        case 'confirmed':
+          return 'Successful'
+        case 'pending':
+        case 'submitted':
+          return 'Pending'
+        default:
+          return ''
+      }
+    },
     getIcon(action) {
-      if (action === 'Top-up') {
-        return '$vuetify.icons.arrow_up_circle'
-      } else if (action === 'Sending') {
-        return '$vuetify.icons.arrow_left_circle'
-      } else if (action === 'Received') {
-        return '$vuetify.icons.arrow_right_circle'
+      if (action === 'Top up') {
+        return '$vuetify.icons.coins_topup'
+      } else if (action === 'Send') {
+        return '$vuetify.icons.coins_send'
+      } else if (action === 'Receive') {
+        return '$vuetify.icons.coins_receive'
       }
     },
     formatDate(date) {

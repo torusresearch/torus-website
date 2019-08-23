@@ -430,7 +430,7 @@ describe('MetaMaskController', function() {
   //   it('#placeSeedWords should match the initially created vault seed', function() {
   //     metamaskController.placeSeedWords((err, result) => {
   //       if (err) {
-  //         console.log(err)
+  //         log.error(err)
   //       } else {
   //         getConfigSeed = metamaskController.configManager.getSeedWords()
   //         assert.strictEqual(result, seedPhrase)
@@ -558,7 +558,7 @@ describe('MetaMaskController', function() {
 
       // await metamaskController.createNewVaultAndRestore('foobar1337', TEST_SEED_ALT)
       // await metamaskController.createNewVaultAndKeychain('password')
-      // console.log(await metamaskController.keyringController.getAccounts())
+      // log.info(await metamaskController.keyringController.getAccounts())
 
       msgParams = {
         from: address,
@@ -672,7 +672,7 @@ describe('MetaMaskController', function() {
     // it('errors when signing a message', async function() {
     //   await metamaskController.signPersonalMessage(personalMessages[0].msgParams)
     //   assert.strictEqual(metamaskPersonalMsgs[msgId].status, 'signed') // Not signed cause no keyringcontroller
-    //   console.log(metamaskPersonalMsgs[msgId].rawSig)
+    //   log.info(metamaskPersonalMsgs[msgId].rawSig)
     //   assert.strictEqual(
     //     metamaskPersonalMsgs[msgId].rawSig,
     //     '0x6a1b65e2b8ed53cf398a769fad24738f9fbe29841fe6854e226953542c4b6a173473cb152b6b1ae5f06d601d45dd699a129b0a8ca84e78b423031db5baa734741b'
@@ -691,7 +691,7 @@ describe('MetaMaskController', function() {
 
   //   it('sets up phishing stream for untrusted communication ', async () => {
   //     // await metamaskController.blacklistController.updatePhishingList()
-  //     // console.log(blacklistJSON.blacklist.includes(phishingUrl))
+  //     // log.info(blacklistJSON.blacklist.includes(phishingUrl))
 
   //     const { promise, resolve } = deferredPromise()
 
@@ -725,7 +725,7 @@ describe('MetaMaskController', function() {
   //     })
 
   //     inStream = createThoughStream((chunk, enc, cb) => {
-  //       console.log('finished')
+  //       log.info('finished')
   //     })
 
   //     metamaskController.setupTrustedCommunication(inStream, streamTest, 'mycrypto.com')
