@@ -52,6 +52,8 @@
 <script>
 import BroadcastChannel from 'broadcast-channel'
 import PageLoader from '../../components/helpers/PageLoader'
+import { broadcastChannelOptions } from '../../utils/utils'
+import log from 'loglevel'
 
 export default {
   name: 'confirm',
@@ -69,23 +71,23 @@ export default {
   },
   computed: {},
   methods: {
-    triggerSign(event) {
-      var bc = new BroadcastChannel('torus_provider_change_channel')
-      bc.postMessage({
+    async triggerSign(event) {
+      var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
+      await bc.postMessage({
         data: { type: 'confirm-provider-change', payload: this.payload, approve: true }
       })
       bc.close()
       window.close()
     },
-    triggerDeny(event) {
-      var bc = new BroadcastChannel('torus_provider_change_channel')
-      bc.postMessage({ data: { type: 'deny-provider-change', approve: false } })
+    async triggerDeny(event) {
+      var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
+      await bc.postMessage({ data: { type: 'deny-provider-change', approve: false } })
       bc.close()
       window.close()
     }
   },
   mounted() {
-    var bc = new BroadcastChannel('torus_provider_change_channel')
+    var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
     bc.onmessage = async ev => {
       const {
         payload: { network, type },
@@ -96,7 +98,7 @@ export default {
       try {
         url = new URL(origin)
       } catch (err) {
-        console.log(err)
+        log.error(err)
       }
       this.origin = url.hostname // origin of tx: website url
       if (type && type === 'rpc') {

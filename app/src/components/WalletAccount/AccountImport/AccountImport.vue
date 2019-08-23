@@ -33,6 +33,7 @@
                     label="Private Key"
                     @click:append="togglePrivShow"
                     v-model="privateKey"
+                    single-line
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs12 px-4 class="text-right">
@@ -62,18 +63,10 @@
                   <v-layout align-center justify-space-between>
                     <v-flex grow>
                       Please upload your JSON File
-                      <v-tooltip top>
-                        <template v-slot:activator="{ on }">
-                          <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
-                        </template>
-                        <span>
-                          <div class="primary--text subtitle-2">JSON File</div>
-                          <v-divider class="my-2"></v-divider>
-                          <div class="body-2">
-                            This is a type of file format that your stores information on your Private Key.
-                          </div>
-                        </span>
-                      </v-tooltip>
+                      <HelpTooltip
+                        title="JSON File"
+                        description="This is a type of file format that your stores information on your Private Key."
+                      ></HelpTooltip>
                     </v-flex>
                     <v-flex shrink>
                       <v-btn outlined @click.prevent="$refs.keystoreUpload.click()" class="upload-button" color="primary">
@@ -282,7 +275,13 @@
 <script>
 const WalletWorker = require('worker-loader!../../../utils/wallet.worker.js')
 const ethUtil = require('ethereumjs-util')
+const log = require('loglevel')
+import HelpTooltip from '../../helpers/HelpTooltip'
+
 export default {
+  components: {
+    HelpTooltip
+  },
   data() {
     return {
       selectedType: 'private',
@@ -321,7 +320,7 @@ export default {
         this.$store
           .dispatch('importAccount', { keyData: [this.privateKey], strategy: 'Private Key' })
           .then(() => {
-            this.$router.push({ path: '/wallet/home' })
+            this.onClose()
             this.isLoadingPrivate = false
           })
           .catch(err => {
@@ -367,7 +366,7 @@ export default {
     setErrorState(err) {
       this.error = err
       this.snackbar = true
-      console.log(err)
+      log.error(err)
       this.isLoadingKeystore = false
       this.isLoadingPrivate = false
     },

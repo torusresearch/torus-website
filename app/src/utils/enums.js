@@ -42,6 +42,9 @@ const CONTRACT_INTERACTION_KEY = 'contractInteraction'
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
+const ACTIVE = 'active'
+const INACTIVE = 'inactive'
+
 module.exports = {
   ROPSTEN,
   RINKEBY,
@@ -77,5 +80,7 @@ module.exports = {
   MATIC_URL,
   MATIC_DISPLAY_NAME,
   MATIC,
-  MATIC_CODE
+  MATIC_CODE,
+  ACTIVE,
+  INACTIVE
 }

@@ -35,10 +35,12 @@
 
 .v-tooltip__content {
   @include outlineTooltip();
-  &::after {
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
+  ::v-deep .outline-tooltip {
+    &::after {
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+    }
   }
 }

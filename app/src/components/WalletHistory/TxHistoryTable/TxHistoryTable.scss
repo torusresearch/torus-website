@@ -26,4 +26,19 @@
   ::v-deep .expanded__content {
     box-shadow: none !important;
   }
+
+  ::v-deep .v-pagination__item, ::v-deep .v-pagination__navigation {
+    border: 0;
+    background: none;
+    color: var(--v-torus_text-base);
+    font-weight: 500;
+    box-shadow: none;
+    opacity: 0.7;
+    &.primary {
+      background: none;
+      background-color: transparent !important;
+      color: var(--v-primary-base);
+      opacity: 1;
+    }
+  }
 }

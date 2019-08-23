@@ -1,4 +1,4 @@
-@mixin cardTooltip() {
+.v-tooltip__content {
   background: var(--v-background-base);
   box-shadow: 0 14px 28px 0 rgba(0, 0, 0, 0.5);
   border-radius: 3px;

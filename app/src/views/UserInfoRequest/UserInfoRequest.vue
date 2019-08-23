@@ -48,6 +48,8 @@
 <script>
 import BroadcastChannel from 'broadcast-channel'
 import PageLoader from '../../components/helpers/PageLoader'
+import { broadcastChannelOptions } from '../../utils/utils'
+import log from 'loglevel'
 
 export default {
   name: 'userInfoRequest',
@@ -61,30 +63,39 @@ export default {
     }
   },
   methods: {
-    triggerSign(event) {
-      var bc = new BroadcastChannel(`user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
-      bc.postMessage({
+    async triggerSign(event) {
+      var bc = new BroadcastChannel(
+        `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
+        broadcastChannelOptions
+      )
+      await bc.postMessage({
         data: { type: 'confirm-user-info-request', approve: true }
       })
       bc.close()
       window.close()
     },
-    triggerDeny(event) {
-      var bc = new BroadcastChannel(`user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
-      bc.postMessage({ data: { type: 'deny-user-info-request', approve: false } })
+    async triggerDeny(event) {
+      var bc = new BroadcastChannel(
+        `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
+        broadcastChannelOptions
+      )
+      await bc.postMessage({ data: { type: 'deny-user-info-request', approve: false } })
       bc.close()
       window.close()
     }
   },
   mounted() {
-    var bc = new BroadcastChannel(`user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`)
+    var bc = new BroadcastChannel(
+      `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
+      broadcastChannelOptions
+    )
     bc.onmessage = async ev => {
       const { payload, origin } = ev.data || {}
       let url = { hostname: '' }
       try {
         url = new URL(origin)
       } catch (err) {
-        console.log(err)
+        log.error(err)
       }
       this.origin = url.hostname // origin of tx: website url
       this.type = 'userInfo'

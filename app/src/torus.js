@@ -49,11 +49,11 @@ class Torus {
         VerifierIdentifier string `json:"verifieridentifier"`
       } 
       */
-      console.log(idToken)
+      log.info(idToken)
       var tmpKey = this.ec.genKeyPair()
       var pubKey = tmpKey.getPublic()
       var tokenCommitment = this.web3.utils.keccak256(idToken)
-      console.log(tokenCommitment)
+      log.info(tokenCommitment)
       for (var i = 0; i < endpoints.length; i++) {
         var p = post(
           endpoints[i],
@@ -66,7 +66,7 @@ class Torus {
             verifieridentifier: 'google'
           })
         ).catch(err => {
-          console.error(err)
+          log.error(err)
         })
         promiseArr.push(p)
       }
@@ -106,7 +106,7 @@ class Torus {
                 item: [{ idtoken: idToken, nodesignatures: nodeSigs, verifieridentifier: 'google', email: email }]
               })
             ).catch(err => {
-              console.error(err)
+              log.error(err)
             })
             promiseArrRequest.push(p)
           }
@@ -150,7 +150,7 @@ class Torus {
           })
         })
         .catch(err => {
-          console.error(err)
+          log.error(err)
           reject(err)
         })
     })
@@ -198,7 +198,7 @@ class Torus {
           verifier_id: email.toLowerCase()
         })
       )
-        .catch(err => console.error(err))
+        .catch(err => log.error(err))
         .then(lookupShare => {
           if (lookupShare.error) {
             return post(
@@ -212,7 +212,7 @@ class Torus {
             return this.getLookupPromise(lookupShare)
           }
         })
-        .catch(err => console.error(err))
+        .catch(err => log.error(err))
         .then(lookupShare => {
           log.info('completed')
           log.info(lookupShare)
