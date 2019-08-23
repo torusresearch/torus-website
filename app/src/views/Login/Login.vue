@@ -114,11 +114,9 @@ export default {
   }),
   watch: {
     selectedAddress: function(newAddress, oldAddress) {
-      console.log('watching selected address', newAddress, oldAddress, this.$route.query.redirect)
       if (newAddress !== oldAddress && newAddress !== '') {
         let redirectPath = this.$route.query.redirect
         if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet'
-        console.log(redirectPath)
         this.$router.push(redirectPath)
       }
     }
