@@ -70,7 +70,7 @@
     </v-flex> -->
 
     <v-flex class="xs12 sm6 px-4 my-4" v-if="isFreshAccount" style="order: 1">
-      <PromotionCard title="Welcome to Torusss." subtitle="Learn more about your wallet today." image-path="learn-more.svg">
+      <PromotionCard title="Welcome to Torus." subtitle="Learn more about your wallet today." image-path="learn-more.svg">
         <template v-slot:link>
           <v-dialog v-model="dialog" max-width="700">
             <template v-slot:activator="{ on }">
