@@ -145,4 +145,24 @@ userInfoRequestChannel.onmessage = function(ev) {
   }
 }
 
+var accountImportChannel = new BroadcastChannel('account_import_channel', broadcastChannelOptions)
+accountImportChannel.onmessage = function(ev) {
+  if (ev.data && ev.data.name === 'imported_account' && ev.data.payload) {
+    log.info('importing user account')
+    if (!Object.values(VuexStore.state.wallet).includes(ev.data.payload.privKey)) {
+      VuexStore.dispatch('finishImportAccount', ev.data.payload)
+    }
+  }
+}
+
+var selectedAddressChannel = new BroadcastChannel('selected_address_channel', broadcastChannelOptions)
+selectedAddressChannel.onmessage = function(ev) {
+  if (ev.data && ev.data.name == 'selected_address' && ev.data.payload) {
+    log.info('setting selected address')
+    if (VuexStore.state.selectedAddress !== ev.data.payload) {
+      VuexStore.dispatch('updateSelectedAddress', { selectedAddress: ev.data.payload })
+    }
+  }
+}
+
 export default VuexStore

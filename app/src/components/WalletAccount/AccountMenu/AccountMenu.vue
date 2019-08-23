@@ -169,6 +169,13 @@ export default {
     },
     changeAccount(newAddress) {
       this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
+      const selectedAddressChannel = new BroadcastChannel('selected_address_channel', broadcastChannelOptions)
+      selectedAddressChannel.postMessage({
+        data: {
+          name: 'selected_address',
+          payload: newAddress
+        }
+      })
     }
   }
 }
