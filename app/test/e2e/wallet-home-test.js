@@ -111,14 +111,16 @@ describe('Tests Wallet Home', () => {
   })
 
   it('Should show learn more if fresh account', async () => {
-    await click(page, '#learn-more-btn')
-    await shouldExist(page, '.learn-more')
+    if (isFreshAccount) {
+      await click(page, '#learn-more-btn')
+      await shouldExist(page, '.learn-more')
 
-    // Navigate learn more
-    await click(page, '#get-started-btn')
-    await click(page, '#next-step-btn')
+      // Navigate learn more
+      await click(page, '#get-started-btn')
+      await click(page, '#next-step-btn')
 
-    // Should close learn more
-    await click(page, '#next-step-btn')
+      // Should close learn more
+      await click(page, '#next-step-btn')
+    }
   })
 })
