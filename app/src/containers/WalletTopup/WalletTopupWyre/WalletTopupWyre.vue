@@ -1,5 +1,5 @@
 <template>
-  <v-layout wrap>
+  <v-layout wrap class="wallet-topup-wyre">
     <v-flex xs12>
       <p class="body-2">
         Wyre is a secure way to buy cryptocurrency with your debit card. Start by entering an amount to make your purchase
@@ -71,7 +71,7 @@
 
 <script>
 import { setInterval, clearInterval } from 'timers'
-import { significantDigits, formatCurrencyNumber } from '../../utils/utils'
+import { significantDigits, formatCurrencyNumber } from '../../../utils/utils'
 const MAX_ORDER_VALUE = 40
 const MIN_ORDER_VALUE = 5
 var widget
@@ -149,3 +149,7 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+@import 'WalletTopupWyre.scss';
+</style>

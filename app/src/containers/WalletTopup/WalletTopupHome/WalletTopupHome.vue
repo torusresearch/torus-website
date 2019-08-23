@@ -73,7 +73,7 @@ export default {
           line2: '<span class="font-weight-medium">Wyre Service Fee</span> : 2.9% + 30¢',
           line3: '( $40 per day limit )',
           link: '/wallet/topup/wyre',
-          status: ACTIVE
+          status: INACTIVE
         },
         {
           name: 'crypto',
