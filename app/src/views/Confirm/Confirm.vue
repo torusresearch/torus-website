@@ -105,22 +105,7 @@
             <v-btn block text large class="grey--text" @click="triggerDeny">Cancel</v-btn>
           </v-flex>
           <v-flex xs6>
-            <v-dialog v-model="confirmDialog" max-width="550" persistent>
-              <template v-slot:activator="{ on }">
-                <v-btn :disabled="!canApprove" block depressed large color="primary" class="ml-2" v-on="on">Confirm</v-btn>
-              </template>
-              <transfer-confirm
-                :toAddress="receiver"
-                :selectedCoin="'ETH'"
-                :convertedAmount="dollarValue"
-                :displayAmount="amountDisplay(value)"
-                :speedSelected="speed"
-                :transactionFee="txFees"
-                :selectedCurrency="selectedCurrency"
-                @onClose="confirmDialog = false"
-                @onConfirm="triggerSign"
-              ></transfer-confirm>
-            </v-dialog>
+            <v-btn :disabled="!canApprove" block depressed large color="primary" class="ml-2" @click="triggerSign">Confirm</v-btn>
           </v-flex>
         </v-layout>
       </v-layout>
@@ -197,7 +182,6 @@ import BroadcastChannel from 'broadcast-channel'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
 import PageLoader from '../../components/helpers/PageLoader'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
-import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import torus from '../../torus'
 import {
   significantDigits,
@@ -242,8 +226,7 @@ export default {
   name: 'confirm',
   components: {
     PageLoader,
-    TransactionSpeedSelect,
-    TransferConfirm
+    TransactionSpeedSelect
   },
   data() {
     return {
