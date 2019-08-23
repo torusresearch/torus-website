@@ -69,20 +69,20 @@ export default {
         {
           name: 'wyre',
           logo: 'wyre-logo.svg',
-          line1: 'Pay with Credit Card or Wire Transfer',
-          line2: '<span class="font-weight-medium">Wyre Service Fee</span> : Varies',
-          line3: '',
+          line1: 'Pay with Debit Card (USA only)',
+          line2: '<span class="font-weight-medium">Wyre Service Fee</span> : 2.9% + 30¢',
+          line3: '( $40 per day limit )',
           link: '/wallet/topup/wyre',
           status: INACTIVE
         },
         {
           name: 'crypto',
           logo: 'crypto-logo.png',
-          line1: 'Pay with Credit Card or Wire Transfer',
+          line1: 'Pay with Credit Card',
           line2: '<span class="font-weight-medium">crypto.com Service Fee</span> : Varies',
           line3: '',
           link: '/wallet/topup/crypto',
-          status: INACTIVE
+          status: ACTIVE
         }
       ]
     }
