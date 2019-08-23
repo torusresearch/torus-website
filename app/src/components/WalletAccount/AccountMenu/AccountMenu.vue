@@ -38,19 +38,19 @@
 
     <v-divider></v-divider>
 
-    <v-list>
-      <v-list-item v-for="(acc, index) in getWallets" :key="acc" @click="changeAccount(acc)">
+    <v-list v-if="wallets.length > 1">
+      <v-list-item v-for="acc in filteredWallets" :key="acc.id" @click="changeAccount(acc.address)">
         <v-list-item-content class="font-weight-bold">
           <v-list-item-title>
-            <div class="font-weight-bold headline text-capitalize text--lighten-4">Account #{{ index + 1 }}</div>
+            <div class="font-weight-bold headline text-capitalize text--lighten-4">Account #{{ acc.id + 1 }}</div>
           </v-list-item-title>
 
-          <v-list-item-subtitle>{{ acc }}</v-list-item-subtitle>
+          <v-list-item-subtitle>{{ acc.address }}</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </v-list>
 
-    <v-divider v-if="getWallets.length > 0"></v-divider>
+    <v-divider v-if="wallets.length > 1"></v-divider>
 
     <v-list>
       <v-list-item @click="accountImportDialog = true">
@@ -131,8 +131,11 @@ export default {
     selectedCurrency() {
       return this.$store.state.selectedCurrency
     },
-    getWallets() {
-      return Object.keys(this.$store.state.wallet).filter(acc => acc !== this.selectedAddress)
+    wallets() {
+      return Object.keys(this.$store.state.wallet).map((wallet, id) => ({ id: id, address: wallet }))
+    },
+    filteredWallets() {
+      return this.wallets.filter(acc => acc.address !== this.selectedAddress)
     },
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
