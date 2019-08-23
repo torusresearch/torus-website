@@ -320,7 +320,7 @@ export default {
         this.$store
           .dispatch('importAccount', { keyData: [this.privateKey], strategy: 'Private Key' })
           .then(() => {
-            this.$router.push({ path: '/wallet/home' })
+            this.onClose()
             this.isLoadingPrivate = false
           })
           .catch(err => {
