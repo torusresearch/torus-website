@@ -53,7 +53,7 @@ module.exports = {
       throw new Error(`Value text empty for for selector: ${selector}`)
     }
   },
-  selectItem: async function(page, selector, text) {
+  selectItem: async function(page, selector, selectorContainer, text) {
     try {
       await click(page, selector)
       await page.evaluate(text => {
@@ -63,7 +63,7 @@ module.exports = {
         })
       }, text)
 
-      await waitForText(page, '.v-select__selection.v-select__selection--comma', text)
+      await waitForText(page, `${selectorContainer} .v-select__selection`, text)
     } catch (error) {
       throw new Error(`Option ${text} not found for selector: ${selector}`)
     }

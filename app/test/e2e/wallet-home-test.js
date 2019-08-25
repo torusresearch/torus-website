@@ -101,13 +101,12 @@ describe('Tests Wallet Home', () => {
 
   it('Should update currency', async () => {
     let currency = 'AUD'
-    await selectItem(page, '#currency-selector', currency)
+    await selectItem(page, '#currency-selector', '.e2e-currency-selector-container', currency)
     await waitForText(page, '#selected-currency', currency)
 
     currency = 'USD'
-    await selectItem(page, '#currency-selector', currency)
+    await selectItem(page, '#currency-selector', '.e2e-currency-selector-container', currency)
     await waitForText(page, '#selected-currency', currency)
-    await page.waitFor(4000)
   })
 
   it('Should show learn more if fresh account', async () => {

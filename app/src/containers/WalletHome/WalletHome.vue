@@ -100,7 +100,7 @@
                 <span class="caption">CURRENCY:</span>
                 <v-select
                   id="currency-selector"
-                  class="pt-0 mt-0 ml-1 caption currency-selector"
+                  class="pt-0 mt-0 ml-1 caption currency-selector e2e-currency-selector-container"
                   height="25px"
                   hide-details
                   :items="supportedCurrencies"
