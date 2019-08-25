@@ -55,4 +55,44 @@ describe('Tests Wallet Topup', () => {
 
     await waitForText(page, '.wallet-home .headline', 'My Wallet')
   })
+
+  it('Should go to topup page', async () => {
+    await click(page, '#top-up-link')
+    await shouldExist(page, '.wallet-topup-view')
+  })
+
+  it('Should show for for each active provider', async () => {
+    const providers = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('.topup-provider'), element => ({
+        provider: element.dataset.provider,
+        isComingSoon: Object.values(element.classList).indexOf('coming-soon') > -1
+      }))
+    )
+
+    for (let i = 0; i < providers.length; i++) {
+      const provider = providers[i]
+
+      if (!provider.isComingSoon) {
+        await click(page, `#${provider.provider}-link`)
+        await shouldExist(page, `.wallet-topup-${provider.provider}`)
+      }
+    }
+  })
+
+  it('Should update receive field for simplex', async () => {
+    await click(page, '#simplex-link')
+    await shouldExist(page, '.wallet-topup-simplex')
+
+    await page.waitForResponse(response => response.url() === 'https://simplex-api.tor.us/quote')
+    await page.waitFor(300)
+    let receiveFirst = await page.$eval('#simplex-receive', el => el.value)
+
+    await typeText(page, '00', '#simplex-you-send')
+
+    await page.waitForResponse(response => response.url() === 'https://simplex-api.tor.us/quote')
+    await page.waitFor(300)
+    let receiveSecond = await page.$eval('#simplex-receive', el => el.value)
+
+    assert.notEqual(receiveFirst, receiveSecond)
+  })
 })

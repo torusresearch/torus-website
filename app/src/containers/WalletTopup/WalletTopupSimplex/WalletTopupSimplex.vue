@@ -11,6 +11,7 @@
         <v-flex xs12>
           <div class="subtitle-2">You send</div>
           <v-text-field
+            id="simplex-you-send"
             class="unique-hint"
             placeholder="0.00 (Min 50.00)"
             outlined
@@ -48,6 +49,7 @@
         <v-flex xs12>
           <div class="subtitle-2">Receive</div>
           <v-text-field
+            id="simplex-receive"
             readonly
             placeholder="0.00"
             suffix="ETH"
