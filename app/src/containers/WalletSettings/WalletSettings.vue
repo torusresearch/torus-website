@@ -4,7 +4,7 @@
       <v-expansion-panels multiple>
         <!-- Privacy and security settings -->
         <v-expansion-panel>
-          <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
+          <v-expansion-panel-header id="privacy-panel-header" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
             <img
               :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
               class="d-inline-flex mr-4 shrink"
@@ -17,7 +17,7 @@
           <v-expansion-panel-content>
             <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-0 px-12'">
               <v-list>
-                <v-list-item @click="privateKeyDialog = true">
+                <v-list-item id="private-key-btn" @click="privateKeyDialog = true">
                   <v-list-item-avatar class="mr-4">
                     <img :src="require(`../../../public/img/icons/key.svg`)" class=" mr-4" />
                   </v-list-item-avatar>
@@ -46,8 +46,8 @@
         </v-expansion-panel>
 
         <!-- Network Settigs -->
-        <v-expansion-panel id="expansion-network">
-          <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
+        <v-expansion-panel>
+          <v-expansion-panel-header id="network-panel-header" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
             <img
               :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
               class="d-inline-flex mr-4 shrink collpase-icon"
@@ -105,7 +105,7 @@
 
         <!-- Display Settings -->
         <v-expansion-panel>
-          <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
+          <v-expansion-panel-header id="display-panel-header" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
             <img
               :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
               class="d-inline-flex mr-4 shrink collpase-icon"

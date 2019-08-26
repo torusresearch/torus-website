@@ -59,7 +59,7 @@ describe('Tests Wallet Activity Page', () => {
   it('Should change network to rinkeby', async () => {
     await click(page, '#settings-link')
     await shouldExist(page, '.wallet-settings')
-    await click(page, '#expansion-network')
+    await click(page, '#network-panel-header')
 
     await click(page, '#select-network')
     await page.evaluate(() => {
