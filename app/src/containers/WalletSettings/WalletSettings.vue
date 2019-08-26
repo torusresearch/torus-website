@@ -121,13 +121,17 @@
               <div class="body-2 mb-1 px-1">Select Theme</div>
               <v-layout wrap>
                 <v-flex xs12 sm4 px-1 mb-1>
-                  <v-btn light outlined block color="primary" class="btn-default" @click="selectTheme('default')">Default</v-btn>
+                  <v-btn id="default-theme-btn" light outlined block color="primary" class="btn-default" @click="selectTheme('default')">
+                    Default
+                  </v-btn>
                 </v-flex>
                 <v-flex xs12 sm4 px-1 mb-1>
-                  <v-btn dark depressed block class="btn-cerulean" @click="selectTheme('cerulean-blue')">Cerulean Blue</v-btn>
+                  <v-btn id="cerulean-theme-btn" dark depressed block class="btn-cerulean" @click="selectTheme('cerulean-blue')">Cerulean Blue</v-btn>
                 </v-flex>
                 <v-flex xs12 sm4 px-1 mb-1>
-                  <v-btn dark depressed block class="btn-shuttle-grey" @click="selectTheme('shuttle-grey')">Shuttle Grey</v-btn>
+                  <v-btn id="shuttle-grey-theme-btn" dark depressed block class="btn-shuttle-grey" @click="selectTheme('shuttle-grey')">
+                    Shuttle Grey
+                  </v-btn>
                 </v-flex>
               </v-layout>
               <v-flex class="pt-12 text-right">

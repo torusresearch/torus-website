@@ -88,4 +88,12 @@ describe('Tests Wallet Settings Page', () => {
     // check if textToSelect was selected
     assert.equal(textToSelect, networkSelected)
   })
+
+  it('Should show display settings', async () => {
+    await click(page, '#display-panel-header')
+    await click(page, '#default-theme-btn')
+    await click(page, '#cerulean-theme-btn')
+    await click(page, '#shuttle-grey-theme-btn')
+    await click(page, '#default-theme-btn')
+  })
 })
