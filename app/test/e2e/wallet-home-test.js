@@ -62,15 +62,13 @@ describe('Tests Wallet Home', () => {
     await shouldExist(page, '.wallet-settings')
     await click(page, '#network-panel-header')
 
-    await click(page, '#select-network')
-    await page.evaluate(() => {
-      let options = [...document.querySelectorAll('.v-list-item__title')]
-      options.forEach(function(option) {
-        if (option.innerText == 'Rinkeby Test Network') option.click()
-      })
-    })
+    const textToSelect = 'Rinkeby Test Network'
+    await selectItem(page, '#select-network', '.select-network-container', textToSelect)
+    await page.waitFor(100)
+    const networkSelected = await page.$eval('.select-network-container .v-select__selection', el => el.textContent)
 
-    await waitForText(page, '.v-select__selection.v-select__selection--comma', 'Rinkeby Test Network')
+    // check if textToSelect was selected
+    assert.equal(textToSelect, networkSelected)
   })
 
   it('Should go to wallet home page', async () => {

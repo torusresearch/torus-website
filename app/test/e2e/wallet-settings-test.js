@@ -76,4 +76,16 @@ describe('Tests Wallet Settings Page', () => {
     await click(page, '.dapp-permisson-container #close-btn')
     await page.waitFor(300)
   })
+
+  it('Should change network to rinkeby', async () => {
+    await click(page, '#network-panel-header')
+
+    const textToSelect = 'Rinkeby Test Network'
+    await selectItem(page, '#select-network', '.select-network-container', textToSelect)
+    await page.waitFor(100)
+    const networkSelected = await page.$eval('.select-network-container .v-select__selection', el => el.textContent)
+
+    // check if textToSelect was selected
+    assert.equal(textToSelect, networkSelected)
+  })
 })
