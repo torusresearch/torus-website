@@ -1,5 +1,5 @@
 <template>
-  <v-card width="400">
+  <v-card width="400" class="account-menu">
     <v-list>
       <v-list-item>
         <v-list-item-avatar class="mr-2 mt-4">
@@ -12,15 +12,15 @@
           <v-list-item-subtitle>
             <div class="caption">
               <span>{{ userEmail }}</span>
-              <v-icon>{{ isShowSelectedAddress ? $vuetify.icons.visibility_off : $vuetify.icons.visibility_on }}</v-icon>
               <img
+                id="show-address-btn"
                 class="float-right mr-5"
                 width="16"
                 :src="require(`../../../../public/img/icons/eye${isShowSelectedAddress ? '-off' : ''}-primary.svg`)"
                 @click="isShowSelectedAddress = !isShowSelectedAddress"
               />
             </div>
-            <div v-if="isShowSelectedAddress" class="caption">
+            <div v-if="isShowSelectedAddress" class="caption public-address-container">
               <show-tool-tip :address="selectedAddress">{{ selectedAddress }}</show-tool-tip>
             </div>
           </v-list-item-subtitle>
