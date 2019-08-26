@@ -69,4 +69,9 @@ describe('Tests Account Menu', () => {
     await click(page, '#show-address-btn')
     await shouldExist(page, '.public-address-container')
   })
+
+  it('Should show import account', async () => {
+    await click(page, '#import-account-btn')
+    await shouldExist(page, '.account-import')
+  })
 })

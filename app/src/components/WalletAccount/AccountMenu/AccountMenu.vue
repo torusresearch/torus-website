@@ -53,7 +53,7 @@
     <v-divider v-if="wallets.length > 1"></v-divider>
 
     <v-list>
-      <v-list-item @click="accountImportDialog = true">
+      <v-list-item id="import-account-btn" @click="accountImportDialog = true">
         <v-list-item-action class="mr-2">
           <img :src="require('../../../../public/img/icons/import-grey.svg')" />
         </v-list-item-action>
