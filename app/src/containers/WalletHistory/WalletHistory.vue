@@ -5,6 +5,7 @@
         <div class="text-black font-weight-bold headline float-left">Transaction Activities</div>
         <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
           <v-select
+            id="transaction-selector"
             class="pt-0 mt-0 ml-2 subtitle-2 nav-selector transaction"
             height="25px"
             hide-details
@@ -13,6 +14,7 @@
             append-icon="$vuetify.icons.select"
           />
           <v-select
+            id="period-selector"
             class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period"
             height="25px"
             hide-details
