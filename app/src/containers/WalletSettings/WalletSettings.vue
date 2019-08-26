@@ -25,7 +25,7 @@
                     <v-list-item-title>Private Key</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item @click="dappPermissionDialog = true">
+                <v-list-item id="dapp-permisson-btn" @click="dappPermissionDialog = true">
                   <v-list-item-avatar class="mr-4">
                     <img :src="require(`../../../public/img/icons/list.svg`)" class=" mr-4" />
                   </v-list-item-avatar>
@@ -64,6 +64,7 @@
                 <v-flex>
                   <v-select
                     id="select-network"
+                    class="select-network-container"
                     outlined
                     :items="networks"
                     item-text="name"

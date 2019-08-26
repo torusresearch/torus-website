@@ -1,5 +1,5 @@
 <template>
-  <v-card class="advance-option">
+  <v-card class="private-key-container">
     <v-card-text class="torus_text--text py-6">
       <v-layout wrap>
         <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
@@ -108,7 +108,7 @@
       </v-layout>
       <v-layout mt-4 pr-4>
         <v-spacer></v-spacer>
-        <v-btn large text @click="onClose">Close</v-btn>
+        <v-btn id="close-btn" large text @click="onClose">Close</v-btn>
       </v-layout>
     </v-card-text>
   </v-card>
