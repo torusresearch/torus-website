@@ -14,10 +14,11 @@
               <v-list-item-content>
                 <div class="subtitle-1 flex-grow-1 font-weight-bold">Download soft copy (JSON)</div>
                 <v-expand-transition>
-                  <v-layout wrap align-center justify-space-between v-if="isShowGetPassword" class="mt-2">
+                  <v-layout wrap align-center justify-space-between v-if="isShowGetPassword" class="mt-2 download-form-container">
                     <v-flex>
                       <v-form ref="downloadForm" @submit.prevent="downloadWallet" v-model="downloadFormValid" lazy-validation>
                         <v-text-field
+                          id="json-file-password"
                           small
                           :rules="[rules.required]"
                           v-model="keyStorePassword"
@@ -27,6 +28,7 @@
                         >
                           <template v-slot:append-outer v-if="!$vuetify.breakpoint.xsOnly">
                             <v-btn
+                              id="json-file-confirm-btn"
                               color="primary"
                               depressed
                               :disabled="!downloadFormValid || isLoadingDownloadWallet"
@@ -36,7 +38,9 @@
                             >
                               Confirm
                             </v-btn>
-                            <v-btn depressed color="primary" v-if="walletJson" :href="walletJson" :download="name">Download wallet</v-btn>
+                            <v-btn id="json-file-download-btn" depressed color="primary" v-if="walletJson" :href="walletJson" :download="name">
+                              Download wallet
+                            </v-btn>
                           </template>
                         </v-text-field>
                       </v-form>
@@ -57,7 +61,7 @@
                 </v-expand-transition>
               </v-list-item-content>
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'ma-1' : ''">
-                <v-btn icon small @click="isShowGetPassword = true">
+                <v-btn id="show-download-form-btn" icon small @click="isShowGetPassword = true">
                   <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require('../../../../public/img/icons/download-primary.svg')" />
                 </v-btn>
               </v-list-item-icon>
@@ -84,7 +88,7 @@
                     </v-flex>
                     <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : ''">
                       <show-tool-tip :address="selectedKey">
-                        <v-btn text small class="primary--text" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'caption'">
+                        <v-btn id="click-to-copy-btn" text small class="primary--text" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'caption'">
                           <img
                             :src="require('../../../../public/img/icons/copy-primary.svg')"
                             class="mr-1"
@@ -98,7 +102,7 @@
                 </v-expand-transition>
               </v-list-item-content>
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'ma-1' : ''">
-                <v-btn icon small @click="isShowPrivateKey = !isShowPrivateKey">
+                <v-btn id="show-private-key-btn" icon small @click="isShowPrivateKey = !isShowPrivateKey">
                   <img
                     :width="$vuetify.breakpoint.xsOnly ? '20' : ''"
                     :src="require(`../../../../public/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)"

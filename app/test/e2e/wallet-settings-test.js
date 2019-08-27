@@ -61,22 +61,6 @@ describe('Tests Wallet Settings Page', () => {
     await shouldExist(page, '.wallet-settings')
   })
 
-  it('Should show private key popup', async () => {
-    await click(page, '#privacy-panel-header')
-    await click(page, '#private-key-btn')
-    await shouldExist(page, '.private-key-container')
-
-    await click(page, '.private-key-container #close-btn')
-  })
-
-  it('Should show dapp permission popup', async () => {
-    await click(page, '#dapp-permisson-btn')
-    await shouldExist(page, '.dapp-permisson-container')
-
-    await click(page, '.dapp-permisson-container #close-btn')
-    await page.waitFor(300)
-  })
-
   it('Should change network to rinkeby', async () => {
     await click(page, '#network-panel-header')
 
@@ -89,6 +73,46 @@ describe('Tests Wallet Settings Page', () => {
     assert.equal(textToSelect, networkSelected)
   })
 
+  it('Should show private key popup', async () => {
+    await click(page, '#privacy-panel-header')
+    await click(page, '#private-key-btn')
+    await shouldExist(page, '.private-key-container')
+  })
+
+  it('Should show download wallet', async () => {
+    await click(page, '#show-download-form-btn')
+
+    // wait for expansion effect
+    await page.waitFor(300)
+    await shouldExist(page, '.download-form-container')
+    await typeText(page, 's@mplePassword', '#json-file-password')
+    await click(page, '#json-file-confirm-btn')
+
+    // wait for download wallet to appear
+    await page.waitForResponse(response => response.url().indexOf('https://api.infura.io/v1/jsonrpc/rinkeby') >= 0)
+    await shouldExist(page, '#json-file-download-btn')
+  })
+
+  it('Should show private-key', async () => {
+    await click(page, '#show-private-key-btn')
+
+    // wait for expansion effect
+    await page.waitFor(300)
+    await shouldExist(page, '#click-to-copy-btn')
+
+    await click(page, '.private-key-container #close-btn')
+  })
+
+  // TODO: after permissions feature are done
+  it('Should show dapp permission popup', async () => {
+    await click(page, '#dapp-permisson-btn')
+    await shouldExist(page, '.dapp-permisson-container')
+
+    await click(page, '.dapp-permisson-container #close-btn')
+    await page.waitFor(300)
+  })
+
+  // TODO: after actual themes are done
   it('Should show display settings', async () => {
     await click(page, '#display-panel-header')
     await click(page, '#default-theme-btn')
