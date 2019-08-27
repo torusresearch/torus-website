@@ -8,13 +8,15 @@ const click = require('./lib/helpers').click
 const typeText = require('./lib/helpers').typeText
 const waitForText = require('./lib/helpers').waitForText
 const shouldExist = require('./lib/helpers').shouldExist
-const shouldTextNotBeEmpty = require('./lib/helpers').shouldTextNotBeEmpty
+const selectItem = require('./lib/helpers').selectItem
 const shouldValueNotBeEmpty = require('./lib/helpers').shouldValueNotBeEmpty
+const shouldTextNotBeEmpty = require('./lib/helpers').shouldTextNotBeEmpty
 
 describe('Tests Wallet Transfer Transaction', () => {
   let browser
   let page
   let confirmPage
+  let transactionCount
 
   before(async function() {
     browser = await puppeteer.launch({
@@ -58,6 +60,13 @@ describe('Tests Wallet Transfer Transaction', () => {
     await waitForText(page, '.wallet-home .headline', 'My Wallet')
   })
 
+  it('Should load needed api', async () => {
+    // Wait for these APIs
+    const userResponse = await page.waitForResponse(response => response.url() === 'https://api.tor.us/user')
+    let userData = await userResponse.json()
+    transactionCount = userData.data.transactions.length
+  })
+
   it('Should change network to rinkeby', async () => {
     await click(page, '#settings-link')
     await shouldExist(page, '.wallet-settings')
@@ -78,15 +87,13 @@ describe('Tests Wallet Transfer Transaction', () => {
   })
 
   it('Should select coin', async () => {
-    await click(page, '#select-coin')
-    await page.evaluate(() => {
-      let options = [...document.querySelectorAll('.v-list-item__title')]
-      options.forEach(function(option) {
-        if (option.innerText == 'Ethereum') option.click()
-      })
-    })
+    const textToSelect = 'Ethereum'
+    await selectItem(page, '#select-coin', '.select-coin-container', textToSelect)
+    await page.waitFor(100)
+    const coinSelected = await page.$eval('.select-coin-container .v-select__selection', el => el.textContent)
 
-    await page.waitFor(500)
+    // check if textToSelect was selected
+    assert.equal(textToSelect, coinSelected)
   })
 
   it('Should error on invalid input', async () => {
@@ -103,15 +110,30 @@ describe('Tests Wallet Transfer Transaction', () => {
     await waitForText(page, '.you-send-container .v-messages__message', 'Insufficient balance for transaction')
   })
 
+  it('Should click send all', async () => {
+    await click(page, '#send-all-btn')
+    await shouldExist(page, '#send-all-reset-btn')
+
+    const isReadOnly = await page.$eval('#you-send', el => el.readOnly)
+    assert.equal(isReadOnly, true)
+  })
+
+  it('Should reset send all', async () => {
+    await click(page, '#send-all-reset-btn')
+    await shouldExist(page, '#send-all-btn')
+
+    const isReadOnly = await page.$eval('#you-send', el => el.readOnly)
+    assert.equal(isReadOnly, false)
+  })
+
   it('Should show you send conversion ', async () => {
     const youSendValue = 0.001
     // overwrite content
     await page.click('#you-send', { clickCount: 3 })
-    await page.waitFor(500)
+    await page.waitFor(100)
     await typeText(page, youSendValue.toString(), '#you-send')
     await shouldValueNotBeEmpty(page, '.you-send-container .v-messages__message')
   })
-
   it('Should load advanced options', async () => {
     await click(page, '#advance-option-link')
     await waitForText(page, '.advance-option .subtitle-2', 'Customize Gas')
@@ -121,11 +143,11 @@ describe('Tests Wallet Transfer Transaction', () => {
     const transactionFee = await page.$eval('#transaction-fee', el => el.value)
     let gasPrice = await page.$eval('#gas-price', el => el.value)
     gasPrice = parseFloat(gasPrice) + 4
-    await page.waitFor(500)
+    await page.waitFor(100)
 
     // overwrite content
     await page.click('#gas-price', { clickCount: 3 })
-    await page.waitFor(500)
+    await page.waitFor(100)
     await typeText(page, gasPrice.toString(), '#gas-price')
     const newTransactionFee = await page.$eval('#transaction-fee', el => el.value)
     assert.notEqual(transactionFee, newTransactionFee)
@@ -134,7 +156,7 @@ describe('Tests Wallet Transfer Transaction', () => {
   it('Should submit advanced option', async () => {
     await click(page, '#adv-opt-submit-btn')
     await shouldExist(page, '#adv-reset-btn')
-    await page.waitFor(500)
+    await page.waitFor(300)
   })
 
   it('Should reset advanced option', async () => {
@@ -180,6 +202,10 @@ describe('Tests Wallet Transfer Transaction', () => {
   })
 
   it('Should show on wallet activity page', async () => {
+    await click(page, '#activity-link')
+    await page.waitForResponse(response => response.url().indexOf('https://simplex-api.tor.us/pastorders') >= 0)
     await shouldExist(page, '.wallet-activity')
+    let activityPageTransactionCount = await page.$eval('.activity-table', el => el.dataset.countTransfer)
+    assert.equal(transactionCount + 1, activityPageTransactionCount)
   })
 })

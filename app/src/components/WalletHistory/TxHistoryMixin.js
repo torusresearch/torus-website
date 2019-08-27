@@ -29,7 +29,7 @@ const mapper = {
 }
 
 export default {
-  props: ['transactions', 'selectedAction', 'selectedPeriod'],
+  props: ['transactions', 'selectedAction', 'selectedPeriod', 'nonTopupTransactionCount'],
   data() {
     return {
       mapper: mapper

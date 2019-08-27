@@ -1,5 +1,5 @@
 <template>
-  <div class="activity-table" :data-count="transactions.length" :data-per-page="itemsPerPage">
+  <div class="activity-table" :data-count="transactions.length" :data-per-page="itemsPerPage" :data-count-transfer="nonTopupTransactionCount">
     <v-data-table
       :headers="headers"
       :items="filteredTransactions"

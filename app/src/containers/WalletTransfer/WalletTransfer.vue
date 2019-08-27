@@ -8,6 +8,7 @@
             <span class="subtitle-2">Select your Coin</span>
             <v-select
               id="select-coin"
+              class="select-coin-container"
               append-icon="$vuetify.icons.select"
               hide-details
               :items="finalBalancesArray"
@@ -52,8 +53,8 @@
           <v-flex xs12 px-4 sm6 class="you-send-container">
             <div>
               <span class="subtitle-2">You send</span>
-              <a class="float-right primary--text subtitle-2" v-if="!isSendAll" @click="sendAll">Send All</a>
-              <a class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">Reset</a>
+              <a id="send-all-btn" class="float-right primary--text subtitle-2" v-if="!isSendAll" @click="sendAll">Send All</a>
+              <a id="send-all-reset-btn" class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">Reset</a>
             </div>
             <v-text-field
               id="you-send"

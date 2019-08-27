@@ -31,6 +31,7 @@
           :selectedAction="selectedAction"
           :selectedPeriod="selectedPeriod"
           :transactions="calculateFinalTransactions()"
+          :nonTopupTransactionCount="getNonTopupTransactionCount()"
         />
         <tx-history-table-mobile
           v-if="$vuetify.breakpoint.xsOnly"
@@ -111,6 +112,9 @@ export default {
   methods: {
     onCurrencyChange(value) {
       this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value })
+    },
+    getNonTopupTransactionCount() {
+      return this.calculateFinalTransactions().filter(item => item.action !== 'Top up').length
     },
     calculateFinalTransactions() {
       let finalTx = this.paymentTx
