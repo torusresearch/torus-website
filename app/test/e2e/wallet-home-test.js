@@ -57,6 +57,13 @@ describe('Tests Wallet Home', () => {
     await waitForText(page, '.wallet-home .headline', 'My Wallet')
   })
 
+  it('Should load needed api', async () => {
+    // Wait for these APIs
+    const userResponse = await page.waitForResponse(response => response.url() === 'https://api.tor.us/user')
+    let userData = await userResponse.json()
+    isFreshAccount = userData.data.is_new
+  })
+
   it('Should change network to rinkeby', async () => {
     await click(page, '#settings-link')
     await shouldExist(page, '.wallet-settings')
@@ -76,8 +83,13 @@ describe('Tests Wallet Home', () => {
     await shouldExist(page, '.wallet-home')
   })
 
+  it('Should show get eth tooltip if fresh account', async () => {
+    if (isFreshAccount) {
+      await waitForText(page, '.outline-tooltip', 'Get ETH!')
+    }
+  })
+
   it('Should go to transfer page is not fresh account', async () => {
-    isFreshAccount = (await page.$('.transfer-btn[disabled]')) !== null
     if (!isFreshAccount) {
       await click(page, '.transfer-btn')
       await shouldExist(page, '.wallet-transfer')
@@ -85,16 +97,16 @@ describe('Tests Wallet Home', () => {
     }
   })
 
-  it('Should go to topup page', async () => {
-    await click(page, '.topup-btn')
-    await shouldExist(page, '.wallet-topup-view')
-    await click(page, '#home-link')
-  })
-
   it('Should show getEth tooltip if fresh account', async () => {
     if (isFreshAccount) {
       await shouldExist(page, '.outline-tooltip')
     }
+  })
+
+  it('Should go to topup page', async () => {
+    await click(page, '.topup-btn')
+    await shouldExist(page, '.wallet-topup-view')
+    await click(page, '#home-link')
   })
 
   it('Should update currency', async () => {
