@@ -61,7 +61,7 @@ describe('Tests Wallet Topup', () => {
     await shouldExist(page, '.wallet-topup-view')
   })
 
-  it('Should show for for each active provider', async () => {
+  it('Should show container for for each active provider', async () => {
     const providers = await page.evaluate(() =>
       Array.from(document.querySelectorAll('.topup-provider'), element => ({
         provider: element.dataset.provider,
@@ -84,15 +84,21 @@ describe('Tests Wallet Topup', () => {
     await shouldExist(page, '.wallet-topup-simplex')
 
     await page.waitForResponse(response => response.url() === 'https://simplex-api.tor.us/quote')
-    await page.waitFor(300)
+    await page.waitFor(100)
     let receiveFirst = await page.$eval('#simplex-receive', el => el.value)
 
     await typeText(page, '00', '#simplex-you-send')
 
     await page.waitForResponse(response => response.url() === 'https://simplex-api.tor.us/quote')
-    await page.waitFor(300)
+    await page.waitFor(100)
     let receiveSecond = await page.$eval('#simplex-receive', el => el.value)
 
     assert.notEqual(receiveFirst, receiveSecond)
+  })
+
+  it('Should load moonpay', async () => {
+    await click(page, '#moonpay-link')
+    await shouldExist(page, '.wallet-topup-moonpay')
+    await page.waitForResponse(response => response.url().indexOf('https://buy.moonpay.io/') >= 0)
   })
 })
