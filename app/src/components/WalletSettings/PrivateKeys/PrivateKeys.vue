@@ -17,15 +17,18 @@
                   <v-layout wrap align-center justify-space-between v-if="isShowGetPassword" class="mt-2">
                     <v-flex>
                       <v-form ref="downloadForm" @submit.prevent="downloadWallet" v-model="downloadFormValid" lazy-validation>
-                        <v-text-field small :rules="[rules.required]" v-model="keyStorePassword" :type="showJsonPassword ? 'text' : 'password'">
-                          <template v-slot:append>
-                            <v-btn icon small @click="showJsonPassword = !showJsonPassword">
-                              <img :src="require(`../../../../public/img/icons/eye${showJsonPassword ? '-off' : ''}-grey.svg`)" />
-                            </v-btn>
-                          </template>
+                        <v-text-field
+                          small
+                          :rules="[rules.required]"
+                          v-model="keyStorePassword"
+                          :type="showJsonPassword ? 'text' : 'password'"
+                          @click:append="showJsonPassword = !showJsonPassword"
+                          :append-icon="showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
+                        >
                           <template v-slot:append-outer v-if="!$vuetify.breakpoint.xsOnly">
                             <v-btn
                               color="primary"
+                              depressed
                               :disabled="!downloadFormValid || isLoadingDownloadWallet"
                               v-if="!walletJson"
                               :loading="isLoadingDownloadWallet"
@@ -33,7 +36,7 @@
                             >
                               Confirm
                             </v-btn>
-                            <v-btn color="primary" v-if="walletJson" :href="walletJson" :download="name">Download wallet</v-btn>
+                            <v-btn depressed color="primary" v-if="walletJson" :href="walletJson" :download="name">Download wallet</v-btn>
                           </template>
                         </v-text-field>
                       </v-form>

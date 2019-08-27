@@ -45,10 +45,6 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const ACTIVE = 'active'
 const INACTIVE = 'inactive'
 
-const TYPED = 'typed'
-const NORMAL = 'normal'
-const PERSONAL = 'personal'
-
 module.exports = {
   ROPSTEN,
   RINKEBY,
@@ -86,8 +82,5 @@ module.exports = {
   MATIC,
   MATIC_CODE,
   ACTIVE,
-  INACTIVE,
-  TYPED,
-  NORMAL,
-  PERSONAL
+  INACTIVE
 }
