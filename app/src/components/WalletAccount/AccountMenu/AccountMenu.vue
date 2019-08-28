@@ -7,7 +7,10 @@
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title>
-            <div class="font-weight-bold headline text-capitalize">{{ userName }}'s Account</div>
+            <div class="font-weight-bold headline text-capitalize">
+              <span id="account-name">{{ userName }}</span>
+              's Account
+            </div>
           </v-list-item-title>
           <v-list-item-subtitle>
             <div class="caption">

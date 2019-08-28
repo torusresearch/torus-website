@@ -30,7 +30,7 @@
       <v-menu offset-y bottom left z-index="20" :close-on-content-click="false">
         <template v-slot:activator="{ on }">
           <v-btn id="menu-dropdown-btn" class="hidden-xs-only" small text v-on="on">
-            <span id="account-name" class="text-capitalize subtitle-2">{{ userName }}</span>
+            <span class="text-capitalize subtitle-2">{{ userName }}</span>
             <v-icon class="ml-2 mt-0" small>$vuetify.icons.select</v-icon>
           </v-btn>
         </template>
