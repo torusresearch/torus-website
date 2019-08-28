@@ -7,8 +7,8 @@ const loadUrl = require('./lib/helpers').loadUrl
 const click = require('./lib/helpers').click
 const typeText = require('./lib/helpers').typeText
 const waitForText = require('./lib/helpers').waitForText
-const shouldExist = require('./lib/helpers').shouldExist
 const selectItem = require('./lib/helpers').selectItem
+const navigateTo = require('./lib/helpers').navigateTo
 
 describe('Tests Wallet Activity Page', () => {
   let browser
@@ -57,8 +57,7 @@ describe('Tests Wallet Activity Page', () => {
   })
 
   it('Should change network to rinkeby', async () => {
-    await click(page, '#settings-link')
-    await shouldExist(page, '.wallet-settings')
+    await navigateTo(page, '#settings-link', '.wallet-settings')
     await click(page, '#network-panel-header')
 
     const textToSelect = 'Rinkeby Test Network'
@@ -71,20 +70,21 @@ describe('Tests Wallet Activity Page', () => {
   })
 
   it('Should go to wallet activity page', async () => {
-    await click(page, '#activity-link')
-    await shouldExist(page, '.wallet-activity')
+    await navigateTo(page, '#activity-link', '.wallet-activity')
   })
 
   it('Should show correct pagination', async () => {
-    let transactionData = await page.$eval('.activity-table', el => ({
-      count: parseInt(el.dataset.count),
-      perPage: parseInt(el.dataset.perPage)
-    }))
+    if (!config.isMobile) {
+      let transactionData = await page.$eval('.activity-table', el => ({
+        count: parseInt(el.dataset.count),
+        perPage: parseInt(el.dataset.perPage)
+      }))
 
-    if (transactionData.count > transactionData.perPage) {
-      const expectedPages = Math.ceil(transactionData.count / transactionData.perPage)
-      const actualPages = await page.$$eval('.activity-pagination .v-pagination__item', el => el.length)
-      assert.equal(expectedPages, actualPages)
+      if (transactionData.count > transactionData.perPage) {
+        const expectedPages = Math.ceil(transactionData.count / transactionData.perPage)
+        const actualPages = await page.$$eval('.activity-pagination .v-pagination__item', el => el.length)
+        assert.equal(expectedPages, actualPages)
+      }
     }
   })
 
@@ -99,8 +99,12 @@ describe('Tests Wallet Activity Page', () => {
 
     // check if there are rows which is not textToSelect
     const negativeRowsCount = await page.evaluate(
-      textToSelect => [...document.querySelectorAll('.activity-table .transaction-action')].filter(el => el.textContent !== textToSelect).length,
-      textToSelect
+      (textToSelect, config) =>
+        [...document.querySelectorAll(`.activity-table${config.isMobile ? '-mobile' : ''} .transaction-action`)].filter(
+          el => el.textContent !== textToSelect
+        ).length,
+      textToSelect,
+      config
     )
     assert.equal(negativeRowsCount, 0)
   })
@@ -122,12 +126,13 @@ describe('Tests Wallet Activity Page', () => {
     const oneWeekAgo = new Date()
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
     const negativeRowsCount = await page.evaluate(
-      oneWeekAgo =>
-        [...document.querySelectorAll('.activity-table .transaction-date')].filter(el => {
+      (oneWeekAgo, config) =>
+        [...document.querySelectorAll(`.activity-table${config.isMobile ? '-mobile' : ''} .transaction-date`)].filter(el => {
           console.log(new Date(el.textContent), new Date(oneWeekAgo))
           return new Date(el.textContent) < new Date(oneWeekAgo)
         }).length,
-      oneWeekAgo
+      oneWeekAgo,
+      config
     )
     assert.equal(negativeRowsCount, 0)
   })
