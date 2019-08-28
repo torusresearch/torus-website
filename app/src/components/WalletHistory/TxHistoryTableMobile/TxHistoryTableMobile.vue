@@ -1,5 +1,5 @@
 <template>
-  <v-container class="activity-table-mobile">
+  <v-container class="activity-table-mobile" :data-count-transfer="nonTopupTransactionCount">
     <v-expansion-panels multiple>
       <v-expansion-panel v-for="transaction in filteredTransactions" :key="`${transaction.id}`">
         <v-expansion-panel-header class="px-2">

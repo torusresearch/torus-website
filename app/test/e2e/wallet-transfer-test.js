@@ -11,6 +11,7 @@ const shouldExist = require('./lib/helpers').shouldExist
 const selectItem = require('./lib/helpers').selectItem
 const shouldValueNotBeEmpty = require('./lib/helpers').shouldValueNotBeEmpty
 const shouldTextNotBeEmpty = require('./lib/helpers').shouldTextNotBeEmpty
+const navigateTo = require('./lib/helpers').navigateTo
 
 describe('Tests Wallet Transfer Transaction', () => {
   let browser
@@ -68,8 +69,7 @@ describe('Tests Wallet Transfer Transaction', () => {
   })
 
   it('Should change network to rinkeby', async () => {
-    await click(page, '#settings-link')
-    await shouldExist(page, '.wallet-settings')
+    await navigateTo(page, '#settings-link', '.wallet-settings')
     await click(page, '#network-panel-header')
 
     const textToSelect = 'Rinkeby Test Network'
@@ -82,8 +82,7 @@ describe('Tests Wallet Transfer Transaction', () => {
   })
 
   it('Should go to wallet transfer page', async () => {
-    await click(page, '#transfer-link')
-    await shouldExist(page, '.wallet-transfer')
+    await navigateTo(page, '#transfer-link', '.wallet-transfer')
   })
 
   it('Should select coin', async () => {
@@ -134,13 +133,17 @@ describe('Tests Wallet Transfer Transaction', () => {
     await typeText(page, youSendValue.toString(), '#you-send')
     await shouldValueNotBeEmpty(page, '.you-send-container .v-messages__message')
   })
+
   it('Should load advanced options', async () => {
     await click(page, '#advance-option-link')
     await waitForText(page, '.advance-option .subtitle-2', 'Customize Gas')
   })
 
   it('Should updated transaction fee', async () => {
-    const transactionFee = await page.$eval('#transaction-fee', el => el.value)
+    const transactionFee = config.isMobile
+      ? await page.$eval('#transaction-fee-mobile', el => el.textContent)
+      : await page.$eval('#transaction-fee', el => el.value)
+
     let gasPrice = await page.$eval('#gas-price', el => el.value)
     gasPrice = parseFloat(gasPrice) + 4
     await page.waitFor(100)
@@ -149,7 +152,11 @@ describe('Tests Wallet Transfer Transaction', () => {
     await page.click('#gas-price', { clickCount: 3 })
     await page.waitFor(100)
     await typeText(page, gasPrice.toString(), '#gas-price')
-    const newTransactionFee = await page.$eval('#transaction-fee', el => el.value)
+
+    const newTransactionFee = config.isMobile
+      ? await page.$eval('#transaction-fee-mobile', el => el.textContent)
+      : await page.$eval('#transaction-fee', el => el.value)
+
     assert.notEqual(transactionFee, newTransactionFee)
   })
 
@@ -202,11 +209,10 @@ describe('Tests Wallet Transfer Transaction', () => {
   })
 
   it('Should show on wallet activity page', async () => {
-    await click(page, '#activity-link')
-    await shouldExist(page, '.wallet-activity')
+    await navigateTo(page, '#activity-link', '.wallet-activity')
     await page.waitForResponse(response => response.url().indexOf('https://simplex-api.tor.us/pastorders') >= 0)
     await page.waitFor(500)
-    let activityPageTransactionCount = await page.$eval('.activity-table', el => el.dataset.countTransfer)
+    let activityPageTransactionCount = await page.$eval(`.activity-table${config.isMobile ? '-mobile' : ''}`, el => el.dataset.countTransfer)
     assert.equal(transactionCount + 1, activityPageTransactionCount)
   })
 })

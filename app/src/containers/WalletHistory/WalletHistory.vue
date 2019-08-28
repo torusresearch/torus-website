@@ -39,6 +39,7 @@
           :selectedAction="selectedAction"
           :selectedPeriod="selectedPeriod"
           :transactions="calculateFinalTransactions()"
+          :nonTopupTransactionCount="getNonTopupTransactionCount()"
         />
       </v-flex>
     </v-layout>

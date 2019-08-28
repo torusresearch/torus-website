@@ -72,7 +72,10 @@
                 <v-flex xs12 sm6 px-4>
                   <span class="subtitle-2">Transaction Fee</span>
                   <template v-if="$vuetify.breakpoint.xsOnly">
-                    <span class="float-right">{{ gasAmountDisplay }} {{ symbol }}</span>
+                    <span class="float-right">
+                      <span id="transaction-fee-mobile">{{ gasAmountDisplay }}</span>
+                      {{ symbol }}
+                    </span>
                     <v-divider class="mt-1 mb-2"></v-divider>
                   </template>
                   <v-text-field
