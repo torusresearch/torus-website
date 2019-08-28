@@ -11,7 +11,7 @@
       </router-link>
       <div class="beta-text caption pr-4 hidden-xs-only">Beta</div>
       <v-toolbar-title class="mt-1 hidden-sm-and-up">
-        <router-link :to="{ name: 'walletHome' }">
+        <router-link id="logo-home-lnk" :to="{ name: 'walletHome' }">
           <img :src="require('../../../../public/img/icons/t-fill.svg')" width="35" height="30" />
         </router-link>
         <div class="primary--text subtitle-2 beta-text-mobile">Beta</div>
@@ -23,7 +23,7 @@
         </v-tab>
       </v-tabs>
 
-      <v-btn class="hidden-sm-and-up" icon @click="drawer = !drawer">
+      <v-btn id="menu-dropdown-btn" class="hidden-sm-and-up" icon @click="drawer = !drawer">
         <img :src="require('../../../../public/img/icons/menu-primary.svg')" />
       </v-btn>
 

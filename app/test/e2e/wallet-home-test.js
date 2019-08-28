@@ -9,6 +9,7 @@ const typeText = require('./lib/helpers').typeText
 const waitForText = require('./lib/helpers').waitForText
 const shouldExist = require('./lib/helpers').shouldExist
 const selectItem = require('./lib/helpers').selectItem
+const navigateTo = require('./lib/helpers').navigateTo
 
 describe('Tests Wallet Home', () => {
   let browser
@@ -65,8 +66,7 @@ describe('Tests Wallet Home', () => {
   })
 
   it('Should change network to rinkeby', async () => {
-    await click(page, '#settings-link')
-    await shouldExist(page, '.wallet-settings')
+    await navigateTo(page, '#settings-link', '.wallet-settings')
     await click(page, '#network-panel-header')
 
     const textToSelect = 'Rinkeby Test Network'
@@ -79,7 +79,7 @@ describe('Tests Wallet Home', () => {
   })
 
   it('Should go to wallet home page', async () => {
-    await click(page, '#home-link')
+    await click(page, config.isMobile ? '#logo-home-lnk' : '#home-link')
     await shouldExist(page, '.wallet-home')
   })
 
@@ -91,22 +91,16 @@ describe('Tests Wallet Home', () => {
 
   it('Should go to transfer page is not fresh account', async () => {
     if (!isFreshAccount) {
-      await click(page, '.transfer-btn')
+      await click(page, `.transfer-btn${config.isMobile ? '-mobile' : ''}`)
       await shouldExist(page, '.wallet-transfer')
-      await click(page, '#home-link')
-    }
-  })
-
-  it('Should show getEth tooltip if fresh account', async () => {
-    if (isFreshAccount) {
-      await shouldExist(page, '.outline-tooltip')
+      await click(page, config.isMobile ? '#logo-home-lnk' : '#home-link')
     }
   })
 
   it('Should go to topup page', async () => {
-    await click(page, '.topup-btn')
+    await click(page, `.topup-btn${config.isMobile ? '-mobile' : ''}`)
     await shouldExist(page, '.wallet-topup-view')
-    await click(page, '#home-link')
+    await click(page, config.isMobile ? '#logo-home-lnk' : '#home-link')
   })
 
   it('Should update currency', async () => {

@@ -67,7 +67,14 @@
     <v-divider></v-divider>
 
     <v-list>
-      <v-list-item v-for="headerItem in filteredMenu" :key="headerItem.name" link router :to="headerItem.route">
+      <v-list-item
+        :id="`${headerItem.name}-link-mobile`"
+        v-for="headerItem in filteredMenu"
+        :key="headerItem.name"
+        link
+        router
+        :to="headerItem.route"
+      >
         <v-list-item-action class="mr-2">
           <img :src="require(`../../../../public/img/icons/${headerItem.icon}`)" />
         </v-list-item-action>

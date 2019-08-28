@@ -45,7 +45,7 @@
               block
               color="primary"
               :disabled="isFreshAccount"
-              class="transfer-btn px-12 py-1 mr-4 mt-4"
+              class="transfer-btn-mobile px-12 py-1 mr-4 mt-4"
               @click="initiateTransfer"
             >
               <v-icon left>$vuetify.icons.send</v-icon>
@@ -55,7 +55,7 @@
           <v-flex xs6 class="pl-1">
             <v-tooltip top :value="isFreshAccount" class="hidden-sm-and-up">
               <template v-slot:activator="{ on }">
-                <v-btn depressed large block color="primary" class="px-12 py-1 mt-4 topup-btn hidden-sm-and-up" @click="topup" v-on="on">
+                <v-btn depressed large block color="primary" class="px-12 py-1 mt-4 topup-btn-mobile hidden-sm-and-up" @click="topup" v-on="on">
                   <v-icon left>$vuetify.icons.add</v-icon>
                   Top up
                 </v-btn>
