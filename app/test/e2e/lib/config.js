@@ -1,7 +1,9 @@
 module.exports = {
+  testAccountName: 'toruspuppeteer@gmail.com',
+  testAccountPassword: 'toruse2e',
   baseUrl: 'https://localhost:3000', // https://dev.to
   ignoreHTTPSErrors: true,
-  isHeadless: true,
+  isHeadless: false,
   slowMo: 0,
   isDevTools: true,
   launchTimeout: 10000,

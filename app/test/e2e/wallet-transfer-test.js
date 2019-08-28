@@ -52,9 +52,9 @@ describe('Tests Wallet Transfer Transaction', () => {
     const loginPage = await loginPageTarget.page()
 
     // Login user
-    await typeText(loginPage, 'toruspuppeteer@gmail.com', '#identifierId')
+    await typeText(loginPage, config.testAccountName, '#identifierId')
     await click(loginPage, '#identifierNext')
-    await typeText(loginPage, 'toruse2e', 'input[type="password"]')
+    await typeText(loginPage, config.testAccountPassword, 'input[type="password"]')
     await click(loginPage, '#passwordNext')
 
     await waitForText(page, '.wallet-home .headline', 'My Wallet')
