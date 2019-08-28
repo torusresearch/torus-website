@@ -36,6 +36,7 @@ Start local application first before running the e2e test
 ```sh
 npm run serve
 npm run test:e2e
+npm run test:e2e:mobile
 ```
 
 ### Lints and fixes files
