@@ -203,8 +203,9 @@ describe('Tests Wallet Transfer Transaction', () => {
 
   it('Should show on wallet activity page', async () => {
     await click(page, '#activity-link')
-    await page.waitForResponse(response => response.url().indexOf('https://simplex-api.tor.us/pastorders') >= 0)
     await shouldExist(page, '.wallet-activity')
+    await page.waitForResponse(response => response.url().indexOf('https://simplex-api.tor.us/pastorders') >= 0)
+    await page.waitFor(500)
     let activityPageTransactionCount = await page.$eval('.activity-table', el => el.dataset.countTransfer)
     assert.equal(transactionCount + 1, activityPageTransactionCount)
   })
