@@ -28,6 +28,7 @@
     "test:coverage-coveralls": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:coveralls-upload",
     "test:coveralls-upload": "if [ $COVERALLS_REPO_TOKEN ]; then nyc report --reporter=text-lcov | coveralls; fi",
     "test:e2e": "mocha --timeout=30000 ./test/e2e",
+    "test:e2e:mobile": "env MOBILE_ENV=true mocha --timeout=30000 ./test/e2e",
     "test:e2e-loggedin": "node ./test/e2e/simple_puppeteer.js",
     "test:e2e:headful": "node ./test/e2e/puppeteer.js false",
     "test:unit": "mocha ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js"
