@@ -47,6 +47,7 @@
                     </v-flex>
                     <v-flex v-if="$vuetify.breakpoint.xsOnly" class="text-right">
                       <v-btn
+                        id="mobile-json-file-confirm-btn"
                         color="primary"
                         :disabled="!downloadFormValid || isLoadingDownloadWallet"
                         v-if="!walletJson"
@@ -55,7 +56,9 @@
                       >
                         Confirm
                       </v-btn>
-                      <v-btn color="primary" v-if="walletJson" :href="walletJson" :download="name">Download wallet</v-btn>
+                      <v-btn id="mobile-json-file-download-btn" color="primary" v-if="walletJson" :href="walletJson" :download="name">
+                        Download wallet
+                      </v-btn>
                     </v-flex>
                   </v-layout>
                 </v-expand-transition>

@@ -9,6 +9,7 @@ const typeText = require('./lib/helpers').typeText
 const waitForText = require('./lib/helpers').waitForText
 const shouldExist = require('./lib/helpers').shouldExist
 const selectItem = require('./lib/helpers').selectItem
+const navigateTo = require('./lib/helpers').navigateTo
 
 describe('Tests Wallet Settings Page', () => {
   let browser
@@ -57,8 +58,7 @@ describe('Tests Wallet Settings Page', () => {
   })
 
   it('Should go to wallet settings page', async () => {
-    await click(page, '#settings-link')
-    await shouldExist(page, '.wallet-settings')
+    await navigateTo(page, '#settings-link', '.wallet-settings')
   })
 
   it('Should change network to rinkeby', async () => {
@@ -80,17 +80,20 @@ describe('Tests Wallet Settings Page', () => {
   })
 
   it('Should show download wallet', async () => {
+    await page.waitFor(100)
     await click(page, '#show-download-form-btn')
 
     // wait for expansion effect
-    await page.waitFor(300)
+    await page.waitFor(100)
     await shouldExist(page, '.download-form-container')
     await typeText(page, 's@mplePassword', '#json-file-password')
-    await click(page, '#json-file-confirm-btn')
+    await click(page, `#${config.isMobile ? 'mobile-' : ''}json-file-confirm-btn`)
 
     // wait for download wallet to appear
     await page.waitForResponse(response => response.url().indexOf('https://api.infura.io/v1/jsonrpc/rinkeby') >= 0)
-    await shouldExist(page, '#json-file-download-btn')
+
+    await page.waitFor(100)
+    await shouldExist(page, `#${config.isMobile ? 'mobile-' : ''}json-file-download-btn`)
   })
 
   it('Should show private-key', async () => {
@@ -105,15 +108,15 @@ describe('Tests Wallet Settings Page', () => {
 
   // TODO: after permissions feature are done
   it('Should show dapp permission popup', async () => {
+    await page.waitFor(300)
     await click(page, '#dapp-permisson-btn')
     await shouldExist(page, '.dapp-permisson-container')
-
     await click(page, '.dapp-permisson-container #close-btn')
-    await page.waitFor(300)
   })
 
   // TODO: after actual themes are done
   it('Should show display settings', async () => {
+    await page.waitFor(300)
     await click(page, '#display-panel-header')
     await click(page, '#default-theme-btn')
     await click(page, '#cerulean-theme-btn')
