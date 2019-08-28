@@ -31,6 +31,13 @@ npm run build
 npm run test:unit
 ```
 
+### Run your E2E tests
+Start local application first before running the e2e test
+```sh
+npm run serve
+npm run test:e2e
+```
+
 ### Lints and fixes files
 
 ```sh
