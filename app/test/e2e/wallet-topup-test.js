@@ -9,6 +9,7 @@ const typeText = require('./lib/helpers').typeText
 const waitForText = require('./lib/helpers').waitForText
 const shouldExist = require('./lib/helpers').shouldExist
 const selectItem = require('./lib/helpers').selectItem
+const navigateTo = require('./lib/helpers').navigateTo
 
 describe('Tests Wallet Topup', () => {
   let browser
@@ -57,8 +58,7 @@ describe('Tests Wallet Topup', () => {
   })
 
   it('Should go to topup page', async () => {
-    await click(page, '#top-up-link')
-    await shouldExist(page, '.wallet-topup-view')
+    await navigateTo(page, '#top-up-link', '.wallet-topup-view')
   })
 
   it('Should show container for for each active provider', async () => {
