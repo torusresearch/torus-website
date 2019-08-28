@@ -66,6 +66,7 @@ describe('Tests Account Menu', () => {
   })
 
   it('Should be able to show public address', async () => {
+    await page.waitFor(200)
     await click(page, '#show-address-btn')
     await shouldExist(page, '.public-address-container')
   })

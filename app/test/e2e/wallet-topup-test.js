@@ -90,7 +90,7 @@ describe('Tests Wallet Topup', () => {
     await typeText(page, '00', '#simplex-you-send')
 
     await page.waitForResponse(response => response.url() === 'https://simplex-api.tor.us/quote')
-    await page.waitFor(100)
+    await page.waitFor(300)
     let receiveSecond = await page.$eval('#simplex-receive', el => el.value)
 
     assert.notEqual(receiveFirst, receiveSecond)

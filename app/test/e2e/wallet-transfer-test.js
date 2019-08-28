@@ -210,8 +210,12 @@ describe('Tests Wallet Transfer Transaction', () => {
 
   it('Should show on wallet activity page', async () => {
     await navigateTo(page, '#activity-link', '.wallet-activity')
-    await page.waitForResponse(response => response.url().indexOf('https://simplex-api.tor.us/pastorders') >= 0)
-    await page.waitFor(500)
+    if (!config.isMobile) {
+      await page.waitForResponse(response => response.url().indexOf('https://simplex-api.tor.us/pastorders') >= 0)
+    }
+
+    // wait for the list to load
+    await page.waitFor(1000)
     let activityPageTransactionCount = await page.$eval(`.activity-table${config.isMobile ? '-mobile' : ''}`, el => el.dataset.countTransfer)
     assert.equal(transactionCount + 1, activityPageTransactionCount)
   })
