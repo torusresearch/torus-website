@@ -1,3 +1,5 @@
+const config = require('./config')
+
 const click = async function(page, selector) {
   try {
     await page.waitForSelector(selector, { visible: true })
@@ -16,9 +18,31 @@ const waitForText = async function(page, selector, text) {
   }
 }
 
+const shouldExist = async function(page, selector) {
+  try {
+    await page.waitForSelector(selector, { visible: true })
+  } catch (error) {
+    throw new Error(`Selector ${selector} does not exist`)
+  }
+}
+
 module.exports = {
   click,
   waitForText,
+  shouldExist,
+  navigateTo: async function(page, selector, pageContainer) {
+    if (config.isMobile) {
+      await click(page, '#menu-dropdown-btn')
+      await page.waitFor(100)
+      await click(page, `${selector}-mobile`)
+      // wait for animation
+      await page.waitFor(100)
+      await shouldExist(page, pageContainer)
+    } else {
+      await click(page, selector)
+      await shouldExist(page, pageContainer)
+    }
+  },
   loadUrl: async function(page, url) {
     await page.goto(url, { waitUntil: 'networkidle0' })
   },
@@ -28,13 +52,6 @@ module.exports = {
       await page.type(selector, text)
     } catch (error) {
       throw new Error(`Could not text into selector: ${selector}`)
-    }
-  },
-  shouldExist: async function(page, selector) {
-    try {
-      await page.waitForSelector(selector, { visible: true })
-    } catch (error) {
-      throw new Error(`Selector ${selector} does not exist`)
     }
   },
   shouldTextNotBeEmpty: async function(page, selector) {
