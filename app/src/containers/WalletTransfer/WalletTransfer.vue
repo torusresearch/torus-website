@@ -94,6 +94,8 @@
             :displayAmount="displayAmount"
             @onSelectSpeed="onSelectSpeed"
           />
+        </v-layout>
+        <v-layout wrap>
           <v-flex xs12 px-4 sm6>
             <div>
               <span class="subtitle-2">Total Cost</span>
@@ -108,9 +110,10 @@
             ></v-text-field>
           </v-flex>
         </v-layout>
-        <v-layout mt-4 pr-2 wrap>
-          <v-spacer></v-spacer>
-          <v-btn large depressed color="primary" :disabled="!formValid || speedSelected === ''" class="px-6" type="submit">Continue</v-btn>
+        <v-layout mt-4 wrap>
+          <v-flex xs12 px-4 sm6 class="text-right">
+            <v-btn large depressed color="primary" :disabled="!formValid || speedSelected === ''" class="px-6" type="submit">Transfer</v-btn>
+          </v-flex>
         </v-layout>
 
         <v-layout mt-4 pr-2 wrap>
