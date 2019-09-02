@@ -29,7 +29,7 @@
         </div>
       </v-flex>
 
-      <v-flex xs12 sm6 mb-4 px-4>
+      <v-flex xs12 sm7 mb-4 px-4>
         <router-view></router-view>
       </v-flex>
     </v-layout>

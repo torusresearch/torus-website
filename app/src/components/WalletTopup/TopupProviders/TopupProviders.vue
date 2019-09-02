@@ -1,5 +1,5 @@
 <template>
-  <v-flex xs12 sm6 mb-4 px-4 class="topup-providers">
+  <v-flex xs12 sm5 mb-4 px-4 class="topup-providers">
     <v-card class="mb-4" v-for="targetProvider in activeProviders" @click="innerProvider = targetProvider.name" :key="targetProvider.name">
       <router-link :to="targetProvider.link">
         <v-list-item three-line>

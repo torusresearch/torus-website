@@ -6,7 +6,7 @@
       </p>
     </v-flex>
 
-    <v-flex xs12>
+    <v-flex xs9>
       <v-form ref="inputForm" v-model="formValid" lazy-validation @submit.prevent>
         <v-flex xs12>
           <div class="subtitle-2">You send</div>
@@ -75,7 +75,6 @@
     </v-flex>
     <v-flex xs12>
       <div class="text-right">
-        <v-btn class="mr-3" text @click.prevent="provider = ''">Back</v-btn>
         <v-tooltip bottom :disabled="formValid">
           <template v-slot:activator="{ on }">
             <span v-on="on">
