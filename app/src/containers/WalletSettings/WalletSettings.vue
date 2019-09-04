@@ -14,7 +14,7 @@
               Privacy and Security
             </div>
           </v-expansion-panel-header>
-          <v-expansion-panel-content>
+          <v-expansion-panel-content class="privacy-security-container">
             <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-0 px-12'">
               <v-list>
                 <v-list-item @click="privateKeyDialog = true">
