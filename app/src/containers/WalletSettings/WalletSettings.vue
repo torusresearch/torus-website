@@ -116,14 +116,14 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
-              <div class="body-2 mb-1 px-1">Toggle Theme</div>
+              <div class="body-2 mb-1 px-1">Select Theme</div>
               <v-layout wrap>
                 <v-flex xs12 sm6 px-1 mb-1>
                   <v-btn v-if="$vuetify.theme.dark" light depressed block @click="$vuetify.theme.dark = false">Light</v-btn>
                   <v-btn v-else dark depressed block @click="$vuetify.theme.dark = true">Dark</v-btn>
                 </v-flex>
               </v-layout>
-              <v-flex class="pt-12 text-right">
+              <v-flex class="pt-4 text-right">
                 <v-btn color="primary" depressed class="px-12 py-1 mt-4">Save</v-btn>
               </v-flex>
             </div>
