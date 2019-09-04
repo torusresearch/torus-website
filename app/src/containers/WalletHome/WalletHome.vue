@@ -27,7 +27,7 @@
           <v-card-title class="font-weight-bold subtitle-2 pt-6 px-6">
             TOTAL VALUE
           </v-card-title>
-          <v-card-text class="pb-4 px-6">
+          <v-card-text class="pb-8 px-6">
             <h2 class="display-2 font-weight-bold">
               {{ totalPortfolioValue }}
               <span class="body-2 font-weight-light">{{ selectedCurrency }}</span>
