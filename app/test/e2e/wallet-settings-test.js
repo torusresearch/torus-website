@@ -107,20 +107,20 @@ describe('Tests Wallet Settings Page', () => {
   })
 
   // TODO: after permissions feature are done
-  it('Should show dapp permission popup', async () => {
-    await page.waitFor(300)
-    await click(page, '#dapp-permisson-btn')
-    await shouldExist(page, '.dapp-permisson-container')
-    await click(page, '.dapp-permisson-container #close-btn')
-  })
+  // it('Should show dapp permission popup', async () => {
+  //   await page.waitFor(300)
+  //   await click(page, '#dapp-permisson-btn')
+  //   await shouldExist(page, '.dapp-permisson-container')
+  //   await click(page, '.dapp-permisson-container #close-btn')
+  // })
 
   // TODO: after actual themes are done
-  it('Should show display settings', async () => {
-    await page.waitFor(300)
-    await click(page, '#display-panel-header')
-    await click(page, '#default-theme-btn')
-    await click(page, '#cerulean-theme-btn')
-    await click(page, '#shuttle-grey-theme-btn')
-    await click(page, '#default-theme-btn')
-  })
+  // it('Should show display settings', async () => {
+  //   await page.waitFor(300)
+  //   await click(page, '#display-panel-header')
+  //   await click(page, '#default-theme-btn')
+  //   await click(page, '#cerulean-theme-btn')
+  //   await click(page, '#shuttle-grey-theme-btn')
+  //   await click(page, '#default-theme-btn')
+  // })
 })
