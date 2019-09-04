@@ -115,7 +115,7 @@
     "mocha-eslint": "^5.0.0",
     "mocha-jsdom": "^2.0.0",
     "mocha-sinon": "^2.1.0",
-    "nock": "^10.0.6",
+    "nock": "^11.1.0",
     "node-sass": "^4.12.0",
     "nyc": "^14.1.1",
     "prerender-spa-plugin": "^3.4.0",
