@@ -18,6 +18,7 @@ import CoinsReceiveIcon from './CoinsReceiveIcon'
 import CoinsTopupIcon from './CoinsTopupIcon'
 import ChevronLeftIcon from './ChevronLeftIcon'
 import ChevronRightIcon from './ChevronRightIcon'
+import ClearIcon from './ClearIcon'
 
 export default {
   select: {
@@ -79,5 +80,8 @@ export default {
   },
   page_next: {
     component: ChevronRightIcon
+  },
+  clear: {
+    component: ClearIcon
   }
 }
