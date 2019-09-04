@@ -84,7 +84,7 @@ describe('Tests Wallet Topup', () => {
     await shouldExist(page, '.wallet-topup-simplex')
 
     await page.waitForResponse(response => response.url() === 'https://simplex-api.tor.us/quote')
-    await page.waitFor(100)
+    await page.waitFor(500)
     let receiveFirst = await page.$eval('#simplex-receive', el => el.value)
 
     await typeText(page, '00', '#simplex-you-send')
