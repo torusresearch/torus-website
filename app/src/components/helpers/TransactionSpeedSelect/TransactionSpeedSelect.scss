@@ -1,11 +1,28 @@
 ::v-deep .button-speed {
   &.v-btn {
     height: inherit;
+    &.selected {
+      border: 1px solid var(--v-primary-base);
+      color: var(--v-primary-base);
+    }
   }
   .v-btn__content {
     flex-direction: column;
     padding: 12px 0;
     line-height: 1em;
+  }
+}
+
+
+::v-deep .theme--dark.button-speed {
+  &.v-btn {
+    border: 1px solid grey;
+    color: grey;
+    &.selected {
+      border: 1px solid white;
+      color: white;
+      background: var(--v-background-base);
+    }
   }
 }
 
