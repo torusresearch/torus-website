@@ -1,6 +1,6 @@
 <template>
-  <nav class="container header-container py-0 px-2">
-    <v-app-bar :class="$vuetify.breakpoint.xsOnly ? '' : ''">
+  <nav class="header-container pa-0">
+    <v-app-bar class="container" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : 'px-2 py-0'">
       <router-link class="hidden-xs-only" :to="{ name: 'walletHome' }">
         <img
           class="home-link"
