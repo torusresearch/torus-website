@@ -5,6 +5,7 @@
       v-for="targetProvider in activeProviders"
       @click="innerProvider = targetProvider.name"
       :key="targetProvider.name"
+      :data-provider="targetProvider.name"
     >
       <router-link :to="targetProvider.link">
         <v-list-item three-line :id="`${targetProvider.name}-link`">
