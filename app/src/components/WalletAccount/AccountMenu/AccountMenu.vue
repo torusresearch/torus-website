@@ -161,6 +161,8 @@ export default {
   },
   methods: {
     async logout() {
+      this.$vuetify.theme.dark = false
+
       var bc = new BroadcastChannel('torus_logout_channel', broadcastChannelOptions)
       await bc.postMessage({ data: { type: 'logout' } })
       bc.close()
