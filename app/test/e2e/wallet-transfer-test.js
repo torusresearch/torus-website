@@ -26,7 +26,7 @@ describe('Tests Wallet Transfer Transaction', () => {
       devtools: config.isDevTools,
       timeout: config.launchTimeout,
       ignoreHTTPSErrors: config.ignoreHTTPSErrors,
-      args: ['--start-fullscreen']
+      args: ['--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
     })
 
     page = await browser.newPage()
