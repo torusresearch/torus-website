@@ -1,6 +1,9 @@
 .header-container{
+  background: var(--v-background-base);
+
   .v-toolbar {
     box-shadow: none;
+    padding: 0;
   }
   
   .v-tab {
