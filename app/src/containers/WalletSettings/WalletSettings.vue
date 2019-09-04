@@ -116,7 +116,7 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
-              <div class="body-2 mb-1 px-1">Toggle Theme</div>
+              <div class="body-2 mb-1 px-1">Select Theme</div>
               <v-layout wrap>
                 <v-flex xs12 sm6 px-1 mb-1>
                   <v-btn v-if="$vuetify.theme.dark" light depressed block @click="$vuetify.theme.dark = false">Light</v-btn>
