@@ -46,11 +46,14 @@
 }
 
 .v-input.v-input--is-readonly {
-  fieldset {
-    border-color: var(--v-disabled-base);
-  }
   .v-input__slot {
     background: var(--v-disabled-base) !important;
+  }
+}
+
+.theme--dark.v-input.v-input--is-readonly {
+  fieldset {
+    border-color: var(--v-disabled-base);
   }
 }
 
