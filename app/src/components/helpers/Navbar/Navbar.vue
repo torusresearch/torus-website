@@ -23,7 +23,7 @@
         </v-tab>
       </v-tabs>
 
-      <v-btn id="menu-dropdown-btn" class="hidden-sm-and-up" icon @click="drawer = !drawer">
+      <v-btn id="menu-dropdown-mobile-btn" class="hidden-sm-and-up" icon @click="drawer = !drawer">
         <img :src="require('../../../../public/img/icons/menu-primary.svg')" />
       </v-btn>
 

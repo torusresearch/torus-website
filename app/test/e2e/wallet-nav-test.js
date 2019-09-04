@@ -57,7 +57,11 @@ describe('Tests Account Menu', () => {
   })
 
   it('Should show account menu', async () => {
-    await click(page, '#menu-dropdown-btn')
+    if (config.isMobile) {
+      await click(page, '#menu-dropdown-mobile-btn')
+    } else {
+      await click(page, '#menu-dropdown-btn')
+    }
     await shouldExist(page, '.account-menu')
 
     // Check if google info is showing
