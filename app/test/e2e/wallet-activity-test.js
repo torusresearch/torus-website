@@ -128,7 +128,6 @@ describe('Tests Wallet Activity Page', () => {
     const negativeRowsCount = await page.evaluate(
       (oneWeekAgo, config) =>
         [...document.querySelectorAll(`.activity-table${config.isMobile ? '-mobile' : ''} .transaction-date`)].filter(el => {
-          console.log(new Date(el.textContent), new Date(oneWeekAgo))
           return new Date(el.textContent) < new Date(oneWeekAgo)
         }).length,
       oneWeekAgo,
