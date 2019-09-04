@@ -38,11 +38,13 @@
           <v-flex xs12 px-4 sm6>
             <span class="subtitle-2">Recipient Address</span>
             <v-text-field
+              class="recipient-address"
               v-model="toAddress"
               placeholder="ETH Address / Google Address here"
               required
               :rules="[rules.toAddress, rules.required]"
               outlined
+              clearable
             ></v-text-field>
           </v-flex>
         </v-layout>
