@@ -32,7 +32,7 @@ module.exports = {
   shouldExist,
   navigateTo: async function(page, selector, pageContainer) {
     if (config.isMobile) {
-      await click(page, '#menu-dropdown-btn')
+      await click(page, '#menu-dropdown-mobile-btn')
       await page.waitFor(100)
       await click(page, `${selector}-mobile`)
       // wait for animation
