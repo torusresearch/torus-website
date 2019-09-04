@@ -25,7 +25,7 @@
           large
           outlined
           class="button-speed"
-          :color="speedSelected === 'average' ? 'primary' : 'grey'"
+          :class="speedSelected === 'average' ? 'selected' : ''"
           @click="selectSpeed('average', averageGasPrice)"
         >
           <span>~ {{ averageGasPriceSpeed }} Mins</span>
@@ -38,7 +38,7 @@
           large
           outlined
           class="button-speed"
-          :color="speedSelected === 'fastest' ? 'primary' : 'grey'"
+          :class="speedSelected === 'fastest' ? 'selected' : ''"
           @click="selectSpeed('fastest', fastestGasPrice)"
         >
           <span>~ {{ fastestGasPriceSpeed }} Mins</span>
