@@ -116,16 +116,11 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
-              <div class="body-2 mb-1 px-1">Select Theme</div>
+              <div class="body-2 mb-1 px-1">Toggle Theme</div>
               <v-layout wrap>
-                <v-flex xs12 sm4 px-1 mb-1>
-                  <v-btn light outlined block color="primary" class="btn-default" @click="selectTheme('default')">Default</v-btn>
-                </v-flex>
-                <v-flex xs12 sm4 px-1 mb-1>
-                  <v-btn dark depressed block class="btn-cerulean" @click="selectTheme('cerulean-blue')">Cerulean Blue</v-btn>
-                </v-flex>
-                <v-flex xs12 sm4 px-1 mb-1>
-                  <v-btn dark depressed block class="btn-shuttle-grey" @click="selectTheme('shuttle-grey')">Shuttle Grey</v-btn>
+                <v-flex xs12 sm6 px-1 mb-1>
+                  <v-btn v-if="$vuetify.theme.dark" light depressed block @click="$vuetify.theme.dark = false">Light</v-btn>
+                  <v-btn v-else dark depressed block @click="$vuetify.theme.dark = true">Dark</v-btn>
                 </v-flex>
               </v-layout>
               <v-flex class="pt-12 text-right">
@@ -230,26 +225,6 @@ export default {
     setRPC() {
       this.selectedNetwork = RPC
       this.$store.dispatch('setProviderType', { network: this.rpc, type: RPC })
-    },
-    selectTheme(value) {
-      let selectedTheme = lightBlue
-      let isDark = false
-      if (value === 'cerulean-blue') {
-        selectedTheme = ceruleanBlue
-        isDark = true
-      } else if (value === 'shuttle-grey') {
-        selectedTheme = shuttleGrey
-        isDark = true
-      }
-
-      this.$vuetify.theme.dark = isDark
-      if (isDark) {
-        this.$vuetify.theme.themes.dark.background = selectedTheme.background
-        log.info(this.$vuetify.theme.themes.dark)
-      } else {
-        this.$vuetify.theme.themes.light.background = selectedTheme.background
-        log.info(this.$vuetify.theme.themes.light)
-      }
     }
   },
   mounted() {
