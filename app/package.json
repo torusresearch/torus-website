@@ -69,6 +69,7 @@
     "swappable-obj-proxy": "^1.1.0",
     "ua-parser-js": "^0.7.20",
     "vue": "^2.6.10",
+    "vue-content-loader": "^0.2.2",
     "vue-knob-control": "^1.6.0",
     "vue-router": "^3.1.2",
     "vuetify": "^2.0.10",
