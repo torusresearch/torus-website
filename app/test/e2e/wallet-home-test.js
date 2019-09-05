@@ -54,15 +54,19 @@ describe('Tests Wallet Home', () => {
     await click(loginPage, '#identifierNext')
     await typeText(loginPage, config.testAccountPassword, 'input[type="password"]')
     await click(loginPage, '#passwordNext')
-
-    await waitForText(page, '.wallet-home .headline', 'My Wallet')
   })
 
   it('Should load needed api', async () => {
     // Wait for these APIs
-    const userResponse = await page.waitForResponse(response => response.url() === 'https://api.tor.us/user', { timeout: 60000 })
+    const userResponse = await page.waitForResponse(response => response.url() === 'https://api.tor.us/user' && response.status() === 200, {
+      timeout: 60000
+    })
     let userData = await userResponse.json()
     isFreshAccount = userData.data.is_new
+  })
+
+  it('Should show main page', async () => {
+    await waitForText(page, '.wallet-home .headline', 'My Wallet')
   })
 
   it('Should change network to rinkeby', async () => {

@@ -56,13 +56,15 @@ describe('Tests Wallet Transfer Transaction', () => {
     await click(loginPage, '#identifierNext')
     await typeText(loginPage, config.testAccountPassword, 'input[type="password"]')
     await click(loginPage, '#passwordNext')
-
-    await waitForText(page, '.wallet-home .headline', 'My Wallet')
   })
 
   it('Should load needed api', async () => {
     // Wait for these APIs
     await page.waitForResponse(response => response.url() === 'https://api.tor.us/user', { timeout: 60000 })
+  })
+
+  it('Should show main page', async () => {
+    await waitForText(page, '.wallet-home .headline', 'My Wallet')
   })
 
   it('Should change network to rinkeby', async () => {
