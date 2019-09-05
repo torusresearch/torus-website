@@ -9,7 +9,7 @@ module.exports = {
   slowMo: 0,
   isDevTools: true,
   launchTimeout: 10000,
-  waitingTimeout: 40000,
+  waitingTimeout: 10000,
   isMobile: isMobile,
   viewportWidth: isMobile ? 425 : 1200,
   viewportHeight: isMobile ? 650 : 900
