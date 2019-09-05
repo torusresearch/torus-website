@@ -83,14 +83,14 @@ describe('Tests Wallet Topup', () => {
     await click(page, '#simplex-link')
     await shouldExist(page, '.wallet-topup-simplex')
 
-    await page.waitForResponse(response => response.url() === 'https://simplex-api.tor.us/quote', { timeout: 60000 })
+    await page.waitForResponse(response => response.url() === 'https://simplex-api.tor.us/quote' && response.status() === 200, { timeout: 60000 })
     await page.waitFor(500)
     let receiveFirst = await page.$eval('#simplex-receive', el => el.value)
 
-    await typeText(page, '00', '#simplex-you-send')
+    await typeText(page, '0', '#simplex-you-send')
 
-    await page.waitForResponse(response => response.url() === 'https://simplex-api.tor.us/quote', { timeout: 60000 })
-    await page.waitFor(300)
+    await page.waitForResponse(response => response.url() === 'https://simplex-api.tor.us/quote' && response.status() === 200, { timeout: 60000 })
+    await page.waitFor(500)
     let receiveSecond = await page.$eval('#simplex-receive', el => el.value)
 
     assert.notEqual(receiveFirst, receiveSecond)
