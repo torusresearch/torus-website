@@ -1,5 +1,12 @@
 <template>
-  <div :class="[{ 'background-login': !loggedIn }, 'default']">
+  <div :class="[{ 'background-login': !loggedIn && !(gapiLoaded && loginInProgress) }, 'default']">
+    <template v-if="gapiLoaded && loginInProgress">
+      <wallet-transfer-loader v-if="redirectPath === '/wallet/transfer'" />
+      <wallet-topup-loader v-else-if="redirectPath === '/wallet/topup'" />
+      <wallet-activity-loader v-else-if="redirectPath === '/wallet/history'" />
+      <wallet-settings-loader v-else-if="redirectPath === '/wallet/settings'" />
+      <wallet-home-loader v-else />
+    </template>
     <v-container fill-height align-content-center>
       <template v-if="gapiLoaded">
         <template v-if="!loginInProgress">
@@ -72,9 +79,6 @@
             </v-flex>
           </v-layout>
         </template>
-        <template v-else>
-          <page-loader />
-        </template>
       </template>
       <template v-else>
         <page-loader />
@@ -85,15 +89,17 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import { WalletHomeLoader, WalletTransferLoader, WalletTopupLoader, WalletActivityLoader, WalletSettingsLoader } from '../../content-loader'
 import PageLoader from '../../components/helpers/PageLoader'
 
 export default {
   name: 'login',
-  components: { PageLoader },
+  components: { PageLoader, WalletHomeLoader, WalletTransferLoader, WalletTopupLoader, WalletActivityLoader, WalletSettingsLoader },
   data() {
     return {
       gapiLoaded: false,
-      isLogout: false
+      isLogout: false,
+      redirectPath: ''
     }
   },
   methods: {
@@ -135,7 +141,8 @@ export default {
       }
     }, 2000)
 
-    if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet')
+    this.redirectPath = this.$route.query.redirect
+    if (this.selectedAddress !== '') this.$router.push(redirectPath || '/wallet')
   },
   created() {
     this.isLogout = this.$route.name !== 'login'
