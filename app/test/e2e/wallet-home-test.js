@@ -60,7 +60,7 @@ describe('Tests Wallet Home', () => {
 
   it('Should load needed api', async () => {
     // Wait for these APIs
-    const userResponse = await page.waitForResponse(response => response.url() === 'https://api.tor.us/user')
+    const userResponse = await page.waitForResponse(response => response.url() === 'https://api.tor.us/user', { timeout: 60000 })
     let userData = await userResponse.json()
     isFreshAccount = userData.data.is_new
   })

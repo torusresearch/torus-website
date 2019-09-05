@@ -63,7 +63,7 @@ describe('Tests Wallet Transfer Transaction', () => {
 
   it('Should load needed api', async () => {
     // Wait for these APIs
-    const userResponse = await page.waitForResponse(response => response.url() === 'https://api.tor.us/user')
+    const userResponse = await page.waitForResponse(response => response.url() === 'https://api.tor.us/user', { timeout: 60000 })
     let userData = await userResponse.json()
     transactionCount = userData.data.transactions.length
   })
@@ -197,26 +197,26 @@ describe('Tests Wallet Transfer Transaction', () => {
     await click(confirmPage, '#less-details-link')
   })
 
-  it('Should submit confirm', async () => {
-    await click(confirmPage, '#confirm-btn')
-    await waitForText(confirmPage, '.headline', 'Confirm your Transfer')
-    await click(confirmPage, '#confirm-transfer-btn')
-  })
+  // it('Should submit confirm', async () => {
+  //   await click(confirmPage, '#confirm-btn')
+  //   await waitForText(confirmPage, '.headline', 'Confirm your Transfer')
+  //   await click(confirmPage, '#confirm-transfer-btn')
+  // })
 
-  it('Should show success alert', async () => {
-    await shouldExist(page, '.message-modal')
-    await click(page, '.message-modal #continue-link')
-  })
+  // it('Should show success alert', async () => {
+  //   await shouldExist(page, '.message-modal')
+  //   await click(page, '.message-modal #continue-link')
+  // })
 
-  it('Should show on wallet activity page', async () => {
-    await navigateTo(page, '#activity-link', '.wallet-activity')
-    // if (!config.isMobile) {
-    //   await page.waitForResponse(response => response.url().indexOf('https://simplex-api.tor.us/pastorders') >= 0)
-    // }
+  // it('Should show on wallet activity page', async () => {
+  //   await navigateTo(page, '#activity-link', '.wallet-activity')
+  //   if (!config.isMobile) {
+  //     await page.waitForResponse(response => response.url().indexOf('https://simplex-api.tor.us/pastorders') >= 0)
+  //   }
 
-    // wait for the list to load
-    // await page.waitFor(1000)
-    // let activityPageTransactionCount = await page.$eval(`.activity-table${config.isMobile ? '-mobile' : ''}`, el => el.dataset.countTransfer)
-    // assert.equal(transactionCount + 1, activityPageTransactionCount)
-  })
+  //   // wait for the list to load
+  //   await page.waitFor(1000)
+  //   let activityPageTransactionCount = await page.$eval(`.activity-table${config.isMobile ? '-mobile' : ''}`, el => el.dataset.countTransfer)
+  //   assert.equal(transactionCount + 1, activityPageTransactionCount)
+  // })
 })

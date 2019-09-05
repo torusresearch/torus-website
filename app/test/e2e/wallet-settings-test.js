@@ -90,7 +90,7 @@ describe('Tests Wallet Settings Page', () => {
     await click(page, `#${config.isMobile ? 'mobile-' : ''}json-file-confirm-btn`)
 
     // wait for download wallet to appear
-    await page.waitForResponse(response => response.url().indexOf('https://api.infura.io/v1/jsonrpc/rinkeby') >= 0)
+    await page.waitForResponse(response => response.url().indexOf('https://api.infura.io/v1/jsonrpc/rinkeby') >= 0, { timeout: 60000 })
 
     await page.waitFor(100)
     await shouldExist(page, `#${config.isMobile ? 'mobile-' : ''}json-file-download-btn`)
