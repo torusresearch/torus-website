@@ -26,7 +26,7 @@ describe('Tests Wallet Home', () => {
       args: ['--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
     })
 
-    page = await browser.newPage()
+    page = (await browser.pages())[0]
     await page.setDefaultTimeout(config.waitingTimeout)
     await page.setViewport({
       width: config.viewportWidth,
