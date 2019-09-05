@@ -83,6 +83,15 @@ export default {
           line3: '',
           link: '/wallet/topup/crypto',
           status: ACTIVE
+        },
+        {
+          name: 'coindirect',
+          logo: `coindirect${this.$vuetify.theme.dark ? '' : '-dark'}.svg`,
+          line1: 'Pay with Credit Card',
+          line2: '<span class="font-weight-medium">coindirect.com Service Fee</span> : Varies',
+          line3: '',
+          link: '/wallet/topup/coindirect',
+          status: ACTIVE
         }
       ]
     }
