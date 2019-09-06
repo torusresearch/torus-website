@@ -22,6 +22,10 @@
   }
 }
 
+.v-card.theme--dark.active {
+  background: var(--v-background_4-base);
+}
+
 .v-card a{
   text-decoration: none;
 }

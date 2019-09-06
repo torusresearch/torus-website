@@ -59,7 +59,7 @@ export default {
         },
         {
           name: 'moonpay',
-          logo: 'moon-pay-logo.svg',
+          logo: this.$vuetify.theme.dark ? 'moon-pay-logo-white.svg' : 'moon-pay-logo.svg',
           line1: 'Pay with Credit Card',
           line2: '<span class="font-weight-medium">Moonpay Service Fee</span> : 4.5% or 5 USD',
           line3: '(whichever is higher)',
@@ -68,7 +68,7 @@ export default {
         },
         {
           name: 'wyre',
-          logo: 'wyre-logo.svg',
+          logo: this.$vuetify.theme.dark ? 'wyre-logo-white.svg' : 'wyre-logo.svg',
           line1: 'Pay with Debit Card (USA only)',
           line2: '<span class="font-weight-medium">Wyre Service Fee</span> : 2.9% + 30¢',
           line3: '( $40 per day limit )',
@@ -77,7 +77,7 @@ export default {
         },
         {
           name: 'crypto',
-          logo: 'crypto-logo.png',
+          logo: this.$vuetify.theme.dark ? 'crypto-logo-white.png' : 'crypto-logo.png',
           line1: 'Pay with Credit Card',
           line2: '<span class="font-weight-medium">crypto.com Service Fee</span> : Varies',
           line3: '',
