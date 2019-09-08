@@ -16,6 +16,8 @@ function onloadTorus(torus) {
 
   const localStorageCachedNetwork = localStorage.getItem('torus_network_type') || MAINNET
 
+  // change how rehydration is done
+  // Await until actual rehydration is done before resolving the ethereum.enable promise
   const torusController = new TorusController({
     localStorageCachedNetwork,
     showUnconfirmedMessage: triggerUi.bind(window, 'showUnconfirmedMessage'),
