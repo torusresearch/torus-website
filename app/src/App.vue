@@ -23,10 +23,30 @@ export default {}
   text-transform: inherit;
 }
 
+.theme--light {
+  /* width */
+  ::-webkit-scrollbar {
+    width: 0.8em;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #e2e2e2;
+    box-shadow: inset 0 0 1px #e2e2e2;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #7d7d7d;
+    border: 2px solid #e2e2e2;
+    border-radius: 8px;
+  }
+}
+
 .theme--dark {
   /* width */
   ::-webkit-scrollbar {
-    width: 0.5em;
+    width: 0.8em;
   }
 
   /* Track */
@@ -37,8 +57,8 @@ export default {}
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: var(--v-background_body-base);
-    border: 1px solid #626262;
+    background: #242529;
+    border: 2px solid #626262;
     border-radius: 8px;
   }
 }
