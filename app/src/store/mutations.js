@@ -10,6 +10,7 @@ export default {
   },
   setWeiBalance(state, weiBalance) {
     state.weiBalance = weiBalance
+    state.weiBalanceLoaded = true
   },
   setTokenData(state, tokenData) {
     state.tokenData = tokenData

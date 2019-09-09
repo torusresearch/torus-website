@@ -9,6 +9,7 @@ const initialState = {
   idToken: '',
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
+  weiBalanceLoaded: false, // Account specific object
   selectedAddress: '',
   selectedCurrency: 'USD',
   networkId: 0,
