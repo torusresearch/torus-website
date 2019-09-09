@@ -22,4 +22,24 @@ export default {}
 .v-btn {
   text-transform: inherit;
 }
+
+.theme--dark {
+  /* width */
+  ::-webkit-scrollbar {
+    width: 0.5em;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #626262;
+    box-shadow: inset 0 0 5px #626262;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: var(--v-background_body-base);
+    border: 1px solid #626262;
+    border-radius: 8px;
+  }
+}
 </style>
