@@ -2,7 +2,10 @@
   <v-layout wrap align-center>
     <v-flex class="xs12 sm6 px-4 my-4" v-for="(balance, index) in tokenBalances" :key="index" :style="`order: ${index > 0 ? index + 1 : index}`">
       <v-card color="card-shadow pb-6 pt-1">
-        <v-card-text class="torus_text--text py-6 px-6">
+        <v-layout v-if="!weiBalanceLoaded" class="justify-center align-center my-12">
+          <component-loader />
+        </v-layout>
+        <v-card-text v-else class="torus_text--text py-6 px-6">
           <v-layout>
             <v-flex xs6>
               <img
@@ -87,6 +90,7 @@
 <script>
 import LearnMore from '../LearnMore'
 import PromotionCard from '../PromotionCard'
+import ComponentLoader from '../../../components/helpers/ComponentLoader'
 
 export default {
   props: ['tokenBalances', 'selected', 'isFreshAccount'],
@@ -100,11 +104,15 @@ export default {
   },
   components: {
     LearnMore,
-    PromotionCard
+    PromotionCard,
+    ComponentLoader
   },
   computed: {
     showFooter() {
       return this.tokenBalances.length > 5
+    },
+    weiBalanceLoaded() {
+      return this.$store.state.weiBalanceLoaded
     }
   },
   methods: {
