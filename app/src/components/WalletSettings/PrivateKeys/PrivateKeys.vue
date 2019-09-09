@@ -26,12 +26,14 @@
                           :append-icon="showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                         >
                           <template v-slot:append-outer v-if="!$vuetify.breakpoint.xsOnly">
+                            <v-btn class="mx-7" disabled icon v-if="isLoadingDownloadWallet">
+                              <component-loader />
+                            </v-btn>
                             <v-btn
                               color="primary"
                               depressed
-                              :disabled="!downloadFormValid || isLoadingDownloadWallet"
-                              v-if="!walletJson"
-                              :loading="isLoadingDownloadWallet"
+                              :disabled="!downloadFormValid"
+                              v-if="!walletJson && !isLoadingDownloadWallet"
                               @click="downloadWallet"
                             >
                               Confirm
@@ -42,13 +44,10 @@
                       </v-form>
                     </v-flex>
                     <v-flex v-if="$vuetify.breakpoint.xsOnly" class="text-right">
-                      <v-btn
-                        color="primary"
-                        :disabled="!downloadFormValid || isLoadingDownloadWallet"
-                        v-if="!walletJson"
-                        :loading="isLoadingDownloadWallet"
-                        @click="downloadWallet"
-                      >
+                      <v-btn class="mx-7" disabled icon v-if="isLoadingDownloadWallet">
+                        <component-loader />
+                      </v-btn>
+                      <v-btn color="primary" :disabled="!downloadFormValid" v-if="!walletJson && !isLoadingDownloadWallet" @click="downloadWallet">
                         Confirm
                       </v-btn>
                       <v-btn color="primary" v-if="walletJson" :href="walletJson" :download="name">Download wallet</v-btn>
@@ -119,12 +118,13 @@
 
 <script>
 import ShowToolTip from '../../helpers/ShowToolTip'
+import ComponentLoader from '../../helpers/ComponentLoader'
 const Wallet = require('ethereumjs-wallet')
 const ethUtil = require('ethereumjs-util')
 const WalletWorker = require('worker-loader!../../../utils/wallet.worker.js')
 
 export default {
-  components: { ShowToolTip },
+  components: { ShowToolTip, ComponentLoader },
   data() {
     return {
       isShowPrivateKey: false,
