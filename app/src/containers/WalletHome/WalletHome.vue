@@ -24,15 +24,20 @@
 
       <v-flex xs12 px-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'mb-6'">
         <v-card class="card-total card-shadow">
-          <v-card-title class="font-weight-bold subtitle-2 pt-6 px-6">
-            TOTAL VALUE
-          </v-card-title>
-          <v-card-text class="pb-4 px-6">
-            <h2 class="display-2 font-weight-bold">
-              {{ totalPortfolioValue }}
-              <span class="body-2 font-weight-light">{{ selectedCurrency }}</span>
-            </h2>
-          </v-card-text>
+          <v-layout v-if="!weiBalanceLoaded" class="justify-center align-center my-12">
+            <component-loader />
+          </v-layout>
+          <template v-else>
+            <v-card-title class="font-weight-bold subtitle-2 pt-6 px-6">
+              TOTAL VALUE
+            </v-card-title>
+            <v-card-text class="pb-4 px-6">
+              <h2 class="display-2 font-weight-bold">
+                {{ totalPortfolioValue }}
+                <span class="body-2 font-weight-light">{{ selectedCurrency }}</span>
+              </h2>
+            </v-card-text>
+          </template>
         </v-card>
       </v-flex>
 
@@ -122,11 +127,12 @@
 // The color of dropdown icon requires half day work in modifying v-select
 import config from '../../config'
 import TokenBalancesTable from '../../components/WalletHome/TokenBalancesTable'
+import ComponentLoader from '../../components/helpers/ComponentLoader'
 import { MAINNET } from '../../utils/enums'
 
 export default {
   name: 'walletHome',
-  components: { TokenBalancesTable },
+  components: { TokenBalancesTable, ComponentLoader },
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
@@ -138,6 +144,9 @@ export default {
   computed: {
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
+    },
+    weiBalanceLoaded() {
+      return this.$store.state.weiBalanceLoaded
     },
     finalBalancesArray() {
       let balances = this.$store.getters.tokenBalances.finalBalancesArray
