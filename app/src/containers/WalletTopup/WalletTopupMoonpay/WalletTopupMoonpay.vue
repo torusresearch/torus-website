@@ -60,7 +60,9 @@ export default {
       '&email=' +
       this.$store.state.userInfo.email +
       '&redirectURL=' +
-      this.redirectURL
+      this.redirectURL +
+      '&externalCustomerId=' +
+      this.$store.state.selectedAddress
 
     this.loaded = true
     // log.info('this is', this)
