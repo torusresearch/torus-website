@@ -47,7 +47,11 @@
 
         <v-flex xs12>
           <div class="subtitle-2">Receive</div>
+          <v-layout v-if="loadingEthValue" class="align-center mt-6 mb-10">
+            <component-loader />
+          </v-layout>
           <v-text-field
+            v-else
             readonly
             placeholder="0.00"
             suffix="ETH"
@@ -78,7 +82,7 @@
         <v-tooltip bottom :disabled="formValid">
           <template v-slot:activator="{ on }">
             <span v-on="on">
-              <v-btn :disabled="!formValid" depressed color="primary" type="submit" @click.prevent="sendOrder">
+              <v-btn :disabled="!formValid || loadingEthValue" depressed color="primary" type="submit" @click.prevent="sendOrder">
                 Continue
               </v-btn>
             </span>
@@ -96,6 +100,7 @@ import throttle from 'lodash.throttle'
 import { significantDigits, formatCurrencyNumber } from '../../../utils/utils'
 import { postQuote, postOrder } from '../../../plugins/simplex'
 import HelpTooltip from '../../../components/helpers/HelpTooltip'
+import ComponentLoader from '../../../components/helpers/ComponentLoader'
 
 const MIN_ORDER_VALUE = 50
 const MAX_ORDER_VALUE = 20000
@@ -104,7 +109,8 @@ const validSimplexCurrencies = ['USD', 'EUR']
 
 export default {
   components: {
-    HelpTooltip
+    HelpTooltip,
+    ComponentLoader
   },
   data() {
     return {
@@ -113,6 +119,7 @@ export default {
       currencyRate: 0,
       currentOrder: {},
       formValid: true,
+      loadingEthValue: true,
       rules: {
         required: value => !!value || 'Required',
         validNumber: value => !isNaN(parseFloat(value)) || 'Enter a valid number',
@@ -138,6 +145,7 @@ export default {
       if (parseFloat(newValue) <= 20000 && parseFloat(newValue) >= 50) this.fetchQuote()
     },
     fetchQuote: throttle(async function() {
+      this.loadingEthValue = true
       postQuote({
         digital_currency: 'ETH',
         fiat_currency: this.selectedCurrency,
@@ -148,8 +156,13 @@ export default {
           this.ethValue = result.result.digital_money.amount
           this.currencyRate = result.result.digital_money.amount / result.result.fiat_money.total_amount
           this.currentOrder = result.result
+
+          this.loadingEthValue = false
         })
-        .catch(err => log.error(err))
+        .catch(err => {
+          log.error(err)
+          this.loadingEthValue = false
+        })
     }, 0),
     post(path, params, method = 'post') {
       const form = document.createElement('form')
