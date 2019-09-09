@@ -27,7 +27,10 @@
           </v-flex>
           <v-flex xs12 sm6 mb-5 px-4 v-if="selectedItem">
             <span class="subtitle-2">Account Balance</span>
-            <div>
+            <v-layout v-if="!weiBalanceLoaded" class="align-center mt-2">
+              <component-loader />
+            </v-layout>
+            <div v-else>
               <span class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
               <span class="caption torus_text--text text--lighten-4">{{ currencyBalanceDisplay }}</span>
             </div>
@@ -138,6 +141,7 @@ import { significantDigits, getRandomNumber } from '../../utils/utils'
 import config from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
+import ComponentLoader from '../../components/helpers/ComponentLoader'
 import { get } from '../../utils/httpHelpers'
 import log from 'loglevel'
 
@@ -151,7 +155,8 @@ export default {
   props: ['address'],
   components: {
     TransactionSpeedSelect,
-    MessageModal
+    MessageModal,
+    ComponentLoader
   },
   data() {
     return {
@@ -237,6 +242,9 @@ export default {
     },
     totalCostSuffix() {
       return this.selectedTokenAddress === '0x' ? (this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency) : ''
+    },
+    weiBalanceLoaded() {
+      return this.$store.state.weiBalanceLoaded
     }
   },
   watch: {
