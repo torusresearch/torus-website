@@ -13,7 +13,8 @@ export default {
   moonpayLiveAPIKEY: 'pk_live_Wg90NLnFst3ms7tiqnMDDO0yjlypMzYK',
   moonpayTestHost: 'https://buy-staging.moonpay.io?',
   moonpayTestAPIKEY: 'pk_test_j6AnwGJD0XTJDg3bTO37OczjFsddYpS',
-  coindirectHost: 'https://business.sandbox.coindirect.com/buy?',
+  coindirectTestHost: 'https://business.sandbox.coindirect.com/buy?',
+  coindirectLiveHost: 'https://business.coindirect.com/buy?',
   coindirectTestMerchantID: '82y58W8S302f28h',
   coindirectLiveMerchantID: 'b08d7b18-da82-4dfc-990f-313ea26ac66b',
   // api: 'http://localhost:2030'

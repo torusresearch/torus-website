@@ -12,7 +12,7 @@
 
 <script>
 import config from '../../../config'
-const { coindirectHost, coindirectTestMerchantID } = config
+const { coindirectTestHost, coindirectLiveHost, coindirectTestMerchantID, coindirectLiveMerchantID } = config
 
 export default {
   data() {
@@ -20,8 +20,8 @@ export default {
       url: '',
       loaded: false,
       currencyCode: 'eth',
-      path: coindirectHost,
-      merchantId: coindirectTestMerchantID,
+      path: coindirectLiveHost,
+      merchantId: coindirectLiveMerchantID,
       // Modify before deploying.
       redirectURL: ''
     }
