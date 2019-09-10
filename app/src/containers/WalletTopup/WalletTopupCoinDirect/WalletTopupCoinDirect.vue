@@ -28,7 +28,18 @@ export default {
   },
   mounted() {
     //merchantId=82y58W8S302f28h&to=eth&address=0x67Cb438A35427a7dB62e69ec091B2372b68DEB8a
-    this.url = this.path + 'merchantId=' + this.merchantId + '&to=' + this.currencyCode + '&address=' + this.$store.state.selectedAddress
+    let redirectURL = window.location.origin + '/wallet/history'
+
+    this.url =
+      this.path +
+      'merchantId=' +
+      this.merchantId +
+      '&to=' +
+      this.currencyCode +
+      '&address=' +
+      this.$store.state.selectedAddress +
+      '&url=' +
+      encodeURIComponent(redirectURL)
 
     this.loaded = true
     // log.info('this is', this)
