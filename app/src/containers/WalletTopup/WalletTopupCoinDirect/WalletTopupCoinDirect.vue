@@ -32,7 +32,9 @@ export default {
 
     this.url =
       this.path +
-      'merchantId=' +
+      '&email=' +
+      this.$store.state.userInfo.email +
+      '&merchantId=' +
       this.merchantId +
       '&to=' +
       this.currencyCode +
