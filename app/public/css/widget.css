@@ -3,41 +3,81 @@
   position: fixed;
 }
 
-#torusLogin {
-  border-radius: 25px;
-  height: 50px;
-  width: 50px;
+/* FAB Speed dial */
+.speed-dial-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.speed-dial-list li {
+  margin-bottom: 16px;
+  opacity: 0;
+}
+
+.speed-dial-list.active li {
+  opacity: 1;
+}
+
+.torus-btn {
+  border-radius: 30px;
+  background-color: #0364ff;
+  padding: 14px;
+  width: 60px;
+  height: 60px;
+  border: 0;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.torus-btn--login {
   background-image: url('/images/login.png');
   background-size: 60%;
   background-repeat: no-repeat;
-  border-width: 0px;
   background-position: center;
-  background-color: #75b4fd;
-  transition: background-color, background-image, width 0.1s ease-in-out;
-  user-select: none;
-  outline: none;
+  transition: width 0.3s;
 }
 
-#torusMenuBtn {
-  cursor: pointer;
-  border-radius: 25px;
-  height: 50px;
-  width: 50px;
-  background-image: url('/images/favicon_inverted.png');
-  background-size: 100%;
+.torus-btn--login:hover {
+  width: 150px;
+  background-image: url('/images/loginwithgoogle.png');
+  background-size: 85%;
   background-repeat: no-repeat;
-  border-width: 0px;
   background-position: center;
-  background-color: #ffffff;
-  transition: background-color, background-image, width 0.1s ease-in-out;
-  user-select: none;
-  outline: none;
-  display: none;
+  transition: width 0.3s;
 }
 
-#torusMenuBtn:hover {
-  background-color: #eeeeee;
-  transition: background-color, 0.1s ease-in-out;
+.torus-btn img {
+  width: 100%;
+  height: auto;
+}
+
+.torus-btn--main {
+  display: none;
+  padding: 10px 8px 10px 12px;
+  transition: transform 0.3s;
+}
+
+.torus-btn--main.active {
+  padding: 12px;
+  background-color: #eef2f4;
+  transform: scale(0.7);
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+}
+
+.torus-btn--text {
+  padding: 10px;
+  font-family: Roboto;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.7px;
+  line-height: 19px;
+}
+
+.torus-btn:focus {
+  outline: none;
 }
 
 #closeOverlayBtn {
@@ -54,15 +94,6 @@
   transition: background-color, background-image, width 0.1s ease-in-out;
   user-select: none;
   outline: none;
-}
-
-#torusLogin:hover {
-  background-color: #75b4fd;
-  height: 50px;
-  width: 120px;
-  background-size: 85%;
-  background-image: url('/images/loginwithgoogle.png');
-  transition: background-color, background-image, width 0.1s ease-in-out;
 }
 
 #torusIframeContainer {
