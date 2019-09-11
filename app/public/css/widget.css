@@ -80,6 +80,42 @@
   outline: none;
 }
 
+.tooltip {
+  position: relative;
+}
+
+.tooltip-text {
+  display: none;
+  position: absolute;
+  opacity: 0.8;
+  background-color: #2f3136;
+  color: #ffffff;
+  font-family: Roboto;
+  border-radius: 5px;
+  padding: 3px 5px;
+  text-align: center;
+  font-size: 12px;
+  left: 0;
+  top: 0;
+  transform: translate(110%, 20%);
+}
+
+.tooltip-copied {
+  transform: translate(140%, 30%);
+}
+
+.tooltip-copied.tooltip-text.active {
+  display: block;
+}
+
+.tooltip-note.tooltip-text.active {
+  display: none;
+}
+
+.tooltip:hover .tooltip-note:not(.active) {
+  display: block;
+}
+
 #closeOverlayBtn {
   cursor: pointer;
   border-radius: 20px;
