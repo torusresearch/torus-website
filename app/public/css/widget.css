@@ -57,6 +57,10 @@
   display: none;
   padding: 10px 8px 10px 12px;
   transition: transform 0.3s;
+  background-image: url('/img/icons/torus-icon-light.svg');
+  background-size: 65%;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .torus-btn--main.active {
@@ -65,6 +69,7 @@
   transform: scale(0.7);
   transition: transform 0.3s;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+  background-image: url('/img/icons/torus-icon-dark.svg');
 }
 
 .torus-btn--text {
