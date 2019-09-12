@@ -29,13 +29,13 @@
   cursor: pointer;
   color: white;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+  background-size: 60%;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .torus-btn--login {
   background-image: url('/images/login.png');
-  background-size: 60%;
-  background-repeat: no-repeat;
-  background-position: center;
   transition: width 0.3s;
 }
 
@@ -43,8 +43,6 @@
   width: 150px;
   background-image: url('/images/loginwithgoogle.png');
   background-size: 85%;
-  background-repeat: no-repeat;
-  background-position: center;
   transition: width 0.3s;
 }
 
@@ -58,9 +56,8 @@
   padding: 10px 8px 10px 12px;
   transition: transform 0.3s;
   background-image: url('/img/icons/torus-icon-light.svg');
-  background-size: 65%;
-  background-repeat: no-repeat;
-  background-position: center;
+  background-size: 55%;
+  background-position: 55% 52%;
 }
 
 .torus-btn--main.active {
@@ -79,6 +76,14 @@
   font-weight: bold;
   letter-spacing: 0.7px;
   line-height: 19px;
+}
+
+.torus-btn--home {
+  background-image: url('/img/icons/home.svg');
+}
+
+.torus-btn--transfer {
+  background-image: url('/img/icons/indent-increase.svg');
 }
 
 .torus-btn:focus {
@@ -102,15 +107,19 @@
   font-size: 12px;
   left: 0;
   top: 0;
-  transform: translate(110%, 20%);
+  transform: translate(70px, 10px);
 }
 
 .tooltip-copied {
-  transform: translate(140%, 30%);
+  transform: translate(70px, 20px);
 }
 
 .tooltip-copied.tooltip-text.active {
   display: block;
+}
+
+.tooltip-note.tooltip-text {
+  width: 150px;
 }
 
 .tooltip-note.tooltip-text.active {
