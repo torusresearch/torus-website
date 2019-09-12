@@ -2,7 +2,7 @@ import BroadcastChannel from 'broadcast-channel'
 import log from 'loglevel'
 import config from '../config'
 import torus from '../torus'
-import { RPC } from '../utils/enums'
+import { RPC, USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
 import { getRandomNumber, broadcastChannelOptions } from '../utils/utils'
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
@@ -190,6 +190,10 @@ export default {
         .then(response => resolve())
         .catch(err => reject(err))
     })
+  },
+  updateUserInfoAccess({ commit }, payload) {
+    if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
+    else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
   },
   updateTransactions({ commit }, payload) {
     commit('setTransactions', payload.transactions)
