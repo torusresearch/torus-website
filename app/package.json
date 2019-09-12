@@ -39,7 +39,7 @@
     "core-js": "2.6.5",
     "debounce": "^1.2.0",
     "eth-block-tracker": "^4.4.2",
-    "eth-contract-metadata": "^1.9.2",
+    "eth-contract-metadata": "^1.9.3",
     "eth-json-rpc-filters": "^4.1.0",
     "eth-json-rpc-infura": "^4.0.1",
     "eth-json-rpc-middleware": "^4.1.6",
