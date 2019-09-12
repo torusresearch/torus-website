@@ -20,16 +20,15 @@ export default {
       url: '',
       loaded: false,
       currencyCode: 'eth',
-      path: coindirectLiveHost,
-      merchantId: coindirectLiveMerchantID,
+      path: coindirectTestHost,
+      merchantId: coindirectTestMerchantID,
       // Modify before deploying.
       redirectURL: ''
     }
   },
   mounted() {
-    //merchantId=82y58W8S302f28h&to=eth&address=0x67Cb438A35427a7dB62e69ec091B2372b68DEB8a
     let redirectURL = window.location.origin + '/wallet/history'
-
+    //let redirectURL = "localhost:3070/transaction"
     this.url =
       this.path +
       '&email=' +
