@@ -56,7 +56,7 @@ import { getPastOrders } from '../../plugins/simplex'
 import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getEthTxStatus } from '../../utils/utils'
 import torus from '../../torus'
 import { patch } from '../../utils/httpHelpers'
-import { WALLET_HEADERS_TRANSFER } from '../../utils/enums'
+import { WALLET_HEADERS_TRANSFER, ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_TOPUP } from '../../utils/enums'
 const web3Utils = torus.web3.utils
 
 export default {
@@ -79,8 +79,8 @@ export default {
         { text: 'Status', value: 'status', align: 'center' }
       ],
       pastOrders: [],
-      actionTypes: ['All Transactions', 'Send', 'Receive', 'Top up'],
-      selectedAction: 'All Transactions',
+      actionTypes: [ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_TOPUP],
+      selectedAction: ACTIVITY_ACTION_ALL,
       periods: ['All', 'Last 1 Week', 'Last 1 Month', 'Last 6 Months'],
       selectedPeriod: 'All',
       paymentTx: [],
@@ -152,7 +152,7 @@ export default {
           slicedFrom: addressSlicer(x.from),
           to: x.to,
           slicedTo: addressSlicer(x.to),
-          action: this.wallets.indexOf(x.to) >= 0 ? 'Receive' : 'Send',
+          action: this.wallets.indexOf(x.to) >= 0 ? 'Receive' : ACTIVITY_ACTION_SEND,
           totalAmount: x.total_amount,
           totalAmountString: totalAmountString,
           currencyAmount: x.currency_amount,
@@ -176,7 +176,7 @@ export default {
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
           const txObj = {}
           txObj.id = txOld.time
-          txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? 'Receive' : 'Send'
+          txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? 'Receive' : ACTIVITY_ACTION_SEND
           txObj.date = new Date(txOld.time)
           txObj.from = web3Utils.toChecksumAddress(txOld.txParams.from)
           txObj.slicedFrom = addressSlicer(txOld.txParams.from)

@@ -14,7 +14,8 @@ const {
   LOCALHOST_DISPLAY_NAME,
   GOERLI_DISPLAY_NAME,
   RPC_DISPLAY_NAME,
-  MATIC_DISPLAY_NAME
+  MATIC_DISPLAY_NAME,
+  ACTIVITY_ACTION_SEND
 } = require('../../utils/enums')
 
 const mapper = {
@@ -93,7 +94,7 @@ export default {
     getIcon(action) {
       if (action === 'Top up') {
         return '$vuetify.icons.coins_topup'
-      } else if (action === 'Send') {
+      } else if (action === ACTIVITY_ACTION_SEND) {
         return '$vuetify.icons.coins_send'
       } else if (action === 'Receive') {
         return '$vuetify.icons.coins_receive'

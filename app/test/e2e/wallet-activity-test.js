@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer')
 const assert = require('assert')
-const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME } = require('../../src/utils/enums')
+const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME, ACTIVITY_ACTION_SEND } = require('../../src/utils/enums')
 
 const config = require('./lib/config')
 const { loadUrl, click, typeText, waitForText, selectItem, navigateTo } = require('./lib/helpers')
@@ -84,7 +84,7 @@ describe('Tests Wallet Activity Page', () => {
   })
 
   it('Should filter transaction type correctly', async () => {
-    const textToSelect = 'Send'
+    const textToSelect = ACTIVITY_ACTION_SEND
     await selectItem(page, '#transaction-selector', '.nav-selector.transaction', textToSelect)
     await page.waitFor(100)
     const transactionFilter = await page.$eval('.nav-selector.transaction .v-select__selection', el => el.textContent)
