@@ -1,6 +1,12 @@
 const puppeteer = require('puppeteer')
 const assert = require('assert')
-const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME, ACTIVITY_ACTION_SEND, ACTIVITY_PERIOD_WEEK_ONE } = require('../../src/utils/enums')
+const {
+  WALLET_HEADERS_HOME,
+  RINKEBY_DISPLAY_NAME,
+  ACTIVITY_ACTION_ALL,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_PERIOD_WEEK_ONE
+} = require('../../src/utils/enums')
 
 const config = require('./lib/config')
 const { loadUrl, click, typeText, waitForText, selectItem, navigateTo } = require('./lib/helpers')
