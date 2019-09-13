@@ -34,6 +34,15 @@
   background-position: center;
 }
 
+.torus-btn--loading {
+  display: none;
+  padding: 0;
+}
+
+.torus-btn--loading.active {
+  display: block;
+}
+
 .torus-btn--login {
   background-image: url('/images/login.png');
   transition: width 0.3s;
@@ -128,6 +137,53 @@
 
 .tooltip:hover .tooltip-note:not(.active) {
   display: block;
+}
+
+.spinner .beat {
+  background-color: #ffffff;
+  height: 10px;
+  width: 10px;
+  margin: 2px;
+  border-radius: 100%;
+  -webkit-animation: beatStretchDelay 0.7s infinite linear;
+  animation: beatStretchDelay 0.7s infinite linear;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  display: inline-block;
+}
+.spinner .beat-odd {
+  animation-delay: 0s;
+}
+.spinner .beat-even {
+  animation-delay: 0.35s;
+}
+@-webkit-keyframes beatStretchDelay {
+  50% {
+    -webkit-transform: scale(0.75);
+    transform: scale(0.75);
+    -webkit-opacity: 0.2;
+    opacity: 0.2;
+  }
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    -webkit-opacity: 1;
+    opacity: 1;
+  }
+}
+@keyframes beatStretchDelay {
+  50% {
+    -webkit-transform: scale(0.75);
+    transform: scale(0.75);
+    -webkit-opacity: 0.2;
+    opacity: 0.2;
+  }
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    -webkit-opacity: 1;
+    opacity: 1;
+  }
 }
 
 #closeOverlayBtn {
