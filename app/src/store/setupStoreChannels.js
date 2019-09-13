@@ -3,7 +3,7 @@ import log from 'loglevel'
 import pump from 'pump'
 import stream from 'stream'
 import torus from '../torus'
-import { MAINNET, RPC } from '../utils/enums'
+import { MAINNET, RPC, USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, USER_INFO_REQUEST_NEW } from '../utils/enums'
 import VuexStore from './store'
 import { broadcastChannelOptions } from '../utils/utils'
 
@@ -57,7 +57,23 @@ torus.communicationMux.getStream('logout').on('data', function(chunk) {
 
 const userInfoStream = torus.communicationMux.getStream('user_info')
 userInfoStream.on('data', function(chunk) {
-  if (chunk.name === 'user_info_request') VuexStore.dispatch('showUserInfoRequestPopup', { ...chunk.data })
+  if (chunk.name === 'user_info_request') {
+    const userInfoRequestChannel = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`, broadcastChannelOptions)
+    switch (VuexStore.state.userInfoAccess) {
+      case USER_INFO_REQUEST_APPROVED:
+        userInfoRequestChannel.postMessage({
+          data: { type: 'confirm-user-info-request', approve: true }
+        })
+        break
+      case USER_INFO_REQUEST_REJECTED:
+        userInfoRequestChannel.postMessage({ data: { type: 'deny-user-info-request', approve: false } })
+        break
+      case USER_INFO_REQUEST_NEW:
+      default:
+        VuexStore.dispatch('showUserInfoRequestPopup', { ...chunk.data })
+        break
+    }
+  }
 })
 
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
@@ -138,10 +154,12 @@ var userInfoRequestChannel = new BroadcastChannel(`user_info_request_channel_${t
 userInfoRequestChannel.onmessage = function(ev) {
   if (ev.data && ev.data.type === 'confirm-user-info-request' && ev.data.approve) {
     log.info('User Info Request approved')
+    VuexStore.dispatch('updateUserInfoAccess', { approved: true })
     userInfoStream.write({ name: 'user_info_response', data: { payload: VuexStore.state.userInfo, approved: true } })
-  } else if (ev.data && ev.data.tyep === 'deny-user-info-request') {
-    log.info('User Info Request deined')
-    userInfoStream.write({ name: 'user_info_response', data: { payload: VuexStore.state.userInfo, approved: false } })
+  } else if (ev.data && ev.data.type === 'deny-user-info-request') {
+    log.info('User Info Request denied')
+    VuexStore.dispatch('updateUserInfoAccess', { approved: false })
+    userInfoStream.write({ name: 'user_info_response', data: { payload: {}, approved: false } })
   }
 }
 

@@ -32,6 +32,7 @@ const vuexPersist = new VuexPersistence({
   reducer: state => {
     return {
       userInfo: state.userInfo,
+      userInfoAccess: state.userInfoAccess,
       idToken: state.idToken,
       wallet: state.wallet,
       // weiBalance: state.weiBalance,

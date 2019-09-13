@@ -2,7 +2,7 @@ import BroadcastChannel from 'broadcast-channel'
 import log from 'loglevel'
 import config from '../config'
 import torus from '../torus'
-import { RPC } from '../utils/enums'
+import { RPC, USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
 import { getRandomNumber, broadcastChannelOptions } from '../utils/utils'
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
@@ -195,6 +195,10 @@ export default {
         .catch(err => reject(err))
     })
   },
+  updateUserInfoAccess({ commit }, payload) {
+    if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
+    else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
+  },
   updateTransactions({ commit }, payload) {
     commit('setTransactions', payload.transactions)
   },
@@ -342,11 +346,13 @@ export default {
       .then(async response => {
         const data = response[0]
         const message = response[1]
-        dispatch('addWallet', data)
-        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
+        dispatch('addWallet', data) // synchronus
+        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
         dispatch('subscribeToControllers')
-        await dispatch('initTorusKeyring', data)
-        await dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
+        await Promise.all([
+          dispatch('initTorusKeyring', data),
+          dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
+        ])
 
         // continue enable function
         var ethAddress = data.ethAddress
@@ -466,8 +472,10 @@ export default {
       if (selectedAddress && wallet[selectedAddress]) {
         dispatch('updateSelectedAddress', { selectedAddress })
         setTimeout(() => dispatch('subscribeToControllers'), 50)
-        await torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet))
-        await dispatch('setUserInfo', { token: jwtToken, calledFromEmbed: false })
+        await Promise.all([
+          torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet)),
+          dispatch('setUserInfo', { token: jwtToken, calledFromEmbed: false })
+        ])
         statusStream.write({ loggedIn: true })
         log.info('rehydrated wallet')
         torus.web3.eth.net
