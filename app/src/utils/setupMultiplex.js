@@ -1,3 +1,4 @@
+import log from 'loglevel'
 const ObjectMultiplex = require('obj-multiplex')
 const pump = require('pump')
 
