@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer')
 const assert = require('assert')
-const { WALLET_HEADERS_HOME } = require('../../src/utils/enums')
+const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME } = require('../../src/utils/enums')
 
 const config = require('./lib/config')
 const { loadUrl, click, typeText, waitForText, shouldExist, selectItem, navigateTo } = require('./lib/helpers')
@@ -58,7 +58,7 @@ describe('Tests Wallet Settings Page', () => {
   it('Should change network to rinkeby', async () => {
     await click(page, '#network-panel-header')
 
-    const textToSelect = 'Rinkeby Test Network'
+    const textToSelect = RINKEBY_DISPLAY_NAME
     await selectItem(page, '#select-network', '.select-network-container', textToSelect)
     await page.waitFor(100)
     const networkSelected = await page.$eval('.select-network-container .v-select__selection', el => el.textContent)
