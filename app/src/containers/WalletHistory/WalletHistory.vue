@@ -56,7 +56,17 @@ import { getPastOrders } from '../../plugins/simplex'
 import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getEthTxStatus } from '../../utils/utils'
 import torus from '../../torus'
 import { patch } from '../../utils/httpHelpers'
-import { WALLET_HEADERS_TRANSFER, ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_TOPUP } from '../../utils/enums'
+import {
+  WALLET_HEADERS_TRANSFER,
+  ACTIVITY_ACTION_ALL,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_TOPUP,
+  ACTIVITY_PERIOD_ALL,
+  ACTIVITY_PERIOD_WEEK_ONE,
+  ACTIVITY_PERIOD_MONTH_ONE,
+  ACTIVITY_PERIOD_MONTH_SIX
+} from '../../utils/enums'
 const web3Utils = torus.web3.utils
 
 export default {
@@ -81,8 +91,8 @@ export default {
       pastOrders: [],
       actionTypes: [ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_TOPUP],
       selectedAction: ACTIVITY_ACTION_ALL,
-      periods: ['All', 'Last 1 Week', 'Last 1 Month', 'Last 6 Months'],
-      selectedPeriod: 'All',
+      periods: [ACTIVITY_PERIOD_ALL, ACTIVITY_PERIOD_WEEK_ONE, ACTIVITY_PERIOD_MONTH_ONE, ACTIVITY_PERIOD_MONTH_SIX],
+      selectedPeriod: ACTIVITY_PERIOD_ALL,
       paymentTx: [],
       pastTx: []
     }

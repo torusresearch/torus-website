@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer')
 const assert = require('assert')
-const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME, ACTIVITY_ACTION_SEND } = require('../../src/utils/enums')
+const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME, ACTIVITY_ACTION_SEND, ACTIVITY_PERIOD_WEEK_ONE } = require('../../src/utils/enums')
 
 const config = require('./lib/config')
 const { loadUrl, click, typeText, waitForText, selectItem, navigateTo } = require('./lib/helpers')
@@ -109,7 +109,7 @@ describe('Tests Wallet Activity Page', () => {
     await selectItem(page, '#transaction-selector', '.nav-selector.transaction', ACTIVITY_ACTION_ALL)
     await page.waitFor(100)
 
-    const textToSelect = 'Last 1 Week'
+    const textToSelect = ACTIVITY_PERIOD_WEEK_ONE
     await selectItem(page, '#period-selector', '.nav-selector.period', textToSelect)
     await page.waitFor(100)
     const dateFilter = await page.$eval('.nav-selector.period .v-select__selection', el => el.textContent)
