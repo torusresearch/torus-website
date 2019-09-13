@@ -71,7 +71,7 @@
 
 .torus-btn--text {
   padding: 10px;
-  font-family: Roboto;
+  font-family: 'Roboto', sans-serif !important;
   font-size: 14px;
   font-weight: bold;
   letter-spacing: 0.7px;
@@ -100,7 +100,7 @@
   opacity: 0.8;
   background-color: #2f3136;
   color: #ffffff;
-  font-family: Roboto;
+  font-family: 'Roboto', sans-serif !important;
   border-radius: 5px;
   padding: 3px 5px;
   text-align: center;
