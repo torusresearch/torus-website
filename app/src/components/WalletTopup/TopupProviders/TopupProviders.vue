@@ -14,7 +14,7 @@
             <v-icon color="grey" v-else>$vuetify.icons.radio_unchecked</v-icon>
           </v-list-item-icon>
           <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
-            <img :src="require(`../../../../public/images/logos/${targetProvider.logo}`)" />
+            <img :src="require(`../../../../public/images/${targetProvider.logo}`)" />
           </v-list-item-avatar>
           <v-list-item-content class="align-self-center text-right caption">
             <div>{{ targetProvider.line1 }}</div>
@@ -34,7 +34,7 @@
                 <v-icon color="grey">$vuetify.icons.radio_unchecked</v-icon>
               </v-list-item-icon>
               <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
-                <img :src="require(`../../../../public/images/logos/${targetProvider.logo}`)" />
+                <img :src="require(`../../../../public/images/${targetProvider.logo}`)" />
               </v-list-item-avatar>
               <v-list-item-content class="align-self-center text-right caption">
                 <div>{{ targetProvider.line1 }}</div>
