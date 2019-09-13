@@ -8,7 +8,7 @@
         <v-form ref="advanceOptionForm" :value="advanceOptionFormValid" @submit.prevent="saveOptions" lazy-validation>
           <v-layout wrap>
             <v-flex xs12 px-4>
-              <div class="font-weight-bold headline">Transfer Details</div>
+              <div class="font-weight-bold headline">{{ pageHeader }}</div>
               <div class="font-weight-bold subtitle-2">Customize Gas</div>
             </v-flex>
             <v-flex xs12 mt-4>
@@ -122,6 +122,7 @@
 <script>
 import { significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'
+import { WALLET_HEADERS_TRANSFER } from '../../../utils/enums'
 
 export default {
   components: {
@@ -130,6 +131,7 @@ export default {
   props: ['activeGasPrice', 'gas', 'displayAmount', 'symbol'],
   data() {
     return {
+      pageHeader: WALLET_HEADERS_TRANSFER,
       dialog: false,
       advanceOptionFormValid: true,
       advancedActiveGasPrice: 0,

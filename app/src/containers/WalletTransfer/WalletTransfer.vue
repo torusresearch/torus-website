@@ -1,6 +1,6 @@
 <template>
   <v-layout wrap class="wallet-transfer" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
-    <div class="text-black font-weight-bold headline px-4 mb-4">Transfer Details</div>
+    <div class="text-black font-weight-bold headline px-4 mb-4">{{ pageHeader }}</div>
     <v-flex xs12 mb-4>
       <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation>
         <v-layout wrap>
@@ -155,6 +155,7 @@ import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSel
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import { get } from '../../utils/httpHelpers'
 import log from 'loglevel'
+import { WALLET_HEADERS_TRANSFER } from '../../utils/enums'
 
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
@@ -170,6 +171,7 @@ export default {
   },
   data() {
     return {
+      pageHeader: WALLET_HEADERS_TRANSFER,
       tokenAddress: '0x',
       amount: 0,
       displayAmount: '',
