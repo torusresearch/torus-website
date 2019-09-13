@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer')
 const assert = require('assert')
-const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME } = require('../../src/utils/enums')
+const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME, WALLET_HEADERS_CONFIRM } = require('../../src/utils/enums')
 
 const config = require('./lib/config')
 const {
@@ -202,7 +202,7 @@ describe('Tests Wallet Transfer Transaction', () => {
 
   it('Should submit confirm', async () => {
     await click(confirmPage, '#confirm-btn')
-    await waitForText(confirmPage, '.headline', 'Confirm your Transfer')
+    await waitForText(confirmPage, '.headline', WALLET_HEADERS_CONFIRM)
     await click(confirmPage, '#confirm-transfer-btn')
   })
 

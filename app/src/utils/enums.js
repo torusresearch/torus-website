@@ -52,6 +52,7 @@ const USER_INFO_REQUEST_NEW = 'user_info_request_new'
 const WALLET_HEADERS_HOME = 'My Wallet'
 const WALLET_HEADERS_TRANSFER = 'Transfer Details'
 const WALLET_HEADERS_ACTIVITY = 'Transaction Activities'
+const WALLET_HEADERS_CONFIRM = 'Confirm your Transfer'
 
 const ACTIVITY_ACTION_ALL = 'All Transactions'
 const ACTIVITY_ACTION_SEND = 'Send'
