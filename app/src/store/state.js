@@ -1,4 +1,4 @@
-import { MAINNET } from '../utils/enums'
+import { MAINNET, USER_INFO_REQUEST_NEW } from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -6,6 +6,7 @@ const initialState = {
     name: '',
     profileImage: ''
   },
+  userInfoAccess: USER_INFO_REQUEST_NEW,
   idToken: '',
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object

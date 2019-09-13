@@ -45,6 +45,10 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const ACTIVE = 'active'
 const INACTIVE = 'inactive'
 
+const USER_INFO_REQUEST_APPROVED = 'user_info_request_approved'
+const USER_INFO_REQUEST_REJECTED = 'user_info_request_rejected'
+const USER_INFO_REQUEST_NEW = 'user_info_request_new'
+
 module.exports = {
   ROPSTEN,
   RINKEBY,
@@ -82,5 +86,8 @@ module.exports = {
   MATIC,
   MATIC_CODE,
   ACTIVE,
-  INACTIVE
+  INACTIVE,
+  USER_INFO_REQUEST_APPROVED,
+  USER_INFO_REQUEST_REJECTED,
+  USER_INFO_REQUEST_NEW
 }

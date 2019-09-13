@@ -3,41 +3,131 @@
   position: fixed;
 }
 
-#torusLogin {
-  border-radius: 25px;
-  height: 50px;
-  width: 50px;
-  background-image: url('/images/login.png');
+/* FAB Speed dial */
+.speed-dial-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.speed-dial-list li {
+  margin-bottom: 16px;
+  opacity: 0;
+}
+
+.speed-dial-list.active li {
+  opacity: 1;
+}
+
+.torus-btn {
+  border-radius: 30px;
+  background-color: #0364ff;
+  padding: 14px;
+  width: 60px;
+  height: 60px;
+  border: 0;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
   background-size: 60%;
   background-repeat: no-repeat;
-  border-width: 0px;
   background-position: center;
-  background-color: #75b4fd;
-  transition: background-color, background-image, width 0.1s ease-in-out;
-  user-select: none;
+}
+
+.torus-btn--login {
+  background-image: url('/images/login.png');
+  transition: width 0.3s;
+}
+
+.torus-btn--login:hover {
+  width: 150px;
+  background-image: url('/images/loginwithgoogle.png');
+  background-size: 85%;
+  transition: width 0.3s;
+}
+
+.torus-btn img {
+  width: 100%;
+  height: auto;
+}
+
+.torus-btn--main {
+  display: none;
+  padding: 10px 8px 10px 12px;
+  transition: transform 0.3s;
+  background-image: url('/img/icons/torus-icon-light.svg');
+  background-size: 55%;
+  background-position: 55% 52%;
+}
+
+.torus-btn--main.active {
+  padding: 12px;
+  background-color: #eef2f4;
+  transform: scale(0.7);
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+  background-image: url('/img/icons/torus-icon-dark.svg');
+}
+
+.torus-btn--text {
+  padding: 10px;
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.7px;
+  line-height: 19px;
+}
+
+.torus-btn--home {
+  background-image: url('/img/icons/home.svg');
+}
+
+.torus-btn--transfer {
+  background-image: url('/img/icons/indent-increase.svg');
+}
+
+.torus-btn:focus {
   outline: none;
 }
 
-#torusMenuBtn {
-  cursor: pointer;
-  border-radius: 25px;
-  height: 50px;
-  width: 50px;
-  background-image: url('/images/favicon_inverted.png');
-  background-size: 100%;
-  background-repeat: no-repeat;
-  border-width: 0px;
-  background-position: center;
-  background-color: #ffffff;
-  transition: background-color, background-image, width 0.1s ease-in-out;
-  user-select: none;
-  outline: none;
+.tooltip {
+  position: relative;
+}
+
+.tooltip-text {
+  display: none;
+  position: absolute;
+  opacity: 0.8;
+  background-color: #2f3136;
+  color: #ffffff;
+  font-family: 'Roboto', sans-serif !important;
+  border-radius: 5px;
+  padding: 3px 5px;
+  text-align: center;
+  font-size: 12px;
+  left: 0;
+  top: 0;
+  transform: translate(70px, 10px);
+}
+
+.tooltip-copied {
+  transform: translate(70px, 20px);
+}
+
+.tooltip-copied.tooltip-text.active {
+  display: block;
+}
+
+.tooltip-note.tooltip-text {
+  width: 150px;
+}
+
+.tooltip-note.tooltip-text.active {
   display: none;
 }
 
-#torusMenuBtn:hover {
-  background-color: #eeeeee;
-  transition: background-color, 0.1s ease-in-out;
+.tooltip:hover .tooltip-note:not(.active) {
+  display: block;
 }
 
 #closeOverlayBtn {
@@ -54,15 +144,6 @@
   transition: background-color, background-image, width 0.1s ease-in-out;
   user-select: none;
   outline: none;
-}
-
-#torusLogin:hover {
-  background-color: #75b4fd;
-  height: 50px;
-  width: 120px;
-  background-size: 85%;
-  background-image: url('/images/loginwithgoogle.png');
-  transition: background-color, background-image, width 0.1s ease-in-out;
 }
 
 #torusIframeContainer {
