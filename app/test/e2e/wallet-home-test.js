@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer')
 const assert = require('assert')
+const { WALLET_HEADERS_HOME } = require('../../src/utils/enums')
 
 const config = require('./lib/config')
 const { loadUrl, click, typeText, waitForText, shouldExist, selectItem, navigateTo } = require('./lib/helpers')
@@ -62,7 +63,7 @@ describe('Tests Wallet Home', () => {
   })
 
   it('Should show main page', async () => {
-    await waitForText(page, '.wallet-home .headline', 'My Wallet')
+    await waitForText(page, '.wallet-home .headline', WALLET_HEADERS_HOME)
   })
 
   it('Should change network to rinkeby', async () => {

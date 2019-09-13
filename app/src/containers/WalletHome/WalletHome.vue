@@ -2,7 +2,7 @@
   <div class="wallet-home">
     <v-layout wrap align-center :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
       <v-flex xs6 px-4 mb-4>
-        <div class="font-weight-bold headline float-left">My Wallet</div>
+        <div class="font-weight-bold headline float-left">{{ pageHeader }}</div>
       </v-flex>
       <v-flex xs6 px-4 mb-4 class="text-right hidden-xs-only">
         <v-btn outlined large color="primary" :disabled="isFreshAccount" class="transfer-btn px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
@@ -131,13 +131,14 @@
 // The color of dropdown icon requires half day work in modifying v-select
 import config from '../../config'
 import TokenBalancesTable from '../../components/WalletHome/TokenBalancesTable'
-import { MAINNET } from '../../utils/enums'
+import { MAINNET, WALLET_HEADERS_HOME } from '../../utils/enums'
 
 export default {
   name: 'walletHome',
   components: { TokenBalancesTable },
   data() {
     return {
+      pageHeader: WALLET_HEADERS_HOME,
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
       selected: [],
       search: '',

@@ -49,6 +49,10 @@ const USER_INFO_REQUEST_APPROVED = 'user_info_request_approved'
 const USER_INFO_REQUEST_REJECTED = 'user_info_request_rejected'
 const USER_INFO_REQUEST_NEW = 'user_info_request_new'
 
+const WALLET_HEADERS_HOME = 'My Wallet'
+const WALLET_HEADERS_TRANSFER = 'Transfer Details'
+const WALLET_HEADERS_ACTIVITY = 'Transaction Activities'
+
 module.exports = {
   ROPSTEN,
   RINKEBY,
@@ -89,5 +93,8 @@ module.exports = {
   INACTIVE,
   USER_INFO_REQUEST_APPROVED,
   USER_INFO_REQUEST_REJECTED,
-  USER_INFO_REQUEST_NEW
+  USER_INFO_REQUEST_NEW,
+  WALLET_HEADERS_HOME,
+  WALLET_HEADERS_TRANSFER,
+  WALLET_HEADERS_ACTIVITY
 }

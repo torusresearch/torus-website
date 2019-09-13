@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer')
 const assert = require('assert')
+const { WALLET_HEADERS_HOME } = require('../../src/utils/enums')
 
 const config = require('./lib/config')
 const { loadUrl, click, typeText, waitForText, shouldExist } = require('./lib/helpers')
@@ -47,7 +48,7 @@ describe('Tests Account Menu', () => {
     await typeText(loginPage, config.testAccountPassword, 'input[type="password"]')
     await click(loginPage, '#passwordNext')
 
-    await waitForText(page, '.wallet-home .headline', 'My Wallet')
+    await waitForText(page, '.wallet-home .headline', WALLET_HEADERS_HOME)
   })
 
   it('Should show account menu', async () => {
