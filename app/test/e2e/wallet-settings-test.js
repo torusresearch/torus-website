@@ -2,14 +2,7 @@ const puppeteer = require('puppeteer')
 const assert = require('assert')
 
 const config = require('./lib/config')
-
-const loadUrl = require('./lib/helpers').loadUrl
-const click = require('./lib/helpers').click
-const typeText = require('./lib/helpers').typeText
-const waitForText = require('./lib/helpers').waitForText
-const shouldExist = require('./lib/helpers').shouldExist
-const selectItem = require('./lib/helpers').selectItem
-const navigateTo = require('./lib/helpers').navigateTo
+const { loadUrl, click, typeText, waitForText, shouldExist, selectItem, navigateTo } = require('./lib/helpers')
 
 describe('Tests Wallet Settings Page', () => {
   let browser

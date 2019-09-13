@@ -2,7 +2,6 @@ const puppeteer = require('puppeteer')
 const assert = require('assert')
 
 const config = require('./lib/config')
-
 const { loadUrl, click, typeText, waitForText, selectItem, navigateTo } = require('./lib/helpers')
 
 describe('Tests Wallet Activity Page', () => {
