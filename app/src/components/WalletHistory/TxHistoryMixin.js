@@ -15,7 +15,9 @@ const {
   GOERLI_DISPLAY_NAME,
   RPC_DISPLAY_NAME,
   MATIC_DISPLAY_NAME,
-  ACTIVITY_ACTION_SEND
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_TOPUP
 } = require('../../utils/enums')
 
 const mapper = {
@@ -92,11 +94,11 @@ export default {
       }
     },
     getIcon(action) {
-      if (action === 'Top up') {
+      if (action === ACTIVITY_ACTION_TOPUP) {
         return '$vuetify.icons.coins_topup'
       } else if (action === ACTIVITY_ACTION_SEND) {
         return '$vuetify.icons.coins_send'
-      } else if (action === 'Receive') {
+      } else if (action === ACTIVITY_ACTION_RECEIVE) {
         return '$vuetify.icons.coins_receive'
       }
     },

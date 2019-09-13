@@ -117,7 +117,7 @@ export default {
       this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value })
     },
     getNonTopupTransactionCount() {
-      return this.calculateFinalTransactions().filter(item => item.action !== 'Top up').length
+      return this.calculateFinalTransactions().filter(item => item.action !== ACTIVITY_ACTION_TOPUP).length
     },
     calculateFinalTransactions() {
       let finalTx = this.paymentTx
@@ -152,7 +152,7 @@ export default {
           slicedFrom: addressSlicer(x.from),
           to: x.to,
           slicedTo: addressSlicer(x.to),
-          action: this.wallets.indexOf(x.to) >= 0 ? 'Receive' : ACTIVITY_ACTION_SEND,
+          action: this.wallets.indexOf(x.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
           totalAmount: x.total_amount,
           totalAmountString: totalAmountString,
           currencyAmount: x.currency_amount,
@@ -176,7 +176,7 @@ export default {
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
           const txObj = {}
           txObj.id = txOld.time
-          txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? 'Receive' : ACTIVITY_ACTION_SEND
+          txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
           txObj.date = new Date(txOld.time)
           txObj.from = web3Utils.toChecksumAddress(txOld.txParams.from)
           txObj.slicedFrom = addressSlicer(txOld.txParams.from)
@@ -231,7 +231,7 @@ export default {
               date: new Date(x.createdAt),
               from: 'Simplex',
               slicedFrom: 'Simplex',
-              action: 'Top up',
+              action: ACTIVITY_ACTION_TOPUP,
               to: publicAddress,
               slicedTo: addressSlicer(publicAddress),
               totalAmount: x.requested_digital_amount.amount,
