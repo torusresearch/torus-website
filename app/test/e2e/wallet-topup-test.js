@@ -76,13 +76,19 @@ describe('Tests Wallet Topup', () => {
     await click(page, '#simplex-link')
     await shouldExist(page, '.wallet-topup-simplex')
 
-    await page.waitForResponse(response => response.url() === 'https://simplex-api.tor.us/quote' && response.status() === 200, { timeout: 60000 })
+    await page.waitForResponse(
+      response => response.url() === 'https://simplex-api.tor.us/quote' && (response.status() >= 200 || response.status() < 300),
+      { timeout: 60000 }
+    )
     await page.waitFor(500)
     let receiveFirst = await page.$eval('#simplex-receive', el => el.value)
 
     await typeText(page, '0', '#simplex-you-send')
 
-    await page.waitForResponse(response => response.url() === 'https://simplex-api.tor.us/quote' && response.status() === 200, { timeout: 60000 })
+    await page.waitForResponse(
+      response => response.url() === 'https://simplex-api.tor.us/quote' && (response.status() >= 200 || response.status() < 300),
+      { timeout: 60000 }
+    )
     await page.waitFor(500)
     let receiveSecond = await page.$eval('#simplex-receive', el => el.value)
 
@@ -92,6 +98,9 @@ describe('Tests Wallet Topup', () => {
   it('Should load moonpay', async () => {
     await click(page, '#moonpay-link')
     await shouldExist(page, '.wallet-topup-moonpay')
-    await page.waitForResponse(response => response.url().indexOf('https://buy.moonpay.io/') >= 0, { timeout: 60000 })
+    await page.waitForResponse(
+      response => response.url().indexOf('https://buy.moonpay.io/') >= 0 && (response.status() >= 200 || response.status() < 300),
+      { timeout: 60000 }
+    )
   })
 })

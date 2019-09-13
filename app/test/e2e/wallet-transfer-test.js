@@ -61,7 +61,9 @@ describe('Tests Wallet Transfer Transaction', () => {
 
   it('Should load needed api', async () => {
     // Wait for these APIs
-    await page.waitForResponse(response => response.url() === 'https://api.tor.us/user', { timeout: 60000 })
+    await page.waitForResponse(response => response.url() === 'https://api.tor.us/user' && (response.status() >= 200 || response.status() < 300), {
+      timeout: 60000
+    })
   })
 
   it('Should show main page', async () => {
