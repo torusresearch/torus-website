@@ -15,6 +15,7 @@ const {
   GOERLI_DISPLAY_NAME,
   RPC_DISPLAY_NAME,
   MATIC_DISPLAY_NAME,
+  ACTIVITY_ACTION_ALL,
   ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_TOPUP
@@ -40,7 +41,7 @@ export default {
   },
   computed: {
     filteredTransactions() {
-      const selectedAction = this.selectedAction === 'All Transactions' ? '' : this.selectedAction
+      const selectedAction = this.selectedAction === ACTIVITY_ACTION_ALL ? '' : this.selectedAction
       var regExAction = new RegExp(selectedAction, 'i')
 
       return this.transactions

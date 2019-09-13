@@ -106,7 +106,7 @@ describe('Tests Wallet Activity Page', () => {
 
   it('Should filter transaction date correctly', async () => {
     // Set transaction type to all
-    await selectItem(page, '#transaction-selector', '.nav-selector.transaction', 'All Transactions')
+    await selectItem(page, '#transaction-selector', '.nav-selector.transaction', ACTIVITY_ACTION_ALL)
     await page.waitFor(100)
 
     const textToSelect = 'Last 1 Week'
