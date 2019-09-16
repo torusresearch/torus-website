@@ -153,7 +153,7 @@ export default {
       return this.$store.state.selectedCurrency
     },
     isRefreshVisible() {
-      return this.$store.state.networkType === MAINNET
+      return this.$store.state.networkType.host === MAINNET
     },
     showSearch() {
       return this.finalBalancesArray.length > 5

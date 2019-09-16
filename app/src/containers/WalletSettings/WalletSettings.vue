@@ -79,7 +79,7 @@
                   </v-flex>
 
                   <v-flex xs12>
-                    <v-text-field placeholder="Enter RPC URL" :rules="[rules.required]" outlined v-model="rpc.networkUrl"></v-text-field>
+                    <v-text-field placeholder="Enter RPC URL" :rules="[rules.required]" outlined v-model="rpc.host"></v-text-field>
                   </v-flex>
 
                   <v-flex xs12>
@@ -210,7 +210,7 @@ export default {
           value: MATIC
         }
       ],
-      rpc: { chainId: '', networkName: '', networkUrl: '' },
+      rpc: { chainId: '', networkName: '', host: '' },
       formValid: true,
       rules: {
         required: value => !!value || 'Required'
@@ -225,7 +225,7 @@ export default {
   },
   methods: {
     changeNetwork(value) {
-      if (value !== RPC) this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
+      if (value !== RPC) this.$store.dispatch('setProviderType', { network: { host: this.selectedNetwork } })
     },
     setRPC() {
       this.selectedNetwork = RPC
@@ -253,7 +253,7 @@ export default {
     }
   },
   mounted() {
-    this.selectedNetwork = this.$store.state.networkType
+    this.selectedNetwork = this.$store.state.networkType.host
     this.rpc = this.$store.state.rpcDetails
   }
 }

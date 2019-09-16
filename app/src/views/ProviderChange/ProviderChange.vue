@@ -29,7 +29,7 @@
               <v-list-item-content class="pa-1">
                 <div class="caption torus_text--text text--lighten-3">
                   To change your network to
-                  <span class="text-capitalize">{{ type && type === 'rpc' ? `${rpcNetwork.networkName} : ${rpcNetwork.networkUrl}` : network }}</span>
+                  <span class="text-capitalize">{{ type && type === 'rpc' ? `${rpcNetwork.networkName} : ${rpcNetwork.host}` : network.host }}</span>
                 </div>
               </v-list-item-content>
             </v-list-item>

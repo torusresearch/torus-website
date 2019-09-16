@@ -3,7 +3,16 @@ import log from 'loglevel'
 import pump from 'pump'
 import stream from 'stream'
 import torus from '../torus'
-import { MAINNET, RPC, USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, USER_INFO_REQUEST_NEW } from '../utils/enums'
+import {
+  MAINNET,
+  RPC,
+  USER_INFO_REQUEST_APPROVED,
+  USER_INFO_REQUEST_REJECTED,
+  USER_INFO_REQUEST_NEW,
+  SUPPORTED_NETWORK_TYPES,
+  MAINNET_CODE,
+  MAINNET_DISPLAY_NAME
+} from '../utils/enums'
 import VuexStore from './store'
 import { broadcastChannelOptions } from '../utils/utils'
 
@@ -51,18 +60,19 @@ torus.torusController.networkController.networkStore.subscribe(function(state) {
   VuexStore.dispatch('updateNetworkId', { networkId: state })
 })
 
-if (storageAvailable('localStorage')) {
+if (storageAvailable('sessionStorage')) {
   // listen to changes on localstorage
   window.addEventListener(
     'storage',
     function() {
-      const network = localStorage.getItem('torus_network_type') || MAINNET
-      if (network !== RPC && network !== VuexStore.state.networkType) {
-        VuexStore.dispatch('setProviderType', { network })
+      const sessionData = sessionStorage.getItem('torus-app')
+      const networkType = (JSON.parse(sessionData) && JSON.parse(sessionData).networkType) || {
+        host: MAINNET,
+        chainId: MAINNET_CODE,
+        networkName: MAINNET_DISPLAY_NAME
       }
-      if (network === RPC && localStorage.getItem('torus_custom_rpc') !== VuexStore.state.rpcDetails) {
-        VuexStore.dispatch('setProviderType', { network: JSON.parse(localStorage.getItem('torus_custom_rpc')), type: RPC })
-      }
+      if (SUPPORTED_NETWORK_TYPES.includes(networkType.host)) VuexStore.dispatch('setProviderType', { network: networkType })
+      else VuexStore.dispatch('setProviderType', { network: networkType, type: RPC })
     },
     false
   )

@@ -2,7 +2,7 @@ import BroadcastChannel from 'broadcast-channel'
 import log from 'loglevel'
 import config from '../config'
 import torus from '../torus'
-import { RPC, USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
+import { RPC, USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, SUPPORTED_NETWORK_TYPES } from '../utils/enums'
 import { getRandomNumber, broadcastChannelOptions } from '../utils/utils'
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
@@ -232,16 +232,11 @@ export default {
     torus.updateStaticData({ networkId: payload.networkId })
   },
   setProviderType(context, payload) {
+    context.commit('setNetworkType', payload.network)
     if (payload.type && payload.type === RPC) {
-      context.commit('setNetworkType', RPC)
-      context.commit('setRPCDetails', payload.network)
-      localStorage.setItem('torus_custom_rpc', JSON.stringify(payload.network))
-      localStorage.setItem('torus_network_type', RPC)
       return torus.torusController.setCustomRpc(payload.network.networkUrl, payload.network.chainId, 'ETH', payload.network.networkName)
     } else {
-      context.commit('setNetworkType', payload.network)
-      localStorage.setItem('torus_network_type', payload.network)
-      return torus.torusController.networkController.setProviderType(payload.network)
+      return torus.torusController.networkController.setProviderType(payload.network.host)
     }
   },
   triggerLogin: function({ dispatch }, { calledFromEmbed }) {
@@ -374,7 +369,7 @@ export default {
             torus.continueEnable(ethAddress)
           }, 50)
         }
-        statusStream.write({ loggedIn: true })
+        statusStream.write({ loggedIn: true, rehydrate: false })
         dispatch('loginInProgress', false)
       })
       .catch(err => {
@@ -467,7 +462,7 @@ export default {
     })
   },
   async rehydrate({ state, dispatch }, payload) {
-    let { selectedAddress, wallet, networkType, rpcDetails, jwtToken } = state
+    let { selectedAddress, wallet, networkType, jwtToken } = state
     try {
       // if jwtToken expires, logout
       if (jwtToken) {
@@ -477,11 +472,8 @@ export default {
           return
         }
       }
-      if (networkType && networkType !== RPC) {
-        await dispatch('setProviderType', { network: networkType })
-      } else if (networkType && networkType === RPC && rpcDetails) {
-        await dispatch('setProviderType', { network: rpcDetails, type: RPC })
-      }
+      if (SUPPORTED_NETWORK_TYPES.includes(networkType.host)) await dispatch('setProviderType', { network: networkType })
+      else await dispatch('setProviderType', { network: networkType, type: RPC })
       if (selectedAddress && wallet[selectedAddress]) {
         dispatch('updateSelectedAddress', { selectedAddress })
         setTimeout(() => dispatch('subscribeToControllers'), 50)
@@ -489,7 +481,7 @@ export default {
           torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet)),
           dispatch('setUserInfo', { token: jwtToken, calledFromEmbed: false })
         ])
-        statusStream.write({ loggedIn: true })
+        statusStream.write({ loggedIn: true, rehydrate: true })
         log.info('rehydrated wallet')
         torus.web3.eth.net
           .getId()

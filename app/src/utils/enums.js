@@ -49,6 +49,8 @@ const USER_INFO_REQUEST_APPROVED = 'user_info_request_approved'
 const USER_INFO_REQUEST_REJECTED = 'user_info_request_rejected'
 const USER_INFO_REQUEST_NEW = 'user_info_request_new'
 
+const SUPPORTED_NETWORK_TYPES = [MAINNET, RINKEBY, ROPSTEN, KOVAN, GOERLI, LOCALHOST, MATIC]
+
 module.exports = {
   ROPSTEN,
   RINKEBY,
@@ -89,5 +91,6 @@ module.exports = {
   INACTIVE,
   USER_INFO_REQUEST_APPROVED,
   USER_INFO_REQUEST_REJECTED,
-  USER_INFO_REQUEST_NEW
+  USER_INFO_REQUEST_NEW,
+  SUPPORTED_NETWORK_TYPES
 }

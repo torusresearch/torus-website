@@ -38,9 +38,6 @@ export default {
   setCurrency(state, currency) {
     state.selectedCurrency = currency
   },
-  setRPCDetails(state, rpcDetails) {
-    state.rpcDetails = rpcDetails
-  },
   setTypedMessages(state, unapprovedTypedMessages) {
     state.unapprovedTypedMessages = unapprovedTypedMessages
   },

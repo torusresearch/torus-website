@@ -1,7 +1,7 @@
 // import WebsocketSubprovider from './websocket.js'
 import TorusController from './controllers/TorusController'
 import store from './store'
-import { MAINNET } from './utils/enums'
+import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE } from './utils/enums'
 var log = require('loglevel')
 var Web3 = require('web3')
 var LocalMessageDuplexStream = require('post-message-stream')
@@ -14,10 +14,16 @@ function onloadTorus(torus) {
     store.dispatch('showPopup')
   }
 
-  const localStorageCachedNetwork = localStorage.getItem('torus_network_type') || MAINNET
+  const sessionData = sessionStorage.getItem('torus-app')
+
+  const sessionCachedNetwork = (JSON.parse(sessionData) && JSON.parse(sessionData).networkType) || {
+    host: MAINNET,
+    chainId: MAINNET_CODE,
+    networkName: MAINNET_DISPLAY_NAME
+  }
 
   const torusController = new TorusController({
-    localStorageCachedNetwork,
+    sessionCachedNetwork,
     showUnconfirmedMessage: triggerUi.bind(window, 'showUnconfirmedMessage'),
     unlockAccountMessage: triggerUi.bind(window, 'unlockAccountMessage'),
     showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
