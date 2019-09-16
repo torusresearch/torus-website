@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer')
 const assert = require('assert')
 const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME, WALLET_HEADERS_CONFIRM } = require('../../src/utils/enums')
+const significantDigits = require('../../src/utils/utils').significantDigits
 
 const config = require('./lib/config')
 const {
@@ -86,6 +87,14 @@ describe('Tests Wallet Transfer Transaction', () => {
 
   it('Should go to wallet transfer page', async () => {
     await navigateTo(page, '#transfer-link', '.wallet-transfer')
+
+    // Wait for the gas transaction amounts
+    await page.waitForResponse(
+      response => response.url() === 'https://ethgasstation.info/json/ethgasAPI.json' && (response.status() >= 200 || response.status() < 300),
+      {
+        timeout: 60000
+      }
+    )
   })
 
   it('Should select coin', async () => {
@@ -106,18 +115,44 @@ describe('Tests Wallet Transfer Transaction', () => {
   })
 
   it('Should error on invalid you send input', async () => {
-    let accountBalance = await page.$eval('#account-balance', el => el.textContent)
-    accountBalance = parseFloat(accountBalance.split(' ')[1]) + 10
-    await typeText(page, accountBalance.toString(), '#you-send')
+    const computedBalance = await page.$eval('.wallet-transfer', el => el.__vue__.selectedItem.computedBalance)
+
+    await typeText(page, (computedBalance + 10).toString(), '#you-send')
     await waitForText(page, '.you-send-container .v-messages__message', 'Insufficient balance for transaction')
   })
 
   it('Should click send all', async () => {
+    // Trigger send all
     await click(page, '#send-all-btn')
     await shouldExist(page, '#send-all-reset-btn')
 
     const isReadOnly = await page.$eval('#you-send', el => el.readOnly)
     assert.equal(isReadOnly, true)
+
+    let displayAmount = ''
+    const { gas, activeGasPrice, computedBalance, currencyTokenRate, toggleExclusive } = await page.$eval('.wallet-transfer', el => {
+      return {
+        gas: el.__vue__.gas,
+        activeGasPrice: el.__vue__.activeGasPrice,
+        computedBalance: el.__vue__.selectedItem.computedBalance,
+        currencyTokenRate: el.__vue__.getCurrencyTokenRate,
+        toggleExclusive: el.__vue__.toggle_exclusive
+      }
+    })
+
+    const currencyBalance = computedBalance * currencyTokenRate
+    const ethGasPrice = gas * activeGasPrice * 10 ** -9
+    const currencyGasPrice = ethGasPrice * currencyTokenRate
+
+    if (toggleExclusive === 0) {
+      displayAmount = computedBalance - ethGasPrice
+    } else {
+      displayAmount = currencyBalance - currencyGasPrice
+    }
+
+    // Get you send amount
+    let youSend = await page.$eval('#you-send', el => parseFloat(el.value))
+    assert.equal(displayAmount, youSend)
   })
 
   it('Should reset send all', async () => {
@@ -143,10 +178,6 @@ describe('Tests Wallet Transfer Transaction', () => {
   })
 
   it('Should updated transaction fee', async () => {
-    const transactionFee = config.isMobile
-      ? await page.$eval('#transaction-fee-mobile', el => el.textContent)
-      : await page.$eval('#transaction-fee', el => el.value)
-
     let gasPrice = await page.$eval('#gas-price', el => el.value)
     gasPrice = parseFloat(gasPrice) + 4
     await page.waitFor(100)
@@ -156,11 +187,14 @@ describe('Tests Wallet Transfer Transaction', () => {
     await page.waitFor(100)
     await typeText(page, gasPrice.toString(), '#gas-price')
 
-    const newTransactionFee = config.isMobile
+    let newTransactionFee = config.isMobile
       ? await page.$eval('#transaction-fee-mobile', el => el.textContent)
       : await page.$eval('#transaction-fee', el => el.value)
 
-    assert.notEqual(transactionFee, newTransactionFee)
+    const advancedActiveGasPrice = await page.$eval('#advanced-gas', el => el.value)
+    const computedTransFee = significantDigits(gasPrice * advancedActiveGasPrice * 10 ** -9)
+
+    assert.equal(computedTransFee, newTransactionFee)
   })
 
   it('Should submit advanced option', async () => {
@@ -175,7 +209,25 @@ describe('Tests Wallet Transfer Transaction', () => {
   })
 
   it('Should show total cost', async () => {
-    await shouldValueNotBeEmpty(page, '#total-cost')
+    const { gas, activeGasPrice, currencyTokenRate, toggleExclusive, amount } = await page.$eval('.wallet-transfer', el => {
+      return {
+        gas: el.__vue__.gas,
+        activeGasPrice: el.__vue__.activeGasPrice,
+        currencyTokenRate: el.__vue__.getCurrencyTokenRate,
+        toggleExclusive: el.__vue__.toggle_exclusive,
+        amount: el.__vue__.amount
+      }
+    })
+
+    const gasPriceInEth = gas * activeGasPrice * 10 ** -9
+    const gasPriceInCurrency = gasPriceInEth * currencyTokenRate
+    const toSend = parseFloat(amount)
+    const toSendConverted = toSend * this.getCurrencyTokenRate
+
+    const totalEthCost = toggleExclusive === 0 ? toSend + gasPriceInEth : toSendConverted + gasPriceInCurrency
+    const totalCost = await page.$eval('#total-cost', el => el.value)
+
+    assert.equal(totalEthCost, totalCost)
   })
 
   it('Should submit and load confirm', async () => {
@@ -200,18 +252,18 @@ describe('Tests Wallet Transfer Transaction', () => {
     await click(confirmPage, '#less-details-link')
   })
 
-  it('Should submit confirm', async () => {
-    await click(confirmPage, '#confirm-btn')
-    await waitForText(confirmPage, '.headline', WALLET_HEADERS_CONFIRM)
-    await click(confirmPage, '#confirm-transfer-btn')
-  })
+  // it('Should submit confirm', async () => {
+  //   await click(confirmPage, '#confirm-btn')
+  //   await waitForText(confirmPage, '.headline', WALLET_HEADERS_CONFIRM)
+  //   await click(confirmPage, '#confirm-transfer-btn')
+  // })
 
-  it('Should show success alert', async () => {
-    await shouldExist(page, '.message-modal')
-    await click(page, '.message-modal #continue-link')
-  })
+  // it('Should show success alert', async () => {
+  //   await shouldExist(page, '.message-modal')
+  //   await click(page, '.message-modal #continue-link')
+  // })
 
-  it('Should show on wallet activity page', async () => {
-    await navigateTo(page, '#activity-link', '.wallet-activity')
-  })
+  // it('Should show on wallet activity page', async () => {
+  //   await navigateTo(page, '#activity-link', '.wallet-activity')
+  // })
 })

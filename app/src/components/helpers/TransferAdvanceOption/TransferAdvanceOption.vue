@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" persistent>
     <template v-slot:activator="{ on }">
-      <a id="advance-option-link" class="float-right primary--text advance-option subtitle-2" v-show="displayAmount" v-on="on">Advanced Options</a>
+      <a id="advance-option-link" class="float-right primary--text subtitle-2" v-show="displayAmount" v-on="on">Advanced Options</a>
     </template>
     <v-card class="advance-option py-4">
       <v-container>
@@ -51,7 +51,7 @@
                       A standard ETH transfer requires a gas limit of 21,000 units of gas."
                     ></HelpTooltip>
                   </span>
-                  <v-text-field readonly outlined :value="advancedGas" required type="number"></v-text-field>
+                  <v-text-field id="advanced-gas" readonly outlined :value="advancedGas" required type="number"></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
                   <span class="subtitle-2">Send Amount</span>
