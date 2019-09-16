@@ -5,6 +5,15 @@ export default {
   setIdToken(state, idToken) {
     state.idToken = idToken
   },
+  setVerifier(state, verifier) {
+    state.verifier = verifier
+  },
+  setVerifierId(state, verifierId) {
+    state.verifierId = verifierId
+  },
+  setVerifierParams(state, verifierParams) {
+    state.verifierParams = verifierParams
+  },
   setWallet(state, wallet) {
     state.wallet = wallet
   },

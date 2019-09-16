@@ -1,6 +1,9 @@
 import { MAINNET, USER_INFO_REQUEST_NEW } from '../utils/enums'
 
 const initialState = {
+  verifier: '',
+  verifierId: '',
+  verifierParams: {},
   userInfo: {
     email: '',
     name: '',

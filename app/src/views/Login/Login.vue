@@ -22,10 +22,25 @@
                   color="primary"
                   class="flexiBtn px-12"
                   type="button"
-                  @click="triggerLogin({ calledFromEmbed: false })"
+                  @click="triggerLogin({ verifier: 'google', calledFromEmbed: false })"
                 >
-                  Login
+                  Login With Google
                 </v-btn>
+                <br />
+                <br />
+                <v-btn
+                  :large="!$vuetify.breakpoint.xsOnly"
+                  depressed
+                  color="primary"
+                  class="flexiBtn px-12"
+                  type="button"
+                  @click="triggerLogin({ verifier: 'facebook', calledFromEmbed: false })"
+                >
+                  Login With Facebook
+                </v-btn>
+                <br />
+                <br />
+                <vue-telegram-login mode="callback" telegram-login="torusLoginBot" @callback="handleTelegramLogin" />
                 <small class="d-block text-gray mt-2">
                   By clicking Login, you accept our
                   <br />
@@ -62,9 +77,7 @@
             </v-flex>
             <v-flex xs12 mt-8>
               <div class="text-center">
-                <v-btn large depressed color="primary" class="px-12 title" type="button" @click="returnHome">
-                  Return Home
-                </v-btn>
+                <v-btn large depressed color="primary" class="px-12 title" type="button" @click="returnHome">Return Home</v-btn>
               </div>
               <div class="text-center torus_text--text text--lighten-4 body-2 mt-6" @click="triggerLogin({ calledFromEmbed: false })">
                 Login Again
@@ -85,11 +98,12 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
+import { vueTelegramLogin } from 'vue-telegram-login'
 import PageLoader from '../../components/helpers/PageLoader'
 
 export default {
   name: 'login',
-  components: { PageLoader },
+  components: { PageLoader, vueTelegramLogin },
   data() {
     return {
       gapiLoaded: false,
@@ -103,6 +117,10 @@ export default {
     returnHome() {
       this.$router.push({ path: '/' })
       this.isLogout = false
+    },
+    handleTelegramLogin(user) {
+      window.telegram = user
+      this.triggerLogin({ verifier: 'telegram' })
     }
   },
   computed: mapState({
@@ -123,15 +141,26 @@ export default {
   },
   mounted() {
     // setup google auth sdk
-    const interval = setInterval(() => {
+    const googleInterval = setInterval(() => {
       if (window.gapi) {
         window.gapi.load('auth2', () => {
           window.auth2 = window.gapi.auth2.init({
             client_id: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com'
           })
           this.gapiLoaded = true
-          clearInterval(interval)
+          clearInterval(googleInterval)
         })
+      }
+    }, 2000)
+
+    // setup facebook auth sdk
+    const facebookInterval = setInterval(() => {
+      if (window.FB) {
+        window.FB.init({
+          appId: '2554219104599979',
+          version: 'v4.0'
+        })
+        clearInterval(facebookInterval)
       }
     }, 2000)
 

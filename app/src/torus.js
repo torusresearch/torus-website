@@ -34,7 +34,7 @@ class Torus {
       publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
     }
   }
-  retrieveShares(endpoints, indexes, email, idToken) {
+  retrieveShares(endpoints, indexes, verifier, verifierParams, idToken) {
     // Swallow individual fetch errors to handle node failures
     // catch only logic errors
     return new Promise((resolve, reject) => {
@@ -103,7 +103,7 @@ class Torus {
             var p = post(
               endpoints[i],
               generateJsonRPCObject('ShareRequest', {
-                item: [{ idtoken: idToken, nodesignatures: nodeSigs, verifieridentifier: 'google', email: email }]
+                item: [{ ...verifierParams, idtoken: idToken, nodesignatures: nodeSigs, verifieridentifier: verifier }]
               })
             ).catch(err => {
               log.error(err)
@@ -189,13 +189,13 @@ class Torus {
     var ethAddress = toChecksumAddress(ethAddressLower)
     return ethAddress
   }
-  getPubKeyAsync(endpointUrl, email) {
+  getPubKeyAsync(endpointUrl, verifier, verifierId) {
     return new Promise((resolve, reject) => {
       post(
         endpointUrl,
         generateJsonRPCObject('VerifierLookupRequest', {
-          verifier: 'google',
-          verifier_id: email.toLowerCase()
+          verifier,
+          verifier_id: verifierId.toLowerCase()
         })
       )
         .catch(err => log.error(err))
@@ -204,8 +204,8 @@ class Torus {
             return post(
               endpointUrl,
               generateJsonRPCObject('KeyAssign', {
-                verifier: 'google',
-                verifier_id: email.toLowerCase()
+                verifier,
+                verifier_id: verifierId.toLowerCase()
               })
             )
           } else if (lookupShare.result) {

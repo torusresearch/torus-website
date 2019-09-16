@@ -136,6 +136,15 @@ export default {
   updateIdToken(context, payload) {
     context.commit('setIdToken', payload.idToken)
   },
+  updateVerifier(context, payload) {
+    context.commit('setVerifier', payload.verifier)
+  },
+  updateVerifierId(context, payload) {
+    context.commit('setVerifierId', payload.verifierId)
+  },
+  updateVerifierParams(context, payload) {
+    context.commit('setVerifierParams', payload.verifierParams)
+  },
   addWallet(context, payload) {
     if (payload.ethAddress) {
       context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
@@ -240,49 +249,97 @@ export default {
       torus.torusController.networkController.setProviderType(payload.network)
     }
   },
-  triggerLogin: function({ dispatch }, { calledFromEmbed }) {
-    // log.error('Could not find window.auth2, might not be loaded yet')
-    ;(function gapiLoadCall() {
-      if (window.auth2) {
-        window.auth2
-          .signIn()
-          .then(function(googleUser) {
-            log.info('GOOGLE USER: ', googleUser)
-            let profile = googleUser.getBasicProfile()
-            let domain = googleUser.getHostedDomain()
-            log.info('Domain: ', domain)
-            // log.info(googleUser)
-            log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
-            log.info('Name: ' + profile.getName())
-            log.info('Image URL: ' + profile.getImageUrl())
-            log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
-            dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
-            let email = profile.getEmail()
-            let name = profile.getName()
-            let profileImage = profile.getImageUrl()
-            dispatch('updateUserInfo', { userInfo: { profileImage, name, email } })
-            const { torusNodeEndpoints } = config
-            window.gapi.auth2
-              .getAuthInstance()
-              .disconnect()
-              .then(() => {
-                const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
-                dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-              })
-              .catch(err => {
-                log.error(err)
-                oauthStream.write({ err: 'something went wrong' })
-              })
+  triggerLogin({ dispatch }, { calledFromEmbed, verifier }) {
+    const { torusNodeEndpoints } = config
+    const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
+
+    log.info('Verifier: ', verifier)
+    dispatch('updateVerifier', { verifier })
+
+    if (verifier === 'google') {
+      ;(function gapiLoadCall() {
+        if (window.auth2) {
+          window.auth2
+            .signIn()
+            .then(function(googleUser) {
+              log.info('GOOGLE USER: ', googleUser)
+
+              let profile = googleUser.getBasicProfile()
+
+              let email = profile.getEmail()
+              let name = profile.getName()
+              let profileImage = profile.getImageUrl()
+              let idtoken = googleUser.getAuthResponse().id_token
+
+              log.info('ID: ', profile.getId()) // Do not send to your backend! Use an ID token instead.
+              log.info('ID Token:', idtoken)
+              log.info('Email:', email)
+              log.info('Name:', name)
+              log.info('Image URL:', profileImage)
+
+              dispatch('updateVerifierId', { verifierId: email })
+              dispatch('updateIdToken', { idToken: idtoken })
+              dispatch('updateUserInfo', { userInfo: { profileImage, name, email } })
+              dispatch('updateVerifierParams', { verifierParams: { idtoken, email } })
+
+              window.gapi.auth2
+                .getAuthInstance()
+                .disconnect()
+                .then(() => {
+                  dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+                })
+                .catch(err => {
+                  log.error(err)
+                  oauthStream.write({ err: 'something went wrong' })
+                })
+            })
+            .catch(err => {
+              // called when something goes wrong like user closes popup
+              log.error(err)
+              oauthStream.write({ err: 'popup closed' })
+            })
+        } else {
+          setTimeout(gapiLoadCall, 1000)
+        }
+      })()
+    } else if (verifier === 'facebook') {
+      window.FB.login(response => {
+        if (response.status === 'connected' && response.authResponse) {
+          let accessToken = response.authResponse.accessToken
+          log.info('AccessToken:', accessToken)
+          dispatch('updateIdToken', { idToken: accessToken })
+
+          window.FB.api('/me?fields=name,email', response => {
+            log.info('Email: ', response.email)
+            log.info('Name: ', response.name)
+            log.info('Id: ', response.id)
+
+            dispatch('updateVerifierId', { verifierId: response.id })
+            dispatch('updateIdToken', { idtoken: accessToken })
+            dispatch('updateUserInfo', { userInfo: response })
+            dispatch('updateVerifierParams', { userID: response.id, accessToken })
+
+            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
           })
-          .catch(err => {
-            // called when something goes wrong like user closes popup
-            log.error(err)
-            oauthStream.write({ err: 'popup closed' })
-          })
-      } else {
-        setTimeout(gapiLoadCall, 1000)
-      }
-    })()
+        }
+      })
+    } else if (verifier === 'telegram') {
+      let name = window.telegram.first_name + ' ' + window.telegram.last_name
+
+      log.info('Id: ', window.telegram.id)
+      log.info('Hash: ', window.telegram.hash)
+      log.info('Name: ', name)
+      log.info('Username: ', window.telegram.username)
+      log.info('Image URL: ', window.telegram.photo_url)
+      log.info('Auth Date: ', window.telegram.auth_ate)
+
+      dispatch('updateUserInfo', { userInfo: { profileImage: window.telegram.photo_url, name } })
+      dispatch('updateIdToken', { idToken: window.telegram.hash })
+      dispatch('updateVerifierParams', { verifierParams: window.telegram })
+      dispatch('updateVerifierId', { verifierId: window.telegram.id.toString() })
+
+      dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+    }
   },
   subscribeToControllers({ dispatch, state }, payload) {
     torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
@@ -341,14 +398,13 @@ export default {
   },
   handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
     const { torusNodeEndpoints, torusIndexes } = config
-    const { idToken, userInfo } = state
-    const { email } = userInfo
+    const { idToken, verifier, verifierParams, verifierId } = state
     dispatch('loginInProgress', true)
     torus
-      .getPubKeyAsync(torusNodeEndpoints[endPointNumber], email)
+      .getPubKeyAsync(torusNodeEndpoints[endPointNumber], verifier, verifierId)
       .then(res => {
         log.info('New private key assigned to user at address ', res)
-        const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, email, idToken)
+        const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
         const p2 = torus.getMessageForSigning(res)
         return Promise.all([p1, p2])
       })
