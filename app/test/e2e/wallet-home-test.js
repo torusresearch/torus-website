@@ -3,7 +3,7 @@ const assert = require('assert')
 const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME } = require('../../src/utils/enums')
 
 const config = require('./lib/config')
-const { loadUrl, click, typeText, waitForText, shouldExist, selectItem, navigateTo } = require('./lib/helpers')
+const { login, loadUrl, click, typeText, waitForText, shouldExist, selectItem, navigateTo } = require('./lib/helpers')
 
 describe('Tests Wallet Home', () => {
   let browser
@@ -34,32 +34,7 @@ describe('Tests Wallet Home', () => {
 
   it('Should load page', async () => {
     await loadUrl(page, config.baseUrl)
-
-    // Used for getting the newly opened window
-    const pageTarget = page.target()
-
-    // Get the loginPage
-    await click(page, '#loginBtn')
-    const loginPageTarget = await browser.waitForTarget(target => target.opener() === pageTarget)
-    const loginPage = await loginPageTarget.page()
-
-    // Login user
-    await typeText(loginPage, config.testAccountName, '#identifierId')
-    await click(loginPage, '#identifierNext')
-    await typeText(loginPage, config.testAccountPassword, 'input[type="password"]')
-    await click(loginPage, '#passwordNext')
-  })
-
-  it('Should load needed api', async () => {
-    // Wait for these APIs
-    const userResponse = await page.waitForResponse(
-      response => response.url() === 'https://api.tor.us/user' && (response.status() >= 200 || response.status() < 300),
-      {
-        timeout: 60000
-      }
-    )
-    let userData = await userResponse.json()
-    isFreshAccount = userData.data.is_new
+    await login(page)
   })
 
   it('Should show main page', async () => {

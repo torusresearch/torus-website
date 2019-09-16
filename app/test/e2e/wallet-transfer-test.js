@@ -5,6 +5,7 @@ const significantDigits = require('../../src/utils/utils').significantDigits
 
 const config = require('./lib/config')
 const {
+  login,
   loadUrl,
   click,
   typeText,
@@ -45,27 +46,7 @@ describe('Tests Wallet Transfer Transaction', () => {
 
   it('Should load page', async () => {
     await loadUrl(page, config.baseUrl)
-
-    // Used for getting the newly opened window
-    const pageTarget = page.target()
-
-    // Get the loginPage
-    await click(page, '#loginBtn')
-    const loginPageTarget = await browser.waitForTarget(target => target.opener() === pageTarget)
-    const loginPage = await loginPageTarget.page()
-
-    // Login user
-    await typeText(loginPage, config.testAccountName, '#identifierId')
-    await click(loginPage, '#identifierNext')
-    await typeText(loginPage, config.testAccountPassword, 'input[type="password"]')
-    await click(loginPage, '#passwordNext')
-  })
-
-  it('Should load needed api', async () => {
-    // Wait for these APIs
-    await page.waitForResponse(response => response.url() === 'https://api.tor.us/user' && (response.status() >= 200 || response.status() < 300), {
-      timeout: 60000
-    })
+    await login(page)
   })
 
   it('Should show main page', async () => {
