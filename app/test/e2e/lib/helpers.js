@@ -1,5 +1,21 @@
 const config = require('./config')
 
+const login = async function(page) {
+  await page.evaluate(async config => {
+    let data = {
+      privKey: config.testPrivateKey,
+      ethAddress: config.testEthAddress
+    }
+
+    // grabs the vuestore from the first element that has vue attached
+    let x = document.querySelector('#app').__vue__.$store
+    x.dispatch('addWallet', data)
+    x.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
+    x.dispatch('subscribeToControllers')
+    await x.dispatch('initTorusKeyring', data)
+  }, config)
+}
+
 const click = async function(page, selector) {
   try {
     await page.waitForSelector(selector, { visible: true })
@@ -88,6 +104,7 @@ const selectItem = async function(page, selector, selectorContainer, text) {
 }
 
 module.exports = {
+  login,
   click,
   waitForText,
   shouldExist,
