@@ -1,8 +1,6 @@
 <template>
   <v-layout wrap>
-    <span>
-      Coindirect is the easiest and most trusted place to buy, sell, and convert your cryptocurrency in Singapore.
-    </span>
+    <span>Coindirect is the easiest and most trusted place to buy, sell, and convert your cryptocurrency in Singapore.</span>
 
     <div style="height:500px; width:100%">
       <iframe v-if="loaded" :src="url" height="100%" width="100%" style="border:none"></iframe>
@@ -20,15 +18,15 @@ export default {
       url: '',
       loaded: false,
       currencyCode: 'eth',
-      path: coindirectTestHost,
-      merchantId: coindirectTestMerchantID,
+      path: coindirectLiveHost,
+      merchantId: coindirectLiveMerchantID,
       // Modify before deploying.
       redirectURL: ''
     }
   },
   mounted() {
-    let redirectURL = window.location.origin + '/wallet/history'
-    //let redirectURL = "localhost:3070/transaction"
+    // let redirectURL = window.location.origin + '/wallet/history'
+    let redirectURL = 'http://localhost:2070/transaction'
     this.url =
       this.path +
       '&email=' +
