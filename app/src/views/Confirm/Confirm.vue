@@ -470,6 +470,9 @@ export default {
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
         this.canApprove = false
+      } else {
+        this.errorMsg = ''
+        this.canApprove = true
       }
     },
     gasKnob: function(newGasKnob, oldGasKnob) {
