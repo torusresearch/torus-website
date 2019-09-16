@@ -156,10 +156,13 @@
             <v-list-item class="pa-0">
               <v-list-item-content flat class="pa-1 grey lighten-3">
                 <v-card flat color="background_3" class="body-2 text-left pa-2 ma-3 word-break">
-                  <div>
-                    <p>{{ JSON.parse(typedMessages).domain }}</p>
+                  <div class="columns medium-4" v-for="(value, index) in typedMessages" :key="index">
+                    <v-card-text>
+                      <div class="subtitle-2 blue--text">{{ index }}</div>
+                      <div class="black--text">{{ value }}</div>
+                    </v-card-text>
+                    <v-divider></v-divider>
                   </div>
-                  <div v-if="messageType === 'normal'">{{ message }}</div>
                   <!-- <div v-else-if="messageType === 'typed'" v-for="typedMessage in Object.keys(typedMessages)" :key="typedMessage">
                     <p>  {{ JSON.stringify(typedMessage) }} </p>
                       Type: {{ typedMessage.type }}
@@ -168,7 +171,7 @@
                     <br />
                     Message: {{ typedMessage.value }}
                     <br />
-                  </div> -->
+                  </div>-->
                 </v-card>
               </v-list-item-content>
             </v-list-item>
@@ -578,9 +581,18 @@ export default {
       log.info(txParams)
       this.origin = url.hostname // origin of tx: website url
       if (type === 'message') {
-        const { message, typedMessages } = msgParams.msgParams || {}
-        console.log('typedmessages are', JSON.parse(typedMessages))
+        var { message, typedMessages } = msgParams.msgParams || {}
+        if (typedMessages) {
+          try {
+            typedMessages = JSON.parse(typedMessages)
+          } catch (e) {
+            console.error(e)
+          }
+        }
+
+        console.log('typedmessages are', typedMessages)
         console.log('messages are', message)
+
         const { id } = msgParams || {}
         this.id = id
         this.message = message
