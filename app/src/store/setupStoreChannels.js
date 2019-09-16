@@ -7,6 +7,41 @@ import { MAINNET, RPC, USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, U
 import VuexStore from './store'
 import { broadcastChannelOptions } from '../utils/utils'
 
+/**
+ * Checks whether a storage type is available or not
+ * For more info on how this works, please refer to MDN documentation
+ * https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
+ *
+ * @method storageAvailable
+ * @param {String} type the type of storage ('localStorage', 'sessionStorage')
+ * @returns {Boolean} a boolean indicating whether the specified storage is available or not
+ */
+function storageAvailable(type) {
+  var storage
+  try {
+    storage = window[type]
+    var x = '__storage_test__'
+    storage.setItem(x, x)
+    storage.removeItem(x)
+    return true
+  } catch (e) {
+    return (
+      e &&
+      // everything except Firefox
+      (e.code === 22 ||
+        // Firefox
+        e.code === 1014 ||
+        // test name field too, because code might not be present
+        // everything except Firefox
+        e.name === 'QuotaExceededError' ||
+        // Firefox
+        e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+      // acknowledge QuotaExceededError only if there's something already stored
+      (storage && storage.length !== 0)
+    )
+  }
+}
+
 /* 
 Edited to change networkId => network state. Has an implication of changing neworkVersion 
 to "loading" at times in the inpage API
@@ -16,7 +51,7 @@ torus.torusController.networkController.networkStore.subscribe(function(state) {
   VuexStore.dispatch('updateNetworkId', { networkId: state })
 })
 
-if (window.localStorage) {
+if (storageAvailable('localStorage')) {
   // listen to changes on localstorage
   window.addEventListener(
     'storage',
@@ -47,8 +82,34 @@ torus.communicationMux.getStream('show_wallet').on('data', function(chunk) {
   VuexStore.dispatch('showWalletPopup', { network: chunk.data.calledFromEmbed, path: chunk.data.path || '' })
 })
 
-torus.communicationMux.getStream('provider_change').on('data', function(chunk) {
-  VuexStore.dispatch('showProviderChangePopup', { ...chunk.data })
+torus.communicationMux.getStream('show_provider_change').on('data', function(chunk) {
+  if (chunk.name === 'show_provider_change') {
+    const providerChangeStatus = torus.communicationMux.getStream('provider_change_status')
+    if (chunk.data.override) {
+      VuexStore.dispatch('setProviderType', chunk.data)
+        .then(() => {
+          setTimeout(() => {
+            providerChangeStatus.write({
+              name: 'provider_change_status',
+              data: {
+                success: true
+              }
+            })
+          }, 100)
+        })
+        .catch(err => {
+          providerChangeStatus.write({
+            name: 'provider_change_status',
+            data: {
+              success: false,
+              err: err
+            }
+          })
+        })
+    } else {
+      VuexStore.dispatch('showProviderChangePopup', { ...chunk.data })
+    }
+  }
 })
 
 torus.communicationMux.getStream('logout').on('data', function(chunk) {
@@ -131,11 +192,31 @@ bc.onmessage = function(ev) {
   }
 }
 
-var providerChangeChannel = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
+var providerChangeChannel = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
 providerChangeChannel.onmessage = function(ev) {
   if (ev.data && ev.data.type === 'confirm-provider-change' && ev.data.approve) {
     log.info('Provider change approved', ev.data.payload)
+    const providerChangeStatus = torus.communicationMux.getStream('provider_change_status')
     VuexStore.dispatch('setProviderType', ev.data.payload)
+      .then(() => {
+        setTimeout(() => {
+          providerChangeStatus.write({
+            name: 'provider_change_status',
+            data: {
+              success: true
+            }
+          })
+        }, 100)
+      })
+      .catch(err => {
+        providerChangeStatus.write({
+          name: 'provider_change_status',
+          data: {
+            success: false,
+            err: err
+          }
+        })
+      })
   } else if (ev.data && ev.data.type === 'deny-provider-change') {
     log.info('Provider change denied')
   }

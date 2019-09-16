@@ -83,8 +83,12 @@ export default {
     }
   },
   showProviderChangePopup(context, payload) {
-    var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
-    window.open(`${baseRoute}providerchange`, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600')
+    var bc = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
+    window.open(
+      `${baseRoute}providerchange?instanceId=${torus.instanceId}`,
+      '_blank',
+      'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
+    )
     bc.onmessage = async ev => {
       if (ev.data === 'popup-loaded') {
         await bc.postMessage({
@@ -233,11 +237,11 @@ export default {
       context.commit('setRPCDetails', payload.network)
       localStorage.setItem('torus_custom_rpc', JSON.stringify(payload.network))
       localStorage.setItem('torus_network_type', RPC)
-      torus.torusController.setCustomRpc(payload.network.networkUrl, payload.network.chainId, 'ETH', payload.network.networkName)
+      return torus.torusController.setCustomRpc(payload.network.networkUrl, payload.network.chainId, 'ETH', payload.network.networkName)
     } else {
       context.commit('setNetworkType', payload.network)
       localStorage.setItem('torus_network_type', payload.network)
-      torus.torusController.networkController.setProviderType(payload.network)
+      return torus.torusController.networkController.setProviderType(payload.network)
     }
   },
   triggerLogin: function({ dispatch }, { calledFromEmbed }) {
@@ -474,9 +478,9 @@ export default {
         }
       }
       if (networkType && networkType !== RPC) {
-        dispatch('setProviderType', { network: networkType })
+        await dispatch('setProviderType', { network: networkType })
       } else if (networkType && networkType === RPC && rpcDetails) {
-        dispatch('setProviderType', { network: rpcDetails, type: RPC })
+        await dispatch('setProviderType', { network: rpcDetails, type: RPC })
       }
       if (selectedAddress && wallet[selectedAddress]) {
         dispatch('updateSelectedAddress', { selectedAddress })

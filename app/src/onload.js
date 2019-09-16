@@ -51,7 +51,7 @@ function onloadTorus(torus) {
   torusController.provider.setMaxListeners(100)
   torus.web3 = new Web3(torusController.provider)
   torus.setProviderType = function(network, type) {
-    store.dispatch('setProviderType', { network, type })
+    return store.dispatch('setProviderType', { network, type })
   }
 
   /* Stream setup block */
