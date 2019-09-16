@@ -177,7 +177,7 @@ describe('Tests Wallet Transfer Transaction', () => {
     await waitForText(page, '.advance-option .subtitle-2', 'Customize Gas')
   })
 
-  it('Should updated transaction fee', async () => {
+  it('Should update transaction fee', async () => {
     let gasPrice = await page.$eval('#gas-price', el => el.value)
     gasPrice = parseFloat(gasPrice) + 4
     await page.waitFor(100)
@@ -209,23 +209,27 @@ describe('Tests Wallet Transfer Transaction', () => {
   })
 
   it('Should show total cost', async () => {
-    const { gas, activeGasPrice, currencyTokenRate, toggleExclusive, amount } = await page.$eval('.wallet-transfer', el => {
-      return {
-        gas: el.__vue__.gas,
-        activeGasPrice: el.__vue__.activeGasPrice,
-        currencyTokenRate: el.__vue__.getCurrencyTokenRate,
-        toggleExclusive: el.__vue__.toggle_exclusive,
-        amount: el.__vue__.amount
-      }
-    })
-
-    const gasPriceInEth = gas * activeGasPrice * 10 ** -9
-    const gasPriceInCurrency = gasPriceInEth * currencyTokenRate
-    const toSend = parseFloat(amount)
-    const toSendConverted = toSend * this.getCurrencyTokenRate
-
-    const totalEthCost = toggleExclusive === 0 ? toSend + gasPriceInEth : toSendConverted + gasPriceInCurrency
+    const totalEthCost = await getTotalCost(page)
     const totalCost = await page.$eval('#total-cost', el => el.value)
+
+    assert.equal(totalEthCost, totalCost)
+  })
+
+  it('Should display currency mode', async () => {
+    await click(page, '#currency-mode-btn')
+
+    const totalEthCost = await getTotalCost(page)
+    const totalCost = await page.$eval('#total-cost', el => el.value)
+
+    assert.equal(totalEthCost, totalCost)
+  })
+
+  it('Should update total cost on transaction speed change', async () => {
+    await click(page, '#fastest-speed-btn')
+
+    const totalEthCost = await getTotalCost(page)
+    const totalCost = await page.$eval('#total-cost', el => el.value)
+    await page.waitFor(100)
 
     assert.equal(totalEthCost, totalCost)
   })
@@ -252,18 +256,37 @@ describe('Tests Wallet Transfer Transaction', () => {
     await click(confirmPage, '#less-details-link')
   })
 
-  // it('Should submit confirm', async () => {
-  //   await click(confirmPage, '#confirm-btn')
-  //   await waitForText(confirmPage, '.headline', WALLET_HEADERS_CONFIRM)
-  //   await click(confirmPage, '#confirm-transfer-btn')
-  // })
+  it('Should submit confirm', async () => {
+    await click(confirmPage, '#confirm-btn')
+    await waitForText(confirmPage, '.headline', WALLET_HEADERS_CONFIRM)
+    await click(confirmPage, '#confirm-transfer-btn')
+  })
 
-  // it('Should show success alert', async () => {
-  //   await shouldExist(page, '.message-modal')
-  //   await click(page, '.message-modal #continue-link')
-  // })
+  it('Should show success alert', async () => {
+    await shouldExist(page, '.message-modal')
+    await click(page, '.message-modal #continue-link')
+  })
 
-  // it('Should show on wallet activity page', async () => {
-  //   await navigateTo(page, '#activity-link', '.wallet-activity')
-  // })
+  it('Should show on wallet activity page', async () => {
+    await navigateTo(page, '#activity-link', '.wallet-activity')
+  })
 })
+
+const getTotalCost = async function(page) {
+  const { gas, activeGasPrice, currencyTokenRate, toggleExclusive, amount } = await page.$eval('.wallet-transfer', el => {
+    return {
+      gas: el.__vue__.gas,
+      activeGasPrice: el.__vue__.activeGasPrice,
+      currencyTokenRate: el.__vue__.getCurrencyTokenRate,
+      toggleExclusive: el.__vue__.toggle_exclusive,
+      amount: el.__vue__.amount
+    }
+  })
+
+  const gasPriceInEth = gas * activeGasPrice * 10 ** -9
+  const gasPriceInCurrency = gasPriceInEth * currencyTokenRate
+  const toSend = parseFloat(amount)
+  const toSendConverted = toSend * currencyTokenRate
+
+  return toggleExclusive === 0 ? toSend + gasPriceInEth : toSendConverted + gasPriceInCurrency
+}

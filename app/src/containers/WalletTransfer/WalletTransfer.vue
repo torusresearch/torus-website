@@ -70,6 +70,7 @@
               <template v-slot:append>
                 <v-btn
                   small
+                  id="coin-mode-btn"
                   :outlined="!toggle_exclusive"
                   :text="!!toggle_exclusive"
                   :color="!toggle_exclusive ? 'primary' : 'grey'"
@@ -79,6 +80,7 @@
                 </v-btn>
                 <v-btn
                   small
+                  id="currency-mode-btn"
                   :outlined="!!toggle_exclusive"
                   :text="!toggle_exclusive"
                   :color="toggle_exclusive ? 'primary' : 'grey'"
