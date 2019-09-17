@@ -124,7 +124,7 @@ export default {
     walletWindow =
       walletWindow ||
       window.open(
-        `${baseRoute}wallet${payload.path || ''}`,
+        `${baseRoute}wallet${payload.path || ''}?instanceId=${torus.instanceId}`,
         '_blank',
         'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=750'
       )
