@@ -234,7 +234,7 @@ export default {
   setProviderType(context, payload) {
     context.commit('setNetworkType', payload.network)
     if (payload.type && payload.type === RPC) {
-      return torus.torusController.setCustomRpc(payload.network.networkUrl, payload.network.chainId, 'ETH', payload.network.networkName)
+      return torus.torusController.setCustomRpc(payload.network.host, payload.network.chainId, 'ETH', payload.network.networkName)
     } else {
       return torus.torusController.networkController.setProviderType(payload.network.host)
     }
