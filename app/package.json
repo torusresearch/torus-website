@@ -24,7 +24,7 @@
     "temp": "npm run build-embed:dev && npm run build:dev",
     "test:build-embed": "mocha ./test/compile/Web3Test.js",
     "test:codecov-upload": "if [ $CODECOV_TOKEN ]; then nyc report --reporter=text-lcov > coverage.lcov && codecov; fi",
-    "test:coverage-codecov": "nyc --reporter=text --reporter=html npm run test:unit && npm start & sleep 60 && npm run test:e2e && npm run test:codecov-upload",
+    "test:coverage-codecov": "nyc --reporter=text --reporter=html npm run test:unit && npm run serve & sleep 60 && npm run test:e2e",
     "test:coverage-coveralls": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:coveralls-upload",
     "test:coveralls-upload": "if [ $COVERALLS_REPO_TOKEN ]; then nyc report --reporter=text-lcov | coveralls; fi",
     "test:e2e": "mocha --timeout=60000 ./test/e2e",
