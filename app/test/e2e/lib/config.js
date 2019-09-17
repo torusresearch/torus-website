@@ -5,7 +5,7 @@ module.exports = {
   testAccountPassword: 'toruse2e',
   testPrivateKey: 'f4695e3f5303a1ca054a5364d5ce6a78b3238c498843eeded473fc544aef018e',
   testEthAddress: '0x312DF873ad20c53F6a9843A67B8304b80c1bF299',
-  baseUrl: 'https://localhost:3000', // https://dev.to
+  baseUrl: 'http://localhost:3000', // https://dev.to
   ignoreHTTPSErrors: true,
   isHeadless: true,
   slowMo: 0,
