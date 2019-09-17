@@ -1,4 +1,13 @@
-const { SUPPORTED_NETWORK_TYPES } = require('../../utils/enums')
+const {
+  SUPPORTED_NETWORK_TYPES,
+  ACTIVITY_ACTION_ALL,
+  ACTIVITY_ACTION_TOPUP,
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_PERIOD_ALL,
+  ACTIVITY_PERIOD_MONTH_ONE,
+  ACTIVITY_PERIOD_WEEK_ONE
+} = require('../../utils/enums')
 
 export default {
   props: ['transactions', 'selectedAction', 'selectedPeriod', 'nonTopupTransactionCount'],
