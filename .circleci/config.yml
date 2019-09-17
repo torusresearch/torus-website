@@ -61,7 +61,7 @@ jobs:
       - <<: *step_setup_global_packages
       - run:
           name: "Run Tests for torus website"
-          command: npm run test:unit
+          command: npm run test:unit && npm start & sleep 60 && npm run test:e2e
       - <<: *step_save_cache
       # Save test results
       - store_test_results:
