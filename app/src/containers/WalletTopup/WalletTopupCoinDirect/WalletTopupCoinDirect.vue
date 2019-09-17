@@ -18,8 +18,8 @@ export default {
       url: '',
       loaded: false,
       currencyCode: 'eth',
-      path: coindirectLiveHost,
-      merchantId: coindirectLiveMerchantID,
+      path: coindirectTestHost,
+      merchantId: coindirectTestMerchantID,
       // Modify before deploying.
       redirectURL: ''
     }
