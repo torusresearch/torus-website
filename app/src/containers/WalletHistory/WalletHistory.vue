@@ -1,10 +1,11 @@
 <template>
-  <div>
+  <div class="wallet-activity">
     <v-layout mt-3 wrap>
       <v-flex xs12 px-4 mb-4>
-        <div class="text-black font-weight-bold headline float-left">Transaction Activities</div>
+        <div class="text-black font-weight-bold headline float-left">{{ pageHeader }}</div>
         <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
           <v-select
+            id="transaction-selector"
             class="pt-0 mt-0 ml-2 subtitle-2 nav-selector transaction"
             height="25px"
             hide-details
@@ -13,6 +14,7 @@
             append-icon="$vuetify.icons.select"
           />
           <v-select
+            id="period-selector"
             class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period"
             height="25px"
             hide-details
@@ -29,6 +31,7 @@
           :selectedAction="selectedAction"
           :selectedPeriod="selectedPeriod"
           :transactions="calculateFinalTransactions()"
+          :nonTopupTransactionCount="getNonTopupTransactionCount()"
         />
         <tx-history-table-mobile
           v-if="$vuetify.breakpoint.xsOnly"
@@ -36,6 +39,7 @@
           :selectedAction="selectedAction"
           :selectedPeriod="selectedPeriod"
           :transactions="calculateFinalTransactions()"
+          :nonTopupTransactionCount="getNonTopupTransactionCount()"
         />
       </v-flex>
     </v-layout>
@@ -52,6 +56,17 @@ import { getPastOrders } from '../../plugins/simplex'
 import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getEthTxStatus } from '../../utils/utils'
 import torus from '../../torus'
 import { patch } from '../../utils/httpHelpers'
+import {
+  WALLET_HEADERS_TRANSFER,
+  ACTIVITY_ACTION_ALL,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_TOPUP,
+  ACTIVITY_PERIOD_ALL,
+  ACTIVITY_PERIOD_WEEK_ONE,
+  ACTIVITY_PERIOD_MONTH_ONE,
+  ACTIVITY_PERIOD_MONTH_SIX
+} from '../../utils/enums'
 const web3Utils = torus.web3.utils
 
 export default {
@@ -59,6 +74,7 @@ export default {
   components: { TxHistoryTable, TxHistoryTableMobile },
   data() {
     return {
+      pageHeader: WALLET_HEADERS_TRANSFER,
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
       headers: [
         {
@@ -73,10 +89,10 @@ export default {
         { text: 'Status', value: 'status', align: 'center' }
       ],
       pastOrders: [],
-      actionTypes: ['All Transactions', 'Send', 'Receive', 'Top up'],
-      selectedAction: 'All Transactions',
-      periods: ['All', 'Last 1 Week', 'Last 1 Month', 'Last 6 Months'],
-      selectedPeriod: 'All',
+      actionTypes: [ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_TOPUP],
+      selectedAction: ACTIVITY_ACTION_ALL,
+      periods: [ACTIVITY_PERIOD_ALL, ACTIVITY_PERIOD_WEEK_ONE, ACTIVITY_PERIOD_MONTH_ONE, ACTIVITY_PERIOD_MONTH_SIX],
+      selectedPeriod: ACTIVITY_PERIOD_ALL,
       paymentTx: [],
       pastTx: []
     }
@@ -109,6 +125,9 @@ export default {
   methods: {
     onCurrencyChange(value) {
       this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value })
+    },
+    getNonTopupTransactionCount() {
+      return this.calculateFinalTransactions().filter(item => item.action !== ACTIVITY_ACTION_TOPUP).length
     },
     calculateFinalTransactions() {
       let finalTx = this.paymentTx
@@ -143,7 +162,7 @@ export default {
           slicedFrom: addressSlicer(x.from),
           to: x.to,
           slicedTo: addressSlicer(x.to),
-          action: this.wallets.indexOf(x.to) >= 0 ? 'Receive' : 'Send',
+          action: this.wallets.indexOf(x.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
           totalAmount: x.total_amount,
           totalAmountString: totalAmountString,
           currencyAmount: x.currency_amount,
@@ -167,7 +186,7 @@ export default {
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
           const txObj = {}
           txObj.id = txOld.time
-          txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? 'Receive' : 'Send'
+          txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
           txObj.date = new Date(txOld.time)
           txObj.from = web3Utils.toChecksumAddress(txOld.txParams.from)
           txObj.slicedFrom = addressSlicer(txOld.txParams.from)
@@ -222,7 +241,7 @@ export default {
               date: new Date(x.createdAt),
               from: 'Simplex',
               slicedFrom: 'Simplex',
-              action: 'Top up',
+              action: ACTIVITY_ACTION_TOPUP,
               to: publicAddress,
               slicedTo: addressSlicer(publicAddress),
               totalAmount: x.requested_digital_amount.amount,

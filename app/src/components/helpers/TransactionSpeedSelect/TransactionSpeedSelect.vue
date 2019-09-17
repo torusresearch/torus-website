@@ -21,6 +21,7 @@
     <v-layout xs12 justify-space-between wrap v-if="!isAdvanceOption">
       <v-flex xs6 px-4 mb-1>
         <v-btn
+          id="average-speed-btn"
           block
           large
           outlined
@@ -34,6 +35,7 @@
       </v-flex>
       <v-flex xs6 px-4 mb-1>
         <v-btn
+          id="fastest-speed-btn"
           block
           large
           outlined
@@ -54,7 +56,7 @@
         </div>
       </v-flex>
       <v-flex xs4 px-4 class="text-right">
-        <v-btn outlined color="primary" @click="resetAdvanceOption">Reset</v-btn>
+        <v-btn id="adv-reset-btn" outlined color="primary" @click="resetAdvanceOption">Reset</v-btn>
       </v-flex>
     </v-layout>
     <v-layout>

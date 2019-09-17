@@ -14,7 +14,14 @@ const {
   LOCALHOST_DISPLAY_NAME,
   GOERLI_DISPLAY_NAME,
   RPC_DISPLAY_NAME,
-  MATIC_DISPLAY_NAME
+  MATIC_DISPLAY_NAME,
+  ACTIVITY_ACTION_ALL,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_TOPUP,
+  ACTIVITY_PERIOD_ALL,
+  ACTIVITY_PERIOD_WEEK_ONE,
+  ACTIVITY_PERIOD_MONTH_ONE
 } = require('../../utils/enums')
 
 const mapper = {
@@ -29,7 +36,7 @@ const mapper = {
 }
 
 export default {
-  props: ['transactions', 'selectedAction', 'selectedPeriod'],
+  props: ['transactions', 'selectedAction', 'selectedPeriod', 'nonTopupTransactionCount'],
   data() {
     return {
       mapper: mapper
@@ -37,7 +44,7 @@ export default {
   },
   computed: {
     filteredTransactions() {
-      const selectedAction = this.selectedAction === 'All Transactions' ? '' : this.selectedAction
+      const selectedAction = this.selectedAction === ACTIVITY_ACTION_ALL ? '' : this.selectedAction
       var regExAction = new RegExp(selectedAction, 'i')
 
       return this.transactions
@@ -51,14 +58,14 @@ export default {
         .filter(item => {
           // GET Date Scope
           let isScoped = false
-          if (this.selectedPeriod === 'All') {
+          if (this.selectedPeriod === ACTIVITY_PERIOD_ALL) {
             isScoped = true
           } else {
             let minDate = new Date()
             let itemDate = new Date(item.date)
-            if (this.selectedPeriod === 'Last 1 Week') {
+            if (this.selectedPeriod === ACTIVITY_PERIOD_WEEK_ONE) {
               minDate.setDate(minDate.getDate() - 7)
-            } else if (this.selectedPeriod === 'Last 1 Month') {
+            } else if (this.selectedPeriod === ACTIVITY_PERIOD_MONTH_ONE) {
               minDate.setMonth(minDate.getMonth() - 1)
             } else {
               minDate.setMonth(minDate.getMonth() - 6)
@@ -91,11 +98,11 @@ export default {
       }
     },
     getIcon(action) {
-      if (action === 'Top up') {
+      if (action === ACTIVITY_ACTION_TOPUP) {
         return '$vuetify.icons.coins_topup'
-      } else if (action === 'Send') {
+      } else if (action === ACTIVITY_ACTION_SEND) {
         return '$vuetify.icons.coins_send'
-      } else if (action === 'Receive') {
+      } else if (action === ACTIVITY_ACTION_RECEIVE) {
         return '$vuetify.icons.coins_receive'
       }
     },

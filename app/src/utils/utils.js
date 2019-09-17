@@ -275,7 +275,7 @@ const broadcastChannelOptions = {
   webWorkerSupport: false // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 }
 
-export {
+module.exports = {
   removeListeners,
   applyListeners,
   getPlatform,

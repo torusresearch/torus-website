@@ -1,5 +1,5 @@
 <template>
-  <v-container py-6 px-0>
+  <v-container py-6 px-0 class="confirm-container">
     <template v-if="type === 'transaction'">
       <v-layout align-center mx-6 mb-6>
         <div class="torus_text--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-4' : ''">{{ header }}</div>
@@ -39,28 +39,28 @@
         <v-flex xs12 mb-3 mt-3>
           <v-dialog v-model="detailsDialog" width="600px">
             <template v-slot:activator="{ on }">
-              <div class="subtitle-2 float-right blue--text mx-6" v-on="on">More Details</div>
+              <div id="more-details-link" class="subtitle-2 float-right blue--text mx-6" v-on="on">More Details</div>
             </template>
-            <v-card class="pa-4" color="background_2">
+            <v-card class="pa-4 more-details-container" color="background_2">
               <v-card-text class="torus_text--text">
                 <v-layout wrap>
                   <v-flex xs4 sm2>
                     Rate
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
+                  <v-flex id="currency-rate" xs8 sm10 class="torus_text--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
                   <v-flex xs4 sm2>
                     Network
                     <span class="float-right mr-4">:</span>
                   </v-flex>
                   <v-flex xs8 sm10 class="torus_text--text text--lighten-4">
-                    <span class="text-capitalize">{{ networkName }}</span>
+                    <span id="network" class="text-capitalize">{{ networkName }}</span>
                   </v-flex>
                   <v-flex xs4 sm2>
                     Type
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">{{ header }}</v-flex>
+                  <v-flex id="type" xs8 sm10 class="torus_text--text text--lighten-4">{{ header }}</v-flex>
                   <v-flex xs2 v-if="txData || txDataParams !== ''">
                     Data
                     <span class="float-right mr-4">:</span>
@@ -82,7 +82,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" text @click="detailsDialog = false">Less Details</v-btn>
+                <v-btn id="less-details-link" color="primary" text @click="detailsDialog = false">Less Details</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -107,7 +107,7 @@
           <v-flex xs6>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
               <template v-slot:activator="{ on }">
-                <v-btn :disabled="!canApprove" block depressed large color="primary" class="ml-2" v-on="on">Confirm</v-btn>
+                <v-btn id="confirm-btn" :disabled="!canApprove" block depressed large color="primary" class="ml-2" v-on="on">Confirm</v-btn>
               </template>
               <transfer-confirm
                 :toAddress="receiver"
@@ -470,6 +470,9 @@ export default {
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
         this.canApprove = false
+      } else {
+        this.errorMsg = ''
+        this.canApprove = true
       }
     },
     gasKnob: function(newGasKnob, oldGasKnob) {

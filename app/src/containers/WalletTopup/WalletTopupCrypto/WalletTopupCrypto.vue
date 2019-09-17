@@ -1,5 +1,5 @@
 <template>
-  <v-layout wrap>
+  <v-layout wrap class="wallet-topup-crypto">
     <span>
       Crypto.com is a secure way to buy cryptocurrency with your credit card. Start by installing their application
     </span>
