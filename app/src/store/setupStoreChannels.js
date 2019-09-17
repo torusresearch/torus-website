@@ -3,53 +3,44 @@ import log from 'loglevel'
 import pump from 'pump'
 import stream from 'stream'
 import torus from '../torus'
-import {
-  MAINNET,
-  RPC,
-  USER_INFO_REQUEST_APPROVED,
-  USER_INFO_REQUEST_REJECTED,
-  USER_INFO_REQUEST_NEW,
-  SUPPORTED_NETWORK_TYPES,
-  MAINNET_CODE,
-  MAINNET_DISPLAY_NAME
-} from '../utils/enums'
+import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, USER_INFO_REQUEST_NEW } from '../utils/enums'
 import VuexStore from './store'
 import { broadcastChannelOptions } from '../utils/utils'
 
-/**
- * Checks whether a storage type is available or not
- * For more info on how this works, please refer to MDN documentation
- * https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
- *
- * @method storageAvailable
- * @param {String} type the type of storage ('localStorage', 'sessionStorage')
- * @returns {Boolean} a boolean indicating whether the specified storage is available or not
- */
-function storageAvailable(type) {
-  var storage
-  try {
-    storage = window[type]
-    var x = '__storage_test__'
-    storage.setItem(x, x)
-    storage.removeItem(x)
-    return true
-  } catch (e) {
-    return (
-      e &&
-      // everything except Firefox
-      (e.code === 22 ||
-        // Firefox
-        e.code === 1014 ||
-        // test name field too, because code might not be present
-        // everything except Firefox
-        e.name === 'QuotaExceededError' ||
-        // Firefox
-        e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
-      // acknowledge QuotaExceededError only if there's something already stored
-      (storage && storage.length !== 0)
-    )
-  }
-}
+// /**
+//  * Checks whether a storage type is available or not
+//  * For more info on how this works, please refer to MDN documentation
+//  * https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
+//  *
+//  * @method storageAvailable
+//  * @param {String} type the type of storage ('localStorage', 'sessionStorage')
+//  * @returns {Boolean} a boolean indicating whether the specified storage is available or not
+//  */
+// function storageAvailable(type) {
+//   var storage
+//   try {
+//     storage = window[type]
+//     var x = '__storage_test__'
+//     storage.setItem(x, x)
+//     storage.removeItem(x)
+//     return true
+//   } catch (e) {
+//     return (
+//       e &&
+//       // everything except Firefox
+//       (e.code === 22 ||
+//         // Firefox
+//         e.code === 1014 ||
+//         // test name field too, because code might not be present
+//         // everything except Firefox
+//         e.name === 'QuotaExceededError' ||
+//         // Firefox
+//         e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+//       // acknowledge QuotaExceededError only if there's something already stored
+//       (storage && storage.length !== 0)
+//     )
+//   }
+// }
 
 /* 
 Edited to change networkId => network state. Has an implication of changing neworkVersion 
@@ -60,23 +51,24 @@ torus.torusController.networkController.networkStore.subscribe(function(state) {
   VuexStore.dispatch('updateNetworkId', { networkId: state })
 })
 
-if (storageAvailable('sessionStorage')) {
-  // listen to changes on localstorage
-  window.addEventListener(
-    'storage',
-    function() {
-      const sessionData = sessionStorage.getItem('torus-app')
-      const networkType = (JSON.parse(sessionData) && JSON.parse(sessionData).networkType) || {
-        host: MAINNET,
-        chainId: MAINNET_CODE,
-        networkName: MAINNET_DISPLAY_NAME
-      }
-      if (SUPPORTED_NETWORK_TYPES.includes(networkType.host)) VuexStore.dispatch('setProviderType', { network: networkType })
-      else VuexStore.dispatch('setProviderType', { network: networkType, type: RPC })
-    },
-    false
-  )
-}
+// if (storageAvailable('sessionStorage')) {
+//   function storageHandler() {
+//     log.info('calling twice 1 session')
+//     const sessionData = sessionStorage.getItem('torus-app')
+//     const networkType = (JSON.parse(sessionData) && JSON.parse(sessionData).networkType) || {
+//       host: MAINNET,
+//       chainId: MAINNET_CODE,
+//       networkName: MAINNET_DISPLAY_NAME
+//     }
+//     if (networkType.host !== VuexStore.state.networkType.host) {
+//       if (SUPPORTED_NETWORK_TYPES.includes(networkType.host)) VuexStore.dispatch('setProviderType', { network: networkType })
+//       else VuexStore.dispatch('setProviderType', { network: networkType, type: RPC })
+//     }
+//   }
+//   // listen to changes on sessionStorage
+//   window.removeEventListener('storage', storageHandler, false)
+//   window.addEventListener('storage', storageHandler, false)
+// }
 
 // setup handlers for communicationStream
 var passthroughStream = new stream.PassThrough({ objectMode: true })
