@@ -120,17 +120,11 @@
             <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
               <div class="body-2 mb-1 px-1">Select Theme</div>
               <v-layout wrap>
-                <v-flex xs12 sm4 px-1 mb-1>
-                  <v-btn id="default-theme-btn" light outlined block color="primary" class="btn-default" @click="selectTheme('default')">
-                    Default
-                  </v-btn>
-                </v-flex>
-                <v-flex xs12 sm4 px-1 mb-1>
-                  <v-btn id="cerulean-theme-btn" dark depressed block class="btn-cerulean" @click="selectTheme('cerulean-blue')">Cerulean Blue</v-btn>
-                </v-flex>
-                <v-flex xs12 sm4 px-1 mb-1>
-                  <v-btn id="shuttle-grey-theme-btn" dark depressed block class="btn-shuttle-grey" @click="selectTheme('shuttle-grey')">
-                    Shuttle Grey
+                <v-flex xs12 sm4 px-1 mb-1 v-for="theme in themes" :key="`${theme.name}`">
+                  <!-- <v-btn v-if="$vuetify.theme.dark" light depressed block @click="$vuetify.theme.dark = false">Light</v-btn>
+                  <v-btn v-else dark depressed block @click="$vuetify.theme.dark = true">Dark</v-btn> -->
+                  <v-btn @click="selectTheme(theme)" depressed block class="theme-btn" :class="theme.name">
+                    {{ theme.label }}
                   </v-btn>
                 </v-flex>
               </v-layout>
@@ -147,7 +141,7 @@
 
 //
 <script>
-import { lightBlue, ceruleanBlue, shuttleGrey } from '../../plugins/themes'
+import { lightBlue, darkBlack } from '../../plugins/themes'
 import PrivateKeys from '../../components/WalletSettings/PrivateKeys'
 import DappPermissions from '../../components/WalletSettings/DappPermissions'
 import log from 'loglevel'
@@ -221,6 +215,20 @@ export default {
       rules: {
         required: value => !!value || 'Required'
       },
+      themes: [
+        {
+          label: 'Light',
+          name: 'light-blue',
+          theme: lightBlue,
+          isDark: false
+        },
+        {
+          label: 'Dark',
+          name: 'dark-black',
+          theme: darkBlack,
+          isDark: true
+        }
+      ],
       themeSelected: ''
     }
   },
@@ -236,6 +244,10 @@ export default {
     setRPC() {
       this.selectedNetwork = RPC
       this.$store.dispatch('setProviderType', { network: this.rpc, type: RPC })
+    },
+    selectTheme(theme) {
+      this.$vuetify.theme.dark = theme.isDark
+      this.$vuetify.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
     }
   },
   mounted() {

@@ -19,27 +19,20 @@
     background: transparent;
   }
 
-  .btn-default {
-    color: #5495f7;
-    background-color: white;
-    border: 1px solid #5495f7;
+  .theme-btn.light-blue {
+    color: #0364FF;
+    background-color: white !important;
+    border: 1px solid #0364FF !important;
+    color: #0364FF;
   }
 
-  .btn-cerulean {
-    background-color: #295dab !important;
-    border: 1px solid #295dab;
+  .theme-btn.dark-black {
+    background-color: #2F3136 !important;
+    border: 1px solid white !important;
+    color: white;
 
-    .v-btn__content {
-      color: white;
-    }
-  }
-
-  .btn-shuttle-grey {
-    background-color: #5c6c7f !important;
-    border: 1px solid #5c6c7f;
-
-    .v-btn__content {
-      color: white;
+    &.theme--light {
+      border: 1px solid #2F3136 !important;
     }
   }
 }

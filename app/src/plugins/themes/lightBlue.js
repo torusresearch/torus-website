@@ -5,6 +5,6 @@ export default {
   background_3: '#e8edef',
   background_4: '#ffffff',
   disabled: '#eef2f4',
-  primary: '#5495f7',
+  primary: '#0364FF',
   torus_text: '#0F1222'
 }
