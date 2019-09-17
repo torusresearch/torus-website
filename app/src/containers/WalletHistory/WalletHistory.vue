@@ -147,7 +147,7 @@ export default {
       const pastTx = []
       for (let index = 0; index < pastTransactions.length; index++) {
         const x = pastTransactions[index]
-        if (x.network !== networkType) continue
+        if (x.network !== networkType.host) continue
         let status = x.status
         if (x.status !== 'confirmed' && x.status !== 'rejected' && publicAddress.toLowerCase() === x.from.toLowerCase()) {
           status = await getEthTxStatus(x.transaction_hash, torus.web3)
@@ -200,8 +200,8 @@ export default {
           txObj.currencyAmountString = `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`
           txObj.amount = `${txObj.totalAmountString} / ${txObj.currencyAmountString}`
           txObj.status = txOld.status
-          txObj.etherscanLink = getEtherScanHashLink(txOld.hash, networkType)
-          txObj.networkType = networkType
+          txObj.etherscanLink = getEtherScanHashLink(txOld.hash, networkType.host)
+          txObj.networkType = networkType.host
           txObj.ethRate = significantDigits(parseFloat(txObj.currencyAmount) / parseFloat(txObj.totalAmount))
           txObj.currencyUsed = this.selectedCurrency
           finalTransactions.push(txObj)

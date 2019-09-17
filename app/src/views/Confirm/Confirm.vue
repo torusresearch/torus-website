@@ -214,26 +214,15 @@ const contracts = require('eth-contract-metadata')
 const log = require('loglevel')
 
 const {
-  ROPSTEN,
-  RINKEBY,
-  KOVAN,
-  MAINNET,
-  LOCALHOST,
-  GOERLI,
   RPC,
-  ROPSTEN_DISPLAY_NAME,
-  RINKEBY_DISPLAY_NAME,
-  KOVAN_DISPLAY_NAME,
-  MAINNET_DISPLAY_NAME,
-  LOCALHOST_DISPLAY_NAME,
-  GOERLI_DISPLAY_NAME,
   RPC_DISPLAY_NAME,
   CONTRACT_INTERACTION_KEY,
   DEPLOY_CONTRACT_ACTION_KEY,
   TOKEN_METHOD_APPROVE,
   TOKEN_METHOD_TRANSFER,
   TOKEN_METHOD_TRANSFER_FROM,
-  SEND_ETHER_ACTION_KEY
+  SEND_ETHER_ACTION_KEY,
+  SUPPORTED_NETWORK_TYPES
 } = require('../../utils/enums')
 
 const weiInGwei = 10 ** 9
@@ -288,33 +277,11 @@ export default {
       speed: '',
       id: 0,
       networks: [
+        ...Object.values(SUPPORTED_NETWORK_TYPES),
         {
-          name: MAINNET_DISPLAY_NAME,
-          value: MAINNET
-        },
-        {
-          name: ROPSTEN_DISPLAY_NAME,
-          value: ROPSTEN
-        },
-        {
-          name: RINKEBY_DISPLAY_NAME,
-          value: RINKEBY
-        },
-        {
-          name: KOVAN_DISPLAY_NAME,
-          value: KOVAN
-        },
-        {
-          name: GOERLI_DISPLAY_NAME,
-          value: GOERLI
-        },
-        {
-          name: LOCALHOST_DISPLAY_NAME,
-          value: LOCALHOST
-        },
-        {
-          name: RPC_DISPLAY_NAME,
-          value: RPC
+          networkName: RPC_DISPLAY_NAME,
+          host: RPC,
+          chainId: ''
         }
       ]
     }
@@ -533,11 +500,9 @@ export default {
       }
     },
     getNetworkName(targetNetwork) {
-      const networkName = this.networks.find(network => {
-        return network.value === targetNetwork
-      })
-
-      return networkName.name
+      const foundNetwork = this.networks.find(network => network.host === targetNetwork)
+      if (foundNetwork === -1) return 'UnKnown Network'
+      return foundNetwork.networkName
     },
     getDate() {
       const currentDateTime = new Date()

@@ -29,7 +29,7 @@
               <v-list-item-content class="pa-1">
                 <div class="caption torus_text--text text--lighten-3">
                   To change your network to
-                  <span class="text-capitalize">{{ type && type === 'rpc' ? `${rpcNetwork.networkName} : ${rpcNetwork.networkUrl}` : network }}</span>
+                  <span class="text-capitalize">{{ type && type === 'rpc' ? `${rpcNetwork.networkName} : ${rpcNetwork.host}` : network.host }}</span>
                 </div>
               </v-list-item-content>
             </v-list-item>
@@ -72,7 +72,10 @@ export default {
   computed: {},
   methods: {
     async triggerSign(event) {
-      var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
+      var bc = new BroadcastChannel(
+        `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
+        broadcastChannelOptions
+      )
       await bc.postMessage({
         data: { type: 'confirm-provider-change', payload: this.payload, approve: true }
       })
@@ -80,14 +83,20 @@ export default {
       window.close()
     },
     async triggerDeny(event) {
-      var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
+      var bc = new BroadcastChannel(
+        `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
+        broadcastChannelOptions
+      )
       await bc.postMessage({ data: { type: 'deny-provider-change', approve: false } })
       bc.close()
       window.close()
     }
   },
   mounted() {
-    var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
+    var bc = new BroadcastChannel(
+      `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
+      broadcastChannelOptions
+    )
     bc.onmessage = async ev => {
       const {
         payload: { network, type },

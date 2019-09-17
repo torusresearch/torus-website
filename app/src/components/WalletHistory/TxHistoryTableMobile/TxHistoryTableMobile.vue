@@ -54,7 +54,7 @@
                 Network
                 <span class="float-right">:</span>
               </v-flex>
-              <v-flex xs8 sm11>{{ mapper[transaction.networkType] || '' }}</v-flex>
+              <v-flex xs8 sm11>{{ (mapper[item.networkType] && mapper[item.networkType].networkName) || '' }}</v-flex>
               <!-- <v-flex xs4 sm1 pr-2>
                 Type
                 <span class="float-right">:</span>
