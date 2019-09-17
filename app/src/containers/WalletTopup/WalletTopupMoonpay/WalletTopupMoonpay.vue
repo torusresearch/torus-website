@@ -1,5 +1,5 @@
 <template>
-  <v-layout wrap>
+  <v-layout wrap class="wallet-topup-moonpay">
     <span>
       Moonpay is a secure way to buy cryptocurrency with your credit card. Start by entering a amount below to get a quote before making a purchase
     </span>

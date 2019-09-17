@@ -1,14 +1,15 @@
 <template>
   <v-flex xs12 sm5 mb-4 px-4 class="topup-providers">
     <v-card
-      class="mb-4"
+      class="mb-4 topup-provider"
       :class="{ active: innerProvider === targetProvider.name }"
       v-for="targetProvider in activeProviders"
       @click="innerProvider = targetProvider.name"
       :key="targetProvider.name"
+      :data-provider="targetProvider.name"
     >
       <router-link :to="targetProvider.link">
-        <v-list-item three-line>
+        <v-list-item three-line :id="`${targetProvider.name}-link`">
           <v-list-item-icon class="mr-2 align-self-center">
             <v-icon color="primary" v-if="innerProvider === targetProvider.name">$vuetify.icons.radio_checked</v-icon>
             <v-icon color="grey" v-else>$vuetify.icons.radio_unchecked</v-icon>
@@ -28,7 +29,7 @@
     <template>
       <v-tooltip right v-for="targetProvider in inactiveProviders" :key="targetProvider.name">
         <template v-slot:activator="{ on }">
-          <v-card class="mb-4 coming-soon" v-on="on">
+          <v-card class="topup-provider mb-4 coming-soon" :data-provider="targetProvider.name" v-on="on">
             <v-list-item three-line>
               <v-list-item-icon class="mr-2 align-self-center">
                 <v-icon color="grey">$vuetify.icons.radio_unchecked</v-icon>
