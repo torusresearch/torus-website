@@ -61,7 +61,7 @@ jobs:
       - <<: *step_setup_global_packages
       - run:
           name: "Run Tests for torus website"
-          command: npm run test:unit && npm start & sleep 60 && npm run test:e2e
+          command: npm run serve & sleep 60 && npm run test:e2e
       - <<: *step_save_cache
       # Save test results
       - store_test_results:
@@ -158,6 +158,7 @@ workflows:
   commit:
     jobs:
       - test-coverage
+      - unit-test
       - build:
           filters:
             branches:
@@ -167,6 +168,7 @@ workflows:
           requires:
             - build
             - test-coverage
+            - unit-test
           filters:
             branches:
               only:
@@ -194,6 +196,7 @@ workflows:
           requires:
             - build-staging
             - test-coverage
+            - unit-test
           filters:
             branches:
               only:
@@ -221,6 +224,7 @@ workflows:
           requires:
             - build-testing
             - test-coverage
+            - unit-test
           filters:
             branches:
               only:
