@@ -161,7 +161,7 @@ export default {
   },
   methods: {
     async logout() {
-      var bc = new BroadcastChannel('torus_logout_channel', broadcastChannelOptions)
+      var bc = new BroadcastChannel(`torus_logout_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
       await bc.postMessage({ data: { type: 'logout' } })
       bc.close()
       this.$store.dispatch('logOut')
@@ -169,7 +169,10 @@ export default {
     },
     changeAccount(newAddress) {
       this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
-      const selectedAddressChannel = new BroadcastChannel('selected_address_channel', broadcastChannelOptions)
+      const selectedAddressChannel = new BroadcastChannel(
+        `selected_address_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
+        broadcastChannelOptions
+      )
       selectedAddressChannel.postMessage({
         data: {
           name: 'selected_address',

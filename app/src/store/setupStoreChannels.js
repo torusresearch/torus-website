@@ -224,7 +224,7 @@ providerChangeChannel.onmessage = function(ev) {
   }
 }
 
-var logoutChannel = new BroadcastChannel('torus_logout_channel', broadcastChannelOptions)
+var logoutChannel = new BroadcastChannel(`torus_logout_channel_${torus.instanceId}`, broadcastChannelOptions)
 logoutChannel.onmessage = function(ev) {
   log.info('received logging message', ev)
   if (ev.data && ev.data.type === 'logout') {
@@ -246,7 +246,7 @@ userInfoRequestChannel.onmessage = function(ev) {
   }
 }
 
-var accountImportChannel = new BroadcastChannel('account_import_channel', broadcastChannelOptions)
+var accountImportChannel = new BroadcastChannel(`account_import_channel_${torus.instanceId}`, broadcastChannelOptions)
 accountImportChannel.onmessage = function(ev) {
   if (ev.data && ev.data.name === 'imported_account' && ev.data.payload) {
     log.info('importing user account')
@@ -256,7 +256,7 @@ accountImportChannel.onmessage = function(ev) {
   }
 }
 
-var selectedAddressChannel = new BroadcastChannel('selected_address_channel', broadcastChannelOptions)
+var selectedAddressChannel = new BroadcastChannel(`selected_address_channel_${torus.instanceId}`, broadcastChannelOptions)
 selectedAddressChannel.onmessage = function(ev) {
   if (ev.data && ev.data.name == 'selected_address' && ev.data.payload) {
     log.info('setting selected address')

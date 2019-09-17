@@ -169,7 +169,7 @@ export default {
         .then(privKey => {
           dispatch('finishImportAccount', { privKey })
             .then(() => {
-              const accountImportChannel = new BroadcastChannel('account_import_channel', broadcastChannelOptions)
+              const accountImportChannel = new BroadcastChannel(`account_import_channel_${torus.instanceId}`, broadcastChannelOptions)
               accountImportChannel
                 .postMessage({
                   data: {
