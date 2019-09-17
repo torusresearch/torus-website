@@ -472,7 +472,7 @@ export default {
           return
         }
       }
-      if (SUPPORTED_NETWORK_TYPES.includes(networkType.host)) await dispatch('setProviderType', { network: networkType })
+      if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       if (selectedAddress && wallet[selectedAddress]) {
         dispatch('updateSelectedAddress', { selectedAddress })

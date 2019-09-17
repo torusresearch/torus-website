@@ -1,38 +1,10 @@
-const {
-  ROPSTEN,
-  RINKEBY,
-  KOVAN,
-  MAINNET,
-  LOCALHOST,
-  GOERLI,
-  RPC,
-  MATIC,
-  ROPSTEN_DISPLAY_NAME,
-  RINKEBY_DISPLAY_NAME,
-  KOVAN_DISPLAY_NAME,
-  MAINNET_DISPLAY_NAME,
-  LOCALHOST_DISPLAY_NAME,
-  GOERLI_DISPLAY_NAME,
-  RPC_DISPLAY_NAME,
-  MATIC_DISPLAY_NAME
-} = require('../../utils/enums')
-
-const mapper = {
-  [ROPSTEN]: ROPSTEN_DISPLAY_NAME,
-  [RINKEBY]: RINKEBY_DISPLAY_NAME,
-  [KOVAN]: KOVAN_DISPLAY_NAME,
-  [MAINNET]: MAINNET_DISPLAY_NAME,
-  [LOCALHOST]: LOCALHOST_DISPLAY_NAME,
-  [GOERLI]: GOERLI_DISPLAY_NAME,
-  [RPC]: RPC_DISPLAY_NAME,
-  [MATIC]: MATIC_DISPLAY_NAME
-}
+const { SUPPORTED_NETWORK_TYPES } = require('../../utils/enums')
 
 export default {
   props: ['transactions', 'selectedAction', 'selectedPeriod'],
   data() {
     return {
-      mapper: mapper
+      mapper: SUPPORTED_NETWORK_TYPES
     }
   },
   computed: {
