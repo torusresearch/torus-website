@@ -7,7 +7,7 @@ module.exports = {
   testEthAddress: '0x312DF873ad20c53F6a9843A67B8304b80c1bF299',
   baseUrl: 'https://localhost:3000', // https://dev.to
   ignoreHTTPSErrors: true,
-  isHeadless: false,
+  isHeadless: true,
   slowMo: 0,
   isDevTools: true,
   launchTimeout: 10000,
