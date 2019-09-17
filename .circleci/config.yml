@@ -158,7 +158,6 @@ workflows:
   commit:
     jobs:
       - test-coverage
-      - unit-test
       - build:
           filters:
             branches:
@@ -168,7 +167,6 @@ workflows:
           requires:
             - build
             - test-coverage
-            - unit-test
           filters:
             branches:
               only:
@@ -196,7 +194,6 @@ workflows:
           requires:
             - build-staging
             - test-coverage
-            - unit-test
           filters:
             branches:
               only:
@@ -224,7 +221,6 @@ workflows:
           requires:
             - build-testing
             - test-coverage
-            - unit-test
           filters:
             branches:
               only:

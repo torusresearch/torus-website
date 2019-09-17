@@ -9,10 +9,10 @@ const log = require('loglevel')
 
 // const UAParser = require('ua-parser-js')
 const APP_PORT = process.env.PORT || 3000
-// var certOptions = {
-//   key: fs.readFileSync(path.resolve('../ssl/server.key')),
-//   cert: fs.readFileSync(path.resolve('../ssl/server.crt'))
-// }
+var certOptions = {
+  key: fs.readFileSync(path.resolve('../ssl/server.key')),
+  cert: fs.readFileSync(path.resolve('../ssl/server.crt'))
+}
 // app.all(/^(?!(\/notsupported)).*$/, ensureCompatibleBrowser)
 app.use(compression())
 // Prevents cross-frame clickjacking attacks from external websites
@@ -53,8 +53,8 @@ app.get('*', (req, res) => {
 
 // app.use(express.static('public'))
 
-// https.createServer(certOptions, app).listen(APP_PORT)
-http.createServer(app).listen(APP_PORT)
+https.createServer(certOptions, app).listen(APP_PORT)
+// http.createServer(app).listen(APP_PORT)
 log.info('listening to port ' + APP_PORT)
 
 if (process.env.NODE_ENV === 'production') {
