@@ -20,7 +20,9 @@
         </v-flex>
 
         <v-flex xs12 mx-auto px-4 text-center pb-4>
-          <v-btn v-if="modalType" color="#2DCC70" class="px-12 py-4 mb-12 white--text modal-button" to="/wallet/history">Continue</v-btn>
+          <v-btn id="continue-link" v-if="modalType" color="#2DCC70" class="px-12 py-4 mb-12 white--text modal-button" to="/wallet/history">
+            Continue
+          </v-btn>
 
           <v-btn v-else color="#FEA29F" class="px-12 py-4 mb-12 white--text modal-button" @click="onCancel">Try again</v-btn>
         </v-flex>
