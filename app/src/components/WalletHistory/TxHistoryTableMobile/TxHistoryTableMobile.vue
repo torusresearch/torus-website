@@ -1,5 +1,5 @@
 <template>
-  <v-container class="activity-table-mobile">
+  <v-container class="activity-table-mobile" :data-count-transfer="nonTopupTransactionCount">
     <v-expansion-panels multiple>
       <v-expansion-panel v-for="transaction in filteredTransactions" :key="`${transaction.id}`">
         <v-expansion-panel-header class="px-2">
@@ -7,7 +7,7 @@
             <v-layout>
               <v-flex xs6 my-2 class="subtitle-2">
                 <v-icon small>{{ transaction.actionIcon }}</v-icon>
-                {{ transaction.action }}
+                <span class="transaction-action">{{ transaction.action }}</span>
               </v-flex>
               <v-flex xs6 my-2 class="body-2 text-right text-capitalize" :class="`text-${transaction.status.toLowerCase()}`">
                 {{ transaction.statusText }}
@@ -19,7 +19,7 @@
                 Date:
               </v-flex>
               <v-flex xs6 my-2 class="caption text-right">
-                {{ transaction.dateFormatted }}
+                <span class="transaction-date">{{ transaction.dateFormatted }}</span>
               </v-flex>
             </v-layout>
             <v-divider></v-divider>

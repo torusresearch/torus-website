@@ -1,5 +1,5 @@
 <template>
-  <div class="activity-table">
+  <div class="activity-table" :data-count="transactions.length" :data-per-page="itemsPerPage" :data-count-transfer="nonTopupTransactionCount">
     <v-data-table
       :headers="headers"
       :items="filteredTransactions"
@@ -15,7 +15,7 @@
       <template v-slot:item.action="{ item }">
         <span>
           <v-icon>{{ item.actionIcon }}</v-icon>
-          {{ item.action }}
+          <span class="transaction-action">{{ item.action }}</span>
         </span>
       </template>
       <template v-slot:item.from="{ item }">
@@ -25,7 +25,7 @@
         <span style="word-break: break-all">{{ item.to }}</span>
       </template>
       <template v-slot:item.date="{ item }">
-        <span>{{ item.dateFormatted }}</span>
+        <span class="transaction-date">{{ item.dateFormatted }}</span>
       </template>
       <template v-slot:item.status="{ item }">
         <span class="text-capitalize" :class="`text-${item.status.toLowerCase()}`">{{ item.statusText }}</span>

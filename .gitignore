@@ -6,3 +6,5 @@ dist/
 disc.html
 secrets.json
 .vscode
+.nyc_output
+coverage

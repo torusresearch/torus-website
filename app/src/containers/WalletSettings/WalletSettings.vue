@@ -4,7 +4,7 @@
       <v-expansion-panels multiple>
         <!-- Privacy and security settings -->
         <v-expansion-panel>
-          <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
+          <v-expansion-panel-header id="privacy-panel-header" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
             <img
               :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
               class="d-inline-flex mr-4 shrink"
@@ -17,7 +17,7 @@
           <v-expansion-panel-content>
             <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-0 px-12'">
               <v-list>
-                <v-list-item @click="privateKeyDialog = true">
+                <v-list-item id="private-key-btn" @click="privateKeyDialog = true">
                   <v-list-item-avatar class="mr-4">
                     <img :src="require(`../../../public/img/icons/key.svg`)" class=" mr-4" />
                   </v-list-item-avatar>
@@ -25,7 +25,7 @@
                     <v-list-item-title>Private Key</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item @click="dappPermissionDialog = true">
+                <v-list-item id="dapp-permisson-btn" @click="dappPermissionDialog = true">
                   <v-list-item-avatar class="mr-4">
                     <img :src="require(`../../../public/img/icons/list.svg`)" class=" mr-4" />
                   </v-list-item-avatar>
@@ -47,7 +47,7 @@
 
         <!-- Network Settigs -->
         <v-expansion-panel>
-          <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
+          <v-expansion-panel-header id="network-panel-header" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
             <img
               :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
               class="d-inline-flex mr-4 shrink collpase-icon"
@@ -63,6 +63,8 @@
                 <span class="subtitle-2">Select Network</span>
                 <v-flex>
                   <v-select
+                    id="select-network"
+                    class="select-network-container"
                     outlined
                     :items="networks"
                     item-text="networkName"
@@ -105,7 +107,7 @@
 
         <!-- Display Settings -->
         <v-expansion-panel>
-          <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
+          <v-expansion-panel-header id="display-panel-header" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
             <img
               :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
               class="d-inline-flex mr-4 shrink collpase-icon"
@@ -120,13 +122,17 @@
               <div class="body-2 mb-1 px-1">Select Theme</div>
               <v-layout wrap>
                 <v-flex xs12 sm4 px-1 mb-1>
-                  <v-btn light outlined block color="primary" class="btn-default" @click="selectTheme('default')">Default</v-btn>
+                  <v-btn id="default-theme-btn" light outlined block color="primary" class="btn-default" @click="selectTheme('default')">
+                    Default
+                  </v-btn>
                 </v-flex>
                 <v-flex xs12 sm4 px-1 mb-1>
-                  <v-btn dark depressed block class="btn-cerulean" @click="selectTheme('cerulean-blue')">Cerulean Blue</v-btn>
+                  <v-btn id="cerulean-theme-btn" dark depressed block class="btn-cerulean" @click="selectTheme('cerulean-blue')">Cerulean Blue</v-btn>
                 </v-flex>
                 <v-flex xs12 sm4 px-1 mb-1>
-                  <v-btn dark depressed block class="btn-shuttle-grey" @click="selectTheme('shuttle-grey')">Shuttle Grey</v-btn>
+                  <v-btn id="shuttle-grey-theme-btn" dark depressed block class="btn-shuttle-grey" @click="selectTheme('shuttle-grey')">
+                    Shuttle Grey
+                  </v-btn>
                 </v-flex>
               </v-layout>
               <v-flex class="pt-12 text-right">
