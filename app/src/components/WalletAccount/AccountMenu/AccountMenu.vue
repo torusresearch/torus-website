@@ -91,11 +91,9 @@
 </template>
 
 <script>
-import BroadcastChannel from 'broadcast-channel'
 import { significantDigits, addressSlicer } from '../../../utils/utils'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import AccountImport from '../AccountImport'
-import { broadcastChannelOptions } from '../../../utils/utils'
 
 export default {
   props: ['headerItems'],
@@ -161,24 +159,11 @@ export default {
   },
   methods: {
     async logout() {
-      var bc = new BroadcastChannel(`torus_logout_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
-      await bc.postMessage({ data: { type: 'logout' } })
-      bc.close()
       this.$store.dispatch('logOut')
       this.$router.push({ path: '/logout' })
     },
     changeAccount(newAddress) {
       this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
-      const selectedAddressChannel = new BroadcastChannel(
-        `selected_address_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
-        broadcastChannelOptions
-      )
-      selectedAddressChannel.postMessage({
-        data: {
-          name: 'selected_address',
-          payload: newAddress
-        }
-      })
     }
   }
 }
