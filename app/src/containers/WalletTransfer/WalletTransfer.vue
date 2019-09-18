@@ -309,8 +309,9 @@ export default {
           } else {
             const selectedAddress = this.$store.state.selectedAddress
             const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
+            const value = Math.floor(parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()
             contractInstance.methods
-              .transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString())
+              .transfer(toAddress, value)
               .estimateGas({ from: selectedAddress })
               .then(response => {
                 resolve(response)
@@ -384,7 +385,7 @@ export default {
           log.info('TX SENT: ', {
             from: selectedAddress,
             to: toAddress,
-            value: torus.web3.utils.toWei(this.amount.toString()),
+            value: torus.web3.utils.toWei(parseFloat(this.amount.toString()).toFixed(18)),
             gas: this.gas.toString(),
             gasPrice: fastGasPrice
           })
@@ -392,7 +393,7 @@ export default {
             {
               from: selectedAddress,
               to: toAddress,
-              value: torus.web3.utils.toWei(this.amount.toString()),
+              value: torus.web3.utils.toWei(parseFloat(this.amount.toString()).toFixed(18)),
               gas: this.gas.toString(),
               gasPrice: fastGasPrice
             },
@@ -412,7 +413,8 @@ export default {
           )
         } else {
           const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
-          contractInstance.methods.transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()).send(
+          const value = Math.floor(parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()
+          contractInstance.methods.transfer(toAddress, value).send(
             {
               from: selectedAddress,
               gas: this.gas.toString(),
