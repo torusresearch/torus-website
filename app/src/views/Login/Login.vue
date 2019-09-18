@@ -24,7 +24,7 @@
                     @click="triggerLogin({ calledFromEmbed: false })"
                   >
                     <img :src="require('../../../public/img/icons/google.svg')" class="mr-2" />
-                    Sign up/in with Google
+                    Sign in with Google
                   </v-btn>
                 </v-flex>
                 <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
