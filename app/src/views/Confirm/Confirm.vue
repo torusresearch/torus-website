@@ -155,23 +155,15 @@
             </v-list-item>
             <v-list-item class="pa-0">
               <v-list-item-content flat class="pa-1 grey lighten-3">
-                <v-card flat color="background_3" class="body-2 text-left pa-2 ma-3 word-break">
-                  <div class="columns medium-4" v-for="(value, index) in typedMessages" :key="index">
-                    <v-card-text>
-                      <div class="subtitle-2 blue--text">{{ index }}</div>
-                      <div class="black--text">{{ value }}</div>
-                    </v-card-text>
-                    <v-divider></v-divider>
-                  </div>
-                  <!-- <div v-else-if="messageType === 'typed'" v-for="typedMessage in Object.keys(typedMessages)" :key="typedMessage">
-                    <p>  {{ JSON.stringify(typedMessage) }} </p>
-                      Type: {{ typedMessage.type }}
-                    <br />
-                    Name: {{ typedMessage.name }}
-                    <br />
-                    Message: {{ typedMessage.value }}
-                    <br />
-                  </div>-->
+                <v-card flat class="body-2 text-left pa-2 word-break typedMessageBox">
+                  <v-expansion-panels>
+                    <v-expansion-panel v-for="(value, index) in typedMessages" :key="index">
+                      <v-expansion-panel-header>{{ index | capitalize }}</v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <vue-json-pretty :path="'res'" :data="value" :showline="true" :deep="5"></vue-json-pretty>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
                 </v-card>
               </v-list-item-content>
             </v-list-item>
@@ -200,6 +192,7 @@
 
 <script>
 import { mapActions } from 'vuex' // Maybe dispatch a bc to show popup from that instance
+import VueJsonPretty from 'vue-json-pretty'
 import BroadcastChannel from 'broadcast-channel'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
 import PageLoader from '../../components/helpers/PageLoader'
@@ -250,7 +243,8 @@ export default {
   components: {
     PageLoader,
     TransactionSpeedSelect,
-    TransferConfirm
+    TransferConfirm,
+    VueJsonPretty
   },
   data() {
     return {
@@ -464,6 +458,13 @@ export default {
       const tokenPriceConverted = this.isOtherToken ? this.tokenPrice * ethConverted : ethConverted
       const selectedToken = this.isOtherToken ? this.selectedToken : 'ETH'
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
+    }
+  },
+  filters: {
+    capitalize: function(value) {
+      if (!value) return ''
+      let newValue = value.toString()
+      return newValue.charAt(0).toUpperCase() + newValue.slice(1)
     }
   },
   watch: {

@@ -69,6 +69,7 @@
     "swappable-obj-proxy": "^1.1.0",
     "ua-parser-js": "^0.7.20",
     "vue": "^2.6.10",
+    "vue-json-pretty": "^1.6.2",
     "vue-json-tree": "^0.4.1",
     "vue-knob-control": "^1.6.0",
     "vue-router": "^3.1.2",
