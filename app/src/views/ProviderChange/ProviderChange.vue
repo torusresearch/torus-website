@@ -6,7 +6,6 @@
     <template v-else>
       <v-layout align-center mx-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
         <div class="text-black font-weight-bold headline float-left">Permission</div>
-        <img :src="require('../../../public/img/icons/lock.svg')" width="16" class="ml-2" />
       </v-layout>
       <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
         <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />

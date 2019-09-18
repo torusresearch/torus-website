@@ -3,7 +3,6 @@
     <template v-if="type === 'transaction'">
       <v-layout wrap align-center mx-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
         <div class="torus_text--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">{{ header }}</div>
-        <img :src="require('../../../public/img/icons/transaction.svg')" class="ml-2" />
       </v-layout>
       <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
         <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
@@ -133,7 +132,6 @@
     <template v-if="type === 'message'">
       <v-layout align-center mx-6 mb-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
         <div class="text-black font-weight-bold headline float-left">Permissions</div>
-        <img :src="require('../../../public/img/icons/lock.svg')" width="16" class="ml-2" />
       </v-layout>
       <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
         <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
