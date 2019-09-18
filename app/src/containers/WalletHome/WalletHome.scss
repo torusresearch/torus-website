@@ -5,10 +5,10 @@
 .wallet-home {
   ::v-deep .currency-selector {
     @include navSelector();
-    max-width: 50px;
+    max-width: 75px;
     .v-select__selection {
       color: var(--v-primary-base) !important;
-      width: 1vw;
+      width: 40px;
     }
   }
 

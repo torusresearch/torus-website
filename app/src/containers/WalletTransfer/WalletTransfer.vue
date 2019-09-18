@@ -1,12 +1,14 @@
 <template>
   <v-layout wrap class="wallet-transfer" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
-    <div class="text-black font-weight-bold headline px-4 mb-4">Transfer Details</div>
+    <div class="text-black font-weight-bold headline px-4 mb-4">{{ pageHeader }}</div>
     <v-flex xs12 mb-4>
       <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation>
         <v-layout wrap>
           <v-flex xs12 px-4 mb-5 sm6>
             <span class="subtitle-2">Select your Coin</span>
             <v-select
+              id="select-coin"
+              class="select-coin-container"
               append-icon="$vuetify.icons.select"
               hide-details
               :items="finalBalancesArray"
@@ -28,16 +30,17 @@
           <v-flex xs12 sm6 mb-5 px-4 v-if="selectedItem">
             <span class="subtitle-2">Account Balance</span>
             <div>
-              <span class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
+              <span id="account-balance" class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
               <span class="caption torus_text--text text--lighten-4">{{ currencyBalanceDisplay }}</span>
             </div>
             <div class="caption font-weight-regular torus_text--text text--lighten-4">{{ selectedItem.currencyRateText }}</div>
           </v-flex>
         </v-layout>
         <v-layout wrap>
-          <v-flex xs12 px-4 sm6>
+          <v-flex xs12 px-4 sm6 class="recipient-address-container">
             <span class="subtitle-2">Recipient Address</span>
             <v-text-field
+              id="recipient-address"
               v-model="toAddress"
               placeholder="ETH Address / Google Address here"
               required
@@ -47,13 +50,14 @@
           </v-flex>
         </v-layout>
         <v-layout wrap>
-          <v-flex xs12 px-4 sm6>
+          <v-flex xs12 px-4 sm6 class="you-send-container">
             <div>
               <span class="subtitle-2">You send</span>
-              <a class="float-right primary--text subtitle-2" v-if="!isSendAll" @click="sendAll">Send All</a>
-              <a class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">Reset</a>
+              <a id="send-all-btn" class="float-right primary--text subtitle-2" v-if="!isSendAll" @click="sendAll">Send All</a>
+              <a id="send-all-reset-btn" class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">Reset</a>
             </div>
             <v-text-field
+              id="you-send"
               :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
               persistent-hint
               type="number"
@@ -66,6 +70,7 @@
               <template v-slot:append>
                 <v-btn
                   small
+                  id="coin-mode-btn"
                   :outlined="!toggle_exclusive"
                   :text="!!toggle_exclusive"
                   :color="!toggle_exclusive ? 'primary' : 'grey'"
@@ -75,6 +80,7 @@
                 </v-btn>
                 <v-btn
                   small
+                  id="currency-mode-btn"
                   :outlined="!!toggle_exclusive"
                   :text="!toggle_exclusive"
                   :color="toggle_exclusive ? 'primary' : 'grey'"
@@ -94,11 +100,14 @@
             :displayAmount="displayAmount"
             @onSelectSpeed="onSelectSpeed"
           />
+        </v-layout>
+        <v-layout wrap>
           <v-flex xs12 px-4 sm6>
             <div>
               <span class="subtitle-2">Total Cost</span>
             </div>
             <v-text-field
+              id="total-cost"
               :suffix="totalCostSuffix"
               :hint="convertedTotalCost ? convertedTotalCostDisplay : ''"
               persistent-hint
@@ -108,9 +117,20 @@
             ></v-text-field>
           </v-flex>
         </v-layout>
-        <v-layout mt-4 pr-2 wrap>
-          <v-spacer></v-spacer>
-          <v-btn large depressed color="primary" :disabled="!formValid || speedSelected === ''" class="px-6" type="submit">Continue</v-btn>
+        <v-layout mt-4 wrap>
+          <v-flex xs12 px-4 sm6 class="text-right">
+            <v-btn
+              large
+              depressed
+              color="primary"
+              :disabled="!formValid || speedSelected === ''"
+              class="px-6"
+              type="submit"
+              id="wallet-transfer-submit"
+            >
+              Transfer
+            </v-btn>
+          </v-flex>
         </v-layout>
 
         <v-layout mt-4 pr-2 wrap>
@@ -137,6 +157,7 @@ import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSel
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import { get } from '../../utils/httpHelpers'
 import log from 'loglevel'
+import { WALLET_HEADERS_TRANSFER } from '../../utils/enums'
 
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
@@ -152,6 +173,7 @@ export default {
   },
   data() {
     return {
+      pageHeader: WALLET_HEADERS_TRANSFER,
       tokenAddress: '0x',
       amount: 0,
       displayAmount: '',
@@ -287,8 +309,9 @@ export default {
           } else {
             const selectedAddress = this.$store.state.selectedAddress
             const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
+            const value = Math.floor(parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()
             contractInstance.methods
-              .transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString())
+              .transfer(toAddress, value)
               .estimateGas({ from: selectedAddress })
               .then(response => {
                 resolve(response)
@@ -362,7 +385,7 @@ export default {
           log.info('TX SENT: ', {
             from: selectedAddress,
             to: toAddress,
-            value: torus.web3.utils.toWei(this.amount.toString()),
+            value: torus.web3.utils.toWei(parseFloat(this.amount.toString()).toFixed(18)),
             gas: this.gas.toString(),
             gasPrice: fastGasPrice
           })
@@ -370,7 +393,7 @@ export default {
             {
               from: selectedAddress,
               to: toAddress,
-              value: torus.web3.utils.toWei(this.amount.toString()),
+              value: torus.web3.utils.toWei(parseFloat(this.amount.toString()).toFixed(18)),
               gas: this.gas.toString(),
               gasPrice: fastGasPrice
             },
@@ -390,7 +413,8 @@ export default {
           )
         } else {
           const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
-          contractInstance.methods.transfer(toAddress, (parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()).send(
+          const value = Math.floor(parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()
+          contractInstance.methods.transfer(toAddress, value).send(
             {
               from: selectedAddress,
               gas: this.gas.toString(),

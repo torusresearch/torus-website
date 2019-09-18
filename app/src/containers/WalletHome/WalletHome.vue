@@ -2,16 +2,16 @@
   <div class="wallet-home">
     <v-layout wrap align-center :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
       <v-flex xs6 px-4 mb-4>
-        <div class="font-weight-bold headline float-left">My Wallet</div>
+        <div class="font-weight-bold headline float-left">{{ pageHeader }}</div>
       </v-flex>
       <v-flex xs6 px-4 mb-4 class="text-right hidden-xs-only">
-        <v-btn outlined large color="primary" :disabled="isFreshAccount" class="px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
+        <v-btn outlined large color="primary" :disabled="isFreshAccount" class="transfer-btn px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
           <v-icon left>$vuetify.icons.send</v-icon>
           Transfer
         </v-btn>
         <v-tooltip top :value="isFreshAccount" class="hidden-xs-only">
           <template v-slot:activator="{ on }">
-            <v-btn depressed large color="primary" class="px-12 py-1 mt-4 hidden-xs-only" @click="topup" v-on="on">
+            <v-btn depressed large color="primary" class="px-12 py-1 mt-4 topup-btn hidden-xs-only" @click="topup" v-on="on">
               <v-icon left>$vuetify.icons.add</v-icon>
               Top up
             </v-btn>
@@ -30,7 +30,7 @@
           <v-card-text class="pb-4 px-6">
             <h2 class="display-2 font-weight-bold">
               {{ totalPortfolioValue }}
-              <span class="body-2 font-weight-light">{{ selectedCurrency }}</span>
+              <span id="selected-currency" class="body-2 font-weight-light">{{ selectedCurrency }}</span>
             </h2>
           </v-card-text>
         </v-card>
@@ -39,7 +39,15 @@
       <v-flex xs12 px-4 class="hidden-sm-and-up mb-3">
         <v-layout>
           <v-flex xs6 class="pr-1">
-            <v-btn outlined large block color="primary" :disabled="isFreshAccount" class="px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
+            <v-btn
+              outlined
+              large
+              block
+              color="primary"
+              :disabled="isFreshAccount"
+              class="transfer-btn-mobile px-12 py-1 mr-4 mt-4"
+              @click="initiateTransfer"
+            >
               <v-icon left>$vuetify.icons.send</v-icon>
               Transfer
             </v-btn>
@@ -47,7 +55,7 @@
           <v-flex xs6 class="pl-1">
             <v-tooltip top :value="isFreshAccount" class="hidden-sm-and-up">
               <template v-slot:activator="{ on }">
-                <v-btn depressed large block color="primary" class="px-12 py-1 mt-4 hidden-sm-and-up" @click="topup" v-on="on">
+                <v-btn depressed large block color="primary" class="px-12 py-1 mt-4 topup-btn-mobile hidden-sm-and-up" @click="topup" v-on="on">
                   <v-icon left>$vuetify.icons.add</v-icon>
                   Top up
                 </v-btn>
@@ -84,14 +92,15 @@
           </v-flex>
           <v-flex xs12 sm6 class="balance-filter" :class="showSearch ? 'pt-2' : ''">
             <v-layout>
-              <v-flex xs8 class="hidden-sm-and-up refresh">
+              <v-flex xs7 class="hidden-sm-and-up refresh">
                 <v-icon color="primary" @click="refreshBalances()" small>$vuetify.icons.refresh</v-icon>
                 <span class="caption">Last update {{ lastUpdated }}</span>
               </v-flex>
-              <v-flex xs4 sm12 class="text-right currency">
+              <v-flex xs5 sm12 class="text-right currency">
                 <span class="caption">CURRENCY:</span>
                 <v-select
-                  class="pt-0 mt-0 ml-1 caption currency-selector"
+                  id="currency-selector"
+                  class="pt-0 mt-0 ml-1 caption currency-selector e2e-currency-selector-container"
                   height="25px"
                   hide-details
                   :items="supportedCurrencies"
@@ -122,13 +131,14 @@
 // The color of dropdown icon requires half day work in modifying v-select
 import config from '../../config'
 import TokenBalancesTable from '../../components/WalletHome/TokenBalancesTable'
-import { MAINNET } from '../../utils/enums'
+import { MAINNET, WALLET_HEADERS_HOME } from '../../utils/enums'
 
 export default {
   name: 'walletHome',
   components: { TokenBalancesTable },
   data() {
     return {
+      pageHeader: WALLET_HEADERS_HOME,
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
       selected: [],
       search: '',
@@ -153,7 +163,7 @@ export default {
       return this.$store.state.selectedCurrency
     },
     isRefreshVisible() {
-      return this.$store.state.networkType === MAINNET
+      return this.$store.state.networkType.host === MAINNET
     },
     showSearch() {
       return this.finalBalancesArray.length > 5

@@ -1,5 +1,5 @@
 <template>
-  <v-card class="advance-option">
+  <v-card class="dapp-permisson-container">
     <v-card-text class="torus_text--text">
       <v-container>
         <v-layout mt-4 wrap class="wallet-dapp-permission">
@@ -32,7 +32,7 @@
         </v-layout>
         <v-layout mt-4 pr-4>
           <v-spacer></v-spacer>
-          <v-btn large text @click="onClose">Close</v-btn>
+          <v-btn id="close-btn" large text @click="onClose">Close</v-btn>
         </v-layout>
       </v-container>
     </v-card-text>

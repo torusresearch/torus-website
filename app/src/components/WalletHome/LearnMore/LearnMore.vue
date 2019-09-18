@@ -10,12 +10,12 @@
             </v-flex>
           </v-layout>
         </v-img>
-        <v-btn @click="e1 = 2" depressed large color="white" class="primary--text px-12 next-btn">Next</v-btn>
+        <v-btn id="get-started-btn" @click="e1 = 2" depressed large color="white" class="primary--text px-12 next-btn">Next</v-btn>
       </v-stepper-content>
       <v-stepper-content v-for="content in contents" :step="content.step" :key="content.title">
         <v-layout align-center>
           <v-flex xs8 class="mt-12 ml-12">
-            <div class="display-1 font-weight-bold">{{ content.title }}</div>
+            <div class="learn-more-header display-1 font-weight-bold">{{ content.title }}</div>
             <div class="caption torus_text--text text--lighten-3">{{ content.subtitle }}</div>
           </v-flex>
           <v-flex xs4 class="mt-12 mr-12 text-right">
@@ -33,7 +33,9 @@
             </v-list-item-content>
           </v-list-item>
         </v-list>
-        <v-btn @click="nextStep(content.step)" depressed large class="primary px-12 next-btn">{{ content.step > 2 ? 'Done' : 'Next' }}</v-btn>
+        <v-btn id="next-step-btn" @click="nextStep(content.step)" depressed large class="primary px-12 next-btn">
+          {{ content.step > 2 ? 'Done' : 'Next' }}
+        </v-btn>
       </v-stepper-content>
     </v-stepper-items>
   </v-stepper>
