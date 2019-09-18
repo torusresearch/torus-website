@@ -1,9 +1,13 @@
 <template>
   <v-container py-6 px-0 class="confirm-container">
     <template v-if="type === 'transaction'">
-      <v-layout align-center mx-6 mb-6>
-        <div class="torus_text--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-4' : ''">{{ header }}</div>
+      <v-layout wrap align-center mx-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
+        <div class="torus_text--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">{{ header }}</div>
         <img :src="require('../../../public/img/icons/transaction.svg')" class="ml-2" />
+      </v-layout>
+      <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
+        <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
+        <span class="caption ml-1 torus_text--text text--lighten-3 text-capitalize">{{ selectedNetwork }}</span>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-4 mx-6>
@@ -127,9 +131,13 @@
     </template>
 
     <template v-if="type === 'message'">
-      <v-layout align-center mx-6 mb-6>
+      <v-layout align-center mx-6 mb-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
         <div class="text-black font-weight-bold headline float-left">Permissions</div>
         <img :src="require('../../../public/img/icons/lock.svg')" width="16" class="ml-2" />
+      </v-layout>
+      <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
+        <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
+        <span class="caption ml-1 torus_text--text text--lighten-3 text-capitalize">{{ selectedNetwork }}</span>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-6 mx-6>
@@ -287,6 +295,9 @@ export default {
     }
   },
   computed: {
+    selectedNetwork() {
+      return this.$store.state.networkType.networkName || this.$store.state.networkType.host
+    },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
     },
