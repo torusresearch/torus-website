@@ -4,7 +4,7 @@
       <v-expansion-panels multiple>
         <!-- Privacy and security settings -->
         <v-expansion-panel>
-          <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
+          <v-expansion-panel-header id="privacy-panel-header" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
             <img
               :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
               class="d-inline-flex mr-4 shrink"
@@ -17,7 +17,7 @@
           <v-expansion-panel-content>
             <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-0 px-12'">
               <v-list>
-                <v-list-item @click="privateKeyDialog = true">
+                <v-list-item id="private-key-btn" @click="privateKeyDialog = true">
                   <v-list-item-avatar class="mr-4">
                     <img :src="require(`../../../public/img/icons/key.svg`)" class=" mr-4" />
                   </v-list-item-avatar>
@@ -25,7 +25,7 @@
                     <v-list-item-title>Private Key</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item @click="dappPermissionDialog = true">
+                <v-list-item id="dapp-permisson-btn" @click="dappPermissionDialog = true">
                   <v-list-item-avatar class="mr-4">
                     <img :src="require(`../../../public/img/icons/list.svg`)" class=" mr-4" />
                   </v-list-item-avatar>
@@ -47,7 +47,7 @@
 
         <!-- Network Settigs -->
         <v-expansion-panel>
-          <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
+          <v-expansion-panel-header id="network-panel-header" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
             <img
               :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
               class="d-inline-flex mr-4 shrink collpase-icon"
@@ -63,12 +63,15 @@
                 <span class="subtitle-2">Select Network</span>
                 <v-flex>
                   <v-select
+                    id="select-network"
+                    class="select-network-container"
                     outlined
                     :items="networks"
-                    item-text="name"
-                    item-value="value"
+                    item-text="networkName"
+                    item-value="host"
                     v-model="selectedNetwork"
                     @change="changeNetwork"
+                    return-object
                     append-icon="$vuetify.icons.select"
                   ></v-select>
                 </v-flex>
@@ -79,7 +82,7 @@
                   </v-flex>
 
                   <v-flex xs12>
-                    <v-text-field placeholder="Enter RPC URL" :rules="[rules.required]" outlined v-model="rpc.networkUrl"></v-text-field>
+                    <v-text-field placeholder="Enter RPC URL" :rules="[rules.required]" outlined v-model="rpc.host"></v-text-field>
                   </v-flex>
 
                   <v-flex xs12>
@@ -104,7 +107,7 @@
 
         <!-- Display Settings -->
         <v-expansion-panel>
-          <v-expansion-panel-header :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
+          <v-expansion-panel-header id="display-panel-header" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
             <img
               :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
               class="d-inline-flex mr-4 shrink collpase-icon"
@@ -119,13 +122,17 @@
               <div class="body-2 mb-1 px-1">Select Theme</div>
               <v-layout wrap>
                 <v-flex xs12 sm4 px-1 mb-1>
-                  <v-btn light outlined block color="primary" class="btn-default" @click="selectTheme('default')">Default</v-btn>
+                  <v-btn id="default-theme-btn" light outlined block color="primary" class="btn-default" @click="selectTheme('default')">
+                    Default
+                  </v-btn>
                 </v-flex>
                 <v-flex xs12 sm4 px-1 mb-1>
-                  <v-btn dark depressed block class="btn-cerulean" @click="selectTheme('cerulean-blue')">Cerulean Blue</v-btn>
+                  <v-btn id="cerulean-theme-btn" dark depressed block class="btn-cerulean" @click="selectTheme('cerulean-blue')">Cerulean Blue</v-btn>
                 </v-flex>
                 <v-flex xs12 sm4 px-1 mb-1>
-                  <v-btn dark depressed block class="btn-shuttle-grey" @click="selectTheme('shuttle-grey')">Shuttle Grey</v-btn>
+                  <v-btn id="shuttle-grey-theme-btn" dark depressed block class="btn-shuttle-grey" @click="selectTheme('shuttle-grey')">
+                    Shuttle Grey
+                  </v-btn>
                 </v-flex>
               </v-layout>
               <v-flex class="pt-12 text-right">
@@ -146,24 +153,7 @@ import PrivateKeys from '../../components/WalletSettings/PrivateKeys'
 import DappPermissions from '../../components/WalletSettings/DappPermissions'
 import log from 'loglevel'
 
-const {
-  ROPSTEN,
-  RINKEBY,
-  KOVAN,
-  MAINNET,
-  LOCALHOST,
-  GOERLI,
-  RPC,
-  MATIC,
-  ROPSTEN_DISPLAY_NAME,
-  RINKEBY_DISPLAY_NAME,
-  KOVAN_DISPLAY_NAME,
-  MAINNET_DISPLAY_NAME,
-  LOCALHOST_DISPLAY_NAME,
-  GOERLI_DISPLAY_NAME,
-  RPC_DISPLAY_NAME,
-  MATIC_DISPLAY_NAME
-} = require('../../utils/enums')
+const { RPC, RPC_DISPLAY_NAME, SUPPORTED_NETWORK_TYPES } = require('../../utils/enums')
 
 export default {
   name: 'walletSettings',
@@ -175,42 +165,16 @@ export default {
     return {
       privateKeyDialog: false,
       dappPermissionDialog: false,
-      selectedNetwork: '',
+      selectedNetwork: {},
       networks: [
+        ...Object.values(SUPPORTED_NETWORK_TYPES),
         {
-          name: MAINNET_DISPLAY_NAME,
-          value: MAINNET
-        },
-        {
-          name: ROPSTEN_DISPLAY_NAME,
-          value: ROPSTEN
-        },
-        {
-          name: RINKEBY_DISPLAY_NAME,
-          value: RINKEBY
-        },
-        {
-          name: KOVAN_DISPLAY_NAME,
-          value: KOVAN
-        },
-        {
-          name: GOERLI_DISPLAY_NAME,
-          value: GOERLI
-        },
-        {
-          name: LOCALHOST_DISPLAY_NAME,
-          value: LOCALHOST
-        },
-        {
-          name: RPC_DISPLAY_NAME,
-          value: RPC
-        },
-        {
-          name: MATIC_DISPLAY_NAME,
-          value: MATIC
+          networkName: RPC_DISPLAY_NAME,
+          host: RPC,
+          chainId: ''
         }
       ],
-      rpc: { chainId: '', networkName: '', networkUrl: '' },
+      rpc: { chainId: '', networkName: '', host: '' },
       formValid: true,
       rules: {
         required: value => !!value || 'Required'
@@ -220,15 +184,16 @@ export default {
   },
   computed: {
     isRPCSelected() {
-      return this.selectedNetwork === RPC
+      return this.selectedNetwork.host === RPC
     }
   },
   methods: {
     changeNetwork(value) {
-      if (value !== RPC) this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
+      if (value && value.host !== RPC) this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
     },
     setRPC() {
-      this.selectedNetwork = RPC
+      // this.selectedNetwork = RPC
+      console.log(this.selectedNetwork)
       this.$store.dispatch('setProviderType', { network: this.rpc, type: RPC })
     },
     selectTheme(value) {
@@ -254,7 +219,8 @@ export default {
   },
   mounted() {
     this.selectedNetwork = this.$store.state.networkType
-    this.rpc = this.$store.state.rpcDetails
+    this.rpc = this.$store.state.networkType
+    console.log(this.rpc)
   }
 }
 //

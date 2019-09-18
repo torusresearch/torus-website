@@ -38,9 +38,6 @@ export default {
   setCurrency(state, currency) {
     state.selectedCurrency = currency
   },
-  setRPCDetails(state, rpcDetails) {
-    state.rpcDetails = rpcDetails
-  },
   setTypedMessages(state, unapprovedTypedMessages) {
     state.unapprovedTypedMessages = unapprovedTypedMessages
   },
@@ -52,6 +49,9 @@ export default {
   },
   setJwtToken(state, payload) {
     state.jwtToken = payload
+  },
+  setUserInfoAccess(state, payload) {
+    state.userInfoAccess = payload
   },
   setNewUser(state, payload) {
     state.isNewUser = payload
