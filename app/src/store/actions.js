@@ -232,11 +232,15 @@ export default {
     torus.updateStaticData({ networkId: payload.networkId })
   },
   setProviderType(context, payload) {
-    context.commit('setNetworkType', payload.network)
+    let networkType = payload.network
+    if (SUPPORTED_NETWORK_TYPES[networkType.host]) {
+      networkType = SUPPORTED_NETWORK_TYPES[networkType.host]
+    }
+    context.commit('setNetworkType', networkType)
     if (payload.type && payload.type === RPC) {
-      return torus.torusController.setCustomRpc(payload.network.host, payload.network.chainId, 'ETH', payload.network.networkName)
+      return torus.torusController.setCustomRpc(networkType.host, networkType.chainId, 'ETH', networkType.networkName)
     } else {
-      return torus.torusController.networkController.setProviderType(payload.network.host)
+      return torus.torusController.networkController.setProviderType(networkType.host)
     }
   },
   triggerLogin: function({ dispatch }, { calledFromEmbed }) {
