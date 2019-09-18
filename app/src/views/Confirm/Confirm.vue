@@ -580,8 +580,14 @@ export default {
         if (methodParams) {
           const pairs = checkSummedTo
           const query = `contract_addresses=${pairs}&vs_currencies=eth`
-          const prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
-          const tokenPrice = prices[checkSummedTo.toLowerCase()].eth //token price in eth
+          let prices = {}
+          try {
+            prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
+          } catch (error) {
+            log.info(error)
+          }
+          const tokenPrice = //token price in eth
+            prices[checkSummedTo.toLowerCase()] && prices[checkSummedTo.toLowerCase()].eth ? prices[checkSummedTo.toLowerCase()].eth : 0
           this.tokenPrice = tokenPrice
           this.amountTokenValueConverted =
             tokenPrice * parseFloat(this.amountValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
