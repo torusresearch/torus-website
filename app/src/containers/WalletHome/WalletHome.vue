@@ -92,11 +92,11 @@
           </v-flex>
           <v-flex xs12 sm6 class="balance-filter" :class="showSearch ? 'pt-2' : ''">
             <v-layout>
-              <v-flex xs8 class="hidden-sm-and-up refresh">
+              <v-flex xs7 class="hidden-sm-and-up refresh">
                 <v-icon color="primary" @click="refreshBalances()" small>$vuetify.icons.refresh</v-icon>
                 <span class="caption">Last update {{ lastUpdated }}</span>
               </v-flex>
-              <v-flex xs4 sm12 class="text-right currency">
+              <v-flex xs5 sm12 class="text-right currency">
                 <span class="caption">CURRENCY:</span>
                 <v-select
                   id="currency-selector"
