@@ -6,22 +6,28 @@
           <v-layout wrap fill-height align-center justify-center class="login-panel-left">
             <v-flex xs12 md6>
               <v-layout wrap>
-                <v-flex class="mb-5" xs7 ml-auto mr-auto>
+                <v-flex class="mb-5" xs9 sm7 ml-auto mr-auto>
                   <img width="117" :src="require('../../../public/images/torus-logo-blue.svg')" />
                 </v-flex>
-                <v-flex class="mb-3" xs7 ml-auto mr-auto>
+                <v-flex class="mb-3" xs9 sm7 ml-auto mr-auto>
                   <span class="display-2 font-weight-bold">Welcome to Torus</span>
                 </v-flex>
-                <v-flex class="body-1" mb-6 xs7 ml-auto mr-auto>
+                <v-flex class="body-1" mb-6 xs9 sm7 ml-auto mr-auto>
                   <span>You are just one step away from getting your digital wallet for your cryptocurrencies</span>
                 </v-flex>
-                <v-flex xs7 ml-auto mb-1 mr-auto>
-                  <v-btn color="white" large class="body-2 login-btn" @click="triggerLogin({ calledFromEmbed: false })">
+                <v-flex xs9 sm7 ml-auto mb-1 mr-auto>
+                  <v-btn
+                    color="white"
+                    large
+                    :block="$vuetify.breakpoint.xsOnly"
+                    class="body-2 login-btn"
+                    @click="triggerLogin({ calledFromEmbed: false })"
+                  >
                     <img :src="require('../../../public/img/icons/google.svg')" class="mr-2" />
                     Sign up/in with Google
                   </v-btn>
                 </v-flex>
-                <v-flex class="caption" mb-6 xs7 ml-auto mr-auto>
+                <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
                   <span>
                     By clicking Login, you accept our
                     <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
@@ -29,7 +35,7 @@
                     </a>
                   </span>
                 </v-flex>
-                <v-flex class="caption" xs7 ml-auto mr-auto>
+                <v-flex class="caption" xs9 sm7 ml-auto mr-auto>
                   <span>
                     Note : For first time users, kindly
                     <span class="primary--text">enable Pop-ups</span>
@@ -40,7 +46,7 @@
             </v-flex>
             <v-flex xs12 md6 fill-height class="hidden-sm-and-down login-panel-right">
               <v-layout class="pb-8" wrap fill-height align-end>
-                <v-flex class="mb-3 text-center" xs7 ml-auto mr-auto>
+                <v-flex class="mb-3 text-center" xs9 sm7 ml-auto mr-auto>
                   <div class="display-1 white--text font-weight-bold">Frictionless Logins</div>
                   <div class="display-1 white--text mb-3">for DApps</div>
                   <div class="caption white--text">
