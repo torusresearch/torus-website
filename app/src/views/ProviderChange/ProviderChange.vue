@@ -4,9 +4,13 @@
       <page-loader />
     </template>
     <template v-else>
-      <v-layout align-center mx-6 mb-6>
+      <v-layout align-center mx-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
         <div class="text-black font-weight-bold headline float-left">Permission</div>
         <img :src="require('../../../public/img/icons/lock.svg')" width="16" class="ml-2" />
+      </v-layout>
+      <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
+        <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
+        <span class="caption ml-1 torus_text--text text--lighten-3 text-capitalize">{{ selectedNetwork }}</span>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-2 mx-6>
@@ -69,7 +73,16 @@ export default {
       payload: {}
     }
   },
-  computed: {},
+  computed: {
+    selectedNetwork() {
+      let finalNetwork = ''
+      finalNetwork =
+        !this.$store.state.networkType.networkName || this.$store.state.networkType.networkName === ''
+          ? this.$store.state.networkType.host
+          : this.$store.state.networkType.networkName
+      return finalNetwork
+    }
+  },
   methods: {
     async triggerSign(event) {
       var bc = new BroadcastChannel(
