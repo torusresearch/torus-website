@@ -27,7 +27,7 @@ const baseRoute = process.env.BASE_URL
 Vue.use(Vuex)
 
 const vuexPersist = new VuexPersistence({
-  key: 'my-app',
+  key: 'torus-app',
   storage: window.sessionStorage,
   reducer: state => {
     return {
@@ -37,6 +37,7 @@ const vuexPersist = new VuexPersistence({
       wallet: state.wallet,
       // weiBalance: state.weiBalance,
       selectedAddress: state.selectedAddress,
+      networkType: state.networkType,
       networkId: state.networkId,
       currencyData: state.currencyData,
       // tokenData: state.tokenData,
@@ -76,7 +77,7 @@ var VuexStore = new Vuex.Store({
               data: {
                 origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
                 type: 'transaction',
-                txParams: { ...txParams, network: state.networkType },
+                txParams: { ...txParams, network: state.networkType.host },
                 balance
               }
             })
@@ -184,12 +185,12 @@ VuexStore.subscribe((mutation, state) => {
           currency_amount: (getCurrencyMultiplier() * totalAmount).toString(),
           selected_currency: state.selectedCurrency,
           status: 'submitted',
-          network: state.networkType,
+          network: state.networkType.host,
           transaction_hash: txMeta.hash
         }
         if (state.pastTransactions.findIndex(x => x.transaction_hash === txObj.transaction_hash && x.network === txObj.network) === -1) {
           // User notification
-          notifyUser(getEtherScanHashLink(txHash, state.networkType))
+          notifyUser(getEtherScanHashLink(txHash, state.networkType.host))
 
           post(`${config.api}/transaction`, txObj, {
             headers: {

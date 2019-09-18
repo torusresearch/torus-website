@@ -67,10 +67,11 @@
                     class="select-network-container"
                     outlined
                     :items="networks"
-                    item-text="name"
-                    item-value="value"
+                    item-text="networkName"
+                    item-value="host"
                     v-model="selectedNetwork"
                     @change="changeNetwork"
+                    return-object
                     append-icon="$vuetify.icons.select"
                   ></v-select>
                 </v-flex>
@@ -81,7 +82,7 @@
                   </v-flex>
 
                   <v-flex xs12>
-                    <v-text-field placeholder="Enter RPC URL" :rules="[rules.required]" outlined v-model="rpc.networkUrl"></v-text-field>
+                    <v-text-field placeholder="Enter RPC URL" :rules="[rules.required]" outlined v-model="rpc.host"></v-text-field>
                   </v-flex>
 
                   <v-flex xs12>
@@ -146,24 +147,7 @@ import PrivateKeys from '../../components/WalletSettings/PrivateKeys'
 import DappPermissions from '../../components/WalletSettings/DappPermissions'
 import log from 'loglevel'
 
-const {
-  ROPSTEN,
-  RINKEBY,
-  KOVAN,
-  MAINNET,
-  LOCALHOST,
-  GOERLI,
-  RPC,
-  MATIC,
-  ROPSTEN_DISPLAY_NAME,
-  RINKEBY_DISPLAY_NAME,
-  KOVAN_DISPLAY_NAME,
-  MAINNET_DISPLAY_NAME,
-  LOCALHOST_DISPLAY_NAME,
-  GOERLI_DISPLAY_NAME,
-  RPC_DISPLAY_NAME,
-  MATIC_DISPLAY_NAME
-} = require('../../utils/enums')
+const { RPC, RPC_DISPLAY_NAME, SUPPORTED_NETWORK_TYPES } = require('../../utils/enums')
 
 export default {
   name: 'walletSettings',
@@ -175,42 +159,16 @@ export default {
     return {
       privateKeyDialog: false,
       dappPermissionDialog: false,
-      selectedNetwork: '',
+      selectedNetwork: {},
       networks: [
+        ...Object.values(SUPPORTED_NETWORK_TYPES),
         {
-          name: MAINNET_DISPLAY_NAME,
-          value: MAINNET
-        },
-        {
-          name: ROPSTEN_DISPLAY_NAME,
-          value: ROPSTEN
-        },
-        {
-          name: RINKEBY_DISPLAY_NAME,
-          value: RINKEBY
-        },
-        {
-          name: KOVAN_DISPLAY_NAME,
-          value: KOVAN
-        },
-        {
-          name: GOERLI_DISPLAY_NAME,
-          value: GOERLI
-        },
-        {
-          name: LOCALHOST_DISPLAY_NAME,
-          value: LOCALHOST
-        },
-        {
-          name: RPC_DISPLAY_NAME,
-          value: RPC
-        },
-        {
-          name: MATIC_DISPLAY_NAME,
-          value: MATIC
+          networkName: RPC_DISPLAY_NAME,
+          host: RPC,
+          chainId: ''
         }
       ],
-      rpc: { chainId: '', networkName: '', networkUrl: '' },
+      rpc: { chainId: '', networkName: '', host: '' },
       formValid: true,
       rules: {
         required: value => !!value || 'Required'
@@ -234,15 +192,16 @@ export default {
   },
   computed: {
     isRPCSelected() {
-      return this.selectedNetwork === RPC
+      return this.selectedNetwork.host === RPC
     }
   },
   methods: {
     changeNetwork(value) {
-      if (value !== RPC) this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
+      if (value && value.host !== RPC) this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
     },
     setRPC() {
-      this.selectedNetwork = RPC
+      // this.selectedNetwork = RPC
+      console.log(this.selectedNetwork)
       this.$store.dispatch('setProviderType', { network: this.rpc, type: RPC })
     },
     selectTheme(theme) {
@@ -252,7 +211,8 @@ export default {
   },
   mounted() {
     this.selectedNetwork = this.$store.state.networkType
-    this.rpc = this.$store.state.rpcDetails
+    this.rpc = this.$store.state.networkType
+    console.log(this.rpc)
   }
 }
 //

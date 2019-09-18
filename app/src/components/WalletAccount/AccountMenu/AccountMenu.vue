@@ -8,8 +8,8 @@
         <v-list-item-content>
           <v-list-item-title>
             <div class="font-weight-bold headline text-capitalize">
-              <span id="account-name">{{ userName }}</span>
-              's Account
+              <span id="account-name">{{ userName }}'s</span>
+              Account
             </div>
           </v-list-item-title>
           <v-list-item-subtitle>
@@ -106,6 +106,7 @@ import { significantDigits, addressSlicer } from '../../../utils/utils'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import AccountImport from '../AccountImport'
 import { broadcastChannelOptions } from '../../../utils/utils'
+import torus from '../../../torus'
 
 export default {
   props: ['headerItems'],
@@ -173,21 +174,28 @@ export default {
     async logout() {
       this.$vuetify.theme.dark = false
 
-      var bc = new BroadcastChannel('torus_logout_channel', broadcastChannelOptions)
-      await bc.postMessage({ data: { type: 'logout' } })
-      bc.close()
+      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      if (urlInstance && urlInstance !== '') {
+        var bc = new BroadcastChannel(`torus_logout_channel_${urlInstance}`, broadcastChannelOptions)
+        await bc.postMessage({ data: { type: 'logout' } })
+        bc.close()
+      }
       this.$store.dispatch('logOut')
       this.$router.push({ path: '/logout' })
     },
-    changeAccount(newAddress) {
+    async changeAccount(newAddress) {
       this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
-      const selectedAddressChannel = new BroadcastChannel('selected_address_channel', broadcastChannelOptions)
-      selectedAddressChannel.postMessage({
-        data: {
-          name: 'selected_address',
-          payload: newAddress
-        }
-      })
+      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      if (urlInstance && urlInstance !== '') {
+        const selectedAddressChannel = new BroadcastChannel(`selected_address_channel_${urlInstance}`, broadcastChannelOptions)
+        await selectedAddressChannel.postMessage({
+          data: {
+            name: 'selected_address',
+            payload: newAddress
+          }
+        })
+        selectedAddressChannel.close()
+      }
     }
   }
 }

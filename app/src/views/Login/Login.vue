@@ -1,60 +1,78 @@
 <template>
   <div :class="[{ 'background-login': !loggedIn }, 'default']">
-    <v-container fill-height align-content-center>
-      <template v-if="gapiLoaded">
-        <template v-if="!loginInProgress">
-          <v-layout v-if="!isLogout" wrap align-center justify-center align-content-center>
-            <v-flex xs12 m-0>
-              <div class="text-center font-weight-bold primary--text" :class="$vuetify.breakpoint.xsOnly ? 'display-1' : 'display-2'">
-                Welcome to Torus
-              </div>
+    <template v-if="!isLogout">
+      <template v-if="!loginInProgress">
+        <template v-if="gapiLoaded">
+          <v-layout wrap fill-height align-center justify-center class="login-panel-left">
+            <v-flex xs12 md6>
+              <v-layout wrap>
+                <v-flex class="mb-5" xs9 sm7 ml-auto mr-auto>
+                  <img width="117" :src="require('../../../public/images/torus-logo-blue.svg')" />
+                </v-flex>
+                <v-flex class="mb-3" xs9 sm7 ml-auto mr-auto>
+                  <span class="display-2 font-weight-bold">Welcome to Torus</span>
+                </v-flex>
+                <v-flex class="body-1" mb-6 xs9 sm7 ml-auto mr-auto>
+                  <span>You are just one step away from getting your digital wallet for your cryptocurrencies</span>
+                </v-flex>
+                <v-flex xs9 sm7 ml-auto mb-1 mr-auto>
+                  <v-btn
+                    color="white"
+                    large
+                    :block="$vuetify.breakpoint.xsOnly"
+                    class="body-2 login-btn"
+                    @click="triggerLogin({ calledFromEmbed: false })"
+                  >
+                    <img :src="require('../../../public/img/icons/google.svg')" class="mr-2" />
+                    Sign up/in with Google
+                  </v-btn>
+                </v-flex>
+                <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
+                  <span>
+                    By clicking Login, you accept our
+                    <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
+                      <span class="primary--text">Terms and Conditions</span>
+                    </a>
+                  </span>
+                </v-flex>
+                <v-flex class="caption" xs9 sm7 ml-auto mr-auto>
+                  <span>
+                    Note : For first time users, kindly
+                    <span class="primary--text">enable Pop-ups</span>
+                    to gain access to your Torus Wallet
+                  </span>
+                </v-flex>
+              </v-layout>
             </v-flex>
-            <v-flex xs12>
-              <div class="text-center login-subtitle font-weight-medium" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1 pa-2' : 'headline'">
-                You are just one step away from getting your digital wallet for your cryptocurrencies
-              </div>
-            </v-flex>
-            <v-flex xs12 mt-5>
-              <div class="text-center">
-                <v-btn
-                  :large="!$vuetify.breakpoint.xsOnly"
-                  depressed
-                  id="loginBtn"
-                  color="primary"
-                  class="flexiBtn px-12"
-                  type="button"
-                  @click="triggerLogin({ calledFromEmbed: false })"
-                >
-                  Login
-                </v-btn>
-                <small class="d-block text-gray mt-2">
-                  By clicking Login, you accept our
-                  <br />
-                  <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
-                    <span class="primary--text">Terms and Conditions</span>
-                  </a>
-                </small>
-              </div>
-            </v-flex>
-            <v-flex xs12 mt-5>
-              <small class="text-gray text-center d-block">
-                Note : For first time users, kindly
-                <a href="#">
-                  <span class="primary--text">enable Pop-ups</span>
-                </a>
-                to
-                <br />
-                gain access to your Torus Wallet
-              </small>
-            </v-flex>
-            <v-flex mt-5 text-center>
-              <img :width="$vuetify.breakpoint.xsOnly ? '150px' : '200px'" height="auto" :src="require('../../../public/images/torus-people.png')" />
-              <p class="m-0">
-                <small class="text-gray">The Decentralized Web Awaits</small>
-              </p>
+            <v-flex xs12 md6 fill-height class="hidden-sm-and-down login-panel-right">
+              <v-layout class="pb-8" wrap fill-height align-end>
+                <v-flex class="mb-3 text-center" xs9 sm7 ml-auto mr-auto>
+                  <div class="display-1 white--text font-weight-bold">Frictionless Logins</div>
+                  <div class="display-1 white--text mb-3">for DApps</div>
+                  <div class="caption white--text">
+                    A simple and secure gateway to the decentralized ecosystem via Google OAuth logins
+                  </div>
+                </v-flex>
+              </v-layout>
             </v-flex>
           </v-layout>
-          <v-layout v-else wrap align-center justify-center align-content-center>
+        </template>
+        <template v-else>
+          <v-container fill-height align-content-center>
+            <page-loader />
+          </v-container>
+        </template>
+      </template>
+      <template v-else>
+        <v-container fill-height align-content-center>
+          <page-loader />
+        </v-container>
+      </template>
+    </template>
+    <v-container v-else fill-height align-content-center>
+      <template v-if="gapiLoaded">
+        <template v-if="!loginInProgress">
+          <v-layout wrap align-center justify-center align-content-center>
             <v-flex text-center>
               <img width="200px" height="auto" :src="require('../../../public/images/torus-people-colored.svg')" />
             </v-flex>
