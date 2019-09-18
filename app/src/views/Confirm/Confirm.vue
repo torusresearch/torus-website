@@ -3,7 +3,6 @@
     <template v-if="type === 'transaction'">
       <v-layout wrap align-center mx-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
         <div class="torus_text--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">{{ header }}</div>
-        <img :src="require('../../../public/img/icons/transaction.svg')" class="ml-2" />
       </v-layout>
       <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
         <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
@@ -33,17 +32,17 @@
           <v-divider></v-divider>
           <div>
             <span class="subtitle-2">Cost of Transaction</span>
-            <span class="subtitle-1 float-right blue--text font-weight-bold">{{ costOfTransaction }}</span>
+            <span class="subtitle-1 float-right primary--text font-weight-bold">{{ costOfTransaction }}</span>
           </div>
           <div v-if="isOtherToken" class="clearfix">
-            <span class="subtitle-1 float-right blue--text font-weight-bold">+ {{ significantDigits(this.gasCost) }} ETH</span>
+            <span class="subtitle-1 float-right primary--text font-weight-bold">+ {{ significantDigits(this.gasCost) }} ETH</span>
           </div>
           <div class="caption float-right clearfix">{{ costOfTransactionConverted }}</div>
         </v-flex>
         <v-flex xs12 mb-3 mt-3>
           <v-dialog v-model="detailsDialog" width="600px">
             <template v-slot:activator="{ on }">
-              <div id="more-details-link" class="subtitle-2 float-right blue--text mx-6" v-on="on">More Details</div>
+              <div id="more-details-link" class="subtitle-2 float-right primary--text mx-6" v-on="on">More Details</div>
             </template>
             <v-card class="pa-4 more-details-container" color="background_2">
               <v-card-text class="torus_text--text">
@@ -133,7 +132,6 @@
     <template v-if="type === 'message'">
       <v-layout align-center mx-6 mb-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
         <div class="text-black font-weight-bold headline float-left">Permissions</div>
-        <img :src="require('../../../public/img/icons/lock.svg')" width="16" class="ml-2" />
       </v-layout>
       <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
         <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
@@ -145,7 +143,7 @@
 
           <v-card flat class="grey lighten-3">
             <v-card-text>
-              <div class="subtitle-2 blue--text">{{ origin }}</div>
+              <div class="subtitle-2 primary--text">{{ origin }}</div>
             </v-card-text>
             <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
           </v-card>

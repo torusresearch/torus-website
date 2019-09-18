@@ -6,7 +6,6 @@
     <template v-else>
       <v-layout align-center mx-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
         <div class="text-black font-weight-bold headline float-left">Permission</div>
-        <img :src="require('../../../public/img/icons/lock.svg')" width="16" class="ml-2" />
       </v-layout>
       <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
         <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
@@ -18,7 +17,7 @@
 
           <v-card flat class="grey lighten-3">
             <v-card-text>
-              <div class="subtitle-2 blue--text">{{ origin }}</div>
+              <div class="subtitle-2 primary--text">{{ origin }}</div>
             </v-card-text>
             <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
           </v-card>

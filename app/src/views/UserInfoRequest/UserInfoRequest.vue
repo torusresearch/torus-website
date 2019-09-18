@@ -14,7 +14,7 @@
 
           <v-card flat class="grey lighten-3">
             <v-card-text>
-              <div class="subtitle-2 blue--text">{{ origin }}</div>
+              <div class="subtitle-2 primary--text">{{ origin }}</div>
             </v-card-text>
             <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
           </v-card>

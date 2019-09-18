@@ -38,7 +38,7 @@ export default {
       }
       if (!document.cookie.match(/^(.*;)?\s*moonpay-fixed\s*=\s*[^;]+(.*)?$/)) {
         document.cookie = 'moonpay-fixed=fixed; expires=Tue, 19 Jan 2038 03:14:07 UTC; path=/'
-        window.location.replace('https://buy.io/safari_fix')
+        window.location.replace('https://buy.moonpay.io/safari_fix')
       }
     }
   },
@@ -60,7 +60,9 @@ export default {
       '&email=' +
       this.$store.state.userInfo.email +
       '&redirectURL=' +
-      this.redirectURL
+      this.redirectURL +
+      '&colorCode=' +
+      encodeURIComponent(this.$vuetify.theme.themes.light.primary)
 
     this.loaded = true
     // log.info('this is', this)
