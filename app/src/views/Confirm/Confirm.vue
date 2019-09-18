@@ -296,7 +296,12 @@ export default {
   },
   computed: {
     selectedNetwork() {
-      return this.$store.state.networkType.networkName || this.$store.state.networkType.host
+      let finalNetwork = ''
+      finalNetwork =
+        !this.$store.state.networkType.networkName || this.$store.state.networkType.networkName === ''
+          ? this.$store.state.networkType.host
+          : this.$store.state.networkType.networkName
+      return finalNetwork
     },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
