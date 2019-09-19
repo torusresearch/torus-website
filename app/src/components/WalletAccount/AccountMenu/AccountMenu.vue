@@ -172,8 +172,6 @@ export default {
   },
   methods: {
     async logout() {
-      this.$vuetify.theme.dark = false
-
       const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
       if (urlInstance && urlInstance !== '') {
         var bc = new BroadcastChannel(`torus_logout_channel_${urlInstance}`, broadcastChannelOptions)

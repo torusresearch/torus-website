@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
-import { darkBlack, lightBlue } from './themes'
+import themes from './themes'
 import iconsValues from '../icons'
+import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 
 Vue.use(Vuetify)
 
@@ -9,8 +10,8 @@ export default new Vuetify({
   theme: {
     dark: false,
     themes: {
-      light: { ...lightBlue },
-      dark: { ...darkBlack }
+      light: { ...themes[THEME_LIGHT_BLUE_NAME].theme },
+      dark: { ...themes[THEME_DARK_BLACK_NAME].theme }
     },
     options: {
       customProperties: true

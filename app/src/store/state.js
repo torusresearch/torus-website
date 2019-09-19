@@ -24,7 +24,8 @@ const initialState = {
   loginInProgress: false,
   jwtToken: '',
   pastTransactions: [],
-  isNewUser: false
+  isNewUser: false,
+  theme: ''
 }
 
 export default initialState

@@ -124,13 +124,13 @@
                 <v-flex xs12 sm4 px-1 mb-1 v-for="theme in themes" :key="`${theme.name}`">
                   <!-- <v-btn v-if="$vuetify.theme.dark" light depressed block @click="$vuetify.theme.dark = false">Light</v-btn>
                   <v-btn v-else dark depressed block @click="$vuetify.theme.dark = true">Dark</v-btn> -->
-                  <v-btn @click="selectTheme(theme)" depressed block class="theme-btn" :class="theme.name">
+                  <v-btn @click="selectTheme(theme.name)" depressed block class="theme-btn" :class="theme.name">
                     {{ theme.label }}
                   </v-btn>
                 </v-flex>
               </v-layout>
               <v-flex class="pt-4 text-right">
-                <v-btn color="primary" depressed class="px-12 py-1 mt-4">Save</v-btn>
+                <v-btn color="primary" depressed class="px-12 py-1 mt-4" @click="saveTheme()">Save</v-btn>
               </v-flex>
             </div>
           </v-expansion-panel-content>
@@ -142,7 +142,7 @@
 
 //
 <script>
-import { lightBlue, darkBlack } from '../../plugins/themes'
+import themes from '../../plugins/themes'
 import PrivateKeys from '../../components/WalletSettings/PrivateKeys'
 import DappPermissions from '../../components/WalletSettings/DappPermissions'
 import log from 'loglevel'
@@ -173,21 +173,7 @@ export default {
       rules: {
         required: value => !!value || 'Required'
       },
-      themes: [
-        {
-          label: 'Light',
-          name: 'light-blue',
-          theme: lightBlue,
-          isDark: false
-        },
-        {
-          label: 'Dark',
-          name: 'dark-black',
-          theme: darkBlack,
-          isDark: true
-        }
-      ],
-      themeSelected: ''
+      themes: themes
     }
   },
   computed: {
@@ -204,15 +190,16 @@ export default {
       console.log(this.selectedNetwork)
       this.$store.dispatch('setProviderType', { network: this.rpc, type: RPC })
     },
-    selectTheme(theme) {
-      this.$vuetify.theme.dark = theme.isDark
-      this.$vuetify.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
+    selectTheme(themeName) {
+      this.$store.commit('setTheme', themeName)
+    },
+    saveTheme() {
+      this.$store.dispatch('setUserTheme', { theme: this.$store.state.theme })
     }
   },
   mounted() {
     this.selectedNetwork = this.$store.state.networkType
     this.rpc = this.$store.state.networkType
-    console.log(this.rpc)
   }
 }
 //
