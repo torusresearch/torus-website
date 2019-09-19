@@ -4,6 +4,8 @@ export default {
   background_2: '#585a5e',
   background_3: '#828386',
   background_4: '#575757',
+  error: '#e20d0d',
   disabled: '#403F43',
-  primary: '#0364FF'
+  primary: '#0364FF',
+  normal_text: '#bebebf'
 }

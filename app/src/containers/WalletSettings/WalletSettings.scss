@@ -8,8 +8,13 @@
       border-bottom: 1px solid var(--v-background_3-base);
       border-radius: 0;
     }
-  }
 
+    .title,
+    ::v-deep .v-icon {
+      color: var(--v-normal_text-base) !important;
+    }
+  }
+  
   .v-expansion-panel--active:not(:first-child),
   .v-expansion-panel--active + .v-expansion-panel {
     margin-top: 0;

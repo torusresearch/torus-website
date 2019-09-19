@@ -10,6 +10,9 @@
       color: var(--v-primary-base) !important;
       width: 40px;
     }
+    .v-icon {
+      color: var(--v-normal_text-base) !important;
+    }
   }
 
   ::v-deep .search-field {
