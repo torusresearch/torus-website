@@ -81,7 +81,7 @@ torus.communicationMux.getStream('oauth').on('data', function(chunk) {
 })
 
 torus.communicationMux.getStream('show_wallet').on('data', function(chunk) {
-  VuexStore.dispatch('showWalletPopup', { network: chunk.data.calledFromEmbed, path: chunk.data.path || '' })
+  VuexStore.dispatch('showWalletPopup', { path: chunk.data.path || '' })
 })
 
 torus.communicationMux.getStream('show_provider_change').on('data', function(chunk) {
