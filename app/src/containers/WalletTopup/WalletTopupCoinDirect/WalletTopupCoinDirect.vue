@@ -26,7 +26,7 @@ export default {
   },
   mounted() {
     // let redirectURL = window.location.origin + '/wallet/history'
-    let redirectURL = 'http://localhost:2070/transaction'
+    let redirectURL = 'http://coindirect-api.tor.us/transaction'
     this.url =
       this.path +
       '&email=' +
