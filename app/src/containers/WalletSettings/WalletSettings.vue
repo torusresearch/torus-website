@@ -137,6 +137,12 @@
         </v-expansion-panel>
       </v-expansion-panels>
     </v-flex>
+    <v-snackbar v-model="snackbar" :color="snackbarColor">
+      {{ snackbarText }}
+      <v-btn dark text @click="snackbar = false">
+        Close
+      </v-btn>
+    </v-snackbar>
   </v-layout>
 </template>
 
@@ -173,7 +179,10 @@ export default {
       rules: {
         required: value => !!value || 'Required'
       },
-      themes: themes
+      themes: themes,
+      snackbar: false,
+      snackbarText: '',
+      snackbarColor: 'success'
     }
   },
   computed: {
@@ -194,7 +203,18 @@ export default {
       this.$store.commit('setTheme', themeName)
     },
     saveTheme() {
-      this.$store.dispatch('setUserTheme', { theme: this.$store.state.theme })
+      this.$store
+        .dispatch('setUserTheme', { theme: this.$store.state.theme })
+        .then(() => {
+          this.snackbar = true
+          this.snackbarColor = 'success'
+          this.snackbarText = 'Successfully saved theme'
+        })
+        .catch(err => {
+          this.snackbar = true
+          this.snackbarColor = 'error'
+          this.snackbarText = err
+        })
     }
   },
   mounted() {

@@ -1,4 +1,4 @@
-import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, USER_INFO_REQUEST_NEW } from '../utils/enums'
+import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, USER_INFO_REQUEST_NEW, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -25,7 +25,7 @@ const initialState = {
   jwtToken: '',
   pastTransactions: [],
   isNewUser: false,
-  theme: ''
+  theme: THEME_LIGHT_BLUE_NAME
 }
 
 export default initialState
