@@ -33,21 +33,13 @@
   }
 }
 
-.v-window__container {
-  height: 100% !important;
-}
-
-.application--wrap {
-  min-height: 0px !important;
-}
-
 .v-btn {
   text-transform: inherit;
 }
 
 .v-input.v-input--is-readonly {
   .v-input__slot {
-    background: var(--v-disabled-base) !important;
+    background: var(--v-disabled-base);
   }
 }
 

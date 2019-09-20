@@ -94,7 +94,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-@import 'WalletTopupHome.scss';
-</style>

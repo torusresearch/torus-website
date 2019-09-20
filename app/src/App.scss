@@ -30,16 +30,19 @@
   }
 }
 
-.theme--dark {
-  &.v-application,
-  &.v-card,
-  &.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled) *,
-  &.v-select .v-select__selections,
-  &.v-input:not(.v-input--is-disabled) input,
-  &.v-input:not(.v-input--is-disabled) textarea,
-  &.v-expansion-panels .v-expansion-panel,
-  &.v-data-table {
-    color: var(--v-normal_text-base) !important;
+.torus-app.theme--dark {
+  &.v-application {
+    color: var(--v-normal_text-base);
+  }
+
+  .theme--dark.v-card,
+  .theme--dark.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled) *,
+  .theme--dark.v-select .v-select__selections,
+  .theme--dark.v-input:not(.v-input--is-disabled) input,
+  .theme--dark.v-input:not(.v-input--is-disabled) textarea,
+  .theme--dark.v-expansion-panels .v-expansion-panel,
+  .theme--dark.v-data-table {
+    color: var(--v-normal_text-base);
   }
 
   .theme--dark

@@ -7,11 +7,11 @@
     @include navSelector();
     max-width: 75px;
     .v-select__selection {
-      color: var(--v-primary-base) !important;
+      color: var(--v-primary-base);
       width: 40px;
     }
     .v-icon {
-      color: var(--v-normal_text-base) !important;
+      color: var(--v-normal_text-base);
     }
   }
 

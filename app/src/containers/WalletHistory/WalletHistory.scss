@@ -28,21 +28,6 @@
   width: 80px;
 }
 
-::v-deep .v-text-field--solo .v-input__slot,
-.v-text-field--outline .v-input__slot {
-  min-height: auto !important;
-  display: flex !important;
-  align-items: flex-end !important;
-  border-radius: 17px !important;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.16) !important;
-  margin-top: 20px !important;
-  margin-bottom: 0px !important;
-}
-
-::v-deep .v-text-field.v-text-field--solo .v-input__control {
-  min-height: auto !important;
-}
-
 /* NEW UI */
 ::v-deep .nav-selector {
   @include navSelector();
@@ -53,6 +38,6 @@
     max-width: 130px;
   }
   .v-icon {
-    color: var(--v-normal_text-base) !important;
+    color: var(--v-normal_text-base);
   }
 }

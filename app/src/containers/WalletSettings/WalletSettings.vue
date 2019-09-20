@@ -124,7 +124,7 @@
                 <v-flex xs12 sm4 px-1 mb-1 v-for="theme in themes" :key="`${theme.name}`">
                   <!-- <v-btn v-if="$vuetify.theme.dark" light depressed block @click="$vuetify.theme.dark = false">Light</v-btn>
                   <v-btn v-else dark depressed block @click="$vuetify.theme.dark = true">Dark</v-btn> -->
-                  <v-btn @click="selectTheme(theme.name)" depressed block class="theme-btn" :class="theme.name">
+                  <v-btn @click="selectTheme(theme.name)" depressed block class="theme-btn" :class="`${theme.name}-color`">
                     {{ theme.label }}
                   </v-btn>
                 </v-flex>

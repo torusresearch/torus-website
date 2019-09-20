@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="torus-app">
     <router-view />
   </v-app>
 </template>

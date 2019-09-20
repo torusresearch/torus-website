@@ -23,8 +23,8 @@
     cursor: pointer;
   }
 
-  ::v-deep .expanded__content {
-    box-shadow: none !important;
+  ::v-deep tr.expanded.expanded__content {
+    box-shadow: none;
   }
 
   ::v-deep .v-pagination__item, ::v-deep .v-pagination__navigation {
