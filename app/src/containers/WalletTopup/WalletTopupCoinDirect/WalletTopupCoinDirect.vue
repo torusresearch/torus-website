@@ -38,7 +38,9 @@ export default {
       '&address=' +
       this.$store.state.selectedAddress +
       '&url=' +
-      encodeURIComponent(redirectURL)
+      encodeURIComponent(redirectURL) +
+      '&colorCode=' +
+      encodeURIComponent(this.$vuetify.theme.themes.light.primary)
 
     this.loaded = true
     // log.info('this is', this)
