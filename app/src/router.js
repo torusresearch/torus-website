@@ -124,12 +124,22 @@ const router = new Router({
   ]
 })
 
-router.beforeResolve((to, ___, next) => {
+function hasQueryParams(route) {
+  return !!Object.keys(route.query).length
+}
+
+router.beforeResolve((to, from, next) => {
   if (to.hasOwnProperty('meta') && to.meta.hasOwnProperty('requiresAuth') && to.meta.requiresAuth === false) {
-    next()
+    if (!hasQueryParams(to) && hasQueryParams(from)) {
+      next({ name: to.name, query: from.query })
+    } else {
+      next()
+    }
   } else {
     if (store.state.selectedAddress === '') {
       next({ name: 'login', query: { redirect: to.path } })
+    } else if (!hasQueryParams(to) && hasQueryParams(from)) {
+      next({ name: to.name, query: from.query })
     } else {
       next()
     }

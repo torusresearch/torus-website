@@ -13,7 +13,7 @@ const unApprovedTransactions = state => {
 }
 const tokenBalances = state => {
   let { weiBalance, tokenData, tokenRates, currencyData, selectedCurrency, networkType, selectedAddress } = state || {}
-  if (networkType !== MAINNET) {
+  if (networkType.host !== MAINNET) {
     tokenData = {}
     tokenRates = {}
   }

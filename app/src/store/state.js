@@ -1,4 +1,4 @@
-import { MAINNET, USER_INFO_REQUEST_NEW } from '../utils/enums'
+import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, USER_INFO_REQUEST_NEW } from '../utils/enums'
 
 const initialState = {
   verifier: '',
@@ -16,7 +16,7 @@ const initialState = {
   selectedAddress: '',
   selectedCurrency: 'USD',
   networkId: 0,
-  networkType: localStorage.getItem('torus_network_type') || MAINNET,
+  networkType: { host: MAINNET, chainId: MAINNET_CODE, networkName: MAINNET_DISPLAY_NAME },
   currencyData: {},
   tokenData: {}, // Account specific object
   tokenRates: {},
@@ -25,7 +25,6 @@ const initialState = {
   unapprovedPersonalMsgs: {},
   unapprovedMsgs: {},
   loginInProgress: false,
-  rpcDetails: JSON.parse(localStorage.getItem('torus_custom_rpc')) || {},
   jwtToken: '',
   pastTransactions: [],
   isNewUser: false

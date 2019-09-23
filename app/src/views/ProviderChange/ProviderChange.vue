@@ -4,9 +4,12 @@
       <page-loader />
     </template>
     <template v-else>
-      <v-layout align-center mx-6 mb-6>
+      <v-layout align-center mx-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
         <div class="text-black font-weight-bold headline float-left">Permission</div>
-        <img :src="require('../../../public/img/icons/lock.svg')" width="16" class="ml-2" />
+      </v-layout>
+      <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
+        <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
+        <span class="caption ml-1 torus_text--text text--lighten-3 text-capitalize">{{ selectedNetwork }}</span>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-2 mx-6>
@@ -14,7 +17,7 @@
 
           <v-card flat class="grey lighten-3">
             <v-card-text>
-              <div class="subtitle-2 blue--text">{{ origin }}</div>
+              <div class="subtitle-2 primary--text">{{ origin }}</div>
             </v-card-text>
             <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
           </v-card>
@@ -29,7 +32,7 @@
               <v-list-item-content class="pa-1">
                 <div class="caption torus_text--text text--lighten-3">
                   To change your network to
-                  <span class="text-capitalize">{{ type && type === 'rpc' ? `${rpcNetwork.networkName} : ${rpcNetwork.networkUrl}` : network }}</span>
+                  <span class="text-capitalize">{{ type && type === 'rpc' ? `${rpcNetwork.networkName} : ${rpcNetwork.host}` : network.host }}</span>
                 </div>
               </v-list-item-content>
             </v-list-item>
@@ -69,10 +72,22 @@ export default {
       payload: {}
     }
   },
-  computed: {},
+  computed: {
+    selectedNetwork() {
+      let finalNetwork = ''
+      finalNetwork =
+        !this.$store.state.networkType.networkName || this.$store.state.networkType.networkName === ''
+          ? this.$store.state.networkType.host
+          : this.$store.state.networkType.networkName
+      return finalNetwork
+    }
+  },
   methods: {
     async triggerSign(event) {
-      var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
+      var bc = new BroadcastChannel(
+        `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
+        broadcastChannelOptions
+      )
       await bc.postMessage({
         data: { type: 'confirm-provider-change', payload: this.payload, approve: true }
       })
@@ -80,14 +95,20 @@ export default {
       window.close()
     },
     async triggerDeny(event) {
-      var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
+      var bc = new BroadcastChannel(
+        `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
+        broadcastChannelOptions
+      )
       await bc.postMessage({ data: { type: 'deny-provider-change', approve: false } })
       bc.close()
       window.close()
     }
   },
   mounted() {
-    var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
+    var bc = new BroadcastChannel(
+      `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
+      broadcastChannelOptions
+    )
     bc.onmessage = async ev => {
       const {
         payload: { network, type },

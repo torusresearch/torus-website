@@ -61,7 +61,7 @@ jobs:
       - <<: *step_setup_global_packages
       - run:
           name: "Run Tests for torus website"
-          command: npm run test:unit
+          command: (npm run build:testing & sleep 60) && (npm start & sleep 10 && npm run test:e2e)
       - <<: *step_save_cache
       # Save test results
       - store_test_results:
@@ -90,7 +90,7 @@ jobs:
       - run:
           name: "Build code for torus website"
           command: |
-            cd .. && npm version patch -m 'Updating version to %s [skip ci]' && cd app && npm run build && . ./scripts/gitPush.sh
+            npm version patch -m 'Updating version to %s [skip ci]' && npm run build && . ./scripts/gitPush.sh
       - persist_to_workspace:
           root: ~/torus-website/
           paths:
@@ -106,7 +106,7 @@ jobs:
       - run:
           name: "Build code for torus staging website"
           command: |
-            cd .. && npm version patch -m 'Updating version to %s [skip ci]' && cd app && npm run build:staging && . ./scripts/gitPush.sh
+            npm version patch -m 'Updating version to %s [skip ci]' && npm run build:staging && . ./scripts/gitPush.sh
       - persist_to_workspace:
           root: ~/torus-website/
           paths:
