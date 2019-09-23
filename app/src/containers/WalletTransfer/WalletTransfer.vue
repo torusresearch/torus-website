@@ -155,7 +155,7 @@ import { significantDigits, getRandomNumber } from '../../utils/utils'
 import config from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
-import { get } from '../../utils/httpHelpers'
+import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
 import { WALLET_HEADERS_TRANSFER } from '../../utils/enums'
 
@@ -277,6 +277,24 @@ export default {
     }
   },
   methods: {
+    sendEmail: function(typeToken) {
+      if (/\S+@\S+\.\S+/.test(this.toAddress)) {
+        const emailObject = {
+          from_name: this.$store.state.userInfo.name,
+          to_email: this.toAddress,
+          total_amount: this.amount,
+          token: typeToken
+        }
+        post(config.api + '/transaction/sendemail', emailObject, {
+          headers: {
+            Authorization: 'Bearer ' + this.$store.state.jwtToken,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        })
+          .then(response => log.info('email response', response))
+          .catch(err => log.error(err))
+      }
+    },
     moreThanZero: function(value) {
       if (this.selectedItem) {
         return parseFloat(value) > 0 || 'Invalid amount'
@@ -406,6 +424,9 @@ export default {
                 }
                 log.error(err)
               } else {
+                // Send email to the user
+                this.sendEmail(this.selectedItem.symbol)
+
                 this.showModalMessage = true
                 this.modalMessageSuccess = true
               }
@@ -429,6 +450,9 @@ export default {
                 }
                 log.error(err)
               } else {
+                // Send email to the user
+                this.sendEmail(this.selectedItem.symbol)
+
                 this.showModalMessage = true
                 this.modalMessageSuccess = true
               }

@@ -62,7 +62,7 @@ export default {
       '&redirectURL=' +
       this.redirectURL +
       '&colorCode=' +
-      encodeURIComponent(this.$vuetify.theme.themes.light.primary) + 
+      encodeURIComponent(this.$vuetify.theme.themes.light.primary) +
       '&externalCustomerId=' +
       this.$store.state.selectedAddress
 
