@@ -285,7 +285,6 @@ export default {
           total_amount: this.amount,
           token: typeToken
         }
-        console.log(emailObject)
         post(config.api + '/transaction/sendemail', emailObject, {
           headers: {
             Authorization: 'Bearer ' + this.$store.state.jwtToken,
