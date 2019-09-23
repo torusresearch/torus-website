@@ -9,10 +9,11 @@ const MATIC = 'matic'
 
 const MAINNET_CODE = 1
 const ROPSTEN_CODE = 3
-const RINKEYBY_CODE = 4
+const RINKEBY_CODE = 4
 const KOVAN_CODE = 42
 const GOERLI_CODE = 5
-const MATIC_CODE = 1
+const MATIC_CODE = 4626
+const LOCALHOST_CODE = 5777
 
 const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
 const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
@@ -20,7 +21,7 @@ const KOVAN_DISPLAY_NAME = 'Kovan Test Network'
 const MAINNET_DISPLAY_NAME = 'Main Ethereum Network'
 const GOERLI_DISPLAY_NAME = 'Goerli Test Network'
 const RPC_DISPLAY_NAME = 'RPC'
-const LOCALHOST_DISPLAY_NAME = 'localhost:8545'
+const LOCALHOST_DISPLAY_NAME = 'https://localhost:8545'
 const MATIC_DISPLAY_NAME = 'Matic Alpha-Mainnet'
 
 const MATIC_URL = 'https://alpha.ethereum.matic.network'
@@ -45,6 +46,42 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const ACTIVE = 'active'
 const INACTIVE = 'inactive'
 
+const USER_INFO_REQUEST_APPROVED = 'user_info_request_approved'
+const USER_INFO_REQUEST_REJECTED = 'user_info_request_rejected'
+const USER_INFO_REQUEST_NEW = 'user_info_request_new'
+
+const createNetwork = (host, networkName, chainId) => {
+  return {
+    host,
+    networkName,
+    chainId
+  }
+}
+
+const SUPPORTED_NETWORK_TYPES = {
+  [MAINNET]: createNetwork(MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE),
+  [RINKEBY]: createNetwork(RINKEBY, RINKEBY_DISPLAY_NAME, RINKEBY_CODE),
+  [KOVAN]: createNetwork(KOVAN, KOVAN_DISPLAY_NAME, KOVAN_CODE),
+  [ROPSTEN]: createNetwork(ROPSTEN, ROPSTEN_DISPLAY_NAME, ROPSTEN_CODE),
+  [GOERLI]: createNetwork(GOERLI, GOERLI_DISPLAY_NAME, GOERLI_CODE),
+  [LOCALHOST]: createNetwork(LOCALHOST, LOCALHOST_DISPLAY_NAME, LOCALHOST_CODE),
+  [MATIC]: createNetwork(MATIC, MATIC_DISPLAY_NAME, MATIC_CODE)
+}
+const WALLET_HEADERS_HOME = 'My Wallet'
+const WALLET_HEADERS_TRANSFER = 'Transfer Details'
+const WALLET_HEADERS_ACTIVITY = 'Transaction Activities'
+const WALLET_HEADERS_CONFIRM = 'Confirm your Transfer'
+
+const ACTIVITY_ACTION_ALL = 'All Transactions'
+const ACTIVITY_ACTION_SEND = 'Send'
+const ACTIVITY_ACTION_RECEIVE = 'Receive'
+const ACTIVITY_ACTION_TOPUP = 'Top up'
+
+const ACTIVITY_PERIOD_ALL = 'All'
+const ACTIVITY_PERIOD_WEEK_ONE = 'Last 1 Week'
+const ACTIVITY_PERIOD_MONTH_ONE = 'Last 1 Month'
+const ACTIVITY_PERIOD_MONTH_SIX = 'Last 6 Months'
+
 module.exports = {
   ROPSTEN,
   RINKEBY,
@@ -55,7 +92,7 @@ module.exports = {
   RPC,
   MAINNET_CODE,
   ROPSTEN_CODE,
-  RINKEYBY_CODE,
+  RINKEBY_CODE,
   GOERLI_CODE,
   KOVAN_CODE,
   ROPSTEN_DISPLAY_NAME,
@@ -82,5 +119,21 @@ module.exports = {
   MATIC,
   MATIC_CODE,
   ACTIVE,
-  INACTIVE
+  INACTIVE,
+  USER_INFO_REQUEST_APPROVED,
+  USER_INFO_REQUEST_REJECTED,
+  USER_INFO_REQUEST_NEW,
+  SUPPORTED_NETWORK_TYPES,
+  WALLET_HEADERS_HOME,
+  WALLET_HEADERS_TRANSFER,
+  WALLET_HEADERS_ACTIVITY,
+  WALLET_HEADERS_CONFIRM,
+  ACTIVITY_ACTION_ALL,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_TOPUP,
+  ACTIVITY_PERIOD_ALL,
+  ACTIVITY_PERIOD_WEEK_ONE,
+  ACTIVITY_PERIOD_MONTH_ONE,
+  ACTIVITY_PERIOD_MONTH_SIX
 }

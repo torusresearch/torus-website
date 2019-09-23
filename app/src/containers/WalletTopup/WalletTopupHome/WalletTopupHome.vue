@@ -29,7 +29,7 @@
         </div>
       </v-flex>
 
-      <v-flex xs12 sm6 mb-4 px-4>
+      <v-flex xs12 sm7 mb-4 px-4>
         <router-view></router-view>
       </v-flex>
     </v-layout>
@@ -37,8 +37,8 @@
 </template>
 
 <script>
-import TopupProviders from '../../components/WalletTopup/TopupProviders'
-import { ACTIVE, INACTIVE } from '../../utils/enums'
+import TopupProviders from '../../../components/WalletTopup/TopupProviders'
+import { ACTIVE, INACTIVE } from '../../../utils/enums'
 
 export default {
   components: {
@@ -69,20 +69,29 @@ export default {
         {
           name: 'wyre',
           logo: 'wyre-logo.svg',
-          line1: 'Pay with Credit Card or Wire Transfer',
-          line2: '<span class="font-weight-medium">Wyre Service Fee</span> : Varies',
-          line3: '',
+          line1: 'Pay with Debit Card (USA only)',
+          line2: '<span class="font-weight-medium">Wyre Service Fee</span> : 2.9% + 30¢',
+          line3: '( $40 per day limit )',
           link: '/wallet/topup/wyre',
           status: INACTIVE
         },
         {
           name: 'crypto',
           logo: 'crypto-logo.png',
-          line1: 'Pay with Credit Card or Wire Transfer',
+          line1: 'Pay with Credit Card',
           line2: '<span class="font-weight-medium">crypto.com Service Fee</span> : Varies',
           line3: '',
           link: '/wallet/topup/crypto',
-          status: INACTIVE
+          status: ACTIVE
+        },
+        {
+          name: 'coindirect',
+          logo: `coindirect${this.$vuetify.theme.dark ? '' : '-dark'}.svg`,
+          line1: 'Pay with Credit Card',
+          line2: '<span class="font-weight-medium">coindirect.com Service Fee</span> : Varies',
+          line3: '',
+          link: '/wallet/topup/coindirect',
+          status: ACTIVE
         }
       ]
     }
@@ -96,5 +105,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'WalletTopup.scss';
+@import 'WalletTopupHome.scss';
 </style>

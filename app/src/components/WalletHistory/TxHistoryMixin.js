@@ -1,43 +1,24 @@
 const {
-  ROPSTEN,
-  RINKEBY,
-  KOVAN,
-  MAINNET,
-  LOCALHOST,
-  GOERLI,
-  RPC,
-  MATIC,
-  ROPSTEN_DISPLAY_NAME,
-  RINKEBY_DISPLAY_NAME,
-  KOVAN_DISPLAY_NAME,
-  MAINNET_DISPLAY_NAME,
-  LOCALHOST_DISPLAY_NAME,
-  GOERLI_DISPLAY_NAME,
-  RPC_DISPLAY_NAME,
-  MATIC_DISPLAY_NAME
+  SUPPORTED_NETWORK_TYPES,
+  ACTIVITY_ACTION_ALL,
+  ACTIVITY_ACTION_TOPUP,
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_PERIOD_ALL,
+  ACTIVITY_PERIOD_MONTH_ONE,
+  ACTIVITY_PERIOD_WEEK_ONE
 } = require('../../utils/enums')
 
-const mapper = {
-  [ROPSTEN]: ROPSTEN_DISPLAY_NAME,
-  [RINKEBY]: RINKEBY_DISPLAY_NAME,
-  [KOVAN]: KOVAN_DISPLAY_NAME,
-  [MAINNET]: MAINNET_DISPLAY_NAME,
-  [LOCALHOST]: LOCALHOST_DISPLAY_NAME,
-  [GOERLI]: GOERLI_DISPLAY_NAME,
-  [RPC]: RPC_DISPLAY_NAME,
-  [MATIC]: MATIC_DISPLAY_NAME
-}
-
 export default {
-  props: ['transactions', 'selectedAction', 'selectedPeriod'],
+  props: ['transactions', 'selectedAction', 'selectedPeriod', 'nonTopupTransactionCount'],
   data() {
     return {
-      mapper: mapper
+      mapper: SUPPORTED_NETWORK_TYPES
     }
   },
   computed: {
     filteredTransactions() {
-      const selectedAction = this.selectedAction === 'All Transactions' ? '' : this.selectedAction
+      const selectedAction = this.selectedAction === ACTIVITY_ACTION_ALL ? '' : this.selectedAction
       var regExAction = new RegExp(selectedAction, 'i')
 
       return this.transactions
@@ -51,15 +32,17 @@ export default {
         .filter(item => {
           // GET Date Scope
           let isScoped = false
-          if (this.selectedPeriod === 'Period') {
+          if (this.selectedPeriod === ACTIVITY_PERIOD_ALL) {
             isScoped = true
           } else {
             let minDate = new Date()
             let itemDate = new Date(item.date)
-            if (this.selectedPeriod === 'Last Week') {
+            if (this.selectedPeriod === ACTIVITY_PERIOD_WEEK_ONE) {
               minDate.setDate(minDate.getDate() - 7)
-            } else {
+            } else if (this.selectedPeriod === ACTIVITY_PERIOD_MONTH_ONE) {
               minDate.setMonth(minDate.getMonth() - 1)
+            } else {
+              minDate.setMonth(minDate.getMonth() - 6)
             }
 
             isScoped = minDate.getTime() <= itemDate.getTime()
@@ -89,11 +72,11 @@ export default {
       }
     },
     getIcon(action) {
-      if (action === 'Topup') {
+      if (action === ACTIVITY_ACTION_TOPUP) {
         return '$vuetify.icons.coins_topup'
-      } else if (action === 'Send') {
+      } else if (action === ACTIVITY_ACTION_SEND) {
         return '$vuetify.icons.coins_send'
-      } else if (action === 'Receive') {
+      } else if (action === ACTIVITY_ACTION_RECEIVE) {
         return '$vuetify.icons.coins_receive'
       }
     },

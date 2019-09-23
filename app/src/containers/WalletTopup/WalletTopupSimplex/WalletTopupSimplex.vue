@@ -1,16 +1,17 @@
 <template>
-  <v-layout wrap>
+  <v-layout wrap class="wallet-topup-simplex">
     <v-flex xs12>
       <p class="body-2">
-        Simplex is a secure way to buy CryptoCurrency with your credit card. Start by entering an amount to get a quote before making your purchase.
+        Simplex is a secure way to buy CryptoCurrency with your credit card. Start by entering an amount to get a quote before making your purchase
       </p>
     </v-flex>
 
-    <v-flex xs12>
+    <v-flex xs9>
       <v-form ref="inputForm" v-model="formValid" lazy-validation @submit.prevent>
         <v-flex xs12>
           <div class="subtitle-2">You send</div>
           <v-text-field
+            id="simplex-you-send"
             class="unique-hint"
             placeholder="0.00 (Min 50.00)"
             outlined
@@ -31,18 +32,10 @@
                 <div class="v-messages__message d-flex torus_text--text text--lighten-4">
                   <v-flex class="px-3">
                     * Includes 5% Simplex Service Fees or 10 USD (whichever higher)
-                    <v-tooltip class="torus-tooltip" bottom>
-                      <template v-slot:activator="{ on }">
-                        <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
-                      </template>
-                      <span>
-                        <div class="primary--text subtitle-2">Simplex Service Fee</div>
-                        <v-divider class="my-2"></v-divider>
-                        <div class="body-2">
-                          This fee goes entirely to Simplex for their services in credit card processing, mitigation and fraud detection.
-                        </div>
-                      </span>
-                    </v-tooltip>
+                    <HelpTooltip
+                      title="Simplex Service Fee"
+                      description="This fee goes entirely to Simplex for their services in credit card processing, mitigation and fraud detection."
+                    ></HelpTooltip>
                   </v-flex>
                   <v-flex grow-shrink-0>
                     <span>min 50 USD*</span>
@@ -56,6 +49,7 @@
         <v-flex xs12>
           <div class="subtitle-2">Receive</div>
           <v-text-field
+            id="simplex-receive"
             readonly
             placeholder="0.00"
             suffix="ETH"
@@ -71,19 +65,18 @@
     <v-flex xs12>
       <div class="mt-12 mb-6 torus_text--text text--lighten-4">
         <div>
-          <img :src="require(`../../../public/img/icons/info-circle.svg`)" class="help-icon" />
+          <img :src="require(`../../../../public/img/icons/info-circle.svg`)" class="help-icon" />
           <small class="d-inline ml-2">The process would take approximately 10 - 15 mins.</small>
         </div>
 
         <div>
-          <img :src="require(`../../../public/img/icons/info-circle.svg`)" class="help-icon" />
+          <img :src="require(`../../../../public/img/icons/info-circle.svg`)" class="help-icon" />
           <small class="d-inline ml-2">Please prepare your Identity Card/Passport to complete the purchase.</small>
         </div>
       </div>
     </v-flex>
     <v-flex xs12>
       <div class="text-right">
-        <v-btn class="mr-3" text @click.prevent="provider = ''">Back</v-btn>
         <v-tooltip bottom :disabled="formValid">
           <template v-slot:activator="{ on }">
             <span v-on="on">
@@ -102,8 +95,9 @@
 
 <script>
 import throttle from 'lodash.throttle'
-import { significantDigits, formatCurrencyNumber } from '../../utils/utils'
-import { postQuote, postOrder } from '../../plugins/simplex'
+import { significantDigits, formatCurrencyNumber } from '../../../utils/utils'
+import { postQuote, postOrder } from '../../../plugins/simplex'
+import HelpTooltip from '../../../components/helpers/HelpTooltip'
 
 const MIN_ORDER_VALUE = 50
 const MAX_ORDER_VALUE = 20000
@@ -111,6 +105,9 @@ const MAX_ORDER_VALUE = 20000
 const validSimplexCurrencies = ['USD', 'EUR']
 
 export default {
+  components: {
+    HelpTooltip
+  },
   data() {
     return {
       fiatValue: 0,
@@ -239,5 +236,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'WalletTopup.scss';
+@import 'WalletTopupSimplex.scss';
 </style>

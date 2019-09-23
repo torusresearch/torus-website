@@ -3,7 +3,7 @@ const path = require('path')
 
 let routes = ['/']
 
-if (process.env.TORUS_BUILD_ENV !== 'production') {
+if (process.env.VUE_APP_TORUS_BUILD_ENV !== 'production') {
   routes.push('/login')
 }
 // https://157.230.171.237:8117
@@ -54,7 +54,7 @@ module.exports = {
     //   })
   },
 
-  publicPath: process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/` : '/',
+  publicPath: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ? `/${version}/` : '/',
 
   integrity: true,
   crossorigin: 'anonymous',
@@ -79,17 +79,22 @@ module.exports = {
     appleMobileWebAppStatusBarStyle: 'black',
     workboxPluginMode: 'GenerateSW',
     mainfestPath:
-      process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/manifest.json` : '/manifest.json',
+      process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
+        ? `/${version}/manifest.json`
+        : '/manifest.json',
     manifestOptions: {
       name: 'Torus',
       short_name: 'Torus',
-      start_url: process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging' ? `/${version}/index.html` : '/index.html',
+      start_url:
+        process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
+          ? `/${version}/index.html`
+          : '/index.html',
       display: 'standalone',
       theme_color: '#3996ff',
       icons: [
         {
           src:
-            process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging'
+            process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
               ? `/${version}/img/icons/android-chrome-192x192.png`
               : './img/icons/android-chrome-192x192.png',
           sizes: '192x192',
@@ -97,7 +102,7 @@ module.exports = {
         },
         {
           src:
-            process.env.TORUS_BUILD_ENV === 'production' || process.env.TORUS_BUILD_ENV === 'staging'
+            process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
               ? `/${version}/img/icons/android-chrome-512x512.png`
               : './img/icons/android-chrome-192x192.png',
           sizes: '512x512',

@@ -1,21 +1,13 @@
 <template>
-  <v-flex xs12 md6 mb-5>
+  <v-flex xs12 sm6 mb-3>
     <div class="subtitle-2 mb-1 px-4">
       <span>
         Select your Transaction Speed
-        <v-tooltip class="torus-tooltip" top>
-          <template v-slot:activator="{ on }">
-            <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
-          </template>
-          <span>
-            <div class="primary--text subtitle-2">Transaction Fee</div>
-            <v-divider class="my-2"></v-divider>
-            <div class="body-2">
-              This is a mandatory processing fee users pay to the Ethereum network for each transaction. A higher fee will speed up the transaction
-              process.
-            </div>
-          </span>
-        </v-tooltip>
+        <HelpTooltip
+          title="Transaction Fee"
+          description="This is a mandatory processing fee users pay to the Ethereum network for each transaction.
+          A higher fee will speed up the transaction process."
+        />
       </span>
       <TransferAdvanceOption
         v-if="!$vuetify.breakpoint.xsOnly"
@@ -29,6 +21,7 @@
     <v-layout xs12 justify-space-between wrap v-if="!isAdvanceOption">
       <v-flex xs6 px-4 mb-1>
         <v-btn
+          id="average-speed-btn"
           block
           large
           outlined
@@ -42,6 +35,7 @@
       </v-flex>
       <v-flex xs6 px-4 mb-1>
         <v-btn
+          id="fastest-speed-btn"
           block
           large
           outlined
@@ -62,7 +56,7 @@
         </div>
       </v-flex>
       <v-flex xs4 px-4 class="text-right">
-        <v-btn outlined color="primary" @click="resetAdvanceOption">Reset</v-btn>
+        <v-btn id="adv-reset-btn" outlined color="primary" @click="resetAdvanceOption">Reset</v-btn>
       </v-flex>
     </v-layout>
     <v-layout>
@@ -83,11 +77,13 @@
 <script>
 import { significantDigits } from '../../../utils/utils'
 import TransferAdvanceOption from '../TransferAdvanceOption'
+import HelpTooltip from '../HelpTooltip'
 import log from 'loglevel'
 
 export default {
   components: {
-    TransferAdvanceOption
+    TransferAdvanceOption,
+    HelpTooltip
   },
   props: ['gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol', 'resetSpeed'],
   data() {

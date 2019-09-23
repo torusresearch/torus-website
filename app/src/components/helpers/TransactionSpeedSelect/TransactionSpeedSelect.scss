@@ -1,5 +1,3 @@
-@import '../../../scss/_card-tooltip.mixin';
-
 ::v-deep .button-speed {
   &.v-btn {
     height: inherit;
@@ -13,8 +11,4 @@
 
 .advance-option {
   cursor: pointer;
-}
-
-.v-tooltip__content {
-  @include cardTooltip();
 }

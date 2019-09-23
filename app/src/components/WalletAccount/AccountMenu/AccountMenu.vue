@@ -1,5 +1,5 @@
 <template>
-  <v-card width="400">
+  <v-card width="400" class="account-menu">
     <v-list>
       <v-list-item>
         <v-list-item-avatar class="mr-2 mt-4">
@@ -7,20 +7,23 @@
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title>
-            <div class="font-weight-bold headline text-capitalize">{{ userName }}'s Account</div>
+            <div class="font-weight-bold headline text-capitalize">
+              <span id="account-name">{{ userName }}'s</span>
+              Account
+            </div>
           </v-list-item-title>
           <v-list-item-subtitle>
             <div class="caption">
               <span>{{ userEmail }}</span>
-              <v-icon>{{ isShowSelectedAddress ? $vuetify.icons.visibility_off : $vuetify.icons.visibility_on }}</v-icon>
               <img
+                id="show-address-btn"
                 class="float-right mr-5"
                 width="16"
                 :src="require(`../../../../public/img/icons/eye${isShowSelectedAddress ? '-off' : ''}-primary.svg`)"
                 @click="isShowSelectedAddress = !isShowSelectedAddress"
               />
             </div>
-            <div v-if="isShowSelectedAddress" class="caption">
+            <div v-if="isShowSelectedAddress" class="caption public-address-container">
               <show-tool-tip :address="selectedAddress">{{ selectedAddress }}</show-tool-tip>
             </div>
           </v-list-item-subtitle>
@@ -38,22 +41,22 @@
 
     <v-divider></v-divider>
 
-    <v-list>
-      <v-list-item v-for="(acc, index) in getWallets" :key="acc" @click="changeAccount(acc)">
+    <v-list v-if="wallets.length > 1">
+      <v-list-item v-for="acc in filteredWallets" :key="acc.id" @click="changeAccount(acc.address)">
         <v-list-item-content class="font-weight-bold">
           <v-list-item-title>
-            <div class="font-weight-bold headline text-capitalize text--lighten-4">Account #{{ index + 1 }}</div>
+            <div class="font-weight-bold headline text-capitalize text--lighten-4">Account #{{ acc.id + 1 }}</div>
           </v-list-item-title>
 
-          <v-list-item-subtitle>{{ acc }}</v-list-item-subtitle>
+          <v-list-item-subtitle>{{ acc.address }}</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
     </v-list>
 
-    <v-divider v-if="getWallets.length > 0"></v-divider>
+    <v-divider v-if="wallets.length > 1"></v-divider>
 
     <v-list>
-      <v-list-item @click="accountImportDialog = true">
+      <v-list-item id="import-account-btn" @click="accountImportDialog = true">
         <v-list-item-action class="mr-2">
           <img :src="require('../../../../public/img/icons/import-grey.svg')" />
         </v-list-item-action>
@@ -67,7 +70,14 @@
     <v-divider></v-divider>
 
     <v-list>
-      <v-list-item v-for="headerItem in filteredMenu" :key="headerItem.name" link router :to="headerItem.route">
+      <v-list-item
+        :id="`${headerItem.name}-link-mobile`"
+        v-for="headerItem in filteredMenu"
+        :key="headerItem.name"
+        link
+        router
+        :to="headerItem.route"
+      >
         <v-list-item-action class="mr-2">
           <img :src="require(`../../../../public/img/icons/${headerItem.icon}`)" />
         </v-list-item-action>
@@ -96,6 +106,7 @@ import { significantDigits, addressSlicer } from '../../../utils/utils'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import AccountImport from '../AccountImport'
 import { broadcastChannelOptions } from '../../../utils/utils'
+import torus from '../../../torus'
 
 export default {
   props: ['headerItems'],
@@ -131,8 +142,11 @@ export default {
     selectedCurrency() {
       return this.$store.state.selectedCurrency
     },
-    getWallets() {
-      return Object.keys(this.$store.state.wallet).filter(acc => acc !== this.selectedAddress)
+    wallets() {
+      return Object.keys(this.$store.state.wallet).map((wallet, id) => ({ id: id, address: wallet }))
+    },
+    filteredWallets() {
+      return this.wallets.filter(acc => acc.address !== this.selectedAddress)
     },
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
@@ -158,14 +172,28 @@ export default {
   },
   methods: {
     async logout() {
-      var bc = new BroadcastChannel('torus_logout_channel', broadcastChannelOptions)
-      await bc.postMessage({ data: { type: 'logout' } })
-      bc.close()
+      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      if (urlInstance && urlInstance !== '') {
+        var bc = new BroadcastChannel(`torus_logout_channel_${urlInstance}`, broadcastChannelOptions)
+        await bc.postMessage({ data: { type: 'logout' } })
+        bc.close()
+      }
       this.$store.dispatch('logOut')
       this.$router.push({ path: '/logout' })
     },
-    changeAccount(newAddress) {
+    async changeAccount(newAddress) {
       this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
+      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      if (urlInstance && urlInstance !== '') {
+        const selectedAddressChannel = new BroadcastChannel(`selected_address_channel_${urlInstance}`, broadcastChannelOptions)
+        await selectedAddressChannel.postMessage({
+          data: {
+            name: 'selected_address',
+            payload: newAddress
+          }
+        })
+        selectedAddressChannel.close()
+      }
     }
   }
 }

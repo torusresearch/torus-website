@@ -9,11 +9,10 @@ import store from './store'
 // import torus from './torus'
 
 log.enableAll()
-log.setDefaultLevel('info')
 Vue.config.productionTip = false
 
 // Loglevel init
-const buildEnv = process.env.TORUS_BUILD_ENV
+const buildEnv = process.env.VUE_APP_TORUS_BUILD_ENV
 let logLevel
 switch (buildEnv) {
   case 'staging':
@@ -28,13 +27,16 @@ switch (buildEnv) {
     logLevel = 'debug'
     log.setDefaultLevel(logLevel)
     break
-  default:
+  case 'production':
     logLevel = 'error'
     log.setDefaultLevel(logLevel)
     log.disableAll()
     break
+  default:
+    logLevel = 'error'
+    log.setDefaultLevel(logLevel)
 }
-log.info('TORUS_BUILD_ENV', process.env.TORUS_BUILD_ENV)
+log.info('VUE_APP_TORUS_BUILD_ENV', process.env.VUE_APP_TORUS_BUILD_ENV)
 
 // Object.defineProperty(Vue.prototype, 'torus', { value: torus })
 // Object.defineProperty(Vue.prototype, 'Buffer', { value: Buffer })

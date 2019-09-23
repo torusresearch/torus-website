@@ -7,13 +7,18 @@ import UserInfoRequest from './views/UserInfoRequest'
 import Login from './views/Login'
 import Confirm from './views/Confirm'
 import Wallet from './views/Wallet'
-import WalletTopup from './containers/WalletTopup'
 import WalletHome from './containers/WalletHome'
 import WalletHistory from './containers/WalletHistory'
 import WalletSettings from './containers/WalletSettings'
 import WalletTransfer from './containers/WalletTransfer'
-import WalletTopupSimplex from './containers/WalletTopup/WalletTopupSimplex.vue'
-import WalletTopupMoonpay from './containers/WalletTopup/WalletTopupMoonpay.vue'
+import {
+  WalletTopupHome,
+  WalletTopupSimplex,
+  WalletTopupMoonpay,
+  WalletTopupWyre,
+  WalletTopupCrypto,
+  WalletTopupCoinDirect
+} from './containers/WalletTopup'
 
 // const Popup = () => import('./views/Popup.vue')
 // const Confirm = () => import('./views/Confirm.vue')
@@ -96,7 +101,7 @@ const router = new Router({
         {
           path: 'topup',
           name: 'walletTopup',
-          component: WalletTopup,
+          component: WalletTopupHome,
           children: [
             {
               path: 'simplex',
@@ -107,6 +112,21 @@ const router = new Router({
               path: 'moonpay',
               name: 'walletTopupMoonpay',
               component: WalletTopupMoonpay
+            },
+            {
+              path: 'wyre',
+              name: 'walletTopupWyre',
+              component: WalletTopupWyre
+            },
+            {
+              path: 'crypto',
+              name: 'walletTopupCrypto',
+              component: WalletTopupCrypto
+            },
+            {
+              path: 'coindirect',
+              name: 'walletTopupCoindirect',
+              component: WalletTopupCoinDirect
             }
           ]
         }
@@ -116,12 +136,22 @@ const router = new Router({
   ]
 })
 
-router.beforeResolve((to, ___, next) => {
+function hasQueryParams(route) {
+  return !!Object.keys(route.query).length
+}
+
+router.beforeResolve((to, from, next) => {
   if (to.hasOwnProperty('meta') && to.meta.hasOwnProperty('requiresAuth') && to.meta.requiresAuth === false) {
-    next()
+    if (!hasQueryParams(to) && hasQueryParams(from)) {
+      next({ name: to.name, query: from.query })
+    } else {
+      next()
+    }
   } else {
     if (store.state.selectedAddress === '') {
       next({ name: 'login', query: { redirect: to.path } })
+    } else if (!hasQueryParams(to) && hasQueryParams(from)) {
+      next({ name: to.name, query: from.query })
     } else {
       next()
     }
