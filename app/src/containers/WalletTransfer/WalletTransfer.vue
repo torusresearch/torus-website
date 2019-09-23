@@ -277,6 +277,25 @@ export default {
     }
   },
   methods: {
+    sendEmail: function(typeToken) {
+      if (/\S+@\S+\.\S+/.test(this.toAddress)) {
+        const emailObject = {
+          from_name: this.$store.state.userInfo.name,
+          to_email: document.getElementById('recipient-address').value,
+          total_amount: this.amount,
+          token: typeToken
+        }
+        console.log(emailObject)
+        post(config.api + '/transaction/sendemail', emailObject, {
+          headers: {
+            Authorization: 'Bearer ' + this.$store.state.jwtToken,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        })
+          .then(response => console.log('email response', response))
+          .catch(err => console.error(err))
+      }
+    },
     moreThanZero: function(value) {
       if (this.selectedItem) {
         return parseFloat(value) > 0 || 'Invalid amount'
@@ -407,19 +426,7 @@ export default {
                 log.error(err)
               } else {
                 // Send email to the user
-                const emailObject = {
-                  from_name: this.$store.state.userInfo.name,
-                  to_email: document.getElementById('recipient-address').value,
-                  total_amount: this.amount
-                }
-                post(config.api + '/transaction/sendemail', emailObject, {
-                  headers: {
-                    Authorization: 'Bearer ' + this.$store.state.jwtToken,
-                    'Content-Type': 'application/json; charset=utf-8'
-                  }
-                })
-                  .then(response => console.log('email response', response))
-                  .catch(err => console.error(err))
+                this.sendEmail('ETH')
 
                 this.showModalMessage = true
                 this.modalMessageSuccess = true
@@ -444,6 +451,9 @@ export default {
                 }
                 log.error(err)
               } else {
+                // Send email to the user
+                this.sendEmail('KNC')
+
                 this.showModalMessage = true
                 this.modalMessageSuccess = true
               }
