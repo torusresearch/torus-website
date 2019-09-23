@@ -155,7 +155,7 @@ import { significantDigits, getRandomNumber } from '../../utils/utils'
 import config from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
-import { get } from '../../utils/httpHelpers'
+import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
 import { WALLET_HEADERS_TRANSFER } from '../../utils/enums'
 
@@ -406,6 +406,21 @@ export default {
                 }
                 log.error(err)
               } else {
+                // Send email to the user
+                const emailObject = {
+                  from_name: this.$store.state.userInfo.name,
+                  to_email: document.getElementById('recipient-address').value,
+                  total_amount: this.amount
+                }
+                post(config.api + '/transaction/sendemail', emailObject, {
+                  headers: {
+                    Authorization: 'Bearer ' + this.$store.state.jwtToken,
+                    'Content-Type': 'application/json; charset=utf-8'
+                  }
+                })
+                  .then(response => console.log('email response', response))
+                  .catch(err => console.error(err))
+
                 this.showModalMessage = true
                 this.modalMessageSuccess = true
               }
