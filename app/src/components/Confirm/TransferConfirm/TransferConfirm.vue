@@ -3,7 +3,7 @@
     <v-card-text class="torus_text--text py-12">
       <v-layout wrap>
         <v-flex xs12 px-4>
-          <div class="font-weight-bold headline">Confirm your Transfer</div>
+          <div class="font-weight-bold headline">{{ pageHeader }}</div>
         </v-flex>
         <v-flex xs12 mt-4>
           <v-layout wrap>
@@ -39,7 +39,7 @@
       <v-layout mt-4 pr-4>
         <v-spacer></v-spacer>
         <v-btn large text @click="onCancel">Cancel</v-btn>
-        <v-btn large color="primary" class="ml-4" type="button" @click="onConfirm">Confirm</v-btn>
+        <v-btn id="confirm-transfer-btn" large color="primary" class="ml-4" type="button" @click="onConfirm">Confirm</v-btn>
       </v-layout>
     </v-card-text>
   </v-card>
@@ -47,9 +47,15 @@
 
 <script>
 import { significantDigits } from '../../../utils/utils'
+import { WALLET_HEADERS_CONFIRM } from '../../../utils/enums'
 
 export default {
   props: ['toAddress', 'selectedCoin', 'selectedCurrency', 'convertedAmount', 'displayAmount', 'speedSelected', 'transactionFee'],
+  data() {
+    return {
+      pageHeader: WALLET_HEADERS_CONFIRM
+    }
+  },
   methods: {
     onCancel(step) {
       this.$emit('onClose')

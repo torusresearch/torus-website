@@ -21,3 +21,5 @@ yarn-error.log*
 *.sw*
 
 embed.min.js
+.nyc_output
+coverage

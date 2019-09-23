@@ -1,9 +1,12 @@
 <template>
-  <v-container py-6 px-0>
+  <v-container py-6 px-0 class="confirm-container">
     <template v-if="type === 'transaction'">
-      <v-layout align-center mx-6 mb-6>
-        <div class="torus_text--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-4' : ''">{{ header }}</div>
-        <img :src="require('../../../public/img/icons/transaction.svg')" class="ml-2" />
+      <v-layout wrap align-center mx-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
+        <div class="torus_text--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">{{ header }}</div>
+      </v-layout>
+      <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
+        <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
+        <span class="caption ml-1 torus_text--text text--lighten-3 text-capitalize">{{ selectedNetwork }}</span>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-4 mx-6>
@@ -29,38 +32,38 @@
           <v-divider></v-divider>
           <div>
             <span class="subtitle-2">Cost of Transaction</span>
-            <span class="subtitle-1 float-right blue--text font-weight-bold">{{ costOfTransaction }}</span>
+            <span class="subtitle-1 float-right primary--text font-weight-bold">{{ costOfTransaction }}</span>
           </div>
           <div v-if="isOtherToken" class="clearfix">
-            <span class="subtitle-1 float-right blue--text font-weight-bold">+ {{ significantDigits(this.gasCost) }} ETH</span>
+            <span class="subtitle-1 float-right primary--text font-weight-bold">+ {{ significantDigits(this.gasCost) }} ETH</span>
           </div>
           <div class="caption float-right clearfix">{{ costOfTransactionConverted }}</div>
         </v-flex>
         <v-flex xs12 mb-3 mt-3>
           <v-dialog v-model="detailsDialog" width="600px">
             <template v-slot:activator="{ on }">
-              <div class="subtitle-2 float-right blue--text mx-6" v-on="on">More Details</div>
+              <div id="more-details-link" class="subtitle-2 float-right primary--text mx-6" v-on="on">More Details</div>
             </template>
-            <v-card class="pa-4" color="background_2">
+            <v-card class="pa-4 more-details-container" color="background_2">
               <v-card-text class="torus_text--text">
                 <v-layout wrap>
                   <v-flex xs4 sm2>
                     Rate
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
+                  <v-flex id="currency-rate" xs8 sm10 class="torus_text--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
                   <v-flex xs4 sm2>
                     Network
                     <span class="float-right mr-4">:</span>
                   </v-flex>
                   <v-flex xs8 sm10 class="torus_text--text text--lighten-4">
-                    <span class="text-capitalize">{{ networkName }}</span>
+                    <span id="network" class="text-capitalize">{{ networkName }}</span>
                   </v-flex>
                   <v-flex xs4 sm2>
                     Type
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">{{ header }}</v-flex>
+                  <v-flex id="type" xs8 sm10 class="torus_text--text text--lighten-4">{{ header }}</v-flex>
                   <v-flex xs2 v-if="txData || txDataParams !== ''">
                     Data
                     <span class="float-right mr-4">:</span>
@@ -82,7 +85,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary" text @click="detailsDialog = false">Less Details</v-btn>
+                <v-btn id="less-details-link" color="primary" text @click="detailsDialog = false">Less Details</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -107,7 +110,7 @@
           <v-flex xs6>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
               <template v-slot:activator="{ on }">
-                <v-btn :disabled="!canApprove" block depressed large color="primary" class="ml-2" v-on="on">Confirm</v-btn>
+                <v-btn id="confirm-btn" :disabled="!canApprove" block depressed large color="primary" class="ml-2" v-on="on">Confirm</v-btn>
               </template>
               <transfer-confirm
                 :toAddress="receiver"
@@ -127,9 +130,12 @@
     </template>
 
     <template v-if="type === 'message'">
-      <v-layout align-center mx-6 mb-6>
+      <v-layout align-center mx-6 mb-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
         <div class="text-black font-weight-bold headline float-left">Permissions</div>
-        <img :src="require('../../../public/img/icons/lock.svg')" width="16" class="ml-2" />
+      </v-layout>
+      <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
+        <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
+        <span class="caption ml-1 torus_text--text text--lighten-3 text-capitalize">{{ selectedNetwork }}</span>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-6 mx-6>
@@ -137,7 +143,7 @@
 
           <v-card flat class="grey lighten-3">
             <v-card-text>
-              <div class="subtitle-2 blue--text">{{ origin }}</div>
+              <div class="subtitle-2 primary--text">{{ origin }}</div>
             </v-card-text>
             <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
           </v-card>
@@ -214,26 +220,15 @@ const contracts = require('eth-contract-metadata')
 const log = require('loglevel')
 
 const {
-  ROPSTEN,
-  RINKEBY,
-  KOVAN,
-  MAINNET,
-  LOCALHOST,
-  GOERLI,
   RPC,
-  ROPSTEN_DISPLAY_NAME,
-  RINKEBY_DISPLAY_NAME,
-  KOVAN_DISPLAY_NAME,
-  MAINNET_DISPLAY_NAME,
-  LOCALHOST_DISPLAY_NAME,
-  GOERLI_DISPLAY_NAME,
   RPC_DISPLAY_NAME,
   CONTRACT_INTERACTION_KEY,
   DEPLOY_CONTRACT_ACTION_KEY,
   TOKEN_METHOD_APPROVE,
   TOKEN_METHOD_TRANSFER,
   TOKEN_METHOD_TRANSFER_FROM,
-  SEND_ETHER_ACTION_KEY
+  SEND_ETHER_ACTION_KEY,
+  SUPPORTED_NETWORK_TYPES
 } = require('../../utils/enums')
 
 const weiInGwei = 10 ** 9
@@ -290,38 +285,24 @@ export default {
       typedMessages: {},
       id: 0,
       networks: [
+        ...Object.values(SUPPORTED_NETWORK_TYPES),
         {
-          name: MAINNET_DISPLAY_NAME,
-          value: MAINNET
-        },
-        {
-          name: ROPSTEN_DISPLAY_NAME,
-          value: ROPSTEN
-        },
-        {
-          name: RINKEBY_DISPLAY_NAME,
-          value: RINKEBY
-        },
-        {
-          name: KOVAN_DISPLAY_NAME,
-          value: KOVAN
-        },
-        {
-          name: GOERLI_DISPLAY_NAME,
-          value: GOERLI
-        },
-        {
-          name: LOCALHOST_DISPLAY_NAME,
-          value: LOCALHOST
-        },
-        {
-          name: RPC_DISPLAY_NAME,
-          value: RPC
+          networkName: RPC_DISPLAY_NAME,
+          host: RPC,
+          chainId: ''
         }
       ]
     }
   },
   computed: {
+    selectedNetwork() {
+      let finalNetwork = ''
+      finalNetwork =
+        !this.$store.state.networkType.networkName || this.$store.state.networkType.networkName === ''
+          ? this.$store.state.networkType.host
+          : this.$store.state.networkType.networkName
+      return finalNetwork
+    },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
     },
@@ -479,6 +460,9 @@ export default {
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
         this.canApprove = false
+      } else {
+        this.errorMsg = ''
+        this.canApprove = true
       }
     },
     gasKnob: function(newGasKnob, oldGasKnob) {
@@ -539,11 +523,9 @@ export default {
       }
     },
     getNetworkName(targetNetwork) {
-      const networkName = this.networks.find(network => {
-        return network.value === targetNetwork
-      })
-
-      return networkName.name
+      const foundNetwork = this.networks.find(network => network.host === targetNetwork)
+      if (foundNetwork === -1) return 'UnKnown Network'
+      return foundNetwork.networkName
     },
     getDate() {
       const currentDateTime = new Date()
@@ -632,8 +614,14 @@ export default {
         if (methodParams) {
           const pairs = checkSummedTo
           const query = `contract_addresses=${pairs}&vs_currencies=eth`
-          const prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
-          const tokenPrice = prices[checkSummedTo.toLowerCase()].eth //token price in eth
+          let prices = {}
+          try {
+            prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
+          } catch (error) {
+            log.info(error)
+          }
+          const tokenPrice = //token price in eth
+            prices[checkSummedTo.toLowerCase()] && prices[checkSummedTo.toLowerCase()].eth ? prices[checkSummedTo.toLowerCase()].eth : 0
           this.tokenPrice = tokenPrice
           this.amountTokenValueConverted =
             tokenPrice * parseFloat(this.amountValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]

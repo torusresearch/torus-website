@@ -54,6 +54,7 @@ app.get('*', (req, res) => {
 // app.use(express.static('public'))
 
 https.createServer(certOptions, app).listen(APP_PORT)
+// http.createServer(app).listen(APP_PORT)
 log.info('listening to port ' + APP_PORT)
 
 if (process.env.NODE_ENV === 'production') {

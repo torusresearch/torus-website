@@ -3,9 +3,44 @@ import log from 'loglevel'
 import pump from 'pump'
 import stream from 'stream'
 import torus from '../torus'
-import { MAINNET, RPC } from '../utils/enums'
+import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, USER_INFO_REQUEST_NEW } from '../utils/enums'
 import VuexStore from './store'
 import { broadcastChannelOptions } from '../utils/utils'
+
+// /**
+//  * Checks whether a storage type is available or not
+//  * For more info on how this works, please refer to MDN documentation
+//  * https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
+//  *
+//  * @method storageAvailable
+//  * @param {String} type the type of storage ('localStorage', 'sessionStorage')
+//  * @returns {Boolean} a boolean indicating whether the specified storage is available or not
+//  */
+// function storageAvailable(type) {
+//   var storage
+//   try {
+//     storage = window[type]
+//     var x = '__storage_test__'
+//     storage.setItem(x, x)
+//     storage.removeItem(x)
+//     return true
+//   } catch (e) {
+//     return (
+//       e &&
+//       // everything except Firefox
+//       (e.code === 22 ||
+//         // Firefox
+//         e.code === 1014 ||
+//         // test name field too, because code might not be present
+//         // everything except Firefox
+//         e.name === 'QuotaExceededError' ||
+//         // Firefox
+//         e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+//       // acknowledge QuotaExceededError only if there's something already stored
+//       (storage && storage.length !== 0)
+//     )
+//   }
+// }
 
 /* 
 Edited to change networkId => network state. Has an implication of changing neworkVersion 
@@ -16,22 +51,24 @@ torus.torusController.networkController.networkStore.subscribe(function(state) {
   VuexStore.dispatch('updateNetworkId', { networkId: state })
 })
 
-if (window.localStorage) {
-  // listen to changes on localstorage
-  window.addEventListener(
-    'storage',
-    function() {
-      const network = localStorage.getItem('torus_network_type') || MAINNET
-      if (network !== RPC && network !== VuexStore.state.networkType) {
-        VuexStore.dispatch('setProviderType', { network })
-      }
-      if (network === RPC && localStorage.getItem('torus_custom_rpc') !== VuexStore.state.rpcDetails) {
-        VuexStore.dispatch('setProviderType', { network: JSON.parse(localStorage.getItem('torus_custom_rpc')), type: RPC })
-      }
-    },
-    false
-  )
-}
+// if (storageAvailable('sessionStorage')) {
+//   function storageHandler() {
+//     log.info('calling twice 1 session')
+//     const sessionData = sessionStorage.getItem('torus-app')
+//     const networkType = (JSON.parse(sessionData) && JSON.parse(sessionData).networkType) || {
+//       host: MAINNET,
+//       chainId: MAINNET_CODE,
+//       networkName: MAINNET_DISPLAY_NAME
+//     }
+//     if (networkType.host !== VuexStore.state.networkType.host) {
+//       if (SUPPORTED_NETWORK_TYPES.includes(networkType.host)) VuexStore.dispatch('setProviderType', { network: networkType })
+//       else VuexStore.dispatch('setProviderType', { network: networkType, type: RPC })
+//     }
+//   }
+//   // listen to changes on sessionStorage
+//   window.removeEventListener('storage', storageHandler, false)
+//   window.addEventListener('storage', storageHandler, false)
+// }
 
 // setup handlers for communicationStream
 var passthroughStream = new stream.PassThrough({ objectMode: true })
@@ -44,11 +81,37 @@ torus.communicationMux.getStream('oauth').on('data', function(chunk) {
 })
 
 torus.communicationMux.getStream('show_wallet').on('data', function(chunk) {
-  VuexStore.dispatch('showWalletPopup', { network: chunk.data.calledFromEmbed })
+  VuexStore.dispatch('showWalletPopup', { path: chunk.data.path || '' })
 })
 
-torus.communicationMux.getStream('provider_change').on('data', function(chunk) {
-  VuexStore.dispatch('showProviderChangePopup', { ...chunk.data })
+torus.communicationMux.getStream('show_provider_change').on('data', function(chunk) {
+  if (chunk.name === 'show_provider_change') {
+    const providerChangeStatus = torus.communicationMux.getStream('provider_change_status')
+    if (chunk.data.override) {
+      VuexStore.dispatch('setProviderType', chunk.data)
+        .then(() => {
+          setTimeout(() => {
+            providerChangeStatus.write({
+              name: 'provider_change_status',
+              data: {
+                success: true
+              }
+            })
+          }, 100)
+        })
+        .catch(err => {
+          providerChangeStatus.write({
+            name: 'provider_change_status',
+            data: {
+              success: false,
+              err: err
+            }
+          })
+        })
+    } else {
+      VuexStore.dispatch('showProviderChangePopup', { ...chunk.data })
+    }
+  }
 })
 
 torus.communicationMux.getStream('logout').on('data', function(chunk) {
@@ -57,7 +120,23 @@ torus.communicationMux.getStream('logout').on('data', function(chunk) {
 
 const userInfoStream = torus.communicationMux.getStream('user_info')
 userInfoStream.on('data', function(chunk) {
-  if (chunk.name === 'user_info_request') VuexStore.dispatch('showUserInfoRequestPopup', { ...chunk.data })
+  if (chunk.name === 'user_info_request') {
+    const userInfoRequestChannel = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`, broadcastChannelOptions)
+    switch (VuexStore.state.userInfoAccess) {
+      case USER_INFO_REQUEST_APPROVED:
+        userInfoRequestChannel.postMessage({
+          data: { type: 'confirm-user-info-request', approve: true }
+        })
+        break
+      case USER_INFO_REQUEST_REJECTED:
+        userInfoRequestChannel.postMessage({ data: { type: 'deny-user-info-request', approve: false } })
+        break
+      case USER_INFO_REQUEST_NEW:
+      default:
+        VuexStore.dispatch('showUserInfoRequestPopup', { ...chunk.data })
+        break
+    }
+  }
 })
 
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
@@ -115,17 +194,37 @@ bc.onmessage = function(ev) {
   }
 }
 
-var providerChangeChannel = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
+var providerChangeChannel = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
 providerChangeChannel.onmessage = function(ev) {
   if (ev.data && ev.data.type === 'confirm-provider-change' && ev.data.approve) {
     log.info('Provider change approved', ev.data.payload)
+    const providerChangeStatus = torus.communicationMux.getStream('provider_change_status')
     VuexStore.dispatch('setProviderType', ev.data.payload)
+      .then(() => {
+        setTimeout(() => {
+          providerChangeStatus.write({
+            name: 'provider_change_status',
+            data: {
+              success: true
+            }
+          })
+        }, 100)
+      })
+      .catch(err => {
+        providerChangeStatus.write({
+          name: 'provider_change_status',
+          data: {
+            success: false,
+            err: err
+          }
+        })
+      })
   } else if (ev.data && ev.data.type === 'deny-provider-change') {
     log.info('Provider change denied')
   }
 }
 
-var logoutChannel = new BroadcastChannel('torus_logout_channel', broadcastChannelOptions)
+var logoutChannel = new BroadcastChannel(`torus_logout_channel_${torus.instanceId}`, broadcastChannelOptions)
 logoutChannel.onmessage = function(ev) {
   log.info('received logging message', ev)
   if (ev.data && ev.data.type === 'logout') {
@@ -138,14 +237,16 @@ var userInfoRequestChannel = new BroadcastChannel(`user_info_request_channel_${t
 userInfoRequestChannel.onmessage = function(ev) {
   if (ev.data && ev.data.type === 'confirm-user-info-request' && ev.data.approve) {
     log.info('User Info Request approved')
+    VuexStore.dispatch('updateUserInfoAccess', { approved: true })
     userInfoStream.write({ name: 'user_info_response', data: { payload: VuexStore.state.userInfo, approved: true } })
-  } else if (ev.data && ev.data.tyep === 'deny-user-info-request') {
-    log.info('User Info Request deined')
-    userInfoStream.write({ name: 'user_info_response', data: { payload: VuexStore.state.userInfo, approved: false } })
+  } else if (ev.data && ev.data.type === 'deny-user-info-request') {
+    log.info('User Info Request denied')
+    VuexStore.dispatch('updateUserInfoAccess', { approved: false })
+    userInfoStream.write({ name: 'user_info_response', data: { payload: {}, approved: false } })
   }
 }
 
-var accountImportChannel = new BroadcastChannel('account_import_channel', broadcastChannelOptions)
+var accountImportChannel = new BroadcastChannel(`account_import_channel_${torus.instanceId}`, broadcastChannelOptions)
 accountImportChannel.onmessage = function(ev) {
   if (ev.data && ev.data.name === 'imported_account' && ev.data.payload) {
     log.info('importing user account')
@@ -155,7 +256,7 @@ accountImportChannel.onmessage = function(ev) {
   }
 }
 
-var selectedAddressChannel = new BroadcastChannel('selected_address_channel', broadcastChannelOptions)
+var selectedAddressChannel = new BroadcastChannel(`selected_address_channel_${torus.instanceId}`, broadcastChannelOptions)
 selectedAddressChannel.onmessage = function(ev) {
   if (ev.data && ev.data.name == 'selected_address' && ev.data.payload) {
     log.info('setting selected address')

@@ -2,7 +2,7 @@ import BroadcastChannel from 'broadcast-channel'
 import log from 'loglevel'
 import config from '../config'
 import torus from '../torus'
-import { RPC } from '../utils/enums'
+import { RPC, USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, SUPPORTED_NETWORK_TYPES } from '../utils/enums'
 import { getRandomNumber, broadcastChannelOptions } from '../utils/utils'
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
@@ -16,6 +16,7 @@ let totalFailCount = 0
 
 // stream to send logged in status
 const statusStream = torus.communicationMux.getStream('status')
+const oauthStream = torus.communicationMux.getStream('oauth')
 
 var walletWindow
 
@@ -82,8 +83,12 @@ export default {
     }
   },
   showProviderChangePopup(context, payload) {
-    var bc = new BroadcastChannel('torus_provider_change_channel', broadcastChannelOptions)
-    window.open(`${baseRoute}providerchange`, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600')
+    var bc = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
+    window.open(
+      `${baseRoute}providerchange?instanceId=${torus.instanceId}`,
+      '_blank',
+      'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
+    )
     bc.onmessage = async ev => {
       if (ev.data === 'popup-loaded') {
         await bc.postMessage({
@@ -118,7 +123,11 @@ export default {
   showWalletPopup(context, payload) {
     walletWindow =
       walletWindow ||
-      window.open(`${baseRoute}wallet`, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=750')
+      window.open(
+        `${baseRoute}wallet${payload.path || ''}?instanceId=${torus.instanceId}`,
+        '_blank',
+        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=750'
+      )
     walletWindow.blur()
     setTimeout(walletWindow.focus(), 0)
     walletWindow.onbeforeunload = function() {
@@ -160,7 +169,7 @@ export default {
         .then(privKey => {
           dispatch('finishImportAccount', { privKey })
             .then(() => {
-              const accountImportChannel = new BroadcastChannel('account_import_channel', broadcastChannelOptions)
+              const accountImportChannel = new BroadcastChannel(`account_import_channel_${torus.instanceId}`, broadcastChannelOptions)
               accountImportChannel
                 .postMessage({
                   data: {
@@ -191,6 +200,10 @@ export default {
         .catch(err => reject(err))
     })
   },
+  updateUserInfoAccess({ commit }, payload) {
+    if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
+    else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
+  },
   updateTransactions({ commit }, payload) {
     commit('setTransactions', payload.transactions)
   },
@@ -219,49 +232,56 @@ export default {
     torus.updateStaticData({ networkId: payload.networkId })
   },
   setProviderType(context, payload) {
+    let networkType = payload.network
+    if (SUPPORTED_NETWORK_TYPES[networkType.host]) {
+      networkType = SUPPORTED_NETWORK_TYPES[networkType.host]
+    }
+    context.commit('setNetworkType', networkType)
     if (payload.type && payload.type === RPC) {
-      context.commit('setNetworkType', RPC)
-      context.commit('setRPCDetails', payload.network)
-      localStorage.setItem('torus_custom_rpc', JSON.stringify(payload.network))
-      localStorage.setItem('torus_network_type', RPC)
-      torus.torusController.setCustomRpc(payload.network.networkUrl, payload.network.chainId, 'ETH', payload.network.networkName)
+      return torus.torusController.setCustomRpc(networkType.host, networkType.chainId, 'ETH', networkType.networkName)
     } else {
-      context.commit('setNetworkType', payload.network)
-      localStorage.setItem('torus_network_type', payload.network)
-      torus.torusController.networkController.setProviderType(payload.network)
+      return torus.torusController.networkController.setProviderType(networkType.host)
     }
   },
   triggerLogin: function({ dispatch }, { calledFromEmbed }) {
     // log.error('Could not find window.auth2, might not be loaded yet')
     ;(function gapiLoadCall() {
       if (window.auth2) {
-        window.auth2.signIn().then(function(googleUser) {
-          log.info('GOOGLE USER: ', googleUser)
-          let profile = googleUser.getBasicProfile()
-          let domain = googleUser.getHostedDomain()
-          log.info('Domain: ', domain)
-          // log.info(googleUser)
-          log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
-          log.info('Name: ' + profile.getName())
-          log.info('Image URL: ' + profile.getImageUrl())
-          log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
-          dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
-          let email = profile.getEmail()
-          let name = profile.getName()
-          let profileImage = profile.getImageUrl()
-          dispatch('updateUserInfo', { userInfo: { profileImage, name, email } })
-          const { torusNodeEndpoints } = config
-          window.gapi.auth2
-            .getAuthInstance()
-            .disconnect()
-            .then(() => {
-              const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
-              dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-            })
-            .catch(function(err) {
-              log.error(err)
-            })
-        })
+        window.auth2
+          .signIn()
+          .then(function(googleUser) {
+            log.info('GOOGLE USER: ', googleUser)
+            let profile = googleUser.getBasicProfile()
+            let domain = googleUser.getHostedDomain()
+            log.info('Domain: ', domain)
+            // log.info(googleUser)
+            log.info('ID: ' + profile.getId()) // Do not send to your backend! Use an ID token instead.
+            log.info('Name: ' + profile.getName())
+            log.info('Image URL: ' + profile.getImageUrl())
+            log.info('Email: ' + profile.getEmail()) // This is null if the 'email' scope is not present.
+            dispatch('updateIdToken', { idToken: googleUser.getAuthResponse().id_token })
+            let email = profile.getEmail()
+            let name = profile.getName()
+            let profileImage = profile.getImageUrl()
+            dispatch('updateUserInfo', { userInfo: { profileImage, name, email } })
+            const { torusNodeEndpoints } = config
+            window.gapi.auth2
+              .getAuthInstance()
+              .disconnect()
+              .then(() => {
+                const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
+                dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+              })
+              .catch(err => {
+                log.error(err)
+                oauthStream.write({ err: 'something went wrong' })
+              })
+          })
+          .catch(err => {
+            // called when something goes wrong like user closes popup
+            log.error(err)
+            oauthStream.write({ err: 'popup closed' })
+          })
       } else {
         setTimeout(gapiLoadCall, 1000)
       }
@@ -338,11 +358,13 @@ export default {
       .then(async response => {
         const data = response[0]
         const message = response[1]
-        dispatch('addWallet', data)
-        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
+        dispatch('addWallet', data) // synchronus
+        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
         dispatch('subscribeToControllers')
-        await dispatch('initTorusKeyring', data)
-        await dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
+        await Promise.all([
+          dispatch('initTorusKeyring', data),
+          dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
+        ])
 
         // continue enable function
         var ethAddress = data.ethAddress
@@ -351,7 +373,7 @@ export default {
             torus.continueEnable(ethAddress)
           }, 50)
         }
-        statusStream.write({ loggedIn: true })
+        statusStream.write({ loggedIn: true, rehydrate: false })
         dispatch('loginInProgress', false)
       })
       .catch(err => {
@@ -444,7 +466,7 @@ export default {
     })
   },
   async rehydrate({ state, dispatch }, payload) {
-    let { selectedAddress, wallet, networkType, rpcDetails, jwtToken } = state
+    let { selectedAddress, wallet, networkType, jwtToken } = state
     try {
       // if jwtToken expires, logout
       if (jwtToken) {
@@ -454,17 +476,16 @@ export default {
           return
         }
       }
-      if (networkType && networkType !== RPC) {
-        dispatch('setProviderType', { network: networkType })
-      } else if (networkType && networkType === RPC && rpcDetails) {
-        dispatch('setProviderType', { network: rpcDetails, type: RPC })
-      }
+      if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
+      else await dispatch('setProviderType', { network: networkType, type: RPC })
       if (selectedAddress && wallet[selectedAddress]) {
         dispatch('updateSelectedAddress', { selectedAddress })
         setTimeout(() => dispatch('subscribeToControllers'), 50)
-        await torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet))
-        await dispatch('setUserInfo', { token: jwtToken, calledFromEmbed: false })
-        statusStream.write({ loggedIn: true })
+        await Promise.all([
+          torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet)),
+          dispatch('setUserInfo', { token: jwtToken, calledFromEmbed: false })
+        ])
+        statusStream.write({ loggedIn: true, rehydrate: true })
         log.info('rehydrated wallet')
         torus.web3.eth.net
           .getId()

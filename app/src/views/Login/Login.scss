@@ -1,3 +1,27 @@
+.login-panel-left {
+  background-color: #ffffff;
+}
+
+.login-panel-right {
+  background-image: url('/images/login-bg.png');
+  background-repeat: no-repeat;
+  background-position: left top;
+  background-size: auto 100%;
+  background-color: #0364FF;
+
+  .caption {
+    width: 80%;
+    margin: auto
+  }
+}
+
+.login-btn {
+  width: 70%;
+  ::v-deep .v-btn__content {
+    justify-content: left; 
+  }
+}
+
 a {
   text-decoration: none;
 }
@@ -9,10 +33,8 @@ a {
 }
 
 .background-login {
+  color: #0F1222;
   position: relative;
-  background-image: url('/images/footer_waves.png');
-  background-repeat: no-repeat;
-  background-position: center bottom;
   @extend .default;
 
   @media only screen and (min-width: 1264px) {
