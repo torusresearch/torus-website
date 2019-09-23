@@ -90,7 +90,7 @@ jobs:
       - run:
           name: "Build code for torus website"
           command: |
-            npm version minor -m 'Updating version to %s [skip ci]' && npm run build && . ./scripts/gitPush.sh
+            npm version patch -m 'Updating version to %s [skip ci]' && npm run build && . ./scripts/gitPush.sh
       - persist_to_workspace:
           root: ~/torus-website/
           paths:
@@ -106,7 +106,7 @@ jobs:
       - run:
           name: "Build code for torus staging website"
           command: |
-            npm version minor -m 'Updating version to %s [skip ci]' && npm run build:staging && . ./scripts/gitPush.sh
+            npm version patch -m 'Updating version to %s [skip ci]' && npm run build:staging && . ./scripts/gitPush.sh
       - persist_to_workspace:
           root: ~/torus-website/
           paths:

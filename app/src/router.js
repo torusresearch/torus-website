@@ -11,7 +11,14 @@ import WalletHome from './containers/WalletHome'
 import WalletHistory from './containers/WalletHistory'
 import WalletSettings from './containers/WalletSettings'
 import WalletTransfer from './containers/WalletTransfer'
-import { WalletTopupHome, WalletTopupSimplex, WalletTopupMoonpay, WalletTopupWyre, WalletTopupCrypto } from './containers/WalletTopup'
+import {
+  WalletTopupHome,
+  WalletTopupSimplex,
+  WalletTopupMoonpay,
+  WalletTopupWyre,
+  WalletTopupCrypto,
+  WalletTopupCoinDirect
+} from './containers/WalletTopup'
 
 // const Popup = () => import('./views/Popup.vue')
 // const Confirm = () => import('./views/Confirm.vue')
@@ -115,6 +122,11 @@ const router = new Router({
               path: 'crypto',
               name: 'walletTopupCrypto',
               component: WalletTopupCrypto
+            },
+            {
+              path: 'coindirect',
+              name: 'walletTopupCoindirect',
+              component: WalletTopupCoinDirect
             }
           ]
         }
@@ -124,12 +136,22 @@ const router = new Router({
   ]
 })
 
-router.beforeResolve((to, ___, next) => {
+function hasQueryParams(route) {
+  return !!Object.keys(route.query).length
+}
+
+router.beforeResolve((to, from, next) => {
   if (to.hasOwnProperty('meta') && to.meta.hasOwnProperty('requiresAuth') && to.meta.requiresAuth === false) {
-    next()
+    if (!hasQueryParams(to) && hasQueryParams(from)) {
+      next({ name: to.name, query: from.query })
+    } else {
+      next()
+    }
   } else {
     if (store.state.selectedAddress === '') {
       next({ name: 'login', query: { redirect: to.path } })
+    } else if (!hasQueryParams(to) && hasQueryParams(from)) {
+      next({ name: to.name, query: from.query })
     } else {
       next()
     }
