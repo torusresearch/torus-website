@@ -153,7 +153,7 @@ export default class TorusKeyring extends EventEmitter {
         } else {
           signature = sigUtil.signTypedData(privKey, { data: parsedData })
         }
-        resolve(sig)
+        resolve(signature)
       } catch (error) {
         reject(error)
       }
