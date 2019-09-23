@@ -1,9 +1,6 @@
 export default {
   background_body: '#ffffff',
-  background: '#ffffff',
-  background_2: '#eef2f4',
-  background_3: '#e8edef',
-  background_4: '#ffffff',
+  background: '#9E9E9E',
   error: '#e20d0d',
   success: '#2dcc70',
   disabled: '#eef2f4',

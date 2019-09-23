@@ -32,7 +32,7 @@
       </template>
       <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length" class="pa-0 ma-0" style="height: inherit" v-show="item.etherscanLink !== ''">
-          <v-flex xs12 class="card-shadow background_2 pa-4">
+          <v-flex xs12 class="pa-4" :class="$vuetify.theme.dark ? 'background lighten-2' : ''">
             <v-layout wrap>
               <v-flex xs4 sm1 pr-2>
                 Rate

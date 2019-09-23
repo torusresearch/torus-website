@@ -22,11 +22,12 @@
       <v-flex xs6 px-4 mb-1>
         <v-btn
           id="average-speed-btn"
+          :color="speedSelected === 'average' ? 'primary' : 'background lighten-1'"
           block
           large
           outlined
           class="button-speed"
-          :class="speedSelected === 'average' ? 'selected' : ''"
+          :class="speedSelected === 'average' ? 'selected primary--text' : 'background--text text--lighten-1'"
           @click="selectSpeed('average', averageGasPrice)"
         >
           <span>~ {{ averageGasPriceSpeed }} Mins</span>
@@ -36,11 +37,12 @@
       <v-flex xs6 px-4 mb-1>
         <v-btn
           id="fastest-speed-btn"
+          :color="speedSelected === 'fastest' ? 'primary' : 'background lighten-1'"
           block
           large
           outlined
           class="button-speed"
-          :class="speedSelected === 'fastest' ? 'selected' : ''"
+          :class="speedSelected === 'fastest' ? 'selected primary--text' : 'background--text text--lighten-1'"
           @click="selectSpeed('fastest', fastestGasPrice)"
         >
           <span>~ {{ fastestGasPriceSpeed }} Mins</span>

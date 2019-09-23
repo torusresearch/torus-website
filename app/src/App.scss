@@ -30,7 +30,35 @@
   }
 }
 
+.torus-app.theme--light {
+  &.v-application {
+    background: var(--v-background_body-base);
+  }
+  &.v-sheet {
+    background: var(--v-background-base);
+  }
+  &.v-tabs .v-tabs-bar {
+    background: var(--v-background-base);
+  }
+  &.v-data-table {
+    background: var(--v-background-base);
+  }
+  &.v-stepper {
+    background: var(--v-background-base);
+  }
+}
+
 .torus-app.theme--dark {
+  &.v-application {
+    background: var(--v-background_body-base);
+  }
+
+  & .v-data-table,
+  & .v-tabs > .v-tabs-bar,
+  & .v-sheet {
+    background: var(--v-background-base);
+  }
+
   &.v-application {
     color: var(--v-normal_text-base);
   }
@@ -43,6 +71,11 @@
   .theme--dark.v-expansion-panels .v-expansion-panel,
   .theme--dark.v-data-table {
     color: var(--v-normal_text-base);
+  }
+
+  
+  .v-text-field--outlined fieldset {
+    border-color: var(--v-normal_text-base);
   }
 
   .theme--dark
@@ -62,5 +95,22 @@
     background: #242529;
     border: 2px solid #626262;
     border-radius: 8px;
+  }
+}
+
+// Card shadow
+.theme--light {
+  .card-shadow {
+    box-shadow: 0 14px 28px 0 rgba(0, 0, 0, 0.06);
+    border: 0;
+    border-radius: 3px;
+  }
+}
+
+.theme--dark {
+  .card-shadow {
+    box-shadow: none;
+    border: 0;
+    border-radius: 3px;
   }
 }

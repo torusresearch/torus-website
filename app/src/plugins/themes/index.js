@@ -5,13 +5,13 @@ import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../../utils/enums'
 export default {
   [THEME_LIGHT_BLUE_NAME]: {
     label: 'Light',
-    name: 'light-blue',
+    name: THEME_LIGHT_BLUE_NAME,
     theme: lightBlue,
     isDark: false
   },
   [THEME_DARK_BLACK_NAME]: {
     label: 'Dark',
-    name: 'dark-black',
+    name: THEME_DARK_BLACK_NAME,
     theme: darkBlack,
     isDark: true
   }

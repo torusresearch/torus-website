@@ -1,6 +1,8 @@
 .header-container{
-  background: var(--v-background-base);
-
+  .theme--dark & {
+    background: var(--v-background-base);
+  }
+  
   .v-toolbar {
     box-shadow: none;
     padding: 0;
@@ -13,6 +15,10 @@
     &:first-of-type {
       margin-left: auto
     }
+  }
+
+  .v-tab {
+    text-transform: inherit
   }
 
   .theme--dark {

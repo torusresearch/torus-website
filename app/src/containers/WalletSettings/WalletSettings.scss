@@ -23,21 +23,4 @@
   .privacy-security-container .v-sheet {
     background: transparent;
   }
-
-  // .theme--light.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined)
-  .v-btn.theme-btn.light-blue-color {
-    background-color: white;
-    border: 1px solid #0364FF;
-    color: #0364FF;
-  }
-
-  .v-btn.theme-btn.dark-black-color {
-    background-color: #242529;
-    border: 1px solid white;
-    color: white;
-
-    &.theme--light {
-      border: 1px solid #242529;
-    }
-  }
 }

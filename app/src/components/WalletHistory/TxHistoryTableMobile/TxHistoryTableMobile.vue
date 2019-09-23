@@ -43,7 +43,7 @@
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <v-card class="pa-3" color="background_2" :key="`${transaction.id}-details`" v-show="transaction.etherscanLink !== ''">
+          <v-card class="pa-3" color="background lighten-2" :key="`${transaction.id}-details`" v-show="transaction.etherscanLink !== ''">
             <v-layout wrap>
               <v-flex xs4 sm1 pr-2>
                 Rate

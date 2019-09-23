@@ -122,9 +122,14 @@
               <div class="body-2 mb-1 px-1">Select Theme</div>
               <v-layout wrap>
                 <v-flex xs12 sm4 px-1 mb-1 v-for="theme in themes" :key="`${theme.name}`">
-                  <!-- <v-btn v-if="$vuetify.theme.dark" light depressed block @click="$vuetify.theme.dark = false">Light</v-btn>
-                  <v-btn v-else dark depressed block @click="$vuetify.theme.dark = true">Dark</v-btn> -->
-                  <v-btn @click="selectTheme(theme.name)" depressed block class="theme-btn" :class="`${theme.name}-color`">
+                  <v-btn
+                    @click="selectTheme(theme.name)"
+                    depressed
+                    block
+                    class="theme-btn"
+                    :class="`${theme.name}-color`"
+                    :style="themeBtnStyle(theme)"
+                  >
                     {{ theme.label }}
                   </v-btn>
                 </v-flex>
@@ -215,6 +220,15 @@ export default {
           this.snackbarColor = 'error'
           this.snackbarText = err
         })
+    },
+    themeBtnStyle(theme) {
+      return {
+        color: theme.theme.primary,
+        backgroundColor: theme.theme.background_body,
+        borderColor: theme.theme.primary,
+        borderWidth: '1px',
+        borderStyle: 'solid'
+      }
     }
   },
   mounted() {
