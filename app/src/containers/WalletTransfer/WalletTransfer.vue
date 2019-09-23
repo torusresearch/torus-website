@@ -425,7 +425,7 @@ export default {
                 log.error(err)
               } else {
                 // Send email to the user
-                this.sendEmail('ETH')
+                this.sendEmail(this.selectedItem.symbol)
 
                 this.showModalMessage = true
                 this.modalMessageSuccess = true
