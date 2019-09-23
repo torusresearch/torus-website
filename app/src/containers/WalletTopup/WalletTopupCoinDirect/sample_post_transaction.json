@@ -1,0 +1,82 @@
+{
+  "signature": "a84ace5eda677bc90ebb3398dbeffc3767f77bcb42a1a5b460fd1b2327b91499",
+  "payload": {
+    "id": 8421,
+    "from": "EUR",
+    "to": "ETH",
+    "amountIn": 15,
+    "amountOut": 0.09456085,
+    "price": 158.6280157169,
+    "quoteStatus": "PAYMENT_IN_RECEIVED",
+    "paymentStatus": "SUCCESS",
+    "acceptanceExpiryDate": 1568365725000,
+    "paymentExpiryDate": 1568366565000,
+    "paymentReceiptDate": 1568365688000,
+    "payInMethod": {
+      "id": 2,
+      "code": "card",
+      "settlementCurrency": "EUR",
+      "requestedCurrency": null,
+      "estimatedExchangeRate": null,
+      "accountMethods": []
+    },
+    "payOutMethod": {
+      "id": 1,
+      "code": "crypto",
+      "currency": "ETH",
+      "accountMethods": []
+    },
+    "uuid": "0ccfa64b-d766-4fe5-b29d-a10acffb631e",
+    "payOutInstruction": {
+      "code": "crypto",
+      "address": "0xd872b389BCd34b45901d8E4d99D8EE7A33FAF3f6",
+      "tag": null
+    },
+    "payInInstruction": {
+      "action": "FORM",
+      "form": {
+        "action": "https://igw-demo.every-pay.com/transactions/",
+        "parameters": {
+          "api_username": "7ea81c82d41eca9f",
+          "nonce": "bc740f82-673e-4048-bb6c-dbadb47de262",
+          "timestamp": "1568365666",
+          "account_id": "EUR3D1",
+          "callback_url": "https://listeners.staging.node.limited:10084/vendor-listener/everypay",
+          "customer_url": "https://listeners.staging.node.limited:10084/vendor-listener/redirect?charge=182e4027-a215-4ec4-ae4a-2c9804949ec8",
+          "transaction_type": "charge",
+          "amount": "15",
+          "order_reference": "182e4027-a215-4ec4-ae4a-2c9804949ec8",
+          "email": "rathishubham017@gmail.com",
+          "billing_city": "singpaore",
+          "billing_country": "SG",
+          "user_ip": "223.25.67.235",
+          "hmac_fields": "account_id,amount,api_username,billing_city,billing_country,callback_url,customer_url,email,hmac_fields,nonce,order_reference,timestamp,transaction_type,user_ip",
+          "hmac": "4cd10cc45f061acc678598f9e1da7ea8d023aa47"
+        }
+      },
+      "redirectUrl": null,
+      "displayParameters": null
+    },
+    "usePayInMethod": null,
+    "usePayOutMethod": null,
+    "fee": 0,
+    "processingFee": 0.52500000000000005,
+    "type": "FIXED",
+    "netPrice": 158.6280157169,
+    "grossPrice": 153.0760351668085,
+    "amountInGross": 14.47,
+    "amountInNet": 15,
+    "fees": {
+      "percentage": {
+        "service": 0,
+        "processing": 0.035
+      },
+      "value": {
+        "service": 0,
+        "processing": 0.52
+      }
+    },
+    "dateCreated": 1568365665000,
+    "lastUpdated": 1568365688000
+  }
+}
