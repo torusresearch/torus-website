@@ -32,7 +32,8 @@
 
 .torus-app.theme--light {
   &.v-application {
-    background: var(--v-background_body-base);
+    background: var(--v-background_body_1-base);
+    background: linear-gradient(135deg, var(--v-background_body_1-base) 0%, var(--v-background_body_2-base) 100%);
   }
   &.v-sheet {
     background: var(--v-background-base);
@@ -50,7 +51,8 @@
 
 .torus-app.theme--dark {
   &.v-application {
-    background: var(--v-background_body-base);
+    background: var(--v-background_body_1-base);
+    background: linear-gradient(135deg, var(--v-background_body_1-base) 0%, var(--v-background_body_2-base) 100%);
   }
 
   & .v-data-table,
@@ -60,7 +62,7 @@
   }
 
   &.v-application {
-    color: var(--v-normal_text-base);
+    color: var(--v-text_2-base);
   }
 
   .theme--dark.v-card,
@@ -70,12 +72,12 @@
   .theme--dark.v-input:not(.v-input--is-disabled) textarea,
   .theme--dark.v-expansion-panels .v-expansion-panel,
   .theme--dark.v-data-table {
-    color: var(--v-normal_text-base);
+    color: var(--v-text_2-base);
   }
 
   
   .v-text-field--outlined fieldset {
-    border-color: var(--v-normal_text-base);
+    border-color: var(--v-text_2-base);
   }
 
   .theme--dark

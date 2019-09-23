@@ -1,10 +1,12 @@
 export default {
-  background_body: '#ffffff',
+  background_body_1: '#ffffff',
+  background_body_2: '#ffffff',
   background: '#9E9E9E',
-  error: '#e20d0d',
-  success: '#2dcc70',
-  disabled: '#eef2f4',
+  text_1: '#0F1222',
+  text_2: '#000000',
   primary: '#0364FF',
-  torus_text: '#0F1222',
-  normal_text: '#000000'
+  // Rarely changed
+  success: '#2dcc70',
+  error: '#e20d0d',
+  disabled: '#eef2f4'
 }

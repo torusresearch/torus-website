@@ -2,7 +2,7 @@
   <v-layout wrap align-center>
     <v-flex class="xs12 sm6 px-4 my-4" v-for="(balance, index) in tokenBalances" :key="index" :style="`order: ${index > 0 ? index + 1 : index}`">
       <v-card color="card-shadow pb-6 pt-1">
-        <v-card-text class="torus_text--text py-6 px-6">
+        <v-card-text class="text_1--text py-6 px-6">
           <v-layout>
             <v-flex xs6>
               <img
@@ -17,7 +17,7 @@
             </v-flex>
           </v-layout>
           <v-divider class="my-1"></v-divider>
-          <v-layout class="font-weight-regular torus_text--text text--lighten-4">
+          <v-layout class="font-weight-regular text_1--text text--lighten-4">
             <v-flex xs6>
               {{ balance.currencyRateText }}
             </v-flex>

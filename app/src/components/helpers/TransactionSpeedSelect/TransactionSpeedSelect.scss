@@ -12,8 +12,8 @@
 
 ::v-deep .theme--dark.button-speed {
   &.v-btn:not(.selected) {
-    border: 1px solid var(--v-normal_text-base);
-    color: var(--v-normal_text-base);
+    border: 1px solid var(--v-text_2-base);
+    color: var(--v-text_2-base);
   }
 }
 

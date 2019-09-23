@@ -29,7 +29,7 @@
           <div class="v-text-field__details torus-hint mb-6">
             <div class="v-messages">
               <div class="v-messages__wrapper">
-                <div class="v-messages__message d-flex torus_text--text text--lighten-4">
+                <div class="v-messages__message d-flex text_1--text text--lighten-4">
                   <v-flex class="px-3">
                     * Includes 5% Simplex Service Fees or 10 USD (whichever higher)
                     <HelpTooltip
@@ -63,7 +63,7 @@
     </v-flex>
 
     <v-flex xs12>
-      <div class="mt-12 mb-6 torus_text--text text--lighten-4">
+      <div class="mt-12 mb-6 text_1--text text--lighten-4">
         <div>
           <img :src="require(`../../../../public/img/icons/info-circle.svg`)" class="help-icon" />
           <small class="d-inline ml-2">The process would take approximately 10 - 15 mins.</small>
@@ -87,7 +87,7 @@
           </template>
           <span>Resolve the errors</span>
         </v-tooltip>
-        <div class="caption torus_text--text text--lighten-4">You will be redirected to Simplex Page</div>
+        <div class="caption text_1--text text--lighten-4">You will be redirected to Simplex Page</div>
       </div>
     </v-flex>
   </v-layout>

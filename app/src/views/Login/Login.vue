@@ -85,7 +85,7 @@
                   Return Home
                 </v-btn>
               </div>
-              <div class="text-center torus_text--text text--lighten-4 body-2 mt-6" @click="triggerLogin({ calledFromEmbed: false })">
+              <div class="text-center text_1--text text--lighten-4 body-2 mt-6" @click="triggerLogin({ calledFromEmbed: false })">
                 Login Again
               </div>
             </v-flex>

@@ -31,9 +31,9 @@
             <span class="subtitle-2">Account Balance</span>
             <div>
               <span id="account-balance" class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
-              <span class="caption torus_text--text text--lighten-4">{{ currencyBalanceDisplay }}</span>
+              <span class="caption text_1--text text--lighten-4">{{ currencyBalanceDisplay }}</span>
             </div>
-            <div class="caption font-weight-regular torus_text--text text--lighten-4">{{ selectedItem.currencyRateText }}</div>
+            <div class="caption font-weight-regular text_1--text text--lighten-4">{{ selectedItem.currencyRateText }}</div>
           </v-flex>
         </v-layout>
         <v-layout wrap>

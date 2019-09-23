@@ -224,7 +224,7 @@ export default {
     themeBtnStyle(theme) {
       return {
         color: theme.theme.primary,
-        backgroundColor: theme.theme.background_body,
+        backgroundColor: theme.theme.background_body_1,
         borderColor: theme.theme.primary,
         borderWidth: '1px',
         borderStyle: 'solid'

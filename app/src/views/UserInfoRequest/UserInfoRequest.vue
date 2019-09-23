@@ -26,7 +26,7 @@
                 <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
               </v-list-item-icon>
               <v-list-item-content class="pa-1">
-                <div class="caption torus_text--text text--lighten-3">To access your Google Email, Photo and Name</div>
+                <div class="caption text_1--text text--lighten-3">To access your Google Email, Photo and Name</div>
               </v-list-item-content>
             </v-list-item>
           </v-list>

@@ -1,6 +1,6 @@
 <template>
   <v-card class="private-key-container">
-    <v-card-text class="torus_text--text py-6">
+    <v-card-text class="text_1--text py-6">
       <v-layout wrap>
         <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
           <div class="font-weight-bold headline">Private Key</div>
@@ -81,11 +81,7 @@
                 <v-expand-transition>
                   <v-layout wrap align-center justify-space-between v-if="isShowPrivateKey" class="mt-2">
                     <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12' : ''">
-                      <div
-                        class="torus_text--text text--lighten-4"
-                        :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''"
-                        style="word-break: break-all"
-                      >
+                      <div class="text_1--text text--lighten-4" :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''" style="word-break: break-all">
                         {{ selectedKey }}
                       </div>
                     </v-flex>

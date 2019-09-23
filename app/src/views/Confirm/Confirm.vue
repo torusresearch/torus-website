@@ -2,11 +2,11 @@
   <v-container py-6 px-0 class="confirm-container">
     <template v-if="type === 'transaction'">
       <v-layout wrap align-center mx-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
-        <div class="torus_text--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">{{ header }}</div>
+        <div class="text_1--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">{{ header }}</div>
       </v-layout>
       <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
         <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
-        <span class="caption ml-1 torus_text--text text--lighten-3 text-capitalize">{{ selectedNetwork }}</span>
+        <span class="caption ml-1 text_1--text text--lighten-3 text-capitalize">{{ selectedNetwork }}</span>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-4 mx-6>
@@ -45,25 +45,25 @@
               <div id="more-details-link" class="subtitle-2 float-right primary--text mx-6" v-on="on">More Details</div>
             </template>
             <v-card class="pa-4 more-details-container" :color="$vuetify.theme.dark ? 'background lighten-2' : ''">
-              <v-card-text class="torus_text--text">
+              <v-card-text class="text_1--text">
                 <v-layout wrap>
                   <v-flex xs4 sm2>
                     Rate
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex id="currency-rate" xs8 sm10 class="torus_text--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
+                  <v-flex id="currency-rate" xs8 sm10 class="text_1--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
                   <v-flex xs4 sm2>
                     Network
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">
+                  <v-flex xs8 sm10 class="text_1--text text--lighten-4">
                     <span id="network" class="text-capitalize">{{ networkName }}</span>
                   </v-flex>
                   <v-flex xs4 sm2>
                     Type
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex id="type" xs8 sm10 class="torus_text--text text--lighten-4">{{ header }}</v-flex>
+                  <v-flex id="type" xs8 sm10 class="text_1--text text--lighten-4">{{ header }}</v-flex>
                   <v-flex xs2 v-if="txData || txDataParams !== ''">
                     Data
                     <span class="float-right mr-4">:</span>
@@ -135,7 +135,7 @@
       </v-layout>
       <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
         <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
-        <span class="caption ml-1 torus_text--text text--lighten-3 text-capitalize">{{ selectedNetwork }}</span>
+        <span class="caption ml-1 text_1--text text--lighten-3 text-capitalize">{{ selectedNetwork }}</span>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-6 mx-6>
@@ -156,7 +156,7 @@
                 <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
               </v-list-item-icon>
               <v-list-item-content class="pa-1">
-                <div class="caption torus_text--text text--lighten-3">This application is requesting for your digital signature.</div>
+                <div class="caption text_1--text text--lighten-3">This application is requesting for your digital signature.</div>
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="pa-0">
@@ -177,7 +177,7 @@
           </v-list>
         </v-flex>
         <!-- <v-flex xs12 mt-12 mb-5 mx-7>
-          <div class="caption torus_text--text text--lighten-3">
+          <div class="caption text_1--text text--lighten-3">
             Note : You may re-adjust the dapp permission later under ‘Settings > Dapp Permission’
           </div>
         </v-flex>-->
