@@ -250,7 +250,7 @@ export default {
     log.info('Verifier: ', verifier)
 
     if (verifier === GOOGLE) {
-      ;(function gapiLoadCall() {
+      ;(function googleLogin() {
         if (window.auth2) {
           window.auth2
             .signIn()
@@ -271,7 +271,9 @@ export default {
               log.info('Image URL:', profileImage)
               // Set only idToken and userInfo into the state
               dispatch('updateIdToken', { idToken: idtoken })
-              dispatch('updateUserInfo', { userInfo: { profileImage, name, verifierId: email, verifier: GOOGLE, verifierParams: { email } } })
+              dispatch('updateUserInfo', {
+                userInfo: { profileImage, name, verifierId: email, verifier: GOOGLE, verifierParams: { verifier_id: email } }
+              })
 
               window.gapi.auth2
                 .getAuthInstance()
@@ -290,30 +292,44 @@ export default {
               oauthStream.write({ err: 'popup closed' })
             })
         } else {
-          setTimeout(gapiLoadCall, 1000)
+          setTimeout(googleLogin, 1000)
         }
       })()
     } else if (verifier === FACEBOOK) {
-      window.FB.login(response => {
-        if (response.status === 'connected' && response.authResponse) {
-          let accessToken = response.authResponse.accessToken
-          log.info('AccessToken:', accessToken)
-          dispatch('updateIdToken', { idToken: accessToken })
+      ;(function facebookLogin() {
+        if (window.FB) {
+          window.FB.login(response => {
+            if (response.authResponse && response.status === 'connected') {
+              let { accessToken } = response.authResponse || {}
+              log.info('AccessToken:', accessToken)
+              dispatch('updateIdToken', { idToken: accessToken })
 
-          window.FB.api('/me?fields=name,email', response => {
-            log.info('Email: ', response.email)
-            log.info('Name: ', response.name)
-            log.info('Id: ', response.id)
+              window.FB.api('/me?fields=name,email,picture.type(large)', response => {
+                log.info('Email: ', response)
+                log.info('Name: ', response.name)
+                log.info('Id: ', response.id)
+                const { name, id, picture } = response || {}
+                dispatch('updateUserInfo', {
+                  userInfo: {
+                    profileImage: picture.data.url,
+                    name,
+                    verifierId: id,
+                    verifier: FACEBOOK,
+                    verifierParams: { verifier_id: id }
+                  }
+                })
 
-            dispatch('updateVerifierId', { verifierId: response.id })
-            dispatch('updateIdToken', { idtoken: accessToken })
-            dispatch('updateUserInfo', { userInfo: response })
-            dispatch('updateVerifierParams', { userID: response.id, accessToken })
-
-            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+                dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+              })
+            } else {
+              log.error('User cancelled login or did not fully authorize.')
+              oauthStream.write({ err: 'User cancelled login or did not fully authorize.' })
+            }
           })
+        } else {
+          setTimeout(facebookLogin, 1000)
         }
-      })
+      })()
     } else if (verifier === TELEGRAM) {
       let name = window.telegram.first_name + ' ' + window.telegram.last_name
 
