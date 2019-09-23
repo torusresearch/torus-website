@@ -17,6 +17,6 @@ export default {
   coindirectTestMerchantID: '150e5ef3-0c72-4d96-a411-8933eed66612',
   coindirectLiveHost: 'https://business.coindirect.com/buy?',
   coindirectLiveMerchantID: 'b08d7b18-da82-4dfc-990f-313ea26ac66b',
-  api: 'http://localhost:2020'
-  // api: 'https://api.tor.us'
+  // api: 'http://localhost:2020'
+  api: 'https://api.tor.us'
 }

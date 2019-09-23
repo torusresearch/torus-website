@@ -281,7 +281,7 @@ export default {
       if (/\S+@\S+\.\S+/.test(this.toAddress)) {
         const emailObject = {
           from_name: this.$store.state.userInfo.name,
-          to_email: document.getElementById('recipient-address').value,
+          to_email: this.toAddress,
           total_amount: this.amount,
           token: typeToken
         }
@@ -291,8 +291,8 @@ export default {
             'Content-Type': 'application/json; charset=utf-8'
           }
         })
-          .then(response => console.log('email response', response))
-          .catch(err => console.error(err))
+          .then(response => log.info('email response', response))
+          .catch(err => log.error(err))
       }
     },
     moreThanZero: function(value) {
@@ -451,7 +451,7 @@ export default {
                 log.error(err)
               } else {
                 // Send email to the user
-                this.sendEmail('KNC')
+                this.sendEmail(this.selectedItem.symbol)
 
                 this.showModalMessage = true
                 this.modalMessageSuccess = true
