@@ -1,4 +1,5 @@
 export default {
+  // Main background color, supports 2 color gradient
   background_body_1: '#242529',
   background_body_2: '#242529',
   background: '#2F3136',

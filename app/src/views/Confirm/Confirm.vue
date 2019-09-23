@@ -5,15 +5,15 @@
         <div class="text_1--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">{{ header }}</div>
       </v-layout>
       <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
-        <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
-        <span class="caption ml-1 text_1--text text--lighten-3 text-capitalize">{{ selectedNetwork }}</span>
+        <v-icon small class="text_2--text" v-text="'$vuetify.icons.network'"></v-icon>
+        <span class="caption ml-1 text_2--text text-capitalize">{{ selectedNetwork }}</span>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-4 mx-6>
           <div class="subtitle-2">Amount</div>
           <v-divider></v-divider>
           <div>
-            <span class="subtitle-2 float-left grey--text">{{ displayAmountTo }}</span>
+            <span class="subtitle-2 float-left text_2--text">{{ displayAmountTo }}</span>
             <span class="subtitle-2 float-right">{{ displayAmountValue }}</span>
           </div>
           <div class="caption float-right clearfix">{{ displayAmountConverted }}</div>
@@ -51,19 +51,19 @@
                     Rate
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex id="currency-rate" xs8 sm10 class="text_1--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
+                  <v-flex id="currency-rate" xs8 sm10 class="text_2--text">{{ getCurrencyRate }}</v-flex>
                   <v-flex xs4 sm2>
                     Network
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex xs8 sm10 class="text_1--text text--lighten-4">
+                  <v-flex xs8 sm10 class="text_2--text">
                     <span id="network" class="text-capitalize">{{ networkName }}</span>
                   </v-flex>
                   <v-flex xs4 sm2>
                     Type
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex id="type" xs8 sm10 class="text_1--text text--lighten-4">{{ header }}</v-flex>
+                  <v-flex id="type" xs8 sm10 class="text_2--text">{{ header }}</v-flex>
                   <v-flex xs2 v-if="txData || txDataParams !== ''">
                     Data
                     <span class="float-right mr-4">:</span>
@@ -105,7 +105,7 @@
         </v-flex>
         <v-layout px-6>
           <v-flex xs6>
-            <v-btn block text large class="grey--text" @click="triggerDeny">Cancel</v-btn>
+            <v-btn block text large class="text_2--text" @click="triggerDeny">Cancel</v-btn>
           </v-flex>
           <v-flex xs6>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
@@ -135,11 +135,11 @@
       </v-layout>
       <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
         <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
-        <span class="caption ml-1 text_1--text text--lighten-3 text-capitalize">{{ selectedNetwork }}</span>
+        <span class="caption ml-1 text_2--text text-capitalize">{{ selectedNetwork }}</span>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-6 mx-6>
-          <div class="subtitle-2 grey--text">Request from:</div>
+          <div class="subtitle-2 text_2--text">Request from:</div>
 
           <v-card flat class="grey lighten-3">
             <v-card-text>
@@ -156,7 +156,7 @@
                 <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
               </v-list-item-icon>
               <v-list-item-content class="pa-1">
-                <div class="caption text_1--text text--lighten-3">This application is requesting for your digital signature.</div>
+                <div class="caption text_2--text">This application is requesting for your digital signature.</div>
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="pa-0">
@@ -177,13 +177,13 @@
           </v-list>
         </v-flex>
         <!-- <v-flex xs12 mt-12 mb-5 mx-7>
-          <div class="caption text_1--text text--lighten-3">
+          <div class="caption text_2--text">
             Note : You may re-adjust the dapp permission later under ‘Settings > Dapp Permission’
           </div>
         </v-flex>-->
         <v-layout px-6 mx-3>
           <v-flex xs6>
-            <v-btn block text large class="grey--text" @click="triggerDeny">Cancel</v-btn>
+            <v-btn block text large class="text_2--text" @click="triggerDeny">Cancel</v-btn>
           </v-flex>
           <v-flex xs6>
             <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">Confirm</v-btn>

@@ -10,16 +10,16 @@
             <v-flex xs12 px-4 pb-4>
               <div class="subtitle-2">Sending to:</div>
               <v-divider class="my-1" />
-              <div class="caption text_1--text text--lighten-4">{{ toAddress }}</div>
+              <div class="caption text_2--text">{{ toAddress }}</div>
             </v-flex>
             <v-flex xs12 px-4 pb-4>
               <div class="subtitle-2">Amount to send:</div>
               <v-divider class="my-1" />
               <div>
-                <div class="float-left text_1--text text--lighten-4">{{ selectedCoin }}</div>
+                <div class="float-left text_2--text">{{ selectedCoin }}</div>
                 <div class="float-right text-right">
                   <div class="body-1 font-weight-bold">{{ displayAmount }} ETH</div>
-                  <div class="caption text_1--text text--lighten-4">{{ convertedAmount }} {{ selectedCurrency }}</div>
+                  <div class="caption text_2--text">{{ convertedAmount }} {{ selectedCurrency }}</div>
                 </div>
               </div>
             </v-flex>
@@ -29,7 +29,7 @@
               <div>
                 <div class="float-right text-right">
                   <div class="body-1 font-weight-bold">~ {{ speedSelected }} Mins</div>
-                  <div class="caption text_1--text text--lighten-4">{{ significantDigits(transactionFee) }} {{ selectedCurrency }}</div>
+                  <div class="caption text_2--text">{{ significantDigits(transactionFee) }} {{ selectedCurrency }}</div>
                 </div>
               </div>
             </v-flex>

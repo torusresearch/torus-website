@@ -1,16 +1,85 @@
-.v-input__slot {
-  margin-bottom: 2px;
+.torus-app.theme--dark,
+.torus-app.theme--light {
+  // Input Related Styles
+  input::placeholder {
+    color: var(--v-text_2-base) !important;
+    opacity: 1;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus {
+    border: 0;
+    -webkit-text-fill-color: var(--v-text_1-base);
+    -webkit-box-shadow: 0 0 0px 1000px var(--v-background_body_1-base) inset;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  .v-input__slot {
+    margin-bottom: 2px;
+  }
+
+  .v-text-field.v-text-field--enclosed .v-text-field__details {
+    margin-bottom: 0;
+  }
+
+  .theme--light.v-messages,
+  .theme--dark.v-messages {
+    color: var(--v-text_2-base);
+  }
+
+  .v-btn {
+    text-transform: inherit;
+  }
+
+  &.v-application {
+    color: var(--v-text_1-base);
+    background: var(--v-background_body_1-base);
+    background: linear-gradient(135deg, var(--v-background_body_1-base) 0%, var(--v-background_body_2-base) 100%);
+  }
+  .v-card,
+  .v-card > .v-card__text,
+  .v-list-item:not(.v-list-item--active):not(.v-list-item--disabled) .v-list-item__content,
+  .v-select .v-select__selections,
+  .v-input:not(.v-input--is-disabled) input,
+  .v-input:not(.v-input--is-disabled) textarea,
+  .v-expansion-panels .v-expansion-panel,
+  .v-data-table {
+    color: var(--v-text_1-base);
+  }
+  
+  .v-text-field--outlined fieldset {
+    border-color: var(--v-text_2-base);
+  }
 }
 
-.v-text-field.v-text-field--enclosed .v-text-field__details {
-  margin-bottom: 0;
-}
+.torus-app.theme--light {
+  &.v-sheet {
+    background: var(--v-background-base);
+  }
+  &.v-tabs .v-tabs-bar {
+    background: var(--v-background-base);
+  }
+  &.v-data-table {
+    background: var(--v-background-base);
+  }
+  &.v-stepper {
+    background: var(--v-background-base);
+  }
 
-.v-btn {
-  text-transform: inherit;
-}
-
-.theme--light {
+  .card-shadow {
+    box-shadow: 0 14px 28px 0 rgba(0, 0, 0, 0.06);
+    border: 0;
+    border-radius: 3px;
+  }
+  
+  // Srollbars
   /* width */
   ::-webkit-scrollbar {
     width: 0.8em;
@@ -30,57 +99,21 @@
   }
 }
 
-.torus-app.theme--light {
-  &.v-application {
-    background: var(--v-background_body_1-base);
-    background: linear-gradient(135deg, var(--v-background_body_1-base) 0%, var(--v-background_body_2-base) 100%);
-  }
-  &.v-sheet {
-    background: var(--v-background-base);
-  }
-  &.v-tabs .v-tabs-bar {
-    background: var(--v-background-base);
-  }
-  &.v-data-table {
-    background: var(--v-background-base);
-  }
-  &.v-stepper {
-    background: var(--v-background-base);
-  }
-}
 
 .torus-app.theme--dark {
-  &.v-application {
-    background: var(--v-background_body_1-base);
-    background: linear-gradient(135deg, var(--v-background_body_1-base) 0%, var(--v-background_body_2-base) 100%);
-  }
-
   & .v-data-table,
   & .v-tabs > .v-tabs-bar,
   & .v-sheet {
     background: var(--v-background-base);
   }
 
-  &.v-application {
-    color: var(--v-text_2-base);
+  .card-shadow {
+    box-shadow: none;
+    border: 0;
+    border-radius: 3px;
   }
 
-  .theme--dark.v-card,
-  .theme--dark.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled) *,
-  .theme--dark.v-select .v-select__selections,
-  .theme--dark.v-input:not(.v-input--is-disabled) input,
-  .theme--dark.v-input:not(.v-input--is-disabled) textarea,
-  .theme--dark.v-expansion-panels .v-expansion-panel,
-  .theme--dark.v-data-table {
-    color: var(--v-text_2-base);
-  }
-
-  
-  .v-text-field--outlined fieldset {
-    border-color: var(--v-text_2-base);
-  }
-
-  .theme--dark
+  // Scrollbars
   /* width */
   ::-webkit-scrollbar {
     width: 0.8em;
@@ -97,22 +130,5 @@
     background: #242529;
     border: 2px solid #626262;
     border-radius: 8px;
-  }
-}
-
-// Card shadow
-.theme--light {
-  .card-shadow {
-    box-shadow: 0 14px 28px 0 rgba(0, 0, 0, 0.06);
-    border: 0;
-    border-radius: 3px;
-  }
-}
-
-.theme--dark {
-  .card-shadow {
-    box-shadow: none;
-    border: 0;
-    border-radius: 3px;
   }
 }

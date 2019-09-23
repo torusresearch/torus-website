@@ -57,11 +57,11 @@ export default {
       drawer: false,
       selectedItem: 'home',
       headerItems: [
-        { name: 'home', display: 'Home', route: '/wallet/home', icon: 'settings.svg' },
-        { name: 'transfer', display: 'Transfer', route: '/wallet/transfer', icon: 'transaction.svg' },
-        { name: 'top-up', display: 'Top up', route: '/wallet/topup', icon: 'topup.svg' },
-        { name: 'activity', display: 'Activity', route: '/wallet/history', icon: 'activities.svg' },
-        { name: 'settings', display: 'Settings', route: '/wallet/settings', icon: 'settings.svg' }
+        { name: 'home', display: 'Home', route: '/wallet/home', icon: 'settings' },
+        { name: 'transfer', display: 'Transfer', route: '/wallet/transfer', icon: 'transaction' },
+        { name: 'top-up', display: 'Top up', route: '/wallet/topup', icon: 'topup' },
+        { name: 'activity', display: 'Activity', route: '/wallet/history', icon: 'activities' },
+        { name: 'settings', display: 'Settings', route: '/wallet/settings', icon: 'settings' }
       ]
     }
   },

@@ -31,9 +31,9 @@
             <span class="subtitle-2">Account Balance</span>
             <div>
               <span id="account-balance" class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
-              <span class="caption text_1--text text--lighten-4">{{ currencyBalanceDisplay }}</span>
+              <span class="caption text_2--text">{{ currencyBalanceDisplay }}</span>
             </div>
-            <div class="caption font-weight-regular text_1--text text--lighten-4">{{ selectedItem.currencyRateText }}</div>
+            <div class="caption font-weight-regular text_2--text">{{ selectedItem.currencyRateText }}</div>
           </v-flex>
         </v-layout>
         <v-layout wrap>
@@ -47,7 +47,6 @@
               required
               :rules="[rules.toAddress, rules.required]"
               outlined
-              clearable
             ></v-text-field>
           </v-flex>
         </v-layout>
@@ -75,7 +74,7 @@
                   id="coin-mode-btn"
                   :outlined="!toggle_exclusive"
                   :text="!!toggle_exclusive"
-                  :color="!toggle_exclusive ? 'primary' : 'grey'"
+                  :color="!toggle_exclusive ? 'primary' : 'text_2'"
                   @click="changeSelectedToCurrency(0)"
                 >
                   {{ selectedItem && selectedItem.symbol }}
@@ -85,7 +84,7 @@
                   id="currency-mode-btn"
                   :outlined="!!toggle_exclusive"
                   :text="!toggle_exclusive"
-                  :color="toggle_exclusive ? 'primary' : 'grey'"
+                  :color="toggle_exclusive ? 'primary' : 'text_2'"
                   @click="changeSelectedToCurrency(1)"
                 >
                   {{ selectedCurrency }}

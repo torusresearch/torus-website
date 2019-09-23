@@ -81,7 +81,7 @@
                 <v-expand-transition>
                   <v-layout wrap align-center justify-space-between v-if="isShowPrivateKey" class="mt-2">
                     <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12' : ''">
-                      <div class="text_1--text text--lighten-4" :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''" style="word-break: break-all">
+                      <div class="text_2--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''" style="word-break: break-all">
                         {{ selectedKey }}
                       </div>
                     </v-flex>

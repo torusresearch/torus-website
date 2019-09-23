@@ -22,12 +22,11 @@
       <v-flex xs6 px-4 mb-1>
         <v-btn
           id="average-speed-btn"
-          :color="speedSelected === 'average' ? 'primary' : 'background lighten-1'"
           block
           large
           outlined
           class="button-speed"
-          :class="speedSelected === 'average' ? 'selected primary--text' : 'background--text text--lighten-1'"
+          :class="speedSelected === 'average' ? 'selected' : ''"
           @click="selectSpeed('average', averageGasPrice)"
         >
           <span>~ {{ averageGasPriceSpeed }} Mins</span>
@@ -37,12 +36,11 @@
       <v-flex xs6 px-4 mb-1>
         <v-btn
           id="fastest-speed-btn"
-          :color="speedSelected === 'fastest' ? 'primary' : 'background lighten-1'"
           block
           large
           outlined
           class="button-speed"
-          :class="speedSelected === 'fastest' ? 'selected primary--text' : 'background--text text--lighten-1'"
+          :class="speedSelected === 'fastest' ? 'selected' : ''"
           @click="selectSpeed('fastest', fastestGasPrice)"
         >
           <span>~ {{ fastestGasPriceSpeed }} Mins</span>
@@ -54,7 +52,7 @@
       <v-flex xs8 px-6 mb-1>
         <div class="subtitle-2 font-weight-bold">
           {{ getEthAmountDisplay(gas, activeGasPrice) }}
-          <span class="caption text_1--text text--lighten-3">( ~ {{ getGasDisplayString(activeGasPrice) }} )</span>
+          <span class="caption text_2--text">( ~ {{ getGasDisplayString(activeGasPrice) }} )</span>
         </div>
       </v-flex>
       <v-flex xs4 px-4 class="text-right">

@@ -26,7 +26,7 @@
         <div class="v-text-field__details torus-hint mb-6">
           <div class="v-messages">
             <div class="v-messages__wrapper">
-              <div class="v-messages__message d-flex text_1--text text--lighten-4">
+              <div class="v-messages__message d-flex text_2--text">
                 <v-flex class="px-3">
                   * Includes 2.9% + 30¢ Wyre Service Fees ($40 Limit)
                   <v-tooltip class="torus-tooltip" bottom>
@@ -63,7 +63,7 @@
           </template>
           <span>Resolve the errors</span>
         </v-tooltip>
-        <div class="caption text_1--text text--lighten-4">You will be shown a widget</div>
+        <div class="caption text_2--text">You will be shown a widget</div>
       </div>
     </v-flex>
   </v-layout>

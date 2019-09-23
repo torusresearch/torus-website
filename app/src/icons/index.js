@@ -19,6 +19,19 @@ import CoinsTopupIcon from './CoinsTopupIcon'
 import ChevronLeftIcon from './ChevronLeftIcon'
 import ChevronRightIcon from './ChevronRightIcon'
 import ClearIcon from './ClearIcon'
+import NetworkIcon from './NetworkIcon'
+import LockIcon from './LockIcon'
+import KeyIcon from './KeyIcon'
+import ListIcon from './ListIcon'
+import GlobeIcon from './GlobeIcon'
+import ServerIcon from './ServerIcon'
+import BalanceIcon from './BalanceIcon'
+import ImportIcon from './ImportIcon'
+import InfoIcon from './InfoIcon'
+import TransactionIcon from './TransactionIcon'
+import TopupIcon from './TopupIcon'
+import ActivitiesIcon from './ActivitiesIcon'
+import SettingsIcon from './SettingsIcon'
 
 export default {
   select: {
@@ -83,5 +96,44 @@ export default {
   },
   clear: {
     component: ClearIcon
+  },
+  network: {
+    component: NetworkIcon
+  },
+  lock: {
+    component: LockIcon
+  },
+  key: {
+    component: KeyIcon
+  },
+  list: {
+    component: ListIcon
+  },
+  globe: {
+    component: GlobeIcon
+  },
+  server: {
+    component: ServerIcon
+  },
+  balance: {
+    component: BalanceIcon
+  },
+  import: {
+    component: ImportIcon
+  },
+  info: {
+    component: InfoIcon
+  },
+  transaction: {
+    component: TransactionIcon
+  },
+  topup: {
+    component: TopupIcon
+  },
+  activities: {
+    component: ActivitiesIcon
+  },
+  settings: {
+    component: SettingsIcon
   }
 }

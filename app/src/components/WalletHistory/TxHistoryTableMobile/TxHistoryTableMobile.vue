@@ -15,7 +15,7 @@
             </v-layout>
             <v-divider></v-divider>
             <v-layout>
-              <v-flex xs6 my-2 class="caption text_1--text text--lighten-4">
+              <v-flex xs6 my-2 class="caption text_2--text">
                 Date:
               </v-flex>
               <v-flex xs6 my-2 class="caption text-right">
@@ -24,7 +24,7 @@
             </v-layout>
             <v-divider></v-divider>
             <v-layout>
-              <v-flex xs6 my-2 class="caption text_1--text text--lighten-4">
+              <v-flex xs6 my-2 class="caption text_2--text">
                 Amount:
               </v-flex>
               <v-flex xs6 my-2 class="caption text-right">
@@ -33,7 +33,7 @@
             </v-layout>
             <v-divider></v-divider>
             <v-layout>
-              <v-flex xs2 my-2 class="caption text_1--text text--lighten-4">
+              <v-flex xs2 my-2 class="caption text_2--text">
                 To:
               </v-flex>
               <v-flex xs10 my-2 class="caption text-right">

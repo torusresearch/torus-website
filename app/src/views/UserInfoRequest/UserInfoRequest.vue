@@ -10,7 +10,7 @@
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-2 mx-6>
-          <div class="subtitle-2 grey--text">Request from:</div>
+          <div class="subtitle-2 text_2--text">Request from:</div>
 
           <v-card flat class="grey lighten-3">
             <v-card-text>
@@ -26,7 +26,7 @@
                 <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
               </v-list-item-icon>
               <v-list-item-content class="pa-1">
-                <div class="caption text_1--text text--lighten-3">To access your Google Email, Photo and Name</div>
+                <div class="caption text_2--text">To access your Google Email, Photo and Name</div>
               </v-list-item-content>
             </v-list-item>
           </v-list>
@@ -34,7 +34,7 @@
 
         <v-layout px-6 mx-3>
           <v-flex xs6>
-            <v-btn block text large class="grey--text" @click="triggerDeny">Cancel</v-btn>
+            <v-btn block text large class="text_2--text" @click="triggerDeny">Cancel</v-btn>
           </v-flex>
           <v-flex xs6>
             <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">Confirm</v-btn>

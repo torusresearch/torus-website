@@ -5,12 +5,8 @@
         <!-- Privacy and security settings -->
         <v-expansion-panel>
           <v-expansion-panel-header id="privacy-panel-header" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
-            <img
-              :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
-              class="d-inline-flex mr-4 shrink"
-              :src="require(`../../../public/img/icons/lock.svg`)"
-            />
-            <div class="grow font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'title'">
+            <v-icon :small="$vuetify.breakpoint.xsOnly" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.lock'" />
+            <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'title'">
               Privacy and Security
             </div>
           </v-expansion-panel-header>
@@ -19,18 +15,18 @@
               <v-list>
                 <v-list-item id="private-key-btn" @click="privateKeyDialog = true">
                   <v-list-item-avatar class="mr-4">
-                    <img :src="require(`../../../public/img/icons/key.svg`)" class=" mr-4" />
+                    <v-icon class="mr-4 text_2--text" v-text="'$vuetify.icons.key'" />
                   </v-list-item-avatar>
                   <v-list-item-content>
-                    <v-list-item-title>Private Key</v-list-item-title>
+                    <v-list-item-title class="text_1--text">Private Key</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item id="dapp-permisson-btn" @click="dappPermissionDialog = true">
                   <v-list-item-avatar class="mr-4">
-                    <img :src="require(`../../../public/img/icons/list.svg`)" class=" mr-4" />
+                    <v-icon class="mr-4 text_2--text" v-text="'$vuetify.icons.list'" />
                   </v-list-item-avatar>
                   <v-list-item-content>
-                    <v-list-item-title>DApp Permission</v-list-item-title>
+                    <v-list-item-title class="text_1--text">DApp Permission</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -48,12 +44,8 @@
         <!-- Network Settigs -->
         <v-expansion-panel>
           <v-expansion-panel-header id="network-panel-header" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
-            <img
-              :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
-              class="d-inline-flex mr-4 shrink collpase-icon"
-              :src="require(`../../../public/img/icons/globe.svg`)"
-            />
-            <div class="grow font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'title'">
+            <v-icon :small="$vuetify.breakpoint.xsOnly" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.globe'" />
+            <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'title'">
               Network
             </div>
           </v-expansion-panel-header>
@@ -108,18 +100,14 @@
         <!-- Display Settings -->
         <v-expansion-panel>
           <v-expansion-panel-header id="display-panel-header" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">
-            <img
-              :width="$vuetify.breakpoint.xsOnly ? '16' : '24'"
-              class="d-inline-flex mr-4 shrink collpase-icon"
-              :src="require(`../../../public/img/icons/server.svg`)"
-            />
-            <div class="grow font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'title'">
+            <v-icon :small="$vuetify.breakpoint.xsOnly" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.server'" />
+            <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'title'">
               Display
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
-              <div class="body-2 mb-1 px-1">Select Theme</div>
+              <div class="body-2 text_1--text mb-1 px-1">Select Theme</div>
               <v-layout wrap>
                 <v-flex xs12 sm4 px-1 mb-1 v-for="theme in themes" :key="`${theme.name}`">
                   <v-btn

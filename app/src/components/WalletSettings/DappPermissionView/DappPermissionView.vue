@@ -7,7 +7,7 @@
         </v-list-item-icon>
         <v-list-item-content class="subtitle-2 py-0">Etheremon.com</v-list-item-content>
         <v-spacer></v-spacer>
-        <v-list-item-action class="text_1--text text--lighten-4 caption my-0">
+        <v-list-item-action class="text_2--text caption my-0">
           15 April 2019 @ 13:45:49
         </v-list-item-action>
       </v-list-item>
