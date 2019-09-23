@@ -189,7 +189,7 @@ class Torus {
     var ethAddress = toChecksumAddress(ethAddressLower)
     return ethAddress
   }
-  getPubKeyAsync(endpointUrl, verifier, verifierId) {
+  getPubKeyAsync(endpointUrl, { verifier, verifierId }) {
     return new Promise((resolve, reject) => {
       post(
         endpointUrl,

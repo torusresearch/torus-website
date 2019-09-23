@@ -1,16 +1,15 @@
 import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, USER_INFO_REQUEST_NEW } from '../utils/enums'
 
 const initialState = {
-  verifier: '',
-  verifierId: '',
-  verifierParams: {},
   userInfo: {
-    email: '',
-    name: '',
-    profileImage: ''
+    name: '', // first + last name
+    profileImage: '', // image url
+    verifier: '', // enum like GOOGLE
+    verifierId: '', // usually email or facebook id or telegram id
+    verifierParams: {} // general params
   },
-  userInfoAccess: USER_INFO_REQUEST_NEW,
   idToken: '',
+  userInfoAccess: USER_INFO_REQUEST_NEW,
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
   selectedAddress: '',

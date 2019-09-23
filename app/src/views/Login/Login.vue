@@ -21,7 +21,7 @@
                     large
                     :block="$vuetify.breakpoint.xsOnly"
                     class="body-2 login-btn"
-                    @click="triggerLogin({ calledFromEmbed: false })"
+                    @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
                   >
                     <img :src="require('../../../public/img/icons/google.svg')" class="mr-2" />
                     Sign in with Google
@@ -34,7 +34,7 @@
                     color="primary"
                     class="flexiBtn px-12"
                     type="button"
-                    @click="triggerLogin({ verifier: 'facebook', calledFromEmbed: false })"
+                    @click="triggerLogin({ verifier: FACEBOOK, verifier: 'facebook', calledFromEmbed: false })"
                   >
                     Login With Facebook
                   </v-btn>
@@ -96,9 +96,9 @@
               <div class="text-center">
                 <v-btn large depressed color="primary" class="px-12 title" type="button" @click="returnHome">Return Home</v-btn>
               </div>
-              <div class="text-center torus_text--text text--lighten-4 body-2 mt-6" @click="triggerLogin({ calledFromEmbed: false })">
+              <!-- <div class="text-center torus_text--text text--lighten-4 body-2 mt-6" @click="triggerLogin({ calledFromEmbed: false })">
                 Login Again
-              </div>
+              </div> -->
             </v-flex>
           </v-layout>
         </template>
@@ -117,6 +117,7 @@
 import { mapActions, mapState } from 'vuex'
 import { vueTelegramLogin } from 'vue-telegram-login'
 import PageLoader from '../../components/helpers/PageLoader'
+import { GOOGLE, FACEBOOK, TELEGRAM } from '../../utils/enums'
 
 export default {
   name: 'login',
@@ -124,7 +125,11 @@ export default {
   data() {
     return {
       gapiLoaded: false,
-      isLogout: false
+      fbLoaded: false,
+      isLogout: false,
+      FACEBOOK: FACEBOOK,
+      GOOGLE: GOOGLE,
+      TELEGRAM: TELEGRAM
     }
   },
   methods: {
@@ -136,8 +141,7 @@ export default {
       this.isLogout = false
     },
     handleTelegramLogin(user) {
-      window.telegram = user
-      this.triggerLogin({ verifier: 'telegram' })
+      this.triggerLogin({ verifier: TELEGRAM, calledFromEmbed: false, userParams: user })
     }
   },
   computed: mapState({
@@ -177,6 +181,7 @@ export default {
           appId: '2554219104599979',
           version: 'v4.0'
         })
+        this.fbLoaded = true
         clearInterval(facebookInterval)
       }
     }, 2000)

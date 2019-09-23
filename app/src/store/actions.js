@@ -2,7 +2,7 @@ import BroadcastChannel from 'broadcast-channel'
 import log from 'loglevel'
 import config from '../config'
 import torus from '../torus'
-import { RPC, USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, SUPPORTED_NETWORK_TYPES } from '../utils/enums'
+import { RPC, USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, SUPPORTED_NETWORK_TYPES, FACEBOOK, GOOGLE, TELEGRAM } from '../utils/enums'
 import { getRandomNumber, broadcastChannelOptions } from '../utils/utils'
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
@@ -140,15 +140,6 @@ export default {
   updateIdToken(context, payload) {
     context.commit('setIdToken', payload.idToken)
   },
-  updateVerifier(context, payload) {
-    context.commit('setVerifier', payload.verifier)
-  },
-  updateVerifierId(context, payload) {
-    context.commit('setVerifierId', payload.verifierId)
-  },
-  updateVerifierParams(context, payload) {
-    context.commit('setVerifierParams', payload.verifierParams)
-  },
   addWallet(context, payload) {
     if (payload.ethAddress) {
       context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
@@ -252,14 +243,13 @@ export default {
       return torus.torusController.networkController.setProviderType(networkType.host)
     }
   },
-  triggerLogin({ dispatch }, { calledFromEmbed, verifier }) {
+  triggerLogin({ dispatch }, { calledFromEmbed, verifier, userParams }) {
     const { torusNodeEndpoints } = config
     const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
 
     log.info('Verifier: ', verifier)
-    dispatch('updateVerifier', { verifier })
 
-    if (verifier === 'google') {
+    if (verifier === GOOGLE) {
       ;(function gapiLoadCall() {
         if (window.auth2) {
           window.auth2
@@ -279,11 +269,9 @@ export default {
               log.info('Email:', email)
               log.info('Name:', name)
               log.info('Image URL:', profileImage)
-
-              dispatch('updateVerifierId', { verifierId: email })
+              // Set only idToken and userInfo into the state
               dispatch('updateIdToken', { idToken: idtoken })
-              dispatch('updateUserInfo', { userInfo: { profileImage, name, email } })
-              dispatch('updateVerifierParams', { verifierParams: { idtoken, email } })
+              dispatch('updateUserInfo', { userInfo: { profileImage, name, verifierId: email, verifier: GOOGLE, verifierParams: { email } } })
 
               window.gapi.auth2
                 .getAuthInstance()
@@ -305,7 +293,7 @@ export default {
           setTimeout(gapiLoadCall, 1000)
         }
       })()
-    } else if (verifier === 'facebook') {
+    } else if (verifier === FACEBOOK) {
       window.FB.login(response => {
         if (response.status === 'connected' && response.authResponse) {
           let accessToken = response.authResponse.accessToken
@@ -326,7 +314,7 @@ export default {
           })
         }
       })
-    } else if (verifier === 'telegram') {
+    } else if (verifier === TELEGRAM) {
       let name = window.telegram.first_name + ' ' + window.telegram.last_name
 
       log.info('Id: ', window.telegram.id)
@@ -401,10 +389,13 @@ export default {
   },
   handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
     const { torusNodeEndpoints, torusIndexes } = config
-    const { idToken, verifier, verifierParams, verifierId } = state
+    const {
+      idToken,
+      userInfo: { verifierId, verifier, verifierParams }
+    } = state
     dispatch('loginInProgress', true)
     torus
-      .getPubKeyAsync(torusNodeEndpoints[endPointNumber], verifier, verifierId)
+      .getPubKeyAsync(torusNodeEndpoints[endPointNumber], { verifier, verifierId })
       .then(res => {
         log.info('New private key assigned to user at address ', res)
         const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
@@ -454,7 +445,7 @@ export default {
           signed_message: signedMessage
         })
         commit('setJwtToken', response.token)
-        await dispatch('setUserInfo', { token: response.token, calledFromEmbed: calledFromEmbed })
+        await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed: calledFromEmbed })
 
         resolve()
       } catch (error) {
@@ -481,7 +472,7 @@ export default {
       }
     )
   },
-  setUserInfo({ commit, dispatch, state }, payload) {
+  setUserInfoAction({ commit, dispatch, state }, payload) {
     return new Promise(async (resolve, reject) => {
       const { token, calledFromEmbed } = payload
       try {
@@ -539,7 +530,7 @@ export default {
         setTimeout(() => dispatch('subscribeToControllers'), 50)
         await Promise.all([
           torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet)),
-          dispatch('setUserInfo', { token: jwtToken, calledFromEmbed: false })
+          dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false })
         ])
         statusStream.write({ loggedIn: true, rehydrate: true })
         log.info('rehydrated wallet')

@@ -81,6 +81,9 @@ const ACTIVITY_PERIOD_ALL = 'All'
 const ACTIVITY_PERIOD_WEEK_ONE = 'Last 1 Week'
 const ACTIVITY_PERIOD_MONTH_ONE = 'Last 1 Month'
 const ACTIVITY_PERIOD_MONTH_SIX = 'Last 6 Months'
+const GOOGLE = 'google'
+const FACEBOOK = 'facebook'
+const TELEGRAM = 'telegram'
 
 module.exports = {
   ROPSTEN,
@@ -135,5 +138,8 @@ module.exports = {
   ACTIVITY_PERIOD_ALL,
   ACTIVITY_PERIOD_WEEK_ONE,
   ACTIVITY_PERIOD_MONTH_ONE,
-  ACTIVITY_PERIOD_MONTH_SIX
+  ACTIVITY_PERIOD_MONTH_SIX,
+  GOOGLE,
+  TELEGRAM,
+  FACEBOOK
 }
