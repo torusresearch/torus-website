@@ -10,6 +10,8 @@ var BN = require('bn.js')
 const setupMultiplex = require('./utils/setupMultiplex').default
 const toChecksumAddress = require('./utils/toChecksumAddress').default
 const ethUtil = require('ethereumjs-util')
+const eccrypto = require('eccrypto')
+
 // Make this a class. Use ES6
 class Torus {
   constructor() {
@@ -137,6 +139,22 @@ class Torus {
           log.info(shareResponses)
           for (var i = 0; i < shareResponses.length; i++) {
             if (shareResponses[i]) {
+              // let verifierEncrypted = {
+              //   ciphertext: Buffer.from(verifier.ciphertext.data, 'hex'),
+              //   mac: Buffer.from(verifier.mac.data, 'hex'),
+              //   iv: Buffer.from(verifier.iv.data, 'hex'),
+              //   ephemPublicKey: Buffer.from(verifier.ephemPublicKey.data, 'hex')
+              // }
+              // eccrypto
+              //   .decrypt(Buffer.from(window.oauthVars.privKey.toString(16, 64), 'hex'), verifierEncrypted)
+              //   .then(bufferVal => {
+              //     window.oauthVars.requestTokens[i].verifier = bufferVal.toString()
+              //     setOauthvars(window.oauthVars)
+              //   })
+              //   .catch(e => {
+              //     console.error(e)
+              //   })
+
               shares.push(new BN(shareResponses[i].result.keys[0].Share, 16))
               nodeIndex.push(new BN(indexes[i], 16))
             }

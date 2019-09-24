@@ -178,7 +178,7 @@ export default {
     const facebookInterval = setInterval(() => {
       if (window.FB) {
         window.FB.init({
-          appId: '511137253052786',
+          appId: '2554219104599979',
           version: 'v4.0'
         })
         this.fbLoaded = true
