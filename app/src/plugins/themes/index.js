@@ -1,5 +1,18 @@
-import ceruleanBlue from './ceruleanBlue'
 import lightBlue from './lightBlue'
-import shuttleGrey from './shuttleGrey'
+import darkBlack from './darkBlack'
+import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../../utils/enums'
 
-export { ceruleanBlue, lightBlue, shuttleGrey }
+export default {
+  [THEME_LIGHT_BLUE_NAME]: {
+    label: 'Light',
+    name: THEME_LIGHT_BLUE_NAME,
+    theme: lightBlue,
+    isDark: false
+  },
+  [THEME_DARK_BLACK_NAME]: {
+    label: 'Dark',
+    name: THEME_DARK_BLACK_NAME,
+    theme: darkBlack,
+    isDark: true
+  }
+}

@@ -31,15 +31,16 @@
             <span class="subtitle-2">Account Balance</span>
             <div>
               <span id="account-balance" class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
-              <span class="caption torus_text--text text--lighten-4">{{ currencyBalanceDisplay }}</span>
+              <span class="caption text_2--text">{{ currencyBalanceDisplay }}</span>
             </div>
-            <div class="caption font-weight-regular torus_text--text text--lighten-4">{{ selectedItem.currencyRateText }}</div>
+            <div class="caption font-weight-regular text_2--text">{{ selectedItem.currencyRateText }}</div>
           </v-flex>
         </v-layout>
         <v-layout wrap>
           <v-flex xs12 px-4 sm6 class="recipient-address-container">
             <span class="subtitle-2">Recipient Address</span>
             <v-text-field
+              class="recipient-address"
               id="recipient-address"
               v-model="toAddress"
               placeholder="ETH Address / Google Address here"
@@ -73,7 +74,7 @@
                   id="coin-mode-btn"
                   :outlined="!toggle_exclusive"
                   :text="!!toggle_exclusive"
-                  :color="!toggle_exclusive ? 'primary' : 'grey'"
+                  :color="!toggle_exclusive ? 'primary' : 'text_2'"
                   @click="changeSelectedToCurrency(0)"
                 >
                   {{ selectedItem && selectedItem.symbol }}
@@ -83,7 +84,7 @@
                   id="currency-mode-btn"
                   :outlined="!!toggle_exclusive"
                   :text="!toggle_exclusive"
-                  :color="toggle_exclusive ? 'primary' : 'grey'"
+                  :color="toggle_exclusive ? 'primary' : 'text_2'"
                   @click="changeSelectedToCurrency(1)"
                 >
                   {{ selectedCurrency }}

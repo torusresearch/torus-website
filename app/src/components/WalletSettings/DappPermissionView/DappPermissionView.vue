@@ -7,7 +7,7 @@
         </v-list-item-icon>
         <v-list-item-content class="subtitle-2 py-0">Etheremon.com</v-list-item-content>
         <v-spacer></v-spacer>
-        <v-list-item-action class="torus_text--text text--lighten-4 caption my-0">
+        <v-list-item-action class="text_2--text caption my-0">
           15 April 2019 @ 13:45:49
         </v-list-item-action>
       </v-list-item>
@@ -15,7 +15,7 @@
       <v-list-item>
         <v-list-item-content class="caption py-0">Type:</v-list-item-content>
         <v-spacer></v-spacer>
-        <v-list-item-action class="torus_text--text caption my-0">
+        <v-list-item-action class="text_1--text caption my-0">
           ERC 20 Transfer
         </v-list-item-action>
       </v-list-item>
@@ -23,7 +23,7 @@
       <v-list-item>
         <v-list-item-content class="caption py-0">Amount:</v-list-item-content>
         <v-spacer></v-spacer>
-        <v-list-item-action class="torus_text--text font-weight-bold caption my-0">
+        <v-list-item-action class="text_1--text font-weight-bold caption my-0">
           10.00 USD
         </v-list-item-action>
       </v-list-item>
@@ -31,7 +31,7 @@
       <v-list-item>
         <v-list-item-content class="caption py-0">Period of Validity:</v-list-item-content>
         <v-spacer></v-spacer>
-        <v-list-item-action class="torus_text--text caption my-0">
+        <v-list-item-action class="text_1--text caption my-0">
           1 Month (15 April ~ May 2019)
         </v-list-item-action>
       </v-list-item>
