@@ -442,7 +442,7 @@ export default {
       patch(
         `${config.api}/user/theme`,
         {
-          theme: payload.theme
+          theme: state.theme
         },
         {
           headers: {

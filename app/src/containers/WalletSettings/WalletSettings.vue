@@ -189,7 +189,6 @@ export default {
     },
     setRPC() {
       // this.selectedNetwork = RPC
-      console.log(this.selectedNetwork)
       this.$store.dispatch('setProviderType', { network: this.rpc, type: RPC })
     },
     selectTheme(themeName) {
@@ -197,7 +196,7 @@ export default {
     },
     saveTheme() {
       this.$store
-        .dispatch('setUserTheme', { theme: this.$store.state.theme })
+        .dispatch('setUserTheme')
         .then(() => {
           this.snackbar = true
           this.snackbarColor = 'success'
