@@ -341,7 +341,7 @@ export default {
       log.info('Image URL: ', photo_url)
       log.info('Auth Date: ', auth_date)
 
-      dispatch('updateIdToken', { idToken: id })
+      dispatch('updateIdToken', { idToken: id }) // works
 
       dispatch('updateUserInfo', {
         userInfo: {
