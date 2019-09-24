@@ -16,7 +16,7 @@
         <v-layout align-center>
           <v-flex xs8 class="mt-12 ml-12">
             <div class="learn-more-header display-1 font-weight-bold">{{ content.title }}</div>
-            <div class="caption torus_text--text text--lighten-3">{{ content.subtitle }}</div>
+            <div class="caption text_2--text">{{ content.subtitle }}</div>
           </v-flex>
           <v-flex xs4 class="mt-12 mr-12 text-right">
             <img width="110" :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
@@ -29,7 +29,7 @@
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title class=".subtitle-1 font-weight-bold">{{ contentItem.name }}</v-list-item-title>
-              <div class="caption torus_text--text text--lighten-3">{{ contentItem.content }}</div>
+              <div class="caption text_2--text">{{ contentItem.content }}</div>
             </v-list-item-content>
           </v-list-item>
         </v-list>

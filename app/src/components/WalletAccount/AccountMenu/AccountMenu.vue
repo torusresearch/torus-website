@@ -13,7 +13,7 @@
             </div>
           </v-list-item-title>
           <v-list-item-subtitle>
-            <div class="caption">
+            <div class="caption text_2--text">
               <span>{{ userEmail }}</span>
               <img
                 id="show-address-btn"
@@ -32,8 +32,8 @@
       <v-list-item>
         <v-list-item-content>
           <div class="subtitle-2 mb-0">
-            <img :src="require(`../../../../public/img/icons/account-balance.svg`)" class="mr-2" />
-            {{ totalPortfolioEthValue }} ETH / {{ `${totalPortfolioValue} ${selectedCurrency}` }}
+            <v-icon class="mr-2 text_2--text" v-text="'$vuetify.icons.balance'" />
+            <span class="text_1--text">{{ totalPortfolioEthValue }} ETH / {{ `${totalPortfolioValue} ${selectedCurrency}` }}</span>
           </div>
         </v-list-item-content>
       </v-list-item>
@@ -58,9 +58,9 @@
     <v-list>
       <v-list-item id="import-account-btn" @click="accountImportDialog = true">
         <v-list-item-action class="mr-2">
-          <img :src="require('../../../../public/img/icons/import-grey.svg')" />
+          <v-icon class="text_2--text" v-text="'$vuetify.icons.import'" />
         </v-list-item-action>
-        <v-list-item-content class="font-weight-bold">Import Account</v-list-item-content>
+        <v-list-item-content class="text_1--text font-weight-bold">Import Account</v-list-item-content>
       </v-list-item>
       <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
         <account-import @onClose="accountImportDialog = false" />
@@ -79,22 +79,22 @@
         :to="headerItem.route"
       >
         <v-list-item-action class="mr-2">
-          <img :src="require(`../../../../public/img/icons/${headerItem.icon}`)" />
+          <v-icon :size="headerItem.icon === 'activities' ? 12 : 16" class="text_2--text" v-text="`$vuetify.icons.${headerItem.icon}`" />
         </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-title class="font-weight-bold">{{ headerItem.display }}</v-list-item-title>
+          <v-list-item-title class="font-weight-bold text_1--text">{{ headerItem.display }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
       <v-list-item href="https://docs.tor.us/#users" target="_blank">
         <v-list-item-action class="mr-2">
-          <img :src="require('../../../../public/img/icons/info-grey.svg')" />
+          <v-icon :small="$vuetify.breakpoint.xsOnly" class="text_2--text" v-text="'$vuetify.icons.info'" />
         </v-list-item-action>
-        <v-list-item-content class="font-weight-bold">Info and Support</v-list-item-content>
+        <v-list-item-content class="text_1--text font-weight-bold">Info and Support</v-list-item-content>
       </v-list-item>
     </v-list>
 
     <v-card-actions>
-      <v-btn text class="torus_text--text text--lighten-4 font-weight-bold mb-6 ml-2" @click="logout">Log Out</v-btn>
+      <v-btn text class="text_1--text font-weight-bold mb-6 ml-2" @click="logout">Log Out</v-btn>
       <v-spacer></v-spacer>
     </v-card-actions>
   </v-card>
@@ -198,7 +198,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-@import 'AccountMenu.scss';
-</style>

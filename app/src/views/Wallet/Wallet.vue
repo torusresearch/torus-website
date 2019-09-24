@@ -1,7 +1,7 @@
 <template>
   <div>
     <navbar />
-    <hr class="navbar-line" />
+    <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
     <v-container>
       <router-view></router-view>
     </v-container>

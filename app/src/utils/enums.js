@@ -85,6 +85,9 @@ const GOOGLE = 'google'
 const FACEBOOK = 'facebook'
 const TELEGRAM = 'telegram'
 
+const THEME_DARK_BLACK_NAME = 'dark-black'
+const THEME_LIGHT_BLUE_NAME = 'light-blue'
+
 module.exports = {
   ROPSTEN,
   RINKEBY,
@@ -141,5 +144,7 @@ module.exports = {
   ACTIVITY_PERIOD_MONTH_SIX,
   GOOGLE,
   TELEGRAM,
-  FACEBOOK
+  FACEBOOK,
+  THEME_DARK_BLACK_NAME,
+  THEME_LIGHT_BLUE_NAME
 }
