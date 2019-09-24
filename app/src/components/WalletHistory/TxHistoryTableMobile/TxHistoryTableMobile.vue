@@ -15,7 +15,7 @@
             </v-layout>
             <v-divider></v-divider>
             <v-layout>
-              <v-flex xs6 my-2 class="caption torus_text--text text--lighten-4">
+              <v-flex xs6 my-2 class="caption text_2--text">
                 Date:
               </v-flex>
               <v-flex xs6 my-2 class="caption text-right">
@@ -24,7 +24,7 @@
             </v-layout>
             <v-divider></v-divider>
             <v-layout>
-              <v-flex xs6 my-2 class="caption torus_text--text text--lighten-4">
+              <v-flex xs6 my-2 class="caption text_2--text">
                 Amount:
               </v-flex>
               <v-flex xs6 my-2 class="caption text-right">
@@ -33,7 +33,7 @@
             </v-layout>
             <v-divider></v-divider>
             <v-layout>
-              <v-flex xs2 my-2 class="caption torus_text--text text--lighten-4">
+              <v-flex xs2 my-2 class="caption text_2--text">
                 To:
               </v-flex>
               <v-flex xs10 my-2 class="caption text-right">
@@ -43,7 +43,7 @@
           </div>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <v-card class="pa-3" color="background_2" :key="`${transaction.id}-details`" v-show="transaction.etherscanLink !== ''">
+          <v-card class="pa-3" color="background lighten-2" :key="`${transaction.id}-details`" v-show="transaction.etherscanLink !== ''">
             <v-layout wrap>
               <v-flex xs4 sm1 pr-2>
                 Rate

@@ -4,7 +4,7 @@
       Moonpay is a secure way to buy cryptocurrency with your credit card. Start by entering a amount below to get a quote before making a purchase
     </span>
 
-    <div style="height:500px; width:100%">
+    <div class="mt-4" style="height:500px; width:100%">
       <iframe v-if="loaded" :src="url" height="100%" width="100%" style="border:none"></iframe>
     </div>
   </v-layout>

@@ -27,8 +27,8 @@
           <v-card-title class="font-weight-bold subtitle-2 pt-6 px-6">
             TOTAL VALUE
           </v-card-title>
-          <v-card-text class="pb-4 px-6">
-            <h2 class="display-2 font-weight-bold">
+          <v-card-text class="pb-8 px-6">
+            <h2 class="display-2 text_2--text font-weight-bold">
               {{ totalPortfolioValue }}
               <span id="selected-currency" class="body-2 font-weight-light">{{ selectedCurrency }}</span>
             </h2>
@@ -86,7 +86,7 @@
                 <v-btn text icon small class="refresh-button" color="primary" @click="refreshBalances()">
                   <v-icon small>$vuetify.icons.refresh</v-icon>
                 </v-btn>
-                <span class="caption">Last update {{ lastUpdated }}</span>
+                <span class="caption text_2--text">Last update {{ lastUpdated }}</span>
               </v-flex>
             </v-layout>
           </v-flex>
@@ -94,10 +94,10 @@
             <v-layout>
               <v-flex xs7 class="hidden-sm-and-up refresh">
                 <v-icon color="primary" @click="refreshBalances()" small>$vuetify.icons.refresh</v-icon>
-                <span class="caption">Last update {{ lastUpdated }}</span>
+                <span class="caption text_2--text">Last update {{ lastUpdated }}</span>
               </v-flex>
               <v-flex xs5 sm12 class="text-right currency">
-                <span class="caption">CURRENCY:</span>
+                <span class="caption text_2--text">CURRENCY:</span>
                 <v-select
                   id="currency-selector"
                   class="pt-0 mt-0 ml-1 caption currency-selector e2e-currency-selector-container"
