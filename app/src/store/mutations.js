@@ -62,6 +62,9 @@ export default {
   patchPastTransactions(state, payload) {
     state.pastTransactions = [...state.pastTransactions, payload]
   },
+  setTheme(state, payload) {
+    state.theme = payload
+  },
   logOut(state, payload) {
     Object.keys(state).forEach(key => {
       state[key] = payload[key] // or = initialState[key]

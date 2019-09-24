@@ -425,6 +425,33 @@ export default {
       }
     )
   },
+  setTheme({ commit }, payload) {
+    commit('setTheme', payload)
+  },
+  setUserTheme({ state }, payload) {
+    return new Promise((resolve, reject) => {
+      patch(
+        `${config.api}/user/theme`,
+        {
+          theme: payload.theme
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }
+      )
+        .then(response => {
+          log.info('successfully patched', response)
+          resolve(response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to patch theme')
+          reject('Unable to update theme')
+        })
+    })
+  },
   setUserInfo({ commit, dispatch, state }, payload) {
     return new Promise(async (resolve, reject) => {
       const { token, calledFromEmbed } = payload
@@ -436,7 +463,8 @@ export default {
         })
           .then(user => {
             if (user.data) {
-              const { transactions, default_currency } = user.data || {}
+              const { transactions, default_currency, theme } = user.data || {}
+              commit('setTheme', theme)
               commit('setPastTransactions', transactions)
               dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
               dispatch('storeUserLogin', calledFromEmbed)
@@ -447,7 +475,8 @@ export default {
             await post(
               `${config.api}/user`,
               {
-                default_currency: state.selectedCurrency
+                default_currency: state.selectedCurrency,
+                theme: state.theme
               },
               {
                 headers: {

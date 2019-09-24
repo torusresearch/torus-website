@@ -1,13 +1,13 @@
 export default {
   // Main background color, supports 2 color gradient
-  background_body_1: '#ffffff',
-  background_body_2: '#ffffff',
-  background: '#9E9E9E',
-  text_1: '#0F1222',
-  text_2: '#5C6C7F',
+  background_body_1: '#242529',
+  background_body_2: '#242529',
+  background: '#2F3136',
+  text_1: '#D3D3D4',
+  text_2: '#7F8186',
   primary: '#0364FF',
   // Rarely changed
   success: '#2dcc70',
   error: '#e20d0d',
-  disabled: '#eef2f4'
+  disabled: '#403F43'
 }

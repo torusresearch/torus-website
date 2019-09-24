@@ -1,25 +1,39 @@
 <template>
-  <v-app>
+  <v-app class="torus-app">
     <router-view />
   </v-app>
 </template>
 
 <script>
-export default {}
+import themes from './plugins/themes'
+import { THEME_LIGHT_BLUE_NAME } from './utils/enums'
+
+export default {
+  computed: {
+    currentTheme() {
+      return this.$store.state.theme
+    }
+  },
+  watch: {
+    currentTheme(stateTheme) {
+      this.applyTheme(stateTheme)
+    }
+  },
+  methods: {
+    applyTheme(themeName) {
+      const theme = themes[themeName || THEME_LIGHT_BLUE_NAME]
+      this.$vuetify.theme.dark = theme.isDark
+      this.$vuetify.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
+    }
+  },
+  created() {
+    this.applyTheme(this.$store.state.theme)
+  }
+}
 </script>
 
 <style src="../public/css/circles.css"></style>
 
 <style lang="scss">
-.v-input__slot {
-  margin-bottom: 2px;
-}
-
-.v-text-field.v-text-field--enclosed .v-text-field__details {
-  margin-bottom: 0;
-}
-
-.v-btn {
-  text-transform: inherit;
-}
+@import 'App.scss';
 </style>
