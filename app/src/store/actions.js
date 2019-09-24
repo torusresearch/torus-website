@@ -347,14 +347,14 @@ export default {
       const { first_name, last_name, id, hash, username, photo_url, auth_date } = userParams || {}
       let name = first_name + ' ' + last_name
 
-      log.info('Id: ', id)
+      log.info('Id: ', id.toString())
       log.info('Hash: ', hash)
       log.info('Name: ', name)
       log.info('Username: ', username)
       log.info('Image URL: ', photo_url)
       log.info('Auth Date: ', auth_date)
 
-      dispatch('updateIdToken', { idToken: id }) // works
+      dispatch('updateIdToken', { idToken: id.toString() }) // works
 
       dispatch('updateUserInfo', {
         userInfo: {
