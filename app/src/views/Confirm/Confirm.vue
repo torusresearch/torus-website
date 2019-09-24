@@ -162,10 +162,23 @@
             <v-list-item class="pa-0">
               <v-list-item-content flat class="pa-1 grey lighten-3">
                 <v-card flat class="body-2 text-left pa-2 word-break typedMessageBox">
-                  <v-expansion-panels>
+                  <v-expansion-panels v-if="typeof message === 'string'">
+                    <p class="blue--text" style="text-align:left">{{ message }}</p>
+                  </v-expansion-panels>
+
+                  <v-expansion-panels v-else-if="!Array.isArray(typedMessages)">
                     <v-expansion-panel v-for="(value, index) in typedMessages" :key="index">
-                      <v-expansion-panel-header>{{ index | capitalize }}</v-expansion-panel-header>
+                      <v-expansion-panel-header>{{ index }}</v-expansion-panel-header>
                       <v-expansion-panel-content>
+                        <vue-json-pretty :path="'res'" :data="value" :showline="true" :deep="5"></vue-json-pretty>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
+
+                  <v-expansion-panels v-else-if="Array.isArray(typedMessages)">
+                    <v-expansion-panel>
+                      <v-expansion-panel-header>data</v-expansion-panel-header>
+                      <v-expansion-panel-content v-for="value in typedMessages" :key="value">
                         <vue-json-pretty :path="'res'" :data="value" :showline="true" :deep="5"></vue-json-pretty>
                       </v-expansion-panel-content>
                     </v-expansion-panel>
@@ -443,8 +456,8 @@ export default {
   },
   filters: {
     capitalize: function(value) {
-      if (!value) return ''
       let newValue = value.toString()
+      if (!newValue) return ''
       return newValue.charAt(0).toUpperCase() + newValue.slice(1)
     }
   },
