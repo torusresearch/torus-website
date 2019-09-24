@@ -193,7 +193,7 @@ export default {
       this.$store.dispatch('setProviderType', { network: this.rpc, type: RPC })
     },
     selectTheme(themeName) {
-      this.$store.commit('setTheme', themeName)
+      this.$store.dispatch('setTheme', themeName)
     },
     saveTheme() {
       this.$store

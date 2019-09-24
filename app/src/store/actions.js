@@ -2,11 +2,14 @@ import BroadcastChannel from 'broadcast-channel'
 import log from 'loglevel'
 import config from '../config'
 import torus from '../torus'
-import { RPC, USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, SUPPORTED_NETWORK_TYPES } from '../utils/enums'
+import { RPC, USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, SUPPORTED_NETWORK_TYPES, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { getRandomNumber, broadcastChannelOptions } from '../utils/utils'
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import initialState from './state'
+
+import vuetify from '../plugins/vuetify'
+import themes from '../plugins/themes'
 
 const accountImporter = require('../utils/accountImporter')
 
@@ -21,8 +24,9 @@ const oauthStream = torus.communicationMux.getStream('oauth')
 var walletWindow
 
 export default {
-  logOut(context, payload) {
-    context.commit('logOut', initialState)
+  logOut({ commit, dispatch }, payload) {
+    commit('logOut', initialState)
+    dispatch('setTheme', THEME_LIGHT_BLUE_NAME)
     window.sessionStorage.clear()
     statusStream.write({ loggedIn: false })
   },
@@ -427,6 +431,11 @@ export default {
   },
   setTheme({ commit }, payload) {
     commit('setTheme', payload)
+
+    // Update vuetify theme
+    const theme = themes[payload || THEME_LIGHT_BLUE_NAME]
+    vuetify.framework.theme.dark = theme.isDark
+    vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
   },
   setUserTheme({ state }, payload) {
     return new Promise((resolve, reject) => {
@@ -464,8 +473,8 @@ export default {
           .then(user => {
             if (user.data) {
               const { transactions, default_currency, theme } = user.data || {}
-              commit('setTheme', theme)
               commit('setPastTransactions', transactions)
+              dispatch('setTheme', theme)
               dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
               dispatch('storeUserLogin', calledFromEmbed)
               resolve()
