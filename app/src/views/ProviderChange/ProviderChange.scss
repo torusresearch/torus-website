@@ -30,3 +30,8 @@
     min-height: inherit;
   }
 }
+
+.theme--light.v-sheet, 
+.theme--dark.v-sheet {
+  background: transparent
+}

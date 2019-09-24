@@ -5,4 +5,16 @@
       text-align: left;
     }
   }
+  ::v-deep .select-coin-container {
+    .v-icon {
+      color: var(--v-text_2-base);
+    }
+  }
+  .recipient-address {
+    ::v-deep .v-input__icon.v-input__icon--clear {
+      .v-icon.v-icon.v-icon--link {
+        height: 16px;
+      }
+    }
+  }
 }

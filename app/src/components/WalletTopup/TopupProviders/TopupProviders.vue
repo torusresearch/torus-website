@@ -2,6 +2,7 @@
   <v-flex xs12 sm5 mb-4 px-4 class="topup-providers">
     <v-card
       class="mb-4 topup-provider"
+      :class="{ active: innerProvider === targetProvider.name }"
       v-for="targetProvider in activeProviders"
       @click="innerProvider = targetProvider.name"
       :key="targetProvider.name"
@@ -10,11 +11,11 @@
       <router-link :to="targetProvider.link">
         <v-list-item three-line :id="`${targetProvider.name}-link`">
           <v-list-item-icon class="mr-2 align-self-center">
-            <v-icon color="primary" v-if="innerProvider === targetProvider.name">$vuetify.icons.radio_checked</v-icon>
-            <v-icon color="grey" v-else>$vuetify.icons.radio_unchecked</v-icon>
+            <v-icon class="primary--text" v-if="innerProvider === targetProvider.name">$vuetify.icons.radio_checked</v-icon>
+            <v-icon class="text_2--text" v-else>$vuetify.icons.radio_unchecked</v-icon>
           </v-list-item-icon>
           <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
-            <img :src="require(`../../../../public/images/logos/${targetProvider.logo}`)" />
+            <img :src="require(`../../../../public/images/${targetProvider.logo}`)" />
           </v-list-item-avatar>
           <v-list-item-content class="align-self-center text-right caption">
             <div>{{ targetProvider.line1 }}</div>
@@ -34,7 +35,7 @@
                 <v-icon color="grey">$vuetify.icons.radio_unchecked</v-icon>
               </v-list-item-icon>
               <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
-                <img :src="require(`../../../../public/images/logos/${targetProvider.logo}`)" />
+                <img :src="require(`../../../../public/images/${targetProvider.logo}`)" />
               </v-list-item-avatar>
               <v-list-item-content class="align-self-center text-right caption">
                 <div>{{ targetProvider.line1 }}</div>

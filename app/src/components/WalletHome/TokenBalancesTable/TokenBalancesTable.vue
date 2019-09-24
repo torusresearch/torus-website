@@ -2,7 +2,7 @@
   <v-layout wrap align-center>
     <v-flex class="xs12 sm6 px-4 my-4" v-for="(balance, index) in tokenBalances" :key="index" :style="`order: ${index > 0 ? index + 1 : index}`">
       <v-card color="card-shadow pb-6 pt-1">
-        <v-card-text class="torus_text--text py-6 px-6">
+        <v-card-text class="text_1--text py-6 px-6">
           <v-layout>
             <v-flex xs6>
               <img
@@ -17,7 +17,7 @@
             </v-flex>
           </v-layout>
           <v-divider class="my-1"></v-divider>
-          <v-layout class="font-weight-regular torus_text--text text--lighten-4">
+          <v-layout class="font-weight-regular text_2--text">
             <v-flex xs6>
               {{ balance.currencyRateText }}
             </v-flex>
@@ -30,7 +30,7 @@
     </v-flex>
 
     <v-flex class="xs12 sm6 px-4 my-4" v-if="!isFreshAccount" style="order: 1">
-      <v-card color="dark card-shadow" white>
+      <v-card color="card-shadow">
         <v-card-text class="pt-1 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-4' : 'pb-5'">
           <v-layout align-center>
             <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
@@ -70,11 +70,14 @@
     </v-flex> -->
 
     <v-flex class="xs12 sm6 px-4 my-4" v-if="isFreshAccount" style="order: 1">
-      <PromotionCard title="Welcome to Torus." subtitle="Learn more about your wallet today." image-path="learn-more.svg">
-        <template v-slot:link>
+      <PromotionCard title="Welcome to Torus." :image-path="`${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`">
+        <template v-slot:subtitle>
           <v-dialog v-model="dialog" max-width="700">
             <template v-slot:activator="{ on }">
-              <v-btn id="learn-more-btn" color="primary" depressed class="px-12 py-1 mt-4" v-on="on">Learn more</v-btn>
+              <div class="body-2'">
+                <a id="learn-more-btn" class="primary--text font-weight-bold" v-on="on">Learn more</a>
+                about your wallet today.
+              </div>
             </template>
             <LearnMore @onClose="dialog = false" />
           </v-dialog>
