@@ -87,7 +87,7 @@
       </v-list-item>
       <v-list-item href="https://docs.tor.us/#users" target="_blank">
         <v-list-item-action class="mr-2">
-          <v-icon :small="$vuetify.breakpoint.xsOnly" class="text_1--text" v-text="'$vuetify.icons.info'" />
+          <v-icon :small="$vuetify.breakpoint.xsOnly" class="text_2--text" v-text="'$vuetify.icons.info'" />
         </v-list-item-action>
         <v-list-item-content class="text_1--text font-weight-bold">Info and Support</v-list-item-content>
       </v-list-item>
