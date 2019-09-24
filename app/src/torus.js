@@ -65,7 +65,7 @@ class Torus {
             temppubx: pubKey.getX().toString('hex'),
             temppuby: pubKey.getY().toString('hex'),
             timestamp: (Date.now() - 2000).toString().slice(0, 10),
-            verifieridentifier: 'google'
+            verifieridentifier: verifier
           })
         ).catch(err => {
           log.error(err)

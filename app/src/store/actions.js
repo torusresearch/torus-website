@@ -331,19 +331,34 @@ export default {
         }
       })()
     } else if (verifier === TELEGRAM) {
-      let name = window.telegram.first_name + ' ' + window.telegram.last_name
+      const { first_name, last_name, id, hash, username, photo_url, auth_date } = userParams || {}
+      let name = first_name + ' ' + last_name
 
-      log.info('Id: ', window.telegram.id)
-      log.info('Hash: ', window.telegram.hash)
+      log.info('Id: ', id)
+      log.info('Hash: ', hash)
       log.info('Name: ', name)
-      log.info('Username: ', window.telegram.username)
-      log.info('Image URL: ', window.telegram.photo_url)
-      log.info('Auth Date: ', window.telegram.auth_ate)
+      log.info('Username: ', username)
+      log.info('Image URL: ', photo_url)
+      log.info('Auth Date: ', auth_date)
 
-      dispatch('updateUserInfo', { userInfo: { profileImage: window.telegram.photo_url, name } })
-      dispatch('updateIdToken', { idToken: window.telegram.hash })
-      dispatch('updateVerifierParams', { verifierParams: window.telegram })
-      dispatch('updateVerifierId', { verifierId: window.telegram.id.toString() })
+      dispatch('updateIdToken', { idToken: id })
+
+      dispatch('updateUserInfo', {
+        userInfo: {
+          profileImage: photo_url,
+          name,
+          verifierId: username,
+          verifier: TELEGRAM,
+          verifierParams: {
+            first_name,
+            last_name,
+            verifier_id: username,
+            photo_url,
+            auth_date,
+            hash
+          }
+        }
+      })
 
       dispatch('handleLogin', { calledFromEmbed, endPointNumber })
     }

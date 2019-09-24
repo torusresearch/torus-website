@@ -34,7 +34,7 @@
                     color="primary"
                     class="flexiBtn px-12"
                     type="button"
-                    @click="triggerLogin({ verifier: FACEBOOK, verifier: 'facebook', calledFromEmbed: false })"
+                    @click="triggerLogin({ verifier: FACEBOOK, calledFromEmbed: false })"
                   >
                     Login With Facebook
                   </v-btn>
