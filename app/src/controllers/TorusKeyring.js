@@ -127,7 +127,7 @@ export default class TorusKeyring extends EventEmitter {
   }
 
   // personal_signTypedData, signs data along with the schema
-  signTypedData(withAccount, typedData) {
+  signTypedData(withAccount, typedData, version) {
     return new Promise((resolve, reject) => {
       try {
         const wallet = this._getWalletForAccount(withAccount)
@@ -136,8 +136,24 @@ export default class TorusKeyring extends EventEmitter {
         if (typeof parsedData === 'string') {
           parsedData = JSON.parse(parsedData)
         }
-        const sig = sigUtil.signTypedData(privKey, { data: parsedData })
-        resolve(sig)
+        let signature
+        if (version) {
+          switch (version) {
+            case 'V1':
+              signature = sigUtil.signTypedDataLegacy(privKey, { data: typedData })
+              break
+            case 'V4':
+              signature = sigUtil.signTypedData_v4(privKey, { data: parsedData })
+              break
+            case 'V3':
+            default:
+              signature = sigUtil.signTypedData(privKey, { data: parsedData })
+              break
+          }
+        } else {
+          signature = sigUtil.signTypedData(privKey, { data: parsedData })
+        }
+        resolve(signature)
       } catch (error) {
         reject(error)
       }
