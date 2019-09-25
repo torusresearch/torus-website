@@ -352,7 +352,7 @@ export default {
       log.info('Name: ', name)
       log.info('Username: ', username)
       log.info('Image URL: ', photo_url)
-      log.info('Auth Date: ', auth_date)
+      log.info('Auth Date: ', auth_date.toString())
 
       dispatch('updateIdToken', { idToken: id.toString() }) // works
 
@@ -367,7 +367,7 @@ export default {
             last_name,
             verifier_id: username,
             photo_url,
-            auth_date,
+            auth_date: auth_date.toString(),
             hash
           }
         }
