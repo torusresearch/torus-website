@@ -22,9 +22,8 @@ export default class AssetContractController {
    * @typedef {Object} AssetContract
    * @param {Object} opts Initialize various properties of the class.
    */
-  constructor(opts = {}) {
+  constructor() {
     this._provider = opts.provider
-
     this.web3 = new Web3(this._provider)
   }
 
@@ -210,9 +209,9 @@ export default class AssetContractController {
     })
   }
   /**
-   * Returns contract instance of
+   * Query for balances of all tokens
    *
-   * @returns - Promise resolving to the 'tokenURI'
+   * @returns - Promise resolving to array of non-zero balances
    */
   getBalancesInSingleCall(selectedAddress, tokensToDetect) {
     const contract = this.web3.eth.contract(abiSingleCallBalancesContract).at(SINGLE_CALL_BALANCES_ADDRESS)
