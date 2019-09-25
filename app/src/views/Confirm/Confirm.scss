@@ -28,12 +28,18 @@
   }
 }
 
+.textColor {
+  color: var(--v-text_2-base);
+}
+
 .svg-bcg-color {
   background-color: var(--v-torus_svg_bcg-base);
 }
 
 @mixin svg-size($args...) {
-  @each $name, $size in keywords($args) {
+
+  @each $name,
+  $size in keywords($args) {
     .svg-setting-#{$name} {
       width: $size;
       height: $size;
@@ -123,6 +129,7 @@ hr {
 .v-card__text {
   padding: 12px;
 }
+
 .card-upper-icon {
   position: absolute;
   top: 8px;
@@ -151,6 +158,47 @@ hr {
     min-height: inherit;
   }
 }
-.word-break{
-    word-break: break-all
+
+.word-break {
+  word-break: break-all
+}
+
+::v-deep .v-expansion-panel .vjs-tree .vjs-value__string {
+  color: var(--v-primary-base) !important;
+}
+
+::v-deep .v-expansion-panel .vjs-tree .vjs-tree__brackets {
+  color: gray !important;
+  display: none;
+}
+
+::v-deep .vjs-tree .vjs-tree__content.has-line {
+  border-left: 1px solid #bfcbd9;
+}
+
+.v-expansion-panel {
+  background: transparent !important;
+  margin-bottom: 5px
+}
+
+.v-expansion-panel::before {
+  box-shadow: none;
+  border-left: 2px solid var(--v-primary-base);
+  border-radius: 0
+}
+
+.v-expansion-panel:not(:first-child)::after {
+  border-top: 0
+}
+
+.v-expansion-panel-header {
+  color: var(--v-primary-base) !important;
+}
+
+.background_3 {
+  background: transparent !important
+}
+
+.typedMessageBox {
+  background: transparent !important;
 }
