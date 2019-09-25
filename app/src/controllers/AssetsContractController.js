@@ -22,7 +22,7 @@ export default class AssetContractController {
    * @typedef {Object} AssetContract
    * @param {Object} opts Initialize various properties of the class.
    */
-  constructor() {
+  constructor(opts) {
     this._provider = opts.provider
     this.web3 = new Web3(this._provider)
   }
@@ -36,7 +36,8 @@ export default class AssetContractController {
    * @returns - Promise resolving to whether the contract implements `interfaceID`
    */
   contractSupportsInterface(address, interfaceId) {
-    const contract = this.web3.eth.contract(abiERC721).at(address)
+    const web3Instance = this.web3
+    const contract = new web3Instance.eth.Contract(abiERC721, address)
     return new Promise((resolve, reject) => {
       contract.supportsInterface(interfaceId, (error, result) => {
         /* istanbul ignore if */
@@ -58,6 +59,7 @@ export default class AssetContractController {
   contractSupportsMetadataInterface(address) {
     return this.contractSupportsInterface(address, ERC721METADATA_INTERFACE_ID)
   }
+
   /**
    * Query if contract implements ERC721Enumerable interface
    *
@@ -76,7 +78,8 @@ export default class AssetContractController {
    * @returns - Promise resolving to BN object containing balance for current account on specific asset contract
    */
   getBalanceOf(address, selectedAddress) {
-    const contract = this.web3.eth.contract(abiERC20).at(address)
+    const web3Instance = this.web3
+    const contract = new web3Instance.eth.contract(abiERC20, address)
     return new Promise((resolve, reject) => {
       contract.balanceOf(selectedAddress, (error, result) => {
         /* istanbul ignore if */
@@ -98,7 +101,9 @@ export default class AssetContractController {
    * @returns - Promise resolving to token identifier for the 'index'th asset assigned to 'selectedAddress'
    */
   getCollectibleTokenId(address, selectedAddress, index) {
-    const contract = this.web3.eth.contract(abiERC721).at(address)
+    const web3Instance = this.web3
+
+    const contract = new web3Instance.eth.contract(abiERC721).at(address)
     return new Promise((resolve, reject) => {
       contract.tokenOfOwnerByIndex(selectedAddress, index, (error, result) => {
         /* istanbul ignore if */
@@ -119,7 +124,9 @@ export default class AssetContractController {
    * @returns - Promise resolving to the 'tokenURI'
    */
   getCollectibleTokenURI(address, tokenId) {
-    const contract = this.web3.eth.contract(abiERC721).at(address)
+    const web3Instance = this.web3
+
+    const contract = new web3Instance.eth.contract(abiERC721).at(address)
     return new Promise((resolve, reject) => {
       contract.tokenURI(tokenId, (error, result) => {
         /* istanbul ignore if */
@@ -138,7 +145,9 @@ export default class AssetContractController {
    * @returns - Promise resolving to the 'decimals'
    */
   getTokenDecimals(address) {
-    const contract = this.web3.eth.contract(abiERC20).at(address)
+    const web3Instance = this.web3
+
+    const contract = new web3Instance.eth.contract(abiERC20).at(address)
     return new Promise((resolve, reject) => {
       contract.decimals((error, result) => {
         /* istanbul ignore if */
@@ -157,7 +166,9 @@ export default class AssetContractController {
    * @returns - Promise resolving to the 'name'
    */
   getAssetName(address) {
-    const contract = this.web3.eth.contract(abiERC721).at(address)
+    const web3Instance = this.web3
+
+    const contract = new web3Instance.eth.contract(abiERC721).at(address)
     return new Promise((resolve, reject) => {
       contract.name((error, result) => {
         /* istanbul ignore if */
@@ -176,7 +187,9 @@ export default class AssetContractController {
    * @returns - Promise resolving to the 'symbol'
    */
   getAssetSymbol(address) {
-    const contract = this.web3.eth.contract(abiERC721).at(address)
+    const web3Instance = this.web3
+
+    const contract = new web3Instance.eth.contract(abiERC721).at(address)
     return new Promise((resolve, reject) => {
       contract.symbol((error, result) => {
         /* istanbul ignore if */
@@ -196,7 +209,9 @@ export default class AssetContractController {
    * @returns - Promise resolving to the owner address
    */
   getOwnerOf(address, tokenId) {
-    const contract = this.web3.eth.contract(abiERC721).at(address)
+    const web3Instance = this.web3
+
+    const contract = new web3Instance.eth.contract(abiERC721).at(address)
     return new Promise((resolve, reject) => {
       contract.ownerOf(tokenId, (error, result) => {
         /* istanbul ignore if */
@@ -214,7 +229,9 @@ export default class AssetContractController {
    * @returns - Promise resolving to array of non-zero balances
    */
   getBalancesInSingleCall(selectedAddress, tokensToDetect) {
-    const contract = this.web3.eth.contract(abiSingleCallBalancesContract).at(SINGLE_CALL_BALANCES_ADDRESS)
+    const web3Instance = this.web3
+
+    const contract = new web3Instance.eth.contract(abiSingleCallBalancesContract).at(SINGLE_CALL_BALANCES_ADDRESS)
     return new Promise((resolve, reject) => {
       contract.balances([selectedAddress], tokensToDetect, (error, result) => {
         /* istanbul ignore if */
