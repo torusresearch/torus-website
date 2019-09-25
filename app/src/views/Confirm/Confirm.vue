@@ -163,7 +163,7 @@
               <v-list-item-content flat class="pa-1 grey lighten-3">
                 <v-card flat class="body-2 text-left pa-2 word-break typedMessageBox">
                   <v-expansion-panels v-if="typeof message === 'string'">
-                    <p class="blue--text" style="text-align:left">{{ message }}</p>
+                    <p class="textColor" style="text-align:left">{{ message }}</p>
                   </v-expansion-panels>
 
                   <v-expansion-panels v-else-if="!Array.isArray(typedMessages)">
@@ -454,13 +454,6 @@ export default {
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
     }
   },
-  filters: {
-    capitalize: function(value) {
-      let newValue = value.toString()
-      if (!newValue) return ''
-      return newValue.charAt(0).toUpperCase() + newValue.slice(1)
-    }
-  },
   watch: {
     gasPrice: function(newGasPrice, oldGasPrice) {
       this.gasCost = newGasPrice * this.gasEstimate * 10 ** -9
@@ -582,13 +575,9 @@ export default {
           try {
             typedMessages = JSON.parse(typedMessages)
           } catch (e) {
-            console.error(e)
+            log.error(e)
           }
         }
-
-        console.log('typedmessages are', typedMessages)
-        console.log('messages are', message)
-
         const { id } = msgParams || {}
         this.id = id
         this.message = message

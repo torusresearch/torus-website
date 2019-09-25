@@ -509,7 +509,6 @@ export default class TorusController extends EventEmitter {
    * @param {Function} cb - The callback function, called with the signature.
    */
   newUnsignedTypedMessage(msgParams, req, version) {
-    console.log('method called', JSON.stringify(msgParams, req, version))
     const promise = this.typedMessageManager.addUnapprovedMessageAsync(msgParams, req, version)
     this.sendUpdate()
     this.opts.showUnconfirmedMessage()
