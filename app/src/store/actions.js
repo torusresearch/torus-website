@@ -310,7 +310,7 @@ export default {
       })()
     } else if (verifier === FACEBOOK) {
       ;(function facebookLogin() {
-        if (window.FB) {
+        if (window.FBInitialized) {
           window.FB.login(response => {
             if (response.authResponse && response.status === 'connected') {
               let { accessToken } = response.authResponse || {}
@@ -464,7 +464,7 @@ export default {
             torus.continueEnable(ethAddress)
           }, 50)
         }
-        statusStream.write({ loggedIn: true, rehydrate: false })
+        statusStream.write({ loggedIn: true, rehydrate: false, verifier: verifier })
         dispatch('loginInProgress', false)
       })
       .catch(err => {
@@ -591,7 +591,13 @@ export default {
     })
   },
   async rehydrate({ state, dispatch }, payload) {
-    let { selectedAddress, wallet, networkType, jwtToken } = state
+    let {
+      selectedAddress,
+      wallet,
+      networkType,
+      jwtToken,
+      userInfo: { verifier }
+    } = state
     try {
       // if jwtToken expires, logout
       if (jwtToken) {
@@ -610,7 +616,7 @@ export default {
           torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet)),
           dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false })
         ])
-        statusStream.write({ loggedIn: true, rehydrate: true })
+        statusStream.write({ loggedIn: true, rehydrate: true, verifier: verifier })
         log.info('rehydrated wallet')
         torus.web3.eth.net
           .getId()

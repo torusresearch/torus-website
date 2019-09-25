@@ -178,6 +178,7 @@ export default {
           appId: '2554219104599979',
           version: 'v4.0'
         })
+        window.FBInitialized = true
         this.fbLoaded = true
         clearInterval(facebookInterval)
       }

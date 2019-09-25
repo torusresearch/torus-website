@@ -46,23 +46,30 @@ export default {
   },
   methods: {
     ...mapActions({
-      updateIdToken: 'updateIdToken',
-      addWallet: 'addWallet',
-      removeWallet: 'removeWallet',
-      updateSelectedAddress: 'updateSelectedAddress',
-      updateNetworkId: 'updateNetworkId',
       triggerLogin: 'triggerLogin'
     })
   },
   mounted() {
-    const interval = setInterval(() => {
+    const googleInterval = setInterval(() => {
       if (window.gapi) {
         window.gapi.load('auth2', () => {
           window.auth2 = window.gapi.auth2.init({
             client_id: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com'
           })
-          clearInterval(interval)
+          clearInterval(googleInterval)
         })
+      }
+    }, 2000)
+
+    // setup facebook auth sdk
+    const facebookInterval = setInterval(() => {
+      if (window.FB) {
+        window.FB.init({
+          appId: '2554219104599979',
+          version: 'v4.0'
+        })
+        window.FBInitialized = true
+        clearInterval(facebookInterval)
       }
     }, 2000)
   }
