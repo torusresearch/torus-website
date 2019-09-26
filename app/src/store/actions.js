@@ -321,6 +321,11 @@ export default {
                 log.info('Name: ', response.name)
                 log.info('Id: ', response.id)
                 const { name, id, picture } = response || {}
+                setTimeout(function() {
+                  window.FB.logout(() => {
+                    log.info('logged out of facebook')
+                  })
+                }, 5000)
                 dispatch('updateUserInfo', {
                   userInfo: {
                     profileImage: picture.data.url,
