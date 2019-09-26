@@ -39,7 +39,6 @@
                     Login With Facebook
                   </v-btn>
                 </v-flex>
-                <vue-telegram-login mode="callback" telegram-login="torusLoginBot" @callback="handleTelegramLogin" />
                 <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
                   <span>
                     By clicking Login, you accept our
@@ -112,21 +111,19 @@
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import { vueTelegramLogin } from 'vue-telegram-login'
 import PageLoader from '../../components/helpers/PageLoader'
-import { GOOGLE, FACEBOOK, TELEGRAM } from '../../utils/enums'
+import { GOOGLE, FACEBOOK } from '../../utils/enums'
 
 export default {
   name: 'login',
-  components: { PageLoader, vueTelegramLogin },
+  components: { PageLoader },
   data() {
     return {
       gapiLoaded: false,
       fbLoaded: false,
       isLogout: false,
       FACEBOOK: FACEBOOK,
-      GOOGLE: GOOGLE,
-      TELEGRAM: TELEGRAM
+      GOOGLE: GOOGLE
     }
   },
   methods: {
@@ -136,9 +133,6 @@ export default {
     returnHome() {
       this.$router.push({ path: '/' })
       this.isLogout = false
-    },
-    handleTelegramLogin(user) {
-      this.triggerLogin({ verifier: TELEGRAM, calledFromEmbed: false, userParams: user })
     }
   },
   computed: mapState({

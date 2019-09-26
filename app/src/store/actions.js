@@ -9,7 +9,6 @@ import {
   SUPPORTED_NETWORK_TYPES,
   FACEBOOK,
   GOOGLE,
-  TELEGRAM,
   THEME_LIGHT_BLUE_NAME
 } from '../utils/enums'
 import { getRandomNumber, broadcastChannelOptions } from '../utils/utils'
@@ -256,7 +255,7 @@ export default {
       return torus.torusController.networkController.setProviderType(networkType.host)
     }
   },
-  triggerLogin({ dispatch }, { calledFromEmbed, verifier, userParams }) {
+  triggerLogin({ dispatch }, { calledFromEmbed, verifier }) {
     const { torusNodeEndpoints } = config
     const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
 
@@ -343,37 +342,6 @@ export default {
           setTimeout(facebookLogin, 1000)
         }
       })()
-    } else if (verifier === TELEGRAM) {
-      const { first_name, last_name, id, hash, username, photo_url, auth_date } = userParams || {}
-      let name = first_name + ' ' + last_name
-
-      log.info('Id: ', id.toString())
-      log.info('Hash: ', hash)
-      log.info('Name: ', name)
-      log.info('Username: ', username)
-      log.info('Image URL: ', photo_url)
-      log.info('Auth Date: ', auth_date.toString())
-
-      dispatch('updateIdToken', { idToken: id.toString() }) // works
-
-      dispatch('updateUserInfo', {
-        userInfo: {
-          profileImage: photo_url,
-          name,
-          verifierId: username,
-          verifier: TELEGRAM,
-          verifierParams: {
-            first_name,
-            last_name,
-            verifier_id: username,
-            photo_url,
-            auth_date: auth_date.toString(),
-            hash
-          }
-        }
-      })
-
-      dispatch('handleLogin', { calledFromEmbed, endPointNumber })
     }
   },
   subscribeToControllers({ dispatch, state }, payload) {
