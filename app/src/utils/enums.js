@@ -83,7 +83,6 @@ const ACTIVITY_PERIOD_MONTH_ONE = 'Last 1 Month'
 const ACTIVITY_PERIOD_MONTH_SIX = 'Last 6 Months'
 const GOOGLE = 'google'
 const FACEBOOK = 'facebook'
-const TELEGRAM = 'telegram'
 
 const THEME_DARK_BLACK_NAME = 'dark-black'
 const THEME_LIGHT_BLUE_NAME = 'light-blue'
@@ -143,7 +142,6 @@ module.exports = {
   ACTIVITY_PERIOD_MONTH_ONE,
   ACTIVITY_PERIOD_MONTH_SIX,
   GOOGLE,
-  TELEGRAM,
   FACEBOOK,
   THEME_DARK_BLACK_NAME,
   THEME_LIGHT_BLUE_NAME

@@ -5,7 +5,7 @@ const initialState = {
     name: '', // first + last name
     profileImage: '', // image url
     verifier: '', // enum like GOOGLE
-    verifierId: '', // usually email or facebook id or telegram id
+    verifierId: '', // usually email or facebook id
     verifierParams: {} // general params
   },
   idToken: '',
