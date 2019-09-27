@@ -351,9 +351,19 @@ export default {
       })()
     } else if (verifier === TWITCH) {
       const redirect_uri = 'https://localhost:3000/redirect'
+      const claims = JSON.stringify({
+        id_token: {
+          email: null,
+          email_verified: null
+        },
+        userinfo: {
+          picture: null,
+          preferred_username: null
+        }
+      })
       window.open(
         'https://id.twitch.tv/oauth2/authorize?client_id=tfppratfiloo53g1x133ofa4rc29px&redirect_uri=' +
-          `${redirect_uri}&response_type=token&scope=user:edit+user:read:email`
+          `${redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}`
       )
     }
   },
