@@ -25,7 +25,14 @@
       <v-flex xs12 px-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'mb-6'">
         <v-card class="card-total card-shadow">
           <v-card-title class="font-weight-bold subtitle-2 pt-6 px-6">
-            TOTAL VALUE
+            <v-layout>
+              <v-flex>
+                <span>TOTAL VALUE</span>
+              </v-flex>
+              <v-flex text-right>
+                <export-qr-code></export-qr-code>
+              </v-flex>
+            </v-layout>
           </v-card-title>
           <v-card-text class="pb-8 px-6">
             <h2 class="display-2 text_2--text font-weight-bold">
@@ -131,18 +138,20 @@
 // The color of dropdown icon requires half day work in modifying v-select
 import config from '../../config'
 import TokenBalancesTable from '../../components/WalletHome/TokenBalancesTable'
+import ExportQrCode from '../../components/WalletHome/ExportQrCode'
 import { MAINNET, WALLET_HEADERS_HOME } from '../../utils/enums'
 
 export default {
   name: 'walletHome',
-  components: { TokenBalancesTable },
+  components: { TokenBalancesTable, ExportQrCode },
   data() {
     return {
       pageHeader: WALLET_HEADERS_HOME,
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
       selected: [],
       search: '',
-      lastUpdated: ''
+      lastUpdated: '',
+      qrDialoag: false
     }
   },
   computed: {

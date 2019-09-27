@@ -32,6 +32,8 @@ import TransactionIcon from './TransactionIcon'
 import TopupIcon from './TopupIcon'
 import ActivitiesIcon from './ActivitiesIcon'
 import SettingsIcon from './SettingsIcon'
+import CloseIcon from './CloseIcon'
+import DownloadIcon from './DownloadIcon'
 
 export default {
   select: {
@@ -135,5 +137,11 @@ export default {
   },
   settings: {
     component: SettingsIcon
+  },
+  close: {
+    component: CloseIcon
+  },
+  download: {
+    component: DownloadIcon
   }
 }
