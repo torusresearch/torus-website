@@ -49,11 +49,12 @@
               outlined
             >
               <template v-slot:append>
-                <v-btn icon small color="primary">
+                <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()">
                   <v-icon small>$vuetify.icons.scan</v-icon>
                 </v-btn>
               </template>
             </v-text-field>
+            <qrcode-capture @decode="onDecodeQr" ref="captureQr" style="display: none" />
           </v-flex>
         </v-layout>
         <v-layout wrap>
@@ -157,6 +158,7 @@
 </template>
 
 <script>
+import { QrcodeCapture } from 'vue-qrcode-reader'
 import torus from '../../torus'
 import { significantDigits, getRandomNumber } from '../../utils/utils'
 import config from '../../config'
@@ -176,7 +178,8 @@ export default {
   props: ['address'],
   components: {
     TransactionSpeedSelect,
-    MessageModal
+    MessageModal,
+    QrcodeCapture
   },
   data() {
     return {
@@ -542,6 +545,10 @@ export default {
       this.updateTotalCost()
 
       this.resetSpeed = false
+    },
+    onDecodeQr(result) {
+      const address = result.split('?')[1].split('=')[1]
+      this.toAddress = address
     }
   },
   created() {
