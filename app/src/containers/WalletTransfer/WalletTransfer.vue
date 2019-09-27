@@ -47,7 +47,13 @@
               required
               :rules="[rules.toAddress, rules.required]"
               outlined
-            ></v-text-field>
+            >
+              <template v-slot:append>
+                <v-btn icon small color="primary">
+                  <v-icon small>$vuetify.icons.scan</v-icon>
+                </v-btn>
+              </template>
+            </v-text-field>
           </v-flex>
         </v-layout>
         <v-layout wrap>
@@ -540,6 +546,7 @@ export default {
   },
   created() {
     this.tokenAddress = this.address
+    this.toAddress = this.$route.query.to || ''
   }
 }
 </script>

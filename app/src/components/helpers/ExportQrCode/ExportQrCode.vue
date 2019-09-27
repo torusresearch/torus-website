@@ -16,11 +16,12 @@
           :logoSrc="require(`../../../../public/images/torus-circle.png`)"
           :logoScale="0.23"
           :logoCornerRadius="30"
-          :margin="0"
+          :margin="10"
           logoBackgroundColor="white"
-          :text="selectedAddress"
-          :size="230"
+          :text="transferUrl"
+          :size="240"
           :dotScale="1"
+          :correctLevel="3"
         ></vue-qr>
         <div class="caption text_2--text">
           <show-tool-tip :address="selectedAddress">{{ slicedAddress }}</show-tool-tip>
@@ -38,6 +39,7 @@
 <script>
 import VueQr from 'vue-qr'
 import ShowToolTip from '../../helpers/ShowToolTip'
+const baseRoute = process.env.BASE_URL
 
 export default {
   components: {
@@ -55,6 +57,11 @@ export default {
     },
     slicedAddress() {
       return `${this.selectedAddress.slice(0, 20)}...${this.selectedAddress.slice(-10)}`
+    },
+    transferUrl() {
+      const urlDomain = window.location.origin
+      const urlPath = this.$router.resolve({ name: 'walletTransfer', query: { to: this.selectedAddress } }).href
+      return `${urlDomain}${urlPath}`
     }
   },
   methods: {

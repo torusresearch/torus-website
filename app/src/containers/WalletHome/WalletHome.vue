@@ -138,7 +138,7 @@
 // The color of dropdown icon requires half day work in modifying v-select
 import config from '../../config'
 import TokenBalancesTable from '../../components/WalletHome/TokenBalancesTable'
-import ExportQrCode from '../../components/WalletHome/ExportQrCode'
+import ExportQrCode from '../../components/helpers/ExportQrCode'
 import { MAINNET, WALLET_HEADERS_HOME } from '../../utils/enums'
 
 export default {
