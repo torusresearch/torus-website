@@ -18,7 +18,7 @@ import CoinsReceiveIcon from './CoinsReceiveIcon'
 import CoinsTopupIcon from './CoinsTopupIcon'
 import ChevronLeftIcon from './ChevronLeftIcon'
 import ChevronRightIcon from './ChevronRightIcon'
-import ClearIcon from './ClearIcon'
+import ScanIcon from './ScanIcon'
 import NetworkIcon from './NetworkIcon'
 import LockIcon from './LockIcon'
 import KeyIcon from './KeyIcon'
@@ -96,8 +96,8 @@ export default {
   page_next: {
     component: ChevronRightIcon
   },
-  clear: {
-    component: ClearIcon
+  scan: {
+    component: ScanIcon
   },
   network: {
     component: NetworkIcon
