@@ -39,6 +39,30 @@
                     Login With Facebook
                   </v-btn>
                 </v-flex>
+                <v-flex xs9 sm7 ml-auto mb-1 mr-auto>
+                  <v-btn
+                    :large="!$vuetify.breakpoint.xsOnly"
+                    depressed
+                    color="primary"
+                    class="flexiBtn px-12"
+                    type="button"
+                    @click="triggerLogin({ verifier: REDDIT, calledFromEmbed: false })"
+                  >
+                    Login With Reddit
+                  </v-btn>
+                </v-flex>
+                <v-flex xs9 sm7 ml-auto mb-1 mr-auto>
+                  <v-btn
+                    :large="!$vuetify.breakpoint.xsOnly"
+                    depressed
+                    color="primary"
+                    class="flexiBtn px-12"
+                    type="button"
+                    @click="triggerLogin({ verifier: TWITCH, calledFromEmbed: false })"
+                  >
+                    Login With Twitch
+                  </v-btn>
+                </v-flex>
                 <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
                   <span>
                     By clicking Login, you accept our
@@ -112,7 +136,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import PageLoader from '../../components/helpers/PageLoader'
-import { GOOGLE, FACEBOOK } from '../../utils/enums'
+import { GOOGLE, FACEBOOK, REDDIT, TWITCH } from '../../utils/enums'
 
 export default {
   name: 'login',
@@ -123,7 +147,9 @@ export default {
       fbLoaded: false,
       isLogout: false,
       FACEBOOK: FACEBOOK,
-      GOOGLE: GOOGLE
+      GOOGLE: GOOGLE,
+      TWITCH: TWITCH,
+      REDDIT: REDDIT
     }
   },
   methods: {

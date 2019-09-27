@@ -9,6 +9,8 @@ import {
   SUPPORTED_NETWORK_TYPES,
   FACEBOOK,
   GOOGLE,
+  TWITCH,
+  REDDIT,
   THEME_LIGHT_BLUE_NAME
 } from '../utils/enums'
 import { getRandomNumber, broadcastChannelOptions } from '../utils/utils'
@@ -347,6 +349,12 @@ export default {
           setTimeout(facebookLogin, 1000)
         }
       })()
+    } else if (verifier === TWITCH) {
+      const redirect_uri = 'https://localhost:3000/redirect'
+      window.open(
+        'https://id.twitch.tv/oauth2/authorize?client_id=tfppratfiloo53g1x133ofa4rc29px&redirect_uri=' +
+          `${redirect_uri}&response_type=token&scope=user:edit+user:read:email`
+      )
     }
   },
   subscribeToControllers({ dispatch, state }, payload) {
