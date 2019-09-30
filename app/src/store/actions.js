@@ -350,20 +350,67 @@ export default {
         }
       })()
     } else if (verifier === TWITCH) {
-      const redirect_uri = 'https://localhost:3000/redirect'
+      // const redirect_uri = `${baseRoute}redirect`
+      const redirect_uri =
+        process.env.VUE_APP_TORUS_BUILD_ENV === 'production' ||
+        process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ||
+        process.env.VUE_APP_TORUS_BUILD_ENV === 'testing'
+          ? `${baseRoute}redirect`
+          : 'https://localhost:3000/redirect'
+      const state = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: torus.instanceId,
+            verifier: TWITCH
+          })
+        )
+      )
       const claims = JSON.stringify({
         id_token: {
-          email: null,
-          email_verified: null
+          email: null
         },
         userinfo: {
           picture: null,
           preferred_username: null
         }
       })
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      bc.onmessage = async ev => {
+        if (ev.data && ev.data.verifier === TWITCH) {
+          try {
+            const { access_token: accessToken, id_token: idtoken } = ev.data.verifierParams
+            bc.close()
+            const userInfo = await get('https://id.twitch.tv/oauth2/userinfo', {
+              headers: {
+                Authorization: `Bearer ${accessToken}`
+              }
+            })
+            const tokenInfo = jwtDecode(idtoken)
+            const { picture: profileImage, preferred_username: name } = userInfo || {}
+            const { email } = tokenInfo || {}
+            console.log(tokenInfo, userInfo, idtoken)
+            dispatch('updateIdToken', { idToken: accessToken.toString() })
+            dispatch('updateUserInfo', {
+              userInfo: {
+                profileImage,
+                name,
+                verifierId: userInfo.sub.toString(),
+                verifier: TWITCH,
+                verifierParams: { verifier_id: userInfo.sub.toString() }
+              }
+            })
+            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+          } catch (error) {
+            log.error(error)
+            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+          }
+        }
+      }
       window.open(
         'https://id.twitch.tv/oauth2/authorize?client_id=tfppratfiloo53g1x133ofa4rc29px&redirect_uri=' +
-          `${redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}`
+          `${redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`,
+        '_blank',
+        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
       )
     }
   },
