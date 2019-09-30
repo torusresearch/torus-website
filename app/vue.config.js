@@ -82,7 +82,7 @@ module.exports = {
       importWorkboxFrom: 'disabled',
       swSrc: 'sw.js',
       swDest: 'service-worker.js',
-      precacheManifestFilename: 'precache-manifest.js'
+      precacheManifestFilename: 'precache-manifest.[manifestHash].js'
     },
     mainfestPath:
       process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
