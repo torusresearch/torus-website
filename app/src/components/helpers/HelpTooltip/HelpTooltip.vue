@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip top :value="showTooltip">
+  <v-tooltip top>
     <template v-slot:activator="{ on }">
       <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
     </template>
@@ -17,12 +17,7 @@
 
 <script>
 export default {
-  props: ['title', 'description'],
-  data() {
-    return {
-      showTooltip: true
-    }
-  }
+  props: ['title', 'description']
 }
 </script>
 
