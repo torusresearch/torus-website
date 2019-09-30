@@ -286,7 +286,7 @@ export default {
               // Set only idToken and userInfo into the state
               dispatch('updateIdToken', { idToken: idtoken })
               dispatch('updateUserInfo', {
-                userInfo: { profileImage, name, verifierId: email, verifier: GOOGLE, verifierParams: { verifier_id: email } }
+                userInfo: { profileImage, name, email, verifierId: email, verifier: GOOGLE, verifierParams: { verifier_id: email } }
               })
 
               window.gapi.auth2
@@ -319,10 +319,10 @@ export default {
               dispatch('updateIdToken', { idToken: accessToken })
 
               window.FB.api('/me?fields=name,email,picture.type(large)', response => {
-                log.info('Email: ', response)
+                log.info('Email: ', response.email)
                 log.info('Name: ', response.name)
                 log.info('Id: ', response.id)
-                const { name, id, picture } = response || {}
+                const { name, id, picture, email } = response || {}
                 setTimeout(function() {
                   window.FB.logout(() => {
                     log.info('logged out of facebook')
@@ -332,6 +332,7 @@ export default {
                   userInfo: {
                     profileImage: picture.data.url,
                     name,
+                    email: email,
                     verifierId: id,
                     verifier: FACEBOOK,
                     verifierParams: { verifier_id: id }
@@ -350,13 +351,6 @@ export default {
         }
       })()
     } else if (verifier === TWITCH) {
-      // const redirect_uri = `${baseRoute}redirect`
-      const redirect_uri =
-        process.env.VUE_APP_TORUS_BUILD_ENV === 'production' ||
-        process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ||
-        process.env.VUE_APP_TORUS_BUILD_ENV === 'testing'
-          ? `${baseRoute}redirect`
-          : 'https://localhost:3000/redirect'
       const state = encodeURIComponent(
         window.btoa(
           JSON.stringify({
@@ -394,6 +388,7 @@ export default {
               userInfo: {
                 profileImage,
                 name,
+                email,
                 verifierId: userInfo.sub.toString(),
                 verifier: TWITCH,
                 verifierParams: { verifier_id: userInfo.sub.toString() }
@@ -407,8 +402,58 @@ export default {
         }
       }
       window.open(
-        'https://id.twitch.tv/oauth2/authorize?client_id=tfppratfiloo53g1x133ofa4rc29px&redirect_uri=' +
-          `${redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`,
+        `https://id.twitch.tv/oauth2/authorize?client_id=${config.TWITCH_CLIENT_ID}&redirect_uri=` +
+          `${config.redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`,
+        '_blank',
+        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
+      )
+    } else if (verifier === REDDIT) {
+      const state = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: torus.instanceId,
+            verifier: REDDIT
+          })
+        )
+      )
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      bc.onmessage = async ev => {
+        if (ev.data && ev.data.verifier === REDDIT) {
+          try {
+            const { access_token: accessToken, error } = ev.data.verifierParams
+            bc.close()
+            if (error) {
+              log.error('User cancelled login or did not fully authorize.')
+              oauthStream.write({ err: 'User cancelled login or did not fully authorize.' + error })
+            } else {
+              const userInfo = await get('https://oauth.reddit.com/api/v1/me', {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`
+                }
+              })
+              const { id, icon_img: profileImage, name } = userInfo || {}
+              dispatch('updateIdToken', { idToken: accessToken.toString() })
+              dispatch('updateUserInfo', {
+                userInfo: {
+                  profileImage,
+                  name,
+                  email: '',
+                  verifierId: id.toString(),
+                  verifier: REDDIT,
+                  verifierParams: { verifier_id: id.toString() }
+                }
+              })
+              dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+            }
+          } catch (error) {
+            log.error(error)
+            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+          }
+        }
+      }
+      window.open(
+        `https://www.reddit.com/api/v1/authorize?client_id=${config.REDDIT_CLIENT_ID}&redirect_uri=` +
+          `${config.redirect_uri}&response_type=token&scope=identity&state=${state}`,
         '_blank',
         'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
       )

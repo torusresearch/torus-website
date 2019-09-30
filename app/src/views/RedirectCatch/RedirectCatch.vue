@@ -27,35 +27,27 @@ export default {
       return result
     }, {})
     if (result && result.state) {
-      const instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(result.state)))) || {}
-      var bc = new BroadcastChannel(`redirect_channel_${instanceParams.instanceId}`, broadcastChannelOptions)
-      await bc.postMessage({
-        data: {
-          verifier: instanceParams.verifier,
-          verifierParams: result
-        }
-      })
-      bc.close()
+      let bc
+      try {
+        const instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(result.state)))) || {}
+        bc = new BroadcastChannel(`redirect_channel_${instanceParams.instanceId}`, broadcastChannelOptions)
+        await bc.postMessage({
+          data: {
+            verifier: instanceParams.verifier,
+            verifierParams: result
+          }
+        })
+        bc.close()
+        window.close()
+      } catch (error) {
+        log.info(error, 'something went wrong')
+        bc.close()
+        window.close()
+      }
+    } else {
+      log.info('something went wrong')
       window.close()
     }
-
-    // var bc = new BroadcastChannel(
-    //   `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
-    //   broadcastChannelOptions
-    // )
-    // bc.onmessage = async ev => {
-    //   const { payload, origin } = ev.data || {}
-    //   let url = { hostname: '' }
-    //   try {
-    //     url = new URL(origin)
-    //   } catch (err) {
-    //     log.error(err)
-    //   }
-    //   this.origin = url.hostname // origin of tx: website url
-    //   this.type = 'userInfo'
-    //   bc.close()
-    // }
-    // bc.postMessage({ data: 'popup-loaded' })
   }
 }
 </script>

@@ -10,6 +10,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import config from '../../config'
 
 export default {
   name: 'popup',
@@ -21,7 +22,7 @@ export default {
       if (window.gapi) {
         window.gapi.load('auth2', () => {
           window.auth2 = window.gapi.auth2.init({
-            client_id: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com'
+            client_id: config.GOOGLE_CLIENT_ID
           })
           clearInterval(googleInterval)
         })
@@ -32,7 +33,7 @@ export default {
     const facebookInterval = setInterval(() => {
       if (window.FB) {
         window.FB.init({
-          appId: '2554219104599979',
+          appId: config.FACEBOOK_APP_ID,
           version: 'v4.0'
         })
         window.FBInitialized = true
