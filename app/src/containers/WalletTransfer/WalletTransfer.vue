@@ -154,6 +154,12 @@
         </v-layout>
       </v-form>
     </v-flex>
+    <v-snackbar v-model="snackbar" :color="snackbarColor">
+      {{ snackbarText }}
+      <v-btn dark text @click="snackbar = false">
+        Close
+      </v-btn>
+    </v-snackbar>
   </v-layout>
 </template>
 
@@ -205,7 +211,10 @@ export default {
       },
       showModalMessage: false,
       modalMessageSuccess: null,
-      isSendAll: false
+      isSendAll: false,
+      snackbar: false,
+      snackbarText: '',
+      snackbarColor: 'success'
     }
   },
   computed: {
@@ -547,8 +556,16 @@ export default {
       this.resetSpeed = false
     },
     onDecodeQr(result) {
-      const address = result.split('?')[1].split('=')[1]
-      this.toAddress = address
+      const qrUrl = new URL(result)
+      const qrParams = new URLSearchParams(qrUrl.search)
+
+      if (qrParams.has('to')) {
+        this.toAddress = qrParams.get('to')
+      } else {
+        this.snackbar = true
+        this.snackbarColor = 'error'
+        this.snackbarText = 'Incorrect QR code'
+      }
     }
   },
   created() {
