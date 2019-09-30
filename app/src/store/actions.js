@@ -382,7 +382,6 @@ export default {
             const tokenInfo = jwtDecode(idtoken)
             const { picture: profileImage, preferred_username: name } = userInfo || {}
             const { email } = tokenInfo || {}
-            console.log(tokenInfo, userInfo, idtoken)
             dispatch('updateIdToken', { idToken: accessToken.toString() })
             dispatch('updateUserInfo', {
               userInfo: {
@@ -432,15 +431,15 @@ export default {
                 }
               })
               const { id, icon_img: profileImage, name } = userInfo || {}
-              dispatch('updateIdToken', { idToken: accessToken.toString() })
+              dispatch('updateIdToken', { idToken: accessToken })
               dispatch('updateUserInfo', {
                 userInfo: {
                   profileImage,
                   name,
                   email: '',
-                  verifierId: id.toString(),
+                  verifierId: id,
                   verifier: REDDIT,
-                  verifierParams: { verifier_id: id.toString() }
+                  verifierParams: { verifier_id: id }
                 }
               })
               dispatch('handleLogin', { calledFromEmbed, endPointNumber })
