@@ -59,9 +59,9 @@ export default {
       return `${this.selectedAddress.slice(0, 20)}...${this.selectedAddress.slice(-10)}`
     },
     transferUrl() {
-      const urlDomain = window.location.origin
-      const urlPath = this.$router.resolve({ name: 'walletTransfer', query: { to: this.selectedAddress } }).href
-      return `${urlDomain}${urlPath}`
+      let urlPath = this.$router.resolve({ name: 'walletTransfer', query: { to: this.selectedAddress } }).href
+      if (urlPath.indexOf('/') === 0) urlPath = urlPath.substr(1)
+      return `${baseRoute}${urlPath}`
     }
   },
   methods: {

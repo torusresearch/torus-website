@@ -47,6 +47,7 @@
               required
               :rules="[rules.toAddress, rules.required]"
               outlined
+              @keyup="correctQrCode = true"
             >
               <template v-slot:append>
                 <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()">
@@ -55,6 +56,15 @@
               </template>
             </v-text-field>
             <qrcode-capture @decode="onDecodeQr" ref="captureQr" style="display: none" />
+            <div v-if="!correctQrCode" class="v-text-field__details torus-hint">
+              <div class="v-messages">
+                <div class="v-messages__wrapper">
+                  <div class="v-messages__message d-flex error--text px-3">
+                    Incorrect QR Code
+                  </div>
+                </div>
+              </div>
+            </div>
           </v-flex>
         </v-layout>
         <v-layout wrap>
@@ -154,12 +164,6 @@
         </v-layout>
       </v-form>
     </v-flex>
-    <v-snackbar v-model="snackbar" :color="snackbarColor">
-      {{ snackbarText }}
-      <v-btn dark text @click="snackbar = false">
-        Close
-      </v-btn>
-    </v-snackbar>
   </v-layout>
 </template>
 
@@ -205,16 +209,14 @@ export default {
       timeTaken: '',
       convertedTotalCost: '',
       resetSpeed: false,
+      correctQrCode: true,
       rules: {
         toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid ETH or Email Address',
         required: value => !!value || 'Required'
       },
       showModalMessage: false,
       modalMessageSuccess: null,
-      isSendAll: false,
-      snackbar: false,
-      snackbarText: '',
-      snackbarColor: 'success'
+      isSendAll: false
     }
   },
   computed: {
@@ -561,10 +563,10 @@ export default {
 
       if (qrParams.has('to')) {
         this.toAddress = qrParams.get('to')
+        this.correctQrCode = true
       } else {
-        this.snackbar = true
-        this.snackbarColor = 'error'
-        this.snackbarText = 'Incorrect QR code'
+        this.toAddress = ''
+        this.correctQrCode = false
       }
     }
   },
