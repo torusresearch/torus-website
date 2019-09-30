@@ -9,17 +9,17 @@
           <v-icon size="8">$vuetify.icons.close</v-icon>
         </v-btn>
       </div>
-      <v-card-text class="text-center">
+      <v-card-text class="text-center qr-container">
         <div class="headline font-weight-bold mb-4">Your QR code</div>
         <vue-qr
           ref="address-qr"
-          :logoSrc="require(`../../../../public/images/torus-circle.png`)"
-          :logoScale="0.23"
-          :logoCornerRadius="30"
+          :logoSrc="require(`../../../../public/images/torus-circle.svg`)"
           :margin="10"
+          :logoScale="0.4"
+          :logoCornerRadius="145"
           logoBackgroundColor="white"
           :text="transferUrl"
-          :size="240"
+          :size="800"
           :dotScale="1"
           :correctLevel="3"
         ></vue-qr>
@@ -78,3 +78,7 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+@import 'ExportQrCode.scss';
+</style>
