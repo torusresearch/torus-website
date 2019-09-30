@@ -77,7 +77,13 @@ module.exports = {
     msTileColor: '#000000',
     appleMobileWebAppCapable: 'yes',
     appleMobileWebAppStatusBarStyle: 'black',
-    workboxPluginMode: 'GenerateSW',
+    workboxPluginMode: 'InjectManifest',
+    workboxOptions: {
+      importWorkboxFrom: 'disabled',
+      swSrc: 'sw.js',
+      swDest: 'service-worker.js',
+      precacheManifestFilename: 'precache-manifest.js'
+    },
     mainfestPath:
       process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
         ? `/${version}/manifest.json`
