@@ -32,6 +32,9 @@ const statusStream = torus.communicationMux.getStream('status')
 const oauthStream = torus.communicationMux.getStream('oauth')
 
 var walletWindow
+var twitchWindow
+var iClosedTwitch = false
+var redditWindow
 
 export default {
   logOut({ commit, dispatch }, payload) {
@@ -372,40 +375,61 @@ export default {
       bc.onmessage = async ev => {
         if (ev.data && ev.data.verifier === TWITCH) {
           try {
-            const { access_token: accessToken, id_token: idtoken } = ev.data.verifierParams
-            bc.close()
-            const userInfo = await get('https://id.twitch.tv/oauth2/userinfo', {
-              headers: {
-                Authorization: `Bearer ${accessToken}`
-              }
-            })
-            const tokenInfo = jwtDecode(idtoken)
-            const { picture: profileImage, preferred_username: name } = userInfo || {}
-            const { email } = tokenInfo || {}
-            dispatch('updateIdToken', { idToken: accessToken.toString() })
-            dispatch('updateUserInfo', {
-              userInfo: {
-                profileImage,
-                name,
-                email,
-                verifierId: userInfo.sub.toString(),
-                verifier: TWITCH,
-                verifierParams: { verifier_id: userInfo.sub.toString() }
-              }
-            })
-            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+            if (ev.error) {
+              log.error(ev.error)
+              oauthStream.write({ err: ev.error })
+              bc.close()
+            } else {
+              const { access_token: accessToken, id_token: idtoken } = ev.data.verifierParams
+              bc.close()
+              const userInfo = await get('https://id.twitch.tv/oauth2/userinfo', {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`
+                }
+              })
+              const tokenInfo = jwtDecode(idtoken)
+              const { picture: profileImage, preferred_username: name } = userInfo || {}
+              const { email } = tokenInfo || {}
+              dispatch('updateIdToken', { idToken: accessToken.toString() })
+              dispatch('updateUserInfo', {
+                userInfo: {
+                  profileImage,
+                  name,
+                  email,
+                  verifierId: userInfo.sub.toString(),
+                  verifier: TWITCH,
+                  verifierParams: { verifier_id: userInfo.sub.toString() }
+                }
+              })
+              dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+            }
           } catch (error) {
             log.error(error)
-            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+            oauthStream.write({ err: 'something went wrong.' })
+          } finally {
+            iClosedTwitch = true
+            twitchWindow.close()
           }
         }
       }
-      window.open(
+      twitchWindow = window.open(
         `https://id.twitch.tv/oauth2/authorize?client_id=${config.TWITCH_CLIENT_ID}&redirect_uri=` +
           `${config.redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`,
         '_blank',
         'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
       )
+      log.info(twitchWindow)
+      var twitchTimer = setInterval(function() {
+        if (twitchWindow.closed) {
+          clearInterval(twitchTimer)
+          if (!iClosedTwitch) {
+            log.error('user closed popup')
+            oauthStream.write({ err: 'user closed popup' })
+          }
+          iClosedTwitch = false
+          twitchWindow = undefined
+        }
+      }, 1000)
     } else if (verifier === REDDIT) {
       const state = encodeURIComponent(
         window.btoa(

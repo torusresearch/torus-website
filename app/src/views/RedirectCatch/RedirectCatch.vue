@@ -19,33 +19,44 @@ export default {
     PageLoader
   },
   async mounted() {
-    const hash = this.$router.currentRoute.hash.substr(1)
-
-    let result = hash.split('&').reduce(function(result, item) {
-      const parts = item.split('=')
-      result[parts[0]] = parts[1]
-      return result
-    }, {})
-    if (result && result.state) {
-      let bc
-      try {
-        const instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(result.state)))) || {}
-        bc = new BroadcastChannel(`redirect_channel_${instanceParams.instanceId}`, broadcastChannelOptions)
-        await bc.postMessage({
-          data: {
-            verifier: instanceParams.verifier,
-            verifierParams: result
-          }
-        })
-        bc.close()
-        window.close()
-      } catch (error) {
-        log.info(error, 'something went wrong')
-        bc.close()
-        window.close()
+    let bc
+    try {
+      const hash = this.$router.currentRoute.hash.substr(1)
+      const hashParams = hash.split('&').reduce(function(result, item) {
+        const parts = item.split('=')
+        result[parts[0]] = parts[1]
+        return result
+      }, {})
+      const queryParams = this.$router.currentRoute.query
+      // reddit error - hash params
+      // error: "access_denied"
+      // state: "eyJpbnN0YW5jZUlkIjoiTjFhRHNmaGN4dGNzc1dhc2pPV2tzSThPclI2eHBIIiwidmVyaWZpZXIiOiJyZWRkaXQifQ%3D%3D"
+      // twitch error - query params
+      // error: "access_denied"
+      // error_description: "The user denied you access"
+      // state: "eyJpbnN0YW5jZUlkIjoiTjFhRHNmaGN4dGNzc1dhc2pPV2tzSThPclI2eHBIIiwidmVyaWZpZXIiOiJ0d2l0Y2gifQ=="
+      console.log(hashParams, queryParams)
+      let instanceParams = {}
+      let error = {}
+      if (Object.keys(hashParams).length > 0 && hashParams.state) {
+        instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {}
+        if (hashParams.error) error = hashParams.error
+      } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
+        instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {}
+        if (queryParams.error) error = queryParams.error
       }
-    } else {
-      log.info('something went wrong')
+      bc = new BroadcastChannel(`redirect_channel_${instanceParams.instanceId}`, broadcastChannelOptions)
+      await bc.postMessage({
+        data: {
+          verifier: instanceParams.verifier,
+          verifierParams: hashParams
+        },
+        error: error
+      })
+      bc.close()
+    } catch (error) {
+      log.info(error, 'something went wrong')
+      bc.close()
       window.close()
     }
   }
