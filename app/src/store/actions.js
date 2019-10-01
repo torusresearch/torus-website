@@ -186,18 +186,7 @@ export default {
         .importAccount(payload.strategy, payload.keyData)
         .then(privKey => {
           dispatch('finishImportAccount', { privKey })
-            .then(() => {
-              const accountImportChannel = new BroadcastChannel(`account_import_channel_${torus.instanceId}`, broadcastChannelOptions)
-              accountImportChannel
-                .postMessage({
-                  data: {
-                    name: 'imported_account',
-                    payload: { privKey }
-                  }
-                })
-                .then(() => resolve())
-                .catch(err => reject(err))
-            })
+            .then(() => resolve(privKey))
             .catch(err => reject(err))
         })
         .catch(err => {
@@ -214,7 +203,7 @@ export default {
       dispatch('updateSelectedAddress', { selectedAddress: address })
       torus.torusController
         .addAccount(privKey, address)
-        .then(response => resolve())
+        .then(response => resolve(privKey))
         .catch(err => reject(err))
     })
   },
