@@ -18,7 +18,7 @@ import CoinsReceiveIcon from './CoinsReceiveIcon'
 import CoinsTopupIcon from './CoinsTopupIcon'
 import ChevronLeftIcon from './ChevronLeftIcon'
 import ChevronRightIcon from './ChevronRightIcon'
-import ClearIcon from './ClearIcon'
+import ScanIcon from './ScanIcon'
 import NetworkIcon from './NetworkIcon'
 import LockIcon from './LockIcon'
 import KeyIcon from './KeyIcon'
@@ -32,6 +32,8 @@ import TransactionIcon from './TransactionIcon'
 import TopupIcon from './TopupIcon'
 import ActivitiesIcon from './ActivitiesIcon'
 import SettingsIcon from './SettingsIcon'
+import CloseIcon from './CloseIcon'
+import DownloadIcon from './DownloadIcon'
 
 export default {
   select: {
@@ -94,8 +96,8 @@ export default {
   page_next: {
     component: ChevronRightIcon
   },
-  clear: {
-    component: ClearIcon
+  scan: {
+    component: ScanIcon
   },
   network: {
     component: NetworkIcon
@@ -135,5 +137,11 @@ export default {
   },
   settings: {
     component: SettingsIcon
+  },
+  close: {
+    component: CloseIcon
+  },
+  download: {
+    component: DownloadIcon
   }
 }
