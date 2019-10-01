@@ -1,11 +1,11 @@
-const baseRoute = process.env.BASE_URL
-
-const redirect_uri =
+const baseRoute =
   process.env.VUE_APP_TORUS_BUILD_ENV === 'production' ||
   process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ||
   process.env.VUE_APP_TORUS_BUILD_ENV === 'testing'
-    ? `${baseRoute}redirect`
-    : 'https://localhost:3000/redirect'
+    ? process.env.BASE_URL
+    : 'https://localhost:3000/'
+
+const redirect_uri = `${baseRoute}redirect`
 export default {
   torusNodeEndpoints: [
     'https://localhost:5000/jrpc',
@@ -14,6 +14,7 @@ export default {
     'https://localhost:5003/jrpc',
     'https://localhost:5004/jrpc'
   ],
+  baseRoute: baseRoute,
   torusIndexes: [1, 2, 3, 4, 5],
   supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH'],
   simplexHost: 'https://simplex-api.tor.us',

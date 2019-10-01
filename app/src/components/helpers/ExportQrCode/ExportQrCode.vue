@@ -39,7 +39,8 @@
 <script>
 import VueQr from 'vue-qr'
 import ShowToolTip from '../../helpers/ShowToolTip'
-const baseRoute = process.env.BASE_URL
+import config from '../../../config'
+const baseRoute = config.baseRoute
 
 export default {
   components: {
@@ -73,7 +74,7 @@ export default {
       downloadLink.download = 'qrcode.png'
       document.body.appendChild(downloadLink)
       downloadLink.click()
-      document.body.removeChild(downloadLinkz)
+      document.body.removeChild(downloadLink)
     }
   }
 }

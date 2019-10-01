@@ -176,7 +176,7 @@ import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSel
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
-import { WALLET_HEADERS_TRANSFER } from '../../utils/enums'
+import { WALLET_HEADERS_TRANSFER, GOOGLE } from '../../utils/enums'
 
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
@@ -408,14 +408,14 @@ export default {
         } else {
           const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
           try {
-            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[endPointNumber], this.toAddress)
+            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[endPointNumber], { verifier: GOOGLE, verifierId: this.toAddress })
           } catch (err) {
             log.error(err)
             let newEndPointNumber = endPointNumber
             while (newEndPointNumber === endPointNumber) {
               newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
             }
-            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], this.toAddress)
+            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], { verifier: GOOGLE, verifierId: this.toAddress })
           }
         }
         this.gas = await this.calculateGas(toAddress)

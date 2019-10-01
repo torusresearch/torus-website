@@ -23,7 +23,7 @@ import themes from '../plugins/themes'
 
 const accountImporter = require('../utils/accountImporter')
 
-const baseRoute = process.env.BASE_URL
+const baseRoute = config.baseRoute
 
 let totalFailCount = 0
 
