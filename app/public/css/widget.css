@@ -50,7 +50,7 @@
 
 .torus-btn--login:hover {
   width: 150px;
-  background-image: url('/images/loginwithgoogle.png');
+  background-image: url('/images/login-with-torus.png');
   background-size: 85%;
   transition: width 0.3s;
 }

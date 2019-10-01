@@ -15,7 +15,7 @@
                 <v-flex class="body-1" mb-6 xs9 sm7 ml-auto mr-auto>
                   <span>You are just one step away from getting your digital wallet for your cryptocurrencies</span>
                 </v-flex>
-                <v-flex xs9 sm7 ml-auto mb-1 mr-auto>
+                <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
                   <v-btn
                     color="white"
                     large
@@ -27,41 +27,48 @@
                     Sign in with Google
                   </v-btn>
                 </v-flex>
-                <v-flex xs9 sm7 ml-auto mb-1 mr-auto>
-                  <v-btn
-                    :large="!$vuetify.breakpoint.xsOnly"
-                    depressed
-                    color="primary"
-                    class="flexiBtn px-12"
-                    type="button"
-                    @click="triggerLogin({ verifier: FACEBOOK, calledFromEmbed: false })"
-                  >
-                    Login With Facebook
-                  </v-btn>
+                <v-flex class="body-1" mb-2 xs9 sm7 ml-auto mr-auto>
+                  <span>Or, use another account:</span>
                 </v-flex>
-                <v-flex xs9 sm7 ml-auto mb-1 mr-auto>
-                  <v-btn
-                    :large="!$vuetify.breakpoint.xsOnly"
-                    depressed
-                    color="primary"
-                    class="flexiBtn px-12"
-                    type="button"
-                    @click="triggerLogin({ verifier: REDDIT, calledFromEmbed: false })"
-                  >
-                    Login With Reddit
-                  </v-btn>
-                </v-flex>
-                <v-flex xs9 sm7 ml-auto mb-1 mr-auto>
-                  <v-btn
-                    :large="!$vuetify.breakpoint.xsOnly"
-                    depressed
-                    color="primary"
-                    class="flexiBtn px-12"
-                    type="button"
-                    @click="triggerLogin({ verifier: TWITCH, calledFromEmbed: false })"
-                  >
-                    Login With Twitch
-                  </v-btn>
+                <v-flex xs9 sm7 ml-auto mr-auto mb-4>
+                  <v-layout wrap class="other-login-container">
+                    <v-flex xs4 px-1>
+                      <v-btn
+                        :large="!$vuetify.breakpoint.xsOnly"
+                        outlined
+                        block
+                        class="other-login-btn"
+                        type="button"
+                        @click="triggerLogin({ verifier: FACEBOOK, calledFromEmbed: false })"
+                      >
+                        <img width="24" :src="require('../../../public/img/icons/facebook.svg')" />
+                      </v-btn>
+                    </v-flex>
+                    <v-flex xs4 px-1>
+                      <v-btn
+                        :large="!$vuetify.breakpoint.xsOnly"
+                        outlined
+                        block
+                        class="other-login-btn"
+                        type="button"
+                        @click="triggerLogin({ verifier: REDDIT, calledFromEmbed: false })"
+                      >
+                        <img width="32" :src="require('../../../public/img/icons/reddit.svg')" />
+                      </v-btn>
+                    </v-flex>
+                    <v-flex xs4 px-1>
+                      <v-btn
+                        :large="!$vuetify.breakpoint.xsOnly"
+                        outlined
+                        block
+                        class="other-login-btn"
+                        type="button"
+                        @click="triggerLogin({ verifier: TWITCH, calledFromEmbed: false })"
+                      >
+                        <img width="24" :src="require('../../../public/img/icons/twitch.svg')" />
+                      </v-btn>
+                    </v-flex>
+                  </v-layout>
                 </v-flex>
                 <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
                   <span>

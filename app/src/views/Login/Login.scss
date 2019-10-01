@@ -26,10 +26,13 @@ a {
   text-decoration: none;
 }
 
-.flexiBtn.btnStyle {
-  width: 172px;
-  height: 48px;
-  border-radius: 12px;
+.other-login-container {
+  margin: 0 -4px;
+  .other-login-btn {
+    border: 2px solid #E9EAEA;
+    border-radius: 2px;
+    height: 50px;
+  }
 }
 
 .background-login {
