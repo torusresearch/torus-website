@@ -316,6 +316,11 @@ export default {
       }
     })
 
+    // torus.torusController.assetDetectionController.store.subscribe(function({ state }) {
+    //   console.log('state of assetDetection Controller')
+    //   // dispatch('updateAssets', { assets: state })
+    // })
+
     torus.torusController.typedMessageManager.store.subscribe(function({ unapprovedTypedMessages }) {
       dispatch('updateTypedMessages', { unapprovedTypedMessages: unapprovedTypedMessages })
     })

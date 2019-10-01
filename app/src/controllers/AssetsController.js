@@ -8,18 +8,17 @@ const ethereumjs_util = require('ethereumjs-util')
 const events = require('events')
 const Mutex = require('await-semaphore').Mutex
 const random = require('uuid/v1')
+const log = require('loglevel')
+const ObservableStore = require('obs-store')
 const AssetsContractController = require('./AssetsContractController').default
 const utils = require('../utils/httpHelpers')
 
 export default class AssetController {
   constructor(opts = {}) {
-    this.defaultConfig = {
-      networkType: 'mainnet',
-      selectedAddress: ''
-    }
-    this.hub = new events.EventEmitter()
-
-    this.defaultState = {
+    const initState = {
+      networkType: opts.network,
+      selectedAddress: '',
+      provider: opts.provider,
       allCollectibleContracts: {},
       allCollectibles: {},
       allTokens: {},
@@ -30,6 +29,11 @@ export default class AssetController {
       suggestedAssets: [],
       tokens: []
     }
+    this.store = new ObservableStore(initState)
+    this.hub = new events.EventEmitter()
+    this.mutex = new Mutex()
+    this.network = opts.network
+    this.selectedAddress = opts.selectedAddress
   }
   getCollectibleApi(contractAddress, tokenId) {
     return `https://api.opensea.io/api/v1/asset/${contractAddress}/${tokenId}`
@@ -172,24 +176,22 @@ export default class AssetController {
   async getCollectibleContractInformation(contractAddress) {
     try {
       let information
+
       // First try with OpenSea
-      information = await safelyExecute(async () => {
-        return await this.getCollectibleContractInformationFromApi(contractAddress)
-      })
+      information = await this.getCollectibleContractInformationFromApi(contractAddress)
       if (information) {
         return information
       }
+
       // Then following ERC721 standard
-      information = await safelyExecute(async () => {
-        return await this.getCollectibleContractInformationFromContract(contractAddress)
-      })
+      information = await this.getCollectibleContractInformationFromContract(contractAddress)
       if (information) {
         return information
       }
       /* istanbul ignore next */
       return {}
     } catch (error) {
-      log.error(error)
+      log.error('getCollectibleContractInformation ', err)
     }
   }
 
@@ -205,9 +207,9 @@ export default class AssetController {
   async addIndividualCollectible(address, tokenId, opts) {
     try {
       const releaseLock = await this.mutex.acquire()
-      address2 = ethereumjs_util.toChecksumAddress(address)
-      const { allCollectibles, collectibles } = this.state
-      const { networkType, selectedAddress } = this.config
+      const address2 = ethereumjs_util.toChecksumAddress(address)
+      const { allCollectibles, collectibles, selectedAddress } = this.store.getState()
+      const networkType = this.network
       const existingEntry = collectibles.find(collectible => collectible.address === address2 && collectible.tokenId === tokenId)
       if (existingEntry) {
         releaseLock()
@@ -219,7 +221,7 @@ export default class AssetController {
       const addressCollectibles = allCollectibles[selectedAddress]
       const newAddressCollectibles = { ...addressCollectibles, ...{ [networkType]: newCollectibles } }
       const newAllCollectibles = { ...allCollectibles, ...{ [selectedAddress]: newAddressCollectibles } }
-      this.update({ allCollectibles: newAllCollectibles, collectibles: newCollectibles })
+      this.store.updateState({ allCollectibles: newAllCollectibles, collectibles: newCollectibles })
       releaseLock()
       return newCollectibles
     } catch (err) {
@@ -234,8 +236,8 @@ export default class AssetController {
    * @param tokenId - Token identifier of the collectible
    */
   removeAndIgnoreIndividualCollectible(address2, tokenId) {
-    address = ethereumjs_util_1.toChecksumAddress(address2)
-    const { allCollectibles, collectibles, ignoredCollectibles } = this.state
+    address = ethereumjs_util.toChecksumAddress(address2)
+    const { allCollectibles, collectibles, ignoredCollectibles } = this.store.getState()
     const { networkType, selectedAddress } = this.config
     const newIgnoredCollectibles = [...ignoredCollectibles]
     const newCollectibles = collectibles.filter(collectible => {
@@ -264,7 +266,7 @@ export default class AssetController {
    */
   removeIndividualCollectible(address2, tokenId) {
     address = ethereumjs_util.toChecksumAddress(address2)
-    const { allCollectibles, collectibles } = this.state
+    const { allCollectibles, collectibles } = this.store.getState()
     const { networkType, selectedAddress } = this.config
     const newCollectibles = collectibles.filter(collectible => !(collectible.address === address && collectible.tokenId === tokenId))
     const addressCollectibles = allCollectibles[selectedAddress]
@@ -281,7 +283,7 @@ export default class AssetController {
    */
   removeCollectibleContract(address2) {
     address = ethereumjs_util.toChecksumAddress(address2)
-    const { allCollectibleContracts, collectibleContracts } = this.state
+    const { allCollectibleContracts, collectibleContracts } = this.store.getState()
     const { networkType, selectedAddress } = this.config
     const newCollectibleContracts = collectibleContracts.filter(collectibleContract => !(collectibleContract.address === address))
     const addressCollectibleContracts = allCollectibleContracts[selectedAddress]
@@ -310,7 +312,7 @@ export default class AssetController {
     try {
       const releaseLock = await this.mutex.acquire()
       address = toChecksumAddress(address2)
-      const { allTokens, tokens } = this.state
+      const { allTokens, tokens } = this.store.getState()
       const { networkType, selectedAddress } = this.config
       const newEntry = { address, symbol, decimals, image }
       const previousEntry = tokens.find(token => token.address === address)
@@ -394,7 +396,7 @@ export default class AssetController {
           }
         })
       })
-      const { suggestedAssets } = this.state
+      const { suggestedAssets } = this.store.getState()
       suggestedAssets.push(suggestedAssetMeta)
       this.update({ suggestedAssets: [...suggestedAssets] })
       this.hub.emit('pendingSuggestedAsset', suggestedAssetMeta)
@@ -413,7 +415,7 @@ export default class AssetController {
    * @returns - Promise resolving when this operation completes
    */
   async acceptWatchAsset(suggestedAssetID) {
-    const { suggestedAssets } = this.state
+    const { suggestedAssets } = this.store.getState()
     const index = suggestedAssets.findIndex(({ id }) => suggestedAssetID === id)
     const suggestedAssetMeta = suggestedAssets[index]
     try {
@@ -441,7 +443,7 @@ export default class AssetController {
    * @param suggestedAssetID - ID of the suggestedAsset to accept
    */
   rejectWatchAsset(suggestedAssetID) {
-    const { suggestedAssets } = this.state
+    const { suggestedAssets } = this.store.getState()
     const index = suggestedAssets.findIndex(({ id }) => suggestedAssetID === id)
     const suggestedAssetMeta = suggestedAssets[index]
     if (!suggestedAssetMeta) {
@@ -451,6 +453,56 @@ export default class AssetController {
     this.hub.emit(`${suggestedAssetMeta.id}:finished`, suggestedAssetMeta)
     const newSuggestedAssets = suggestedAssets.filter(({ id }) => id !== suggestedAssetID)
     this.update({ suggestedAssets: [...newSuggestedAssets] })
+  }
+
+  /**
+   * Adds a collectible contract to the stored collectible contracts list
+   *
+   * @param address - Hex address of the collectible contract
+   * @param detection? - Whether the collectible is manually added or auto-detected
+   * @returns - Promise resolving to the current collectible contracts list
+   */
+  async addCollectibleContract(address2, detection) {
+    const releaseLock = await this.mutex.acquire()
+    const address = ethereumjs_util.toChecksumAddress(address2)
+    const { allCollectibleContracts, collectibleContracts, networkType, selectedAddress } = this.store.getState()
+    const existingEntry = collectibleContracts.find(collectibleContract => collectibleContract.address === address)
+    if (existingEntry) {
+      releaseLock()
+      return collectibleContracts
+    }
+    const contractInformation = await this.getCollectibleContractInformation(address)
+    const { name, symbol, image_url, description, total_supply } = contractInformation
+    // If being auto-detected opensea information is expected
+    // Oherwise at least name and symbol from contract is needed
+    if ((detection && !image_url) || Object.keys(contractInformation).length === 0) {
+      releaseLock()
+      return collectibleContracts
+    }
+    const newEntry = {
+      address,
+      description,
+      logo: image_url,
+      name,
+      symbol,
+      totalSupply: total_supply
+    }
+    const newCollectibleContracts = [...collectibleContracts, newEntry]
+    const addressCollectibleContracts = allCollectibleContracts[selectedAddress]
+    const newAddressCollectibleContracts = {
+      ...addressCollectibleContracts,
+      ...{ [networkType]: newCollectibleContracts }
+    }
+    const newAllCollectibleContracts = {
+      ...allCollectibleContracts,
+      ...{ [selectedAddress]: newAddressCollectibleContracts }
+    }
+    this.store.updateState({
+      allCollectibleContracts: newAllCollectibleContracts,
+      collectibleContracts: newCollectibleContracts
+    })
+    releaseLock()
+    return newCollectibleContracts
   }
 
   /**
@@ -464,10 +516,13 @@ export default class AssetController {
    */
   async addCollectible(address2, tokenId, opts, detection) {
     try {
-      address = ethereumjs_util_1.toChecksumAddress(address2)
+      const address = ethereumjs_util.toChecksumAddress(address2)
       const newCollectibleContracts = await this.addCollectibleContract(address, detection)
+      log.info('AssetController: addCollectible(): newCollectionContracts are', newCollectibleContracts)
+
       // If collectible contract was not added, do not add individual collectible
       const collectibleContract = newCollectibleContracts.find(contract => contract.address === address)
+
       // If collectible contract information, add individual collectible
       if (collectibleContract) {
         await this.addIndividualCollectible(address, tokenId, opts)
@@ -484,7 +539,7 @@ export default class AssetController {
    */
   removeAndIgnoreToken(address2) {
     address = ethereumjs_util.toChecksumAddress(address2)
-    const { allTokens, tokens, ignoredTokens } = this.state
+    const { allTokens, tokens, ignoredTokens } = this.store.getState()
     const { networkType, selectedAddress } = this.config
     const newIgnoredTokens = [...ignoredTokens]
     const newTokens = tokens.filter(token => {
@@ -507,8 +562,8 @@ export default class AssetController {
    * @param address2 - Hex address of the token contract
    */
   removeToken(address2) {
-    address = ethereumjs_util_1.toChecksumAddress(address2)
-    const { allTokens, tokens } = this.state
+    address = ethereumjs_util.toChecksumAddress(address2)
+    const { allTokens, tokens } = this.store.getState()
     const { networkType, selectedAddress } = this.config
     const newTokens = tokens.filter(token => token.address !== address)
     const addressTokens = allTokens[selectedAddress]
@@ -524,9 +579,9 @@ export default class AssetController {
    * @param tokenId - Token identifier of the collectible
    */
   removeCollectible(address2, tokenId) {
-    address = ethereumjs_util_1.toChecksumAddress(address2)
+    address = ethereumjs_util.toChecksumAddress(address2)
     this.removeIndividualCollectible(address, tokenId)
-    const { collectibles } = this.state
+    const { collectibles } = this.store.getState()
     const remainingCollectible = collectibles.find(collectible => collectible.address === address)
     if (!remainingCollectible) {
       this.removeCollectibleContract(address)
@@ -540,9 +595,9 @@ export default class AssetController {
    * @param tokenId - Token identifier of the collectible
    */
   removeAndIgnoreCollectible(address2, tokenId) {
-    address = ethereumjs_util_1.toChecksumAddress(address2)
+    address = ethereumjs_util.toChecksumAddress(address2)
     this.removeAndIgnoreIndividualCollectible(address, tokenId)
-    const { collectibles } = this.state
+    const { collectibles } = this.store.getState()
     const remainingCollectible = collectibles.find(collectible => collectible.address === address)
     if (!remainingCollectible) {
       this.removeCollectibleContract(address)
@@ -560,7 +615,7 @@ export default class AssetController {
     const preferences = this.context.PreferencesController
     const network = this.context.NetworkController
     preferences.subscribe(({ selectedAddress }) => {
-      const { allCollectibleContracts, allCollectibles, allTokens } = this.state
+      const { allCollectibleContracts, allCollectibles, allTokens } = this.store.getState()
       const { networkType } = this.config
       this.configure({ selectedAddress })
       this.update({
@@ -570,7 +625,7 @@ export default class AssetController {
       })
     })
     network.subscribe(({ provider }) => {
-      const { allCollectibleContracts, allCollectibles, allTokens } = this.state
+      const { allCollectibleContracts, allCollectibles, allTokens } = this.store.getState()
       const { selectedAddress } = this.config
       const networkType = provider.type
       this.configure({ networkType })

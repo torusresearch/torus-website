@@ -6,26 +6,56 @@
 const assetsController = require('./AssetsController')
 const utils = require('../utils/httpHelpers')
 const log = require('loglevel')
+log.setLevel('ERROR')
+const ObservableStore = require('obs-store')
 const ethereumjs_util = require('ethereumjs-util')
+
+const { MAINNET_CODE, RINKEYBY_CODE, ROPSTEN_CODE, KOVAN_CODE, ZERO_ADDRESS, MAINNET, KOVAN, RINKEBY, LOCALHOST } = require('../utils/enums')
+
 const DEFAULT_INTERVAL = 180000
 
-class AssetsDetectionController {
+export default class AssetsDetectionController {
   constructor(opts) {
-    this.defaultConfig = {
+    log.info('AssetDetectionController: initialised', opts)
+    const initState = {
       interval: DEFAULT_INTERVAL,
-      networkType: opts.provider,
+      network: opts.network,
       selectedAddress: '',
       tokens: []
     }
+    this.assetController = opts.assetController
+    this.store = new ObservableStore(initState)
+    // this.poll()
   }
+
+  async poll(address2) {
+    this.store.updateState({ selectedAddress: address2 })
+    log.info('AssetDetectionController: poll', address2)
+    await this.detectAssets()
+    setTimeout(() => {
+      // console.log(this.store.getState().address)
+      this.poll(this.store.getState().selectedAddress)
+    }, 10000)
+  }
+
   getOwnerCollectiblesApi(address) {
     return `https://api.opensea.io/api/v1/assets?owner=${address}&limit=300`
   }
 
+  /**
+   * In setter when isUnlocked is updated to true, detectNewTokens and restart polling
+   * @type {Object}
+   */
+  startTokenDetection(selectedAddress) {
+    log.info('AssetDetectionController: starting token detection')
+    this.store.updateState({ selectedAddress })
+    this.detectAssets()
+  }
+
   async getOwnerCollectibles() {
-    const { selectedAddress } = this.config
+    const { selectedAddress } = this.store.getState()
     const api = this.getOwnerCollectiblesApi(selectedAddress)
-    const assetsController = assetsController()
+    const assetsController = this.assetController
     let response
     try {
       /* istanbul ignore if */
@@ -34,8 +64,8 @@ class AssetsDetectionController {
       } else {
         response = await utils.promiseRace(api, {}, 15000)
       }
-      const collectiblesArray = await response.json()
-      const collectibles = collectiblesArray.assets
+      const collectibles = response.assets
+      log.info('AssetDetectionController collectibles:', collectibles)
       return collectibles
     } catch (e) {
       /* istanbul ignore next */
@@ -43,15 +73,19 @@ class AssetsDetectionController {
       return []
     }
   }
+
   /**
    * Checks whether network is mainnet or not
    *
    * @returns - Whether current network is mainnet
    */
   isMainnet() {
-    if (this.config.networkType !== MAINNET || this.disabled) {
+    // log.info('AssetDetectionController: isMainnet called', this.store.getState().network.getNetworkNameFromNetworkCode())
+    if (this.store.getState().network.getNetworkNameFromNetworkCode() !== MAINNET || this.disabled) {
+      //log.info('AssetDetectionController: false')
       return false
     }
+    log.info('AssetDetectionController: true')
     return true
   }
   /**
@@ -62,7 +96,7 @@ class AssetsDetectionController {
     if (!this.isMainnet()) {
       return
     }
-    this.detectTokens()
+    // this.detectTokens()
     this.detectCollectibles()
   }
 
@@ -115,14 +149,14 @@ class AssetsDetectionController {
     if (!this.isMainnet()) {
       return
     }
-    const { selectedAddress } = this.config
+    const selectedAddress = this.store.getState().selectedAddress
     /* istanbul ignore else */
     if (!selectedAddress) {
+      //console.log(selectedAddress)
       return
     }
-    const assetsController = assetsController()
-    const { ignoredCollectibles } = assetsController.state
-    let collectiblesToRemove = assetsController.state.collectibles
+    //console.log(this.assetController.store.getState())
+    var { ignoredCollectibles, collectibles: collectiblesToRemove } = this.assetController.store.getState()
     const apiCollectibles = await this.getOwnerCollectibles()
     const addCollectiblesPromises = apiCollectibles.map(async collectible => {
       const {
@@ -143,7 +177,7 @@ class AssetsDetectionController {
       }
       /* istanbul ignore else */
       if (!ignored) {
-        await assetsController.addCollectible(
+        await this.assetController.addCollectible(
           address,
           Number(token_id),
           {
@@ -160,7 +194,7 @@ class AssetsDetectionController {
     })
     await Promise.all(addCollectiblesPromises)
     collectiblesToRemove.forEach(({ address, tokenId }) => {
-      assetsController.removeCollectible(address, tokenId)
+      this.assetController.removeCollectible(address, tokenId)
     })
   }
 }
