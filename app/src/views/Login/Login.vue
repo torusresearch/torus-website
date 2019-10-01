@@ -39,6 +39,7 @@
                         block
                         class="other-login-btn"
                         type="button"
+                        title="Login with Facebook"
                         @click="triggerLogin({ verifier: FACEBOOK, calledFromEmbed: false })"
                       >
                         <img width="24" :src="require('../../../public/img/icons/facebook.svg')" />
@@ -51,6 +52,7 @@
                         block
                         class="other-login-btn"
                         type="button"
+                        title="Login with Reddit"
                         @click="triggerLogin({ verifier: REDDIT, calledFromEmbed: false })"
                       >
                         <img width="32" :src="require('../../../public/img/icons/reddit.svg')" />
@@ -63,6 +65,7 @@
                         block
                         class="other-login-btn"
                         type="button"
+                        title="Login with Twitch"
                         @click="triggerLogin({ verifier: TWITCH, calledFromEmbed: false })"
                       >
                         <img width="24" :src="require('../../../public/img/icons/twitch.svg')" />
@@ -75,6 +78,7 @@
                         block
                         class="other-login-btn"
                         type="button"
+                        title="Login with Discord"
                         @click="triggerLogin({ verifier: DISCORD, calledFromEmbed: false })"
                       >
                         <img width="24" :src="require('../../../public/img/icons/discord.svg')" />
