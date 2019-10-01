@@ -53,7 +53,6 @@ export default {
         },
         error: error
       })
-      log.info('sent data')
       bc.close()
     } catch (error) {
       log.info(error, 'something went wrong')

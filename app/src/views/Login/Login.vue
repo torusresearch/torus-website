@@ -32,7 +32,7 @@
                 </v-flex>
                 <v-flex xs9 sm7 ml-auto mr-auto mb-2>
                   <v-layout wrap class="other-login-container">
-                    <v-flex xs4 px-1>
+                    <v-flex xs3 px-1>
                       <v-btn
                         :large="!$vuetify.breakpoint.xsOnly"
                         outlined
@@ -44,7 +44,7 @@
                         <img width="24" :src="require('../../../public/img/icons/facebook.svg')" />
                       </v-btn>
                     </v-flex>
-                    <v-flex xs4 px-1>
+                    <v-flex xs3 px-1>
                       <v-btn
                         :large="!$vuetify.breakpoint.xsOnly"
                         outlined
@@ -56,7 +56,7 @@
                         <img width="32" :src="require('../../../public/img/icons/reddit.svg')" />
                       </v-btn>
                     </v-flex>
-                    <v-flex xs4 px-1>
+                    <v-flex xs3 px-1>
                       <v-btn
                         :large="!$vuetify.breakpoint.xsOnly"
                         outlined
@@ -68,7 +68,7 @@
                         <img width="24" :src="require('../../../public/img/icons/twitch.svg')" />
                       </v-btn>
                     </v-flex>
-                    <v-flex xs4 px-1>
+                    <v-flex xs3 px-1>
                       <v-btn
                         :large="!$vuetify.breakpoint.xsOnly"
                         outlined

@@ -11,6 +11,7 @@ import {
   GOOGLE,
   TWITCH,
   REDDIT,
+  DISCORD,
   THEME_LIGHT_BLUE_NAME
 } from '../utils/enums'
 import { getRandomNumber, broadcastChannelOptions } from '../utils/utils'
@@ -36,6 +37,8 @@ var twitchWindow
 var iClosedTwitch = false
 var redditWindow
 var iClosedReddit = false
+var discordWindow
+var iClosedDiscord = false
 
 export default {
   logOut({ commit, dispatch }, payload) {
@@ -476,6 +479,74 @@ export default {
           }
           iClosedReddit = false
           redditWindow = undefined
+        }
+      }, 1000)
+    } else if (verifier === DISCORD) {
+      const state = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: torus.instanceId,
+            verifier: DISCORD
+          })
+        )
+      )
+      const scope = encodeURIComponent('identify email')
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      bc.onmessage = async ev => {
+        if (ev.error && ev.error !== '') {
+          log.error(ev.error)
+          oauthStream.write({ err: ev.error })
+        } else if (ev.data && ev.data.verifier === DISCORD) {
+          try {
+            const { access_token: accessToken } = ev.data.verifierParams
+            const userInfo = await get('https://discordapp.com/api/users/@me', {
+              headers: {
+                Authorization: `Bearer ${accessToken}`
+              }
+            })
+            console.log(userInfo, ev.data)
+            const { id, avatar, email, username: name, discriminator } = userInfo || {}
+            const profileImage =
+              avatar === null
+                ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
+                : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`
+            dispatch('updateIdToken', { idToken: accessToken })
+            dispatch('updateUserInfo', {
+              userInfo: {
+                profileImage,
+                name: `${name}#${discriminator}`,
+                email,
+                verifierId: id,
+                verifier: DISCORD,
+                verifierParams: { verifier_id: id }
+              }
+            })
+            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+          } catch (error) {
+            log.error(error)
+            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+          } finally {
+            bc.close()
+            iClosedDiscord = true
+            discordWindow.close()
+          }
+        }
+      }
+      discordWindow = window.open(
+        `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${config.DISCORD_CLIENT_ID}` +
+          `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`,
+        '_blank',
+        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
+      )
+      var discordTimer = setInterval(function() {
+        if (discordWindow.closed) {
+          clearInterval(discordTimer)
+          if (!iClosedDiscord) {
+            log.error('user closed popup')
+            oauthStream.write({ err: 'user closed popup' })
+          }
+          iClosedDiscord = false
+          discordWindow = undefined
         }
       }, 1000)
     }

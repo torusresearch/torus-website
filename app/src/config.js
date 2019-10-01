@@ -30,6 +30,7 @@ export default {
   FACEBOOK_APP_ID: '2554219104599979',
   TWITCH_CLIENT_ID: 'tfppratfiloo53g1x133ofa4rc29px',
   REDDIT_CLIENT_ID: 'dcQJYPaG481XyQ',
+  DISCORD_CLIENT_ID: '628482163100352534',
   redirect_uri: redirect_uri,
   // api: 'http://localhost:2020'
   api: 'https://api.tor.us'
