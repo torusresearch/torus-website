@@ -47,7 +47,24 @@
               required
               :rules="[rules.toAddress, rules.required]"
               outlined
-            ></v-text-field>
+              @keyup="correctQrCode = true"
+            >
+              <template v-slot:append>
+                <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()">
+                  <v-icon small>$vuetify.icons.scan</v-icon>
+                </v-btn>
+              </template>
+            </v-text-field>
+            <qrcode-capture @decode="onDecodeQr" ref="captureQr" style="display: none" />
+            <div v-if="!correctQrCode" class="v-text-field__details torus-hint">
+              <div class="v-messages">
+                <div class="v-messages__wrapper">
+                  <div class="v-messages__message d-flex error--text px-3">
+                    Incorrect QR Code
+                  </div>
+                </div>
+              </div>
+            </div>
           </v-flex>
         </v-layout>
         <v-layout wrap>
@@ -151,6 +168,7 @@
 </template>
 
 <script>
+import { QrcodeCapture } from 'vue-qrcode-reader'
 import torus from '../../torus'
 import { significantDigits, getRandomNumber } from '../../utils/utils'
 import config from '../../config'
@@ -170,7 +188,8 @@ export default {
   props: ['address'],
   components: {
     TransactionSpeedSelect,
-    MessageModal
+    MessageModal,
+    QrcodeCapture
   },
   data() {
     return {
@@ -190,6 +209,7 @@ export default {
       timeTaken: '',
       convertedTotalCost: '',
       resetSpeed: false,
+      correctQrCode: true,
       rules: {
         toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid ETH or Email Address',
         required: value => !!value || 'Required'
@@ -536,10 +556,23 @@ export default {
       this.updateTotalCost()
 
       this.resetSpeed = false
+    },
+    onDecodeQr(result) {
+      const qrUrl = new URL(result)
+      const qrParams = new URLSearchParams(qrUrl.search)
+
+      if (qrParams.has('to')) {
+        this.toAddress = qrParams.get('to')
+        this.correctQrCode = true
+      } else {
+        this.toAddress = ''
+        this.correctQrCode = false
+      }
     }
   },
   created() {
     this.tokenAddress = this.address
+    this.toAddress = this.$route.query.to || ''
   }
 }
 </script>
