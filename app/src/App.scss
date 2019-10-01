@@ -57,6 +57,13 @@
   .v-text-field--outlined fieldset {
     border-color: var(--v-text_2-base);
   }
+
+  /* Override Max widths */
+  @media (min-width: 1904px) {
+    .container {
+      max-width: 1264px;
+    }
+  }
 }
 
 .torus-app.theme--light {
