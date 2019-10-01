@@ -187,14 +187,17 @@ export default class AssetsDetectionController {
           },
           true
         )
+        log.info('AssetDetectionController: Collectible added')
       }
       collectiblesToRemove = collectiblesToRemove.filter(c => {
         return !(c.tokenId === Number(token_id) && c.address === ethereumjs_util.toChecksumAddress(address))
       })
     })
     await Promise.all(addCollectiblesPromises)
-    collectiblesToRemove.forEach(({ address, tokenId }) => {
-      this.assetController.removeCollectible(address, tokenId)
+    log.info('AssetDetectionController: CollectiblesToRemove', collectiblesToRemove)
+
+    collectiblesToRemove.forEach(({ address2, tokenId }) => {
+      this.assetController.removeCollectible(address2, tokenId)
     })
   }
 }

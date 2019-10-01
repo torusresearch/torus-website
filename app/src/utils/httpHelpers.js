@@ -71,7 +71,10 @@ function promiseRace(url, options, timeout) {
   return Promise.race([
     this.get(url, options),
     new Promise((resolve, reject) => {
-      setTimeout(() => reject(new Error('timeout')), timeout)
+      setTimeout(() => {
+        console.log('Timeout won in promise race')
+        reject(new Error('timeout'))
+      }, timeout)
     })
   ])
 }

@@ -236,7 +236,7 @@ export default class AssetController {
    * @param tokenId - Token identifier of the collectible
    */
   removeAndIgnoreIndividualCollectible(address2, tokenId) {
-    address = ethereumjs_util.toChecksumAddress(address2)
+    const address = ethereumjs_util.toChecksumAddress(address2)
     const { allCollectibles, collectibles, ignoredCollectibles } = this.store.getState()
     const { networkType, selectedAddress } = this.config
     const newIgnoredCollectibles = [...ignoredCollectibles]
@@ -251,7 +251,7 @@ export default class AssetController {
     const addressCollectibles = allCollectibles[selectedAddress]
     const newAddressCollectibles = Object.assign({}, addressCollectibles, { [networkType]: newCollectibles })
     const newAllCollectibles = Object.assign({}, allCollectibles, { [selectedAddress]: newAddressCollectibles })
-    this.update({
+    this.store.updateState({
       allCollectibles: newAllCollectibles,
       collectibles: newCollectibles,
       ignoredCollectibles: newIgnoredCollectibles
@@ -265,14 +265,14 @@ export default class AssetController {
    * @param tokenId - Token identifier of the collectible
    */
   removeIndividualCollectible(address2, tokenId) {
-    address = ethereumjs_util.toChecksumAddress(address2)
+    const address = ethereumjs_util.toChecksumAddress(address2)
     const { allCollectibles, collectibles } = this.store.getState()
     const { networkType, selectedAddress } = this.config
     const newCollectibles = collectibles.filter(collectible => !(collectible.address === address && collectible.tokenId === tokenId))
     const addressCollectibles = allCollectibles[selectedAddress]
     const newAddressCollectibles = Object.assign({}, addressCollectibles, { [networkType]: newCollectibles })
     const newAllCollectibles = Object.assign({}, allCollectibles, { [selectedAddress]: newAddressCollectibles })
-    this.update({ allCollectibles: newAllCollectibles, collectibles: newCollectibles })
+    this.store.updateState({ allCollectibles: newAllCollectibles, collectibles: newCollectibles })
   }
 
   /**
@@ -282,14 +282,14 @@ export default class AssetController {
    * @returns - Promise resolving to the current collectible contracts list
    */
   removeCollectibleContract(address2) {
-    address = ethereumjs_util.toChecksumAddress(address2)
+    const address = ethereumjs_util.toChecksumAddress(address2)
     const { allCollectibleContracts, collectibleContracts } = this.store.getState()
     const { networkType, selectedAddress } = this.config
     const newCollectibleContracts = collectibleContracts.filter(collectibleContract => !(collectibleContract.address === address))
     const addressCollectibleContracts = allCollectibleContracts[selectedAddress]
     const newAddressCollectibleContracts = Object.assign({}, addressCollectibleContracts, { [networkType]: newCollectibleContracts })
     const newAllCollectibleContracts = Object.assign({}, allCollectibleContracts, { [selectedAddress]: newAddressCollectibleContracts })
-    this.update({
+    this.store.updateState({
       allCollectibleContracts: newAllCollectibleContracts,
       collectibleContracts: newCollectibleContracts
     })
@@ -326,7 +326,7 @@ export default class AssetController {
       const newAddressTokens = Object.assign({}, addressTokens, { [networkType]: tokens })
       const newAllTokens = Object.assign({}, allTokens, { [selectedAddress]: newAddressTokens })
       const newTokens = [...tokens]
-      this.update({ allTokens: newAllTokens, tokens: newTokens })
+      this.store.updateState({ allTokens: newAllTokens, tokens: newTokens })
       releaseLock()
       return newTokens
     } catch (error) {
@@ -398,7 +398,7 @@ export default class AssetController {
       })
       const { suggestedAssets } = this.store.getState()
       suggestedAssets.push(suggestedAssetMeta)
-      this.update({ suggestedAssets: [...suggestedAssets] })
+      this.store.updateState({ suggestedAssets: [...suggestedAssets] })
       this.hub.emit('pendingSuggestedAsset', suggestedAssetMeta)
       return { result, suggestedAssetMeta }
     } catch (error) {
@@ -433,7 +433,7 @@ export default class AssetController {
       this.failSuggestedAsset(suggestedAssetMeta, error)
     }
     const newSuggestedAssets = suggestedAssets.filter(({ id }) => id !== suggestedAssetID)
-    this.update({ suggestedAssets: [...newSuggestedAssets] })
+    this.store.updateState({ suggestedAssets: [...newSuggestedAssets] })
   }
 
   /**
@@ -452,7 +452,7 @@ export default class AssetController {
     suggestedAssetMeta.status = 'rejected'
     this.hub.emit(`${suggestedAssetMeta.id}:finished`, suggestedAssetMeta)
     const newSuggestedAssets = suggestedAssets.filter(({ id }) => id !== suggestedAssetID)
-    this.update({ suggestedAssets: [...newSuggestedAssets] })
+    this.store.updateState({ suggestedAssets: [...newSuggestedAssets] })
   }
 
   /**
@@ -553,7 +553,7 @@ export default class AssetController {
     const addressTokens = allTokens[selectedAddress]
     const newAddressTokens = Object.assign({}, addressTokens, { [networkType]: newTokens })
     const newAllTokens = Object.assign({}, allTokens, { [selectedAddress]: newAddressTokens })
-    this.update({ allTokens: newAllTokens, tokens: newTokens, ignoredTokens: newIgnoredTokens })
+    this.store.updateState({ allTokens: newAllTokens, tokens: newTokens, ignoredTokens: newIgnoredTokens })
   }
 
   /**
@@ -562,14 +562,14 @@ export default class AssetController {
    * @param address2 - Hex address of the token contract
    */
   removeToken(address2) {
-    address = ethereumjs_util.toChecksumAddress(address2)
+    const address = ethereumjs_util.toChecksumAddress(address2)
     const { allTokens, tokens } = this.store.getState()
     const { networkType, selectedAddress } = this.config
     const newTokens = tokens.filter(token => token.address !== address)
     const addressTokens = allTokens[selectedAddress]
     const newAddressTokens = Object.assign({}, addressTokens, { [networkType]: newTokens })
     const newAllTokens = Object.assign({}, allTokens, { [selectedAddress]: newAddressTokens })
-    this.update({ allTokens: newAllTokens, tokens: newTokens })
+    this.store.updateState({ allTokens: newAllTokens, tokens: newTokens })
   }
 
   /**
@@ -579,7 +579,7 @@ export default class AssetController {
    * @param tokenId - Token identifier of the collectible
    */
   removeCollectible(address2, tokenId) {
-    address = ethereumjs_util.toChecksumAddress(address2)
+    const address = ethereumjs_util.toChecksumAddress(address2)
     this.removeIndividualCollectible(address, tokenId)
     const { collectibles } = this.store.getState()
     const remainingCollectible = collectibles.find(collectible => collectible.address === address)
@@ -595,7 +595,7 @@ export default class AssetController {
    * @param tokenId - Token identifier of the collectible
    */
   removeAndIgnoreCollectible(address2, tokenId) {
-    address = ethereumjs_util.toChecksumAddress(address2)
+    const address = ethereumjs_util.toChecksumAddress(address2)
     this.removeAndIgnoreIndividualCollectible(address, tokenId)
     const { collectibles } = this.store.getState()
     const remainingCollectible = collectibles.find(collectible => collectible.address === address)
@@ -618,7 +618,7 @@ export default class AssetController {
       const { allCollectibleContracts, allCollectibles, allTokens } = this.store.getState()
       const { networkType } = this.config
       this.configure({ selectedAddress })
-      this.update({
+      this.store.updateState({
         collectibleContracts: (allCollectibleContracts[selectedAddress] && allCollectibleContracts[selectedAddress][networkType]) || [],
         collectibles: (allCollectibles[selectedAddress] && allCollectibles[selectedAddress][networkType]) || [],
         tokens: (allTokens[selectedAddress] && allTokens[selectedAddress][networkType]) || []
@@ -629,7 +629,7 @@ export default class AssetController {
       const { selectedAddress } = this.config
       const networkType = provider.type
       this.configure({ networkType })
-      this.update({
+      this.store.updateState({
         collectibleContracts: (allCollectibleContracts[selectedAddress] && allCollectibleContracts[selectedAddress][networkType]) || [],
         collectibles: (allCollectibles[selectedAddress] && allCollectibles[selectedAddress][networkType]) || [],
         tokens: (allTokens[selectedAddress] && allTokens[selectedAddress][networkType]) || []
