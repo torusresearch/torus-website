@@ -85,6 +85,7 @@ const GOOGLE = 'google'
 const FACEBOOK = 'facebook'
 const REDDIT = 'reddit'
 const TWITCH = 'twitch'
+const DISCORD = 'discord'
 
 const THEME_DARK_BLACK_NAME = 'dark-black'
 const THEME_LIGHT_BLUE_NAME = 'light-blue'
@@ -147,6 +148,7 @@ module.exports = {
   FACEBOOK,
   TWITCH,
   REDDIT,
+  DISCORD,
   THEME_DARK_BLACK_NAME,
   THEME_LIGHT_BLUE_NAME
 }
