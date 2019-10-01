@@ -37,7 +37,7 @@ export default {
       // state: "eyJpbnN0YW5jZUlkIjoiTjFhRHNmaGN4dGNzc1dhc2pPV2tzSThPclI2eHBIIiwidmVyaWZpZXIiOiJ0d2l0Y2gifQ=="
       console.log(hashParams, queryParams)
       let instanceParams = {}
-      let error = {}
+      let error = ''
       if (Object.keys(hashParams).length > 0 && hashParams.state) {
         instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {}
         if (hashParams.error) error = hashParams.error
@@ -53,6 +53,7 @@ export default {
         },
         error: error
       })
+      log.info('sent data')
       bc.close()
     } catch (error) {
       log.info(error, 'something went wrong')

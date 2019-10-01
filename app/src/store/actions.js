@@ -374,34 +374,32 @@ export default {
       })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
-        if (ev.data && ev.data.verifier === TWITCH) {
+        if (ev.error && ev.error !== '') {
+          log.error(ev.error)
+          oauthStream.write({ err: ev.error })
+        } else if (ev.data && ev.data.verifier === TWITCH) {
           try {
-            if (ev.error) {
-              log.error(ev.error)
-              oauthStream.write({ err: ev.error })
-            } else {
-              const { access_token: accessToken, id_token: idtoken } = ev.data.verifierParams
-              const userInfo = await get('https://id.twitch.tv/oauth2/userinfo', {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`
-                }
-              })
-              const tokenInfo = jwtDecode(idtoken)
-              const { picture: profileImage, preferred_username: name } = userInfo || {}
-              const { email } = tokenInfo || {}
-              dispatch('updateIdToken', { idToken: accessToken.toString() })
-              dispatch('updateUserInfo', {
-                userInfo: {
-                  profileImage,
-                  name,
-                  email,
-                  verifierId: userInfo.sub.toString(),
-                  verifier: TWITCH,
-                  verifierParams: { verifier_id: userInfo.sub.toString() }
-                }
-              })
-              dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-            }
+            const { access_token: accessToken, id_token: idtoken } = ev.data.verifierParams
+            const userInfo = await get('https://id.twitch.tv/oauth2/userinfo', {
+              headers: {
+                Authorization: `Bearer ${accessToken}`
+              }
+            })
+            const tokenInfo = jwtDecode(idtoken)
+            const { picture: profileImage, preferred_username: name } = userInfo || {}
+            const { email } = tokenInfo || {}
+            dispatch('updateIdToken', { idToken: accessToken.toString() })
+            dispatch('updateUserInfo', {
+              userInfo: {
+                profileImage,
+                name,
+                email,
+                verifierId: userInfo.sub.toString(),
+                verifier: TWITCH,
+                verifierParams: { verifier_id: userInfo.sub.toString() }
+              }
+            })
+            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
           } catch (error) {
             log.error(error)
             oauthStream.write({ err: 'something went wrong.' })
@@ -440,32 +438,30 @@ export default {
       )
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
-        if (ev.data && ev.data.verifier === REDDIT) {
+        if (ev.error && ev.error !== '') {
+          log.error(ev.error)
+          oauthStream.write({ err: ev.error })
+        } else if (ev.data && ev.data.verifier === REDDIT) {
           try {
-            if (ev.error) {
-              log.error(ev.error)
-              oauthStream.write({ err: ev.error })
-            } else {
-              const { access_token: accessToken } = ev.data.verifierParams
-              const userInfo = await get('https://oauth.reddit.com/api/v1/me', {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`
-                }
-              })
-              const { id, icon_img: profileImage, name } = userInfo || {}
-              dispatch('updateIdToken', { idToken: accessToken })
-              dispatch('updateUserInfo', {
-                userInfo: {
-                  profileImage,
-                  name,
-                  email: '',
-                  verifierId: id,
-                  verifier: REDDIT,
-                  verifierParams: { verifier_id: id }
-                }
-              })
-              dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-            }
+            const { access_token: accessToken } = ev.data.verifierParams
+            const userInfo = await get('https://oauth.reddit.com/api/v1/me', {
+              headers: {
+                Authorization: `Bearer ${accessToken}`
+              }
+            })
+            const { id, icon_img: profileImage, name } = userInfo || {}
+            dispatch('updateIdToken', { idToken: accessToken })
+            dispatch('updateUserInfo', {
+              userInfo: {
+                profileImage,
+                name,
+                email: '',
+                verifierId: id,
+                verifier: REDDIT,
+                verifierParams: { verifier_id: id }
+              }
+            })
+            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
           } catch (error) {
             log.error(error)
             oauthStream.write({ err: 'User cancelled login or something went wrong.' })
