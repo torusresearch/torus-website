@@ -35,6 +35,7 @@ var walletWindow
 var twitchWindow
 var iClosedTwitch = false
 var redditWindow
+var iClosedReddit = false
 
 export default {
   logOut({ commit, dispatch }, payload) {
@@ -378,10 +379,8 @@ export default {
             if (ev.error) {
               log.error(ev.error)
               oauthStream.write({ err: ev.error })
-              bc.close()
             } else {
               const { access_token: accessToken, id_token: idtoken } = ev.data.verifierParams
-              bc.close()
               const userInfo = await get('https://id.twitch.tv/oauth2/userinfo', {
                 headers: {
                   Authorization: `Bearer ${accessToken}`
@@ -408,6 +407,7 @@ export default {
             oauthStream.write({ err: 'something went wrong.' })
           } finally {
             iClosedTwitch = true
+            bc.close()
             twitchWindow.close()
           }
         }
@@ -418,7 +418,6 @@ export default {
         '_blank',
         'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
       )
-      log.info(twitchWindow)
       var twitchTimer = setInterval(function() {
         if (twitchWindow.closed) {
           clearInterval(twitchTimer)
@@ -443,12 +442,11 @@ export default {
       bc.onmessage = async ev => {
         if (ev.data && ev.data.verifier === REDDIT) {
           try {
-            const { access_token: accessToken, error } = ev.data.verifierParams
-            bc.close()
-            if (error) {
-              log.error('User cancelled login or did not fully authorize.')
-              oauthStream.write({ err: 'User cancelled login or did not fully authorize.' + error })
+            if (ev.error) {
+              log.error(ev.error)
+              oauthStream.write({ err: ev.error })
             } else {
+              const { access_token: accessToken } = ev.data.verifierParams
               const userInfo = await get('https://oauth.reddit.com/api/v1/me', {
                 headers: {
                   Authorization: `Bearer ${accessToken}`
@@ -471,15 +469,30 @@ export default {
           } catch (error) {
             log.error(error)
             oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+          } finally {
+            bc.close()
+            iClosedReddit = true
+            redditWindow.close()
           }
         }
       }
-      window.open(
+      redditWindow = window.open(
         `https://www.reddit.com/api/v1/authorize?client_id=${config.REDDIT_CLIENT_ID}&redirect_uri=` +
           `${config.redirect_uri}&response_type=token&scope=identity&state=${state}`,
         '_blank',
         'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
       )
+      var redditTimer = setInterval(function() {
+        if (redditWindow.closed) {
+          clearInterval(redditTimer)
+          if (!iClosedReddit) {
+            log.error('user closed popup')
+            oauthStream.write({ err: 'user closed popup' })
+          }
+          iClosedReddit = false
+          redditWindow = undefined
+        }
+      }, 1000)
     }
   },
   subscribeToControllers({ dispatch, state }, payload) {
