@@ -1,5 +1,10 @@
 <template>
-  <v-chip v-if="selectedNetwork !== ''" small class="caption network-chip black--text text-capitalize" :class="`network-chip--${host}`">
+  <v-chip
+    v-if="selectedNetwork !== ''"
+    small
+    class="caption network-chip black--text"
+    :class="!isUrlNetwork ? `network-chip--${host} text-capitalize` : ''"
+  >
     <v-icon size="12" class="black--text" v-text="'$vuetify.icons.network'"></v-icon>
     {{ selectedNetwork }}
   </v-chip>
@@ -19,6 +24,14 @@ export default {
     },
     host() {
       return this.$store.state.networkType.host
+    },
+    isUrlNetwork() {
+      try {
+        new URL(this.selectedNetwork)
+        return true
+      } catch (err) {
+        return false
+      }
     }
   }
 }
