@@ -192,7 +192,7 @@ import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSel
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
-import { WALLET_HEADERS_TRANSFER, GOOGLE, FACEBOOK, REDDIT, DISCORD, TWITCH, ETH } from '../../utils/enums'
+import { WALLET_HEADERS_TRANSFER, GOOGLE, REDDIT, DISCORD, ETH } from '../../utils/enums'
 
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
@@ -237,20 +237,12 @@ export default {
           value: GOOGLE
         },
         {
-          name: 'Facebook ID',
-          value: FACEBOOK
-        },
-        {
           name: 'Reddit ID',
           value: REDDIT
         },
         {
           name: 'Discord ID',
           value: DISCORD
-        },
-        {
-          name: 'Twitch ID',
-          value: TWITCH
         }
       ],
       rules: {
