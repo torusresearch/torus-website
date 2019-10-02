@@ -8,33 +8,31 @@ const utils = require('../utils/httpHelpers')
 const log = require('loglevel')
 log.setLevel('ERROR')
 const ObservableStore = require('obs-store')
+const contractMap = require('eth-contract-metadata')
 const ethereumjs_util = require('ethereumjs-util')
-
 const { MAINNET_CODE, RINKEYBY_CODE, ROPSTEN_CODE, KOVAN_CODE, ZERO_ADDRESS, MAINNET, KOVAN, RINKEBY, LOCALHOST } = require('../utils/enums')
-
 const DEFAULT_INTERVAL = 180000
 
 export default class AssetsDetectionController {
   constructor(opts) {
-    log.info('AssetDetectionController: initialised', opts)
+    // log.info('AssetDetectionController: initialised', opts)
     const initState = {
       interval: DEFAULT_INTERVAL,
       network: opts.network,
       selectedAddress: '',
-      tokens: []
+      token: []
     }
     this.assetController = opts.assetController
+    this.assetContractController = opts.assetContractController
     this.store = new ObservableStore(initState)
-    // this.poll()
   }
 
   async poll(address2) {
     this.store.updateState({ selectedAddress: address2 })
-    log.info('\n\n AssetDetectionController: poll', address2)
+    log.info('AssetDetectionController: poll', address2)
     await this.detectAssets()
     setTimeout(() => {
-      // console.log(this.store.getState().address)
-      log.info('AssetDetectionController: poll: setTimeoutCalled')
+      //log.info('AssetDetectionController: poll: setTimeoutCalled')
       this.poll(this.store.getState().selectedAddress)
     }, 10000)
   }
@@ -48,7 +46,7 @@ export default class AssetsDetectionController {
    * @type {Object}
    */
   startTokenDetection(selectedAddress) {
-    log.info('AssetDetectionController: starting token detection')
+    log.info('AssetDetectionController: starting token detection', this.store.getState())
     this.store.updateState({ selectedAddress })
     this.detectAssets()
   }
@@ -66,7 +64,7 @@ export default class AssetsDetectionController {
         response = await utils.promiseRace(api, {}, 30000)
       }
       const collectibles = response.assets
-      log.info('AssetDetectionController: getOwnerCollectibles:', collectibles)
+      // log.info('AssetDetectionController: getOwnerCollectibles:', collectibles)
       return collectibles
     } catch (e) {
       /* istanbul ignore next */
@@ -97,7 +95,7 @@ export default class AssetsDetectionController {
     if (!this.isMainnet()) {
       return
     }
-    // this.detectTokens()
+    this.detectTokens()
     this.detectCollectibles()
   }
 
@@ -109,7 +107,7 @@ export default class AssetsDetectionController {
     if (!this.isMainnet()) {
       return
     }
-    const tokensAddresses = this.config.tokens.filter(/* istanbul ignore next*/ token => token.address)
+    const tokensAddresses = this.store.getState().token.filter(/* istanbul ignore next*/ token => token.address)
     const tokensToDetect = []
     for (const address in contractMap) {
       const contract = contractMap[address]
@@ -118,15 +116,16 @@ export default class AssetsDetectionController {
       }
     }
 
-    const assetsContractController = assetsController()
-    const { selectedAddress } = this.config
+    // log.info('AssetsDetectionController: detectTokens(): tokensTodetect[]:', tokensToDetect)
+    const assetsContractController = this.assetContractController
+    const { selectedAddress } = this.store.getState().selectedAddress
     /* istanbul ignore else */
     if (!selectedAddress) {
       return
     }
-    await safelyExecute(async () => {
+    try {
       const balances = await assetsContractController.getBalancesInSingleCall(selectedAddress, tokensToDetect)
-      const assetsController = assetsController()
+      const assetsController = this.assetContractController
       const { ignoredTokens } = assetsController.state
       for (const tokenAddress in balances) {
         let ignored
@@ -138,7 +137,9 @@ export default class AssetsDetectionController {
           await assetsController.addToken(tokenAddress, contractMap[tokenAddress].symbol, contractMap[tokenAddress].decimals)
         }
       }
-    })
+    } catch (err) {
+      log.error(err)
+    }
   }
 
   /**
@@ -156,10 +157,9 @@ export default class AssetsDetectionController {
       //console.log(selectedAddress)
       return
     }
-    //console.log(this.assetController.store.getState())
     var { ignoredCollectibles, collectibles: collectiblesToRemove } = this.assetController.store.getState()
     this.assetController.store.updateState({ selectedAddress: selectedAddress })
-    log.info('AssetDetectionController: detectCollectibles: State of AssetController', this.assetController.store.getState())
+    // log.info('AssetDetectionController: detectCollectibles: State of AssetController', this.assetController.store.getState())
     const apiCollectibles = await this.getOwnerCollectibles()
     const addCollectiblesPromises = apiCollectibles.map(async collectible => {
       const {
@@ -190,14 +190,14 @@ export default class AssetsDetectionController {
           },
           true
         )
-        log.info('AssetDetectionController: Collectible added')
+        // log.info('AssetDetectionController: Collectible added')
       }
       collectiblesToRemove = collectiblesToRemove.filter(c => {
         return !(c.tokenId === Number(token_id) && c.address === ethereumjs_util.toChecksumAddress(address))
       })
     })
     await Promise.all(addCollectiblesPromises)
-    log.info('AssetDetectionController: CollectiblesToRemove', collectiblesToRemove, this.assetController.store.getState())
+    // log.info('AssetDetectionController: CollectiblesToRemove', collectiblesToRemove, this.assetController.store.getState())
 
     collectiblesToRemove.forEach(({ address, tokenId }) => {
       this.assetController.removeCollectible(address, tokenId)

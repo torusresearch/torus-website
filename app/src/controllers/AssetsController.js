@@ -272,7 +272,6 @@ export default class AssetController {
     const addressCollectibles = allCollectibles[selectedAddress]
     const newAddressCollectibles = Object.assign({}, addressCollectibles, { [networkType]: newCollectibles })
     const newAllCollectibles = Object.assign({}, allCollectibles, { [selectedAddress]: newAddressCollectibles })
-    log.info('AssetController: removeIndividualCollectible: newAddressCOllectibles, newAllCollectibles', newAddressCollectibles, newAllCollectibles)
     this.store.updateState({ allCollectibles: newAllCollectibles, collectibles: newCollectibles })
   }
 
@@ -520,14 +519,14 @@ export default class AssetController {
     try {
       const address = ethereumjs_util.toChecksumAddress(address2)
       const newCollectibleContracts = await this.addCollectibleContract(address, detection)
-      log.info('AssetController: addCollectible(): newCollectionContracts are', newCollectibleContracts)
+      // log.info('AssetController: addCollectible(): newCollectionContracts are', newCollectibleContracts)
 
       // If collectible contract was not added, do not add individual collectible
       const collectibleContract = newCollectibleContracts.find(contract => contract.address === address)
 
       // If collectible contract information, add individual collectible
       if (collectibleContract) {
-        log.info('AssetController: addCollectible(): addingIndividualCollectible')
+        // log.info('AssetController: addCollectible(): addingIndividualCollectible')
         await this.addIndividualCollectible(address, tokenId, opts)
       }
     } catch (error) {
@@ -584,7 +583,7 @@ export default class AssetController {
   removeCollectible(address2, tokenId) {
     const address = ethereumjs_util.toChecksumAddress(address2)
     this.removeIndividualCollectible(address, tokenId)
-    log.info('AssetController: removeIndividualCollectible: indiviual')
+    // log.info('AssetController: removeIndividualCollectible: indiviual')
     const { collectibles } = this.store.getState()
     const remainingCollectible = collectibles.find(collectible => collectible.address2 === address)
     if (!remainingCollectible) {

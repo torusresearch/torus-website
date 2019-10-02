@@ -9,6 +9,7 @@
 const log = require('loglevel')
 const BN = require('ethereumjs-util').BN
 const Web3 = require('web3')
+const ObservableStore = require('obs-store')
 const abiERC20 = require('human-standard-token-abi')
 const abiERC721 = require('human-standard-collectible-abi')
 const abiSingleCallBalancesContract = require('single-call-balance-checker-abi')
@@ -25,6 +26,10 @@ export default class AssetContractController {
   constructor(opts) {
     this._provider = opts.provider
     this.web3 = new Web3(this._provider)
+    const initState = {
+      provider: opts.provider
+    }
+    this.store = new ObservableStore(initState)
   }
 
   /**
@@ -231,7 +236,7 @@ export default class AssetContractController {
   getBalancesInSingleCall(selectedAddress, tokensToDetect) {
     const web3Instance = this.web3
 
-    const contract = new web3Instance.eth.contract(abiSingleCallBalancesContract).at(SINGLE_CALL_BALANCES_ADDRESS)
+    const contract = new web3Instance.eth.Contract(abiSingleCallBalancesContract).at(SINGLE_CALL_BALANCES_ADDRESS)
     return new Promise((resolve, reject) => {
       contract.balances([selectedAddress], tokensToDetect, (error, result) => {
         /* istanbul ignore if */

@@ -235,6 +235,7 @@ export default {
     context.commit('setNetworkId', payload.networkId)
     torus.updateStaticData({ networkId: payload.networkId })
   },
+  updateAssets({ commit }, payload) {},
   setProviderType(context, payload) {
     let networkType = payload.network
     if (SUPPORTED_NETWORK_TYPES[networkType.host]) {
@@ -316,10 +317,23 @@ export default {
       }
     })
 
-    // torus.torusController.assetDetectionController.store.subscribe(function({ state }) {
-    //   console.log('state of assetDetection Controller')
-    //   // dispatch('updateAssets', { assets: state })
-    // })
+    torus.torusController.assetController.store.subscribe(function({
+      allCollectibleContracts,
+      allCollectibles,
+      allTokens,
+      collectibleContracts,
+      collectibles,
+      tokens
+    }) {
+      dispatch('updateAssets', {
+        allCollectibleContracts: allCollectibleContracts,
+        allCollectibles: allCollectibles,
+        allTokens: allTokens,
+        collectibleContracts: collectibleContracts,
+        collectibles: collectibles,
+        tokens: tokens
+      })
+    })
 
     torus.torusController.typedMessageManager.store.subscribe(function({ unapprovedTypedMessages }) {
       dispatch('updateTypedMessages', { unapprovedTypedMessages: unapprovedTypedMessages })
