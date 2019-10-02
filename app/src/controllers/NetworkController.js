@@ -26,7 +26,22 @@ const { createSwappableProxy, createEventEmitterProxy } = require('swappable-obj
 const defaultProviderConfig = { type: 'mainnet' }
 const defaultNetworkConfig = { ticker: 'ETH' }
 const networks = { networkList: {} }
-const { ROPSTEN, RINKEBY, KOVAN, MAINNET, LOCALHOST, GOERLI, MATIC, MATIC_URL, MATIC_CODE } = require('../utils/enums')
+const {
+  ROPSTEN,
+  RINKEBY,
+  KOVAN,
+  MAINNET,
+  LOCALHOST,
+  GOERLI,
+  MATIC,
+  MATIC_URL,
+  MATIC_CODE,
+  MAINNET_CODE,
+  GOERLI_CODE,
+  ROPSTEN_CODE,
+  KOVAN_CODE,
+  RINKEBY_CODE
+} = require('../utils/enums')
 const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET, GOERLI]
 
 export default class NetworkController extends EventEmitter {
@@ -54,6 +69,27 @@ export default class NetworkController extends EventEmitter {
     // provider and block tracker proxies - because the network changes
     this._providerProxy = null
     this._blockTrackerProxy = null
+  }
+
+  getNetworkNameFromNetworkCode() {
+    switch (parseInt(this.getNetworkState())) {
+      case MAINNET_CODE:
+        return MAINNET
+
+      case RINKEBY_CODE:
+        return RINKEBY
+
+      case ROPSTEN_CODE:
+        return ROPSTEN
+
+      case KOVAN_CODE:
+        return KOVAN
+
+      case GOERLI_CODE:
+        return GOERLI
+      default:
+        return 'loading'
+    }
   }
 
   /**
