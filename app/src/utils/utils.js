@@ -11,6 +11,7 @@ const {
   PLATFORM_EDGE,
   PLATFORM_BRAVE
 } = require('./enums')
+const log = require('loglevel')
 
 /**
  * Generates an example stack trace

@@ -10,6 +10,7 @@ const Mutex = require('await-semaphore').Mutex
 const random = require('uuid/v1')
 const AssetsContractController = require('./AssetsContractController').default
 const utils = require('../utils/httpHelpers')
+const log = require('loglevel')
 
 export default class AssetController {
   constructor(opts = {}) {

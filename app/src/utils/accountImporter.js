@@ -1,6 +1,7 @@
 const Wallet = require('ethereumjs-wallet')
 const importers = require('ethereumjs-wallet/thirdparty')
 const ethUtil = require('ethereumjs-util')
+const log = require('loglevel')
 
 const accountImporter = {
   importAccount(strategy, args) {
