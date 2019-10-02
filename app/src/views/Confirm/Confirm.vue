@@ -43,7 +43,7 @@
             <template v-slot:activator="{ on }">
               <div id="more-details-link" class="subtitle-2 float-right primary--text mx-6" v-on="on">More Details</div>
             </template>
-            <v-card class="pa-4 more-details-container" :color="$vuetify.theme.dark ? 'background lighten-2' : ''">
+            <v-card class="pa-4 more-details-container" :color="$vuetify.theme.dark ? 'background lighten-3' : ''">
               <v-card-text class="text_1--text">
                 <v-layout wrap>
                   <v-flex xs4 sm2>
@@ -139,7 +139,7 @@
         <v-flex xs12 mb-6 mx-6>
           <div class="subtitle-2 text_2--text">Request from:</div>
 
-          <v-card flat class="grey lighten-3">
+          <v-card flat class="background lighten-3">
             <v-card-text>
               <div class="subtitle-2 primary--text">{{ origin }}</div>
             </v-card-text>
@@ -158,10 +158,10 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="pa-0">
-              <v-list-item-content flat class="pa-1 grey lighten-3">
+              <v-list-item-content flat class="pa-1 background lighten-3">
                 <v-card flat class="body-2 text-left pa-2 word-break typedMessageBox">
                   <v-expansion-panels v-if="typeof message === 'string'">
-                    <p class="textColor" style="text-align:left">{{ message }}</p>
+                    <p :class="$vuetify.theme.dark ? 'text_1--text' : 'text_2--text'" style="text-align:left">{{ message }}</p>
                   </v-expansion-panels>
 
                   <v-expansion-panels v-else-if="!Array.isArray(typedMessages)">
