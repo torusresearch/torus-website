@@ -39,13 +39,21 @@
         <v-layout wrap>
           <v-flex xs12 px-4 sm6 class="recipient-address-container">
             <span class="subtitle-2">Recipient Address</span>
+            <v-select
+              outlined
+              append-icon="$vuetify.icons.select"
+              :items="verifierOptions"
+              item-text="name"
+              item-value="value"
+              v-model="selectedVerifier"
+            ></v-select>
             <v-text-field
               class="recipient-address"
               id="recipient-address"
               v-model="toAddress"
               placeholder="ETH Address / Google Address here"
               required
-              :rules="[rules.toAddress, rules.required]"
+              :rules="[toAddressRule, rules.required]"
               outlined
               @keyup="correctQrCode = true"
             >
@@ -176,7 +184,7 @@ import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSel
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
-import { WALLET_HEADERS_TRANSFER, GOOGLE } from '../../utils/enums'
+import { WALLET_HEADERS_TRANSFER, GOOGLE, REDDIT, DISCORD, ETH } from '../../utils/enums'
 
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
@@ -210,8 +218,26 @@ export default {
       convertedTotalCost: '',
       resetSpeed: false,
       correctQrCode: true,
+      selectedVerifier: ETH,
+      verifierOptions: [
+        {
+          name: 'ETH Address',
+          value: ETH
+        },
+        {
+          name: 'Enter google Email',
+          value: GOOGLE
+        },
+        {
+          name: 'Enter reddit username',
+          value: REDDIT
+        },
+        {
+          name: 'Enter Discord Id',
+          value: DISCORD
+        }
+      ],
       rules: {
-        toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid ETH or Email Address',
         required: value => !!value || 'Required'
       },
       showModalMessage: false,
@@ -298,7 +324,7 @@ export default {
     }
   },
   methods: {
-    sendEmail: function(typeToken) {
+    sendEmail(typeToken) {
       if (/\S+@\S+\.\S+/.test(this.toAddress)) {
         const emailObject = {
           from_name: this.$store.state.userInfo.name,
@@ -316,19 +342,27 @@ export default {
           .catch(err => log.error(err))
       }
     },
-    moreThanZero: function(value) {
+    moreThanZero(value) {
       if (this.selectedItem) {
         return parseFloat(value) > 0 || 'Invalid amount'
       }
       return ''
     },
-    lesserThan: function(value) {
+    lesserThan(value) {
       if (this.selectedItem) {
         let amount = value
         if (this.toggle_exclusive === 1) {
           amount = amount / this.getCurrencyTokenRate
         }
         return parseFloat(amount) <= this.selectedItem.computedBalance || 'Insufficient balance for transaction'
+      }
+      return ''
+    },
+    toAddressRule(value) {
+      if (this.selectedVerifier === ETH) {
+        return torus.web3.utils.isAddress(value) || 'Invalid ETH Address'
+      } else if (this.selectedVerifier === GOOGLE) {
+        return /\S+@\S+\.\S+/.test(value) || 'Invalid Email Address'
       }
       return ''
     },
@@ -408,14 +442,20 @@ export default {
         } else {
           const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
           try {
-            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[endPointNumber], { verifier: GOOGLE, verifierId: this.toAddress })
+            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[endPointNumber], {
+              verifier: this.selectedVerifier,
+              verifierId: this.toAddress
+            })
           } catch (err) {
             log.error(err)
             let newEndPointNumber = endPointNumber
             while (newEndPointNumber === endPointNumber) {
               newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
             }
-            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], { verifier: GOOGLE, verifierId: this.toAddress })
+            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], {
+              verifier: this.selectedVerifier,
+              verifierId: this.toAddress
+            })
           }
         }
         this.gas = await this.calculateGas(toAddress)

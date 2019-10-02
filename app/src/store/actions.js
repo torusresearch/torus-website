@@ -448,9 +448,9 @@ export default {
                 profileImage,
                 name,
                 email: '',
-                verifierId: id,
+                verifierId: name,
                 verifier: REDDIT,
-                verifierParams: { verifier_id: id }
+                verifierParams: { verifier_id: name }
               }
             })
             dispatch('handleLogin', { calledFromEmbed, endPointNumber })

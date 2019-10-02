@@ -1,3 +1,5 @@
+const ETH = 'eth'
+
 const ROPSTEN = 'ropsten'
 const RINKEBY = 'rinkeby'
 const KOVAN = 'kovan'
@@ -91,6 +93,7 @@ const THEME_DARK_BLACK_NAME = 'dark-black'
 const THEME_LIGHT_BLUE_NAME = 'light-blue'
 
 module.exports = {
+  ETH,
   ROPSTEN,
   RINKEBY,
   KOVAN,
