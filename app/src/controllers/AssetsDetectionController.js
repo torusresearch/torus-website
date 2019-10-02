@@ -30,10 +30,11 @@ export default class AssetsDetectionController {
 
   async poll(address2) {
     this.store.updateState({ selectedAddress: address2 })
-    log.info('AssetDetectionController: poll', address2)
+    log.info('\n\n AssetDetectionController: poll', address2)
     await this.detectAssets()
     setTimeout(() => {
       // console.log(this.store.getState().address)
+      log.info('AssetDetectionController: poll: setTimeoutCalled')
       this.poll(this.store.getState().selectedAddress)
     }, 10000)
   }
@@ -60,12 +61,12 @@ export default class AssetsDetectionController {
     try {
       /* istanbul ignore if */
       if (assetsController.openSeaApiKey) {
-        response = await utils.promiseRace(api, { headers: { 'X-API-KEY': assetsController.openSeaApiKey } }, 15000)
+        response = await utils.promiseRace(api, { headers: { 'X-API-KEY': assetsController.openSeaApiKey } }, 30000)
       } else {
-        response = await utils.promiseRace(api, {}, 15000)
+        response = await utils.promiseRace(api, {}, 30000)
       }
       const collectibles = response.assets
-      log.info('AssetDetectionController collectibles:', collectibles)
+      log.info('AssetDetectionController: getOwnerCollectibles:', collectibles)
       return collectibles
     } catch (e) {
       /* istanbul ignore next */
@@ -85,7 +86,7 @@ export default class AssetsDetectionController {
       //log.info('AssetDetectionController: false')
       return false
     }
-    log.info('AssetDetectionController: true')
+    // log.info('AssetDetectionController: true')
     return true
   }
   /**
@@ -157,6 +158,8 @@ export default class AssetsDetectionController {
     }
     //console.log(this.assetController.store.getState())
     var { ignoredCollectibles, collectibles: collectiblesToRemove } = this.assetController.store.getState()
+    this.assetController.store.updateState({ selectedAddress: selectedAddress })
+    log.info('AssetDetectionController: detectCollectibles: State of AssetController', this.assetController.store.getState())
     const apiCollectibles = await this.getOwnerCollectibles()
     const addCollectiblesPromises = apiCollectibles.map(async collectible => {
       const {
@@ -194,10 +197,10 @@ export default class AssetsDetectionController {
       })
     })
     await Promise.all(addCollectiblesPromises)
-    log.info('AssetDetectionController: CollectiblesToRemove', collectiblesToRemove)
+    log.info('AssetDetectionController: CollectiblesToRemove', collectiblesToRemove, this.assetController.store.getState())
 
-    collectiblesToRemove.forEach(({ address2, tokenId }) => {
-      this.assetController.removeCollectible(address2, tokenId)
+    collectiblesToRemove.forEach(({ address, tokenId }) => {
+      this.assetController.removeCollectible(address, tokenId)
     })
   }
 }

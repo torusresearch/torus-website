@@ -66,13 +66,13 @@ function generateJsonRPCObject(method, params) {
   }
 }
 
-function promiseRace(url, options, timeout) {
+function promiseRace(url, options, timeout, counter) {
   console.log('promise race started', url, options, timeout)
   return Promise.race([
-    this.get(url, options),
+    get(url, options),
     new Promise((resolve, reject) => {
       setTimeout(() => {
-        console.log('Timeout won in promise race')
+        console.log('Timeout won in promise race', counter)
         reject(new Error('timeout'))
       }, timeout)
     })

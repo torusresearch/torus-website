@@ -204,19 +204,19 @@ export default class AssetController {
    * @param detection? - Whether the collectible is manually added or autodetected
    * @returns - Promise resolving to the current collectible list
    */
-  async addIndividualCollectible(address, tokenId, opts) {
+  async addIndividualCollectible(address2, tokenId, opts) {
     try {
       const releaseLock = await this.mutex.acquire()
-      const address2 = ethereumjs_util.toChecksumAddress(address)
+      const address = ethereumjs_util.toChecksumAddress(address2)
       const { allCollectibles, collectibles, selectedAddress } = this.store.getState()
-      const networkType = this.network
-      const existingEntry = collectibles.find(collectible => collectible.address === address2 && collectible.tokenId === tokenId)
+      const networkType = this.network.getNetworkNameFromNetworkCode()
+      const existingEntry = collectibles.find(collectible => collectible.address === address && collectible.tokenId === tokenId)
       if (existingEntry) {
         releaseLock()
         return collectibles
       }
-      const { name, image, description } = opts ? opts : await this.getCollectibleInformation(address2, tokenId)
-      const newEntry = { address2, tokenId, name, image, description }
+      const { name, image, description } = opts ? opts : await this.getCollectibleInformation(address, tokenId)
+      const newEntry = { address, tokenId, name, image, description }
       const newCollectibles = [...collectibles, newEntry]
       const addressCollectibles = allCollectibles[selectedAddress]
       const newAddressCollectibles = { ...addressCollectibles, ...{ [networkType]: newCollectibles } }
@@ -237,8 +237,8 @@ export default class AssetController {
    */
   removeAndIgnoreIndividualCollectible(address2, tokenId) {
     const address = ethereumjs_util.toChecksumAddress(address2)
-    const { allCollectibles, collectibles, ignoredCollectibles } = this.store.getState()
-    const { networkType, selectedAddress } = this.config
+    const { allCollectibles, collectibles, ignoredCollectibles, selectedAddress } = this.store.getState()
+    const { networkType } = this.network.getNetworkNameFromNetworkCode()
     const newIgnoredCollectibles = [...ignoredCollectibles]
     const newCollectibles = collectibles.filter(collectible => {
       if (collectible.address === address && collectible.tokenId === tokenId) {
@@ -266,12 +266,13 @@ export default class AssetController {
    */
   removeIndividualCollectible(address2, tokenId) {
     const address = ethereumjs_util.toChecksumAddress(address2)
-    const { allCollectibles, collectibles } = this.store.getState()
-    const { networkType, selectedAddress } = this.config
+    const { allCollectibles, collectibles, selectedAddress } = this.store.getState()
+    const { networkType } = this.network.getNetworkNameFromNetworkCode()
     const newCollectibles = collectibles.filter(collectible => !(collectible.address === address && collectible.tokenId === tokenId))
     const addressCollectibles = allCollectibles[selectedAddress]
     const newAddressCollectibles = Object.assign({}, addressCollectibles, { [networkType]: newCollectibles })
     const newAllCollectibles = Object.assign({}, allCollectibles, { [selectedAddress]: newAddressCollectibles })
+    log.info('AssetController: removeIndividualCollectible: newAddressCOllectibles, newAllCollectibles', newAddressCollectibles, newAllCollectibles)
     this.store.updateState({ allCollectibles: newAllCollectibles, collectibles: newCollectibles })
   }
 
@@ -283,8 +284,8 @@ export default class AssetController {
    */
   removeCollectibleContract(address2) {
     const address = ethereumjs_util.toChecksumAddress(address2)
-    const { allCollectibleContracts, collectibleContracts } = this.store.getState()
-    const { networkType, selectedAddress } = this.config
+    const { allCollectibleContracts, collectibleContracts, selectedAddress } = this.store.getState()
+    const { networkType } = this.network.getNetworkNameFromNetworkCode()
     const newCollectibleContracts = collectibleContracts.filter(collectibleContract => !(collectibleContract.address === address))
     const addressCollectibleContracts = allCollectibleContracts[selectedAddress]
     const newAddressCollectibleContracts = Object.assign({}, addressCollectibleContracts, { [networkType]: newCollectibleContracts })
@@ -312,8 +313,8 @@ export default class AssetController {
     try {
       const releaseLock = await this.mutex.acquire()
       address = toChecksumAddress(address2)
-      const { allTokens, tokens } = this.store.getState()
-      const { networkType, selectedAddress } = this.config
+      const { allTokens, selectedAddress, tokens } = this.store.getState()
+      const { networkType } = this.network.getNetworkNameFromNetworkCode()
       const newEntry = { address, symbol, decimals, image }
       const previousEntry = tokens.find(token => token.address === address)
       if (previousEntry) {
@@ -465,7 +466,8 @@ export default class AssetController {
   async addCollectibleContract(address2, detection) {
     const releaseLock = await this.mutex.acquire()
     const address = ethereumjs_util.toChecksumAddress(address2)
-    const { allCollectibleContracts, collectibleContracts, networkType, selectedAddress } = this.store.getState()
+    const { allCollectibleContracts, collectibleContracts, selectedAddress } = this.store.getState()
+    const networkType = this.network.getNetworkNameFromNetworkCode()
     const existingEntry = collectibleContracts.find(collectibleContract => collectibleContract.address === address)
     if (existingEntry) {
       releaseLock()
@@ -525,6 +527,7 @@ export default class AssetController {
 
       // If collectible contract information, add individual collectible
       if (collectibleContract) {
+        log.info('AssetController: addCollectible(): addingIndividualCollectible')
         await this.addIndividualCollectible(address, tokenId, opts)
       }
     } catch (error) {
@@ -539,8 +542,8 @@ export default class AssetController {
    */
   removeAndIgnoreToken(address2) {
     address = ethereumjs_util.toChecksumAddress(address2)
-    const { allTokens, tokens, ignoredTokens } = this.store.getState()
-    const { networkType, selectedAddress } = this.config
+    const { allTokens, tokens, ignoredTokens, selectedAddress } = this.store.getState()
+    const { networkType } = this.network.getNetworkNameFromNetworkCode()
     const newIgnoredTokens = [...ignoredTokens]
     const newTokens = tokens.filter(token => {
       if (token.address === address) {
@@ -563,8 +566,8 @@ export default class AssetController {
    */
   removeToken(address2) {
     const address = ethereumjs_util.toChecksumAddress(address2)
-    const { allTokens, tokens } = this.store.getState()
-    const { networkType, selectedAddress } = this.config
+    const { allTokens, tokens, selectedAddress } = this.store.getState()
+    const { networkType } = this.network.getNetworkNameFromNetworkCode()
     const newTokens = tokens.filter(token => token.address !== address)
     const addressTokens = allTokens[selectedAddress]
     const newAddressTokens = Object.assign({}, addressTokens, { [networkType]: newTokens })
@@ -581,8 +584,9 @@ export default class AssetController {
   removeCollectible(address2, tokenId) {
     const address = ethereumjs_util.toChecksumAddress(address2)
     this.removeIndividualCollectible(address, tokenId)
+    log.info('AssetController: removeIndividualCollectible: indiviual')
     const { collectibles } = this.store.getState()
-    const remainingCollectible = collectibles.find(collectible => collectible.address === address)
+    const remainingCollectible = collectibles.find(collectible => collectible.address2 === address)
     if (!remainingCollectible) {
       this.removeCollectibleContract(address)
     }
@@ -616,7 +620,7 @@ export default class AssetController {
     const network = this.context.NetworkController
     preferences.subscribe(({ selectedAddress }) => {
       const { allCollectibleContracts, allCollectibles, allTokens } = this.store.getState()
-      const { networkType } = this.config
+      const { networkType } = this.network.getNetworkNameFromNetworkCode()
       this.configure({ selectedAddress })
       this.store.updateState({
         collectibleContracts: (allCollectibleContracts[selectedAddress] && allCollectibleContracts[selectedAddress][networkType]) || [],
@@ -626,7 +630,7 @@ export default class AssetController {
     })
     network.subscribe(({ provider }) => {
       const { allCollectibleContracts, allCollectibles, allTokens } = this.store.getState()
-      const { selectedAddress } = this.config
+      const { selectedAddress } = this.network.getNetworkNameFromNetworkCode()
       const networkType = provider.type
       this.configure({ networkType })
       this.store.updateState({
