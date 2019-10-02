@@ -282,7 +282,14 @@ export default {
               // Set only idToken and userInfo into the state
               dispatch('updateIdToken', { idToken: idtoken })
               dispatch('updateUserInfo', {
-                userInfo: { profileImage, name, email, verifierId: email, verifier: GOOGLE, verifierParams: { verifier_id: email } }
+                userInfo: {
+                  profileImage,
+                  name,
+                  email,
+                  verifierId: email.toString().toLowerCase(),
+                  verifier: GOOGLE,
+                  verifierParams: { verifier_id: email.toString().toLowerCase() }
+                }
               })
 
               window.gapi.auth2
@@ -329,9 +336,9 @@ export default {
                     profileImage: picture.data.url,
                     name,
                     email: email,
-                    verifierId: id,
+                    verifierId: id.toString(),
                     verifier: FACEBOOK,
-                    verifierParams: { verifier_id: id }
+                    verifierParams: { verifier_id: id.toString() }
                   }
                 })
 
@@ -448,9 +455,9 @@ export default {
                 profileImage,
                 name,
                 email: '',
-                verifierId: name,
+                verifierId: name.toString().toLowerCase(),
                 verifier: REDDIT,
-                verifierParams: { verifier_id: name }
+                verifierParams: { verifier_id: name.toString().toLowerCase() }
               }
             })
             dispatch('handleLogin', { calledFromEmbed, endPointNumber })
@@ -516,9 +523,9 @@ export default {
                 profileImage,
                 name: `${name}#${discriminator}`,
                 email,
-                verifierId: id,
+                verifierId: id.toString(),
                 verifier: DISCORD,
-                verifierParams: { verifier_id: id }
+                verifierParams: { verifier_id: id.toString() }
               }
             })
             dispatch('handleLogin', { calledFromEmbed, endPointNumber })
