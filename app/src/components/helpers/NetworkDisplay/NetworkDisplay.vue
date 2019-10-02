@@ -26,12 +26,8 @@ export default {
       return this.$store.state.networkType.host
     },
     isUrlNetwork() {
-      try {
-        new URL(this.selectedNetwork)
-        return true
-      } catch (err) {
-        return false
-      }
+      // Checks if input is a url including localhost, ip address and domain name
+      return /^((?:http(s)?:\/\/)?([\w.-]+(?:\.[\w\.-]+)+|localhost?)[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+)$/.test(this.selectedNetwork)
     }
   }
 }
