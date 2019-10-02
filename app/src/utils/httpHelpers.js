@@ -66,13 +66,15 @@ function generateJsonRPCObject(method, params) {
   }
 }
 
-function promiseRace(url, options, timeout) {
-  return Promise.race[
-    (this.get(url, options),
+function promiseRace(url, options, timeout, counter) {
+  return Promise.race([
+    get(url, options),
     new Promise((resolve, reject) => {
-      setTimeout(() => reject(new Error('timeout')), timeout)
-    }))
-  ]
+      setTimeout(() => {
+        reject(new Error('timeout'))
+      }, timeout)
+    })
+  ])
 }
 
 export { get, post, patch, generateJsonRPCObject, promiseRace }

@@ -186,7 +186,7 @@
 <script>
 import { QrcodeCapture } from 'vue-qrcode-reader'
 import torus from '../../torus'
-import { significantDigits, getRandomNumber } from '../../utils/utils'
+import { significantDigits, getRandomNumber, getEtherScanHashLink } from '../../utils/utils'
 import config from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
@@ -343,13 +343,15 @@ export default {
     }
   },
   methods: {
-    sendEmail(typeToken) {
+    sendEmail(typeToken, transactionHash) {
       if (/\S+@\S+\.\S+/.test(this.toAddress)) {
+        const etherscanLink = getEtherScanHashLink(transactionHash, this.$store.state.networkType.host)
         const emailObject = {
           from_name: this.$store.state.userInfo.name,
           to_email: this.toAddress,
           total_amount: this.amount,
-          token: typeToken
+          token: typeToken,
+          etherscanLink: etherscanLink
         }
         post(config.api + '/transaction/sendemail', emailObject, {
           headers: {
@@ -510,7 +512,7 @@ export default {
                 log.error(err)
               } else {
                 // Send email to the user
-                this.sendEmail(this.selectedItem.symbol)
+                this.sendEmail(this.selectedItem.symbol, transactionHash)
 
                 this.showModalMessage = true
                 this.modalMessageSuccess = true
@@ -536,7 +538,7 @@ export default {
                 log.error(err)
               } else {
                 // Send email to the user
-                this.sendEmail(this.selectedItem.symbol)
+                this.sendEmail(this.selectedItem.symbol, transactionHash)
 
                 this.showModalMessage = true
                 this.modalMessageSuccess = true
