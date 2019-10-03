@@ -28,10 +28,6 @@
   }
 }
 
-.textColor {
-  color: var(--v-text_2-base);
-}
-
 .svg-bcg-color {
   background-color: var(--v-torus_svg_bcg-base);
 }
@@ -157,6 +153,11 @@ hr {
   .v-list-item {
     min-height: inherit;
   }
+}
+
+.theme--light.v-sheet, 
+.theme--dark.v-sheet {
+  background: transparent
 }
 
 .word-break {

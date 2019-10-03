@@ -1,12 +1,11 @@
 <template>
   <v-container py-6 px-0 class="confirm-container">
     <template v-if="type === 'transaction'">
-      <v-layout wrap align-center mx-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
-        <div class="text_1--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">{{ header }}</div>
-      </v-layout>
-      <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
-        <v-icon small class="text_2--text" v-text="'$vuetify.icons.network'"></v-icon>
-        <span class="caption ml-1 text_2--text text-capitalize">{{ selectedNetwork }}</span>
+      <v-layout wrap align-center mx-6 mb-6>
+        <v-flex xs12 class="text_1--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">{{ header }}</v-flex>
+        <v-flex xs12>
+          <network-display></network-display>
+        </v-flex>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-4 mx-6>
@@ -44,7 +43,7 @@
             <template v-slot:activator="{ on }">
               <div id="more-details-link" class="subtitle-2 float-right primary--text mx-6" v-on="on">More Details</div>
             </template>
-            <v-card class="pa-4 more-details-container" :color="$vuetify.theme.dark ? 'background lighten-2' : ''">
+            <v-card class="pa-4 more-details-container" :color="$vuetify.theme.dark ? 'background lighten-3' : ''">
               <v-card-text class="text_1--text">
                 <v-layout wrap>
                   <v-flex xs4 sm2>
@@ -130,18 +129,17 @@
     </template>
 
     <template v-if="type === 'message'">
-      <v-layout align-center mx-6 mb-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
-        <div class="text-black font-weight-bold headline float-left">Permissions</div>
-      </v-layout>
-      <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
-        <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
-        <span class="caption ml-1 text_2--text text-capitalize">{{ selectedNetwork }}</span>
+      <v-layout wrap align-center mx-6 mb-6>
+        <v-flex xs12 class="text_1--text font-weight-bold headline float-left">Permissions</v-flex>
+        <v-flex xs12>
+          <network-display></network-display>
+        </v-flex>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-6 mx-6>
           <div class="subtitle-2 text_2--text">Request from:</div>
 
-          <v-card flat class="grey lighten-3">
+          <v-card flat class="background lighten-3">
             <v-card-text>
               <div class="subtitle-2 primary--text">{{ origin }}</div>
             </v-card-text>
@@ -160,10 +158,10 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="pa-0">
-              <v-list-item-content flat class="pa-1 grey lighten-3">
+              <v-list-item-content flat class="pa-1 background lighten-3">
                 <v-card flat class="body-2 text-left pa-2 word-break typedMessageBox">
                   <v-expansion-panels v-if="typeof message === 'string'">
-                    <p class="textColor" style="text-align:left">{{ message }}</p>
+                    <p :class="$vuetify.theme.dark ? 'text_1--text' : 'text_2--text'" style="text-align:left">{{ message }}</p>
                   </v-expansion-panels>
 
                   <v-expansion-panels v-else-if="!Array.isArray(typedMessages)">
@@ -217,6 +215,7 @@ import ShowToolTip from '../../components/helpers/ShowToolTip'
 import PageLoader from '../../components/helpers/PageLoader'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
+import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import torus from '../../torus'
 import {
   significantDigits,
@@ -252,7 +251,8 @@ export default {
     PageLoader,
     TransactionSpeedSelect,
     TransferConfirm,
-    VueJsonPretty
+    VueJsonPretty,
+    NetworkDisplay
   },
   data() {
     return {
@@ -308,14 +308,6 @@ export default {
     }
   },
   computed: {
-    selectedNetwork() {
-      let finalNetwork = ''
-      finalNetwork =
-        !this.$store.state.networkType.networkName || this.$store.state.networkType.networkName === ''
-          ? this.$store.state.networkType.host
-          : this.$store.state.networkType.networkName
-      return finalNetwork
-    },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
     },
