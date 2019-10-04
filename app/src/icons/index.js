@@ -34,6 +34,8 @@ import ActivitiesIcon from './ActivitiesIcon'
 import SettingsIcon from './SettingsIcon'
 import CloseIcon from './CloseIcon'
 import DownloadIcon from './DownloadIcon'
+import CollectibleIcon from './CollectibleIcon'
+import TokenIcon from './TokenIcon'
 
 export default {
   select: {
@@ -143,5 +145,11 @@ export default {
   },
   download: {
     component: DownloadIcon
+  },
+  collectibles: {
+    component: CollectibleIcon
+  },
+  token: {
+    component: TokenIcon
   }
 }

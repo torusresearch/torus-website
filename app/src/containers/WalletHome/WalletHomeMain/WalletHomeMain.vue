@@ -149,8 +149,14 @@
 
       <v-flex xs12 px-4 mt-5>
         <v-tabs v-model="activeTab">
-          <v-tab>Tokens</v-tab>
-          <v-tab>Collectibles</v-tab>
+          <v-tab>
+            <v-icon left>$vuetify.icons.token</v-icon>
+            Tokens
+          </v-tab>
+          <v-tab>
+            <v-icon left>$vuetify.icons.collectibles</v-icon>
+            Collectibles
+          </v-tab>
         </v-tabs>
       </v-flex>
     </v-layout>

@@ -1,4 +1,24 @@
-.asset-details {
-  font-size: 10px;
-  line-height: 1.2em;
+.asset {
+  .asset-details {
+    font-size: 10px;
+    line-height: 1.2em;
+  }
+  
+  &.asset--new {
+    ::v-deep .v-image__image {
+      opacity: 0.3;
+    }
+    
+    .add-container {
+      border: 1px solid var(--v-primary-base);
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      line-height: 36px;
+    }
+
+    .asset-text {
+      opacity: 0.2;
+    }
+  }
 }
