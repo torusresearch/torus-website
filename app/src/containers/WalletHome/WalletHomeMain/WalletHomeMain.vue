@@ -147,7 +147,16 @@
         </v-layout>
       </v-flex>
 
-      <v-flex xs12>
+      <v-flex xs12 px-4 mt-5>
+        <v-tabs v-model="activeTab">
+          <v-tab>Tokens</v-tab>
+          <v-tab>Collectibles</v-tab>
+        </v-tabs>
+      </v-flex>
+    </v-layout>
+
+    <v-tabs-items v-model="activeTab">
+      <v-tab-item>
         <token-balances-table
           :tokenBalances="filteredBalancesArray"
           @update:select="select"
@@ -155,23 +164,27 @@
           :search="search"
           :isFreshAccount="isFreshAccount"
         />
-      </v-flex>
-    </v-layout>
+      </v-tab-item>
+      <v-tab-item>
+        <collectibles-list></collectibles-list>
+      </v-tab-item>
+    </v-tabs-items>
   </div>
 </template>
 
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
-import config from '../../config'
-import TokenBalancesTable from '../../components/WalletHome/TokenBalancesTable'
-import ExportQrCode from '../../components/helpers/ExportQrCode'
-import PromotionCard from '../../components/WalletHome/PromotionCard'
-import LearnMore from '../../components/WalletHome/LearnMore'
-import { MAINNET, WALLET_HEADERS_HOME } from '../../utils/enums'
+import config from '../../../config'
+import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
+import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
+import ExportQrCode from '../../../components/helpers/ExportQrCode'
+import PromotionCard from '../../../components/WalletHome/PromotionCard'
+import LearnMore from '../../../components/WalletHome/LearnMore'
+import { MAINNET, WALLET_HEADERS_HOME } from '../../../utils/enums'
 
 export default {
   name: 'walletHome',
-  components: { TokenBalancesTable, ExportQrCode, PromotionCard, LearnMore },
+  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore },
   data() {
     return {
       pageHeader: WALLET_HEADERS_HOME,
@@ -179,7 +192,8 @@ export default {
       selected: [],
       search: '',
       lastUpdated: '',
-      dialogLearnMore: false
+      dialogLearnMore: false,
+      activeTab: 0
     }
   },
   computed: {
@@ -264,5 +278,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'WalletHome.scss';
+@import 'WalletHomeMain.scss';
 </style>
