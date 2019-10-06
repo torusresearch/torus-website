@@ -145,6 +145,7 @@ export default class TypedMessageManager extends EventEmitter {
         }, 'Expected EIP712 typed data')
         break
       case 'V3':
+      case 'V4':
         let data
         assert.strictEqual(typeof params, 'object', 'Params should be an object.')
         assert.ok('data' in params, 'Params must include a data field.')

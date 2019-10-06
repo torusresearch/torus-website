@@ -15,7 +15,7 @@ const pify = require('pify')
 const Web3 = require('web3')
 const SINGLE_CALL_BALANCES_ABI = require('single-call-balance-checker-abi')
 
-const { MAINNET_CODE, RINKEYBY_CODE, ROPSTEN_CODE, KOVAN_CODE, ZERO_ADDRESS } = require('../utils/enums')
+const { MAINNET_CODE, RINKEBY_CODE, ROPSTEN_CODE, KOVAN_CODE, ZERO_ADDRESS } = require('../utils/enums')
 const {
   SINGLE_CALL_BALANCES_ADDRESS,
   SINGLE_CALL_BALANCES_ADDRESS_RINKEBY,
@@ -187,7 +187,7 @@ export default class AccountTracker {
           await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS)
           break
 
-        case RINKEYBY_CODE:
+        case RINKEBY_CODE:
           await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_RINKEBY)
           break
 

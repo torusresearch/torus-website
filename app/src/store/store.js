@@ -22,7 +22,7 @@ function getCurrencyMultiplier() {
   return currencyMultiplier
 }
 
-const baseRoute = process.env.BASE_URL
+const baseRoute = config.baseRoute
 
 Vue.use(Vuex)
 
@@ -43,7 +43,8 @@ const vuexPersist = new VuexPersistence({
       // tokenData: state.tokenData,
       tokenRates: state.tokenRates,
       selectedCurrency: state.selectedCurrency,
-      jwtToken: state.jwtToken
+      jwtToken: state.jwtToken,
+      theme: state.theme
       // pastTransactions: state.pastTransactions
     }
   }

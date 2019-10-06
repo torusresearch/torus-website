@@ -77,7 +77,7 @@ passthroughStream.on('data', function() {
 })
 
 torus.communicationMux.getStream('oauth').on('data', function(chunk) {
-  VuexStore.dispatch('triggerLogin', { calledFromEmbed: chunk.data.calledFromEmbed })
+  VuexStore.dispatch('triggerLogin', { calledFromEmbed: chunk.data.calledFromEmbed, verifier: chunk.data.verifier })
 })
 
 torus.communicationMux.getStream('show_wallet').on('data', function(chunk) {
@@ -238,7 +238,9 @@ userInfoRequestChannel.onmessage = function(ev) {
   if (ev.data && ev.data.type === 'confirm-user-info-request' && ev.data.approve) {
     log.info('User Info Request approved')
     VuexStore.dispatch('updateUserInfoAccess', { approved: true })
-    userInfoStream.write({ name: 'user_info_response', data: { payload: VuexStore.state.userInfo, approved: true } })
+    const returnObj = JSON.parse(JSON.stringify(VuexStore.state.userInfo))
+    delete returnObj.verifierParams
+    userInfoStream.write({ name: 'user_info_response', data: { payload: returnObj, approved: true } })
   } else if (ev.data && ev.data.type === 'deny-user-info-request') {
     log.info('User Info Request denied')
     VuexStore.dispatch('updateUserInfoAccess', { approved: false })

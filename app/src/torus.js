@@ -10,6 +10,8 @@ var BN = require('bn.js')
 const setupMultiplex = require('./utils/setupMultiplex').default
 const toChecksumAddress = require('./utils/toChecksumAddress').default
 const ethUtil = require('ethereumjs-util')
+const eccrypto = require('eccrypto')
+
 // Make this a class. Use ES6
 class Torus {
   constructor() {
@@ -34,7 +36,7 @@ class Torus {
       publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
     }
   }
-  retrieveShares(endpoints, indexes, email, idToken) {
+  retrieveShares(endpoints, indexes, verifier, verifierParams, idToken) {
     // Swallow individual fetch errors to handle node failures
     // catch only logic errors
     return new Promise((resolve, reject) => {
@@ -63,7 +65,7 @@ class Torus {
             temppubx: pubKey.getX().toString('hex'),
             temppuby: pubKey.getY().toString('hex'),
             timestamp: (Date.now() - 2000).toString().slice(0, 10),
-            verifieridentifier: 'google'
+            verifieridentifier: verifier
           })
         ).catch(err => {
           log.error(err)
@@ -103,7 +105,7 @@ class Torus {
             var p = post(
               endpoints[i],
               generateJsonRPCObject('ShareRequest', {
-                item: [{ idtoken: idToken, nodesignatures: nodeSigs, verifieridentifier: 'google', email: email }]
+                item: [{ ...verifierParams, idtoken: idToken, nodesignatures: nodeSigs, verifieridentifier: verifier }]
               })
             ).catch(err => {
               log.error(err)
@@ -137,6 +139,22 @@ class Torus {
           log.info(shareResponses)
           for (var i = 0; i < shareResponses.length; i++) {
             if (shareResponses[i]) {
+              // let verifierEncrypted = {
+              //   ciphertext: Buffer.from(verifier.ciphertext.data, 'hex'),
+              //   mac: Buffer.from(verifier.mac.data, 'hex'),
+              //   iv: Buffer.from(verifier.iv.data, 'hex'),
+              //   ephemPublicKey: Buffer.from(verifier.ephemPublicKey.data, 'hex')
+              // }
+              // eccrypto
+              //   .decrypt(Buffer.from(window.oauthVars.privKey.toString(16, 64), 'hex'), verifierEncrypted)
+              //   .then(bufferVal => {
+              //     window.oauthVars.requestTokens[i].verifier = bufferVal.toString()
+              //     setOauthvars(window.oauthVars)
+              //   })
+              //   .catch(e => {
+              //     console.error(e)
+              //   })
+
               shares.push(new BN(shareResponses[i].result.keys[0].Share, 16))
               nodeIndex.push(new BN(indexes[i], 16))
             }
@@ -189,13 +207,13 @@ class Torus {
     var ethAddress = toChecksumAddress(ethAddressLower)
     return ethAddress
   }
-  getPubKeyAsync(endpointUrl, email) {
+  getPubKeyAsync(endpointUrl, { verifier, verifierId }) {
     return new Promise((resolve, reject) => {
       post(
         endpointUrl,
         generateJsonRPCObject('VerifierLookupRequest', {
-          verifier: 'google',
-          verifier_id: email.toLowerCase()
+          verifier,
+          verifier_id: verifierId.toString().toLowerCase()
         })
       )
         .catch(err => log.error(err))
@@ -204,8 +222,8 @@ class Torus {
             return post(
               endpointUrl,
               generateJsonRPCObject('KeyAssign', {
-                verifier: 'google',
-                verifier_id: email.toLowerCase()
+                verifier,
+                verifier_id: verifierId.toString().toLowerCase()
               })
             )
           } else if (lookupShare.result) {

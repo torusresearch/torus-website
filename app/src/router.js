@@ -4,6 +4,7 @@ import store from './store'
 import Popup from './views/Popup'
 import ProviderChange from './views/ProviderChange'
 import UserInfoRequest from './views/UserInfoRequest'
+import RedirectCatch from './views/RedirectCatch'
 import Login from './views/Login'
 import Confirm from './views/Confirm'
 import Wallet from './views/Wallet'
@@ -11,7 +12,14 @@ import WalletHome from './containers/WalletHome'
 import WalletHistory from './containers/WalletHistory'
 import WalletSettings from './containers/WalletSettings'
 import WalletTransfer from './containers/WalletTransfer'
-import { WalletTopupHome, WalletTopupSimplex, WalletTopupMoonpay, WalletTopupWyre, WalletTopupCrypto } from './containers/WalletTopup'
+import {
+  WalletTopupHome,
+  WalletTopupSimplex,
+  WalletTopupMoonpay,
+  WalletTopupWyre,
+  WalletTopupCrypto,
+  WalletTopupCoinDirect
+} from './containers/WalletTopup'
 
 // const Popup = () => import('./views/Popup.vue')
 // const Confirm = () => import('./views/Confirm.vue')
@@ -44,6 +52,12 @@ const router = new Router({
       path: '/popup',
       name: 'popup',
       component: Popup,
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/redirect',
+      name: 'redirect',
+      component: RedirectCatch,
       meta: { requiresAuth: false }
     },
     {
@@ -115,6 +129,11 @@ const router = new Router({
               path: 'crypto',
               name: 'walletTopupCrypto',
               component: WalletTopupCrypto
+            },
+            {
+              path: 'coindirect',
+              name: 'walletTopupCoindirect',
+              component: WalletTopupCoinDirect
             }
           ]
         }

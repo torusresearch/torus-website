@@ -4,24 +4,29 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <meta name="description" content="A simple and secure gateway to the decentralized ecosystem via Google or Facebook OAuth logins">
-    <meta name="keywords" content="crypto, wallet, oauth, login, best, ethereum, torus">
-    <meta name="author" content="Torus Labs">
+    <meta name="description" content="A simple and secure gateway to the decentralized ecosystem via Google or Facebook OAuth logins" />
+    <meta name="keywords" content="crypto, wallet, oauth, login, best, ethereum, torus" />
+    <meta name="author" content="Torus Labs" />
     <link rel="shortcut icon" href="<%= BASE_URL %>favicon.png" />
     <title>Torus</title>
     <script>
       if (window.torus !== undefined) {
-        window._torus = window.torus;
+        window._torus = window.torus
       } else {
-        window.torus = {};
+        window.torus = {}
       }
     </script>
-    <script src="<%= BASE_URL %>js/gapi.js" crossorigin="anonymous" integrity="sha384-m0UrUl+xP4P/jooB7I71mIMQv8pSXopfvry4S8m1KJZTKCLv5wVy1h9JIADN2v8T"></script>
+    <script
+      src="<%= BASE_URL %>js/gapi.js"
+      crossorigin="anonymous"
+      integrity="sha384-m0UrUl+xP4P/jooB7I71mIMQv8pSXopfvry4S8m1KJZTKCLv5wVy1h9JIADN2v8T"
+    ></script>
+    <script crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v4.0"></script>
     <meta name="google-signin-client_id" content="876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" />
   </head>
 
-  <body class="theme-light" data-spy="scroll" data-target="#mainnav" data-offset="80">
+  <body data-spy="scroll" data-target="#mainnav" data-offset="80">
     <noscript>
       <strong>We're sorry but app doesn't work properly without javascript enabled. Please enable it to continue.</strong>
     </noscript>

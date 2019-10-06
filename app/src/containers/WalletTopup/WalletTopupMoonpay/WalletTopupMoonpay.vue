@@ -4,7 +4,7 @@
       Moonpay is a secure way to buy cryptocurrency with your credit card. Start by entering a amount below to get a quote before making a purchase
     </span>
 
-    <div style="height:500px; width:100%">
+    <div class="mt-4" style="height:500px; width:100%">
       <iframe v-if="loaded" :src="url" height="100%" width="100%" style="border:none"></iframe>
     </div>
   </v-layout>
@@ -12,6 +12,7 @@
 
 <script>
 import config from '../../../config'
+import { GOOGLE } from '../../../utils/enums'
 const { moonpayLiveAPIKEY, moonpayHost } = config
 
 export default {
@@ -49,6 +50,7 @@ export default {
      * iframe init for moon pay.
      */
     this.redirectURL = 'javascript:window.top.location.href="' + window.location.origin + '/wallet/history"'
+    const userEmailString = this.$store.state.userInfo.email !== '' ? '&email=' + this.$store.state.userInfo.email : ''
     this.url =
       this.path +
       'apiKey=' +
@@ -57,12 +59,13 @@ export default {
       this.currencyCode +
       '&walletAddress=' +
       this.$store.state.selectedAddress +
-      '&email=' +
-      this.$store.state.userInfo.email +
+      userEmailString +
       '&redirectURL=' +
       this.redirectURL +
       '&colorCode=' +
-      encodeURIComponent(this.$vuetify.theme.themes.light.primary)
+      encodeURIComponent(this.$vuetify.theme.themes.light.primary) +
+      '&externalCustomerId=' +
+      this.$store.state.selectedAddress
 
     this.loaded = true
     // log.info('this is', this)

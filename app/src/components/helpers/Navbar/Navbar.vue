@@ -1,6 +1,6 @@
 <template>
-  <nav class="container header-container py-0 px-2">
-    <v-app-bar :class="$vuetify.breakpoint.xsOnly ? '' : ''">
+  <nav class="header-container pa-0">
+    <v-app-bar class="container" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : 'px-2 py-0'">
       <router-link class="hidden-xs-only" :to="{ name: 'walletHome' }">
         <img
           class="home-link"
@@ -57,11 +57,11 @@ export default {
       drawer: false,
       selectedItem: 'home',
       headerItems: [
-        { name: 'home', display: 'Home', route: '/wallet/home', icon: 'settings.svg' },
-        { name: 'transfer', display: 'Transfer', route: '/wallet/transfer', icon: 'transaction.svg' },
-        { name: 'top-up', display: 'Top up', route: '/wallet/topup', icon: 'topup.svg' },
-        { name: 'activity', display: 'Activity', route: '/wallet/history', icon: 'activities.svg' },
-        { name: 'settings', display: 'Settings', route: '/wallet/settings', icon: 'settings.svg' }
+        { name: 'home', display: 'Home', route: '/wallet/home', icon: 'settings' },
+        { name: 'transfer', display: 'Transfer', route: '/wallet/transfer', icon: 'transaction' },
+        { name: 'top-up', display: 'Top up', route: '/wallet/topup', icon: 'topup' },
+        { name: 'activity', display: 'Activity', route: '/wallet/history', icon: 'activities' },
+        { name: 'settings', display: 'Settings', route: '/wallet/settings', icon: 'settings' }
       ]
     }
   },

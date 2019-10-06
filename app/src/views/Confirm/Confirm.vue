@@ -1,19 +1,18 @@
 <template>
   <v-container py-6 px-0 class="confirm-container">
     <template v-if="type === 'transaction'">
-      <v-layout wrap align-center mx-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
-        <div class="torus_text--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">{{ header }}</div>
-      </v-layout>
-      <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
-        <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
-        <span class="caption ml-1 torus_text--text text--lighten-3 text-capitalize">{{ selectedNetwork }}</span>
+      <v-layout wrap align-center mx-6 mb-6>
+        <v-flex xs12 class="text_1--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">{{ header }}</v-flex>
+        <v-flex xs12>
+          <network-display></network-display>
+        </v-flex>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-4 mx-6>
           <div class="subtitle-2">Amount</div>
           <v-divider></v-divider>
           <div>
-            <span class="subtitle-2 float-left grey--text">{{ displayAmountTo }}</span>
+            <span class="subtitle-2 float-left text_2--text">{{ displayAmountTo }}</span>
             <span class="subtitle-2 float-right">{{ displayAmountValue }}</span>
           </div>
           <div class="caption float-right clearfix">{{ displayAmountConverted }}</div>
@@ -44,26 +43,26 @@
             <template v-slot:activator="{ on }">
               <div id="more-details-link" class="subtitle-2 float-right primary--text mx-6" v-on="on">More Details</div>
             </template>
-            <v-card class="pa-4 more-details-container" color="background_2">
-              <v-card-text class="torus_text--text">
+            <v-card class="pa-4 more-details-container" :color="$vuetify.theme.dark ? 'background lighten-3' : ''">
+              <v-card-text class="text_1--text">
                 <v-layout wrap>
                   <v-flex xs4 sm2>
                     Rate
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex id="currency-rate" xs8 sm10 class="torus_text--text text--lighten-4">{{ getCurrencyRate }}</v-flex>
+                  <v-flex id="currency-rate" xs8 sm10 class="text_2--text">{{ getCurrencyRate }}</v-flex>
                   <v-flex xs4 sm2>
                     Network
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex xs8 sm10 class="torus_text--text text--lighten-4">
+                  <v-flex xs8 sm10 class="text_2--text">
                     <span id="network" class="text-capitalize">{{ networkName }}</span>
                   </v-flex>
                   <v-flex xs4 sm2>
                     Type
                     <span class="float-right mr-4">:</span>
                   </v-flex>
-                  <v-flex id="type" xs8 sm10 class="torus_text--text text--lighten-4">{{ header }}</v-flex>
+                  <v-flex id="type" xs8 sm10 class="text_2--text">{{ header }}</v-flex>
                   <v-flex xs2 v-if="txData || txDataParams !== ''">
                     Data
                     <span class="float-right mr-4">:</span>
@@ -105,7 +104,7 @@
         </v-flex>
         <v-layout px-6>
           <v-flex xs6>
-            <v-btn block text large class="grey--text" @click="triggerDeny">Cancel</v-btn>
+            <v-btn block text large class="text_2--text" @click="triggerDeny">Cancel</v-btn>
           </v-flex>
           <v-flex xs6>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
@@ -130,18 +129,17 @@
     </template>
 
     <template v-if="type === 'message'">
-      <v-layout align-center mx-6 mb-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
-        <div class="text-black font-weight-bold headline float-left">Permissions</div>
-      </v-layout>
-      <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
-        <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
-        <span class="caption ml-1 torus_text--text text--lighten-3 text-capitalize">{{ selectedNetwork }}</span>
+      <v-layout wrap align-center mx-6 mb-6>
+        <v-flex xs12 class="text_1--text font-weight-bold headline float-left">Permissions</v-flex>
+        <v-flex xs12>
+          <network-display></network-display>
+        </v-flex>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-6 mx-6>
-          <div class="subtitle-2 grey--text">Request from:</div>
+          <div class="subtitle-2 text_2--text">Request from:</div>
 
-          <v-card flat class="grey lighten-3">
+          <v-card flat class="background lighten-3">
             <v-card-text>
               <div class="subtitle-2 primary--text">{{ origin }}</div>
             </v-card-text>
@@ -156,34 +154,46 @@
                 <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
               </v-list-item-icon>
               <v-list-item-content class="pa-1">
-                <div class="caption torus_text--text text--lighten-3">This application is requesting for your digital signature.</div>
+                <div class="caption text_2--text">This application is requesting for your digital signature.</div>
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="pa-0">
-              <v-list-item-content flat class="pa-1 grey lighten-3">
-                <v-card flat color="background_3" class="body-2 text-left pa-2 ma-3 word-break">
-                  <div v-if="messageType === 'normal'">{{ message }}</div>
-                  <div v-else-if="messageType === 'typed'" v-for="typedMessage in typedMessages" :key="typedMessage.name">
-                    Type: {{ typedMessage.type }}
-                    <br />
-                    Name: {{ typedMessage.name }}
-                    <br />
-                    Message: {{ typedMessage.value }}
-                    <br />
-                  </div>
+              <v-list-item-content flat class="pa-1 background lighten-3">
+                <v-card flat class="body-2 text-left pa-2 word-break typedMessageBox">
+                  <v-expansion-panels v-if="typeof message === 'string'">
+                    <p :class="$vuetify.theme.dark ? 'text_1--text' : 'text_2--text'" style="text-align:left">{{ message }}</p>
+                  </v-expansion-panels>
+
+                  <v-expansion-panels v-else-if="!Array.isArray(typedMessages)">
+                    <v-expansion-panel v-for="(value, index) in typedMessages" :key="index">
+                      <v-expansion-panel-header>{{ index }}</v-expansion-panel-header>
+                      <v-expansion-panel-content>
+                        <vue-json-pretty :path="'res'" :data="value" :showline="true" :deep="5"></vue-json-pretty>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
+
+                  <v-expansion-panels v-else-if="Array.isArray(typedMessages)">
+                    <v-expansion-panel>
+                      <v-expansion-panel-header>data</v-expansion-panel-header>
+                      <v-expansion-panel-content v-for="value in typedMessages" :key="value">
+                        <vue-json-pretty :path="'res'" :data="value" :showline="true" :deep="5"></vue-json-pretty>
+                      </v-expansion-panel-content>
+                    </v-expansion-panel>
+                  </v-expansion-panels>
                 </v-card>
               </v-list-item-content>
             </v-list-item>
           </v-list>
         </v-flex>
         <!-- <v-flex xs12 mt-12 mb-5 mx-7>
-          <div class="caption torus_text--text text--lighten-3">
+          <div class="caption text_2--text">
             Note : You may re-adjust the dapp permission later under ‘Settings > Dapp Permission’
           </div>
         </v-flex>-->
         <v-layout px-6 mx-3>
           <v-flex xs6>
-            <v-btn block text large class="grey--text" @click="triggerDeny">Cancel</v-btn>
+            <v-btn block text large class="text_2--text" @click="triggerDeny">Cancel</v-btn>
           </v-flex>
           <v-flex xs6>
             <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">Confirm</v-btn>
@@ -199,11 +209,13 @@
 
 <script>
 import { mapActions } from 'vuex' // Maybe dispatch a bc to show popup from that instance
+import VueJsonPretty from 'vue-json-pretty'
 import BroadcastChannel from 'broadcast-channel'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
 import PageLoader from '../../components/helpers/PageLoader'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
+import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import torus from '../../torus'
 import {
   significantDigits,
@@ -238,7 +250,9 @@ export default {
   components: {
     PageLoader,
     TransactionSpeedSelect,
-    TransferConfirm
+    TransferConfirm,
+    VueJsonPretty,
+    NetworkDisplay
   },
   data() {
     return {
@@ -281,6 +295,7 @@ export default {
       canShowError: false,
       selectedSpeed: '',
       speed: '',
+      typedMessages: {},
       id: 0,
       networks: [
         ...Object.values(SUPPORTED_NETWORK_TYPES),
@@ -293,14 +308,6 @@ export default {
     }
   },
   computed: {
-    selectedNetwork() {
-      let finalNetwork = ''
-      finalNetwork =
-        !this.$store.state.networkType.networkName || this.$store.state.networkType.networkName === ''
-          ? this.$store.state.networkType.host
-          : this.$store.state.networkType.networkName
-      return finalNetwork
-    },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
     },
@@ -555,7 +562,14 @@ export default {
       log.info(txParams)
       this.origin = url.hostname // origin of tx: website url
       if (type === 'message') {
-        const { message, typedMessages } = msgParams.msgParams || {}
+        var { message, typedMessages } = msgParams.msgParams || {}
+        if (typedMessages) {
+          try {
+            typedMessages = JSON.parse(typedMessages)
+          } catch (e) {
+            log.error(e)
+          }
+        }
         const { id } = msgParams || {}
         this.id = id
         this.message = message
