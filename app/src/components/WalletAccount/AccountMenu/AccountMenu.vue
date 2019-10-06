@@ -118,7 +118,7 @@ export default {
   },
   computed: {
     userEmail() {
-      return this.userInfo.email
+      return this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId
     },
     userName() {
       return this.userInfo.name
