@@ -191,6 +191,7 @@ export default class TorusController extends EventEmitter {
       processEthSignMessage: this.newUnsignedMessage.bind(this),
       processTypedMessage: this.newUnsignedTypedMessage.bind(this),
       processTypedMessageV3: this.newUnsignedTypedMessage.bind(this),
+      processTypedMessageV4: this.newUnsignedTypedMessage.bind(this),
       processPersonalMessage: this.newUnsignedPersonalMessage.bind(this),
       getPendingNonce: this.getPendingNonce.bind(this)
     }
@@ -524,10 +525,11 @@ export default class TorusController extends EventEmitter {
   async signTypedMessage(msgParams) {
     log.info('MetaMaskController - eth_signTypedData')
     const msgId = msgParams.metamaskId
+    const version = msgParams.version
     try {
       const cleanMsgParams = await this.typedMessageManager.approveMessage(msgParams)
       const address = toChecksumAddress(sigUtil.normalize(cleanMsgParams.from))
-      let signature = await this.keyringController.signTypedData(address, cleanMsgParams.data)
+      let signature = await this.keyringController.signTypedData(address, cleanMsgParams.data, version)
       this.typedMessageManager.setMsgStatusSigned(msgId, signature)
       return this.getState()
     } catch (error) {

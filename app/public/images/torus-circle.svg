@@ -1,0 +1,21 @@
+<svg width="70" height="70" xmlns="http://www.w3.org/2000/svg">
+ <!-- Generator: Sketch 58 (84663) - https://sketch.com -->
+
+ <title>Group 8</title>
+ <desc>Created with Sketch.</desc>
+ <g>
+  <title>background</title>
+  <rect fill="none" id="canvas_background" height="72" width="72" y="-1" x="-1"/>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <g fill-rule="evenodd" fill="none" id="Invision-4">
+   <g stroke="null" id="Group-8">
+    <g stroke="null" fill="#FFFFFF" id="Group-10">
+     <circle stroke="null" r="33.203866" cy="35.203866" cx="35.203866" id="Oval"/>
+    </g>
+    <path stroke="null" fill="#0364FF" id="Combined-Shape" d="m37.417458,19.708729l0,9.96116l0,21.029115l-9.96116,0l0,-21.029115l-7.747569,0l0,-9.96116l17.708729,0zm7.194171,0c2.750697,0 4.98058,2.229883 4.98058,4.98058c0,2.750697 -2.229883,4.98058 -4.98058,4.98058c-2.750697,0 -4.98058,-2.229883 -4.98058,-4.98058c0,-2.750697 2.229883,-4.98058 4.98058,-4.98058z"/>
+   </g>
+  </g>
+ </g>
+</svg>

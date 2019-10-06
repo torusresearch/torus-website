@@ -31,22 +31,56 @@
             <span class="subtitle-2">Account Balance</span>
             <div>
               <span id="account-balance" class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
-              <span class="caption torus_text--text text--lighten-4">{{ currencyBalanceDisplay }}</span>
+              <span class="caption text_2--text">{{ currencyBalanceDisplay }}</span>
             </div>
-            <div class="caption font-weight-regular torus_text--text text--lighten-4">{{ selectedItem.currencyRateText }}</div>
+            <div class="caption font-weight-regular text_2--text">{{ selectedItem.currencyRateText }}</div>
           </v-flex>
         </v-layout>
         <v-layout wrap>
-          <v-flex xs12 px-4 sm6 class="recipient-address-container">
-            <span class="subtitle-2">Recipient Address</span>
-            <v-text-field
-              id="recipient-address"
-              v-model="toAddress"
-              placeholder="ETH Address / Google Address here"
-              required
-              :rules="[rules.toAddress, rules.required]"
-              outlined
-            ></v-text-field>
+          <v-flex xs12 sm6 px-4>
+            <v-layout wrap>
+              <v-flex xs12><span class="subtitle-2">Transfer Mode</span></v-flex>
+              <v-flex xs12 sm6 pr-1 class="recipient-verifier-container">
+                <v-select
+                  outlined
+                  append-icon="$vuetify.icons.select"
+                  :items="verifierOptions"
+                  item-text="name"
+                  item-value="value"
+                  v-model="selectedVerifier"
+                  @change="$refs.form.validate()"
+                ></v-select>
+              </v-flex>
+              <v-flex xs12 sm6 pl-1 class="recipient-address-container">
+                <v-text-field
+                  class="recipient-address"
+                  id="recipient-address"
+                  ref="recipientAddress"
+                  v-model="toAddress"
+                  :placeholder="verifierPlaceholder"
+                  required
+                  :rules="[toAddressRule, rules.required]"
+                  outlined
+                  @keyup="correctQrCode = true"
+                >
+                  <template v-slot:append>
+                    <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()">
+                      <v-icon small>$vuetify.icons.scan</v-icon>
+                    </v-btn>
+                  </template>
+                </v-text-field>
+                <qrcode-capture @decode="onDecodeQr" ref="captureQr" style="display: none" />
+                <div v-if="!correctQrCode" class="v-text-field__details torus-hint">
+                  <div class="v-messages">
+                    <div class="v-messages__wrapper">
+                      <div class="v-messages__message d-flex error--text px-3">
+                        Incorrect QR Code
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </v-flex>
+            </v-layout>
           </v-flex>
         </v-layout>
         <v-layout wrap>
@@ -73,7 +107,7 @@
                   id="coin-mode-btn"
                   :outlined="!toggle_exclusive"
                   :text="!!toggle_exclusive"
-                  :color="!toggle_exclusive ? 'primary' : 'grey'"
+                  :color="!toggle_exclusive ? 'primary' : 'text_2'"
                   @click="changeSelectedToCurrency(0)"
                 >
                   {{ selectedItem && selectedItem.symbol }}
@@ -83,7 +117,7 @@
                   id="currency-mode-btn"
                   :outlined="!!toggle_exclusive"
                   :text="!toggle_exclusive"
-                  :color="toggle_exclusive ? 'primary' : 'grey'"
+                  :color="toggle_exclusive ? 'primary' : 'text_2'"
                   @click="changeSelectedToCurrency(1)"
                 >
                   {{ selectedCurrency }}
@@ -150,14 +184,15 @@
 </template>
 
 <script>
+import { QrcodeCapture } from 'vue-qrcode-reader'
 import torus from '../../torus'
-import { significantDigits, getRandomNumber } from '../../utils/utils'
+import { significantDigits, getRandomNumber, getEtherScanHashLink } from '../../utils/utils'
 import config from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
-import { get } from '../../utils/httpHelpers'
+import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
-import { WALLET_HEADERS_TRANSFER } from '../../utils/enums'
+import { WALLET_HEADERS_TRANSFER, GOOGLE, REDDIT, DISCORD, ETH } from '../../utils/enums'
 
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
@@ -169,7 +204,8 @@ export default {
   props: ['address'],
   components: {
     TransactionSpeedSelect,
-    MessageModal
+    MessageModal,
+    QrcodeCapture
   },
   data() {
     return {
@@ -189,8 +225,27 @@ export default {
       timeTaken: '',
       convertedTotalCost: '',
       resetSpeed: false,
+      correctQrCode: true,
+      selectedVerifier: ETH,
+      verifierOptions: [
+        {
+          name: 'ETH Address',
+          value: ETH
+        },
+        {
+          name: 'Google Email',
+          value: GOOGLE
+        },
+        {
+          name: 'Reddit ID',
+          value: REDDIT
+        },
+        {
+          name: 'Discord ID',
+          value: DISCORD
+        }
+      ],
       rules: {
-        toAddress: value => torus.web3.utils.isAddress(value) || /\S+@\S+\.\S+/.test(value) || 'Invalid ETH or Email Address',
         required: value => !!value || 'Required'
       },
       showModalMessage: false,
@@ -256,6 +311,9 @@ export default {
     },
     totalCostSuffix() {
       return this.selectedTokenAddress === '0x' ? (this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency) : ''
+    },
+    verifierPlaceholder() {
+      return `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
     }
   },
   watch: {
@@ -277,13 +335,33 @@ export default {
     }
   },
   methods: {
-    moreThanZero: function(value) {
+    sendEmail(typeToken, transactionHash) {
+      if (/\S+@\S+\.\S+/.test(this.toAddress)) {
+        const etherscanLink = getEtherScanHashLink(transactionHash, this.$store.state.networkType.host)
+        const emailObject = {
+          from_name: this.$store.state.userInfo.name,
+          to_email: this.toAddress,
+          total_amount: this.amount,
+          token: typeToken,
+          etherscanLink: etherscanLink
+        }
+        post(config.api + '/transaction/sendemail', emailObject, {
+          headers: {
+            Authorization: 'Bearer ' + this.$store.state.jwtToken,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        })
+          .then(response => log.info('email response', response))
+          .catch(err => log.error(err))
+      }
+    },
+    moreThanZero(value) {
       if (this.selectedItem) {
         return parseFloat(value) > 0 || 'Invalid amount'
       }
       return ''
     },
-    lesserThan: function(value) {
+    lesserThan(value) {
       if (this.selectedItem) {
         let amount = value
         if (this.toggle_exclusive === 1) {
@@ -292,6 +370,19 @@ export default {
         return parseFloat(amount) <= this.selectedItem.computedBalance || 'Insufficient balance for transaction'
       }
       return ''
+    },
+    toAddressRule(value) {
+      if (this.selectedVerifier === ETH) {
+        return torus.web3.utils.isAddress(value) || 'Invalid ETH Address'
+      } else if (this.selectedVerifier === GOOGLE) {
+        return /\S+@\S+\.\S+/.test(value) || 'Invalid Email Address'
+      } else if (this.selectedVerifier === REDDIT) {
+        return (value.length <= 20 && value.length >= 3) || 'ID should be 3-20 characters long'
+      } else if (this.selectedVerifier === DISCORD) {
+        return /^[0-9]*$/.test(value) || 'ID should contain numbers only'
+      }
+
+      return true
     },
     async calculateGas(toAddress) {
       if (torus.web3.utils.isAddress(toAddress)) {
@@ -369,14 +460,20 @@ export default {
         } else {
           const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
           try {
-            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[endPointNumber], this.toAddress)
+            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[endPointNumber], {
+              verifier: this.selectedVerifier,
+              verifierId: this.toAddress
+            })
           } catch (err) {
             log.error(err)
             let newEndPointNumber = endPointNumber
             while (newEndPointNumber === endPointNumber) {
               newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
             }
-            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], this.toAddress)
+            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], {
+              verifier: this.selectedVerifier,
+              verifierId: this.toAddress
+            })
           }
         }
         this.gas = await this.calculateGas(toAddress)
@@ -406,6 +503,9 @@ export default {
                 }
                 log.error(err)
               } else {
+                // Send email to the user
+                this.sendEmail(this.selectedItem.symbol, transactionHash)
+
                 this.showModalMessage = true
                 this.modalMessageSuccess = true
               }
@@ -429,6 +529,9 @@ export default {
                 }
                 log.error(err)
               } else {
+                // Send email to the user
+                this.sendEmail(this.selectedItem.symbol, transactionHash)
+
                 this.showModalMessage = true
                 this.modalMessageSuccess = true
               }
@@ -511,10 +614,29 @@ export default {
       this.updateTotalCost()
 
       this.resetSpeed = false
+    },
+    onDecodeQr(result) {
+      const qrUrl = new URL(result)
+      const qrParams = new URLSearchParams(qrUrl.search)
+
+      if (qrParams.has('to')) {
+        this.selectedVerifier = ETH
+        this.toAddress = qrParams.get('to')
+        this.correctQrCode = true
+      } else {
+        this.toAddress = ''
+        this.correctQrCode = false
+      }
     }
   },
   created() {
     this.tokenAddress = this.address
+    if (this.$route.query.hasOwnProperty('to')) {
+      this.selectedVerifier = ETH
+      this.toAddress = this.$route.query.to
+    } else {
+      this.toAddress = ''
+    }
   }
 }
 </script>

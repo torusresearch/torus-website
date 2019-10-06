@@ -10,6 +10,7 @@ export default function createMetamaskMiddleware({
   processEthSignMessage,
   processTypedMessage,
   processTypedMessageV3,
+  processTypedMessageV4,
   processPersonalMessage,
   getPendingNonce
 }) {
@@ -25,6 +26,7 @@ export default function createMetamaskMiddleware({
       processEthSignMessage,
       processTypedMessage,
       processTypedMessageV3,
+      processTypedMessageV4,
       processPersonalMessage
     }),
     createPendingNonceMiddleware({ getPendingNonce })

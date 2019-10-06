@@ -4,18 +4,17 @@
       <page-loader />
     </template>
     <template v-else>
-      <v-layout align-center mx-6 :class="selectedNetwork === '' ? 'mb-6' : ''">
-        <div class="text-black font-weight-bold headline float-left">Permission</div>
-      </v-layout>
-      <v-layout align-center mx-6 mb-6 v-if="selectedNetwork != ''">
-        <img :src="require('../../../public/img/icons/network.svg')" width="16" height="16" />
-        <span class="caption ml-1 torus_text--text text--lighten-3 text-capitalize">{{ selectedNetwork }}</span>
+      <v-layout wrap align-center mx-6 mb-6>
+        <v-flex xs12 class="text_1--text font-weight-bold headline float-left">Permission</v-flex>
+        <v-flex xs12>
+          <network-display></network-display>
+        </v-flex>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-2 mx-6>
-          <div class="subtitle-2 grey--text">Request from:</div>
+          <div class="subtitle-2 text_2--text">Request from:</div>
 
-          <v-card flat class="grey lighten-3">
+          <v-card flat class="background lighten-3">
             <v-card-text>
               <div class="subtitle-2 primary--text">{{ origin }}</div>
             </v-card-text>
@@ -30,7 +29,7 @@
                 <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
               </v-list-item-icon>
               <v-list-item-content class="pa-1">
-                <div class="caption torus_text--text text--lighten-3">
+                <div class="caption text_2--text">
                   To change your network to
                   <span class="text-capitalize">{{ type && type === 'rpc' ? `${rpcNetwork.networkName} : ${rpcNetwork.host}` : network.host }}</span>
                 </div>
@@ -41,7 +40,7 @@
 
         <v-layout px-6 mx-3>
           <v-flex xs6>
-            <v-btn block text large class="grey--text" @click="triggerDeny">Cancel</v-btn>
+            <v-btn block text large class="text_2--text" @click="triggerDeny">Cancel</v-btn>
           </v-flex>
           <v-flex xs6>
             <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">Confirm</v-btn>
@@ -55,13 +54,15 @@
 <script>
 import BroadcastChannel from 'broadcast-channel'
 import PageLoader from '../../components/helpers/PageLoader'
+import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import { broadcastChannelOptions } from '../../utils/utils'
 import log from 'loglevel'
 
 export default {
   name: 'confirm',
   components: {
-    PageLoader
+    PageLoader,
+    NetworkDisplay
   },
   data() {
     return {
@@ -70,16 +71,6 @@ export default {
       network: '',
       rpcNetwork: {},
       payload: {}
-    }
-  },
-  computed: {
-    selectedNetwork() {
-      let finalNetwork = ''
-      finalNetwork =
-        !this.$store.state.networkType.networkName || this.$store.state.networkType.networkName === ''
-          ? this.$store.state.networkType.host
-          : this.$store.state.networkType.networkName
-      return finalNetwork
     }
   },
   methods: {

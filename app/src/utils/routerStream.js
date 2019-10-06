@@ -1,6 +1,7 @@
 var Duplex = require('readable-stream').Duplex
 var PassThrough = require('readable-stream').PassThrough
 // var Transform = require('readable-stream').Transform
+const log = require('loglevel')
 
 module.exports = function() {
   var sources = []

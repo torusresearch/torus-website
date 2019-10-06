@@ -19,8 +19,8 @@ function notifyUser(url) {
   } else {
     //log.info(url)
     log.info('notification permission granted.')
-    var notification = new Notification('Confirmed trasaction', {
-      body: 'View of etherscan'
+    var notification = new Notification('Confirmed Transaction', {
+      body: 'View on Etherscan'
     })
 
     notification.onclick = function() {

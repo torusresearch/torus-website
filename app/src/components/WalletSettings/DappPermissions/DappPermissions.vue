@@ -1,6 +1,6 @@
 <template>
   <v-card class="dapp-permisson-container">
-    <v-card-text class="torus_text--text">
+    <v-card-text class="text_1--text">
       <v-container>
         <v-layout mt-4 wrap class="wallet-dapp-permission">
           <v-flex xs12 px-4 class="title-container mb-4">
