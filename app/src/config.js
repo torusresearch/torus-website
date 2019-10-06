@@ -1,8 +1,10 @@
 const baseRoute =
-  process.env.VUE_APP_TORUS_BUILD_ENV === 'production' ||
-  process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ||
-  process.env.VUE_APP_TORUS_BUILD_ENV === 'testing'
-    ? process.env.BASE_URL
+  process.env.VUE_APP_TORUS_BUILD_ENV === 'production'
+    ? `https://app.tor.us${process.env.BASE_URL}`
+    : process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
+    ? `https://staging.tor.us${process.env.BASE_URL}`
+    : process.env.VUE_APP_TORUS_BUILD_ENV === 'testing'
+    ? `https://testing.tor.us${process.env.BASE_URL}`
     : 'https://localhost:3000/'
 
 const redirect_uri = `${baseRoute}redirect`
