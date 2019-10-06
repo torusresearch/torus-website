@@ -27,10 +27,10 @@ export default {
   coindirectLiveHost: 'https://business.coindirect.com/buy?',
   coindirectLiveMerchantID: 'b08d7b18-da82-4dfc-990f-313ea26ac66b',
   GOOGLE_CLIENT_ID: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com',
-  FACEBOOK_APP_ID: '2554219104599979',
-  TWITCH_CLIENT_ID: 'tfppratfiloo53g1x133ofa4rc29px',
+  FACEBOOK_APP_ID: '2131832573696080',
+  TWITCH_CLIENT_ID: 'm6d2yd3zipy6cbqmzrb5v8k56twpsj',
   REDDIT_CLIENT_ID: 'dcQJYPaG481XyQ',
-  DISCORD_CLIENT_ID: '628482163100352534',
+  DISCORD_CLIENT_ID: '630308572013527060',
   redirect_uri: redirect_uri,
   // api: 'http://localhost:2020'
   api: 'https://api.tor.us'
