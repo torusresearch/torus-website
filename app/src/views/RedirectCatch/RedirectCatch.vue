@@ -35,7 +35,7 @@ export default {
       // error: "access_denied"
       // error_description: "The user denied you access"
       // state: "eyJpbnN0YW5jZUlkIjoiTjFhRHNmaGN4dGNzc1dhc2pPV2tzSThPclI2eHBIIiwidmVyaWZpZXIiOiJ0d2l0Y2gifQ=="
-      console.log(hashParams, queryParams)
+      log.info(hashParams, queryParams)
       let instanceParams = {}
       let error = ''
       if (Object.keys(hashParams).length > 0 && hashParams.state) {

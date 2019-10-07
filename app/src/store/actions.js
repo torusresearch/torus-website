@@ -511,7 +511,6 @@ export default {
                 Authorization: `Bearer ${accessToken}`
               }
             })
-            console.log(userInfo, ev.data)
             const { id, avatar, email, username: name, discriminator } = userInfo || {}
             const profileImage =
               avatar === null

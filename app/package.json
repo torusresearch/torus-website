@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -85,10 +85,10 @@
     "xtend": "^4.0.2"
   },
   "devDependencies": {
-    "@toruslabs/torus-embed": "^0.2.0",
+    "@toruslabs/torus-embed": "^0.2.2",
     "@vue/cli-plugin-babel": "^3.11.0",
     "@vue/cli-plugin-eslint": "^3.11.0",
-    "@vue/cli-plugin-pwa": "^4.0.0-rc.6",
+    "@vue/cli-plugin-pwa": "^4.0.0-rc.7",
     "@vue/cli-service": "^3.11.0",
     "@vue/eslint-config-standard": "^4.0.0",
     "babel-eslint": "^10.0.3",
