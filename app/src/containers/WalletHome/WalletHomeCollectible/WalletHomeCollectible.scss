@@ -1,11 +1,39 @@
 .asset {
+  cursor: pointer;
+
+  &.v-card--link:focus:before {
+    opacity: 0;
+  }
+
+  .v-card__title {
+    word-break: break-word;
+    text-align: center;
+  }
+
   .asset-details {
     font-size: 10px;
     line-height: 1.2em;
   }
+
+  .asset-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .asset-more {
+    font-size: 10px;
+    line-height: 1.8em;
+  }
+
+  .v-divider--vertical.v-divider--inset {
+    margin-top: 0;
+  }
   
   &.asset--new {
-    ::v-deep .v-image__image {
+    position: relative;
+    ::v-deep .v-image__image, 
+    .v-card__actions {
       opacity: 0.3;
     }
     
@@ -15,10 +43,29 @@
       width: 45px;
       height: 45px;
       line-height: 36px;
+      margin: auto;
+
+      .v-icon {
+        margin-top: 1px;
+        margin-left: -1px;
+      }
     }
 
     .asset-text {
       opacity: 0.2;
     }
+
+    .asset__new-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+    }
   }
+}
+
+::v-deep .v-breadcrumbs .v-breadcrumbs__divider {
+  padding-left: 4px;
+  padding-right: 4px;
 }

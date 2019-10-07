@@ -1,1 +1,1 @@
-export { default } from './WalletTopupHome'
+export { default } from './WalletHome'
