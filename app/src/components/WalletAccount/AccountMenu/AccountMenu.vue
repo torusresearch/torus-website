@@ -98,10 +98,10 @@
 
 <script>
 import BroadcastChannel from 'broadcast-channel'
-import { significantDigits, addressSlicer } from '../../../utils/utils'
+import { significantDigits, addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import AccountImport from '../AccountImport'
-import { broadcastChannelOptions } from '../../../utils/utils'
+import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../../utils/enums'
 import torus from '../../../torus'
 
 export default {
@@ -118,7 +118,18 @@ export default {
   },
   computed: {
     userEmail() {
-      return this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId
+      let verifierLabel = ''
+      switch (this.userInfo.verifier) {
+        case FACEBOOK:
+        case REDDIT:
+        case TWITCH:
+        case DISCORD:
+          verifierLabel = this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1) + ': '
+          break
+        case GOOGLE:
+          verifierLabel = 'Gmail: '
+      }
+      return verifierLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
     },
     userName() {
       return this.userInfo.name

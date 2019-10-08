@@ -40,7 +40,7 @@
           <v-flex xs12 sm6 px-4>
             <v-layout wrap>
               <v-flex xs12><span class="subtitle-2">Transfer Mode</span></v-flex>
-              <v-flex xs12 sm6 pr-1 class="recipient-verifier-container">
+              <v-flex xs12 sm6 class="recipient-verifier-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
                 <v-select
                   outlined
                   append-icon="$vuetify.icons.select"
@@ -51,7 +51,7 @@
                   @change="$refs.form.validate()"
                 ></v-select>
               </v-flex>
-              <v-flex xs12 sm6 pl-1 class="recipient-address-container">
+              <v-flex xs12 sm6 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
                 <v-text-field
                   class="recipient-address"
                   id="recipient-address"
