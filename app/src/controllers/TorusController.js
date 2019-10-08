@@ -9,9 +9,6 @@ const RecentBlocksController = require('./RecentBlocksController').default
 const CurrencyController = require('./CurrencyController').default
 const DetectTokensController = require('./DetectTokensController').default
 const TokenRatesController = require('./TokenRatesController').default
-const AssetDetectionController = require('./AssetsDetectionController').default
-const AssetController = require('./AssetsController').default
-const AssetContractController = require('./AssetsContractController').default
 const toChecksumAddress = require('../utils/toChecksumAddress').default
 const BN = require('ethereumjs-util').BN
 const GWEI_BN = new BN('1000000000')
@@ -140,23 +137,6 @@ export default class TorusController extends EventEmitter {
           this.platform.showTransactionNotification(txMeta) // TODO: implement platform specific handlers
         }
       }
-    })
-
-    // Asset controllers
-    this.assetController = new AssetController({
-      network: this.networkController,
-      provider: this.provider
-    })
-
-    this.assetContractController = new AssetContractController({
-      provider: this.provider
-    })
-
-    this.assetDetectionController = new AssetDetectionController({
-      network: this.networkController,
-      provider: this.provider,
-      assetController: this.assetController,
-      assetContractController: this.assetContractController
     })
 
     this.networkController.lookupNetwork()
@@ -331,9 +311,7 @@ export default class TorusController extends EventEmitter {
   }
 
   setSelectedAccount(address) {
-    log.info('setselectedaccount called from torus controller')
     this.detectTokensController.startTokenDetection(address)
-    this.assetDetectionController.poll(address)
   }
 
   /**

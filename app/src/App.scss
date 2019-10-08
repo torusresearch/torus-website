@@ -3,7 +3,8 @@
   // Input Related Styles
   input::placeholder {
     color: var(--v-text_2-base) !important;
-    opacity: 1;
+    font-size: 14px;	
+    opacity: 0.7;
   }
 
   input:-webkit-autofill,
@@ -19,6 +20,10 @@
     -webkit-text-fill-color: var(--v-text_1-base);
     -webkit-box-shadow: 0 0 0px 1000px var(--v-background_body_1-base) inset;
     transition: background-color 5000s ease-in-out 0s;
+  }
+
+  .v-input {
+    font-size: 14px;
   }
 
   .v-input__slot {
@@ -56,6 +61,13 @@
   
   .v-text-field--outlined fieldset {
     border-color: var(--v-text_2-base);
+  }
+
+  /* Override Max widths */
+  @media (min-width: 1904px) {
+    .container {
+      max-width: 1264px;
+    }
   }
 }
 

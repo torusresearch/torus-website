@@ -4,6 +4,7 @@ import store from './store'
 import Popup from './views/Popup'
 import ProviderChange from './views/ProviderChange'
 import UserInfoRequest from './views/UserInfoRequest'
+import RedirectCatch from './views/RedirectCatch'
 import Login from './views/Login'
 import Confirm from './views/Confirm'
 import Wallet from './views/Wallet'
@@ -51,6 +52,12 @@ const router = new Router({
       path: '/popup',
       name: 'popup',
       component: Popup,
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/redirect',
+      name: 'redirect',
+      component: RedirectCatch,
       meta: { requiresAuth: false }
     },
     {

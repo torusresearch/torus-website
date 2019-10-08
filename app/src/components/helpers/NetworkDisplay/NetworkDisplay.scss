@@ -1,0 +1,40 @@
+.v-chip.network-chip {
+  height: 20px;
+  background: #FFE9B3;
+
+  &.network-chip--mainnet {
+    background: #CDE0FF;
+  }
+
+  &.network-chip--rinkeby {
+    background: #CAF1FE;
+  }
+
+  &.network-chip--kovan {
+    background: #B7F7E9;
+  }
+
+  &.network-chip--ropsten {
+    background: #FFD9F8;
+  }
+
+  &.network-chip--goerli {
+    background: #FFE1D4;
+  }
+
+  &.network-chip--rpc {
+    background: #C8F8C1;
+  }
+
+  &.network-chip--matic {
+    background: #EFE2FF;
+  }
+}
+
+
+
+
+
+
+
+

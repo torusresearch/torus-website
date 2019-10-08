@@ -72,6 +72,7 @@
 <script>
 import { setInterval, clearInterval } from 'timers'
 import { significantDigits, formatCurrencyNumber } from '../../../utils/utils'
+import log from 'loglevel'
 const MAX_ORDER_VALUE = 40
 const MIN_ORDER_VALUE = 5
 var widget
@@ -119,15 +120,15 @@ export default {
         widget.on('close', function(e) {
           // the widget closed before completing the process
           if (e.error) {
-            console.log('there was a problem: ', e.error)
+            log.error('there was a problem: ', e.error)
           } else {
-            console.log('the customer closed the widget')
+            log.error('the customer closed the widget')
           }
         })
 
         widget.on('complete', function(e) {
           // onboarding was completed successfully!
-          console.log(e, 'completed')
+          log.info(e, 'completed')
         })
         widget.open()
       }

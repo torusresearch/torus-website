@@ -2,12 +2,15 @@ import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, USER_INFO_REQUEST_NEW, THE
 
 const initialState = {
   userInfo: {
+    name: '', // first + last name
+    profileImage: '', // image url
     email: '',
-    name: '',
-    profileImage: ''
+    verifier: '', // enum like GOOGLE
+    verifierId: '', // usually email or facebook id
+    verifierParams: {} // general params
   },
-  userInfoAccess: USER_INFO_REQUEST_NEW,
   idToken: '',
+  userInfoAccess: USER_INFO_REQUEST_NEW,
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
   selectedAddress: '',

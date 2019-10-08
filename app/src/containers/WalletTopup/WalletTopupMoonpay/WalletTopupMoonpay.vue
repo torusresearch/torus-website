@@ -12,6 +12,7 @@
 
 <script>
 import config from '../../../config'
+import { GOOGLE } from '../../../utils/enums'
 const { moonpayLiveAPIKEY, moonpayHost } = config
 
 export default {
@@ -49,6 +50,7 @@ export default {
      * iframe init for moon pay.
      */
     this.redirectURL = 'javascript:window.top.location.href="' + window.location.origin + '/wallet/history"'
+    const userEmailString = this.$store.state.userInfo.email !== '' ? '&email=' + this.$store.state.userInfo.email : ''
     this.url =
       this.path +
       'apiKey=' +
@@ -57,8 +59,7 @@ export default {
       this.currencyCode +
       '&walletAddress=' +
       this.$store.state.selectedAddress +
-      '&email=' +
-      this.$store.state.userInfo.email +
+      userEmailString +
       '&redirectURL=' +
       this.redirectURL +
       '&colorCode=' +
