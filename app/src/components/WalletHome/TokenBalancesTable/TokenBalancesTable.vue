@@ -28,18 +28,82 @@
         </v-card-text>
       </v-card>
     </v-flex>
+
+    <v-flex class="xs12 sm6 px-4 my-4" v-if="!isFreshAccount" style="order: 1">
+      <v-card color="card-shadow">
+        <v-card-text class="pt-1 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-4' : 'pb-5'">
+          <v-layout align-center>
+            <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
+              <div class="body-1 font-weight-bold">Welcome to Torus</div>
+              <div :class="$vuetify.breakpoint.lgAndUp ? 'body-2' : 'caption'">Torus Online Hackathon Live Now!</div>
+              <div>
+                <v-btn color="primary" depressed class="px-12 py-1 mt-4 white--text" href="http://torus4everyone2019.devpost.com" target="_blank">
+                  Register Now
+                </v-btn>
+              </div>
+            </v-flex>
+            <v-flex xs4 pt-4 class="text-right hidden-xs-only">
+              <img :src="require(`../../../../public/images/learn-more.svg`)" style="height: 100px" />
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+      </v-card>
+    </v-flex>
+
+    <!-- <v-flex class="xs12 sm6 px-4 my-4" v-if="!isFreshAccount" style="order: 1">
+      <v-card color="dark card-shadow" white>
+        <v-card-text class="pt-1 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-4' : 'pb-5'">
+          <v-layout align-center>
+            <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
+              <div class="body-1 font-weight-bold">Check out the latest Dapp</div>
+              <div :class="$vuetify.breakpoint.lgAndUp ? 'body-2' : 'caption'">Visit Etheremon and start using ETH.</div>
+              <div>
+                <v-btn color="primary" depressed class="px-12 py-1 mt-4 white--text" href="https://www.etheremon.com" target="_blank">Play Now</v-btn>
+              </div>
+            </v-flex>
+            <v-flex pt-4 class="text-right hidden-xs-only" :class="$vuetify.breakpoint.lgAndUp ? 'xs4' : 'xs3'">
+              <img :src="require(`../../../../public/images/etheremon.png`)" style="width: 100%" />
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+      </v-card>
+    </v-flex> -->
+
+    <v-flex class="xs12 sm6 px-4 my-4" v-if="isFreshAccount" style="order: 1">
+      <PromotionCard title="Welcome to Torus." :image-path="`${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`">
+        <template v-slot:subtitle>
+          <v-dialog v-model="dialog" max-width="700">
+            <template v-slot:activator="{ on }">
+              <div class="body-2'">
+                <a id="learn-more-btn" class="primary--text font-weight-bold" v-on="on">Learn more</a>
+                about your wallet today.
+              </div>
+            </template>
+            <LearnMore @onClose="dialog = false" />
+          </v-dialog>
+        </template>
+      </PromotionCard>
+    </v-flex>
   </v-layout>
 </template>
 
 <script>
+import LearnMore from '../LearnMore'
+import PromotionCard from '../PromotionCard'
+
 export default {
   props: ['tokenBalances', 'selected', 'isFreshAccount'],
   data() {
     return {
       pagination: {
         sortBy: 'name'
-      }
+      },
+      dialog: false
     }
+  },
+  components: {
+    LearnMore,
+    PromotionCard
   },
   computed: {
     showFooter() {
