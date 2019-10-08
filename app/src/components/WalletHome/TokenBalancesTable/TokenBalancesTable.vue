@@ -1,5 +1,5 @@
 <template>
-  <v-layout wrap align-center>
+  <v-layout class="home-cards" wrap align-center>
     <v-flex class="xs12 sm6 px-4 my-4" v-for="(balance, index) in tokenBalances" :key="index" :style="`order: ${index > 0 ? index + 1 : index}`">
       <v-card color="card-shadow pb-6 pt-1">
         <v-card-text class="text_1--text py-6 px-6">
@@ -30,44 +30,13 @@
     </v-flex>
 
     <v-flex class="xs12 sm6 px-4 my-4" v-if="!isFreshAccount" style="order: 1">
-      <v-card color="card-shadow">
-        <v-card-text class="pt-1 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-4' : 'pb-5'">
-          <v-layout align-center>
-            <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
-              <div class="body-1 font-weight-bold">Welcome to Torus</div>
-              <div :class="$vuetify.breakpoint.lgAndUp ? 'body-2' : 'caption'">Torus Online Hackathon Live Now!</div>
-              <div>
-                <v-btn color="primary" depressed class="px-12 py-1 mt-4 white--text" href="http://torus4everyone2019.devpost.com" target="_blank">
-                  Register Now
-                </v-btn>
-              </div>
-            </v-flex>
-            <v-flex xs4 pt-4 class="text-right hidden-xs-only">
-              <img :src="require(`../../../../public/images/learn-more.svg`)" style="height: 100px" />
-            </v-flex>
-          </v-layout>
-        </v-card-text>
-      </v-card>
+      <promotion-card
+        title="Join us at User X Devcon After-Party"
+        :image-path="`ethereum-rainbow.svg`"
+        subtitle="11 Oct 2019 @ osaka"
+        details-link="https://www.eventbrite.sg/e/user-x-devcon-after-party-tickets-74785051101"
+      ></promotion-card>
     </v-flex>
-
-    <!-- <v-flex class="xs12 sm6 px-4 my-4" v-if="!isFreshAccount" style="order: 1">
-      <v-card color="dark card-shadow" white>
-        <v-card-text class="pt-1 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-4' : 'pb-5'">
-          <v-layout align-center>
-            <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
-              <div class="body-1 font-weight-bold">Check out the latest Dapp</div>
-              <div :class="$vuetify.breakpoint.lgAndUp ? 'body-2' : 'caption'">Visit Etheremon and start using ETH.</div>
-              <div>
-                <v-btn color="primary" depressed class="px-12 py-1 mt-4 white--text" href="https://www.etheremon.com" target="_blank">Play Now</v-btn>
-              </div>
-            </v-flex>
-            <v-flex pt-4 class="text-right hidden-xs-only" :class="$vuetify.breakpoint.lgAndUp ? 'xs4' : 'xs3'">
-              <img :src="require(`../../../../public/images/etheremon.png`)" style="width: 100%" />
-            </v-flex>
-          </v-layout>
-        </v-card-text>
-      </v-card>
-    </v-flex> -->
 
     <v-flex class="xs12 sm6 px-4 my-4" v-if="isFreshAccount" style="order: 1">
       <PromotionCard title="Welcome to Torus." :image-path="`${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`">
