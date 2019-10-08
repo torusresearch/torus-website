@@ -157,7 +157,15 @@ hr {
 
 .theme--light.v-sheet, 
 .theme--dark.v-sheet {
-  background: transparent
+  background: transparent;
+}
+
+.theme--light.v-card {
+  background: var(--v-background_body_1-base);
+
+}
+.theme--dark.v-card {
+  background: var(--v-background_body_1-base);
 }
 
 .word-break {
