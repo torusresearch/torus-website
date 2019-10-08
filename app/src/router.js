@@ -8,7 +8,7 @@ import RedirectCatch from './views/RedirectCatch'
 import Login from './views/Login'
 import Confirm from './views/Confirm'
 import Wallet from './views/Wallet'
-import WalletHome from './containers/WalletHome'
+import { WalletHome, WalletHomeMain, WalletHomeCollectible } from './containers/WalletHome'
 import WalletHistory from './containers/WalletHistory'
 import WalletSettings from './containers/WalletSettings'
 import WalletTransfer from './containers/WalletTransfer'
@@ -80,14 +80,28 @@ const router = new Router({
       component: Wallet,
       children: [
         {
-          path: '',
+          path: '/',
           name: 'walletDefault',
-          component: WalletHome
+          component: WalletHome,
+          redirect: { name: 'walletHomeMain' }
         },
         {
           path: 'home',
           name: 'walletHome',
-          component: WalletHome
+          component: WalletHome,
+          redirect: { name: 'walletHomeMain' },
+          children: [
+            {
+              path: '',
+              name: 'walletHomeMain',
+              component: WalletHomeMain
+            },
+            {
+              path: 'collectible',
+              name: 'walletHomeCollectible',
+              component: WalletHomeCollectible
+            }
+          ]
         },
         {
           path: 'history',

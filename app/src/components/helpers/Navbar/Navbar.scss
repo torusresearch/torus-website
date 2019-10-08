@@ -20,12 +20,6 @@
   .v-tab {
     text-transform: inherit
   }
-
-  .theme--dark {
-    .v-tab.v-tab--active {
-      color: #ffffff;
-    }
-  }
   
   .beta-text {
     line-height: 1em;
@@ -36,14 +30,6 @@
   .beta-text-mobile {
     line-height: 1em;
     margin-top: -5px;
-  }
-  
-  .theme--light {
-    .v-tab {
-      &.v-tab--active {
-        color: var(--v-secondary-darken3);
-      }
-    }
   }
   
   .home-link {
