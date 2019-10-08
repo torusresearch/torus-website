@@ -22,57 +22,25 @@
         </v-tooltip>
       </v-flex>
 
-      <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'mb-6'">
-        <v-layout class="home-cards" wrap>
-          <v-flex xs12 sm6 px-4 :class="$vuetify.breakpoint.xsOnly ? 'mb-4' : ''">
-            <v-card class="card-total card-shadow">
-              <v-card-title class="font-weight-bold subtitle-2 pt-6 px-6">
-                <v-layout>
-                  <v-flex>
-                    <span>TOTAL VALUE</span>
-                  </v-flex>
-                  <v-flex text-right>
-                    <export-qr-code></export-qr-code>
-                  </v-flex>
-                </v-layout>
-              </v-card-title>
-              <v-card-text class="pb-8 px-6">
-                <h2 class="display-2 text_2--text font-weight-bold">
-                  {{ totalPortfolioValue }}
-                  <span id="selected-currency" class="body-2 font-weight-light">{{ selectedCurrency }}</span>
-                </h2>
-              </v-card-text>
-            </v-card>
-          </v-flex>
-          <v-flex xs12 sm6 px-4>
-            <PromotionCard
-              v-if="isFreshAccount"
-              title="Welcome to Torus."
-              :image-path="`${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`"
-            >
-              <template v-slot:subtitle>
-                <v-dialog v-model="dialogLearnMore" max-width="700">
-                  <template v-slot:activator="{ on }">
-                    <div class="body-2'">
-                      <a id="learn-more-btn" class="primary--text font-weight-bold" v-on="on">Learn more</a>
-                      about your wallet today.
-                    </div>
-                  </template>
-                  <LearnMore @onClose="dialogLearnMore = false" />
-                </v-dialog>
-              </template>
-            </PromotionCard>
-
-            <PromotionCard
-              v-if="!isFreshAccount"
-              title="Welcome to Torus."
-              details-link="http://torus4everyone2019.devpost.com"
-              details-text="Register Now"
-              subtitle="Torus Online Hackathon Live Now!"
-              :image-path="`learn-more.svg`"
-            ></PromotionCard>
-          </v-flex>
-        </v-layout>
+      <v-flex xs12 px-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'mb-6'">
+        <v-card class="card-total card-shadow">
+          <v-card-title class="font-weight-bold subtitle-2 pt-6 px-6">
+            <v-layout>
+              <v-flex>
+                <span>TOTAL VALUE</span>
+              </v-flex>
+              <v-flex text-right>
+                <export-qr-code></export-qr-code>
+              </v-flex>
+            </v-layout>
+          </v-card-title>
+          <v-card-text class="pb-8 px-6">
+            <h2 class="display-2 text_2--text font-weight-bold">
+              {{ totalPortfolioValue }}
+              <span id="selected-currency" class="body-2 font-weight-light">{{ selectedCurrency }}</span>
+            </h2>
+          </v-card-text>
+        </v-card>
       </v-flex>
 
       <v-flex xs12 px-4 class="hidden-sm-and-up mb-3">
@@ -107,11 +75,11 @@
         </v-layout>
       </v-flex>
 
-      <v-flex xs12>
+      <v-flex xs12 px-4>
         <v-layout wrap justify-space-between align-center>
-          <v-flex xs12 sm6 px-4 v-if="showSearch">
+          <v-flex xs12 sm6>
             <v-layout wrap>
-              <v-flex xs12>
+              <v-flex xs12 sm3 v-if="showSearch">
                 <v-text-field
                   v-model="search"
                   outlined
@@ -121,15 +89,21 @@
                   append-icon="$vuetify.icons.search"
                 ></v-text-field>
               </v-flex>
+              <v-flex xs12 sm9 class="hidden-xs-only">
+                <v-btn text icon small class="refresh-button" color="primary" @click="refreshBalances()">
+                  <v-icon small>$vuetify.icons.refresh</v-icon>
+                </v-btn>
+                <span class="caption text_2--text">Last update {{ lastUpdated }}</span>
+              </v-flex>
             </v-layout>
           </v-flex>
-          <v-flex xs12 sm6 px-4 class="balance-filter" :class="showSearch ? 'pt-2' : ''">
+          <v-flex xs12 sm6 class="balance-filter" :class="showSearch ? 'pt-2' : ''">
             <v-layout>
-              <v-flex xs7 class="refresh">
+              <v-flex xs7 class="hidden-sm-and-up refresh">
                 <v-icon color="primary" @click="refreshBalances()" small>$vuetify.icons.refresh</v-icon>
                 <span class="caption text_2--text">Last update {{ lastUpdated }}</span>
               </v-flex>
-              <v-flex xs5 class="text-right currency">
+              <v-flex xs5 sm12 class="text-right currency">
                 <span class="caption text_2--text">CURRENCY:</span>
                 <v-select
                   id="currency-selector"
@@ -147,22 +121,7 @@
         </v-layout>
       </v-flex>
 
-      <v-flex xs12 px-4 mt-5>
-        <v-tabs v-model="activeTab">
-          <v-tab>
-            <v-icon left>$vuetify.icons.token</v-icon>
-            Tokens
-          </v-tab>
-          <v-tab>
-            <v-icon left>$vuetify.icons.collectibles</v-icon>
-            Collectibles
-          </v-tab>
-        </v-tabs>
-      </v-flex>
-    </v-layout>
-
-    <v-tabs-items v-model="activeTab">
-      <v-tab-item>
+      <v-flex xs12>
         <token-balances-table
           :tokenBalances="filteredBalancesArray"
           @update:select="select"
@@ -170,27 +129,21 @@
           :search="search"
           :isFreshAccount="isFreshAccount"
         />
-      </v-tab-item>
-      <v-tab-item>
-        <collectibles-list></collectibles-list>
-      </v-tab-item>
-    </v-tabs-items>
+      </v-flex>
+    </v-layout>
   </div>
 </template>
 
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
-import config from '../../../config'
-import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
-import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
-import ExportQrCode from '../../../components/helpers/ExportQrCode'
-import PromotionCard from '../../../components/WalletHome/PromotionCard'
-import LearnMore from '../../../components/WalletHome/LearnMore'
-import { MAINNET, WALLET_HEADERS_HOME } from '../../../utils/enums'
+import config from '../../config'
+import TokenBalancesTable from '../../components/WalletHome/TokenBalancesTable'
+import ExportQrCode from '../../components/helpers/ExportQrCode'
+import { MAINNET, WALLET_HEADERS_HOME } from '../../utils/enums'
 
 export default {
   name: 'walletHome',
-  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore },
+  components: { TokenBalancesTable, ExportQrCode },
   data() {
     return {
       pageHeader: WALLET_HEADERS_HOME,
@@ -198,8 +151,7 @@ export default {
       selected: [],
       search: '',
       lastUpdated: '',
-      dialogLearnMore: false,
-      activeTab: 0
+      qrDialoag: false
     }
   },
   computed: {
@@ -284,5 +236,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'WalletHomeMain.scss';
+@import 'WalletHome.scss';
 </style>
