@@ -7,8 +7,8 @@
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title>
-            <div class="font-weight-bold headline text-capitalize">
-              <span id="account-name">{{ userName }}'s</span>
+            <div class="font-weight-bold headline">
+              <span id="account-name">{{ userName }}</span>
               Account
             </div>
           </v-list-item-title>
@@ -132,7 +132,8 @@ export default {
       return verifierLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
     },
     userName() {
-      return this.userInfo.name
+      const userName = this.userInfo.name.charAt(0).toUpperCase() + this.userInfo.name.slice(1)
+      return userName[userName.length - 1] === 's' ? `${userName}'` : `${userName}'s`
     },
     profileImage() {
       return this.userInfo.profileImage
