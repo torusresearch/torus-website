@@ -33,6 +33,7 @@ export default {
   TWITCH_CLIENT_ID: 'tfppratfiloo53g1x133ofa4rc29px',
   REDDIT_CLIENT_ID: 'dcQJYPaG481XyQ',
   DISCORD_CLIENT_ID: '630308572013527060',
+  BMW_CLIENT_ID: '5f7945da-4031-4b95-ab8d-89aca41f8e77',
   redirect_uri: redirect_uri,
   // api: 'http://localhost:2020'
   api: 'https://api.tor.us'

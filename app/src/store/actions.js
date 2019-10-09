@@ -12,6 +12,7 @@ import {
   TWITCH,
   REDDIT,
   DISCORD,
+  BMW,
   THEME_LIGHT_BLUE_NAME
 } from '../utils/enums'
 import { getRandomNumber, broadcastChannelOptions } from '../utils/utils'
@@ -39,6 +40,8 @@ var redditWindow
 var iClosedReddit = false
 var discordWindow
 var iClosedDiscord = false
+var bmwWindow
+var iClosedBmw = false
 
 export default {
   logOut({ commit, dispatch }, payload) {
@@ -553,6 +556,75 @@ export default {
           }
           iClosedDiscord = false
           discordWindow = undefined
+        }
+      }, 1000)
+    } else if (verifier === BMW) {
+      const state = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: torus.instanceId,
+            verifier: BMW
+          })
+        )
+      )
+      const scope = encodeURIComponent('only_authentication')
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      bc.onmessage = async ev => {
+        if (ev.error && ev.error !== '') {
+          log.error(ev.error)
+          oauthStream.write({ err: ev.error })
+        } else if (ev.data && ev.data.verifier === BMW) {
+          try {
+            log.info(ev.data)
+            const { access_token: accessToken } = ev.data.verifierParams
+            // const userInfo = await get('https://discordapp.com/api/users/@me', {
+            //   headers: {
+            //     Authorization: `Bearer ${accessToken}`
+            //   }
+            // })
+            // const { id, avatar, email, username: name, discriminator } = userInfo || {}
+            // const profileImage =
+            //   avatar === null
+            //     ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
+            //     : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`
+            // dispatch('updateIdToken', { idToken: accessToken })
+            // dispatch('updateUserInfo', {
+            //   userInfo: {
+            //     profileImage,
+            //     name: `${name}#${discriminator}`,
+            //     email,
+            //     verifierId: id.toString(),
+            //     verifier: BMW,
+            //     verifierParams: { verifier_id: id.toString() }
+            //   }
+            // })
+            // dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+          } catch (error) {
+            log.error(error)
+            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+          } finally {
+            bc.close()
+            iClosedBmw = true
+            bmwWindow.close()
+          }
+        }
+      }
+      bmwWindow = window.open(
+        `https://customer-i.bmwgroup.com/one/signin.html?client_id=${
+          config.BMW_CLIENT_ID
+        }&scope=${scope}&state=${state}&response_type=token&redirect_uri=https%3A%2F%2Ftesting-bmw.tor.us/redirect&locale=innovation-SGP-en`,
+        '_blank',
+        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
+      )
+      var bmwTimer = setInterval(function() {
+        if (bmwWindow.closed) {
+          clearInterval(bmwTimer)
+          if (!iClosedBmw) {
+            log.error('user closed popup')
+            oauthStream.write({ err: 'user closed popup' })
+          }
+          iClosedBmw = false
+          bmwWindow = undefined
         }
       }, 1000)
     }

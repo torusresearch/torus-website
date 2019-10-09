@@ -88,6 +88,7 @@ const FACEBOOK = 'facebook'
 const REDDIT = 'reddit'
 const DISCORD = 'discord'
 const TWITCH = 'twitch'
+const BMW = 'bmw'
 
 const THEME_DARK_BLACK_NAME = 'dark-black'
 const THEME_LIGHT_BLUE_NAME = 'light-blue'
@@ -152,6 +153,7 @@ module.exports = {
   TWITCH,
   REDDIT,
   DISCORD,
+  BMW,
   THEME_DARK_BLACK_NAME,
   THEME_LIGHT_BLUE_NAME
 }
