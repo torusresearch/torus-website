@@ -123,7 +123,7 @@
                 <div class="display-1 white--text font-weight-bold">Frictionless Logins</div>
                 <div class="display-1 white--text mb-3">for DApps</div>
                 <div class="caption white--text">
-                  A simple and secure gateway to the decentralized ecosystem via Google OAuth logins
+                  A simple and secure gateway to the decentralized ecosystem via OAuth logins
                 </div>
               </v-flex>
             </v-layout>
