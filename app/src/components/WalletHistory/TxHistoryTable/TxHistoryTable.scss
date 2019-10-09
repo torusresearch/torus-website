@@ -19,12 +19,18 @@
     color: #5c6c7f;
   }
 
-  ::v-deep tr > td {
-    cursor: pointer;
-  }
-
-  ::v-deep tr.expanded.expanded__content {
-    box-shadow: none;
+  .v-data-table {
+    ::v-deep tr > td {
+      cursor: pointer;
+    }
+  
+    ::v-deep tr.v-data-table__expanded__content {
+      box-shadow: none;
+    }
+  
+    ::v-deep .address-col {
+      min-width: 150px;
+    }
   }
 
   ::v-deep .v-pagination__item, ::v-deep .v-pagination__navigation {
