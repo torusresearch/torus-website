@@ -40,7 +40,7 @@
           <v-flex xs12 sm6 px-4>
             <v-layout wrap>
               <v-flex xs12><span class="subtitle-2">Transfer Mode</span></v-flex>
-              <v-flex xs12 sm6 pr-1 class="recipient-verifier-container">
+              <v-flex xs12 sm6 class="recipient-verifier-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
                 <v-select
                   outlined
                   append-icon="$vuetify.icons.select"
@@ -51,7 +51,7 @@
                   @change="$refs.form.validate()"
                 ></v-select>
               </v-flex>
-              <v-flex xs12 sm6 pl-1 class="recipient-address-container">
+              <v-flex xs12 sm6 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
                 <v-text-field
                   class="recipient-address"
                   id="recipient-address"
@@ -61,7 +61,7 @@
                   required
                   :rules="[toAddressRule, rules.required]"
                   outlined
-                  @keyup="correctQrCode = true"
+                  @keyup="qrErrorMsg = ''"
                 >
                   <template v-slot:append>
                     <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()">
@@ -70,11 +70,11 @@
                   </template>
                 </v-text-field>
                 <qrcode-capture @decode="onDecodeQr" ref="captureQr" style="display: none" />
-                <div v-if="!correctQrCode" class="v-text-field__details torus-hint">
+                <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                   <div class="v-messages">
                     <div class="v-messages__wrapper">
                       <div class="v-messages__message d-flex error--text px-3">
-                        Incorrect QR Code
+                        {{ qrErrorMsg }}
                       </div>
                     </div>
                   </div>
@@ -225,7 +225,7 @@ export default {
       timeTaken: '',
       convertedTotalCost: '',
       resetSpeed: false,
-      correctQrCode: true,
+      qrErrorMsg: '',
       selectedVerifier: ETH,
       verifierOptions: [
         {
@@ -616,16 +616,24 @@ export default {
       this.resetSpeed = false
     },
     onDecodeQr(result) {
-      const qrUrl = new URL(result)
-      const qrParams = new URLSearchParams(qrUrl.search)
-
-      if (qrParams.has('to')) {
-        this.selectedVerifier = ETH
-        this.toAddress = qrParams.get('to')
-        this.correctQrCode = true
-      } else {
-        this.toAddress = ''
-        this.correctQrCode = false
+      try {
+        const qrUrl = new URL(result)
+        const qrParams = new URLSearchParams(qrUrl.search)
+        if (qrParams.has('to')) {
+          this.selectedVerifier = ETH
+          this.toAddress = qrParams.get('to')
+        } else {
+          this.toAddress = ''
+          this.qrErrorMsg = 'Incorrect QR Code'
+        }
+      } catch (error) {
+        if (torus.web3.utils.isAddress(result)) {
+          this.selectedVerifier = ETH
+          this.toAddress = result
+        } else {
+          this.toAddress = ''
+          this.qrErrorMsg = 'Incorrect QR Code'
+        }
       }
     }
   },

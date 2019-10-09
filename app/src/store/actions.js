@@ -452,7 +452,7 @@ export default {
             dispatch('updateIdToken', { idToken: accessToken })
             dispatch('updateUserInfo', {
               userInfo: {
-                profileImage,
+                profileImage: profileImage.split('?').length > 0 ? profileImage.split('?')[0] : profileImage,
                 name,
                 email: '',
                 verifierId: name.toString().toLowerCase(),
@@ -511,7 +511,6 @@ export default {
                 Authorization: `Bearer ${accessToken}`
               }
             })
-            console.log(userInfo, ev.data)
             const { id, avatar, email, username: name, discriminator } = userInfo || {}
             const profileImage =
               avatar === null
