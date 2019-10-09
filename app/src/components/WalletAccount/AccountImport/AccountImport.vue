@@ -124,10 +124,12 @@
 </template>
 
 <script>
+import BroadcastChannel from 'broadcast-channel'
 const WalletWorker = require('worker-loader!../../../utils/wallet.worker.js')
 const ethUtil = require('ethereumjs-util')
 const log = require('loglevel')
 import HelpTooltip from '../../helpers/HelpTooltip'
+import { broadcastChannelOptions } from '../../../utils/utils'
 
 export default {
   components: {
@@ -170,13 +172,26 @@ export default {
 
         this.$store
           .dispatch('importAccount', { keyData: [this.privateKey], strategy: 'Private Key' })
-          .then(() => {
+          .then(privKey => {
             this.onClose()
             this.isLoadingPrivate = false
+            this.informClients(privKey)
           })
           .catch(err => {
             this.setErrorState(err)
           })
+      }
+    },
+    informClients(privKey) {
+      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      if (urlInstance && urlInstance !== '') {
+        const accountImportChannel = new BroadcastChannel(`account_import_channel_${urlInstance}`, broadcastChannelOptions)
+        accountImportChannel.postMessage({
+          data: {
+            name: 'imported_account',
+            payload: { privKey }
+          }
+        })
       }
     },
     importViaKeyStoreFile() {
@@ -193,9 +208,10 @@ export default {
         if (!window.Worker) {
           this.$store
             .dispatch('importAccount', { keyData: [keyData, this.jsonPassword], strategy: 'JSON File' })
-            .then(() => {
+            .then(privKey => {
               this.onClose()
               this.isLoadingKeystore = false
+              this.informClients(privKey)
             })
             .catch(err => {
               this.setErrorState(err)
@@ -207,9 +223,10 @@ export default {
             const privKey = ethUtil.stripHexPrefix(ethUtil.bufferToHex(Buffer.from(e.data._privKey)))
             this.$store
               .dispatch('finishImportAccount', { privKey })
-              .then(() => {
+              .then(privKey => {
                 this.onClose()
                 this.isLoadingKeystore = false
+                this.informClients(privKey)
               })
               .catch(err => {
                 this.setErrorState(err)

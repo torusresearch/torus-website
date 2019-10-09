@@ -15,13 +15,9 @@
           <v-list-item-subtitle>
             <div class="caption text_2--text">
               <span>{{ userEmail }}</span>
-              <img
-                id="show-address-btn"
-                class="float-right mr-5"
-                width="16"
-                :src="require(`../../../../public/img/icons/eye${isShowSelectedAddress ? '-off' : ''}-primary.svg`)"
-                @click="isShowSelectedAddress = !isShowSelectedAddress"
-              />
+              <v-btn icon small class="primary--text float-right mr-5" @click="isShowSelectedAddress = !isShowSelectedAddress">
+                <v-icon small v-text="'$vuetify.icons.key'" />
+              </v-btn>
             </div>
             <div v-if="isShowSelectedAddress" class="caption public-address-container">
               <show-tool-tip :address="selectedAddress">{{ selectedAddress }}</show-tool-tip>
@@ -122,7 +118,7 @@ export default {
   },
   computed: {
     userEmail() {
-      return this.userInfo.verifierId
+      return this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId
     },
     userName() {
       return this.userInfo.name

@@ -22,7 +22,7 @@ function getCurrencyMultiplier() {
   return currencyMultiplier
 }
 
-const baseRoute = process.env.BASE_URL
+const baseRoute = config.baseRoute
 
 Vue.use(Vuex)
 

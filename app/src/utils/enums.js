@@ -1,3 +1,5 @@
+const ETH = 'eth'
+
 const ROPSTEN = 'ropsten'
 const RINKEBY = 'rinkeby'
 const KOVAN = 'kovan'
@@ -84,12 +86,14 @@ const ACTIVITY_PERIOD_MONTH_SIX = 'Last 6 Months'
 const GOOGLE = 'google'
 const FACEBOOK = 'facebook'
 const REDDIT = 'reddit'
+const DISCORD = 'discord'
 const TWITCH = 'twitch'
 
 const THEME_DARK_BLACK_NAME = 'dark-black'
 const THEME_LIGHT_BLUE_NAME = 'light-blue'
 
 module.exports = {
+  ETH,
   ROPSTEN,
   RINKEBY,
   KOVAN,
@@ -147,6 +151,7 @@ module.exports = {
   FACEBOOK,
   TWITCH,
   REDDIT,
+  DISCORD,
   THEME_DARK_BLACK_NAME,
   THEME_LIGHT_BLUE_NAME
 }

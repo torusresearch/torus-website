@@ -213,7 +213,7 @@ class Torus {
         endpointUrl,
         generateJsonRPCObject('VerifierLookupRequest', {
           verifier,
-          verifier_id: verifierId.toLowerCase()
+          verifier_id: verifierId.toString().toLowerCase()
         })
       )
         .catch(err => log.error(err))
@@ -223,7 +223,7 @@ class Torus {
               endpointUrl,
               generateJsonRPCObject('KeyAssign', {
                 verifier,
-                verifier_id: verifierId.toLowerCase()
+                verifier_id: verifierId.toString().toLowerCase()
               })
             )
           } else if (lookupShare.result) {

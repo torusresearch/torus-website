@@ -50,7 +50,7 @@
 
 .torus-btn--login:hover {
   width: 150px;
-  background-image: url('/images/loginwithgoogle.png');
+  background-image: url('/images/login-with-torus.png');
   background-size: 85%;
   transition: width 0.3s;
 }
@@ -309,11 +309,16 @@
   padding: 0;
   display: flex;
   margin: 16px -4px;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .login-list li {
-  width: 33.3333%;
-  padding: 0 4px;
+  flex-basis: 33.3333333333%;
+  flex-grow: 0;
+  max-width: 33.3333333333%;
+  padding: 0 4px 8px;
+  box-sizing: border-box;
 }
 
 .login-list button {
@@ -331,6 +336,14 @@
 .login-list img {
   height: 24px;
   width: auto;
+}
+
+.login-btn.login-btn--reddit {
+  padding: 6px 0;
+}
+
+.login-btn.login-btn--reddit img {
+  height: 32px;
 }
 
 .login-note {

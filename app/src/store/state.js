@@ -4,6 +4,7 @@ const initialState = {
   userInfo: {
     name: '', // first + last name
     profileImage: '', // image url
+    email: '',
     verifier: '', // enum like GOOGLE
     verifierId: '', // usually email or facebook id
     verifierParams: {} // general params

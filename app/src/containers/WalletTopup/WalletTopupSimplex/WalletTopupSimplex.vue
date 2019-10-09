@@ -98,6 +98,7 @@ import throttle from 'lodash.throttle'
 import { significantDigits, formatCurrencyNumber } from '../../../utils/utils'
 import { postQuote, postOrder } from '../../../plugins/simplex'
 import HelpTooltip from '../../../components/helpers/HelpTooltip'
+import log from 'loglevel'
 
 const MIN_ORDER_VALUE = 50
 const MAX_ORDER_VALUE = 20000
