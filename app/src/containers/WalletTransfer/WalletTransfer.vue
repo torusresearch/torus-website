@@ -4,28 +4,64 @@
     <v-flex xs12 mb-4>
       <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation>
         <v-layout wrap>
-          <v-flex xs12 px-4 mb-5 sm6>
-            <span class="subtitle-2">Select your Coin</span>
-            <v-select
-              id="select-coin"
-              class="select-coin-container"
-              append-icon="$vuetify.icons.select"
-              hide-details
-              :items="finalBalancesArray"
-              :value="selectedItem"
-              @change="selectedItemChanged"
-              item-text="name"
-              item-value="tokenAddress"
-              outlined
-            >
-              <template v-slot:prepend-inner>
-                <img
-                  :src="require(`../../../public/images/logos/${selectedItem.logo}`)"
-                  height="24px"
-                  onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
-                />
-              </template>
-            </v-select>
+          <v-flex xs12 sm6 px-4 mb-5>
+            <span class="subtitle-2">Select item</span>
+            <div>
+              <v-menu transition="slide-y-transition" bottom>
+                <template v-slot:activator="{ on }">
+                  <v-chip class="select-coin" label outlined large v-on="on">
+                    <img
+                      class="mr-2"
+                      :src="require(`../../../public/images/logos/${selectedItem.logo}`)"
+                      height="24px"
+                      onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                    />
+                    <span>{{ selectedItem.name }}</span>
+                    <div class="flex-grow-1 text-right pr-2">
+                      <v-icon right>$vuetify.icons.select</v-icon>
+                    </div>
+                  </v-chip>
+                </template>
+                <v-list>
+                  <v-subheader>
+                    <v-icon left class="mr-2">$vuetify.icons.token</v-icon>
+                    TOKEN
+                    <div class="flex-grow-1 text-right">
+                      <v-icon right>$vuetify.icons.select</v-icon>
+                    </div>
+                  </v-subheader>
+                  <v-list-item-group>
+                    <v-list-item v-for="token in finalBalancesArray" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
+                      <v-list-item-icon class="ml-8 mr-1">
+                        <img
+                          :src="require(`../../../public/images/logos/${token.logo}`)"
+                          height="24px"
+                          onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                        />
+                      </v-list-item-icon>
+                      <v-list-item-content>
+                        <v-list-item-title>{{ token.name }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                  <v-divider class="mx-3"></v-divider>
+                  <v-subheader>
+                    <v-icon left class="mr-2">$vuetify.icons.collectibles</v-icon>
+                    COLLECTIBLES
+                  </v-subheader>
+                  <v-list-item-group>
+                    <v-list-item v-for="contract in contracts" :key="contract.id" @click="selectedItemChanged(contract.tokenAddress)">
+                      <v-list-item-icon class="ml-8 mr-1">
+                        <img :src="contract.image" height="24px" />
+                      </v-list-item-icon>
+                      <v-list-item-content>
+                        <v-list-item-title>{{ contract.name }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-list>
+              </v-menu>
+            </div>
           </v-flex>
           <v-flex xs12 sm6 mb-5 px-4 v-if="selectedItem">
             <span class="subtitle-2">Account Balance</span>
@@ -262,6 +298,57 @@ export default {
     },
     finalBalancesArray() {
       return this.$store.getters.tokenBalances.finalBalancesArray || []
+    },
+    contracts() {
+      return [
+        {
+          id: 1,
+          name: 'Cryptokitties',
+          image: 'https://www.cryptokitties.co/images/kitty-eth.svg',
+          tokenAddress: '0x',
+          assets: [
+            {
+              id: 1,
+              name: 'Long nameeee',
+              image_url: 'https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/1713976.png',
+              costEth: '0.0498 ETH',
+              costCurrency: '$8.65 USD',
+              color: 'Thistle',
+              isSelected: false
+            },
+            {
+              id: 2,
+              name: 'Jack',
+              image_url: 'https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/1712114.png',
+              costEth: '0.0498 ETH',
+              costCurrency: '$8.65 USD',
+              color: 'Thistle',
+              isSelected: false
+            },
+            {
+              id: 3,
+              name: 'Jack',
+              image_url: 'https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/1712114.png',
+              costEth: '0.0498 ETH',
+              costCurrency: '$8.65 USD',
+              color: 'Thistle',
+              isSelected: false
+            }
+          ]
+        },
+        {
+          id: 2,
+          name: 'My Crypto Heroes',
+          image: 'https://pbs.twimg.com/profile_images/1074160618788147200/W-COgBLA_400x400.jpg',
+          tokenAddress: '0x'
+        },
+        {
+          id: 3,
+          name: 'Proof of Attendance Protocol',
+          image: 'https://cdn.stateofthedapps.com/dapps/poap/logo_poap_2e95b0adb2b95625bcd5240c61c74b8d1037c29aed9d3f2b6e4d9c1fb6cebdc3_opti.png',
+          tokenAddress: '0x'
+        }
+      ]
     },
     selectedItem() {
       const foundElement = this.finalBalancesArray.find(x => x.tokenAddress === this.selectedTokenAddress)
