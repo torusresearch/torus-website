@@ -99,19 +99,19 @@ export default {
           text: 'Transaction',
           value: 'action',
           align: 'left',
-          width: '150px'
+          width: '120px'
         },
         {
           text: 'From',
           value: 'from',
           align: 'left',
-          width: '300px'
+          class: 'address-col'
         },
         {
           text: 'To',
           value: 'to',
           align: 'left',
-          width: '300px'
+          class: 'address-col'
         },
         {
           text: 'Amount',

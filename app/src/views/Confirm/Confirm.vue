@@ -43,7 +43,7 @@
             <template v-slot:activator="{ on }">
               <div id="more-details-link" class="subtitle-2 float-right primary--text mx-6" v-on="on">More Details</div>
             </template>
-            <v-card class="pa-4 more-details-container" :color="$vuetify.theme.dark ? 'background lighten-3' : ''">
+            <v-card class="pa-4 more-details-container">
               <v-card-text class="text_1--text">
                 <v-layout wrap>
                   <v-flex xs4 sm2>

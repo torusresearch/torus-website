@@ -7,8 +7,8 @@
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title>
-            <div class="font-weight-bold headline text-capitalize">
-              <span id="account-name">{{ userName }}'s</span>
+            <div class="font-weight-bold headline">
+              <span id="account-name">{{ userName }}</span>
               Account
             </div>
           </v-list-item-title>
@@ -98,10 +98,10 @@
 
 <script>
 import BroadcastChannel from 'broadcast-channel'
-import { significantDigits, addressSlicer } from '../../../utils/utils'
+import { significantDigits, addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import AccountImport from '../AccountImport'
-import { broadcastChannelOptions } from '../../../utils/utils'
+import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../../utils/enums'
 import torus from '../../../torus'
 
 export default {
@@ -118,10 +118,22 @@ export default {
   },
   computed: {
     userEmail() {
-      return this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId
+      let verifierLabel = ''
+      switch (this.userInfo.verifier) {
+        case FACEBOOK:
+        case REDDIT:
+        case TWITCH:
+        case DISCORD:
+          verifierLabel = this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1) + ': '
+          break
+        case GOOGLE:
+          verifierLabel = 'Gmail: '
+      }
+      return verifierLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
     },
     userName() {
-      return this.userInfo.name
+      const userName = this.userInfo.name.charAt(0).toUpperCase() + this.userInfo.name.slice(1)
+      return userName[userName.length - 1] === 's' ? `${userName}'` : `${userName}'s`
     },
     profileImage() {
       return this.userInfo.profileImage
