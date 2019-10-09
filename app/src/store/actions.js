@@ -226,6 +226,8 @@ export default {
   updateMessages({ commit }, payload) {
     commit('setMessages', payload.unapprovedMsgs)
   },
+  updateAssets({ commit }, payload) {},
+
   updateTokenData({ commit, state }, payload) {
     if (payload.tokenData) commit('setTokenData', { ...state.tokenData, [payload.address]: payload.tokenData })
   },
@@ -581,6 +583,23 @@ export default {
         // log.info(updatedTransactions, 'txs')
         dispatch('updateTransactions', { transactions: updatedTransactions })
       }
+    })
+    torus.torusController.assetController.store.subscribe(function({
+      allCollectibleContracts,
+      allCollectibles,
+      allTokens,
+      collectibleContracts,
+      collectibles,
+      tokens
+    }) {
+      dispatch('updateAssets', {
+        allCollectibleContracts: allCollectibleContracts,
+        allCollectibles: allCollectibles,
+        allTokens: allTokens,
+        collectibleContracts: collectibleContracts,
+        collectibles: collectibles,
+        tokens: tokens
+      })
     })
 
     torus.torusController.typedMessageManager.store.subscribe(function({ unapprovedTypedMessages }) {
