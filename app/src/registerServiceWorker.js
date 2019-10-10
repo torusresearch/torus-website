@@ -5,11 +5,13 @@ import log from 'loglevel'
 import sriToolbox from 'sri-toolbox'
 
 const swIntegrity = 'SERVICE_WORKER_SHA_INTEGRITY' // string-replaced
+const swUrl = `${process.env.BASE_URL}service-worker.js`
 const expectedCacheControlHeader = 'max-age=3600'
 
 if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
+  // if swIntegrity is not calculated
   if (swIntegrity === ['SERVICE', 'WORKER', 'SHA', 'INTEGRITY'].join('_')) {
-    register(`${process.env.BASE_URL}service-worker.js`, {
+    register(swUrl, {
       ready() {
         log.info('App is being served from cache by a service worker.\n' + 'For more details, visit https://goo.gl/AFskqB')
       },
@@ -46,8 +48,8 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
         let promise = new Promise(function(res, rej) {
           resolve = res
         })
-        var removeRegsAndResolveWithError = function(err) {
-          response.err = new Error(err)
+        var removeRegsAndResolveWithError = function(errorMessage) {
+          response.err = new Error(errorMessage)
           log.error(err)
           const promises = []
           navigator.serviceWorker.getRegistrations().then(function(arr) {
@@ -63,8 +65,8 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
           removeRegsAndResolveWithError('Should only have one service worker registered')
         } else if (regs[0].updateViaCache !== 'all') {
           removeRegsAndResolveWithError('updateViaCache should be "all"')
-        } else if (regs[0].active.scriptURL !== swurl) {
-          removeRegsAndResolveWithError(`unexpected scriptURL ${regs[0].active.scriptURL}, expected ${swurl}`)
+        } else if (regs[0].active.scriptURL !== swUrl) {
+          removeRegsAndResolveWithError(`unexpected scriptURL ${regs[0].active.scriptURL}, expected ${swUrl}`)
         } else {
           response.sw = regs[0]
           resolve(response)
@@ -74,7 +76,7 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
       .then(responseObj => {
         // if there were errors, we need to re-register the service-worker
         if (responseObj.err) {
-          return navigator.serviceWorker.register(swurl, { updateViaCache: 'all' })
+          return navigator.serviceWorker.register(swUrl, { updateViaCache: 'all' })
         } else {
           return Promise.resolve(responseObj.sw)
         }
@@ -85,7 +87,7 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
         // bypass HTML cache. Instead, we ensure that the service-worker was already registered,
         // force-fetch the service worker file from the server and check that its cached
         // and then we use this cached file to *update* the service worker
-        return fetch(swurl, {
+        return fetch(swUrl, {
           cache: 'reload'
         })
           .then(resp => {
