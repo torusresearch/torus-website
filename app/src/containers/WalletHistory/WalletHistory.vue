@@ -149,9 +149,13 @@ export default {
         const x = pastTransactions[index]
         if (x.network !== networkType.host) continue
         let status = x.status
-        if (x.status !== 'confirmed' && x.status !== 'rejected' && publicAddress.toLowerCase() === x.from.toLowerCase()) {
+        if (
+          x.status !== 'confirmed' &&
+          x.status !== 'rejected' &&
+          (publicAddress.toLowerCase() === x.from.toLowerCase() || publicAddress.toLowerCase() === x.to.toLowerCase())
+        ) {
           status = await getEthTxStatus(x.transaction_hash, torus.web3)
-          this.patchTx(x, status, jwtToken)
+          if (publicAddress.toLowerCase() === x.from.toLowerCase()) this.patchTx(x, status, jwtToken)
         }
         const totalAmountString = `${significantDigits(parseFloat(x.total_amount))} ETH`
         const currencyAmountString = `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
