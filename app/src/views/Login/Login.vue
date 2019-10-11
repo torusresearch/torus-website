@@ -22,12 +22,81 @@
                   class="body-2 login-btn"
                   @click="triggerLogin({ verifier: BMW, calledFromEmbed: false })"
                 >
-                  <img :src="require('../../../public/img/icons/google.svg')" class="mr-2" />
+                  <img :src="require('../../../public/img/icons/bmw.svg')" class="mr-2" width="20px" height="20px" />
                   Sign in with BMW
                 </v-btn>
               </v-flex>
               <v-flex class="body-1" mb-2 xs9 sm7 ml-auto mr-auto>
                 <span>Or, use another account:</span>
+              </v-flex>
+              <v-flex xs9 sm7 ml-auto mr-auto mb-2>
+                <v-layout wrap class="other-login-container">
+                  <v-flex xs4 px-1>
+                    <v-btn
+                      :large="!$vuetify.breakpoint.xsOnly"
+                      outlined
+                      block
+                      class="other-login-btn"
+                      title="Login with Google"
+                      type="button"
+                      @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
+                    >
+                      <img :src="require('../../../public/img/icons/google.svg')" />
+                    </v-btn>
+                  </v-flex>
+                  <v-flex xs4 px-1>
+                    <v-btn
+                      :large="!$vuetify.breakpoint.xsOnly"
+                      outlined
+                      block
+                      class="other-login-btn"
+                      type="button"
+                      title="Login with Facebook"
+                      @click="triggerLogin({ verifier: FACEBOOK, calledFromEmbed: false })"
+                    >
+                      <img width="24" :src="require('../../../public/img/icons/facebook.svg')" />
+                    </v-btn>
+                  </v-flex>
+                  <v-flex xs4 px-1>
+                    <v-btn
+                      :large="!$vuetify.breakpoint.xsOnly"
+                      outlined
+                      block
+                      class="other-login-btn"
+                      type="button"
+                      title="Login with Reddit"
+                      @click="triggerLogin({ verifier: REDDIT, calledFromEmbed: false })"
+                    >
+                      <img width="32" :src="require('../../../public/img/icons/reddit.svg')" />
+                    </v-btn>
+                  </v-flex>
+                  <v-flex xs4 px-1>
+                    <v-btn
+                      :large="!$vuetify.breakpoint.xsOnly"
+                      outlined
+                      block
+                      class="other-login-btn"
+                      type="button"
+                      title="Login with Twitch"
+                      @click="triggerLogin({ verifier: TWITCH, calledFromEmbed: false })"
+                    >
+                      <img width="24" :src="require('../../../public/img/icons/twitch.svg')" />
+                    </v-btn>
+                  </v-flex>
+                  <v-flex xs4 px-1>
+                    <v-btn
+                      :large="!$vuetify.breakpoint.xsOnly"
+                      outlined
+                      block
+                      class="other-login-btn"
+                      type="button"
+                      title="Login with Discord"
+                      @click="triggerLogin({ verifier: DISCORD, calledFromEmbed: false })"
+                    >
+                      <img width="24" :src="require('../../../public/img/icons/discord.svg')" />
+                    </v-btn>
+                  </v-flex>
+                </v-layout>
               </v-flex>
               <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
                 <span>

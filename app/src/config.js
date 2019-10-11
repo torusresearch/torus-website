@@ -5,16 +5,18 @@ const baseRoute =
     ? 'https://staging.tor.us/'
     : process.env.VUE_APP_TORUS_BUILD_ENV === 'testing'
     ? 'https://testing.tor.us/'
+    : process.env.VUE_APP_TORUS_BUILD_ENV === 'bmw'
+    ? 'https://testing-bmw.tor.us/'
     : 'https://localhost:3000/'
 
 const redirect_uri = `${baseRoute}redirect`
 export default {
   torusNodeEndpoints: [
-    'https://binance-main-3.torusnode.com/jrpc',
-    'https://waseda-main-3.torusnode.com/jrpc',
-    'https://vgr-main-3.torusnode.com/jrpc',
-    'https://torus-main-3.torusnode.com/jrpc',
-    'https://etc-main-3.torusnode.com/jrpc'
+    'https://localhost:5000',
+    'https://localhost:5001',
+    'https://localhost:5002',
+    'https://localhost:5003',
+    'https://localhost:5004'
   ],
   baseRoute: baseRoute,
   torusIndexes: [1, 2, 3, 4, 5],

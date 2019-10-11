@@ -577,28 +577,20 @@ export default {
           try {
             log.info(ev.data)
             const { access_token: accessToken } = ev.data.verifierParams
-            // const userInfo = await get('https://discordapp.com/api/users/@me', {
-            //   headers: {
-            //     Authorization: `Bearer ${accessToken}`
-            //   }
-            // })
-            // const { id, avatar, email, username: name, discriminator } = userInfo || {}
-            // const profileImage =
-            //   avatar === null
-            //     ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
-            //     : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`
-            // dispatch('updateIdToken', { idToken: accessToken })
-            // dispatch('updateUserInfo', {
-            //   userInfo: {
-            //     profileImage,
-            //     name: `${name}#${discriminator}`,
-            //     email,
-            //     verifierId: id.toString(),
-            //     verifier: BMW,
-            //     verifierParams: { verifier_id: id.toString() }
-            //   }
-            // })
-            // dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+            const userInfo = await get(`https://customer-i.bmwgroup.com/oauth/tokeninfo?access_token=${accessToken}`)
+            const { user_id } = userInfo || {}
+            dispatch('updateIdToken', { idToken: accessToken })
+            dispatch('updateUserInfo', {
+              userInfo: {
+                profileImage: '',
+                name: '',
+                email: '',
+                verifierId: user_id.toString(),
+                verifier: BMW,
+                verifierParams: { verifier_id: user_id.toString() }
+              }
+            })
+            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
           } catch (error) {
             log.error(error)
             oauthStream.write({ err: 'User cancelled login or something went wrong.' })
@@ -612,9 +604,9 @@ export default {
       bmwWindow = window.open(
         `https://customer-i.bmwgroup.com/one/signin.html?client_id=${
           config.BMW_CLIENT_ID
-        }&scope=${scope}&state=${state}&response_type=token&redirect_uri=https%3A%2F%2Ftesting-bmw.tor.us/redirect&locale=innovation-SGP-en`,
+        }&scope=${scope}&state=${state}&response_type=token&redirect_uri=${encodeURIComponent(config.redirect_uri)}&locale=innovation-SGP-en`,
         '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
+        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=1200'
       )
       var bmwTimer = setInterval(function() {
         if (bmwWindow.closed) {
