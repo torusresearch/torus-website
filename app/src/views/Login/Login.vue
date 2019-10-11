@@ -29,22 +29,21 @@
               <v-flex class="body-1" mb-2 xs9 sm7 ml-auto mr-auto>
                 <span>Or, use another account:</span>
               </v-flex>
+              <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
+                <v-btn
+                  color="white"
+                  large
+                  :block="$vuetify.breakpoint.xsOnly"
+                  class="body-2 login-btn"
+                  @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
+                >
+                  <img :src="require('../../../public/img/icons/google.svg')" class="mr-2" width="20px" height="20px" />
+                  Sign in with Google
+                </v-btn>
+              </v-flex>
               <v-flex xs9 sm7 ml-auto mr-auto mb-2>
                 <v-layout wrap class="other-login-container">
-                  <v-flex xs4 px-1>
-                    <v-btn
-                      :large="!$vuetify.breakpoint.xsOnly"
-                      outlined
-                      block
-                      class="other-login-btn"
-                      title="Login with Google"
-                      type="button"
-                      @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
-                    >
-                      <img :src="require('../../../public/img/icons/google.svg')" />
-                    </v-btn>
-                  </v-flex>
-                  <v-flex xs4 px-1>
+                  <!-- <v-flex xs4 px-1>
                     <v-btn
                       :large="!$vuetify.breakpoint.xsOnly"
                       outlined
@@ -95,7 +94,7 @@
                     >
                       <img width="24" :src="require('../../../public/img/icons/discord.svg')" />
                     </v-btn>
-                  </v-flex>
+                  </v-flex> -->
                 </v-layout>
               </v-flex>
               <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>

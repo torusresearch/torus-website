@@ -604,7 +604,9 @@ export default {
       bmwWindow = window.open(
         `https://customer-i.bmwgroup.com/one/signin.html?client_id=${
           config.BMW_CLIENT_ID
-        }&scope=${scope}&state=${state}&response_type=token&redirect_uri=${encodeURIComponent(config.redirect_uri)}&locale=innovation-SGP-en`,
+        }&scope=${scope}&state=${state}&response_type=id_token%20token&redirect_uri=${encodeURIComponent(
+          config.redirect_uri
+        )}&locale=innovation-SGP-en`,
         '_blank',
         'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=1200'
       )
