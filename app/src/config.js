@@ -12,11 +12,11 @@ const baseRoute =
 const redirect_uri = `${baseRoute}redirect`
 export default {
   torusNodeEndpoints: [
-    'https://localhost:5000',
-    'https://localhost:5001',
-    'https://localhost:5002',
-    'https://localhost:5003',
-    'https://localhost:5004'
+    'https://localhost:5000/jrpc',
+    'https://localhost:5001/jrpc',
+    'https://localhost:5002/jrpc',
+    'https://localhost:5003/jrpc',
+    'https://localhost:5004/jrpc'
   ],
   baseRoute: baseRoute,
   torusIndexes: [1, 2, 3, 4, 5],
