@@ -52,6 +52,10 @@ module.exports = {
   },
   chainWebpack: config => {
     config.resolve.alias.set('bn.js', 'fork-bn.js')
+    config
+      .plugin('service-worker-integrity')
+      .use(require('./service-worker-integrity-plugin'), ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
+      .before('cors')
     // config.module
     //   .rule('worker')
     //   .test(/\.worker\.js$/)
