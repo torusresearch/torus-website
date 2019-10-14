@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 
-import { register } from 'register-service worker'
+import { register } from 'register-service-worker'
 import log from 'loglevel'
 import sriToolbox from 'sri-toolbox'
 
 const swIntegrity = 'SERVICE_WORKER_SHA_INTEGRITY' // string-replaced
-const swUrl = `${process.env.BASE_URL}service worker.js`
+const swUrl = `${process.env.BASE_URL}service-worker.js`
 const expectedCacheControlHeader = 'max-age=3600'
 
 if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
