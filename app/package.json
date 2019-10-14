@@ -18,7 +18,7 @@
     "dev": "cross-env NODE_ENV=development VUE_APP_TORUS_BUILD_ENV=development node server.js",
     "lint:js": "eslint --fix src/**/*.js",
     "lint:vue": "vue-cli-service lint && eslint --fix src/**/*.vue",
-    "copyManifest": ". ./scripts/copyPrecacheManifest.sh",
+    "copy-manifest": ". ./scripts/copyPrecacheManifest.sh",
     "pre-build": ". ./scripts/calculateIntegrity.sh",
     "post-build": ". ./scripts/buildErrorPage.sh",
     "production": "cross-env PORT=443 NODE_ENV=production node server.js",
