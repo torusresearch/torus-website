@@ -693,9 +693,19 @@ export default {
   },
   created() {
     this.tokenAddress = this.address
+
     if (this.$route.query.hasOwnProperty('to')) {
       this.selectedVerifier = ETH
       this.toAddress = this.$route.query.to
+    } else {
+      this.toAddress = ''
+    }
+
+    if (this.$route.query.hasOwnProperty('contract')) {
+      this.selectedItemChanged(this.$route.query.contract, true)
+      if (this.$route.query.hasOwnProperty('tokenId')) {
+        this.assetSelected = this.contractSelected.assets.find(asset => asset.tokenId === this.$route.query.tokenId)
+      }
     } else {
       this.toAddress = ''
     }

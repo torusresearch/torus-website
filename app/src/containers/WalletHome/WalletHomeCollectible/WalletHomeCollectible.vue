@@ -38,8 +38,8 @@
           <v-card-text class="asset-text py-1 px-3">
             <div class="body-2 asset-name" :title="asset.name">{{ asset.name }}</div>
             <div class="text-right asset-details mt-1">
-              <div class="font-weight-medium">{{ asset.costEth || '???' }}</div>
-              <div class="font-weight-light text_2--text">{{ asset.costCurrency || '???' }}</div>
+              <div class="font-weight-medium">{{ asset.costEth || '&nbsp;' }}</div>
+              <div class="font-weight-light text_2--text">{{ asset.costCurrency || '&nbsp;' }}</div>
             </div>
           </v-card-text>
           <v-expand-transition>
@@ -49,7 +49,7 @@
               <div class="font-weight-medium mt-2">ID</div>
               <div class="ml-2 text_2--text">#{{ asset.tokenId }}</div>
               <div class="mt-4">
-                <v-btn block depressed color="primary">Transfer</v-btn>
+                <v-btn block depressed color="primary" @click="transferAsset(asset)">Transfer</v-btn>
                 <v-btn block text @click.stop="toggleDetails($event, false)">Close</v-btn>
               </div>
             </v-card-text>
@@ -63,8 +63,8 @@
             <v-list-item-content class="asset-text">
               <div class="body-2 asset-name" :title="asset.name">{{ asset.name }}</div>
               <div class="asset-details mt-8 align-self-baseline">
-                <div class="font-weight-medium">{{ asset.costEth || '???' }}</div>
-                <div class="font-weight-light text_2--text">{{ asset.costCurrency || '???' }}</div>
+                <div class="font-weight-medium">{{ asset.costEth || '&nbsp;' }}</div>
+                <div class="font-weight-light text_2--text">{{ asset.costCurrency || '&nbsp;' }}</div>
               </div>
             </v-list-item-content>
 
@@ -89,7 +89,7 @@
             </v-flex>
             <v-divider inset vertical></v-divider>
             <v-flex xs6>
-              <v-btn block small text color="primary">Transfer</v-btn>
+              <v-btn block small text color="primary" @click="transferAsset(asset)">Transfer</v-btn>
             </v-flex>
           </v-card-actions>
         </v-card>
@@ -99,7 +99,7 @@
       <v-flex xs12 sm3 md2 px-4 pb-4>
         <!-- Add Asset Desktop View -->
         <v-card class="mx-auto asset asset--new" max-width="344" v-if="!$vuetify.breakpoint.xsOnly">
-          <v-img src="https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/1713976.png" height="140px" />
+          <v-img src="https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/1713976.png" height="145px" />
           <v-card-text class="asset-text py-1 px-3">
             <div class="body-2 asset-name">Nisse Fabears</div>
             <div class="text-right asset-details mt-1">
@@ -199,6 +199,9 @@ export default {
       } else {
         event.target.closest('.asset').classList.remove('asset--active')
       }
+    },
+    transferAsset(asset) {
+      this.$router.push({ name: 'walletTransfer', query: { contract: asset.address, asset: asset.tokenId } })
     }
   },
   created() {
