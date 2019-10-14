@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
 
-import { register } from 'register-service-worker'
+import { register } from 'register-service worker'
 import log from 'loglevel'
 import sriToolbox from 'sri-toolbox'
 
 const swIntegrity = 'SERVICE_WORKER_SHA_INTEGRITY' // string-replaced
-const swUrl = `${process.env.BASE_URL}service-worker.js`
+const swUrl = `${process.env.BASE_URL}service worker.js`
 const expectedCacheControlHeader = 'max-age=3600'
 
 if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
@@ -74,7 +74,7 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
         return promise
       })
       .then(responseObj => {
-        // if there were errors, we need to re-register the service-worker
+        // if there were errors, we need to re-register the service worker
         if (responseObj.err) {
           return navigator.serviceWorker.register(swUrl, { updateViaCache: 'all' })
         } else {
@@ -84,7 +84,7 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
       .then(swReg => {
         // Although the service worker is registered, its integrity has not been checked.
         // This is impossible to circumvent, service worker initial registrations always
-        // bypass HTML cache. Instead, we ensure that the service-worker was already registered,
+        // bypass HTML cache. Instead, we ensure that the service worker was already registered,
         // force-fetch the service worker file from the server and check that its cached
         // and then we use this cached file to *update* the service worker
         return fetch(swUrl, {
@@ -111,14 +111,15 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
           })
           .catch(err => {
             // if failed to fetch, throw
-            throw new Error('Could not fetch service-worker from server, ' + err.toString())
+            throw new Error('Could not fetch service worker from server, ' + err.toString())
           })
       })
       .then(updatedSwReg => {
         log.info('Successfully registered secure service worker', updatedSwReg)
       })
       .catch(err => {
-        log.error('Could not complete service-worker installation process, error: ', err)
+        log.error('Could not complete service worker installation process, error: ', err)
+        throw new Error('Could not install service worker')
       })
   }
 }
