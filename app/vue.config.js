@@ -23,6 +23,14 @@ module.exports = {
     hotOnly: false,
     headers: {
       'Access-Control-Allow-Origin': '*'
+    },
+    before: function(app, server) {
+      app.get('/service-worker.js', function(req, res) {
+        res.setHeaders({
+          'Cache-Control': 'max-age=3600',
+          'Service-Worker-Allowed': '/'
+        })
+      })
     }
   },
   css: {
