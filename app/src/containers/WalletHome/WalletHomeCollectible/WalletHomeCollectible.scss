@@ -5,6 +5,10 @@
     opacity: 0;
   }
 
+  img {
+    max-width: 100%;
+  }
+
   .v-card__title {
     word-break: break-word;
     text-align: center;
@@ -22,8 +26,15 @@
   }
 
   .asset-more {
+    display: none;
     font-size: 10px;
     line-height: 1.8em;
+  }
+  .more-info-show {
+    display: block;
+  }
+  .more-info-hide {
+    display: none;
   }
 
   .v-divider--vertical.v-divider--inset {
@@ -61,6 +72,18 @@
       left: 50%;
       transform: translate(-50%, -50%);
       width: 100%;
+    }
+  }
+
+  &.asset--active {
+    .asset-more {
+      display: block;
+    }
+    .more-info-show {
+      display: none;
+    }
+    .more-info-hide {
+      display: block;
     }
   }
 }

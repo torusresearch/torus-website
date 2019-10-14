@@ -97,7 +97,7 @@ const router = new Router({
               component: WalletHomeMain
             },
             {
-              path: 'collectible',
+              path: 'collectible/:address',
               name: 'walletHomeCollectible',
               component: WalletHomeCollectible
             }
@@ -170,9 +170,10 @@ router.beforeResolve((to, from, next) => {
     }
   } else {
     if (store.state.selectedAddress === '') {
-      next({ name: 'login', query: { redirect: to.path } })
+      next({ name: 'login', query: { redirect: to.fullPath } })
     } else if (!hasQueryParams(to) && hasQueryParams(from)) {
-      next({ name: to.name, query: from.query })
+      // next({ name: to.name, query: from.query })
+      next()
     } else {
       next()
     }

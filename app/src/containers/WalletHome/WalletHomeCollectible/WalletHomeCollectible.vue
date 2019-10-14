@@ -12,14 +12,14 @@
           v-model="selectedContract"
           @change="changeContract"
           item-text="name"
-          item-value="id"
+          item-value="address"
           outlined
           hide-details
           append-icon="$vuetify.icons.select"
           return-object
         >
           <template v-slot:prepend-inner>
-            <img class="mr-1" :src="selectedContract.image" height="24px" />
+            <img v-if="selectedContract" class="mr-1" :src="selectedContract.logo" height="24px" />
           </template>
         </v-select>
       </v-flex>
@@ -27,65 +27,65 @@
         {{ platform }}
       </v-flex>
     </v-layout>
-    <v-layout wrap align-top mt-10>
-      <v-flex xs12 sm3 md2 px-4 pb-4 v-for="asset in selectedContract.assets" :key="asset.id">
+    <v-layout wrap align-top mt-10 v-if="selectedContract">
+      <v-flex xs12 sm3 md2 px-4 pb-4 v-for="asset in selectedContract.assets" :key="asset.address">
         <!-- Asset Desktop View -->
-        <v-card class="mx-auto asset" max-width="344" :ripple="false" @click="asset.isSelected = true" v-if="!$vuetify.breakpoint.xsOnly">
-          <v-img :src="asset.image_url" height="140px" :style="{ backgroundColor: asset.color }"></v-img>
+        <v-card class="mx-auto asset" max-width="344" :ripple="false" v-if="!$vuetify.breakpoint.xsOnly" @click="toggleDetails($event, true)">
+          <!-- <v-img :src="asset.image" height="140px" :style="{ backgroundColor: asset.color }"></v-img> -->
+          <div class="text-center">
+            <img :src="asset.image" style="width: auto; height: 140px" />
+          </div>
           <v-card-text class="asset-text py-1 px-3">
             <div class="body-2 asset-name" :title="asset.name">{{ asset.name }}</div>
             <div class="text-right asset-details mt-1">
-              <div class="font-weight-medium">{{ asset.costEth }}</div>
-              <div class="font-weight-light text_2--text">{{ asset.costCurrency }}</div>
+              <div class="font-weight-medium">{{ asset.costEth || '???' }}</div>
+              <div class="font-weight-light text_2--text">{{ asset.costCurrency || '???' }}</div>
             </div>
           </v-card-text>
           <v-expand-transition>
-            <v-card-text class="asset-more py-1 px-3" v-show="asset.isSelected">
+            <v-card-text class="asset-more py-1 px-3">
               <div class="font-weight-medium">Description</div>
-              <div class="ml-2 text_2--text">Hatched by werekitty</div>
+              <div class="ml-2 text_2--text">{{ asset.description }}</div>
               <div class="font-weight-medium mt-2">ID</div>
-              <div class="ml-2 text_2--text">#{{ asset.id }}</div>
+              <div class="ml-2 text_2--text">#{{ asset.tokenId }}</div>
               <div class="mt-4">
                 <v-btn block depressed color="primary">Transfer</v-btn>
-                <v-btn block text @click.stop="asset.isSelected = false">Close</v-btn>
+                <v-btn block text @click.stop="toggleDetails($event, false)">Close</v-btn>
               </div>
             </v-card-text>
           </v-expand-transition>
         </v-card>
+
         <!-- Asset Mobile View -->
         <v-card class="asset" v-if="$vuetify.breakpoint.xsOnly">
-          <v-list-item :style="{ backgroundColor: asset.color }">
+          <!-- <v-list-item :style="{ backgroundColor: asset.color }"> -->
+          <v-list-item>
             <v-list-item-content class="asset-text">
               <div class="body-2 asset-name" :title="asset.name">{{ asset.name }}</div>
               <div class="asset-details mt-8 align-self-baseline">
-                <div class="font-weight-medium">{{ asset.costEth }}</div>
-                <div class="font-weight-light text_2--text">{{ asset.costCurrency }}</div>
+                <div class="font-weight-medium">{{ asset.costEth || '???' }}</div>
+                <div class="font-weight-light text_2--text">{{ asset.costCurrency || '???' }}</div>
               </div>
             </v-list-item-content>
 
             <v-list-item-avatar size="100" tile>
-              <v-img :src="asset.image_url"></v-img>
+              <v-img :src="asset.image"></v-img>
             </v-list-item-avatar>
           </v-list-item>
 
           <v-expand-transition>
-            <v-card-text class="asset-more py-1 px-3" v-show="asset.isSelected">
-              <v-layout>
-                <v-flex xs6 sm12>
-                  <div class="font-weight-medium">Description</div>
-                  <div class="ml-2 text_2--text">Hatched by werekitty</div>
-                </v-flex>
-                <v-flex xs6 sm12>
-                  <div class="font-weight-medium" :class="$vuetify.breakpoint.xsOnly ? '' : 'mt-2'">ID</div>
-                  <div class="ml-2 text_2--text">#{{ asset.id }}</div>
-                </v-flex>
-              </v-layout>
+            <v-card-text class="asset-more py-1 px-3">
+              <div class="font-weight-medium">Description</div>
+              <div class="ml-2 text_2--text">{{ asset.description }}</div>
+              <div class="font-weight-medium mt-2">ID</div>
+              <div class="ml-2 text_2--text">#{{ asset.tokenId }}</div>
             </v-card-text>
           </v-expand-transition>
 
           <v-card-actions>
             <v-flex xs6>
-              <v-btn block small text @click.stop="asset.isSelected = !asset.isSelected">{{ asset.isSelected ? 'Less' : 'More' }} Info</v-btn>
+              <v-btn block small text class="more-info-show" @click="toggleDetails($event, true)">More Info</v-btn>
+              <v-btn block small text class="more-info-hide" @click="toggleDetails($event, false)">Less Info</v-btn>
             </v-flex>
             <v-divider inset vertical></v-divider>
             <v-flex xs6>
@@ -182,65 +182,32 @@ export default {
       return 'Ethereum Blockchain'
     },
     contracts() {
-      return [
-        {
-          id: 1,
-          name: 'Cryptokitties',
-          image: 'https://www.cryptokitties.co/images/kitty-eth.svg',
-          assets: [
-            {
-              id: 1,
-              name: 'Long nameeee',
-              image_url: 'https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/1713976.png',
-              costEth: '0.0498 ETH',
-              costCurrency: '$8.65 USD',
-              color: 'Thistle',
-              isSelected: false
-            },
-            {
-              id: 2,
-              name: 'Jack',
-              image_url: 'https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/1712114.png',
-              costEth: '0.0498 ETH',
-              costCurrency: '$8.65 USD',
-              color: 'Thistle',
-              isSelected: false
-            },
-            {
-              id: 3,
-              name: 'Jack',
-              image_url: 'https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/1712114.png',
-              costEth: '0.0498 ETH',
-              costCurrency: '$8.65 USD',
-              color: 'Thistle',
-              isSelected: false
-            }
-          ]
-        },
-        {
-          id: 2,
-          name: 'My Crypto Heroes',
-          image: 'https://pbs.twimg.com/profile_images/1074160618788147200/W-COgBLA_400x400.jpg'
-        },
-        {
-          id: 3,
-          name: 'Proof of Attendance Protocol',
-          image: 'https://cdn.stateofthedapps.com/dapps/poap/logo_poap_2e95b0adb2b95625bcd5240c61c74b8d1037c29aed9d3f2b6e4d9c1fb6cebdc3_opti.png'
-        }
-      ]
+      console.log('this.$store.state', this.$store.state)
+      return this.$store.state.assets
     }
   },
   methods: {
     changeContract() {
-      this.breadcrumb[2].text = this.selectedContract.name
-      this.breadcrumb[2].href = `collectible/${this.selectedContract.id}`
+      if (this.selectedContract) {
+        this.breadcrumb[2].text = this.selectedContract.name
+        this.breadcrumb[2].href = `collectible?address=${this.selectedContract.address}`
+      }
+    },
+    toggleDetails(event, isAdd) {
+      if (isAdd) {
+        event.target.closest('.asset').classList.add('asset--active')
+      } else {
+        event.target.closest('.asset').classList.remove('asset--active')
+      }
     }
   },
   created() {
-    const contractId = parseInt(this.$route.query.id || 1)
-    this.selectedContract = this.contracts.find(contract => {
-      return contract.id === contractId
-    })
+    const contractAddress = this.$route.params.address
+    this.selectedContract =
+      this.contracts.find(contract => {
+        return contract.address === contractAddress
+      }) || this.contracts[0]
+
     this.changeContract()
   }
 }

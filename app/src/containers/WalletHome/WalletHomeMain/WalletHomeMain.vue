@@ -161,7 +161,7 @@
       </v-flex>
     </v-layout>
 
-    <v-tabs-items v-model="activeTab">
+    <v-tabs-items v-model="activeTab" class="token-tab-content">
       <v-tab-item>
         <token-balances-table
           :tokenBalances="filteredBalancesArray"

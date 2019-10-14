@@ -6,17 +6,17 @@
         <v-layout wrap>
           <v-flex xs12 sm6 px-4 mb-5>
             <span class="subtitle-2">Select item</span>
-            <div>
+            <div v-if="selectedItemDisplay">
               <v-menu transition="slide-y-transition" bottom>
                 <template v-slot:activator="{ on }">
                   <v-chip class="select-coin" label outlined large v-on="on">
                     <img
                       class="mr-2"
-                      :src="require(`../../../public/images/logos/${selectedItem.logo}`)"
+                      :src="isContract ? selectedItemDisplay.logo : require(`../../../public/images/logos/${selectedItemDisplay.logo}`)"
                       height="24px"
                       onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
                     />
-                    <span>{{ selectedItem.name }}</span>
+                    <span>{{ selectedItemDisplay.name }}</span>
                     <div class="flex-grow-1 text-right pr-2">
                       <v-icon right>$vuetify.icons.select</v-icon>
                     </div>
@@ -31,7 +31,7 @@
                     </div>
                   </v-subheader>
                   <v-list-item-group>
-                    <v-list-item v-for="token in finalBalancesArray" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
+                    <v-list-item v-for="token in finalBalancesArray" :key="token.id" @click="selectedItemChanged(token.tokenAddress, false)">
                       <v-list-item-icon class="ml-8 mr-1">
                         <img
                           :src="require(`../../../public/images/logos/${token.logo}`)"
@@ -50,9 +50,9 @@
                     COLLECTIBLES
                   </v-subheader>
                   <v-list-item-group>
-                    <v-list-item v-for="contract in contracts" :key="contract.id" @click="selectedItemChanged(contract.tokenAddress)">
+                    <v-list-item v-for="contract in contracts" :key="contract.address" @click="selectedItemChanged(contract.address, true)">
                       <v-list-item-icon class="ml-8 mr-1">
-                        <img :src="contract.image" height="24px" />
+                        <img :src="contract.logo" height="24px" />
                       </v-list-item-icon>
                       <v-list-item-content>
                         <v-list-item-title>{{ contract.name }}</v-list-item-title>
@@ -123,10 +123,20 @@
           <v-flex xs12 px-4 sm6 class="you-send-container">
             <div>
               <span class="subtitle-2">You send</span>
-              <a id="send-all-btn" class="float-right primary--text subtitle-2" v-if="!isSendAll" @click="sendAll">Send All</a>
+              <a id="send-all-btn" class="float-right primary--text subtitle-2" v-if="!isContract && !isSendAll" @click="sendAll">Send All</a>
               <a id="send-all-reset-btn" class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">Reset</a>
             </div>
+            <v-select v-if="isContract" v-model="assetSelected" :items="contractSelected.assets" outlined item-text="name" return-object>
+              <template v-slot:prepend-inner>
+                <img :src="assetSelected.image" height="24px" />
+              </template>
+              <template v-slot:item="{ item }">
+                <img class="mr-2" :src="item.image" height="24px" />
+                {{ item.name }}
+              </template>
+            </v-select>
             <v-text-field
+              v-if="!isContract"
               id="you-send"
               :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
               persistent-hint
@@ -246,6 +256,9 @@ export default {
   data() {
     return {
       pageHeader: WALLET_HEADERS_TRANSFER,
+      isContract: false,
+      contractSelected: {},
+      assetSelected: {},
       tokenAddress: '0x',
       amount: 0,
       displayAmount: '',
@@ -300,59 +313,17 @@ export default {
       return this.$store.getters.tokenBalances.finalBalancesArray || []
     },
     contracts() {
-      return [
-        {
-          id: 1,
-          name: 'Cryptokitties',
-          image: 'https://www.cryptokitties.co/images/kitty-eth.svg',
-          tokenAddress: '0x',
-          assets: [
-            {
-              id: 1,
-              name: 'Long nameeee',
-              image_url: 'https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/1713976.png',
-              costEth: '0.0498 ETH',
-              costCurrency: '$8.65 USD',
-              color: 'Thistle',
-              isSelected: false
-            },
-            {
-              id: 2,
-              name: 'Jack',
-              image_url: 'https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/1712114.png',
-              costEth: '0.0498 ETH',
-              costCurrency: '$8.65 USD',
-              color: 'Thistle',
-              isSelected: false
-            },
-            {
-              id: 3,
-              name: 'Jack',
-              image_url: 'https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/1712114.png',
-              costEth: '0.0498 ETH',
-              costCurrency: '$8.65 USD',
-              color: 'Thistle',
-              isSelected: false
-            }
-          ]
-        },
-        {
-          id: 2,
-          name: 'My Crypto Heroes',
-          image: 'https://pbs.twimg.com/profile_images/1074160618788147200/W-COgBLA_400x400.jpg',
-          tokenAddress: '0x'
-        },
-        {
-          id: 3,
-          name: 'Proof of Attendance Protocol',
-          image: 'https://cdn.stateofthedapps.com/dapps/poap/logo_poap_2e95b0adb2b95625bcd5240c61c74b8d1037c29aed9d3f2b6e4d9c1fb6cebdc3_opti.png',
-          tokenAddress: '0x'
-        }
-      ]
+      return this.$store.state.assets
     },
     selectedItem() {
-      const foundElement = this.finalBalancesArray.find(x => x.tokenAddress === this.selectedTokenAddress)
+      let foundElement = this.finalBalancesArray.find(x => x.tokenAddress === this.selectedTokenAddress)
       return foundElement
+    },
+    selectedItemDisplay() {
+      if (!this.isContract) return this.selectedItem
+
+      const foundContract = this.contracts.find(x => x.address === this.contractSelected.address)
+      return foundContract
     },
     selectedTokenAddress() {
       if (this.tokenAddress === '0x' || !torus.web3.utils.isAddress(this.tokenAddress)) return '0x'
@@ -504,8 +475,12 @@ export default {
         return 21000
       }
     },
-    async selectedItemChanged(tokenAddress) {
-      this.tokenAddress = tokenAddress
+    async selectedItemChanged(address, isContract) {
+      this.isContract = isContract
+      this.tokenAddress = isContract ? '0x' : address
+      this.contractSelected = isContract ? this.contracts.find(x => x.address === address) : {}
+      this.assetSelected = this.contractSelected.assets[0]
+
       this.gas = await this.calculateGas(this.toAddress)
       this.updateTotalCost()
     },

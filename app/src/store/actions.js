@@ -226,8 +226,17 @@ export default {
   updateMessages({ commit }, payload) {
     commit('setMessages', payload.unapprovedMsgs)
   },
-  updateAssets({ commit }, payload) {},
+  updateAssets({ commit }, payload) {
+    const collectibles = payload.collectibleContracts.map(contract => {
+      contract.assets = payload.collectibles.filter(asset => {
+        return asset.address === contract.address
+      })
 
+      return contract
+    })
+
+    commit('setAssets', collectibles)
+  },
   updateTokenData({ commit, state }, payload) {
     if (payload.tokenData) commit('setTokenData', { ...state.tokenData, [payload.address]: payload.tokenData })
   },
