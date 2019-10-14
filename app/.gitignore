@@ -18,7 +18,7 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
-*.sw*
+service-worker.js
 
 embed.min.js
 .nyc_output
