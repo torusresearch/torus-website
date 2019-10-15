@@ -29,29 +29,38 @@
       </v-card>
     </v-flex>
 
-    <v-flex class="xs12 sm6 px-4 my-4" v-if="!isFreshAccount" style="order: 1">
+    <v-flex class="xs12 sm6 px-4 my-4" v-for="(event, i) in isFreshAccount ? [] : events" :key="`event-${i}`" style="order: 1">
       <promotion-card
-        title="Join us at User X Devcon After-Party"
-        :image-path="`ethereum-rainbow.svg`"
-        subtitle="11 Oct 2019 @ osaka"
-        details-link="https://www.eventbrite.sg/e/user-x-devcon-after-party-tickets-74785051101"
+        :title="event.EventName"
+        :image-path="event.ImageUrl"
+        :subtitle="event.Description"
+        :details-link="event.CallToActionLink"
+        :details-text="event.CallToActionText"
       ></promotion-card>
     </v-flex>
 
     <v-flex class="xs12 sm6 px-4 my-4" v-if="isFreshAccount" style="order: 1">
-      <PromotionCard title="Welcome to Torus." :image-path="`${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`">
-        <template v-slot:subtitle>
-          <v-dialog v-model="dialog" max-width="700">
-            <template v-slot:activator="{ on }">
-              <div class="body-2'">
-                <a id="learn-more-btn" class="primary--text font-weight-bold" v-on="on">Learn more</a>
-                about your wallet today.
-              </div>
-            </template>
-            <LearnMore @onClose="dialog = false" />
-          </v-dialog>
-        </template>
-      </PromotionCard>
+      <v-card class="card-shadow">
+        <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
+          <v-layout>
+            <v-flex class="text_1--text pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
+              <div class="body-1 font-weight-bold">Welcome to Torus.</div>
+              <v-dialog v-model="dialog" max-width="700">
+                <template v-slot:activator="{ on }">
+                  <div class="body-2'">
+                    <a id="learn-more-btn" class="primary--text font-weight-bold" v-on="on">Learn more</a>
+                    about your wallet today.
+                  </div>
+                </template>
+                <LearnMore @onClose="dialog = false" />
+              </v-dialog>
+            </v-flex>
+            <v-flex xs4 pt-4 class="text-right hidden-xs-only">
+              <img :src="require(`../../../../public/images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)" style="height: 90px" />
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+      </v-card>
     </v-flex>
   </v-layout>
 </template>
@@ -59,6 +68,9 @@
 <script>
 import LearnMore from '../LearnMore'
 import PromotionCard from '../PromotionCard'
+import config from '../../../config'
+import { get } from '../../../utils/httpHelpers'
+const baseRoute = config.baseRoute
 
 export default {
   props: ['tokenBalances', 'selected', 'isFreshAccount'],
@@ -67,6 +79,7 @@ export default {
       pagination: {
         sortBy: 'name'
       },
+      events: [],
       dialog: false
     }
   },
@@ -90,7 +103,38 @@ export default {
     },
     selectEmit(item) {
       this.$emit('update:select', item)
+    },
+    fetchEvents(apikey) {
+      const currentUrl = new URL(baseRoute)
+      const subdomain = currentUrl.hostname === 'localhost' ? 'develop' : currentUrl.hostname.split('.')[0]
+
+      const url = new URL('https://api.airtable.com/v0/appVd9rIDGbdmcnPj/Billboard')
+      url.searchParams.append('filterByFormula', `AND(Domain = '${subdomain}', NOT(IS_BEFORE(TODAY(), DateLive)))`)
+      get(url, {
+        headers: {
+          Authorization: `Bearer ${apikey}`
+        }
+      }).then(events => {
+        this.events = events.records.map(event => {
+          event.fields.ImageUrl =
+            event.fields.Image.length > 0 && false
+              ? event.fields.Image[0].url
+              : require(`../../../../public/images/${this.$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)
+          return event.fields
+        })
+      })
     }
+  },
+  created() {
+    const jwtToken = this.$store.state.jwtToken
+
+    get(`${config.api}/keys/airtable`, {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`
+      }
+    }).then(resp => {
+      this.fetchEvents(resp.data)
+    })
   }
 }
 </script>
