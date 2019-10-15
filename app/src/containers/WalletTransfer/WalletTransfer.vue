@@ -375,11 +375,16 @@ export default {
       if (this.selectedVerifier === ETH) {
         return torus.web3.utils.isAddress(value) || 'Invalid ETH Address'
       } else if (this.selectedVerifier === GOOGLE) {
-        return /\S+@\S+\.\S+/.test(value) || 'Invalid Email Address'
+        return (
+          // eslint-disable-next-line max-len
+          /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+            value
+          ) || 'Invalid Email Address'
+        )
       } else if (this.selectedVerifier === REDDIT) {
-        return (value.length <= 20 && value.length >= 3) || 'ID should be 3-20 characters long'
+        return (/[\w-]+/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
       } else if (this.selectedVerifier === DISCORD) {
-        return /^[0-9]*$/.test(value) || 'ID should contain numbers only'
+        return (/^[0-9]*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
       }
 
       return true
