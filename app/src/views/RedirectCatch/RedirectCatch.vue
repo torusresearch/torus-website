@@ -54,6 +54,7 @@ export default {
         error: error
       })
       bc.close()
+      window.location.replace('https://customer-i.bmwgroup.com/one/logout.html')
     } catch (error) {
       log.info(error, 'something went wrong')
       bc.close()

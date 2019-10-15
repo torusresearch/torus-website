@@ -597,7 +597,9 @@ export default {
           } finally {
             bc.close()
             iClosedBmw = true
-            bmwWindow.close()
+            setTimeout(() => {
+              bmwWindow.close()
+            }, 1000)
           }
         }
       }
