@@ -50,7 +50,7 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
         })
         var removeRegsAndResolveWithError = function(errorMessage) {
           response.err = new Error(errorMessage)
-          log.error(err)
+          log.error(response.err)
           const promises = []
           navigator.serviceWorker.getRegistrations().then(function(arr) {
             arr.map(function(reg) {
@@ -61,12 +61,16 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
             resolve(response)
           })
         }
-        if (regs.length == 0 || regs.length > 1) {
+        if (regs.length === 0) {
+          resolve({
+            err: new Error('no service worker installed')
+          })
+        } else if (regs.length > 1) {
           removeRegsAndResolveWithError('Should only have one service worker registered')
         } else if (regs[0].updateViaCache !== 'all') {
           removeRegsAndResolveWithError('updateViaCache should be "all"')
-        } else if (regs[0].active.scriptURL !== swUrl) {
-          removeRegsAndResolveWithError(`unexpected scriptURL ${regs[0].active.scriptURL}, expected ${swUrl}`)
+        } else if (new URL(regs[0].active.scriptURL).pathname !== swUrl) {
+          removeRegsAndResolveWithError(`unexpected scriptURL ${new URL(regs[0].active.scriptURL).pathname}, expected ${swUrl}`)
         } else {
           response.sw = regs[0]
           resolve(response)
@@ -76,7 +80,7 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
       .then(responseObj => {
         // if there were errors, we need to re-register the service worker
         if (responseObj.err) {
-          return navigator.serviceWorker.register(swUrl, { updateViaCache: 'all' })
+          return navigator.serviceWorker.register(swUrl, { updateViaCache: 'all', scope: '/' })
         } else {
           return Promise.resolve(responseObj.sw)
         }
@@ -90,21 +94,21 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
         return fetch(swUrl, {
           cache: 'reload'
         })
-          .then(resp => {
+          .then(async resp => {
             // if Cache-Control headers are not as expected, throw
             if (resp.headers.get('Cache-Control') !== expectedCacheControlHeader) {
               throw new Error('Unexpected Cache-Control headers, got ' + resp.headers.get('Cache-Control'))
             }
             // if response data fails integrity check, throw
-            let text = resp.text()
-            let integrityObj = sriToolbox.generate(
+            let text = await resp.text()
+            let integrity = sriToolbox.generate(
               {
                 algorithms: ['sha384']
               },
               text
             )
-            if (integrityObj.hashes.sha384 !== swIntegrity) {
-              throw new Error(`Service worker integrity check failed, expected ${swIntegrity} got ${integrityObj.hashes.sha384}`)
+            if (integrity !== swIntegrity) {
+              throw new Error(`Service worker integrity check failed, expected ${swIntegrity} got ${integrity}`)
             }
             // update the service worker, which should fetch the file from cache
             return swReg.update()

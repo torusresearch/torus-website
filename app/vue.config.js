@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const serviceWorkerIntegrityPlugin = require('./service-worker-integrity-plugin')
 
 let routes = ['/']
 
@@ -26,10 +27,10 @@ module.exports = {
     },
     before: function(app, server) {
       app.get('/service-worker.js', function(req, res) {
-        res.setHeaders({
-          'Cache-Control': 'max-age=3600',
-          'Service-Worker-Allowed': '/'
-        })
+        res.setHeader('Content-Type', 'application/javascript')
+        res.setHeader('Cache-Control', 'max-age=3600')
+        res.setHeader('Service-Worker-Allowed', '/')
+        res.sendFile(path.resolve('./dist/service-worker.js'))
       })
     }
   },
@@ -49,13 +50,17 @@ module.exports = {
       // replace the current one with it
       config.optimization.minimizer[0] = new TerserPlugin(options)
     }
+    config.watchOptions = {
+      aggregateTimeout: 300,
+      poll: 1000
+    }
   },
   chainWebpack: config => {
     config.resolve.alias.set('bn.js', 'fork-bn.js')
     config
       .plugin('service-worker-integrity')
-      .use(require('./service-worker-integrity-plugin'), ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
-      .before('cors')
+      .use(serviceWorkerIntegrityPlugin, ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
+      .after('workbox')
     // config.module
     //   .rule('worker')
     //   .test(/\.worker\.js$/)
