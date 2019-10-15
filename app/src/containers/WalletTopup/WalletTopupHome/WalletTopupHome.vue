@@ -38,7 +38,7 @@
 
 <script>
 import TopupProviders from '../../../components/WalletTopup/TopupProviders'
-import { ACTIVE, INACTIVE } from '../../../utils/enums'
+import { ACTIVE, INACTIVE, THEME_DARK_BLACK_NAME } from '../../../utils/enums'
 
 export default {
   components: {
@@ -50,7 +50,7 @@ export default {
       providers: [
         {
           name: 'simplex',
-          logo: 'simplex-logo.png',
+          logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'simplex-logo-white.png' : 'simplex-logo.png',
           line1: 'Pay with Credit Card',
           line2: '<span class="font-weight-medium">Simplex Service Fee</span> : 5% or 10 USD',
           line3: '(whichever is higher)',
@@ -59,7 +59,7 @@ export default {
         },
         {
           name: 'moonpay',
-          logo: this.$vuetify.theme.dark ? 'moon-pay-logo-white.svg' : 'moon-pay-logo.svg',
+          logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'moon-pay-logo-white.svg' : 'moon-pay-logo.svg',
           line1: 'Pay with Credit Card',
           line2: '<span class="font-weight-medium">Moonpay Service Fee</span> : 4.5% or 5 USD',
           line3: '(whichever is higher)',
@@ -68,31 +68,31 @@ export default {
         },
         {
           name: 'wyre',
-          logo: this.$vuetify.theme.dark ? 'wyre-logo-white.svg' : 'wyre-logo.svg',
+          logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'wyre-logo-white.svg' : 'wyre-logo.svg',
           line1: 'Pay with Debit Card (USA only)',
           line2: '<span class="font-weight-medium">Wyre Service Fee</span> : 2.9% + 30¢',
           line3: '( $40 per day limit )',
           link: '/wallet/topup/wyre',
-          status: INACTIVE
+          status: ACTIVE
         },
         {
           name: 'crypto',
-          logo: this.$vuetify.theme.dark ? 'crypto-logo-white.png' : 'crypto-logo.png',
+          logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'crypto-logo-white.png' : 'crypto-logo.png',
           line1: 'Pay with Credit Card',
           line2: '<span class="font-weight-medium">crypto.com Service Fee</span> : Varies',
           line3: '',
           link: '/wallet/topup/crypto',
           status: ACTIVE
+        },
+        {
+          name: 'coindirect',
+          logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'coindirect-logo-white.svg' : 'coindirect-logo.svg',
+          line1: 'Pay with Credit Card',
+          line2: '<span class="font-weight-medium">coindirect.com Service Fee</span> : Varies',
+          line3: '',
+          link: '/wallet/topup/coindirect',
+          status: ACTIVE
         }
-        // {
-        //   name: 'coindirect',
-        //   logo: `coindirect${this.$vuetify.theme.dark ? '' : '-dark'}.svg`,
-        //   line1: 'Pay with Credit Card',
-        //   line2: '<span class="font-weight-medium">coindirect.com Service Fee</span> : Varies',
-        //   line3: '',
-        //   link: '/wallet/topup/coindirect',
-        //   status: ACTIVE
-        // }
       ]
     }
   },
