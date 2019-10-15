@@ -3,6 +3,11 @@
 // workbox port
 var precacheController
 var listenerAdded = false
+var _cacheNameDetails = {
+  precache: 'precache-v2',
+  prefix: 'workbox',
+  suffix: registration.scope
+}
 
 function precacheAndRoute(entries, opts) {
   precache(entries)
@@ -20,7 +25,7 @@ function addFetchListener(opts) {
   var directoryIndex = opts.directoryIndex || 'index.html'
   var cleanURLs = opts.cleanURLs === undefined ? true : opts.cleanURLs
   var urlManipulation = opts.urlManipulation
-  var cacheName = 'precache-v2'
+  var cacheName = _createCacheName(_cacheNameDetails.precache)
   addEventListener('fetch', function(event) {
     var precachedURL = getCacheKeyForURL(event.request.url, {
       cleanURLs: cleanURLs,
@@ -29,7 +34,7 @@ function addFetchListener(opts) {
       urlManipulation: urlManipulation
     })
     if (!precachedURL) {
-      console.log('Precacher did not find a match for', event.request.url)
+      // console.log('Precacher did not find a match for', event.request.url)
       return
     }
     var responsePromise = caches
@@ -39,13 +44,17 @@ function addFetchListener(opts) {
       })
       .then(function(cachedResponse) {
         if (cachedResponse) {
-          return cachedReponse
+          return cachedResponse
         }
         console.warn('Precached response not found ', precachedURL)
         return fetch(precachedURL)
       })
     event.respondWith(responsePromise)
   })
+}
+
+function _createCacheName(cacheName) {
+  return [_cacheNameDetails.prefix, cacheName, _cacheNameDetails.suffix].filter(value => value && value.length > 0).join('-')
 }
 
 function getCacheKeyForURL(url, opts) {
@@ -155,8 +164,8 @@ function createCacheKey(entry) {
   }
 }
 
-function PrecacheController(cacheName) {
-  this._cacheName = cacheName
+function PrecacheController() {
+  this._cacheName = _createCacheName(_cacheNameDetails.precache)
   this._urlsToCacheKeys = {}
   this._urlsToCacheModes = {}
   this._cacheKeysToIntegrities = {}
