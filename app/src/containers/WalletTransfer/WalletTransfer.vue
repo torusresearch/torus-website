@@ -382,7 +382,10 @@ export default {
           ) || 'Invalid Email Address'
         )
       } else if (this.selectedVerifier === REDDIT) {
-        return (value.length <= 20 && value.length >= 3) || 'ID should be 3-20 characters long'
+        return (
+          (/\A[\w-]+\Z/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) ||
+          'Invalid reddit username (can only contain A-Z, a-z, 0-9, _, or -)'
+        )
       } else if (this.selectedVerifier === DISCORD) {
         return /^[0-9]*$/.test(value) || 'ID should contain numbers only'
       }
