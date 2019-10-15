@@ -382,12 +382,9 @@ export default {
           ) || 'Invalid Email Address'
         )
       } else if (this.selectedVerifier === REDDIT) {
-        return (
-          (/\A[\w-]+\Z/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) ||
-          'Invalid reddit username (can only contain A-Z, a-z, 0-9, _, or -)'
-        )
+        return (/[\w-]+/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
       } else if (this.selectedVerifier === DISCORD) {
-        return (/^[0-9]*$/.test(value) && value.length === 18) || 'Invalid Discord ID (must be a number of length 18)'
+        return (/^[0-9]*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
       }
 
       return true
