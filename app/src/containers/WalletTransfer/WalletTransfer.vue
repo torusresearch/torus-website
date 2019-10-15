@@ -387,7 +387,7 @@ export default {
           'Invalid reddit username (can only contain A-Z, a-z, 0-9, _, or -)'
         )
       } else if (this.selectedVerifier === DISCORD) {
-        return /^[0-9]*$/.test(value) || 'ID should contain numbers only'
+        return (/^[0-9]*$/.test(value) && value.length === 18) || 'Invalid Discord ID (must be a number of length 18)'
       }
 
       return true
