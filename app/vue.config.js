@@ -42,20 +42,6 @@ module.exports = {
       // replace the current one with it
       config.optimization.minimizer[0] = new TerserPlugin(options)
     }
-    config.watchOptions = {
-      aggregateTimeout: 300,
-      poll: 1000
-    }
-    config.module
-      .rule('string-replace')
-      .test('sw.js')
-      .use('string-replace-loader')
-      .loader('string-replace-loader')
-      .options({
-        search: '$',
-        replace: 'window.jQuery'
-      })
-      .end()
   },
   chainWebpack: config => {
     config.resolve.alias.set('bn.js', 'fork-bn.js')
