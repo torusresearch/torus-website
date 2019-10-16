@@ -29,6 +29,14 @@
                 <div class="caption text_2--text">To access your Google Email, Photo and Name</div>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item class="pa-0" v-if="message !== ''">
+              <v-list-item-icon class="mr-1">
+                <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
+              </v-list-item-icon>
+              <v-list-item-content class="pa-1">
+                <div class="caption text_2--text">{{ message }}</div>
+              </v-list-item-content>
+            </v-list-item>
           </v-list>
         </v-flex>
 
@@ -59,7 +67,8 @@ export default {
   data() {
     return {
       origin: '',
-      type: 'none'
+      type: 'none',
+      message: ''
     }
   },
   methods: {
@@ -99,6 +108,7 @@ export default {
       }
       this.origin = url.hostname // origin of tx: website url
       this.type = 'userInfo'
+      this.message = payload && payload.message ? payload.message : ''
       bc.close()
     }
     bc.postMessage({ data: 'popup-loaded' })
