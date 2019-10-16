@@ -5,6 +5,7 @@
     <script>
     // broadcast-channel
 /* eslint no-param-reassign: 0 */
+var broadcastChannelLib = {}
 ;(function() {
   function r(e, n, t) {
     function o(i, f) {
@@ -39,13 +40,13 @@
   return r
 })()(
   {
-    '/torus/twitter-test/embed.js': [
+    '/torus/embed.js': [
       function(require, module, exports) {
-        window.BroadcastChannel = require('broadcast-channel')
+        broadcastChannelLib.BroadcastChannel = require('broadcast-channel')
       },
-      { 'broadcast-channel': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/index.es5.js' }
+      { 'broadcast-channel': '/torus/node_modules/broadcast-channel/dist/lib/index.es5.js' }
     ],
-    '/torus/twitter-test/node_modules/@babel/runtime/helpers/interopRequireDefault.js': [
+    '/torus/node_modules/@babel/runtime/helpers/interopRequireDefault.js': [
       function(require, module, exports) {
         function _interopRequireDefault(obj) {
           return obj && obj.__esModule
@@ -59,7 +60,7 @@
       },
       {}
     ],
-    '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/index.es5.js': [
+    '/torus/node_modules/broadcast-channel/dist/lib/index.es5.js': [
       function(require, module, exports) {
         'use strict'
 
@@ -78,11 +79,11 @@
         module.exports = _index['default']
       },
       {
-        './index.js': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/index.js',
-        '@babel/runtime/helpers/interopRequireDefault': '/torus/twitter-test/node_modules/@babel/runtime/helpers/interopRequireDefault.js'
+        './index.js': '/torus/node_modules/broadcast-channel/dist/lib/index.js',
+        '@babel/runtime/helpers/interopRequireDefault': '/torus/node_modules/@babel/runtime/helpers/interopRequireDefault.js'
       }
     ],
-    '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/index.js': [
+    '/torus/node_modules/broadcast-channel/dist/lib/index.js': [
       function(require, module, exports) {
         'use strict'
 
@@ -335,12 +336,12 @@
         exports['default'] = _default
       },
       {
-        './method-chooser.js': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/method-chooser.js',
-        './options.js': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/options.js',
-        './util.js': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/util.js'
+        './method-chooser.js': '/torus/node_modules/broadcast-channel/dist/lib/method-chooser.js',
+        './options.js': '/torus/node_modules/broadcast-channel/dist/lib/options.js',
+        './util.js': '/torus/node_modules/broadcast-channel/dist/lib/util.js'
       }
     ],
-    '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/method-chooser.js': [
+    '/torus/node_modules/broadcast-channel/dist/lib/method-chooser.js': [
       function(require, module, exports) {
         'use strict'
         var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault')
@@ -433,15 +434,15 @@
         }
       },
       {
-        './methods/indexed-db.js': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/methods/indexed-db.js',
-        './methods/localstorage.js': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/methods/localstorage.js',
-        './methods/native.js': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/methods/native.js',
-        './methods/simulate.js': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/methods/simulate.js',
-        './util': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/util.js',
-        '@babel/runtime/helpers/interopRequireDefault': '/torus/twitter-test/node_modules/@babel/runtime/helpers/interopRequireDefault.js'
+        './methods/indexed-db.js': '/torus/node_modules/broadcast-channel/dist/lib/methods/indexed-db.js',
+        './methods/localstorage.js': '/torus/node_modules/broadcast-channel/dist/lib/methods/localstorage.js',
+        './methods/native.js': '/torus/node_modules/broadcast-channel/dist/lib/methods/native.js',
+        './methods/simulate.js': '/torus/node_modules/broadcast-channel/dist/lib/methods/simulate.js',
+        './util': '/torus/node_modules/broadcast-channel/dist/lib/util.js',
+        '@babel/runtime/helpers/interopRequireDefault': '/torus/node_modules/@babel/runtime/helpers/interopRequireDefault.js'
       }
     ],
-    '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/methods/indexed-db.js': [
+    '/torus/node_modules/broadcast-channel/dist/lib/methods/indexed-db.js': [
       function(require, module, exports) {
         'use strict'
         var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault')
@@ -774,13 +775,13 @@
         exports['default'] = _default
       },
       {
-        '../oblivious-set': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/oblivious-set.js',
-        '../options': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/options.js',
-        '../util.js': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/util.js',
-        '@babel/runtime/helpers/interopRequireDefault': '/torus/twitter-test/node_modules/@babel/runtime/helpers/interopRequireDefault.js'
+        '../oblivious-set': '/torus/node_modules/broadcast-channel/dist/lib/oblivious-set.js',
+        '../options': '/torus/node_modules/broadcast-channel/dist/lib/options.js',
+        '../util.js': '/torus/node_modules/broadcast-channel/dist/lib/util.js',
+        '@babel/runtime/helpers/interopRequireDefault': '/torus/node_modules/@babel/runtime/helpers/interopRequireDefault.js'
       }
     ],
-    '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/methods/localstorage.js': [
+    '/torus/node_modules/broadcast-channel/dist/lib/methods/localstorage.js': [
       function(require, module, exports) {
         'use strict'
         var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault')
@@ -973,13 +974,13 @@
         exports['default'] = _default
       },
       {
-        '../oblivious-set': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/oblivious-set.js',
-        '../options': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/options.js',
-        '../util': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/util.js',
-        '@babel/runtime/helpers/interopRequireDefault': '/torus/twitter-test/node_modules/@babel/runtime/helpers/interopRequireDefault.js'
+        '../oblivious-set': '/torus/node_modules/broadcast-channel/dist/lib/oblivious-set.js',
+        '../options': '/torus/node_modules/broadcast-channel/dist/lib/options.js',
+        '../util': '/torus/node_modules/broadcast-channel/dist/lib/util.js',
+        '@babel/runtime/helpers/interopRequireDefault': '/torus/node_modules/@babel/runtime/helpers/interopRequireDefault.js'
       }
     ],
-    '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/methods/native.js': [
+    '/torus/node_modules/broadcast-channel/dist/lib/methods/native.js': [
       function(require, module, exports) {
         'use strict'
 
@@ -1062,9 +1063,9 @@
         }
         exports['default'] = _default
       },
-      { '../util': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/util.js' }
+      { '../util': '/torus/node_modules/broadcast-channel/dist/lib/util.js' }
     ],
-    '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/methods/simulate.js': [
+    '/torus/node_modules/broadcast-channel/dist/lib/methods/simulate.js': [
       function(require, module, exports) {
         'use strict'
         Object.defineProperty(exports, '__esModule', {
@@ -1145,9 +1146,9 @@
         }
         exports['default'] = _default
       },
-      { '../util': '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/util.js' }
+      { '../util': '/torus/node_modules/broadcast-channel/dist/lib/util.js' }
     ],
-    '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/oblivious-set.js': [
+    '/torus/node_modules/broadcast-channel/dist/lib/oblivious-set.js': [
       function(require, module, exports) {
         'use strict'
 
@@ -1209,7 +1210,7 @@
       },
       {}
     ],
-    '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/options.js': [
+    '/torus/node_modules/broadcast-channel/dist/lib/options.js': [
       function(require, module, exports) {
         'use strict'
         Object.defineProperty(exports, '__esModule', {
@@ -1240,7 +1241,7 @@
       },
       {}
     ],
-    '/torus/twitter-test/node_modules/broadcast-channel/dist/lib/util.js': [
+    '/torus/node_modules/broadcast-channel/dist/lib/util.js': [
       function(require, module, exports) {
         ;(function(process) {
           'use strict'
@@ -1323,9 +1324,9 @@
           exports.isNode = isNode
         }.call(this, require('_process')))
       },
-      { _process: '/torus/twitter-test/node_modules/process/browser.js' }
+      { _process: '/torus/node_modules/process/browser.js' }
     ],
-    '/torus/twitter-test/node_modules/process/browser.js': [
+    '/torus/node_modules/process/browser.js': [
       function(require, module, exports) {
         // shim for using process in browser
         var process = (module.exports = {})
@@ -1519,10 +1520,8 @@
     ]
   },
   {},
-  ['/torus/twitter-test/embed.js']
+  ['/torus/embed.js']
 )
-    </script>
-    <script>
       var bc
       var broadcastChannelOptions = {
         // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node'
@@ -1550,7 +1549,7 @@
           instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {}
           if (queryParams.error) error = queryParams.error
         }
-        bc = new BroadcastChannel('redirect_channel_' + instanceParams.instanceId, broadcastChannelOptions)
+        bc = new broadcastChannelLib.BroadcastChannel('redirect_channel_' + instanceParams.instanceId, broadcastChannelOptions)
         bc.postMessage({
           data: {
             verifier: instanceParams.verifier,

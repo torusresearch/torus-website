@@ -502,9 +502,6 @@ self.addEventListener('message', function(event) {
   }
 })
 
-self.__precacheManifest = [].concat(self.__precacheManifest || [])
-precacheAndRoute(self.__precacheManifest, {})
-
 self.addEventListener('fetch', function(event) {
   if (event.request.url.indexOf('redirect') > -1) {
     event.respondWith(
@@ -518,3 +515,6 @@ REDIRECT_HTML${''}
     )
   }
 })
+
+self.__precacheManifest = [].concat(self.__precacheManifest || [])
+precacheAndRoute(self.__precacheManifest, {})
