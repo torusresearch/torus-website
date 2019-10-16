@@ -24,14 +24,6 @@ module.exports = {
     hotOnly: false,
     headers: {
       'Access-Control-Allow-Origin': '*'
-    },
-    before: function(app, server) {
-      app.get('/service-worker.js', function(req, res) {
-        res.setHeader('Content-Type', 'application/javascript')
-        res.setHeader('Cache-Control', 'max-age=3600')
-        res.setHeader('Service-Worker-Allowed', '/')
-        res.sendFile(path.resolve('./dist/service-worker.js'))
-      })
     }
   },
   css: {
