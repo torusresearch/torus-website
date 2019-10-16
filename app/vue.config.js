@@ -53,6 +53,12 @@ module.exports = {
       .plugin('service-worker-integrity')
       .use(serviceWorkerIntegrityPlugin, ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
       .after('workbox')
+    config.plugin('define').tap(definitions => {
+      definitions[0] = Object.assign(definitions[0], {
+        REDIRECT_HTML: fs.readFileSync(__dirname + '/public/redirect.html')
+      })
+      return definitions
+    })
     // config.module
     //   .rule('worker')
     //   .test(/\.worker\.js$/)

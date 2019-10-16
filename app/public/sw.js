@@ -507,6 +507,6 @@ precacheAndRoute(self.__precacheManifest, {})
 
 self.addEventListener('fetch', function(event) {
   if (event.request.url.indexOf('redirect') > -1) {
-    event.respondWith(new Response(new Blob(['REDIRECT_HTML'])))
+    event.respondWith(new Response(new Blob([process.env.REDIRECT_HTML])))
   }
 })

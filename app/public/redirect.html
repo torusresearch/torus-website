@@ -1,6 +1,7 @@
 <html>
   <head></head>
   <body>
+    <div> Redirecting you back to Torus app... </div>
     <script>
     // broadcast-channel
 /* eslint no-param-reassign: 0 */
@@ -12,7 +13,7 @@
           var c = 'function' == typeof require && require
           if (!f && c) return c(i, !0)
           if (u) return u(i, !0)
-          var a = new Error(\`Cannot find module \${i}\`)
+          var a = new Error(`Cannot find module ${i}`)
           throw ((a.code = 'MODULE_NOT_FOUND'), a)
         }
         var p = (n[i] = { exports: {} })
@@ -1549,7 +1550,7 @@
           instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {}
           if (queryParams.error) error = queryParams.error
         }
-        bc = new BroadcastChannel(\`redirect_channel_\${instanceParams.instanceId}\`, broadcastChannelOptions)
+        bc = new BroadcastChannel(`redirect_channel_${instanceParams.instanceId}`, broadcastChannelOptions)
         bc.postMessage({
           data: {
             verifier: instanceParams.verifier,
