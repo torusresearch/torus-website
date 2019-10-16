@@ -9,6 +9,7 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
       log.info('App is being served from cache by a service worker.\n' + 'For more details, visit https://goo.gl/AFskqB')
     },
     registered() {
+      caches.keys().then(keys => keys.map(key => caches.delete(key)))
       log.info('Service worker has been registered.')
     },
     cached() {
