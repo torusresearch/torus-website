@@ -4,7 +4,7 @@ const path = require('path')
 let routes = ['/']
 
 if (process.env.VUE_APP_TORUS_BUILD_ENV !== 'production') {
-  routes.push('/login')
+  // routes.push('/login')
 }
 // https://157.230.171.237:8117
 
