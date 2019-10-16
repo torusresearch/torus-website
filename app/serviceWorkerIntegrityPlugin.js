@@ -17,8 +17,6 @@ module.exports = class ServiceWorkerIntegrityPlugin {
       })[0]
     }
 
-    debugger
-
     compiler.hooks.emit.tap(ID, compilation => {
       try {
         var precacheManifestName = getFileName(compilation, 'precache-manifest.')

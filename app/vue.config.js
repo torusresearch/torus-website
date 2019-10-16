@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const serviceWorkerIntegrityPlugin = require('./service-worker-integrity-plugin')
+const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
 
 let routes = ['/']
 
