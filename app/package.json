@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "post-build": ". ./scripts/buildErrorPage.sh",
     "build": "cross-env NODE_ENV=production VUE_APP_TORUS_BUILD_ENV=production npm run build-embed:production && npm run pre-build && cross-env VUE_APP_TORUS_BUILD_ENV=production vue-cli-service build && npm run post-build",
     "lint": "vue-cli-service lint",
     "build-embed:dev": "cross-env VUE_APP_TORUS_BUILD_ENV=development node ./scripts/createEmbed.js",
@@ -19,7 +18,8 @@
     "dev": "cross-env NODE_ENV=development VUE_APP_TORUS_BUILD_ENV=development node server.js",
     "lint:js": "eslint --fix src/**/*.js",
     "lint:vue": "vue-cli-service lint && eslint --fix src/**/*.vue",
-    "pre-build": ". ./scripts/calculateIntegrity.sh",
+    "pre-build": ". ./scripts/calculateIntegrity.sh && node ./scripts/replaceRedirectHTML.js",
+    "post-build": ". ./scripts/buildErrorPage.sh",
     "production": "cross-env PORT=443 NODE_ENV=production node server.js",
     "temp": "npm run build-embed:dev && npm run build:dev",
     "test:build-embed": "mocha ./test/compile/Web3Test.js",
