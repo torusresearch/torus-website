@@ -38,17 +38,21 @@ module.exports = class ServiceWorkerIntegrityPlugin {
         compilation.assets['js/app.js'] = new RawSource(str.toString().replace('SERVICE_WORKER_SHA_INTEGRITY', swIntegrity))
         var appHTMLName = getFileName(compilation, 'app.html')
         compiler.hooks.done.tap(ID, stats => {
-          var appIntegrity = ssri.fromData(stats.compilation.assets['js/app.js'].source(), { algorithms: ['sha384'] }).toString()
-          var appHTMLName = getFileName(compilation, 'index.html')
-          var appHTMLPath = stats.compilation.assets[appHTMLName].existsAt
-          var appHTMLFile = fs.readFileSync(appHTMLPath)
-          fs.writeFileSync(
-            appHTMLPath,
-            appHTMLFile
-              .toString()
-              .replace(/app\.[0-9a-z]*\.js/, 'app.js')
-              .replace(/(\/js\/app.js.*)(integrity="sha384\-[a-zA-Z0-9\/\+\=]*")(><\/script>)/, `$1integrity="${appIntegrity}"$3`)
-          )
+          try {
+            var appIntegrity = ssri.fromData(stats.compilation.assets['js/app.js'].source(), { algorithms: ['sha384'] }).toString()
+            var appHTMLName = getFileName(compilation, 'index.html')
+            var appHTMLPath = stats.compilation.assets[appHTMLName].existsAt
+            var appHTMLFile = fs.readFileSync(appHTMLPath)
+            fs.writeFileSync(
+              appHTMLPath,
+              appHTMLFile
+                .toString()
+                .replace(/app\.[0-9a-z]*\.js/, 'app.js')
+                .replace(/(\/js\/app.js.*)(integrity="sha384\-[a-zA-Z0-9\/\+\=]*")(><\/script>)/, `$1integrity="${appIntegrity}"$3`)
+            )
+          } catch (err) {
+            console.error('Could not run service worker integrity plugin on compilation', err)
+          }
         })
       } catch (err) {
         console.error('Could not run service worker integrity plugin ', err)
