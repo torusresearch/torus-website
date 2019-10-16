@@ -5,8 +5,6 @@ const baseRoute =
     ? 'https://staging.tor.us/'
     : process.env.VUE_APP_TORUS_BUILD_ENV === 'testing'
     ? 'https://testing.tor.us/'
-    : process.env.VUE_APP_TORUS_BUILD_ENV === 'telegram-login'
-    ? 'https://telegram-login.tor.us/'
     : 'https://localhost:3000/'
 
 const redirect_uri = `${baseRoute}redirect`

@@ -23,7 +23,8 @@ module.exports = {
     // },
     hotOnly: false,
     headers: {
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'max-age=3600'
     }
   },
   css: {

@@ -31,7 +31,13 @@ const securityHeaderMiddleware = (req, res, next) => {
   next()
 }
 
+const cacheControlHeaderMiddleware = (req, res, next) => {
+  res.setHeader('Cache-Control', 'max-age=3600')
+  next()
+}
+
 app.use(securityHeaderMiddleware)
+app.use(cacheControlHeaderMiddleware)
 
 app.get('/service-worker.js', function(req, res) {
   res.setHeader('Content-Type', 'application/javascript')
