@@ -44,33 +44,43 @@
               </v-card-text>
             </v-card>
           </v-flex>
-          <v-flex xs12 sm6 px-4>
-            <PromotionCard
-              v-if="isFreshAccount"
-              title="Welcome to Torus."
-              :image-path="`${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`"
-            >
-              <template v-slot:subtitle>
-                <v-dialog v-model="dialogLearnMore" max-width="700">
-                  <template v-slot:activator="{ on }">
-                    <div class="body-2'">
-                      <a id="learn-more-btn" class="primary--text font-weight-bold" v-on="on">Learn more</a>
-                      about your wallet today.
-                    </div>
-                  </template>
-                  <LearnMore @onClose="dialogLearnMore = false" />
-                </v-dialog>
-              </template>
-            </PromotionCard>
-
-            <PromotionCard
-              v-if="!isFreshAccount"
-              title="Welcome to Torus."
-              details-link="http://torus4everyone2019.devpost.com"
-              details-text="Register Now"
-              subtitle="Torus Online Hackathon Live Now!"
-              :image-path="`learn-more.svg`"
-            ></PromotionCard>
+          <v-flex xs12 sm6 px-4 v-if="isFreshAccount">
+            <v-card class="card-shadow">
+              <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
+                <v-layout>
+                  <v-flex
+                    class="text_1--text pt-4"
+                    :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'"
+                  >
+                    <div class="body-1 font-weight-bold">Welcome to Torus.</div>
+                    <v-dialog v-model="dialogLearnMore" max-width="700">
+                      <template v-slot:activator="{ on }">
+                        <div class="body-2'">
+                          <a id="learn-more-btn" class="primary--text font-weight-bold" v-on="on">Learn more</a>
+                          about your wallet today.
+                        </div>
+                      </template>
+                      <LearnMore @onClose="dialogLearnMore = false" />
+                    </v-dialog>
+                  </v-flex>
+                  <v-flex xs4 pt-4 class="text-right hidden-xs-only">
+                    <img
+                      :src="require(`../../../../public/images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)"
+                      style="height: 90px"
+                    />
+                  </v-flex>
+                </v-layout>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+          <v-flex xs12 sm6 px-4 v-for="(event, i) in isFreshAccount ? [] : events" :key="`event-${i}`">
+            <promotion-card
+              :title="event.eventName"
+              :image-path="event.imageUrl"
+              :subtitle="event.description"
+              :details-link="event.callToActionLink"
+              :details-text="event.callToActionText"
+            ></promotion-card>
           </v-flex>
         </v-layout>
       </v-flex>
@@ -163,13 +173,7 @@
 
     <v-tabs-items v-model="activeTab" class="token-tab-content">
       <v-tab-item>
-        <token-balances-table
-          :tokenBalances="filteredBalancesArray"
-          @update:select="select"
-          :selected="selected"
-          :search="search"
-          :isFreshAccount="isFreshAccount"
-        />
+        <token-balances-table :tokenBalances="filteredBalancesArray" @update:select="select" :selected="selected" />
       </v-tab-item>
       <v-tab-item>
         <collectibles-list></collectibles-list>
@@ -187,6 +191,7 @@ import ExportQrCode from '../../../components/helpers/ExportQrCode'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import LearnMore from '../../../components/WalletHome/LearnMore'
 import { MAINNET, WALLET_HEADERS_HOME } from '../../../utils/enums'
+import { get } from '../../../utils/httpHelpers'
 
 export default {
   name: 'walletHome',
@@ -199,7 +204,8 @@ export default {
       search: '',
       lastUpdated: '',
       dialogLearnMore: false,
-      activeTab: 0
+      activeTab: 0,
+      events: []
     }
   },
   computed: {
@@ -279,6 +285,16 @@ export default {
   },
   created() {
     this.setDateUpdated()
+
+    const jwtToken = this.$store.state.jwtToken
+
+    get(`${config.api}/billboard`, {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`
+      }
+    }).then(resp => {
+      this.events = resp.data
+    })
   }
 }
 </script>

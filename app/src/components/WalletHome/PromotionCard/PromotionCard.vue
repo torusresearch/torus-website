@@ -15,7 +15,7 @@
         </v-flex>
         <slot name="image">
           <v-flex xs4 pt-4 class="text-right hidden-xs-only">
-            <img :src="require(`../../../../public/images/${imagePath}`)" style="height: 101px" />
+            <img :src="imagePath" style="height: 101px" />
           </v-flex>
         </slot>
       </v-layout>
