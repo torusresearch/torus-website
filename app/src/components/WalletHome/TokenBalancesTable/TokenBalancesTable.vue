@@ -31,11 +31,11 @@
 
     <v-flex class="xs12 sm6 px-4 my-4" v-for="(event, i) in isFreshAccount ? [] : events" :key="`event-${i}`" style="order: 1">
       <promotion-card
-        :title="event.EventName"
-        :image-path="event.ImageUrl"
-        :subtitle="event.Description"
-        :details-link="event.CallToActionLink"
-        :details-text="event.CallToActionText"
+        :title="event.eventName"
+        :image-path="event.imageUrl"
+        :subtitle="event.description"
+        :details-link="event.callToActionLink"
+        :details-text="event.callToActionText"
       ></promotion-card>
     </v-flex>
 
@@ -103,37 +103,17 @@ export default {
     },
     selectEmit(item) {
       this.$emit('update:select', item)
-    },
-    fetchEvents(apikey) {
-      const currentUrl = new URL(baseRoute)
-      const subdomain = currentUrl.hostname === 'localhost' ? 'develop' : currentUrl.hostname.split('.')[0]
-
-      const url = new URL('https://api.airtable.com/v0/appVd9rIDGbdmcnPj/Billboard')
-      url.searchParams.append('filterByFormula', `AND(Domain = '${subdomain}', NOT(IS_BEFORE(TODAY(), DateLive)))`)
-      get(url, {
-        headers: {
-          Authorization: `Bearer ${apikey}`
-        }
-      }).then(events => {
-        this.events = events.records.map(event => {
-          event.fields.ImageUrl =
-            event.fields.Image.length > 0 && false
-              ? event.fields.Image[0].url
-              : require(`../../../../public/images/${this.$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)
-          return event.fields
-        })
-      })
     }
   },
   created() {
     const jwtToken = this.$store.state.jwtToken
 
-    get(`${config.api}/keys/airtable`, {
+    get(`${config.api}/billboard`, {
       headers: {
         Authorization: `Bearer ${jwtToken}`
       }
     }).then(resp => {
-      this.fetchEvents(resp.data)
+      this.events = resp.data
     })
   }
 }
