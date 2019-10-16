@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer')
 const assert = require('assert')
-const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME, WALLET_HEADERS_CONFIRM } = require('../../src/utils/enums')
+const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME, WALLET_HEADERS_CONFIRM, GOOGLE_LABEL } = require('../../src/utils/enums')
 const significantDigits = require('../../src/utils/utils').significantDigits
 
 const config = require('./lib/config')
@@ -10,6 +10,7 @@ const {
   click,
   typeText,
   waitForText,
+  waitForClass,
   shouldExist,
   selectItem,
   shouldValueNotBeEmpty,
@@ -29,7 +30,7 @@ describe('Tests Wallet Transfer Transaction', () => {
       devtools: config.isDevTools,
       timeout: config.launchTimeout,
       ignoreHTTPSErrors: config.ignoreHTTPSErrors,
-      args: ['--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
     })
 
     page = (await browser.pages())[0]
@@ -89,8 +90,9 @@ describe('Tests Wallet Transfer Transaction', () => {
   })
 
   it('Should error on invalid input', async () => {
+    await selectItem(page, '#recipient-verifier', '.recipient-verifier-container', GOOGLE_LABEL)
     await typeText(page, 'lionell', '#recipient-address')
-    await waitForText(page, '.recipient-address-container .v-messages__message', 'Invalid ETH or Email Address')
+    await waitForClass(page, '.recipient-address', 'error--text')
 
     await typeText(page, '@tor.us', '#recipient-address')
   })

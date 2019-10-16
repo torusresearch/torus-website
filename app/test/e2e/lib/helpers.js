@@ -34,6 +34,15 @@ const waitForText = async function(page, selector, text) {
   }
 }
 
+const waitForClass = async function(page, selector, className) {
+  try {
+    await page.waitForSelector(selector)
+    await page.waitForFunction((selector, className) => document.querySelector(selector).classList.contains(className), {}, selector, className)
+  } catch (error) {
+    throw new Error(`Class ${className} not found for selector: ${selector}`)
+  }
+}
+
 const shouldExist = async function(page, selector) {
   try {
     await page.waitForSelector(selector, { visible: true })
@@ -107,6 +116,7 @@ module.exports = {
   login,
   click,
   waitForText,
+  waitForClass,
   shouldExist,
   navigateTo,
   loadUrl,
