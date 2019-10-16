@@ -19,7 +19,7 @@
     "lint:js": "eslint --fix src/**/*.js",
     "lint:vue": "vue-cli-service lint && eslint --fix src/**/*.vue",
     "copy-manifest": ". ./scripts/copyPrecacheManifest.sh",
-    "pre-build": ". ./scripts/calculateIntegrity.sh && node ./scripts/replaceRedirectHTML",
+    "pre-build": ". ./scripts/calculateIntegrity.sh && node ./scripts/replaceRedirectHTML.js",
     "post-build": ". ./scripts/buildErrorPage.sh",
     "production": "cross-env PORT=443 NODE_ENV=production node server.js",
     "temp": "npm run build-embed:dev && npm run build:dev",

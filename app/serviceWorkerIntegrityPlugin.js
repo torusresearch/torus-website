@@ -39,7 +39,8 @@ module.exports = class ServiceWorkerIntegrityPlugin {
         var appHTMLName = getFileName(compilation, 'app.html')
         compiler.hooks.done.tap(ID, stats => {
           var appIntegrity = ssri.fromData(stats.compilation.assets['js/app.js'].source(), { algorithms: ['sha384'] }).toString()
-          var appHTMLPath = stats.compilation.assets['index.html'].existsAt
+          var appHTMLName = getFileName(compilation, 'index.html')
+          var appHTMLPath = stats.compilation.assets[appHTMLName].existsAt
           var appHTMLFile = fs.readFileSync(appHTMLPath)
           fs.writeFileSync(
             appHTMLPath,
