@@ -2,6 +2,7 @@
 import TorusController from './controllers/TorusController'
 import store from './store'
 import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE } from './utils/enums'
+import { storageAvailable } from './utils/utils'
 var log = require('loglevel')
 var Web3 = require('web3')
 var LocalMessageDuplexStream = require('post-message-stream')
@@ -14,9 +15,13 @@ function onloadTorus(torus) {
     store.dispatch('showPopup')
   }
 
-  const sessionData = sessionStorage.getItem('torus-app')
+  let sessionData
 
-  const sessionCachedNetwork = (JSON.parse(sessionData) && JSON.parse(sessionData).networkType) || {
+  if (storageAvailable('sessionStorage')) {
+    sessionData = sessionStorage.getItem('torus-app')
+  }
+
+  const sessionCachedNetwork = (sessionData && JSON.parse(sessionData).networkType) || {
     host: MAINNET,
     chainId: MAINNET_CODE,
     networkName: MAINNET_DISPLAY_NAME
