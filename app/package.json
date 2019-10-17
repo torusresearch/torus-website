@@ -5,8 +5,6 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "cross-env NODE_ENV=production VUE_APP_TORUS_BUILD_ENV=production npm run build-embed:production && npm run pre-build && cross-env VUE_APP_TORUS_BUILD_ENV=production vue-cli-service build && npm run post-build",
-    "test:unit": "mocha ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js",
-    "test:e2e": "mocha --timeout=60000 ./test/e2e",
     "lint": "vue-cli-service lint",
     "build-embed:dev": "cross-env VUE_APP_TORUS_BUILD_ENV=development node ./scripts/createEmbed.js",
     "build-embed:production": "cross-env VUE_APP_TORUS_BUILD_ENV=production NODE_ENV=production node ./scripts/createEmbed.js",
@@ -24,6 +22,8 @@
     "pre-build": ". ./scripts/calculateIntegrity.sh && node ./scripts/replaceRedirectHTML.js",
     "production": "cross-env PORT=443 NODE_ENV=production node server.js",
     "temp": "npm run build-embed:dev && npm run build:dev",
+    "test:unit": "mocha ./test/unit/controllers/*.js ./test/unit/controllers/transactions/*.js",
+    "test:e2e": "mocha --timeout=60000 ./test/e2e",
     "test:build-embed": "mocha ./test/compile/Web3Test.js",
     "test:codecov-upload": "if [ $CODECOV_TOKEN ]; then nyc report --reporter=text-lcov > coverage.lcov && codecov; fi",
     "test:coverage-codecov": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:codecov-upload",
