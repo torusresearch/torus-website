@@ -26,6 +26,7 @@ describe('Tests Wallet Activity Page', () => {
     })
 
     page = (await browser.pages())[0]
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36')
     await page.setDefaultTimeout(config.waitingTimeout)
     await page.setViewport({
       width: config.viewportWidth,
@@ -42,7 +43,9 @@ describe('Tests Wallet Activity Page', () => {
 
     // Used for getting the newly opened window
     const pageTarget = page.target()
-
+    await pageTarget.setUserAgent(
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36'
+    )
     // Get the loginPage
     await click(page, '#loginBtn')
     const loginPageTarget = await browser.waitForTarget(target => target.opener() === pageTarget)
