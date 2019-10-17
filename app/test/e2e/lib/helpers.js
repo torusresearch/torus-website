@@ -18,7 +18,7 @@ const login = async function(page) {
 
 const click = async function(page, selector) {
   try {
-    await page.waitForSelector(selector, { visible: true })
+    await page.waitForSelector(selector, { visible: true, timeout: 120000 })
     await page.click(selector)
   } catch (error) {
     throw new Error(`Could not click on selector: ${selector}`)
@@ -27,8 +27,8 @@ const click = async function(page, selector) {
 
 const waitForText = async function(page, selector, text) {
   try {
-    await page.waitForSelector(selector)
-    await page.waitForFunction((selector, text) => document.querySelector(selector).innerText.includes(text), {}, selector, text)
+    await page.waitForSelector(selector, { timeout: 120000 })
+    await page.waitForFunction((selector, text) => document.querySelector(selector).innerText.includes(text), { timeout: 120000 }, selector, text)
   } catch (error) {
     throw new Error(`Text ${text} not found for selector: ${selector}`)
   }
@@ -36,8 +36,13 @@ const waitForText = async function(page, selector, text) {
 
 const waitForClass = async function(page, selector, className) {
   try {
-    await page.waitForSelector(selector)
-    await page.waitForFunction((selector, className) => document.querySelector(selector).classList.contains(className), {}, selector, className)
+    await page.waitForSelector(selector, { timeout: 120000 })
+    await page.waitForFunction(
+      (selector, className) => document.querySelector(selector).classList.contains(className),
+      { timeout: 120000 },
+      selector,
+      className
+    )
   } catch (error) {
     throw new Error(`Class ${className} not found for selector: ${selector}`)
   }
@@ -45,7 +50,7 @@ const waitForClass = async function(page, selector, className) {
 
 const shouldExist = async function(page, selector) {
   try {
-    await page.waitForSelector(selector, { visible: true })
+    await page.waitForSelector(selector, { visible: true, timeout: 120000 })
   } catch (error) {
     throw new Error(`Selector ${selector} does not exist`)
   }
@@ -71,7 +76,7 @@ const loadUrl = async function(page, url) {
 
 const typeText = async function(page, text, selector) {
   try {
-    await page.waitForSelector(selector, { visible: true })
+    await page.waitForSelector(selector, { visible: true, timeout: 120000 })
     await page.type(selector, text)
   } catch (error) {
     throw new Error(`Could not text into selector: ${selector}`)
@@ -80,8 +85,8 @@ const typeText = async function(page, text, selector) {
 
 const shouldTextNotBeEmpty = async function(page, selector) {
   try {
-    await page.waitForSelector(selector)
-    await page.waitForFunction(selector => document.querySelector(selector).innerText !== '', {}, selector)
+    await page.waitForSelector(selector, { timeout: 120000 })
+    await page.waitForFunction(selector => document.querySelector(selector).innerText !== '', { timeout: 120000 }, selector)
   } catch (error) {
     throw new Error(`Inner text empty for selector: ${selector}`)
   }
@@ -89,8 +94,8 @@ const shouldTextNotBeEmpty = async function(page, selector) {
 
 const shouldValueNotBeEmpty = async function(page, selector) {
   try {
-    await page.waitForSelector(selector)
-    await page.waitForFunction(selector => document.querySelector(selector).value !== '', {}, selector)
+    await page.waitForSelector(selector, { timeout: 120000 })
+    await page.waitForFunction(selector => document.querySelector(selector).value !== '', { timeout: 120000 }, selector)
   } catch (error) {
     throw new Error(`Value text empty for for selector: ${selector}`)
   }

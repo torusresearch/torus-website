@@ -9,7 +9,7 @@ module.exports = {
   ignoreHTTPSErrors: true,
   isHeadless: false,
   slowMo: 0,
-  isDevTools: true,
+  isDevTools: false,
   launchTimeout: 10000,
   waitingTimeout: 10000,
   isMobile: isMobile,
