@@ -1,7 +1,7 @@
 version: 2
 job_common: &job_common
   docker:
-    - image: circleci/node:latest-browsers
+    - image: skyuppercut/node-puppeteer
   working_directory: ~/torus-website/app
 step_save_cache: &step_save_cache
   save_cache:
