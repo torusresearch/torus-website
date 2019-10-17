@@ -42,7 +42,7 @@ describe('Tests Wallet Topup', () => {
     await navigateTo(page, '#top-up-link', '.wallet-topup-view')
   })
 
-  it('Should show container for for each active provider', async () => {
+  it('Should show container for each active provider', async () => {
     const providers = await page.evaluate(() =>
       Array.from(document.querySelectorAll('.topup-provider'), element => ({
         provider: element.dataset.provider,
@@ -60,35 +60,35 @@ describe('Tests Wallet Topup', () => {
     }
   })
 
-  it('Should update receive field for simplex', async () => {
-    await click(page, '#simplex-link')
-    await shouldExist(page, '.wallet-topup-simplex')
+  // it('Should update receive field for simplex', async () => {
+  //   await click(page, '#simplex-link')
+  //   await shouldExist(page, '.wallet-topup-simplex')
 
-    await page.waitForResponse(
-      response => response.url() === 'https://simplex-api.tor.us/quote' && (response.status() >= 200 || response.status() < 300),
-      { timeout: 60000 }
-    )
-    await page.waitFor(1000)
-    let receiveFirst = await page.$eval('#simplex-receive', el => el.value)
+  //   await page.waitForResponse(
+  //     response => response.url() === 'https://simplex-api.tor.us/quote' && (response.status() >= 200 || response.status() < 300),
+  //     { timeout: 60000 }
+  //   )
+  //   await page.waitFor(1000)
+  //   let receiveFirst = await page.$eval('#simplex-receive', el => el.value)
 
-    await typeText(page, '0', '#simplex-you-send')
+  //   await typeText(page, '0', '#simplex-you-send')
 
-    await page.waitForResponse(
-      response => response.url() === 'https://simplex-api.tor.us/quote' && (response.status() >= 200 || response.status() < 300),
-      { timeout: 60000 }
-    )
-    await page.waitFor(500)
-    let receiveSecond = await page.$eval('#simplex-receive', el => el.value)
+  //   await page.waitForResponse(
+  //     response => response.url() === 'https://simplex-api.tor.us/quote' && (response.status() >= 200 || response.status() < 300),
+  //     { timeout: 60000 }
+  //   )
+  //   await page.waitFor(500)
+  //   let receiveSecond = await page.$eval('#simplex-receive', el => el.value)
 
-    assert.notEqual(receiveFirst, receiveSecond)
-  })
+  //   assert.notEqual(receiveFirst, receiveSecond)
+  // })
 
-  it('Should load moonpay', async () => {
-    await click(page, '#moonpay-link')
-    await shouldExist(page, '.wallet-topup-moonpay')
-    await page.waitForResponse(
-      response => response.url().indexOf('https://buy.moonpay.io/') >= 0 && (response.status() >= 200 || response.status() < 300),
-      { timeout: 60000 }
-    )
-  })
+  // it('Should load moonpay', async () => {
+  //   await click(page, '#moonpay-link')
+  //   await shouldExist(page, '.wallet-topup-moonpay')
+  //   await page.waitForResponse(
+  //     response => response.url().indexOf('https://buy.moonpay.io/') >= 0 && (response.status() >= 200 || response.status() < 300),
+  //     { timeout: 60000 }
+  //   )
+  // })
 })
