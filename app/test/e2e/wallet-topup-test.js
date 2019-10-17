@@ -16,7 +16,7 @@ describe('Tests Wallet Topup', () => {
       devtools: config.isDevTools,
       timeout: config.launchTimeout,
       ignoreHTTPSErrors: config.ignoreHTTPSErrors,
-      args: ['--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
     })
 
     page = (await browser.pages())[0]
@@ -68,7 +68,7 @@ describe('Tests Wallet Topup', () => {
       response => response.url() === 'https://simplex-api.tor.us/quote' && (response.status() >= 200 || response.status() < 300),
       { timeout: 60000 }
     )
-    await page.waitFor(500)
+    await page.waitFor(1000)
     let receiveFirst = await page.$eval('#simplex-receive', el => el.value)
 
     await typeText(page, '0', '#simplex-you-send')
