@@ -1,28 +1,20 @@
 const fs = require('fs')
 const path = require('path')
+const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
 
 let routes = ['/']
-
-if (process.env.VUE_APP_TORUS_BUILD_ENV !== 'production') {
-  routes.push('/login')
-}
-// https://157.230.171.237:8117
 
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
 
 module.exports = {
   devServer: {
-    // open: process.platform === 'darwin',
     https: true,
     host: 'localhost',
     port: 3000, // CHANGE YOUR PORT HERE!
-    // https: {
-    //   key: fs.readFileSync(path.resolve('../ssl/server.key')),
-    //   cert: fs.readFileSync(path.resolve('../ssl/server.crt'))
-    // },
     hotOnly: false,
     headers: {
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'max-age=3600'
     }
   },
   css: {
@@ -44,6 +36,10 @@ module.exports = {
   },
   chainWebpack: config => {
     config.resolve.alias.set('bn.js', 'fork-bn.js')
+    config
+      .plugin('service-worker-integrity')
+      .use(serviceWorkerIntegrityPlugin, ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
+      .after('workbox')
     // config.module
     //   .rule('worker')
     //   .test(/\.worker\.js$/)
@@ -77,7 +73,13 @@ module.exports = {
     msTileColor: '#000000',
     appleMobileWebAppCapable: 'yes',
     appleMobileWebAppStatusBarStyle: 'black',
-    workboxPluginMode: 'GenerateSW',
+    workboxPluginMode: 'InjectManifest',
+    workboxOptions: {
+      importWorkboxFrom: 'disabled',
+      swSrc: 'sw.js',
+      swDest: 'service-worker.js',
+      precacheManifestFilename: 'precache-manifest.[manifestHash].js'
+    },
     mainfestPath:
       process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
         ? `/${version}/manifest.json`

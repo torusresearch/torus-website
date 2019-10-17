@@ -7,15 +7,17 @@
           <slot name="subtitle">
             <div :class="$vuetify.breakpoint.lgAndUp ? 'body-2' : 'caption'">{{ subtitle }}</div>
           </slot>
-          <div>
-            <v-btn color="primary" depressed class="px-12 py-1 mt-2 white--text" :href="detailsLink" target="_blank">
-              More Details
-            </v-btn>
-          </div>
+          <slot name="link">
+            <div>
+              <v-btn color="primary" depressed class="px-12 py-1 mt-2 white--text" :href="detailsLink" target="_blank">
+                {{ detailsText }}
+              </v-btn>
+            </div>
+          </slot>
         </v-flex>
         <slot name="image">
           <v-flex xs4 pt-4 class="text-right hidden-xs-only">
-            <img :src="require(`../../../../public/images/${imagePath}`)" style="height: 90px" />
+            <img :src="imagePath" style="height: 90px" />
           </v-flex>
         </slot>
       </v-layout>
@@ -25,6 +27,6 @@
 
 <script>
 export default {
-  props: ['title', 'subtitle', 'imagePath', 'detailsLink']
+  props: ['title', 'subtitle', 'imagePath', 'detailsLink', 'detailsText']
 }
 </script>
