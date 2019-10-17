@@ -158,7 +158,7 @@ export default {
       const form = document.createElement('form')
       form.method = method
       form.action = path
-      form.target = '_blank'
+      form.target = 'form-target'
       for (const key in params) {
         if (params.hasOwnProperty(key)) {
           const hiddenField = document.createElement('input')
@@ -169,6 +169,7 @@ export default {
         }
       }
       document.body.appendChild(form)
+      var simplexWindow = window.open('about:blank', 'form-target', 'width=1200, height=700')
       form.submit()
     },
     sendOrder() {
