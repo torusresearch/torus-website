@@ -17,18 +17,9 @@ module.exports = {
       'Cache-Control': 'max-age=3600'
     }
   },
-  // css: {
-  //   extract: false,
-  //   loaderOptions: {
-  //     scss: {
-  //       prependData: '@import "~@/variables.scss";',
-  //       sourceMap: false
-  //       // sassOptions: {
-  //       //   indentedSyntax: true
-  //       // }
-  //     }
-  //   }
-  // },
+  css: {
+    extract: false
+  },
   configureWebpack: config => {
     if (process.env.NODE_ENV === 'production') {
       const TerserPlugin = require('terser-webpack-plugin')
