@@ -14,7 +14,7 @@ import {
   DISCORD,
   THEME_LIGHT_BLUE_NAME
 } from '../utils/enums'
-import { getRandomNumber, broadcastChannelOptions } from '../utils/utils'
+import { getRandomNumber, broadcastChannelOptions, storageAvailable } from '../utils/utils'
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import initialState from './state'
@@ -44,7 +44,7 @@ export default {
   logOut({ commit, dispatch }, payload) {
     commit('logOut', initialState)
     dispatch('setTheme', THEME_LIGHT_BLUE_NAME)
-    window.sessionStorage.clear()
+    if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
     statusStream.write({ loggedIn: false })
   },
   loginInProgress(context, payload) {
