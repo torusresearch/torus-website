@@ -71,7 +71,7 @@
 
 <script>
 import { setInterval, clearInterval } from 'timers'
-import { significantDigits, formatCurrencyNumber } from '../../../utils/utils'
+import { significantDigits, formatCurrencyNumber, storageAvailable } from '../../../utils/utils'
 import log from 'loglevel'
 const MAX_ORDER_VALUE = 40
 const MIN_ORDER_VALUE = 5
@@ -96,12 +96,15 @@ export default {
     },
     startWyre() {
       if (this.$refs.inputForm.validate()) {
-        var deviceToken = localStorage.getItem('DEVICE_TOKEN')
+        let deviceToken
+        if (storageAvailable('localStorage')) {
+          deviceToken = localStorage.getItem('DEVICE_TOKEN')
+        }
         if (!deviceToken) {
           var array = new Uint8Array(25)
           window.crypto.getRandomValues(array)
           deviceToken = Array.prototype.map.call(array, x => ('00' + x.toString(16)).slice(-2)).join('')
-          localStorage.setItem('DEVICE_TOKEN', deviceToken)
+          if (storageAvailable('localStorage')) localStorage.setItem('DEVICE_TOKEN', deviceToken)
         }
         widget = new Wyre.Widget({
           env: 'test',
