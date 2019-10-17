@@ -61,7 +61,7 @@ jobs:
       - <<: *step_setup_global_packages
       - run:
           name: "Run Tests for torus website"
-          command: (npm run build:dev & sleep 60) && (npm start & sleep 10 && sudo xvfb-run -e /dev/stdout --server-args="-screen 0 1024x768x24" ./node_modules/.bin/_mocha --timeout=60000 ./test/e2e)
+          command: (sudo npm run build:dev & sleep 60) && (npm start & sleep 10 && sudo xvfb-run -e /dev/stdout --server-args="-screen 0 1024x768x24" ./node_modules/.bin/_mocha --timeout=60000 ./test/e2e)
       - <<: *step_save_cache
       # Save test results
       - store_test_results:
