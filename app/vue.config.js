@@ -4,23 +4,13 @@ const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
 
 let routes = ['/']
 
-if (process.env.VUE_APP_TORUS_BUILD_ENV !== 'production') {
-  // routes.push('/login')
-}
-// https://157.230.171.237:8117
-
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
 
 module.exports = {
   devServer: {
-    // open: process.platform === 'darwin',
     https: true,
     host: 'localhost',
     port: 3000, // CHANGE YOUR PORT HERE!
-    // https: {
-    //   key: fs.readFileSync(path.resolve('../ssl/server.key')),
-    //   cert: fs.readFileSync(path.resolve('../ssl/server.crt'))
-    // },
     hotOnly: false,
     headers: {
       'Access-Control-Allow-Origin': '*',
