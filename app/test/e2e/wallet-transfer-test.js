@@ -72,7 +72,7 @@ describe('Tests Wallet Transfer Transaction', () => {
 
     // Wait for the gas transaction amounts
     await page.waitForResponse(
-      response => response.url() === 'https://ethgasstation.info/json/ethgasAPI.json' && (response.status() >= 200 || response.status() < 300),
+      response => response.url() === 'https://ethgasstation.info/json/ethgasAPI.json' && (response.status() >= 200 || response.status() < 400),
       {
         timeout: 60000
       }
