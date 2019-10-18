@@ -88,6 +88,12 @@ const FACEBOOK = 'facebook'
 const REDDIT = 'reddit'
 const DISCORD = 'discord'
 const TWITCH = 'twitch'
+const ETH_LABEL = 'ETH Address'
+const GOOGLE_LABEL = 'Google Email'
+const FACEBOOK_LABEL = 'Facebook ID'
+const REDDIT_LABEL = 'Reddit ID'
+const DISCORD_LABEL = 'Discord ID'
+const TWITCH_LABEL = 'Twitch ID'
 
 const THEME_DARK_BLACK_NAME = 'dark-black'
 const THEME_LIGHT_BLUE_NAME = 'light-blue'
@@ -152,6 +158,12 @@ module.exports = {
   TWITCH,
   REDDIT,
   DISCORD,
+  ETH_LABEL,
+  GOOGLE_LABEL,
+  FACEBOOK_LABEL,
+  REDDIT_LABEL,
+  DISCORD_LABEL,
+  TWITCH_LABEL,
   THEME_DARK_BLACK_NAME,
   THEME_LIGHT_BLUE_NAME
 }

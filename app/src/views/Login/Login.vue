@@ -16,6 +16,7 @@
               </v-flex>
               <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
                 <v-btn
+                  id="loginBtn"
                   color="white"
                   large
                   :block="$vuetify.breakpoint.xsOnly"
