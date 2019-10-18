@@ -39,13 +39,15 @@ export default {
       pagination: {
         sortBy: 'name'
       },
-      events: [],
       dialog: false
     }
   },
   computed: {
     showFooter() {
       return this.tokenBalances.length > 5
+    },
+    events() {
+      return this.$store.state.billboard
     }
   },
   methods: {

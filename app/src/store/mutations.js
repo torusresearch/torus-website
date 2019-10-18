@@ -68,6 +68,9 @@ export default {
   setAssets(state, payload) {
     state.assets = payload
   },
+  setBillboard(state, payload) {
+    state.billboard = payload
+  },
   logOut(state, payload) {
     Object.keys(state).forEach(key => {
       state[key] = payload[key] // or = initialState[key]
