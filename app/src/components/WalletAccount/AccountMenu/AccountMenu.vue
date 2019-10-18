@@ -15,7 +15,7 @@
           <v-list-item-subtitle>
             <div class="caption text_2--text">
               <span>{{ userEmail }}</span>
-              <v-btn icon small class="primary--text float-right mr-5" @click="isShowSelectedAddress = !isShowSelectedAddress">
+              <v-btn id="show-address-btn" icon small class="primary--text float-right mr-5" @click="isShowSelectedAddress = !isShowSelectedAddress">
                 <v-icon small v-text="'$vuetify.icons.key'" />
               </v-btn>
             </div>

@@ -47,25 +47,12 @@ app.get('/service-worker.js', function(req, res) {
 })
 app.use(express.static('dist'))
 
-// function ensureCompatibleBrowser(req, res, next) {
-//   var parser = new UAParser()
-//   var ua = req.headers['user-agent']
-//   var browserName = parser.setUA(ua).getBrowser().name
-//   if (browserName === 'IE' || browserName === 'Edge' || browserName === 'Safari') res.redirect('/notsupported/')
-//   else return next()
-// }
-
-app.get('/notsupported/', (req, res) => {
-  res.send('Broadcast channels are currently not supported on Edge and Safari browsers. Please check back for further updates')
-})
-
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/dist/index.html'))
 })
 
-// app.use(express.static('public'))
-
 https.createServer(certOptions, app).listen(APP_PORT)
+// http.createServer(app).listen(APP_PORT)
 // http.createServer(app).listen(APP_PORT)
 log.info('listening to port ' + APP_PORT)
 

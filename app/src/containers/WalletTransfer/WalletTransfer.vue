@@ -78,6 +78,7 @@
               <v-flex xs12><span class="subtitle-2">Transfer Mode</span></v-flex>
               <v-flex xs12 sm6 class="recipient-verifier-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
                 <v-select
+                  id="recipient-verifier"
                   outlined
                   append-icon="$vuetify.icons.select"
                   :items="verifierOptions"
@@ -238,7 +239,7 @@ import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSel
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
-import { WALLET_HEADERS_TRANSFER, GOOGLE, REDDIT, DISCORD, ETH } from '../../utils/enums'
+import { WALLET_HEADERS_TRANSFER, GOOGLE, REDDIT, DISCORD, ETH, ETH_LABEL, GOOGLE_LABEL, REDDIT_LABEL, DISCORD_LABEL } from '../../utils/enums'
 
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
@@ -278,19 +279,19 @@ export default {
       selectedVerifier: ETH,
       verifierOptions: [
         {
-          name: 'ETH Address',
+          name: ETH_LABEL,
           value: ETH
         },
         {
-          name: 'Google Email',
+          name: GOOGLE_LABEL,
           value: GOOGLE
         },
         {
-          name: 'Reddit ID',
+          name: REDDIT_LABEL,
           value: REDDIT
         },
         {
-          name: 'Discord ID',
+          name: DISCORD_LABEL,
           value: DISCORD
         }
       ],
