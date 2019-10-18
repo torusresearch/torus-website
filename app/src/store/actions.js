@@ -612,6 +612,19 @@ export default {
   initTorusKeyring({ state, dispatch }, payload) {
     return torus.torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
   },
+  setBillboard({ commit, state }) {
+    try {
+      get(`${config.api}/billboard`, {
+        headers: {
+          Authorization: `Bearer ${state.jwtToken}`
+        }
+      }).then(resp => {
+        if (resp.data) commit('setBillboard', resp.data)
+      })
+    } catch (error) {
+      reject(error)
+    }
+  },
   handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
     const { torusNodeEndpoints, torusIndexes } = config
     const {
@@ -633,6 +646,7 @@ export default {
         dispatch('addWallet', data) // synchronus
         dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
         dispatch('subscribeToControllers')
+        dispatch('setBillboard')
         await Promise.all([
           dispatch('initTorusKeyring', data),
           dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
