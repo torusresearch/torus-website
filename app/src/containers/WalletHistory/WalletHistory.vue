@@ -49,6 +49,7 @@
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
 import log from 'loglevel'
+import { toChecksumAddress, toBN, fromWei } from 'web3-utils'
 import config from '../../config'
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
 import TxHistoryTableMobile from '../../components/WalletHistory/TxHistoryTableMobile'
@@ -67,7 +68,6 @@ import {
   ACTIVITY_PERIOD_MONTH_ONE,
   ACTIVITY_PERIOD_MONTH_SIX
 } from '../../utils/enums'
-const web3Utils = torus.web3.utils
 
 export default {
   name: 'walletHistory',
@@ -192,13 +192,11 @@ export default {
           txObj.id = txOld.time
           txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
           txObj.date = new Date(txOld.time)
-          txObj.from = web3Utils.toChecksumAddress(txOld.txParams.from)
+          txObj.from = toChecksumAddress(txOld.txParams.from)
           txObj.slicedFrom = addressSlicer(txOld.txParams.from)
-          txObj.to = web3Utils.toChecksumAddress(txOld.txParams.to)
+          txObj.to = toChecksumAddress(txOld.txParams.to)
           txObj.slicedTo = addressSlicer(txOld.txParams.to)
-          txObj.totalAmount = web3Utils.fromWei(
-            web3Utils.toBN(txOld.txParams.value).add(web3Utils.toBN(txOld.txParams.gas).mul(web3Utils.toBN(txOld.txParams.gasPrice)))
-          )
+          txObj.totalAmount = fromWei(toBN(txOld.txParams.value).add(toBN(txOld.txParams.gas).mul(toBN(txOld.txParams.gasPrice))))
           txObj.totalAmountString = `${significantDigits(txObj.totalAmount)} ETH`
           txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount
           txObj.currencyAmountString = `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`

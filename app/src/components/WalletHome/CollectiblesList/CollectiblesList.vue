@@ -17,7 +17,7 @@
 export default {
   computed: {
     contracts() {
-      return this.$store.state.assets
+      return this.$store.getters.collectibleBalances
     }
   }
 }

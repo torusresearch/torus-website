@@ -1,4 +1,5 @@
 import randomId from 'random-id'
+import { keccak256 } from 'web3-utils'
 import config from './config.js'
 import onloadTorus from './onload.js'
 import { generateJsonRPCObject, post } from './utils/httpHelpers.js'
@@ -54,7 +55,7 @@ class Torus {
       log.info(idToken)
       var tmpKey = this.ec.genKeyPair()
       var pubKey = tmpKey.getPublic()
-      var tokenCommitment = this.web3.utils.keccak256(idToken)
+      var tokenCommitment = keccak256(idToken)
       log.info(tokenCommitment)
       for (var i = 0; i < endpoints.length; i++) {
         var p = post(
@@ -203,7 +204,7 @@ class Torus {
       .getPublic()
       .encode('hex')
       .slice(2)
-    var ethAddressLower = '0x' + this.web3.utils.keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
+    var ethAddressLower = '0x' + keccak256(Buffer.from(publicKey, 'hex')).slice(64 - 38) // remove 0x
     var ethAddress = toChecksumAddress(ethAddressLower)
     return ethAddress
   }

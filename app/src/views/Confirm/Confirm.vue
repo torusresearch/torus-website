@@ -211,6 +211,7 @@
 import { mapActions } from 'vuex' // Maybe dispatch a bc to show popup from that instance
 import VueJsonPretty from 'vue-json-pretty'
 import BroadcastChannel from 'broadcast-channel'
+import { numberToHex, fromWei, toChecksumAddress, hexToNumber } from 'web3-utils'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
 import PageLoader from '../../components/helpers/PageLoader'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
@@ -482,7 +483,7 @@ export default {
     },
     async triggerSign(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
-      var gasHex = torus.web3.utils.numberToHex(this.gasPrice * weiInGwei)
+      var gasHex = numberToHex(this.gasPrice * weiInGwei)
       await bc.postMessage({
         data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id }
       })
@@ -576,13 +577,12 @@ export default {
         this.typedMessages = typedMessages
         this.messageType = typedMessages ? 'typed' : 'normal'
       } else if (type === 'transaction') {
-        const web3Utils = torus.web3.utils
         let finalValue = 0
         const { value, to, data, from: sender, gas, gasPrice } = txParams.txParams || {}
         const { simulationFails, network, id, transactionCategory, methodParams } = txParams || {}
         const { reason } = simulationFails || {}
         if (value) {
-          finalValue = web3Utils.fromWei(value.toString())
+          finalValue = fromWei(value.toString())
         }
 
         this.origin = this.origin.trim().length === 0 ? 'Wallet' : this.origin
@@ -592,16 +592,16 @@ export default {
         if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM) [amountFrom, amountTo, amountValue] = methodParams || []
         else [amountTo, amountValue] = methodParams || []
         log.info(methodParams, 'params')
-        const checkSummedTo = web3Utils.toChecksumAddress(to)
+        const checkSummedTo = toChecksumAddress(to)
 
-        const tokenObj = Object.prototype.hasOwnProperty.call(contracts, checkSummedTo) ? contracts[web3Utils.toChecksumAddress(to)] : {}
+        const tokenObj = Object.prototype.hasOwnProperty.call(contracts, checkSummedTo) ? contracts[toChecksumAddress(to)] : {}
         const decimals = tokenObj.decimals || 0
         this.selectedToken = tokenObj.symbol || 'ERC20'
         this.id = id
         this.network = network
         this.networkName = this.getNetworkName(network)
         this.transactionCategory = transactionCategory
-        var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
+        var gweiGasPrice = hexToNumber(gasPrice) / weiInGwei
         this.amountTo = amountTo ? amountTo.value : checkSummedTo
         this.amountValue = amountValue ? parseFloat(amountValue.value) / 10 ** parseFloat(decimals) : ''
 
@@ -628,7 +628,7 @@ export default {
         this.gasKnob = calculateGasKnob(gweiGasPrice)
         this.balance = balance // in eth
         this.balanceUsd = significantDigits(parseFloat(balance) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]) // in usd
-        this.gasEstimate = web3Utils.hexToNumber(gas) // gas number
+        this.gasEstimate = hexToNumber(gas) // gas number
         this.txData = data // data hex
         this.txDataParams = txDataParams !== '' ? JSON.stringify(txDataParams, null, 2) : ''
         this.sender = sender // address of sender

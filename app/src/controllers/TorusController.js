@@ -113,6 +113,8 @@ export default class TorusController extends EventEmitter {
     this.networkController.on('networkDidChange', () => {
       this.accountTracker._updateAccounts()
       this.detectTokensController.restartTokenDetection()
+      this.assetDetectionController.restartAssetDetection()
+      // TODO: trigger asset detection
     })
 
     // key mgmt
@@ -333,7 +335,7 @@ export default class TorusController extends EventEmitter {
   setSelectedAccount(address) {
     log.info('setselectedaccount called from torus controller')
     this.detectTokensController.startTokenDetection(address)
-    this.assetDetectionController.poll(address)
+    this.assetDetectionController.startAssetDetection(address)
   }
 
   /**

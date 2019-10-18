@@ -232,6 +232,7 @@
 
 <script>
 import { QrcodeCapture } from 'vue-qrcode-reader'
+import { isAddress, toChecksumAddress, toBN, toWei } from 'web3-utils'
 import torus from '../../torus'
 import { significantDigits, getRandomNumber, getEtherScanHashLink } from '../../utils/utils'
 import config from '../../config'
@@ -327,8 +328,8 @@ export default {
       return foundContract
     },
     selectedTokenAddress() {
-      if (this.tokenAddress === '0x' || !torus.web3.utils.isAddress(this.tokenAddress)) return '0x'
-      return torus.web3.utils.toChecksumAddress(this.tokenAddress)
+      if (this.tokenAddress === '0x' || !isAddress(this.tokenAddress)) return '0x'
+      return toChecksumAddress(this.tokenAddress)
     },
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
@@ -432,7 +433,7 @@ export default {
     },
     toAddressRule(value) {
       if (this.selectedVerifier === ETH) {
-        return torus.web3.utils.isAddress(value) || 'Invalid ETH Address'
+        return isAddress(value) || 'Invalid ETH Address'
       } else if (this.selectedVerifier === GOOGLE) {
         return (
           // eslint-disable-next-line max-len
@@ -449,7 +450,7 @@ export default {
       return true
     },
     async calculateGas(toAddress) {
-      if (torus.web3.utils.isAddress(toAddress)) {
+      if (isAddress(toAddress)) {
         return new Promise((resolve, reject) => {
           if (this.selectedTokenAddress === '0x') {
             torus.web3.eth
@@ -521,10 +522,10 @@ export default {
     },
     async sendCoin() {
       if (this.$refs.form.validate()) {
-        const fastGasPrice = torus.web3.utils.toBN((this.activeGasPrice * 10 ** 9).toString())
+        const fastGasPrice = toBN((this.activeGasPrice * 10 ** 9).toString())
         let toAddress
-        if (torus.web3.utils.isAddress(this.toAddress)) {
-          toAddress = torus.web3.utils.toChecksumAddress(this.toAddress)
+        if (isAddress(this.toAddress)) {
+          toAddress = toChecksumAddress(this.toAddress)
         } else {
           const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
           try {
@@ -550,7 +551,7 @@ export default {
           log.info('TX SENT: ', {
             from: selectedAddress,
             to: toAddress,
-            value: torus.web3.utils.toWei(parseFloat(this.amount.toString()).toFixed(18)),
+            value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
             gas: this.gas.toString(),
             gasPrice: fastGasPrice
           })
@@ -558,7 +559,7 @@ export default {
             {
               from: selectedAddress,
               to: toAddress,
-              value: torus.web3.utils.toWei(parseFloat(this.amount.toString()).toFixed(18)),
+              value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
               gas: this.gas.toString(),
               gasPrice: fastGasPrice
             },
@@ -695,7 +696,7 @@ export default {
           this.qrErrorMsg = 'Incorrect QR Code'
         }
       } catch (error) {
-        if (torus.web3.utils.isAddress(result)) {
+        if (isAddress(result)) {
           this.selectedVerifier = ETH
           this.toAddress = result
         } else {

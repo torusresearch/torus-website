@@ -66,8 +66,7 @@ export default {
     state.theme = payload
   },
   setAssets(state, payload) {
-    // console.log('Assets', payload)
-    state.assets = [...payload]
+    state.assets = payload
   },
   logOut(state, payload) {
     Object.keys(state).forEach(key => {
