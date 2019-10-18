@@ -55,7 +55,21 @@
                 ></v-select>
               </v-flex>
               <v-flex xs12 sm6 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
-                <v-text-field
+                <v-combobox
+                  v-model="toAddress"
+                  :items="contactList"
+                  :placeholder="verifierPlaceholder"
+                  required
+                  :rules="[toAddressRule, rules.required]"
+                  outlined
+                >
+                  <template v-slot:append>
+                    <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()">
+                      <v-icon small>$vuetify.icons.scan</v-icon>
+                    </v-btn>
+                  </template>
+                </v-combobox>
+                <!-- <v-text-field
                   class="recipient-address"
                   id="recipient-address"
                   ref="recipientAddress"
@@ -72,7 +86,7 @@
                       <v-icon small>$vuetify.icons.scan</v-icon>
                     </v-btn>
                   </template>
-                </v-text-field>
+                </v-text-field> -->
                 <qrcode-capture @decode="onDecodeQr" ref="captureQr" style="display: none" />
                 <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                   <div class="v-messages">
@@ -316,6 +330,32 @@ export default {
     },
     verifierPlaceholder() {
       return `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
+    },
+    contactList() {
+      return [
+        {
+          verifier: GOOGLE,
+          address: 'lionell@tor.us'
+        },
+        {
+          verifier: GOOGLE,
+          address: 'sinlin@tor.us'
+        },
+        {
+          verifier: GOOGLE,
+          address: 'chai@tor.us'
+        },
+        {
+          verifier: GOOGLE,
+          address: 'shubham@tor.us'
+        },
+        {
+          verifier: GOOGLE,
+          address: 'carlos@tor.us'
+        }
+      ]
+        .filter(contact => contact.verifier === this.selectedVerifier)
+        .map(contact => contact.address)
     }
   },
   watch: {
