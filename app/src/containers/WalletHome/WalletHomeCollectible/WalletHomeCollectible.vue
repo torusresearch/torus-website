@@ -182,8 +182,7 @@ export default {
       return 'Ethereum Blockchain'
     },
     contracts() {
-      console.log('this.$store.state', this.$store.state)
-      return this.$store.state.assets
+      return this.$store.getters.collectibleBalances
     }
   },
   methods: {

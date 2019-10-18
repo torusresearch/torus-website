@@ -315,7 +315,7 @@ export default {
       return this.$store.getters.tokenBalances.finalBalancesArray || []
     },
     contracts() {
-      return this.$store.state.assets
+      return this.$store.getters.collectibleBalances
     },
     selectedItem() {
       let foundElement = this.finalBalancesArray.find(x => x.tokenAddress === this.selectedTokenAddress)

@@ -231,7 +231,6 @@ export default {
       contract.assets = payload.collectibles.filter(asset => {
         return asset.address === contract.address
       })
-
       return contract
     })
 
@@ -592,21 +591,12 @@ export default {
         dispatch('updateTransactions', { transactions: updatedTransactions })
       }
     })
-    torus.torusController.assetController.store.subscribe(function({
-      allCollectibleContracts,
-      allCollectibles,
-      allTokens,
-      collectibleContracts,
-      collectibles,
-      tokens
-    }) {
+    torus.torusController.assetController.store.subscribe(function({ allCollectibleContracts, allCollectibles, collectibleContracts, collectibles }) {
       dispatch('updateAssets', {
         allCollectibleContracts: allCollectibleContracts,
         allCollectibles: allCollectibles,
-        allTokens: allTokens,
         collectibleContracts: collectibleContracts,
-        collectibles: collectibles,
-        tokens: tokens
+        collectibles: collectibles
       })
     })
 

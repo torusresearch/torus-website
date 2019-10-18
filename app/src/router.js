@@ -172,8 +172,8 @@ router.beforeResolve((to, from, next) => {
     if (store.state.selectedAddress === '') {
       next({ name: 'login', query: { redirect: to.fullPath } })
     } else if (!hasQueryParams(to) && hasQueryParams(from)) {
-      // next({ name: to.name, query: from.query })
-      next()
+      next({ name: to.name, query: from.query })
+      // next()
     } else {
       next()
     }
