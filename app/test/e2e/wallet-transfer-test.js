@@ -69,14 +69,13 @@ describe('Tests Wallet Transfer Transaction', () => {
 
   it('Should go to wallet transfer page', async () => {
     await navigateTo(page, '#transfer-link', '.wallet-transfer')
-
-    // Wait for the gas transaction amounts
-    await page.waitForResponse(
-      response => response.url() === 'https://ethgasstation.info/json/ethgasAPI.json' && (response.status() >= 200 || response.status() < 400),
-      {
-        timeout: 60000
-      }
-    )
+    // // Wait for the gas transaction amounts
+    // await page.waitForResponse(
+    //   response => response.url() === 'https://ethgasstation.info/json/ethgasAPI.json' && (response.status() >= 200 || response.status() < 400),
+    //   {
+    //     timeout: 60000
+    //   }
+    // )
   })
 
   it('Should select coin', async () => {
