@@ -79,7 +79,6 @@ export default {
       pagination: {
         sortBy: 'name'
       },
-      events: [],
       dialog: false
     }
   },
@@ -90,6 +89,9 @@ export default {
   computed: {
     showFooter() {
       return this.tokenBalances.length > 5
+    },
+    events() {
+      return this.$store.state.billboard
     }
   },
   methods: {
@@ -104,17 +106,6 @@ export default {
     selectEmit(item) {
       this.$emit('update:select', item)
     }
-  },
-  created() {
-    const jwtToken = this.$store.state.jwtToken
-
-    get(`${config.api}/billboard`, {
-      headers: {
-        Authorization: `Bearer ${jwtToken}`
-      }
-    }).then(resp => {
-      this.events = resp.data
-    })
   }
 }
 </script>
