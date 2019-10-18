@@ -1,15 +1,9 @@
 const puppeteer = require('puppeteer')
 const assert = require('assert')
-const {
-  WALLET_HEADERS_HOME,
-  RINKEBY_DISPLAY_NAME,
-  ACTIVITY_ACTION_ALL,
-  ACTIVITY_ACTION_SEND,
-  ACTIVITY_PERIOD_WEEK_ONE
-} = require('../../src/utils/enums')
+const { RINKEBY_DISPLAY_NAME, ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_PERIOD_WEEK_ONE } = require('../../src/utils/enums')
 
 const config = require('./lib/config')
-const { loadUrl, click, typeText, waitForText, selectItem, navigateTo } = require('./lib/helpers')
+const { loadUrl, click, login, selectItem, navigateTo } = require('./lib/helpers')
 
 describe('Tests Wallet Activity Page', () => {
   let browser
@@ -39,21 +33,7 @@ describe('Tests Wallet Activity Page', () => {
 
   it('Should load page', async () => {
     await loadUrl(page, config.baseUrl)
-
-    // Used for getting the newly opened window
-    const pageTarget = page.target()
-    // Get the loginPage
-    await click(page, '#loginBtn')
-    const loginPageTarget = await browser.waitForTarget(target => target.opener() === pageTarget)
-    const loginPage = await loginPageTarget.page()
-
-    // Login user
-    await typeText(loginPage, config.testAccountName, '#identifierId')
-    await click(loginPage, '#identifierNext')
-    await typeText(loginPage, config.testAccountPassword, 'input[type="password"]')
-    await click(loginPage, '#passwordNext')
-
-    await waitForText(page, '.wallet-home .headline', WALLET_HEADERS_HOME)
+    await login(page)
   })
 
   it('Should change network to rinkeby', async () => {
