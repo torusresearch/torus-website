@@ -540,17 +540,20 @@ export default {
       const foundInBalances = this.finalBalancesArray.find(token => token.tokenAddress === address)
       const foundInContracts = this.contracts.find(token => token.address === address)
 
-      this.tokenAddress = address
-
       if (foundInBalances) {
+        this.tokenAddress = foundInBalances.tokenAddress
         this.contractType = foundInBalances.erc20 ? CONTRACT_TYPE_ERC20 : CONTRACT_TYPE_ETH
 
         history.pushState({}, null, `?contract=${this.tokenAddress}`)
       } else if (foundInContracts) {
+        this.tokenAddress = foundInContracts.tokenAddress
         this.contractType = CONTRACT_TYPE_ERC721
         this.contractSelected = this.contracts.find(x => x.address === address)
         this.assetSelected = tokenId ? this.contractSelected.assets.find(asset => asset.tokenId === tokenId) : this.contractSelected.assets[0]
         this.selectedAssetChanged(this.assetSelected)
+      } else {
+        // When no address is found in contracts
+        this.selectedItemChanged('0x')
       }
 
       this.gas = await this.calculateGas(this.toAddress)
