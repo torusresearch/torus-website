@@ -164,7 +164,7 @@ function hasQueryParams(route) {
 router.beforeResolve((to, from, next) => {
   if (to.hasOwnProperty('meta') && to.meta.hasOwnProperty('requiresAuth') && to.meta.requiresAuth === false) {
     if (!hasQueryParams(to) && hasQueryParams(from)) {
-      next({ name: to.name, query: from.query })
+      next({ name: to.name, query: from.query, hash: to.hash })
     } else {
       next()
     }

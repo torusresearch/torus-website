@@ -204,8 +204,7 @@ export default {
       search: '',
       lastUpdated: '',
       dialogLearnMore: false,
-      activeTab: 0,
-      events: []
+      activeTab: 0
     }
   },
   computed: {
@@ -233,6 +232,9 @@ export default {
     },
     isFreshAccount() {
       return this.$store.state.isNewUser
+    },
+    events() {
+      return this.$store.state.billboard
     }
   },
   methods: {
@@ -283,20 +285,10 @@ export default {
       this.lastUpdated = `${date}, ${time}`
     }
   },
-  created() {
+  mounted() {
     this.setDateUpdated()
 
     this.activeTab = this.$route.hash === '#collectibles' ? 1 : 0
-
-    const jwtToken = this.$store.state.jwtToken
-
-    get(`${config.api}/billboard`, {
-      headers: {
-        Authorization: `Bearer ${jwtToken}`
-      }
-    }).then(resp => {
-      this.events = resp.data
-    })
   }
 }
 </script>
