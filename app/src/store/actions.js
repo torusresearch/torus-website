@@ -15,7 +15,7 @@ import {
   BMW,
   THEME_LIGHT_BLUE_NAME
 } from '../utils/enums'
-import { getRandomNumber, broadcastChannelOptions } from '../utils/utils'
+import { getRandomNumber, broadcastChannelOptions, storageAvailable } from '../utils/utils'
 import { post, get, patch } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import initialState from './state'
@@ -47,7 +47,7 @@ export default {
   logOut({ commit, dispatch }, payload) {
     commit('logOut', initialState)
     dispatch('setTheme', THEME_LIGHT_BLUE_NAME)
-    window.sessionStorage.clear()
+    if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
     statusStream.write({ loggedIn: false })
   },
   loginInProgress(context, payload) {
@@ -678,6 +678,19 @@ export default {
   initTorusKeyring({ state, dispatch }, payload) {
     return torus.torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
   },
+  setBillboard({ commit, state }) {
+    try {
+      get(`${config.api}/billboard`, {
+        headers: {
+          Authorization: `Bearer ${state.jwtToken}`
+        }
+      }).then(resp => {
+        if (resp.data) commit('setBillboard', resp.data)
+      })
+    } catch (error) {
+      reject(error)
+    }
+  },
   handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
     const { torusNodeEndpoints, torusIndexes } = config
     const {
@@ -699,6 +712,7 @@ export default {
         dispatch('addWallet', data) // synchronus
         dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
         dispatch('subscribeToControllers')
+        dispatch('setBillboard')
         await Promise.all([
           dispatch('initTorusKeyring', data),
           dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })

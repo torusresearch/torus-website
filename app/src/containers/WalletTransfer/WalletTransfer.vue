@@ -42,6 +42,7 @@
               <v-flex xs12><span class="subtitle-2">Transfer Mode</span></v-flex>
               <v-flex xs12 sm6 class="recipient-verifier-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
                 <v-select
+                  id="recipient-verifier"
                   outlined
                   append-icon="$vuetify.icons.select"
                   :items="verifierOptions"
@@ -192,7 +193,7 @@ import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSel
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
-import { WALLET_HEADERS_TRANSFER, GOOGLE, REDDIT, DISCORD, ETH } from '../../utils/enums'
+import { WALLET_HEADERS_TRANSFER, GOOGLE, REDDIT, DISCORD, ETH, ETH_LABEL, GOOGLE_LABEL, REDDIT_LABEL, DISCORD_LABEL } from '../../utils/enums'
 
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
@@ -229,19 +230,19 @@ export default {
       selectedVerifier: ETH,
       verifierOptions: [
         {
-          name: 'ETH Address',
+          name: ETH_LABEL,
           value: ETH
         },
         {
-          name: 'Google Email',
+          name: GOOGLE_LABEL,
           value: GOOGLE
         },
         {
-          name: 'Reddit ID',
+          name: REDDIT_LABEL,
           value: REDDIT
         },
         {
-          name: 'Discord ID',
+          name: DISCORD_LABEL,
           value: DISCORD
         }
       ],
@@ -375,11 +376,16 @@ export default {
       if (this.selectedVerifier === ETH) {
         return torus.web3.utils.isAddress(value) || 'Invalid ETH Address'
       } else if (this.selectedVerifier === GOOGLE) {
-        return /\S+@\S+\.\S+/.test(value) || 'Invalid Email Address'
+        return (
+          // eslint-disable-next-line max-len
+          /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+            value
+          ) || 'Invalid Email Address'
+        )
       } else if (this.selectedVerifier === REDDIT) {
-        return (value.length <= 20 && value.length >= 3) || 'ID should be 3-20 characters long'
+        return (/[\w-]+/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
       } else if (this.selectedVerifier === DISCORD) {
-        return /^[0-9]*$/.test(value) || 'ID should contain numbers only'
+        return (/^[0-9]*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
       }
 
       return true

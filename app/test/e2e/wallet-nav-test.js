@@ -1,9 +1,8 @@
 const puppeteer = require('puppeteer')
 const assert = require('assert')
-const { WALLET_HEADERS_HOME } = require('../../src/utils/enums')
 
 const config = require('./lib/config')
-const { loadUrl, click, typeText, waitForText, shouldExist } = require('./lib/helpers')
+const { loadUrl, click, login, shouldExist } = require('./lib/helpers')
 
 describe('Tests Account Menu', () => {
   let browser
@@ -16,7 +15,7 @@ describe('Tests Account Menu', () => {
       devtools: config.isDevTools,
       timeout: config.launchTimeout,
       ignoreHTTPSErrors: config.ignoreHTTPSErrors,
-      args: ['--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
     })
 
     page = (await browser.pages())[0]
@@ -33,22 +32,7 @@ describe('Tests Account Menu', () => {
 
   it('Should load page', async () => {
     await loadUrl(page, config.baseUrl)
-
-    // Used for getting the newly opened window
-    const pageTarget = page.target()
-
-    // Get the loginPage
-    await click(page, '#loginBtn')
-    const loginPageTarget = await browser.waitForTarget(target => target.opener() === pageTarget)
-    const loginPage = await loginPageTarget.page()
-
-    // Login user
-    await typeText(loginPage, config.testAccountName, '#identifierId')
-    await click(loginPage, '#identifierNext')
-    await typeText(loginPage, config.testAccountPassword, 'input[type="password"]')
-    await click(loginPage, '#passwordNext')
-
-    await waitForText(page, '.wallet-home .headline', WALLET_HEADERS_HOME)
+    await login(page)
   })
 
   it('Should show account menu', async () => {
@@ -59,9 +43,9 @@ describe('Tests Account Menu', () => {
     }
     await shouldExist(page, '.account-menu')
 
-    // Check if google info is showing
-    const accountName = await page.$eval('#account-name', el => el.textContent)
-    assert.notEqual(accountName, '')
+    // // Check if google info is showing
+    // const accountName = await page.$eval('#account-name', el => el.textContent)
+    // assert.equal(accountName, '')
   })
 
   it('Should be able to show public address', async () => {
