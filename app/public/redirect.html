@@ -1550,7 +1550,7 @@ var broadcastChannelLib = {}
           if (queryParams.error) error = queryParams.error
         }
         bc = new broadcastChannelLib.BroadcastChannel('redirect_channel_' + instanceParams.instanceId, broadcastChannelOptions)
-        console.log('sending message down')
+        console.log('sending message down', instanceParams, hashParams)
         bc.postMessage({
           data: {
             verifier: instanceParams.verifier,

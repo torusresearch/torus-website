@@ -567,6 +567,7 @@ export default {
           })
         )
       )
+      log.info(torus.instanceId, 'id')
       const scope = encodeURIComponent('only_authentication')
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
