@@ -39,7 +39,9 @@
         <v-layout wrap>
           <v-flex xs12 sm6 px-4>
             <v-layout wrap>
-              <v-flex xs12><span class="subtitle-2">Transfer Mode</span></v-flex>
+              <v-flex xs12>
+                <span class="subtitle-2">Transfer Mode</span>
+              </v-flex>
               <v-flex xs12 sm6 class="recipient-verifier-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
                 <v-select
                   id="recipient-verifier"
@@ -62,6 +64,7 @@
                   required
                   :rules="[toAddressRule, rules.required]"
                   outlined
+                  autocomplete="ThisIsASampleAutocomplete"
                   @keyup="qrErrorMsg = ''"
                 >
                   <template v-slot:append>
@@ -74,9 +77,7 @@
                 <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                   <div class="v-messages">
                     <div class="v-messages__wrapper">
-                      <div class="v-messages__message d-flex error--text px-3">
-                        {{ qrErrorMsg }}
-                      </div>
+                      <div class="v-messages__message d-flex error--text px-3">{{ qrErrorMsg }}</div>
                     </div>
                   </div>
                 </div>
