@@ -97,7 +97,7 @@ const router = new Router({
               component: WalletHomeMain
             },
             {
-              path: 'collectible/:address',
+              path: 'collectibles/:address',
               name: 'walletHomeCollectible',
               component: WalletHomeCollectible
             }

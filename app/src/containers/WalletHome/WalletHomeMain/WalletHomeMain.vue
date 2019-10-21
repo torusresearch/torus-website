@@ -286,6 +286,8 @@ export default {
   created() {
     this.setDateUpdated()
 
+    this.activeTab = this.$route.hash === '#collectibles' ? 1 : 0
+
     const jwtToken = this.$store.state.jwtToken
 
     get(`${config.api}/billboard`, {
