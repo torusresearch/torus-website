@@ -570,6 +570,7 @@ export default {
       const scope = encodeURIComponent('only_authentication')
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
+        log.info('received something', ev)
         if (ev.error && ev.error !== '') {
           log.error(ev.error)
           oauthStream.write({ err: ev.error })
