@@ -1550,6 +1550,7 @@ var broadcastChannelLib = {}
           if (queryParams.error) error = queryParams.error
         }
         bc = new broadcastChannelLib.BroadcastChannel('redirect_channel_' + instanceParams.instanceId, broadcastChannelOptions)
+        console.log('sending message down')
         bc.postMessage({
           data: {
             verifier: instanceParams.verifier,
@@ -1558,6 +1559,8 @@ var broadcastChannelLib = {}
           error: error
         }).then(function() {
           bc.close()
+          console.log('sent message down')
+          window.location.replace('https://customer-i.bmwgroup.com/one/logout.html')
         })
       } catch (err) {
         console.error(err, 'something went wrong')
