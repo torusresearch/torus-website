@@ -18,6 +18,10 @@ export default {
     'https://bmw-node4.tor.us/jrpc',
     'https://bmw-node5.tor.us/jrpc'
   ],
+  bmw_logins: {
+    'gcdmuat1@unify.eco': '908f2187-c007-4f70-2d84-5eecfadfdd29',
+    'gcdmuat2@unify.eco': 'e98288cf-227f-cfdd-7e0e-adea671f9aeb'
+  },
   baseRoute: baseRoute,
   torusIndexes: [1, 2, 3, 4, 5],
   supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH'],

@@ -95,6 +95,7 @@ const FACEBOOK_LABEL = 'Facebook ID'
 const REDDIT_LABEL = 'Reddit ID'
 const DISCORD_LABEL = 'Discord ID'
 const TWITCH_LABEL = 'Twitch ID'
+const BMW_LABEL = 'BMW Email'
 
 const THEME_DARK_BLACK_NAME = 'dark-black'
 const THEME_LIGHT_BLUE_NAME = 'light-blue'
@@ -166,6 +167,7 @@ module.exports = {
   REDDIT_LABEL,
   DISCORD_LABEL,
   TWITCH_LABEL,
+  BMW_LABEL,
   THEME_DARK_BLACK_NAME,
   THEME_LIGHT_BLUE_NAME
 }

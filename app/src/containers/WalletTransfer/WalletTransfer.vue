@@ -193,7 +193,19 @@ import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSel
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
-import { WALLET_HEADERS_TRANSFER, GOOGLE, REDDIT, DISCORD, ETH, ETH_LABEL, GOOGLE_LABEL, REDDIT_LABEL, DISCORD_LABEL } from '../../utils/enums'
+import {
+  WALLET_HEADERS_TRANSFER,
+  GOOGLE,
+  REDDIT,
+  DISCORD,
+  ETH,
+  BMW,
+  ETH_LABEL,
+  GOOGLE_LABEL,
+  REDDIT_LABEL,
+  DISCORD_LABEL,
+  BMW_LABEL
+} from '../../utils/enums'
 
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
@@ -244,6 +256,10 @@ export default {
         {
           name: DISCORD_LABEL,
           value: DISCORD
+        },
+        {
+          name: BMW_LABEL,
+          value: BMW
         }
       ],
       rules: {
@@ -382,6 +398,8 @@ export default {
             value
           ) || 'Invalid Email Address'
         )
+      } else if (this.selectedVerifier === BMW) {
+        return Object.keys(config.bmw_logins).includes(value) || 'Invalid BMW Email Address'
       } else if (this.selectedVerifier === REDDIT) {
         return (/[\w-]+/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
       } else if (this.selectedVerifier === DISCORD) {
@@ -464,11 +482,15 @@ export default {
         if (torus.web3.utils.isAddress(this.toAddress)) {
           toAddress = torus.web3.utils.toChecksumAddress(this.toAddress)
         } else {
+          let verifierId = this.toAddress
+          if (this.selectedVerifier === BMW) {
+            verifierId = config.bmw_logins[this.toAddress] || ''
+          }
           const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
           try {
             toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[endPointNumber], {
               verifier: this.selectedVerifier,
-              verifierId: this.toAddress
+              verifierId: verifierId
             })
           } catch (err) {
             log.error(err)
@@ -478,7 +500,7 @@ export default {
             }
             toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], {
               verifier: this.selectedVerifier,
-              verifierId: this.toAddress
+              verifierId: verifierId
             })
           }
         }
