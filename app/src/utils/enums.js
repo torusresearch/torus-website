@@ -55,6 +55,10 @@ const USER_INFO_REQUEST_APPROVED = 'user_info_request_approved'
 const USER_INFO_REQUEST_REJECTED = 'user_info_request_rejected'
 const USER_INFO_REQUEST_NEW = 'user_info_request_new'
 
+const CONTRACT_TYPE_ETH = 'eth'
+const CONTRACT_TYPE_ERC20 = 'erc20'
+const CONTRACT_TYPE_ERC721 = 'erc721'
+
 const createNetwork = (host, networkName, chainId) => {
   return {
     host,
@@ -171,5 +175,8 @@ module.exports = {
   THEME_LIGHT_BLUE_NAME,
   ERC721METADATA_INTERFACE_ID,
   ERC721ENUMERABLE_INTERFACE_ID,
-  SINGLE_CALL_BALANCES_ADDRESS
+  SINGLE_CALL_BALANCES_ADDRESS,
+  CONTRACT_TYPE_ETH,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721
 }

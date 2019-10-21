@@ -1,5 +1,6 @@
 .asset {
   cursor: pointer;
+  height: 200px;
 
   &.v-card--link:focus:before {
     opacity: 0;
@@ -75,7 +76,12 @@
     }
   }
 
+  &.asset--mobile {
+    height: inherit;
+  }
+
   &.asset--active {
+    height: inherit;
     .asset-more {
       display: block;
     }
@@ -85,6 +91,15 @@
     .more-info-hide {
       display: block;
     }
+  }
+}
+
+::v-deep .v-breadcrumbs {
+  a {
+    color: var(--v-text_2-base);
+  }
+  a.v-breadcrumbs__item.v-breadcrumbs__item--disabled {
+    color: var(--v-text_1-base);
   }
 }
 

@@ -12,7 +12,11 @@
                   <v-chip class="select-coin" label outlined large v-on="on">
                     <img
                       class="mr-2"
-                      :src="isContract ? selectedItemDisplay.logo : require(`../../../public/images/logos/${selectedItemDisplay.logo}`)"
+                      :src="
+                        contractType === CONTRACT_TYPE_ETH
+                          ? require(`../../../public/images/logos/${selectedItemDisplay.logo}`)
+                          : selectedItemDisplay.logo
+                      "
                       height="24px"
                       onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
                     />
@@ -23,15 +27,27 @@
                   </v-chip>
                 </template>
                 <v-list>
-                  <v-subheader>
+                  <v-list-item v-for="token in finalBalancesArrayEthOnly" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
+                    <v-list-item-icon class="mr-1">
+                      <img
+                        :src="require(`../../../public/images/logos/${token.logo}`)"
+                        height="24px"
+                        onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                      />
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title>{{ token.name }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-subheader v-if="finalBalancesArrayTokens.length > 0">
                     <v-icon left class="mr-2">$vuetify.icons.token</v-icon>
                     TOKEN
                     <div class="flex-grow-1 text-right">
                       <v-icon right>$vuetify.icons.select</v-icon>
                     </div>
                   </v-subheader>
-                  <v-list-item-group>
-                    <v-list-item v-for="token in finalBalancesArray" :key="token.id" @click="selectedItemChanged(token.tokenAddress, false)">
+                  <v-list-item-group v-if="finalBalancesArrayTokens.length > 0">
+                    <v-list-item v-for="token in finalBalancesArrayTokens" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
                       <v-list-item-icon class="ml-8 mr-1">
                         <img
                           :src="require(`../../../public/images/logos/${token.logo}`)"
@@ -50,7 +66,7 @@
                     COLLECTIBLES
                   </v-subheader>
                   <v-list-item-group>
-                    <v-list-item v-for="contract in contracts" :key="contract.address" @click="selectedItemChanged(contract.address, true)">
+                    <v-list-item v-for="contract in contracts" :key="contract.address" @click="selectedItemChanged(contract.address)">
                       <v-list-item-icon class="ml-8 mr-1">
                         <img :src="contract.logo" height="24px" />
                       </v-list-item-icon>
@@ -125,10 +141,25 @@
           <v-flex xs12 px-4 sm6 class="you-send-container">
             <div>
               <span class="subtitle-2">You send</span>
-              <a id="send-all-btn" class="float-right primary--text subtitle-2" v-if="!isContract && !isSendAll" @click="sendAll">Send All</a>
+              <a
+                id="send-all-btn"
+                class="float-right primary--text subtitle-2"
+                v-if="contractType !== CONTRACT_TYPE_ERC721 && !isSendAll"
+                @click="sendAll"
+              >
+                Send All
+              </a>
               <a id="send-all-reset-btn" class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">Reset</a>
             </div>
-            <v-select v-if="isContract" v-model="assetSelected" :items="contractSelected.assets" outlined item-text="name" return-object>
+            <v-select
+              v-if="contractType === CONTRACT_TYPE_ERC721"
+              v-model="assetSelected"
+              @change="selectedAssetChanged"
+              :items="contractSelected.assets"
+              outlined
+              item-text="name"
+              return-object
+            >
               <template v-slot:prepend-inner>
                 <img :src="assetSelected.image" height="24px" />
               </template>
@@ -138,7 +169,7 @@
               </template>
             </v-select>
             <v-text-field
-              v-if="!isContract"
+              v-if="contractType !== CONTRACT_TYPE_ERC721"
               id="you-send"
               :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
               persistent-hint
@@ -183,7 +214,7 @@
             @onSelectSpeed="onSelectSpeed"
           />
         </v-layout>
-        <v-layout wrap>
+        <v-layout wrap v-if="contractType !== CONTRACT_TYPE_ERC721">
           <v-flex xs12 px-4 sm6>
             <div>
               <span class="subtitle-2">Total Cost</span>
@@ -241,7 +272,20 @@ import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSel
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
-import { WALLET_HEADERS_TRANSFER, GOOGLE, REDDIT, DISCORD, ETH, ETH_LABEL, GOOGLE_LABEL, REDDIT_LABEL, DISCORD_LABEL } from '../../utils/enums'
+import {
+  WALLET_HEADERS_TRANSFER,
+  GOOGLE,
+  REDDIT,
+  DISCORD,
+  ETH,
+  ETH_LABEL,
+  GOOGLE_LABEL,
+  REDDIT_LABEL,
+  DISCORD_LABEL,
+  CONTRACT_TYPE_ETH,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721
+} from '../../utils/enums'
 
 const { torusNodeEndpoints } = config
 const transferABI = require('human-standard-token-abi')
@@ -259,6 +303,7 @@ export default {
   data() {
     return {
       pageHeader: WALLET_HEADERS_TRANSFER,
+      contractType: CONTRACT_TYPE_ETH,
       isContract: false,
       contractSelected: {},
       assetSelected: {},
@@ -302,7 +347,10 @@ export default {
       },
       showModalMessage: false,
       modalMessageSuccess: null,
-      isSendAll: false
+      isSendAll: false,
+      CONTRACT_TYPE_ETH,
+      CONTRACT_TYPE_ERC20,
+      CONTRACT_TYPE_ERC721
     }
   },
   computed: {
@@ -315,6 +363,12 @@ export default {
     finalBalancesArray() {
       return this.$store.getters.tokenBalances.finalBalancesArray || []
     },
+    finalBalancesArrayTokens() {
+      return this.$store.getters.tokenBalances.finalBalancesArray.filter(token => token.tokenAddress !== '0x') || []
+    },
+    finalBalancesArrayEthOnly() {
+      return this.$store.getters.tokenBalances.finalBalancesArray.filter(token => token.tokenAddress === '0x') || []
+    },
     contracts() {
       return this.$store.getters.collectibleBalances
     },
@@ -323,13 +377,13 @@ export default {
       return foundElement
     },
     selectedItemDisplay() {
-      if (!this.isContract) return this.selectedItem
+      if (this.contractType !== CONTRACT_TYPE_ERC721) return this.selectedItem
 
       const foundContract = this.contracts.find(x => x.address === this.contractSelected.address)
       return foundContract
     },
     selectedTokenAddress() {
-      if (this.tokenAddress === '0x' || !isAddress(this.tokenAddress)) return '0x'
+      if (this.tokenAddress === '0x' || !isAddress(this.tokenAddress) || this.contractType === CONTRACT_TYPE_ERC721) return '0x'
       return toChecksumAddress(this.tokenAddress)
     },
     getCurrencyMultiplier() {
@@ -483,14 +537,31 @@ export default {
         return 21000
       }
     },
-    async selectedItemChanged(address, isContract) {
-      this.isContract = isContract
-      this.tokenAddress = isContract ? '0x' : address
-      this.contractSelected = isContract ? this.contracts.find(x => x.address === address) : {}
-      this.assetSelected = this.contractSelected.assets[0]
+    async selectedItemChanged(address, tokenId) {
+      const foundInBalances = this.finalBalancesArray.find(token => token.tokenAddress === address)
+      const foundInContracts = this.contracts.find(token => token.address === address)
+
+      if (foundInBalances) {
+        this.tokenAddress = foundInBalances.tokenAddress
+        this.contractType = foundInBalances.erc20 ? CONTRACT_TYPE_ERC20 : CONTRACT_TYPE_ETH
+
+        history.pushState({}, null, `?contract=${this.tokenAddress}`)
+      } else if (foundInContracts) {
+        this.tokenAddress = foundInContracts.tokenAddress
+        this.contractType = CONTRACT_TYPE_ERC721
+        this.contractSelected = this.contracts.find(x => x.address === address)
+        this.assetSelected = tokenId ? this.contractSelected.assets.find(asset => asset.tokenId === tokenId) : this.contractSelected.assets[0]
+        this.selectedAssetChanged(this.assetSelected)
+      } else {
+        // When no address is found in contracts
+        this.selectedItemChanged('0x')
+      }
 
       this.gas = await this.calculateGas(this.toAddress)
       this.updateTotalCost()
+    },
+    selectedAssetChanged(asset) {
+      history.pushState({}, null, `?contract=${this.tokenAddress}&asset=${asset.tokenId}`)
     },
     changeSelectedToCurrency(value) {
       this.toggle_exclusive = value
@@ -718,10 +789,7 @@ export default {
     }
 
     if (this.$route.query.hasOwnProperty('contract')) {
-      this.selectedItemChanged(this.$route.query.contract, true)
-      if (this.$route.query.hasOwnProperty('tokenId')) {
-        this.assetSelected = this.contractSelected.assets.find(asset => asset.tokenId === this.$route.query.tokenId)
-      }
+      this.selectedItemChanged(this.$route.query.contract, this.$route.query.hasOwnProperty('asset') ? this.$route.query.asset : '')
     } else {
       this.toAddress = ''
     }
