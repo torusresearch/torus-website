@@ -537,7 +537,6 @@ export default {
       }
     },
     async selectedItemChanged(address, tokenId) {
-      console.log(address, tokenId)
       const foundInBalances = this.finalBalancesArray.find(token => token.tokenAddress === address)
       const foundInContracts = this.contracts.find(token => token.address === address)
 
