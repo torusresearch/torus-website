@@ -277,7 +277,8 @@ import {
   DISCORD_LABEL,
   CONTRACT_TYPE_ETH,
   CONTRACT_TYPE_ERC20,
-  CONTRACT_TYPE_ERC721
+  CONTRACT_TYPE_ERC721,
+  OLD_ERC721_LIST
 } from '../../utils/enums'
 
 const { torusNodeEndpoints } = config
@@ -528,8 +529,8 @@ export default {
           } else if (this.contractType === CONTRACT_TYPE_ERC721) {
             const selectedAddress = this.$store.state.selectedAddress
             const contractInstance = new torus.web3.eth.Contract(erc721TransferABI, this.selectedTokenAddress)
-            contractInstance.methods
-              .safeTransferFrom(selectedAddress, toAddress, this.assetSelected.tokenId)
+            this.getTransferFromMethod(contractInstance, selectedAddress, toAddress)
+              .getMethod(this.selectedTokenAddress)
               .estimateGas({ from: selectedAddress })
               .then(response => {
                 resolve(response)
@@ -543,6 +544,12 @@ export default {
       } else {
         return 21000
       }
+    },
+    getTransferFromMethod(contractInstance, selectedAddress, toAddress) {
+      // For support of older ERC721
+      return OLD_ERC721_LIST.includes(toAddress)
+        ? contractInstance.methods.transferFrom(selectedAddress, toAddress, this.assetSelected.tokenId)
+        : contractInstance.methods.safeTransferFrom(selectedAddress, toAddress, this.assetSelected.tokenId)
     },
     async selectedItemChanged(address, tokenId) {
       const foundInBalances = this.finalBalancesArray.find(token => token.tokenAddress === address)
@@ -682,7 +689,7 @@ export default {
           )
         } else if (this.contractType === CONTRACT_TYPE_ERC721) {
           const contractInstance = new torus.web3.eth.Contract(erc721TransferABI, this.selectedTokenAddress)
-          contractInstance.methods.safeTransferFrom(selectedAddress, toAddress, this.assetSelected.tokenId).send(
+          this.getTransferFromMethod(contractInstance, selectedAddress, toAddress).send(
             {
               from: selectedAddress,
               gas: this.gas.toString(),

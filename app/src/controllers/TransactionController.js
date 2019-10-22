@@ -630,6 +630,7 @@ class TransactionController extends EventEmitter {
     } else if (decodedERC721) {
       // Next give preference to erc721
       const { name = '', params } = decodedERC721
+      // transferFrom & approve of ERC721 can't be distinguished from ERC20
       tokenMethodName = [COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM].find(tokenMethodName => tokenMethodName.toLowerCase() === name.toLowerCase())
       methodParams = params
       contractParams = tokenObj
