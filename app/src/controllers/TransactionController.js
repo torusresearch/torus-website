@@ -1,11 +1,20 @@
-import { addABI, decodeMethod } from '../utils/abiDecoder'
+import AbiDecoder from '../utils/abiDecoder'
 const EventEmitter = require('safe-event-emitter')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
 const Transaction = require('ethereumjs-tx')
 const EthQuery = require('ethjs-query')
-const abi = require('human-standard-token-abi')
-addABI(abi)
+const tokenAbi = require('human-standard-token-abi')
+const collectibleAbi = require('human-standard-collectible-abi')
+
+const tokenABIDecoder = new AbiDecoder(tokenAbi)
+const collectibleABIDecoder = new AbiDecoder(collectibleAbi)
+
+console.log(tokenABIDecoder.getMethodIDs())
+console.log(collectibleABIDecoder.getMethodIDs())
+
+const { toChecksumAddress } = require('web3-utils')
+const erc20Contracts = require('eth-contract-metadata')
 
 const TransactionStateManager = require('./TransactionStateManager').default
 const TxGasUtil = require('../utils/TxGasUtil').default
@@ -24,7 +33,8 @@ const {
   TOKEN_METHOD_TRANSFER_FROM,
   SEND_ETHER_ACTION_KEY,
   DEPLOY_CONTRACT_ACTION_KEY,
-  CONTRACT_INTERACTION_KEY
+  CONTRACT_INTERACTION_KEY,
+  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
 } = require('../utils/enums')
 
 const { hexToBn, bnToHex, BnMultiplyByFraction } = require('../utils/utils')
@@ -189,12 +199,13 @@ class TransactionController extends EventEmitter {
     }
     txUtils.validateTxParams(normalizedTxParams)
     // construct txMeta
-    const { transactionCategory, getCodeResponse, methodParams } = await this._determineTransactionCategory(txParams)
+    const { transactionCategory, getCodeResponse, methodParams, contractParams } = await this._determineTransactionCategory(txParams)
     let txMeta = this.txStateManager.generateTxMeta({
       txParams: normalizedTxParams,
       type: TRANSACTION_TYPE_STANDARD,
       transactionCategory,
-      methodParams
+      methodParams,
+      contractParams
     })
     this.addTx(txMeta)
 
@@ -592,10 +603,41 @@ class TransactionController extends EventEmitter {
   */
   async _determineTransactionCategory(txParams) {
     const { data, to } = txParams
-    const { name, params } = (data && decodeMethod(data)) || {}
-    const tokenMethodName = [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].find(
-      tokenMethodName => tokenMethodName === name && name.toLowerCase()
-    )
+    const checkSummedTo = toChecksumAddress(to)
+    const decodedERC721 = data && collectibleABIDecoder.decodeMethod(data)
+    const decodedERC20 = data && tokenABIDecoder.decodeMethod(data)
+    let tokenMethodName = ''
+    let methodParams = {}
+    let contractParams = {}
+    const tokenObj = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[toChecksumAddress(to)] : {}
+    // If we know the contract address, mark it as erc20
+    if (tokenObj && tokenObj.erc20 && decodedERC20) {
+      const { name, params } = decodedERC20
+      tokenMethodName = [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].find(
+        tokenMethodName => tokenMethodName.toLowerCase() === name && name.toLowerCase()
+      )
+      methodParams = params
+      contractParams = tokenObj
+    } else if (decodedERC20) {
+      // fallback to erc20
+      const { name, params } = decodedERC20
+      tokenMethodName = [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].find(
+        tokenMethodName => tokenMethodName.toLowerCase() === name && name.toLowerCase()
+      )
+      methodParams = params
+      contractParams.erc20 = true
+      contractParams.symbol = 'ERC20'
+    } else if (decodedERC721) {
+      // Next give preference to erc721
+      const { name, params } = decodedERC721
+      tokenMethodName = [COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM].find(tokenMethodName => tokenMethodName.toLowerCase() === name && name.toLowerCase())
+      methodParams = params
+      contractParams = tokenObj
+      contractParams.erc721 = true
+      contractParams.symbol = 'ERC721'
+    }
+
+    console.log(data, decodedERC20, decodedERC721)
 
     let result
     let code
@@ -618,7 +660,7 @@ class TransactionController extends EventEmitter {
       result = codeIsEmpty ? SEND_ETHER_ACTION_KEY : CONTRACT_INTERACTION_KEY
     }
 
-    return { transactionCategory: result, getCodeResponse: code, methodParams: params }
+    return { transactionCategory: result, getCodeResponse: code, methodParams: methodParams, contractParams: contractParams }
   }
 
   /**

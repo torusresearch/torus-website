@@ -227,8 +227,9 @@ import {
   broadcastChannelOptions
 } from '../../utils/utils'
 import { get } from '../../utils/httpHelpers'
-const abiDecoder = require('../../utils/abiDecoder')
-const abi = require('human-standard-token-abi')
+
+const tokenABI = require('human-standard-token-abi')
+const collectibleABI = require('human-standard-collectible-abi')
 const contracts = require('eth-contract-metadata')
 const log = require('loglevel')
 
@@ -240,6 +241,7 @@ const {
   TOKEN_METHOD_APPROVE,
   TOKEN_METHOD_TRANSFER,
   TOKEN_METHOD_TRANSFER_FROM,
+  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   SEND_ETHER_ACTION_KEY,
   SUPPORTED_NETWORK_TYPES
 } = require('../../utils/enums')
@@ -331,6 +333,10 @@ export default {
         case CONTRACT_INTERACTION_KEY:
           return this.getHeaderByDapp()
           break
+        case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
+          // return 'ERC721 SafeTransferFrom'
+          return 'Safe Collectible Transfer From'
+          break
         case TOKEN_METHOD_APPROVE:
           // return 'ERC20 Approve'
           return 'Approve'
@@ -359,6 +365,7 @@ export default {
         case TOKEN_METHOD_APPROVE:
         case TOKEN_METHOD_TRANSFER:
         case TOKEN_METHOD_TRANSFER_FROM:
+        case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
           return `To: ${this.slicedAddress(this.amountTo)}`
           break
         case SEND_ETHER_ACTION_KEY:
@@ -379,6 +386,9 @@ export default {
         case TOKEN_METHOD_TRANSFER:
         case TOKEN_METHOD_TRANSFER_FROM:
           return `${this.amountDisplay(this.amountValue)} ${this.selectedToken}`
+          break
+        case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
+          return `${this.amountValue} ${this.selectedToken}`
           break
         case SEND_ETHER_ACTION_KEY:
         case CONTRACT_INTERACTION_KEY:
@@ -579,7 +589,7 @@ export default {
       } else if (type === 'transaction') {
         let finalValue = 0
         const { value, to, data, from: sender, gas, gasPrice } = txParams.txParams || {}
-        const { simulationFails, network, id, transactionCategory, methodParams } = txParams || {}
+        const { simulationFails, network, id, transactionCategory, methodParams, contractParams } = txParams || {}
         const { reason } = simulationFails || {}
         if (value) {
           finalValue = fromWei(value.toString())
@@ -587,14 +597,21 @@ export default {
 
         this.origin = this.origin.trim().length === 0 ? 'Wallet' : this.origin
         // GET data params
-        const txDataParams = abi.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
+        let txDataParams = ''
+        if (contractParams.erc721) {
+          txDataParams = collectibleABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
+        } else if (contractParams.erc20) {
+          txDataParams = collectibleABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
+        }
+
         let amountTo, amountValue, amountFrom
-        if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM) [amountFrom, amountTo, amountValue] = methodParams || []
+        if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
+          [amountFrom, amountTo, amountValue] = methodParams || []
         else [amountTo, amountValue] = methodParams || []
         log.info(methodParams, 'params')
         const checkSummedTo = toChecksumAddress(to)
 
-        const tokenObj = Object.prototype.hasOwnProperty.call(contracts, checkSummedTo) ? contracts[toChecksumAddress(to)] : {}
+        const tokenObj = contractParams
         const decimals = tokenObj.decimals || 0
         this.selectedToken = tokenObj.symbol || 'ERC20'
         this.id = id
@@ -605,7 +622,7 @@ export default {
         this.amountTo = amountTo ? amountTo.value : checkSummedTo
         this.amountValue = amountValue ? parseFloat(amountValue.value) / 10 ** parseFloat(decimals) : ''
 
-        if (methodParams) {
+        if (methodParams && contractParams.erc20) {
           const pairs = checkSummedTo
           const query = `contract_addresses=${pairs}&vs_currencies=eth`
           let prices = {}
