@@ -510,7 +510,7 @@ export default {
               })
               .catch(err => {
                 log.error(err)
-                resolve(MAX_GAS)
+                resolve(0)
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC20) {
             const selectedAddress = this.$store.state.selectedAddress
@@ -524,7 +524,7 @@ export default {
               })
               .catch(err => {
                 log.error(err)
-                resolve(MAX_GAS)
+                resolve(0)
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC721) {
             const selectedAddress = this.$store.state.selectedAddress
@@ -536,7 +536,7 @@ export default {
               })
               .catch(err => {
                 log.error(err)
-                resolve(MAX_GAS)
+                resolve(0)
               })
           }
         })
@@ -632,7 +632,7 @@ export default {
             from: selectedAddress,
             to: toAddress,
             value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
-            gas: this.gas.toString(),
+            gas: this.gas === 0 ? undefined : this.gas.toString(),
             gasPrice: fastGasPrice
           })
           torus.web3.eth.sendTransaction(
@@ -640,7 +640,7 @@ export default {
               from: selectedAddress,
               to: toAddress,
               value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
-              gas: this.gas.toString(),
+              gas: this.gas === 0 ? undefined : this.gas.toString(),
               gasPrice: fastGasPrice
             },
             (err, transactionHash) => {
@@ -666,7 +666,7 @@ export default {
           contractInstance.methods.transfer(toAddress, value).send(
             {
               from: selectedAddress,
-              gas: this.gas.toString(),
+              gas: this.gas === 0 ? undefined : this.gas.toString(),
               gasPrice: fastGasPrice
             },
             (err, transactionHash) => {
@@ -691,7 +691,7 @@ export default {
           this.getTransferFromMethod(contractInstance, selectedAddress, toAddress).send(
             {
               from: selectedAddress,
-              gas: this.gas.toString(),
+              gas: this.gas === 0 ? undefined : this.gas.toString(),
               gasPrice: fastGasPrice
             },
             (err, transactionHash) => {

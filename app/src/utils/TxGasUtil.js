@@ -24,7 +24,9 @@ class TxGasUtil {
     let estimatedGasHex
     try {
       estimatedGasHex = await this.estimateTxGas(txMeta, block.gasLimit)
+      console.log(estimatedGasHex)
     } catch (err) {
+      console.log(err)
       txMeta.simulationFails = {
         reason: err.message,
         errorKey: err.errorKey,

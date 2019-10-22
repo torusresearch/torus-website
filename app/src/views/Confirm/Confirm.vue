@@ -91,7 +91,7 @@
         </v-flex>
         <v-flex xs12 px-6 mb-6 class="text-right" v-if="canShowError">
           <div class="caption error--text">{{ errorMsg }}</div>
-          <div class="caption mt-1">
+          <div class="caption mt-1" v-if="topUpErrorShow">
             Please
             <v-btn color="primary" class="mx-1 px-2 caption" small outlined @click="topUp">Top up</v-btn>
             your wallet
@@ -290,6 +290,7 @@ export default {
       totalEthCost: 0,
       totalEthCostDisplay: '',
       errorMsg: '',
+      topUpErrorShow: '',
       txFees: 0,
       network: '',
       networkName: '',
@@ -471,16 +472,18 @@ export default {
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
         this.canApprove = false
-      } else {
-        this.errorMsg = ''
-        this.canApprove = true
+        this.topUpErrorShow = true
       }
     },
     gasKnob: function(newGasKnob, oldGasKnob) {
       this.gasPrice = calculateGasPrice(newGasKnob)
     },
     errorMsg: function(newErrorMsg, oldErrorMsg) {
-      if (newErrorMsg !== oldErrorMsg) this.canShowError = newErrorMsg && newErrorMsg !== ''
+      if (newErrorMsg !== oldErrorMsg) {
+        const boolean = newErrorMsg && newErrorMsg !== ''
+        this.canShowError = boolean
+        this.canApprove = !boolean
+      }
     }
   },
   methods: {
@@ -669,6 +672,7 @@ export default {
         if (parseFloat(this.balance) < ethCost && !this.canShowError) {
           this.errorMsg = 'Insufficient Funds'
           this.canApprove = false
+          this.topUpErrorShow = true
         }
       }
       this.type = type // type of tx
