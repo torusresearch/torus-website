@@ -1,10 +1,10 @@
 <template>
   <div class="wallet-home">
     <v-layout wrap align-center :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
-      <v-flex xs6 px-4 mb-4>
+      <v-flex xs6 px-4>
         <div class="font-weight-bold headline float-left">{{ pageHeader }}</div>
       </v-flex>
-      <v-flex xs6 px-4 mb-4 class="text-right hidden-xs-only">
+      <v-flex xs6 px-4 class="text-right hidden-xs-only">
         <v-btn outlined large color="primary" :disabled="isFreshAccount" class="transfer-btn px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
           <v-icon left>$vuetify.icons.send</v-icon>
           Transfer
@@ -22,9 +22,9 @@
         </v-tooltip>
       </v-flex>
 
-      <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'mb-6'">
+      <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'mb-2'">
         <v-layout class="home-cards" wrap>
-          <v-flex xs12 sm6 px-4 :class="$vuetify.breakpoint.xsOnly ? 'mb-4' : ''">
+          <v-flex xs12 sm6 px-4 my-4 :class="$vuetify.breakpoint.xsOnly ? 'mb-4' : ''">
             <v-card class="card-total card-shadow">
               <v-card-title class="font-weight-bold subtitle-2 pt-6 px-6">
                 <v-layout>
@@ -44,7 +44,7 @@
               </v-card-text>
             </v-card>
           </v-flex>
-          <v-flex xs12 sm6 px-4 v-if="isFreshAccount">
+          <v-flex xs12 sm6 px-4 my-4 v-if="isFreshAccount">
             <v-card class="card-shadow">
               <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
                 <v-layout>
@@ -73,7 +73,7 @@
               </v-card-text>
             </v-card>
           </v-flex>
-          <v-flex xs12 sm6 px-4 v-for="(event, i) in isFreshAccount ? [] : events" :key="`event-${i}`">
+          <v-flex xs12 sm6 px-4 my-4 v-for="(event, i) in isFreshAccount ? [] : events" :key="`event-${i}`">
             <promotion-card
               :title="event.eventName"
               :image-path="event.imageUrl"

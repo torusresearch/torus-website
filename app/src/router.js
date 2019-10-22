@@ -163,8 +163,10 @@ function hasQueryParams(route) {
 
 router.beforeResolve((to, from, next) => {
   if (to.hasOwnProperty('meta') && to.meta.hasOwnProperty('requiresAuth') && to.meta.requiresAuth === false) {
-    if (!hasQueryParams(to) && hasQueryParams(from)) {
-      next({ name: to.name, query: from.query, hash: to.hash })
+    if (to.name === 'logout') {
+      next()
+    } else if (!hasQueryParams(to) && hasQueryParams(from)) {
+      next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
     } else {
       next()
     }
@@ -172,7 +174,7 @@ router.beforeResolve((to, from, next) => {
     if (store.state.selectedAddress === '') {
       next({ name: 'login', query: { redirect: to.fullPath } })
     } else if (!hasQueryParams(to) && hasQueryParams(from)) {
-      next({ name: to.name, query: from.query, hash: to.hash })
+      next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
       // next()
     } else {
       next()
