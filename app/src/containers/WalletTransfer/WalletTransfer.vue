@@ -17,7 +17,7 @@
                           ? selectedItemDisplay.logo
                           : require(`../../../public/images/logos/${selectedItemDisplay.logo}`)
                       "
-                      height="24px"
+                      height="20px"
                       onerror="if (this.src !== 'eth.svg') this.src = 'images/logos/eth.svg';"
                     />
                     <span>{{ selectedItemDisplay.name }}</span>
@@ -26,56 +26,49 @@
                     </div>
                   </v-chip>
                 </template>
-                <v-list>
+                <v-list class="select-item-list">
                   <v-list-item v-for="token in finalBalancesArrayEthOnly" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
                     <v-list-item-icon class="mr-1">
                       <img
                         :src="require(`../../../public/images/logos/${token.logo}`)"
-                        height="24px"
+                        height="20px"
                         onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
                       />
                     </v-list-item-icon>
                     <v-list-item-content>
-                      <v-list-item-title>{{ token.name }}</v-list-item-title>
+                      <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                   <v-divider class="mx-3"></v-divider>
-                  <v-subheader v-if="finalBalancesArrayTokens.length > 0">
-                    <v-icon left class="mr-2">$vuetify.icons.token</v-icon>
+                  <v-subheader class="body-2" v-if="finalBalancesArrayTokens.length > 0">
+                    <v-icon small left class="mr-2">$vuetify.icons.token</v-icon>
                     TOKEN
-                    <div class="flex-grow-1 text-right">
-                      <v-icon right>$vuetify.icons.select</v-icon>
-                    </div>
                   </v-subheader>
-                  <v-list-item-group v-if="finalBalancesArrayTokens.length > 0">
-                    <v-list-item v-for="token in finalBalancesArrayTokens" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
-                      <v-list-item-icon class="ml-8 mr-1">
-                        <img
-                          :src="require(`../../../public/images/logos/${token.logo}`)"
-                          height="24px"
-                          onerror="if (this.src !== 'eth.svg') this.src = 'images/logos/eth.svg';"
-                        />
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>{{ token.name }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list-item-group>
+                  <v-list-item v-for="token in finalBalancesArrayTokens" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
+                    <v-list-item-icon class="ml-8 mr-1">
+                      <img
+                        :src="require(`../../../public/images/logos/${token.logo}`)"
+                        height="20px"
+                        onerror="if (this.src !== 'eth.svg') this.src = 'images/logos/eth.svg';"
+                      />
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
                   <v-divider class="mx-3"></v-divider>
-                  <v-subheader v-if="collectibles.length > 0">
-                    <v-icon left class="mr-2">$vuetify.icons.collectibles</v-icon>
+                  <v-subheader class="body-2" v-if="collectibles.length > 0">
+                    <v-icon small left class="mr-2">$vuetify.icons.collectibles</v-icon>
                     COLLECTIBLES
                   </v-subheader>
-                  <v-list-item-group v-if="collectibles.length > 0">
-                    <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
-                      <v-list-item-icon class="ml-8 mr-1">
-                        <img :src="collectible.logo" height="24px" />
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>{{ collectible.name }}</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list-item-group>
+                  <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
+                    <v-list-item-icon class="ml-8 mr-1">
+                      <img :src="collectible.logo" height="20px" />
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title class="body-2">{{ collectible.name }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
                 </v-list>
               </v-menu>
             </div>
@@ -207,9 +200,8 @@
         </v-layout>
         <v-layout wrap>
           <TransactionSpeedSelect
-            v-if="contractType !== CONTRACT_TYPE_ERC721"
             :resetSpeed="resetSpeed"
-            :symbol="selectedItem.symbol"
+            :symbol="contractType !== CONTRACT_TYPE_ERC721 ? selectedItem.symbol : 'ETH'"
             :gas="gas"
             :displayAmount="displayAmount"
             @onSelectSpeed="onSelectSpeed"
@@ -561,14 +553,14 @@ export default {
         this.contractType = foundInBalances.erc20 ? CONTRACT_TYPE_ERC20 : CONTRACT_TYPE_ETH
         this.collectibleSelected = ''
         this.assetSelected = ''
-
-        // history.pushState({}, null, `?contract=${this.tokenAddress}`)
       } else if (foundInCollectibles) {
         this.tokenAddress = foundInCollectibles.address
         this.contractType = CONTRACT_TYPE_ERC721
         this.collectibleSelected = this.collectibles.find(x => x.address === address)
         this.assetSelected = tokenId ? this.collectibleSelected.assets.find(asset => asset.tokenId === tokenId) : this.collectibleSelected.assets[0]
-        // this.selectedAssetChanged(this.assetSelected)
+
+        // Reset you send
+        this.resetSendAll()
       }
       this.gas = await this.calculateGas(this.toAddress)
       this.updateTotalCost()
