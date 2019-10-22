@@ -248,7 +248,7 @@ export default {
       })
     },
     onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value })
+      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'home' })
     },
     refreshBalances() {
       this.$store.dispatch('forceFetchTokens')

@@ -9,7 +9,7 @@
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-4 mx-6>
-          <div class="subtitle-2">Amount</div>
+          <div class="subtitle-2">{{ transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM ? 'Collectible' : 'Amount' }}</div>
           <v-divider></v-divider>
           <div>
             <span class="subtitle-2 float-left text_2--text">{{ displayAmountTo }}</span>
@@ -300,6 +300,7 @@ export default {
       speed: '',
       typedMessages: {},
       id: 0,
+      COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM: COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
       networks: [
         ...Object.values(SUPPORTED_NETWORK_TYPES),
         {
@@ -335,7 +336,7 @@ export default {
           break
         case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
           // return 'ERC721 SafeTransferFrom'
-          return 'Safe Collectible Transfer From'
+          return 'Collectible Safe Transfer From'
           break
         case TOKEN_METHOD_APPROVE:
           // return 'ERC20 Approve'
@@ -388,7 +389,7 @@ export default {
           return `${this.amountDisplay(this.amountValue)} ${this.selectedToken}`
           break
         case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
-          return `${this.amountValue} ${this.selectedToken}`
+          return `ID: ${this.amountValue}`
           break
         case SEND_ETHER_ACTION_KEY:
         case CONTRACT_INTERACTION_KEY:
@@ -621,7 +622,6 @@ export default {
         var gweiGasPrice = hexToNumber(gasPrice) / weiInGwei
         this.amountTo = amountTo ? amountTo.value : checkSummedTo
         this.amountValue = amountValue ? parseFloat(amountValue.value) / 10 ** parseFloat(decimals) : ''
-
         if (methodParams && contractParams.erc20) {
           const pairs = checkSummedTo
           const query = `contract_addresses=${pairs}&vs_currencies=eth`

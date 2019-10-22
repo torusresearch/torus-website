@@ -124,7 +124,7 @@ export default {
   },
   methods: {
     onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value })
+      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'history' })
     },
     getNonTopupTransactionCount() {
       return this.calculateFinalTransactions().filter(item => item.action !== ACTIVITY_ACTION_TOPUP).length

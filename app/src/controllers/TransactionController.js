@@ -612,32 +612,33 @@ class TransactionController extends EventEmitter {
     const tokenObj = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[toChecksumAddress(to)] : {}
     // If we know the contract address, mark it as erc20
     if (tokenObj && tokenObj.erc20 && decodedERC20) {
-      const { name, params } = decodedERC20
+      const { name = '', params } = decodedERC20
       tokenMethodName = [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].find(
-        tokenMethodName => tokenMethodName.toLowerCase() === name && name.toLowerCase()
+        tokenMethodName => tokenMethodName.toLowerCase() === name.toLowerCase()
       )
       methodParams = params
       contractParams = tokenObj
     } else if (decodedERC20) {
       // fallback to erc20
-      const { name, params } = decodedERC20
+      const { name = '', params } = decodedERC20
       tokenMethodName = [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].find(
-        tokenMethodName => tokenMethodName.toLowerCase() === name && name.toLowerCase()
+        tokenMethodName => tokenMethodName.toLowerCase() === name.toLowerCase()
       )
       methodParams = params
       contractParams.erc20 = true
       contractParams.symbol = 'ERC20'
     } else if (decodedERC721) {
       // Next give preference to erc721
-      const { name, params } = decodedERC721
-      tokenMethodName = [COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM].find(tokenMethodName => tokenMethodName.toLowerCase() === name && name.toLowerCase())
+      const { name = '', params } = decodedERC721
+      tokenMethodName = [COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM].find(tokenMethodName => tokenMethodName.toLowerCase() === name.toLowerCase())
       methodParams = params
       contractParams = tokenObj
       contractParams.erc721 = true
       contractParams.symbol = 'ERC721'
+      contractParams.decimals = 0
     }
 
-    console.log(data, decodedERC20, decodedERC721)
+    // log.info(data, decodedERC20, decodedERC721, tokenMethodName, contractParams, methodParams)
 
     let result
     let code

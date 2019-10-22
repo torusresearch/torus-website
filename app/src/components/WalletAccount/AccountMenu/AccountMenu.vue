@@ -166,7 +166,10 @@ export default {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
     },
     totalPortfolioEthValue() {
-      return significantDigits(parseFloat(this.totalPortfolioValue.replace(',', '')) / this.getCurrencyMultiplier)
+      return significantDigits(
+        parseFloat(this.totalPortfolioValue.toString().includes(',') ? this.totalPortfolioValue.replace(',', '') : this.totalPortfolioValue) /
+          this.getCurrencyMultiplier
+      )
     },
     filteredMenu() {
       if (this.headerItems) {
