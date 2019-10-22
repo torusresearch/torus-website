@@ -530,7 +530,6 @@ export default {
             const selectedAddress = this.$store.state.selectedAddress
             const contractInstance = new torus.web3.eth.Contract(erc721TransferABI, this.selectedTokenAddress)
             this.getTransferFromMethod(contractInstance, selectedAddress, toAddress)
-              .getMethod(this.selectedTokenAddress)
               .estimateGas({ from: selectedAddress })
               .then(response => {
                 resolve(response)

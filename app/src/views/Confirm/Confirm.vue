@@ -243,7 +243,8 @@ const {
   TOKEN_METHOD_TRANSFER_FROM,
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   SEND_ETHER_ACTION_KEY,
-  SUPPORTED_NETWORK_TYPES
+  SUPPORTED_NETWORK_TYPES,
+  OLD_ERC721_LIST
 } = require('../../utils/enums')
 
 const weiInGwei = 10 ** 9
@@ -611,6 +612,14 @@ export default {
         else [amountTo, amountValue] = methodParams || []
         log.info(methodParams, 'params')
         const checkSummedTo = toChecksumAddress(to)
+
+        if (OLD_ERC721_LIST.includes(checkSummedTo)) {
+          transactionCategory = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
+          contractParams.erc721 = true
+          contractParams.erc20 = false
+          contractParams.symbol = 'ERC721'
+          contractParams.decimals = 0
+        }
 
         const tokenObj = contractParams
         const decimals = tokenObj.decimals || 0
