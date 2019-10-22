@@ -140,6 +140,7 @@ export default {
       }, [])
       // log.info('this.pastTx', finalTx)
       const sortedTx = finalTx.sort((a, b) => b.date - a.date) || []
+      // console.table('sortedTx is,', sortedTx)
       return sortedTx
     },
     async calculatePastTransactions() {
@@ -199,6 +200,10 @@ export default {
           txObj.totalAmount = web3Utils.fromWei(
             web3Utils.toBN(txOld.txParams.value).add(web3Utils.toBN(txOld.txParams.gas).mul(web3Utils.toBN(txOld.txParams.gasPrice)))
           )
+          txObj.gas = {
+            gas: web3Utils.toBN(txOld.txParams.gas),
+            gasPrice: web3Utils.toBN(txOld.txParams.gasPrice)
+          }
           txObj.totalAmountString = `${significantDigits(txObj.totalAmount)} ETH`
           txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount
           txObj.currencyAmountString = `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`
@@ -209,6 +214,7 @@ export default {
           txObj.ethRate = significantDigits(parseFloat(txObj.currencyAmount) / parseFloat(txObj.totalAmount))
           txObj.currencyUsed = this.selectedCurrency
           finalTransactions.push(txObj)
+          console.log('txObj is', txObj)
         }
       }
       return finalTransactions
