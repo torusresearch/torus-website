@@ -662,14 +662,13 @@ export default {
         const data = response[0]
         const message = response[1]
         dispatch('addWallet', data) // synchronus
-        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
         dispatch('subscribeToControllers')
-        dispatch('setBillboard')
         await Promise.all([
           dispatch('initTorusKeyring', data),
           dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
         ])
-
+        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
+        dispatch('setBillboard')
         // continue enable function
         var ethAddress = data.ethAddress
         if (calledFromEmbed) {
@@ -808,6 +807,7 @@ export default {
       selectedAddress,
       wallet,
       networkType,
+      networkId,
       jwtToken,
       userInfo: { verifier }
     } = state
@@ -823,23 +823,25 @@ export default {
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       if (selectedAddress && wallet[selectedAddress]) {
-        dispatch('updateSelectedAddress', { selectedAddress })
         setTimeout(() => dispatch('subscribeToControllers'), 50)
         await Promise.all([
           torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet)),
           dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false })
         ])
+        dispatch('updateSelectedAddress', { selectedAddress })
+        dispatch('updateNetworkId', { networkId: networkId })
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: verifier })
         log.info('rehydrated wallet')
-        torus.web3.eth.net
-          .getId()
-          .then(res => {
-            setTimeout(function() {
-              dispatch('updateNetworkId', { networkId: res })
-            })
-            // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-          })
-          .catch(e => log.error(e))
+        // torus.web3.eth.net
+        //   .getId()
+        //   .then(res => {
+        //     console.log(res)
+        //     setTimeout(function() {
+        //       dispatch('updateNetworkId', { networkId: toHex(res) })
+        //     })
+        //     // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+        //   })
+        //   .catch(e => log.error(e))
       }
     } catch (error) {
       log.error('Failed to rehydrate', error)

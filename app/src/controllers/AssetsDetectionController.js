@@ -3,8 +3,10 @@
  * Controller that passively polls on a set interval for assets auto detection
  */
 
-const utils = require('../utils/httpHelpers')
 const log = require('loglevel')
+const utils = require('../utils/httpHelpers')
+import config from '../config'
+import store from '../store'
 // const contractMap = require('eth-contract-metadata')
 const { MAINNET } = require('../utils/enums')
 const DEFAULT_INTERVAL = 180000
@@ -56,15 +58,14 @@ export default class AssetsDetectionController {
   async getOwnerCollectibles() {
     const selectedAddress = this.selectedAddress
     const api = this.getOwnerCollectiblesApi(selectedAddress)
-    const assetsController = this.assetController
     let response
     try {
-      if (assetsController.openSeaApiKey) {
-        response = await utils.get(api, { headers: { 'X-API-KEY': assetsController.openSeaApiKey } })
-      } else {
-        response = await utils.get(api, {})
-      }
-      const collectibles = response.assets
+      response = await utils.get(`${config.api}/opensea?url=${api}`, {
+        headers: {
+          Authorization: `Bearer ${store.state.jwtToken}`
+        }
+      })
+      const collectibles = response.data.assets
       return collectibles
     } catch (e) {
       log.error(e)

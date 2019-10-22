@@ -9,10 +9,6 @@ const collectibleAbi = require('human-standard-collectible-abi')
 
 const tokenABIDecoder = new AbiDecoder(tokenAbi)
 const collectibleABIDecoder = new AbiDecoder(collectibleAbi)
-
-console.log(tokenABIDecoder.getMethodIDs())
-console.log(collectibleABIDecoder.getMethodIDs())
-
 const { toChecksumAddress } = require('web3-utils')
 const erc20Contracts = require('eth-contract-metadata')
 

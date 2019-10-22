@@ -8,6 +8,8 @@ const { toChecksumAddress } = require('web3-utils')
 const log = require('loglevel')
 const ObservableStore = require('obs-store')
 const utils = require('../utils/httpHelpers')
+import config from '../config'
+import store from '../store'
 
 export default class AssetController {
   constructor(opts = {}) {
@@ -67,12 +69,13 @@ export default class AssetController {
     const tokenURI = this.getCollectibleApi(contractAddress, tokenId)
     let collectibleInformation
     /* istanbul ignore if */
-    if (this.openSeaApiKey) {
-      collectibleInformation = await utils.get(tokenURI, { headers: { 'X-API-KEY': this.openSeaApiKey } })
-    } else {
-      collectibleInformation = await utils.get(tokenURI)
-    }
-    const { name, description, image_original_url } = collectibleInformation
+    collectibleInformation = await utils.get(`${config.api}/opensea?url=${encodeURIComponent(tokenURI)}`, {
+      headers: {
+        Authorization: `Bearer ${store.state.jwtToken}`
+      }
+    })
+
+    const { name, description, image_original_url } = collectibleInformation.data
     return { image: image_original_url, name, description }
   }
 
@@ -129,12 +132,14 @@ export default class AssetController {
     const api = this.getCollectibleContractInformationApi(contractAddress)
     let collectibleContractObject
     /* istanbul ignore if */
-    if (this.openSeaApiKey) {
-      collectibleContractObject = await utils.get(api, { headers: { 'X-API-KEY': this.openSeaApiKey } })
-    } else {
-      collectibleContractObject = await utils.get(api)
-    }
-    const { name, symbol, image_url, description, total_supply } = collectibleContractObject
+
+    collectibleContractObject = await utils.get(`${config.api}/opensea?url=${encodeURIComponent(api)}`, {
+      headers: {
+        Authorization: `Bearer ${store.state.jwtToken}`
+      }
+    })
+
+    const { name, symbol, image_url, description, total_supply } = collectibleContractObject.data
     return { name, symbol, image_url, description, total_supply }
   }
 
@@ -209,10 +214,6 @@ export default class AssetController {
     } catch (err) {
       log.error(err)
     }
-  }
-
-  setApiKey(openSeaApiKey) {
-    this.openSeaApiKey = openSeaApiKey
   }
 
   /**
