@@ -87,7 +87,7 @@
           </template>
           <span>Resolve the errors</span>
         </v-tooltip>
-        <div class="caption text_2--text">You will be redirected to Simplex Page</div>
+        <div class="caption text_2--text">You will be sent to Simplex</div>
       </div>
     </v-flex>
   </v-layout>
@@ -140,92 +140,22 @@ export default {
       this.fiatValue = newValue
       if (parseFloat(newValue) <= 20000 && parseFloat(newValue) >= 50) this.fetchQuote()
     },
-    fetchQuote: throttle(async function() {
-      postQuote({
-        digital_currency: 'ETH',
-        fiat_currency: this.selectedCurrency,
-        requested_currency: this.selectedCurrency,
-        requested_amount: +parseFloat(this.fiatValue)
-      })
-        .then(result => {
-          this.ethValue = result.result.digital_money.amount
-          this.currencyRate = result.result.digital_money.amount / result.result.fiat_money.total_amount
-          this.currentOrder = result.result
-        })
-        .catch(err => log.error(err))
-    }, 0),
-    post(path, params, method = 'post') {
-      const form = document.createElement('form')
-      form.method = method
-      form.action = path
-      form.target = 'form-target'
-      for (const key in params) {
-        if (params.hasOwnProperty(key)) {
-          const hiddenField = document.createElement('input')
-          hiddenField.type = 'hidden'
-          hiddenField.name = key
-          hiddenField.value = params[key]
-          form.appendChild(hiddenField)
-        }
-      }
-      document.body.appendChild(form)
-      var simplexWindow = window.open('about:blank', 'form-target', 'width=1200, height=700')
-      form.submit()
+    fetchQuote() {
+      const self = this
+      throttle(() => {
+        self.$store
+          .dispatch('fetchSimplexQuote', { selectedCurrency: self.selectedCurrency, fiatValue: self.fiatValue })
+          .then(result => {
+            self.ethValue = result.result.digital_money.amount
+            self.currencyRate = result.result.digital_money.amount / result.result.fiat_money.total_amount
+            self.currentOrder = result.result
+          })
+          .catch(err => log.error(err))
+      }, 0)()
     },
     sendOrder() {
       if (this.$refs.inputForm.validate()) {
-        postOrder({
-          'g-recaptcha-response': '',
-          account_details: {
-            app_end_user_id: this.currentOrder.user_id
-          },
-          transaction_details: {
-            payment_details: {
-              fiat_total_amount: {
-                currency: this.currentOrder.fiat_money.currency,
-                amount: this.currentOrder.fiat_money.total_amount
-              },
-              requested_digital_amount: {
-                currency: this.currentOrder.digital_money.currency,
-                amount: this.currentOrder.digital_money.amount
-              },
-              destination_wallet: {
-                currency: this.currentOrder.digital_money.currency,
-                address: this.$store.state.selectedAddress
-              }
-            }
-          }
-        }).then(result => {
-          const {
-            version,
-            partner,
-            return_url,
-            quote_id,
-            payment_id,
-            user_id,
-            destination_wallet_address,
-            destination_wallet_currency,
-            fiat_total_amount_amount,
-            fiat_total_amount_currency,
-            digital_total_amount_amount,
-            digital_total_amount_currency
-          } = result.result
-          this.post(result.result.payment_post_url, {
-            payment_flow_type: 'wallet',
-            version: version,
-            partner: partner,
-            return_url: return_url,
-            quote_id: quote_id,
-            payment_id: payment_id,
-            user_id: user_id,
-            'destination_wallet[address]': destination_wallet_address,
-            'destination_wallet[currency]': destination_wallet_currency,
-            'fiat_total_amount[amount]': fiat_total_amount_amount,
-            'fiat_total_amount[currency]': fiat_total_amount_currency,
-            'digital_total_amount[amount]': digital_total_amount_amount,
-            'digital_total_amount[currency]': digital_total_amount_currency
-          })
-        })
+        this.$store.dispatch('fetchSimplexOrder', { currentOrder: this.currentOrder })
       }
     }
   },

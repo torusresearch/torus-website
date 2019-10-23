@@ -51,37 +51,31 @@ export default {
         {
           name: 'simplex',
           logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'simplex-logo-white.png' : 'simplex-logo.png',
-          line1: 'Pay with Credit Card',
-          line2: '<span class="font-weight-medium">Simplex Service Fee</span> : 5% or 10 USD',
-          line3: '(whichever is higher)',
+          line1: 'Pay with Credit / Debit Card',
+          line2: '<span class="font-weight-medium">Fee</span> : 5% or 10 USD',
+          line3: 'Limits: $20,000/day, $50,000/mo',
+          line4: 'Currencies: ETH',
           link: '/wallet/topup/simplex',
           status: ACTIVE
         },
         {
           name: 'moonpay',
           logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'moon-pay-logo-white.svg' : 'moon-pay-logo.svg',
-          line1: 'Pay with Credit Card',
-          line2: '<span class="font-weight-medium">Moonpay Service Fee</span> : 4.5% or 5 USD',
-          line3: '(whichever is higher)',
+          line1: 'Pay with Credit / Debit Card',
+          line2: '<span class="font-weight-medium">Fee</span> : 4.5% or 5 USD',
+          line3: 'Limits: 2,000€/day, 10,000€/mo',
+          line4: 'Currencies: ETH, DAI, TUSD, USDC, USDT',
           link: '/wallet/topup/moonpay',
           status: ACTIVE
         },
         {
           name: 'wyre',
           logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'wyre-logo-white.svg' : 'wyre-logo.svg',
-          line1: 'Pay with Debit Card (USA only)',
-          line2: '<span class="font-weight-medium">Wyre Service Fee</span> : 2.9% + 30¢',
-          line3: '( $40 per day limit )',
+          line1: 'Pay with Google/Apple/Masterpass',
+          line2: '<span class="font-weight-medium">Fee</span> : 2.9% + 30¢',
+          line3: 'Limits: $250/day',
+          line4: 'Currencies: ETH, DAI, WETH, USDC',
           link: '/wallet/topup/wyre',
-          status: ACTIVE
-        },
-        {
-          name: 'crypto',
-          logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'crypto-logo-white.png' : 'crypto-logo.png',
-          line1: 'Pay with Credit Card',
-          line2: '<span class="font-weight-medium">crypto.com Service Fee</span> : Varies',
-          line3: '',
-          link: '/wallet/topup/crypto',
           status: ACTIVE
         },
         {
@@ -89,8 +83,19 @@ export default {
           logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'coindirect-logo-white.svg' : 'coindirect-logo.svg',
           line1: 'Pay with Credit Card',
           line2: '<span class="font-weight-medium">coindirect.com Service Fee</span> : Varies',
-          line3: '',
+          line3: 'Limits: N/A',
+          line4: 'Currencies: ETH',
           link: '/wallet/topup/coindirect',
+          status: ACTIVE
+        },
+        {
+          name: 'crypto',
+          logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'crypto-logo-white.png' : 'crypto-logo.png',
+          line1: 'Pay with Credit Card',
+          line2: '<span class="font-weight-medium">crypto.com Service Fee</span> : Varies',
+          line3: 'Limits: N/A',
+          line4: 'Currencies: ETH',
+          link: '/wallet/topup/crypto',
           status: ACTIVE
         }
       ]
