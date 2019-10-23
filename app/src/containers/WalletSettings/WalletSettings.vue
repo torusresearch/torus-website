@@ -1,7 +1,7 @@
 <template>
   <v-layout mt-1 wrap class="wallet-settings">
-    <v-flex xs12 sm8 px-4>
-      <v-expansion-panels multiple>
+    <v-flex xs12 sm10 md8 px-4>
+      <v-expansion-panels accordion multiple>
         <!-- Privacy and security settings -->
         <v-expansion-panel>
           <v-expansion-panel-header id="privacy-panel-header" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : ''" expand-icon="$vuetify.icons.select">

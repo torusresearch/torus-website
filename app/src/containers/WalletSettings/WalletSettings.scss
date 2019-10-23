@@ -1,8 +1,5 @@
 .wallet-settings {
   .v-expansion-panel {
-    background-color: transparent;
-    border-radius: 0;
-
     &::before {
       box-shadow: none;
       border-bottom: 1px solid var(--v-background_3-base);

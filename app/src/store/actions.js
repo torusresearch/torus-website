@@ -625,6 +625,36 @@ export default {
       reject(error)
     }
   },
+  setContacts({ commit }) {
+    commit('setContacts', [
+      {
+        id: 1,
+        verifier: 'google',
+        contact: 'lionell@tor.us'
+      },
+      {
+        id: 2,
+        verifier: 'google',
+        contact: 'shubham@tor.us'
+      },
+      {
+        id: 3,
+        verifier: 'google',
+        contact: 'chai@tor.us'
+      }
+    ])
+  },
+  updateContacts({ commit, state }, payload) {
+    state.contacts.sort((a, b) => (a.id < b.id ? 1 : a.id > b.id ? -1 : 0))
+    commit('updateContacts', {
+      id: state.contacts[0].id + 1,
+      ...payload
+    })
+  },
+  deleteContact({ commit, state }, payload) {
+    const contactIndex = state.contacts.findIndex(contact => contact.id === payload)
+    commit('deleteContact', contactIndex)
+  },
   handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
     const { torusNodeEndpoints, torusIndexes } = config
     const {
@@ -647,6 +677,7 @@ export default {
         dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
         dispatch('subscribeToControllers')
         dispatch('setBillboard')
+        dispatch('setContacts')
         await Promise.all([
           dispatch('initTorusKeyring', data),
           dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })

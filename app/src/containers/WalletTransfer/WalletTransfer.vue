@@ -332,30 +332,7 @@ export default {
       return `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
     },
     contactList() {
-      return [
-        {
-          verifier: GOOGLE,
-          address: 'lionell@tor.us'
-        },
-        {
-          verifier: GOOGLE,
-          address: 'sinlin@tor.us'
-        },
-        {
-          verifier: GOOGLE,
-          address: 'chai@tor.us'
-        },
-        {
-          verifier: GOOGLE,
-          address: 'shubham@tor.us'
-        },
-        {
-          verifier: GOOGLE,
-          address: 'carlos@tor.us'
-        }
-      ]
-        .filter(contact => contact.verifier === this.selectedVerifier)
-        .map(contact => contact.address)
+      return this.$store.state.contacts.filter(contact => contact.verifier === this.selectedVerifier).map(contact => contact.contact)
     }
   },
   watch: {

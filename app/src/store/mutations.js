@@ -68,6 +68,15 @@ export default {
   setBillboard(state, payload) {
     state.billboard = payload
   },
+  setContacts(state, payload) {
+    state.contacts = payload
+  },
+  updateContacts(state, payload) {
+    state.contacts = [...state.contacts, payload]
+  },
+  deleteContact(state, payload) {
+    state.contacts.splice(payload, 1)
+  },
   logOut(state, payload) {
     Object.keys(state).forEach(key => {
       state[key] = payload[key] // or = initialState[key]
