@@ -2,8 +2,6 @@ const fs = require('fs')
 const path = require('path')
 const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
 
-let routes = ['/']
-
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
 
 module.exports = {
@@ -56,16 +54,6 @@ module.exports = {
   crossorigin: 'anonymous',
 
   productionSourceMap: false,
-
-  pluginOptions: {
-    prerenderSpa: {
-      registry: undefined,
-      renderRoutes: routes,
-      useRenderEvent: true,
-      headless: true,
-      onlyProduction: true
-    }
-  },
 
   pwa: {
     name: 'Torus',
