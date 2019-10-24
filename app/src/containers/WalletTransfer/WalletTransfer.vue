@@ -447,9 +447,29 @@ export default {
         : significantDigits(this.displayAmount * this.getCurrencyTokenRate)
 
       this.updateTotalCost()
+    },
+    collectibles: function(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.updateFieldsBasedOnRoute()
+      }
+    },
+    finalBalancesArray: function(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.updateFieldsBasedOnRoute()
+      }
     }
   },
   methods: {
+    updateFieldsBasedOnRoute() {
+      if (Object.prototype.hasOwnProperty.call(this.$route.query, 'contract')) {
+        this.selectedItemChanged(
+          this.$route.query.contract,
+          Object.prototype.hasOwnProperty.call(this.$route.query, 'asset') ? this.$route.query.asset : ''
+        )
+      } else {
+        this.toAddress = ''
+      }
+    },
     sendEmail(typeToken, transactionHash) {
       if (/\S+@\S+\.\S+/.test(this.toAddress)) {
         const etherscanLink = getEtherScanHashLink(transactionHash, this.$store.state.networkType.host)
@@ -567,9 +587,12 @@ export default {
       } else if (foundInCollectibles) {
         this.tokenAddress = foundInCollectibles.address
         this.contractType = CONTRACT_TYPE_ERC721
-        this.collectibleSelected = this.collectibles.find(x => x.address === address)
-        this.assetSelected = tokenId ? this.collectibleSelected.assets.find(asset => asset.tokenId === tokenId) : this.collectibleSelected.assets[0]
-
+        this.collectibleSelected = foundInCollectibles
+        if (foundInCollectibles.assets && foundInCollectibles.assets.length > 0) {
+          this.assetSelected = tokenId
+            ? foundInCollectibles.assets.find(asset => asset.tokenId.toString() === tokenId.toString())
+            : foundInCollectibles.assets[0]
+        }
         // Reset you send
         this.resetSendAll()
       }
@@ -825,14 +848,7 @@ export default {
       this.toAddress = ''
     }
 
-    if (Object.prototype.hasOwnProperty.call(this.$route.query, 'contract')) {
-      this.selectedItemChanged(
-        this.$route.query.contract,
-        Object.prototype.hasOwnProperty.call(this.$route.query, 'asset') ? this.$route.query.asset : ''
-      )
-    } else {
-      this.toAddress = ''
-    }
+    this.updateFieldsBasedOnRoute()
   }
 }
 </script>

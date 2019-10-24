@@ -333,7 +333,6 @@ export default class TorusController extends EventEmitter {
   }
 
   setSelectedAccount(address) {
-    log.info('setselectedaccount called from torus controller')
     this.detectTokensController.startTokenDetection(address)
     this.assetDetectionController.startAssetDetection(address)
   }

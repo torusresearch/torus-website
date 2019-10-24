@@ -109,7 +109,6 @@ export default class AssetsDetectionController {
       return
     }
     this.assetController.selectedAddress = selectedAddress
-    log.info('AssetDetectionController: detectCollectibles: State of AssetController', this.assetController.store.getState())
     const apiCollectibles = await this.getOwnerCollectibles()
     for (let index = 0; index < apiCollectibles.length; index++) {
       const {

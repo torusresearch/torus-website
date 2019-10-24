@@ -81,8 +81,8 @@
     "vuetify": "^2.1.6",
     "vuex": "^3.1.1",
     "vuex-persist": "^2.1.1",
-    "web3": "git://github.com/ethereum/web3.js.git#1.x",
-    "web3-utils": "^1.2.1",
+    "web3": "^1.2.2",
+    "web3-utils": "^1.2.2",
     "xtend": "^4.0.2"
   },
   "devDependencies": {
@@ -112,7 +112,7 @@
     "eslint-plugin-vue": "^5.2.3",
     "esm": "^3.2.25",
     "eth-phishing-detect": "^1.1.13",
-    "fibers": "^4.0.1",
+    "fibers": "^4.0.2",
     "ganache-core": "^2.8.0",
     "husky": "^3.0.9",
     "isomorphic-fetch": "^2.2.1",
