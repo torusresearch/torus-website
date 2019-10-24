@@ -116,8 +116,7 @@ const router = new Router({
         {
           path: 'transfer',
           name: 'walletTransfer',
-          component: WalletTransfer,
-          props: route => ({ address: route.query.address })
+          component: WalletTransfer
         },
         {
           path: 'topup',

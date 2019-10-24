@@ -294,7 +294,6 @@ const MAX_GAS = 6721975
 
 export default {
   name: 'walletTransfer',
-  props: ['address'],
   components: {
     TransactionSpeedSelect,
     MessageModal,
@@ -839,8 +838,6 @@ export default {
     }
   },
   mounted() {
-    this.tokenAddress = this.address
-
     if (Object.prototype.hasOwnProperty.call(this.$route.query, 'to')) {
       this.selectedVerifier = ETH
       this.toAddress = this.$route.query.to

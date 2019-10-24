@@ -83,7 +83,6 @@ class AbiDecoder {
   decodeMethod(data) {
     const methodID = data.slice(2, 10)
     const abiItem = this.state.methodIDs[methodID]
-    console.log(abiItem)
     if (abiItem) {
       const params = abiItem.inputs.map(item => {
         return item.type
@@ -94,8 +93,6 @@ class AbiDecoder {
         name: abiItem.name,
         params: []
       }
-
-      console.log(decoded, 'decoded')
 
       for (let i = 0; i < decoded.__length__; i++) {
         let param = decoded[i]
