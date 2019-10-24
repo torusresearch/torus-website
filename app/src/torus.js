@@ -139,7 +139,7 @@ class Torus {
           var nodeIndex = []
           log.info(shareResponses)
           for (var i = 0; i < shareResponses.length; i++) {
-            if (shareResponses[i]) {
+            if (shareResponses[i] && shareResponses[i].result && shareResponses[i].result.keys && shareResponses[i].result.keys.length > 0) {
               // let verifierEncrypted = {
               //   ciphertext: Buffer.from(verifier.ciphertext.data, 'hex'),
               //   mac: Buffer.from(verifier.mac.data, 'hex'),
