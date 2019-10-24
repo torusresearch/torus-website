@@ -80,9 +80,10 @@ describe('Tests Wallet Transfer Transaction', () => {
 
   it('Should select coin', async () => {
     const textToSelect = 'Ethereum'
-    await selectItem(page, '#select-coin', '.select-coin-container', textToSelect)
+    await click(page, '.select-coin')
+    await click(page, '.select-coin-eth')
     await page.waitFor(100)
-    const coinSelected = await page.$eval('.select-coin-container .v-select__selection', el => el.textContent)
+    const coinSelected = await page.$eval('.select-coin-container .select-coin-name', el => el.textContent)
 
     // check if textToSelect was selected
     assert.equal(textToSelect, coinSelected)

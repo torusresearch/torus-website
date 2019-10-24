@@ -1,5 +1,5 @@
 <template>
-  <v-layout wrap align-center>
+  <v-layout class="collectibles-tab-container" wrap align-center>
     <v-flex class="xs12 sm6 md4 lg3 px-4 my-4" v-for="(collectible, i) in collectibles" :key="i">
       <v-card class="card-shadow">
         <v-list-item class="py-4" router-link :to="{ name: 'walletHomeCollectible', params: { address: collectible.address } }">

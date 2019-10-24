@@ -81,11 +81,10 @@ describe('Tests Wallet Home', () => {
 
   it('Should update currency', async () => {
     let currency = 'AUD'
-    await selectItem(page, '#currency-selector', '.e2e-currency-selector-container', currency)
+    await selectItem(page, '.currency-selector', '.e2e-currency-selector-container', currency)
     await waitForText(page, '#selected-currency', currency)
-
     currency = 'USD'
-    await selectItem(page, '#currency-selector', '.e2e-currency-selector-container', currency)
+    await selectItem(page, '.currency-selector', '.e2e-currency-selector-container', currency)
     await waitForText(page, '#selected-currency', currency)
   })
 
@@ -101,5 +100,12 @@ describe('Tests Wallet Home', () => {
       // Should close learn more
       await click(page, '#next-step-btn')
     }
+  })
+
+  it('Should show tokens collectibles table', async () => {
+    await click(page, '.home-tab-token')
+    await shouldExist(page, '.token-balance-tab-container')
+    await click(page, '.home-tab-collectibles')
+    await shouldExist(page, '.collectibles-tab-container')
   })
 })

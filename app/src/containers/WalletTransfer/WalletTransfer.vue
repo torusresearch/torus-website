@@ -20,14 +20,19 @@
                       height="20px"
                       onerror="if (this.src !== 'eth.svg') this.src = 'images/logos/eth.svg';"
                     />
-                    <span>{{ selectedItemDisplay.name }}</span>
+                    <span class="select-coin-name">{{ selectedItemDisplay.name }}</span>
                     <div class="flex-grow-1 text-right pr-2">
                       <v-icon right>$vuetify.icons.select</v-icon>
                     </div>
                   </v-chip>
                 </template>
                 <v-list class="select-item-list">
-                  <v-list-item v-for="token in finalBalancesArrayEthOnly" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
+                  <v-list-item
+                    class="select-coin-eth"
+                    v-for="token in finalBalancesArrayEthOnly"
+                    :key="token.id"
+                    @click="selectedItemChanged(token.tokenAddress)"
+                  >
                     <v-list-item-icon class="mr-1">
                       <img
                         :src="require(`../../../public/images/logos/${token.logo}`)"
