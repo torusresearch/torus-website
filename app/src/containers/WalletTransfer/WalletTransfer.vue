@@ -171,7 +171,7 @@
 
         <v-layout mt-4 pr-2 wrap>
           <v-spacer></v-spacer>
-          <v-dialog v-model="showModalMessage" max-width="550" persistent>
+          <v-dialog v-model="showModalMessage" max-width="500" persistent>
             <message-modal
               @onClose="showModalMessage = false"
               :modal-type="modalMessageSuccess"
