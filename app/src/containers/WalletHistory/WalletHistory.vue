@@ -138,9 +138,8 @@ export default {
         if (acc.findIndex(y => y.etherscanLink === x.etherscanLink) === -1) acc.push(x)
         return acc
       }, [])
-      // log.info('this.pastTx', finalTx)
       const sortedTx = finalTx.sort((a, b) => b.date - a.date) || []
-      // console.table('sortedTx is,', sortedTx)
+      log.info('sortedTx is', sortedTx)
       return sortedTx
     },
     async calculatePastTransactions() {
@@ -168,6 +167,7 @@ export default {
           to: x.to,
           slicedTo: addressSlicer(x.to),
           action: this.wallets.indexOf(x.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
+          gas: {},
           totalAmount: x.total_amount,
           totalAmountString: totalAmountString,
           currencyAmount: x.currency_amount,
@@ -201,8 +201,8 @@ export default {
             web3Utils.toBN(txOld.txParams.value).add(web3Utils.toBN(txOld.txParams.gas).mul(web3Utils.toBN(txOld.txParams.gasPrice)))
           )
           txObj.gas = {
-            gas: web3Utils.toBN(txOld.txParams.gas),
-            gasPrice: web3Utils.toBN(txOld.txParams.gasPrice)
+            gas: web3Utils.fromWei(web3Utils.toBN(txOld.txParams.gas), 'gwei'),
+            gasPrice: web3Utils.fromWei(web3Utils.toBN(txOld.txParams.gasPrice), 'gwei')
           }
           txObj.totalAmountString = `${significantDigits(txObj.totalAmount)} ETH`
           txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount
@@ -255,6 +255,7 @@ export default {
               to: publicAddress,
               slicedTo: addressSlicer(publicAddress),
               totalAmount: x.requested_digital_amount.amount,
+              gas: {},
               totalAmountString,
               currencyAmount: x.fiat_total_amount.amount,
               currencyAmountString,

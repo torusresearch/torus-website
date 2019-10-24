@@ -38,7 +38,7 @@
                 Rate
                 <span class="float-right">:</span>
               </v-flex>
-              <v-flex xs8 sm11>1 ETH = {{ item.ethRate }} {{ item.currencyUsed }} @ {{ item.timeFormatted }}</v-flex>
+              <v-flex xs8 sm11>1 ETH = {{ item.ethRate }} {{ item.currencyUsed }} @ {{ item.timeFormatted }} {{ JSON.stringify(item.gas) }}</v-flex>
               <v-flex xs4 sm1 pr-2>
                 Network
                 <span class="float-right">:</span>
