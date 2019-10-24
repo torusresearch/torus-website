@@ -15,7 +15,7 @@ import {
   THEME_LIGHT_BLUE_NAME
 } from '../utils/enums'
 import { getRandomNumber, broadcastChannelOptions, storageAvailable } from '../utils/utils'
-import { post, get, patch } from '../utils/httpHelpers.js'
+import { post, get, patch, remove } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import initialState from './state'
 
@@ -625,35 +625,61 @@ export default {
       reject(error)
     }
   },
-  setContacts({ commit }) {
-    commit('setContacts', [
-      {
-        id: 1,
-        verifier: 'google',
-        contact: 'lionell@tor.us'
-      },
-      {
-        id: 2,
-        verifier: 'google',
-        contact: 'shubham@tor.us'
-      },
-      {
-        id: 3,
-        verifier: 'google',
-        contact: 'chai@tor.us'
-      }
-    ])
+  setContacts({ commit, state }) {
+    try {
+      get(`${config.api}/contact`, {
+        headers: {
+          Authorization: `Bearer ${state.jwtToken}`
+        }
+      }).then(resp => {
+        if (resp.data) commit('setContacts', resp.data)
+      })
+    } catch (error) {
+      reject(error)
+    }
   },
   updateContacts({ commit, state }, payload) {
-    state.contacts.sort((a, b) => (a.id < b.id ? 1 : a.id > b.id ? -1 : 0))
-    commit('updateContacts', {
-      id: state.contacts[0].id + 1,
-      ...payload
+    return new Promise((resolve, reject) => {
+      post(`${config.api}/contact`, payload, {
+        headers: {
+          Authorization: `Bearer ${state.jwtToken}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      })
+        .then(response => {
+          commit('updateContacts', response.data)
+          log.info('successfully added contact', response)
+          resolve(response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to add contact')
+          reject('Unable to add contact')
+        })
     })
   },
   deleteContact({ commit, state }, payload) {
-    const contactIndex = state.contacts.findIndex(contact => contact.id === payload)
-    commit('deleteContact', contactIndex)
+    return new Promise((resolve, reject) => {
+      remove(
+        `${config.api}/contact/${payload}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`
+          }
+        }
+      )
+        .then(response => {
+          commit('deleteContact', payload)
+          log.info('successfully deleted contact', response)
+          resolve(response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to delete contact')
+          reject('Unable to delete contact')
+        })
+    })
+    // const contactIndex = state.contacts.findIndex(contact => contact.id === payload)
+    // commit('deleteContact', contactIndex)
   },
   handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
     const { torusNodeEndpoints, torusIndexes } = config
@@ -676,12 +702,13 @@ export default {
         dispatch('addWallet', data) // synchronus
         dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
         dispatch('subscribeToControllers')
-        dispatch('setBillboard')
-        dispatch('setContacts')
         await Promise.all([
           dispatch('initTorusKeyring', data),
           dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
         ])
+
+        dispatch('setBillboard')
+        dispatch('setContacts')
 
         // continue enable function
         var ethAddress = data.ethAddress

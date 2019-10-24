@@ -1,5 +1,5 @@
 <template>
-  <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-0 px-12'">
+  <div class="contact-list-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'py-0 px-12'">
     <div class="subtitle-2">List of Contacts</div>
     <v-card class="card-shadow mt-2">
       <v-list dense flat class="pa-0">
@@ -18,7 +18,6 @@
               </v-btn>
             </v-list-item-action>
           </v-list-item>
-          <v-divider :key="`divider-${contact.id}`"></v-divider>
         </template>
       </v-list>
     </v-card>
@@ -102,3 +101,7 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+@import 'ContactList.scss';
+</style>
