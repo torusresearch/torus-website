@@ -11,7 +11,7 @@ var BN = require('bn.js')
 const setupMultiplex = require('./utils/setupMultiplex').default
 const toChecksumAddress = require('./utils/toChecksumAddress').default
 const ethUtil = require('ethereumjs-util')
-const eccrypto = require('eccrypto')
+// const eccrypto = require('eccrypto')
 
 // Make this a class. Use ES6
 class Torus {
