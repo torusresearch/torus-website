@@ -669,7 +669,8 @@ export default {
         }
       )
         .then(response => {
-          commit('deleteContact', payload)
+          const contactIndex = state.contacts.findIndex(contact => contact.id === payload)
+          commit('deleteContact', contactIndex)
           log.info('successfully deleted contact', response)
           resolve(response)
         })
@@ -678,8 +679,6 @@ export default {
           reject('Unable to delete contact')
         })
     })
-    // const contactIndex = state.contacts.findIndex(contact => contact.id === payload)
-    // commit('deleteContact', contactIndex)
   },
   handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
     const { torusNodeEndpoints, torusIndexes } = config

@@ -69,24 +69,6 @@
                     </v-btn>
                   </template>
                 </v-combobox>
-                <!-- <v-text-field
-                  class="recipient-address"
-                  id="recipient-address"
-                  ref="recipientAddress"
-                  v-model="toAddress"
-                  :placeholder="verifierPlaceholder"
-                  required
-                  :rules="[toAddressRule, rules.required]"
-                  outlined
-                  autocomplete="ThisIsASampleAutocomplete"
-                  @keyup="qrErrorMsg = ''"
-                >
-                  <template v-slot:append>
-                    <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()">
-                      <v-icon small>$vuetify.icons.scan</v-icon>
-                    </v-btn>
-                  </template>
-                </v-text-field> -->
                 <qrcode-capture @decode="onDecodeQr" ref="captureQr" style="display: none" />
                 <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                   <div class="v-messages">

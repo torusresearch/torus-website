@@ -33,14 +33,15 @@
             item-text="name"
             item-value="value"
             v-model="selectedVerifier"
+            @change="$refs.addContactForm.validate()"
           ></v-select>
         </v-flex>
         <v-flex xs12>
-          <v-text-field v-model="newContact" :placeholder="verifierPlaceholder" required outlined></v-text-field>
+          <v-text-field v-model="newContact" :placeholder="verifierPlaceholder" :rules="[toAddressRule, rules.required]" outlined></v-text-field>
         </v-flex>
 
         <v-flex xs12 class="pt-4 text-right">
-          <v-btn type="submit" color="primary" depressed class="px-12 py-1 mt-4">Add Contact</v-btn>
+          <v-btn type="submit" color="primary" depressed class="px-12 py-1">Add Contact</v-btn>
         </v-flex>
       </v-layout>
     </v-form>
@@ -48,6 +49,7 @@
 </template>
 
 <script>
+import torus from '../../../torus'
 const { GOOGLE, REDDIT, DISCORD, ETH } = require('../../../utils/enums')
 
 export default {
@@ -56,6 +58,9 @@ export default {
     return {
       selectedVerifier: ETH,
       newContact: '',
+      rules: {
+        required: value => !!value || 'Required'
+      },
       verifierOptions: [
         {
           name: 'ETH Address',
@@ -88,15 +93,35 @@ export default {
   methods: {
     addContact(e) {
       e.preventDefault()
-      this.$store.dispatch('updateContacts', {
-        contact: this.newContact,
-        verifier: this.selectedVerifier
-      })
-
-      this.newContact = ''
+      this.$store
+        .dispatch('updateContacts', {
+          contact: this.newContact,
+          verifier: this.selectedVerifier
+        })
+        .then(response => {
+          this.newContact = ''
+        })
     },
     deleteContact(contactId) {
       this.$store.dispatch('deleteContact', contactId)
+    },
+    toAddressRule(value) {
+      if (this.selectedVerifier === ETH) {
+        return torus.web3.utils.isAddress(value) || 'Invalid ETH Address'
+      } else if (this.selectedVerifier === GOOGLE) {
+        return (
+          // eslint-disable-next-line max-len
+          /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+            value
+          ) || 'Invalid Email Address'
+        )
+      } else if (this.selectedVerifier === REDDIT) {
+        return (/[\w-]+/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
+      } else if (this.selectedVerifier === DISCORD) {
+        return (/^[0-9]*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
+      }
+
+      return true
     }
   }
 }
