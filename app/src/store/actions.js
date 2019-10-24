@@ -197,11 +197,11 @@ export default {
         })
     })
   },
-  finishImportAccount({ dispatch }, payload) {
+  finishImportAccount({ dispatch, state }, payload) {
     return new Promise((resolve, reject) => {
       const { privKey } = payload
       const address = torus.generateAddressFromPrivKey(privKey)
-      torus.torusController.setSelectedAccount(address)
+      torus.torusController.setSelectedAccount(address, { jwtToken: state.jwtToken })
       dispatch('addWallet', { ethAddress: address, privKey: privKey })
       dispatch('updateSelectedAddress', { selectedAddress: address })
       torus.torusController
@@ -242,10 +242,10 @@ export default {
   updateTokenRates({ commit }, payload) {
     commit('setTokenRates', payload.tokenRates)
   },
-  updateSelectedAddress(context, payload) {
-    context.commit('setSelectedAddress', payload.selectedAddress)
+  updateSelectedAddress({ commit, state }, payload) {
+    commit('setSelectedAddress', payload.selectedAddress)
     torus.updateStaticData({ selectedAddress: payload.selectedAddress })
-    torus.torusController.setSelectedAccount(payload.selectedAddress)
+    torus.torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
   },
   updateNetworkId(context, payload) {
     context.commit('setNetworkId', payload.networkId)

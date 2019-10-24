@@ -5,8 +5,7 @@
 
 const log = require('loglevel')
 const utils = require('../utils/httpHelpers')
-import config from '../config'
-import store from '../store'
+const config = require('../config').default
 // const contractMap = require('eth-contract-metadata')
 const { MAINNET } = require('../utils/enums')
 const DEFAULT_INTERVAL = 180000
@@ -19,6 +18,11 @@ export default class AssetsDetectionController {
     this._provider = opts.provider
     this.assetController = opts.assetController
     this.assetContractController = opts.assetContractController
+    this.jwtToken = ''
+  }
+
+  setJwtToken(jwtToken) {
+    this.jwtToken = jwtToken
   }
 
   restartAssetDetection() {
@@ -62,7 +66,7 @@ export default class AssetsDetectionController {
     try {
       response = await utils.get(`${config.api}/opensea?url=${api}`, {
         headers: {
-          Authorization: `Bearer ${store.state.jwtToken}`
+          Authorization: `Bearer ${this.jwtToken}`
         }
       })
       const collectibles = response.data.assets

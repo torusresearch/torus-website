@@ -8,8 +8,7 @@ const { toChecksumAddress } = require('web3-utils')
 const log = require('loglevel')
 const ObservableStore = require('obs-store')
 const utils = require('../utils/httpHelpers')
-import config from '../config'
-import store from '../store'
+const config = require('../config').default
 
 export default class AssetController {
   constructor(opts = {}) {
@@ -27,6 +26,11 @@ export default class AssetController {
     this.network = opts.network
     this.assetContractController = opts.assetContractController
     this.selectedAddress = opts.selectedAddress
+    this.jwtToken = ''
+  }
+
+  setJwtToken(jwtToken) {
+    this.jwtToken = jwtToken
   }
 
   getCollectibleApi(contractAddress, tokenId) {
@@ -71,7 +75,7 @@ export default class AssetController {
     /* istanbul ignore if */
     collectibleInformation = await utils.get(`${config.api}/opensea?url=${encodeURIComponent(tokenURI)}`, {
       headers: {
-        Authorization: `Bearer ${store.state.jwtToken}`
+        Authorization: `Bearer ${this.jwtToken}`
       }
     })
 
@@ -135,7 +139,7 @@ export default class AssetController {
 
     collectibleContractObject = await utils.get(`${config.api}/opensea?url=${encodeURIComponent(api)}`, {
       headers: {
-        Authorization: `Bearer ${store.state.jwtToken}`
+        Authorization: `Bearer ${this.jwtToken}`
       }
     })
 

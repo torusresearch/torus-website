@@ -332,7 +332,11 @@ export default class TorusController extends EventEmitter {
     this.accountTracker.addAccounts([address])
   }
 
-  setSelectedAccount(address) {
+  setSelectedAccount(address, opts) {
+    if (opts.jwtToken) {
+      this.assetDetectionController.jwtToken = opts.jwtToken
+      this.assetController.jwtToken = opts.jwtToken
+    }
     this.detectTokensController.startTokenDetection(address)
     this.assetDetectionController.startAssetDetection(address)
   }
