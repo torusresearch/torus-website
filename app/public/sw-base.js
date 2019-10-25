@@ -516,5 +516,9 @@ REDIRECT_HTML${''}
   }
 })
 
-self.__precacheManifest = [].concat(self.__precacheManifest || [])
+self.__precacheManifest = [
+  {
+    url: '/js/app.js'
+  }
+].concat(self.__precacheManifest || [])
 precacheAndRoute(self.__precacheManifest, {})
