@@ -256,10 +256,10 @@ export default {
     },
     initiateTransfer() {
       // this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
-      this.$router.push({ path: '/wallet/transfer' })
+      this.$router.push({ name: 'walletTransfer' }).catch(err => {})
     },
     topup() {
-      this.$router.push({ path: '/wallet/topup' })
+      this.$router.push({ path: '/wallet/topup' }).catch(err => {})
     },
     setDateUpdated() {
       const currentDateTime = new Date()

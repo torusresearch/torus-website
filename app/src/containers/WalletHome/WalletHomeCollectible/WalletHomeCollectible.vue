@@ -146,7 +146,7 @@ export default {
       }
     },
     transferAsset(asset) {
-      this.$router.push({ name: 'walletTransfer', query: { ...this.$route.query, contract: asset.address, asset: asset.tokenId } })
+      this.$router.push({ name: 'walletTransfer', query: { ...this.$route.query, contract: asset.address, asset: asset.tokenId } }).catch(err => {})
     }
   },
   created() {

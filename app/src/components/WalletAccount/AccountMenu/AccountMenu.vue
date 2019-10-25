@@ -190,7 +190,7 @@ export default {
         bc.close()
       }
       this.$store.dispatch('logOut')
-      this.$router.push({ path: '/logout' })
+      this.$router.push({ path: '/logout' }).catch(err => {})
     },
     async changeAccount(newAddress) {
       this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
