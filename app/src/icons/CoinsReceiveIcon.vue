@@ -1,9 +1,9 @@
 <template>
   <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-      <g id="61-–-finance">
-        <rect id="body" x="0" y="0" width="24" height="24"></rect>
-        <g id="icon" transform="translate(0.800000, 1.600000)">
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+      <g>
+        <rect x="0" y="0" width="24" height="24"></rect>
+        <g transform="translate(0.800000, 1.600000)">
           <path
             d="M2.8,9.6 C3.65976132,8.1113505 4.32642799,7.17801716 4.8,6.8 C5.37794429,6.33867024 4.71304225,
               4.29635511 5.2,4 C5.64100463,3.73161127 7.57930629,5.11942702 7.94568652,4.9863455 C9.33122778,
@@ -19,7 +19,6 @@
               14.9290806 0.909832782,14.6768743 0.141998315,14.4433809 C0.057630233,14.4179196 1.0792339e-17,
               14.3401587 0,14.2520325 L0,10.5508603 C-3.24223108e-16,10.4615642 0.0591954629,
               10.383087 0.145055774,10.3585555 L2.8,9.6 L2.8,9.6 Z"
-            id="Path-219"
             stroke="#0364FF"
             stroke-width="1.5"
             stroke-linecap="round"
@@ -27,19 +26,12 @@
           <path
             d="M19.1900442,7.20774695 C20.167262,6.47845398 20.8,5.31311893 20.8,4 C20.8,1.790861 19.009139,
               0 16.8,0 C14.590861,0 12.8,1.790861 12.8,4"
-            id="Shape"
             stroke="#0364FF"
             stroke-width="1.5"
             stroke-linecap="round"
           ></path>
-          <circle id="Oval" fill="#0364FF" cx="6.8" cy="10.8" r="1.2"></circle>
-          <path
-            d="M22.3668737,11.2 C22.192944,12 21.6706527,12.4 20.8,12.4"
-            id="Path-220"
-            stroke="#0364FF"
-            stroke-width="1.5"
-            stroke-linecap="round"
-          ></path>
+          <circle fill="#0364FF" cx="6.8" cy="10.8" r="1.2"></circle>
+          <path d="M22.3668737,11.2 C22.192944,12 21.6706527,12.4 20.8,12.4" stroke="#0364FF" stroke-width="1.5" stroke-linecap="round"></path>
         </g>
       </g>
     </g>
