@@ -34,10 +34,11 @@ module.exports = {
   },
   chainWebpack: config => {
     config.resolve.alias.set('bn.js', 'fork-bn.js')
-    config
-      .plugin('service-worker-integrity')
-      .use(serviceWorkerIntegrityPlugin, ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
-      .after('workbox')
+    if (process.env.NODE_ENV === 'production')
+      config
+        .plugin('service-worker-integrity')
+        .use(serviceWorkerIntegrityPlugin, ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
+        .after('workbox')
     // config.module
     //   .rule('worker')
     //   .test(/\.worker\.js$/)

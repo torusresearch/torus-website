@@ -157,7 +157,7 @@ const router = new Router({
 })
 
 function hasQueryParams(route) {
-  return !!Object.keys(route.query).length
+  return Object.prototype.hasOwnProperty.call(route.query, 'instanceId')
 }
 
 router.beforeResolve((to, from, next) => {
@@ -173,6 +173,9 @@ router.beforeResolve((to, from, next) => {
     if (store.state.selectedAddress === '') {
       next({ name: 'login', query: { redirect: to.fullPath } })
     } else if (!hasQueryParams(to) && hasQueryParams(from)) {
+      if (to.name !== 'walletTransfer') {
+        Object.keys(from.query).forEach(key => key === 'instanceId' || delete from.query[key])
+      }
       next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
       // next()
     } else {

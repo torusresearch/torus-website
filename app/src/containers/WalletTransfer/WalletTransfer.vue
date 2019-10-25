@@ -446,16 +446,6 @@ export default {
         : significantDigits(this.displayAmount * this.getCurrencyTokenRate)
 
       this.updateTotalCost()
-    },
-    collectibles: function(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        this.updateFieldsBasedOnRoute()
-      }
-    },
-    finalBalancesArray: function(newValue, oldValue) {
-      if (newValue !== oldValue) {
-        this.updateFieldsBasedOnRoute()
-      }
     }
   },
   methods: {
@@ -844,6 +834,20 @@ export default {
     } else {
       this.toAddress = ''
     }
+
+    const collectiblesUnwatch = this.$watch('collectibles', function(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.updateFieldsBasedOnRoute()
+        collectiblesUnwatch()
+      }
+    })
+
+    const tokensUnwatch = this.$watch('finalBalancesArray', function(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.updateFieldsBasedOnRoute()
+        tokensUnwatch()
+      }
+    })
 
     this.updateFieldsBasedOnRoute()
   }
