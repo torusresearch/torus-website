@@ -16,10 +16,9 @@
               <div class="subtitle-2">Amount to send:</div>
               <v-divider class="my-1" />
               <div>
-                <div class="float-left text_2--text">{{ selectedCoin }}</div>
                 <div class="float-right text-right">
-                  <div class="body-1 font-weight-bold">{{ displayAmount }} ETH</div>
-                  <div class="caption text_2--text">{{ convertedAmount }} {{ selectedCurrency }}</div>
+                  <div class="body-1 font-weight-bold">{{ displayAmount }}</div>
+                  <div class="caption text_2--text">{{ convertedAmount }}</div>
                 </div>
               </div>
             </v-flex>
@@ -50,7 +49,7 @@ import { significantDigits } from '../../../utils/utils'
 import { WALLET_HEADERS_CONFIRM } from '../../../utils/enums'
 
 export default {
-  props: ['toAddress', 'selectedCoin', 'selectedCurrency', 'convertedAmount', 'displayAmount', 'speedSelected', 'transactionFee'],
+  props: ['toAddress', 'selectedCurrency', 'convertedAmount', 'displayAmount', 'speedSelected', 'transactionFee'],
   data() {
     return {
       pageHeader: WALLET_HEADERS_CONFIRM
