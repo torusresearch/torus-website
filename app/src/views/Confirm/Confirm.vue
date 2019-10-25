@@ -113,9 +113,8 @@
               </template>
               <transfer-confirm
                 :toAddress="receiver"
-                :selectedCoin="'ETH'"
-                :convertedAmount="dollarValue"
-                :displayAmount="amountDisplay(value)"
+                :convertedAmount="displayAmountConverted"
+                :displayAmount="displayAmountValue"
                 :speedSelected="speed"
                 :transactionFee="txFees"
                 :selectedCurrency="selectedCurrency"
