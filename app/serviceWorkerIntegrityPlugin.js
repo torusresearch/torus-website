@@ -16,7 +16,6 @@ module.exports = class ServiceWorkerIntegrityPlugin {
         return name.includes(partialName)
       })
     }
-    // Inherent loop here. Shouldn't work
     compiler.hooks.emit.tap(ID, compilation => {
       try {
         var precacheManifestName = getFileName(compilation, 'precache-manifest.')
@@ -43,14 +42,10 @@ module.exports = class ServiceWorkerIntegrityPlugin {
             var appHTMLPath = stats.compilation.assets[appHTMLName].existsAt
             var appHTMLFile = fs.readFileSync(appHTMLPath, 'utf8')
             const modifiedFile = appHTMLFile
-            .toString()
-            .replace(/app\.[0-9a-z]*\.js/, 'app.js')
-            .replace(/(\/js\/app.js.*)(integrity=sha384\-[a-zA-Z0-9\/\+\=]*)(><\/script>)/, `$1integrity="${appIntegrity}"$3`)
-            fs.writeFileSync(
-              appHTMLPath,
-              modifiedFile
-            )
-            
+              .toString()
+              .replace(/app\.[0-9a-z]*\.js/, 'app.js')
+              .replace(/(\/js\/app.js.*)(integrity=sha384\-[a-zA-Z0-9\/\+\=]*)(><\/script>)/, `$1integrity="${appIntegrity}"$3`)
+            fs.writeFileSync(appHTMLPath, modifiedFile)
           } catch (err) {
             console.error('Could not run service worker integrity plugin on compilation', err)
           }
