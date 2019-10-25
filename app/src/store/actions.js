@@ -638,7 +638,7 @@ export default {
       reject(error)
     }
   },
-  updateContacts({ commit, state }, payload) {
+  addContact({ commit, state }, payload) {
     return new Promise((resolve, reject) => {
       post(`${config.api}/contact`, payload, {
         headers: {
@@ -647,7 +647,7 @@ export default {
         }
       })
         .then(response => {
-          commit('updateContacts', response.data)
+          commit('addContacts', [response.data])
           log.info('successfully added contact', response)
           resolve(response)
         })
@@ -669,10 +669,12 @@ export default {
         }
       )
         .then(response => {
-          const contactIndex = state.contacts.findIndex(contact => contact.id === payload)
-          commit('deleteContact', contactIndex)
-          log.info('successfully deleted contact', response)
-          resolve(response)
+          const contactIndex = state.contacts.findIndex(contact => contact.id === response.data.id)
+          if (contactIndex !== -1) {
+            commit('deleteContact', contactIndex)
+            log.info('successfully deleted contact', response)
+            resolve(response)
+          }
         })
         .catch(err => {
           log.error(err, 'unable to delete contact')

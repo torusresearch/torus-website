@@ -71,7 +71,7 @@ export default {
   setContacts(state, payload) {
     state.contacts = payload
   },
-  updateContacts(state, payload) {
+  addContacts(state, payload) {
     state.contacts = [...state.contacts, ...payload]
   },
   deleteContact(state, payload) {

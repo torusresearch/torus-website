@@ -23,7 +23,7 @@
     </v-card>
     <div class="subtitle-2 mt-4">Add new contact</div>
 
-    <v-form ref="addContactForm" @submit="addContact" lazy-validation>
+    <v-form ref="addContactForm" v-model="contactFormValid" @submit="addContact">
       <v-layout wrap class="mt-2">
         <v-flex xs12 sm6>
           <v-select
@@ -41,7 +41,7 @@
         </v-flex>
 
         <v-flex xs12 class="pt-4 text-right">
-          <v-btn type="submit" color="primary" depressed class="px-12 py-1">Add Contact</v-btn>
+          <v-btn type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">Add Contact</v-btn>
         </v-flex>
       </v-layout>
     </v-form>
@@ -56,6 +56,7 @@ export default {
   name: 'networkSettings',
   data() {
     return {
+      contactFormValid: false,
       selectedVerifier: ETH,
       newContact: '',
       rules: {
@@ -94,7 +95,7 @@ export default {
     addContact(e) {
       e.preventDefault()
       this.$store
-        .dispatch('updateContacts', {
+        .dispatch('addContact', {
           contact: this.newContact,
           verifier: this.selectedVerifier
         })
