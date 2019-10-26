@@ -59,8 +59,8 @@
     color: var(--v-text_1-base);
   }
   
-  .v-text-field--outlined fieldset {
-    border-color: var(--v-text_2-base);
+  .v-text-field--outlined:not(.error--text) fieldset {
+    border-color: var(--v-text_2-lighten3);
   }
 
   /* Override Max widths */
