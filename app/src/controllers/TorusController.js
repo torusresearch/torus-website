@@ -31,6 +31,7 @@ const TypedMessageManager = require('./TypedMessageManager').default
 const ObservableStore = require('obs-store')
 const nodeify = require('../utils/nodeify').default
 const KeyringController = require('./TorusKeyring').default
+const ChannelController = require('./ChannelController').default
 
 // defaults and constants
 const version = '0.0.1'
@@ -159,6 +160,13 @@ export default class TorusController extends EventEmitter {
         opts.rehydrate()
       }, 50)
     }
+
+    // channel method management
+    this.channelController = new ChannelController({
+      keyRingController: this.keyRingController,
+      networkController: this.networkController,
+      store: this.store
+    })
   }
 
   /**
