@@ -226,6 +226,7 @@ import {
   broadcastChannelOptions
 } from '../../utils/utils'
 import { get } from '../../utils/httpHelpers'
+import config from '../../config'
 
 const tokenABI = require('human-standard-token-abi')
 const collectibleABI = require('human-standard-collectible-abi')
@@ -647,6 +648,20 @@ export default {
           this.tokenPrice = tokenPrice
           this.amountTokenValueConverted =
             tokenPrice * parseFloat(this.amountValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+        } else if (methodParams && contractParams.erc721) {
+          console.log(methodParams, contractParams)
+          let assetDetails = {}
+          try {
+            const url = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
+            assetDetails = await get(`${config.api}/opensea?url=${url}`, {
+              headers: {
+                Authorization: `Bearer ${this.$store.state.jwtToken}`
+              }
+            })
+            console.log(assetDetails)
+          } catch (error) {
+            log.info(error)
+          }
         }
         this.currencyRateDate = this.getDate()
         this.receiver = to // address of receiver
