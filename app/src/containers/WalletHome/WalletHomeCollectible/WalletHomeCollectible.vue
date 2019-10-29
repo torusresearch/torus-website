@@ -8,7 +8,7 @@
     <v-layout wrap align-end>
       <v-flex xs12 sm6 px-4>
         <v-select
-          :items="contracts"
+          :items="collectibles"
           v-model="selectedContract"
           @change="changeContract"
           item-text="name"
@@ -31,7 +31,7 @@
       <v-flex xs12 sm3 md2 px-4 pb-4 v-for="asset in selectedContract.assets" :key="asset.tokenId">
         <!-- Asset Desktop View -->
         <v-expand-transition>
-          <v-card class="mx-auto asset" max-width="344" :ripple="false" v-if="!$vuetify.breakpoint.xsOnly" @click="toggleDetails($event, true)">
+          <v-card class="mx-auto asset" max-width="344" :ripple="false" v-if="!$vuetify.breakpoint.xsOnly" @click="toggleDetails($event)">
             <!-- <v-img :src="asset.image" height="140px" :style="{ backgroundColor: asset.color }"></v-img> -->
             <div class="text-center">
               <img :src="asset.image" style="width: auto; height: 140px" />
@@ -50,7 +50,7 @@
               <div class="ml-2 text_2--text">#{{ asset.tokenId }}</div>
               <div class="mt-4">
                 <v-btn block depressed color="primary" @click="transferAsset(asset)">Transfer</v-btn>
-                <v-btn block text @click.stop="toggleDetails($event, false)">Close</v-btn>
+                <v-btn block text @click.stop="toggleDetails($event)">Close</v-btn>
               </div>
             </v-card-text>
           </v-card>
@@ -58,7 +58,7 @@
 
         <!-- Asset Mobile View -->
         <v-expand-transition>
-          <v-card class="asset asset--mobile" v-if="$vuetify.breakpoint.xsOnly">
+          <v-card class="asset asset--mobile" v-if="$vuetify.breakpoint.xsOnly" @click="toggleDetails($event)">
             <!-- <v-list-item :style="{ backgroundColor: asset.color }"> -->
             <v-list-item>
               <v-list-item-content class="asset-text">
@@ -83,8 +83,8 @@
 
             <v-card-actions>
               <v-flex xs6>
-                <v-btn block small text class="more-info-show" @click="toggleDetails($event, true)">More Info</v-btn>
-                <v-btn block small text class="more-info-hide" @click="toggleDetails($event, false)">Less Info</v-btn>
+                <v-btn block small text class="more-info-show" @click="toggleDetails($event)">More Info</v-btn>
+                <v-btn block small text class="more-info-hide" @click="toggleDetails($event)">Less Info</v-btn>
               </v-flex>
               <v-divider inset vertical></v-divider>
               <v-flex xs6>
@@ -127,8 +127,15 @@ export default {
     platform() {
       return 'Ethereum Blockchain'
     },
-    contracts() {
+    collectibles() {
       return this.$store.getters.collectibleBalances
+    }
+  },
+  watch: {
+    collectibles: function(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.updateFieldsBasedOnRoute()
+      }
     }
   },
   methods: {
@@ -138,25 +145,28 @@ export default {
         this.breadcrumb[2].href = `collectible?address=${this.selectedContract.address}`
       }
     },
-    toggleDetails(event, isAdd) {
-      if (isAdd) {
-        event.target.closest('.asset').classList.add('asset--active')
-      } else {
+    toggleDetails(event) {
+      if (event.target.closest('.asset').classList.contains('asset--active')) {
         event.target.closest('.asset').classList.remove('asset--active')
+      } else {
+        event.target.closest('.asset').classList.add('asset--active')
       }
     },
     transferAsset(asset) {
       this.$router.push({ name: 'walletTransfer', query: { ...this.$route.query, contract: asset.address, asset: asset.tokenId } }).catch(err => {})
+    },
+    updateFieldsBasedOnRoute() {
+      const contractAddress = this.$route.params.address
+      this.selectedContract =
+        this.collectibles.find(contract => {
+          return contract.address.toLowerCase() === contractAddress.toLowerCase()
+        }) || this.collectibles[0]
+
+      this.changeContract()
     }
   },
-  created() {
-    const contractAddress = this.$route.params.address
-    this.selectedContract =
-      this.contracts.find(contract => {
-        return contract.address === contractAddress
-      }) || this.contracts[0]
-
-    this.changeContract()
+  mounted() {
+    this.updateFieldsBasedOnRoute()
   }
 }
 </script>
