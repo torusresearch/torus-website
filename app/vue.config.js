@@ -2,8 +2,6 @@ const fs = require('fs')
 const path = require('path')
 const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
 
-let routes = ['/']
-
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
 
 module.exports = {
@@ -36,10 +34,11 @@ module.exports = {
   },
   chainWebpack: config => {
     config.resolve.alias.set('bn.js', 'fork-bn.js')
-    config
-      .plugin('service-worker-integrity')
-      .use(serviceWorkerIntegrityPlugin, ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
-      .after('workbox')
+    if (process.env.NODE_ENV === 'production')
+      config
+        .plugin('service-worker-integrity')
+        .use(serviceWorkerIntegrityPlugin, ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
+        .after('workbox')
     // config.module
     //   .rule('worker')
     //   .test(/\.worker\.js$/)
@@ -56,16 +55,6 @@ module.exports = {
   crossorigin: 'anonymous',
 
   productionSourceMap: false,
-
-  pluginOptions: {
-    prerenderSpa: {
-      registry: undefined,
-      renderRoutes: routes,
-      useRenderEvent: true,
-      headless: true,
-      onlyProduction: true
-    }
-  },
 
   pwa: {
     name: 'Torus',

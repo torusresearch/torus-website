@@ -1530,7 +1530,7 @@ var broadcastChannelLib = {}
       try {
 
         var url = new URL(location.href)
-        var hash = url.hash
+        var hash = url.hash.substr(1)
         var hashParams = hash.split('&').reduce(function(result, item) {
           const parts = item.split('=')
           result[parts[0]] = parts[1]
