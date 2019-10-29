@@ -1,6 +1,6 @@
 
-@import '../../scss/nav-selector.mixin';
-@import '../../scss/outline-tooltip.mixin';
+@import '../../../scss/nav-selector.mixin';
+@import '../../../scss/outline-tooltip.mixin';
 
 .wallet-home {
   ::v-deep .currency-selector {
@@ -8,10 +8,21 @@
     max-width: 75px;
     .v-select__selection {
       color: var(--v-primary-base);
-      width: 40px;
+      width: 30px;
+      max-width: 30px;
     }
     .v-icon {
       color: var(--v-text_2-base);
+      width: 20px;
+      height: 20px;
+    }
+    input#currency-selector {
+      display: none;
+    }
+    .v-input__append-inner {
+      padding: 0;
+      margin: 0;
+      width: 16px;
     }
   }
 
@@ -33,6 +44,14 @@
     .v-icon {
       width: 12px;
     }
+  }
+
+  .home-cards .v-card {
+    height: 140px;
+  }
+
+  .token-tab-content {
+    background: transparent;
   }
 }
 

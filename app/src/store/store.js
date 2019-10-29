@@ -3,6 +3,7 @@ import log from 'loglevel'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
+import { fromWei, hexToUtf8, toBN, toChecksumAddress } from 'web3-utils'
 import config from '../config'
 import torus from '../torus'
 import { getEtherScanHashLink, broadcastChannelOptions } from '../utils/utils'
@@ -12,8 +13,6 @@ import state from './state'
 import actions from './actions'
 import getters from './getters'
 import mutations from './mutations'
-
-const web3Utils = torus.web3.utils
 
 function getCurrencyMultiplier() {
   const { selectedCurrency, currencyData } = VuexStore.state || {}
@@ -63,7 +62,7 @@ var VuexStore = new Vuex.Store({
       var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`, broadcastChannelOptions)
       const isTx = isTorusTransaction()
       const width = 500
-      const height = isTx ? 650 : 400
+      const height = isTx ? 660 : 400
       // const width = 500
       // const height = 600
       window.open(
@@ -72,7 +71,7 @@ var VuexStore = new Vuex.Store({
         `directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=${height},width=${width}`
       )
       if (isTx) {
-        var balance = torus.web3.utils.fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
+        var balance = fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
         bc.onmessage = async ev => {
           if (ev.data === 'popup-loaded') {
             var txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
@@ -132,7 +131,7 @@ function getLatestMessageParams() {
   if (msg) {
     let finalMsg
     try {
-      finalMsg = torus.web3.utils.hexToUtf8(msg.msgParams.data)
+      finalMsg = hexToUtf8(msg.msgParams.data)
     } catch (error) {
       finalMsg = msg.msgParams.data
     }
@@ -177,13 +176,11 @@ VuexStore.subscribe((mutation, state) => {
 
         const txHash = txMeta.hash
 
-        const totalAmount = web3Utils.fromWei(
-          web3Utils.toBN(txMeta.txParams.value).add(web3Utils.toBN(txMeta.txParams.gas).mul(web3Utils.toBN(txMeta.txParams.gasPrice)))
-        )
+        const totalAmount = fromWei(toBN(txMeta.txParams.value).add(toBN(txMeta.txParams.gas).mul(toBN(txMeta.txParams.gasPrice))))
         const txObj = {
           created_at: new Date(txMeta.time),
-          from: web3Utils.toChecksumAddress(txMeta.txParams.from),
-          to: web3Utils.toChecksumAddress(txMeta.txParams.to),
+          from: toChecksumAddress(txMeta.txParams.from),
+          to: toChecksumAddress(txMeta.txParams.to),
           total_amount: totalAmount,
           currency_amount: (getCurrencyMultiplier() * totalAmount).toString(),
           selected_currency: state.selectedCurrency,

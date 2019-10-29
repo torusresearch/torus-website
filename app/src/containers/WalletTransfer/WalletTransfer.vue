@@ -4,28 +4,79 @@
     <v-flex xs12 mb-4>
       <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation>
         <v-layout wrap>
-          <v-flex xs12 px-4 mb-5 sm6>
-            <span class="subtitle-2">Select your Coin</span>
-            <v-select
-              id="select-coin"
-              class="select-coin-container"
-              append-icon="$vuetify.icons.select"
-              hide-details
-              :items="finalBalancesArray"
-              :value="selectedItem"
-              @change="selectedItemChanged"
-              item-text="name"
-              item-value="tokenAddress"
-              outlined
-            >
-              <template v-slot:prepend-inner>
-                <img
-                  :src="require(`../../../public/images/logos/${selectedItem.logo}`)"
-                  height="24px"
-                  onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
-                />
-              </template>
-            </v-select>
+          <v-flex xs12 sm6 px-4 mb-5>
+            <span class="subtitle-2">Select item</span>
+            <div v-if="selectedItemDisplay">
+              <v-menu transition="slide-y-transition" bottom>
+                <template v-slot:activator="{ on }">
+                  <v-chip class="select-coin" label outlined large v-on="on">
+                    <img
+                      class="mr-2"
+                      :src="
+                        contractType === CONTRACT_TYPE_ERC721
+                          ? selectedItemDisplay.logo
+                          : require(`../../../public/images/logos/${selectedItemDisplay.logo}`)
+                      "
+                      height="20px"
+                      onerror="if (this.src !== 'eth.svg') this.src = 'images/logos/eth.svg';"
+                    />
+                    <span class="select-coin-name">{{ selectedItemDisplay.name }}</span>
+                    <div class="flex-grow-1 text-right pr-2">
+                      <v-icon right>$vuetify.icons.select</v-icon>
+                    </div>
+                  </v-chip>
+                </template>
+                <v-list class="select-item-list">
+                  <v-list-item
+                    class="select-coin-eth"
+                    v-for="token in finalBalancesArrayEthOnly"
+                    :key="token.id"
+                    @click="selectedItemChanged(token.tokenAddress)"
+                  >
+                    <v-list-item-icon class="mr-1">
+                      <img
+                        :src="require(`../../../public/images/logos/${token.logo}`)"
+                        height="20px"
+                        onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                      />
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-divider class="mx-3"></v-divider>
+                  <v-subheader class="body-2" v-if="finalBalancesArrayTokens.length > 0">
+                    <v-icon small left class="mr-2">$vuetify.icons.token</v-icon>
+                    TOKEN
+                  </v-subheader>
+                  <v-list-item v-for="token in finalBalancesArrayTokens" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
+                    <v-list-item-icon class="ml-8 mr-1">
+                      <img
+                        :src="require(`../../../public/images/logos/${token.logo}`)"
+                        height="20px"
+                        onerror="if (this.src !== 'eth.svg') this.src = 'images/logos/eth.svg';"
+                      />
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-divider class="mx-3"></v-divider>
+                  <v-subheader class="body-2" v-if="collectibles.length > 0">
+                    <v-icon small left class="mr-2">$vuetify.icons.collectibles</v-icon>
+                    COLLECTIBLES
+                  </v-subheader>
+                  <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
+                    <v-list-item-icon class="ml-8 mr-1">
+                      <img :src="collectible.logo" height="20px" />
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title class="body-2">{{ collectible.name }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </div>
           </v-flex>
           <v-flex xs12 sm6 mb-5 px-4 v-if="selectedItem">
             <span class="subtitle-2">Account Balance</span>
@@ -85,10 +136,34 @@
           <v-flex xs12 px-4 sm6 class="you-send-container">
             <div>
               <span class="subtitle-2">You send</span>
-              <a id="send-all-btn" class="float-right primary--text subtitle-2" v-if="!isSendAll" @click="sendAll">Send All</a>
+              <a
+                id="send-all-btn"
+                class="float-right primary--text subtitle-2"
+                v-if="contractType !== CONTRACT_TYPE_ERC721 && !isSendAll"
+                @click="sendAll"
+              >
+                Send All
+              </a>
               <a id="send-all-reset-btn" class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">Reset</a>
             </div>
+            <v-select
+              v-if="contractType === CONTRACT_TYPE_ERC721"
+              v-model="assetSelected"
+              :items="collectibleSelected.assets"
+              outlined
+              item-text="name"
+              return-object
+            >
+              <template v-slot:prepend-inner>
+                <img :src="assetSelected.image" height="24px" />
+              </template>
+              <template v-slot:item="{ item }">
+                <img class="mr-2" :src="item.image" height="24px" />
+                {{ item.name }}
+              </template>
+            </v-select>
             <v-text-field
+              v-if="contractType !== CONTRACT_TYPE_ERC721"
               id="you-send"
               :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
               persistent-hint
@@ -127,13 +202,13 @@
         <v-layout wrap>
           <TransactionSpeedSelect
             :resetSpeed="resetSpeed"
-            :symbol="selectedItem.symbol"
+            :symbol="contractType !== CONTRACT_TYPE_ERC721 ? selectedItem.symbol : 'ETH'"
             :gas="gas"
             :displayAmount="displayAmount"
             @onSelectSpeed="onSelectSpeed"
           />
         </v-layout>
-        <v-layout wrap>
+        <v-layout wrap v-if="contractType !== CONTRACT_TYPE_ERC721">
           <v-flex xs12 px-4 sm6>
             <div>
               <span class="subtitle-2">Total Cost</span>
@@ -183,6 +258,7 @@
 
 <script>
 import { QrcodeCapture } from 'vue-qrcode-reader'
+import { isAddress, toChecksumAddress, toBN, toWei } from 'web3-utils'
 import torus from '../../torus'
 import { significantDigits, getRandomNumber, getEtherScanHashLink } from '../../utils/utils'
 import config from '../../config'
@@ -190,16 +266,30 @@ import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSel
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
-import { WALLET_HEADERS_TRANSFER, GOOGLE, REDDIT, DISCORD, ETH, ETH_LABEL, GOOGLE_LABEL, REDDIT_LABEL, DISCORD_LABEL } from '../../utils/enums'
+import {
+  WALLET_HEADERS_TRANSFER,
+  GOOGLE,
+  REDDIT,
+  DISCORD,
+  ETH,
+  ETH_LABEL,
+  GOOGLE_LABEL,
+  REDDIT_LABEL,
+  DISCORD_LABEL,
+  CONTRACT_TYPE_ETH,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721,
+  OLD_ERC721_LIST
+} from '../../utils/enums'
 
 const { torusNodeEndpoints } = config
-const transferABI = require('human-standard-token-abi')
+const erc20TransferABI = require('human-standard-token-abi')
+const erc721TransferABI = require('human-standard-collectible-abi')
 
 const MAX_GAS = 6721975
 
 export default {
   name: 'walletTransfer',
-  props: ['address'],
   components: {
     TransactionSpeedSelect,
     MessageModal,
@@ -208,6 +298,10 @@ export default {
   data() {
     return {
       pageHeader: WALLET_HEADERS_TRANSFER,
+      contractType: CONTRACT_TYPE_ETH,
+      isContract: false,
+      collectibleSelected: {},
+      assetSelected: {},
       tokenAddress: '0x',
       amount: 0,
       displayAmount: '',
@@ -248,7 +342,10 @@ export default {
       },
       showModalMessage: false,
       modalMessageSuccess: null,
-      isSendAll: false
+      isSendAll: false,
+      CONTRACT_TYPE_ETH,
+      CONTRACT_TYPE_ERC20,
+      CONTRACT_TYPE_ERC721
     }
   },
   computed: {
@@ -261,13 +358,28 @@ export default {
     finalBalancesArray() {
       return this.$store.getters.tokenBalances.finalBalancesArray || []
     },
+    finalBalancesArrayTokens() {
+      return this.$store.getters.tokenBalances.finalBalancesArray.filter(token => token.tokenAddress !== '0x') || []
+    },
+    finalBalancesArrayEthOnly() {
+      return this.$store.getters.tokenBalances.finalBalancesArray.filter(token => token.tokenAddress === '0x') || []
+    },
+    collectibles() {
+      return this.$store.getters.collectibleBalances
+    },
     selectedItem() {
-      const foundElement = this.finalBalancesArray.find(x => x.tokenAddress === this.selectedTokenAddress)
+      let foundElement = this.finalBalancesArray.find(x => x.tokenAddress === this.selectedTokenAddress)
       return foundElement
     },
+    selectedItemDisplay() {
+      if (this.contractType !== CONTRACT_TYPE_ERC721) return this.selectedItem
+
+      const foundContract = this.collectibles.find(x => x.address === this.collectibleSelected.address)
+      return foundContract
+    },
     selectedTokenAddress() {
-      if (this.tokenAddress === '0x' || !torus.web3.utils.isAddress(this.tokenAddress)) return '0x'
-      return torus.web3.utils.toChecksumAddress(this.tokenAddress)
+      if (this.tokenAddress === '0x' || !isAddress(this.tokenAddress)) return '0x'
+      return toChecksumAddress(this.tokenAddress)
     },
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
@@ -279,7 +391,7 @@ export default {
       const { tokenRates } = this.$store.state
       const currencyMultiplier = this.getCurrencyMultiplier
       let tokenRateMultiplier = 1
-      if (this.selectedTokenAddress !== '0x') tokenRateMultiplier = tokenRates[this.selectedTokenAddress.toLowerCase()] || 0
+      if (this.contractType === CONTRACT_TYPE_ERC20) tokenRateMultiplier = tokenRates[this.selectedTokenAddress.toLowerCase()] || 0
       return currencyMultiplier * tokenRateMultiplier
     },
     gasDisplayString() {
@@ -308,7 +420,7 @@ export default {
       return `= ${getNumber} ${this.selectedCurrency}`
     },
     totalCostSuffix() {
-      return this.selectedTokenAddress === '0x' ? (this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency) : ''
+      return this.contractType === CONTRACT_TYPE_ETH ? (this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency) : ''
     },
     verifierPlaceholder() {
       return `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
@@ -336,14 +448,24 @@ export default {
     }
   },
   methods: {
+    updateFieldsBasedOnRoute() {
+      if (Object.prototype.hasOwnProperty.call(this.$route.query, 'contract')) {
+        this.selectedItemChanged(
+          this.$route.query.contract,
+          Object.prototype.hasOwnProperty.call(this.$route.query, 'asset') ? this.$route.query.asset : ''
+        )
+      } else {
+        this.toAddress = ''
+      }
+    },
     sendEmail(typeToken, transactionHash) {
       if (/\S+@\S+\.\S+/.test(this.toAddress)) {
         const etherscanLink = getEtherScanHashLink(transactionHash, this.$store.state.networkType.host)
         const emailObject = {
           from_name: this.$store.state.userInfo.name,
           to_email: this.toAddress,
-          total_amount: this.amount,
-          token: typeToken,
+          total_amount: this.amount.toString(),
+          token: typeToken.toString(),
           etherscanLink: etherscanLink
         }
         post(config.api + '/transaction/sendemail', emailObject, {
@@ -374,7 +496,7 @@ export default {
     },
     toAddressRule(value) {
       if (this.selectedVerifier === ETH) {
-        return torus.web3.utils.isAddress(value) || 'Invalid ETH Address'
+        return isAddress(value) || 'Invalid ETH Address'
       } else if (this.selectedVerifier === GOOGLE) {
         return (
           // eslint-disable-next-line max-len
@@ -391,9 +513,9 @@ export default {
       return true
     },
     async calculateGas(toAddress) {
-      if (torus.web3.utils.isAddress(toAddress)) {
+      if (isAddress(toAddress)) {
         return new Promise((resolve, reject) => {
-          if (this.selectedTokenAddress === '0x') {
+          if (this.contractType === CONTRACT_TYPE_ETH) {
             torus.web3.eth
               .estimateGas({ to: toAddress })
               .then(response => {
@@ -401,21 +523,30 @@ export default {
               })
               .catch(err => {
                 log.error(err)
-                resolve(MAX_GAS)
+                resolve(0)
               })
-          } else {
+          } else if (this.contractType === CONTRACT_TYPE_ERC20) {
             const selectedAddress = this.$store.state.selectedAddress
-            const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
             const value = Math.floor(parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()
-            contractInstance.methods
-              .transfer(toAddress, value)
+            this.getTransferMethod(this.contractType, selectedAddress, toAddress, value)
               .estimateGas({ from: selectedAddress })
               .then(response => {
                 resolve(response)
               })
               .catch(err => {
                 log.error(err)
-                resolve(MAX_GAS)
+                resolve(0)
+              })
+          } else if (this.contractType === CONTRACT_TYPE_ERC721) {
+            const selectedAddress = this.$store.state.selectedAddress
+            this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId)
+              .estimateGas({ from: selectedAddress })
+              .then(response => {
+                resolve(response)
+              })
+              .catch(err => {
+                log.error(err)
+                resolve(0)
               })
           }
         })
@@ -423,8 +554,37 @@ export default {
         return 21000
       }
     },
-    async selectedItemChanged(tokenAddress) {
-      this.tokenAddress = tokenAddress
+    getTransferMethod(contractType, selectedAddress, toAddress, value) {
+      // For support of older ERC721
+      if (OLD_ERC721_LIST.includes(this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
+        const contractInstance = new torus.web3.eth.Contract(erc20TransferABI, this.selectedTokenAddress)
+        return contractInstance.methods.transfer(toAddress, value)
+      } else if (contractType === CONTRACT_TYPE_ERC721) {
+        const contractInstance = new torus.web3.eth.Contract(erc721TransferABI, this.selectedTokenAddress)
+        return contractInstance.methods.safeTransferFrom(selectedAddress, toAddress, value)
+      }
+    },
+    async selectedItemChanged(address, tokenId) {
+      const foundInBalances = this.finalBalancesArray.find(token => token.tokenAddress === address)
+      const foundInCollectibles = this.collectibles.find(token => token.address === address)
+
+      if (foundInBalances) {
+        this.tokenAddress = foundInBalances.tokenAddress
+        this.contractType = foundInBalances.erc20 ? CONTRACT_TYPE_ERC20 : CONTRACT_TYPE_ETH
+        this.collectibleSelected = ''
+        this.assetSelected = ''
+      } else if (foundInCollectibles) {
+        this.tokenAddress = foundInCollectibles.address
+        this.contractType = CONTRACT_TYPE_ERC721
+        this.collectibleSelected = foundInCollectibles
+        if (foundInCollectibles.assets && foundInCollectibles.assets.length > 0) {
+          this.assetSelected = tokenId
+            ? foundInCollectibles.assets.find(asset => asset.tokenId.toString() === tokenId.toString())
+            : foundInCollectibles.assets[0]
+        }
+        // Reset you send
+        this.resetSendAll()
+      }
       this.gas = await this.calculateGas(this.toAddress)
       this.updateTotalCost()
     },
@@ -459,10 +619,10 @@ export default {
     },
     async sendCoin() {
       if (this.$refs.form.validate()) {
-        const fastGasPrice = torus.web3.utils.toBN((this.activeGasPrice * 10 ** 9).toString())
+        const fastGasPrice = toBN((this.activeGasPrice * 10 ** 9).toString())
         let toAddress
-        if (torus.web3.utils.isAddress(this.toAddress)) {
-          toAddress = torus.web3.utils.toChecksumAddress(this.toAddress)
+        if (isAddress(this.toAddress)) {
+          toAddress = toChecksumAddress(this.toAddress)
         } else {
           const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
           try {
@@ -484,20 +644,20 @@ export default {
         }
         this.gas = await this.calculateGas(toAddress)
         const selectedAddress = this.$store.state.selectedAddress
-        if (this.selectedTokenAddress === '0x') {
+        if (this.contractType === CONTRACT_TYPE_ETH) {
           log.info('TX SENT: ', {
             from: selectedAddress,
             to: toAddress,
-            value: torus.web3.utils.toWei(parseFloat(this.amount.toString()).toFixed(18)),
-            gas: this.gas.toString(),
+            value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
+            gas: this.gas === 0 ? undefined : this.gas.toString(),
             gasPrice: fastGasPrice
           })
           torus.web3.eth.sendTransaction(
             {
               from: selectedAddress,
               to: toAddress,
-              value: torus.web3.utils.toWei(parseFloat(this.amount.toString()).toFixed(18)),
-              gas: this.gas.toString(),
+              value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
+              gas: this.gas === 0 ? undefined : this.gas.toString(),
               gasPrice: fastGasPrice
             },
             (err, transactionHash) => {
@@ -517,13 +677,12 @@ export default {
               }
             }
           )
-        } else {
-          const contractInstance = new torus.web3.eth.Contract(transferABI, this.selectedTokenAddress)
+        } else if (this.contractType === CONTRACT_TYPE_ERC20) {
           const value = Math.floor(parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()
-          contractInstance.methods.transfer(toAddress, value).send(
+          this.getTransferMethod(this.contractType, selectedAddress, toAddress, value).send(
             {
               from: selectedAddress,
-              gas: this.gas.toString(),
+              gas: this.gas === 0 ? undefined : this.gas.toString(),
               gasPrice: fastGasPrice
             },
             (err, transactionHash) => {
@@ -538,6 +697,29 @@ export default {
                 // Send email to the user
                 this.sendEmail(this.selectedItem.symbol, transactionHash)
 
+                this.showModalMessage = true
+                this.modalMessageSuccess = true
+              }
+            }
+          )
+        } else if (this.contractType === CONTRACT_TYPE_ERC721) {
+          this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId).send(
+            {
+              from: selectedAddress,
+              gas: this.gas === 0 ? undefined : this.gas.toString(),
+              gasPrice: fastGasPrice
+            },
+            (err, transactionHash) => {
+              if (err) {
+                const regEx = new RegExp('User denied transaction signature', 'i')
+                if (!err.message.match(regEx)) {
+                  this.showModalMessage = true
+                  this.modalMessageSuccess = false
+                }
+                log.error(err)
+              } else {
+                // Send email to the user
+                this.sendEmail(this.assetSelected.name, transactionHash)
                 this.showModalMessage = true
                 this.modalMessageSuccess = true
               }
@@ -592,9 +774,9 @@ export default {
       const toSend = parseFloat(this.amount)
       const toSendConverted = toSend * this.getCurrencyTokenRate
 
-      if (this.selectedTokenAddress === '0x') {
+      if (this.contractType === CONTRACT_TYPE_ETH) {
         this.totalCost = this.toggle_exclusive === 0 ? toSend + gasPriceInEth : toSendConverted + gasPriceInCurrency
-      } else {
+      } else if (this.contractType === CONTRACT_TYPE_ERC20) {
         const displayedCurrency = this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency
         this.totalCost = `${this.displayAmount} ${displayedCurrency} + ${significantDigits(
           this.getEthAmount(this.gas, this.activeGasPrice),
@@ -633,7 +815,7 @@ export default {
           this.qrErrorMsg = 'Incorrect QR Code'
         }
       } catch (error) {
-        if (torus.web3.utils.isAddress(result)) {
+        if (isAddress(result)) {
           this.selectedVerifier = ETH
           this.toAddress = result
         } else {
@@ -643,14 +825,29 @@ export default {
       }
     }
   },
-  created() {
-    this.tokenAddress = this.address
-    if (this.$route.query.hasOwnProperty('to')) {
+  mounted() {
+    if (Object.prototype.hasOwnProperty.call(this.$route.query, 'to')) {
       this.selectedVerifier = ETH
       this.toAddress = this.$route.query.to
     } else {
       this.toAddress = ''
     }
+
+    const collectiblesUnwatch = this.$watch('collectibles', function(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.updateFieldsBasedOnRoute()
+        collectiblesUnwatch()
+      }
+    })
+
+    const tokensUnwatch = this.$watch('finalBalancesArray', function(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.updateFieldsBasedOnRoute()
+        tokensUnwatch()
+      }
+    })
+
+    this.updateFieldsBasedOnRoute()
   }
 }
 </script>

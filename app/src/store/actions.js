@@ -81,6 +81,7 @@ export default {
   },
   async forceFetchTokens({ state }, payload) {
     torus.torusController.detectTokensController.refreshTokenBalances()
+    torus.torusController.assetDetectionController.restartAssetDetection()
     try {
       const response = await get(`${config.api}/tokenbalances`, {
         headers: {
@@ -93,7 +94,7 @@ export default {
         torus.torusController.detectTokensController.detectEtherscanTokenBalance(obj.contractAddress, {
           decimals: obj.tokenDecimal,
           erc20: true,
-          logo: '',
+          logo: 'eth.svg',
           name: obj.name,
           balance: obj.balance,
           symbol: obj.ticker
@@ -197,11 +198,11 @@ export default {
         })
     })
   },
-  finishImportAccount({ dispatch }, payload) {
+  finishImportAccount({ dispatch, state }, payload) {
     return new Promise((resolve, reject) => {
       const { privKey } = payload
       const address = torus.generateAddressFromPrivKey(privKey)
-      torus.torusController.setSelectedAccount(address)
+      torus.torusController.setSelectedAccount(address, { jwtToken: state.jwtToken })
       dispatch('addWallet', { ethAddress: address, privKey: privKey })
       dispatch('updateSelectedAddress', { selectedAddress: address })
       torus.torusController
@@ -226,16 +227,26 @@ export default {
   updateMessages({ commit }, payload) {
     commit('setMessages', payload.unapprovedMsgs)
   },
+  updateAssets({ commit }, payload) {
+    const collectibles = payload.collectibleContracts.map(contract => {
+      contract.assets = payload.collectibles.filter(asset => {
+        return asset.address === contract.address
+      })
+      return contract
+    })
+
+    commit('setAssets', collectibles)
+  },
   updateTokenData({ commit, state }, payload) {
     if (payload.tokenData) commit('setTokenData', { ...state.tokenData, [payload.address]: payload.tokenData })
   },
   updateTokenRates({ commit }, payload) {
     commit('setTokenRates', payload.tokenRates)
   },
-  updateSelectedAddress(context, payload) {
-    context.commit('setSelectedAddress', payload.selectedAddress)
+  updateSelectedAddress({ commit, state }, payload) {
+    commit('setSelectedAddress', payload.selectedAddress)
     torus.updateStaticData({ selectedAddress: payload.selectedAddress })
-    torus.torusController.setSelectedAccount(payload.selectedAddress)
+    torus.torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
   },
   updateNetworkId(context, payload) {
     context.commit('setNetworkId', payload.networkId)
@@ -581,6 +592,14 @@ export default {
         dispatch('updateTransactions', { transactions: updatedTransactions })
       }
     })
+    torus.torusController.assetController.store.subscribe(function({ allCollectibleContracts, allCollectibles, collectibleContracts, collectibles }) {
+      dispatch('updateAssets', {
+        allCollectibleContracts: allCollectibleContracts,
+        allCollectibles: allCollectibles,
+        collectibleContracts: collectibleContracts,
+        collectibles: collectibles
+      })
+    })
 
     torus.torusController.typedMessageManager.store.subscribe(function({ unapprovedTypedMessages }) {
       dispatch('updateTypedMessages', { unapprovedTypedMessages: unapprovedTypedMessages })
@@ -701,16 +720,14 @@ export default {
         const data = response[0]
         const message = response[1]
         dispatch('addWallet', data) // synchronus
-        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
         dispatch('subscribeToControllers')
         await Promise.all([
           dispatch('initTorusKeyring', data),
           dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
         ])
-
+        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
         dispatch('setBillboard')
         dispatch('setContacts')
-
         // continue enable function
         var ethAddress = data.ethAddress
         if (calledFromEmbed) {
@@ -849,6 +866,7 @@ export default {
       selectedAddress,
       wallet,
       networkType,
+      networkId,
       jwtToken,
       userInfo: { verifier }
     } = state
@@ -864,23 +882,25 @@ export default {
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       if (selectedAddress && wallet[selectedAddress]) {
-        dispatch('updateSelectedAddress', { selectedAddress })
         setTimeout(() => dispatch('subscribeToControllers'), 50)
         await Promise.all([
           torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet)),
           dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false })
         ])
+        dispatch('updateSelectedAddress', { selectedAddress })
+        dispatch('updateNetworkId', { networkId: networkId })
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: verifier })
         log.info('rehydrated wallet')
-        torus.web3.eth.net
-          .getId()
-          .then(res => {
-            setTimeout(function() {
-              dispatch('updateNetworkId', { networkId: res })
-            })
-            // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-          })
-          .catch(e => log.error(e))
+        // torus.web3.eth.net
+        //   .getId()
+        //   .then(res => {
+        //     console.log(res)
+        //     setTimeout(function() {
+        //       dispatch('updateNetworkId', { networkId: toHex(res) })
+        //     })
+        //     // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+        //   })
+        //   .catch(e => log.error(e))
       }
     } catch (error) {
       log.error('Failed to rehydrate', error)

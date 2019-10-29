@@ -65,6 +65,9 @@ export default {
   setTheme(state, payload) {
     state.theme = payload
   },
+  setAssets(state, payload) {
+    state.assets = payload
+  },
   setBillboard(state, payload) {
     state.billboard = payload
   },

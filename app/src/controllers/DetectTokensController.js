@@ -3,18 +3,10 @@ const contracts = require('eth-contract-metadata')
 const { warn } = require('loglevel')
 const ObservableStore = require('obs-store')
 const { MAINNET } = require('../utils/enums')
+const { toHex } = require('web3-utils')
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
-// const ERC20_ABI = [
-//   {
-//     constant: true,
-//     inputs: [{ name: '_owner', type: 'address' }],
-//     name: 'balanceOf',
-//     outputs: [{ name: 'balance', type: 'uint256' }],
-//     payable: false,
-//     type: 'function'
-//   }
-// ]
+
 const SINGLE_CALL_BALANCES_ABI = require('single-call-balance-checker-abi')
 const SINGLE_CALL_BALANCES_ADDRESS = '0xb1f8e55c7f64d203c1400b9d8555d050f94adf39'
 /**
@@ -60,7 +52,7 @@ class DetectTokensController {
         }
         const nonZeroTokens = []
         tokensToDetect.forEach((tokenAddress, index) => {
-          const balance = web3Instance.utils.toHex(result[index])
+          const balance = toHex(result[index])
           if (balance && balance !== '0x0') {
             // do sth else here
             nonZeroTokens.push({ ...contracts[tokenAddress], tokenAddress, balance })
@@ -83,11 +75,10 @@ class DetectTokensController {
     const nonZeroTokens = this.detectedTokensStore.getState().tokens
     const index = nonZeroTokens.findIndex(elem => elem.tokenAddress.toLowerCase() === contractAddress.toLowerCase())
     if (index === -1) {
-      const web3Instance = this.web3
       nonZeroTokens.push({
         ...data,
         tokenAddress: contractAddress,
-        balance: web3Instance.utils.toHex(parseFloat(data.balance) * 10 ** data.decimals)
+        balance: toHex(parseFloat(data.balance) * 10 ** data.decimals)
       })
       this.detectedTokensStore.putState({ tokens: nonZeroTokens })
     }
@@ -109,7 +100,7 @@ class DetectTokensController {
         }
         const nonZeroTokens = []
         tokenAddresses.forEach((tokenAddress, index) => {
-          const balance = web3Instance.utils.toHex(result[index])
+          const balance = toHex(result[index])
           if (balance && balance !== '0x0') {
             nonZeroTokens.push({ ...oldTokens[index], balance })
           }
