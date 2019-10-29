@@ -678,8 +678,8 @@ export default {
               }
             })
             this.assetDetails = {
-              name: assetDetails.data.name,
-              logo: assetDetails.data.image_thumbnail_url
+              name: assetDetails.data.name || '',
+              logo: assetDetails.data.image_thumbnail_url || ''
             }
           } catch (error) {
             log.info(error)
