@@ -20,12 +20,6 @@
   .v-tab {
     text-transform: inherit
   }
-
-  .theme--dark {
-    .v-tab.v-tab--active {
-      color: #ffffff;
-    }
-  }
   
   .beta-text {
     line-height: 1em;
@@ -41,7 +35,7 @@
   .theme--light {
     .v-tab {
       &.v-tab--active {
-        color: var(--v-secondary-darken3);
+        color: var(--v-text_2-darken3);
       }
     }
   }
