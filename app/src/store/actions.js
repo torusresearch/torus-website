@@ -81,6 +81,7 @@ export default {
   },
   async forceFetchTokens({ state }, payload) {
     torus.torusController.detectTokensController.refreshTokenBalances()
+    torus.torusController.assetDetectionController.restartAssetDetection()
     try {
       const response = await get(`${config.api}/tokenbalances`, {
         headers: {
@@ -93,7 +94,7 @@ export default {
         torus.torusController.detectTokensController.detectEtherscanTokenBalance(obj.contractAddress, {
           decimals: obj.tokenDecimal,
           erc20: true,
-          logo: '',
+          logo: 'eth.svg',
           name: obj.name,
           balance: obj.balance,
           symbol: obj.ticker
