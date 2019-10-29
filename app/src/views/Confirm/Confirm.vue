@@ -668,7 +668,7 @@ export default {
           this.amountTokenValueConverted =
             tokenPrice * parseFloat(this.amountValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
         } else if (methodParams && contractParams.erc721) {
-          console.log(methodParams, contractParams)
+          log.info(methodParams, contractParams)
           let assetDetails = {}
           try {
             const url = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
