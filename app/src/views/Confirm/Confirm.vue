@@ -8,8 +8,25 @@
         </v-flex>
       </v-layout>
       <v-layout wrap>
-        <v-flex xs12 mb-4 mx-6>
-          <div class="subtitle-2">{{ transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM ? 'Collectible' : 'Amount' }}</div>
+        <template v-if="transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM">
+          <v-flex xs12 mb-4 mx-6>
+            <div class="subtitle-2">Send to</div>
+            <v-divider></v-divider>
+            <div>
+              <span class="subtitle-2 float-left text_2--text">{{ amountTo }}</span>
+            </div>
+          </v-flex>
+          <v-flex xs12 mb-4 mx-6>
+            <div class="subtitle-2">You send</div>
+            <v-divider class="mb-1"></v-divider>
+            <div>
+              <img class="mr-2 float-left" :src="assetDetails.logo" height="35px" />
+              <span class="subtitle-2 float-left text_2--text asset-name">{{ assetDetails.name }}</span>
+            </div>
+          </v-flex>
+        </template>
+        <v-flex v-else xs12 mb-4 mx-6>
+          <div class="subtitle-2">Amount</div>
           <v-divider></v-divider>
           <div>
             <span class="subtitle-2 float-left text_2--text">{{ displayAmountTo }}</span>
@@ -302,6 +319,7 @@ export default {
       speed: '',
       typedMessages: {},
       id: 0,
+      assetDetails: {},
       COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM: COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
       networks: [
         ...Object.values(SUPPORTED_NETWORK_TYPES),
@@ -368,7 +386,6 @@ export default {
         case TOKEN_METHOD_APPROVE:
         case TOKEN_METHOD_TRANSFER:
         case TOKEN_METHOD_TRANSFER_FROM:
-        case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
           return `To: ${this.slicedAddress(this.amountTo)}`
           break
         case SEND_ETHER_ACTION_KEY:
@@ -658,7 +675,10 @@ export default {
                 Authorization: `Bearer ${this.$store.state.jwtToken}`
               }
             })
-            console.log(assetDetails)
+            this.assetDetails = {
+              name: assetDetails.data.name,
+              logo: assetDetails.data.image_thumbnail_url
+            }
           } catch (error) {
             log.info(error)
           }

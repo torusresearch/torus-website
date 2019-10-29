@@ -61,7 +61,7 @@ var VuexStore = new Vuex.Store({
       var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`, broadcastChannelOptions)
       const isTx = isTorusTransaction()
       const width = 500
-      const height = isTx ? 650 : 400
+      const height = isTx ? 660 : 400
       // const width = 500
       // const height = 600
       window.open(
