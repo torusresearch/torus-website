@@ -28,7 +28,7 @@
       </v-flex>
     </v-layout>
     <v-layout wrap align-top mt-10 v-if="selectedContract">
-      <v-flex xs12 sm3 md2 px-4 pb-4 v-for="asset in selectedContract.assets" :key="asset.address">
+      <v-flex xs12 sm3 md2 px-4 pb-4 v-for="asset in selectedContract.assets" :key="asset.tokenId">
         <!-- Asset Desktop View -->
         <v-expand-transition>
           <v-card class="mx-auto asset" max-width="344" :ripple="false" v-if="!$vuetify.breakpoint.xsOnly" @click="toggleDetails($event, true)">

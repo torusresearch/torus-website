@@ -160,7 +160,7 @@ export default {
         const totalAmountString = `${significantDigits(parseFloat(x.total_amount))} ETH`
         const currencyAmountString = `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
         const finalObj = {
-          id: x.created_at,
+          id: x.created_at.toString(),
           date: new Date(x.created_at),
           from: x.from,
           slicedFrom: addressSlicer(x.from),
@@ -189,7 +189,7 @@ export default {
         const txOld = transactions[tx]
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
           const txObj = {}
-          txObj.id = txOld.time
+          txObj.id = txOld.time.toString()
           txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
           txObj.date = new Date(txOld.time)
           txObj.from = toChecksumAddress(txOld.txParams.from)
