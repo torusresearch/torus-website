@@ -565,9 +565,8 @@ export default {
       }
     },
     async selectedItemChanged(address, tokenId) {
-      const foundInBalances = this.finalBalancesArray.find(token => token.tokenAddress === address)
-      const foundInCollectibles = this.collectibles.find(token => token.address === address)
-
+      const foundInBalances = this.finalBalancesArray.find(token => token.tokenAddress.toLowerCase() === address.toLowerCase())
+      const foundInCollectibles = this.collectibles.find(token => token.address.toLowerCase() === address.toLowerCase())
       if (foundInBalances) {
         this.tokenAddress = foundInBalances.tokenAddress
         this.contractType = foundInBalances.erc20 ? CONTRACT_TYPE_ERC20 : CONTRACT_TYPE_ETH
@@ -578,9 +577,8 @@ export default {
         this.contractType = CONTRACT_TYPE_ERC721
         this.collectibleSelected = foundInCollectibles
         if (foundInCollectibles.assets && foundInCollectibles.assets.length > 0) {
-          this.assetSelected = tokenId
-            ? foundInCollectibles.assets.find(asset => asset.tokenId.toString() === tokenId.toString())
-            : foundInCollectibles.assets[0]
+          this.assetSelected =
+            foundInCollectibles.assets.find(asset => asset.tokenId.toString() === tokenId.toString()) || foundInCollectibles.assets[0]
         }
         // Reset you send
         this.resetSendAll()
@@ -836,7 +834,6 @@ export default {
     const collectiblesUnwatch = this.$watch('collectibles', function(newValue, oldValue) {
       if (newValue !== oldValue) {
         this.updateFieldsBasedOnRoute()
-        collectiblesUnwatch()
       }
     })
 
