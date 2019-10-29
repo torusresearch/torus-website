@@ -528,10 +528,8 @@ export default {
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC20) {
             const selectedAddress = this.$store.state.selectedAddress
-            const contractInstance = new torus.web3.eth.Contract(erc20TransferABI, this.selectedTokenAddress)
             const value = Math.floor(parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()
-            contractInstance.methods
-              .transfer(toAddress, value)
+            this.getTransferMethod(this.contractType, selectedAddress, toAddress, value)
               .estimateGas({ from: selectedAddress })
               .then(response => {
                 resolve(response)
@@ -542,8 +540,7 @@ export default {
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC721) {
             const selectedAddress = this.$store.state.selectedAddress
-            const contractInstance = new torus.web3.eth.Contract(erc721TransferABI, this.selectedTokenAddress)
-            this.getTransferFromMethod(contractInstance, selectedAddress, toAddress)
+            this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId)
               .estimateGas({ from: selectedAddress })
               .then(response => {
                 resolve(response)
@@ -558,11 +555,15 @@ export default {
         return 21000
       }
     },
-    getTransferFromMethod(contractInstance, selectedAddress, toAddress) {
+    getTransferMethod(contractType, selectedAddress, toAddress, value) {
       // For support of older ERC721
-      return OLD_ERC721_LIST.includes(toAddress)
-        ? contractInstance.methods.transferFrom(selectedAddress, toAddress, this.assetSelected.tokenId)
-        : contractInstance.methods.safeTransferFrom(selectedAddress, toAddress, this.assetSelected.tokenId)
+      if (OLD_ERC721_LIST.includes(this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
+        const contractInstance = new torus.web3.eth.Contract(erc20TransferABI, this.selectedTokenAddress)
+        return contractInstance.methods.transfer(toAddress, value)
+      } else if (contractType === CONTRACT_TYPE_ERC721) {
+        const contractInstance = new torus.web3.eth.Contract(erc721TransferABI, this.selectedTokenAddress)
+        return contractInstance.methods.safeTransferFrom(selectedAddress, toAddress, value)
+      }
     },
     async selectedItemChanged(address, tokenId) {
       const foundInBalances = this.finalBalancesArray.find(token => token.tokenAddress === address)
@@ -678,9 +679,8 @@ export default {
             }
           )
         } else if (this.contractType === CONTRACT_TYPE_ERC20) {
-          const contractInstance = new torus.web3.eth.Contract(erc20TransferABI, this.selectedTokenAddress)
           const value = Math.floor(parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()
-          contractInstance.methods.transfer(toAddress, value).send(
+          this.getTransferMethod(this.contractType, selectedAddress, toAddress, value).send(
             {
               from: selectedAddress,
               gas: this.gas === 0 ? undefined : this.gas.toString(),
@@ -704,8 +704,7 @@ export default {
             }
           )
         } else if (this.contractType === CONTRACT_TYPE_ERC721) {
-          const contractInstance = new torus.web3.eth.Contract(erc721TransferABI, this.selectedTokenAddress)
-          this.getTransferFromMethod(contractInstance, selectedAddress, toAddress).send(
+          this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId).send(
             {
               from: selectedAddress,
               gas: this.gas === 0 ? undefined : this.gas.toString(),

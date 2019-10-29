@@ -244,6 +244,7 @@ import {
 } from '../../utils/utils'
 import { get } from '../../utils/httpHelpers'
 import config from '../../config'
+import { isArray } from 'util'
 
 const tokenABI = require('human-standard-token-abi')
 const collectibleABI = require('human-standard-collectible-abi')
@@ -611,12 +612,11 @@ export default {
       } else if (type === 'transaction') {
         let finalValue = 0
         const { value, to, data, from: sender, gas, gasPrice } = txParams.txParams || {}
-        const { simulationFails, network, id, transactionCategory, methodParams, contractParams } = txParams || {}
+        let { simulationFails, network, id, transactionCategory, methodParams, contractParams } = txParams || {}
         const { reason } = simulationFails || {}
         if (value) {
           finalValue = fromWei(value.toString())
         }
-
         this.origin = this.origin.trim().length === 0 ? 'Wallet' : this.origin
         // GET data params
         let txDataParams = ''
@@ -625,15 +625,17 @@ export default {
         } else if (contractParams.erc20) {
           txDataParams = collectibleABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
         }
-
+        // log.info(methodParams, 'params')
         let amountTo, amountValue, amountFrom
-        if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
-          [amountFrom, amountTo, amountValue] = methodParams || []
-        else [amountTo, amountValue] = methodParams || []
+        if (methodParams && isArray(methodParams)) {
+          if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
+            [amountFrom, amountTo, amountValue] = methodParams || []
+          else [amountTo, amountValue] = methodParams || []
+        }
         log.info(methodParams, 'params')
         const checkSummedTo = toChecksumAddress(to)
 
-        if (OLD_ERC721_LIST.includes(checkSummedTo)) {
+        if (OLD_ERC721_LIST.includes(checkSummedTo.toLowerCase())) {
           transactionCategory = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
           contractParams.erc721 = true
           contractParams.erc20 = false
