@@ -6,7 +6,7 @@
       </v-btn>
     </template>
     <v-card class="add-contact-container">
-      <v-form ref="addContactForm" v-model="contactFormValid" @submit="addContact">
+      <v-form ref="addContactForm" v-model="contactFormValid" @submit="addContact" lazy-validation>
         <v-card-text class="text_1--text py-6">
           <v-layout wrap>
             <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
@@ -48,7 +48,7 @@ export default {
   data() {
     return {
       addContactDialoag: false,
-      contactFormValid: false,
+      contactFormValid: true,
       newContactName: '',
       rules: {
         required: value => !!value || 'Required'
@@ -58,17 +58,20 @@ export default {
   },
   methods: {
     addContact(e) {
-      e.preventDefault()
-      this.$store
-        .dispatch('addContact', {
-          contact: this.contact,
-          verifier: this.verifier,
-          name: this.newContactName
-        })
-        .then(response => {
-          this.newContactName = ''
-          this.addContactDialoag = false
-        })
+      if (this.$refs.addContactForm.validate()) {
+        e.preventDefault()
+        this.$store
+          .dispatch('addContact', {
+            contact: this.contact,
+            verifier: this.verifier,
+            name: this.newContactName
+          })
+          .then(response => {
+            this.newContactName = ''
+            this.addContactDialoag = false
+            this.$refs.addContactForm.reset()
+          })
+      }
     }
   }
 }

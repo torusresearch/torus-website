@@ -60,7 +60,7 @@ export default {
     state.pastTransactions = payload
   },
   patchPastTransactions(state, payload) {
-    state.pastTransactions = [...state.pastTransactions]
+    state.pastTransactions = [...state.pastTransactions, payload]
   },
   setTheme(state, payload) {
     state.theme = payload

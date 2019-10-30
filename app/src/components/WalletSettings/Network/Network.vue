@@ -1,6 +1,6 @@
 <template>
   <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
-    <v-form ref="form" v-model="formValid" lazy-validation @submit.prevent="">
+    <v-form ref="networkForm" v-model="formValid" lazy-validation @submit.prevent="">
       <span class="subtitle-2">Select Network</span>
       <v-flex>
         <v-select
@@ -78,8 +78,10 @@ export default {
       if (value && value.host !== RPC) this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
     },
     setRPC() {
-      // this.selectedNetwork = RPC
-      this.$store.dispatch('setProviderType', { network: this.rpc, type: RPC })
+      if (this.$refs.networkForm.validate()) {
+        // this.selectedNetwork = RPC
+        this.$store.dispatch('setProviderType', { network: this.rpc, type: RPC })
+      }
     }
   },
   mounted() {

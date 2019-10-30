@@ -732,7 +732,6 @@ export default {
         ])
         dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
         dispatch('setBillboard')
-        dispatch('setContacts')
         // continue enable function
         var ethAddress = data.ethAddress
         if (calledFromEmbed) {
@@ -836,8 +835,9 @@ export default {
         })
           .then(user => {
             if (user.data) {
-              const { transactions, default_currency, theme } = user.data || {}
+              const { transactions, contacts, default_currency, theme } = user.data || {}
               commit('setPastTransactions', transactions)
+              commit('setContacts', contacts)
               dispatch('setTheme', theme)
               dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
               dispatch('storeUserLogin', { calledFromEmbed, rehydrate })

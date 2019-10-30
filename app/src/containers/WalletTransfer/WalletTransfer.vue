@@ -268,7 +268,7 @@
 import { QrcodeCapture } from 'vue-qrcode-reader'
 import { isAddress, toChecksumAddress, toBN, toWei } from 'web3-utils'
 import torus from '../../torus'
-import { significantDigits, getRandomNumber, getEtherScanHashLink } from '../../utils/utils'
+import { significantDigits, getRandomNumber, getEtherScanHashLink, validateVerifierId } from '../../utils/utils'
 import config from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
@@ -288,7 +288,8 @@ import {
   CONTRACT_TYPE_ETH,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
-  OLD_ERC721_LIST
+  OLD_ERC721_LIST,
+  ALLOWED_VERIFIERS
 } from '../../utils/enums'
 
 const { torusNodeEndpoints } = config
@@ -318,7 +319,7 @@ export default {
       convertedAmount: '',
       contactSelected: '',
       toAddress: '',
-      formValid: false,
+      formValid: true,
       toggle_exclusive: 0,
       gas: 21000,
       activeGasPrice: '',
@@ -330,24 +331,7 @@ export default {
       resetSpeed: false,
       qrErrorMsg: '',
       selectedVerifier: ETH,
-      verifierOptions: [
-        {
-          name: ETH_LABEL,
-          value: ETH
-        },
-        {
-          name: GOOGLE_LABEL,
-          value: GOOGLE
-        },
-        {
-          name: REDDIT_LABEL,
-          value: REDDIT
-        },
-        {
-          name: DISCORD_LABEL,
-          value: DISCORD
-        }
-      ],
+      verifierOptions: ALLOWED_VERIFIERS,
       rules: {
         required: value => !!value || 'Required'
       },
@@ -437,12 +421,15 @@ export default {
       return `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
     },
     contactList() {
-      return this.$store.state.contacts
-        .filter(contact => contact.verifier === this.selectedVerifier)
-        .map(contact => ({
-          name: `${contact.name} (${contact.contact})`,
-          value: contact.contact
-        }))
+      return this.$store.state.contacts.reduce((mappedObj, contact) => {
+        if (contact.verifier === this.selectedVerifier) {
+          return mappedObj.push({
+            name: `${contact.name} (${contact.contact})`,
+            value: contact.contact
+          })
+        }
+        return mappedObj
+      }, [])
     },
     newContact() {
       if (!this.contactSelected) return false
@@ -519,23 +506,7 @@ export default {
     },
     contactRule(contact) {
       const value = contact === null ? '' : typeof contact === 'string' ? contact : contact.value
-
-      if (this.selectedVerifier === ETH) {
-        return isAddress(value) || 'Invalid ETH Address'
-      } else if (this.selectedVerifier === GOOGLE) {
-        return (
-          // eslint-disable-next-line max-len
-          /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-            value
-          ) || 'Invalid Email Address'
-        )
-      } else if (this.selectedVerifier === REDDIT) {
-        return (/[\w-]+/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
-      } else if (this.selectedVerifier === DISCORD) {
-        return (/^[0-9]*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
-      }
-
-      return true
+      return validateVerifierId(this.selectedVerifier, value)
     },
     contactChanged(contact) {
       if (contact) this.toAddress = typeof contact === 'string' ? contact : contact.value
