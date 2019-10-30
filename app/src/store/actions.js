@@ -227,15 +227,14 @@ export default {
   updateMessages({ commit }, payload) {
     commit('setMessages', payload.unapprovedMsgs)
   },
-  updateAssets({ commit }, payload) {
+  updateAssets({ commit, state }, payload) {
     const collectibles = payload.collectibleContracts.map(contract => {
       contract.assets = payload.collectibles.filter(asset => {
         return asset.address === contract.address
       })
       return contract
     })
-
-    commit('setAssets', collectibles)
+    commit('setAssets', { ...state.assets, [payload.selectedAddress]: collectibles })
   },
   updateTokenData({ commit, state }, payload) {
     if (payload.tokenData) commit('setTokenData', { ...state.tokenData, [payload.address]: payload.tokenData })
@@ -592,13 +591,19 @@ export default {
         dispatch('updateTransactions', { transactions: updatedTransactions })
       }
     })
-    torus.torusController.assetController.store.subscribe(function({ allCollectibleContracts, allCollectibles, collectibleContracts, collectibles }) {
-      dispatch('updateAssets', {
-        allCollectibleContracts: allCollectibleContracts,
-        allCollectibles: allCollectibles,
-        collectibleContracts: collectibleContracts,
-        collectibles: collectibles
-      })
+    torus.torusController.assetController.store.subscribe(function({ accounts }) {
+      for (const key in accounts) {
+        if (Object.prototype.hasOwnProperty.call(accounts, key)) {
+          const { allCollectibleContracts, allCollectibles, collectibleContracts, collectibles } = accounts[key]
+          dispatch('updateAssets', {
+            allCollectibleContracts: allCollectibleContracts,
+            allCollectibles: allCollectibles,
+            collectibleContracts: collectibleContracts,
+            collectibles: collectibles,
+            selectedAddress: key
+          })
+        }
+      }
     })
 
     torus.torusController.typedMessageManager.store.subscribe(function({ unapprovedTypedMessages }) {
@@ -760,7 +765,7 @@ export default {
           signed_message: signedMessage
         })
         commit('setJwtToken', response.token)
-        await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed: calledFromEmbed })
+        await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed: calledFromEmbed, rehydrate: false })
 
         resolve()
       } catch (error) {
@@ -771,21 +776,22 @@ export default {
   },
   storeUserLogin({ state }, payload) {
     let userOrigin = ''
-    if (payload) {
+    if (payload && payload.calledFromEmbed) {
       userOrigin = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
     } else userOrigin = window.location.origin
-    post(
-      `${config.api}/user/recordLogin`,
-      {
-        hostname: userOrigin
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${state.jwtToken}`,
-          'Content-Type': 'application/json; charset=utf-8'
+    if (!payload.rehydrate)
+      post(
+        `${config.api}/user/recordLogin`,
+        {
+          hostname: userOrigin
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
         }
-      }
-    )
+      )
   },
   setTheme({ commit }, payload) {
     commit('setTheme', payload)
@@ -821,7 +827,7 @@ export default {
   },
   setUserInfoAction({ commit, dispatch, state }, payload) {
     return new Promise(async (resolve, reject) => {
-      const { token, calledFromEmbed } = payload
+      const { token, calledFromEmbed, rehydrate } = payload
       try {
         get(`${config.api}/user`, {
           headers: {
@@ -834,7 +840,7 @@ export default {
               commit('setPastTransactions', transactions)
               dispatch('setTheme', theme)
               dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
-              dispatch('storeUserLogin', calledFromEmbed)
+              dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
               resolve()
             }
           })
@@ -853,7 +859,7 @@ export default {
               }
             )
             commit('setNewUser', true)
-            dispatch('storeUserLogin', calledFromEmbed)
+            dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
             resolve()
           })
       } catch (error) {
@@ -885,7 +891,7 @@ export default {
         setTimeout(() => dispatch('subscribeToControllers'), 50)
         await Promise.all([
           torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet)),
-          dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false })
+          dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true })
         ])
         dispatch('updateSelectedAddress', { selectedAddress })
         dispatch('updateNetworkId', { networkId: networkId })

@@ -58,11 +58,11 @@ const tokenBalances = state => {
 }
 
 const collectibleBalances = state => {
-  let { networkType, assets } = state || {}
+  let { networkType, assets, selectedAddress } = state || {}
   if (networkType.host !== MAINNET) {
-    assets = {}
+    assets[selectedAddress] = []
   }
-  return assets
+  return assets[selectedAddress] || []
 }
 
 export default {
