@@ -104,7 +104,7 @@ export default {
           .then(response => {
             this.newContact = ''
             this.newContactName = ''
-            this.$refs.addContactForm.reset()
+            this.$refs.addContactForm.resetValidation()
           })
       }
     },

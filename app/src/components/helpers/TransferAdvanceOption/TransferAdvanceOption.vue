@@ -181,7 +181,7 @@ export default {
 
         this.$emit('onSave', payload)
         this.dialog = false
-        this.$refs.advanceOptionForm.reset()
+        this.$refs.advanceOptionForm.resetValidation()
       }
     },
     updateDetails() {

@@ -69,7 +69,7 @@ export default {
           .then(response => {
             this.newContactName = ''
             this.addContactDialoag = false
-            this.$refs.addContactForm.reset()
+            this.$refs.addContactForm.resetValidation()
           })
       }
     }

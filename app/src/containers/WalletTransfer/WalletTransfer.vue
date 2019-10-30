@@ -423,7 +423,7 @@ export default {
     contactList() {
       return this.$store.state.contacts.reduce((mappedObj, contact) => {
         if (contact.verifier === this.selectedVerifier) {
-          return mappedObj.push({
+          mappedObj.push({
             name: `${contact.name} (${contact.contact})`,
             value: contact.contact
           })
