@@ -107,12 +107,17 @@
               </v-flex>
               <v-flex xs12 sm6 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
                 <v-combobox
-                  v-model="toAddress"
+                  ref="contactSelected"
+                  v-model="contactSelected"
+                  @change="contactChanged"
                   :items="contactList"
                   :placeholder="verifierPlaceholder"
                   required
-                  :rules="[toAddressRule, rules.required]"
+                  :rules="[contactRule, rules.required]"
                   outlined
+                  item-text="name"
+                  item-value="value"
+                  return-object
                 >
                   <template v-slot:append>
                     <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()">
@@ -128,6 +133,9 @@
                     </div>
                   </div>
                 </div>
+              </v-flex>
+              <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid" x12 mb-2>
+                <add-contact :contact="contactSelected" :verifier="selectedVerifier"></add-contact>
               </v-flex>
             </v-layout>
           </v-flex>
@@ -264,6 +272,7 @@ import { significantDigits, getRandomNumber, getEtherScanHashLink } from '../../
 import config from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
+import AddContact from '../../components/WalletTransfer/AddContact'
 import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
 import {
@@ -293,7 +302,8 @@ export default {
   components: {
     TransactionSpeedSelect,
     MessageModal,
-    QrcodeCapture
+    QrcodeCapture,
+    AddContact
   },
   data() {
     return {
@@ -306,6 +316,7 @@ export default {
       amount: 0,
       displayAmount: '',
       convertedAmount: '',
+      contactSelected: '',
       toAddress: '',
       formValid: false,
       toggle_exclusive: 0,
@@ -426,7 +437,17 @@ export default {
       return `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
     },
     contactList() {
-      return this.$store.state.contacts.filter(contact => contact.verifier === this.selectedVerifier).map(contact => contact.contact)
+      return this.$store.state.contacts
+        .filter(contact => contact.verifier === this.selectedVerifier)
+        .map(contact => ({
+          name: `${contact.name} (${contact.contact})`,
+          value: contact.contact
+        }))
+    },
+    newContact() {
+      const targetContact = typeof this.contactSelected === 'string' ? this.contactSelected : this.contactSelected.value
+      const addressFound = this.contactList.find(contact => contact.value === targetContact)
+      return addressFound === undefined
     }
   },
   watch: {
@@ -494,7 +515,9 @@ export default {
       }
       return ''
     },
-    toAddressRule(value) {
+    contactRule(contact) {
+      const value = typeof contact === 'string' ? contact : contact.value
+
       if (this.selectedVerifier === ETH) {
         return isAddress(value) || 'Invalid ETH Address'
       } else if (this.selectedVerifier === GOOGLE) {
@@ -511,6 +534,9 @@ export default {
       }
 
       return true
+    },
+    contactChanged(contact) {
+      this.toAddress = typeof contact === 'string' ? contact : contact.value
     },
     async calculateGas(toAddress) {
       if (isAddress(toAddress)) {
@@ -812,6 +838,8 @@ export default {
           this.toAddress = ''
           this.qrErrorMsg = 'Incorrect QR Code'
         }
+
+        this.contactSelected = this.toAddress
       } catch (error) {
         if (isAddress(result)) {
           this.selectedVerifier = ETH
@@ -820,6 +848,8 @@ export default {
           this.toAddress = ''
           this.qrErrorMsg = 'Incorrect QR Code'
         }
+
+        this.contactSelected = this.toAddress
       }
     }
   },
@@ -830,6 +860,8 @@ export default {
     } else {
       this.toAddress = ''
     }
+
+    this.contactSelected = this.toAddress
 
     const collectiblesUnwatch = this.$watch('collectibles', function(newValue, oldValue) {
       if (newValue !== oldValue) {
