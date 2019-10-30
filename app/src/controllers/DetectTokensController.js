@@ -32,7 +32,7 @@ class DetectTokensController {
    *
    */
   async detectNewTokens() {
-    if (this.network.store.getState().provider.type !== MAINNET) {
+    if (this.network.store.getState().provider.type !== MAINNET || this.selectedAddress === '') {
       return
     }
     const tokenAddresses = this.detectedTokensStore.getState().tokens.map(x => x.tokenAddress.toLowerCase())
@@ -85,7 +85,7 @@ class DetectTokensController {
   }
 
   async refreshTokenBalances() {
-    if (this.network.store.getState().provider.type !== MAINNET) {
+    if (this.network.store.getState().provider.type !== MAINNET || this.selectedAddress === '') {
       return
     }
     const oldTokens = this.detectedTokensStore.getState().tokens
