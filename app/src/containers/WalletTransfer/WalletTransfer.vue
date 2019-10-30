@@ -576,8 +576,9 @@ export default {
         this.contractType = CONTRACT_TYPE_ERC721
         this.collectibleSelected = foundInCollectibles
         if (foundInCollectibles.assets && foundInCollectibles.assets.length > 0) {
-          this.assetSelected =
-            foundInCollectibles.assets.find(asset => asset.tokenId.toString() === tokenId.toString()) || foundInCollectibles.assets[0]
+          this.assetSelected = tokenId
+            ? foundInCollectibles.assets.find(asset => asset.tokenId.toString() === tokenId.toString()) || foundInCollectibles.assets[0]
+            : foundInCollectibles.assets[0]
         }
         // Reset you send
         this.resetSendAll()
@@ -618,6 +619,7 @@ export default {
       if (this.$refs.form.validate()) {
         const fastGasPrice = toBN((this.activeGasPrice * 10 ** 9).toString())
         let toAddress
+        log.info(this.toAddress, this.selectedVerifier)
         if (isAddress(this.toAddress)) {
           toAddress = toChecksumAddress(this.toAddress)
         } else {
