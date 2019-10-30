@@ -73,7 +73,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-@import 'AddContact.scss';
-</style>
