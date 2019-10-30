@@ -518,7 +518,7 @@ export default {
       return ''
     },
     contactRule(contact) {
-      const value = typeof contact === 'string' ? contact : contact.value
+      const value = contact === null ? '' : typeof contact === 'string' ? contact : contact.value
 
       if (this.selectedVerifier === ETH) {
         return isAddress(value) || 'Invalid ETH Address'
@@ -538,7 +538,7 @@ export default {
       return true
     },
     contactChanged(contact) {
-      this.toAddress = typeof contact === 'string' ? contact : contact.value
+      if (contact) this.toAddress = typeof contact === 'string' ? contact : contact.value
     },
     async calculateGas(toAddress) {
       if (isAddress(toAddress)) {
