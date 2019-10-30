@@ -1,5 +1,5 @@
 <template>
-  <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-0 px-12'">
+  <div class="privacy-security-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'py-0 px-12'">
     <v-list>
       <v-list-item id="private-key-btn" @click="privateKeyDialog = true">
         <v-list-item-action class="mr-4">
@@ -46,3 +46,7 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+@import 'PrivacySecurity.scss';
+</style>

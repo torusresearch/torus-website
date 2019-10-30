@@ -1,19 +1,21 @@
 <template>
   <div class="contact-list-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'py-0 px-12'">
-    <div class="subtitle-2">List of Contacts</div>
+    <div class="body-2">List of Contacts</div>
     <v-card class="card-shadow mt-2">
       <v-list dense flat class="pa-0">
         <template v-for="contact in contacts">
-          <v-list-item :key="`contact-${contact.id}`">
+          <v-list-item two-line :key="`contact-${contact.id}`">
             <v-list-item-content>
-              <v-list-item-title>
-                <span class="text-capitalize">{{ contact.verifier === ETH ? 'Eth Address' : contact.verifier }}</span>
-                -
-                <span class="primary--text">{{ contact.contact }}</span>
+              <v-list-item-title class="font-weight-regular caption">
+                <span>{{ contact.name }}</span>
               </v-list-item-title>
+              <v-list-item-subtitle class="font-weight-regular caption text_2--text text--lighten-2">
+                <span class="text-capitalize">{{ contact.verifier === ETH ? '' : `${contact.verifier}: ` }}</span>
+                <span>{{ contact.contact }}</span>
+              </v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-action>
-              <v-btn icon small @click="deleteContact(contact.id)">
+              <v-btn color="text_2" icon small @click="deleteContact(contact.id)">
                 <v-icon size="10">$vuetify.icons.close</v-icon>
               </v-btn>
             </v-list-item-action>
@@ -21,7 +23,7 @@
         </template>
       </v-list>
     </v-card>
-    <div class="subtitle-2 mt-4">Add new contact</div>
+    <div class="body-2 mt-4">Add new contact</div>
 
     <v-form ref="addContactForm" v-model="contactFormValid" @submit="addContact">
       <v-layout wrap class="mt-2">
@@ -35,6 +37,9 @@
             v-model="selectedVerifier"
             @change="$refs.addContactForm.validate()"
           ></v-select>
+        </v-flex>
+        <v-flex xs12>
+          <v-text-field v-model="newContactName" placeholder="Enter Contact Name" :rules="[rules.required]" outlined></v-text-field>
         </v-flex>
         <v-flex xs12>
           <v-text-field v-model="newContact" :placeholder="verifierPlaceholder" :rules="[toAddressRule, rules.required]" outlined></v-text-field>
@@ -59,6 +64,7 @@ export default {
       contactFormValid: false,
       selectedVerifier: ETH,
       newContact: '',
+      newContactName: '',
       rules: {
         required: value => !!value || 'Required'
       },
@@ -97,10 +103,12 @@ export default {
       this.$store
         .dispatch('addContact', {
           contact: this.newContact,
+          name: this.newContactName,
           verifier: this.selectedVerifier
         })
         .then(response => {
           this.newContact = ''
+          this.newContactName = ''
         })
     },
     deleteContact(contactId) {

@@ -1,5 +1,6 @@
 .wallet-settings {
   .v-expansion-panel {
+    background-color: transparent;
     &::before {
       box-shadow: none;
       border-bottom: 1px solid var(--v-background_3-base);
@@ -15,9 +16,5 @@
   .v-expansion-panel--active:not(:first-child),
   .v-expansion-panel--active + .v-expansion-panel {
     margin-top: 0;
-  }
-
-  .privacy-security-container .v-sheet {
-    background: transparent;
   }
 }

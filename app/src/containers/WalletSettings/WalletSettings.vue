@@ -10,7 +10,7 @@
               Privacy and Security
             </div>
           </v-expansion-panel-header>
-          <v-expansion-panel-content class="privacy-security-container">
+          <v-expansion-panel-content>
             <privacy-security />
           </v-expansion-panel-content>
         </v-expansion-panel>
