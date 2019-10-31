@@ -100,7 +100,7 @@ const TWITCH = 'twitch'
 const ETH_LABEL = 'ETH Address'
 const GOOGLE_LABEL = 'Google Email'
 const FACEBOOK_LABEL = 'Facebook ID'
-const REDDIT_LABEL = 'Reddit ID'
+const REDDIT_LABEL = 'Reddit Username'
 const DISCORD_LABEL = 'Discord ID'
 const TWITCH_LABEL = 'Twitch ID'
 
