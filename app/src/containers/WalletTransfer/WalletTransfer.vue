@@ -107,6 +107,8 @@
               </v-flex>
               <v-flex xs12 sm6 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
                 <v-combobox
+                  id="recipient-address"
+                  class="recipient-address"
                   ref="contactSelected"
                   v-model="contactSelected"
                   @change="contactChanged"

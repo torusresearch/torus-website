@@ -2,7 +2,7 @@
   <div class="contact-list-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'py-0 px-12'">
     <div class="body-2">List of Contacts</div>
     <v-card class="card-shadow mt-2">
-      <v-list dense flat class="pa-0">
+      <v-list dense flat class="pa-0 contact-list">
         <template v-for="contact in contacts">
           <v-list-item two-line :key="`contact-${contact.id}`">
             <v-list-item-content>
@@ -15,7 +15,7 @@
               </v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-action>
-              <v-btn color="text_2" icon small @click="deleteContact(contact.id)">
+              <v-btn class="delete-btn" color="text_2" icon small @click="deleteContact(contact.id)">
                 <v-icon size="10">$vuetify.icons.close</v-icon>
               </v-btn>
             </v-list-item-action>
@@ -29,6 +29,8 @@
       <v-layout wrap class="mt-2">
         <v-flex xs12 sm6>
           <v-select
+            id="select-verifier"
+            class="select-verifier-container"
             outlined
             append-icon="$vuetify.icons.select"
             :items="verifierOptions"
@@ -39,10 +41,11 @@
           ></v-select>
         </v-flex>
         <v-flex xs12>
-          <v-text-field v-model="newContactName" placeholder="Enter Contact Name" :rules="[rules.required]" outlined></v-text-field>
+          <v-text-field id="contact-name" v-model="newContactName" placeholder="Enter Contact Name" :rules="[rules.required]" outlined></v-text-field>
         </v-flex>
         <v-flex xs12>
           <v-text-field
+            id="contact-value"
             v-model="newContact"
             :placeholder="verifierPlaceholder"
             :rules="[toAddressRule, rules.required, checkDuplicates]"
@@ -51,7 +54,7 @@
         </v-flex>
 
         <v-flex xs12 class="pt-4 text-right">
-          <v-btn type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">Add Contact</v-btn>
+          <v-btn id="contact-submit-btn" type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">Add Contact</v-btn>
         </v-flex>
       </v-layout>
     </v-form>
