@@ -12,7 +12,7 @@ export default {
     state.weiBalance = weiBalance
   },
   setTokenData(state, tokenData) {
-    state.tokenData = tokenData
+    state.tokenData = { ...state.tokenData, ...tokenData }
   },
   setTokenRates(state, tokenRates) {
     state.tokenRates = tokenRates
@@ -66,7 +66,7 @@ export default {
     state.theme = payload
   },
   setAssets(state, payload) {
-    state.assets = payload
+    state.assets = { ...state.assets, ...payload }
   },
   setBillboard(state, payload) {
     state.billboard = payload

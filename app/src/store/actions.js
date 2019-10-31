@@ -18,7 +18,16 @@ import { getRandomNumber, broadcastChannelOptions, storageAvailable } from '../u
 import { post, get, patch, remove } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import initialState from './state'
-
+import {
+  accountTrackerHandler,
+  assetControllerHandler,
+  typedMessageManagerHandler,
+  personalMessageManagerHandler,
+  transactionControllerHandler,
+  messageManagerHandler,
+  detectTokensControllerHandler,
+  tokenRatesControllerHandler
+} from './controllerSubscriptions'
 import vuetify from '../plugins/vuetify'
 import themes from '../plugins/themes'
 
@@ -46,6 +55,14 @@ export default {
     dispatch('setTheme', THEME_LIGHT_BLUE_NAME)
     if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
     statusStream.write({ loggedIn: false })
+    torus.torusController.accountTracker.store.unsubscribe(accountTrackerHandler)
+    torus.torusController.txController.store.unsubscribe(transactionControllerHandler)
+    torus.torusController.assetController.store.unsubscribe(assetControllerHandler)
+    torus.torusController.typedMessageManager.store.unsubscribe(typedMessageManagerHandler)
+    torus.torusController.personalMessageManager.store.unsubscribe(personalMessageManagerHandler)
+    torus.torusController.messageManager.store.unsubscribe(messageManagerHandler)
+    torus.torusController.detectTokensController.detectedTokensStore.unsubscribe(detectTokensControllerHandler)
+    torus.torusController.tokenRatesController.store.unsubscribe(tokenRatesControllerHandler)
   },
   loginInProgress(context, payload) {
     context.commit('setLoginInProgress', payload)
@@ -227,17 +244,17 @@ export default {
   updateMessages({ commit }, payload) {
     commit('setMessages', payload.unapprovedMsgs)
   },
-  updateAssets({ commit, state }, payload) {
+  updateAssets({ commit }, payload) {
     const collectibles = payload.collectibleContracts.map(contract => {
       contract.assets = payload.collectibles.filter(asset => {
         return asset.address === contract.address
       })
       return contract
     })
-    commit('setAssets', { ...state.assets, [payload.selectedAddress]: collectibles })
+    commit('setAssets', { [payload.selectedAddress]: collectibles })
   },
   updateTokenData({ commit, state }, payload) {
-    if (payload.tokenData) commit('setTokenData', { ...state.tokenData, [payload.address]: payload.tokenData })
+    if (payload.tokenData) commit('setTokenData', { [payload.address]: payload.tokenData })
   },
   updateTokenRates({ commit }, payload) {
     commit('setTokenRates', payload.tokenRates)
@@ -567,71 +584,15 @@ export default {
       }, 1000)
     }
   },
-  subscribeToControllers({ dispatch, state }, payload) {
-    torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
-      if (accounts) {
-        for (const key in accounts) {
-          if (Object.prototype.hasOwnProperty.call(accounts, key)) {
-            const account = accounts[key]
-            dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
-          }
-        }
-      }
-    })
-    torus.torusController.txController.store.subscribe(function({ transactions }) {
-      if (transactions) {
-        // these transactions have negative index
-        const updatedTransactions = []
-        for (let id in transactions) {
-          if (transactions[id]) {
-            updatedTransactions.push(transactions[id])
-          }
-        }
-        // log.info(updatedTransactions, 'txs')
-        dispatch('updateTransactions', { transactions: updatedTransactions })
-      }
-    })
-    torus.torusController.assetController.store.subscribe(function({ accounts }) {
-      for (const key in accounts) {
-        if (Object.prototype.hasOwnProperty.call(accounts, key)) {
-          const { allCollectibleContracts, allCollectibles, collectibleContracts, collectibles } = accounts[key]
-          dispatch('updateAssets', {
-            allCollectibleContracts: allCollectibleContracts,
-            allCollectibles: allCollectibles,
-            collectibleContracts: collectibleContracts,
-            collectibles: collectibles,
-            selectedAddress: key
-          })
-        }
-      }
-    })
-
-    torus.torusController.typedMessageManager.store.subscribe(function({ unapprovedTypedMessages }) {
-      dispatch('updateTypedMessages', { unapprovedTypedMessages: unapprovedTypedMessages })
-    })
-
-    torus.torusController.personalMessageManager.store.subscribe(function({ unapprovedPersonalMsgs }) {
-      dispatch('updatePersonalMessages', { unapprovedPersonalMsgs: unapprovedPersonalMsgs })
-    })
-
-    torus.torusController.messageManager.store.subscribe(function({ unapprovedMsgs }) {
-      dispatch('updateMessages', { unapprovedMsgs: unapprovedMsgs })
-    })
-
-    dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
-    torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
-      if (tokens.length > 0) {
-        dispatch('updateTokenData', {
-          tokenData: tokens,
-          address: torus.torusController.detectTokensController.selectedAddress
-        })
-      }
-    })
-    torus.torusController.tokenRatesController.store.subscribe(function({ contractExchangeRates }) {
-      if (contractExchangeRates) {
-        dispatch('updateTokenRates', { tokenRates: contractExchangeRates })
-      }
-    })
+  subscribeToControllers(context, payload) {
+    torus.torusController.accountTracker.store.subscribe(accountTrackerHandler)
+    torus.torusController.txController.store.subscribe(transactionControllerHandler)
+    torus.torusController.assetController.store.subscribe(assetControllerHandler)
+    torus.torusController.typedMessageManager.store.subscribe(typedMessageManagerHandler)
+    torus.torusController.personalMessageManager.store.subscribe(personalMessageManagerHandler)
+    torus.torusController.messageManager.store.subscribe(messageManagerHandler)
+    torus.torusController.detectTokensController.detectedTokensStore.subscribe(detectTokensControllerHandler)
+    torus.torusController.tokenRatesController.store.subscribe(tokenRatesControllerHandler)
   },
   initTorusKeyring({ state, dispatch }, payload) {
     return torus.torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])

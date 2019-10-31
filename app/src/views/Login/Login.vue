@@ -171,8 +171,9 @@ export default {
       triggerLogin: 'triggerLogin'
     }),
     returnHome() {
-      this.$router.push({ path: '/' }).catch(err => {})
-      this.isLogout = false
+      // this.$router.push({ path: '/' }).catch(err => {})
+      // this.isLogout = false
+      window.location.href = process.env.BASE_URL
     }
   },
   computed: mapState({
