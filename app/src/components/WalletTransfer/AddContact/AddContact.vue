@@ -11,7 +11,7 @@
           <v-layout wrap>
             <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
               <div class="font-weight-bold headline">Add Contact</div>
-              <v-chip small class="caption" color="#CAF1FE">{{ verifierLabels[verifier] }}</v-chip>
+              <v-chip small class="caption" light color="#CAF1FE">{{ verifierLabels[verifier] }}</v-chip>
             </v-flex>
             <v-flex xs12 mt-6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
               <span class="subtitle-2">Contact Account Name</span>

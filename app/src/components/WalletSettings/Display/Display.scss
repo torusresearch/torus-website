@@ -1,0 +1,11 @@
+.select-theme-container {
+  .select-theme {
+    display: flex;
+    ::v-deep .v-chip__content {
+      width: 100%;
+    }
+  }
+}
+.v-menu__content {
+  border-radius: 0;
+}

@@ -37,7 +37,9 @@
               <img :src="asset.image" style="width: auto; height: 140px" />
             </div>
             <v-card-text class="asset-text py-1 px-3">
-              <div class="body-2 asset-name" :title="asset.name">{{ asset.name }}</div>
+              <div class="body-2" :title="asset.name || `${selectedContract.name} #${asset.tokenId}`">
+                {{ asset.name || `${selectedContract.name} #${asset.tokenId}` }}
+              </div>
               <div class="text-right asset-details mt-1">
                 <div class="font-weight-medium">{{ asset.costEth || '&nbsp;' }}</div>
                 <div class="font-weight-light text_2--text">{{ asset.costCurrency || '&nbsp;' }}</div>
@@ -62,7 +64,9 @@
             <!-- <v-list-item :style="{ backgroundColor: asset.color }"> -->
             <v-list-item>
               <v-list-item-content class="asset-text">
-                <div class="body-2 asset-name" :title="asset.name">{{ asset.name }}</div>
+                <div class="body-2" :title="asset.name || `${selectedContract.name} #${asset.tokenId}`">
+                  {{ asset.name || `${selectedContract.name} #${asset.tokenId}` }}
+                </div>
                 <div class="asset-details mt-8 align-self-baseline">
                   <div class="font-weight-medium">{{ asset.costEth || '&nbsp;' }}</div>
                   <div class="font-weight-light text_2--text">{{ asset.costCurrency || '&nbsp;' }}</div>

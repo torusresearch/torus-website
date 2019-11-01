@@ -761,12 +761,12 @@ export default {
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
   },
-  setUserTheme({ state }, payload) {
+  setUserTheme({ state, dispatch }, payload) {
     return new Promise((resolve, reject) => {
       patch(
         `${config.api}/user/theme`,
         {
-          theme: state.theme
+          theme: payload
         },
         {
           headers: {
@@ -776,6 +776,7 @@ export default {
         }
       )
         .then(response => {
+          dispatch('setTheme', payload)
           log.info('successfully patched', response)
           resolve(response)
         })

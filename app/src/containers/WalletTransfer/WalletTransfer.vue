@@ -162,6 +162,7 @@
               :items="collectibleSelected.assets"
               outlined
               item-text="name"
+              append-icon="$vuetify.icons.select"
               return-object
             >
               <template v-slot:prepend-inner>
