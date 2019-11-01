@@ -8,7 +8,7 @@ const utils = require('../utils/httpHelpers')
 const config = require('../config').default
 // const contractMap = require('eth-contract-metadata')
 const { MAINNET } = require('../utils/enums')
-const DEFAULT_INTERVAL = 180000
+const DEFAULT_INTERVAL = 60000
 
 export default class AssetsDetectionController {
   constructor(opts) {
@@ -112,6 +112,7 @@ export default class AssetsDetectionController {
     if (!selectedAddress) {
       return
     }
+    log.info('starting asset detection')
     this.assetController.setSelectedAddress(selectedAddress)
     const apiCollectibles = await this.getOwnerCollectibles()
     for (let index = 0; index < apiCollectibles.length; index++) {

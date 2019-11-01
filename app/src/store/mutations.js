@@ -12,7 +12,7 @@ export default {
     state.weiBalance = weiBalance
   },
   setTokenData(state, tokenData) {
-    state.tokenData = tokenData
+    state.tokenData = { ...state.tokenData, ...tokenData }
   },
   setTokenRates(state, tokenRates) {
     state.tokenRates = tokenRates
@@ -66,10 +66,19 @@ export default {
     state.theme = payload
   },
   setAssets(state, payload) {
-    state.assets = payload
+    state.assets = { ...state.assets, ...payload }
   },
   setBillboard(state, payload) {
     state.billboard = payload
+  },
+  setContacts(state, payload) {
+    state.contacts = payload
+  },
+  addContacts(state, payload) {
+    state.contacts = [...state.contacts, ...payload]
+  },
+  deleteContact(state, payload) {
+    state.contacts.splice(payload, 1)
   },
   logOut(state, payload) {
     Object.keys(state).forEach(key => {

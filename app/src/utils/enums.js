@@ -100,7 +100,7 @@ const TWITCH = 'twitch'
 const ETH_LABEL = 'ETH Address'
 const GOOGLE_LABEL = 'Google Email'
 const FACEBOOK_LABEL = 'Facebook ID'
-const REDDIT_LABEL = 'Reddit ID'
+const REDDIT_LABEL = 'Reddit Username'
 const DISCORD_LABEL = 'Discord ID'
 const TWITCH_LABEL = 'Twitch ID'
 
@@ -108,6 +108,25 @@ const THEME_DARK_BLACK_NAME = 'dark-black'
 const THEME_LIGHT_BLUE_NAME = 'light-blue'
 
 const OLD_ERC721_LIST = ['0x06012c8cf97bead5deae237070f9587f8e7a266d']
+
+const ALLOWED_VERIFIERS = [
+  {
+    name: ETH_LABEL,
+    value: ETH
+  },
+  {
+    name: GOOGLE_LABEL,
+    value: GOOGLE
+  },
+  {
+    name: REDDIT_LABEL,
+    value: REDDIT
+  },
+  {
+    name: DISCORD_LABEL,
+    value: DISCORD
+  }
+]
 
 module.exports = {
   ETH,
@@ -184,5 +203,6 @@ module.exports = {
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
-  OLD_ERC721_LIST
+  OLD_ERC721_LIST,
+  ALLOWED_VERIFIERS
 }

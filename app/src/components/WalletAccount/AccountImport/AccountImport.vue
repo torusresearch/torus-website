@@ -176,6 +176,7 @@ export default {
             this.onClose()
             this.isLoadingPrivate = false
             this.informClients(privKey)
+            this.$refs.privateKeyForm.resetValidation()
           })
           .catch(err => {
             this.setErrorState(err)
@@ -212,6 +213,7 @@ export default {
               this.onClose()
               this.isLoadingKeystore = false
               this.informClients(privKey)
+              this.$refs.jsonFileForm.resetValidation()
             })
             .catch(err => {
               this.setErrorState(err)
@@ -227,6 +229,7 @@ export default {
                 this.onClose()
                 this.isLoadingKeystore = false
                 this.informClients(privKey)
+                this.$refs.jsonFileForm.resetValidation()
               })
               .catch(err => {
                 this.setErrorState(err)
