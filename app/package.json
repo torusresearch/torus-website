@@ -7,7 +7,7 @@
     "build": "npm run build-embed:production && npm run pre-build && vue-cli-service build && npm run post-build",
     "lint": "vue-cli-service lint",
     "build-embed:dev": "cross-env VUE_APP_TORUS_BUILD_ENV=development node ./scripts/createEmbed.js",
-    "build-embed:production": "cross-env VUE_APP_TORUS_BUILD_ENV=production NODE_ENV=production node ./scripts/createEmbed.js",
+    "build-embed:production": "cross-env VUE_APP_TORUS_BUILD_ENV=production node ./scripts/createEmbed.js",
     "build-embed:report": "npm run build-embed:production && discify ./public/embed.min.js > disc.html",
     "build-embed:staging": "cross-env VUE_APP_TORUS_BUILD_ENV=staging node ./scripts/createEmbed.js",
     "build-embed:testing": "cross-env VUE_APP_TORUS_BUILD_ENV=testing node ./scripts/createEmbed.js",
