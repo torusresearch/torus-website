@@ -18,6 +18,9 @@ module.exports = {
   css: {
     extract: false
   },
+  // Adds support for Edge browser, IE 11 and Safari 9
+  transpileDependencies: ['vuetify'],
+
   configureWebpack: config => {
     if (process.env.NODE_ENV === 'production') {
       const TerserPlugin = require('terser-webpack-plugin')
