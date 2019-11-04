@@ -106,24 +106,27 @@
                 ></v-select>
               </v-flex>
               <v-flex xs12 sm6 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
-                <v-text-field
-                  class="recipient-address"
+                <v-combobox
                   id="recipient-address"
-                  ref="recipientAddress"
-                  v-model="toAddress"
+                  class="recipient-address"
+                  ref="contactSelected"
+                  v-model="contactSelected"
+                  @change="contactChanged"
+                  :items="contactList"
                   :placeholder="verifierPlaceholder"
                   required
-                  :rules="[toAddressRule, rules.required]"
+                  :rules="[contactRule, rules.required]"
                   outlined
-                  autocomplete="ThisIsASampleAutocomplete"
-                  @keyup="qrErrorMsg = ''"
+                  item-text="name"
+                  item-value="value"
+                  return-object
                 >
                   <template v-slot:append>
                     <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()">
                       <v-icon small>$vuetify.icons.scan</v-icon>
                     </v-btn>
                   </template>
-                </v-text-field>
+                </v-combobox>
                 <qrcode-capture @decode="onDecodeQr" ref="captureQr" style="display: none" />
                 <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                   <div class="v-messages">
@@ -132,6 +135,9 @@
                     </div>
                   </div>
                 </div>
+              </v-flex>
+              <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid" x12 mb-2>
+                <add-contact :contact="contactSelected" :verifier="selectedVerifier"></add-contact>
               </v-flex>
             </v-layout>
           </v-flex>
@@ -156,6 +162,7 @@
               :items="collectibleSelected.assets"
               outlined
               item-text="name"
+              append-icon="$vuetify.icons.select"
               return-object
             >
               <template v-slot:prepend-inner>
@@ -264,10 +271,11 @@
 import { QrcodeCapture } from 'vue-qrcode-reader'
 import { isAddress, toChecksumAddress, toBN, toWei } from 'web3-utils'
 import torus from '../../torus'
-import { significantDigits, getRandomNumber, getEtherScanHashLink } from '../../utils/utils'
+import { significantDigits, getRandomNumber, getEtherScanHashLink, validateVerifierId } from '../../utils/utils'
 import config from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
+import AddContact from '../../components/WalletTransfer/AddContact'
 import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
 import {
@@ -283,7 +291,8 @@ import {
   CONTRACT_TYPE_ETH,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
-  OLD_ERC721_LIST
+  OLD_ERC721_LIST,
+  ALLOWED_VERIFIERS
 } from '../../utils/enums'
 
 const { torusNodeEndpoints } = config
@@ -297,7 +306,8 @@ export default {
   components: {
     TransactionSpeedSelect,
     MessageModal,
-    QrcodeCapture
+    QrcodeCapture,
+    AddContact
   },
   data() {
     return {
@@ -310,8 +320,9 @@ export default {
       amount: 0,
       displayAmount: '',
       convertedAmount: '',
+      contactSelected: '',
       toAddress: '',
-      formValid: false,
+      formValid: true,
       toggle_exclusive: 0,
       gas: 21000,
       activeGasPrice: '',
@@ -323,24 +334,7 @@ export default {
       resetSpeed: false,
       qrErrorMsg: '',
       selectedVerifier: ETH,
-      verifierOptions: [
-        {
-          name: ETH_LABEL,
-          value: ETH
-        },
-        {
-          name: GOOGLE_LABEL,
-          value: GOOGLE
-        },
-        {
-          name: REDDIT_LABEL,
-          value: REDDIT
-        },
-        {
-          name: DISCORD_LABEL,
-          value: DISCORD
-        }
-      ],
+      verifierOptions: ALLOWED_VERIFIERS,
       rules: {
         required: value => !!value || 'Required'
       },
@@ -428,6 +422,24 @@ export default {
     },
     verifierPlaceholder() {
       return `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
+    },
+    contactList() {
+      return this.$store.state.contacts.reduce((mappedObj, contact) => {
+        if (contact.verifier === this.selectedVerifier) {
+          mappedObj.push({
+            name: `${contact.name} (${contact.contact})`,
+            value: contact.contact
+          })
+        }
+        return mappedObj
+      }, [])
+    },
+    newContact() {
+      if (!this.contactSelected) return false
+
+      const targetContact = typeof this.contactSelected === 'string' ? this.contactSelected : this.contactSelected.value
+      const addressFound = this.contactList.find(contact => contact.value === targetContact)
+      return addressFound === undefined
     }
   },
   watch: {
@@ -495,23 +507,12 @@ export default {
       }
       return ''
     },
-    toAddressRule(value) {
-      if (this.selectedVerifier === ETH) {
-        return isAddress(value) || 'Invalid ETH Address'
-      } else if (this.selectedVerifier === GOOGLE) {
-        return (
-          // eslint-disable-next-line max-len
-          /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-            value
-          ) || 'Invalid Email Address'
-        )
-      } else if (this.selectedVerifier === REDDIT) {
-        return (/[\w-]+/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
-      } else if (this.selectedVerifier === DISCORD) {
-        return (/^[0-9]*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
-      }
-
-      return true
+    contactRule(contact) {
+      const value = contact === null ? '' : typeof contact === 'string' ? contact : contact.value
+      return validateVerifierId(this.selectedVerifier, value)
+    },
+    contactChanged(contact) {
+      if (contact) this.toAddress = typeof contact === 'string' ? contact : contact.value
     },
     async calculateGas(toAddress) {
       if (isAddress(toAddress)) {
@@ -578,8 +579,9 @@ export default {
         this.contractType = CONTRACT_TYPE_ERC721
         this.collectibleSelected = foundInCollectibles
         if (foundInCollectibles.assets && foundInCollectibles.assets.length > 0) {
-          this.assetSelected =
-            foundInCollectibles.assets.find(asset => asset.tokenId.toString() === tokenId.toString()) || foundInCollectibles.assets[0]
+          this.assetSelected = tokenId
+            ? foundInCollectibles.assets.find(asset => asset.tokenId.toString() === tokenId.toString()) || foundInCollectibles.assets[0]
+            : foundInCollectibles.assets[0]
         }
         // Reset you send
         this.resetSendAll()
@@ -620,6 +622,7 @@ export default {
       if (this.$refs.form.validate()) {
         const fastGasPrice = toBN((this.activeGasPrice * 10 ** 9).toString())
         let toAddress
+        log.info(this.toAddress, this.selectedVerifier)
         if (isAddress(this.toAddress)) {
           toAddress = toChecksumAddress(this.toAddress)
         } else {
@@ -813,6 +816,8 @@ export default {
           this.toAddress = ''
           this.qrErrorMsg = 'Incorrect QR Code'
         }
+
+        this.contactSelected = this.toAddress
       } catch (error) {
         if (isAddress(result)) {
           this.selectedVerifier = ETH
@@ -821,6 +826,8 @@ export default {
           this.toAddress = ''
           this.qrErrorMsg = 'Incorrect QR Code'
         }
+
+        this.contactSelected = this.toAddress
       }
     }
   },
@@ -831,6 +838,8 @@ export default {
     } else {
       this.toAddress = ''
     }
+
+    this.contactSelected = this.toAddress
 
     const collectiblesUnwatch = this.$watch('collectibles', function(newValue, oldValue) {
       if (newValue !== oldValue) {

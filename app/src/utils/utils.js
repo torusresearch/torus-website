@@ -9,9 +9,14 @@ const {
   PLATFORM_OPERA,
   PLATFORM_CHROME,
   PLATFORM_EDGE,
-  PLATFORM_BRAVE
+  PLATFORM_BRAVE,
+  ETH,
+  GOOGLE,
+  REDDIT,
+  DISCORD
 } = require('./enums')
 const log = require('loglevel')
+const { isAddress } = require('web3-utils')
 
 /**
  * Checks whether a storage type is available or not
@@ -311,6 +316,25 @@ const broadcastChannelOptions = {
   webWorkerSupport: false // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 }
 
+function validateVerifierId(selectedVerifier, value) {
+  if (selectedVerifier === ETH) {
+    return isAddress(value) || 'Invalid ETH Address'
+  } else if (selectedVerifier === GOOGLE) {
+    return (
+      // eslint-disable-next-line max-len
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+        value
+      ) || 'Invalid Email Address'
+    )
+  } else if (selectedVerifier === REDDIT) {
+    return (/[\w-]+/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
+  } else if (selectedVerifier === DISCORD) {
+    return (/^[0-9]*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
+  }
+
+  return true
+}
+
 module.exports = {
   removeListeners,
   applyListeners,
@@ -334,5 +358,6 @@ module.exports = {
   getStatus,
   getEthTxStatus,
   broadcastChannelOptions,
-  storageAvailable
+  storageAvailable,
+  validateVerifierId
 }

@@ -45,7 +45,8 @@ const vuexPersist = new VuexPersistence({
       selectedCurrency: state.selectedCurrency,
       jwtToken: state.jwtToken,
       theme: state.theme,
-      billboard: state.billboard
+      billboard: state.billboard,
+      contacts: state.contacts
       // pastTransactions: state.pastTransactions
     }
   }

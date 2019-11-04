@@ -25,6 +25,7 @@ class DetectTokensController {
     this.detectedTokensStore = new ObservableStore({ tokens: [] })
     this._provider = provider
     this.web3 = new Web3(this._provider)
+    this.selectedAddress = ''
   }
 
   /**

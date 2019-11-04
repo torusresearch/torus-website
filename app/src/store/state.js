@@ -30,7 +30,8 @@ const initialState = {
   isNewUser: false,
   theme: THEME_LIGHT_BLUE_NAME,
   assets: {}, // Account specific object
-  billboard: []
+  billboard: [],
+  contacts: []
 }
 
 export default initialState
