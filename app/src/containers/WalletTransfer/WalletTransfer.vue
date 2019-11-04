@@ -471,7 +471,7 @@ export default {
         this.toAddress = ''
       }
     },
-    sendEmail(typeToken, transactionHash) {
+    sendEmail(typeToken, transactionHash, assetImage) {
       if (/\S+@\S+\.\S+/.test(this.toAddress)) {
         const etherscanLink = getEtherScanHashLink(transactionHash, this.$store.state.networkType.host)
         const emailObject = {
@@ -479,6 +479,7 @@ export default {
           to_email: this.toAddress,
           total_amount: this.amount.toString(),
           token: typeToken.toString(),
+          image: assetImage || '',
           etherscanLink: etherscanLink
         }
         post(config.api + '/transaction/sendemail', emailObject, {
@@ -721,7 +722,7 @@ export default {
                 log.error(err)
               } else {
                 // Send email to the user
-                this.sendEmail(this.assetSelected.name, transactionHash)
+                this.sendEmail(this.assetSelected.name, transactionHash, this.assetSelected.image)
                 this.showModalMessage = true
                 this.modalMessageSuccess = true
               }
