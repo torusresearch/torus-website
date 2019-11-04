@@ -45,12 +45,12 @@
               </v-flex>
               <v-flex xs8 sm11>{{ (mapper[item.networkType] && mapper[item.networkType].networkName) || '' }}</v-flex>
 
-              <v-flex xs12 class="text-right" v-if="item.status.toLowerCase() == 'pending'">
+              <v-flex xs12 class="text-right" v-if="Object.keys(item.gas).length">
                 <v-btn color="primary" class="px-6" @click="speedUpTx = true">Speed up transaction</v-btn>
               </v-flex>
 
               <v-dialog v-model="speedUpTx" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly">
-                <SpeedUpTransaction @onClose="speedUpTx = false" />
+                <SpeedUpTransaction :gas="item.gas" @onClose="speedUpTx = false" />
               </v-dialog>
               <!-- <v-flex xs4 sm1 pr-2>
                 Type

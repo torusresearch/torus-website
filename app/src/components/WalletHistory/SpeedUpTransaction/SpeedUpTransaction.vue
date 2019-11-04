@@ -6,6 +6,16 @@
           <v-flex xs12 px-4 class="title-container mb-4">
             <div class="title">
               <div class="d-inline font-weight-bold headline">Speedup transaction</div>
+              <p>{{ gas }}</p>
+
+              <v-slider
+                v-model="slider"
+                thumb-label="always"
+                class="align-center"
+                :max="gas.gasPrice * 5"
+                :min="gas.gasPrice"
+                hide-details
+              ></v-slider>
             </div>
           </v-flex>
         </v-layout>
@@ -13,16 +23,15 @@
           <v-spacer>
             <v-card-text>
               <v-row>
-                <v-col class="pr-4">
-                  <v-slider v-model="slider" thumb-label="always" class="align-center" :max="max" :min="min" hide-details></v-slider>
-                </v-col>
+                <v-col class="pr-4"></v-col>
               </v-row>
             </v-card-text>
           </v-spacer>
           <br />
-          <v-btn id="confirm" large @click="confirm">confirm</v-btn>
-          <v-btn id="close-btn" large text @click="onClose">Close</v-btn>
         </v-layout>
+
+        <v-btn id="confirm" large @click="confirm">confirm</v-btn>
+        <v-btn id="close-btn" large text @click="onClose">Close</v-btn>
       </v-container>
     </v-card-text>
   </v-card>
@@ -30,6 +39,7 @@
 
 <script>
 export default {
+  props: ['gas'],
   data() {
     return {
       editMode: false,
@@ -54,6 +64,7 @@ export default {
       const targetIndex = this.permissions.indexOf(target)
       this.permissions.splice(targetIndex, 1)
     }
-  }
+  },
+  created() {}
 }
 </script>
