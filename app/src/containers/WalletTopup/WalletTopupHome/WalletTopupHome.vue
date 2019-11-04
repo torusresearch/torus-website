@@ -4,7 +4,7 @@
       <v-flex xs12 mb-2>
         <div class="text-black font-weight-bold headline px-4 mb-4">
           <span v-if="selectedProvider && !$vuetify.breakpoint.xsOnly">
-            Purchase Cryptocurrency with your credit card via
+            Purchase Cryptocurrency via
             <span class="text-capitalize">{{ selectedProvider }}</span>
           </span>
           <span v-else>Select a Provider</span>
@@ -23,7 +23,7 @@
       <v-flex xs12 mb-2 v-if="selectedProvider && $vuetify.breakpoint.xsOnly">
         <div class="text-black font-weight-bold headline px-4 mb-4">
           <span>
-            Purchase Cryptocurrency with your credit card via
+            Purchase Cryptocurrency via
             <span class="text-capitalize">{{ selectedProvider }}</span>
           </span>
         </div>
@@ -39,6 +39,7 @@
 <script>
 import TopupProviders from '../../../components/WalletTopup/TopupProviders'
 import { ACTIVE, INACTIVE, THEME_DARK_BLACK_NAME } from '../../../utils/enums'
+import { getPaymentProviders } from '../../../utils/utils'
 
 export default {
   components: {
@@ -46,59 +47,12 @@ export default {
   },
   data() {
     return {
-      selectedProvider: '',
-      providers: [
-        {
-          name: 'simplex',
-          logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'simplex-logo-white.png' : 'simplex-logo.png',
-          line1: 'Pay with Credit / Debit Card',
-          line2: '<span class="font-weight-medium">Fee</span> : 5% or 10 USD',
-          line3: 'Limits: $20,000/day, $50,000/mo',
-          line4: 'Currencies: ETH',
-          link: '/wallet/topup/simplex',
-          status: ACTIVE
-        },
-        {
-          name: 'moonpay',
-          logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'moon-pay-logo-white.svg' : 'moon-pay-logo.svg',
-          line1: 'Pay with Credit / Debit Card',
-          line2: '<span class="font-weight-medium">Fee</span> : 4.5% or 5 USD',
-          line3: 'Limits: 2,000€/day, 10,000€/mo',
-          line4: 'Currencies: ETH, DAI, TUSD, USDC, USDT',
-          link: '/wallet/topup/moonpay',
-          status: ACTIVE
-        },
-        {
-          name: 'wyre',
-          logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'wyre-logo-white.svg' : 'wyre-logo.svg',
-          line1: 'Pay with Google/Apple/Masterpass',
-          line2: '<span class="font-weight-medium">Fee</span> : 2.9% + 30¢',
-          line3: 'Limits: $250/day',
-          line4: 'Currencies: ETH, DAI, WETH, USDC',
-          link: '/wallet/topup/wyre',
-          status: ACTIVE
-        },
-        {
-          name: 'coindirect',
-          logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'coindirect-logo-white.svg' : 'coindirect-logo.svg',
-          line1: 'Pay with Credit Card',
-          line2: '<span class="font-weight-medium">Fee</span> : Varies',
-          line3: 'Limits: N/A',
-          line4: 'Currencies: ETH',
-          link: '/wallet/topup/coindirect',
-          status: ACTIVE
-        },
-        {
-          name: 'crypto',
-          logo: this.$store.state.theme === THEME_DARK_BLACK_NAME ? 'crypto-logo-white.png' : 'crypto-logo.png',
-          line1: 'Pay with Credit Card',
-          line2: '<span class="font-weight-medium">Fee</span> : Varies',
-          line3: 'Limits: N/A',
-          line4: 'Currencies: ETH',
-          link: '/wallet/topup/crypto',
-          status: ACTIVE
-        }
-      ]
+      selectedProvider: ''
+    }
+  },
+  computed: {
+    providers() {
+      return getPaymentProviders(this.$store.state.theme)
     }
   },
   created() {

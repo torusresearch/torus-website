@@ -11,7 +11,7 @@ import { post } from '../utils/httpHelpers.js'
 import { notifyUser } from '../utils/notifications'
 import state from './state'
 import actions from './actions'
-import paymentActions from './paymentActions'
+import paymentActions from './PaymentActions'
 import getters from './getters'
 import mutations from './mutations'
 

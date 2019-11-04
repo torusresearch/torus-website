@@ -1,11 +1,11 @@
-import { postQuote, postOrder } from '../plugins/simplex'
+import { postQuote, postOrder } from '../../plugins/simplex'
 
 export default {
   fetchSimplexQuote(context, payload) {
     // returns a promise
     // Need to add validations here
     return postQuote({
-      digital_currency: 'ETH',
+      digital_currency: payload.selectedCryptoCurrency,
       fiat_currency: payload.selectedCurrency,
       requested_currency: payload.selectedCurrency,
       requested_amount: +parseFloat(payload.fiatValue)

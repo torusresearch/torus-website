@@ -13,7 +13,17 @@ const {
   ETH,
   GOOGLE,
   REDDIT,
-  DISCORD
+  DISCORD,
+  SIMPLEX,
+  MOONPAY,
+  COINDIRECT,
+  WYRE,
+  CRYPTO,
+  THEME_DARK_BLACK_NAME,
+  INACTIVE,
+  ACTIVE,
+  PNG,
+  SVG
 } = require('./enums')
 const log = require('loglevel')
 const { isAddress } = require('web3-utils')
@@ -335,6 +345,86 @@ function validateVerifierId(selectedVerifier, value) {
   return true
 }
 
+const paymentProviders = {
+  [SIMPLEX]: {
+    line1: 'Pay with Credit / Debit Card',
+    line2: '<span class="font-weight-medium">Fee</span> : 5% or 10 USD',
+    line3: 'Limits: $20,000/day, $50,000/mo',
+    line4: 'Currencies: ETH',
+    status: ACTIVE,
+    logoExtension: PNG,
+    supportPage: 'https://www.simplex.com/support/',
+    minOrderValue: 50,
+    maxOrderValue: 20000,
+    validCurrencies: ['USD', 'EUR'],
+    validCryptoCurrencies: ['ETH']
+  },
+  [MOONPAY]: {
+    line1: 'Pay with Credit / Debit Card',
+    line2: '<span class="font-weight-medium">Fee</span> : 4.5% or 5 USD',
+    line3: 'Limits: 2,000€/day, 10,000€/mo',
+    line4: 'Currencies: ETH, DAI, TUSD, USDC, USDT',
+    status: ACTIVE,
+    logoExtension: SVG,
+    supportPage: 'https://help.moonpay.io/en/',
+    minOrderValue: 20,
+    maxOrderValue: 2000,
+    validCurrencies: ['USD', 'EUR', 'GBP'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT']
+  },
+  [WYRE]: {
+    line1: 'Pay with Google/Apple/Masterpass',
+    line2: '<span class="font-weight-medium">Fee</span> : 2.9% + 30¢',
+    line3: 'Limits: $250/day',
+    line4: 'Currencies: ETH, DAI, WETH, USDC',
+    status: ACTIVE,
+    logoExtension: SVG,
+    supportPage: 'https://support.sendwyre.com/en/',
+    minOrderValue: 1,
+    maxOrderValue: 250,
+    validCurrencies: ['USD', 'GBP', 'AUD', 'EUR'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'WETH']
+  },
+  [COINDIRECT]: {
+    line1: 'Pay with Credit Card',
+    line2: '<span class="font-weight-medium">Fee</span> : Varies',
+    line3: 'Limits: N/A',
+    line4: 'Currencies: ETH',
+    status: ACTIVE,
+    logoExtension: SVG,
+    supportPage: 'https://help.coindirect.com/hc/en-us',
+    minOrderValue: 20,
+    maxOrderValue: 500,
+    validCurrencies: ['EUR'],
+    validCryptoCurrencies: ['ETH']
+  },
+  [CRYPTO]: {
+    line1: 'Pay with Credit Card',
+    line2: '<span class="font-weight-medium">Fee</span> : Varies',
+    line3: 'Limits: N/A',
+    line4: 'Currencies: ETH, tokens',
+    status: ACTIVE,
+    logoExtension: PNG,
+    supportPage: 'https://help.crypto.com/en/',
+    minOrderValue: 10,
+    maxOrderValue: 1000,
+    validCurrencies: ['USD'],
+    validCryptoCurrencies: ['ETH']
+  }
+}
+
+function getPaymentProviders(theme) {
+  return Object.keys(paymentProviders).map(x => {
+    const item = paymentProviders[x]
+    return {
+      ...item,
+      name: x,
+      logo: theme === THEME_DARK_BLACK_NAME ? `${x}-logo-white.${item.logoExtension}` : `${x}-logo.${item.logoExtension}`,
+      link: `/wallet/topup/${x}`
+    }
+  })
+}
+
 module.exports = {
   removeListeners,
   applyListeners,
@@ -359,5 +449,7 @@ module.exports = {
   getEthTxStatus,
   broadcastChannelOptions,
   storageAvailable,
-  validateVerifierId
+  validateVerifierId,
+  paymentProviders,
+  getPaymentProviders
 }

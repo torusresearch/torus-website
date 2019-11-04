@@ -128,6 +128,14 @@ const ALLOWED_VERIFIERS = [
   }
 ]
 
+const SIMPLEX = 'simplex'
+const MOONPAY = 'moonpay'
+const WYRE = 'wyre'
+const COINDIRECT = 'coindirect'
+const CRYPTO = 'crypto'
+const PNG = 'png'
+const SVG = 'svg'
+
 module.exports = {
   ETH,
   ROPSTEN,
@@ -204,5 +212,12 @@ module.exports = {
   CONTRACT_TYPE_ERC721,
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   OLD_ERC721_LIST,
-  ALLOWED_VERIFIERS
+  ALLOWED_VERIFIERS,
+  SIMPLEX,
+  MOONPAY,
+  COINDIRECT,
+  WYRE,
+  CRYPTO,
+  PNG,
+  SVG
 }
