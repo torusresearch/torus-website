@@ -24,7 +24,7 @@
           >
             <v-icon :small="$vuetify.breakpoint.xsOnly" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.list'" />
             <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'title'">
-              Contact List
+              Address Book
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
