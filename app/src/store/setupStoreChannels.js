@@ -6,6 +6,11 @@ import torus from '../torus'
 import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, USER_INFO_REQUEST_NEW } from '../utils/enums'
 import VuexStore from './store'
 import { broadcastChannelOptions } from '../utils/utils'
+import config from '../config'
+const baseRoute = config.baseRoute
+
+var permissionsRequestWindow
+var iClosedPermissionsWindow
 
 /* 
 Edited to change networkId => network state. Has an implication of changing neworkVersion 
@@ -103,6 +108,42 @@ userInfoStream.on('data', function(chunk) {
     }
   }
 })
+
+const permissionsStream = torus.communicationMux.getStream('permissions')
+permissionsStream.on('data', function(chunk) {
+  if (chunk.name === 'permissions_request') {
+    // Check for existing permissions on that contract
+    var bc = new BroadcastChannel(`permission_request_channel_${torus.instanceId}`, broadcastChannelOptions)
+    permissionsRequestWindow = window.open(
+      `${baseRoute}permissionrequest?instanceId=${torus.instanceId}`,
+      '_blank',
+      'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
+    )
+    bc.onmessage = async ev => {
+      if (ev.data === 'popup-loaded') {
+        await bc.postMessage({
+          data: {
+            origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+            payload: chunk.data
+          }
+        })
+        bc.close()
+      }
+    }
+  }
+})
+
+var permissionsTimer = setInterval(function() {
+  if (permissionsRequestWindow.closed) {
+    clearInterval(permissionsTimer)
+    if (!iClosedPermissionsWindow) {
+      log.error('user closed popup')
+      permissionsStream.write({ message: 'user closed popup' })
+    }
+    iClosedPermissionsWindow = false
+    permissionsRequestWindow = undefined
+  }
+}, 1000)
 
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
