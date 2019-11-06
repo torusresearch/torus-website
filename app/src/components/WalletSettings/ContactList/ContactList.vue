@@ -91,7 +91,7 @@ export default {
   methods: {
     checkDuplicates(value) {
       if (this.contacts) {
-        return this.contacts.findIndex(x => x.contact === value) < 0 || 'Duplicate contact'
+        return this.contacts.findIndex(x => x.contact.toLowerCase() === value.toLowerCase()) < 0 || 'Duplicate contact'
       }
       return ''
     },

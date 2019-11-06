@@ -438,7 +438,7 @@ export default {
       if (!this.contactSelected) return false
 
       const targetContact = typeof this.contactSelected === 'string' ? this.contactSelected : this.contactSelected.value
-      const addressFound = this.contactList.find(contact => contact.value === targetContact)
+      const addressFound = this.contactList.find(contact => contact.value.toLowerCase() === targetContact.toLowerCase())
       return addressFound === undefined
     }
   },
