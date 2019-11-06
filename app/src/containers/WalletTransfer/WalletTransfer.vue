@@ -47,7 +47,7 @@
                   <v-divider class="mx-3"></v-divider>
                   <v-subheader class="body-2" v-if="finalBalancesArrayTokens.length > 0">
                     <v-icon small left class="mr-2">$vuetify.icons.token</v-icon>
-                    TOKEN
+                    TOKENS
                   </v-subheader>
                   <v-list-item v-for="token in finalBalancesArrayTokens" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
                     <v-list-item-icon class="ml-8 mr-1">
