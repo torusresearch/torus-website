@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer')
 const assert = require('assert')
-const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME, WALLET_HEADERS_CONFIRM } = require('../../src/utils/enums')
+const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME, WALLET_HEADERS_CONFIRM, GOOGLE_LABEL } = require('../../src/utils/enums')
 const significantDigits = require('../../src/utils/utils').significantDigits
 
 const config = require('./lib/config')
@@ -10,6 +10,7 @@ const {
   click,
   typeText,
   waitForText,
+  waitForClass,
   shouldExist,
   selectItem,
   shouldValueNotBeEmpty,
@@ -29,7 +30,7 @@ describe('Tests Wallet Transfer Transaction', () => {
       devtools: config.isDevTools,
       timeout: config.launchTimeout,
       ignoreHTTPSErrors: config.ignoreHTTPSErrors,
-      args: ['--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
     })
 
     page = (await browser.pages())[0]
@@ -68,29 +69,30 @@ describe('Tests Wallet Transfer Transaction', () => {
 
   it('Should go to wallet transfer page', async () => {
     await navigateTo(page, '#transfer-link', '.wallet-transfer')
-
-    // Wait for the gas transaction amounts
-    await page.waitForResponse(
-      response => response.url() === 'https://ethgasstation.info/json/ethgasAPI.json' && (response.status() >= 200 || response.status() < 300),
-      {
-        timeout: 60000
-      }
-    )
+    // // Wait for the gas transaction amounts
+    // await page.waitForResponse(
+    //   response => response.url() === 'https://ethgasstation.info/json/ethgasAPI.json' && (response.status() >= 200 || response.status() < 400),
+    //   {
+    //     timeout: 60000
+    //   }
+    // )
   })
 
   it('Should select coin', async () => {
     const textToSelect = 'Ethereum'
-    await selectItem(page, '#select-coin', '.select-coin-container', textToSelect)
+    await click(page, '.select-coin')
+    await click(page, '.select-coin-eth')
     await page.waitFor(100)
-    const coinSelected = await page.$eval('.select-coin-container .v-select__selection', el => el.textContent)
+    const coinSelected = await page.$eval('.select-coin .select-coin-name', el => el.textContent)
 
     // check if textToSelect was selected
     assert.equal(textToSelect, coinSelected)
   })
 
   it('Should error on invalid input', async () => {
+    await selectItem(page, '#recipient-verifier', '.recipient-verifier-container', GOOGLE_LABEL)
     await typeText(page, 'lionell', '#recipient-address')
-    await waitForText(page, '.recipient-address-container .v-messages__message', 'Invalid ETH or Email Address')
+    await waitForClass(page, '.recipient-address', 'error--text')
 
     await typeText(page, '@tor.us', '#recipient-address')
   })

@@ -1,4 +1,4 @@
-import torus from '../torus'
+import { hexToNumberString } from 'web3-utils'
 import { MAINNET } from '../utils/enums'
 import { formatCurrencyNumber, significantDigits } from '../utils/utils'
 
@@ -36,7 +36,7 @@ const tokenBalances = state => {
   }
   let totalPortfolioValue = 0
   const finalBalancesArray = full.map(x => {
-    const computedBalance = parseFloat(torus.web3.utils.hexToNumberString(x.balance)) / 10 ** parseFloat(x.decimals) || 0
+    const computedBalance = parseFloat(hexToNumberString(x.balance)) / 10 ** parseFloat(x.decimals) || 0
     let tokenRateMultiplier = 1
     if (x.tokenAddress !== '0x') tokenRateMultiplier = tokenRates[x.tokenAddress.toLowerCase()] || 0
     const currencyRate = currencyMultiplier * tokenRateMultiplier
@@ -57,7 +57,16 @@ const tokenBalances = state => {
   return { finalBalancesArray, totalPortfolioValue }
 }
 
+const collectibleBalances = state => {
+  let { networkType, assets, selectedAddress } = state || {}
+  if (networkType.host !== MAINNET) {
+    assets[selectedAddress] = []
+  }
+  return assets[selectedAddress] || []
+}
+
 export default {
   unApprovedTransactions,
-  tokenBalances
+  tokenBalances,
+  collectibleBalances
 }

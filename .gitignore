@@ -1,6 +1,5 @@
 node_modules/
 .DS_Store
-ssl/
 dist/
 .env
 disc.html
@@ -8,3 +7,4 @@ secrets.json
 .vscode
 .nyc_output
 coverage
+sw.js

@@ -137,7 +137,7 @@ export default {
       walletJson: '',
       name: '',
       isLoadingDownloadWallet: false,
-      downloadFormValid: false,
+      downloadFormValid: true,
       rules: {
         required: value => !!value || 'Required.'
       }

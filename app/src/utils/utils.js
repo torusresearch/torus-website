@@ -9,9 +9,49 @@ const {
   PLATFORM_OPERA,
   PLATFORM_CHROME,
   PLATFORM_EDGE,
-  PLATFORM_BRAVE
+  PLATFORM_BRAVE,
+  ETH,
+  GOOGLE,
+  REDDIT,
+  DISCORD
 } = require('./enums')
 const log = require('loglevel')
+const { isAddress } = require('web3-utils')
+
+/**
+ * Checks whether a storage type is available or not
+ * For more info on how this works, please refer to MDN documentation
+ * https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
+ *
+ * @method storageAvailable
+ * @param {String} type the type of storage ('localStorage', 'sessionStorage')
+ * @returns {Boolean} a boolean indicating whether the specified storage is available or not
+ */
+function storageAvailable(type) {
+  var storage
+  try {
+    storage = window[type]
+    var x = '__storage_test__'
+    storage.setItem(x, x)
+    storage.removeItem(x)
+    return true
+  } catch (e) {
+    return (
+      e &&
+      // everything except Firefox
+      (e.code === 22 ||
+        // Firefox
+        e.code === 1014 ||
+        // test name field too, because code might not be present
+        // everything except Firefox
+        e.name === 'QuotaExceededError' ||
+        // Firefox
+        e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+      // acknowledge QuotaExceededError only if there's something already stored
+      (storage && storage.length !== 0)
+    )
+  }
+}
 
 /**
  * Generates an example stack trace
@@ -276,6 +316,25 @@ const broadcastChannelOptions = {
   webWorkerSupport: false // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 }
 
+function validateVerifierId(selectedVerifier, value) {
+  if (selectedVerifier === ETH) {
+    return isAddress(value) || 'Invalid ETH Address'
+  } else if (selectedVerifier === GOOGLE) {
+    return (
+      // eslint-disable-next-line max-len
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+        value
+      ) || 'Invalid Email Address'
+    )
+  } else if (selectedVerifier === REDDIT) {
+    return (/[\w-]+/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
+  } else if (selectedVerifier === DISCORD) {
+    return (/^[0-9]*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
+  }
+
+  return true
+}
+
 module.exports = {
   removeListeners,
   applyListeners,
@@ -298,5 +357,7 @@ module.exports = {
   getRandomNumber,
   getStatus,
   getEthTxStatus,
-  broadcastChannelOptions
+  broadcastChannelOptions,
+  storageAvailable,
+  validateVerifierId
 }

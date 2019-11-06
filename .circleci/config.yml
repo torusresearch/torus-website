@@ -1,7 +1,7 @@
 version: 2
 job_common: &job_common
   docker:
-    - image: skyuppercut/node-puppeteer:latest
+    - image: skyuppercut/node-puppeteer
   working_directory: ~/torus-website/app
 step_save_cache: &step_save_cache
   save_cache:
@@ -61,7 +61,7 @@ jobs:
       - <<: *step_setup_global_packages
       - run:
           name: "Run Tests for torus website"
-          command: (npm run build:testing & sleep 60) && (npm start & sleep 10 && npm run test:e2e)
+          command: (npm run build:dev & sleep 60) && (npm start & sleep 10 && npm run test:e2e)
       - <<: *step_save_cache
       # Save test results
       - store_test_results:
@@ -158,6 +158,7 @@ workflows:
   commit:
     jobs:
       - test-coverage
+      - unit-test
       - build:
           filters:
             branches:

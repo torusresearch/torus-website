@@ -28,7 +28,10 @@ const initialState = {
   jwtToken: '',
   pastTransactions: [],
   isNewUser: false,
-  theme: THEME_LIGHT_BLUE_NAME
+  theme: THEME_LIGHT_BLUE_NAME,
+  assets: {}, // Account specific object
+  billboard: [],
+  contacts: []
 }
 
 export default initialState

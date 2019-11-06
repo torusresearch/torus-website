@@ -44,8 +44,7 @@ new Vue({
   router,
   store,
   render: h => h(App),
-  vuetify,
-  mounted: () => document.dispatchEvent(new Event('x-app-rendered'))
+  vuetify
 }).$mount('#app')
 
 // window.Vue = vue

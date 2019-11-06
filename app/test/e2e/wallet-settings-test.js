@@ -1,9 +1,9 @@
 const puppeteer = require('puppeteer')
 const assert = require('assert')
-const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME } = require('../../src/utils/enums')
+const { WALLET_HEADERS_HOME, RINKEBY_DISPLAY_NAME, GOOGLE_LABEL } = require('../../src/utils/enums')
 
 const config = require('./lib/config')
-const { login, loadUrl, click, typeText, waitForText, shouldExist, selectItem, navigateTo } = require('./lib/helpers')
+const { login, loadUrl, click, typeText, waitForText, shouldExist, selectItem, navigateTo, waitForClass } = require('./lib/helpers')
 
 describe('Tests Wallet Settings Page', () => {
   let browser
@@ -16,7 +16,7 @@ describe('Tests Wallet Settings Page', () => {
       devtools: config.isDevTools,
       timeout: config.launchTimeout,
       ignoreHTTPSErrors: config.ignoreHTTPSErrors,
-      args: ['--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
     })
 
     page = (await browser.pages())[0]
@@ -88,6 +88,27 @@ describe('Tests Wallet Settings Page', () => {
     await shouldExist(page, '#click-to-copy-btn')
 
     await click(page, '.private-key-container #close-btn')
+  })
+
+  it('Should should validate contacts', async () => {
+    await page.waitFor(300)
+    await click(page, '#contact-list-panel-header')
+    await shouldExist(page, '.contact-list-container')
+
+    const textToSelect = GOOGLE_LABEL
+    await selectItem(page, '#select-verifier', '.select-verifier-container', textToSelect)
+    await page.waitFor(100)
+    const verifierSelected = await page.$eval('.select-verifier-container .v-select__selection', el => el.textContent)
+
+    // check if textToSelect was selected
+    assert.equal(textToSelect, verifierSelected)
+
+    await typeText(page, 'Contact Name', '#contact-name')
+    await typeText(page, 'lionell', '#contact-value')
+    await waitForClass(page, '#contact-submit-btn', 'v-btn--disabled')
+
+    await typeText(page, '@tor.us', '#contact-value')
+    await waitForClass(page, '#contact-submit-btn', 'primary')
   })
 
   // TODO: after permissions feature are done

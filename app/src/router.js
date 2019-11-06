@@ -8,7 +8,7 @@ import RedirectCatch from './views/RedirectCatch'
 import Login from './views/Login'
 import Confirm from './views/Confirm'
 import Wallet from './views/Wallet'
-import WalletHome from './containers/WalletHome'
+import { WalletHome, WalletHomeMain, WalletHomeCollectible } from './containers/WalletHome'
 import WalletHistory from './containers/WalletHistory'
 import WalletSettings from './containers/WalletSettings'
 import WalletTransfer from './containers/WalletTransfer'
@@ -80,14 +80,28 @@ const router = new Router({
       component: Wallet,
       children: [
         {
-          path: '',
+          path: '/',
           name: 'walletDefault',
-          component: WalletHome
+          component: WalletHome,
+          redirect: { name: 'walletHomeMain' }
         },
         {
           path: 'home',
           name: 'walletHome',
-          component: WalletHome
+          component: WalletHome,
+          redirect: { name: 'walletHomeMain' },
+          children: [
+            {
+              path: '',
+              name: 'walletHomeMain',
+              component: WalletHomeMain
+            },
+            {
+              path: 'collectibles/:address',
+              name: 'walletHomeCollectible',
+              component: WalletHomeCollectible
+            }
+          ]
         },
         {
           path: 'history',
@@ -102,8 +116,7 @@ const router = new Router({
         {
           path: 'transfer',
           name: 'walletTransfer',
-          component: WalletTransfer,
-          props: route => ({ address: route.query.address })
+          component: WalletTransfer
         },
         {
           path: 'topup',
@@ -144,21 +157,27 @@ const router = new Router({
 })
 
 function hasQueryParams(route) {
-  return !!Object.keys(route.query).length
+  return Object.prototype.hasOwnProperty.call(route.query, 'instanceId')
 }
 
 router.beforeResolve((to, from, next) => {
   if (to.hasOwnProperty('meta') && to.meta.hasOwnProperty('requiresAuth') && to.meta.requiresAuth === false) {
-    if (!hasQueryParams(to) && hasQueryParams(from)) {
-      next({ name: to.name, query: from.query })
+    if (to.name === 'logout') {
+      next()
+    } else if (!hasQueryParams(to) && hasQueryParams(from)) {
+      next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
     } else {
       next()
     }
   } else {
     if (store.state.selectedAddress === '') {
-      next({ name: 'login', query: { redirect: to.path } })
+      next({ name: 'login', query: { redirect: to.fullPath } })
     } else if (!hasQueryParams(to) && hasQueryParams(from)) {
-      next({ name: to.name, query: from.query })
+      if (to.name !== 'walletTransfer') {
+        Object.keys(from.query).forEach(key => key === 'instanceId' || delete from.query[key])
+      }
+      next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
+      // next()
     } else {
       next()
     }
