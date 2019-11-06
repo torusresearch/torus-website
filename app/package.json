@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -67,6 +67,7 @@
     "random-id": "^1.0.3",
     "readable-stream": "^3.4.0",
     "register-service-worker": "^1.6.2",
+    "scrypt-shim": "git://github.com/web3-js/scrypt-shim.git#master",
     "single-call-balance-checker-abi": "^1.0.0",
     "swappable-obj-proxy": "^1.1.0",
     "ua-parser-js": "^0.7.20",
@@ -80,12 +81,13 @@
     "vuetify": "^2.1.9",
     "vuex": "^3.1.1",
     "vuex-persist": "^2.1.1",
-    "web3": "^1.2.2",
+    "web3": "git://github.com/ethereum/web3.js.git#1.x",
+    "websocket": "git://github.com/web3-js/WebSocket-Node.git#polyfill/globalThis",
     "web3-utils": "^1.2.2",
     "xtend": "^4.0.2"
   },
   "devDependencies": {
-    "@toruslabs/torus-embed": "^0.2.4",
+    "@toruslabs/torus-embed": "^0.2.5",
     "@vue/cli-plugin-babel": "^4.0.5",
     "@vue/cli-plugin-eslint": "^4.0.5",
     "@vue/cli-plugin-pwa": "^4.0.5",
