@@ -7,41 +7,6 @@ import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, USER_INFO_REQUE
 import VuexStore from './store'
 import { broadcastChannelOptions } from '../utils/utils'
 
-// /**
-//  * Checks whether a storage type is available or not
-//  * For more info on how this works, please refer to MDN documentation
-//  * https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API/Using_the_Web_Storage_API#Feature-detecting_localStorage
-//  *
-//  * @method storageAvailable
-//  * @param {String} type the type of storage ('localStorage', 'sessionStorage')
-//  * @returns {Boolean} a boolean indicating whether the specified storage is available or not
-//  */
-// function storageAvailable(type) {
-//   var storage
-//   try {
-//     storage = window[type]
-//     var x = '__storage_test__'
-//     storage.setItem(x, x)
-//     storage.removeItem(x)
-//     return true
-//   } catch (e) {
-//     return (
-//       e &&
-//       // everything except Firefox
-//       (e.code === 22 ||
-//         // Firefox
-//         e.code === 1014 ||
-//         // test name field too, because code might not be present
-//         // everything except Firefox
-//         e.name === 'QuotaExceededError' ||
-//         // Firefox
-//         e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
-//       // acknowledge QuotaExceededError only if there's something already stored
-//       (storage && storage.length !== 0)
-//     )
-//   }
-// }
-
 /* 
 Edited to change networkId => network state. Has an implication of changing neworkVersion 
 to "loading" at times in the inpage API

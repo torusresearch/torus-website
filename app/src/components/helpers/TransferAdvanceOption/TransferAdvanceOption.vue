@@ -173,13 +173,16 @@ export default {
       this.dialog = false
     },
     saveOptions() {
-      const payload = {
-        advancedGas: this.advancedGas,
-        advancedActiveGasPrice: this.advancedActiveGasPrice
-      }
+      if (this.$refs.advanceOptionForm.validate()) {
+        const payload = {
+          advancedGas: this.advancedGas,
+          advancedActiveGasPrice: this.advancedActiveGasPrice
+        }
 
-      this.$emit('onSave', payload)
-      this.dialog = false
+        this.$emit('onSave', payload)
+        this.dialog = false
+        this.$refs.advanceOptionForm.resetValidation()
+      }
     },
     updateDetails() {
       this.advancedActiveGasPrice = this.activeGasPrice

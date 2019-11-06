@@ -59,8 +59,8 @@
     color: var(--v-text_1-base);
   }
   
-  .v-text-field--outlined fieldset {
-    border-color: var(--v-text_2-base);
+  .v-text-field--outlined:not(.error--text) fieldset {
+    border-color: var(--v-text_2-lighten3);
   }
 
   /* Override Max widths */
@@ -87,7 +87,7 @@
 
   .card-shadow {
     box-shadow: 0 14px 28px 0 rgba(0, 0, 0, 0.06);
-    border: 0;
+    border: 1px solid #F5F5F5;
     border-radius: 3px;
   }
   
@@ -108,6 +108,10 @@
     background: #7d7d7d;
     border: 2px solid #e2e2e2;
     border-radius: 8px;
+  }
+
+  .v-tab.v-tab--active {
+    color: var(--v-secondary-darken3);
   }
 }
 
@@ -142,5 +146,9 @@
     background: #242529;
     border: 2px solid #626262;
     border-radius: 8px;
+  }
+  
+  .v-tab.v-tab--active {
+    color: #ffffff;
   }
 }

@@ -15,7 +15,7 @@
           <v-list-item-subtitle>
             <div class="caption text_2--text">
               <span>{{ userEmail }}</span>
-              <v-btn icon small class="primary--text float-right mr-5" @click="isShowSelectedAddress = !isShowSelectedAddress">
+              <v-btn id="show-address-btn" icon small class="primary--text float-right mr-5" @click="isShowSelectedAddress = !isShowSelectedAddress">
                 <v-icon small v-text="'$vuetify.icons.key'" />
               </v-btn>
             </div>
@@ -166,7 +166,10 @@ export default {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
     },
     totalPortfolioEthValue() {
-      return significantDigits(parseFloat(this.totalPortfolioValue.replace(',', '')) / this.getCurrencyMultiplier)
+      return significantDigits(
+        parseFloat(this.totalPortfolioValue.toString().includes(',') ? this.totalPortfolioValue.replace(',', '') : this.totalPortfolioValue) /
+          this.getCurrencyMultiplier
+      )
     },
     filteredMenu() {
       if (this.headerItems) {
@@ -187,7 +190,7 @@ export default {
         bc.close()
       }
       this.$store.dispatch('logOut')
-      this.$router.push({ path: '/logout' })
+      this.$router.push({ path: '/logout' }).catch(err => {})
     },
     async changeAccount(newAddress) {
       this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
