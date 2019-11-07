@@ -79,12 +79,13 @@
     "vue-qr": "^2.1.0",
     "vue-qrcode-reader": "^2.1.1",
     "vue-router": "^3.1.3",
+    "vue-spinner": "^1.0.3",
     "vuetify": "^2.1.9",
     "vuex": "^3.1.1",
     "vuex-persist": "^2.1.1",
     "web3": "git://github.com/ethereum/web3.js.git#1.x",
-    "websocket": "git://github.com/web3-js/WebSocket-Node.git#polyfill/globalThis",
     "web3-utils": "^1.2.2",
+    "websocket": "git://github.com/web3-js/WebSocket-Node.git#polyfill/globalThis",
     "xtend": "^4.0.2"
   },
   "devDependencies": {

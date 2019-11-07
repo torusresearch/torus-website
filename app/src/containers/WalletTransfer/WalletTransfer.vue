@@ -80,7 +80,8 @@
           </v-flex>
           <v-flex xs12 sm6 mb-5 px-4 v-if="selectedItem">
             <span class="subtitle-2">Account Balance</span>
-            <div>
+            <component-loader class="mt-2" v-if="!weiBalanceLoaded" />
+            <div v-else>
               <span id="account-balance" class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
               <span class="caption text_2--text">{{ currencyBalanceDisplay }}</span>
             </div>
@@ -274,6 +275,7 @@ import torus from '../../torus'
 import { significantDigits, getRandomNumber, getEtherScanHashLink, validateVerifierId } from '../../utils/utils'
 import config from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
+import ComponentLoader from '../../components/helpers/ComponentLoader'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import AddContact from '../../components/WalletTransfer/AddContact'
 import { get, post } from '../../utils/httpHelpers'
@@ -307,7 +309,8 @@ export default {
     TransactionSpeedSelect,
     MessageModal,
     QrcodeCapture,
-    AddContact
+    AddContact,
+    ComponentLoader
   },
   data() {
     return {
@@ -361,6 +364,9 @@ export default {
     },
     finalBalancesArrayEthOnly() {
       return this.$store.getters.tokenBalances.finalBalancesArray.filter(token => token.tokenAddress === '0x') || []
+    },
+    weiBalanceLoaded() {
+      return this.$store.state.weiBalanceLoaded
     },
     collectibles() {
       return this.$store.getters.collectibleBalances
