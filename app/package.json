@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -87,7 +87,7 @@
     "xtend": "^4.0.2"
   },
   "devDependencies": {
-    "@toruslabs/torus-embed": "^0.2.5",
+    "@toruslabs/torus-embed": "^0.2.6",
     "@vue/cli-plugin-babel": "^4.0.5",
     "@vue/cli-plugin-eslint": "^4.0.5",
     "@vue/cli-plugin-pwa": "^4.0.5",
