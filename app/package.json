@@ -111,7 +111,7 @@
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "eslint-plugin-vue": "^5.2.3",
+    "eslint-plugin-vue": "^6.0.0",
     "esm": "^3.2.25",
     "eth-phishing-detect": "^1.1.13",
     "fibers": "^4.0.2",
