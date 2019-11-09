@@ -8,6 +8,7 @@ var _cacheNameDetails = {
   prefix: 'workbox',
   suffix: registration.scope
 }
+var iframeURL = registration.scope + '/popup'
 
 function precacheAndRoute(entries, opts) {
   precache(entries)
@@ -513,12 +514,33 @@ REDIRECT_HTML${''}
         ])
       )
     )
+    return
+  }
+  if (event.request.url.indexOf('integrity=true' > -1)) {
+    var cacheName = _createCacheName(_cacheNameDetails.precache)
+    var responsePromise = caches
+      .open(cacheName)
+      .then(function(cache) {
+        return cache.match(iframeURL)
+      })
+      .then(function(cachedResponse) {
+        if (cachedResponse) {
+          return cachedResponse
+        }
+        console.warn('Precached response not found ', iframeURL)
+        return fetch(iframeURL)
+      })
+    event.respondWith(responsePromise)
+    return
   }
 })
 
 self.__precacheManifest = [
   {
     url: '/js/app.js'
+  },
+  {
+    url: iframeURL
   }
 ].concat(self.__precacheManifest || [])
 precacheAndRoute(self.__precacheManifest, {})
