@@ -61,6 +61,7 @@ function onloadTorus(torus) {
   torus.communicationMux.setMaxListeners(50)
   torusController.provider.setMaxListeners(100)
   torus.web3 = new Web3(torusController.provider)
+  torus._mainnetWeb3 = new Web3(Web3.providers.HttpProvider('https://mainnet.infura.io/metamask'))
   torus.setProviderType = function(network, type) {
     return store.dispatch('setProviderType', { network, type })
   }
