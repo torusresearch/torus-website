@@ -3,6 +3,7 @@ import TorusController from './controllers/TorusController'
 import store from './store'
 import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE } from './utils/enums'
 import { storageAvailable } from './utils/utils'
+import { INFURA_MAINNET_URL } from './config'
 var log = require('loglevel')
 var Web3 = require('web3')
 var LocalMessageDuplexStream = require('post-message-stream')
@@ -61,7 +62,7 @@ function onloadTorus(torus) {
   torus.communicationMux.setMaxListeners(50)
   torusController.provider.setMaxListeners(100)
   torus.web3 = new Web3(torusController.provider)
-  torus._mainnetWeb3 = new Web3(Web3.providers.HttpProvider('https://mainnet.infura.io/metamask'))
+  torus._mainnetWeb3 = new Web3(Web3.providers.HttpProvider(INFURA_MAINNET_URL))
   torus.setProviderType = function(network, type) {
     return store.dispatch('setProviderType', { network, type })
   }
