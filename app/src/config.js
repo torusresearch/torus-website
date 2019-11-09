@@ -27,6 +27,9 @@ export default {
   REDDIT_CLIENT_ID: 'dcQJYPaG481XyQ',
   DISCORD_CLIENT_ID: '630308572013527060',
   INFURA_MAINNET_URL: 'https://mainnet.infura.io/metamask',
+  minEpoch: 3,
+  currentEpoch: 0,
+  nodeListAddress: '0x97c85658cd10b386fc37e4b32df90b916b689ee8',
   redirect_uri: redirect_uri,
   // api: 'http://localhost:2020'
   api: 'https://api.tor.us'

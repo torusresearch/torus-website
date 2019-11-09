@@ -2,8 +2,9 @@
 import TorusController from './controllers/TorusController'
 import store from './store'
 import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE } from './utils/enums'
+import { getNodeEndpoint, getLatestEpochInfo } from './utils/nodeList'
 import { storageAvailable } from './utils/utils'
-import { INFURA_MAINNET_URL } from './config'
+import config, { INFURA_MAINNET_URL } from './config'
 var log = require('loglevel')
 var Web3 = require('web3')
 var LocalMessageDuplexStream = require('post-message-stream')
@@ -63,9 +64,25 @@ function onloadTorus(torus) {
   torusController.provider.setMaxListeners(100)
   torus.web3 = new Web3(torusController.provider)
   torus._mainnetWeb3 = new Web3(Web3.providers.HttpProvider(INFURA_MAINNET_URL))
-  torus.setProviderType = function(network, type) {
-    return store.dispatch('setProviderType', { network, type })
-  }
+  ;(async function() {
+    const latestEpochInfo = await getLatestEpochInfo(torus._mainnetWeb3)
+    config.currentEpoch = Number(latestEpochInfo[0])
+    var nodeEndpointRequests = []
+    var nodeEndpoints = []
+    var indexes = latestEpochInfo[4].map((_, index) => {
+      return index
+    })
+    latestEpochInfo[4].map(async nodeEthAddress => {
+      var req = getNodeEndpoint(torus._mainnetWeb3, nodeEthAddress)
+      nodeEndpointRequests.push(req)
+      nodeEndpoints.push(await req)
+    })
+    await Promise.all(nodeEndpointRequests)
+    config.torusIndexes = indexes
+    config.torusNodeEndpoints = nodeEndpoints
+    // TODO: remove
+    console.log(config)
+  })()
 
   /* Stream setup block */
   // doesnt do anything.. just for logging
