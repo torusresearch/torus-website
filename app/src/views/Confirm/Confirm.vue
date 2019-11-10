@@ -556,7 +556,7 @@ export default {
     },
     getNetworkName(targetNetwork) {
       const foundNetwork = this.networks.find(network => network.host === targetNetwork)
-      if (foundNetwork === -1) return 'UnKnown Network'
+      if (!foundNetwork || foundNetwork === -1) return 'UnKnown Network'
       return Object.prototype.hasOwnProperty.call(foundNetwork, 'networkName') ? foundNetwork.networkName : 'UnKnown Network'
     },
     getDate() {
