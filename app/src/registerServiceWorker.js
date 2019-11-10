@@ -84,7 +84,7 @@ if (
       .then(responseObj => {
         // if there were errors, we need to re-register the service worker
         if (responseObj.err) {
-          return navigator.serviceWorker.register(swUrl, { updateViaCache: 'all' })
+          return navigator.serviceWorker.register(swUrl, { updateViaCache: 'all', scope: '/' })
         } else {
           return Promise.resolve(responseObj.sw)
         }
