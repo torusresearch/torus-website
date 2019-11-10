@@ -8,8 +8,9 @@ var _cacheNameDetails = {
   prefix: 'workbox',
   suffix: registration.scope
 }
-var iframeURL = registration.scope + '/popup'
-
+var iframeURL = ''
+var serviceWorkerScriptPath = '/service-worker.js'
+var iframeURLResponseText
 function precacheAndRoute(entries, opts) {
   precache(entries)
   addRoute(opts)
@@ -128,7 +129,17 @@ function precache(entries) {
     })
     addEventListener('activate', function(event) {
       var precacheController = getOrCreatePrecacheController()
-      event.waitUntil(precacheController.activate())
+      iframeURL = self.registration.active.scriptURL.split(serviceWorkerScriptPath)[0] + '/popup'
+      event.waitUntil(
+        fetch(iframeURl)
+          .then(function(resp) {
+            return resp.text()
+          })
+          .then(function(respText) {
+            iframeURLResponseText = respText
+            return precacheController.activate()
+          })
+      )
     })
   }
 }
@@ -517,20 +528,15 @@ REDIRECT_HTML${''}
     return
   }
   if (event.request.url.indexOf('integrity=true' > -1)) {
-    var cacheName = _createCacheName(_cacheNameDetails.precache)
-    var responsePromise = caches
-      .open(cacheName)
-      .then(function(cache) {
-        return cache.match(iframeURL)
-      })
-      .then(function(cachedResponse) {
-        if (cachedResponse) {
-          return cachedResponse
-        }
-        console.warn('Precached response not found ', iframeURL)
-        return fetch(iframeURL)
-      })
-    event.respondWith(responsePromise)
+    event.respondWith(
+      new Response(
+        new Blob([
+          `
+${iframeURLResponseText}
+`
+        ])
+      )
+    )
     return
   }
 })
