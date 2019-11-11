@@ -14,28 +14,28 @@ Vue.config.productionTip = false
 // Loglevel init
 const buildEnv = process.env.VUE_APP_TORUS_BUILD_ENV
 let logLevel
-// switch (buildEnv) {
-//   case 'staging':
-//     logLevel = 'info'
-//     log.setDefaultLevel(logLevel)
-//     break
-//   case 'testing':
-//     logLevel = 'debug'
-//     log.setDefaultLevel(logLevel)
-//     break
-//   case 'development':
-//     logLevel = 'debug'
-//     log.setDefaultLevel(logLevel)
-//     break
-//   case 'production':
-//     logLevel = 'error'
-//     log.setDefaultLevel(logLevel)
-//     log.disableAll()
-//     break
-//   default:
-//     logLevel = 'error'
-//     log.setDefaultLevel(logLevel)
-// }
+switch (buildEnv) {
+  case 'staging':
+    logLevel = 'info'
+    log.setDefaultLevel(logLevel)
+    break
+  case 'testing':
+    logLevel = 'debug'
+    log.setDefaultLevel(logLevel)
+    break
+  case 'development':
+    logLevel = 'debug'
+    log.setDefaultLevel(logLevel)
+    break
+  case 'production':
+    logLevel = 'error'
+    log.setDefaultLevel(logLevel)
+    log.disableAll()
+    break
+  default:
+    logLevel = 'error'
+    log.setDefaultLevel(logLevel)
+}
 log.info('VUE_APP_TORUS_BUILD_ENV', process.env.VUE_APP_TORUS_BUILD_ENV)
 
 // Object.defineProperty(Vue.prototype, 'torus', { value: torus })
