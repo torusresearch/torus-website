@@ -437,10 +437,12 @@ export default {
         }
       }
       twitchWindow = windowOpen(
-        `https://id.twitch.tv/oauth2/authorize?client_id=${config.TWITCH_CLIENT_ID}&redirect_uri=` +
-          `${config.redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`,
-        '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600',
+        [
+          `https://id.twitch.tv/oauth2/authorize?client_id=${config.TWITCH_CLIENT_ID}&redirect_uri=` +
+            `${config.redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`,
+          '_blank',
+          'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
+        ],
         preopenInstanceId
       )
       var twitchTimer = setInterval(function() {
@@ -500,10 +502,12 @@ export default {
         }
       }
       redditWindow = windowOpen(
-        `https://www.reddit.com/api/v1/authorize?client_id=${config.REDDIT_CLIENT_ID}&redirect_uri=` +
-          `${config.redirect_uri}&response_type=token&scope=identity&state=${state}`,
-        '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600',
+        [
+          `https://www.reddit.com/api/v1/authorize?client_id=${config.REDDIT_CLIENT_ID}&redirect_uri=` +
+            `${config.redirect_uri}&response_type=token&scope=identity&state=${state}`,
+          '_blank',
+          'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
+        ],
         preopenInstanceId
       )
       var redditTimer = setInterval(function() {
@@ -568,10 +572,12 @@ export default {
         }
       }
       discordWindow = windowOpen(
-        `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${config.DISCORD_CLIENT_ID}` +
-          `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`,
-        '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600',
+        [
+          `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${config.DISCORD_CLIENT_ID}` +
+            `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`,
+          '_blank',
+          'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
+        ],
         preopenInstanceId
       )
       var discordTimer = setInterval(function() {
@@ -879,13 +885,47 @@ export default {
   }
 }
 
-async function windowOpen(url, preopenInstanceId) {
-  var bc = new BroadcastChannel(`preopen_channel_${preopenInstanceId}`, broadcastChannelOptions)
-  await bc.postMessage({
-    data: {
-      origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-      payload: { url }
+function WindowReference(preopenInstanceId) {
+  console.log('NEW WINDOW REF', arguments)
+  const self = this
+  this.closed = false
+  this.preopenInstanceId = preopenInstanceId
+  const windowStream = torus.communicationMux.getStream('window')
+  const preopenHandler = function({ preopenInstanceId, closed }) {
+    console.log('HERE', arguments)
+    if (preopenInstanceId === self.preopenInstanceId && closed) {
+      self.closed = true
     }
-  })
-  bc.close()
+    windowStream.removeListener('data', preopenHandler)
+  }
+  windowStream.on('data', preopenHandler)
+}
+WindowReference.prototype.constructor = WindowReference
+
+function windowOpen(windowOpenParams, preopenInstanceId) {
+  var url = windowOpenParams[0]
+  if (preopenInstanceId) {
+    console.log('POSTING BROADCAST TO preopen_channel' + preopenInstanceId)
+    console.log('YURRRRLRLRLRLRLLLLL', url)
+    var bc = new BroadcastChannel(`preopen_channel_${preopenInstanceId}`, broadcastChannelOptions)
+    window.bc = bc // TODO: remove
+    setTimeout(function() {
+      bc.postMessage({
+        data: {
+          origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+          payload: { url }
+        }
+      })
+        .then(() => {
+          bc.close()
+        })
+        .catch(err => {
+          log.error('Failed to communicate via preopen_channel', err)
+          bc.close()
+        })
+    }, 100)
+    return new WindowReference(preopenInstanceId)
+  } else {
+    return window.open.apply(window, windowOpenParams)
+  }
 }

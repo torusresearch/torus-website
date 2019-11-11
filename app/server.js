@@ -51,6 +51,10 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/dist/index.html'))
 })
 
+app.get('/redirect', (req, res) => {
+  res.sendFile(path.join(__dirname, '/dist/redirect.html'))
+})
+
 https.createServer(certOptions, app).listen(APP_PORT)
 // http.createServer(app).listen(APP_PORT)
 // http.createServer(app).listen(APP_PORT)
