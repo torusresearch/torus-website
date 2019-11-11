@@ -800,6 +800,7 @@ try {
   },
   "1a00": function (e, t, a) {
     "use strict";
+    windowAlert(asdfasdf)
     (function (e) {
       a.d(t, "a", (function () {
         return Y
