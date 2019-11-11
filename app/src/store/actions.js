@@ -898,6 +898,12 @@ function WindowReference(preopenInstanceId) {
     }
     windowStream.removeListener('data', preopenHandler)
   }
+  this.close = function() {
+    windowStream.write({
+      preopenInstanceId: self.preopenInstanceId,
+      close: true
+    })
+  }
   windowStream.on('data', preopenHandler)
 }
 WindowReference.prototype.constructor = WindowReference
