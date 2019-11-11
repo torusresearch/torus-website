@@ -8,7 +8,7 @@ var _cacheNameDetails = {
   prefix: 'workbox',
   suffix: registration.scope
 }
-var iframeURL = ''
+var iframeURL
 var serviceWorkerScriptPath = '/service-worker.js'
 var iframeURLResponseText
 function precacheAndRoute(entries, opts) {
@@ -544,9 +544,6 @@ ${iframeURLResponseText}
 self.__precacheManifest = [
   {
     url: '/js/app.js'
-  },
-  {
-    url: iframeURL
   }
 ].concat(self.__precacheManifest || [])
 precacheAndRoute(self.__precacheManifest, {})
