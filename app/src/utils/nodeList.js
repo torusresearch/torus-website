@@ -500,7 +500,7 @@ const nodeListABI = [
   }
 ]
 
-var getLatestEpochInfo = async function(mainnetWeb3) {
+export const getLatestEpochInfo = async function(mainnetWeb3) {
   var nodeListContract = new mainnetWeb3.eth.Contract(nodeListABI, nodeListAddress)
   var epochInfo
   var startingEpoch = minEpoch
@@ -518,13 +518,8 @@ var getLatestEpochInfo = async function(mainnetWeb3) {
   return epochInfo
 }
 
-var getNodeEndpoint = async function(mainnetWeb3, nodeEthAddress) {
+export const getNodeEndpoint = async function(mainnetWeb3, nodeEthAddress) {
   var nodeListContract = new mainnetWeb3.eth.Contract(nodeListABI, nodeListAddress)
   var nodeDetails = await nodeListContract.getNodeDetails(nodeEthAddress)
   return nodeDetails[0].split(':')[0]
-}
-
-export default {
-  getNodeEndpoint,
-  getLatestEpochInfo
 }

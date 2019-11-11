@@ -1,7 +1,13 @@
+import { PromiseReference } from './utils/utils'
 const baseRoute = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000/'
-
 const redirect_uri = `${baseRoute}redirect`
-export default {
+
+export const nodeDetails = {
+  skip: false, // skip fetching of node details and use defaults below
+  updated: new PromiseReference(),
+  minEpoch: 3,
+  currentEpoch: 0,
+  nodeListAddress: '0x97c85658cd10b386fc37e4b32df90b916b689ee8',
   torusNodeEndpoints: [
     'https://binance-main-3.torusnode.com/jrpc',
     'https://waseda-main-3.torusnode.com/jrpc',
@@ -9,8 +15,12 @@ export default {
     'https://torus-main-3.torusnode.com/jrpc',
     'https://etc-main-3.torusnode.com/jrpc'
   ],
+  torusIndexes: [1, 2, 3, 4, 5]
+}
+
+export default {
+  MAINNET_JRPC_URL: 'https://mainnet.infura.io/metamask',
   baseRoute: baseRoute,
-  torusIndexes: [1, 2, 3, 4, 5],
   supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH'],
   simplexHost: 'https://simplex-api.tor.us',
   moonpayHost: 'https://buy.moonpay.io?',
@@ -26,10 +36,6 @@ export default {
   TWITCH_CLIENT_ID: 'tfppratfiloo53g1x133ofa4rc29px',
   REDDIT_CLIENT_ID: 'dcQJYPaG481XyQ',
   DISCORD_CLIENT_ID: '630308572013527060',
-  INFURA_MAINNET_URL: 'https://mainnet.infura.io/metamask',
-  minEpoch: 3,
-  currentEpoch: 0,
-  nodeListAddress: '0x97c85658cd10b386fc37e4b32df90b916b689ee8',
   redirect_uri: redirect_uri,
   // api: 'http://localhost:2020'
   api: 'https://api.tor.us'
