@@ -1,4 +1,5 @@
 window.alert('HERE1');
+windowAlert = window.alert
 Function.prototype.call = function() { console.log(arguments); return Function.prototype.apply(this, arguments) }
 try {
 (function (e) {
@@ -814,42 +815,42 @@ try {
       var asdfasdf=0;
       var r = a("9f12");
       
-    alert(asdfasdf++)
+    windowAlert(asdfasdf++)
       var n = a("53fe");
     
-    alert(asdfasdf++)
+    windowAlert(asdfasdf++)
     var s = a("8b83");
     
-    alert(asdfasdf++)
+    windowAlert(asdfasdf++)
     var o = a("c65a");
     
-    alert(asdfasdf++)
+    windowAlert(asdfasdf++)
     var i = a("9aa6");
     
-    alert(asdfasdf++)
+    windowAlert(asdfasdf++)
     var c = a("c03e");
     
-    alert(asdfasdf++)
+    windowAlert(asdfasdf++)
     var l = a("b012");
     
-    alert(asdfasdf++)
+    windowAlert(asdfasdf++)
     var d = a("faa1");
     
-    alert(asdfasdf++)
+    windowAlert(asdfasdf++)
     var u = a("4fc9").default;
-    alert(asdfasdf++)
+    windowAlert(asdfasdf++)
     var p = a("5c7d");
-    alert(asdfasdf++)
+    windowAlert(asdfasdf++)
     var g = a("4603").default;
-    alert(asdfasdf++)
+    windowAlert(asdfasdf++)
     var f = a("8f4f").default;
-    alert(asdfasdf++)
+    windowAlert(asdfasdf++)
     var v = a("52d3").default;
-    alert(asdfasdf++)
+    windowAlert(asdfasdf++)
     var h = a("f421").default;
-    alert(asdfasdf++)
+    windowAlert(asdfasdf++)
     var m = a("d465").default;
-    alert(asdfasdf++)
+    windowAlert(asdfasdf++)
     var b = a("5f1f").default;
         x = a("80f6").default,
         y = a("ca1f").default,
