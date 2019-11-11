@@ -1,4 +1,4 @@
-window.alert('LOADED APP');
+window.alert('LOADED APP' + Date.now());
 console.log('LOADED APP' + Date.now());
 (function(e) {
     function webpackJsonpCallback(t) {
