@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "0.2.6",
+  "version": "v0.2.6",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

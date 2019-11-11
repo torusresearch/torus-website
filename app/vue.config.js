@@ -2,7 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
 
-const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
+const version = '' // `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
 
 module.exports = {
   devServer: {
@@ -52,7 +52,7 @@ module.exports = {
     //   })
   },
 
-  publicPath: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ? `/${version}/` : '/',
+  publicPath: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ? `/` : '/',
 
   integrity: true,
   crossorigin: 'anonymous',
