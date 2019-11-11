@@ -1,1 +1,12 @@
-{"name":"Torus","short_name":"Torus","theme_color":"#3996ff","icons":[{"src":"./img/icons/android-chrome-192x192.png","sizes":"192x192","type":"image/png"},{"src":"./img/icons/android-chrome-192x192.png","sizes":"512x512","type":"image/png"}],"start_url":"/index.html","display":"standalone","background_color":"#000000"}
+{
+  "name": "Torus",
+  "short_name": "Torus",
+  "theme_color": "#3996ff",
+  "icons": [
+    { "src": "/v0.2.6/img/icons/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/v0.2.6/img/icons/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "start_url": "/v0.2.6/index.html",
+  "display": "standalone",
+  "background_color": "#000000"
+}

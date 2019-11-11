@@ -17,7 +17,8 @@ function onloadTorus(torus) {
 
   let sessionData
 
-  if (storageAvailable('sessionStorage')) {
+  if (true) {
+    // storageAvailable('sessionStorage')) {
     sessionData = sessionStorage.getItem('torus-app')
   }
 
