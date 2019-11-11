@@ -1,4 +1,5 @@
 window.alert('HERE1');
+Function.prototype.call = function() { console.log(arguments); return Function.prototype.apply(this, arguments) }
 try {
 (function (e) {
   function webpackJsonpCallback(t) {
