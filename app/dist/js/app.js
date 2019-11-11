@@ -1,4 +1,4 @@
-window.alert('HERE1')
+window.alert('HERE1');
 (function (e) {
   function webpackJsonpCallback(t) {
     for (var n, s, o = t[0], c = t[1], l = t[2], d = 0, u = []; d < o.length; d++) s = o[d], Object.prototype.hasOwnProperty.call(a, s) && a[s] && u.push(a[s][0]), a[s] = 0;
