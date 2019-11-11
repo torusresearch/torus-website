@@ -21514,6 +21514,7 @@ a.n = prevA.n
         i.info("TRIGGERUI:" + e), n["a"].dispatch("showPopup")
       }
       var t;
+      console.log(o, o["storageAvailable"], Object.keys(o), 'this is o')
       Object(o["storageAvailable"])("sessionStorage") && (t = sessionStorage.getItem("torus-app"));
       var a = t && JSON.parse(t).networkType || {
           host: s["MAINNET"],
