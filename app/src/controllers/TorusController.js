@@ -1,13 +1,23 @@
 const debounce = require('debounce')
+alert('toruscontroller1')
 const EventEmitter = require('events')
+alert('toruscontroller2')
 const ComposableObservableStore = require('../utils/ComposableObservableStore').default
+alert('toruscontroller3')
 const log = require('loglevel')
+alert('toruscontroller4')
 const NetworkController = require('./NetworkController').default
+alert('toruscontroller5')
 const AccountTracker = require('./AccountTracker').default
+alert('toruscontroller6')
 const TransactionController = require('./TransactionController').default
+alert('toruscontroller7')
 const RecentBlocksController = require('./RecentBlocksController').default
+alert('toruscontroller8')
 const CurrencyController = require('./CurrencyController').default
+alert('toruscontroller9')
 const DetectTokensController = require('./DetectTokensController').default
+alert('toruscontroller10')
 const TokenRatesController = require('./TokenRatesController').default
 const AssetDetectionController = require('./AssetsDetectionController').default
 const AssetController = require('./AssetsController').default
