@@ -1,9 +1,5 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    'revision': '6c5ed9f65d2e22889c83e2be3de7dfaf',
-    'url': '/5030711f1155646e1df9.worker.js'
-  },
-  {
     'revision': '76872d4f3e91f6a488edfdf76fadbe7d',
     'url': '/css/circles.css'
   },
