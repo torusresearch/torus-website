@@ -8596,7 +8596,7 @@ a.d = prevA.d;
             w = "sha384-PeqYAaPHe2p96NOLuGLqK0gJjuVC+UhJ58wtnrnsMGOGd3pjd+1EYwDJUnCAzS7v",
             k = "".concat("/", "service-worker.js"),
             C = "max-age=3600";
-        w === ["SERVICE", "WORKER", "SHA", "INTEGRITY"].join("_") ? Object(b["a"])(k, {
+        if (w === ["SERVICE", "WORKER", "SHA", "INTEGRITY"].join("_")) { Object(b["a"])(k, {
             ready: function ready() {
                 n.a.info("App is being served from cache by a service worker.\nFor more details, visit https://goo.gl/AFskqB")
             },
@@ -8618,7 +8618,12 @@ a.d = prevA.d;
             error: function error(e) {
                 n.a.error("Error during service worker registration:", e)
             }
-        }) : navigator.serviceWorker.getRegistrations().then((function(e) {
+        }) 
+    } else { 
+        alert(navigator);
+        alert(navigator.serviceWorker);
+        alert(navigator.serviceWorker.getRegistrations);
+        navigator.serviceWorker.getRegistrations().then((function(e) {
             var t, a = {
                     err: null,
                     sw: null
@@ -8683,6 +8688,7 @@ a.d = prevA.d;
         })).catch((function(e) {
             throw n.a.error("Could not complete service worker installation process, error: ", e), new Error("Could not install service worker")
         }));
+    }
         a("404f"), a("4160"), a("b0c0"), a("b64b"), a("159b");
         var A = a("8c4f"),
             T = a("4360"),
