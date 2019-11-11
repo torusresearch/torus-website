@@ -1,9 +1,8 @@
 import BroadcastChannel from 'broadcast-channel'
 import log from 'loglevel'
 import config, { nodeDetails } from '../config'
-import nodeList from '../config'
 import torus from '../torus'
-import PromiseReference from '../utils/utils'
+import { PromiseReference } from '../utils/utils'
 import {
   RPC,
   USER_INFO_REQUEST_APPROVED,
@@ -284,15 +283,15 @@ export default {
   },
   triggerLogin({ dispatch }, { calledFromEmbed, verifier }) {
     var p = new PromiseReference()
-    if (!nodeList.skip) {
-      nodeList.updated.promise.then(updatedNodeDetails => {
+    if (!nodeDetails.skip) {
+      nodeDetails.updated.promise.then(updatedNodeDetails => {
         p.resolve(updatedNodeDetails)
       })
     } else {
       p.resolve(nodeDetails)
     }
 
-    p.then(updatedNodeDetails => {
+    p.promise.then(updatedNodeDetails => {
       const { torusNodeEndpoints } = updatedNodeDetails
       const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
       log.info('Verifier: ', verifier)
@@ -682,8 +681,8 @@ export default {
   handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
     dispatch('loginInProgress', true)
     var p = new PromiseReference()
-    if (!nodeList.skip) {
-      nodeList.updated.promise.then(updatedNodeDetails => {
+    if (!nodeDetails.skip) {
+      nodeDetails.updated.promise.then(updatedNodeDetails => {
         p.resolve(updatedNodeDetails)
       })
     } else {
@@ -693,50 +692,52 @@ export default {
       idToken,
       userInfo: { verifierId, verifier, verifierParams }
     } = state
-    p.then(updatedNodeDetails => {
-      const torusNodeEndpoints = updatedNodeDetails.torusNodeEndpoints
-      const torusIndexes = updatedNodeDetails.torusIndexes
-      torus
-        .getPubKeyAsync(torusNodeEndpoints[endPointNumber], { verifier, verifierId })
-        .then(res => {
-          log.info('New private key assigned to user at address ', res)
-          const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
-          const p2 = torus.getMessageForSigning(res)
-          return Promise.all([p1, p2])
-        })
-        .then(async response => {
-          const data = response[0]
-          const message = response[1]
-          dispatch('addWallet', data) // synchronous
-          dispatch('subscribeToControllers')
-          await Promise.all([
-            dispatch('initTorusKeyring', data),
-            dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
-          ])
-          dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
-          dispatch('setBillboard')
-          // continue enable function
-          var ethAddress = data.ethAddress
-          if (calledFromEmbed) {
-            setTimeout(function() {
-              torus.continueEnable(ethAddress)
-            }, 50)
-          }
-          statusStream.write({ loggedIn: true, rehydrate: false, verifier: verifier })
-          dispatch('loginInProgress', false)
-        })
-        .catch(err => {
-          totalFailCount += 1
-          let newEndPointNumber = endPointNumber
-          while (newEndPointNumber === endPointNumber) {
-            newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
-          }
-          if (totalFailCount < 3) dispatch('handleLogin', { calledFromEmbed, endPointNumber: newEndPointNumber })
-          log.error(err)
-        })
-    }).catch(err => {
-      log.error(err)
-    })
+    p.promise
+      .then(updatedNodeDetails => {
+        const torusNodeEndpoints = updatedNodeDetails.torusNodeEndpoints
+        const torusIndexes = updatedNodeDetails.torusIndexes
+        torus
+          .getPubKeyAsync(torusNodeEndpoints[endPointNumber], { verifier, verifierId })
+          .then(res => {
+            log.info('New private key assigned to user at address ', res)
+            const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
+            const p2 = torus.getMessageForSigning(res)
+            return Promise.all([p1, p2])
+          })
+          .then(async response => {
+            const data = response[0]
+            const message = response[1]
+            dispatch('addWallet', data) // synchronous
+            dispatch('subscribeToControllers')
+            await Promise.all([
+              dispatch('initTorusKeyring', data),
+              dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
+            ])
+            dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
+            dispatch('setBillboard')
+            // continue enable function
+            var ethAddress = data.ethAddress
+            if (calledFromEmbed) {
+              setTimeout(function() {
+                torus.continueEnable(ethAddress)
+              }, 50)
+            }
+            statusStream.write({ loggedIn: true, rehydrate: false, verifier: verifier })
+            dispatch('loginInProgress', false)
+          })
+          .catch(err => {
+            totalFailCount += 1
+            let newEndPointNumber = endPointNumber
+            while (newEndPointNumber === endPointNumber) {
+              newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
+            }
+            if (totalFailCount < 3) dispatch('handleLogin', { calledFromEmbed, endPointNumber: newEndPointNumber })
+            log.error(err)
+          })
+      })
+      .catch(err => {
+        log.error(err)
+      })
   },
   processAuthMessage({ commit, dispatch }, payload) {
     return new Promise(async (resolve, reject) => {

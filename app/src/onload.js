@@ -5,7 +5,7 @@ import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE } from './utils/enums'
 import { getNodeEndpoint, getLatestEpochInfo } from './utils/nodeList'
 import { storageAvailable } from './utils/utils'
 import config from './config'
-import nodeDetails from './config'
+import { nodeDetails } from './config'
 var log = require('loglevel')
 var Web3 = require('web3')
 var LocalMessageDuplexStream = require('post-message-stream')
@@ -64,22 +64,25 @@ function onloadTorus(torus) {
   torus.communicationMux.setMaxListeners(50)
   torusController.provider.setMaxListeners(100)
   torus.web3 = new Web3(torusController.provider)
-  torus._mainnetWeb3 = new Web3(Web3.providers.HttpProvider(config.MAINNET_JRPC_URL))
+  torus._mainnetWeb3 = new Web3(new Web3.providers.HttpProvider(config.MAINNET_JRPC_URL))
 
   // update node details from nodeList
   ;(async function() {
+    if (nodeDetails.skip) {
+      return
+    }
     try {
       const latestEpochInfo = await getLatestEpochInfo(torus._mainnetWeb3)
       nodeDetails.currentEpoch = Number(latestEpochInfo[0])
       var nodeEndpointRequests = []
       var nodeEndpoints = []
-      var indexes = latestEpochInfo[4].map((_, index) => {
-        return index
+      var indexes = latestEpochInfo[4].map((_, pos) => {
+        return pos + 1
       })
-      latestEpochInfo[4].map(async nodeEthAddress => {
+      latestEpochInfo[4].map(async (nodeEthAddress, pos) => {
         var req = getNodeEndpoint(torus._mainnetWeb3, nodeEthAddress)
         nodeEndpointRequests.push(req)
-        nodeEndpoints.push(await req)
+        nodeEndpoints[pos] = await req
       })
       await Promise.all(nodeEndpointRequests)
       nodeDetails.torusIndexes = indexes
@@ -87,9 +90,8 @@ function onloadTorus(torus) {
       nodeDetails.updated.resolve(nodeDetails)
     } catch (err) {
       nodeDetails.updated.reject(err)
+      log.error(err)
     }
-    // TODO: remove
-    console.log(nodeDetails)
   })()
 
   /* Stream setup block */

@@ -3,7 +3,7 @@ const baseRoute = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000/'
 const redirect_uri = `${baseRoute}redirect`
 
 export const nodeDetails = {
-  skip: false, // skip fetching of node details and use defaults below
+  skip: true, // skip fetching of node details and use defaults below
   updated: new PromiseReference(),
   minEpoch: 3,
   currentEpoch: 0,
