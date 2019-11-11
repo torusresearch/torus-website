@@ -24426,6 +24426,7 @@ a.d = prevA.d;
                     var a = "__storage_test__";
                     return t.setItem(a, a), t.removeItem(a), !0
                 } catch (r) {
+                    console.log("error with storageAvailable", r);
                     return r && (22 === r.code || 1014 === r.code || "QuotaExceededError" === r.name || "NS_ERROR_DOM_QUOTA_REACHED" === r.name) && t && 0 !== t.length
                 }
             }

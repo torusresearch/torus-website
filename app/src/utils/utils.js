@@ -36,6 +36,7 @@ function storageAvailable(type) {
     storage.removeItem(x)
     return true
   } catch (e) {
+    console.log("error in storage available", e);
     return (
       e &&
       // everything except Firefox
