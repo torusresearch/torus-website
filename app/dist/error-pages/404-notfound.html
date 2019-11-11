@@ -9,22 +9,22 @@
     <title>Page not found</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:100,300,400,500,700,900">
-    <link rel="stylesheet" href="/v0.2.6/css/error-page.css">
+    <link rel="stylesheet" href="<%= BASE_URL %>css/error-page.css">
     </head>
     <body class="theme-light" data-spy="scroll" data-target="#mainnav" data-offset="80">
         <div class="error-container">
             <div class="error-header">
-                <img src="/v0.2.6/images/torus_logo.png" alt="dsadsadsa"/>
+                <img src="<%= BASE_URL %>images/torus_logo.png" alt="dsadsadsa"/>
             </div>
             <div class="error-content">
                 <div class="error-row">
                     <div class="error-column text-center">
-                        <img class="people" src="/v0.2.6/images/people_error.svg" alt="">
+                        <img class="people" src="<%= BASE_URL %>images/people_error.svg" alt="">
                     </div>
                     <div class="error-column">
                         <h1 class="page-header">Oops! Page not found</h1>
                         <p class="page-desc">It looks like you are lost. We are unable to find the page you are looking for.</p>
-                        <button class="home-button" onclick="window.location.href='https://app.tor.us/v0.2.6/'">Back to Home</button>
+                        <button class="home-button" onclick="window.location.href='https://app.tor.us<%= BASE_URL %>'">Back to Home</button>
                     </div>
                 </div>
             </div>
