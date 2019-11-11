@@ -969,7 +969,6 @@ a.r = prevA.r
 a.d = prevA.d
 a.n = prevA.n
     "use strict";
-    windowAlert(asdfasdf)
     (function (e) {
       a.d(t, "a", (function () {
         return Y
