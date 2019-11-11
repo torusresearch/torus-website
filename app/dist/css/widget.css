@@ -1,0 +1,359 @@
+.widget {
+  z-index: 999999;
+  position: fixed;
+}
+
+/* FAB Speed dial */
+.speed-dial-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.speed-dial-list li {
+  margin-bottom: 16px;
+  opacity: 0;
+}
+
+.speed-dial-list.active li {
+  opacity: 1;
+}
+
+.torus-btn {
+  border-radius: 30px;
+  background-color: #0364ff;
+  padding: 14px;
+  width: 60px;
+  height: 60px;
+  border: 0;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+  background-size: 60%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.torus-btn--loading {
+  display: none;
+  padding: 0;
+}
+
+.torus-btn--loading.active {
+  display: block;
+}
+
+.torus-btn--login {
+  background-image: url('/images/login.png');
+  transition: width 0.3s;
+}
+
+.torus-btn--login:hover {
+  width: 150px;
+  background-image: url('/images/login-with-torus.png');
+  background-size: 85%;
+  transition: width 0.3s;
+}
+
+.torus-btn img {
+  width: 100%;
+  height: auto;
+}
+
+.torus-btn--main {
+  display: none;
+  padding: 10px 8px 10px 12px;
+  transition: transform 0.3s;
+  background-image: url('/img/icons/torus-icon-light.svg');
+  background-size: 55%;
+  background-position: 55% 52%;
+}
+
+.torus-btn--main.active {
+  padding: 12px;
+  background-color: #eef2f4;
+  transform: scale(0.7);
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+  background-image: url('/img/icons/torus-icon-dark.svg');
+}
+
+.torus-btn--text {
+  padding: 10px;
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.7px;
+  line-height: 19px;
+}
+
+.torus-btn--home {
+  background-image: url('/img/icons/home.svg');
+}
+
+.torus-btn--transfer {
+  background-image: url('/img/icons/indent-increase.svg');
+}
+
+.torus-btn:focus {
+  outline: none;
+}
+
+.tooltip {
+  position: relative;
+}
+
+.tooltip-text {
+  display: none;
+  position: absolute;
+  opacity: 0.8;
+  background-color: #2f3136;
+  color: #ffffff;
+  font-family: 'Roboto', sans-serif !important;
+  border-radius: 5px;
+  padding: 3px 5px;
+  text-align: center;
+  font-size: 12px;
+  left: 0;
+  top: 0;
+  transform: translate(70px, 10px);
+}
+
+.tooltip-copied {
+  transform: translate(70px, 20px);
+}
+
+.tooltip-copied.tooltip-text.active {
+  display: block;
+}
+
+.tooltip-note.tooltip-text {
+  width: 150px;
+}
+
+.tooltip-note.tooltip-text.active {
+  display: none;
+}
+
+.tooltip:hover .tooltip-note:not(.active) {
+  display: block;
+}
+
+.spinner .beat {
+  background-color: #ffffff;
+  height: 10px;
+  width: 10px;
+  margin: 2px;
+  border-radius: 100%;
+  -webkit-animation: beatStretchDelay 0.7s infinite linear;
+  animation: beatStretchDelay 0.7s infinite linear;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  display: inline-block;
+}
+.spinner .beat-odd {
+  animation-delay: 0s;
+}
+.spinner .beat-even {
+  animation-delay: 0.35s;
+}
+@-webkit-keyframes beatStretchDelay {
+  50% {
+    -webkit-transform: scale(0.75);
+    transform: scale(0.75);
+    -webkit-opacity: 0.2;
+    opacity: 0.2;
+  }
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    -webkit-opacity: 1;
+    opacity: 1;
+  }
+}
+@keyframes beatStretchDelay {
+  50% {
+    -webkit-transform: scale(0.75);
+    transform: scale(0.75);
+    -webkit-opacity: 0.2;
+    opacity: 0.2;
+  }
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+    -webkit-opacity: 1;
+    opacity: 1;
+  }
+}
+
+#closeOverlayBtn {
+  cursor: pointer;
+  border-radius: 20px;
+  height: 40px;
+  width: 40px;
+  background-image: url('/images/red-x.png');
+  background-size: 60%;
+  background-repeat: no-repeat;
+  border-width: 0px;
+  background-position: center;
+  background-color: #75b4fd;
+  transition: background-color, background-image, width 0.1s ease-in-out;
+  user-select: none;
+  outline: none;
+}
+
+#torusIframeContainer {
+  display: none;
+  z-index: 999999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+#torusIframe {
+  height: 100%;
+  width: 100%;
+  display: none;
+}
+
+/* Torus multiple login */
+
+/* Background */
+.login-modal {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(33, 33, 33, 0.46);
+  border-color: rgb(33, 33, 33, 0.46);
+}
+
+/* Modal Container */
+.modal-container {
+  background-color: #ffffff;
+  width: 500px;
+  margin: 5% auto;
+  padding: 30px;
+  border: 1px solid #979797;
+  border-radius: 6px;
+}
+
+/* Contents */
+.close-container {
+  text-align: right;
+}
+
+.close {
+  color: #0f1222;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-content {
+  padding: 0 50px;
+  font-family: 'Roboto', sans-serif !important;
+}
+
+.logo-container img {
+  height: 30px;
+  width: auto;
+}
+
+.login-header {
+  font-size: 32px;
+  font-weight: 500;
+  margin: 24px 0 5px;
+}
+
+.login-subtitle {
+  font-size: 14px;
+  margin: 0 0 15px;
+}
+
+.login-google {
+  color: rgba(0, 0, 0, 0.54);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 4px;
+  padding: 15px 10px;
+  margin: 0 0 16px;
+  text-align: left;
+  font-size: 14px;
+  height: 50px;
+  width: 100%;
+  border: 0;
+  background-color: #ffffff;
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+.login-google img {
+  margin-right: 20px;
+}
+
+.login-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  margin: 16px -4px;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.login-list li {
+  flex-basis: 33.3333333333%;
+  flex-grow: 0;
+  max-width: 33.3333333333%;
+  padding: 0 4px 8px;
+  box-sizing: border-box;
+}
+
+.login-list button {
+  cursor: pointer;
+  padding: 10px 0;
+  margin: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: inherit;
+  border: 2px solid #e9eaea;
+  border-radius: 2px;
+  background-color: #ffffff;
+}
+
+.login-list img {
+  height: 24px;
+  width: auto;
+}
+
+.login-btn.login-btn--reddit {
+  padding: 6px 0;
+}
+
+.login-btn.login-btn--reddit img {
+  height: 32px;
+}
+
+.login-note {
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 12px;
+  margin-bottom: 50px;
+}
+
+.login-note a {
+  color: #0364ff;
+  cursor: pointer;
+  text-decoration: none;
+}
