@@ -280,7 +280,7 @@ export default {
       return torus.torusController.networkController.setProviderType(networkType.host)
     }
   },
-  triggerLogin({ dispatch }, { calledFromEmbed, verifier }) {
+  triggerLogin({ dispatch }, { calledFromEmbed, verifier, preopenInstanceId }) {
     const { torusNodeEndpoints } = config
     const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
 
@@ -436,11 +436,12 @@ export default {
           }
         }
       }
-      twitchWindow = window.open(
+      twitchWindow = windowOpen(
         `https://id.twitch.tv/oauth2/authorize?client_id=${config.TWITCH_CLIENT_ID}&redirect_uri=` +
           `${config.redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`,
         '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
+        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600',
+        preopenInstanceId
       )
       var twitchTimer = setInterval(function() {
         if (twitchWindow.closed) {
@@ -498,11 +499,12 @@ export default {
           }
         }
       }
-      redditWindow = window.open(
+      redditWindow = windowOpen(
         `https://www.reddit.com/api/v1/authorize?client_id=${config.REDDIT_CLIENT_ID}&redirect_uri=` +
           `${config.redirect_uri}&response_type=token&scope=identity&state=${state}`,
         '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
+        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600',
+        preopenInstanceId
       )
       var redditTimer = setInterval(function() {
         if (redditWindow.closed) {
@@ -565,11 +567,12 @@ export default {
           }
         }
       }
-      discordWindow = window.open(
+      discordWindow = windowOpen(
         `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${config.DISCORD_CLIENT_ID}` +
           `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`,
         '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
+        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600',
+        preopenInstanceId
       )
       var discordTimer = setInterval(function() {
         if (discordWindow.closed) {
@@ -874,4 +877,15 @@ export default {
       log.error('Failed to rehydrate', error)
     }
   }
+}
+
+async function windowOpen(url, preopenInstanceId) {
+  var bc = new BroadcastChannel(`preopen_channel_${preopenInstanceId}`, broadcastChannelOptions)
+  await bc.postMessage({
+    data: {
+      origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+      payload: { url }
+    }
+  })
+  bc.close()
 }
