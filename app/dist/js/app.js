@@ -36,7 +36,7 @@ console.log('LOADED APP' + Date.now());
     }
     __webpack_require__.m = e, __webpack_require__.c = t, __webpack_require__.d = function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -81,7 +81,7 @@ a.d = prevA.d;
 })({
     0: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -89,7 +89,7 @@ a.d = prevA.d;
     },
     "01ef": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -100,7 +100,7 @@ a.d = prevA.d;
     },
     "0306": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -108,7 +108,7 @@ a.d = prevA.d;
     },
     "0341": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -116,7 +116,7 @@ a.d = prevA.d;
     },
     "036a": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -124,7 +124,7 @@ a.d = prevA.d;
     },
     "03c9": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -138,7 +138,7 @@ a.d = prevA.d;
     },
     "0676": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -146,7 +146,7 @@ a.d = prevA.d;
     },
     "06f1": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -154,7 +154,7 @@ a.d = prevA.d;
     },
     "082e": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -222,7 +222,7 @@ a.d = prevA.d;
     },
     "08ef": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -233,7 +233,7 @@ a.d = prevA.d;
     },
     "0960": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -241,7 +241,7 @@ a.d = prevA.d;
     },
     "09de": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -355,7 +355,7 @@ a.d = prevA.d;
     },
     "0f6d": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -363,7 +363,7 @@ a.d = prevA.d;
     },
     "0f7c": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -371,7 +371,7 @@ a.d = prevA.d;
     },
     "0fc8": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -385,7 +385,7 @@ a.d = prevA.d;
     11: function(e, t) {},
     1186: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -402,7 +402,7 @@ a.d = prevA.d;
     },
     "11a2": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -411,7 +411,7 @@ a.d = prevA.d;
     12: function(e, t) {},
     "12f0": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -420,7 +420,7 @@ a.d = prevA.d;
     13: function(e, t) {},
     1351: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -462,7 +462,7 @@ a.d = prevA.d;
     },
     "13b2": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -471,7 +471,7 @@ a.d = prevA.d;
     14: function(e, t) {},
     "146f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -481,7 +481,7 @@ a.d = prevA.d;
     16: function(e, t) {},
     1646: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -497,7 +497,7 @@ a.d = prevA.d;
     },
     "164e": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -505,7 +505,7 @@ a.d = prevA.d;
     },
     "16a8": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -513,7 +513,7 @@ a.d = prevA.d;
     },
     "16a8d": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -524,7 +524,7 @@ a.d = prevA.d;
     },
     "170f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -532,7 +532,7 @@ a.d = prevA.d;
     },
     1785: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -540,7 +540,7 @@ a.d = prevA.d;
     },
     "17ac": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -761,7 +761,7 @@ a.d = prevA.d;
     },
     1805: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -769,7 +769,7 @@ a.d = prevA.d;
     },
     1970: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -788,7 +788,7 @@ a.d = prevA.d;
     },
     "19ac": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -945,7 +945,7 @@ a.d = prevA.d;
     },
     "19c9": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -963,7 +963,7 @@ a.d = prevA.d;
     },
     "1a00": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1565,7 +1565,7 @@ a.d = prevA.d;
     },
     "1a30": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1573,7 +1573,7 @@ a.d = prevA.d;
     },
     "1a3e": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1581,7 +1581,7 @@ a.d = prevA.d;
     },
     "1b25": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1589,7 +1589,7 @@ a.d = prevA.d;
     },
     "1cbb": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1597,7 +1597,7 @@ a.d = prevA.d;
     },
     "1cbd": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1605,7 +1605,7 @@ a.d = prevA.d;
     },
     "1ccc": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1613,7 +1613,7 @@ a.d = prevA.d;
     },
     "1f40": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1692,7 +1692,7 @@ a.d = prevA.d;
     },
     "1fa6": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1701,7 +1701,7 @@ a.d = prevA.d;
     2: function(e, t) {},
     2068: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1709,7 +1709,7 @@ a.d = prevA.d;
     },
     2172: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1717,7 +1717,7 @@ a.d = prevA.d;
     },
     "21af": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1725,7 +1725,7 @@ a.d = prevA.d;
     },
     "21ca": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1733,7 +1733,7 @@ a.d = prevA.d;
     },
     2291: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1741,7 +1741,7 @@ a.d = prevA.d;
     },
     2328: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1749,7 +1749,7 @@ a.d = prevA.d;
     },
     "233c": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1757,7 +1757,7 @@ a.d = prevA.d;
     },
     "23c2": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1765,7 +1765,7 @@ a.d = prevA.d;
     },
     "25b9": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1773,7 +1773,7 @@ a.d = prevA.d;
     },
     "274e": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1781,7 +1781,7 @@ a.d = prevA.d;
     },
     2798: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1797,7 +1797,7 @@ a.d = prevA.d;
     },
     2864: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1805,7 +1805,7 @@ a.d = prevA.d;
     },
     2939: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1813,7 +1813,7 @@ a.d = prevA.d;
     },
     "2cb2": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1821,7 +1821,7 @@ a.d = prevA.d;
     },
     "2d00": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1829,7 +1829,7 @@ a.d = prevA.d;
     },
     "2e86": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1837,7 +1837,7 @@ a.d = prevA.d;
     },
     "2f05": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1846,7 +1846,7 @@ a.d = prevA.d;
     3: function(e, t) {},
     3034: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1854,7 +1854,7 @@ a.d = prevA.d;
     },
     "322b": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -1865,7 +1865,7 @@ a.d = prevA.d;
     },
     3246: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2305,7 +2305,7 @@ a.d = prevA.d;
     },
     3256: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2332,7 +2332,7 @@ a.d = prevA.d;
     },
     3290: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2340,7 +2340,7 @@ a.d = prevA.d;
     },
     3355: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2348,7 +2348,7 @@ a.d = prevA.d;
     },
     3458: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2356,7 +2356,7 @@ a.d = prevA.d;
     },
     3488: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2364,7 +2364,7 @@ a.d = prevA.d;
     },
     "355e": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2375,7 +2375,7 @@ a.d = prevA.d;
     },
     "364a": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2383,7 +2383,7 @@ a.d = prevA.d;
     },
     3668: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2391,7 +2391,7 @@ a.d = prevA.d;
     },
     "36d0": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2402,7 +2402,7 @@ a.d = prevA.d;
     },
     "36dc": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2519,7 +2519,7 @@ a.d = prevA.d;
     },
     3717: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2535,7 +2535,7 @@ a.d = prevA.d;
     },
     3735: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2543,7 +2543,7 @@ a.d = prevA.d;
     },
     3783: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2551,7 +2551,7 @@ a.d = prevA.d;
     },
     "37cf": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2678,7 +2678,7 @@ a.d = prevA.d;
     },
     3844: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2686,7 +2686,7 @@ a.d = prevA.d;
     },
     3851: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2694,7 +2694,7 @@ a.d = prevA.d;
     },
     3877: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2705,7 +2705,7 @@ a.d = prevA.d;
     },
     3887: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2721,7 +2721,7 @@ a.d = prevA.d;
     },
     "3c2b": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2729,7 +2729,7 @@ a.d = prevA.d;
     },
     "3d15": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2737,7 +2737,7 @@ a.d = prevA.d;
     },
     "3da9": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2745,7 +2745,7 @@ a.d = prevA.d;
     },
     "3db1": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2753,7 +2753,7 @@ a.d = prevA.d;
     },
     "3df7": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2761,7 +2761,7 @@ a.d = prevA.d;
     },
     "3e90": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2777,7 +2777,7 @@ a.d = prevA.d;
     },
     "3eb7": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2785,7 +2785,7 @@ a.d = prevA.d;
     },
     "3ecf": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2793,7 +2793,7 @@ a.d = prevA.d;
     },
     "3f16": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2801,7 +2801,7 @@ a.d = prevA.d;
     },
     "3fc1": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2809,7 +2809,7 @@ a.d = prevA.d;
     },
     "3ff5": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2826,7 +2826,7 @@ a.d = prevA.d;
     4: function(e, t) {},
     "401e": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -2834,7 +2834,7 @@ a.d = prevA.d;
     },
     "402c": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -5284,7 +5284,7 @@ a.d = prevA.d;
     },
     "404f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -5300,7 +5300,7 @@ a.d = prevA.d;
     },
     4111: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -5308,7 +5308,7 @@ a.d = prevA.d;
     },
     4235: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -5324,7 +5324,7 @@ a.d = prevA.d;
     },
     4360: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -6967,7 +6967,7 @@ a.d = prevA.d;
     },
     "43b0": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -6975,7 +6975,7 @@ a.d = prevA.d;
     },
     "43e5": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -6983,7 +6983,7 @@ a.d = prevA.d;
     },
     "440d": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -6991,7 +6991,7 @@ a.d = prevA.d;
     },
     4603: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7412,7 +7412,7 @@ a.d = prevA.d;
     },
     "46c1": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7420,7 +7420,7 @@ a.d = prevA.d;
     },
     "4aec2": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7428,7 +7428,7 @@ a.d = prevA.d;
     },
     "4af8": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7436,7 +7436,7 @@ a.d = prevA.d;
     },
     "4c22": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7447,7 +7447,7 @@ a.d = prevA.d;
     },
     "4c95": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7455,7 +7455,7 @@ a.d = prevA.d;
     },
     "4cf0": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7471,7 +7471,7 @@ a.d = prevA.d;
     },
     "4df4": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7487,7 +7487,7 @@ a.d = prevA.d;
     },
     "4e44": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7495,7 +7495,7 @@ a.d = prevA.d;
     },
     "4ea4": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7503,7 +7503,7 @@ a.d = prevA.d;
     },
     "4ef4": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7511,7 +7511,7 @@ a.d = prevA.d;
     },
     "4f44": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7527,7 +7527,7 @@ a.d = prevA.d;
     },
     "4fc9": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7595,7 +7595,7 @@ a.d = prevA.d;
     5: function(e, t) {},
     "507e": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7603,7 +7603,7 @@ a.d = prevA.d;
     },
     "50d0": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7611,7 +7611,7 @@ a.d = prevA.d;
     },
     "50e1": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7619,7 +7619,7 @@ a.d = prevA.d;
     },
     "518f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -7635,7 +7635,7 @@ a.d = prevA.d;
     },
     "52d3": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -8416,7 +8416,7 @@ a.d = prevA.d;
     },
     5300: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -8424,7 +8424,7 @@ a.d = prevA.d;
     },
     5584: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -8432,7 +8432,7 @@ a.d = prevA.d;
     },
     "56d7": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18444,7 +18444,7 @@ a.d = prevA.d;
         }
         $s.beforeResolve((function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18497,7 +18497,7 @@ a.d = prevA.d;
     },
     "56db": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18505,7 +18505,7 @@ a.d = prevA.d;
     },
     "56e7": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18521,7 +18521,7 @@ a.d = prevA.d;
     },
     "570a": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18532,7 +18532,7 @@ a.d = prevA.d;
     },
     "58e9": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18540,7 +18540,7 @@ a.d = prevA.d;
     },
     "5ad6": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18551,7 +18551,7 @@ a.d = prevA.d;
     },
     "5b32": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18609,7 +18609,7 @@ a.d = prevA.d;
     },
     "5b7d": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18617,7 +18617,7 @@ a.d = prevA.d;
     },
     "5c27": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18625,7 +18625,7 @@ a.d = prevA.d;
     },
     "5c2f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18797,7 +18797,7 @@ a.d = prevA.d;
     },
     "5c3a": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18805,7 +18805,7 @@ a.d = prevA.d;
     },
     "5c64": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18816,7 +18816,7 @@ a.d = prevA.d;
     },
     "5dc1": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18832,7 +18832,7 @@ a.d = prevA.d;
     },
     "5e5c": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18972,7 +18972,7 @@ a.d = prevA.d;
     },
     "5e6f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18980,7 +18980,7 @@ a.d = prevA.d;
     },
     "5eed": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -18996,7 +18996,7 @@ a.d = prevA.d;
     },
     "5f1f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19173,7 +19173,7 @@ a.d = prevA.d;
     },
     "5ffc": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19182,7 +19182,7 @@ a.d = prevA.d;
     6: function(e, t) {},
     "60a2": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19190,7 +19190,7 @@ a.d = prevA.d;
     },
     "643f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19270,7 +19270,7 @@ a.d = prevA.d;
     },
     6477: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19278,7 +19278,7 @@ a.d = prevA.d;
     },
     "647c": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19286,7 +19286,7 @@ a.d = prevA.d;
     },
     "65fc": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19294,7 +19294,7 @@ a.d = prevA.d;
     },
     "664b": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19302,7 +19302,7 @@ a.d = prevA.d;
     },
     6696: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19310,7 +19310,7 @@ a.d = prevA.d;
     },
     "66de": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19321,7 +19321,7 @@ a.d = prevA.d;
     },
     6866: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19329,7 +19329,7 @@ a.d = prevA.d;
     },
     6907: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19337,7 +19337,7 @@ a.d = prevA.d;
     },
     "698c": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19345,7 +19345,7 @@ a.d = prevA.d;
     },
     "69eb": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19353,7 +19353,7 @@ a.d = prevA.d;
     },
     "6a36": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19361,7 +19361,7 @@ a.d = prevA.d;
     },
     "6b4c": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19369,7 +19369,7 @@ a.d = prevA.d;
     },
     "6c44": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19385,7 +19385,7 @@ a.d = prevA.d;
     },
     "6d04": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19393,7 +19393,7 @@ a.d = prevA.d;
     },
     "6d70": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19409,7 +19409,7 @@ a.d = prevA.d;
     },
     "6d9b": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19417,7 +19417,7 @@ a.d = prevA.d;
     },
     "6e1c": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19428,7 +19428,7 @@ a.d = prevA.d;
     },
     "6e56": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19444,7 +19444,7 @@ a.d = prevA.d;
     },
     "6ec5": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19591,7 +19591,7 @@ a.d = prevA.d;
     },
     "6f95": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19599,7 +19599,7 @@ a.d = prevA.d;
     },
     "6f9e": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19608,7 +19608,7 @@ a.d = prevA.d;
     7: function(e, t) {},
     7048: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19616,7 +19616,7 @@ a.d = prevA.d;
     },
     7134: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19659,7 +19659,7 @@ a.d = prevA.d;
     },
     "714b": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19667,7 +19667,7 @@ a.d = prevA.d;
     },
     7283: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19681,7 +19681,7 @@ a.d = prevA.d;
     },
     "73bb": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19697,7 +19697,7 @@ a.d = prevA.d;
     },
     7467: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19705,7 +19705,7 @@ a.d = prevA.d;
     },
     "74a2": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19713,7 +19713,7 @@ a.d = prevA.d;
     },
     7525: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19724,7 +19724,7 @@ a.d = prevA.d;
     },
     "75ea": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19732,7 +19732,7 @@ a.d = prevA.d;
     },
     "75f3": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19740,7 +19740,7 @@ a.d = prevA.d;
     },
     7642: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19748,7 +19748,7 @@ a.d = prevA.d;
     },
     7648: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19962,7 +19962,7 @@ a.d = prevA.d;
     },
     "765c": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19970,7 +19970,7 @@ a.d = prevA.d;
     },
     7771: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19978,7 +19978,7 @@ a.d = prevA.d;
     },
     7777: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19986,7 +19986,7 @@ a.d = prevA.d;
     },
     7825: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -19997,7 +19997,7 @@ a.d = prevA.d;
     },
     "790f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20005,7 +20005,7 @@ a.d = prevA.d;
     },
     "7b9b": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20013,7 +20013,7 @@ a.d = prevA.d;
     },
     "7c3b": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20021,7 +20021,7 @@ a.d = prevA.d;
     },
     "7c92": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20029,7 +20029,7 @@ a.d = prevA.d;
     },
     "7d8f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20037,7 +20037,7 @@ a.d = prevA.d;
     },
     "7db6": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20045,7 +20045,7 @@ a.d = prevA.d;
     },
     "7dc5": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20053,7 +20053,7 @@ a.d = prevA.d;
     },
     "7fc8": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20062,7 +20062,7 @@ a.d = prevA.d;
     8: function(e, t) {},
     "80f6": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20153,7 +20153,7 @@ a.d = prevA.d;
     },
     8136: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20161,7 +20161,7 @@ a.d = prevA.d;
     },
     "815b": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20169,7 +20169,7 @@ a.d = prevA.d;
     },
     8191: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20177,7 +20177,7 @@ a.d = prevA.d;
     },
     "81b6": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20185,7 +20185,7 @@ a.d = prevA.d;
     },
     "847f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20201,7 +20201,7 @@ a.d = prevA.d;
     },
     "852c": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20217,7 +20217,7 @@ a.d = prevA.d;
     },
     "855f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20225,7 +20225,7 @@ a.d = prevA.d;
     },
     8575: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20233,7 +20233,7 @@ a.d = prevA.d;
     },
     "85bf": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20462,7 +20462,7 @@ a.d = prevA.d;
     },
     "876a": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20470,7 +20470,7 @@ a.d = prevA.d;
     },
     "87db": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20478,7 +20478,7 @@ a.d = prevA.d;
     },
     "88ba": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20489,7 +20489,7 @@ a.d = prevA.d;
     },
     "891f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20497,7 +20497,7 @@ a.d = prevA.d;
     },
     "8aa9": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20698,7 +20698,7 @@ a.d = prevA.d;
     },
     "8b0a": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20706,7 +20706,7 @@ a.d = prevA.d;
     },
     "8bc6": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20714,7 +20714,7 @@ a.d = prevA.d;
     },
     "8c34": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20725,7 +20725,7 @@ a.d = prevA.d;
     },
     "8c84": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20733,7 +20733,7 @@ a.d = prevA.d;
     },
     "8c92": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20741,7 +20741,7 @@ a.d = prevA.d;
     },
     "8c98": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20749,7 +20749,7 @@ a.d = prevA.d;
     },
     "8cbf": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20760,7 +20760,7 @@ a.d = prevA.d;
     },
     "8ce95": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20768,7 +20768,7 @@ a.d = prevA.d;
     },
     "8d5f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20784,7 +20784,7 @@ a.d = prevA.d;
     },
     "8d7b": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20792,7 +20792,7 @@ a.d = prevA.d;
     },
     "8d97": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20800,7 +20800,7 @@ a.d = prevA.d;
     },
     "8e49": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20811,7 +20811,7 @@ a.d = prevA.d;
     },
     "8f16": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -20819,7 +20819,7 @@ a.d = prevA.d;
     },
     "8f4f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21035,7 +21035,7 @@ a.d = prevA.d;
     },
     "8f6d": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21052,7 +21052,7 @@ a.d = prevA.d;
     9: function(e, t) {},
     "903c": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21063,7 +21063,7 @@ a.d = prevA.d;
     },
     9101: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21071,7 +21071,7 @@ a.d = prevA.d;
     },
     9182: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21343,7 +21343,7 @@ a.d = prevA.d;
     },
     "922d": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21351,7 +21351,7 @@ a.d = prevA.d;
     },
     9291: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21359,7 +21359,7 @@ a.d = prevA.d;
     },
     "92fb": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21367,7 +21367,7 @@ a.d = prevA.d;
     },
     "930f": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21378,7 +21378,7 @@ a.d = prevA.d;
     },
     "94a0": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21386,7 +21386,7 @@ a.d = prevA.d;
     },
     "94ce": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21397,7 +21397,7 @@ a.d = prevA.d;
     },
     9718: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21408,7 +21408,7 @@ a.d = prevA.d;
     },
     "974e": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21424,7 +21424,7 @@ a.d = prevA.d;
     },
     9752: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21435,7 +21435,7 @@ a.d = prevA.d;
     },
     "97b1": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21443,7 +21443,7 @@ a.d = prevA.d;
     },
     "97ed": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21454,7 +21454,7 @@ a.d = prevA.d;
     },
     "982a": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21477,7 +21477,7 @@ a.d = prevA.d;
     },
     "9d50": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21558,7 +21558,7 @@ a.d = prevA.d;
     },
     "9d6e": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21566,7 +21566,7 @@ a.d = prevA.d;
     },
     "9dd1": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21582,7 +21582,7 @@ a.d = prevA.d;
     },
     "9e49": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21590,7 +21590,7 @@ a.d = prevA.d;
     },
     "9e62": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21601,7 +21601,7 @@ a.d = prevA.d;
     },
     "9e74": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21609,7 +21609,7 @@ a.d = prevA.d;
     },
     "9ea8": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21617,7 +21617,7 @@ a.d = prevA.d;
     },
     "9fc7": function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21628,7 +21628,7 @@ a.d = prevA.d;
     },
     a07b: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21636,7 +21636,7 @@ a.d = prevA.d;
     },
     a0c3: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21644,7 +21644,7 @@ a.d = prevA.d;
     },
     a1a6: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21652,7 +21652,7 @@ a.d = prevA.d;
     },
     a22e: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21660,7 +21660,7 @@ a.d = prevA.d;
     },
     a299: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21668,7 +21668,7 @@ a.d = prevA.d;
     },
     a2a3: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21679,7 +21679,7 @@ a.d = prevA.d;
     },
     a2ab: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21690,7 +21690,7 @@ a.d = prevA.d;
     },
     a345: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21698,7 +21698,7 @@ a.d = prevA.d;
     },
     a3ab: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21706,7 +21706,7 @@ a.d = prevA.d;
     },
     a3ed: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21714,7 +21714,7 @@ a.d = prevA.d;
     },
     a442: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21722,7 +21722,7 @@ a.d = prevA.d;
     },
     a49d: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21730,7 +21730,7 @@ a.d = prevA.d;
     },
     a4e8f: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21738,7 +21738,7 @@ a.d = prevA.d;
     },
     a5f5: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21801,7 +21801,7 @@ a.d = prevA.d;
     },
     a63e: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21817,7 +21817,7 @@ a.d = prevA.d;
     },
     a6c8: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21825,7 +21825,7 @@ a.d = prevA.d;
     },
     a7a4: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21836,7 +21836,7 @@ a.d = prevA.d;
     },
     a87c: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21844,7 +21844,7 @@ a.d = prevA.d;
     },
     a885: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21852,7 +21852,7 @@ a.d = prevA.d;
     },
     a9d9: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21863,7 +21863,7 @@ a.d = prevA.d;
     },
     ab61: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21871,7 +21871,7 @@ a.d = prevA.d;
     },
     ab72: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21879,7 +21879,7 @@ a.d = prevA.d;
     },
     ac9c: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21887,7 +21887,7 @@ a.d = prevA.d;
     },
     acf3: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21895,7 +21895,7 @@ a.d = prevA.d;
     },
     adb0: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21903,7 +21903,7 @@ a.d = prevA.d;
     },
     af19: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21911,7 +21911,7 @@ a.d = prevA.d;
     },
     af1f: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21919,7 +21919,7 @@ a.d = prevA.d;
     },
     af40: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -21930,7 +21930,7 @@ a.d = prevA.d;
     },
     b00c: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22112,7 +22112,7 @@ a.d = prevA.d;
     },
     b022: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22120,7 +22120,7 @@ a.d = prevA.d;
     },
     b0b5: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22128,7 +22128,7 @@ a.d = prevA.d;
     },
     b0dc: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22136,7 +22136,7 @@ a.d = prevA.d;
     },
     b126: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22144,7 +22144,7 @@ a.d = prevA.d;
     },
     b1b4: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22152,7 +22152,7 @@ a.d = prevA.d;
     },
     b1c2: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22160,7 +22160,7 @@ a.d = prevA.d;
     },
     b22d: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22187,7 +22187,7 @@ a.d = prevA.d;
     },
     b241: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22195,7 +22195,7 @@ a.d = prevA.d;
     },
     b291: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22211,7 +22211,7 @@ a.d = prevA.d;
     },
     b2da: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22219,7 +22219,7 @@ a.d = prevA.d;
     },
     b2e1: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22292,7 +22292,7 @@ a.d = prevA.d;
     },
     b2f7: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22303,7 +22303,7 @@ a.d = prevA.d;
     },
     b5aa: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22311,7 +22311,7 @@ a.d = prevA.d;
     },
     b676: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22319,7 +22319,7 @@ a.d = prevA.d;
     },
     b7a6: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22327,7 +22327,7 @@ a.d = prevA.d;
     },
     b815: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22335,7 +22335,7 @@ a.d = prevA.d;
     },
     ba42: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22343,7 +22343,7 @@ a.d = prevA.d;
     },
     bab5: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22351,7 +22351,7 @@ a.d = prevA.d;
     },
     bba3: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22359,7 +22359,7 @@ a.d = prevA.d;
     },
     bc0f: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22367,7 +22367,7 @@ a.d = prevA.d;
     },
     bc13: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22375,7 +22375,7 @@ a.d = prevA.d;
     },
     bc4d: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22383,7 +22383,7 @@ a.d = prevA.d;
     },
     bc5e: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22400,7 +22400,7 @@ a.d = prevA.d;
     },
     bce6: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22411,7 +22411,7 @@ a.d = prevA.d;
     },
     bd8d: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22586,7 +22586,7 @@ a.d = prevA.d;
     },
     be5c: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22594,7 +22594,7 @@ a.d = prevA.d;
     },
     beea: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22602,7 +22602,7 @@ a.d = prevA.d;
     },
     bf2c: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22610,7 +22610,7 @@ a.d = prevA.d;
     },
     bf32: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22618,7 +22618,7 @@ a.d = prevA.d;
     },
     bf4f: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22629,7 +22629,7 @@ a.d = prevA.d;
     },
     c004: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22637,7 +22637,7 @@ a.d = prevA.d;
     },
     c059: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22685,7 +22685,7 @@ a.d = prevA.d;
     },
     c0b7: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22701,7 +22701,7 @@ a.d = prevA.d;
     },
     c1cf: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22712,7 +22712,7 @@ a.d = prevA.d;
     },
     c1e8: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22887,7 +22887,7 @@ a.d = prevA.d;
     },
     c22f: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22898,7 +22898,7 @@ a.d = prevA.d;
     },
     c28c: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22914,7 +22914,7 @@ a.d = prevA.d;
     },
     c34a: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22922,7 +22922,7 @@ a.d = prevA.d;
     },
     c3c5: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22930,7 +22930,7 @@ a.d = prevA.d;
     },
     c54e: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22938,7 +22938,7 @@ a.d = prevA.d;
     },
     c6eb: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22949,7 +22949,7 @@ a.d = prevA.d;
     },
     c7e3: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22957,7 +22957,7 @@ a.d = prevA.d;
     },
     c8b1: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -22965,7 +22965,7 @@ a.d = prevA.d;
     },
     ca1f: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23114,7 +23114,7 @@ a.d = prevA.d;
     },
     ca5f: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23122,7 +23122,7 @@ a.d = prevA.d;
     },
     cb13: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23130,7 +23130,7 @@ a.d = prevA.d;
     },
     cb40: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23138,7 +23138,7 @@ a.d = prevA.d;
     },
     cd1b: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23146,7 +23146,7 @@ a.d = prevA.d;
     },
     cdb3: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23154,7 +23154,7 @@ a.d = prevA.d;
     },
     cdf2: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23162,7 +23162,7 @@ a.d = prevA.d;
     },
     ce20: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23170,7 +23170,7 @@ a.d = prevA.d;
     },
     ce75: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23181,7 +23181,7 @@ a.d = prevA.d;
     },
     cf3f: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23271,7 +23271,7 @@ a.d = prevA.d;
     },
     cf49: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23287,7 +23287,7 @@ a.d = prevA.d;
     },
     cfe0: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23298,7 +23298,7 @@ a.d = prevA.d;
     },
     cfe5: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23306,7 +23306,7 @@ a.d = prevA.d;
     },
     d0a0: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23314,7 +23314,7 @@ a.d = prevA.d;
     },
     d177: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23331,7 +23331,7 @@ a.d = prevA.d;
     },
     d324: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23339,7 +23339,7 @@ a.d = prevA.d;
     },
     d338: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23347,7 +23347,7 @@ a.d = prevA.d;
     },
     d465: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23470,7 +23470,7 @@ a.d = prevA.d;
     },
     d553: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23486,7 +23486,7 @@ a.d = prevA.d;
     },
     d575: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23497,7 +23497,7 @@ a.d = prevA.d;
     },
     d5be: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23505,7 +23505,7 @@ a.d = prevA.d;
     },
     d5d8: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23516,7 +23516,7 @@ a.d = prevA.d;
     },
     d627: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23532,7 +23532,7 @@ a.d = prevA.d;
     },
     d64d: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23548,7 +23548,7 @@ a.d = prevA.d;
     },
     d67d: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23556,7 +23556,7 @@ a.d = prevA.d;
     },
     d7bc: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23566,7 +23566,7 @@ a.d = prevA.d;
     },
     d8d9: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23574,7 +23574,7 @@ a.d = prevA.d;
     },
     d90f: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23582,7 +23582,7 @@ a.d = prevA.d;
     },
     d94f: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23590,7 +23590,7 @@ a.d = prevA.d;
     },
     d9fb: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23601,7 +23601,7 @@ a.d = prevA.d;
     },
     db49: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23635,7 +23635,7 @@ a.d = prevA.d;
     },
     dc0c: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23646,7 +23646,7 @@ a.d = prevA.d;
     },
     dc3d: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23654,7 +23654,7 @@ a.d = prevA.d;
     },
     dd69: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23662,7 +23662,7 @@ a.d = prevA.d;
     },
     e0c5: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23670,7 +23670,7 @@ a.d = prevA.d;
     },
     e0ee: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23681,7 +23681,7 @@ a.d = prevA.d;
     },
     e125: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23689,7 +23689,7 @@ a.d = prevA.d;
     },
     e163: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23705,7 +23705,7 @@ a.d = prevA.d;
     },
     e239: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23713,7 +23713,7 @@ a.d = prevA.d;
     },
     e2c1: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23736,7 +23736,7 @@ a.d = prevA.d;
     },
     e306: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23755,7 +23755,7 @@ a.d = prevA.d;
     },
     e358: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23763,7 +23763,7 @@ a.d = prevA.d;
     },
     e3e8: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23771,7 +23771,7 @@ a.d = prevA.d;
     },
     e439a: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23779,7 +23779,7 @@ a.d = prevA.d;
     },
     e452: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23787,7 +23787,7 @@ a.d = prevA.d;
     },
     e69c: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23795,7 +23795,7 @@ a.d = prevA.d;
     },
     e7a3: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23811,7 +23811,7 @@ a.d = prevA.d;
     },
     e7d5: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23819,7 +23819,7 @@ a.d = prevA.d;
     },
     e80f: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23827,7 +23827,7 @@ a.d = prevA.d;
     },
     e817: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23835,7 +23835,7 @@ a.d = prevA.d;
     },
     e881: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23843,7 +23843,7 @@ a.d = prevA.d;
     },
     e922: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23851,7 +23851,7 @@ a.d = prevA.d;
     },
     e996: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23859,7 +23859,7 @@ a.d = prevA.d;
     },
     e9d9: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23867,7 +23867,7 @@ a.d = prevA.d;
     },
     e9da: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23878,7 +23878,7 @@ a.d = prevA.d;
     },
     ea58: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23886,7 +23886,7 @@ a.d = prevA.d;
     },
     ea9b: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23902,7 +23902,7 @@ a.d = prevA.d;
     },
     eafa: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23910,7 +23910,7 @@ a.d = prevA.d;
     },
     eb38: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23918,7 +23918,7 @@ a.d = prevA.d;
     },
     eb54: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23926,7 +23926,7 @@ a.d = prevA.d;
     },
     eba9: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -23942,7 +23942,7 @@ a.d = prevA.d;
     },
     ebbe: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24083,7 +24083,7 @@ a.d = prevA.d;
     },
     ebed: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24091,7 +24091,7 @@ a.d = prevA.d;
     },
     ebf3: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24099,7 +24099,7 @@ a.d = prevA.d;
     },
     ec4e: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24107,7 +24107,7 @@ a.d = prevA.d;
     },
     ed34: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24115,7 +24115,7 @@ a.d = prevA.d;
     },
     edaf: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24123,7 +24123,7 @@ a.d = prevA.d;
     },
     eff6: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24131,7 +24131,7 @@ a.d = prevA.d;
     },
     f1b4: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24139,7 +24139,7 @@ a.d = prevA.d;
     },
     f234: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24162,7 +24162,7 @@ a.d = prevA.d;
     },
     f282: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24170,7 +24170,7 @@ a.d = prevA.d;
     },
     f32a: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24178,7 +24178,7 @@ a.d = prevA.d;
     },
     f3c2: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24186,7 +24186,7 @@ a.d = prevA.d;
     },
     f421: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24365,7 +24365,7 @@ a.d = prevA.d;
     },
     f43e: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24373,7 +24373,7 @@ a.d = prevA.d;
     },
     f61a: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24381,7 +24381,7 @@ a.d = prevA.d;
     },
     f93b: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24389,7 +24389,7 @@ a.d = prevA.d;
     },
     fa7d: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24639,7 +24639,7 @@ a.d = prevA.d;
     },
     fb36: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24647,7 +24647,7 @@ a.d = prevA.d;
     },
     fbdc: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24655,7 +24655,7 @@ a.d = prevA.d;
     },
     fd72: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24663,7 +24663,7 @@ a.d = prevA.d;
     },
     fd99: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24671,7 +24671,7 @@ a.d = prevA.d;
     },
     ff81: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24679,7 +24679,7 @@ a.d = prevA.d;
     },
     ffad: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24687,7 +24687,7 @@ a.d = prevA.d;
     },
     ffb1: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
@@ -24695,7 +24695,7 @@ a.d = prevA.d;
     },
     ffcc: function(e, t, a) {
 var prevA = a;
-a = function() { console.log(arguments); return prevA.apply(this, arguments); }
+a = function() { console.log(JSON.stringify(arguments)); return prevA.apply(this, arguments); }
 a.r = prevA.r;
 a.n = prevA.n;
 a.d = prevA.d;
