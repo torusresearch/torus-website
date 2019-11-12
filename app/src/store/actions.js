@@ -886,33 +886,29 @@ export default {
 }
 
 function WindowReference(preopenInstanceId) {
-  console.log('NEW WINDOW REF', arguments)
   const self = this
   this.closed = false
   this.preopenInstanceId = preopenInstanceId
   const windowStream = torus.communicationMux.getStream('window')
   const preopenHandler = function({ preopenInstanceId, closed }) {
-    console.log('HERE', arguments)
     if (preopenInstanceId === self.preopenInstanceId && closed) {
       self.closed = true
+      windowStream.removeListener('data', preopenHandler)
     }
-    windowStream.removeListener('data', preopenHandler)
   }
+  windowStream.on('data', preopenHandler)
   this.close = function() {
     windowStream.write({
       preopenInstanceId: self.preopenInstanceId,
       close: true
     })
   }
-  windowStream.on('data', preopenHandler)
 }
 WindowReference.prototype.constructor = WindowReference
 
 function windowOpen(windowOpenParams, preopenInstanceId) {
   var url = windowOpenParams[0]
   if (preopenInstanceId) {
-    console.log('POSTING BROADCAST TO preopen_channel' + preopenInstanceId)
-    console.log('YURRRRLRLRLRLRLLLLL', url)
     var bc = new BroadcastChannel(`preopen_channel_${preopenInstanceId}`, broadcastChannelOptions)
     window.bc = bc // TODO: remove
     setTimeout(function() {
