@@ -266,7 +266,7 @@ class Torus {
   }
 
   hashMessage(message) {
-    const bufferedMessage = ethUtil.toBuffer(message)
+    const bufferedMessage = Buffer.from(message, 'utf8')
     return ethUtil.hashPersonalMessage(bufferedMessage)
   }
 }
