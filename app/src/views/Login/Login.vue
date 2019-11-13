@@ -171,8 +171,9 @@ export default {
       triggerLogin: 'triggerLogin'
     }),
     returnHome() {
-      this.$router.push({ path: '/' })
-      this.isLogout = false
+      // this.$router.push({ path: '/' }).catch(err => {})
+      // this.isLogout = false
+      window.location.href = process.env.BASE_URL
     }
   },
   computed: mapState({
@@ -187,7 +188,7 @@ export default {
       if (newAddress !== oldAddress && newAddress !== '') {
         let redirectPath = this.$route.query.redirect
         if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet'
-        this.$router.push(redirectPath)
+        this.$router.push(redirectPath).catch(err => {})
       }
     }
   },
@@ -218,7 +219,7 @@ export default {
       }
     }, 2000)
 
-    if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet')
+    if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch(err => {})
   },
   created() {
     this.isLogout = this.$route.name !== 'login'

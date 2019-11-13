@@ -1,11 +1,6 @@
-const baseRoute =
-  process.env.VUE_APP_TORUS_BUILD_ENV === 'production'
-    ? 'https://app.tor.us/'
-    : process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
-    ? 'https://staging.tor.us/'
-    : process.env.VUE_APP_TORUS_BUILD_ENV === 'testing'
-    ? 'https://testing.tor.us/'
-    : 'https://localhost:3000/'
+let baseRoute = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000'
+
+baseRoute += process.env.BASE_URL
 
 const redirect_uri = `${baseRoute}redirect`
 export default {

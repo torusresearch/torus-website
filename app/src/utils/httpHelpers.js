@@ -19,6 +19,26 @@ function post(url = '', data = {}, opts = {}) {
   })
 }
 
+function remove(url = '', data = {}, opts = {}) {
+  const defaultOptions = {
+    mode: 'cors',
+    cache: 'no-cache',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+    }
+  }
+  const options = {
+    ...defaultOptions,
+    ...opts,
+    ...{ method: 'DELETE' }
+  }
+  return fetch(url, options).then(response => {
+    if (response.ok) {
+      return response.json()
+    } else throw new Error('Could not connect', response)
+  })
+}
+
 function get(url = '', opts = {}) {
   const defaultOptions = {
     mode: 'cors',
@@ -77,4 +97,4 @@ function promiseRace(url, options, timeout, counter) {
   ])
 }
 
-export { get, post, patch, generateJsonRPCObject, promiseRace }
+export { get, post, patch, remove, generateJsonRPCObject, promiseRace }

@@ -37,13 +37,18 @@ const TRANSACTION_STATUS_CONFIRMED = 'confirmed'
 
 const TOKEN_METHOD_TRANSFER = 'transfer'
 const TOKEN_METHOD_APPROVE = 'approve'
-const TOKEN_METHOD_TRANSFER_FROM = 'transferfrom'
+const TOKEN_METHOD_TRANSFER_FROM = 'transferFrom'
+
+const COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM = 'safeTransferFrom'
 
 const SEND_ETHER_ACTION_KEY = 'sentEther'
 const DEPLOY_CONTRACT_ACTION_KEY = 'contractDeployment'
 const CONTRACT_INTERACTION_KEY = 'contractInteraction'
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+const ERC721METADATA_INTERFACE_ID = '0x5b5e139f'
+const ERC721ENUMERABLE_INTERFACE_ID = '0x780e9d63'
+const SINGLE_CALL_BALANCES_ADDRESS = '0xb1f8e55c7f64d203c1400b9d8555d050f94adf39'
 
 const ACTIVE = 'active'
 const INACTIVE = 'inactive'
@@ -51,6 +56,10 @@ const INACTIVE = 'inactive'
 const USER_INFO_REQUEST_APPROVED = 'user_info_request_approved'
 const USER_INFO_REQUEST_REJECTED = 'user_info_request_rejected'
 const USER_INFO_REQUEST_NEW = 'user_info_request_new'
+
+const CONTRACT_TYPE_ETH = 'eth'
+const CONTRACT_TYPE_ERC20 = 'erc20'
+const CONTRACT_TYPE_ERC721 = 'erc721'
 
 const createNetwork = (host, networkName, chainId) => {
   return {
@@ -91,12 +100,33 @@ const TWITCH = 'twitch'
 const ETH_LABEL = 'ETH Address'
 const GOOGLE_LABEL = 'Google Email'
 const FACEBOOK_LABEL = 'Facebook ID'
-const REDDIT_LABEL = 'Reddit ID'
+const REDDIT_LABEL = 'Reddit Username'
 const DISCORD_LABEL = 'Discord ID'
 const TWITCH_LABEL = 'Twitch ID'
 
 const THEME_DARK_BLACK_NAME = 'dark-black'
 const THEME_LIGHT_BLUE_NAME = 'light-blue'
+
+const OLD_ERC721_LIST = ['0x06012c8cf97bead5deae237070f9587f8e7a266d']
+
+const ALLOWED_VERIFIERS = [
+  {
+    name: ETH_LABEL,
+    value: ETH
+  },
+  {
+    name: GOOGLE_LABEL,
+    value: GOOGLE
+  },
+  {
+    name: REDDIT_LABEL,
+    value: REDDIT
+  },
+  {
+    name: DISCORD_LABEL,
+    value: DISCORD
+  }
+]
 
 module.exports = {
   ETH,
@@ -165,5 +195,14 @@ module.exports = {
   DISCORD_LABEL,
   TWITCH_LABEL,
   THEME_DARK_BLACK_NAME,
-  THEME_LIGHT_BLUE_NAME
+  THEME_LIGHT_BLUE_NAME,
+  ERC721METADATA_INTERFACE_ID,
+  ERC721ENUMERABLE_INTERFACE_ID,
+  SINGLE_CALL_BALANCES_ADDRESS,
+  CONTRACT_TYPE_ETH,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721,
+  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
+  OLD_ERC721_LIST,
+  ALLOWED_VERIFIERS
 }

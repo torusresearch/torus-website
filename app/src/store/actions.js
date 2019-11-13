@@ -15,10 +15,19 @@ import {
   THEME_LIGHT_BLUE_NAME
 } from '../utils/enums'
 import { getRandomNumber, broadcastChannelOptions, storageAvailable } from '../utils/utils'
-import { post, get, patch } from '../utils/httpHelpers.js'
+import { post, get, patch, remove } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import initialState from './state'
-
+import {
+  accountTrackerHandler,
+  assetControllerHandler,
+  typedMessageManagerHandler,
+  personalMessageManagerHandler,
+  transactionControllerHandler,
+  messageManagerHandler,
+  detectTokensControllerHandler,
+  tokenRatesControllerHandler
+} from './controllerSubscriptions'
 import vuetify from '../plugins/vuetify'
 import themes from '../plugins/themes'
 
@@ -46,6 +55,14 @@ export default {
     dispatch('setTheme', THEME_LIGHT_BLUE_NAME)
     if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
     statusStream.write({ loggedIn: false })
+    torus.torusController.accountTracker.store.unsubscribe(accountTrackerHandler)
+    torus.torusController.txController.store.unsubscribe(transactionControllerHandler)
+    torus.torusController.assetController.store.unsubscribe(assetControllerHandler)
+    torus.torusController.typedMessageManager.store.unsubscribe(typedMessageManagerHandler)
+    torus.torusController.personalMessageManager.store.unsubscribe(personalMessageManagerHandler)
+    torus.torusController.messageManager.store.unsubscribe(messageManagerHandler)
+    torus.torusController.detectTokensController.detectedTokensStore.unsubscribe(detectTokensControllerHandler)
+    torus.torusController.tokenRatesController.store.unsubscribe(tokenRatesControllerHandler)
   },
   loginInProgress(context, payload) {
     context.commit('setLoginInProgress', payload)
@@ -81,6 +98,7 @@ export default {
   },
   async forceFetchTokens({ state }, payload) {
     torus.torusController.detectTokensController.refreshTokenBalances()
+    torus.torusController.assetDetectionController.restartAssetDetection()
     try {
       const response = await get(`${config.api}/tokenbalances`, {
         headers: {
@@ -93,7 +111,7 @@ export default {
         torus.torusController.detectTokensController.detectEtherscanTokenBalance(obj.contractAddress, {
           decimals: obj.tokenDecimal,
           erc20: true,
-          logo: '',
+          logo: 'eth.svg',
           name: obj.name,
           balance: obj.balance,
           symbol: obj.ticker
@@ -197,11 +215,11 @@ export default {
         })
     })
   },
-  finishImportAccount({ dispatch }, payload) {
+  finishImportAccount({ dispatch, state }, payload) {
     return new Promise((resolve, reject) => {
       const { privKey } = payload
       const address = torus.generateAddressFromPrivKey(privKey)
-      torus.torusController.setSelectedAccount(address)
+      torus.torusController.setSelectedAccount(address, { jwtToken: state.jwtToken })
       dispatch('addWallet', { ethAddress: address, privKey: privKey })
       dispatch('updateSelectedAddress', { selectedAddress: address })
       torus.torusController
@@ -226,16 +244,25 @@ export default {
   updateMessages({ commit }, payload) {
     commit('setMessages', payload.unapprovedMsgs)
   },
+  updateAssets({ commit }, payload) {
+    const collectibles = payload.collectibleContracts.map(contract => {
+      contract.assets = payload.collectibles.filter(asset => {
+        return asset.address === contract.address
+      })
+      return contract
+    })
+    commit('setAssets', { [payload.selectedAddress]: collectibles })
+  },
   updateTokenData({ commit, state }, payload) {
-    if (payload.tokenData) commit('setTokenData', { ...state.tokenData, [payload.address]: payload.tokenData })
+    if (payload.tokenData) commit('setTokenData', { [payload.address]: payload.tokenData })
   },
   updateTokenRates({ commit }, payload) {
     commit('setTokenRates', payload.tokenRates)
   },
-  updateSelectedAddress(context, payload) {
-    context.commit('setSelectedAddress', payload.selectedAddress)
+  updateSelectedAddress({ commit, state }, payload) {
+    commit('setSelectedAddress', payload.selectedAddress)
     torus.updateStaticData({ selectedAddress: payload.selectedAddress })
-    torus.torusController.setSelectedAccount(payload.selectedAddress)
+    torus.torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
   },
   updateNetworkId(context, payload) {
     context.commit('setNetworkId', payload.networkId)
@@ -557,57 +584,15 @@ export default {
       }, 1000)
     }
   },
-  subscribeToControllers({ dispatch, state }, payload) {
-    torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
-      if (accounts) {
-        for (const key in accounts) {
-          if (Object.prototype.hasOwnProperty.call(accounts, key)) {
-            const account = accounts[key]
-            dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
-          }
-        }
-      }
-    })
-    torus.torusController.txController.store.subscribe(function({ transactions }) {
-      if (transactions) {
-        // these transactions have negative index
-        const updatedTransactions = []
-        for (let id in transactions) {
-          if (transactions[id]) {
-            updatedTransactions.push(transactions[id])
-          }
-        }
-        // log.info(updatedTransactions, 'txs')
-        dispatch('updateTransactions', { transactions: updatedTransactions })
-      }
-    })
-
-    torus.torusController.typedMessageManager.store.subscribe(function({ unapprovedTypedMessages }) {
-      dispatch('updateTypedMessages', { unapprovedTypedMessages: unapprovedTypedMessages })
-    })
-
-    torus.torusController.personalMessageManager.store.subscribe(function({ unapprovedPersonalMsgs }) {
-      dispatch('updatePersonalMessages', { unapprovedPersonalMsgs: unapprovedPersonalMsgs })
-    })
-
-    torus.torusController.messageManager.store.subscribe(function({ unapprovedMsgs }) {
-      dispatch('updateMessages', { unapprovedMsgs: unapprovedMsgs })
-    })
-
-    dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
-    torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
-      if (tokens.length > 0) {
-        dispatch('updateTokenData', {
-          tokenData: tokens,
-          address: torus.torusController.detectTokensController.selectedAddress
-        })
-      }
-    })
-    torus.torusController.tokenRatesController.store.subscribe(function({ contractExchangeRates }) {
-      if (contractExchangeRates) {
-        dispatch('updateTokenRates', { tokenRates: contractExchangeRates })
-      }
-    })
+  subscribeToControllers(context, payload) {
+    torus.torusController.accountTracker.store.subscribe(accountTrackerHandler)
+    torus.torusController.txController.store.subscribe(transactionControllerHandler)
+    torus.torusController.assetController.store.subscribe(assetControllerHandler)
+    torus.torusController.typedMessageManager.store.subscribe(typedMessageManagerHandler)
+    torus.torusController.personalMessageManager.store.subscribe(personalMessageManagerHandler)
+    torus.torusController.messageManager.store.subscribe(messageManagerHandler)
+    torus.torusController.detectTokensController.detectedTokensStore.subscribe(detectTokensControllerHandler)
+    torus.torusController.tokenRatesController.store.subscribe(tokenRatesControllerHandler)
   },
   initTorusKeyring({ state, dispatch }, payload) {
     return torus.torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
@@ -624,6 +609,63 @@ export default {
     } catch (error) {
       reject(error)
     }
+  },
+  setContacts({ commit, state }) {
+    try {
+      get(`${config.api}/contact`, {
+        headers: {
+          Authorization: `Bearer ${state.jwtToken}`
+        }
+      }).then(resp => {
+        if (resp.data) commit('setContacts', resp.data)
+      })
+    } catch (error) {
+      reject(error)
+    }
+  },
+  addContact({ commit, state }, payload) {
+    return new Promise((resolve, reject) => {
+      post(`${config.api}/contact`, payload, {
+        headers: {
+          Authorization: `Bearer ${state.jwtToken}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      })
+        .then(response => {
+          commit('addContacts', [response.data])
+          log.info('successfully added contact', response)
+          resolve(response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to add contact')
+          reject('Unable to add contact')
+        })
+    })
+  },
+  deleteContact({ commit, state }, payload) {
+    return new Promise((resolve, reject) => {
+      remove(
+        `${config.api}/contact/${payload}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`
+          }
+        }
+      )
+        .then(response => {
+          const contactIndex = state.contacts.findIndex(contact => contact.id === response.data.id)
+          if (contactIndex !== -1) {
+            commit('deleteContact', contactIndex)
+            log.info('successfully deleted contact', response)
+            resolve(response)
+          }
+        })
+        .catch(err => {
+          log.error(err, 'unable to delete contact')
+          reject('Unable to delete contact')
+        })
+    })
   },
   handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
     const { torusNodeEndpoints, torusIndexes } = config
@@ -644,14 +686,13 @@ export default {
         const data = response[0]
         const message = response[1]
         dispatch('addWallet', data) // synchronus
-        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
         dispatch('subscribeToControllers')
-        dispatch('setBillboard')
         await Promise.all([
           dispatch('initTorusKeyring', data),
           dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
         ])
-
+        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
+        dispatch('setBillboard')
         // continue enable function
         var ethAddress = data.ethAddress
         if (calledFromEmbed) {
@@ -684,7 +725,7 @@ export default {
           signed_message: signedMessage
         })
         commit('setJwtToken', response.token)
-        await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed: calledFromEmbed })
+        await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed: calledFromEmbed, rehydrate: false })
 
         resolve()
       } catch (error) {
@@ -695,21 +736,22 @@ export default {
   },
   storeUserLogin({ state }, payload) {
     let userOrigin = ''
-    if (payload) {
+    if (payload && payload.calledFromEmbed) {
       userOrigin = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
     } else userOrigin = window.location.origin
-    post(
-      `${config.api}/user/recordLogin`,
-      {
-        hostname: userOrigin
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${state.jwtToken}`,
-          'Content-Type': 'application/json; charset=utf-8'
+    if (!payload.rehydrate)
+      post(
+        `${config.api}/user/recordLogin`,
+        {
+          hostname: userOrigin
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
         }
-      }
-    )
+      )
   },
   setTheme({ commit }, payload) {
     commit('setTheme', payload)
@@ -719,12 +761,12 @@ export default {
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
   },
-  setUserTheme({ state }, payload) {
+  setUserTheme({ state, dispatch }, payload) {
     return new Promise((resolve, reject) => {
       patch(
         `${config.api}/user/theme`,
         {
-          theme: state.theme
+          theme: payload
         },
         {
           headers: {
@@ -734,6 +776,7 @@ export default {
         }
       )
         .then(response => {
+          dispatch('setTheme', payload)
           log.info('successfully patched', response)
           resolve(response)
         })
@@ -745,7 +788,7 @@ export default {
   },
   setUserInfoAction({ commit, dispatch, state }, payload) {
     return new Promise(async (resolve, reject) => {
-      const { token, calledFromEmbed } = payload
+      const { token, calledFromEmbed, rehydrate } = payload
       try {
         get(`${config.api}/user`, {
           headers: {
@@ -754,11 +797,12 @@ export default {
         })
           .then(user => {
             if (user.data) {
-              const { transactions, default_currency, theme } = user.data || {}
+              const { transactions, contacts, default_currency, theme } = user.data || {}
               commit('setPastTransactions', transactions)
+              commit('setContacts', contacts)
               dispatch('setTheme', theme)
               dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
-              dispatch('storeUserLogin', calledFromEmbed)
+              dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
               resolve()
             }
           })
@@ -777,7 +821,7 @@ export default {
               }
             )
             commit('setNewUser', true)
-            dispatch('storeUserLogin', calledFromEmbed)
+            dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
             resolve()
           })
       } catch (error) {
@@ -790,6 +834,7 @@ export default {
       selectedAddress,
       wallet,
       networkType,
+      networkId,
       jwtToken,
       userInfo: { verifier }
     } = state
@@ -805,23 +850,25 @@ export default {
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       if (selectedAddress && wallet[selectedAddress]) {
-        dispatch('updateSelectedAddress', { selectedAddress })
         setTimeout(() => dispatch('subscribeToControllers'), 50)
         await Promise.all([
           torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet)),
-          dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false })
+          dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true })
         ])
+        dispatch('updateSelectedAddress', { selectedAddress })
+        dispatch('updateNetworkId', { networkId: networkId })
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: verifier })
         log.info('rehydrated wallet')
-        torus.web3.eth.net
-          .getId()
-          .then(res => {
-            setTimeout(function() {
-              dispatch('updateNetworkId', { networkId: res })
-            })
-            // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-          })
-          .catch(e => log.error(e))
+        // torus.web3.eth.net
+        //   .getId()
+        //   .then(res => {
+        //     console.log(res)
+        //     setTimeout(function() {
+        //       dispatch('updateNetworkId', { networkId: toHex(res) })
+        //     })
+        //     // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+        //   })
+        //   .catch(e => log.error(e))
       }
     } catch (error) {
       log.error('Failed to rehydrate', error)
