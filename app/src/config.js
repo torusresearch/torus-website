@@ -1,5 +1,8 @@
 import { PromiseReference } from './utils/utils'
-const baseRoute = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000/'
+let baseRoute = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000'
+
+baseRoute += process.env.BASE_URL
+
 const redirect_uri = `${baseRoute}redirect`
 
 export const nodeDetails = {
