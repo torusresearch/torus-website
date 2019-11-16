@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "assert": "^2.0.0",
-    "broadcast-channel": "^2.3.4",
+    "broadcast-channel": "^3.0.2",
     "copy-to-clipboard": "^3.2.0",
     "core-js": "3.4.1",
     "debounce": "^1.2.0",
