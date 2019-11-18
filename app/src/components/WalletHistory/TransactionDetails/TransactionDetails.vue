@@ -16,10 +16,10 @@
       <v-flex xs12>
         <v-layout>
           <v-flex xs6 class="mr-1">
-            <v-btn small block outlined color="success">Speed up Transaction</v-btn>
+            <speed-up-transaction :transaction="transaction"></speed-up-transaction>
           </v-flex>
           <v-flex xs6 class="ml-1">
-            <v-btn small block outlined color="error">Stop Transaction</v-btn>
+            <cancel-transaction :transaction="transaction"></cancel-transaction>
           </v-flex>
         </v-layout>
       </v-flex>
@@ -58,11 +58,13 @@
 
 <script>
 import SpeedUpTransaction from '../SpeedUpTransaction'
+import CancelTransaction from '../CancelTransaction'
 
 export default {
   props: ['transaction'],
   components: {
-    // SpeedUpTransaction
+    SpeedUpTransaction,
+    CancelTransaction
   }
 }
 </script>

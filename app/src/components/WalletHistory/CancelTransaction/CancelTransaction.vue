@@ -1,44 +1,37 @@
 <template>
   <v-dialog v-model="dialog" width="400" :fullscreen="$vuetify.breakpoint.xsOnly">
     <template v-slot:activator="{ on }">
-      <v-btn small block outlined color="success" v-on="on">Speed up Transaction</v-btn>
+      <v-btn small block outlined color="error" v-on="on">Stop Transaction</v-btn>
     </template>
     <v-card class="speed-up-transaction py-6 px-8">
       <v-layout wrap>
         <v-flex xs12>
-          <div class="font-weight-bold headline">Speed up your transaction</div>
+          <div class="font-weight-bold headline">Cancel your transaction</div>
         </v-flex>
         <v-flex xs12>
-          <div class="mb-10 body-2">Increase your transfer fee:</div>
+          <div class="mb-10 body-2">To do so, you have to pay for a min fee shown below:</div>
           <v-slider v-model="slider" thumb-label="always" class="align-center mx-n2" :max="gasPrice * 5" :min="gasPrice" hide-details></v-slider>
           <v-layout>
             <v-flex xs6>
-              <div class="primary--text subtitle-2">Current</div>
-              <div class="body-2">~ 7 Mins</div>
+              <div class="subtitle-2">Min</div>
             </v-flex>
             <v-flex xs6 class="text-right">
-              <div class="primary--text subtitle-2">Fast</div>
-              <div class="body-2">~ 2 Mins</div>
+              <div class="subtitle-2">Max</div>
             </v-flex>
           </v-layout>
         </v-flex>
-        <v-flex>
-          <div class="subtitle-2">Updated Summary</div>
-          <v-divider></v-divider>
-          <v-list dense>
-            <v-list-item>
-              <v-list-item-content class="caption">Send Amount</v-list-item-content>
-              <v-list-item-content class="caption align-end">0.01 ETH</v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content class="caption">New Transfer Fee</v-list-item-content>
-              <v-list-item-content class="caption align-end">0.12 ETH</v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content class="body-2">New Total</v-list-item-content>
-              <v-list-item-content class="body-2 align-end">0.13 ETH</v-list-item-content>
-            </v-list-item>
-          </v-list>
+        <v-flex xs12 mt-2>
+          <v-alert class="caption" color="#FED9D8">
+            <div class="subtitle-2 ml-n2">
+              <v-icon class="error--text" small v-text="'$vuetify.icons.info'" />
+              ATTENTION
+            </div>
+            <div class="caption ml-3">
+              The network requires a fee higher than your original transaction fee. A higher fee increases the chances of a succesful cancellation.
+              <span class="font-weight-bold">This fee will only be charged</span>
+              if the attempt to cancel the transaction is successful.
+            </div>
+          </v-alert>
         </v-flex>
         <v-flex xs12 class="mx-n1 mt-2">
           <v-layout>
