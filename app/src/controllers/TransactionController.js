@@ -363,7 +363,9 @@ class TransactionController extends EventEmitter {
     @param txId {number} - the tx's Id
   */
   async approveTransaction(txId) {
+    console.log('approveTransaction and txId is', txId)
     let nonceLock
+    console.log(this.txStateManager.getTxList())
     try {
       if (this.inProcessOfSigning.has(txId)) {
         return
@@ -373,6 +375,7 @@ class TransactionController extends EventEmitter {
       this.txStateManager.setTxStatusApproved(txId)
       // get next nonce
       const txMeta = this.txStateManager.getTx(txId)
+      console.log('approvetransaction and txMeta is', txMeta)
       const fromAddress = txMeta.txParams.from
       // wait for a nonce
       nonceLock = await this.nonceTracker.getNonceLock(fromAddress)
