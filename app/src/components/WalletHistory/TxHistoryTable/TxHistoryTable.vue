@@ -1,6 +1,38 @@
 <template>
   <div class="activity-table" :data-count="transactions.length" :data-per-page="itemsPerPage" :data-count-transfer="nonTopupTransactionCount">
-    <v-data-table
+    <v-dialog width="400" :fullscreen="$vuetify.breakpoint.xsOnly" v-for="transaction in filteredTransactions" :key="transaction.id">
+      <template v-slot:activator="{ on }">
+        <v-card color="card-shadow activity mb-4 pa-5" v-on="on">
+          <v-layout>
+            <v-flex xs2>
+              <div class="caption font-weight-medium">{{ transaction.dateFormatted }}</div>
+              <div class="info font-weight-light">{{ transaction.dateFormatted }}</div>
+            </v-flex>
+            <v-flex xs5>
+              <v-icon large color="primary" class="float-left mr-2">{{ transaction.actionIcon }}</v-icon>
+              <div class="caption font-weight-medium">{{ transaction.action }}</div>
+              <div class="info font-weight-light">to {{ transaction.to }}</div>
+            </v-flex>
+            <v-flex xs4 class="text-right">
+              <div class="caption font-weight-medium">{{ transaction.totalAmountString }}</div>
+              <div class="info font-weight-light">{{ transaction.currencyAmountString }}</div>
+            </v-flex>
+            <v-flex xs2></v-flex>
+            <v-flex xs2 class="text-center">
+              <template v-if="transaction.statusText === 'Pending'">
+                <div class="caption font-weight-medium mb-1">{{ transaction.statusText }}</div>
+                <v-progress-linear color="success" value="15"></v-progress-linear>
+              </template>
+              <v-chip v-else :color="transaction.statusText === 'Successful' ? '#9BE8C7' : '#FEA29F'" x-small>
+                {{ transaction.statusText }}
+              </v-chip>
+            </v-flex>
+          </v-layout>
+        </v-card>
+      </template>
+      <transaction-details :transaction="transaction" />
+    </v-dialog>
+    <!-- <v-data-table
       :headers="headers"
       :items="filteredTransactions"
       :expanded.sync="expanded"
@@ -52,20 +84,6 @@
               <v-dialog v-model="speedUpTx" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly">
                 <SpeedUpTransaction :gas="item.gas" @onClose="speedUpTx = false" />
               </v-dialog>
-              <!-- <v-flex xs4 sm1 pr-2>
-                Type
-                <span class="float-right">:</span>
-              </v-flex>
-              <v-flex xs8 sm11>Contract Interaction</v-flex>-->
-              <!-- <v-flex xs4 sm1 pr-2>
-                Data
-                <span class="float-right">:</span>
-              </v-flex>
-              <v-flex xs8 sm11>
-                <v-card flat class="grey lighten-3">
-                  <v-card-text></v-card-text>
-                </v-card>
-              </v-flex>-->
               <v-flex xs12 class="text-right">
                 <a class="v-btn" color="primary" :href="item.etherscanLink" target="_blank">View On Etherscan</a>
               </v-flex>
@@ -85,16 +103,19 @@
         v-model="page"
         :length="pageCount"
       ></v-pagination>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
 import TxHistoryMixin from '../TxHistoryMixin'
-import SpeedUpTransaction from '../SpeedUpTransaction'
+import TransactionDetails from '../TransactionDetails'
 
 export default {
   mixins: [TxHistoryMixin],
+  components: {
+    TransactionDetails
+  },
   data() {
     return {
       page: 1,
@@ -147,9 +168,6 @@ export default {
     showFooter() {
       return this.transactions && this.transactions.length > 5
     }
-  },
-  components: {
-    SpeedUpTransaction: SpeedUpTransaction
   },
   methods: {
     changeSort(column) {
