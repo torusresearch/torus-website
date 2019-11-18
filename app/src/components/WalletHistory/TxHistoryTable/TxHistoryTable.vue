@@ -1,37 +1,11 @@
 <template>
   <div class="activity-table" :data-count="transactions.length" :data-per-page="itemsPerPage" :data-count-transfer="nonTopupTransactionCount">
-    <v-dialog width="400" :fullscreen="$vuetify.breakpoint.xsOnly" v-for="transaction in filteredTransactions" :key="transaction.id">
-      <template v-slot:activator="{ on }">
-        <v-card color="card-shadow activity mb-4 pa-5" v-on="on">
-          <v-layout>
-            <v-flex xs2>
-              <div class="caption font-weight-medium">{{ transaction.dateFormatted }}</div>
-              <div class="info font-weight-light">{{ transaction.dateFormatted }}</div>
-            </v-flex>
-            <v-flex xs5>
-              <v-icon large color="primary" class="float-left mr-2">{{ transaction.actionIcon }}</v-icon>
-              <div class="caption font-weight-medium">{{ transaction.action }}</div>
-              <div class="info font-weight-light">to {{ transaction.to }}</div>
-            </v-flex>
-            <v-flex xs4 class="text-right">
-              <div class="caption font-weight-medium">{{ transaction.totalAmountString }}</div>
-              <div class="info font-weight-light">{{ transaction.currencyAmountString }}</div>
-            </v-flex>
-            <v-flex xs2></v-flex>
-            <v-flex xs2 class="text-center">
-              <template v-if="transaction.statusText === 'Pending'">
-                <div class="caption font-weight-medium mb-1">{{ transaction.statusText }}</div>
-                <v-progress-linear color="success" value="15"></v-progress-linear>
-              </template>
-              <v-chip v-else :color="transaction.statusText === 'Successful' ? '#9BE8C7' : '#FEA29F'" x-small>
-                {{ transaction.statusText }}
-              </v-chip>
-            </v-flex>
-          </v-layout>
-        </v-card>
-      </template>
-      <transaction-details :transaction="transaction" />
-    </v-dialog>
+    <transaction-details
+      v-for="transaction in filteredTransactions"
+      :key="transaction.id"
+      @onCancelTransaction="cancelTransaction"
+      :transaction="transaction"
+    />
     <!-- <v-data-table
       :headers="headers"
       :items="filteredTransactions"
@@ -184,6 +158,9 @@ export default {
       } else {
         this.expanded = [item]
       }
+    },
+    cancelTransaction(data) {
+      console.log('cancelTransaction', data)
     }
   }
 }
