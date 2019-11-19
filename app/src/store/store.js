@@ -188,7 +188,8 @@ VuexStore.subscribe((mutation, state) => {
           selected_currency: state.selectedCurrency,
           status: 'submitted',
           network: state.networkType.host,
-          transaction_hash: txMeta.hash
+          transaction_hash: txMeta.hash,
+          rawTxMeta: JSON.stringify(txMeta)
         }
         log.info('txMeta, store.js', txMeta, txObj, Date.now())
 
