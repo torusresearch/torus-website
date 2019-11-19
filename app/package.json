@@ -124,7 +124,7 @@
     "lint-staged": "^9.4.3",
     "luxon": "^1.21.1",
     "mocha": "^6.2.2",
-    "mocha-eslint": "^5.0.0",
+    "mocha-eslint": "^6.0.0",
     "mocha-jsdom": "^2.0.0",
     "mocha-sinon": "^2.1.0",
     "nock": "^11.7.0",
