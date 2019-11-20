@@ -8,7 +8,9 @@ var _cacheNameDetails = {
   prefix: 'workbox',
   suffix: registration.scope
 }
-
+var iframeURL
+var serviceWorkerScriptPath = '/service-worker.js'
+var iframeURLResponseText
 function precacheAndRoute(entries, opts) {
   precache(entries)
   addRoute(opts)
@@ -127,7 +129,17 @@ function precache(entries) {
     })
     addEventListener('activate', function(event) {
       var precacheController = getOrCreatePrecacheController()
-      event.waitUntil(precacheController.activate())
+      iframeURL = self.registration.active.scriptURL.split(serviceWorkerScriptPath)[0] + '/popup'
+      event.waitUntil(
+        fetch(iframeURL)
+          .then(function(resp) {
+            return resp.text()
+          })
+          .then(function(respText) {
+            iframeURLResponseText = respText
+            return precacheController.activate()
+          })
+      )
     })
   }
 }
@@ -509,6 +521,16 @@ self.addEventListener('fetch', function(event) {
         new Blob([
           `
 REDIRECT_HTML${''}
+`
+        ])
+      )
+    )
+  } else if (event.request.url.indexOf('integrity=true') > -1) {
+    event.respondWith(
+      new Response(
+        new Blob([
+          `
+${iframeURLResponseText}
 `
         ])
       )
