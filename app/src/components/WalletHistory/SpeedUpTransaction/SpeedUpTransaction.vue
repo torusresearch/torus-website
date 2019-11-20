@@ -1,15 +1,15 @@
 <template>
   <v-dialog v-model="dialog" width="400" :fullscreen="$vuetify.breakpoint.xsOnly">
     <template v-slot:activator="{ on }">
-      <v-btn small block outlined color="success" v-on="on">Speed up Transaction</v-btn>
+      <v-btn x-small width="145" outlined rounded color="success" v-on="on">Speed up Transaction</v-btn>
     </template>
     <v-card class="speed-up-transaction py-6 px-8">
       <v-layout wrap>
-        <v-flex xs12>
+        <v-flex xs12 class="mb-4">
           <div class="font-weight-bold headline">Speed up your transaction</div>
         </v-flex>
-        <v-flex xs12>
-          <div class="mb-10 body-2">Increase your transfer fee:</div>
+        <v-flex xs12 class="mb-8">
+          <div class="mb-10 body-2">Increase your transfer fee (ETH):</div>
           <v-slider v-model="slider" thumb-label="always" class="align-center mx-n2" :max="gasPrice * 5" :min="gasPrice" hide-details></v-slider>
           <v-layout>
             <v-flex xs6>
@@ -25,27 +25,33 @@
         <v-flex>
           <div class="subtitle-2">Updated Summary</div>
           <v-divider></v-divider>
-          <v-list dense>
+          <v-list dense class="updated-summary pt-1">
             <v-list-item>
               <v-list-item-content class="caption">Send Amount</v-list-item-content>
-              <v-list-item-content class="caption align-end">0.01 ETH</v-list-item-content>
+              <v-list-item-content class="caption text-end">
+                <span>0.01 ETH</span>
+              </v-list-item-content>
             </v-list-item>
             <v-list-item>
               <v-list-item-content class="caption">New Transfer Fee</v-list-item-content>
-              <v-list-item-content class="caption align-end">0.12 ETH</v-list-item-content>
+              <v-list-item-content class="caption text-end">
+                <span>0.12 ETH</span>
+              </v-list-item-content>
             </v-list-item>
             <v-list-item>
               <v-list-item-content class="body-2">New Total</v-list-item-content>
-              <v-list-item-content class="body-2 align-end">0.13 ETH</v-list-item-content>
+              <v-list-item-content class="body-2 text-end">
+                <span>0.13 ETH</span>
+              </v-list-item-content>
             </v-list-item>
           </v-list>
         </v-flex>
-        <v-flex xs12 class="mx-n1 mt-2">
+        <v-flex xs12 class="mx-n1 mt-10">
           <v-layout>
-            <v-flex mx-1>
+            <v-flex mx-2>
               <v-btn block depressed @click="dialog = false">Cancel</v-btn>
             </v-flex>
-            <v-flex mx-1>
+            <v-flex mx-2>
               <v-btn block depressed color="primary">Confirm</v-btn>
             </v-flex>
           </v-layout>
@@ -85,3 +91,7 @@ export default {
   created() {}
 }
 </script>
+
+<style lang="scss" scoped>
+@import 'SpeedUpTransaction.scss';
+</style>

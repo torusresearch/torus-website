@@ -6,8 +6,13 @@ const {
   ACTIVITY_ACTION_SEND,
   ACTIVITY_PERIOD_ALL,
   ACTIVITY_PERIOD_MONTH_ONE,
-  ACTIVITY_PERIOD_WEEK_ONE
+  ACTIVITY_PERIOD_WEEK_ONE,
+  ACTIVITY_STATUS_SUCCESSFUL,
+  ACTIVITY_STATUS_UNSUCCESSFUL,
+  ACTIVITY_STATUS_PENDING
 } = require('../../utils/enums')
+
+const { formatDate } = require('../../utils/utils')
 
 export default {
   props: ['transactions', 'selectedAction', 'selectedPeriod', 'nonTopupTransactionCount'],
@@ -24,6 +29,7 @@ export default {
       return this.transactions
         .map(item => {
           item.actionIcon = this.getIcon(item.action)
+          item.actionText = this.getActionText(item.action, 'ETH')
           item.statusText = this.getStatusText(item.status)
           item.dateFormatted = this.formatDate(item.date)
           item.timeFormatted = this.formatTime(item.date)
@@ -61,14 +67,21 @@ export default {
         case 'rejected':
         case 'denied':
         case 'unapproved':
-          return 'Unsuccessful'
+          return ACTIVITY_STATUS_UNSUCCESSFUL
         case 'confirmed':
-          return 'Successful'
+          return ACTIVITY_STATUS_SUCCESSFUL
         case 'pending':
         case 'submitted':
-          return 'Pending'
+          return ACTIVITY_STATUS_PENDING
         default:
           return ''
+      }
+    },
+    getActionText(action, item) {
+      if (action === ACTIVITY_ACTION_SEND) {
+        return 'Send ' + item
+      } else if (action === ACTIVITY_ACTION_RECEIVE) {
+        return 'Received ' + item
       }
     },
     getIcon(action) {
@@ -81,10 +94,7 @@ export default {
       }
     },
     formatDate(date) {
-      return date
-        .toString()
-        .substring(4)
-        .substring(0, 20)
+      return formatDate(date)
     },
     formatTime(time) {
       return time.toTimeString().substring(0, 8)

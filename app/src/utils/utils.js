@@ -335,6 +335,14 @@ function validateVerifierId(selectedVerifier, value) {
   return true
 }
 
+function formatDate(date) {
+  const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  const day = date.getDate()
+  const month = monthList[date.getMonth()]
+  const year = date.getFullYear()
+  return `${day} ${month} ${year}`
+}
+
 module.exports = {
   removeListeners,
   applyListeners,
@@ -359,5 +367,6 @@ module.exports = {
   getEthTxStatus,
   broadcastChannelOptions,
   storageAvailable,
-  validateVerifierId
+  validateVerifierId,
+  formatDate
 }
