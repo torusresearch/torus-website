@@ -524,6 +524,5 @@ export const getLatestEpochInfo = async function(mainnetWeb3) {
 
 export const getNodeEndpoint = async function(mainnetWeb3, nodeEthAddress) {
   var nodeListContract = new mainnetWeb3.eth.Contract(nodeListABI, nodeListAddress)
-  var nodeDetails = await nodeListContract.methods.getNodeDetails(nodeEthAddress).call()
-  return nodeDetails[0].split(':')[0]
+  return nodeListContract.methods.getNodeDetails(nodeEthAddress).call()
 }

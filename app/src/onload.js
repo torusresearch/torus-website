@@ -73,20 +73,22 @@ function onloadTorus(torus) {
     }
     try {
       const latestEpochInfo = await getLatestEpochInfo(torus._mainnetWeb3)
-      nodeDetails.currentEpoch = Number(latestEpochInfo[0])
+      nodeDetails.currentEpoch = Number(latestEpochInfo.id)
       var nodeEndpointRequests = []
-      var nodeEndpoints = []
-      var indexes = latestEpochInfo[4].map((_, pos) => {
+      var indexes = latestEpochInfo.nodeList.map((_, pos) => {
         return pos + 1
       })
-      latestEpochInfo[4].map(async (nodeEthAddress, pos) => {
+      latestEpochInfo.nodeList.map(async (nodeEthAddress, pos) => {
         var req = getNodeEndpoint(torus._mainnetWeb3, nodeEthAddress)
         nodeEndpointRequests.push(req)
-        nodeEndpoints[pos] = await req
       })
-      await Promise.all(nodeEndpointRequests)
+      const nodeEndpoints = await Promise.all(nodeEndpointRequests)
+      const updatedNodeEndpoints = nodeEndpoints.map(x => {
+        return `https://${x.declaredIp.split(':')[0]}/jrpc`
+      })
       nodeDetails.torusIndexes = indexes
-      nodeDetails.torusNodeEndpoints = nodeEndpoints
+      nodeDetails.torusNodeEndpoints = updatedNodeEndpoints
+      log.info(updatedNodeEndpoints)
       nodeDetails.updated.resolve(nodeDetails)
     } catch (err) {
       nodeDetails.updated.reject(err)
