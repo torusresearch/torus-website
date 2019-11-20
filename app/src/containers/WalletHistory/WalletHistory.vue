@@ -236,8 +236,13 @@ export default {
     }
   },
   mounted() {
-    const { selectedAddress: publicAddress } = this.$store.state
-    getPastOrders({}, { public_address: publicAddress })
+    const { selectedAddress: publicAddress, jwtToken } = this.$store.state
+    getPastOrders(
+      { public_address: publicAddress },
+      {
+        Authorization: `Bearer ${jwtToken}`
+      }
+    )
       .then(response => {
         this.paymentTx = response.result.reduce((acc, x) => {
           if (!(x.status === 'SENT_TO_SIMPLEX' && new Date() - new Date(x.createdAt) > 86400 * 1000)) {

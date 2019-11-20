@@ -43,7 +43,9 @@
               <div class="v-messages__wrapper">
                 <div class="v-messages__message d-flex text_2--text">
                   <v-flex class="px-3 font-weight-medium">
-                    * Includes
+                    *
+                    <span v-if="selectedProviderObj.includeFees">Includes &nbsp;&nbsp;</span>
+                    <span v-else>Doesn't Include &nbsp;&nbsp;</span>
                     <span v-html="selectedProviderObj.line2 || ''"></span>
                     <HelpTooltip
                       title="Service Fee"

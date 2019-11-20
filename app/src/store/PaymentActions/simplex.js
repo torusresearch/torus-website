@@ -1,39 +1,49 @@
 import { postQuote, postOrder } from '../../plugins/simplex'
 
 export default {
-  fetchSimplexQuote(context, payload) {
+  fetchSimplexQuote({ state }, payload) {
     // returns a promise
     // Need to add validations here
-    return postQuote({
-      digital_currency: payload.selectedCryptoCurrency,
-      fiat_currency: payload.selectedCurrency,
-      requested_currency: payload.selectedCurrency,
-      requested_amount: +parseFloat(payload.fiatValue)
-    })
+    return postQuote(
+      {
+        digital_currency: payload.selectedCryptoCurrency,
+        fiat_currency: payload.selectedCurrency,
+        requested_currency: payload.selectedCurrency,
+        requested_amount: +parseFloat(payload.fiatValue)
+      },
+      {
+        Authorization: `Bearer ${state.jwtToken}`
+      }
+    )
   },
   fetchSimplexOrder({ state, dispatch }, payload) {
-    postOrder({
-      'g-recaptcha-response': '',
-      account_details: {
-        app_end_user_id: payload.currentOrder.user_id
-      },
-      transaction_details: {
-        payment_details: {
-          fiat_total_amount: {
-            currency: payload.currentOrder.fiat_money.currency,
-            amount: payload.currentOrder.fiat_money.total_amount
-          },
-          requested_digital_amount: {
-            currency: payload.currentOrder.digital_money.currency,
-            amount: payload.currentOrder.digital_money.amount
-          },
-          destination_wallet: {
-            currency: payload.currentOrder.digital_money.currency,
-            address: state.selectedAddress
+    postOrder(
+      {
+        'g-recaptcha-response': '',
+        account_details: {
+          app_end_user_id: payload.currentOrder.user_id
+        },
+        transaction_details: {
+          payment_details: {
+            fiat_total_amount: {
+              currency: payload.currentOrder.fiat_money.currency,
+              amount: payload.currentOrder.fiat_money.total_amount
+            },
+            requested_digital_amount: {
+              currency: payload.currentOrder.digital_money.currency,
+              amount: payload.currentOrder.digital_money.amount
+            },
+            destination_wallet: {
+              currency: payload.currentOrder.digital_money.currency,
+              address: state.selectedAddress
+            }
           }
         }
+      },
+      {
+        Authorization: `Bearer ${state.jwtToken}`
       }
-    }).then(result => {
+    ).then(result => {
       const {
         version,
         partner,

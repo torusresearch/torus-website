@@ -358,7 +358,8 @@ const paymentProviders = {
     minOrderValue: 50,
     maxOrderValue: 20000,
     validCurrencies: ['USD', 'EUR'],
-    validCryptoCurrencies: ['ETH']
+    validCryptoCurrencies: ['ETH'],
+    includeFees: true
   },
   [MOONPAY]: {
     line1: 'Pay with Credit / Debit Card',
@@ -371,7 +372,8 @@ const paymentProviders = {
     minOrderValue: 20,
     maxOrderValue: 2000,
     validCurrencies: ['USD', 'EUR', 'GBP'],
-    validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT']
+    validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT'],
+    includeFees: true
   },
   [WYRE]: {
     line1: 'Pay with Google/Apple/Masterpass',
@@ -381,10 +383,11 @@ const paymentProviders = {
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://support.sendwyre.com/en/',
-    minOrderValue: 1,
+    minOrderValue: 20,
     maxOrderValue: 250,
-    validCurrencies: ['USD', 'GBP', 'AUD', 'EUR'],
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDC', 'WETH']
+    validCurrencies: ['USD'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
+    includeFees: false
   },
   [COINDIRECT]: {
     line1: 'Pay with Credit Card',
@@ -397,7 +400,8 @@ const paymentProviders = {
     minOrderValue: 20,
     maxOrderValue: 500,
     validCurrencies: ['EUR'],
-    validCryptoCurrencies: ['ETH']
+    validCryptoCurrencies: ['ETH'],
+    includeFees: true
   },
   [CRYPTO]: {
     line1: 'Pay with Credit Card',
@@ -410,7 +414,8 @@ const paymentProviders = {
     minOrderValue: 10,
     maxOrderValue: 1000,
     validCurrencies: ['USD'],
-    validCryptoCurrencies: ['ETH']
+    validCryptoCurrencies: ['ETH'],
+    includeFees: true
   }
 }
 

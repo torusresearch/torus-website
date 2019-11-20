@@ -2,15 +2,25 @@ import { getQuote } from '../../plugins/wyre'
 import config from '../../config'
 
 export default {
-  fetchWyreQuote(context, payload) {
+  fetchWyreQuote({ state }, payload) {
     // returns a promise
     // Need to add validations here
-    return getQuote()
+    console.log(payload)
+    return getQuote(
+      {
+        source_amount: +parseFloat(payload.fiatValue),
+        source_currency: payload.selectedCurrency,
+        dest_currency: payload.selectedCryptoCurrency
+      },
+      {
+        Authorization: `Bearer ${state.jwtToken}`
+      }
+    )
   },
   fetchWyreOrder({ state, dispatch }, { currentOrder }) {
     const params = {
-      destCurrency: currentOrder.selectedCryptoCurrency,
-      sourceAmount: currentOrder.fiatValue,
+      destCurrency: currentOrder.destCurrency,
+      sourceAmount: currentOrder.sourceAmount,
       redirectUrl: config.payment_redirect_uri,
       dest: `ethereum:${state.selectedAddress}`,
       accountId: config.wyreAccountId

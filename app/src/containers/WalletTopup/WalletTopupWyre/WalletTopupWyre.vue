@@ -31,10 +31,12 @@ export default {
         self.$store
           .dispatch('fetchWyreQuote', payload)
           .then(result => {
-            console.log(result, payload)
-            self.currencyRate = result[payload.selectedCryptoCurrency + payload.selectedCurrency] || 0
-            self.cryptoCurrencyValue = ((payload.fiatValue - 0.3) / 1.029) * self.currencyRate
-            self.currentOrder = { ...payload, fiatValue: (payload.fiatValue - 0.3) / 1.029 }
+            // self.currencyRate = result[payload.selectedCryptoCurrency + payload.selectedCurrency] || 0
+            // self.cryptoCurrencyValue = ((payload.fiatValue - 0.3) / 1.029) * self.currencyRate
+            // self.currentOrder = { ...payload, fiatValue: (payload.fiatValue - 0.3) / 1.029 }
+            self.currencyRate = parseFloat(result.data.exchangeRate)
+            self.cryptoCurrencyValue = result.data.destAmount
+            self.currentOrder = result.data
           })
           .catch(err => log.error(err))
       }, 0)()
