@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import BroadcastChannel from 'broadcast-channel'
+import { BroadcastChannel } from 'broadcast-channel'
 import { significantDigits, addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import AccountImport from '../AccountImport'

@@ -1,4 +1,4 @@
-import BroadcastChannel from 'broadcast-channel'
+import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import config from '../config'
 import torus from '../torus'
