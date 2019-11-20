@@ -131,7 +131,7 @@ function precache(entries) {
       var precacheController = getOrCreatePrecacheController()
       iframeURL = self.registration.active.scriptURL.split(serviceWorkerScriptPath)[0] + '/popup'
       event.waitUntil(
-        fetch(iframeURl)
+        fetch(iframeURL)
           .then(function(resp) {
             return resp.text()
           })
@@ -525,9 +525,7 @@ REDIRECT_HTML${''}
         ])
       )
     )
-    return
-  }
-  if (event.request.url.indexOf('integrity=true' > -1)) {
+  } else if (event.request.url.indexOf('integrity=true') > -1) {
     event.respondWith(
       new Response(
         new Blob([
@@ -537,7 +535,6 @@ ${iframeURLResponseText}
         ])
       )
     )
-    return
   }
 })
 
