@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import BroadcastChannel from 'broadcast-channel'
+import { BroadcastChannel } from 'broadcast-channel'
 import PageLoader from '../../components/helpers/PageLoader'
 import { broadcastChannelOptions } from '../../utils/utils'
 import log from 'loglevel'

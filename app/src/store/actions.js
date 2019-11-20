@@ -1,4 +1,4 @@
-import BroadcastChannel from 'broadcast-channel'
+import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import config, { nodeDetails } from '../config'
 import torus from '../torus'
@@ -125,7 +125,7 @@ export default {
   showProviderChangePopup(context, payload) {
     var bc = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
     window.open(
-      `${baseRoute}providerchange?instanceId=${torus.instanceId}`,
+      `${baseRoute}providerchange?integrity=true&instanceId=${torus.instanceId}`,
       '_blank',
       'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
     )
@@ -144,7 +144,7 @@ export default {
   showUserInfoRequestPopup(context, payload) {
     var bc = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`, broadcastChannelOptions)
     window.open(
-      `${baseRoute}userinforequest?instanceId=${torus.instanceId}`,
+      `${baseRoute}userinforequest?integrity=true&instanceId=${torus.instanceId}`,
       '_blank',
       'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
     )
@@ -164,7 +164,7 @@ export default {
     walletWindow =
       walletWindow ||
       window.open(
-        `${baseRoute}wallet${payload.path || ''}?instanceId=${torus.instanceId}`,
+        `${baseRoute}wallet${payload.path || ''}?integrity=true&instanceId=${torus.instanceId}`,
         '_blank',
         'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=750'
       )

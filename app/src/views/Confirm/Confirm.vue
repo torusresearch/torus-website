@@ -226,7 +226,7 @@
 <script>
 import { mapActions } from 'vuex' // Maybe dispatch a bc to show popup from that instance
 import VueJsonPretty from 'vue-json-pretty'
-import BroadcastChannel from 'broadcast-channel'
+import { BroadcastChannel } from 'broadcast-channel'
 import { numberToHex, fromWei, toChecksumAddress, hexToNumber } from 'web3-utils'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
 import PageLoader from '../../components/helpers/PageLoader'
