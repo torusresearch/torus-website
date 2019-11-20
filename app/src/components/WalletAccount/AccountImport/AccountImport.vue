@@ -124,7 +124,7 @@
 </template>
 
 <script>
-import BroadcastChannel from 'broadcast-channel'
+import { BroadcastChannel } from 'broadcast-channel'
 const WalletWorker = require('worker-loader!../../../utils/wallet.worker.js')
 const ethUtil = require('ethereumjs-util')
 const log = require('loglevel')

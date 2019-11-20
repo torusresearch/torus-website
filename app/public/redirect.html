@@ -14,7 +14,7 @@ var broadcastChannelLib = {}
           var c = 'function' == typeof require && require
           if (!f && c) return c(i, !0)
           if (u) return u(i, !0)
-          var a = new Error('Cannot find module ' + i)
+          var a = new Error('Cannot find module \'' + i + '\'')
           throw ((a.code = 'MODULE_NOT_FOUND'), a)
         }
         var p = (n[i] = { exports: {} })
@@ -40,13 +40,205 @@ var broadcastChannelLib = {}
   return r
 })()(
   {
-    '/torus/embed.js': [
+    1: [function(require, module, exports) {}, {}],
+    2: [
       function(require, module, exports) {
-        broadcastChannelLib.BroadcastChannel = require('broadcast-channel')
+        // shim for using process in browser
+        var process = (module.exports = {})
+
+        // cached from whatever global is present so that test runners that stub it
+        // don't break things.  But we need to wrap it in a try catch in case it is
+        // wrapped in strict mode code which doesn't define any globals.  It's inside a
+        // function because try/catches deoptimize in certain engines.
+
+        var cachedSetTimeout
+        var cachedClearTimeout
+
+        function defaultSetTimout() {
+          throw new Error('setTimeout has not been defined')
+        }
+        function defaultClearTimeout() {
+          throw new Error('clearTimeout has not been defined')
+        }
+        ;(function() {
+          try {
+            if (typeof setTimeout === 'function') {
+              cachedSetTimeout = setTimeout
+            } else {
+              cachedSetTimeout = defaultSetTimout
+            }
+          } catch (e) {
+            cachedSetTimeout = defaultSetTimout
+          }
+          try {
+            if (typeof clearTimeout === 'function') {
+              cachedClearTimeout = clearTimeout
+            } else {
+              cachedClearTimeout = defaultClearTimeout
+            }
+          } catch (e) {
+            cachedClearTimeout = defaultClearTimeout
+          }
+        })()
+        function runTimeout(fun) {
+          if (cachedSetTimeout === setTimeout) {
+            //normal enviroments in sane situations
+            return setTimeout(fun, 0)
+          }
+          // if setTimeout wasn't available but was latter defined
+          if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+            cachedSetTimeout = setTimeout
+            return setTimeout(fun, 0)
+          }
+          try {
+            // when when somebody has screwed with setTimeout but no I.E. maddness
+            return cachedSetTimeout(fun, 0)
+          } catch (e) {
+            try {
+              // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+              return cachedSetTimeout.call(null, fun, 0)
+            } catch (e) {
+              // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+              return cachedSetTimeout.call(this, fun, 0)
+            }
+          }
+        }
+        function runClearTimeout(marker) {
+          if (cachedClearTimeout === clearTimeout) {
+            //normal enviroments in sane situations
+            return clearTimeout(marker)
+          }
+          // if clearTimeout wasn't available but was latter defined
+          if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+            cachedClearTimeout = clearTimeout
+            return clearTimeout(marker)
+          }
+          try {
+            // when when somebody has screwed with setTimeout but no I.E. maddness
+            return cachedClearTimeout(marker)
+          } catch (e) {
+            try {
+              // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+              return cachedClearTimeout.call(null, marker)
+            } catch (e) {
+              // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+              // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+              return cachedClearTimeout.call(this, marker)
+            }
+          }
+        }
+        var queue = []
+        var draining = false
+        var currentQueue
+        var queueIndex = -1
+
+        function cleanUpNextTick() {
+          if (!draining || !currentQueue) {
+            return
+          }
+          draining = false
+          if (currentQueue.length) {
+            queue = currentQueue.concat(queue)
+          } else {
+            queueIndex = -1
+          }
+          if (queue.length) {
+            drainQueue()
+          }
+        }
+
+        function drainQueue() {
+          if (draining) {
+            return
+          }
+          var timeout = runTimeout(cleanUpNextTick)
+          draining = true
+
+          var len = queue.length
+          while (len) {
+            currentQueue = queue
+            queue = []
+            while (++queueIndex < len) {
+              if (currentQueue) {
+                currentQueue[queueIndex].run()
+              }
+            }
+            queueIndex = -1
+            len = queue.length
+          }
+          currentQueue = null
+          draining = false
+          runClearTimeout(timeout)
+        }
+
+        process.nextTick = function(fun) {
+          var args = new Array(arguments.length - 1)
+          if (arguments.length > 1) {
+            for (var i = 1; i < arguments.length; i++) {
+              args[i - 1] = arguments[i]
+            }
+          }
+          queue.push(new Item(fun, args))
+          if (queue.length === 1 && !draining) {
+            runTimeout(drainQueue)
+          }
+        }
+
+        // v8 likes predictible objects
+        function Item(fun, array) {
+          this.fun = fun
+          this.array = array
+        }
+        Item.prototype.run = function() {
+          this.fun.apply(null, this.array)
+        }
+        process.title = 'browser'
+        process.browser = true
+        process.env = {}
+        process.argv = []
+        process.version = '' // empty string to avoid regexp issues
+        process.versions = {}
+
+        function noop() {}
+
+        process.on = noop
+        process.addListener = noop
+        process.once = noop
+        process.off = noop
+        process.removeListener = noop
+        process.removeAllListeners = noop
+        process.emit = noop
+        process.prependListener = noop
+        process.prependOnceListener = noop
+
+        process.listeners = function(name) {
+          return []
+        }
+
+        process.binding = function(name) {
+          throw new Error('process.binding is not supported')
+        }
+
+        process.cwd = function() {
+          return '/'
+        }
+        process.chdir = function(dir) {
+          throw new Error('process.chdir is not supported')
+        }
+        process.umask = function() {
+          return 0
+        }
       },
-      { 'broadcast-channel': '/torus/node_modules/broadcast-channel/dist/lib/index.es5.js' }
+      {}
     ],
-    '/torus/node_modules/@babel/runtime/helpers/interopRequireDefault.js': [
+    3: [
+      function(require, module, exports) {
+        const BroadcastChannel = require('broadcast-channel').BroadcastChannel
+        broadcastChannelLib.BroadcastChannel = BroadcastChannel
+      },
+      { 'broadcast-channel': 6 }
+    ],
+    4: [
       function(require, module, exports) {
         function _interopRequireDefault(obj) {
           return obj && obj.__esModule
@@ -60,37 +252,16 @@ var broadcastChannelLib = {}
       },
       {}
     ],
-    '/torus/node_modules/broadcast-channel/dist/lib/index.es5.js': [
-      function(require, module, exports) {
-        'use strict'
-
-        var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault')
-
-        var _index = _interopRequireDefault(require('./index.js'))
-
-        /**
-         * because babel can only export on default-attribute,
-         * we use this for the non-module-build
-         * this ensures that users do not have to use
-         * var BroadcastChannel = require('broadcast-channel').default;
-         * but
-         * var BroadcastChannel = require('broadcast-channel');
-         */
-        module.exports = _index['default']
-      },
-      {
-        './index.js': '/torus/node_modules/broadcast-channel/dist/lib/index.js',
-        '@babel/runtime/helpers/interopRequireDefault': '/torus/node_modules/@babel/runtime/helpers/interopRequireDefault.js'
-      }
-    ],
-    '/torus/node_modules/broadcast-channel/dist/lib/index.js': [
+    5: [
       function(require, module, exports) {
         'use strict'
 
         Object.defineProperty(exports, '__esModule', {
           value: true
         })
-        exports['default'] = void 0
+        exports.clearNodeFolder = clearNodeFolder
+        exports.enforceOptions = enforceOptions
+        exports.BroadcastChannel = void 0
 
         var _util = require('./util.js')
 
@@ -146,13 +317,14 @@ var broadcastChannelLib = {}
          * See methods/native.js
          */
 
+        exports.BroadcastChannel = BroadcastChannel
         BroadcastChannel._pubkey = true
         /**
          * clears the tmp-folder if is node
          * @return {Promise<boolean>} true if has run, false if not node
          */
 
-        BroadcastChannel.clearNodeFolder = function(options) {
+        function clearNodeFolder(options) {
           options = (0, _options.fillOptionsWithDefaults)(options)
           var method = (0, _methodChooser.chooseMethod)(options)
 
@@ -171,7 +343,7 @@ var broadcastChannelLib = {}
 
         var ENFORCED_OPTIONS
 
-        BroadcastChannel.enforceOptions = function(options) {
+        function enforceOptions(options) {
           ENFORCED_OPTIONS = options
         } // PROTOTYPE
 
@@ -269,8 +441,8 @@ var broadcastChannelLib = {}
               // used in tests to simulate slow runtime
 
               /*if (channel.options.prepareDelay) {
-             await new Promise(res => setTimeout(res, this.options.prepareDelay));
-        }*/
+           await new Promise(res => setTimeout(res, this.options.prepareDelay));
+      }*/
               channel._state = s
             })
           } else {
@@ -331,19 +503,320 @@ var broadcastChannelLib = {}
             channel.method.onMessage(channel._state, null, time)
           }
         }
-
-        var _default = BroadcastChannel
-        exports['default'] = _default
       },
-      {
-        './method-chooser.js': '/torus/node_modules/broadcast-channel/dist/lib/method-chooser.js',
-        './options.js': '/torus/node_modules/broadcast-channel/dist/lib/options.js',
-        './util.js': '/torus/node_modules/broadcast-channel/dist/lib/util.js'
-      }
+      { './method-chooser.js': 9, './options.js': 15, './util.js': 16 }
     ],
-    '/torus/node_modules/broadcast-channel/dist/lib/method-chooser.js': [
+    6: [
       function(require, module, exports) {
         'use strict'
+
+        var _index = require('./index.js')
+
+        /**
+         * because babel can only export on default-attribute,
+         * we use this for the non-module-build
+         * this ensures that users do not have to use
+         * var BroadcastChannel = require('broadcast-channel').default;
+         * but
+         * var BroadcastChannel = require('broadcast-channel');
+         */
+        module.exports = {
+          BroadcastChannel: _index.BroadcastChannel,
+          createLeaderElection: _index.createLeaderElection,
+          clearNodeFolder: _index.clearNodeFolder,
+          enforceOptions: _index.enforceOptions
+        }
+      },
+      { './index.js': 7 }
+    ],
+    7: [
+      function(require, module, exports) {
+        'use strict'
+
+        Object.defineProperty(exports, '__esModule', {
+          value: true
+        })
+        Object.defineProperty(exports, 'BroadcastChannel', {
+          enumerable: true,
+          get: function get() {
+            return _broadcastChannel.BroadcastChannel
+          }
+        })
+        Object.defineProperty(exports, 'clearNodeFolder', {
+          enumerable: true,
+          get: function get() {
+            return _broadcastChannel.clearNodeFolder
+          }
+        })
+        Object.defineProperty(exports, 'enforceOptions', {
+          enumerable: true,
+          get: function get() {
+            return _broadcastChannel.enforceOptions
+          }
+        })
+        Object.defineProperty(exports, 'createLeaderElection', {
+          enumerable: true,
+          get: function get() {
+            return _leaderElection.createLeaderElection
+          }
+        })
+
+        var _broadcastChannel = require('./broadcast-channel')
+
+        var _leaderElection = require('./leader-election')
+      },
+      { './broadcast-channel': 5, './leader-election': 8 }
+    ],
+    8: [
+      function(require, module, exports) {
+        'use strict'
+
+        var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault')
+
+        Object.defineProperty(exports, '__esModule', {
+          value: true
+        })
+        exports.createLeaderElection = createLeaderElection
+
+        var _util = require('./util.js')
+
+        var _unload = _interopRequireDefault(require('unload'))
+
+        var LeaderElection = function LeaderElection(channel, options) {
+          this._channel = channel
+          this._options = options
+          this.isLeader = false
+          this.isDead = false
+          this.token = (0, _util.randomToken)()
+          this._isApl = false // _isApplying
+
+          this._reApply = false // things to clean up
+
+          this._unl = [] // _unloads
+
+          this._lstns = [] // _listeners
+
+          this._invs = [] // _intervals
+        }
+
+        LeaderElection.prototype = {
+          applyOnce: function applyOnce() {
+            var _this = this
+
+            if (this.isLeader) return Promise.resolve(false)
+            if (this.isDead) return Promise.resolve(false) // do nothing if already running
+
+            if (this._isApl) {
+              this._reApply = true
+              return Promise.resolve(false)
+            }
+
+            this._isApl = true
+            var stopCriteria = false
+            var recieved = []
+
+            var handleMessage = function handleMessage(msg) {
+              if (msg.context === 'leader' && msg.token != _this.token) {
+                recieved.push(msg)
+
+                if (msg.action === 'apply') {
+                  // other is applying
+                  if (msg.token > _this.token) {
+                    // other has higher token, stop applying
+                    stopCriteria = true
+                  }
+                }
+
+                if (msg.action === 'tell') {
+                  // other is already leader
+                  stopCriteria = true
+                }
+              }
+            }
+
+            this._channel.addEventListener('internal', handleMessage)
+
+            var ret = _sendMessage(this, 'apply') // send out that this one is applying
+              .then(function() {
+                return (0, _util.sleep)(_this._options.responseTime)
+              }) // let others time to respond
+              .then(function() {
+                if (stopCriteria) return Promise.reject(new Error())
+                else return _sendMessage(_this, 'apply')
+              })
+              .then(function() {
+                return (0, _util.sleep)(_this._options.responseTime)
+              }) // let others time to respond
+              .then(function() {
+                if (stopCriteria) return Promise.reject(new Error())
+                else return _sendMessage(_this)
+              })
+              .then(function() {
+                return _beLeader(_this)
+              }) // no one disagreed -> this one is now leader
+              .then(function() {
+                return true
+              })
+              ['catch'](function() {
+                return false
+              }) // apply not successfull
+              .then(function(success) {
+                _this._channel.removeEventListener('internal', handleMessage)
+
+                _this._isApl = false
+
+                if (!success && _this._reApply) {
+                  _this._reApply = false
+                  return _this.applyOnce()
+                } else return success
+              })
+
+            return ret
+          },
+          awaitLeadership: function awaitLeadership() {
+            if (
+              /* _awaitLeadershipPromise */
+              !this._aLP
+            ) {
+              this._aLP = _awaitLeadershipOnce(this)
+            }
+
+            return this._aLP
+          },
+          die: function die() {
+            var _this2 = this
+
+            if (this.isDead) return
+            this.isDead = true
+
+            this._lstns.forEach(function(listener) {
+              return _this2._channel.removeEventListener('internal', listener)
+            })
+
+            this._invs.forEach(function(interval) {
+              return clearInterval(interval)
+            })
+
+            this._unl.forEach(function(uFn) {
+              uFn.remove()
+            })
+
+            return _sendMessage(this, 'death')
+          }
+        }
+
+        function _awaitLeadershipOnce(leaderElector) {
+          if (leaderElector.isLeader) return Promise.resolve()
+          return new Promise(function(res) {
+            var resolved = false
+
+            var finish = function finish() {
+              if (resolved) return
+              resolved = true
+              clearInterval(interval)
+
+              leaderElector._channel.removeEventListener('internal', whenDeathListener)
+
+              res(true)
+            } // try once now
+
+            leaderElector.applyOnce().then(function() {
+              if (leaderElector.isLeader) finish()
+            }) // try on fallbackInterval
+
+            var interval = setInterval(function() {
+              leaderElector.applyOnce().then(function() {
+                if (leaderElector.isLeader) finish()
+              })
+            }, leaderElector._options.fallbackInterval)
+
+            leaderElector._invs.push(interval) // try when other leader dies
+
+            var whenDeathListener = function whenDeathListener(msg) {
+              if (msg.context === 'leader' && msg.action === 'death') {
+                leaderElector.applyOnce().then(function() {
+                  if (leaderElector.isLeader) finish()
+                })
+              }
+            }
+
+            leaderElector._channel.addEventListener('internal', whenDeathListener)
+
+            leaderElector._lstns.push(whenDeathListener)
+          })
+        }
+        /**
+         * sends and internal message over the broadcast-channel
+         */
+
+        function _sendMessage(leaderElector, action) {
+          var msgJson = {
+            context: 'leader',
+            action: action,
+            token: leaderElector.token
+          }
+          return leaderElector._channel.postInternal(msgJson)
+        }
+
+        function _beLeader(leaderElector) {
+          leaderElector.isLeader = true
+
+          var unloadFn = _unload['default'].add(function() {
+            return leaderElector.die()
+          })
+
+          leaderElector._unl.push(unloadFn)
+
+          var isLeaderListener = function isLeaderListener(msg) {
+            if (msg.context === 'leader' && msg.action === 'apply') {
+              _sendMessage(leaderElector, 'tell')
+            }
+          }
+
+          leaderElector._channel.addEventListener('internal', isLeaderListener)
+
+          leaderElector._lstns.push(isLeaderListener)
+
+          return _sendMessage(leaderElector, 'tell')
+        }
+
+        function fillOptionsWithDefaults(options, channel) {
+          if (!options) options = {}
+          options = JSON.parse(JSON.stringify(options))
+
+          if (!options.fallbackInterval) {
+            options.fallbackInterval = 3000
+          }
+
+          if (!options.responseTime) {
+            options.responseTime = channel.method.averageResponseTime(channel.options)
+          }
+
+          return options
+        }
+
+        function createLeaderElection(channel, options) {
+          if (channel._leaderElector) {
+            throw new Error('BroadcastChannel already has a leader-elector')
+          }
+
+          options = fillOptionsWithDefaults(options, channel)
+          var elector = new LeaderElection(channel, options)
+
+          channel._befC.push(function() {
+            return elector.die()
+          })
+
+          channel._leaderElector = elector
+          return elector
+        }
+      },
+      { './util.js': 16, '@babel/runtime/helpers/interopRequireDefault': 4, unload: 19 }
+    ],
+    9: [
+      function(require, module, exports) {
+        'use strict'
+
         var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault')
 
         Object.defineProperty(exports, '__esModule', {
@@ -392,14 +865,15 @@ var broadcastChannelLib = {}
         }
 
         function chooseMethod(options) {
-          // directly chosen
+          var chooseMethods = [].concat(options.methods, METHODS).filter(Boolean) // directly chosen
+
           if (options.type) {
             if (options.type === 'simulate') {
               // only use simulate-method if directly chosen
               return _simulate['default']
             }
 
-            var ret = METHODS.find(function(m) {
+            var ret = chooseMethods.find(function(m) {
               return m.type === options.type
             })
             if (!ret) throw new Error('method-type ' + options.type + ' not found')
@@ -410,10 +884,8 @@ var broadcastChannelLib = {}
            * remove idb from the list so that localstorage is been chosen
            */
 
-          var chooseMethods = METHODS
-
           if (!options.webWorkerSupport && !_util.isNode) {
-            chooseMethods = METHODS.filter(function(m) {
+            chooseMethods = chooseMethods.filter(function(m) {
               return m.type !== 'idb'
             })
           }
@@ -434,17 +906,18 @@ var broadcastChannelLib = {}
         }
       },
       {
-        './methods/indexed-db.js': '/torus/node_modules/broadcast-channel/dist/lib/methods/indexed-db.js',
-        './methods/localstorage.js': '/torus/node_modules/broadcast-channel/dist/lib/methods/localstorage.js',
-        './methods/native.js': '/torus/node_modules/broadcast-channel/dist/lib/methods/native.js',
-        './methods/simulate.js': '/torus/node_modules/broadcast-channel/dist/lib/methods/simulate.js',
-        './util': '/torus/node_modules/broadcast-channel/dist/lib/util.js',
-        '@babel/runtime/helpers/interopRequireDefault': '/torus/node_modules/@babel/runtime/helpers/interopRequireDefault.js'
+        './methods/indexed-db.js': 10,
+        './methods/localstorage.js': 11,
+        './methods/native.js': 12,
+        './methods/simulate.js': 13,
+        './util': 16,
+        '@babel/runtime/helpers/interopRequireDefault': 4
       }
     ],
-    '/torus/node_modules/broadcast-channel/dist/lib/methods/indexed-db.js': [
+    10: [
       function(require, module, exports) {
         'use strict'
+
         var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault')
 
         Object.defineProperty(exports, '__esModule', {
@@ -637,7 +1110,7 @@ var broadcastChannelLib = {}
               lastCursorId: 0,
               channelName: channelName,
               options: options,
-              uuid: (0, _util.randomToken)(10),
+              uuid: (0, _util.randomToken)(),
 
               /**
                * emittedMessagesIds
@@ -774,16 +1247,12 @@ var broadcastChannelLib = {}
         }
         exports['default'] = _default
       },
-      {
-        '../oblivious-set': '/torus/node_modules/broadcast-channel/dist/lib/oblivious-set.js',
-        '../options': '/torus/node_modules/broadcast-channel/dist/lib/options.js',
-        '../util.js': '/torus/node_modules/broadcast-channel/dist/lib/util.js',
-        '@babel/runtime/helpers/interopRequireDefault': '/torus/node_modules/@babel/runtime/helpers/interopRequireDefault.js'
-      }
+      { '../oblivious-set': 14, '../options': 15, '../util.js': 16, '@babel/runtime/helpers/interopRequireDefault': 4 }
     ],
-    '/torus/node_modules/broadcast-channel/dist/lib/methods/localstorage.js': [
+    11: [
       function(require, module, exports) {
         'use strict'
+
         var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault')
 
         Object.defineProperty(exports, '__esModule', {
@@ -854,7 +1323,7 @@ var broadcastChannelLib = {}
             ;(0, _util.sleep)().then(function() {
               var key = storageKey(channelState.channelName)
               var writeObj = {
-                token: (0, _util.randomToken)(10),
+                token: (0, _util.randomToken)(),
                 time: new Date().getTime(),
                 data: messageJson,
                 uuid: channelState.uuid
@@ -901,7 +1370,7 @@ var broadcastChannelLib = {}
             throw new Error('BroadcastChannel: localstorage cannot be used')
           }
 
-          var uuid = (0, _util.randomToken)(10)
+          var uuid = (0, _util.randomToken)()
           /**
            * eMIs
            * contains all messages that have been emitted before
@@ -958,7 +1427,15 @@ var broadcastChannelLib = {}
         }
 
         function averageResponseTime() {
-          return 120
+          var defaultTime = 120
+          var userAgent = navigator.userAgent.toLowerCase()
+
+          if (userAgent.includes('safari') && !userAgent.includes('chrome')) {
+            // safari is much slower so this time is higher
+            return defaultTime * 2
+          }
+
+          return defaultTime
         }
 
         var _default = {
@@ -973,14 +1450,9 @@ var broadcastChannelLib = {}
         }
         exports['default'] = _default
       },
-      {
-        '../oblivious-set': '/torus/node_modules/broadcast-channel/dist/lib/oblivious-set.js',
-        '../options': '/torus/node_modules/broadcast-channel/dist/lib/options.js',
-        '../util': '/torus/node_modules/broadcast-channel/dist/lib/util.js',
-        '@babel/runtime/helpers/interopRequireDefault': '/torus/node_modules/@babel/runtime/helpers/interopRequireDefault.js'
-      }
+      { '../oblivious-set': 14, '../options': 15, '../util': 16, '@babel/runtime/helpers/interopRequireDefault': 4 }
     ],
-    '/torus/node_modules/broadcast-channel/dist/lib/methods/native.js': [
+    12: [
       function(require, module, exports) {
         'use strict'
 
@@ -1048,7 +1520,7 @@ var broadcastChannelLib = {}
         }
 
         function averageResponseTime() {
-          return 100
+          return 150
         }
 
         var _default = {
@@ -1063,11 +1535,12 @@ var broadcastChannelLib = {}
         }
         exports['default'] = _default
       },
-      { '../util': '/torus/node_modules/broadcast-channel/dist/lib/util.js' }
+      { '../util': 16 }
     ],
-    '/torus/node_modules/broadcast-channel/dist/lib/methods/simulate.js': [
+    13: [
       function(require, module, exports) {
         'use strict'
+
         Object.defineProperty(exports, '__esModule', {
           value: true
         })
@@ -1146,9 +1619,9 @@ var broadcastChannelLib = {}
         }
         exports['default'] = _default
       },
-      { '../util': '/torus/node_modules/broadcast-channel/dist/lib/util.js' }
+      { '../util': 16 }
     ],
-    '/torus/node_modules/broadcast-channel/dist/lib/oblivious-set.js': [
+    14: [
       function(require, module, exports) {
         'use strict'
 
@@ -1210,17 +1683,18 @@ var broadcastChannelLib = {}
       },
       {}
     ],
-    '/torus/node_modules/broadcast-channel/dist/lib/options.js': [
+    15: [
       function(require, module, exports) {
         'use strict'
+
         Object.defineProperty(exports, '__esModule', {
           value: true
         })
         exports.fillOptionsWithDefaults = fillOptionsWithDefaults
 
-        function fillOptionsWithDefaults(options) {
-          if (!options) options = {}
-          options = JSON.parse(JSON.stringify(options)) // main
+        function fillOptionsWithDefaults() {
+          var originalOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {}
+          var options = JSON.parse(JSON.stringify(originalOptions)) // main
 
           if (typeof options.webWorkerSupport === 'undefined') options.webWorkerSupport = true // indexed-db
 
@@ -1230,7 +1704,9 @@ var broadcastChannelLib = {}
           if (!options.idb.fallbackInterval) options.idb.fallbackInterval = 150 // localstorage
 
           if (!options.localstorage) options.localstorage = {}
-          if (!options.localstorage.removeTimeout) options.localstorage.removeTimeout = 1000 * 60 // node
+          if (!options.localstorage.removeTimeout) options.localstorage.removeTimeout = 1000 * 60 // custom methods
+
+          if (originalOptions.methods) options.methods = originalOptions.methods // node
 
           if (!options.node) options.node = {}
           if (!options.node.ttl) options.node.ttl = 1000 * 60 * 2 // 2 minutes;
@@ -1241,10 +1717,11 @@ var broadcastChannelLib = {}
       },
       {}
     ],
-    '/torus/node_modules/broadcast-channel/dist/lib/util.js': [
+    16: [
       function(require, module, exports) {
         ;(function(process) {
           'use strict'
+
           Object.defineProperty(exports, '__esModule', {
             value: true
           })
@@ -1277,19 +1754,13 @@ var broadcastChannelLib = {}
             return Math.floor(Math.random() * (max - min + 1) + min)
           }
           /**
-           * https://stackoverflow.com/a/1349426/3443137
+           * https://stackoverflow.com/a/8084248
            */
 
-          function randomToken(length) {
-            if (!length) length = 5
-            var text = ''
-            var possible = 'abcdefghijklmnopqrstuvwxzy0123456789'
-
-            for (var i = 0; i < length; i++) {
-              text += possible.charAt(Math.floor(Math.random() * possible.length))
-            }
-
-            return text
+          function randomToken() {
+            return Math.random()
+              .toString(36)
+              .substring(2)
           }
 
           var lastMs = 0
@@ -1324,203 +1795,147 @@ var broadcastChannelLib = {}
           exports.isNode = isNode
         }.call(this, require('_process')))
       },
-      { _process: '/torus/node_modules/process/browser.js' }
+      { _process: 2 }
     ],
-    '/torus/node_modules/process/browser.js': [
+    17: [
       function(require, module, exports) {
-        // shim for using process in browser
-        var process = (module.exports = {})
-
-        // cached from whatever global is present so that test runners that stub it
-        // don't break things.  But we need to wrap it in a try catch in case it is
-        // wrapped in strict mode code which doesn't define any globals.  It's inside a
-        // function because try/catches deoptimize in certain engines.
-
-        var cachedSetTimeout
-        var cachedClearTimeout
-
-        function defaultSetTimout() {
-          throw new Error('setTimeout has not been defined')
-        }
-        function defaultClearTimeout() {
-          throw new Error('clearTimeout has not been defined')
-        }
-        ;(function() {
-          try {
-            if (typeof setTimeout === 'function') {
-              cachedSetTimeout = setTimeout
-            } else {
-              cachedSetTimeout = defaultSetTimout
-            }
-          } catch (e) {
-            cachedSetTimeout = defaultSetTimout
-          }
-          try {
-            if (typeof clearTimeout === 'function') {
-              cachedClearTimeout = clearTimeout
-            } else {
-              cachedClearTimeout = defaultClearTimeout
-            }
-          } catch (e) {
-            cachedClearTimeout = defaultClearTimeout
-          }
-        })()
-        function runTimeout(fun) {
-          if (cachedSetTimeout === setTimeout) {
-            //normal enviroments in sane situations
-            return setTimeout(fun, 0)
-          }
-          // if setTimeout wasn't available but was latter defined
-          if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-            cachedSetTimeout = setTimeout
-            return setTimeout(fun, 0)
-          }
-          try {
-            // when when somebody has screwed with setTimeout but no I.E. maddness
-            return cachedSetTimeout(fun, 0)
-          } catch (e) {
-            try {
-              // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-              return cachedSetTimeout.call(null, fun, 0)
-            } catch (e) {
-              // same as above but when it's a version of I.E. that must have the global object for 'this',
-              // hopefully our context correct otherwise it will throw a global error
-              return cachedSetTimeout.call(this, fun, 0)
-            }
-          }
-        }
-        function runClearTimeout(marker) {
-          if (cachedClearTimeout === clearTimeout) {
-            //normal enviroments in sane situations
-            return clearTimeout(marker)
-          }
-          // if clearTimeout wasn't available but was latter defined
-          if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-            cachedClearTimeout = clearTimeout
-            return clearTimeout(marker)
-          }
-          try {
-            // when when somebody has screwed with setTimeout but no I.E. maddness
-            return cachedClearTimeout(marker)
-          } catch (e) {
-            try {
-              // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-              return cachedClearTimeout.call(null, marker)
-            } catch (e) {
-              // same as above but when it's a version of I.E. that must have the global object for 'this',
-              // hopefully our context correct otherwise it will throw a global error.
-              // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-              return cachedClearTimeout.call(this, marker)
-            }
-          }
-        }
-        var queue = []
-        var draining = false
-        var currentQueue
-        var queueIndex = -1
-
-        function cleanUpNextTick() {
-          if (!draining || !currentQueue) {
-            return
-          }
-          draining = false
-          if (currentQueue.length) {
-            queue = currentQueue.concat(queue)
-          } else {
-            queueIndex = -1
-          }
-          if (queue.length) {
-            drainQueue()
-          }
-        }
-
-        function drainQueue() {
-          if (draining) {
-            return
-          }
-          var timeout = runTimeout(cleanUpNextTick)
-          draining = true
-
-          var len = queue.length
-          while (len) {
-            currentQueue = queue
-            queue = []
-            while (++queueIndex < len) {
-              if (currentQueue) {
-                currentQueue[queueIndex].run()
-              }
-            }
-            queueIndex = -1
-            len = queue.length
-          }
-          currentQueue = null
-          draining = false
-          runClearTimeout(timeout)
-        }
-
-        process.nextTick = function(fun) {
-          var args = new Array(arguments.length - 1)
-          if (arguments.length > 1) {
-            for (var i = 1; i < arguments.length; i++) {
-              args[i - 1] = arguments[i]
-            }
-          }
-          queue.push(new Item(fun, args))
-          if (queue.length === 1 && !draining) {
-            runTimeout(drainQueue)
-          }
-        }
-
-        // v8 likes predictible objects
-        function Item(fun, array) {
-          this.fun = fun
-          this.array = array
-        }
-        Item.prototype.run = function() {
-          this.fun.apply(null, this.array)
-        }
-        process.title = 'browser'
-        process.browser = true
-        process.env = {}
-        process.argv = []
-        process.version = '' // empty string to avoid regexp issues
-        process.versions = {}
-
-        function noop() {}
-
-        process.on = noop
-        process.addListener = noop
-        process.once = noop
-        process.off = noop
-        process.removeListener = noop
-        process.removeAllListeners = noop
-        process.emit = noop
-        process.prependListener = noop
-        process.prependOnceListener = noop
-
-        process.listeners = function(name) {
-          return []
-        }
-
-        process.binding = function(name) {
-          throw new Error('process.binding is not supported')
-        }
-
-        process.cwd = function() {
-          return '/'
-        }
-        process.chdir = function(dir) {
-          throw new Error('process.chdir is not supported')
-        }
-        process.umask = function() {
-          return 0
-        }
+        module.exports = false
       },
       {}
+    ],
+    18: [
+      function(require, module, exports) {
+        'use strict'
+
+        Object.defineProperty(exports, '__esModule', {
+          value: true
+        })
+        exports['default'] = void 0
+
+        /* global WorkerGlobalScope */
+        function add(fn) {
+          if (typeof WorkerGlobalScope === 'function' && self instanceof WorkerGlobalScope) {
+            // this is run inside of a webworker
+          } else {
+            /**
+             * if we are on react-native, there is no window.addEventListener
+             * @link https://github.com/pubkey/unload/issues/6
+             */
+            if (typeof window.addEventListener !== 'function') return
+            /**
+             * for normal browser-windows, we use the beforeunload-event
+             */
+
+            window.addEventListener(
+              'beforeunload',
+              function() {
+                fn()
+              },
+              true
+            )
+            /**
+             * for iframes, we have to use the unload-event
+             * @link https://stackoverflow.com/q/47533670/3443137
+             */
+
+            window.addEventListener(
+              'unload',
+              function() {
+                fn()
+              },
+              true
+            )
+          }
+          /**
+           * TODO add fallback for safari-mobile
+           * @link https://stackoverflow.com/a/26193516/3443137
+           */
+        }
+
+        var _default = {
+          add: add
+        }
+        exports['default'] = _default
+      },
+      {}
+    ],
+    19: [
+      function(require, module, exports) {
+        'use strict'
+
+        var _interopRequireDefault = require('@babel/runtime/helpers/interopRequireDefault')
+
+        Object.defineProperty(exports, '__esModule', {
+          value: true
+        })
+        exports.add = add
+        exports.runAll = runAll
+        exports.removeAll = removeAll
+        exports.getSize = getSize
+        exports['default'] = void 0
+
+        var _detectNode = _interopRequireDefault(require('detect-node'))
+
+        var _browser = _interopRequireDefault(require('./browser.js'))
+
+        var _node = _interopRequireDefault(require('./node.js'))
+
+        var USE_METHOD = _detectNode['default'] ? _node['default'] : _browser['default']
+        var LISTENERS = new Set()
+        var startedListening = false
+
+        function startListening() {
+          if (startedListening) return
+          startedListening = true
+          USE_METHOD.add(runAll)
+        }
+
+        function add(fn) {
+          startListening()
+          if (typeof fn !== 'function') throw new Error('Listener is no function')
+          LISTENERS.add(fn)
+          var addReturn = {
+            remove: function remove() {
+              return LISTENERS['delete'](fn)
+            },
+            run: function run() {
+              LISTENERS['delete'](fn)
+              return fn()
+            }
+          }
+          return addReturn
+        }
+
+        function runAll() {
+          var promises = []
+          LISTENERS.forEach(function(fn) {
+            promises.push(fn())
+            LISTENERS['delete'](fn)
+          })
+          return Promise.all(promises)
+        }
+
+        function removeAll() {
+          LISTENERS.clear()
+        }
+
+        function getSize() {
+          return LISTENERS.size
+        }
+
+        var _default = {
+          add: add,
+          runAll: runAll,
+          removeAll: removeAll,
+          getSize: getSize
+        }
+        exports['default'] = _default
+      },
+      { './browser.js': 18, './node.js': 1, '@babel/runtime/helpers/interopRequireDefault': 4, 'detect-node': 17 }
     ]
   },
   {},
-  ['/torus/embed.js']
+  [3]
 )
       var bc
       var broadcastChannelOptions = {

@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import BroadcastChannel from 'broadcast-channel'
+import { BroadcastChannel } from 'broadcast-channel'
 import PageLoader from '../../components/helpers/PageLoader'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import { broadcastChannelOptions } from '../../utils/utils'
