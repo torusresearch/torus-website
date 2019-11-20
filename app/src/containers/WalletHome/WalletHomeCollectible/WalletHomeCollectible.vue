@@ -87,8 +87,8 @@
 
             <v-card-actions>
               <v-flex xs6>
-                <v-btn block small text class="more-info-show" @click="toggleDetails($event)">More Info</v-btn>
-                <v-btn block small text class="more-info-hide" @click="toggleDetails($event)">Less Info</v-btn>
+                <v-btn block small text class="more-info-show" @click.stop="toggleDetails($event)">More Info</v-btn>
+                <v-btn block small text class="more-info-hide" @click.stop="toggleDetails($event)">Less Info</v-btn>
               </v-flex>
               <v-divider inset vertical></v-divider>
               <v-flex xs6>

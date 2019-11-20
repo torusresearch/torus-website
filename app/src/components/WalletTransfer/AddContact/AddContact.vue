@@ -2,7 +2,7 @@
   <v-dialog v-model="addContactDialoag" width="400">
     <template v-slot:activator="{ on }">
       <v-btn depressed x-small block class="caption primary lighten-5 primary--text add-contact-alert" v-on="on">
-        We just detected a new address. Click here to add to your contacts
+        Click here to add Contact to your Address Book
       </v-btn>
     </template>
     <v-card class="add-contact-container">

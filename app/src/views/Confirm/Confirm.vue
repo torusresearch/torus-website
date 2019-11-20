@@ -226,7 +226,7 @@
 <script>
 import { mapActions } from 'vuex' // Maybe dispatch a bc to show popup from that instance
 import VueJsonPretty from 'vue-json-pretty'
-import BroadcastChannel from 'broadcast-channel'
+import { BroadcastChannel } from 'broadcast-channel'
 import { numberToHex, fromWei, toChecksumAddress, hexToNumber } from 'web3-utils'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
 import PageLoader from '../../components/helpers/PageLoader'
@@ -556,8 +556,8 @@ export default {
     },
     getNetworkName(targetNetwork) {
       const foundNetwork = this.networks.find(network => network.host === targetNetwork)
-      if (foundNetwork === -1) return 'UnKnown Network'
-      return foundNetwork.networkName
+      if (!foundNetwork || foundNetwork === -1) return 'UnKnown Network'
+      return Object.prototype.hasOwnProperty.call(foundNetwork, 'networkName') ? foundNetwork.networkName : 'UnKnown Network'
     },
     getDate() {
       const currentDateTime = new Date()

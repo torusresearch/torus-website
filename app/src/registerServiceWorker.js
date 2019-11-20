@@ -9,9 +9,10 @@ const swUrl = `${process.env.BASE_URL}service-worker.js`
 const expectedCacheControlHeader = 'max-age=3600'
 
 if (
-  process.env.VUE_APP_TORUS_BUILD_ENV === 'production' ||
-  process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ||
-  process.env.VUE_APP_TORUS_BUILD_ENV === 'testing'
+  'serviceWorker' in navigator &&
+  (process.env.VUE_APP_TORUS_BUILD_ENV === 'production' ||
+    process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ||
+    process.env.VUE_APP_TORUS_BUILD_ENV === 'testing')
 ) {
   // if swIntegrity is not calculated
   if (swIntegrity === ['SERVICE', 'WORKER', 'SHA', 'INTEGRITY'].join('_')) {
