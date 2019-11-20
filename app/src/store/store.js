@@ -66,7 +66,7 @@ var VuexStore = new Vuex.Store({
       // const width = 500
       // const height = 600
       window.open(
-        `${baseRoute}confirm?instanceId=${torus.instanceId}`,
+        `${baseRoute}confirm?instanceId=${torus.instanceId}&integrity=true`,
         '_blank',
         `directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=${height},width=${width}`
       )
