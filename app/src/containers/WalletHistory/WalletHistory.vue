@@ -140,7 +140,6 @@ export default {
         return acc
       }, [])
       const sortedTx = finalTx.sort((a, b) => b.date - a.date) || []
-      log.info('sortedTx is', sortedTx)
       return sortedTx
     },
     async calculatePastTransactions() {
