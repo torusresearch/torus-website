@@ -1,10 +1,14 @@
 import { getQuote } from '../../plugins/moonpay'
 import config from '../../config'
+import torus from '../../torus'
+import { MOONPAY } from '../../utils/enums'
+import { BroadcastChannel } from 'broadcast-channel'
+import log from 'loglevel'
+import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
   fetchMoonpayQuote(context, payload) {
     // returns a promise
-    // Need to add validations here
     return getQuote({
       digital_currency: payload.selectedCryptoCurrency.toLowerCase(),
       fiat_currency: payload.selectedCurrency.toLowerCase(),
@@ -12,6 +16,14 @@ export default {
     })
   },
   fetchMoonpayOrder({ state, dispatch }, { currentOrder, colorCode }) {
+    const instanceState = encodeURIComponent(
+      window.btoa(
+        JSON.stringify({
+          instanceId: torus.instanceId,
+          provider: MOONPAY
+        })
+      )
+    )
     const params = {
       apiKey: config.moonpayLiveAPIKEY,
       currencyCode: currentOrder.currency.code,
@@ -21,15 +33,50 @@ export default {
       baseCurrencyCode: currentOrder.baseCurrency.code,
       email: state.userInfo.email !== '' ? state.userInfo.email : undefined,
       externalCustomerId: state.selectedAddress,
-      redirectURL: config.payment_redirect_uri
+      redirectURL: `${config.topup_redirect_uri}?state=${instanceState}`
     }
-    dispatch('postMoonpayOrder', { path: config.moonpayHost, params: params })
+    return dispatch('postMoonpayOrder', { path: config.moonpayHost, params: params })
   },
   postMoonpayOrder(context, { path, params, method = 'post' }) {
-    // Do different things based on origin of request
-    const paramString = new URLSearchParams(params)
-    const finalUrl = `${path}?${paramString}`
-    // Handle communication with moonpay window here
-    var moonpayWindow = window.open(finalUrl, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200')
+    var moonpayWindow
+    var iClosedMoonpay = false
+    return new Promise((resolve, reject) => {
+      const paramString = new URLSearchParams(params)
+      const finalUrl = `${path}?${paramString}`
+
+      const bc = new BroadcastChannel(`topup_redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+
+      bc.onmessage = ev => {
+        try {
+          if (ev.error && ev.error !== '') {
+            log.error(ev.error)
+            reject(new Error(ev.error))
+          } else if (ev.data && ev.data.provider === MOONPAY) {
+            resolve({ success: ev.data.success })
+          }
+        } catch (error) {
+          reject(error)
+        } finally {
+          bc.close()
+          iClosedMoonpay = true
+          moonpayWindow.close()
+        }
+      }
+
+      // Handle communication with moonpay window here
+      moonpayWindow = window.open(finalUrl, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200')
+
+      var moonpayTimer = setInterval(function() {
+        if (moonpayWindow.closed) {
+          clearInterval(moonpayTimer)
+          if (!iClosedMoonpay) {
+            log.error('user closed popup')
+            reject(new Error('user closed moonpay popup'))
+          }
+          iClosedMoonpay = false
+          moonpayWindow = undefined
+        }
+      }, 1000)
+    })
   }
 }

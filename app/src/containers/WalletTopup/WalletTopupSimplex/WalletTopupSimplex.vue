@@ -38,8 +38,8 @@ export default {
           .catch(err => log.error(err))
       }, 0)()
     },
-    sendOrder() {
-      this.$store.dispatch('fetchSimplexOrder', { currentOrder: this.currentOrder })
+    sendOrder(cb) {
+      cb(this.$store.dispatch('fetchSimplexOrder', { currentOrder: this.currentOrder }))
     }
   }
 }

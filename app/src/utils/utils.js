@@ -359,7 +359,8 @@ const paymentProviders = {
     maxOrderValue: 20000,
     validCurrencies: ['USD', 'EUR'],
     validCryptoCurrencies: ['ETH'],
-    includeFees: true
+    includeFees: true,
+    api: true
   },
   [MOONPAY]: {
     line1: 'Pay with Credit / Debit Card',
@@ -373,7 +374,8 @@ const paymentProviders = {
     maxOrderValue: 2000,
     validCurrencies: ['USD', 'EUR', 'GBP'],
     validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT'],
-    includeFees: true
+    includeFees: true,
+    api: true
   },
   [WYRE]: {
     line1: 'Pay with Google/Apple/Masterpass',
@@ -387,7 +389,8 @@ const paymentProviders = {
     maxOrderValue: 250,
     validCurrencies: ['USD'],
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
-    includeFees: false
+    includeFees: false,
+    api: true
   },
   [COINDIRECT]: {
     line1: 'Pay with Credit Card',
@@ -398,10 +401,11 @@ const paymentProviders = {
     logoExtension: SVG,
     supportPage: 'https://help.coindirect.com/hc/en-us',
     minOrderValue: 20,
-    maxOrderValue: 500,
+    maxOrderValue: 1000,
     validCurrencies: ['EUR'],
     validCryptoCurrencies: ['ETH'],
-    includeFees: true
+    includeFees: true,
+    api: true
   },
   [CRYPTO]: {
     line1: 'Pay with Credit Card',
@@ -415,7 +419,8 @@ const paymentProviders = {
     maxOrderValue: 1000,
     validCurrencies: ['USD'],
     validCryptoCurrencies: ['ETH'],
-    includeFees: true
+    includeFees: true,
+    api: false
   }
 }
 

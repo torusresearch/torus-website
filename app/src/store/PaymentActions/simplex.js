@@ -1,10 +1,14 @@
 import { postQuote, postOrder } from '../../plugins/simplex'
 import config from '../../config'
+import { broadcastChannelOptions } from '../../utils/utils'
+import { SIMPLEX } from '../../utils/enums'
+import { BroadcastChannel } from 'broadcast-channel'
+import torus from '../../torus'
+import log from 'loglevel'
 
 export default {
   fetchSimplexQuote({ state }, payload) {
     // returns a promise
-    // Need to add validations here
     return postQuote(
       {
         digital_currency: payload.selectedCryptoCurrency,
@@ -18,13 +22,21 @@ export default {
     )
   },
   fetchSimplexOrder({ state, dispatch }, payload) {
-    postOrder(
+    const instanceState = encodeURIComponent(
+      window.btoa(
+        JSON.stringify({
+          instanceId: torus.instanceId,
+          provider: SIMPLEX
+        })
+      )
+    )
+    return postOrder(
       {
         'g-recaptcha-response': '',
         account_details: {
           app_end_user_id: payload.currentOrder.user_id
         },
-        return_url: config.payment_redirect_uri,
+        return_url: `${config.topup_redirect_uri}?state=${instanceState}`,
         transaction_details: {
           payment_details: {
             fiat_total_amount: {
@@ -61,7 +73,7 @@ export default {
         digital_total_amount_currency,
         payment_post_url
       } = result.result
-      dispatch('postSimplexOrder', {
+      return dispatch('postSimplexOrder', {
         path: payment_post_url,
         params: {
           payment_flow_type: 'wallet',
@@ -82,23 +94,58 @@ export default {
     })
   },
   postSimplexOrder(context, { path, params, method = 'post' }) {
-    // Do different things based on origin of request
-    const form = document.createElement('form')
-    form.method = method
-    form.action = path
-    form.target = 'form-target'
-    for (const key in params) {
-      if (params.hasOwnProperty(key)) {
-        const hiddenField = document.createElement('input')
-        hiddenField.type = 'hidden'
-        hiddenField.name = key
-        hiddenField.value = params[key]
-        form.appendChild(hiddenField)
+    var simplexWindow
+    var iClosedSimplex = false
+    return new Promise((resolve, reject) => {
+      const form = document.createElement('form')
+      form.method = method
+      form.action = path
+      form.target = 'form-target'
+      for (const key in params) {
+        if (params.hasOwnProperty(key)) {
+          const hiddenField = document.createElement('input')
+          hiddenField.type = 'hidden'
+          hiddenField.name = key
+          hiddenField.value = params[key]
+          form.appendChild(hiddenField)
+        }
       }
-    }
-    document.body.appendChild(form)
-    // Handle communication with simplex window here
-    var simplexWindow = window.open('about:blank', 'form-target', 'width=1200, height=700')
-    form.submit()
+      document.body.appendChild(form)
+      // Handle communication with simplex window here
+
+      const bc = new BroadcastChannel(`topup_redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+
+      bc.onmessage = ev => {
+        try {
+          if (ev.error && ev.error !== '') {
+            log.error(ev.error)
+            reject(new Error(ev.error))
+          } else if (ev.data && ev.data.provider === SIMPLEX) {
+            resolve({ success: ev.data.success })
+          }
+        } catch (error) {
+          reject(error)
+        } finally {
+          bc.close()
+          iClosedSimplex = true
+          simplexWindow.close()
+        }
+      }
+
+      simplexWindow = window.open('about:blank', 'form-target', 'width=1200, height=700')
+      form.submit()
+
+      var simplexTimer = setInterval(function() {
+        if (simplexWindow.closed) {
+          clearInterval(simplexTimer)
+          if (!iClosedSimplex) {
+            log.error('user closed popup')
+            reject(new Error('user closed simplex popup'))
+          }
+          iClosedSimplex = false
+          simplexWindow = undefined
+        }
+      }, 1000)
+    })
   }
 }

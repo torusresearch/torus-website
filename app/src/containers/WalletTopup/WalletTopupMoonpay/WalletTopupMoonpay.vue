@@ -38,8 +38,8 @@ export default {
           .catch(err => log.error(err))
       }, 0)()
     },
-    sendOrder() {
-      this.$store.dispatch('fetchMoonpayOrder', { currentOrder: this.currentOrder, colorCode: this.$vuetify.theme.themes.light.primary })
+    sendOrder(cb) {
+      cb(this.$store.dispatch('fetchMoonpayOrder', { currentOrder: this.currentOrder, colorCode: this.$vuetify.theme.themes.light.primary }))
     }
   }
 }

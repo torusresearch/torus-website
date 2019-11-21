@@ -49,6 +49,10 @@ torus.communicationMux.getStream('show_wallet').on('data', function(chunk) {
   VuexStore.dispatch('showWalletPopup', { path: chunk.data.path || '' })
 })
 
+torus.communicationMux.getStream('topup').on('data', function(chunk) {
+  VuexStore.dispatch('initiateTopup', chunk.data)
+})
+
 torus.communicationMux.getStream('show_provider_change').on('data', function(chunk) {
   if (chunk.name === 'show_provider_change') {
     const providerChangeStatus = torus.communicationMux.getStream('provider_change_status')

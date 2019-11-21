@@ -3,7 +3,7 @@ let baseRoute = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000'
 baseRoute += process.env.BASE_URL
 
 const redirect_uri = `${baseRoute}redirect`
-const payment_redirect_uri = `${baseRoute}paymentredirect`
+const topup_redirect_uri = `${baseRoute}topupredirect`
 export default {
   torusNodeEndpoints: [
     'https://binance-main-3.torusnode.com/jrpc',
@@ -31,14 +31,14 @@ export default {
   coindirectTestHost: 'https://business.sandbox.coindirect.com/buy',
   coindirectTestMerchantID: 'c21e690c-bb95-42fe-ae17-f962c582b26c',
   coindirectLiveHost: 'https://business.coindirect.com/buy',
-  coindirectLiveMerchantID: 'c21e690c-bb95-42fe-ae17-f962c582b26c',
+  coindirectLiveMerchantID: 'b08d7b18-da82-4dfc-990f-313ea26ac66b',
   GOOGLE_CLIENT_ID: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com',
   FACEBOOK_APP_ID: '2554219104599979',
   TWITCH_CLIENT_ID: 'tfppratfiloo53g1x133ofa4rc29px',
   REDDIT_CLIENT_ID: 'dcQJYPaG481XyQ',
   DISCORD_CLIENT_ID: '630308572013527060',
   redirect_uri: redirect_uri,
-  payment_redirect_uri: payment_redirect_uri,
+  topup_redirect_uri: topup_redirect_uri,
   // api: 'http://localhost:2020'
   api: 'https://api.tor.us'
 }
