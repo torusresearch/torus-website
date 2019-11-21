@@ -1,25 +1,26 @@
 <template>
-  <v-dialog v-model="dialog" width="400" :fullscreen="$vuetify.breakpoint.xsOnly">
+  <v-dialog v-model="dialog" width="400">
     <template v-slot:activator="{ on }">
       <v-card color="card-shadow activity mb-4 pa-5" v-on="on">
-        <v-layout>
-          <v-flex xs2>
+        <v-layout wrap>
+          <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs4' : 'xs2'">
             <div class="caption font-weight-medium">{{ transaction.dateFormatted }}</div>
             <div class="info font-weight-light">{{ transaction.timeFormatted }}</div>
           </v-flex>
-          <v-flex xs5>
+          <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs4' : 'xs2'">
             <v-icon large color="primary" class="float-left mr-2">{{ transaction.actionIcon }}</v-icon>
             <div class="caption font-weight-medium">{{ transaction.actionText }}</div>
             <div class="info font-weight-light">to {{ transaction.slicedTo }}</div>
           </v-flex>
           <v-flex xs4 class="text-right">
             <div class="caption font-weight-medium">
-              {{ transaction.action === ACTIVITY_ACTION_SEND ? '- ' : '' }}{{ transaction.totalAmountString }}
+              <span v-if="transaction.action === ACTIVITY_ACTION_SEND" class="error--text">-</span>
+              {{ transaction.totalAmountString }}
             </div>
             <div class="info font-weight-light">{{ transaction.currencyAmountString }}</div>
           </v-flex>
-          <v-flex xs2></v-flex>
-          <v-flex xs2 class="text-center">
+          <v-flex xs2 v-if="!$vuetify.breakpoint.xsOnly"></v-flex>
+          <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-right mt-4' : 'xs2 text-center'">
             <template v-if="transaction.statusText === 'Pending'">
               <div class="caption font-weight-medium mb-1">{{ transaction.statusText }}</div>
               <v-progress-linear color="success" value="15"></v-progress-linear>
@@ -35,6 +36,7 @@
       <v-layout wrap>
         <v-flex xs12 class="mb-2">
           <div class="font-weight-bold headline">{{ transaction.actionText }}</div>
+          <span class="float-right"></span>
         </v-flex>
         <v-flex xs12>
           <v-chip
