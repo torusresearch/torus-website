@@ -787,6 +787,9 @@ export default {
     })
   },
   setUserInfoAction({ commit, dispatch, state }, payload) {
+    // Fixes loading theme for too long
+    dispatch('setTheme', state.theme)
+
     return new Promise(async (resolve, reject) => {
       const { token, calledFromEmbed, rehydrate } = payload
       try {
