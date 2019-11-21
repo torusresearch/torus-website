@@ -31,7 +31,6 @@ export default {
         self.$store
           .dispatch('fetchCoindirectQuote', payload)
           .then(result => {
-            console.log(result)
             self.currencyRate = 1 / parseFloat(result.netPrice)
             self.cryptoCurrencyValue = result.amountOut
             self.currentOrder = result
@@ -42,26 +41,6 @@ export default {
     sendOrder() {
       this.$store.dispatch('fetchCoindirectOrder', { currentOrder: this.currentOrder })
     }
-  },
-  mounted() {
-    // let redirectURL = window.location.origin + '/wallet/history'
-    // let redirectURL = 'http://coindirect-api.tor.us/transaction'
-    // this.url =
-    //   this.path +
-    //   '&email=' +
-    //   this.$store.state.userInfo.email +
-    //   '&merchantId=' +
-    //   this.merchantId +
-    //   '&to=' +
-    //   this.currencyCode +
-    //   '&address=' +
-    //   this.$store.state.selectedAddress +
-    //   '&url=' +
-    //   encodeURIComponent(redirectURL) +
-    //   '&colorCode=' +
-    //   encodeURIComponent(this.$vuetify.theme.themes.light.primary)
-    // this.loaded = true
-    // log.info('this is', this)
   }
 }
 </script>

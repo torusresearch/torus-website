@@ -1,4 +1,5 @@
 import { postQuote, postOrder } from '../../plugins/simplex'
+import config from '../../config'
 
 export default {
   fetchSimplexQuote({ state }, payload) {
@@ -23,6 +24,7 @@ export default {
         account_details: {
           app_end_user_id: payload.currentOrder.user_id
         },
+        return_url: config.payment_redirect_uri,
         transaction_details: {
           payment_details: {
             fiat_total_amount: {
