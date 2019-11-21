@@ -5,7 +5,6 @@ export default {
   fetchWyreQuote({ state }, payload) {
     // returns a promise
     // Need to add validations here
-    console.log(payload)
     return getQuote(
       {
         source_amount: +parseFloat(payload.fiatValue),
@@ -23,7 +22,8 @@ export default {
       sourceAmount: currentOrder.sourceAmount,
       redirectUrl: config.payment_redirect_uri,
       dest: `ethereum:${state.selectedAddress}`,
-      accountId: config.wyreAccountId
+      accountId: config.wyreAccountId,
+      referenceId: state.selectedAddress
     }
     dispatch('postWyreOrder', { path: config.wyreHost, params: params })
   },
@@ -32,6 +32,6 @@ export default {
     const paramString = new URLSearchParams(params)
     const finalUrl = `${path}?${paramString}`
     // Handle communication with moonpay window here
-    var moonpayWindow = window.open(finalUrl, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200')
+    var wyreWindow = window.open(finalUrl, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200')
   }
 }
