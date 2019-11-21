@@ -1,11 +1,26 @@
 <template>
   <div class="activity-table" :data-count="transactions.length" :data-per-page="itemsPerPage" :data-count-transfer="nonTopupTransactionCount">
-    <transaction-details
-      v-for="transaction in filteredTransactions"
-      :key="transaction.id"
-      @onCancelTransaction="cancelTransaction"
-      :transaction="transaction"
-    />
+    <template v-if="filteredTransactions.length > 0">
+      <transaction-details
+        v-for="transaction in filteredTransactions"
+        :key="transaction.id"
+        @onCancelTransaction="cancelTransaction"
+        :transaction="transaction"
+      />
+    </template>
+    <v-layout v-else>
+      <v-flex xs12 class="text-center">No Transaction Activity!</v-flex>
+    </v-layout>
+
+    <div class="text-center pt-6" v-if="pageCount > 1">
+      <v-pagination
+        class="activity-pagination"
+        prev-icon="$vuetify.icons.page_prev"
+        next-icon="$vuetify.icons.page_next"
+        v-model="page"
+        :length="pageCount"
+      ></v-pagination>
+    </div>
     <!-- <v-data-table
       :headers="headers"
       :items="filteredTransactions"

@@ -3,3 +3,16 @@
     font-size: 10px;
   }
 }
+
+.activity-details {
+  .address-text {
+    font-size: 10px;
+    word-break: break-all;
+  }
+
+  .amount-text {
+    div {
+      line-height: 1em;
+    }
+  }
+}

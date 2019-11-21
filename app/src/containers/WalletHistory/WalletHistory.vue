@@ -26,21 +26,20 @@
       </v-flex>
       <v-flex xs12 px-4 mb-4>
         <tx-history-table
-          v-if="!$vuetify.breakpoint.xsOnly"
           :headers="headers"
           :selectedAction="selectedAction"
           :selectedPeriod="selectedPeriod"
           :transactions="calculateFinalTransactions()"
           :nonTopupTransactionCount="getNonTopupTransactionCount()"
         />
-        <tx-history-table-mobile
+        <!-- <tx-history-table-mobile
           v-if="$vuetify.breakpoint.xsOnly"
           :headers="headers"
           :selectedAction="selectedAction"
           :selectedPeriod="selectedPeriod"
           :transactions="calculateFinalTransactions()"
           :nonTopupTransactionCount="getNonTopupTransactionCount()"
-        />
+        /> -->
       </v-flex>
     </v-layout>
   </div>
@@ -71,7 +70,7 @@ import {
 
 export default {
   name: 'walletHistory',
-  components: { TxHistoryTable, TxHistoryTableMobile },
+  components: { TxHistoryTable },
   data() {
     return {
       pageHeader: WALLET_HEADERS_TRANSFER,
