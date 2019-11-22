@@ -103,7 +103,7 @@
                   item-text="name"
                   item-value="value"
                   v-model="selectedVerifier"
-                  @change="$refs.form.validate()"
+                  @blur="verifierChangedManual"
                 ></v-select>
               </v-flex>
               <v-flex xs12 sm6 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
@@ -336,7 +336,8 @@ export default {
       convertedTotalCost: '',
       resetSpeed: false,
       qrErrorMsg: '',
-      selectedVerifier: ETH,
+      autoSelectVerifier: true,
+      selectedVerifier: '',
       verifierOptions: ALLOWED_VERIFIERS,
       rules: {
         required: value => !!value || 'Required'
@@ -427,7 +428,7 @@ export default {
       return this.contractType === CONTRACT_TYPE_ETH ? (this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency) : ''
     },
     verifierPlaceholder() {
-      return `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
+      return this.selectedVerifier ? `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}` : ''
     },
     contactList() {
       return this.$store.state.contacts.reduce((mappedObj, contact) => {
@@ -517,8 +518,26 @@ export default {
       const value = contact === null ? '' : typeof contact === 'string' ? contact : contact.value
       return validateVerifierId(this.selectedVerifier, value)
     },
+    verifierChangedManual() {
+      this.autoSelectVerifier = false
+      this.verifierChanged()
+    },
+    verifierChanged() {
+      this.$refs.form.validate()
+    },
     contactChanged(contact) {
       if (contact) this.toAddress = typeof contact === 'string' ? contact : contact.value
+
+      // Autoupdate selected verifier
+      if (this.autoSelectVerifier) {
+        if (/^0x/.test(this.toAddress)) {
+          this.selectedVerifier = ETH
+          this.verifierChanged()
+        } else if (/@/.test(this.toAddress)) {
+          this.selectedVerifier = GOOGLE
+          this.verifierChanged()
+        }
+      }
     },
     async calculateGas(toAddress) {
       if (isAddress(toAddress)) {
