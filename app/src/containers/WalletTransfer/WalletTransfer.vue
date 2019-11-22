@@ -111,6 +111,7 @@
                   class="recipient-address"
                   ref="contactSelected"
                   v-model="contactSelected"
+                  @keyup="contactChanged"
                   @change="contactChanged"
                   :items="contactList"
                   :placeholder="verifierPlaceholder"
@@ -519,7 +520,8 @@ export default {
     verifierChanged() {
       this.$refs.form.validate()
     },
-    contactChanged(contact) {
+    contactChanged(event) {
+      const contact = Object.prototype.hasOwnProperty.call(event, 'target') ? event.target.value : event
       if (contact) this.toAddress = typeof contact === 'string' ? contact : contact.value
 
       // Autoupdate selected verifier
