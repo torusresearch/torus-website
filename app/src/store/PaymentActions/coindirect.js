@@ -14,7 +14,7 @@ export default {
       to: payload.selectedCryptoCurrency,
       payInMethod: 'card',
       payOutMethod: 'crypto',
-      merchantId: config.coindirectLiveMerchantID,
+      merchantId: config.coindirectTestMerchantID,
       amountIn: +parseFloat(payload.fiatValue),
       payOutInstruction: {
         code: 'crypto',
@@ -37,7 +37,9 @@ export default {
       address: state.selectedAddress,
       email: state.userInfo.email !== '' ? state.userInfo.email : undefined,
       amount: currentOrder.amountIn,
-      url: encodeURIComponent(`${config.topup_redirect_uri}?state=${instanceState}`)
+      url: encodeURIComponent(
+        `${config.coindirectApiHost}/transaction?url=${encodeURIComponent(`${config.topup_redirect_uri}?state=${instanceState}`)}`
+      )
     }
     return dispatch('postCoindirectOrder', { path: config.coindirectLiveHost, params: params })
   },
