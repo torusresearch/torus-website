@@ -1,5 +1,5 @@
 import randomId from 'random-id'
-import BroadcastChannel from 'broadcast-channel'
+import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import pump from 'pump'
 import stream from 'stream'
