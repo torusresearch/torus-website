@@ -42,6 +42,10 @@ const statusStream = torus.communicationMux.getStream('status')
 const oauthStream = torus.communicationMux.getStream('oauth')
 
 var walletWindow
+var googleWindow
+var iClosedGoogle = false
+var facebookWindow
+var iClosedFacebook = false
 var twitchWindow
 var iClosedTwitch = false
 var redditWindow
@@ -287,99 +291,135 @@ export default {
     log.info('Verifier: ', verifier)
 
     if (verifier === GOOGLE) {
-      ;(function googleLogin() {
-        if (window.auth2) {
-          window.auth2
-            .signIn()
-            .then(function(googleUser) {
-              log.info('GOOGLE USER: ', googleUser)
-
-              let profile = googleUser.getBasicProfile()
-
-              let email = profile.getEmail()
-              let name = profile.getName()
-              let profileImage = profile.getImageUrl()
-              let idtoken = googleUser.getAuthResponse().id_token
-
-              log.info('ID: ', profile.getId()) // Do not send to your backend! Use an ID token instead.
-              log.info('ID Token:', idtoken)
-              log.info('Email:', email)
-              log.info('Name:', name)
-              log.info('Image URL:', profileImage)
-              // Set only idToken and userInfo into the state
-              dispatch('updateIdToken', { idToken: idtoken })
-              dispatch('updateUserInfo', {
-                userInfo: {
-                  profileImage,
-                  name,
-                  email,
-                  verifierId: email.toString().toLowerCase(),
-                  verifier: GOOGLE,
-                  verifierParams: { verifier_id: email.toString().toLowerCase() }
-                }
-              })
-
-              window.gapi.auth2
-                .getAuthInstance()
-                .disconnect()
-                .then(() => {
-                  dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-                })
-                .catch(err => {
-                  log.error(err)
-                  oauthStream.write({ err: 'something went wrong' })
-                })
-            })
-            .catch(err => {
-              // called when something goes wrong like user closes popup
-              log.error(err)
-              oauthStream.write({ err: 'popup closed' })
-            })
-        } else {
-          setTimeout(googleLogin, 1000)
-        }
-      })()
-    } else if (verifier === FACEBOOK) {
-      ;(function facebookLogin() {
-        if (window.FBInitialized) {
-          window.FB.login(response => {
-            if (response.authResponse && response.status === 'connected') {
-              let { accessToken } = response.authResponse || {}
-              log.info('AccessToken:', accessToken)
-              dispatch('updateIdToken', { idToken: accessToken })
-
-              window.FB.api('/me?fields=name,email,picture.type(large)', response => {
-                log.info('Email: ', response.email)
-                log.info('Name: ', response.name)
-                log.info('Id: ', response.id)
-                const { name, id, picture, email } = response || {}
-                setTimeout(function() {
-                  window.FB.logout(() => {
-                    log.info('logged out of facebook')
-                  })
-                }, 5000)
-                dispatch('updateUserInfo', {
-                  userInfo: {
-                    profileImage: picture.data.url,
-                    name,
-                    email: email,
-                    verifierId: id.toString(),
-                    verifier: FACEBOOK,
-                    verifierParams: { verifier_id: id.toString() }
-                  }
-                })
-
-                dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-              })
-            } else {
-              log.error('User cancelled login or did not fully authorize.')
-              oauthStream.write({ err: 'User cancelled login or did not fully authorize.' })
-            }
+      const state = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: torus.instanceId,
+            verifier: GOOGLE
           })
-        } else {
-          setTimeout(facebookLogin, 1000)
+        )
+      )
+      const scope = 'profile email openid'
+      const response_type = 'token id_token'
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      bc.onmessage = async ev => {
+        if (ev.error && ev.error !== '') {
+          log.error(ev.error)
+          oauthStream.write({ err: ev.error })
+        } else if (ev.data && ev.data.verifier === GOOGLE) {
+          try {
+            log.info(ev.data)
+            const { access_token: accessToken, id_token: idToken } = ev.data.verifierParams
+            const userInfo = await get('https://www.googleapis.com/userinfo/v2/me', {
+              headers: {
+                Authorization: `Bearer ${accessToken}`
+              }
+            })
+            const { picture: profileImage, email, name, id } = userInfo || {}
+            dispatch('updateIdToken', { idToken })
+            dispatch('updateUserInfo', {
+              userInfo: {
+                profileImage,
+                name,
+                email,
+                verifierId: email.toString().toLowerCase(),
+                verifier: GOOGLE,
+                verifierParams: { verifier_id: email.toString().toLowerCase() }
+              }
+            })
+            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+          } catch (error) {
+            log.error(error)
+            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+          } finally {
+            bc.close()
+            iClosedGoogle = true
+            googleWindow.close()
+          }
         }
-      })()
+      }
+      googleWindow = window.open(
+        `https://accounts.google.com/o/oauth2/v2/auth?response_type=${response_type}&client_id=${config.GOOGLE_CLIENT_ID}` +
+          `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}`,
+        '_blank',
+        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
+      )
+      var googleTimer = setInterval(function() {
+        if (googleWindow.closed) {
+          clearInterval(googleTimer)
+          if (!iClosedGoogle) {
+            log.error('user closed popup')
+            oauthStream.write({ err: 'user closed popup' })
+          }
+          iClosedGoogle = false
+          googleWindow = undefined
+        }
+      }, 1000)
+    } else if (verifier === FACEBOOK) {
+      const state = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: torus.instanceId,
+            verifier: FACEBOOK
+          })
+        )
+      )
+      const scope = 'public_profile email'
+      const response_type = 'token'
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      bc.onmessage = async ev => {
+        if (ev.error && ev.error !== '') {
+          log.error(ev.error)
+          oauthStream.write({ err: ev.error })
+        } else if (ev.data && ev.data.verifier === FACEBOOK) {
+          try {
+            log.info(ev.data)
+            const { access_token: accessToken } = ev.data.verifierParams
+            const userInfo = await get('https://graph.facebook.com/me?fields=name,email,picture.type(large)', {
+              headers: {
+                Authorization: `Bearer ${accessToken}`
+              }
+            })
+            const { name, id, picture, email } = userInfo || {}
+            dispatch('updateIdToken', { idToken: accessToken })
+            dispatch('updateUserInfo', {
+              userInfo: {
+                profileImage: picture.data.url,
+                name,
+                email: email,
+                verifierId: id.toString(),
+                verifier: FACEBOOK,
+                verifierParams: { verifier_id: id.toString() }
+              }
+            })
+            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+          } catch (error) {
+            log.error(error)
+            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+          } finally {
+            bc.close()
+            iClosedFacebook = true
+            facebookWindow.close()
+          }
+        }
+      }
+      facebookWindow = window.open(
+        `https://www.facebook.com/v5.0/dialog/oauth?response_type=${response_type}&client_id=${config.FACEBOOK_APP_ID}` +
+          `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`,
+        '_blank',
+        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
+      )
+      var facebookTimer = setInterval(function() {
+        if (facebookWindow.closed) {
+          clearInterval(facebookTimer)
+          if (!iClosedFacebook) {
+            log.error('user closed popup')
+            oauthStream.write({ err: 'user closed popup' })
+          }
+          iClosedFacebook = false
+          facebookWindow = undefined
+        }
+      }, 1000)
     } else if (verifier === TWITCH) {
       const state = encodeURIComponent(
         window.btoa(
