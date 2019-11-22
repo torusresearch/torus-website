@@ -11,6 +11,7 @@ import { post } from '../utils/httpHelpers.js'
 import { notifyUser } from '../utils/notifications'
 import state from './state'
 import actions from './actions'
+import paymentActions from './PaymentActions'
 import getters from './getters'
 import mutations from './mutations'
 
@@ -58,6 +59,7 @@ var VuexStore = new Vuex.Store({
   mutations,
   actions: {
     ...actions,
+    ...paymentActions,
     showPopup({ state, getters }, payload) {
       var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`, broadcastChannelOptions)
       const isTx = isTorusTransaction()

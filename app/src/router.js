@@ -5,6 +5,7 @@ import Popup from './views/Popup'
 import ProviderChange from './views/ProviderChange'
 import UserInfoRequest from './views/UserInfoRequest'
 import RedirectCatch from './views/RedirectCatch'
+import TopupRedirectCatch from './views/TopupRedirectCatch'
 import Login from './views/Login'
 import Confirm from './views/Confirm'
 import Wallet from './views/Wallet'
@@ -58,6 +59,12 @@ const router = new Router({
       path: '/redirect',
       name: 'redirect',
       component: RedirectCatch,
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/topupredirect',
+      name: 'topupredirect',
+      component: TopupRedirectCatch,
       meta: { requiresAuth: false }
     },
     {
