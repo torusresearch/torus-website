@@ -35,6 +35,7 @@ export default {
       merchantId: config.coindirectLiveMerchantID,
       to: currentOrder.to,
       address: state.selectedAddress,
+      email: state.userInfo.email !== '' ? state.userInfo.email : undefined,
       amount: currentOrder.amountIn,
       url: encodeURIComponent(`${config.topup_redirect_uri}?state=${instanceState}`)
     }
