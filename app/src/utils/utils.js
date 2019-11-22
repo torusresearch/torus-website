@@ -370,7 +370,7 @@ const paymentProviders = {
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://help.moonpay.io/en/',
-    minOrderValue: 20,
+    minOrderValue: 24.99,
     maxOrderValue: 2000,
     validCurrencies: ['USD', 'EUR', 'GBP'],
     validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT'],
