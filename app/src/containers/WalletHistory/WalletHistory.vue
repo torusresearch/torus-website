@@ -212,7 +212,6 @@ export default {
           txObj.ethRate = significantDigits(parseFloat(txObj.currencyAmount) / parseFloat(txObj.totalAmount))
           txObj.currencyUsed = this.selectedCurrency
           finalTransactions.push(txObj)
-          console.log('txObj is', txObj)
         }
       }
       return finalTransactions
