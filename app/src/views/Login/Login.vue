@@ -131,22 +131,27 @@
       </v-layout>
     </template>
     <template v-else>
-      <v-container fill-height align-content-center>
-        <page-loader />
-      </v-container>
+      <component v-bind:is="activeLoader"></component>
     </template>
   </div>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex'
-import PageLoader from '../../components/helpers/PageLoader'
+import {
+  WalletLoginLoader,
+  WalletHomeLoader,
+  WalletTransferLoader,
+  WalletTopupLoader,
+  WalletActivityLoader,
+  WalletSettingsLoader
+} from '../../content-loader'
 import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../utils/enums'
 import config from '../../config'
 
 export default {
   name: 'login',
-  components: { PageLoader },
+  components: { WalletLoginLoader },
   data() {
     return {
       isLogout: false,
@@ -172,7 +177,22 @@ export default {
     loggedIn: state => {
       return state.selectedAddress !== '' && !state.loginInProgress
     },
-    loginInProgress: 'loginInProgress'
+    loginInProgress: 'loginInProgress',
+    activeLoader() {
+      const redirectPath = this.$route.query.redirect
+
+      if (redirectPath === '/wallet/transfer') {
+        return WalletTransferLoader
+      } else if (redirectPath === '/wallet/topup') {
+        return WalletTopupLoader
+      } else if (redirectPath === '/wallet/history') {
+        return WalletActivityLoader
+      } else if (redirectPath === '/wallet/settings') {
+        return WalletSettingsLoader
+      } else {
+        return WalletHomeLoader
+      }
+    }
   }),
   watch: {
     selectedAddress: function(newAddress, oldAddress) {
