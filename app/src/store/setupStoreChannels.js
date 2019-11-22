@@ -44,12 +44,8 @@ passthroughStream.on('data', function() {
 })
 
 torus.communicationMux.getStream('oauth').on('data', function(chunk) {
-  var verifier = chunk.data.verifier
-  var preopenInstanceId = ''
-  if (verifier === TWITCH || verifier === REDDIT || verifier === DISCORD) {
-    preopenInstanceId = randomId()
-    torus.communicationMux.getStream('window').write({ preopenInstanceId })
-  }
+  const preopenInstanceId = randomId()
+  torus.communicationMux.getStream('window').write({ preopenInstanceId })
   VuexStore.dispatch('triggerLogin', { calledFromEmbed: chunk.data.calledFromEmbed, verifier: chunk.data.verifier, preopenInstanceId })
 })
 

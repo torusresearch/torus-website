@@ -338,11 +338,14 @@ export default {
           }
         }
       }
-      googleWindow = window.open(
-        `https://accounts.google.com/o/oauth2/v2/auth?response_type=${response_type}&client_id=${config.GOOGLE_CLIENT_ID}` +
-          `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}`,
-        '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
+      googleWindow = windowOpen(
+        [
+          `https://accounts.google.com/o/oauth2/v2/auth?response_type=${response_type}&client_id=${config.GOOGLE_CLIENT_ID}` +
+            `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}`,
+          '_blank',
+          'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
+        ],
+        preopenInstanceId
       )
       var googleTimer = setInterval(function() {
         if (googleWindow.closed) {
@@ -403,11 +406,14 @@ export default {
           }
         }
       }
-      facebookWindow = window.open(
-        `https://www.facebook.com/v5.0/dialog/oauth?response_type=${response_type}&client_id=${config.FACEBOOK_APP_ID}` +
-          `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`,
-        '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
+      facebookWindow = windowOpen(
+        [
+          `https://www.facebook.com/v5.0/dialog/oauth?response_type=${response_type}&client_id=${config.FACEBOOK_APP_ID}` +
+            `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`,
+          '_blank',
+          'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
+        ],
+        preopenInstanceId
       )
       var facebookTimer = setInterval(function() {
         if (facebookWindow.closed) {

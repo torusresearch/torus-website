@@ -15,7 +15,10 @@ module.exports = {
       'Cache-Control': 'max-age=3600'
     },
     historyApiFallback: {
-      rewrites: [{ from: 'redirect', to: '/redirect.html' }, { from: /./, to: '/index.html' }]
+      rewrites: [
+        { from: 'redirect', to: '/redirect.html' },
+        { from: /./, to: '/index.html' }
+      ]
     }
   },
   css: {
