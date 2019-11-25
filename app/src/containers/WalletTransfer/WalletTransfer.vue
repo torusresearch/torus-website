@@ -80,7 +80,8 @@
           </v-flex>
           <v-flex xs12 sm6 mb-5 px-4 v-if="selectedItem">
             <span class="subtitle-2">Account Balance</span>
-            <div>
+            <component-loader class="mt-2" v-if="!weiBalanceLoaded" />
+            <div v-else>
               <span id="account-balance" class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
               <span class="caption text_2--text">{{ currencyBalanceDisplay }}</span>
             </div>
@@ -102,7 +103,7 @@
                   item-text="name"
                   item-value="value"
                   v-model="selectedVerifier"
-                  @change="$refs.form.validate()"
+                  @blur="verifierChangedManual"
                 ></v-select>
               </v-flex>
               <v-flex xs12 sm6 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
@@ -111,6 +112,7 @@
                   class="recipient-address"
                   ref="contactSelected"
                   v-model="contactSelected"
+                  @keyup="contactChanged"
                   @change="contactChanged"
                   :items="contactList"
                   :placeholder="verifierPlaceholder"
@@ -274,6 +276,7 @@ import torus from '../../torus'
 import { significantDigits, getRandomNumber, getEtherScanHashLink, validateVerifierId } from '../../utils/utils'
 import config from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
+import ComponentLoader from '../../components/helpers/ComponentLoader'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import AddContact from '../../components/WalletTransfer/AddContact'
 import { get, post } from '../../utils/httpHelpers'
@@ -307,7 +310,8 @@ export default {
     TransactionSpeedSelect,
     MessageModal,
     QrcodeCapture,
-    AddContact
+    AddContact,
+    ComponentLoader
   },
   data() {
     return {
@@ -333,7 +337,8 @@ export default {
       convertedTotalCost: '',
       resetSpeed: false,
       qrErrorMsg: '',
-      selectedVerifier: ETH,
+      autoSelectVerifier: true,
+      selectedVerifier: '',
       verifierOptions: ALLOWED_VERIFIERS,
       rules: {
         required: value => !!value || 'Required'
@@ -361,6 +366,9 @@ export default {
     },
     finalBalancesArrayEthOnly() {
       return this.$store.getters.tokenBalances.finalBalancesArray.filter(token => token.tokenAddress === '0x') || []
+    },
+    weiBalanceLoaded() {
+      return this.$store.state.weiBalanceLoaded
     },
     collectibles() {
       return this.$store.getters.collectibleBalances
@@ -421,7 +429,7 @@ export default {
       return this.contractType === CONTRACT_TYPE_ETH ? (this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency) : ''
     },
     verifierPlaceholder() {
-      return `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
+      return this.selectedVerifier ? `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}` : ''
     },
     contactList() {
       return this.$store.state.contacts.reduce((mappedObj, contact) => {
@@ -511,8 +519,27 @@ export default {
       const value = contact === null ? '' : typeof contact === 'string' ? contact : contact.value
       return validateVerifierId(this.selectedVerifier, value)
     },
-    contactChanged(contact) {
+    verifierChangedManual() {
+      this.autoSelectVerifier = false
+      this.verifierChanged()
+    },
+    verifierChanged() {
+      this.$refs.form.validate()
+    },
+    contactChanged(event) {
+      const contact = Object.prototype.hasOwnProperty.call(event, 'target') ? event.target.value : event
       if (contact) this.toAddress = typeof contact === 'string' ? contact : contact.value
+
+      // Autoupdate selected verifier
+      if (this.autoSelectVerifier) {
+        if (/^0x/.test(this.toAddress)) {
+          this.selectedVerifier = ETH
+          this.verifierChanged()
+        } else if (/@/.test(this.toAddress)) {
+          this.selectedVerifier = GOOGLE
+          this.verifierChanged()
+        }
+      }
     },
     async calculateGas(toAddress) {
       if (isAddress(toAddress)) {

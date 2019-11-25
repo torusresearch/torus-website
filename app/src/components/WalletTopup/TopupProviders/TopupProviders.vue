@@ -21,6 +21,7 @@
             <div>{{ targetProvider.line1 }}</div>
             <div v-html="targetProvider.line2"></div>
             <div>{{ targetProvider.line3 }}</div>
+            <div>{{ targetProvider.line4 }}</div>
           </v-list-item-content>
         </v-list-item>
       </router-link>
@@ -41,6 +42,7 @@
                 <div>{{ targetProvider.line1 }}</div>
                 <div v-html="targetProvider.line2"></div>
                 <div>{{ targetProvider.line3 }}</div>
+                <div>{{ targetProvider.line4 }}</div>
               </v-list-item-content>
             </v-list-item>
           </v-card>
