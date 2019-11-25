@@ -4,7 +4,7 @@
       <v-layout wrap class="wallet-topup">
         <v-flex xs12>
           <p class="body-2">
-            <span class="text-capitalize">{{ selectedProvider }}</span>
+            <span class="text-capitalize selected-provider">{{ selectedProvider }}</span>
             is a secure way to buy cryptocurrency with your payment method. Start by entering an amount below to get a quote before making a purchase
           </p>
         </v-flex>

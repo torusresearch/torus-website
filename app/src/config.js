@@ -1,8 +1,9 @@
-let baseRoute = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000'
+const baseUrl = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000'
 
-baseRoute += process.env.BASE_URL
+const baseRoute = baseUrl + process.env.BASE_URL
 
-const redirect_uri = `${baseRoute}redirect`
+const redirect_uri = navigator.serviceWorker ? `${baseUrl}/redirect` : `${baseRoute}redirect`
+
 export default {
   torusNodeEndpoints: [
     'https://binance-main-3.torusnode.com/jrpc',
