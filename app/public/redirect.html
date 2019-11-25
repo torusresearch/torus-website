@@ -233,13 +233,6 @@
           ],
           3: [
             function(require, module, exports) {
-              const BroadcastChannel = require('broadcast-channel').BroadcastChannel
-              broadcastChannelLib.BroadcastChannel = BroadcastChannel
-            },
-            { 'broadcast-channel': 6 }
-          ],
-          4: [
-            function(require, module, exports) {
               function _interopRequireDefault(obj) {
                 return obj && obj.__esModule
                   ? obj
@@ -252,7 +245,7 @@
             },
             {}
           ],
-          5: [
+          4: [
             function(require, module, exports) {
               'use strict'
 
@@ -504,9 +497,9 @@
                 }
               }
             },
-            { './method-chooser.js': 9, './options.js': 15, './util.js': 16 }
+            { './method-chooser.js': 8, './options.js': 14, './util.js': 15 }
           ],
-          6: [
+          5: [
             function(require, module, exports) {
               'use strict'
 
@@ -527,9 +520,9 @@
                 enforceOptions: _index.enforceOptions
               }
             },
-            { './index.js': 7 }
+            { './index.js': 6 }
           ],
-          7: [
+          6: [
             function(require, module, exports) {
               'use strict'
 
@@ -565,9 +558,9 @@
 
               var _leaderElection = require('./leader-election')
             },
-            { './broadcast-channel': 5, './leader-election': 8 }
+            { './broadcast-channel': 4, './leader-election': 7 }
           ],
-          8: [
+          7: [
             function(require, module, exports) {
               'use strict'
 
@@ -811,9 +804,9 @@
                 return elector
               }
             },
-            { './util.js': 16, '@babel/runtime/helpers/interopRequireDefault': 4, unload: 19 }
+            { './util.js': 15, '@babel/runtime/helpers/interopRequireDefault': 3, unload: 18 }
           ],
-          9: [
+          8: [
             function(require, module, exports) {
               'use strict'
 
@@ -906,15 +899,15 @@
               }
             },
             {
-              './methods/indexed-db.js': 10,
-              './methods/localstorage.js': 11,
-              './methods/native.js': 12,
-              './methods/simulate.js': 13,
-              './util': 16,
-              '@babel/runtime/helpers/interopRequireDefault': 4
+              './methods/indexed-db.js': 9,
+              './methods/localstorage.js': 10,
+              './methods/native.js': 11,
+              './methods/simulate.js': 12,
+              './util': 15,
+              '@babel/runtime/helpers/interopRequireDefault': 3
             }
           ],
-          10: [
+          9: [
             function(require, module, exports) {
               'use strict'
 
@@ -1247,9 +1240,9 @@
               }
               exports['default'] = _default
             },
-            { '../oblivious-set': 14, '../options': 15, '../util.js': 16, '@babel/runtime/helpers/interopRequireDefault': 4 }
+            { '../oblivious-set': 13, '../options': 14, '../util.js': 15, '@babel/runtime/helpers/interopRequireDefault': 3 }
           ],
-          11: [
+          10: [
             function(require, module, exports) {
               'use strict'
 
@@ -1450,9 +1443,9 @@
               }
               exports['default'] = _default
             },
-            { '../oblivious-set': 14, '../options': 15, '../util': 16, '@babel/runtime/helpers/interopRequireDefault': 4 }
+            { '../oblivious-set': 13, '../options': 14, '../util': 15, '@babel/runtime/helpers/interopRequireDefault': 3 }
           ],
-          12: [
+          11: [
             function(require, module, exports) {
               'use strict'
 
@@ -1535,9 +1528,9 @@
               }
               exports['default'] = _default
             },
-            { '../util': 16 }
+            { '../util': 15 }
           ],
-          13: [
+          12: [
             function(require, module, exports) {
               'use strict'
 
@@ -1619,9 +1612,9 @@
               }
               exports['default'] = _default
             },
-            { '../util': 16 }
+            { '../util': 15 }
           ],
-          14: [
+          13: [
             function(require, module, exports) {
               'use strict'
 
@@ -1683,7 +1676,7 @@
             },
             {}
           ],
-          15: [
+          14: [
             function(require, module, exports) {
               'use strict'
 
@@ -1717,7 +1710,7 @@
             },
             {}
           ],
-          16: [
+          15: [
             function(require, module, exports) {
               ;(function(process) {
                 'use strict'
@@ -1797,13 +1790,13 @@
             },
             { _process: 2 }
           ],
-          17: [
+          16: [
             function(require, module, exports) {
               module.exports = false
             },
             {}
           ],
-          18: [
+          17: [
             function(require, module, exports) {
               'use strict'
 
@@ -1859,7 +1852,7 @@
             },
             {}
           ],
-          19: [
+          18: [
             function(require, module, exports) {
               'use strict'
 
@@ -1931,11 +1924,18 @@
               }
               exports['default'] = _default
             },
-            { './browser.js': 18, './node.js': 1, '@babel/runtime/helpers/interopRequireDefault': 4, 'detect-node': 17 }
+            { './browser.js': 17, './node.js': 1, '@babel/runtime/helpers/interopRequireDefault': 3, 'detect-node': 16 }
+          ],
+          19: [
+            function(require, module, exports) {
+              const { BroadcastChannel } = require('broadcast-channel')
+              broadcastChannelLib.BroadcastChannel = BroadcastChannel
+            },
+            { 'broadcast-channel': 5 }
           ]
         },
         {},
-        [3]
+        [19]
       )
       var bc
       var broadcastChannelOptions = {
