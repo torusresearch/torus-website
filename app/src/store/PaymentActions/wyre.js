@@ -32,7 +32,7 @@ export default {
     const params = {
       destCurrency: currentOrder.destCurrency,
       sourceAmount: currentOrder.sourceAmount,
-      redirectUrl: `${config.topup_redirect_uri}?state=${instanceState}`,
+      redirectUrl: `${config.redirect_uri}?state=${instanceState}`,
       dest: `ethereum:${state.selectedAddress}`,
       accountId: config.wyreAccountId,
       referenceId: state.selectedAddress
@@ -46,15 +46,18 @@ export default {
       const paramString = new URLSearchParams(params)
       const finalUrl = `${path}?${paramString}`
 
-      const bc = new BroadcastChannel(`topup_redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
 
       bc.onmessage = ev => {
         try {
+          const {
+            instanceParams: { provider }
+          } = ev.data || {}
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             reject(new Error(ev.error))
-          } else if (ev.data && ev.data.provider === WYRE) {
-            resolve({ success: ev.data.success })
+          } else if (ev.data && provider === WYRE) {
+            resolve({ success: true })
           }
         } catch (error) {
           reject(error)

@@ -3,7 +3,6 @@ let baseRoute = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000'
 baseRoute += process.env.BASE_URL
 
 const redirect_uri = `${baseRoute}redirect`
-const topup_redirect_uri = `${baseRoute}topupredirect`
 export default {
   torusNodeEndpoints: [
     'https://binance-main-3.torusnode.com/jrpc',
@@ -38,7 +37,6 @@ export default {
   REDDIT_CLIENT_ID: 'dcQJYPaG481XyQ',
   DISCORD_CLIENT_ID: '630308572013527060',
   redirect_uri: redirect_uri,
-  topup_redirect_uri: topup_redirect_uri,
   // api: 'http://localhost:2020'
   api: 'https://api.tor.us'
 }

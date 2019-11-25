@@ -1966,8 +1966,8 @@
         bc = new broadcastChannelLib.BroadcastChannel('redirect_channel_' + instanceParams.instanceId, broadcastChannelOptions)
         bc.postMessage({
           data: {
-            verifier: instanceParams.verifier,
-            verifierParams: hashParams
+            instanceParams: instanceParams,
+            hashParams: hashParams
           },
           error: error
         }).then(function() {
