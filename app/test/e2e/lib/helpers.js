@@ -25,12 +25,26 @@ const click = async function(page, selector) {
   }
 }
 
-const waitForText = async function(page, selector, text) {
+const waitForText = async function(page, selector, text, isCaseSensitive = true) {
   try {
     await page.waitForSelector(selector, { timeout: 120000 })
-    await page.waitForFunction((selector, text) => document.querySelector(selector).innerText.includes(text), { timeout: 120000 }, selector, text)
+    await page.waitForFunction(
+      (selector, text, isCaseSensitive) => {
+        let htmlText = document.querySelector(selector).innerText
+        let targetText = text
+        if (!isCaseSensitive) {
+          htmlText = htmlText.toLowerCase()
+          targetText = targetText.toLowerCase()
+        }
+        return htmlText.includes(targetText)
+      },
+      { timeout: 120000 },
+      selector,
+      text,
+      isCaseSensitive
+    )
   } catch (error) {
-    throw new Error(`Text ${text} not found for selector: ${selector}`)
+    throw new Error(error, `Text ${text} not found for selector: ${selector}`)
   }
 }
 

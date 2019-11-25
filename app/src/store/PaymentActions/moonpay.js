@@ -70,7 +70,7 @@ export default {
       moonpayWindow = window.open(finalUrl, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200')
 
       var moonpayTimer = setInterval(function() {
-        if (moonpayWindow.closed) {
+        if (moonpayWindow && moonpayWindow.closed) {
           clearInterval(moonpayTimer)
           if (!iClosedMoonpay) {
             log.error('user closed popup')
@@ -79,6 +79,7 @@ export default {
           iClosedMoonpay = false
           moonpayWindow = undefined
         }
+        if (moonpayWindow === undefined) clearInterval(moonpayTimer)
       }, 1000)
     })
   }
