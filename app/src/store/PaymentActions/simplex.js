@@ -36,7 +36,7 @@ export default {
         account_details: {
           app_end_user_id: payload.currentOrder.user_id
         },
-        return_url: `${config.topup_redirect_uri}?state=${instanceState}`,
+        return_url: `${config.redirect_uri}?state=${instanceState}`,
         transaction_details: {
           payment_details: {
             fiat_total_amount: {
@@ -113,15 +113,18 @@ export default {
       document.body.appendChild(form)
       // Handle communication with simplex window here
 
-      const bc = new BroadcastChannel(`topup_redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
 
       bc.onmessage = ev => {
         try {
+          const {
+            instanceParams: { provider }
+          } = ev.data || {}
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             reject(new Error(ev.error))
-          } else if (ev.data && ev.data.provider === SIMPLEX) {
-            resolve({ success: ev.data.success })
+          } else if (ev.data && provider === SIMPLEX) {
+            resolve({ success: true })
           }
         } catch (error) {
           reject(error)

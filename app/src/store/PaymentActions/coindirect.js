@@ -37,9 +37,7 @@ export default {
       address: state.selectedAddress,
       email: state.userInfo.email !== '' ? state.userInfo.email : undefined,
       amount: currentOrder.amountIn,
-      url: encodeURIComponent(
-        `${config.coindirectApiHost}/transaction?url=${encodeURIComponent(`${config.topup_redirect_uri}?state=${instanceState}`)}`
-      )
+      url: encodeURIComponent(`${config.coindirectApiHost}/transaction?url=${encodeURIComponent(`${config.redirect_uri}?state=${instanceState}`)}`)
     }
     return dispatch('postCoindirectOrder', { path: config.coindirectLiveHost, params: params })
   },
@@ -50,15 +48,18 @@ export default {
       const paramString = new URLSearchParams(params)
       const finalUrl = `${path}?${paramString}`
 
-      const bc = new BroadcastChannel(`topup_redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
 
       bc.onmessage = ev => {
         try {
+          const {
+            instanceParams: { provider }
+          } = ev.data || {}
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             reject(new Error(ev.error))
-          } else if (ev.data && ev.data.provider === COINDIRECT) {
-            resolve({ success: ev.data.success })
+          } else if (ev.data && provider === COINDIRECT) {
+            resolve({ success: true })
           }
         } catch (error) {
           reject(error)

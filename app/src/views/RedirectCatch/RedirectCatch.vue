@@ -48,8 +48,8 @@ export default {
       bc = new BroadcastChannel(`redirect_channel_${instanceParams.instanceId}`, broadcastChannelOptions)
       await bc.postMessage({
         data: {
-          verifier: instanceParams.verifier,
-          verifierParams: hashParams
+          instanceParams: instanceParams,
+          hashParams: hashParams
         },
         error: error
       })
