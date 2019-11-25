@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import BroadcastChannel from 'broadcast-channel'
+import { BroadcastChannel } from 'broadcast-channel'
 import PageLoader from '../../components/helpers/PageLoader'
 import { broadcastChannelOptions } from '../../utils/utils'
 import log from 'loglevel'
@@ -48,8 +48,8 @@ export default {
       bc = new BroadcastChannel(`redirect_channel_${instanceParams.instanceId}`, broadcastChannelOptions)
       await bc.postMessage({
         data: {
-          verifier: instanceParams.verifier,
-          verifierParams: hashParams
+          instanceParams: instanceParams,
+          hashParams: hashParams
         },
         error: error
       })

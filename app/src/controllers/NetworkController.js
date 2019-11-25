@@ -40,7 +40,8 @@ const {
   GOERLI_CODE,
   ROPSTEN_CODE,
   KOVAN_CODE,
-  RINKEBY_CODE
+  RINKEBY_CODE,
+  SUPPORTED_NETWORK_TYPES
 } = require('../utils/enums')
 const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET, GOERLI]
 
@@ -53,6 +54,10 @@ export default class NetworkController extends EventEmitter {
     super()
     this.defaultMaxListeners = 20
     const providerConfig = opts.provider || defaultProviderConfig
+    log.info(providerConfig)
+    if (!SUPPORTED_NETWORK_TYPES[providerConfig.rpcTarget]) {
+      providerConfig.type = 'rpc'
+    }
     this.providerStore = new ObservableStore(providerConfig)
     this.networkStore = new ObservableStore('loading')
     this.networkConfig = new ObservableStore(defaultNetworkConfig)

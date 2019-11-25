@@ -138,7 +138,6 @@ export default {
         if (acc.findIndex(y => y.etherscanLink === x.etherscanLink) === -1) acc.push(x)
         return acc
       }, [])
-      // log.info('this.pastTx', finalTx)
       const sortedTx = finalTx.sort((a, b) => b.date - a.date) || []
       return sortedTx
     },
@@ -167,6 +166,7 @@ export default {
           to: x.to,
           slicedTo: addressSlicer(x.to),
           action: this.wallets.indexOf(x.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
+          gas: {},
           totalAmount: x.total_amount,
           totalAmountString: totalAmountString,
           currencyAmount: x.currency_amount,
@@ -197,6 +197,10 @@ export default {
           txObj.to = toChecksumAddress(txOld.txParams.to)
           txObj.slicedTo = addressSlicer(txOld.txParams.to)
           txObj.totalAmount = fromWei(toBN(txOld.txParams.value).add(toBN(txOld.txParams.gas).mul(toBN(txOld.txParams.gasPrice))))
+          txObj.gas = {
+            gas: fromWei(toBN(txOld.txParams.gas), 'gwei'),
+            gasPrice: fromWei(toBN(txOld.txParams.gasPrice), 'gwei')
+          }
           txObj.totalAmountString = `${significantDigits(txObj.totalAmount)} ETH`
           txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount
           txObj.currencyAmountString = `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`
@@ -231,8 +235,13 @@ export default {
     }
   },
   mounted() {
-    const { selectedAddress: publicAddress } = this.$store.state
-    getPastOrders({}, { public_address: publicAddress })
+    const { selectedAddress: publicAddress, jwtToken } = this.$store.state
+    getPastOrders(
+      { public_address: publicAddress },
+      {
+        Authorization: `Bearer ${jwtToken}`
+      }
+    )
       .then(response => {
         this.paymentTx = response.result.reduce((acc, x) => {
           if (!(x.status === 'SENT_TO_SIMPLEX' && new Date() - new Date(x.createdAt) > 86400 * 1000)) {
@@ -247,6 +256,7 @@ export default {
               to: publicAddress,
               slicedTo: addressSlicer(publicAddress),
               totalAmount: x.requested_digital_amount.amount,
+              gas: {},
               totalAmountString,
               currencyAmount: x.fiat_total_amount.amount,
               currencyAmountString,

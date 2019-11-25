@@ -37,7 +37,8 @@
                 </v-layout>
               </v-card-title>
               <v-card-text class="pb-8 px-6">
-                <h2 class="display-2 text_2--text font-weight-bold">
+                <component-loader class="mt-3" v-if="!weiBalanceLoaded" />
+                <h2 v-else class="display-2 text_2--text font-weight-bold">
                   {{ totalPortfolioValue }}
                   <span id="selected-currency" class="body-2 font-weight-light">{{ selectedCurrency }}</span>
                 </h2>
@@ -188,6 +189,7 @@ import config from '../../../config'
 import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
 import ExportQrCode from '../../../components/helpers/ExportQrCode'
+import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import LearnMore from '../../../components/WalletHome/LearnMore'
 import { MAINNET, WALLET_HEADERS_HOME } from '../../../utils/enums'
@@ -195,7 +197,7 @@ import { get } from '../../../utils/httpHelpers'
 
 export default {
   name: 'walletHome',
-  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore },
+  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore, ComponentLoader },
   data() {
     return {
       pageHeader: WALLET_HEADERS_HOME,
@@ -210,6 +212,9 @@ export default {
   computed: {
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
+    },
+    weiBalanceLoaded() {
+      return this.$store.state.weiBalanceLoaded
     },
     finalBalancesArray() {
       let balances = this.$store.getters.tokenBalances.finalBalancesArray
