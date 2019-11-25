@@ -72,7 +72,7 @@ export default {
       wyreWindow = window.open(finalUrl, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200')
 
       var wyreTimer = setInterval(function() {
-        if (wyreWindow.closed) {
+        if (wyreWindow && wyreWindow.closed) {
           clearInterval(wyreTimer)
           if (!iClosedWyre) {
             log.error('user closed popup')
@@ -81,6 +81,7 @@ export default {
           iClosedWyre = false
           wyreWindow = undefined
         }
+        if (wyreWindow === undefined) clearInterval(wyreTimer)
       }, 1000)
     })
   }

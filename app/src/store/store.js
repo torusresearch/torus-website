@@ -139,7 +139,7 @@ var VuexStore = new Vuex.Store({
         }
       }
       var confirmTimer = setInterval(function() {
-        if (confirmWindow.closed) {
+        if (confirmWindow && confirmWindow.closed) {
           clearInterval(confirmTimer)
           if (!iClosedConfirmWindow) {
             log.error('user closed popup')
@@ -151,6 +151,7 @@ var VuexStore = new Vuex.Store({
           iClosedConfirmWindow = false
           confirmWindow = undefined
         }
+        if (confirmWindow === undefined) clearInterval(confirmTimer)
       }, 1000)
     }
   }

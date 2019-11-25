@@ -139,7 +139,7 @@ export default {
       form.submit()
 
       var simplexTimer = setInterval(function() {
-        if (simplexWindow.closed) {
+        if (simplexWindow && simplexWindow.closed) {
           clearInterval(simplexTimer)
           if (!iClosedSimplex) {
             log.error('user closed popup')
@@ -148,6 +148,7 @@ export default {
           iClosedSimplex = false
           simplexWindow = undefined
         }
+        if (simplexWindow === undefined) clearInterval(simplexTimer)
       }, 1000)
     })
   }

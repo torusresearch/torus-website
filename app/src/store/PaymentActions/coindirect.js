@@ -74,7 +74,7 @@ export default {
       coindirectWindow = window.open(finalUrl, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200')
 
       var coindirectTimer = setInterval(function() {
-        if (coindirectWindow.closed) {
+        if (coindirectWindow && coindirectWindow.closed) {
           clearInterval(coindirectTimer)
           if (!iClosedCoindirect) {
             log.error('user closed popup')
@@ -83,6 +83,7 @@ export default {
           iClosedCoindirect = false
           coindirectWindow = undefined
         }
+        if (coindirectWindow === undefined) clearInterval(coindirectTimer)
       }, 1000)
     })
   }

@@ -349,7 +349,7 @@ export default {
         'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
       )
       var googleTimer = setInterval(function() {
-        if (googleWindow.closed) {
+        if (googleWindow && googleWindow.closed) {
           clearInterval(googleTimer)
           if (!iClosedGoogle) {
             log.error('user closed popup')
@@ -358,6 +358,7 @@ export default {
           iClosedGoogle = false
           googleWindow = undefined
         }
+        if (googleWindow === undefined) clearInterval(googleTimer)
       }, 1000)
     } else if (verifier === FACEBOOK) {
       const state = encodeURIComponent(
@@ -418,7 +419,7 @@ export default {
         'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
       )
       var facebookTimer = setInterval(function() {
-        if (facebookWindow.closed) {
+        if (facebookWindow && facebookWindow.closed) {
           clearInterval(facebookTimer)
           if (!iClosedFacebook) {
             log.error('user closed popup')
@@ -427,6 +428,7 @@ export default {
           iClosedFacebook = false
           facebookWindow = undefined
         }
+        if (facebookWindow === undefined) clearInterval(facebookTimer)
       }, 1000)
     } else if (verifier === TWITCH) {
       const state = encodeURIComponent(
@@ -495,7 +497,7 @@ export default {
         'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
       )
       var twitchTimer = setInterval(function() {
-        if (twitchWindow.closed) {
+        if (twitchWindow && twitchWindow.closed) {
           clearInterval(twitchTimer)
           if (!iClosedTwitch) {
             log.error('user closed popup')
@@ -504,6 +506,7 @@ export default {
           iClosedTwitch = false
           twitchWindow = undefined
         }
+        if (twitchWindow === undefined) clearInterval(twitchTimer)
       }, 1000)
     } else if (verifier === REDDIT) {
       const state = encodeURIComponent(
@@ -561,7 +564,7 @@ export default {
         'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
       )
       var redditTimer = setInterval(function() {
-        if (redditWindow.closed) {
+        if (redditWindow && redditWindow.closed) {
           clearInterval(redditTimer)
           if (!iClosedReddit) {
             log.error('user closed popup')
@@ -570,6 +573,7 @@ export default {
           iClosedReddit = false
           redditWindow = undefined
         }
+        if (redditWindow === undefined) clearInterval(redditTimer)
       }, 1000)
     } else if (verifier === DISCORD) {
       const state = encodeURIComponent(
@@ -632,7 +636,7 @@ export default {
         'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
       )
       var discordTimer = setInterval(function() {
-        if (discordWindow.closed) {
+        if (discordWindow && discordWindow.closed) {
           clearInterval(discordTimer)
           if (!iClosedDiscord) {
             log.error('user closed popup')
@@ -641,6 +645,7 @@ export default {
           iClosedDiscord = false
           discordWindow = undefined
         }
+        if (discordWindow === undefined) clearInterval(discordTimer)
       }, 1000)
     }
   },
