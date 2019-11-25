@@ -1,6 +1,6 @@
 <template>
   <v-container py-6 px-0 class="confirm-container">
-    <template v-if="type === 'transaction'">
+    <template v-if="type === TX_TRANSACTION">
       <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">{{ header }}</v-flex>
         <v-flex xs12>
@@ -155,7 +155,7 @@
       </v-layout>
     </template>
 
-    <template v-if="type === 'message'">
+    <template v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE || type === TX_TYPED_MESSAGE">
       <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left">Permissions</v-flex>
         <v-flex xs12>
@@ -266,7 +266,11 @@ const {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   SEND_ETHER_ACTION_KEY,
   SUPPORTED_NETWORK_TYPES,
-  OLD_ERC721_LIST
+  OLD_ERC721_LIST,
+  TX_MESSAGE,
+  TX_TYPED_MESSAGE,
+  TX_PERSONAL_MESSAGE,
+  TX_TRANSACTION
 } = require('../../utils/enums')
 
 const weiInGwei = 10 ** 9
@@ -326,6 +330,10 @@ export default {
       TOKEN_METHOD_TRANSFER_FROM,
       SEND_ETHER_ACTION_KEY,
       CONTRACT_INTERACTION_KEY,
+      TX_TRANSACTION,
+      TX_TYPED_MESSAGE,
+      TX_PERSONAL_MESSAGE,
+      TX_MESSAGE,
       networks: [
         ...Object.values(SUPPORTED_NETWORK_TYPES),
         {
@@ -503,16 +511,14 @@ export default {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
       var gasHex = numberToHex(this.gasPrice * weiInGwei)
       await bc.postMessage({
-        data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id }
+        data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id, txType: this.type }
       })
       bc.close()
-      window.close()
     },
     async triggerDeny(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
-      await bc.postMessage({ data: { type: 'deny-transaction', id: this.id } })
+      await bc.postMessage({ data: { type: 'deny-transaction', id: this.id, txType: this.type } })
       bc.close()
-      window.close()
     },
     topUp() {
       this.openWallet()
@@ -571,7 +577,7 @@ export default {
       }
       log.info(txParams)
       this.origin = url.hostname // origin of tx: website url
-      if (type === 'message') {
+      if (type !== TX_TRANSACTION) {
         var { message, typedMessages } = msgParams.msgParams || {}
         if (typedMessages) {
           try {
@@ -585,7 +591,7 @@ export default {
         this.message = message
         this.typedMessages = typedMessages
         this.messageType = typedMessages ? 'typed' : 'normal'
-      } else if (type === 'transaction') {
+      } else {
         let finalValue = 0
         const { value, to, data, from: sender, gas, gasPrice } = txParams.txParams || {}
         let { simulationFails, network, id, transactionCategory, methodParams, contractParams } = txParams || {}
