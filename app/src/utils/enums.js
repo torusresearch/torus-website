@@ -28,6 +28,11 @@ const MATIC_DISPLAY_NAME = 'Matic Alpha-Mainnet'
 
 const MATIC_URL = 'https://alpha.ethereum.matic.network'
 
+const TX_MESSAGE = 'message'
+const TX_PERSONAL_MESSAGE = 'personal_message'
+const TX_TYPED_MESSAGE = 'typed_message'
+const TX_TRANSACTION = 'transaction'
+
 const TRANSACTION_TYPE_CANCEL = 'cancel'
 const TRANSACTION_TYPE_RETRY = 'retry'
 const TRANSACTION_TYPE_STANDARD = 'standard'
@@ -220,5 +225,9 @@ module.exports = {
   WYRE,
   CRYPTO,
   PNG,
-  SVG
+  SVG,
+  TX_MESSAGE,
+  TX_TYPED_MESSAGE,
+  TX_PERSONAL_MESSAGE,
+  TX_TRANSACTION
 }
