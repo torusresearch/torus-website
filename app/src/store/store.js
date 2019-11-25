@@ -107,7 +107,9 @@ var VuexStore = new Vuex.Store({
         var { msgParams, id } = getLatestMessageParams()
         bc.onmessage = async ev => {
           if (ev.data === 'popup-loaded') {
-            txId = id
+            if (txId === undefined) {
+              txId = id
+            }
             await bc.postMessage({
               data: {
                 origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
