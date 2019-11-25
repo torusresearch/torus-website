@@ -198,8 +198,8 @@ export default {
           txObj.slicedTo = addressSlicer(txOld.txParams.to)
           txObj.totalAmount = fromWei(toBN(txOld.txParams.value).add(toBN(txOld.txParams.gas).mul(toBN(txOld.txParams.gasPrice))))
           txObj.gas = {
-            gas: web3Utils.fromWei(web3Utils.toBN(txOld.txParams.gas), 'gwei'),
-            gasPrice: web3Utils.fromWei(web3Utils.toBN(txOld.txParams.gasPrice), 'gwei')
+            gas: fromWei(toBN(txOld.txParams.gas), 'gwei'),
+            gasPrice: fromWei(toBN(txOld.txParams.gasPrice), 'gwei')
           }
           txObj.totalAmountString = `${significantDigits(txObj.totalAmount)} ETH`
           txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount
