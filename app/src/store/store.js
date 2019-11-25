@@ -61,13 +61,16 @@ var VuexStore = new Vuex.Store({
     ...actions,
     ...paymentActions,
     showPopup({ state, getters }, payload) {
-      var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`, broadcastChannelOptions)
+      let confirmWindow
+      let iClosedConfirmWindow
+      let txId
+      const bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`, broadcastChannelOptions)
       const isTx = isTorusTransaction()
       const width = 500
       const height = isTx ? 660 : 400
       // const width = 500
       // const height = 600
-      window.open(
+      confirmWindow = window.open(
         `${baseRoute}confirm?instanceId=${torus.instanceId}&integrity=true`,
         '_blank',
         `directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=${height},width=${width}`
@@ -77,6 +80,9 @@ var VuexStore = new Vuex.Store({
         bc.onmessage = async ev => {
           if (ev.data === 'popup-loaded') {
             var txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
+            if (txId === undefined) {
+              txId = txParams.id
+            }
             await bc.postMessage({
               data: {
                 origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
@@ -85,13 +91,23 @@ var VuexStore = new Vuex.Store({
                 balance
               }
             })
+          } else if (ev.data.id === txId && (ev.data.type === 'confirm-transaction' || ev.data.type === 'deny-transaction')) {
+            if (ev.data.type === 'confirm-transaction') {
+              handleConfirm(ev)
+            } else if (ev.data.type === 'deny-transaction') {
+              handleDeny(ev.data.id)
+            }
             bc.close()
+            iClosedConfirmWindow = true
+            txId = undefined
+            confirmWindow && confirmWindow.close()
           }
         }
       } else {
         var { msgParams, id } = getLatestMessageParams()
         bc.onmessage = async ev => {
           if (ev.data === 'popup-loaded') {
+            txId = id
             await bc.postMessage({
               data: {
                 origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
@@ -99,13 +115,86 @@ var VuexStore = new Vuex.Store({
                 msgParams: { msgParams, id }
               }
             })
+          } else if (ev.data.id === txId && (ev.data.type === 'confirm-transaction' || ev.data.type === 'deny-transaction')) {
+            if (ev.data.type === 'confirm-transaction') {
+              handleConfirm(ev)
+            } else if (ev.data.type === 'deny-transaction') {
+              handleDeny(ev.data.id)
+            }
             bc.close()
+            iClosedConfirmWindow = true
+            txId = undefined
+            confirmWindow && confirmWindow.close()
           }
         }
       }
+      var confirmTimer = setInterval(function() {
+        if (confirmWindow.closed) {
+          clearInterval(confirmTimer)
+          if (!iClosedConfirmWindow) {
+            log.error('user closed popup')
+            handleDeny(txId)
+          }
+          bc.close()
+          txId = undefined
+          iClosedConfirmWindow = false
+          confirmWindow = undefined
+        }
+      }, 1000)
     }
   }
 })
+
+function handleConfirm(ev) {
+  let { torusController } = torus
+  let state = VuexStore.state
+  if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
+    let msgParams = state.unapprovedPersonalMsgs[ev.data.id].msgParams
+    log.info('PERSONAL MSG PARAMS:', msgParams)
+    msgParams.metamaskId = parseInt(ev.data.id, 10)
+    torusController.signPersonalMessage(msgParams)
+  } else if (Object.keys(state.unapprovedMsgs).length > 0) {
+    let msgParams = state.unapprovedMsgs[ev.data.id].msgParams
+    log.info(' MSG PARAMS:', msgParams)
+    msgParams.metamaskId = parseInt(ev.data.id, 10)
+    torusController.signMessage(msgParams)
+  } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
+    let msgParams = state.unapprovedTypedMessages[ev.data.id].msgParams
+    log.info('TYPED MSG PARAMS:', msgParams)
+    msgParams.metamaskId = parseInt(ev.data.id, 10)
+    torusController.signTypedMessage(msgParams)
+  } else if (Object.keys(state.transactions).length > 0) {
+    const unApprovedTransactions = VuexStore.getters.unApprovedTransactions
+    var txMeta = unApprovedTransactions.find(x => x.id === ev.data.id)
+    log.info('STANDARD TX PARAMS:', txMeta)
+
+    if (ev.data.gasPrice) {
+      log.info('Changed gas price to:', ev.data.gasPrice)
+      var newTxMeta = JSON.parse(JSON.stringify(txMeta))
+      newTxMeta.txParams.gasPrice = ev.data.gasPrice
+      torusController.txController.updateTransaction(newTxMeta)
+      txMeta = newTxMeta
+      log.info('New txMeta: ', txMeta)
+    }
+    torusController.updateAndApproveTransaction(txMeta)
+  } else {
+    throw new Error('No new transactions.')
+  }
+}
+
+function handleDeny(id) {
+  let { torusController } = torus
+  let state = VuexStore.state
+  if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
+    torusController.cancelPersonalMessage(parseInt(id, 10))
+  } else if (Object.keys(state.unapprovedMsgs).length > 0) {
+    torusController.cancelMessage(parseInt(id, 10))
+  } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
+    torusController.cancelTypedMessage(parseInt(id, 10))
+  } else if (Object.keys(state.transactions).length > 0) {
+    torusController.cancelTransaction(parseInt(id, 10))
+  }
+}
 
 function getLatestMessageParams() {
   let time = 0

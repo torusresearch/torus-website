@@ -506,13 +506,11 @@ export default {
         data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id }
       })
       bc.close()
-      window.close()
     },
     async triggerDeny(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
       await bc.postMessage({ data: { type: 'deny-transaction', id: this.id } })
       bc.close()
-      window.close()
     },
     topUp() {
       this.openWallet()
