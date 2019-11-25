@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -86,7 +86,7 @@
     "xtend": "^4.0.2"
   },
   "devDependencies": {
-    "@toruslabs/torus-embed": "^0.2.6",
+    "@toruslabs/torus-embed": "^0.2.7",
     "@vue/cli-plugin-babel": "^4.0.5",
     "@vue/cli-plugin-eslint": "^4.0.5",
     "@vue/cli-plugin-pwa": "^4.0.5",
@@ -138,7 +138,7 @@
     "uglifyify": "^5.0.2",
     "vue-cli-plugin-vuetify": "^2.0.2",
     "vue-template-compiler": "^2.6.10",
-    "vuetify-loader": "^1.4.1",
+    "vuetify-loader": "^1.4.2",
     "worker-loader": "^2.0.0"
   },
   "browserslist": [
