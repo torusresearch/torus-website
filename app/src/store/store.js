@@ -77,12 +77,13 @@ var VuexStore = new Vuex.Store({
       )
       if (isTx) {
         var balance = fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
+        var txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
         bc.onmessage = async ev => {
-          if (ev.data === 'popup-loaded') {
-            var txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
-            if (txId === undefined) {
-              txId = txParams.id
-            }
+          if (txId !== undefined && txId !== ev.data.id) {
+            return // ignore message if txId is different
+          }
+          if (ev.data === 'popup-loaded' && txId === undefined) {
+            txId = txParams.id
             await bc.postMessage({
               data: {
                 origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
@@ -91,7 +92,7 @@ var VuexStore = new Vuex.Store({
                 balance
               }
             })
-          } else if (ev.data.id === txId && (ev.data.type === 'confirm-transaction' || ev.data.type === 'deny-transaction')) {
+          } else if (ev.data.type === 'confirm-transaction' || ev.data.type === 'deny-transaction') {
             if (ev.data.type === 'confirm-transaction') {
               handleConfirm(ev)
             } else if (ev.data.type === 'deny-transaction') {
@@ -106,10 +107,11 @@ var VuexStore = new Vuex.Store({
       } else {
         var { msgParams, id } = getLatestMessageParams()
         bc.onmessage = async ev => {
-          if (ev.data === 'popup-loaded') {
-            if (txId === undefined) {
-              txId = id
-            }
+          if (txId !== undefined && txId !== ev.data.id) {
+            return // ignore message if txId is different
+          }
+          if (ev.data === 'popup-loaded' && txId === undefined) {
+            txId = id
             await bc.postMessage({
               data: {
                 origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
@@ -117,7 +119,7 @@ var VuexStore = new Vuex.Store({
                 msgParams: { msgParams, id }
               }
             })
-          } else if (ev.data.id === txId && (ev.data.type === 'confirm-transaction' || ev.data.type === 'deny-transaction')) {
+          } else if (ev.data.type === 'confirm-transaction' || ev.data.type === 'deny-transaction') {
             if (ev.data.type === 'confirm-transaction') {
               handleConfirm(ev)
             } else if (ev.data.type === 'deny-transaction') {
