@@ -1,7 +1,7 @@
 <template>
   <v-container py-6 px-0>
     <template v-if="type === 'none'">
-      <page-loader />
+      <popup-screen-loader />
     </template>
     <template v-else>
       <v-layout align-center mx-6 mb-6>
@@ -55,14 +55,14 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import PageLoader from '../../components/helpers/PageLoader'
+import { PopupScreenLoader } from '../../content-loader'
 import { broadcastChannelOptions } from '../../utils/utils'
 import log from 'loglevel'
 
 export default {
   name: 'userInfoRequest',
   components: {
-    PageLoader
+    PopupScreenLoader
   },
   data() {
     return {

@@ -56,3 +56,11 @@ use the following command in the project root (where package.json lives)
 ```sh
 find ./node_modules -name ".git" -type d -exec rm -rf {} +
 ```
+
+### Release notes
+Checklist: 
+Browser: Chrome, Edge, Firefox, Safari, Brave incl. mobile
+Website: *.tor.us
+- [ ] Test login on all google/discord oauths
+- [ ] Test wallet transfer
+- [ ] Test on torus-embed vue-app all buttons

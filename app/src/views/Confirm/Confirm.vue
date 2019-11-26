@@ -1,5 +1,5 @@
 <template>
-  <v-container py-6 px-0 class="confirm-container">
+  <v-container px-0 class="confirm-container" :class="type === TX_TRANSACTION ? 'py-6' : 'py-0'">
     <template v-if="type === TX_TRANSACTION">
       <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">{{ header }}</v-flex>
@@ -229,7 +229,7 @@
       </v-layout>
     </template>
     <template v-if="type === 'none'">
-      <page-loader />
+      <popup-screen-loader />
     </template>
   </v-container>
 </template>
@@ -240,7 +240,7 @@ import VueJsonPretty from 'vue-json-pretty'
 import { BroadcastChannel } from 'broadcast-channel'
 import { numberToHex, fromWei, toChecksumAddress, hexToNumber } from 'web3-utils'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
-import PageLoader from '../../components/helpers/PageLoader'
+import { PopupScreenLoader } from '../../content-loader'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
@@ -278,7 +278,7 @@ const weiInGwei = 10 ** 9
 export default {
   name: 'confirm',
   components: {
-    PageLoader,
+    PopupScreenLoader,
     TransactionSpeedSelect,
     TransferConfirm,
     VueJsonPretty,
