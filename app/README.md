@@ -56,3 +56,10 @@ use the following command in the project root (where package.json lives)
 ```sh
 find ./node_modules -name ".git" -type d -exec rm -rf {} +
 ```
+
+### Release notes
+- Test on testing, staging first
+- Test login on all oauths
+- Test wallet transfer
+- Test on torus-embed vue-app all buttons
+- Release prod then
