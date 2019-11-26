@@ -125,7 +125,9 @@ function precache(entries) {
         })
         .then(function(respText) {
           iframeURLResponseText = respText
+          console.log(iframeURLResponseText)
         })
+        .catch(console.error)
       var precacheController = getOrCreatePrecacheController()
       event.waitUntil(
         precacheController.install({ event: event }).catch(function(err) {
@@ -524,15 +526,30 @@ REDIRECT_HTML${''}
       )
     )
   } else if (event.request.url.indexOf('integrity=true') > -1) {
-    event.respondWith(
-      new Response(
-        new Blob([
-          `
+    if (iframeURLResponseText) {
+      event.respondWith(
+        new Response(
+          new Blob([
+            `
 ${iframeURLResponseText}
 `
-        ])
+          ])
+        )
       )
-    )
+    } else {
+      console.log('nothing', iframeURLResponseText)
+      event.respondWith(fetch(iframeURL))
+      fetch(iframeURL)
+        .then(function(resp) {
+          return resp.text()
+        })
+        .then(function(respText) {
+          iframeURLResponseText = respText
+        })
+        .catch(function(err) {
+          console.error(err)
+        })
+    }
   }
 })
 
