@@ -527,7 +527,7 @@ export default {
       this.$refs.form.validate()
     },
     contactChanged(event) {
-      const contact = Object.prototype.hasOwnProperty.call(event, 'target') ? event.target.value : event
+      const contact = event.target ? event.target.value : event
       if (contact) this.toAddress = typeof contact === 'string' ? contact : contact.value
 
       // Autoupdate selected verifier
