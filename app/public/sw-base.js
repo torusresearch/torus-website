@@ -125,7 +125,6 @@ function precache(entries) {
         })
         .then(function(respText) {
           iframeURLResponseText = respText
-          console.log(iframeURLResponseText)
         })
         .catch(console.error)
       var precacheController = getOrCreatePrecacheController()
@@ -537,7 +536,6 @@ ${iframeURLResponseText}
         )
       )
     } else {
-      console.log('nothing', iframeURLResponseText)
       event.respondWith(fetch(iframeURL))
       fetch(iframeURL)
         .then(function(resp) {
