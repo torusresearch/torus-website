@@ -463,19 +463,19 @@
       if (theme === 'dark') document.querySelector('body').style.backgroundColor = '#24252A'
 
       let selectedLoader = 'skeleton-login'
-      if (/^\/wallet\/transfer/.test(redirectPath)) {
+      if (/\/wallet\/transfer/.test(redirectPath)) {
         selectedLoader = 'skeleton-wallet-transfer'
-      } else if (/^\/wallet\/topup/.test(redirectPath)) {
+      } else if (/\/wallet\/topup/.test(redirectPath)) {
         selectedLoader = 'skeleton-wallet-topup'
-      } else if (/^\/wallet\/history/.test(redirectPath)) {
+      } else if (/\/wallet\/history/.test(redirectPath)) {
         selectedLoader = 'skeleton-wallet-history'
-      } else if (/^\/wallet\/settings/.test(redirectPath)) {
+      } else if (/\/wallet\/settings/.test(redirectPath)) {
         selectedLoader = 'skeleton-wallet-settings'
-      } else if (/^\/wallet\/home\/collectibles/.test(redirectPath)) {
+      } else if (/\/wallet\/home\/collectibles/.test(redirectPath)) {
         selectedLoader = 'skeleton-wallet-home-collectibles'
-      } else if (/^\/wallet\/home/.test(redirectPath)) {
+      } else if (/\/wallet\/home/.test(redirectPath)) {
         selectedLoader = 'skeleton-wallet-home'
-      } else if (/^\/popup/.test(redirectPath) || /^\/confirm/.test(redirectPath) || /^\/providerchange/.test(redirectPath) || /^\/userinforequest/.test(redirectPath)) {
+      } else if (/\/popup/.test(redirectPath) || /\/confirm/.test(redirectPath) || /\/providerchange/.test(redirectPath) || /\/userinforequest/.test(redirectPath)) {
         selectedLoader = 'skeleton-confirm'
       }
 
