@@ -141,6 +141,7 @@ import { mapActions, mapState } from 'vuex'
 import {
   WalletLoginLoader,
   WalletHomeLoader,
+  WalletCollectiblesLoader,
   WalletTransferLoader,
   WalletTopupLoader,
   WalletActivityLoader,
@@ -189,6 +190,8 @@ export default {
         return WalletActivityLoader
       } else if (redirectPath === '/wallet/settings') {
         return WalletSettingsLoader
+      } else if (/^\/wallet\/home\/collectibles/.test(redirectPath)) {
+        return WalletCollectiblesLoader
       } else {
         return WalletHomeLoader
       }
