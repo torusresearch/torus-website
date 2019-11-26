@@ -38,20 +38,20 @@
                 Rate
                 <span class="float-right">:</span>
               </v-flex>
-              <v-flex xs8 sm11>1 ETH = {{ item.ethRate }} {{ item.currencyUsed }} @ {{ item.timeFormatted }} {{ JSON.stringify(item.gas) }}</v-flex>
+              <v-flex xs8 sm11>1 ETH = {{ item.ethRate }} {{ item.currencyUsed }} @ {{ item.timeFormatted }}</v-flex>
               <v-flex xs4 sm1 pr-2>
                 Network
                 <span class="float-right">:</span>
               </v-flex>
               <v-flex xs8 sm11>{{ (mapper[item.networkType] && mapper[item.networkType].networkName) || '' }}</v-flex>
 
-              <v-flex xs12 class="text-right" v-if="Object.keys(item.gas).length">
+              <!-- <v-flex xs12 class="text-right" v-if="Object.keys(item.gas).length">
                 <v-btn color="primary" class="px-6" @click="speedUpTx = true">Speed up transaction</v-btn>
-              </v-flex>
+              </v-flex> -->
 
-              <v-dialog v-model="speedUpTx" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly">
+              <!-- <v-dialog v-model="speedUpTx" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly">
                 <SpeedUpTransaction :gas="item.gas" @onClose="speedUpTx = false" />
-              </v-dialog>
+              </v-dialog> -->
               <!-- <v-flex xs4 sm1 pr-2>
                 Type
                 <span class="float-right">:</span>
@@ -148,9 +148,9 @@ export default {
       return this.transactions && this.transactions.length > 5
     }
   },
-  components: {
-    SpeedUpTransaction: SpeedUpTransaction
-  },
+  // components: {
+  //   SpeedUpTransaction: SpeedUpTransaction
+  // },
   methods: {
     changeSort(column) {
       if (this.pagination.sortBy === column) {
