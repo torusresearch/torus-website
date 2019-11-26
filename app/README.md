@@ -58,8 +58,9 @@ find ./node_modules -name ".git" -type d -exec rm -rf {} +
 ```
 
 ### Release notes
-- Test on testing, staging first
-- Test login on all oauths
-- Test wallet transfer
-- Test on torus-embed vue-app all buttons
-- Release prod then
+Checklist: 
+Browser: Chrome, Edge, Firefox, Safari, Brave incl. mobile
+Website: *.tor.us
+- [ ] Test login on all google/discord oauths
+- [ ] Test wallet transfer
+- [ ] Test on torus-embed vue-app all buttons
