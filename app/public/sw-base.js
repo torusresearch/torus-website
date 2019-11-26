@@ -119,6 +119,13 @@ function precache(entries) {
   precacheController.addToCacheList(entries)
   if (entries.length > 0) {
     addEventListener('install', function(event) {
+      fetch(iframeURL)
+        .then(function(resp) {
+          return resp.text()
+        })
+        .then(function(respText) {
+          iframeURLResponseText = respText
+        })
       var precacheController = getOrCreatePrecacheController()
       event.waitUntil(
         precacheController.install({ event: event }).catch(function(err) {
@@ -130,16 +137,7 @@ function precache(entries) {
     addEventListener('activate', function(event) {
       var precacheController = getOrCreatePrecacheController()
       iframeURL = self.registration.active.scriptURL.split(serviceWorkerScriptPath)[0] + '/popup'
-      event.waitUntil(
-        fetch(iframeURL)
-          .then(function(resp) {
-            return resp.text()
-          })
-          .then(function(respText) {
-            iframeURLResponseText = respText
-            return precacheController.activate()
-          })
-      )
+      event.waitUntil(precacheController.activate())
     })
   }
 }
