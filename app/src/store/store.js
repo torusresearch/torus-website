@@ -57,7 +57,7 @@ if (storageAvailable('sessionStorage'))
   })
 
 var VuexStore = new Vuex.Store({
-  plugins: [vuexPersist && vuexPersist.plugin],
+  plugins: vuexPersist ? [vuexPersist.plugin] : [],
   state,
   getters,
   mutations,
