@@ -51,6 +51,19 @@
                     block
                     class="other-login-btn"
                     type="button"
+                    title="Login with Torus"
+                    @click="triggerLogin({ verifier: TORUS, calledFromEmbed: false })"
+                  >
+                    <img width="32" :src="require('../../../public/img/icons/torus.svg')" />
+                  </v-btn>
+                </v-flex>
+                <v-flex xs3 px-1>
+                  <v-btn
+                    :large="!$vuetify.breakpoint.xsOnly"
+                    outlined
+                    block
+                    class="other-login-btn"
+                    type="button"
                     title="Login with Reddit"
                     @click="triggerLogin({ verifier: REDDIT, calledFromEmbed: false })"
                   >
@@ -147,7 +160,7 @@ import {
   WalletActivityLoader,
   WalletSettingsLoader
 } from '../../content-loader'
-import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../utils/enums'
+import { GOOGLE, TORUS, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../utils/enums'
 import config from '../../config'
 
 export default {
@@ -158,6 +171,7 @@ export default {
       isLogout: false,
       FACEBOOK: FACEBOOK,
       GOOGLE: GOOGLE,
+      TORUS: TORUS,
       TWITCH: TWITCH,
       REDDIT: REDDIT,
       DISCORD: DISCORD

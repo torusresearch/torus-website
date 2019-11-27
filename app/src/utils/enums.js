@@ -98,12 +98,14 @@ const ACTIVITY_PERIOD_WEEK_ONE = 'Last 1 Week'
 const ACTIVITY_PERIOD_MONTH_ONE = 'Last 1 Month'
 const ACTIVITY_PERIOD_MONTH_SIX = 'Last 6 Months'
 const GOOGLE = 'google'
+const TORUS = 'torus'
 const FACEBOOK = 'facebook'
 const REDDIT = 'reddit'
 const DISCORD = 'discord'
 const TWITCH = 'twitch'
 const ETH_LABEL = 'ETH Address'
 const GOOGLE_LABEL = 'Google Email'
+const TORUS_LABEL = 'Torus Email'
 const FACEBOOK_LABEL = 'Facebook ID'
 const REDDIT_LABEL = 'Reddit Username'
 const DISCORD_LABEL = 'Discord ID'
@@ -123,6 +125,10 @@ const ALLOWED_VERIFIERS = [
   {
     name: GOOGLE_LABEL,
     value: GOOGLE
+  },
+  {
+    name: TORUS_LABEL,
+    value: TORUS
   },
   {
     name: REDDIT_LABEL,

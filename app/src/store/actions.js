@@ -9,6 +9,7 @@ import {
   SUPPORTED_NETWORK_TYPES,
   FACEBOOK,
   GOOGLE,
+  TORUS,
   TWITCH,
   REDDIT,
   DISCORD,
@@ -360,6 +361,24 @@ export default {
         }
         if (googleWindow === undefined) clearInterval(googleTimer)
       }, 1000)
+    } else if (verifier === TORUS) {
+      const email = prompt('email')
+      const password = prompt('password')
+      const hash = torus.hashMessage(email + password).toString('hex')
+
+      const signature = null
+      const timestamp = null
+
+      dispatch('updateIdToken', { idToken: signature })
+      dispatch('updateUserInfo', {
+        userInfo: {
+          email: email,
+          verifierId: email,
+          verifier: TORUS,
+          verifierParams: { email, hash, signature, timestamp }
+        }
+      })
+      dispatch('handleLogin', { calledFromEmbed, endPointNumber })
     } else if (verifier === FACEBOOK) {
       const state = encodeURIComponent(
         window.btoa(
