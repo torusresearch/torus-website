@@ -158,7 +158,6 @@ workflows:
   commit:
     jobs:
       - test-coverage
-      - unit-test
       - build:
           filters:
             branches:
