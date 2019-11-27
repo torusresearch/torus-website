@@ -1,6 +1,6 @@
 <template>
   <div :class="[{ 'background-login': !loggedIn }, 'default']">
-    <template v-if="!loginInProgress">
+    <template v-if="!loginInProgress && false">
       <v-layout wrap fill-height align-center justify-center class="login-panel-left">
         <v-flex xs12 md6>
           <v-layout v-if="!isLogout" wrap>
@@ -140,10 +140,14 @@
 import { mapActions, mapState } from 'vuex'
 import {
   WalletLoginLoader,
+  WalletLoginLoaderMobile,
   WalletHomeLoader,
+  WalletHomeLoaderMobile,
   WalletCollectiblesLoader,
   WalletTransferLoader,
+  WalletTransferLoaderMobile,
   WalletTopupLoader,
+  WalletTopupLoaderMobile,
   WalletActivityLoader,
   WalletSettingsLoader
 } from '../../content-loader'
@@ -152,7 +156,7 @@ import config from '../../config'
 
 export default {
   name: 'login',
-  components: { WalletLoginLoader },
+  components: { WalletLoginLoader, WalletLoginLoaderMobile },
   data() {
     return {
       isLogout: false,
@@ -193,7 +197,7 @@ export default {
       } else if (/^\/wallet\/home\/collectibles/.test(redirectPath)) {
         return WalletCollectiblesLoader
       } else {
-        return WalletHomeLoader
+        return WalletTopupLoaderMobile
       }
     }
   }),
