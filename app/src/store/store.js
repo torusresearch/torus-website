@@ -6,7 +6,7 @@ import VuexPersistence from 'vuex-persist'
 import { fromWei, hexToUtf8, toBN, toChecksumAddress } from 'web3-utils'
 import config from '../config'
 import torus from '../torus'
-import { getEtherScanHashLink, broadcastChannelOptions } from '../utils/utils'
+import { getEtherScanHashLink, broadcastChannelOptions, storageAvailable } from '../utils/utils'
 import { TX_MESSAGE, TX_PERSONAL_MESSAGE, TX_TRANSACTION, TX_TYPED_MESSAGE } from '../utils/enums'
 import { post } from '../utils/httpHelpers.js'
 import { notifyUser } from '../utils/notifications'
@@ -27,34 +27,37 @@ const baseRoute = config.baseRoute
 
 Vue.use(Vuex)
 
-const vuexPersist = new VuexPersistence({
-  key: 'torus-app',
-  storage: window.sessionStorage,
-  reducer: state => {
-    return {
-      userInfo: state.userInfo,
-      userInfoAccess: state.userInfoAccess,
-      idToken: state.idToken,
-      wallet: state.wallet,
-      // weiBalance: state.weiBalance,
-      selectedAddress: state.selectedAddress,
-      networkType: state.networkType,
-      networkId: state.networkId,
-      currencyData: state.currencyData,
-      // tokenData: state.tokenData,
-      tokenRates: state.tokenRates,
-      selectedCurrency: state.selectedCurrency,
-      jwtToken: state.jwtToken,
-      theme: state.theme,
-      billboard: state.billboard,
-      contacts: state.contacts
-      // pastTransactions: state.pastTransactions
+let vuexPersist
+
+if (storageAvailable('sessionStorage'))
+  vuexPersist = new VuexPersistence({
+    key: 'torus-app',
+    storage: window.sessionStorage,
+    reducer: state => {
+      return {
+        userInfo: state.userInfo,
+        userInfoAccess: state.userInfoAccess,
+        idToken: state.idToken,
+        wallet: state.wallet,
+        // weiBalance: state.weiBalance,
+        selectedAddress: state.selectedAddress,
+        networkType: state.networkType,
+        networkId: state.networkId,
+        currencyData: state.currencyData,
+        // tokenData: state.tokenData,
+        tokenRates: state.tokenRates,
+        selectedCurrency: state.selectedCurrency,
+        jwtToken: state.jwtToken,
+        theme: state.theme,
+        billboard: state.billboard,
+        contacts: state.contacts
+        // pastTransactions: state.pastTransactions
+      }
     }
-  }
-})
+  })
 
 var VuexStore = new Vuex.Store({
-  plugins: [vuexPersist.plugin],
+  plugins: vuexPersist ? [vuexPersist.plugin] : [],
   state,
   getters,
   mutations,

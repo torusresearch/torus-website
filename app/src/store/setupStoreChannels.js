@@ -16,25 +16,6 @@ torus.torusController.networkController.networkStore.subscribe(function(state) {
   VuexStore.dispatch('updateNetworkId', { networkId: state })
 })
 
-// if (storageAvailable('sessionStorage')) {
-//   function storageHandler() {
-//     log.info('calling twice 1 session')
-//     const sessionData = sessionStorage.getItem('torus-app')
-//     const networkType = (JSON.parse(sessionData) && JSON.parse(sessionData).networkType) || {
-//       host: MAINNET,
-//       chainId: MAINNET_CODE,
-//       networkName: MAINNET_DISPLAY_NAME
-//     }
-//     if (networkType.host !== VuexStore.state.networkType.host) {
-//       if (SUPPORTED_NETWORK_TYPES.includes(networkType.host)) VuexStore.dispatch('setProviderType', { network: networkType })
-//       else VuexStore.dispatch('setProviderType', { network: networkType, type: RPC })
-//     }
-//   }
-//   // listen to changes on sessionStorage
-//   window.removeEventListener('storage', storageHandler, false)
-//   window.addEventListener('storage', storageHandler, false)
-// }
-
 // setup handlers for communicationStream
 var passthroughStream = new stream.PassThrough({ objectMode: true })
 passthroughStream.on('data', function() {
