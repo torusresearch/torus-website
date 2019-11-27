@@ -1,3 +1,35 @@
+.torus-alert {
+  z-index: 999999;
+  position: fixed;
+  overflow: hidden;
+  top: 34px;
+  right: 34px;
+  width: 260px;
+  box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16);
+  border-radius: 8px;
+  background: #ffffff;
+  font-family: 'Roboto', sans-serif !important;
+  padding: 20px;
+}
+
+.torus-alert h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 200;
+}
+
+.torus-alert p {
+  margin: 10px 0 0;
+  font-size: 14px;
+}
+
+.torus-alert .torus-alert-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+}
+
 .widget {
   z-index: 999999;
   position: fixed;
