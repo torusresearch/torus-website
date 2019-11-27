@@ -1,7 +1,7 @@
 <template>
   <v-container py-6 px-0>
     <template v-if="type === 'none'">
-      <page-loader />
+      <popup-screen-loader />
     </template>
     <template v-else>
       <v-layout wrap align-center mx-6 mb-6>
@@ -52,8 +52,8 @@
 </template>
 
 <script>
-import BroadcastChannel from 'broadcast-channel'
-import PageLoader from '../../components/helpers/PageLoader'
+import { BroadcastChannel } from 'broadcast-channel'
+import { PopupScreenLoader } from '../../content-loader'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import { broadcastChannelOptions } from '../../utils/utils'
 import log from 'loglevel'
@@ -61,7 +61,7 @@ import log from 'loglevel'
 export default {
   name: 'confirm',
   components: {
-    PageLoader,
+    PopupScreenLoader,
     NetworkDisplay
   },
   data() {

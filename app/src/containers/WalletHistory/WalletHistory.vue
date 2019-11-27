@@ -138,7 +138,6 @@ export default {
         return acc
       }, [])
       const sortedTx = finalTx.sort((a, b) => b.date - a.date) || []
-      log.info('sortedTx is', sortedTx)
       return sortedTx
     },
     async calculatePastTransactions() {
@@ -198,8 +197,10 @@ export default {
           txObj.to = toChecksumAddress(txOld.txParams.to)
           txObj.slicedTo = addressSlicer(txOld.txParams.to)
           txObj.totalAmount = fromWei(toBN(txOld.txParams.value).add(toBN(txOld.txParams.gas).mul(toBN(txOld.txParams.gasPrice))))
-          txObj.gas = txOld.txParams.gas
-          txObj.gasPrice = txOld.txParams.gasPrice
+          txObj.gas = {
+            gas: fromWei(toBN(txOld.txParams.gas), 'gwei'),
+            gasPrice: fromWei(toBN(txOld.txParams.gasPrice), 'gwei')
+          }
           txObj.totalAmountString = `${significantDigits(txObj.totalAmount)} ETH`
           txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount
           txObj.currencyAmountString = `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`
@@ -210,7 +211,6 @@ export default {
           txObj.ethRate = significantDigits(parseFloat(txObj.currencyAmount) / parseFloat(txObj.totalAmount))
           txObj.currencyUsed = this.selectedCurrency
           finalTransactions.push(txObj)
-          console.log('txObj is', txObj)
         }
       }
       return finalTransactions
@@ -235,8 +235,13 @@ export default {
     }
   },
   mounted() {
-    const { selectedAddress: publicAddress } = this.$store.state
-    getPastOrders({}, { public_address: publicAddress })
+    const { selectedAddress: publicAddress, jwtToken } = this.$store.state
+    getPastOrders(
+      { public_address: publicAddress },
+      {
+        Authorization: `Bearer ${jwtToken}`
+      }
+    )
       .then(response => {
         this.paymentTx = response.result.reduce((acc, x) => {
           if (!(x.status === 'SENT_TO_SIMPLEX' && new Date() - new Date(x.createdAt) > 86400 * 1000)) {

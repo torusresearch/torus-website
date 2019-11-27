@@ -58,7 +58,6 @@
       "directory": "./app"
     }
   ],
-  "prettier.eslintIntegration": true,
   "prettier.jsxBracketSameLine": true,
   "prettier.printWidth": 150
 }

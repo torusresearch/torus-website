@@ -1,6 +1,6 @@
 <template>
-  <v-container py-6 px-0 class="confirm-container">
-    <template v-if="type === 'transaction'">
+  <v-container px-0 class="confirm-container" :class="type === TX_TRANSACTION ? 'py-6' : 'py-0'">
+    <template v-if="type === TX_TRANSACTION">
       <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">{{ header }}</v-flex>
         <v-flex xs12>
@@ -29,7 +29,18 @@
           <div class="subtitle-2">Amount</div>
           <v-divider></v-divider>
           <div>
-            <span class="subtitle-2 float-left text_2--text">{{ displayAmountTo }}</span>
+            <span class="subtitle-2 float-left text_2--text">
+              <show-tool-tip
+                v-if="[TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(transactionCategory) >= 0"
+                :address="amountTo"
+              >
+                {{ displayAmountTo }}
+              </show-tool-tip>
+              <show-tool-tip v-else-if="[SEND_ETHER_ACTION_KEY, CONTRACT_INTERACTION_KEY].indexOf(transactionCategory) >= 0" :address="receiver">
+                {{ displayAmountTo }}
+              </show-tool-tip>
+              <span v-else class="subtitle-2 float-left text_2--text">{{ displayAmountTo }}</span>
+            </span>
             <span class="subtitle-2 float-right">{{ displayAmountValue }}</span>
           </div>
           <div class="caption float-right clearfix">{{ displayAmountConverted }}</div>
@@ -114,7 +125,7 @@
             your wallet
           </div>
         </v-flex>
-        <v-flex xs12 px-6 mb-6 v-if="showConfirmMessage">
+        <v-flex xs12 px-6 mb-6 v-if="transactionCategory === TOKEN_METHOD_APPROVE">
           <div class="caption error--text">
             By confirming this, you grant permission for this contract to spend up to {{ displayAmountValue }} of your tokens.
           </div>
@@ -144,7 +155,7 @@
       </v-layout>
     </template>
 
-    <template v-if="type === 'message'">
+    <template v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE || type === TX_TYPED_MESSAGE">
       <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left">Permissions</v-flex>
         <v-flex xs12>
@@ -218,7 +229,7 @@
       </v-layout>
     </template>
     <template v-if="type === 'none'">
-      <page-loader />
+      <popup-screen-loader />
     </template>
   </v-container>
 </template>
@@ -226,22 +237,15 @@
 <script>
 import { mapActions } from 'vuex' // Maybe dispatch a bc to show popup from that instance
 import VueJsonPretty from 'vue-json-pretty'
-import BroadcastChannel from 'broadcast-channel'
+import { BroadcastChannel } from 'broadcast-channel'
 import { numberToHex, fromWei, toChecksumAddress, hexToNumber } from 'web3-utils'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
-import PageLoader from '../../components/helpers/PageLoader'
+import { PopupScreenLoader } from '../../content-loader'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import torus from '../../torus'
-import {
-  significantDigits,
-  calculateGasKnob,
-  calculateGasPrice,
-  addressSlicer,
-  isSmartContractAddress,
-  broadcastChannelOptions
-} from '../../utils/utils'
+import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, broadcastChannelOptions } from '../../utils/utils'
 import { get } from '../../utils/httpHelpers'
 import config from '../../config'
 import { isArray } from 'util'
@@ -262,7 +266,11 @@ const {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   SEND_ETHER_ACTION_KEY,
   SUPPORTED_NETWORK_TYPES,
-  OLD_ERC721_LIST
+  OLD_ERC721_LIST,
+  TX_MESSAGE,
+  TX_TYPED_MESSAGE,
+  TX_PERSONAL_MESSAGE,
+  TX_TRANSACTION
 } = require('../../utils/enums')
 
 const weiInGwei = 10 ** 9
@@ -270,24 +278,21 @@ const weiInGwei = 10 ** 9
 export default {
   name: 'confirm',
   components: {
-    PageLoader,
+    PopupScreenLoader,
     TransactionSpeedSelect,
     TransferConfirm,
     VueJsonPretty,
-    NetworkDisplay
+    NetworkDisplay,
+    ShowToolTip
   },
   data() {
     return {
       confirmDialog: false,
       detailsDialog: false,
-      dialogAdvanceOptions: false,
-      open: false,
       type: 'none',
       origin: 'unknown',
       gasPrice: 10,
       gasKnob: 10,
-      min: 100,
-      max: 4000,
       balance: 0,
       value: 0,
       amountTo: '',
@@ -296,7 +301,6 @@ export default {
       amountTokenValueConverted: 0,
       currencyRateDate: '',
       receiver: 'unknown',
-      dialog: true,
       message: '',
       selectedToken: '',
       gasCost: 0,
@@ -316,12 +320,20 @@ export default {
       dollarValue: 0,
       canApprove: true,
       canShowError: false,
-      selectedSpeed: '',
       speed: '',
       typedMessages: {},
       id: 0,
       assetDetails: {},
-      COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM: COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
+      COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
+      TOKEN_METHOD_APPROVE,
+      TOKEN_METHOD_TRANSFER,
+      TOKEN_METHOD_TRANSFER_FROM,
+      SEND_ETHER_ACTION_KEY,
+      CONTRACT_INTERACTION_KEY,
+      TX_TRANSACTION,
+      TX_TYPED_MESSAGE,
+      TX_PERSONAL_MESSAGE,
+      TX_MESSAGE,
       networks: [
         ...Object.values(SUPPORTED_NETWORK_TYPES),
         {
@@ -335,16 +347,6 @@ export default {
   computed: {
     selectedCurrency() {
       return this.$store.state.selectedCurrency
-    },
-    color() {
-      if (this.gasPrice < 5) return 'indigo'
-      if (this.gasPrice < 10) return 'teal'
-      if (this.gasPrice < 30) return 'green'
-      if (this.gasPrice < 50) return 'orange'
-      return 'red'
-    },
-    computedBalance() {
-      return significantDigits(parseFloat(this.balance).toFixed(5)) || 0
     },
     header() {
       switch (this.transactionCategory) {
@@ -442,9 +444,6 @@ export default {
           break
       }
     },
-    showConfirmMessage() {
-      return this.transactionCategory === TOKEN_METHOD_APPROVE
-    },
     costOfTransaction() {
       if ([TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(this.transactionCategory) >= 0) {
         return `${this.displayAmountValue}`
@@ -508,41 +507,24 @@ export default {
     slicedAddress(user) {
       return addressSlicer(user) || '0x'
     },
-    closeBottom() {
-      this.open = false
-    },
-    openBottom() {
-      this.open = true
-    },
     async triggerSign(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
       var gasHex = numberToHex(this.gasPrice * weiInGwei)
       await bc.postMessage({
-        data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id }
+        data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id, txType: this.type }
       })
       bc.close()
-      window.close()
     },
     async triggerDeny(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
-      await bc.postMessage({ data: { type: 'deny-transaction', id: this.id } })
+      await bc.postMessage({ data: { type: 'deny-transaction', id: this.id, txType: this.type } })
       bc.close()
-      window.close()
     },
     topUp() {
       this.openWallet()
     },
     openWallet() {
       this.$store.dispatch('showWalletPopup')
-    },
-    showGasPrice(val) {
-      return `Fee: $ ${significantDigits(parseFloat(this.txFees).toFixed(3))}`
-    },
-    getGasDisplayString(speed, fastGasPrice) {
-      const currencyMultiplier = this.getCurrencyMultiplier
-      const ethFee = this.gasEstimate * fastGasPrice * 10 ** -9
-      const currencyFee = ethFee * currencyMultiplier
-      return `${significantDigits(currencyFee)} ${this.$store.state.selectedCurrency}`
     },
     onSelectSpeed(data) {
       this.speedSelected = data.speedSelected
@@ -595,7 +577,7 @@ export default {
       }
       log.info(txParams)
       this.origin = url.hostname // origin of tx: website url
-      if (type === 'message') {
+      if (type !== TX_TRANSACTION) {
         var { message, typedMessages } = msgParams.msgParams || {}
         if (typedMessages) {
           try {
@@ -609,7 +591,7 @@ export default {
         this.message = message
         this.typedMessages = typedMessages
         this.messageType = typedMessages ? 'typed' : 'normal'
-      } else if (type === 'transaction') {
+      } else {
         let finalValue = 0
         const { value, to, data, from: sender, gas, gasPrice } = txParams.txParams || {}
         let { simulationFails, network, id, transactionCategory, methodParams, contractParams } = txParams || {}

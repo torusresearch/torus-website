@@ -28,6 +28,11 @@ const MATIC_DISPLAY_NAME = 'Matic Alpha-Mainnet'
 
 const MATIC_URL = 'https://alpha.ethereum.matic.network'
 
+const TX_MESSAGE = 'message'
+const TX_PERSONAL_MESSAGE = 'personal_message'
+const TX_TYPED_MESSAGE = 'typed_message'
+const TX_TRANSACTION = 'transaction'
+
 const TRANSACTION_TYPE_CANCEL = 'cancel'
 const TRANSACTION_TYPE_RETRY = 'retry'
 const TRANSACTION_TYPE_STANDARD = 'standard'
@@ -109,6 +114,7 @@ const REDDIT_LABEL = 'Reddit Username'
 const DISCORD_LABEL = 'Discord ID'
 const TWITCH_LABEL = 'Twitch ID'
 
+// Format: [dark/light]-[colorName]
 const THEME_DARK_BLACK_NAME = 'dark-black'
 const THEME_LIGHT_BLUE_NAME = 'light-blue'
 
@@ -132,6 +138,14 @@ const ALLOWED_VERIFIERS = [
     value: DISCORD
   }
 ]
+
+const SIMPLEX = 'simplex'
+const MOONPAY = 'moonpay'
+const WYRE = 'wyre'
+const COINDIRECT = 'coindirect'
+const CRYPTO = 'crypto'
+const PNG = 'png'
+const SVG = 'svg'
 
 module.exports = {
   ETH,
@@ -212,5 +226,16 @@ module.exports = {
   CONTRACT_TYPE_ERC721,
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   OLD_ERC721_LIST,
-  ALLOWED_VERIFIERS
+  ALLOWED_VERIFIERS,
+  SIMPLEX,
+  MOONPAY,
+  COINDIRECT,
+  WYRE,
+  CRYPTO,
+  PNG,
+  SVG,
+  TX_MESSAGE,
+  TX_TYPED_MESSAGE,
+  TX_PERSONAL_MESSAGE,
+  TX_TRANSACTION
 }
