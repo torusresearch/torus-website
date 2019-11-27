@@ -120,6 +120,7 @@ class DetectTokensController {
     if (!this.selectedAddress) {
       return
     }
+    this.detectedTokensStore.putState({ tokens: [] })
     this.detectNewTokens()
     this.interval = DEFAULT_INTERVAL
   }
