@@ -15,7 +15,6 @@ export default {
   ...wyre,
   ...coindirect,
   async initiateTopup({ state, dispatch }, { provider, params }) {
-    console.log('initiating topup')
     if (paymentProviders[provider] && paymentProviders[provider].api) {
       try {
         const selectedProvider = paymentProviders[provider]

@@ -2,7 +2,7 @@ const baseUrl = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000'
 
 const baseRoute = baseUrl + process.env.BASE_URL
 
-const redirect_uri = navigator.serviceWorker ? `${baseUrl}/redirect` : `${baseRoute}redirect`
+const redirect_uri = `${baseUrl}/redirect`
 
 export default {
   torusNodeEndpoints: [

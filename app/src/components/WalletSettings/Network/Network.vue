@@ -86,7 +86,7 @@ export default {
   },
   mounted() {
     this.selectedNetwork = this.$store.state.networkType
-    this.rpc = this.$store.state.networkType
+    this.rpc = { ...this.$store.state.networkType }
   }
 }
 </script>
