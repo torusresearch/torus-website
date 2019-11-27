@@ -128,11 +128,7 @@ export default {
       this.dialog = false
     },
     getChipColor(status) {
-      return transaction.statusText === ACTIVITY_STATUS_SUCCESSFUL
-        ? '#9BE8C7'
-        : transaction.statusText === ACTIVITY_STATUS_UNSUCCESSFUL
-        ? '#FEA29F'
-        : '#E0E0E0'
+      return status === ACTIVITY_STATUS_SUCCESSFUL ? '#9BE8C7' : status === ACTIVITY_STATUS_UNSUCCESSFUL ? '#FEA29F' : '#E0E0E0'
     }
   }
 }
