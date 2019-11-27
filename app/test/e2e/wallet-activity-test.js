@@ -39,6 +39,7 @@ describe('Tests Wallet Activity Page', () => {
   it('Should change network to rinkeby', async () => {
     await navigateTo(page, '#settings-link', '.wallet-settings')
     await click(page, '#network-panel-header')
+    await page.waitFor(200)
 
     const textToSelect = RINKEBY_DISPLAY_NAME
     await selectItem(page, '#select-network', '.select-network-container', textToSelect)

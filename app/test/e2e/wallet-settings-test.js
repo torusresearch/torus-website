@@ -44,10 +44,11 @@ describe('Tests Wallet Settings Page', () => {
 
   it('Should change network to rinkeby', async () => {
     await click(page, '#network-panel-header')
+    await page.waitFor(200)
 
     const textToSelect = RINKEBY_DISPLAY_NAME
     await selectItem(page, '#select-network', '.select-network-container', textToSelect)
-    await page.waitFor(100)
+    await page.waitFor(200)
     const networkSelected = await page.$eval('.select-network-container .v-select__selection', el => el.textContent)
 
     // check if textToSelect was selected
@@ -56,7 +57,11 @@ describe('Tests Wallet Settings Page', () => {
 
   it('Should show private key popup', async () => {
     await click(page, '#privacy-panel-header')
+    await page.waitFor(200)
+
     await click(page, '#private-key-btn')
+    await page.waitFor(200)
+
     await shouldExist(page, '.private-key-container')
   })
 
@@ -93,6 +98,8 @@ describe('Tests Wallet Settings Page', () => {
   it('Should should validate contacts', async () => {
     await page.waitFor(300)
     await click(page, '#contact-list-panel-header')
+    await page.waitFor(200)
+
     await shouldExist(page, '.contact-list-container')
 
     const textToSelect = GOOGLE_LABEL
