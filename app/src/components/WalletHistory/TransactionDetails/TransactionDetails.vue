@@ -21,11 +21,11 @@
           </v-flex>
           <v-flex xs2 v-if="!$vuetify.breakpoint.xsOnly"></v-flex>
           <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-right mt-4' : 'xs2 text-center'">
-            <template v-if="transaction.statusText === 'Pending'">
+            <!-- <template v-if="transaction.statusText === 'Pending'">
               <div class="caption font-weight-medium mb-1">{{ transaction.statusText }}</div>
               <v-progress-linear color="success" value="15"></v-progress-linear>
-            </template>
-            <v-chip v-else :color="transaction.statusText === ACTIVITY_STATUS_SUCCESSFUL ? '#9BE8C7' : '#FEA29F'" small>
+            </template> -->
+            <v-chip :color="getChipColor(transaction.statusText)" small>
               {{ transaction.statusText }}
             </v-chip>
           </v-flex>
@@ -39,21 +39,12 @@
           <span class="float-right"></span>
         </v-flex>
         <v-flex xs12>
-          <v-chip
-            :color="
-              transaction.statusText === ACTIVITY_STATUS_SUCCESSFUL
-                ? '#9BE8C7'
-                : transaction.statusText === ACTIVITY_STATUS_UNSUCCESSFUL
-                ? '#FEA29F'
-                : '#E0E0E0'
-            "
-            small
-          >
+          <v-chip :color="getChipColor(transaction.statusText)" small>
             {{ transaction.statusText }}
           </v-chip>
           <a class="caption v-btn float-right" color="primary" :href="transaction.etherscanLink" target="_blank">View On Etherscan</a>
         </v-flex>
-        <v-flex xs12 class="mt-4" v-if="transaction.statusText === ACTIVITY_STATUS_PENDING">
+        <!-- <v-flex xs12 class="mt-4" v-if="transaction.statusText === ACTIVITY_STATUS_PENDING">
           <v-layout>
             <v-flex xs6 class="mr-1 text-right">
               <speed-up-transaction :transaction="transaction"></speed-up-transaction>
@@ -62,7 +53,7 @@
               <cancel-transaction :transaction="transaction" @onConfirm="cancelTransaction"></cancel-transaction>
             </v-flex>
           </v-layout>
-        </v-flex>
+        </v-flex> -->
         <v-flex xs12>
           <v-list class="mx-n4 body-2">
             <v-list-item>
@@ -118,9 +109,9 @@ import CancelTransaction from '../CancelTransaction'
 export default {
   props: ['transaction'],
   components: {
-    NetworkDisplay,
-    SpeedUpTransaction,
-    CancelTransaction
+    NetworkDisplay
+    // SpeedUpTransaction,
+    // CancelTransaction
   },
   data() {
     return {
@@ -135,6 +126,13 @@ export default {
     cancelTransaction(data) {
       this.$emit('onCancelTransaction', data)
       this.dialog = false
+    },
+    getChipColor(status) {
+      return transaction.statusText === ACTIVITY_STATUS_SUCCESSFUL
+        ? '#9BE8C7'
+        : transaction.statusText === ACTIVITY_STATUS_UNSUCCESSFUL
+        ? '#FEA29F'
+        : '#E0E0E0'
     }
   }
 }
