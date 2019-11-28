@@ -1,7 +1,8 @@
 const mergeMiddleware = require('json-rpc-engine/src/mergeMiddleware')
 const createScaffoldMiddleware = require('json-rpc-engine/src/createScaffoldMiddleware')
-const createAsyncMiddleware = require('json-rpc-engine/src/createAsyncMiddleware')
 const createWalletSubprovider = require('eth-json-rpc-middleware/wallet')
+const createAsyncMiddleware = require('json-rpc-engine/src/createAsyncMiddleware')
+const { formatTxMetaForRpcResult } = require('../utils/utils')
 
 export default function createMetamaskMiddleware({
   version,
@@ -12,7 +13,8 @@ export default function createMetamaskMiddleware({
   processTypedMessageV3,
   processTypedMessageV4,
   processPersonalMessage,
-  getPendingNonce
+  getPendingNonce,
+  getPendingTransactionByHash
 }) {
   const metamaskMiddleware = mergeMiddleware([
     createScaffoldMiddleware({
@@ -29,17 +31,33 @@ export default function createMetamaskMiddleware({
       processTypedMessageV4,
       processPersonalMessage
     }),
-    createPendingNonceMiddleware({ getPendingNonce })
+    createPendingNonceMiddleware({ getPendingNonce }),
+    createPendingTxMiddleware({ getPendingTransactionByHash })
   ])
   return metamaskMiddleware
 }
 
-function createPendingNonceMiddleware({ getPendingNonce }) {
+export function createPendingNonceMiddleware({ getPendingNonce }) {
   return createAsyncMiddleware(async (req, res, next) => {
     if (req.method !== 'eth_getTransactionCount') return next()
     const address = req.params[0]
     const blockRef = req.params[1]
     if (blockRef !== 'pending') return next()
     res.result = await getPendingNonce(address)
+  })
+}
+
+export function createPendingTxMiddleware({ getPendingTransactionByHash }) {
+  return createAsyncMiddleware(async (req, res, next) => {
+    const { method, params } = req
+    if (method !== 'eth_getTransactionByHash') {
+      return next()
+    }
+    const [hash] = params
+    const txMeta = getPendingTransactionByHash(hash)
+    if (!txMeta) {
+      return next()
+    }
+    res.result = formatTxMetaForRpcResult(txMeta)
   })
 }
