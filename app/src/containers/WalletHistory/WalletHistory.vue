@@ -39,7 +39,7 @@
           :selectedPeriod="selectedPeriod"
           :transactions="calculateFinalTransactions()"
           :nonTopupTransactionCount="getNonTopupTransactionCount()"
-        /> -->
+        />-->
       </v-flex>
     </v-layout>
   </div>
@@ -138,6 +138,7 @@ export default {
         return acc
       }, [])
       const sortedTx = finalTx.sort((a, b) => b.date - a.date) || []
+      log.info('sorted tx is', sortedTx)
       return sortedTx
     },
     async calculatePastTransactions() {
@@ -165,8 +166,6 @@ export default {
           to: x.to,
           slicedTo: addressSlicer(x.to),
           action: this.wallets.indexOf(x.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
-          gas: x.gas,
-          gasPrice: x.gasPrice,
           totalAmount: x.total_amount,
           totalAmountString: totalAmountString,
           currencyAmount: x.currency_amount,
@@ -197,10 +196,6 @@ export default {
           txObj.to = toChecksumAddress(txOld.txParams.to)
           txObj.slicedTo = addressSlicer(txOld.txParams.to)
           txObj.totalAmount = fromWei(toBN(txOld.txParams.value).add(toBN(txOld.txParams.gas).mul(toBN(txOld.txParams.gasPrice))))
-          txObj.gas = {
-            gas: fromWei(toBN(txOld.txParams.gas), 'gwei'),
-            gasPrice: fromWei(toBN(txOld.txParams.gasPrice), 'gwei')
-          }
           txObj.totalAmountString = `${significantDigits(txObj.totalAmount)} ETH`
           txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount
           txObj.currencyAmountString = `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`
@@ -237,34 +232,29 @@ export default {
   mounted() {
     const { selectedAddress: publicAddress, jwtToken } = this.$store.state
     getPastOrders(
-      { public_address: publicAddress },
+      {},
       {
         Authorization: `Bearer ${jwtToken}`
       }
     )
       .then(response => {
-        this.paymentTx = response.result.reduce((acc, x) => {
-          if (!(x.status === 'SENT_TO_SIMPLEX' && new Date() - new Date(x.createdAt) > 86400 * 1000)) {
-            const totalAmountString = `${significantDigits(x.requested_digital_amount.amount)} ${x.requested_digital_amount.currency}`
-            const currencyAmountString = `${significantDigits(x.fiat_total_amount.amount)} ${x.fiat_total_amount.currency}`
-            acc.push({
-              id: x.createdAt,
-              date: new Date(x.createdAt),
-              from: 'Simplex',
-              slicedFrom: 'Simplex',
-              action: ACTIVITY_ACTION_TOPUP,
-              to: publicAddress,
-              slicedTo: addressSlicer(publicAddress),
-              totalAmount: x.requested_digital_amount.amount,
-              gas: {},
-              totalAmountString,
-              currencyAmount: x.fiat_total_amount.amount,
-              currencyAmountString,
-              amount: `${totalAmountString} / ${currencyAmountString}`,
-              status: getStatus(x.status),
-              etherscanLink: ''
-            })
-          }
+        this.paymentTx = response.data.reduce((acc, x) => {
+          acc.push({
+            id: x.id,
+            date: new Date(x.date),
+            from: x.from,
+            slicedFrom: x.slicedFrom,
+            action: x.action,
+            to: x.to,
+            slicedTo: x.slicedTo,
+            totalAmount: x.totalAmount,
+            totalAmountString: x.totalAmountString,
+            currencyAmount: x.currencyAmount,
+            currencyAmountString: x.currencyAmountString,
+            amount: x.amount,
+            status: x.status,
+            etherscanLink: ''
+          })
 
           return acc
           // }
