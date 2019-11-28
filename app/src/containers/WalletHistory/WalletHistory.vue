@@ -32,14 +32,6 @@
           :transactions="calculateFinalTransactions()"
           :nonTopupTransactionCount="getNonTopupTransactionCount()"
         />
-        <!-- <tx-history-table-mobile
-          v-if="$vuetify.breakpoint.xsOnly"
-          :headers="headers"
-          :selectedAction="selectedAction"
-          :selectedPeriod="selectedPeriod"
-          :transactions="calculateFinalTransactions()"
-          :nonTopupTransactionCount="getNonTopupTransactionCount()"
-        />-->
       </v-flex>
     </v-layout>
   </div>
@@ -51,7 +43,6 @@ import log from 'loglevel'
 import { toChecksumAddress, toBN, fromWei } from 'web3-utils'
 import config from '../../config'
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
-import TxHistoryTableMobile from '../../components/WalletHistory/TxHistoryTableMobile'
 import { getPastOrders } from '../../plugins/simplex'
 import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getEthTxStatus } from '../../utils/utils'
 import torus from '../../torus'
