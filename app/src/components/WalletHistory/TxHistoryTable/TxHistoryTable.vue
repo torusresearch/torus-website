@@ -174,13 +174,13 @@ export default {
     getActionText(action, item) {
       if (action === ACTIVITY_ACTION_SEND) {
         return 'Send ' + item
-      } else if (action === ACTIVITY_ACTION_RECEIVE) {
+      } else if (action === ACTIVITY_ACTION_RECEIVE || action === ACTIVITY_ACTION_TOPUP) {
         return 'Received ' + item
       }
     },
     getIcon(action) {
       if (action === ACTIVITY_ACTION_TOPUP) {
-        return '$vuetify.icons.coins_topup'
+        return '$vuetify.icons.coins_receive'
       } else if (action === ACTIVITY_ACTION_SEND) {
         return '$vuetify.icons.coins_send'
       } else if (action === ACTIVITY_ACTION_RECEIVE) {

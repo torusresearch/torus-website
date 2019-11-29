@@ -91,7 +91,7 @@ const WALLET_HEADERS_CONFIRM = 'Confirm your Transfer'
 const ACTIVITY_ACTION_ALL = 'All Transactions'
 const ACTIVITY_ACTION_SEND = 'Send'
 const ACTIVITY_ACTION_RECEIVE = 'Receive'
-const ACTIVITY_ACTION_TOPUP = 'Top up'
+const ACTIVITY_ACTION_TOPUP = 'Topup'
 
 const ACTIVITY_PERIOD_ALL = 'All'
 const ACTIVITY_PERIOD_WEEK_ONE = 'Last 1 Week'

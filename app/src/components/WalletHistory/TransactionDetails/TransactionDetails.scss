@@ -5,11 +5,25 @@
 }
 
 .activity-details {
-  .address-text {
-    font-size: 10px;
-    word-break: break-all;
+  .v-list-item {
+    min-height: inherit;
   }
 
+  .v-list-item__content {
+    padding: 4px 0;
+  }
+
+  .details-label {
+    font-weight: 400;
+    flex: 1;
+  }
+
+  .details-value {
+    flex: 4;
+  }
+  .network-chip {
+    max-width: 200px;
+  }
   .amount-text {
     div {
       line-height: 1em;
