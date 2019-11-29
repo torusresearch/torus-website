@@ -6,8 +6,8 @@ import { storageAvailable } from './utils/utils'
 var log = require('loglevel')
 var Web3 = require('web3')
 var LocalMessageDuplexStream = require('post-message-stream')
-const stream = require('stream')
 const setupMultiplex = require('./utils/setupMultiplex').default
+const stream = require('stream')
 
 function onloadTorus(torus) {
   function triggerUi(type) {
@@ -55,10 +55,18 @@ function onloadTorus(torus) {
     targetWindow: window.parent
   })
 
+  var channelStream = new LocalMessageDuplexStream({
+    name: 'iframe_chan',
+    target: 'embed_chan',
+    targetWindow: window.parent
+  })
+
   torus.torusController = torusController
   torus.metamaskMux = setupMultiplex(metamaskStream)
   torus.communicationMux = setupMultiplex(communicationStream)
   torus.communicationMux.setMaxListeners(50)
+  torus.channelMux = setupMultiplex(channelStream)
+  torus.channelMux.setMaxListeners(50)
   torusController.provider.setMaxListeners(100)
   torus.web3 = new Web3(torusController.provider)
   torus.setProviderType = function(network, type) {
@@ -82,6 +90,10 @@ function onloadTorus(torus) {
   const providerOutStream = torus.metamaskMux.getStream('provider')
 
   torusController.setupTrustedCommunication(providerOutStream, 'metamask')
+
+  const channelProviderOutStream = torus.channelMux.getStream('channelProvider')
+
+  torusController.channelController.setupConnection(channelProviderOutStream, 'connext')
 
   return torus
 }

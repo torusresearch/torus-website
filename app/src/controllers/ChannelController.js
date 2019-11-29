@@ -1,13 +1,14 @@
 import { connect, utils } from '@connext/client'
+import { Node as NodeTypes } from '@counterfactual/types'
 
-export default class ChannelController {
+class ChannelController {
   /**
    * @constructor
    * @param {Object} opts
    */
   constructor(opts) {
     this.networkController = opts.networkController
-    this.keyRingController = opts.keyRingController
+    this.keyringController = opts.keyringController
     this.store = opts.store
   }
 
@@ -24,8 +25,8 @@ export default class ChannelController {
 
     const store = storeFactory()
 
-    const xpub = this.keyRingController.getChannelXPub()
-    const keyGen = this.keyRingController.getChannelKeyGen()
+    const xpub = this.keyringController.getChannelXPub()
+    const keyGen = this.keyringController.getChannelKeyGen()
 
     const connectOpts = {
       xpub,
@@ -159,7 +160,7 @@ export default class ChannelController {
   getChannel() {
     const channel = this.store.getFlatState().channel
     if (!channel) {
-      console.debug('Make sure to call "initializeConnext" before using channel')
+      console.debug(`Make sure to call 'initializeConnext' before using channel`)
       return
     }
     return channel
@@ -168,8 +169,137 @@ export default class ChannelController {
   getInitdChannel() {
     const channel = this.getChannel()
     if (!channel) {
-      throw new Error('Channel has not been initialized, call "initializeConnext"')
+      throw new Error(`Channel has not been initialized, call 'initializeConnext'`)
     }
     return channel
   }
+
+  /**
+   * A method for serving our channel provider over a given stream.
+   * @param {*} outStream - The stream to provide over.
+   * @param {string} origin - The URI of the requesting resource.
+   */
+  setupConnection(outStream, origin) {
+    const engine = this.setupProviderEngine(origin)
+
+    // setup connection
+    const providerStream = createEngineStream({ engine })
+
+    outStream
+      .pipe(providerStream)
+      .pipe(outStream)
+      .on('error', err => {
+        // cleanup filter polyfill middleware
+        engine._middleware.forEach(mid => {
+          if (mid.destroy && typeof mid.destroy === 'function') {
+            mid.destroy()
+          }
+        })
+        if (err) log.error(err)
+      })
+  }
+
+  async mapPayloadToClient(payload) {
+    const channel = this.getChannel()
+    const { params, id, method } = payload
+    if (!params || typeof params !== 'object') {
+      throw new Error(`Invalid payload params. Payload: ${prettyPrint(payload)}`)
+    }
+
+    if (!id) {
+      throw new Error(`Invalid payload id. Payload: ${prettyPrint(payload)}`)
+    }
+
+    if (!method || typeof method !== 'string') {
+      throw new Error(`Invalid payload method. Payload: ${prettyPrint(payload)}`)
+    }
+
+    let result
+    try {
+      switch (method) {
+        case 'chan_store_set':
+          verifyFields(params, ['pairs'])
+          const { pairs } = params
+          result = await channel.channelRouter.set(pairs)
+          break
+        case 'chan_store_get':
+          verifyFields(params, ['path'])
+          const { path } = params
+          result = await channel.channelRouter.get(path)
+          break
+        case 'chan_node_auth':
+          verifyFields(params, ['message'])
+          const { message } = params
+          result = await channel.channelRouter.signMessage(message)
+          break
+        case 'chan_config':
+          result = await channel.channelProviderConfig(params)
+          break
+        case NodeTypes.RpcMethodName.DEPOSIT:
+          result = await channel.providerDeposit(params)
+          break
+        case NodeTypes.RpcMethodName.GET_STATE:
+          result = await channel.getState(params)
+          break
+        case NodeTypes.RpcMethodName.GET_APP_INSTANCES:
+          result = await channel.getAppInstances(params)
+          break
+        case NodeTypes.RpcMethodName.GET_FREE_BALANCE_STATE:
+          verifyFields(params, ['tokenAddress', 'multisigAddress'])
+          const { tokenAddress } = params
+          result = await channel.getFreeBalance(tokenAddress)
+          break
+        case NodeTypes.RpcMethodName.GET_PROPOSED_APP_INSTANCES:
+          result = await channel.getProposedAppInstances(params)
+          break
+        case NodeTypes.RpcMethodName.GET_APP_INSTANCE_DETAILS:
+          result = await channel.getAppInstanceDetails(params)
+          break
+        case NodeTypes.RpcMethodName.TAKE_ACTION:
+          result = await channel.takeAction(params)
+          break
+        case NodeTypes.RpcMethodName.UPDATE_STATE:
+          result = await channel.updateState(params)
+          break
+        case NodeTypes.RpcMethodName.PROPOSE_INSTALL:
+          result = await channel.proposeInstallApp(params)
+          break
+        case NodeTypes.RpcMethodName.INSTALL_VIRTUAL:
+          result = await channel.installVirtualApp(params)
+          break
+        case NodeTypes.RpcMethodName.INSTALL:
+          result = await channel.installApp(params)
+          break
+        case NodeTypes.RpcMethodName.UNINSTALL:
+          result = await channel.uninstallApp(params)
+          break
+        case NodeTypes.RpcMethodName.UNINSTALL_VIRTUAL:
+          result = await channel.uninstallVirtualApp(params)
+          break
+        case NodeTypes.RpcMethodName.REJECT_INSTALL:
+          result = await channel.rejectInstallApp(params)
+          break
+        case NodeTypes.RpcMethodName.WITHDRAW:
+          result = await channel.providerWithdraw(params)
+          break
+        case NodeTypes.RpcMethodName.WITHDRAW_COMMITMENT:
+          result = await channel.withdrawCommitment(params)
+          break
+        default:
+          console.error(`ChannelProvider mapping error, unknown method. Payload: ${prettyPrint(payload)}`)
+          break
+      }
+    } catch (e) {
+      console.error(`ChannelProvider error: ${JSON.stringify(e, null, 2)}`)
+    }
+    return { id, result }
+  }
 }
+
+// util
+
+function prettyPrint(obj) {
+  return JSON.stringify(obj, null, 2)
+}
+
+export default ChannelController

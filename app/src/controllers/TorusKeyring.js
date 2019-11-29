@@ -54,7 +54,7 @@ export default class TorusKeyring extends EventEmitter {
     return new Promise((resolve, reject) => {
       try {
         this.wallets = privateKeys.map(this.generateWallet)
-        this.channelWallet = this.generateChannelWallet(this.wallets[0])
+        this.channelWallet = this.generateChannelWallet(privateKeys[0])
         resolve()
       } catch (e) {
         reject(e)
