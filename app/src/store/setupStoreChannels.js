@@ -7,15 +7,6 @@ import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, USER_INFO_REQUE
 import VuexStore from './store'
 import { broadcastChannelOptions } from '../utils/utils'
 
-/* 
-Edited to change networkId => network state. Has an implication of changing neworkVersion 
-to "loading" at times in the inpage API
- */
-
-torus.torusController.networkController.networkStore.subscribe(function(state) {
-  VuexStore.dispatch('updateNetworkId', { networkId: state })
-})
-
 // setup handlers for communicationStream
 var passthroughStream = new stream.PassThrough({ objectMode: true })
 passthroughStream.on('data', function() {
