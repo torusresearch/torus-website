@@ -6,7 +6,7 @@
     "ecmaVersion": 6
   },
   "rules": {
-    "quotes": [2, "single"],
+    "quotes": [2, "single", { "allowTemplateLiterals": true }],
     "max-len": [
       2,
       {

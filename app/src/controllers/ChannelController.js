@@ -1,6 +1,4 @@
 import { connect, utils } from '@connext/client'
-// TODO: remove ethers dep!
-import { ethers } from 'ethers'
 
 export default class ChannelController {
   /**
@@ -11,9 +9,6 @@ export default class ChannelController {
     this.networkController = opts.networkController
     this.keyRingController = opts.keyRingController
     this.store = opts.store
-    // generating a random mnemonic on start since im
-    // not sure where you store yours. should delete!
-    this.mnemonic = ethers.Wallet.createRandom().mnemonic
   }
 
   /**
@@ -26,42 +21,15 @@ export default class ChannelController {
    */
   initializeConnext() {
     const { ETH_PROVIDER_URL, NODE_URL, LOG_LEVEL } = process.env
-    // client requires a few options to startup properly.
 
-    // the store: currently using local storage, but is a simple
-    // key-value store where clients can store their own channel
-    // state.
-
-    // optionally, you can use a pisa client to allow for user
-    // state backups as well. A reference for this exists in the
-    // daicard store factory
     const store = storeFactory()
 
-    // you must also provide one of the following for signing states:
-    //  - mnemonic: standard wallet mnemonic which will be used to
-    //    generate app-specific signing keys
-    //  - keyGen: a cb function that allows you to generate signing keys
-    //    for apps without explicitly passing in the mnemonic
-    //  - channelProvider: allows you access to an already set-up
-    //    channel. you most likely will not want to instantiate
-    //    the client this way, but instead will want to allow dapps
-    //    to access a channel provider you've defined. however, if you
-    //    want to use an existing channel (say one injected by metamask)
-    //    then you can instantiate the client with this option.
+    const xpub = this.keyRingController.getChannelXPub()
+    const keyGen = this.keyRingController.getChannelKeyGen()
 
-    // for now i'll use a mnemonic since its easiest to get running
-    // (and because the other PRs havent made it through npm quite yet)
-    // but you will most likely want to update this to use the keygen
-    // property, with something like:
-    // keyGen: this.keyRingController.generateChannelKey()
-    // where `generateChannelKey` returns an app-specific private key
-    // but we are happy to work through this with you when the client
-    // is properly updated!
-
-    // other options are mostly for configuration. i've defaulted some
-    // values here for easy start-up, but feel free to use your own!
     const connectOpts = {
-      mnemonic: this.mnemonic,
+      xpub,
+      keyGen,
       ethProviderUrl: ETH_PROVIDER_URL || 'https://rinkeby.indra.connext.network/api/ethprovider', // default to nodes provider
       logLevel: LOG_LEVEL || 5, // default to log everything
       nodeUrl: NODE_URL || 'wss://rinkeby.indra.connext.network/api/messaging', // default to rinkeby
