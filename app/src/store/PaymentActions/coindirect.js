@@ -1,10 +1,11 @@
+import log from 'loglevel'
 import { postQuote } from '../../plugins/coindirect'
 import config from '../../config'
 import torus from '../../torus'
 import { COINDIRECT } from '../../utils/enums'
 import { BroadcastChannel } from 'broadcast-channel'
-import log from 'loglevel'
 import { broadcastChannelOptions } from '../../utils/utils'
+import PopupHandler from '../../utils/PopupHandler'
 
 export default {
   fetchCoindirectQuote({ state }, payload) {
@@ -42,14 +43,12 @@ export default {
     return dispatch('postCoindirectOrder', { path: config.coindirectLiveHost, params: params })
   },
   postCoindirectOrder(context, { path, params, method = 'post' }) {
-    var coindirectWindow
-    var iClosedCoindirect = false
     return new Promise((resolve, reject) => {
       const paramString = new URLSearchParams(params)
       const finalUrl = `${path}?${paramString}`
+      const coindirectWindow = new PopupHandler(finalUrl)
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-
       bc.onmessage = ev => {
         try {
           const {
@@ -65,26 +64,14 @@ export default {
           reject(error)
         } finally {
           bc.close()
-          iClosedCoindirect = true
           coindirectWindow.close()
         }
       }
 
-      // Handle communication with coindirect window here
-      coindirectWindow = window.open(finalUrl, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200')
-
-      var coindirectTimer = setInterval(function() {
-        if (coindirectWindow && coindirectWindow.closed) {
-          clearInterval(coindirectTimer)
-          if (!iClosedCoindirect) {
-            log.error('user closed popup')
-            reject(new Error('user closed coindirect popup'))
-          }
-          iClosedCoindirect = false
-          coindirectWindow = undefined
-        }
-        if (coindirectWindow === undefined) clearInterval(coindirectTimer)
-      }, 1000)
+      coindirectWindow.open()
+      coindirectWindow.once('close', () => {
+        reject(new Error('user closed coindirect popup'))
+      })
     })
   }
 }

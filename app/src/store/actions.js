@@ -30,6 +30,7 @@ import {
 } from './controllerSubscriptions'
 import vuetify from '../plugins/vuetify'
 import themes from '../plugins/themes'
+import PopupHandler from '../utils/PopupHandler'
 
 const accountImporter = require('../utils/accountImporter')
 
@@ -42,16 +43,6 @@ const statusStream = torus.communicationMux.getStream('status')
 const oauthStream = torus.communicationMux.getStream('oauth')
 
 var walletWindow
-var googleWindow
-var iClosedGoogle = false
-var facebookWindow
-var iClosedFacebook = false
-var twitchWindow
-var iClosedTwitch = false
-var redditWindow
-var iClosedReddit = false
-var discordWindow
-var iClosedDiscord = false
 
 export default {
   logOut({ commit, dispatch }, payload) {
@@ -301,6 +292,10 @@ export default {
       )
       const scope = 'profile email openid'
       const response_type = 'token id_token'
+      const finalUrl =
+        `https://accounts.google.com/o/oauth2/v2/auth?response_type=${response_type}&client_id=${config.GOOGLE_CLIENT_ID}` +
+        `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}`
+      const googleWindow = new PopupHandler(finalUrl)
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         const {
@@ -337,32 +332,14 @@ export default {
             oauthStream.write({ err: 'User cancelled login or something went wrong.' })
           } finally {
             bc.close()
-            iClosedGoogle = true
             googleWindow.close()
           }
         }
       }
-      googleWindow = windowOpen(
-        [
-          `https://accounts.google.com/o/oauth2/v2/auth?response_type=${response_type}&client_id=${config.GOOGLE_CLIENT_ID}` +
-            `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}`,
-          '_blank',
-          'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
-        ],
-        preopenInstanceId
-      )
-      var googleTimer = setInterval(function() {
-        if (googleWindow && googleWindow.closed) {
-          clearInterval(googleTimer)
-          if (!iClosedGoogle) {
-            log.error('user closed popup')
-            oauthStream.write({ err: 'user closed popup' })
-          }
-          iClosedGoogle = false
-          googleWindow = undefined
-        }
-        if (googleWindow === undefined) clearInterval(googleTimer)
-      }, 1000)
+      googleWindow.open()
+      googleWindow.once('close', () => {
+        oauthStream.write({ err: 'user closed popup' })
+      })
     } else if (verifier === FACEBOOK) {
       const state = encodeURIComponent(
         window.btoa(
@@ -374,6 +351,10 @@ export default {
       )
       const scope = 'public_profile email'
       const response_type = 'token'
+      const finalUrl =
+        `https://www.facebook.com/v5.0/dialog/oauth?response_type=${response_type}&client_id=${config.FACEBOOK_APP_ID}` +
+        `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
+      const facebookWindow = new PopupHandler(finalUrl)
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         const {
@@ -410,32 +391,14 @@ export default {
             oauthStream.write({ err: 'User cancelled login or something went wrong.' })
           } finally {
             bc.close()
-            iClosedFacebook = true
             facebookWindow.close()
           }
         }
       }
-      facebookWindow = windowOpen(
-        [
-          `https://www.facebook.com/v5.0/dialog/oauth?response_type=${response_type}&client_id=${config.FACEBOOK_APP_ID}` +
-            `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`,
-          '_blank',
-          'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
-        ],
-        preopenInstanceId
-      )
-      var facebookTimer = setInterval(function() {
-        if (facebookWindow && facebookWindow.closed) {
-          clearInterval(facebookTimer)
-          if (!iClosedFacebook) {
-            log.error('user closed popup')
-            oauthStream.write({ err: 'user closed popup' })
-          }
-          iClosedFacebook = false
-          facebookWindow = undefined
-        }
-        if (facebookWindow === undefined) clearInterval(facebookTimer)
-      }, 1000)
+      facebookWindow.open()
+      facebookWindow.once('close', () => {
+        oauthStream.write({ err: 'user closed popup' })
+      })
     } else if (verifier === TWITCH) {
       const state = encodeURIComponent(
         window.btoa(
@@ -454,6 +417,10 @@ export default {
           preferred_username: null
         }
       })
+      const finalUrl =
+        `https://id.twitch.tv/oauth2/authorize?client_id=${config.TWITCH_CLIENT_ID}&redirect_uri=` +
+        `${config.redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`
+      const twitchWindow = new PopupHandler(finalUrl)
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         const {
@@ -490,33 +457,15 @@ export default {
             log.error(error)
             oauthStream.write({ err: 'something went wrong.' })
           } finally {
-            iClosedTwitch = true
             bc.close()
             twitchWindow.close()
           }
         }
       }
-      twitchWindow = windowOpen(
-        [
-          `https://id.twitch.tv/oauth2/authorize?client_id=${config.TWITCH_CLIENT_ID}&redirect_uri=` +
-            `${config.redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`,
-          '_blank',
-          'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
-        ],
-        preopenInstanceId
-      )
-      var twitchTimer = setInterval(function() {
-        if (twitchWindow && twitchWindow.closed) {
-          clearInterval(twitchTimer)
-          if (!iClosedTwitch) {
-            log.error('user closed popup')
-            oauthStream.write({ err: 'user closed popup' })
-          }
-          iClosedTwitch = false
-          twitchWindow = undefined
-        }
-        if (twitchWindow === undefined) clearInterval(twitchTimer)
-      }, 1000)
+      twitchWindow.open()
+      twitchWindow.once('close', () => {
+        oauthStream.write({ err: 'user closed popup' })
+      })
     } else if (verifier === REDDIT) {
       const state = encodeURIComponent(
         window.btoa(
@@ -526,6 +475,10 @@ export default {
           })
         )
       )
+      const finalUrl =
+        `https://www.reddit.com/api/v1/authorize?client_id=${config.REDDIT_CLIENT_ID}&redirect_uri=` +
+        `${config.redirect_uri}&response_type=token&scope=identity&state=${state}`
+      const redditWindow = new PopupHandler(finalUrl)
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         const {
@@ -561,32 +514,14 @@ export default {
             oauthStream.write({ err: 'User cancelled login or something went wrong.' })
           } finally {
             bc.close()
-            iClosedReddit = true
             redditWindow.close()
           }
         }
       }
-      redditWindow = windowOpen(
-        [
-          `https://www.reddit.com/api/v1/authorize?client_id=${config.REDDIT_CLIENT_ID}&redirect_uri=` +
-            `${config.redirect_uri}&response_type=token&scope=identity&state=${state}`,
-          '_blank',
-          'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
-        ],
-        preopenInstanceId
-      )
-      var redditTimer = setInterval(function() {
-        if (redditWindow && redditWindow.closed) {
-          clearInterval(redditTimer)
-          if (!iClosedReddit) {
-            log.error('user closed popup')
-            oauthStream.write({ err: 'user closed popup' })
-          }
-          iClosedReddit = false
-          redditWindow = undefined
-        }
-        if (redditWindow === undefined) clearInterval(redditTimer)
-      }, 1000)
+      redditWindow.open()
+      redditWindow.once('close', () => {
+        oauthStream.write({ err: 'user closed popup' })
+      })
     } else if (verifier === DISCORD) {
       const state = encodeURIComponent(
         window.btoa(
@@ -597,6 +532,10 @@ export default {
         )
       )
       const scope = encodeURIComponent('identify email')
+      const finalUrl =
+        `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${config.DISCORD_CLIENT_ID}` +
+        `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
+      const discordWindow = new PopupHandler(finalUrl)
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         const {
@@ -636,32 +575,14 @@ export default {
             oauthStream.write({ err: 'User cancelled login or something went wrong.' })
           } finally {
             bc.close()
-            iClosedDiscord = true
             discordWindow.close()
           }
         }
       }
-      discordWindow = windowOpen(
-        [
-          `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${config.DISCORD_CLIENT_ID}` +
-            `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`,
-          '_blank',
-          'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
-        ],
-        preopenInstanceId
-      )
-      var discordTimer = setInterval(function() {
-        if (discordWindow && discordWindow.closed) {
-          clearInterval(discordTimer)
-          if (!iClosedDiscord) {
-            log.error('user closed popup')
-            oauthStream.write({ err: 'user closed popup' })
-          }
-          iClosedDiscord = false
-          discordWindow = undefined
-        }
-        if (discordWindow === undefined) clearInterval(discordTimer)
-      }, 1000)
+      discordWindow.open()
+      discordWindow.once('close', () => {
+        oauthStream.write({ err: 'user closed popup' })
+      })
     }
   },
   subscribeToControllers(context, payload) {
@@ -984,7 +905,6 @@ function windowOpen(windowOpenParams, preopenInstanceId) {
   var url = windowOpenParams[0]
   if (preopenInstanceId) {
     var bc = new BroadcastChannel(`preopen_channel_${preopenInstanceId}`, broadcastChannelOptions)
-    window.bc = bc // TODO: remove
     setTimeout(function() {
       bc.postMessage({
         data: {
