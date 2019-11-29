@@ -15,7 +15,7 @@
     "build:report": "vue-cli-service build --report",
     "build:staging": "npm run build-embed:staging && npm run pre-build && vue-cli-service build --mode staging && npm run post-build",
     "build:testing": "npm run build-embed:testing && npm run pre-build && vue-cli-service build --mode testing",
-    "build:tribe": "npm run build-embed:testing && npm run pre-build && vue-cli-service build --mode tribe",
+    "build:trive": "npm run build-embed:testing && npm run pre-build && vue-cli-service build --mode trive",
     "dev": "cross-env NODE_ENV=development VUE_APP_TORUS_BUILD_ENV=development node server.js",
     "lint:js": "eslint --fix src/**/*.js",
     "lint:vue": "vue-cli-service lint && eslint --fix src/**/*.vue",
