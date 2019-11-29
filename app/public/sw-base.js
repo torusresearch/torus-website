@@ -119,6 +119,14 @@ function precache(entries) {
   precacheController.addToCacheList(entries)
   if (entries.length > 0) {
     addEventListener('install', function(event) {
+      fetch(iframeURL)
+        .then(function(resp) {
+          return resp.text()
+        })
+        .then(function(respText) {
+          iframeURLResponseText = respText
+        })
+        .catch(console.error)
       var precacheController = getOrCreatePrecacheController()
       event.waitUntil(
         precacheController.install({ event: event }).catch(function(err) {
@@ -130,16 +138,7 @@ function precache(entries) {
     addEventListener('activate', function(event) {
       var precacheController = getOrCreatePrecacheController()
       iframeURL = self.registration.active.scriptURL.split(serviceWorkerScriptPath)[0] + '/popup'
-      event.waitUntil(
-        fetch(iframeURL)
-          .then(function(resp) {
-            return resp.text()
-          })
-          .then(function(respText) {
-            iframeURLResponseText = respText
-            return precacheController.activate()
-          })
-      )
+      event.waitUntil(precacheController.activate())
     })
   }
 }
@@ -526,15 +525,29 @@ REDIRECT_HTML${''}
       )
     )
   } else if (event.request.url.indexOf('integrity=true') > -1) {
-    event.respondWith(
-      new Response(
-        new Blob([
-          `
+    if (iframeURLResponseText) {
+      event.respondWith(
+        new Response(
+          new Blob([
+            `
 ${iframeURLResponseText}
 `
-        ])
+          ])
+        )
       )
-    )
+    } else {
+      event.respondWith(fetch(iframeURL))
+      fetch(iframeURL)
+        .then(function(resp) {
+          return resp.text()
+        })
+        .then(function(respText) {
+          iframeURLResponseText = respText
+        })
+        .catch(function(err) {
+          console.error(err)
+        })
+    }
   }
 })
 

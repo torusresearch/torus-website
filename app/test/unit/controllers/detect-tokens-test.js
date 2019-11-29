@@ -71,6 +71,7 @@ describe('DetectTokensController', () => {
   })
 
   it('should only check and add tokens while in main network', async () => {
+    await controller.startTokenDetection(TEMP_ADDRESS)
     sandbox
       .stub(controller, 'detectEtherscanTokenBalance')
       .withArgs('0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4', { decimals: 8, symbol: 'J8T' })
@@ -102,7 +103,6 @@ describe('DetectTokensController', () => {
           ]
         })
       )
-    await controller.startTokenDetection(TEMP_ADDRESS)
     assert.deepStrictEqual(
       controller.detectedTokensStore.getState().tokens.map(x => {
         return { address: x.tokenAddress, decimals: x.decimals, symbol: x.symbol }
@@ -116,6 +116,7 @@ describe('DetectTokensController', () => {
 
   it('should not detect same token while in main network', async () => {
     const controller = new DetectTokensController({ network: network })
+    await controller.startTokenDetection(TEMP_ADDRESS)
     controller.detectedTokensStore.putState({
       tokens: [
         {
@@ -158,7 +159,6 @@ describe('DetectTokensController', () => {
         })
       )
 
-    await controller.startTokenDetection(TEMP_ADDRESS)
     assert.deepStrictEqual(
       controller.detectedTokensStore.getState().tokens.map(x => {
         return { address: x.tokenAddress, decimals: x.decimals, symbol: x.symbol }

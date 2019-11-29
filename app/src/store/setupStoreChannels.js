@@ -18,25 +18,6 @@ torus.torusController.networkController.networkStore.subscribe(function(state) {
   VuexStore.dispatch('updateNetworkId', { networkId: state })
 })
 
-// if (storageAvailable('sessionStorage')) {
-//   function storageHandler() {
-//     log.info('calling twice 1 session')
-//     const sessionData = sessionStorage.getItem('torus-app')
-//     const networkType = (JSON.parse(sessionData) && JSON.parse(sessionData).networkType) || {
-//       host: MAINNET,
-//       chainId: MAINNET_CODE,
-//       networkName: MAINNET_DISPLAY_NAME
-//     }
-//     if (networkType.host !== VuexStore.state.networkType.host) {
-//       if (SUPPORTED_NETWORK_TYPES.includes(networkType.host)) VuexStore.dispatch('setProviderType', { network: networkType })
-//       else VuexStore.dispatch('setProviderType', { network: networkType, type: RPC })
-//     }
-//   }
-//   // listen to changes on sessionStorage
-//   window.removeEventListener('storage', storageHandler, false)
-//   window.addEventListener('storage', storageHandler, false)
-// }
-
 // setup handlers for communicationStream
 var passthroughStream = new stream.PassThrough({ objectMode: true })
 passthroughStream.on('data', function() {
@@ -51,6 +32,10 @@ torus.communicationMux.getStream('oauth').on('data', function(chunk) {
 
 torus.communicationMux.getStream('show_wallet').on('data', function(chunk) {
   VuexStore.dispatch('showWalletPopup', { path: chunk.data.path || '' })
+})
+
+torus.communicationMux.getStream('topup').on('data', function(chunk) {
+  VuexStore.dispatch('initiateTopup', chunk.data)
 })
 
 torus.communicationMux.getStream('show_provider_change').on('data', function(chunk) {
@@ -111,57 +96,6 @@ userInfoStream.on('data', function(chunk) {
 pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
   if (err) log.error(err)
 })
-var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`, broadcastChannelOptions)
-bc.onmessage = function(ev) {
-  if (ev.data.type === 'confirm-transaction') {
-    let { torusController } = torus
-    let state = VuexStore.state
-    if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
-      let msgParams = state.unapprovedPersonalMsgs[ev.data.id].msgParams
-      log.info('PERSONAL MSG PARAMS:', msgParams)
-      msgParams.metamaskId = parseInt(ev.data.id, 10)
-      torusController.signPersonalMessage(msgParams)
-    } else if (Object.keys(state.unapprovedMsgs).length > 0) {
-      let msgParams = state.unapprovedMsgs[ev.data.id].msgParams
-      log.info(' MSG PARAMS:', msgParams)
-      msgParams.metamaskId = parseInt(ev.data.id, 10)
-      torusController.signMessage(msgParams)
-    } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
-      let msgParams = state.unapprovedTypedMessages[ev.data.id].msgParams
-      log.info('TYPED MSG PARAMS:', msgParams)
-      msgParams.metamaskId = parseInt(ev.data.id, 10)
-      torusController.signTypedMessage(msgParams)
-    } else if (Object.keys(state.transactions).length > 0) {
-      const unApprovedTransactions = VuexStore.getters.unApprovedTransactions
-      var txMeta = unApprovedTransactions.find(x => x.id === ev.data.id)
-      log.info('STANDARD TX PARAMS:', txMeta)
-
-      if (ev.data.gasPrice) {
-        log.info('Changed gas price to:', ev.data.gasPrice)
-        var newTxMeta = JSON.parse(JSON.stringify(txMeta))
-        newTxMeta.txParams.gasPrice = ev.data.gasPrice
-        torusController.txController.updateTransaction(newTxMeta)
-        txMeta = newTxMeta
-        log.info('New txMeta: ', txMeta)
-      }
-      torusController.updateAndApproveTransaction(txMeta)
-    } else {
-      throw new Error('No new transactions.')
-    }
-  } else if (ev.data.type === 'deny-transaction') {
-    let { torusController } = torus
-    let state = VuexStore.state
-    if (Object.keys(state.unapprovedPersonalMsgs).length > 0) {
-      torusController.cancelPersonalMessage(parseInt(ev.data.id, 10))
-    } else if (Object.keys(state.unapprovedMsgs).length > 0) {
-      torusController.cancelMessage(parseInt(ev.data.id, 10))
-    } else if (Object.keys(state.unapprovedTypedMessages).length > 0) {
-      torusController.cancelTypedMessage(parseInt(ev.data.id, 10))
-    } else if (Object.keys(state.transactions).length > 0) {
-      torusController.cancelTransaction(parseInt(ev.data.id, 10))
-    }
-  }
-}
 
 var providerChangeChannel = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
 providerChangeChannel.onmessage = function(ev) {

@@ -1,5 +1,6 @@
 const EventEmitter = require('events')
 const ObservableStore = require('obs-store')
+const { errors: rpcErrors } = require('eth-json-rpc-errors')
 const createId = require('../utils/random-id').default
 const assert = require('assert')
 const sigUtil = require('eth-sig-util')
@@ -82,7 +83,7 @@ export default class TypedMessageManager extends EventEmitter {
           case 'signed':
             return resolve(data.rawSig)
           case 'rejected':
-            return reject(new Error('MetaMask Message Signature: User denied message signature.'))
+            return reject(rpcErrors.eth.userRejectedRequest('MetaMask Message Signature: User denied message signature.'))
           case 'errored':
             return reject(new Error(`MetaMask Message Signature: ${data.error}`))
           default:

@@ -28,7 +28,6 @@ function transactionControllerHandler({ transactions }) {
 }
 
 function assetControllerHandler({ accounts }) {
-  log.info('received assets')
   for (const key in accounts) {
     if (Object.prototype.hasOwnProperty.call(accounts, key)) {
       const { allCollectibleContracts, allCollectibles, collectibleContracts, collectibles } = accounts[key]

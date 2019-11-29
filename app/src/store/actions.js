@@ -303,13 +303,17 @@ export default {
       const response_type = 'token id_token'
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
+        const {
+          instanceParams: { verifier },
+          hashParams: verifierParams
+        } = ev.data || {}
         if (ev.error && ev.error !== '') {
           log.error(ev.error)
           oauthStream.write({ err: ev.error })
-        } else if (ev.data && ev.data.verifier === GOOGLE) {
+        } else if (ev.data && verifier === GOOGLE) {
           try {
             log.info(ev.data)
-            const { access_token: accessToken, id_token: idToken } = ev.data.verifierParams
+            const { access_token: accessToken, id_token: idToken } = verifierParams
             const userInfo = await get('https://www.googleapis.com/userinfo/v2/me', {
               headers: {
                 Authorization: `Bearer ${accessToken}`
@@ -348,7 +352,7 @@ export default {
         preopenInstanceId
       )
       var googleTimer = setInterval(function() {
-        if (googleWindow.closed) {
+        if (googleWindow && googleWindow.closed) {
           clearInterval(googleTimer)
           if (!iClosedGoogle) {
             log.error('user closed popup')
@@ -357,6 +361,7 @@ export default {
           iClosedGoogle = false
           googleWindow = undefined
         }
+        if (googleWindow === undefined) clearInterval(googleTimer)
       }, 1000)
     } else if (verifier === FACEBOOK) {
       const state = encodeURIComponent(
@@ -371,13 +376,17 @@ export default {
       const response_type = 'token'
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
+        const {
+          instanceParams: { verifier },
+          hashParams: verifierParams
+        } = ev.data || {}
         if (ev.error && ev.error !== '') {
           log.error(ev.error)
           oauthStream.write({ err: ev.error })
-        } else if (ev.data && ev.data.verifier === FACEBOOK) {
+        } else if (ev.data && verifier === FACEBOOK) {
           try {
             log.info(ev.data)
-            const { access_token: accessToken } = ev.data.verifierParams
+            const { access_token: accessToken } = verifierParams
             const userInfo = await get('https://graph.facebook.com/me?fields=name,email,picture.type(large)', {
               headers: {
                 Authorization: `Bearer ${accessToken}`
@@ -416,7 +425,7 @@ export default {
         preopenInstanceId
       )
       var facebookTimer = setInterval(function() {
-        if (facebookWindow.closed) {
+        if (facebookWindow && facebookWindow.closed) {
           clearInterval(facebookTimer)
           if (!iClosedFacebook) {
             log.error('user closed popup')
@@ -425,6 +434,7 @@ export default {
           iClosedFacebook = false
           facebookWindow = undefined
         }
+        if (facebookWindow === undefined) clearInterval(facebookTimer)
       }, 1000)
     } else if (verifier === TWITCH) {
       const state = encodeURIComponent(
@@ -446,12 +456,16 @@ export default {
       })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
+        const {
+          instanceParams: { verifier },
+          hashParams: verifierParams
+        } = ev.data || {}
         if (ev.error && ev.error !== '') {
           log.error(ev.error)
           oauthStream.write({ err: ev.error })
-        } else if (ev.data && ev.data.verifier === TWITCH) {
+        } else if (ev.data && verifier === TWITCH) {
           try {
-            const { access_token: accessToken, id_token: idtoken } = ev.data.verifierParams
+            const { access_token: accessToken, id_token: idtoken } = verifierParams
             const userInfo = await get('https://id.twitch.tv/oauth2/userinfo', {
               headers: {
                 Authorization: `Bearer ${accessToken}`
@@ -492,7 +506,7 @@ export default {
         preopenInstanceId
       )
       var twitchTimer = setInterval(function() {
-        if (twitchWindow.closed) {
+        if (twitchWindow && twitchWindow.closed) {
           clearInterval(twitchTimer)
           if (!iClosedTwitch) {
             log.error('user closed popup')
@@ -501,6 +515,7 @@ export default {
           iClosedTwitch = false
           twitchWindow = undefined
         }
+        if (twitchWindow === undefined) clearInterval(twitchTimer)
       }, 1000)
     } else if (verifier === REDDIT) {
       const state = encodeURIComponent(
@@ -513,12 +528,16 @@ export default {
       )
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
+        const {
+          instanceParams: { verifier },
+          hashParams: verifierParams
+        } = ev.data || {}
         if (ev.error && ev.error !== '') {
           log.error(ev.error)
           oauthStream.write({ err: ev.error })
-        } else if (ev.data && ev.data.verifier === REDDIT) {
+        } else if (ev.data && verifier === REDDIT) {
           try {
-            const { access_token: accessToken } = ev.data.verifierParams
+            const { access_token: accessToken } = verifierParams
             const userInfo = await get('https://oauth.reddit.com/api/v1/me', {
               headers: {
                 Authorization: `Bearer ${accessToken}`
@@ -557,7 +576,7 @@ export default {
         preopenInstanceId
       )
       var redditTimer = setInterval(function() {
-        if (redditWindow.closed) {
+        if (redditWindow && redditWindow.closed) {
           clearInterval(redditTimer)
           if (!iClosedReddit) {
             log.error('user closed popup')
@@ -566,6 +585,7 @@ export default {
           iClosedReddit = false
           redditWindow = undefined
         }
+        if (redditWindow === undefined) clearInterval(redditTimer)
       }, 1000)
     } else if (verifier === DISCORD) {
       const state = encodeURIComponent(
@@ -579,12 +599,16 @@ export default {
       const scope = encodeURIComponent('identify email')
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
+        const {
+          instanceParams: { verifier },
+          hashParams: verifierParams
+        } = ev.data || {}
         if (ev.error && ev.error !== '') {
           log.error(ev.error)
           oauthStream.write({ err: ev.error })
-        } else if (ev.data && ev.data.verifier === DISCORD) {
+        } else if (ev.data && verifier === DISCORD) {
           try {
-            const { access_token: accessToken } = ev.data.verifierParams
+            const { access_token: accessToken } = verifierParams
             const userInfo = await get('https://discordapp.com/api/users/@me', {
               headers: {
                 Authorization: `Bearer ${accessToken}`
@@ -627,7 +651,7 @@ export default {
         preopenInstanceId
       )
       var discordTimer = setInterval(function() {
-        if (discordWindow.closed) {
+        if (discordWindow && discordWindow.closed) {
           clearInterval(discordTimer)
           if (!iClosedDiscord) {
             log.error('user closed popup')
@@ -636,6 +660,7 @@ export default {
           iClosedDiscord = false
           discordWindow = undefined
         }
+        if (discordWindow === undefined) clearInterval(discordTimer)
       }, 1000)
     }
   },
