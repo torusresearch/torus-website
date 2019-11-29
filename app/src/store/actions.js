@@ -295,7 +295,7 @@ export default {
       const finalUrl =
         `https://accounts.google.com/o/oauth2/v2/auth?response_type=${response_type}&client_id=${config.GOOGLE_CLIENT_ID}` +
         `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}`
-      const googleWindow = new PopupHandler(finalUrl)
+      const googleWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         const {
@@ -354,7 +354,7 @@ export default {
       const finalUrl =
         `https://www.facebook.com/v5.0/dialog/oauth?response_type=${response_type}&client_id=${config.FACEBOOK_APP_ID}` +
         `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
-      const facebookWindow = new PopupHandler(finalUrl)
+      const facebookWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         const {
@@ -420,7 +420,7 @@ export default {
       const finalUrl =
         `https://id.twitch.tv/oauth2/authorize?client_id=${config.TWITCH_CLIENT_ID}&redirect_uri=` +
         `${config.redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`
-      const twitchWindow = new PopupHandler(finalUrl)
+      const twitchWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         const {
@@ -478,7 +478,7 @@ export default {
       const finalUrl =
         `https://www.reddit.com/api/v1/authorize?client_id=${config.REDDIT_CLIENT_ID}&redirect_uri=` +
         `${config.redirect_uri}&response_type=token&scope=identity&state=${state}`
-      const redditWindow = new PopupHandler(finalUrl)
+      const redditWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         const {
@@ -535,7 +535,7 @@ export default {
       const finalUrl =
         `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${config.DISCORD_CLIENT_ID}` +
         `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
-      const discordWindow = new PopupHandler(finalUrl)
+      const discordWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         const {
@@ -877,51 +877,5 @@ export default {
     } catch (error) {
       log.error('Failed to rehydrate', error)
     }
-  }
-}
-
-function WindowReference(preopenInstanceId) {
-  const self = this
-  this.closed = false
-  this.preopenInstanceId = preopenInstanceId
-  const windowStream = torus.communicationMux.getStream('window')
-  const preopenHandler = function({ preopenInstanceId, closed }) {
-    if (preopenInstanceId === self.preopenInstanceId && closed) {
-      self.closed = true
-      windowStream.removeListener('data', preopenHandler)
-    }
-  }
-  windowStream.on('data', preopenHandler)
-  this.close = function() {
-    windowStream.write({
-      preopenInstanceId: self.preopenInstanceId,
-      close: true
-    })
-  }
-}
-WindowReference.prototype.constructor = WindowReference
-
-function windowOpen(windowOpenParams, preopenInstanceId) {
-  var url = windowOpenParams[0]
-  if (preopenInstanceId) {
-    var bc = new BroadcastChannel(`preopen_channel_${preopenInstanceId}`, broadcastChannelOptions)
-    setTimeout(function() {
-      bc.postMessage({
-        data: {
-          origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-          payload: { url }
-        }
-      })
-        .then(() => {
-          bc.close()
-        })
-        .catch(err => {
-          log.error('Failed to communicate via preopen_channel', err)
-          bc.close()
-        })
-    }, 100)
-    return new WindowReference(preopenInstanceId)
-  } else {
-    return window.open.apply(window, windowOpenParams)
   }
 }

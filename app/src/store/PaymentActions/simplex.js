@@ -112,7 +112,7 @@ export default {
       document.body.appendChild(form)
       // Handle communication with simplex window here
 
-      const simplexWindow = new PopupHandler('about:blank', 'form-target', 'width=1200, height=700')
+      const simplexWindow = new PopupHandler({ url: 'about:blank', target: 'form-target', features: 'width=1200, height=700' })
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
 

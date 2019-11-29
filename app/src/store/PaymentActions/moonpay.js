@@ -42,7 +42,7 @@ export default {
     return new Promise((resolve, reject) => {
       const paramString = new URLSearchParams(params)
       const finalUrl = `${path}?${paramString}`
-      const moonpayWindow = new PopupHandler(finalUrl)
+      const moonpayWindow = new PopupHandler({ url: finalUrl })
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = ev => {

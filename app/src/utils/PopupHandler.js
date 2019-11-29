@@ -1,8 +1,11 @@
 import { EventEmitter } from 'events'
 import log from 'loglevel'
+import { BroadcastChannel } from 'broadcast-channel'
+import { broadcastChannelOptions } from './utils'
+import torus from '../torus'
 
 class PopupHandler extends EventEmitter {
-  constructor(url, target, features) {
+  constructor({ url, target, features, preopenInstanceId }) {
     super()
     this.url = url
     this.target = target || '_blank'
@@ -10,7 +13,8 @@ class PopupHandler extends EventEmitter {
     this.window = undefined
     this.windowTimer = {}
     this.iClosedWindow = false
-    this._setupTimer()
+    this.preopenInstanceId = preopenInstanceId
+    if (!preopenInstanceId) this._setupTimer()
   }
 
   _setupTimer() {
@@ -29,12 +33,49 @@ class PopupHandler extends EventEmitter {
   }
 
   open() {
-    this.window = window.open(this.url, this.target, this.features)
+    if (!this.preopenInstanceId) this.window = window.open(this.url, this.target, this.features)
+    else {
+      const bc = new BroadcastChannel(`preopen_channel_${this.preopenInstanceId}`, broadcastChannelOptions)
+      log.info('setting up bc', this.preopenInstanceId)
+      setTimeout(() => {
+        bc.postMessage({
+          data: {
+            origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+            payload: { url: this.url }
+          }
+        })
+          .then(() => {
+            bc.close()
+          })
+          .catch(err => {
+            log.error('Failed to communicate via preopen_channel', err)
+            bc.close()
+          })
+      }, 2000)
+      // this.window = new WindowReference(this.preopenInstanceId)
+      this.windowStream = torus.communicationMux.getStream('window')
+      const preopenHandler = chunk => {
+        const { preopenInstanceId, closed } = chunk.data
+        if (preopenInstanceId === this.preopenInstanceId && closed) {
+          log.error('user closed popup')
+          this.emit('close')
+          this.windowStream.removeListener('data', preopenHandler)
+        }
+      }
+      this.windowStream.on('data', preopenHandler)
+    }
   }
 
   close() {
-    this.iClosedWindow = true
-    this.window && this.window.close()
+    if (!this.preopenInstanceId) {
+      this.iClosedWindow = true
+      this.window && this.window.close()
+    } else {
+      this.windowStream.write({
+        preopenInstanceId: this.preopenInstanceId,
+        close: true
+      })
+    }
   }
 }
 

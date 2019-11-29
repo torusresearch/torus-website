@@ -16,7 +16,7 @@ module.exports = {
     },
     historyApiFallback: {
       rewrites: [
-        { from: 'redirect', to: '/redirect.html' },
+        { from: /redirect/, to: '/redirect.html' },
         { from: /./, to: '/index.html' }
       ]
     }
