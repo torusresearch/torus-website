@@ -11,7 +11,7 @@
               <span class="display-2 font-weight-bold">Welcome to Torus</span>
             </v-flex>
             <v-flex class="body-1" mb-6 xs9 sm7 ml-auto mr-auto>
-              <span>You are just one step away from getting your digital wallet for your cryptocurrencies</span>
+              <span>You are just one step away from interacting with the blockchain ecosystem</span>
             </v-flex>
             <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
               <v-btn
@@ -44,19 +44,7 @@
                     <img width="24" :src="require('../../../public/img/icons/facebook.svg')" />
                   </v-btn>
                 </v-flex>
-                <v-flex xs3 px-1>
-                  <v-btn
-                    :large="!$vuetify.breakpoint.xsOnly"
-                    outlined
-                    block
-                    class="other-login-btn"
-                    type="button"
-                    title="Login with Reddit"
-                    @click="triggerLogin({ verifier: REDDIT, calledFromEmbed: false })"
-                  >
-                    <img width="32" :src="require('../../../public/img/icons/reddit.svg')" />
-                  </v-btn>
-                </v-flex>
+
                 <v-flex xs3 px-1>
                   <v-btn
                     :large="!$vuetify.breakpoint.xsOnly"
