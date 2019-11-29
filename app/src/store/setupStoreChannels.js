@@ -1,4 +1,3 @@
-import randomId from 'random-id'
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import pump from 'pump'
@@ -7,7 +6,6 @@ import torus from '../torus'
 import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, USER_INFO_REQUEST_NEW } from '../utils/enums'
 import VuexStore from './store'
 import { broadcastChannelOptions } from '../utils/utils'
-import { TWITCH, REDDIT, DISCORD } from '../utils/enums'
 
 /* 
 Edited to change networkId => network state. Has an implication of changing neworkVersion 
@@ -25,9 +23,11 @@ passthroughStream.on('data', function() {
 })
 
 torus.communicationMux.getStream('oauth').on('data', function(chunk) {
-  const preopenInstanceId = randomId()
-  torus.communicationMux.getStream('window').write({ preopenInstanceId })
-  VuexStore.dispatch('triggerLogin', { calledFromEmbed: chunk.data.calledFromEmbed, verifier: chunk.data.verifier, preopenInstanceId })
+  VuexStore.dispatch('triggerLogin', {
+    calledFromEmbed: chunk.data.calledFromEmbed,
+    verifier: chunk.data.verifier,
+    preopenInstanceId: chunk.data.preopenInstanceId
+  })
 })
 
 torus.communicationMux.getStream('show_wallet').on('data', function(chunk) {
