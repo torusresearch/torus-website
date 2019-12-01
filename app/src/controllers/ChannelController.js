@@ -176,32 +176,19 @@ class ChannelController {
 
   /**
    * A method for serving our channel provider over a given stream.
-   * @param {*} outStream - The stream to provide over.
-   * @param {string} origin - The URI of the requesting resource.
+   * @param {*} communicationMux - The stream to provide over.
    */
-  setupConnection(outStream, origin) {
-    const engine = this.setupProviderEngine(origin)
+  setupConnection(communicationMux) {
+    this.channelRpcStream = communicationMux.getStream('channel_rpc')
 
-    // setup connection
-    const providerStream = createEngineStream({ engine })
-
-    outStream
-      .pipe(providerStream)
-      .pipe(outStream)
-      .on('error', err => {
-        // cleanup filter polyfill middleware
-        engine._middleware.forEach(mid => {
-          if (mid.destroy && typeof mid.destroy === 'function') {
-            mid.destroy()
-          }
-        })
-        if (err) log.error(err)
-      })
+    this.channelRpcStream.on('data', payload => this.onPayload(payload))
   }
 
-  async mapPayloadToClient(payload) {
+  async onPayload(payload) {
     const channel = this.getChannel()
+
     const { params, id, method } = payload
+
     if (!params || typeof params !== 'object') {
       throw new Error(`Invalid payload params. Payload: ${prettyPrint(payload)}`)
     }
@@ -214,7 +201,9 @@ class ChannelController {
       throw new Error(`Invalid payload method. Payload: ${prettyPrint(payload)}`)
     }
 
+    let errorMsg
     let result
+
     try {
       switch (method) {
         case 'chan_store_set':
@@ -286,13 +275,19 @@ class ChannelController {
           result = await channel.withdrawCommitment(params)
           break
         default:
-          console.error(`ChannelProvider mapping error, unknown method. Payload: ${prettyPrint(payload)}`)
+          errorMsg = `ChannelProvider mapping error, unknown method. Payload: ${prettyPrint(payload)}`
           break
       }
     } catch (e) {
-      console.error(`ChannelProvider error: ${JSON.stringify(e, null, 2)}`)
+      errorMsg = `ChannelProvider error: ${JSON.stringify(e, null, 2)}`
     }
-    return { id, result }
+
+    if (result) {
+      channelRpcStream.write({ id, result })
+    } else {
+      channelRpcStream.write({ id, error: { message: errorMsg || 'ChannelProvider error: Missing error message' } })
+      console.error(errorMsg)
+    }
   }
 }
 

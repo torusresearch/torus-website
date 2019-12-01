@@ -91,9 +91,9 @@ function onloadTorus(torus) {
 
   torusController.setupTrustedCommunication(providerOutStream, 'metamask')
 
-  const channelProviderOutStream = torus.channelMux.getStream('channelProvider')
+  const channelRpcStream = torus.channelMux.getStream('channel_rpc')
 
-  torusController.channelController.setupConnection(channelProviderOutStream, 'connext')
+  torusController.channelController.setupConnection(channelRpcStream)
 
   return torus
 }
