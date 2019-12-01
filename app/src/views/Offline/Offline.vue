@@ -13,7 +13,7 @@
       <v-flex xs12 sm12 md12 lg12 align-center>
         <v-layout wrap align-center justify-center align-content-center>
           <div class="px-12">
-            <img width="280px" height="auto" :src="require('../../../public/images/offline_icon.svg')" />
+            <img width="280px" height="auto" :src="require('../../../public/images/blublu-icon.svg')" />
           </div>
           <div class="px-6 py-12">
             <div class="display-1 font-weight-bold py-4">Hmm… You are offline.</div>

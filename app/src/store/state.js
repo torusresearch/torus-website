@@ -21,6 +21,7 @@ const initialState = {
   currencyData: {},
   tokenData: {}, // Account specific object
   tokenRates: {},
+  isOnline: true,
   transactions: [],
   unapprovedTypedMessages: {},
   unapprovedPersonalMsgs: {},

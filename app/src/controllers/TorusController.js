@@ -12,6 +12,7 @@ const TokenRatesController = require('./TokenRatesController').default
 const AssetDetectionController = require('./AssetsDetectionController').default
 const AssetController = require('./AssetsController').default
 const AssetContractController = require('./AssetsContractController').default
+const InfuraController = require('./InfuraController').default
 const toChecksumAddress = require('../utils/toChecksumAddress').default
 const BN = require('ethereumjs-util').BN
 const GWEI_BN = new BN('1000000000')
@@ -153,6 +154,11 @@ export default class TorusController extends EventEmitter {
     this.assetContractController = new AssetContractController({
       provider: this.provider
     })
+
+    this.infuraController = new InfuraController({
+      provider: this.provider
+    })
+    this.infuraController.scheduleInfuraNetworkCheck()
 
     this.assetDetectionController = new AssetDetectionController({
       network: this.networkController,

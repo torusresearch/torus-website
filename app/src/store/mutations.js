@@ -18,6 +18,9 @@ export default {
   setTokenRates(state, tokenRates) {
     state.tokenRates = tokenRates
   },
+  setNetworkState(state, networkState) {
+    state.isOnline = networkState
+  },
   setSelectedAddress(state, selectedAddress) {
     state.selectedAddress = selectedAddress
   },

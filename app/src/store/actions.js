@@ -26,7 +26,8 @@ import {
   transactionControllerHandler,
   messageManagerHandler,
   detectTokensControllerHandler,
-  tokenRatesControllerHandler
+  tokenRatesControllerHandler,
+  infuraControllerHandler
 } from './controllerSubscriptions'
 import vuetify from '../plugins/vuetify'
 import themes from '../plugins/themes'
@@ -67,6 +68,7 @@ export default {
     torus.torusController.messageManager.store.unsubscribe(messageManagerHandler)
     torus.torusController.detectTokensController.detectedTokensStore.unsubscribe(detectTokensControllerHandler)
     torus.torusController.tokenRatesController.store.unsubscribe(tokenRatesControllerHandler)
+    torus.torusController.infuraController.store.unsubscribe(infuraControllerHandler)
   },
   loginInProgress(context, payload) {
     context.commit('setLoginInProgress', payload)
@@ -262,6 +264,9 @@ export default {
   },
   updateTokenRates({ commit }, payload) {
     commit('setTokenRates', payload.tokenRates)
+  },
+  updateNetworkState({ commit }, payload) {
+    commit('setNetworkState', payload.infuraNetworkStatus)
   },
   updateSelectedAddress({ commit, state }, payload) {
     commit('setSelectedAddress', payload.selectedAddress)
@@ -658,6 +663,7 @@ export default {
     torus.torusController.messageManager.store.subscribe(messageManagerHandler)
     torus.torusController.detectTokensController.detectedTokensStore.subscribe(detectTokensControllerHandler)
     torus.torusController.tokenRatesController.store.subscribe(tokenRatesControllerHandler)
+    torus.torusController.infuraController.store.subscribe(infuraControllerHandler)
   },
   initTorusKeyring({ state, dispatch }, payload) {
     return torus.torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])

@@ -1,5 +1,5 @@
 <template>
-  <v-app class="torus-app" v-if="isConnected">
+  <v-app class="torus-app" v-if="isOnline">
     <router-view />
   </v-app>
   <v-app class="torus-app" v-else>
@@ -8,26 +8,21 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import Offline from './views/Offline'
 export default {
-  data() {
-    return {
-      isConnected: false
-    }
-  },
   components: {
     Offline
   },
+  computed: mapState(['isOnline']),
   mounted() {
     if (typeof window !== 'undefined') {
-      this.isConnected = navigator.onLine
-
       const onlineHandler = () => {
-        this.isConnected = true
+        this.$store.dispatch('updateNetworkState', { infuraNetworkStatus: true })
       }
 
       const offlineHandler = () => {
-        this.isConnected = false
+        this.$store.dispatch('updateNetworkState', { infuraNetworkStatus: false })
       }
 
       window.addEventListener('online', onlineHandler)

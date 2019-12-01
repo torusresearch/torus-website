@@ -69,6 +69,10 @@ function tokenRatesControllerHandler({ contractExchangeRates }) {
   }
 }
 
+function infuraControllerHandler({ infuraNetworkStatus }) {
+  store.dispatch('updateNetworkState', { infuraNetworkStatus: infuraNetworkStatus })
+}
+
 export {
   accountTrackerHandler,
   transactionControllerHandler,
@@ -77,5 +81,6 @@ export {
   personalMessageManagerHandler,
   messageManagerHandler,
   detectTokensControllerHandler,
-  tokenRatesControllerHandler
+  tokenRatesControllerHandler,
+  infuraControllerHandler
 }
