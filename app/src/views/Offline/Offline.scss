@@ -1,0 +1,15 @@
+.offline {
+  background-color: #ffffff;
+  color: #000000;
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  height: 100vh;
+  .header-container {
+    background-color: #ffffff;
+    header {
+      background-color: #ffffff;
+      color: #000000;
+    }
+  }
+}
