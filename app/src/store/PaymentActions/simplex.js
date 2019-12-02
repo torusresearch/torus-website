@@ -75,6 +75,7 @@ export default {
         payment_post_url
       } = result.result
       return dispatch('postSimplexOrder', {
+        preopenInstanceId: payload.preopenInstanceId,
         path: payment_post_url,
         params: {
           payment_flow_type: 'wallet',
@@ -94,7 +95,7 @@ export default {
       })
     })
   },
-  postSimplexOrder(context, { path, params, method = 'post' }) {
+  postSimplexOrder(context, { path, params, method = 'post', preopenInstanceId }) {
     return new Promise((resolve, reject) => {
       const form = document.createElement('form')
       form.method = method
@@ -112,7 +113,7 @@ export default {
       document.body.appendChild(form)
       // Handle communication with simplex window here
 
-      const simplexWindow = new PopupHandler({ url: 'about:blank', target: 'form-target', features: 'width=1200, height=700' })
+      const simplexWindow = new PopupHandler({ url: 'about:blank', target: 'form-target', features: 'width=1200, height=700', preopenInstanceId })
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
 

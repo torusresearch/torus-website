@@ -16,7 +16,7 @@ export default {
       requested_amount: +parseFloat(payload.fiatValue)
     })
   },
-  fetchMoonpayOrder({ state, dispatch }, { currentOrder, colorCode }) {
+  fetchMoonpayOrder({ state, dispatch }, { currentOrder, colorCode, preopenInstanceId }) {
     const instanceState = encodeURIComponent(
       window.btoa(
         JSON.stringify({
@@ -36,13 +36,13 @@ export default {
       externalCustomerId: state.selectedAddress,
       redirectURL: `${config.redirect_uri}?state=${instanceState}`
     }
-    return dispatch('postMoonpayOrder', { path: config.moonpayHost, params: params })
+    return dispatch('postMoonpayOrder', { path: config.moonpayHost, params: params, preopenInstanceId })
   },
-  postMoonpayOrder(context, { path, params, method = 'post' }) {
+  postMoonpayOrder(context, { path, params, method = 'post', preopenInstanceId }) {
     return new Promise((resolve, reject) => {
       const paramString = new URLSearchParams(params)
       const finalUrl = `${path}?${paramString}`
-      const moonpayWindow = new PopupHandler({ url: finalUrl })
+      const moonpayWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = ev => {
