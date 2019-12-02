@@ -41,6 +41,8 @@ let totalFailCount = 0
 // stream to send logged in status
 const statusStream = torus.communicationMux.getStream('status')
 const oauthStream = torus.communicationMux.getStream('oauth')
+const userInfoStream = torus.communicationMux.getStream('user_info')
+const providerChangeStream = torus.communicationMux.getStream('provider_change')
 
 export default {
   logOut({ commit, dispatch }, payload) {
@@ -114,13 +116,36 @@ export default {
       log.error('etherscan balance fetch failed')
     }
   },
-  showProviderChangePopup(context, payload) {
-    var bc = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
-    window.open(
-      `${baseRoute}providerchange?integrity=true&instanceId=${torus.instanceId}`,
-      '_blank',
-      'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
-    )
+  showProviderChangePopup({ dispatch }, payload) {
+    const { override, preopenInstanceId } = payload
+    const handleSuccess = () => {
+      setTimeout(() => {
+        providerChangeStream.write({
+          name: 'provider_change_status',
+          data: {
+            success: true
+          }
+        })
+      }, 100)
+    }
+
+    const handleDeny = err => {
+      providerChangeStream.write({
+        name: 'provider_change_status',
+        data: {
+          success: false,
+          err: err
+        }
+      })
+    }
+    if (override) {
+      return dispatch('setProviderType', payload)
+        .then(handleSuccess)
+        .catch(handleDeny)
+    }
+    const bc = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
+    const finalUrl = `${baseRoute}providerchange?integrity=true&instanceId=${torus.instanceId}`
+    const providerChangeWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
     bc.onmessage = async ev => {
       if (ev.data === 'popup-loaded') {
         await bc.postMessage({
@@ -129,17 +154,57 @@ export default {
             payload: payload
           }
         })
+      } else if (ev.data && ev.data.type === 'confirm-provider-change' && ev.data.approve) {
+        log.info('Provider change approved', ev.data.payload)
+        dispatch('setProviderType', ev.data.payload)
+          .then(() => {
+            handleSuccess()
+            bc.close()
+            providerChangeWindow.close()
+          })
+          .catch(err => {
+            handleDeny(err)
+            bc.close()
+            providerChangeWindow.close()
+          })
+      } else if (ev.data && ev.data.type === 'deny-provider-change') {
+        log.info('Provider change denied')
+        handleDeny(new Error('user denied provider change request'))
         bc.close()
+        providerChangeWindow.close()
       }
     }
+
+    providerChangeWindow.open()
+    providerChangeWindow.on('close', () => {
+      bc.close()
+      handleDeny(new Error('user denied provider change request'))
+    })
   },
-  showUserInfoRequestPopup(context, payload) {
+  showUserInfoRequestPopup({ dispatch, state }, payload) {
+    const { preopenInstanceId } = payload
+    log.info(preopenInstanceId, 'userinfo')
     var bc = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`, broadcastChannelOptions)
-    window.open(
-      `${baseRoute}userinforequest?integrity=true&instanceId=${torus.instanceId}`,
-      '_blank',
-      'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
-    )
+    const finalUrl = `${baseRoute}userinforequest?integrity=true&instanceId=${torus.instanceId}`
+    const userInfoRequestWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+
+    const handleDeny = () => {
+      log.info('User Info Request denied')
+      dispatch('updateUserInfoAccess', { approved: false })
+      userInfoStream.write({ name: 'user_info_response', data: { payload: {}, approved: false } })
+      bc.close()
+      userInfoRequestWindow.close()
+    }
+    const handleSuccess = () => {
+      log.info('User Info Request approved')
+      dispatch('updateUserInfoAccess', { approved: true })
+      const returnObj = JSON.parse(JSON.stringify(state.userInfo))
+      delete returnObj.verifierParams
+      userInfoStream.write({ name: 'user_info_response', data: { payload: returnObj, approved: true } })
+      bc.close()
+      userInfoRequestWindow.close()
+    }
+
     bc.onmessage = async ev => {
       if (ev.data === 'popup-loaded') {
         await bc.postMessage({
@@ -148,9 +213,17 @@ export default {
             payload: payload
           }
         })
-        bc.close()
+      } else if (ev.data && ev.data.type === 'confirm-user-info-request' && ev.data.approve) {
+        handleSuccess()
+      } else if (ev.data && ev.data.type === 'deny-user-info-request') {
+        handleDeny()
       }
     }
+
+    userInfoRequestWindow.open()
+    userInfoRequestWindow.on('close', () => {
+      handleDeny()
+    })
   },
   showWalletPopup(context, payload) {
     const finalUrl = `${baseRoute}wallet${payload.path || ''}?integrity=true&instanceId=${torus.instanceId}`

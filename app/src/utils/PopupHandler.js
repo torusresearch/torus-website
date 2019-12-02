@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events'
-import log from 'loglevel'
 
 import StreamWindow from './StreamWindow'
 
@@ -27,7 +26,7 @@ class PopupHandler extends EventEmitter {
         this.window = undefined
       }
       if (this.window === undefined) clearInterval(this.windowTimer)
-    }, 1000)
+    }, 500)
   }
 
   open() {

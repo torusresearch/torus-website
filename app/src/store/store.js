@@ -199,7 +199,6 @@ function handleConfirm(ev) {
 
 function handleDeny(id, txType) {
   let { torusController } = torus
-  let state = VuexStore.state
   if (txType === TX_PERSONAL_MESSAGE) {
     torusController.cancelPersonalMessage(parseInt(id, 10))
   } else if (txType === TX_MESSAGE) {

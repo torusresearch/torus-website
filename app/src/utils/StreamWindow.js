@@ -32,7 +32,6 @@ class StreamWindow {
     const preopenHandler = chunk => {
       const { preopenInstanceId, closed } = chunk.data
       if (preopenInstanceId === this.preopenInstanceId && closed) {
-        log.error('user closed popup')
         this.closed = true
         this.windowStream.removeListener('data', preopenHandler)
       }
