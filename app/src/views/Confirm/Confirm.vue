@@ -521,10 +521,7 @@ export default {
       bc.close()
     },
     topUp() {
-      this.openWallet()
-    },
-    openWallet() {
-      this.$store.dispatch('showWalletPopup')
+      this.$store.dispatch('showWalletPopup', { path: '/topup' })
     },
     onSelectSpeed(data) {
       this.speedSelected = data.speedSelected

@@ -21,7 +21,6 @@ class PopupHandler extends EventEmitter {
       if (this.window && this.window.closed) {
         clearInterval(this.windowTimer)
         if (!this.iClosedWindow) {
-          log.error('user closed popup')
           this.emit('close')
         }
         this.iClosedWindow = false

@@ -42,8 +42,6 @@ let totalFailCount = 0
 const statusStream = torus.communicationMux.getStream('status')
 const oauthStream = torus.communicationMux.getStream('oauth')
 
-var walletWindow
-
 export default {
   logOut({ commit, dispatch }, payload) {
     commit('logOut', initialState)
@@ -155,18 +153,11 @@ export default {
     }
   },
   showWalletPopup(context, payload) {
-    walletWindow =
-      walletWindow ||
-      window.open(
-        `${baseRoute}wallet${payload.path || ''}?integrity=true&instanceId=${torus.instanceId}`,
-        '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=750'
-      )
-    walletWindow.blur()
-    setTimeout(walletWindow.focus(), 0)
-    walletWindow.onbeforeunload = function() {
-      walletWindow = undefined
-    }
+    const finalUrl = `${baseRoute}wallet${payload.path || ''}?integrity=true&instanceId=${torus.instanceId}`
+    const walletWindow = new PopupHandler({ url: finalUrl })
+    walletWindow.open()
+    walletWindow.window.blur()
+    setTimeout(walletWindow.window.focus(), 0)
   },
   updateUserInfo(context, payload) {
     context.commit('setUserInfo', payload.userInfo)

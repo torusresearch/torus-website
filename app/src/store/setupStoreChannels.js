@@ -21,8 +21,10 @@ torus.communicationMux.getStream('oauth').on('data', function(chunk) {
   })
 })
 
-torus.communicationMux.getStream('show_wallet').on('data', function(chunk) {
-  VuexStore.dispatch('showWalletPopup', { path: chunk.data.path || '' })
+const walletStream = torus.communicationMux.getStream('show_wallet')
+
+walletStream.on('data', function(chunk) {
+  if (chunk.name === 'show_wallet') walletStream.write({ name: 'show_wallet_instance', data: { instanceId: torus.instanceId } })
 })
 
 torus.communicationMux.getStream('topup').on('data', function(chunk) {
