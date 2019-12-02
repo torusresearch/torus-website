@@ -1,5 +1,6 @@
 import { connect, utils } from '@connext/client'
 import { Node as NodeTypes } from '@counterfactual/types'
+import store from '../utils/channelStore'
 
 class ChannelController {
   /**
@@ -9,7 +10,7 @@ class ChannelController {
   constructor(opts) {
     this.networkController = opts.networkController
     this.keyringController = opts.keyringController
-    this.store = opts.store
+    this.store = store
   }
 
   /**
