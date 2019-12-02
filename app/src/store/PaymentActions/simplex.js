@@ -1,10 +1,11 @@
+import log from 'loglevel'
 import { postQuote, postOrder } from '../../plugins/simplex'
 import config from '../../config'
 import { broadcastChannelOptions } from '../../utils/utils'
+import PopupHandler from '../../utils/PopupHandler'
 import { SIMPLEX } from '../../utils/enums'
 import { BroadcastChannel } from 'broadcast-channel'
 import torus from '../../torus'
-import log from 'loglevel'
 
 export default {
   fetchSimplexQuote({ state }, payload) {
@@ -94,8 +95,6 @@ export default {
     })
   },
   postSimplexOrder(context, { path, params, method = 'post' }) {
-    var simplexWindow
-    var iClosedSimplex = false
     return new Promise((resolve, reject) => {
       const form = document.createElement('form')
       form.method = method
@@ -112,6 +111,8 @@ export default {
       }
       document.body.appendChild(form)
       // Handle communication with simplex window here
+
+      const simplexWindow = new PopupHandler('about:blank', 'form-target', 'width=1200, height=700')
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
 
@@ -130,26 +131,15 @@ export default {
           reject(error)
         } finally {
           bc.close()
-          iClosedSimplex = true
           simplexWindow.close()
         }
       }
-
-      simplexWindow = window.open('about:blank', 'form-target', 'width=1200, height=700')
+      simplexWindow.open()
       form.submit()
 
-      var simplexTimer = setInterval(function() {
-        if (simplexWindow && simplexWindow.closed) {
-          clearInterval(simplexTimer)
-          if (!iClosedSimplex) {
-            log.error('user closed popup')
-            reject(new Error('user closed simplex popup'))
-          }
-          iClosedSimplex = false
-          simplexWindow = undefined
-        }
-        if (simplexWindow === undefined) clearInterval(simplexTimer)
-      }, 1000)
+      simplexWindow.once('close', () => {
+        reject(new Error('user closed simplex popup'))
+      })
     })
   }
 }
