@@ -139,6 +139,7 @@ export default {
       form.submit()
 
       simplexWindow.once('close', () => {
+        bc.close()
         reject(new Error('user closed simplex popup'))
       })
     })

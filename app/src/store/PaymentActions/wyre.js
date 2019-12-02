@@ -68,6 +68,7 @@ export default {
 
       wyreWindow.open()
       wyreWindow.once('close', () => {
+        bc.close()
         reject(new Error('user closed wyre popup'))
       })
     })

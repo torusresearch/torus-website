@@ -67,6 +67,7 @@ export default {
       // Handle communication with moonpay window here
       moonpayWindow.open()
       moonpayWindow.once('close', () => {
+        bc.close()
         reject(new Error('user closed moonpay popup'))
       })
     })

@@ -176,7 +176,7 @@ export default {
     }
 
     providerChangeWindow.open()
-    providerChangeWindow.on('close', () => {
+    providerChangeWindow.once('close', () => {
       bc.close()
       handleDeny(new Error('user denied provider change request'))
     })
@@ -221,7 +221,7 @@ export default {
     }
 
     userInfoRequestWindow.open()
-    userInfoRequestWindow.on('close', () => {
+    userInfoRequestWindow.once('close', () => {
       handleDeny()
     })
   },
@@ -402,6 +402,7 @@ export default {
       }
       googleWindow.open()
       googleWindow.once('close', () => {
+        bc.close()
         oauthStream.write({ err: 'user closed popup' })
       })
     } else if (verifier === FACEBOOK) {
@@ -461,6 +462,7 @@ export default {
       }
       facebookWindow.open()
       facebookWindow.once('close', () => {
+        bc.close()
         oauthStream.write({ err: 'user closed popup' })
       })
     } else if (verifier === TWITCH) {
@@ -528,6 +530,7 @@ export default {
       }
       twitchWindow.open()
       twitchWindow.once('close', () => {
+        bc.close()
         oauthStream.write({ err: 'user closed popup' })
       })
     } else if (verifier === REDDIT) {
@@ -584,6 +587,7 @@ export default {
       }
       redditWindow.open()
       redditWindow.once('close', () => {
+        bc.close()
         oauthStream.write({ err: 'user closed popup' })
       })
     } else if (verifier === DISCORD) {
@@ -645,6 +649,7 @@ export default {
       }
       discordWindow.open()
       discordWindow.once('close', () => {
+        bc.close()
         oauthStream.write({ err: 'user closed popup' })
       })
     }

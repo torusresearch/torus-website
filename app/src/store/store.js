@@ -15,6 +15,7 @@ import actions from './actions'
 import paymentActions from './PaymentActions'
 import getters from './getters'
 import mutations from './mutations'
+import PopupHandler from '../utils/PopupHandler'
 
 function getCurrencyMultiplier() {
   const { selectedCurrency, currencyData } = VuexStore.state || {}
@@ -65,8 +66,6 @@ var VuexStore = new Vuex.Store({
     ...actions,
     ...paymentActions,
     showPopup({ state, getters }, payload) {
-      let confirmWindow
-      let iClosedConfirmWindow
       let txId
       let txType
       const bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`, broadcastChannelOptions)
@@ -75,11 +74,9 @@ var VuexStore = new Vuex.Store({
       const height = isTx ? 660 : 400
       // const width = 500
       // const height = 600
-      confirmWindow = window.open(
-        `${baseRoute}confirm?instanceId=${torus.instanceId}&integrity=true`,
-        '_blank',
-        `directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=${height},width=${width}`
-      )
+      const finalUrl = `${baseRoute}confirm?instanceId=${torus.instanceId}&integrity=true`
+      const confirmWindow = new PopupHandler({ url: finalUrl })
+      confirmWindow.open()
       if (isTx) {
         var balance = fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
         var txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
@@ -105,10 +102,9 @@ var VuexStore = new Vuex.Store({
               handleDeny(ev.data.id, ev.data.txType)
             }
             bc.close()
-            iClosedConfirmWindow = true
             txId = undefined
             txType = undefined
-            confirmWindow && confirmWindow.close()
+            confirmWindow.close()
           }
         }
       } else {
@@ -134,28 +130,20 @@ var VuexStore = new Vuex.Store({
               handleDeny(ev.data.id, ev.data.txType)
             }
             bc.close()
-            iClosedConfirmWindow = true
             txId = undefined
             txType = undefined
-            confirmWindow && confirmWindow.close()
+            confirmWindow.close()
           }
         }
       }
-      var confirmTimer = setInterval(function() {
-        if (confirmWindow && confirmWindow.closed) {
-          clearInterval(confirmTimer)
-          if (!iClosedConfirmWindow) {
-            log.error('user closed popup')
-            handleDeny(txId, txType)
-          }
-          bc.close()
-          txId = undefined
-          txType = undefined
-          iClosedConfirmWindow = false
-          confirmWindow = undefined
-        }
-        if (confirmWindow === undefined) clearInterval(confirmTimer)
-      }, 1000)
+
+      confirmWindow.once('close', () => {
+        bc.close()
+        log.error('user closed popup')
+        handleDeny(txId, txType)
+        txId = undefined
+        txType = undefined
+      })
     }
   }
 })

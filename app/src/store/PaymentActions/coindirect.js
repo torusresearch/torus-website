@@ -70,6 +70,7 @@ export default {
 
       coindirectWindow.open()
       coindirectWindow.once('close', () => {
+        bc.close()
         reject(new Error('user closed coindirect popup'))
       })
     })
