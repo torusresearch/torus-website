@@ -21,7 +21,7 @@ const initialState = {
   currencyData: {},
   tokenData: {}, // Account specific object
   tokenRates: {},
-  isOnline: true,
+  isOnline: navigator.onLine, // returns true when the connection is up and false when the connection is down
   transactions: [],
   unapprovedTypedMessages: {},
   unapprovedPersonalMsgs: {},

@@ -2,7 +2,8 @@ const ObservableStore = require('obs-store')
 const extend = require('xtend')
 const log = require('loglevel')
 
-const POLLING_INTERVAL = 10 * 60 * 1000
+// const POLLING_INTERVAL = 10 * 60 * 1000
+const POLLING_INTERVAL = 3000
 
 export default class InfuraController {
   constructor(opts = {}) {
@@ -16,6 +17,18 @@ export default class InfuraController {
     log.info('Polling network status...')
   }
 
+  async checkNetworkStatus() {
+    window.addEventListener('online', () =>
+      this.store.updateState({
+        infuraNetworkStatus: true
+      })
+    )
+    window.addEventListener('offline', () =>
+      this.store.updateState({
+        infuraNetworkStatus: false
+      })
+    )
+  }
   /**
    * Check Infura Network Status
    */
@@ -37,6 +50,7 @@ export default class InfuraController {
     }
     this.conversionInterval = setInterval(() => {
       this.checkInfuraNetworkStatus().catch(log.warn)
+      this.checkNetworkStatus()
     }, POLLING_INTERVAL)
   }
 }
