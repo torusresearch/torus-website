@@ -75,7 +75,11 @@ var VuexStore = new Vuex.Store({
       // const width = 500
       // const height = 600
       const finalUrl = `${baseRoute}confirm?instanceId=${torus.instanceId}&integrity=true`
-      const confirmWindow = new PopupHandler({ url: finalUrl })
+      const confirmWindow = new PopupHandler({
+        url: finalUrl,
+        target: '_blank',
+        features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500'
+      })
       confirmWindow.open()
       if (isTx) {
         var balance = fromWei(this.state.weiBalance[this.state.selectedAddress].toString())

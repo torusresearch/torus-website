@@ -145,7 +145,12 @@ export default {
     }
     const bc = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
     const finalUrl = `${baseRoute}providerchange?integrity=true&instanceId=${torus.instanceId}`
-    const providerChangeWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+    const providerChangeWindow = new PopupHandler({
+      url: finalUrl,
+      preopenInstanceId,
+      target: '_blank',
+      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=600,width=500'
+    })
     bc.onmessage = async ev => {
       if (ev.data === 'popup-loaded') {
         await bc.postMessage({
@@ -186,7 +191,12 @@ export default {
     log.info(preopenInstanceId, 'userinfo')
     var bc = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`, broadcastChannelOptions)
     const finalUrl = `${baseRoute}userinforequest?integrity=true&instanceId=${torus.instanceId}`
-    const userInfoRequestWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+    const userInfoRequestWindow = new PopupHandler({
+      url: finalUrl,
+      preopenInstanceId,
+      target: '_blank',
+      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=600,width=500'
+    })
 
     const handleDeny = () => {
       log.info('User Info Request denied')
