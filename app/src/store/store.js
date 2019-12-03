@@ -1,4 +1,3 @@
-import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import Vue from 'vue'
 import Vuex from 'vuex'
@@ -6,7 +5,7 @@ import VuexPersistence from 'vuex-persist'
 import { fromWei, hexToUtf8, toBN, toChecksumAddress } from 'web3-utils'
 import config from '../config'
 import torus from '../torus'
-import { getEtherScanHashLink, broadcastChannelOptions, storageAvailable } from '../utils/utils'
+import { getEtherScanHashLink, storageAvailable } from '../utils/utils'
 import { TX_MESSAGE, TX_PERSONAL_MESSAGE, TX_TRANSACTION, TX_TYPED_MESSAGE } from '../utils/enums'
 import { post } from '../utils/httpHelpers.js'
 import { notifyUser } from '../utils/notifications'
@@ -15,7 +14,7 @@ import actions from './actions'
 import paymentActions from './PaymentActions'
 import getters from './getters'
 import mutations from './mutations'
-import PopupHandler from '../utils/PopupHandler'
+import ConfirmHandler from '../utils/ConfirmHandler'
 
 function getCurrencyMultiplier() {
   const { selectedCurrency, currencyData } = VuexStore.state || {}
@@ -23,8 +22,6 @@ function getCurrencyMultiplier() {
   if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
   return currencyMultiplier
 }
-
-const baseRoute = config.baseRoute
 
 Vue.use(Vuex)
 
@@ -66,88 +63,25 @@ var VuexStore = new Vuex.Store({
     ...actions,
     ...paymentActions,
     showPopup({ state, getters }, payload) {
-      let txId
-      let txType
-      const bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`, broadcastChannelOptions)
+      const confirmHandler = new ConfirmHandler()
       const isTx = isTorusTransaction()
-      const width = 500
-      const height = isTx ? 660 : 400
-      // const width = 500
-      // const height = 600
-      const finalUrl = `${baseRoute}confirm?instanceId=${torus.instanceId}&integrity=true`
-      const confirmWindow = new PopupHandler({
-        url: finalUrl,
-        target: '_blank',
-        features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500'
-      })
-      confirmWindow.open()
+      confirmHandler.isTx = isTx
       if (isTx) {
-        var balance = fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
-        var txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
-        bc.onmessage = async ev => {
-          if (txId !== undefined && txId !== ev.data.id) {
-            return // ignore message if txId is different
-          }
-          if (ev.data === 'popup-loaded' && txId === undefined) {
-            txId = txParams.id
-            txType = TX_TRANSACTION
-            await bc.postMessage({
-              data: {
-                origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-                type: TX_TRANSACTION,
-                txParams: { ...txParams, network: state.networkType.host },
-                balance
-              }
-            })
-          } else if (ev.data.type === 'confirm-transaction' || ev.data.type === 'deny-transaction') {
-            if (ev.data.type === 'confirm-transaction') {
-              handleConfirm(ev)
-            } else if (ev.data.type === 'deny-transaction') {
-              handleDeny(ev.data.id, ev.data.txType)
-            }
-            bc.close()
-            txId = undefined
-            txType = undefined
-            confirmWindow.close()
-          }
-        }
+        const balance = fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
+        const txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
+        confirmHandler.txParams = txParams
+        confirmHandler.balance = balance
+        confirmHandler.id = txParams.id
+        confirmHandler.txType = TX_TRANSACTION
+        confirmHandler.host = state.networkType.host
+        confirmHandler.open(handleConfirm, handleDeny)
       } else {
-        var { msgParams, id, type } = getLatestMessageParams()
-        bc.onmessage = async ev => {
-          if (txId !== undefined && txId !== ev.data.id) {
-            return // ignore message if txId is different
-          }
-          if (ev.data === 'popup-loaded' && txId === undefined) {
-            txId = id
-            txType = type
-            await bc.postMessage({
-              data: {
-                origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-                type: type,
-                msgParams: { msgParams, id }
-              }
-            })
-          } else if (ev.data.type === 'confirm-transaction' || ev.data.type === 'deny-transaction') {
-            if (ev.data.type === 'confirm-transaction') {
-              handleConfirm(ev)
-            } else if (ev.data.type === 'deny-transaction') {
-              handleDeny(ev.data.id, ev.data.txType)
-            }
-            bc.close()
-            txId = undefined
-            txType = undefined
-            confirmWindow.close()
-          }
-        }
+        const { msgParams, id, type } = getLatestMessageParams()
+        confirmHandler.msgParams = msgParams
+        confirmHandler.id = id
+        confirmHandler.txType = type
+        confirmHandler.open(handleConfirm, handleDeny)
       }
-
-      confirmWindow.once('close', () => {
-        bc.close()
-        log.error('user closed popup')
-        handleDeny(txId, txType)
-        txId = undefined
-        txType = undefined
-      })
     }
   }
 })
