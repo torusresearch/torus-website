@@ -7,11 +7,16 @@ import torus from '../torus'
 const windowStream = torus.communicationMux.getStream('window')
 
 class StreamWindow {
-  constructor(preopenInstanceId) {
+  constructor(preopenInstanceId, url) {
     this.preopenInstanceId = preopenInstanceId
     this.closed = false
     if (!preopenInstanceId) {
       this.preopenInstanceId = randomId()
+      windowStream.on('data', chunk => {
+        if (chunk.name === 'opened_window' && this.preopenInstanceId === chunk.data.preopenInstanceId) {
+          this.open(url)
+        }
+      })
       windowStream.write({
         name: 'create_window',
         data: {

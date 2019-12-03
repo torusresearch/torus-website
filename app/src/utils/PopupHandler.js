@@ -33,8 +33,7 @@ class PopupHandler extends EventEmitter {
     if (!this.preopenInstanceId) {
       this.window = window.open(this.url, this.target, this.features)
       if (!this.window) {
-        this.window = new StreamWindow()
-        this.window.open(this.url)
+        this.window = new StreamWindow(undefined, this.url)
       }
     } else {
       this.window = new StreamWindow(this.preopenInstanceId)
