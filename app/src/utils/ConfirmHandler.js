@@ -61,10 +61,10 @@ class ConfirmHandler {
   }
 
   handle = async ev => {
-    if (ev.name === 'popup-loaded') {
+    if (ev.name === 'popup-loaded' && ev.data.id.toString() === this.id.toString()) {
       if (this.isTx) this.sendTx()
       else this.sendMessage()
-    } else if (ev.name === 'tx-result' && this.id === ev.data.id) {
+    } else if (ev.name === 'tx-result' && this.id.toString() === ev.data.id.toString()) {
       if (ev.data.type === 'confirm-transaction') {
         this.handleConfirm(ev)
       } else if (ev.data.type === 'deny-transaction') {
