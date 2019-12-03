@@ -1,12 +1,24 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
+import randomId from 'random-id'
 import { broadcastChannelOptions } from './utils'
 import torus from '../torus'
+
+const windowStream = torus.communicationMux.getStream('window')
 
 class StreamWindow {
   constructor(preopenInstanceId) {
     this.preopenInstanceId = preopenInstanceId
     this.closed = false
+    if (!preopenInstanceId) {
+      this.preopenInstanceId = randomId()
+      windowStream.write({
+        name: 'create_window',
+        data: {
+          preopenInstanceId: this.preopenInstanceId
+        }
+      })
+    }
   }
 
   open(url) {
@@ -28,19 +40,18 @@ class StreamWindow {
           bc.close()
         })
     }, 1000)
-    this.windowStream = torus.communicationMux.getStream('window')
     const preopenHandler = chunk => {
       const { preopenInstanceId, closed } = chunk.data
       if (preopenInstanceId === this.preopenInstanceId && closed) {
         this.closed = true
-        this.windowStream.removeListener('data', preopenHandler)
+        windowStream.removeListener('data', preopenHandler)
       }
     }
-    this.windowStream.on('data', preopenHandler)
+    windowStream.on('data', preopenHandler)
   }
 
   close() {
-    this.windowStream.write({
+    windowStream.write({
       preopenInstanceId: this.preopenInstanceId,
       close: true
     })
