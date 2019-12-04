@@ -1,8 +1,9 @@
 import { EventEmitter } from 'events'
-import log from 'loglevel'
+
+import StreamWindow from './StreamWindow'
 
 class PopupHandler extends EventEmitter {
-  constructor(url, target, features) {
+  constructor({ url, target, features, preopenInstanceId }) {
     super()
     this.url = url
     this.target = target || '_blank'
@@ -10,6 +11,7 @@ class PopupHandler extends EventEmitter {
     this.window = undefined
     this.windowTimer = {}
     this.iClosedWindow = false
+    this.preopenInstanceId = preopenInstanceId
     this._setupTimer()
   }
 
@@ -18,18 +20,25 @@ class PopupHandler extends EventEmitter {
       if (this.window && this.window.closed) {
         clearInterval(this.windowTimer)
         if (!this.iClosedWindow) {
-          log.error('user closed popup')
           this.emit('close')
         }
         this.iClosedWindow = false
         this.window = undefined
       }
       if (this.window === undefined) clearInterval(this.windowTimer)
-    }, 1000)
+    }, 500)
   }
 
   open() {
-    this.window = window.open(this.url, this.target, this.features)
+    if (!this.preopenInstanceId) {
+      this.window = window.open(this.url, this.target, this.features)
+      if (!this.window) {
+        this.window = new StreamWindow(undefined, this.url)
+      }
+    } else {
+      this.window = new StreamWindow(this.preopenInstanceId)
+      this.window.open(this.url)
+    }
   }
 
   close() {

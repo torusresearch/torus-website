@@ -1,8 +1,8 @@
 <template>
   <v-container fluid>
     <v-layout wrap>
-      <v-flex xs12 sm6 md3>Redirecting you back to Torus App. Please Wait...</v-flex>
-      <page-loader />
+      <v-flex xs12 sm6 md3 v-if="textVisible">Redirecting you back to Torus App. Please Wait...</v-flex>
+      <page-loader v-if="textVisible" />
     </v-layout>
   </v-container>
 </template>
@@ -17,6 +17,11 @@ export default {
   name: 'redirect',
   components: {
     PageLoader
+  },
+  data() {
+    return {
+      textVisible: false
+    }
   },
   async mounted() {
     let bc
@@ -36,24 +41,37 @@ export default {
       // error_description: "The user denied you access"
       // state: "eyJpbnN0YW5jZUlkIjoiTjFhRHNmaGN4dGNzc1dhc2pPV2tzSThPclI2eHBIIiwidmVyaWZpZXIiOiJ0d2l0Y2gifQ=="
       log.info(hashParams, queryParams)
-      let instanceParams = {}
-      let error = ''
-      if (Object.keys(hashParams).length > 0 && hashParams.state) {
-        instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {}
-        if (hashParams.error) error = hashParams.error
-      } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
-        instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {}
-        if (queryParams.error) error = queryParams.error
+      if (!queryParams.preopenInstanceId) {
+        this.textVisible = true
+        let instanceParams = {}
+        let error = ''
+        if (Object.keys(hashParams).length > 0 && hashParams.state) {
+          instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {}
+          if (hashParams.error) error = hashParams.error
+        } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
+          instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {}
+          if (queryParams.error) error = queryParams.error
+        }
+        bc = new BroadcastChannel(`redirect_channel_${instanceParams.instanceId}`, broadcastChannelOptions)
+        await bc.postMessage({
+          data: {
+            instanceParams: instanceParams,
+            hashParams: hashParams
+          },
+          error: error
+        })
+        bc.close()
+      } else {
+        bc = new BroadcastChannel('preopen_channel_' + queryParams.preopenInstanceId, broadcastChannelOptions)
+        bc.onmessage = function(ev) {
+          if (ev.error && ev.error !== '') {
+            console.error(ev.error)
+            bc.close()
+          }
+          console.log(ev.data, ev.error)
+          window.location.href = ev.data.payload.url
+        }
       }
-      bc = new BroadcastChannel(`redirect_channel_${instanceParams.instanceId}`, broadcastChannelOptions)
-      await bc.postMessage({
-        data: {
-          instanceParams: instanceParams,
-          hashParams: hashParams
-        },
-        error: error
-      })
-      bc.close()
     } catch (error) {
       log.info(error, 'something went wrong')
       bc.close()
