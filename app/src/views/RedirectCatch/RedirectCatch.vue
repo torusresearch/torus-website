@@ -3,7 +3,7 @@
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
         <div class="redirect-title white--text font-weight-bold mb-6">
-          You are being redirected to payment provider
+          You are being redirected
         </div>
         <div class="redirect-info white--text mb-8">
           Please wait
