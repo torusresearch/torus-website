@@ -23,7 +23,7 @@ export default {
       }
     })
   },
-  fetchCoindirectOrder({ state, dispatch }, { currentOrder }) {
+  fetchCoindirectOrder({ state, dispatch }, { currentOrder, preopenInstanceId }) {
     const instanceState = encodeURIComponent(
       window.btoa(
         JSON.stringify({
@@ -40,13 +40,13 @@ export default {
       amount: currentOrder.amountIn,
       url: encodeURIComponent(`${config.coindirectApiHost}/transaction?url=${encodeURIComponent(`${config.redirect_uri}?state=${instanceState}`)}`)
     }
-    return dispatch('postCoindirectOrder', { path: config.coindirectLiveHost, params: params })
+    return dispatch('postCoindirectOrder', { path: config.coindirectLiveHost, params: params, preopenInstanceId })
   },
-  postCoindirectOrder(context, { path, params, method = 'post' }) {
+  postCoindirectOrder(context, { path, params, method = 'post', preopenInstanceId }) {
     return new Promise((resolve, reject) => {
       const paramString = new URLSearchParams(params)
       const finalUrl = `${path}?${paramString}`
-      const coindirectWindow = new PopupHandler(finalUrl)
+      const coindirectWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = ev => {
@@ -70,6 +70,7 @@ export default {
 
       coindirectWindow.open()
       coindirectWindow.once('close', () => {
+        bc.close()
         reject(new Error('user closed coindirect popup'))
       })
     })

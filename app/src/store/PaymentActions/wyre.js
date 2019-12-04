@@ -21,7 +21,7 @@ export default {
       }
     )
   },
-  fetchWyreOrder({ state, dispatch }, { currentOrder }) {
+  fetchWyreOrder({ state, dispatch }, { currentOrder, preopenInstanceId }) {
     const instanceState = encodeURIComponent(
       window.btoa(
         JSON.stringify({
@@ -38,13 +38,13 @@ export default {
       accountId: config.wyreAccountId,
       referenceId: state.selectedAddress
     }
-    return dispatch('postWyreOrder', { path: config.wyreHost, params: params })
+    return dispatch('postWyreOrder', { path: config.wyreHost, params: params, preopenInstanceId })
   },
-  postWyreOrder(context, { path, params, method = 'post' }) {
+  postWyreOrder(context, { path, params, method = 'post', preopenInstanceId }) {
     return new Promise((resolve, reject) => {
       const paramString = new URLSearchParams(params)
       const finalUrl = `${path}?${paramString}`
-      const wyreWindow = new PopupHandler(finalUrl)
+      const wyreWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = ev => {
@@ -68,6 +68,7 @@ export default {
 
       wyreWindow.open()
       wyreWindow.once('close', () => {
+        bc.close()
         reject(new Error('user closed wyre popup'))
       })
     })
