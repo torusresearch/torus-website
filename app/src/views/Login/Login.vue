@@ -8,7 +8,7 @@
               <img width="117" :src="require('../../../public/images/torus-logo-blue.svg')" />
             </v-flex>
             <v-flex class="mb-3" xs9 sm7 ml-auto mr-auto>
-              <span class="display-2 font-weight-bold">Welcome to Torus</span>
+              <span class="display-2 font-weight-bold">{{ $vuetify.lang.t('$vuetify.login.welcome') }} Torus</span>
             </v-flex>
             <v-flex class="body-1" mb-6 xs9 sm7 ml-auto mr-auto>
               <span>You are just one step away from getting your digital wallet for your cryptocurrencies</span>
