@@ -14,11 +14,7 @@ export default {
   components: {
     Offline
   },
-  computed: mapState(['isOnline']),
-  beforeDestroy() {
-    window.removeEventListener('online', this.$store.dispatch('updateNetworkState', { infuraNetworkStatus: true }))
-    window.removeEventListener('offline', this.$store.dispatch('updateNetworkState', { infuraNetworkStatus: false }))
-  }
+  computed: mapState(['isOnline'])
 }
 </script>
 

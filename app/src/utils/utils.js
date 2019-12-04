@@ -436,6 +436,14 @@ function getPaymentProviders(theme) {
   })
 }
 
+function handleEvent(handle, eventName, handler, handleArgs) {
+  const handlerWrapper = () => {
+    handler.apply(this, handleArgs)
+    handle.removeEventListener(eventName, handlerWrapper)
+  }
+  handle.addEventListener(eventName, handlerWrapper)
+}
+
 module.exports = {
   removeListeners,
   applyListeners,
@@ -462,5 +470,6 @@ module.exports = {
   storageAvailable,
   validateVerifierId,
   paymentProviders,
-  getPaymentProviders
+  getPaymentProviders,
+  handleEvent
 }

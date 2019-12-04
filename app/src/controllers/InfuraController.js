@@ -2,8 +2,8 @@ const ObservableStore = require('obs-store')
 const extend = require('xtend')
 const log = require('loglevel')
 
-// const POLLING_INTERVAL = 10 * 60 * 1000
-const POLLING_INTERVAL = 3000
+const POLLING_INTERVAL = 10 * 60 * 1000
+// const POLLING_INTERVAL = 3000
 
 export default class InfuraController {
   constructor(opts = {}) {
@@ -14,7 +14,6 @@ export default class InfuraController {
       opts.initState
     )
     this.store = new ObservableStore(initState)
-    log.info('Polling network status...')
   }
 
   async checkNetworkStatus() {
@@ -36,7 +35,7 @@ export default class InfuraController {
     const response = await fetch('https://api.infura.io/v1/status/metamask')
     const parsedResponse = await response.json()
     this.store.updateState({
-      infuraNetworkStatus: parsedResponse.mainnet === 'ok' ? true : false
+      infuraNetworkStatus: parsedResponse.mainnet === 'ok'
     })
     return parsedResponse
   }
@@ -49,6 +48,7 @@ export default class InfuraController {
       clearInterval(this.conversionInterval)
     }
     this.conversionInterval = setInterval(() => {
+      log.info('Polling network status...')
       this.checkInfuraNetworkStatus().catch(log.warn)
       this.checkNetworkStatus()
     }, POLLING_INTERVAL)
