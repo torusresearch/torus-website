@@ -30,7 +30,7 @@
       <v-divider v-if="this.showDetails" class="mt-2"></v-divider>
       <v-layout wrap v-if="this.showDetails">
         <v-flex x12 class="activity-details">
-          <v-list class="mx-n4 body-2">
+          <v-list class="mx-n4 caption">
             <v-list-item>
               <v-list-item-content class="details-label">Started at:</v-list-item-content>
               <v-list-item-content class="details-value text_2--text">
@@ -61,69 +61,16 @@
                 <network-display :network="transaction.networkType"></network-display>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item v-if="transaction.action !== ACTIVITY_ACTION_TOPUP">
+              <v-list-item-content class="details-value text_2--text text-right">
+                <a class="etherscan-lnk" color="primary" :href="transaction.etherscanLink" target="_blank">View On Etherscan</a>
+              </v-list-item-content>
+            </v-list-item>
           </v-list>
         </v-flex>
       </v-layout>
     </v-card>
   </v-expand-transition>
-  <!-- <v-dialog v-model="dialog" width="400">
-    <template v-slot:activator="{ on }">
-    </template>
-    <v-card class="activity-details py-6 px-8">
-      <v-layout wrap>
-        <v-flex xs12 class="mb-2">
-          <div class="font-weight-bold headline">{{ transaction.actionText }}</div>
-          <span class="float-right"></span>
-        </v-flex>
-        <v-flex xs12>
-          <v-chip :color="getChipColor(transaction.statusText)" small>
-            {{ transaction.statusText }}
-          </v-chip>
-          <a class="caption v-btn float-right" color="primary" :href="transaction.etherscanLink" target="_blank">View On Etherscan</a>
-        </v-flex>
-        <v-flex xs12>
-          <v-list class="mx-n4 body-2">
-            <v-list-item>
-              <v-list-item-content class="details-label">Started at:</v-list-item-content>
-              <v-list-item-content class="details-value text_2--text">
-                <span>
-                  <span class="font-weight-medium">{{ transaction.timeFormatted }}</span>
-                  - {{ transaction.dateFormatted }}
-                </span>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content class="details-label">Send to:</v-list-item-content>
-              <v-list-item-content class="details-value text_2--text address-text">
-                <span>{{ transaction.to }}</span>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content class="details-label">Rate:</v-list-item-content>
-              <v-list-item-content class="details-value text_2--text">
-                <span>1 ETH = {{ transaction.ethRate }} {{ transaction.currencyUsed }}</span>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content class="details-label">Amount:</v-list-item-content>
-              <v-list-item-content class="details-value text_2--text amount-text">
-                <div class="caption font-weight-medium">
-                  {{ transaction.action === ACTIVITY_ACTION_SEND ? '- ' : '' }}{{ transaction.totalAmountString }}
-                </div>
-                <div class="caption font-weight-light">{{ transaction.currencyAmountString }}</div>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item>
-              <v-list-item-content class="details-label">Network:</v-list-item-content>
-              <v-list-item-content class="details-label">
-                <network-display :network="transaction.networkType"></network-display>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-flex>
-      </v-layout>
-    </v-card>
-  </v-dialog> -->
 </template>
 
 <script>
