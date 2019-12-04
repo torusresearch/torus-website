@@ -1,10 +1,11 @@
+import log from 'loglevel'
 import { getQuote } from '../../plugins/moonpay'
 import config from '../../config'
 import torus from '../../torus'
 import { MOONPAY } from '../../utils/enums'
 import { BroadcastChannel } from 'broadcast-channel'
-import log from 'loglevel'
 import { broadcastChannelOptions } from '../../utils/utils'
+import PopupHandler from '../../utils/PopupHandler'
 
 export default {
   fetchMoonpayQuote(context, payload) {
@@ -38,14 +39,12 @@ export default {
     return dispatch('postMoonpayOrder', { path: config.moonpayHost, params: params })
   },
   postMoonpayOrder(context, { path, params, method = 'post' }) {
-    var moonpayWindow
-    var iClosedMoonpay = false
     return new Promise((resolve, reject) => {
       const paramString = new URLSearchParams(params)
       const finalUrl = `${path}?${paramString}`
+      const moonpayWindow = new PopupHandler(finalUrl)
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-
       bc.onmessage = ev => {
         try {
           const {
@@ -61,26 +60,15 @@ export default {
           reject(error)
         } finally {
           bc.close()
-          iClosedMoonpay = true
           moonpayWindow.close()
         }
       }
 
       // Handle communication with moonpay window here
-      moonpayWindow = window.open(finalUrl, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200')
-
-      var moonpayTimer = setInterval(function() {
-        if (moonpayWindow && moonpayWindow.closed) {
-          clearInterval(moonpayTimer)
-          if (!iClosedMoonpay) {
-            log.error('user closed popup')
-            reject(new Error('user closed moonpay popup'))
-          }
-          iClosedMoonpay = false
-          moonpayWindow = undefined
-        }
-        if (moonpayWindow === undefined) clearInterval(moonpayTimer)
-      }, 1000)
+      moonpayWindow.open()
+      moonpayWindow.once('close', () => {
+        reject(new Error('user closed moonpay popup'))
+      })
     })
   }
 }

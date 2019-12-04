@@ -5,6 +5,7 @@ import { WYRE } from '../../utils/enums'
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import { broadcastChannelOptions } from '../../utils/utils'
+import PopupHandler from '../../utils/PopupHandler'
 
 export default {
   fetchWyreQuote({ state }, payload) {
@@ -40,14 +41,12 @@ export default {
     return dispatch('postWyreOrder', { path: config.wyreHost, params: params })
   },
   postWyreOrder(context, { path, params, method = 'post' }) {
-    var wyreWindow
-    var iClosedWyre = false
     return new Promise((resolve, reject) => {
       const paramString = new URLSearchParams(params)
       const finalUrl = `${path}?${paramString}`
+      const wyreWindow = new PopupHandler(finalUrl)
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-
       bc.onmessage = ev => {
         try {
           const {
@@ -63,26 +62,14 @@ export default {
           reject(error)
         } finally {
           bc.close()
-          iClosedWyre = true
           wyreWindow.close()
         }
       }
 
-      // Handle communication with wyre window here
-      wyreWindow = window.open(finalUrl, '_blank', 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=1200')
-
-      var wyreTimer = setInterval(function() {
-        if (wyreWindow && wyreWindow.closed) {
-          clearInterval(wyreTimer)
-          if (!iClosedWyre) {
-            log.error('user closed popup')
-            reject(new Error('user closed wyre popup'))
-          }
-          iClosedWyre = false
-          wyreWindow = undefined
-        }
-        if (wyreWindow === undefined) clearInterval(wyreTimer)
-      }, 1000)
+      wyreWindow.open()
+      wyreWindow.once('close', () => {
+        reject(new Error('user closed wyre popup'))
+      })
     })
   }
 }
