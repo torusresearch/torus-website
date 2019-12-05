@@ -403,3 +403,20 @@
   cursor: pointer;
   text-decoration: none;
 }
+
+/* Mobile */
+@media (max-width: 598px) {
+  .modal-container {
+    width: 100%;
+    padding: 0;
+  }
+
+  .modal-content {
+    padding: 0 40px;
+    font-family: 'Roboto', sans-serif !important;
+  }
+
+  .close-container {
+    padding: 10px 20px;
+  }
+}
