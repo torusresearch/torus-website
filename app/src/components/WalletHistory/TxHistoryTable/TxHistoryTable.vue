@@ -44,11 +44,19 @@
                 <span class="float-right">:</span>
               </v-flex>
               <v-flex xs8 sm11>{{ (mapper[item.networkType] && mapper[item.networkType].networkName) || '' }}</v-flex>
+
+              <!-- <v-flex xs12 class="text-right" v-if="Object.keys(item.gas).length">
+                <v-btn color="primary" class="px-6" @click="speedUpTx = true">Speed up transaction</v-btn>
+              </v-flex> -->
+
+              <!-- <v-dialog v-model="speedUpTx" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly">
+                <SpeedUpTransaction :gas="item.gas" @onClose="speedUpTx = false" />
+              </v-dialog> -->
               <!-- <v-flex xs4 sm1 pr-2>
                 Type
                 <span class="float-right">:</span>
               </v-flex>
-              <v-flex xs8 sm11>Contract Interaction</v-flex> -->
+              <v-flex xs8 sm11>Contract Interaction</v-flex>-->
               <!-- <v-flex xs4 sm1 pr-2>
                 Data
                 <span class="float-right">:</span>
@@ -57,7 +65,7 @@
                 <v-card flat class="grey lighten-3">
                   <v-card-text></v-card-text>
                 </v-card>
-              </v-flex> -->
+              </v-flex>-->
               <v-flex xs12 class="text-right">
                 <a class="v-btn" color="primary" :href="item.etherscanLink" target="_blank">View On Etherscan</a>
               </v-flex>
@@ -83,6 +91,7 @@
 
 <script>
 import TxHistoryMixin from '../TxHistoryMixin'
+import SpeedUpTransaction from '../SpeedUpTransaction'
 
 export default {
   mixins: [TxHistoryMixin],
@@ -94,6 +103,7 @@ export default {
       expanded: [],
       pagination: {},
       defaultSort: 'date',
+      speedUpTx: false,
       headers: [
         {
           text: 'Transaction',
@@ -138,6 +148,9 @@ export default {
       return this.transactions && this.transactions.length > 5
     }
   },
+  // components: {
+  //   SpeedUpTransaction: SpeedUpTransaction
+  // },
   methods: {
     changeSort(column) {
       if (this.pagination.sortBy === column) {

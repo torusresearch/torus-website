@@ -13,6 +13,7 @@ const initialState = {
   userInfoAccess: USER_INFO_REQUEST_NEW,
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
+  weiBalanceLoaded: false, // Use on showing spinners
   selectedAddress: '',
   selectedCurrency: 'USD',
   networkId: 0,
@@ -29,7 +30,9 @@ const initialState = {
   pastTransactions: [],
   isNewUser: false,
   theme: THEME_LIGHT_BLUE_NAME,
-  billboard: []
+  assets: {}, // Account specific object
+  billboard: [],
+  contacts: []
 }
 
 export default initialState

@@ -9,9 +9,24 @@ const {
   PLATFORM_OPERA,
   PLATFORM_CHROME,
   PLATFORM_EDGE,
-  PLATFORM_BRAVE
+  PLATFORM_BRAVE,
+  ETH,
+  GOOGLE,
+  REDDIT,
+  DISCORD,
+  SIMPLEX,
+  MOONPAY,
+  COINDIRECT,
+  WYRE,
+  CRYPTO,
+  THEME_DARK_BLACK_NAME,
+  INACTIVE,
+  ACTIVE,
+  PNG,
+  SVG
 } = require('./enums')
 const log = require('loglevel')
+const { isAddress } = require('web3-utils')
 
 /**
  * Checks whether a storage type is available or not
@@ -43,7 +58,8 @@ function storageAvailable(type) {
         // Firefox
         e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
       // acknowledge QuotaExceededError only if there's something already stored
-      (storage && storage.length !== 0)
+      storage &&
+      storage.length !== 0
     )
   }
 }
@@ -311,6 +327,134 @@ const broadcastChannelOptions = {
   webWorkerSupport: false // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 }
 
+function validateVerifierId(selectedVerifier, value) {
+  if (selectedVerifier === ETH) {
+    return isAddress(value) || 'Invalid ETH Address'
+  } else if (selectedVerifier === GOOGLE) {
+    return (
+      // eslint-disable-next-line max-len
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+        value
+      ) || 'Invalid Email Address'
+    )
+  } else if (selectedVerifier === REDDIT) {
+    return (/[\w-]+/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
+  } else if (selectedVerifier === DISCORD) {
+    return (/^[0-9]*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
+  }
+
+  return true
+}
+
+const paymentProviders = {
+  [SIMPLEX]: {
+    line1: 'Pay with Credit / Debit Card',
+    line2: '<span class="font-weight-medium">Fee</span> : 5% or 10 USD',
+    line3: 'Limits: $20,000/day, $50,000/mo',
+    line4: 'Currencies: ETH',
+    status: ACTIVE,
+    logoExtension: PNG,
+    supportPage: 'https://www.simplex.com/support/',
+    minOrderValue: 50,
+    maxOrderValue: 20000,
+    validCurrencies: ['USD', 'EUR'],
+    validCryptoCurrencies: ['ETH'],
+    includeFees: true,
+    api: true
+  },
+  [MOONPAY]: {
+    line1: 'Pay with Credit / Debit Card',
+    line2: '<span class="font-weight-medium">Fee</span> : 4.5% or 5 USD',
+    line3: 'Limits: 2,000€/day, 10,000€/mo',
+    line4: 'Currencies: ETH, DAI, TUSD, USDC, USDT',
+    status: ACTIVE,
+    logoExtension: SVG,
+    supportPage: 'https://help.moonpay.io/en/',
+    minOrderValue: 24.99,
+    maxOrderValue: 2000,
+    validCurrencies: ['USD', 'EUR', 'GBP'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT'],
+    includeFees: true,
+    api: true
+  },
+  [WYRE]: {
+    line1: 'Pay with Google/Apple/Masterpass',
+    line2: '<span class="font-weight-medium">Fee</span> : 2.9% + 30¢',
+    line3: 'Limits: $250/day',
+    line4: 'Currencies: ETH, DAI, WETH, USDC',
+    status: ACTIVE,
+    logoExtension: SVG,
+    supportPage: 'https://support.sendwyre.com/en/',
+    minOrderValue: 20,
+    maxOrderValue: 250,
+    validCurrencies: ['USD'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
+    includeFees: false,
+    api: true
+  },
+  [COINDIRECT]: {
+    line1: 'Pay with Credit Card',
+    line2: '<span class="font-weight-medium">Fee</span> : Varies',
+    line3: 'Limits: N/A',
+    line4: 'Currencies: ETH',
+    status: ACTIVE,
+    logoExtension: SVG,
+    supportPage: 'https://help.coindirect.com/hc/en-us',
+    minOrderValue: 20,
+    maxOrderValue: 1000,
+    validCurrencies: ['EUR'],
+    validCryptoCurrencies: ['ETH'],
+    includeFees: true,
+    api: true
+  },
+  [CRYPTO]: {
+    line1: 'Pay with Credit Card',
+    line2: '<span class="font-weight-medium">Fee</span> : Varies',
+    line3: 'Limits: N/A',
+    line4: 'Currencies: ETH, tokens',
+    status: ACTIVE,
+    logoExtension: PNG,
+    supportPage: 'https://help.crypto.com/en/',
+    minOrderValue: 10,
+    maxOrderValue: 1000,
+    validCurrencies: ['USD'],
+    validCryptoCurrencies: ['ETH'],
+    includeFees: true,
+    api: false
+  }
+}
+
+function getPaymentProviders(theme) {
+  return Object.keys(paymentProviders).map(x => {
+    const item = paymentProviders[x]
+    return {
+      ...item,
+      name: x,
+      logo: theme === THEME_DARK_BLACK_NAME ? `${x}-logo-white.${item.logoExtension}` : `${x}-logo.${item.logoExtension}`,
+      link: `/wallet/topup/${x}`
+    }
+  })
+}
+
+function formatTxMetaForRpcResult(txMeta) {
+  return {
+    blockHash: txMeta.txReceipt ? txMeta.txReceipt.blockHash : null,
+    blockNumber: txMeta.txReceipt ? txMeta.txReceipt.blockNumber : null,
+    from: txMeta.txParams.from,
+    gas: txMeta.txParams.gas,
+    gasPrice: txMeta.txParams.gasPrice,
+    hash: txMeta.hash,
+    input: txMeta.txParams.data || '0x',
+    nonce: txMeta.txParams.nonce,
+    to: txMeta.txParams.to,
+    transactionIndex: txMeta.txReceipt ? txMeta.txReceipt.transactionIndex : null,
+    value: txMeta.txParams.value || '0x0',
+    v: txMeta.v,
+    r: txMeta.r,
+    s: txMeta.s
+  }
+}
+
 module.exports = {
   removeListeners,
   applyListeners,
@@ -334,5 +478,9 @@ module.exports = {
   getStatus,
   getEthTxStatus,
   broadcastChannelOptions,
-  storageAvailable
+  storageAvailable,
+  validateVerifierId,
+  paymentProviders,
+  getPaymentProviders,
+  formatTxMetaForRpcResult
 }

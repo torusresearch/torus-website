@@ -13,6 +13,7 @@ const log = require('loglevel')
 const pify = require('pify')
 
 const Web3 = require('web3')
+const { toHex } = require('web3-utils')
 const SINGLE_CALL_BALANCES_ABI = require('single-call-balance-checker-abi')
 
 const { MAINNET_CODE, RINKEBY_CODE, ROPSTEN_CODE, KOVAN_CODE, ZERO_ADDRESS } = require('../utils/enums')
@@ -235,16 +236,16 @@ export default class AccountTracker {
     const web3Instance = this.web3
     const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, deployedContractAddress)
     const zeroAddress = [ZERO_ADDRESS]
-    ethContract.methods.balances(addresses, zeroAddress).call({ from: ZERO_ADDRESS }, (error, result) => {
-      if (error) {
-        log.warn('Torus - Account Tracker single call balance fetch failed', error)
-        return Promise.all(addresses.map(this._updateAccount.bind(this)))
-      }
+    try {
+      const result = await ethContract.methods.balances(addresses, zeroAddress).call()
       addresses.forEach((address, index) => {
-        const balance = web3Instance.utils.toHex(result[index])
+        const balance = toHex(result[index])
         accounts[address] = { address, balance }
       })
       this.store.updateState({ accounts })
-    })
+    } catch (error) {
+      log.warn('Torus - Account Tracker single call balance fetch failed', error)
+      return Promise.all(addresses.map(this._updateAccount.bind(this)))
+    }
   }
 }

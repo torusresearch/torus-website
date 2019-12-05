@@ -49,6 +49,7 @@
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
 import log from 'loglevel'
+import { toChecksumAddress, toBN, fromWei } from 'web3-utils'
 import config from '../../config'
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
 import TxHistoryTableMobile from '../../components/WalletHistory/TxHistoryTableMobile'
@@ -67,7 +68,6 @@ import {
   ACTIVITY_PERIOD_MONTH_ONE,
   ACTIVITY_PERIOD_MONTH_SIX
 } from '../../utils/enums'
-const web3Utils = torus.web3.utils
 
 export default {
   name: 'walletHistory',
@@ -124,7 +124,7 @@ export default {
   },
   methods: {
     onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value })
+      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'history' })
     },
     getNonTopupTransactionCount() {
       return this.calculateFinalTransactions().filter(item => item.action !== ACTIVITY_ACTION_TOPUP).length
@@ -138,7 +138,6 @@ export default {
         if (acc.findIndex(y => y.etherscanLink === x.etherscanLink) === -1) acc.push(x)
         return acc
       }, [])
-      // log.info('this.pastTx', finalTx)
       const sortedTx = finalTx.sort((a, b) => b.date - a.date) || []
       return sortedTx
     },
@@ -160,13 +159,14 @@ export default {
         const totalAmountString = `${significantDigits(parseFloat(x.total_amount))} ETH`
         const currencyAmountString = `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
         const finalObj = {
-          id: x.created_at,
+          id: x.created_at.toString(),
           date: new Date(x.created_at),
           from: x.from,
           slicedFrom: addressSlicer(x.from),
           to: x.to,
           slicedTo: addressSlicer(x.to),
           action: this.wallets.indexOf(x.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
+          gas: {},
           totalAmount: x.total_amount,
           totalAmountString: totalAmountString,
           currencyAmount: x.currency_amount,
@@ -189,16 +189,18 @@ export default {
         const txOld = transactions[tx]
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
           const txObj = {}
-          txObj.id = txOld.time
+          txObj.id = txOld.time.toString()
           txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
           txObj.date = new Date(txOld.time)
-          txObj.from = web3Utils.toChecksumAddress(txOld.txParams.from)
+          txObj.from = toChecksumAddress(txOld.txParams.from)
           txObj.slicedFrom = addressSlicer(txOld.txParams.from)
-          txObj.to = web3Utils.toChecksumAddress(txOld.txParams.to)
+          txObj.to = toChecksumAddress(txOld.txParams.to)
           txObj.slicedTo = addressSlicer(txOld.txParams.to)
-          txObj.totalAmount = web3Utils.fromWei(
-            web3Utils.toBN(txOld.txParams.value).add(web3Utils.toBN(txOld.txParams.gas).mul(web3Utils.toBN(txOld.txParams.gasPrice)))
-          )
+          txObj.totalAmount = fromWei(toBN(txOld.txParams.value).add(toBN(txOld.txParams.gas).mul(toBN(txOld.txParams.gasPrice))))
+          txObj.gas = {
+            gas: fromWei(toBN(txOld.txParams.gas), 'gwei'),
+            gasPrice: fromWei(toBN(txOld.txParams.gasPrice), 'gwei')
+          }
           txObj.totalAmountString = `${significantDigits(txObj.totalAmount)} ETH`
           txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount
           txObj.currencyAmountString = `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`
@@ -233,8 +235,13 @@ export default {
     }
   },
   mounted() {
-    const { selectedAddress: publicAddress } = this.$store.state
-    getPastOrders({}, { public_address: publicAddress })
+    const { selectedAddress: publicAddress, jwtToken } = this.$store.state
+    getPastOrders(
+      { public_address: publicAddress },
+      {
+        Authorization: `Bearer ${jwtToken}`
+      }
+    )
       .then(response => {
         this.paymentTx = response.result.reduce((acc, x) => {
           if (!(x.status === 'SENT_TO_SIMPLEX' && new Date() - new Date(x.createdAt) > 86400 * 1000)) {
@@ -249,6 +256,7 @@ export default {
               to: publicAddress,
               slicedTo: addressSlicer(publicAddress),
               totalAmount: x.requested_digital_amount.amount,
+              gas: {},
               totalAmountString,
               currencyAmount: x.fiat_total_amount.amount,
               currencyAmountString,

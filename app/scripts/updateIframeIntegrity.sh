@@ -21,4 +21,8 @@ if ! (git diff --quiet && git diff --staged --quiet && git diff origin/master HE
         git push origin $CIRCLE_BRANCH
         git push --tags 
     fi
+    if [[ "$CIRCLE_BRANCH" = 'staging' ]]; then 
+        npm version patch -m 'Updating iframe integrity and publish %s'
+        git push origin $CIRCLE_BRANCH
+    fi
 fi

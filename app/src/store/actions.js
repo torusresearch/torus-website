@@ -1,4 +1,4 @@
-import BroadcastChannel from 'broadcast-channel'
+import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import config from '../config'
 import torus from '../torus'
@@ -15,12 +15,22 @@ import {
   THEME_LIGHT_BLUE_NAME
 } from '../utils/enums'
 import { getRandomNumber, broadcastChannelOptions, storageAvailable } from '../utils/utils'
-import { post, get, patch } from '../utils/httpHelpers.js'
+import { post, get, patch, remove } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import initialState from './state'
-
+import {
+  accountTrackerHandler,
+  assetControllerHandler,
+  typedMessageManagerHandler,
+  personalMessageManagerHandler,
+  transactionControllerHandler,
+  messageManagerHandler,
+  detectTokensControllerHandler,
+  tokenRatesControllerHandler
+} from './controllerSubscriptions'
 import vuetify from '../plugins/vuetify'
 import themes from '../plugins/themes'
+import PopupHandler from '../utils/PopupHandler'
 
 const accountImporter = require('../utils/accountImporter')
 
@@ -31,14 +41,8 @@ let totalFailCount = 0
 // stream to send logged in status
 const statusStream = torus.communicationMux.getStream('status')
 const oauthStream = torus.communicationMux.getStream('oauth')
-
-var walletWindow
-var twitchWindow
-var iClosedTwitch = false
-var redditWindow
-var iClosedReddit = false
-var discordWindow
-var iClosedDiscord = false
+const userInfoStream = torus.communicationMux.getStream('user_info')
+const providerChangeStream = torus.communicationMux.getStream('provider_change')
 
 export default {
   logOut({ commit, dispatch }, payload) {
@@ -46,6 +50,14 @@ export default {
     dispatch('setTheme', THEME_LIGHT_BLUE_NAME)
     if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
     statusStream.write({ loggedIn: false })
+    torus.torusController.accountTracker.store.unsubscribe(accountTrackerHandler)
+    torus.torusController.txController.store.unsubscribe(transactionControllerHandler)
+    torus.torusController.assetController.store.unsubscribe(assetControllerHandler)
+    torus.torusController.typedMessageManager.store.unsubscribe(typedMessageManagerHandler)
+    torus.torusController.personalMessageManager.store.unsubscribe(personalMessageManagerHandler)
+    torus.torusController.messageManager.store.unsubscribe(messageManagerHandler)
+    torus.torusController.detectTokensController.detectedTokensStore.unsubscribe(detectTokensControllerHandler)
+    torus.torusController.tokenRatesController.store.unsubscribe(tokenRatesControllerHandler)
   },
   loginInProgress(context, payload) {
     context.commit('setLoginInProgress', payload)
@@ -81,6 +93,7 @@ export default {
   },
   async forceFetchTokens({ state }, payload) {
     torus.torusController.detectTokensController.refreshTokenBalances()
+    torus.torusController.assetDetectionController.restartAssetDetection()
     try {
       const response = await get(`${config.api}/tokenbalances`, {
         headers: {
@@ -93,7 +106,7 @@ export default {
         torus.torusController.detectTokensController.detectEtherscanTokenBalance(obj.contractAddress, {
           decimals: obj.tokenDecimal,
           erc20: true,
-          logo: '',
+          logo: 'eth.svg',
           name: obj.name,
           balance: obj.balance,
           symbol: obj.ticker
@@ -103,13 +116,41 @@ export default {
       log.error('etherscan balance fetch failed')
     }
   },
-  showProviderChangePopup(context, payload) {
-    var bc = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
-    window.open(
-      `${baseRoute}providerchange?instanceId=${torus.instanceId}`,
-      '_blank',
-      'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
-    )
+  showProviderChangePopup({ dispatch }, payload) {
+    const { override, preopenInstanceId } = payload
+    const handleSuccess = () => {
+      setTimeout(() => {
+        providerChangeStream.write({
+          name: 'provider_change_status',
+          data: {
+            success: true
+          }
+        })
+      }, 100)
+    }
+
+    const handleDeny = err => {
+      providerChangeStream.write({
+        name: 'provider_change_status',
+        data: {
+          success: false,
+          err: err
+        }
+      })
+    }
+    if (override) {
+      return dispatch('setProviderType', payload)
+        .then(handleSuccess)
+        .catch(handleDeny)
+    }
+    const bc = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
+    const finalUrl = `${baseRoute}providerchange?integrity=true&instanceId=${torus.instanceId}`
+    const providerChangeWindow = new PopupHandler({
+      url: finalUrl,
+      preopenInstanceId,
+      target: '_blank',
+      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=600,width=500'
+    })
     bc.onmessage = async ev => {
       if (ev.data === 'popup-loaded') {
         await bc.postMessage({
@@ -118,17 +159,62 @@ export default {
             payload: payload
           }
         })
+      } else if (ev.data && ev.data.type === 'confirm-provider-change' && ev.data.approve) {
+        log.info('Provider change approved', ev.data.payload)
+        dispatch('setProviderType', ev.data.payload)
+          .then(() => {
+            handleSuccess()
+            bc.close()
+            providerChangeWindow.close()
+          })
+          .catch(err => {
+            handleDeny(err)
+            bc.close()
+            providerChangeWindow.close()
+          })
+      } else if (ev.data && ev.data.type === 'deny-provider-change') {
+        log.info('Provider change denied')
+        handleDeny(new Error('user denied provider change request'))
         bc.close()
+        providerChangeWindow.close()
       }
     }
+
+    providerChangeWindow.open()
+    providerChangeWindow.once('close', () => {
+      bc.close()
+      handleDeny(new Error('user denied provider change request'))
+    })
   },
-  showUserInfoRequestPopup(context, payload) {
+  showUserInfoRequestPopup({ dispatch, state }, payload) {
+    const { preopenInstanceId } = payload
+    log.info(preopenInstanceId, 'userinfo')
     var bc = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`, broadcastChannelOptions)
-    window.open(
-      `${baseRoute}userinforequest?instanceId=${torus.instanceId}`,
-      '_blank',
-      'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
-    )
+    const finalUrl = `${baseRoute}userinforequest?integrity=true&instanceId=${torus.instanceId}`
+    const userInfoRequestWindow = new PopupHandler({
+      url: finalUrl,
+      preopenInstanceId,
+      target: '_blank',
+      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=600,width=500'
+    })
+
+    const handleDeny = () => {
+      log.info('User Info Request denied')
+      dispatch('updateUserInfoAccess', { approved: false })
+      userInfoStream.write({ name: 'user_info_response', data: { payload: {}, approved: false } })
+      bc.close()
+      userInfoRequestWindow.close()
+    }
+    const handleSuccess = () => {
+      log.info('User Info Request approved')
+      dispatch('updateUserInfoAccess', { approved: true })
+      const returnObj = JSON.parse(JSON.stringify(state.userInfo))
+      delete returnObj.verifierParams
+      userInfoStream.write({ name: 'user_info_response', data: { payload: returnObj, approved: true } })
+      bc.close()
+      userInfoRequestWindow.close()
+    }
+
     bc.onmessage = async ev => {
       if (ev.data === 'popup-loaded') {
         await bc.postMessage({
@@ -137,23 +223,24 @@ export default {
             payload: payload
           }
         })
-        bc.close()
+      } else if (ev.data && ev.data.type === 'confirm-user-info-request' && ev.data.approve) {
+        handleSuccess()
+      } else if (ev.data && ev.data.type === 'deny-user-info-request') {
+        handleDeny()
       }
     }
+
+    userInfoRequestWindow.open()
+    userInfoRequestWindow.once('close', () => {
+      handleDeny()
+    })
   },
   showWalletPopup(context, payload) {
-    walletWindow =
-      walletWindow ||
-      window.open(
-        `${baseRoute}wallet${payload.path || ''}?instanceId=${torus.instanceId}`,
-        '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=750'
-      )
-    walletWindow.blur()
-    setTimeout(walletWindow.focus(), 0)
-    walletWindow.onbeforeunload = function() {
-      walletWindow = undefined
-    }
+    const finalUrl = `${baseRoute}wallet${payload.path || ''}?integrity=true&instanceId=${torus.instanceId}`
+    const walletWindow = new PopupHandler({ url: finalUrl })
+    walletWindow.open()
+    walletWindow.window.blur()
+    setTimeout(walletWindow.window.focus(), 0)
   },
   updateUserInfo(context, payload) {
     context.commit('setUserInfo', payload.userInfo)
@@ -197,11 +284,11 @@ export default {
         })
     })
   },
-  finishImportAccount({ dispatch }, payload) {
+  finishImportAccount({ dispatch, state }, payload) {
     return new Promise((resolve, reject) => {
       const { privKey } = payload
       const address = torus.generateAddressFromPrivKey(privKey)
-      torus.torusController.setSelectedAccount(address)
+      torus.torusController.setSelectedAccount(address, { jwtToken: state.jwtToken })
       dispatch('addWallet', { ethAddress: address, privKey: privKey })
       dispatch('updateSelectedAddress', { selectedAddress: address })
       torus.torusController
@@ -226,16 +313,25 @@ export default {
   updateMessages({ commit }, payload) {
     commit('setMessages', payload.unapprovedMsgs)
   },
+  updateAssets({ commit }, payload) {
+    const collectibles = payload.collectibleContracts.map(contract => {
+      contract.assets = payload.collectibles.filter(asset => {
+        return asset.address === contract.address
+      })
+      return contract
+    })
+    commit('setAssets', { [payload.selectedAddress]: collectibles })
+  },
   updateTokenData({ commit, state }, payload) {
-    if (payload.tokenData) commit('setTokenData', { ...state.tokenData, [payload.address]: payload.tokenData })
+    if (payload.tokenData) commit('setTokenData', { [payload.address]: payload.tokenData })
   },
   updateTokenRates({ commit }, payload) {
     commit('setTokenRates', payload.tokenRates)
   },
-  updateSelectedAddress(context, payload) {
-    context.commit('setSelectedAddress', payload.selectedAddress)
+  updateSelectedAddress({ commit, state }, payload) {
+    commit('setSelectedAddress', payload.selectedAddress)
     torus.updateStaticData({ selectedAddress: payload.selectedAddress })
-    torus.torusController.setSelectedAccount(payload.selectedAddress)
+    torus.torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
   },
   updateNetworkId(context, payload) {
     context.commit('setNetworkId', payload.networkId)
@@ -253,106 +349,132 @@ export default {
       return torus.torusController.networkController.setProviderType(networkType.host)
     }
   },
-  triggerLogin({ dispatch }, { calledFromEmbed, verifier }) {
+  triggerLogin({ dispatch }, { calledFromEmbed, verifier, preopenInstanceId }) {
     const { torusNodeEndpoints } = config
     const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
 
     log.info('Verifier: ', verifier)
 
     if (verifier === GOOGLE) {
-      ;(function googleLogin() {
-        if (window.auth2) {
-          window.auth2
-            .signIn()
-            .then(function(googleUser) {
-              log.info('GOOGLE USER: ', googleUser)
-
-              let profile = googleUser.getBasicProfile()
-
-              let email = profile.getEmail()
-              let name = profile.getName()
-              let profileImage = profile.getImageUrl()
-              let idtoken = googleUser.getAuthResponse().id_token
-
-              log.info('ID: ', profile.getId()) // Do not send to your backend! Use an ID token instead.
-              log.info('ID Token:', idtoken)
-              log.info('Email:', email)
-              log.info('Name:', name)
-              log.info('Image URL:', profileImage)
-              // Set only idToken and userInfo into the state
-              dispatch('updateIdToken', { idToken: idtoken })
-              dispatch('updateUserInfo', {
-                userInfo: {
-                  profileImage,
-                  name,
-                  email,
-                  verifierId: email.toString().toLowerCase(),
-                  verifier: GOOGLE,
-                  verifierParams: { verifier_id: email.toString().toLowerCase() }
-                }
-              })
-
-              window.gapi.auth2
-                .getAuthInstance()
-                .disconnect()
-                .then(() => {
-                  dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-                })
-                .catch(err => {
-                  log.error(err)
-                  oauthStream.write({ err: 'something went wrong' })
-                })
-            })
-            .catch(err => {
-              // called when something goes wrong like user closes popup
-              log.error(err)
-              oauthStream.write({ err: 'popup closed' })
-            })
-        } else {
-          setTimeout(googleLogin, 1000)
-        }
-      })()
-    } else if (verifier === FACEBOOK) {
-      ;(function facebookLogin() {
-        if (window.FBInitialized) {
-          window.FB.login(response => {
-            if (response.authResponse && response.status === 'connected') {
-              let { accessToken } = response.authResponse || {}
-              log.info('AccessToken:', accessToken)
-              dispatch('updateIdToken', { idToken: accessToken })
-
-              window.FB.api('/me?fields=name,email,picture.type(large)', response => {
-                log.info('Email: ', response.email)
-                log.info('Name: ', response.name)
-                log.info('Id: ', response.id)
-                const { name, id, picture, email } = response || {}
-                setTimeout(function() {
-                  window.FB.logout(() => {
-                    log.info('logged out of facebook')
-                  })
-                }, 5000)
-                dispatch('updateUserInfo', {
-                  userInfo: {
-                    profileImage: picture.data.url,
-                    name,
-                    email: email,
-                    verifierId: id.toString(),
-                    verifier: FACEBOOK,
-                    verifierParams: { verifier_id: id.toString() }
-                  }
-                })
-
-                dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-              })
-            } else {
-              log.error('User cancelled login or did not fully authorize.')
-              oauthStream.write({ err: 'User cancelled login or did not fully authorize.' })
-            }
+      const state = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: torus.instanceId,
+            verifier: GOOGLE
           })
-        } else {
-          setTimeout(facebookLogin, 1000)
+        )
+      )
+      const scope = 'profile email openid'
+      const response_type = 'token id_token'
+      const finalUrl =
+        `https://accounts.google.com/o/oauth2/v2/auth?response_type=${response_type}&client_id=${config.GOOGLE_CLIENT_ID}` +
+        `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}`
+      const googleWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      bc.onmessage = async ev => {
+        const {
+          instanceParams: { verifier },
+          hashParams: verifierParams
+        } = ev.data || {}
+        if (ev.error && ev.error !== '') {
+          log.error(ev.error)
+          oauthStream.write({ err: ev.error })
+        } else if (ev.data && verifier === GOOGLE) {
+          try {
+            log.info(ev.data)
+            const { access_token: accessToken, id_token: idToken } = verifierParams
+            const userInfo = await get('https://www.googleapis.com/userinfo/v2/me', {
+              headers: {
+                Authorization: `Bearer ${accessToken}`
+              }
+            })
+            const { picture: profileImage, email, name, id } = userInfo || {}
+            dispatch('updateIdToken', { idToken })
+            dispatch('updateUserInfo', {
+              userInfo: {
+                profileImage,
+                name,
+                email,
+                verifierId: email.toString().toLowerCase(),
+                verifier: GOOGLE,
+                verifierParams: { verifier_id: email.toString().toLowerCase() }
+              }
+            })
+            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+          } catch (error) {
+            log.error(error)
+            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+          } finally {
+            bc.close()
+            googleWindow.close()
+          }
         }
-      })()
+      }
+      googleWindow.open()
+      googleWindow.once('close', () => {
+        bc.close()
+        oauthStream.write({ err: 'user closed popup' })
+      })
+    } else if (verifier === FACEBOOK) {
+      const state = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: torus.instanceId,
+            verifier: FACEBOOK
+          })
+        )
+      )
+      const scope = 'public_profile email'
+      const response_type = 'token'
+      const finalUrl =
+        `https://www.facebook.com/v5.0/dialog/oauth?response_type=${response_type}&client_id=${config.FACEBOOK_APP_ID}` +
+        `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
+      const facebookWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      bc.onmessage = async ev => {
+        const {
+          instanceParams: { verifier },
+          hashParams: verifierParams
+        } = ev.data || {}
+        if (ev.error && ev.error !== '') {
+          log.error(ev.error)
+          oauthStream.write({ err: ev.error })
+        } else if (ev.data && verifier === FACEBOOK) {
+          try {
+            log.info(ev.data)
+            const { access_token: accessToken } = verifierParams
+            const userInfo = await get('https://graph.facebook.com/me?fields=name,email,picture.type(large)', {
+              headers: {
+                Authorization: `Bearer ${accessToken}`
+              }
+            })
+            const { name, id, picture, email } = userInfo || {}
+            dispatch('updateIdToken', { idToken: accessToken })
+            dispatch('updateUserInfo', {
+              userInfo: {
+                profileImage: picture.data.url,
+                name,
+                email: email,
+                verifierId: id.toString(),
+                verifier: FACEBOOK,
+                verifierParams: { verifier_id: id.toString() }
+              }
+            })
+            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+          } catch (error) {
+            log.error(error)
+            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+          } finally {
+            bc.close()
+            facebookWindow.close()
+          }
+        }
+      }
+      facebookWindow.open()
+      facebookWindow.once('close', () => {
+        bc.close()
+        oauthStream.write({ err: 'user closed popup' })
+      })
     } else if (verifier === TWITCH) {
       const state = encodeURIComponent(
         window.btoa(
@@ -371,14 +493,22 @@ export default {
           preferred_username: null
         }
       })
+      const finalUrl =
+        `https://id.twitch.tv/oauth2/authorize?client_id=${config.TWITCH_CLIENT_ID}&redirect_uri=` +
+        `${config.redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`
+      const twitchWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
+        const {
+          instanceParams: { verifier },
+          hashParams: verifierParams
+        } = ev.data || {}
         if (ev.error && ev.error !== '') {
           log.error(ev.error)
           oauthStream.write({ err: ev.error })
-        } else if (ev.data && ev.data.verifier === TWITCH) {
+        } else if (ev.data && verifier === TWITCH) {
           try {
-            const { access_token: accessToken, id_token: idtoken } = ev.data.verifierParams
+            const { access_token: accessToken, id_token: idtoken } = verifierParams
             const userInfo = await get('https://id.twitch.tv/oauth2/userinfo', {
               headers: {
                 Authorization: `Bearer ${accessToken}`
@@ -403,29 +533,16 @@ export default {
             log.error(error)
             oauthStream.write({ err: 'something went wrong.' })
           } finally {
-            iClosedTwitch = true
             bc.close()
             twitchWindow.close()
           }
         }
       }
-      twitchWindow = window.open(
-        `https://id.twitch.tv/oauth2/authorize?client_id=${config.TWITCH_CLIENT_ID}&redirect_uri=` +
-          `${config.redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`,
-        '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
-      )
-      var twitchTimer = setInterval(function() {
-        if (twitchWindow.closed) {
-          clearInterval(twitchTimer)
-          if (!iClosedTwitch) {
-            log.error('user closed popup')
-            oauthStream.write({ err: 'user closed popup' })
-          }
-          iClosedTwitch = false
-          twitchWindow = undefined
-        }
-      }, 1000)
+      twitchWindow.open()
+      twitchWindow.once('close', () => {
+        bc.close()
+        oauthStream.write({ err: 'user closed popup' })
+      })
     } else if (verifier === REDDIT) {
       const state = encodeURIComponent(
         window.btoa(
@@ -435,14 +552,22 @@ export default {
           })
         )
       )
+      const finalUrl =
+        `https://www.reddit.com/api/v1/authorize?client_id=${config.REDDIT_CLIENT_ID}&redirect_uri=` +
+        `${config.redirect_uri}&response_type=token&scope=identity&state=${state}`
+      const redditWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
+        const {
+          instanceParams: { verifier },
+          hashParams: verifierParams
+        } = ev.data || {}
         if (ev.error && ev.error !== '') {
           log.error(ev.error)
           oauthStream.write({ err: ev.error })
-        } else if (ev.data && ev.data.verifier === REDDIT) {
+        } else if (ev.data && verifier === REDDIT) {
           try {
-            const { access_token: accessToken } = ev.data.verifierParams
+            const { access_token: accessToken } = verifierParams
             const userInfo = await get('https://oauth.reddit.com/api/v1/me', {
               headers: {
                 Authorization: `Bearer ${accessToken}`
@@ -466,28 +591,15 @@ export default {
             oauthStream.write({ err: 'User cancelled login or something went wrong.' })
           } finally {
             bc.close()
-            iClosedReddit = true
             redditWindow.close()
           }
         }
       }
-      redditWindow = window.open(
-        `https://www.reddit.com/api/v1/authorize?client_id=${config.REDDIT_CLIENT_ID}&redirect_uri=` +
-          `${config.redirect_uri}&response_type=token&scope=identity&state=${state}`,
-        '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
-      )
-      var redditTimer = setInterval(function() {
-        if (redditWindow.closed) {
-          clearInterval(redditTimer)
-          if (!iClosedReddit) {
-            log.error('user closed popup')
-            oauthStream.write({ err: 'user closed popup' })
-          }
-          iClosedReddit = false
-          redditWindow = undefined
-        }
-      }, 1000)
+      redditWindow.open()
+      redditWindow.once('close', () => {
+        bc.close()
+        oauthStream.write({ err: 'user closed popup' })
+      })
     } else if (verifier === DISCORD) {
       const state = encodeURIComponent(
         window.btoa(
@@ -498,14 +610,22 @@ export default {
         )
       )
       const scope = encodeURIComponent('identify email')
+      const finalUrl =
+        `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${config.DISCORD_CLIENT_ID}` +
+        `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
+      const discordWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
+        const {
+          instanceParams: { verifier },
+          hashParams: verifierParams
+        } = ev.data || {}
         if (ev.error && ev.error !== '') {
           log.error(ev.error)
           oauthStream.write({ err: ev.error })
-        } else if (ev.data && ev.data.verifier === DISCORD) {
+        } else if (ev.data && verifier === DISCORD) {
           try {
-            const { access_token: accessToken } = ev.data.verifierParams
+            const { access_token: accessToken } = verifierParams
             const userInfo = await get('https://discordapp.com/api/users/@me', {
               headers: {
                 Authorization: `Bearer ${accessToken}`
@@ -533,81 +653,26 @@ export default {
             oauthStream.write({ err: 'User cancelled login or something went wrong.' })
           } finally {
             bc.close()
-            iClosedDiscord = true
             discordWindow.close()
           }
         }
       }
-      discordWindow = window.open(
-        `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${config.DISCORD_CLIENT_ID}` +
-          `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`,
-        '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=800,width=600'
-      )
-      var discordTimer = setInterval(function() {
-        if (discordWindow.closed) {
-          clearInterval(discordTimer)
-          if (!iClosedDiscord) {
-            log.error('user closed popup')
-            oauthStream.write({ err: 'user closed popup' })
-          }
-          iClosedDiscord = false
-          discordWindow = undefined
-        }
-      }, 1000)
+      discordWindow.open()
+      discordWindow.once('close', () => {
+        bc.close()
+        oauthStream.write({ err: 'user closed popup' })
+      })
     }
   },
-  subscribeToControllers({ dispatch, state }, payload) {
-    torus.torusController.accountTracker.store.subscribe(function({ accounts }) {
-      if (accounts) {
-        for (const key in accounts) {
-          if (Object.prototype.hasOwnProperty.call(accounts, key)) {
-            const account = accounts[key]
-            dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
-          }
-        }
-      }
-    })
-    torus.torusController.txController.store.subscribe(function({ transactions }) {
-      if (transactions) {
-        // these transactions have negative index
-        const updatedTransactions = []
-        for (let id in transactions) {
-          if (transactions[id]) {
-            updatedTransactions.push(transactions[id])
-          }
-        }
-        // log.info(updatedTransactions, 'txs')
-        dispatch('updateTransactions', { transactions: updatedTransactions })
-      }
-    })
-
-    torus.torusController.typedMessageManager.store.subscribe(function({ unapprovedTypedMessages }) {
-      dispatch('updateTypedMessages', { unapprovedTypedMessages: unapprovedTypedMessages })
-    })
-
-    torus.torusController.personalMessageManager.store.subscribe(function({ unapprovedPersonalMsgs }) {
-      dispatch('updatePersonalMessages', { unapprovedPersonalMsgs: unapprovedPersonalMsgs })
-    })
-
-    torus.torusController.messageManager.store.subscribe(function({ unapprovedMsgs }) {
-      dispatch('updateMessages', { unapprovedMsgs: unapprovedMsgs })
-    })
-
-    dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
-    torus.torusController.detectTokensController.detectedTokensStore.subscribe(function({ tokens }) {
-      if (tokens.length > 0) {
-        dispatch('updateTokenData', {
-          tokenData: tokens,
-          address: torus.torusController.detectTokensController.selectedAddress
-        })
-      }
-    })
-    torus.torusController.tokenRatesController.store.subscribe(function({ contractExchangeRates }) {
-      if (contractExchangeRates) {
-        dispatch('updateTokenRates', { tokenRates: contractExchangeRates })
-      }
-    })
+  subscribeToControllers(context, payload) {
+    torus.torusController.accountTracker.store.subscribe(accountTrackerHandler)
+    torus.torusController.txController.store.subscribe(transactionControllerHandler)
+    torus.torusController.assetController.store.subscribe(assetControllerHandler)
+    torus.torusController.typedMessageManager.store.subscribe(typedMessageManagerHandler)
+    torus.torusController.personalMessageManager.store.subscribe(personalMessageManagerHandler)
+    torus.torusController.messageManager.store.subscribe(messageManagerHandler)
+    torus.torusController.detectTokensController.detectedTokensStore.subscribe(detectTokensControllerHandler)
+    torus.torusController.tokenRatesController.store.subscribe(tokenRatesControllerHandler)
   },
   initTorusKeyring({ state, dispatch }, payload) {
     return torus.torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
@@ -624,6 +689,63 @@ export default {
     } catch (error) {
       reject(error)
     }
+  },
+  setContacts({ commit, state }) {
+    try {
+      get(`${config.api}/contact`, {
+        headers: {
+          Authorization: `Bearer ${state.jwtToken}`
+        }
+      }).then(resp => {
+        if (resp.data) commit('setContacts', resp.data)
+      })
+    } catch (error) {
+      reject(error)
+    }
+  },
+  addContact({ commit, state }, payload) {
+    return new Promise((resolve, reject) => {
+      post(`${config.api}/contact`, payload, {
+        headers: {
+          Authorization: `Bearer ${state.jwtToken}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      })
+        .then(response => {
+          commit('addContacts', [response.data])
+          log.info('successfully added contact', response)
+          resolve(response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to add contact')
+          reject('Unable to add contact')
+        })
+    })
+  },
+  deleteContact({ commit, state }, payload) {
+    return new Promise((resolve, reject) => {
+      remove(
+        `${config.api}/contact/${payload}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`
+          }
+        }
+      )
+        .then(response => {
+          const contactIndex = state.contacts.findIndex(contact => contact.id === response.data.id)
+          if (contactIndex !== -1) {
+            commit('deleteContact', contactIndex)
+            log.info('successfully deleted contact', response)
+            resolve(response)
+          }
+        })
+        .catch(err => {
+          log.error(err, 'unable to delete contact')
+          reject('Unable to delete contact')
+        })
+    })
   },
   handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
     const { torusNodeEndpoints, torusIndexes } = config
@@ -644,14 +766,13 @@ export default {
         const data = response[0]
         const message = response[1]
         dispatch('addWallet', data) // synchronus
-        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
         dispatch('subscribeToControllers')
-        dispatch('setBillboard')
         await Promise.all([
           dispatch('initTorusKeyring', data),
           dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
         ])
-
+        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
+        dispatch('setBillboard')
         // continue enable function
         var ethAddress = data.ethAddress
         if (calledFromEmbed) {
@@ -684,7 +805,7 @@ export default {
           signed_message: signedMessage
         })
         commit('setJwtToken', response.token)
-        await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed: calledFromEmbed })
+        await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed: calledFromEmbed, rehydrate: false })
 
         resolve()
       } catch (error) {
@@ -695,21 +816,22 @@ export default {
   },
   storeUserLogin({ state }, payload) {
     let userOrigin = ''
-    if (payload) {
+    if (payload && payload.calledFromEmbed) {
       userOrigin = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
     } else userOrigin = window.location.origin
-    post(
-      `${config.api}/user/recordLogin`,
-      {
-        hostname: userOrigin
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${state.jwtToken}`,
-          'Content-Type': 'application/json; charset=utf-8'
+    if (!payload.rehydrate)
+      post(
+        `${config.api}/user/recordLogin`,
+        {
+          hostname: userOrigin
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
         }
-      }
-    )
+      )
   },
   setTheme({ commit }, payload) {
     commit('setTheme', payload)
@@ -719,12 +841,12 @@ export default {
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
   },
-  setUserTheme({ state }, payload) {
+  setUserTheme({ state, dispatch }, payload) {
     return new Promise((resolve, reject) => {
       patch(
         `${config.api}/user/theme`,
         {
-          theme: state.theme
+          theme: payload
         },
         {
           headers: {
@@ -734,6 +856,7 @@ export default {
         }
       )
         .then(response => {
+          dispatch('setTheme', payload)
           log.info('successfully patched', response)
           resolve(response)
         })
@@ -744,8 +867,11 @@ export default {
     })
   },
   setUserInfoAction({ commit, dispatch, state }, payload) {
+    // Fixes loading theme for too long
+    dispatch('setTheme', state.theme)
+
     return new Promise(async (resolve, reject) => {
-      const { token, calledFromEmbed } = payload
+      const { token, calledFromEmbed, rehydrate } = payload
       try {
         get(`${config.api}/user`, {
           headers: {
@@ -754,11 +880,12 @@ export default {
         })
           .then(user => {
             if (user.data) {
-              const { transactions, default_currency, theme } = user.data || {}
+              const { transactions, contacts, default_currency, theme } = user.data || {}
               commit('setPastTransactions', transactions)
+              commit('setContacts', contacts)
               dispatch('setTheme', theme)
               dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
-              dispatch('storeUserLogin', calledFromEmbed)
+              dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
               resolve()
             }
           })
@@ -777,7 +904,7 @@ export default {
               }
             )
             commit('setNewUser', true)
-            dispatch('storeUserLogin', calledFromEmbed)
+            dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
             resolve()
           })
       } catch (error) {
@@ -790,6 +917,7 @@ export default {
       selectedAddress,
       wallet,
       networkType,
+      networkId,
       jwtToken,
       userInfo: { verifier }
     } = state
@@ -805,23 +933,25 @@ export default {
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       if (selectedAddress && wallet[selectedAddress]) {
-        dispatch('updateSelectedAddress', { selectedAddress })
         setTimeout(() => dispatch('subscribeToControllers'), 50)
         await Promise.all([
           torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet)),
-          dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false })
+          dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true })
         ])
+        dispatch('updateSelectedAddress', { selectedAddress })
+        dispatch('updateNetworkId', { networkId: networkId })
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: verifier })
         log.info('rehydrated wallet')
-        torus.web3.eth.net
-          .getId()
-          .then(res => {
-            setTimeout(function() {
-              dispatch('updateNetworkId', { networkId: res })
-            })
-            // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-          })
-          .catch(e => log.error(e))
+        // torus.web3.eth.net
+        //   .getId()
+        //   .then(res => {
+        //     console.log(res)
+        //     setTimeout(function() {
+        //       dispatch('updateNetworkId', { networkId: toHex(res) })
+        //     })
+        //     // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
+        //   })
+        //   .catch(e => log.error(e))
       }
     } catch (error) {
       log.error('Failed to rehydrate', error)

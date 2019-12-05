@@ -1,10 +1,10 @@
 <template>
   <div class="wallet-home">
     <v-layout wrap align-center :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
-      <v-flex xs6 px-4 mb-4>
+      <v-flex xs6 px-4>
         <div class="font-weight-bold headline float-left">{{ pageHeader }}</div>
       </v-flex>
-      <v-flex xs6 px-4 mb-4 class="text-right hidden-xs-only">
+      <v-flex xs6 px-4 class="text-right hidden-xs-only">
         <v-btn outlined large color="primary" :disabled="isFreshAccount" class="transfer-btn px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
           <v-icon left>$vuetify.icons.send</v-icon>
           Transfer
@@ -22,25 +22,68 @@
         </v-tooltip>
       </v-flex>
 
-      <v-flex xs12 px-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'mb-6'">
-        <v-card class="card-total card-shadow">
-          <v-card-title class="font-weight-bold subtitle-2 pt-6 px-6">
-            <v-layout>
-              <v-flex>
-                <span>TOTAL VALUE</span>
-              </v-flex>
-              <v-flex text-right>
-                <export-qr-code></export-qr-code>
-              </v-flex>
-            </v-layout>
-          </v-card-title>
-          <v-card-text class="pb-8 px-6">
-            <h2 class="display-2 text_2--text font-weight-bold">
-              {{ totalPortfolioValue }}
-              <span id="selected-currency" class="body-2 font-weight-light">{{ selectedCurrency }}</span>
-            </h2>
-          </v-card-text>
-        </v-card>
+      <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'mb-2'">
+        <v-layout class="home-cards" wrap>
+          <v-flex xs12 sm6 px-4 my-4 :class="$vuetify.breakpoint.xsOnly ? 'mb-4' : ''">
+            <v-card class="card-total card-shadow">
+              <v-card-title class="font-weight-bold subtitle-2 pt-6 px-6">
+                <v-layout>
+                  <v-flex>
+                    <span>TOTAL VALUE</span>
+                  </v-flex>
+                  <v-flex text-right>
+                    <export-qr-code></export-qr-code>
+                  </v-flex>
+                </v-layout>
+              </v-card-title>
+              <v-card-text class="pb-8 px-6">
+                <component-loader class="mt-3" v-if="!weiBalanceLoaded" />
+                <h2 v-else class="display-2 text_2--text font-weight-bold">
+                  {{ totalPortfolioValue }}
+                  <span id="selected-currency" class="body-2 font-weight-light">{{ selectedCurrency }}</span>
+                </h2>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+          <v-flex xs12 sm6 px-4 my-4 v-if="isFreshAccount">
+            <v-card class="card-shadow">
+              <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
+                <v-layout>
+                  <v-flex
+                    class="text_1--text pt-4"
+                    :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'"
+                  >
+                    <div class="body-1 font-weight-bold">Welcome to Torus.</div>
+                    <v-dialog v-model="dialogLearnMore" max-width="700">
+                      <template v-slot:activator="{ on }">
+                        <div class="body-2'">
+                          <a id="learn-more-btn" class="primary--text font-weight-bold" v-on="on">Learn more</a>
+                          about your wallet today.
+                        </div>
+                      </template>
+                      <LearnMore @onClose="dialogLearnMore = false" />
+                    </v-dialog>
+                  </v-flex>
+                  <v-flex xs4 pt-4 class="text-right hidden-xs-only">
+                    <img
+                      :src="require(`../../../../public/images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)"
+                      style="height: 90px"
+                    />
+                  </v-flex>
+                </v-layout>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+          <v-flex xs12 sm6 px-4 my-4 v-for="(event, i) in isFreshAccount ? [] : events" :key="`event-${i}`">
+            <promotion-card
+              :title="event.eventName"
+              :image-path="event.imageUrl"
+              :subtitle="event.description"
+              :details-link="event.callToActionLink"
+              :details-text="event.callToActionText"
+            ></promotion-card>
+          </v-flex>
+        </v-layout>
       </v-flex>
 
       <v-flex xs12 px-4 class="hidden-sm-and-up mb-3">
@@ -75,11 +118,11 @@
         </v-layout>
       </v-flex>
 
-      <v-flex xs12 px-4>
+      <v-flex xs12>
         <v-layout wrap justify-space-between align-center>
-          <v-flex xs12 sm6>
+          <v-flex xs12 sm6 px-4 v-if="showSearch">
             <v-layout wrap>
-              <v-flex xs12 sm3 v-if="showSearch">
+              <v-flex xs12>
                 <v-text-field
                   v-model="search"
                   outlined
@@ -89,21 +132,15 @@
                   append-icon="$vuetify.icons.search"
                 ></v-text-field>
               </v-flex>
-              <v-flex xs12 sm9 class="hidden-xs-only">
-                <v-btn text icon small class="refresh-button" color="primary" @click="refreshBalances()">
-                  <v-icon small>$vuetify.icons.refresh</v-icon>
-                </v-btn>
-                <span class="caption text_2--text">Last update {{ lastUpdated }}</span>
-              </v-flex>
             </v-layout>
           </v-flex>
-          <v-flex xs12 sm6 class="balance-filter" :class="showSearch ? 'pt-2' : ''">
+          <v-flex xs12 sm6 px-4 class="balance-filter" :class="showSearch ? 'pt-2' : ''">
             <v-layout>
-              <v-flex xs7 class="hidden-sm-and-up refresh">
+              <v-flex xs7 class="refresh">
                 <v-icon color="primary" @click="refreshBalances()" small>$vuetify.icons.refresh</v-icon>
                 <span class="caption text_2--text">Last update {{ lastUpdated }}</span>
               </v-flex>
-              <v-flex xs5 sm12 class="text-right currency">
+              <v-flex xs5 class="text-right currency">
                 <span class="caption text_2--text">CURRENCY:</span>
                 <v-select
                   id="currency-selector"
@@ -121,29 +158,46 @@
         </v-layout>
       </v-flex>
 
-      <v-flex xs12>
-        <token-balances-table
-          :tokenBalances="filteredBalancesArray"
-          @update:select="select"
-          :selected="selected"
-          :search="search"
-          :isFreshAccount="isFreshAccount"
-        />
+      <v-flex xs12 px-4 mt-5>
+        <v-tabs v-model="activeTab">
+          <v-tab class="home-tab-token">
+            <v-icon left>$vuetify.icons.token</v-icon>
+            Tokens
+          </v-tab>
+          <v-tab class="home-tab-collectibles">
+            <v-icon left>$vuetify.icons.collectibles</v-icon>
+            Collectibles
+          </v-tab>
+        </v-tabs>
       </v-flex>
     </v-layout>
+
+    <v-tabs-items v-model="activeTab" class="token-tab-content">
+      <v-tab-item>
+        <token-balances-table :tokenBalances="filteredBalancesArray" @update:select="select" :selected="selected" />
+      </v-tab-item>
+      <v-tab-item>
+        <collectibles-list></collectibles-list>
+      </v-tab-item>
+    </v-tabs-items>
   </div>
 </template>
 
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
-import config from '../../config'
-import TokenBalancesTable from '../../components/WalletHome/TokenBalancesTable'
-import ExportQrCode from '../../components/helpers/ExportQrCode'
-import { MAINNET, WALLET_HEADERS_HOME } from '../../utils/enums'
+import config from '../../../config'
+import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
+import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
+import ExportQrCode from '../../../components/helpers/ExportQrCode'
+import ComponentLoader from '../../../components/helpers/ComponentLoader'
+import PromotionCard from '../../../components/WalletHome/PromotionCard'
+import LearnMore from '../../../components/WalletHome/LearnMore'
+import { MAINNET, WALLET_HEADERS_HOME } from '../../../utils/enums'
+import { get } from '../../../utils/httpHelpers'
 
 export default {
   name: 'walletHome',
-  components: { TokenBalancesTable, ExportQrCode },
+  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore, ComponentLoader },
   data() {
     return {
       pageHeader: WALLET_HEADERS_HOME,
@@ -151,12 +205,16 @@ export default {
       selected: [],
       search: '',
       lastUpdated: '',
-      qrDialoag: false
+      dialogLearnMore: false,
+      activeTab: 0
     }
   },
   computed: {
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
+    },
+    weiBalanceLoaded() {
+      return this.$store.state.weiBalanceLoaded
     },
     finalBalancesArray() {
       let balances = this.$store.getters.tokenBalances.finalBalancesArray
@@ -179,6 +237,9 @@ export default {
     },
     isFreshAccount() {
       return this.$store.state.isNewUser
+    },
+    events() {
+      return this.$store.state.billboard
     }
   },
   methods: {
@@ -192,7 +253,7 @@ export default {
       })
     },
     onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value })
+      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'home' })
     },
     refreshBalances() {
       this.$store.dispatch('forceFetchTokens')
@@ -200,10 +261,10 @@ export default {
     },
     initiateTransfer() {
       // this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
-      this.$router.push({ path: '/wallet/transfer' })
+      this.$router.push({ name: 'walletTransfer' }).catch(err => {})
     },
     topup() {
-      this.$router.push({ path: '/wallet/topup' })
+      this.$router.push({ path: '/wallet/topup' }).catch(err => {})
     },
     setDateUpdated() {
       const currentDateTime = new Date()
@@ -229,12 +290,14 @@ export default {
       this.lastUpdated = `${date}, ${time}`
     }
   },
-  created() {
+  mounted() {
     this.setDateUpdated()
+
+    this.activeTab = this.$route.hash === '#collectibles' ? 1 : 0
   }
 }
 </script>
 
 <style lang="scss" scoped>
-@import 'WalletHome.scss';
+@import 'WalletHomeMain.scss';
 </style>

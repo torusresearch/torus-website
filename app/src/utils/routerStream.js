@@ -54,10 +54,7 @@ module.exports = function() {
     sources.push(source)
     source.once('end', remove.bind(null, source))
     source.once('error', output.emit.bind(output, 'error'))
-    source.pipe(mapperPassthrough).pipe(
-      output,
-      { end: false }
-    )
+    source.pipe(mapperPassthrough).pipe(output, { end: false })
     return this
   }
 
