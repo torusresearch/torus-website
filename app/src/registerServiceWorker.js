@@ -8,7 +8,12 @@ const swIntegrity = 'SERVICE_WORKER_SHA_INTEGRITY' // string-replaced
 const swUrl = `${process.env.BASE_URL}service-worker.js`
 const expectedCacheControlHeader = 'max-age=3600'
 
-if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'testing') {
+if (
+  'serviceWorker' in navigator &&
+  (process.env.VUE_APP_TORUS_BUILD_ENV === 'production' ||
+    process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ||
+    process.env.VUE_APP_TORUS_BUILD_ENV === 'testing')
+) {
   // if swIntegrity is not calculated
   if (swIntegrity === ['SERVICE', 'WORKER', 'SHA', 'INTEGRITY'].join('_')) {
     register(swUrl, {
@@ -122,8 +127,8 @@ if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' 
         log.info('Successfully registered secure service worker', updatedSwReg)
       })
       .catch(err => {
-        log.error('Could not complete service worker installation process, error: ', err)
-        throw new Error('Could not install service worker')
+        log.warn('Could not complete service worker installation process, error: ', err)
+        // throw new Error('Could not install service worker')
       })
   }
 }

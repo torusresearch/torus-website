@@ -151,14 +151,14 @@ jobs:
           command: |
             ssh-keyscan -H testing.tor.us >> ~/.ssh/known_hosts
             ssh torus@testing.tor.us "rm -rf ~/testing-torus-website/*"
-            scp -r ./dist torus@testing.tor.us:~/testing-torus-website
+            tar czf - dist/ | ssh torus@testing.tor.us "cat > ~/testing-torus-website/dist.tgz"
+            ssh torus@testing.tor.us "cd ~/testing-torus-website && tar zxvf dist.tgz"
 
 workflows:
   version: 2
   commit:
     jobs:
       - test-coverage
-      - unit-test
       - build:
           filters:
             branches:
@@ -168,7 +168,6 @@ workflows:
           requires:
             - build
             - test-coverage
-            - unit-test
           filters:
             branches:
               only:
@@ -196,7 +195,6 @@ workflows:
           requires:
             - build-staging
             - test-coverage
-            - unit-test
           filters:
             branches:
               only:
@@ -224,7 +222,6 @@ workflows:
           requires:
             - build-testing
             - test-coverage
-            - unit-test
           filters:
             branches:
               only:

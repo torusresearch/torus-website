@@ -1,6 +1,6 @@
 <template>
-  <v-container py-6 px-0 class="confirm-container">
-    <template v-if="type === 'transaction'">
+  <v-container px-0 class="confirm-container" :class="type === TX_TRANSACTION ? 'py-6' : 'py-0'">
+    <template v-if="type === TX_TRANSACTION">
       <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">{{ header }}</v-flex>
         <v-flex xs12>
@@ -8,11 +8,39 @@
         </v-flex>
       </v-layout>
       <v-layout wrap>
-        <v-flex xs12 mb-4 mx-6>
+        <template v-if="transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM">
+          <v-flex xs12 mb-4 mx-6>
+            <div class="subtitle-2">Send to</div>
+            <v-divider></v-divider>
+            <div>
+              <span class="subtitle-2 float-left text_2--text">{{ amountTo }}</span>
+            </div>
+          </v-flex>
+          <v-flex xs12 mb-4 mx-6>
+            <div class="subtitle-2">You send</div>
+            <v-divider class="mb-1"></v-divider>
+            <div>
+              <img class="mr-2 float-left" :src="assetDetails.logo" height="35px" />
+              <span class="subtitle-2 float-left text_2--text asset-name">{{ assetDetails.name }}</span>
+            </div>
+          </v-flex>
+        </template>
+        <v-flex v-else xs12 mb-4 mx-6>
           <div class="subtitle-2">Amount</div>
           <v-divider></v-divider>
           <div>
-            <span class="subtitle-2 float-left text_2--text">{{ displayAmountTo }}</span>
+            <span class="subtitle-2 float-left text_2--text">
+              <show-tool-tip
+                v-if="[TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(transactionCategory) >= 0"
+                :address="amountTo"
+              >
+                {{ displayAmountTo }}
+              </show-tool-tip>
+              <show-tool-tip v-else-if="[SEND_ETHER_ACTION_KEY, CONTRACT_INTERACTION_KEY].indexOf(transactionCategory) >= 0" :address="receiver">
+                {{ displayAmountTo }}
+              </show-tool-tip>
+              <span v-else class="subtitle-2 float-left text_2--text">{{ displayAmountTo }}</span>
+            </span>
             <span class="subtitle-2 float-right">{{ displayAmountValue }}</span>
           </div>
           <div class="caption float-right clearfix">{{ displayAmountConverted }}</div>
@@ -91,13 +119,13 @@
         </v-flex>
         <v-flex xs12 px-6 mb-6 class="text-right" v-if="canShowError">
           <div class="caption error--text">{{ errorMsg }}</div>
-          <div class="caption mt-1">
+          <div class="caption mt-1" v-if="topUpErrorShow">
             Please
             <v-btn color="primary" class="mx-1 px-2 caption" small outlined @click="topUp">Top up</v-btn>
             your wallet
           </div>
         </v-flex>
-        <v-flex xs12 px-6 mb-6 v-if="showConfirmMessage">
+        <v-flex xs12 px-6 mb-6 v-if="transactionCategory === TOKEN_METHOD_APPROVE">
           <div class="caption error--text">
             By confirming this, you grant permission for this contract to spend up to {{ displayAmountValue }} of your tokens.
           </div>
@@ -127,7 +155,7 @@
       </v-layout>
     </template>
 
-    <template v-if="type === 'message'">
+    <template v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE || type === TX_TYPED_MESSAGE">
       <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left">Permissions</v-flex>
         <v-flex xs12>
@@ -201,7 +229,7 @@
       </v-layout>
     </template>
     <template v-if="type === 'none'">
-      <page-loader />
+      <popup-screen-loader />
     </template>
   </v-container>
 </template>
@@ -209,24 +237,21 @@
 <script>
 import { mapActions } from 'vuex' // Maybe dispatch a bc to show popup from that instance
 import VueJsonPretty from 'vue-json-pretty'
-import BroadcastChannel from 'broadcast-channel'
+import { BroadcastChannel } from 'broadcast-channel'
+import { numberToHex, fromWei, toChecksumAddress, hexToNumber } from 'web3-utils'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
-import PageLoader from '../../components/helpers/PageLoader'
+import { PopupScreenLoader } from '../../content-loader'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import torus from '../../torus'
-import {
-  significantDigits,
-  calculateGasKnob,
-  calculateGasPrice,
-  addressSlicer,
-  isSmartContractAddress,
-  broadcastChannelOptions
-} from '../../utils/utils'
+import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, broadcastChannelOptions } from '../../utils/utils'
 import { get } from '../../utils/httpHelpers'
-const abiDecoder = require('../../utils/abiDecoder')
-const abi = require('human-standard-token-abi')
+import config from '../../config'
+import { isArray } from 'util'
+
+const tokenABI = require('human-standard-token-abi')
+const collectibleABI = require('human-standard-collectible-abi')
 const contracts = require('eth-contract-metadata')
 const log = require('loglevel')
 
@@ -238,8 +263,14 @@ const {
   TOKEN_METHOD_APPROVE,
   TOKEN_METHOD_TRANSFER,
   TOKEN_METHOD_TRANSFER_FROM,
+  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   SEND_ETHER_ACTION_KEY,
-  SUPPORTED_NETWORK_TYPES
+  SUPPORTED_NETWORK_TYPES,
+  OLD_ERC721_LIST,
+  TX_MESSAGE,
+  TX_TYPED_MESSAGE,
+  TX_PERSONAL_MESSAGE,
+  TX_TRANSACTION
 } = require('../../utils/enums')
 
 const weiInGwei = 10 ** 9
@@ -247,24 +278,21 @@ const weiInGwei = 10 ** 9
 export default {
   name: 'confirm',
   components: {
-    PageLoader,
+    PopupScreenLoader,
     TransactionSpeedSelect,
     TransferConfirm,
     VueJsonPretty,
-    NetworkDisplay
+    NetworkDisplay,
+    ShowToolTip
   },
   data() {
     return {
       confirmDialog: false,
       detailsDialog: false,
-      dialogAdvanceOptions: false,
-      open: false,
       type: 'none',
       origin: 'unknown',
       gasPrice: 10,
       gasKnob: 10,
-      min: 100,
-      max: 4000,
       balance: 0,
       value: 0,
       amountTo: '',
@@ -273,7 +301,6 @@ export default {
       amountTokenValueConverted: 0,
       currencyRateDate: '',
       receiver: 'unknown',
-      dialog: true,
       message: '',
       selectedToken: '',
       gasCost: 0,
@@ -285,6 +312,7 @@ export default {
       totalEthCost: 0,
       totalEthCostDisplay: '',
       errorMsg: '',
+      topUpErrorShow: '',
       txFees: 0,
       network: '',
       networkName: '',
@@ -292,10 +320,20 @@ export default {
       dollarValue: 0,
       canApprove: true,
       canShowError: false,
-      selectedSpeed: '',
       speed: '',
       typedMessages: {},
       id: 0,
+      assetDetails: {},
+      COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
+      TOKEN_METHOD_APPROVE,
+      TOKEN_METHOD_TRANSFER,
+      TOKEN_METHOD_TRANSFER_FROM,
+      SEND_ETHER_ACTION_KEY,
+      CONTRACT_INTERACTION_KEY,
+      TX_TRANSACTION,
+      TX_TYPED_MESSAGE,
+      TX_PERSONAL_MESSAGE,
+      TX_MESSAGE,
       networks: [
         ...Object.values(SUPPORTED_NETWORK_TYPES),
         {
@@ -310,16 +348,6 @@ export default {
     selectedCurrency() {
       return this.$store.state.selectedCurrency
     },
-    color() {
-      if (this.gasPrice < 5) return 'indigo'
-      if (this.gasPrice < 10) return 'teal'
-      if (this.gasPrice < 30) return 'green'
-      if (this.gasPrice < 50) return 'orange'
-      return 'red'
-    },
-    computedBalance() {
-      return significantDigits(parseFloat(this.balance).toFixed(5)) || 0
-    },
     header() {
       switch (this.transactionCategory) {
         case DEPLOY_CONTRACT_ACTION_KEY:
@@ -328,6 +356,10 @@ export default {
           break
         case CONTRACT_INTERACTION_KEY:
           return this.getHeaderByDapp()
+          break
+        case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
+          // return 'ERC721 SafeTransferFrom'
+          return 'Collectible Safe Transfer From'
           break
         case TOKEN_METHOD_APPROVE:
           // return 'ERC20 Approve'
@@ -378,6 +410,9 @@ export default {
         case TOKEN_METHOD_TRANSFER_FROM:
           return `${this.amountDisplay(this.amountValue)} ${this.selectedToken}`
           break
+        case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
+          return `ID: ${this.amountValue}`
+          break
         case SEND_ETHER_ACTION_KEY:
         case CONTRACT_INTERACTION_KEY:
           return `${this.amountDisplay(this.value)} ETH`
@@ -408,9 +443,6 @@ export default {
           return ''
           break
       }
-    },
-    showConfirmMessage() {
-      return this.transactionCategory === TOKEN_METHOD_APPROVE
     },
     costOfTransaction() {
       if ([TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(this.transactionCategory) >= 0) {
@@ -457,57 +489,40 @@ export default {
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
         this.canApprove = false
-      } else {
-        this.errorMsg = ''
-        this.canApprove = true
+        this.topUpErrorShow = true
       }
     },
     gasKnob: function(newGasKnob, oldGasKnob) {
       this.gasPrice = calculateGasPrice(newGasKnob)
     },
     errorMsg: function(newErrorMsg, oldErrorMsg) {
-      if (newErrorMsg !== oldErrorMsg) this.canShowError = newErrorMsg && newErrorMsg !== ''
+      if (newErrorMsg !== oldErrorMsg) {
+        const boolean = newErrorMsg && newErrorMsg !== ''
+        this.canShowError = boolean
+        this.canApprove = !boolean
+      }
     }
   },
   methods: {
     slicedAddress(user) {
       return addressSlicer(user) || '0x'
     },
-    closeBottom() {
-      this.open = false
-    },
-    openBottom() {
-      this.open = true
-    },
     async triggerSign(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
-      var gasHex = torus.web3.utils.numberToHex(this.gasPrice * weiInGwei)
+      var gasHex = numberToHex(this.gasPrice * weiInGwei)
       await bc.postMessage({
-        data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id }
+        name: 'tx-result',
+        data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id, txType: this.type }
       })
       bc.close()
-      window.close()
     },
     async triggerDeny(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
-      await bc.postMessage({ data: { type: 'deny-transaction', id: this.id } })
+      await bc.postMessage({ name: 'tx-result', data: { type: 'deny-transaction', id: this.id, txType: this.type } })
       bc.close()
-      window.close()
     },
     topUp() {
-      this.openWallet()
-    },
-    openWallet() {
-      this.$store.dispatch('showWalletPopup')
-    },
-    showGasPrice(val) {
-      return `Fee: $ ${significantDigits(parseFloat(this.txFees).toFixed(3))}`
-    },
-    getGasDisplayString(speed, fastGasPrice) {
-      const currencyMultiplier = this.getCurrencyMultiplier
-      const ethFee = this.gasEstimate * fastGasPrice * 10 ** -9
-      const currencyFee = ethFee * currencyMultiplier
-      return `${significantDigits(currencyFee)} ${this.$store.state.selectedCurrency}`
+      this.$store.dispatch('showWalletPopup', { path: '/topup' })
     },
     onSelectSpeed(data) {
       this.speedSelected = data.speedSelected
@@ -521,8 +536,8 @@ export default {
     },
     getNetworkName(targetNetwork) {
       const foundNetwork = this.networks.find(network => network.host === targetNetwork)
-      if (foundNetwork === -1) return 'UnKnown Network'
-      return foundNetwork.networkName
+      if (!foundNetwork || foundNetwork === -1) return 'UnKnown Network'
+      return Object.prototype.hasOwnProperty.call(foundNetwork, 'networkName') ? foundNetwork.networkName : 'UnKnown Network'
     },
     getDate() {
       const currentDateTime = new Date()
@@ -549,8 +564,14 @@ export default {
     ...mapActions({})
   },
   mounted() {
-    var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
+    const queryParams = new URLSearchParams(window.location.search)
+    const instanceId = queryParams.get('instanceId')
+    const queryParamId = queryParams.get('id')
+    var bc = new BroadcastChannel(`torus_channel_${instanceId}`, broadcastChannelOptions)
     bc.onmessage = async ev => {
+      if (ev.name !== 'send-params') return
+      if (ev.data && ev.data.txParams && ev.data.txParams.id.toString() !== queryParamId) return
+      bc.close()
       const { type, msgParams, txParams, origin, balance } = ev.data || {}
       let url = { hostname: '' }
       try {
@@ -558,9 +579,9 @@ export default {
       } catch (err) {
         log.info(err)
       }
-      log.info(txParams)
+      log.info(ev.data)
       this.origin = url.hostname // origin of tx: website url
-      if (type === 'message') {
+      if (type !== TX_TRANSACTION) {
         var { message, typedMessages } = msgParams.msgParams || {}
         if (typedMessages) {
           try {
@@ -574,37 +595,51 @@ export default {
         this.message = message
         this.typedMessages = typedMessages
         this.messageType = typedMessages ? 'typed' : 'normal'
-      } else if (type === 'transaction') {
-        const web3Utils = torus.web3.utils
+      } else {
         let finalValue = 0
         const { value, to, data, from: sender, gas, gasPrice } = txParams.txParams || {}
-        const { simulationFails, network, id, transactionCategory, methodParams } = txParams || {}
+        let { simulationFails, network, id, transactionCategory, methodParams, contractParams } = txParams || {}
         const { reason } = simulationFails || {}
         if (value) {
-          finalValue = web3Utils.fromWei(value.toString())
+          finalValue = fromWei(value.toString())
         }
-
         this.origin = this.origin.trim().length === 0 ? 'Wallet' : this.origin
         // GET data params
-        const txDataParams = abi.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
+        let txDataParams = ''
+        if (contractParams.erc721) {
+          txDataParams = collectibleABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
+        } else if (contractParams.erc20) {
+          txDataParams = collectibleABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
+        }
+        // log.info(methodParams, 'params')
         let amountTo, amountValue, amountFrom
-        if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM) [amountFrom, amountTo, amountValue] = methodParams || []
-        else [amountTo, amountValue] = methodParams || []
+        if (methodParams && isArray(methodParams)) {
+          if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
+            [amountFrom, amountTo, amountValue] = methodParams || []
+          else [amountTo, amountValue] = methodParams || []
+        }
         log.info(methodParams, 'params')
-        const checkSummedTo = web3Utils.toChecksumAddress(to)
+        const checkSummedTo = toChecksumAddress(to)
 
-        const tokenObj = Object.prototype.hasOwnProperty.call(contracts, checkSummedTo) ? contracts[web3Utils.toChecksumAddress(to)] : {}
+        if (OLD_ERC721_LIST.includes(checkSummedTo.toLowerCase())) {
+          transactionCategory = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
+          contractParams.erc721 = true
+          contractParams.erc20 = false
+          contractParams.symbol = 'ERC721'
+          contractParams.decimals = 0
+        }
+
+        const tokenObj = contractParams
         const decimals = tokenObj.decimals || 0
         this.selectedToken = tokenObj.symbol || 'ERC20'
         this.id = id
         this.network = network
         this.networkName = this.getNetworkName(network)
         this.transactionCategory = transactionCategory
-        var gweiGasPrice = web3Utils.hexToNumber(gasPrice) / weiInGwei
+        var gweiGasPrice = hexToNumber(gasPrice) / weiInGwei
         this.amountTo = amountTo ? amountTo.value : checkSummedTo
         this.amountValue = amountValue ? parseFloat(amountValue.value) / 10 ** parseFloat(decimals) : ''
-
-        if (methodParams) {
+        if (methodParams && contractParams.erc20) {
           const pairs = checkSummedTo
           const query = `contract_addresses=${pairs}&vs_currencies=eth`
           let prices = {}
@@ -618,6 +653,23 @@ export default {
           this.tokenPrice = tokenPrice
           this.amountTokenValueConverted =
             tokenPrice * parseFloat(this.amountValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+        } else if (methodParams && contractParams.erc721) {
+          log.info(methodParams, contractParams)
+          let assetDetails = {}
+          try {
+            const url = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
+            assetDetails = await get(`${config.api}/opensea?url=${url}`, {
+              headers: {
+                Authorization: `Bearer ${this.$store.state.jwtToken}`
+              }
+            })
+            this.assetDetails = {
+              name: assetDetails.data.name || '',
+              logo: assetDetails.data.image_thumbnail_url || ''
+            }
+          } catch (error) {
+            log.info(error)
+          }
         }
         this.currencyRateDate = this.getDate()
         this.receiver = to // address of receiver
@@ -627,7 +679,7 @@ export default {
         this.gasKnob = calculateGasKnob(gweiGasPrice)
         this.balance = balance // in eth
         this.balanceUsd = significantDigits(parseFloat(balance) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]) // in usd
-        this.gasEstimate = web3Utils.hexToNumber(gas) // gas number
+        this.gasEstimate = hexToNumber(gas) // gas number
         this.txData = data // data hex
         this.txDataParams = txDataParams !== '' ? JSON.stringify(txDataParams, null, 2) : ''
         this.sender = sender // address of sender
@@ -642,12 +694,12 @@ export default {
         if (parseFloat(this.balance) < ethCost && !this.canShowError) {
           this.errorMsg = 'Insufficient Funds'
           this.canApprove = false
+          this.topUpErrorShow = true
         }
       }
       this.type = type // type of tx
-      bc.close()
     }
-    bc.postMessage({ data: 'popup-loaded' })
+    bc.postMessage({ name: 'popup-loaded', data: { id: queryParamId } })
   }
 }
 </script>

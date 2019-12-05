@@ -1,23 +1,28 @@
 <template>
-  <v-container fluid>
-    <v-layout wrap>
-      <v-flex xs12 sm6 md3>Redirecting you back to Torus App. Please Wait...</v-flex>
-      <page-loader />
+  <v-container fill-height text-center>
+    <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
+      <v-flex text-center>
+        <div class="redirect-title white--text font-weight-bold mb-6">
+          You are being redirected
+        </div>
+        <div class="redirect-info white--text mb-8">
+          Please wait
+        </div>
+        <beat-loader color="white" />
+      </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-import BroadcastChannel from 'broadcast-channel'
-import PageLoader from '../../components/helpers/PageLoader'
+import { BroadcastChannel } from 'broadcast-channel'
+import BeatLoader from 'vue-spinner/src/BeatLoader'
 import { broadcastChannelOptions } from '../../utils/utils'
 import log from 'loglevel'
 
 export default {
   name: 'redirect',
-  components: {
-    PageLoader
-  },
+  components: { BeatLoader },
   async mounted() {
     let bc
     try {
@@ -36,24 +41,37 @@ export default {
       // error_description: "The user denied you access"
       // state: "eyJpbnN0YW5jZUlkIjoiTjFhRHNmaGN4dGNzc1dhc2pPV2tzSThPclI2eHBIIiwidmVyaWZpZXIiOiJ0d2l0Y2gifQ=="
       log.info(hashParams, queryParams)
-      let instanceParams = {}
-      let error = ''
-      if (Object.keys(hashParams).length > 0 && hashParams.state) {
-        instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {}
-        if (hashParams.error) error = hashParams.error
-      } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
-        instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {}
-        if (queryParams.error) error = queryParams.error
+      if (!queryParams.preopenInstanceId) {
+        this.textVisible = true
+        let instanceParams = {}
+        let error = ''
+        if (Object.keys(hashParams).length > 0 && hashParams.state) {
+          instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {}
+          if (hashParams.error) error = hashParams.error
+        } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
+          instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {}
+          if (queryParams.error) error = queryParams.error
+        }
+        bc = new BroadcastChannel(`redirect_channel_${instanceParams.instanceId}`, broadcastChannelOptions)
+        await bc.postMessage({
+          data: {
+            instanceParams: instanceParams,
+            hashParams: hashParams
+          },
+          error: error
+        })
+        bc.close()
+      } else {
+        bc = new BroadcastChannel('preopen_channel_' + queryParams.preopenInstanceId, broadcastChannelOptions)
+        bc.onmessage = function(ev) {
+          if (ev.error && ev.error !== '') {
+            console.error(ev.error)
+            bc.close()
+          }
+          console.log(ev.data, ev.error)
+          window.location.href = ev.data.payload.url
+        }
       }
-      bc = new BroadcastChannel(`redirect_channel_${instanceParams.instanceId}`, broadcastChannelOptions)
-      await bc.postMessage({
-        data: {
-          verifier: instanceParams.verifier,
-          verifierParams: hashParams
-        },
-        error: error
-      })
-      bc.close()
     } catch (error) {
       log.info(error, 'something went wrong')
       bc.close()
@@ -62,3 +80,7 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+@import 'RedirectCatch.scss';
+</style>

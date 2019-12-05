@@ -124,7 +124,7 @@
 </template>
 
 <script>
-import BroadcastChannel from 'broadcast-channel'
+import { BroadcastChannel } from 'broadcast-channel'
 const WalletWorker = require('worker-loader!../../../utils/wallet.worker.js')
 const ethUtil = require('ethereumjs-util')
 const log = require('loglevel')
@@ -176,6 +176,7 @@ export default {
             this.onClose()
             this.isLoadingPrivate = false
             this.informClients(privKey)
+            this.$refs.privateKeyForm.resetValidation()
           })
           .catch(err => {
             this.setErrorState(err)
@@ -212,6 +213,7 @@ export default {
               this.onClose()
               this.isLoadingKeystore = false
               this.informClients(privKey)
+              this.$refs.jsonFileForm.resetValidation()
             })
             .catch(err => {
               this.setErrorState(err)
@@ -227,6 +229,7 @@ export default {
                 this.onClose()
                 this.isLoadingKeystore = false
                 this.informClients(privKey)
+                this.$refs.jsonFileForm.resetValidation()
               })
               .catch(err => {
                 this.setErrorState(err)

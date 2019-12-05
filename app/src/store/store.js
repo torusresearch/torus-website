@@ -1,19 +1,20 @@
-import BroadcastChannel from 'broadcast-channel'
 import log from 'loglevel'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
+import { fromWei, hexToUtf8, toBN, toChecksumAddress } from 'web3-utils'
 import config from '../config'
 import torus from '../torus'
-import { getEtherScanHashLink, broadcastChannelOptions } from '../utils/utils'
+import { getEtherScanHashLink, storageAvailable } from '../utils/utils'
+import { TX_MESSAGE, TX_PERSONAL_MESSAGE, TX_TRANSACTION, TX_TYPED_MESSAGE } from '../utils/enums'
 import { post } from '../utils/httpHelpers.js'
 import { notifyUser } from '../utils/notifications'
 import state from './state'
 import actions from './actions'
+import paymentActions from './PaymentActions'
 import getters from './getters'
 import mutations from './mutations'
-
-const web3Utils = torus.web3.utils
+import ConfirmHandler from '../utils/ConfirmHandler'
 
 function getCurrencyMultiplier() {
   const { selectedCurrency, currencyData } = VuexStore.state || {}
@@ -22,92 +23,123 @@ function getCurrencyMultiplier() {
   return currencyMultiplier
 }
 
-const baseRoute = config.baseRoute
-
 Vue.use(Vuex)
 
-const vuexPersist = new VuexPersistence({
-  key: 'torus-app',
-  storage: window.sessionStorage,
-  reducer: state => {
-    return {
-      userInfo: state.userInfo,
-      userInfoAccess: state.userInfoAccess,
-      idToken: state.idToken,
-      wallet: state.wallet,
-      // weiBalance: state.weiBalance,
-      selectedAddress: state.selectedAddress,
-      networkType: state.networkType,
-      networkId: state.networkId,
-      currencyData: state.currencyData,
-      // tokenData: state.tokenData,
-      tokenRates: state.tokenRates,
-      selectedCurrency: state.selectedCurrency,
-      jwtToken: state.jwtToken,
-      theme: state.theme,
-      billboard: state.billboard
-      // pastTransactions: state.pastTransactions
+let vuexPersist
+
+if (storageAvailable('sessionStorage'))
+  vuexPersist = new VuexPersistence({
+    key: 'torus-app',
+    storage: window.sessionStorage,
+    reducer: state => {
+      return {
+        userInfo: state.userInfo,
+        userInfoAccess: state.userInfoAccess,
+        idToken: state.idToken,
+        wallet: state.wallet,
+        // weiBalance: state.weiBalance,
+        selectedAddress: state.selectedAddress,
+        networkType: state.networkType,
+        networkId: state.networkId,
+        currencyData: state.currencyData,
+        // tokenData: state.tokenData,
+        tokenRates: state.tokenRates,
+        selectedCurrency: state.selectedCurrency,
+        jwtToken: state.jwtToken,
+        theme: state.theme,
+        billboard: state.billboard,
+        contacts: state.contacts
+        // pastTransactions: state.pastTransactions
+      }
     }
-  }
-})
+  })
 
 var VuexStore = new Vuex.Store({
-  plugins: [vuexPersist.plugin],
+  plugins: vuexPersist ? [vuexPersist.plugin] : [],
   state,
   getters,
   mutations,
   actions: {
     ...actions,
+    ...paymentActions,
     showPopup({ state, getters }, payload) {
-      var bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`, broadcastChannelOptions)
+      const confirmHandler = new ConfirmHandler()
       const isTx = isTorusTransaction()
-      const width = 500
-      const height = isTx ? 650 : 400
-      // const width = 500
-      // const height = 600
-      window.open(
-        `${baseRoute}confirm?instanceId=${torus.instanceId}`,
-        '_blank',
-        `directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=${height},width=${width}`
-      )
+      confirmHandler.isTx = isTx
       if (isTx) {
-        var balance = torus.web3.utils.fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
-        bc.onmessage = async ev => {
-          if (ev.data === 'popup-loaded') {
-            var txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
-            await bc.postMessage({
-              data: {
-                origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-                type: 'transaction',
-                txParams: { ...txParams, network: state.networkType.host },
-                balance
-              }
-            })
-            bc.close()
-          }
-        }
+        const balance = fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
+        const txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
+        confirmHandler.txParams = txParams
+        confirmHandler.balance = balance
+        confirmHandler.id = txParams.id
+        confirmHandler.txType = TX_TRANSACTION
+        confirmHandler.host = state.networkType.host
+        confirmHandler.open(handleConfirm, handleDeny)
       } else {
-        var { msgParams, id } = getLatestMessageParams()
-        bc.onmessage = async ev => {
-          if (ev.data === 'popup-loaded') {
-            await bc.postMessage({
-              data: {
-                origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-                type: 'message',
-                msgParams: { msgParams, id }
-              }
-            })
-            bc.close()
-          }
-        }
+        const { msgParams, id, type } = getLatestMessageParams()
+        confirmHandler.msgParams = msgParams
+        confirmHandler.id = id
+        confirmHandler.txType = type
+        confirmHandler.open(handleConfirm, handleDeny)
       }
     }
   }
 })
 
+function handleConfirm(ev) {
+  let { torusController } = torus
+  let state = VuexStore.state
+  if (ev.data.txType === TX_PERSONAL_MESSAGE) {
+    let msgParams = state.unapprovedPersonalMsgs[ev.data.id].msgParams
+    log.info('PERSONAL MSG PARAMS:', msgParams)
+    msgParams.metamaskId = parseInt(ev.data.id, 10)
+    torusController.signPersonalMessage(msgParams)
+  } else if (ev.data.txType === TX_MESSAGE) {
+    let msgParams = state.unapprovedMsgs[ev.data.id].msgParams
+    log.info(' MSG PARAMS:', msgParams)
+    msgParams.metamaskId = parseInt(ev.data.id, 10)
+    torusController.signMessage(msgParams)
+  } else if (ev.data.txType === TX_TYPED_MESSAGE) {
+    let msgParams = state.unapprovedTypedMessages[ev.data.id].msgParams
+    log.info('TYPED MSG PARAMS:', msgParams)
+    msgParams.metamaskId = parseInt(ev.data.id, 10)
+    torusController.signTypedMessage(msgParams)
+  } else if (ev.data.txType === TX_TRANSACTION) {
+    const unApprovedTransactions = VuexStore.getters.unApprovedTransactions
+    var txMeta = unApprovedTransactions.find(x => x.id === ev.data.id)
+    log.info('STANDARD TX PARAMS:', txMeta)
+
+    if (ev.data.gasPrice) {
+      log.info('Changed gas price to:', ev.data.gasPrice)
+      var newTxMeta = JSON.parse(JSON.stringify(txMeta))
+      newTxMeta.txParams.gasPrice = ev.data.gasPrice
+      torusController.txController.updateTransaction(newTxMeta)
+      txMeta = newTxMeta
+      log.info('New txMeta: ', txMeta)
+    }
+    torusController.updateAndApproveTransaction(txMeta)
+  } else {
+    throw new Error('No new transactions.')
+  }
+}
+
+function handleDeny(id, txType) {
+  let { torusController } = torus
+  if (txType === TX_PERSONAL_MESSAGE) {
+    torusController.cancelPersonalMessage(parseInt(id, 10))
+  } else if (txType === TX_MESSAGE) {
+    torusController.cancelMessage(parseInt(id, 10))
+  } else if (txType === TX_TYPED_MESSAGE) {
+    torusController.cancelTypedMessage(parseInt(id, 10))
+  } else if (txType === TX_TRANSACTION) {
+    torusController.cancelTransaction(parseInt(id, 10))
+  }
+}
+
 function getLatestMessageParams() {
   let time = 0
   let msg = null
+  let type = ''
   let finalId = 0
   for (let id in VuexStore.state.unapprovedMsgs) {
     const msgTime = VuexStore.state.unapprovedMsgs[id].time
@@ -115,6 +147,7 @@ function getLatestMessageParams() {
       msg = VuexStore.state.unapprovedMsgs[id]
       time = msgTime
       finalId = id
+      type = TX_MESSAGE
     }
   }
 
@@ -124,6 +157,7 @@ function getLatestMessageParams() {
       msg = VuexStore.state.unapprovedPersonalMsgs[id]
       time = msgTime
       finalId = id
+      type = TX_PERSONAL_MESSAGE
     }
   }
 
@@ -131,7 +165,7 @@ function getLatestMessageParams() {
   if (msg) {
     let finalMsg
     try {
-      finalMsg = torus.web3.utils.hexToUtf8(msg.msgParams.data)
+      finalMsg = hexToUtf8(msg.msgParams.data)
     } catch (error) {
       finalMsg = msg.msgParams.data
     }
@@ -146,23 +180,41 @@ function getLatestMessageParams() {
       msg = VuexStore.state.unapprovedTypedMessages[id]
       msg.msgParams.typedMessages = msg.msgParams.data // TODO: use for differentiating msgs later on
       finalId = id
+      type = TX_TYPED_MESSAGE
     }
   }
-  return msg ? { msgParams: msg.msgParams, id: finalId } : {}
+  return msg ? { msgParams: msg.msgParams, id: finalId, type: type } : {}
 }
 
 function isTorusTransaction() {
-  if (Object.keys(VuexStore.state.unapprovedPersonalMsgs).length > 0) {
-    return false
-  } else if (Object.keys(VuexStore.state.unapprovedMsgs).length > 0) {
-    return false
-  } else if (Object.keys(VuexStore.state.unapprovedTypedMessages).length > 0) {
-    return false
-  } else if (VuexStore.getters.unApprovedTransactions.length > 0) {
-    return true
-  } else {
-    throw new Error('No new transactions.')
+  let isLatestTx = false
+  let latestTime = 0
+  for (let id in VuexStore.getters.unApprovedTransactions) {
+    const txTime = VuexStore.getters.unApprovedTransactions[id].time
+    if (txTime > latestTime) {
+      latestTime = txTime
+      isLatestTx = true
+    }
   }
+  for (let id in VuexStore.state.unapprovedTypedMessages) {
+    const msgTime = VuexStore.state.unapprovedTypedMessages[id].time
+    if (msgTime > latestTime) {
+      return false
+    }
+  }
+  for (let id in VuexStore.state.unapprovedPersonalMsgs) {
+    const msgTime = VuexStore.state.unapprovedPersonalMsgs[id].time
+    if (msgTime > latestTime) {
+      return false
+    }
+  }
+  for (let id in VuexStore.state.unapprovedMsgs) {
+    const msgTime = VuexStore.state.unapprovedMsgs[id].time
+    if (msgTime > latestTime) {
+      return false
+    }
+  }
+  return isLatestTx
 }
 
 VuexStore.subscribe((mutation, state) => {
@@ -176,13 +228,11 @@ VuexStore.subscribe((mutation, state) => {
 
         const txHash = txMeta.hash
 
-        const totalAmount = web3Utils.fromWei(
-          web3Utils.toBN(txMeta.txParams.value).add(web3Utils.toBN(txMeta.txParams.gas).mul(web3Utils.toBN(txMeta.txParams.gasPrice)))
-        )
+        const totalAmount = fromWei(toBN(txMeta.txParams.value).add(toBN(txMeta.txParams.gas).mul(toBN(txMeta.txParams.gasPrice))))
         const txObj = {
           created_at: new Date(txMeta.time),
-          from: web3Utils.toChecksumAddress(txMeta.txParams.from),
-          to: web3Utils.toChecksumAddress(txMeta.txParams.to),
+          from: toChecksumAddress(txMeta.txParams.from),
+          to: toChecksumAddress(txMeta.txParams.to),
           total_amount: totalAmount,
           currency_amount: (getCurrencyMultiplier() * totalAmount).toString(),
           selected_currency: state.selectedCurrency,

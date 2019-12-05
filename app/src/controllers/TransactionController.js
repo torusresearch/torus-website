@@ -1,11 +1,18 @@
-import { addABI, decodeMethod } from '../utils/abiDecoder'
+import AbiDecoder from '../utils/abiDecoder'
 const EventEmitter = require('safe-event-emitter')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
+const { sha3 } = require('web3-utils')
 const Transaction = require('ethereumjs-tx')
 const EthQuery = require('ethjs-query')
-const abi = require('human-standard-token-abi')
-addABI(abi)
+const tokenAbi = require('human-standard-token-abi')
+const collectibleAbi = require('human-standard-collectible-abi')
+const { errors: rpcErrors } = require('eth-json-rpc-errors')
+
+const tokenABIDecoder = new AbiDecoder(tokenAbi)
+const collectibleABIDecoder = new AbiDecoder(collectibleAbi)
+const { toChecksumAddress } = require('web3-utils')
+const erc20Contracts = require('eth-contract-metadata')
 
 const TransactionStateManager = require('./TransactionStateManager').default
 const TxGasUtil = require('../utils/TxGasUtil').default
@@ -24,7 +31,8 @@ const {
   TOKEN_METHOD_TRANSFER_FROM,
   SEND_ETHER_ACTION_KEY,
   DEPLOY_CONTRACT_ACTION_KEY,
-  CONTRACT_INTERACTION_KEY
+  CONTRACT_INTERACTION_KEY,
+  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
 } = require('../utils/enums')
 
 const { hexToBn, bnToHex, BnMultiplyByFraction } = require('../utils/utils')
@@ -162,11 +170,11 @@ class TransactionController extends EventEmitter {
           case 'submitted':
             return resolve(finishedTxMeta.hash)
           case 'rejected':
-            return reject(cleanErrorStack(new Error('MetaMask Tx Signature: User denied transaction signature.')))
+            return reject(cleanErrorStack(rpcErrors.eth.userRejectedRequest('MetaMask Tx Signature: User denied transaction signature.')))
           case 'failed':
-            return reject(cleanErrorStack(new Error(finishedTxMeta.err.message)))
+            return reject(cleanErrorStack(rpcErrors.internal(finishedTxMeta.err.message)))
           default:
-            return reject(cleanErrorStack(new Error(`MetaMask Tx Signature: Unknown problem: ${JSON.stringify(finishedTxMeta.txParams)}`)))
+            return reject(cleanErrorStack(rpcErrors.internal(`MetaMask Tx Signature: Unknown problem: ${JSON.stringify(finishedTxMeta.txParams)}`)))
         }
       })
     })
@@ -188,14 +196,21 @@ class TransactionController extends EventEmitter {
       throw new Error('Transaction from address is not valid for this account')
     }
     txUtils.validateTxParams(normalizedTxParams)
-    // construct txMeta
-    const { transactionCategory, getCodeResponse, methodParams } = await this._determineTransactionCategory(txParams)
+    /**
+    `generateTxMeta` adds the default txMeta properties to the passed object.
+    These include the tx's `id`. As we use the id for determining order of
+    txes in the tx-state-manager, it is necessary to call the asynchronous
+    method `this._determineTransactionCategory` after `generateTxMeta`.
+    */
     let txMeta = this.txStateManager.generateTxMeta({
       txParams: normalizedTxParams,
-      type: TRANSACTION_TYPE_STANDARD,
-      transactionCategory,
-      methodParams
+      type: TRANSACTION_TYPE_STANDARD
     })
+    const { transactionCategory, getCodeResponse, methodParams, contractParams } = await this._determineTransactionCategory(txParams)
+    txMeta.transactionCategory = transactionCategory
+    txMeta.methodParams = methodParams
+    txMeta.contractParams = contractParams
+
     this.addTx(txMeta)
 
     try {
@@ -412,6 +427,15 @@ class TransactionController extends EventEmitter {
     const fromAddress = txParams.from
     const ethTx = new Transaction(txParams)
     await this.signEthTx(ethTx, fromAddress)
+
+    // add r,s,v values for provider request purposes see createMetamaskMiddleware
+    // and JSON rpc standard for further explanation
+    txMeta.r = ethUtil.bufferToHex(ethTx.r)
+    txMeta.s = ethUtil.bufferToHex(ethTx.s)
+    txMeta.v = ethUtil.bufferToHex(ethTx.v)
+
+    this.txStateManager.updateTx(txMeta, 'transactions#signTransaction: add r, s, v values')
+
     // set state to signed
     this.txStateManager.setTxStatusSigned(txMeta.id)
     const rawTx = ethUtil.bufferToHex(ethTx.serialize())
@@ -428,7 +452,17 @@ class TransactionController extends EventEmitter {
     const txMeta = this.txStateManager.getTx(txId)
     txMeta.rawTx = rawTx
     this.txStateManager.updateTx(txMeta, 'transactions#publishTransaction')
-    const txHash = await this.query.sendRawTransaction(rawTx)
+    let txHash
+    try {
+      txHash = await this.query.sendRawTransaction(rawTx)
+    } catch (error) {
+      if (error.message.toLowerCase().includes('known transaction')) {
+        txHash = sha3(ethUtil.addHexPrefix(rawTx)).toString('hex')
+        txHash = ethUtil.addHexPrefix(txHash)
+      } else {
+        throw error
+      }
+    }
     this.setTxHash(txId, txHash)
     this.txStateManager.setTxStatusSubmitted(txId)
   }
@@ -592,33 +626,65 @@ class TransactionController extends EventEmitter {
   */
   async _determineTransactionCategory(txParams) {
     const { data, to } = txParams
-    const { name, params } = (data && decodeMethod(data)) || {}
-    const tokenMethodName = [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].find(
-      tokenMethodName => tokenMethodName === name && name.toLowerCase()
-    )
+    const checkSummedTo = toChecksumAddress(to)
+    const decodedERC721 = data && collectibleABIDecoder.decodeMethod(data)
+    const decodedERC20 = data && tokenABIDecoder.decodeMethod(data)
+    let tokenMethodName = ''
+    let methodParams = {}
+    let contractParams = {}
+    const tokenObj = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[toChecksumAddress(to)] : {}
+    // If we know the contract address, mark it as erc20
+    if (tokenObj && tokenObj.erc20 && decodedERC20) {
+      const { name = '', params } = decodedERC20
+      tokenMethodName = [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].find(
+        tokenMethodName => tokenMethodName.toLowerCase() === name.toLowerCase()
+      )
+      methodParams = params
+      contractParams = tokenObj
+    } else if (decodedERC20) {
+      // fallback to erc20
+      const { name = '', params } = decodedERC20
+      tokenMethodName = [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].find(
+        tokenMethodName => tokenMethodName.toLowerCase() === name.toLowerCase()
+      )
+      methodParams = params
+      contractParams.erc20 = true
+      contractParams.symbol = 'ERC20'
+    } else if (decodedERC721) {
+      // Next give preference to erc721
+      const { name = '', params } = decodedERC721
+      // transferFrom & approve of ERC721 can't be distinguished from ERC20
+      tokenMethodName = [COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM].find(tokenMethodName => tokenMethodName.toLowerCase() === name.toLowerCase())
+      methodParams = params
+      contractParams = tokenObj
+      contractParams.erc721 = true
+      contractParams.symbol = 'ERC721'
+      contractParams.decimals = 0
+    }
+
+    // log.info(data, decodedERC20, decodedERC721, tokenMethodName, contractParams, methodParams)
 
     let result
     let code
-    if (!txParams.data) {
-      result = SEND_ETHER_ACTION_KEY
-    } else if (tokenMethodName) {
+
+    if (txParams.data && tokenMethodName) {
       result = tokenMethodName
-    } else if (!to) {
+    } else if (txParams.data && !to) {
       result = DEPLOY_CONTRACT_ACTION_KEY
-    } else {
+    }
+    if (!result) {
       try {
         code = await this.query.getCode(to)
       } catch (e) {
         code = null
         log.warn(e)
       }
-      // For an address with no code, geth will return '0x', and ganache-core v2.2.1 will return '0x0'
       const codeIsEmpty = !code || code === '0x' || code === '0x0'
 
       result = codeIsEmpty ? SEND_ETHER_ACTION_KEY : CONTRACT_INTERACTION_KEY
     }
 
-    return { transactionCategory: result, getCodeResponse: code, methodParams: params }
+    return { transactionCategory: result, getCodeResponse: code, methodParams: methodParams, contractParams: contractParams }
   }
 
   /**
