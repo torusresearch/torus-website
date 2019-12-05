@@ -1,6 +1,6 @@
-import { connect, utils } from '@connext/client'
-import { Node as NodeTypes } from '@counterfactual/types'
-import store from '../utils/channelStore'
+const connext = require('@connext/client')
+const CFTypes = require('@counterfactual/types')
+const channelStore = require('../utils/channelStore').default
 
 class ChannelController {
   /**
@@ -10,7 +10,8 @@ class ChannelController {
   constructor(opts) {
     this.networkController = opts.networkController
     this.keyringController = opts.keyringController
-    this.store = store
+    this.store = opts.store
+    this.initializeConnext()
   }
 
   /**
@@ -24,8 +25,6 @@ class ChannelController {
   initializeConnext() {
     const { ETH_PROVIDER_URL, NODE_URL, LOG_LEVEL } = process.env
 
-    const store = storeFactory()
-
     const xpub = this.keyringController.getChannelXPub()
     const keyGen = this.keyringController.getChannelKeyGen()
 
@@ -35,9 +34,10 @@ class ChannelController {
       ethProviderUrl: ETH_PROVIDER_URL || 'https://rinkeby.indra.connext.network/api/ethprovider', // default to nodes provider
       logLevel: LOG_LEVEL || 5, // default to log everything
       nodeUrl: NODE_URL || 'wss://rinkeby.indra.connext.network/api/messaging', // default to rinkeby
-      store
+      store: channelStore
     }
-    connect(connectOpts).then(channel => {
+
+    connext.connect(connectOpts).then(channel => {
       // save channel in app storage
       this.saveChannel(channel)
     })
@@ -84,15 +84,15 @@ class ChannelController {
    */
   linkTransfer(amount, assetId) {
     const channel = this.getInitdChannel()
-    const paymentId = utils.createPaymentId()
-    const preImage = utils.createPreImage()
+    const paymentId = connext.utils.createPaymentId()
+    const preImage = connext.utils.createPreImage()
     return channel
       .conditionalTransfer({
         assetId,
         amount,
         conditionType: 'LINKED_TRANSFER',
-        paymentId: utils.createPaymentId(),
-        preImage: utils.createPreImage()
+        paymentId: connext.utils.createPaymentId(),
+        preImage: connext.utils.createPreImage()
       })
       .then(transfer => this.saveLinkInfo(paymentId, preImage))
   }
@@ -110,8 +110,8 @@ class ChannelController {
       assetId,
       amount,
       conditionType: 'LINKED_TRANSFER_TO_RECIPIENT',
-      paymentId: utils.createPaymentId(),
-      preImage: utils.createPreImage(),
+      paymentId: connext.utils.createPaymentId(),
+      preImage: connext.utils.createPreImage(),
       recipient
     })
   }
@@ -149,6 +149,7 @@ class ChannelController {
   ///////////////////////////////////////////
   //// Getters / setters
   saveChannel(channel) {
+    console.log('[saveChannel] channel', channel)
     return this.store.updateState({ channel })
   }
 
@@ -177,16 +178,16 @@ class ChannelController {
 
   /**
    * A method for serving our channel provider over a given stream.
-   * @param {*} communicationMux - The stream to provide over.
+   * @param {*} channelMux - The stream to provide over.
    */
-  setupConnection(communicationMux) {
-    this.channelRpcStream = communicationMux.getStream('channel_rpc')
+  setupChannelRpcStream(channelMux) {
+    this.channelRpcStream = channelMux.getStream('channel_rpc')
 
     this.channelRpcStream.on('data', payload => this.onPayload(payload))
   }
 
   async onPayload(payload) {
-    const channel = this.getChannel()
+    const channel = this.getInitdChannel()
 
     const { params, id, method } = payload
 
@@ -225,54 +226,54 @@ class ChannelController {
         case 'chan_config':
           result = await channel.channelProviderConfig(params)
           break
-        case NodeTypes.RpcMethodName.DEPOSIT:
+        case CFTypes.Node.RpcMethodName.DEPOSIT:
           result = await channel.providerDeposit(params)
           break
-        case NodeTypes.RpcMethodName.GET_STATE:
+        case CFTypes.Node.RpcMethodName.GET_STATE:
           result = await channel.getState(params)
           break
-        case NodeTypes.RpcMethodName.GET_APP_INSTANCES:
+        case CFTypes.Node.RpcMethodName.GET_APP_INSTANCES:
           result = await channel.getAppInstances(params)
           break
-        case NodeTypes.RpcMethodName.GET_FREE_BALANCE_STATE:
+        case CFTypes.Node.RpcMethodName.GET_FREE_BALANCE_STATE:
           verifyFields(params, ['tokenAddress', 'multisigAddress'])
           const { tokenAddress } = params
           result = await channel.getFreeBalance(tokenAddress)
           break
-        case NodeTypes.RpcMethodName.GET_PROPOSED_APP_INSTANCES:
+        case CFTypes.Node.RpcMethodName.GET_PROPOSED_APP_INSTANCES:
           result = await channel.getProposedAppInstances(params)
           break
-        case NodeTypes.RpcMethodName.GET_APP_INSTANCE_DETAILS:
+        case CFTypes.Node.RpcMethodName.GET_APP_INSTANCE_DETAILS:
           result = await channel.getAppInstanceDetails(params)
           break
-        case NodeTypes.RpcMethodName.TAKE_ACTION:
+        case CFTypes.Node.RpcMethodName.TAKE_ACTION:
           result = await channel.takeAction(params)
           break
-        case NodeTypes.RpcMethodName.UPDATE_STATE:
+        case CFTypes.Node.RpcMethodName.UPDATE_STATE:
           result = await channel.updateState(params)
           break
-        case NodeTypes.RpcMethodName.PROPOSE_INSTALL:
+        case CFTypes.Node.RpcMethodName.PROPOSE_INSTALL:
           result = await channel.proposeInstallApp(params)
           break
-        case NodeTypes.RpcMethodName.INSTALL_VIRTUAL:
+        case CFTypes.Node.RpcMethodName.INSTALL_VIRTUAL:
           result = await channel.installVirtualApp(params)
           break
-        case NodeTypes.RpcMethodName.INSTALL:
+        case CFTypes.Node.RpcMethodName.INSTALL:
           result = await channel.installApp(params)
           break
-        case NodeTypes.RpcMethodName.UNINSTALL:
+        case CFTypes.Node.RpcMethodName.UNINSTALL:
           result = await channel.uninstallApp(params)
           break
-        case NodeTypes.RpcMethodName.UNINSTALL_VIRTUAL:
+        case CFTypes.Node.RpcMethodName.UNINSTALL_VIRTUAL:
           result = await channel.uninstallVirtualApp(params)
           break
-        case NodeTypes.RpcMethodName.REJECT_INSTALL:
+        case CFTypes.Node.RpcMethodName.REJECT_INSTALL:
           result = await channel.rejectInstallApp(params)
           break
-        case NodeTypes.RpcMethodName.WITHDRAW:
+        case CFTypes.Node.RpcMethodName.WITHDRAW:
           result = await channel.providerWithdraw(params)
           break
-        case NodeTypes.RpcMethodName.WITHDRAW_COMMITMENT:
+        case CFTypes.Node.RpcMethodName.WITHDRAW_COMMITMENT:
           result = await channel.withdrawCommitment(params)
           break
         default:
