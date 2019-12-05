@@ -5,7 +5,7 @@
       <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation>
         <v-layout wrap>
           <v-flex xs12 sm6 px-4 mb-5>
-            <span class="subtitle-2">Select item</span>
+            <span class="subtitle-2">{{ $vuetify.lang.t('$vuetify.walletTransfer.selectItem') }}</span>
             <div v-if="selectedItemDisplay">
               <v-menu transition="slide-y-transition" bottom>
                 <template v-slot:activator="{ on }">
@@ -47,7 +47,7 @@
                   <v-divider class="mx-3"></v-divider>
                   <v-subheader class="body-2" v-if="finalBalancesArrayTokens.length > 0">
                     <v-icon small left class="mr-2">$vuetify.icons.token</v-icon>
-                    TOKENS
+                    {{ $vuetify.lang.t('$vuetify.walletTransfer.tokens') }}
                   </v-subheader>
                   <v-list-item v-for="token in finalBalancesArrayTokens" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
                     <v-list-item-icon class="ml-8 mr-1">
@@ -64,7 +64,7 @@
                   <v-divider class="mx-3"></v-divider>
                   <v-subheader class="body-2" v-if="collectibles.length > 0">
                     <v-icon small left class="mr-2">$vuetify.icons.collectibles</v-icon>
-                    COLLECTIBLES
+                    {{ $vuetify.lang.t('$vuetify.walletTransfer.collectibles') }}
                   </v-subheader>
                   <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
                     <v-list-item-icon class="ml-8 mr-1">
@@ -79,7 +79,7 @@
             </div>
           </v-flex>
           <v-flex xs12 sm6 mb-5 px-4 v-if="selectedItem">
-            <span class="subtitle-2">Account Balance</span>
+            <span class="subtitle-2">{{ $vuetify.lang.t('$vuetify.walletTransfer.accountBalance') }}</span>
             <component-loader class="mt-2" v-if="!weiBalanceLoaded" />
             <div v-else>
               <span id="account-balance" class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
@@ -92,7 +92,7 @@
           <v-flex xs12 sm6 px-4>
             <v-layout wrap>
               <v-flex xs12>
-                <span class="subtitle-2">Transfer Mode</span>
+                <span class="subtitle-2">{{ $vuetify.lang.t('$vuetify.walletTransfer.transferMode') }}</span>
               </v-flex>
               <v-flex xs12 sm6 class="recipient-verifier-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
                 <v-select
@@ -147,14 +147,14 @@
         <v-layout wrap>
           <v-flex xs12 px-4 sm6 class="you-send-container">
             <div>
-              <span class="subtitle-2">You send</span>
+              <span class="subtitle-2">{{ $vuetify.lang.t('$vuetify.walletTransfer.youSend') }}</span>
               <a
                 id="send-all-btn"
                 class="float-right primary--text subtitle-2"
                 v-if="contractType !== CONTRACT_TYPE_ERC721 && !isSendAll"
                 @click="sendAll"
               >
-                Send All
+                {{ $vuetify.lang.t('$vuetify.walletTransfer.sendAll') }}
               </a>
               <a id="send-all-reset-btn" class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">Reset</a>
             </div>
@@ -224,7 +224,7 @@
         <v-layout wrap v-if="contractType !== CONTRACT_TYPE_ERC721">
           <v-flex xs12 px-4 sm6>
             <div>
-              <span class="subtitle-2">Total Cost</span>
+              <span class="subtitle-2">{{ $vuetify.lang.t('$vuetify.walletTransfer.totalCost') }}</span>
             </div>
             <v-text-field
               id="total-cost"

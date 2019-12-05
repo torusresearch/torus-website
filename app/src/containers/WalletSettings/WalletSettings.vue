@@ -12,7 +12,7 @@
           >
             <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.lock'" />
             <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'subtitle-1'">
-              Privacy and Security
+              {{ $vuetify.lang.t('$vuetify.walletSettings.privacySecurity') }}
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
@@ -29,7 +29,7 @@
           >
             <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.globe'" />
             <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'subtitle-1'">
-              Network
+              {{ $vuetify.lang.t('$vuetify.walletSettings.network') }}
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
@@ -46,7 +46,7 @@
           >
             <v-icon size="12" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.list'" />
             <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'subtitle-1'">
-              Address Book
+              {{ $vuetify.lang.t('$vuetify.walletSettings.addressBook') }}
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
@@ -63,7 +63,7 @@
           >
             <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.server'" />
             <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'subtitle-1'">
-              Display
+              {{ $vuetify.lang.t('$vuetify.walletSettings.display') }}
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>

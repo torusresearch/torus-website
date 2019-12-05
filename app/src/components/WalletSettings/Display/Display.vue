@@ -1,6 +1,6 @@
 <template>
   <div class="select-theme-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
-    <div class="body-2 text_1--text mb-1 px-1">Select Theme</div>
+    <div class="body-2 text_1--text mb-1 px-1">{{ $vuetify.lang.t('$vuetify.walletSettings.selectTheme') }}</div>
     <v-layout wrap>
       <v-flex xs12 md6 px-1 mb-1>
         <v-menu class="" transition="slide-y-transition" bottom>
@@ -38,7 +38,7 @@
             />
           </v-flex>
           <v-flex xs12 sm4 :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-2'">
-            <v-btn color="primary" block depressed class="px-12 py-1" @click="saveTheme">Save</v-btn>
+            <v-btn color="primary" block depressed class="px-12 py-1" @click="saveTheme">{{ $vuetify.lang.t('$vuetify.walletSettings.save') }}</v-btn>
           </v-flex>
           <v-flex xs12 v-if="$vuetify.breakpoint.xsOnly" class="mt-2">
             <notification
@@ -81,7 +81,7 @@ export default {
           this.selectedTheme = ''
           this.selectThemeAlert = true
           this.selectThemeAlertType = 'success'
-          this.selectThemeAlertText = 'Successfully saved theme'
+          this.selectThemeAlertText = $vuetify.lang.t('$vuetify.walletSettings.successSaveTheme')
         })
         .catch(err => {
           this.selectedTheme = ''

@@ -55,37 +55,37 @@ export default {
       defaultSort: 'date',
       headers: [
         {
-          text: 'Transaction',
+          text: this.$vuetify.lang.t('$vuetify.walletActivity.headerTransaction'),
           value: 'action',
           align: 'left',
           width: '120px'
         },
         {
-          text: 'From',
+          text: this.$vuetify.lang.t('$vuetify.walletActivity.headerFrom'),
           value: 'from',
           align: 'left',
           class: 'address-col'
         },
         {
-          text: 'To',
+          text: this.$vuetify.lang.t('$vuetify.walletActivity.headerTo'),
           value: 'to',
           align: 'left',
           class: 'address-col'
         },
         {
-          text: 'Amount',
+          text: this.$vuetify.lang.t('$vuetify.walletActivity.headerAmount'),
           value: 'amount',
           align: 'right',
           width: '200px'
         },
         {
-          text: 'Date',
+          text: this.$vuetify.lang.t('$vuetify.walletActivity.headerDate'),
           value: 'date',
           align: 'right',
           width: '80px'
         },
         {
-          text: 'Status',
+          text: this.$vuetify.lang.t('$vuetify.walletActivity.headerStatus'),
           value: 'status',
           align: 'center'
         }

@@ -72,18 +72,6 @@ export default {
     return {
       pageHeader: WALLET_HEADERS_TRANSFER,
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
-      headers: [
-        {
-          text: 'Date',
-          align: 'left',
-          value: 'date'
-        },
-        { text: 'From', value: 'slicedFrom', align: 'center' },
-        { text: 'To', value: 'slicedTo', align: 'center' },
-        { text: 'Amount', value: 'totalAmountString', align: 'center' },
-        { text: 'Value', value: 'currencyAmountString', align: 'center' },
-        { text: 'Status', value: 'status', align: 'center' }
-      ],
       pastOrders: [],
       actionTypes: [ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_TOPUP],
       selectedAction: ACTIVITY_ACTION_ALL,

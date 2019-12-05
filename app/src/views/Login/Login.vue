@@ -11,7 +11,7 @@
               <span class="display-2 font-weight-bold">{{ $vuetify.lang.t('$vuetify.login.welcome') }} Torus</span>
             </v-flex>
             <v-flex class="body-1" mb-6 xs9 sm7 ml-auto mr-auto>
-              <span>You are just one step away from getting your digital wallet for your cryptocurrencies</span>
+              <span>{{ $vuetify.lang.t('$vuetify.login.message') }}</span>
             </v-flex>
             <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
               <v-btn
@@ -23,11 +23,11 @@
                 @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
               >
                 <img :src="require('../../../public/img/icons/google.svg')" class="mr-2" />
-                Sign in with Google
+                {{ $vuetify.lang.t('$vuetify.login.signIn') }} Google
               </v-btn>
             </v-flex>
             <v-flex class="body-1" mb-2 xs9 sm7 ml-auto mr-auto>
-              <span>Or, use another account:</span>
+              <span>{{ $vuetify.lang.t('$vuetify.login.otherAccount') }}:</span>
             </v-flex>
             <v-flex xs9 sm7 ml-auto mr-auto mb-2>
               <v-layout wrap class="other-login-container">
@@ -38,7 +38,7 @@
                     block
                     class="other-login-btn"
                     type="button"
-                    title="Login with Facebook"
+                    :title="`${$vuetify.lang.t('$vuetify.login.loginWith')} Facebook`"
                     @click="triggerLogin({ verifier: FACEBOOK, calledFromEmbed: false })"
                   >
                     <img width="24" :src="require('../../../public/img/icons/facebook.svg')" />
@@ -51,7 +51,7 @@
                     block
                     class="other-login-btn"
                     type="button"
-                    title="Login with Reddit"
+                    :title="`${$vuetify.lang.t('$vuetify.login.loginWith')} Reddit`"
                     @click="triggerLogin({ verifier: REDDIT, calledFromEmbed: false })"
                   >
                     <img width="32" :src="require('../../../public/img/icons/reddit.svg')" />
@@ -64,7 +64,7 @@
                     block
                     class="other-login-btn"
                     type="button"
-                    title="Login with Twitch"
+                    :title="`${$vuetify.lang.t('$vuetify.login.loginWith')} Twitch`"
                     @click="triggerLogin({ verifier: TWITCH, calledFromEmbed: false })"
                   >
                     <img width="24" :src="require('../../../public/img/icons/twitch.svg')" />
@@ -77,7 +77,7 @@
                     block
                     class="other-login-btn"
                     type="button"
-                    title="Login with Discord"
+                    :title="`${$vuetify.lang.t('$vuetify.login.loginWith')} Discord`"
                     @click="triggerLogin({ verifier: DISCORD, calledFromEmbed: false })"
                   >
                     <img width="24" :src="require('../../../public/img/icons/discord.svg')" />
@@ -87,9 +87,9 @@
             </v-flex>
             <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
               <span>
-                By clicking Login, you accept our
+                {{ $vuetify.lang.t('$vuetify.login.acceptTerms') }}
                 <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
-                  <span class="primary--text">Terms and Conditions</span>
+                  <span class="primary--text">{{ $vuetify.lang.t('$vuetify.login.termsAndConditions') }}</span>
                 </a>
               </span>
             </v-flex>
@@ -99,12 +99,12 @@
               <img width="200px" height="auto" :src="require('../../../public/images/blublu-cross-arms.png')" />
             </v-flex>
             <v-flex xs12 mt-10>
-              <div class="text-center headline font-weight-bold">You have been logged out</div>
+              <div class="text-center headline font-weight-bold">{{ $vuetify.lang.t('$vuetify.login.beenLoggedOut') }}</div>
             </v-flex>
             <v-flex xs12 mt-4>
               <div class="text-center">
                 <v-btn large depressed color="primary" class="px-12 title" type="button" @click="returnHome">
-                  Return Home
+                  {{ $vuetify.lang.t('$vuetify.login.returnHome') }}
                 </v-btn>
               </div>
             </v-flex>
@@ -113,10 +113,10 @@
         <v-flex xs12 md6 fill-height class="hidden-sm-and-down login-panel-right">
           <v-layout class="pb-8" wrap fill-height align-end>
             <v-flex class="mb-3 text-center" xs9 sm7 ml-auto mr-auto>
-              <div class="display-1 white--text font-weight-bold">Frictionless Logins</div>
-              <div class="display-1 white--text mb-3">for DApps</div>
+              <div class="display-1 white--text font-weight-bold">{{ $vuetify.lang.t('$vuetify.login.frictionless') }}</div>
+              <div class="display-1 white--text mb-3">{{ $vuetify.lang.t('$vuetify.login.forDapps') }}</div>
               <div class="caption white--text">
-                A simple and secure gateway to the decentralized ecosystem via OAuth logins
+                {{ $vuetify.lang.t('$vuetify.login.simpleSecure') }}
               </div>
             </v-flex>
           </v-layout>

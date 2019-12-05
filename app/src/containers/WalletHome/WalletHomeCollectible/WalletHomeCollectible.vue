@@ -108,13 +108,13 @@ export default {
     return {
       breadcrumb: [
         {
-          text: 'Home',
+          text: this.$vuetify.lang.t('$vuetify.walletHome.home'),
           disabled: false,
           exact: true,
           to: '/wallet/home'
         },
         {
-          text: 'Collectibles',
+          text: this.$vuetify.lang.t('$vuetify.walletHome.collectibles'),
           disabled: false,
           exact: true,
           to: '/wallet/home#collectibles'

@@ -5,14 +5,14 @@
         <v-flex xs12>
           <p class="body-2">
             <span class="text-capitalize selected-provider">{{ selectedProvider }}</span>
-            is a secure way to buy cryptocurrency with your payment method. Start by entering an amount below to get a quote before making a purchase
+            {{ $vuetify.lang.t('$vuetify.walletTopUp.description') }}
           </p>
         </v-flex>
 
         <v-flex xs12>
           <v-form ref="paymentForm" v-model="formValid" lazy-validation @submit.prevent>
             <v-flex xs12>
-              <div class="subtitle-2">Buy</div>
+              <div class="subtitle-2">{{ $vuetify.lang.t('$vuetify.walletTopUp.wannaBuy') }}</div>
               <v-select
                 id="cryptocurrency"
                 class="cryptocurrency-selector"
@@ -24,7 +24,7 @@
               ></v-select>
             </v-flex>
             <v-flex xs12>
-              <div class="subtitle-2">Send</div>
+              <div class="subtitle-2">{{ $vuetify.lang.t('$vuetify.walletTopUp.youSend') }}</div>
               <v-text-field
                 id="you-send"
                 class="unique-hint"
@@ -46,18 +46,23 @@
                   <div class="v-messages__wrapper">
                     <div class="v-messages__message d-flex text_2--text">
                       <v-flex class="font-weight-medium">
-                        <span v-if="selectedProviderObj.includeFees">Includes &nbsp;&nbsp;</span>
-                        <span v-else>Doesn't Include &nbsp;&nbsp;</span>
+                        <span v-if="selectedProviderObj.includeFees">{{ $vuetify.lang.t('$vuetify.walletTopUp.includes') }} &nbsp;&nbsp;</span>
+                        <span v-else>{{ $vuetify.lang.t('$vuetify.walletTopUp.doesntInclude') }} &nbsp;&nbsp;</span>
                         <span v-html="selectedProviderObj.line2 || ''"></span>
                         <HelpTooltip
-                          title="Service Fee"
+                          :title="$vuetify.lang.t('$vuetify.walletTopUp.serviceFee')"
                           :description="
-                            `This fee goes entirely to ${selectedProvider} for their services in card processing, mitigation and fraud detection`
+                            `${$vuetify.lang.t('$vuetify.walletTopUp.serviceFeeDesc1')} ${selectedProvider} ${$vuetify.lang.t(
+                              '$vuetify.walletTopUp.serviceFeeDesc2'
+                            )}`
                           "
                         ></HelpTooltip>
                       </v-flex>
                       <v-flex grow-shrink-0>
-                        <span>min {{ minOrderValue }}, max {{ maxOrderValue }} {{ selectedCurrency }}*</span>
+                        <span>
+                          {{ $vuetify.lang.t('$vuetify.walletTopUp.min') }} {{ minOrderValue }}, {{ $vuetify.lang.t('$vuetify.walletTopUp.max') }}
+                          {{ maxOrderValue }} {{ selectedCurrency }}*
+                        </span>
                       </v-flex>
                     </div>
                   </div>
@@ -67,9 +72,9 @@
 
             <v-flex xs12>
               <div class="subtitle-2">
-                Receive
+                {{ $vuetify.lang.t('$vuetify.walletTopUp.receive') }}
                 <span class="caption float-right text_2--text">
-                  Rate : 1 {{ selectedCryptoCurrency }} = {{ displayRateString }} {{ selectedCurrency }}
+                  {{ $vuetify.lang.t('$vuetify.walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency }} = {{ displayRateString }} {{ selectedCurrency }}
                 </span>
               </div>
               <v-text-field
@@ -78,7 +83,7 @@
                 placeholder="0.00"
                 :suffix="selectedCryptoCurrency"
                 :value="cryptoCurrencyValue"
-                hint="Please prepare your Identity Card/Passport to complete the purchase."
+                :hint="$vuetify.lang.t('$vuetify.walletTopUp.receiveHint')"
                 persistent-hint
                 outlined
               ></v-text-field>
@@ -92,26 +97,28 @@
               <template v-slot:activator="{ on }">
                 <span v-on="on">
                   <v-btn class="px-10" :disabled="!formValid" x-large depressed color="primary" type="submit" @click.prevent="sendOrder">
-                    Continue
+                    {{ $vuetify.lang.t('$vuetify.walletTopUp.continue') }}
                   </v-btn>
                 </span>
               </template>
-              <span>Resolve the errors</span>
+              <span>{{ $vuetify.lang.t('$vuetify.walletTopUp.resolveErrors') }}</span>
             </v-tooltip>
-            <div class="caption text_2--text">You will be redirected to the third party page</div>
+            <div class="caption text_2--text">{{ $vuetify.lang.t('$vuetify.walletTopUp.redirectMessage') }}</div>
           </div>
         </v-flex>
 
         <v-flex class="mt-10 text-center text_2--text caption">
-          Feel free to
-          <a href="mailto:hello@tor.us?Subject=Topup%20Support%20or%20Inquiry" target="_blank">contact us</a>
-          for support or any inquiry
+          {{ $vuetify.lang.t('$vuetify.walletTopUp.contact1') }}
+          <a href="mailto:hello@tor.us?Subject=Topup%20Support%20or%20Inquiry" target="_blank">
+            {{ $vuetify.lang.t('$vuetify.walletTopUp.contact2') }}
+          </a>
+          {{ $vuetify.lang.t('$vuetify.walletTopUp.contact3') }}
         </v-flex>
       </v-layout>
     </v-card>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
       {{ snackbarText }}
-      <v-btn dark text @click="snackbar = false">Close</v-btn>
+      <v-btn dark text @click="snackbar = false">{{ $vuetify.lang.t('$vuetify.walletTopUp.close') }}</v-btn>
     </v-snackbar>
   </div>
 </template>

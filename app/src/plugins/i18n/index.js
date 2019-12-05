@@ -1,7 +1,7 @@
 import en from './en.json'
-import de from './en.json'
+import de from './de.json'
 
-export const defaultLocale = 'en'
+export const defaultLocale = 'de'
 
 export const languages = {
   en: en,

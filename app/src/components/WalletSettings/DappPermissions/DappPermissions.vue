@@ -5,18 +5,17 @@
         <v-layout mt-4 wrap class="wallet-dapp-permission">
           <v-flex xs12 px-4 class="title-container mb-4">
             <div class="title">
-              <div class="d-inline font-weight-bold headline">Dapp Permission</div>
+              <div class="d-inline font-weight-bold headline">{{ $vuetify.lang.t('$vuetify.walletSettings.dappPermission') }}</div>
               <p class="text">
                 <small>
-                  As a form of security, all transactions require your signature for validation. You may add and allow certain Dapps to transact under
-                  certain circumstances.
+                  {{ $vuetify.lang.t('$vuetify.walletSettings.dappPermissionDesc') }}
                 </small>
               </p>
             </div>
 
             <v-btn depressed color="primary" @click="addPermission">
               <v-icon left>$vuetify.icons.add</v-icon>
-              Add a new List
+              {{ $vuetify.lang.t('$vuetify.walletSettings.addNewList') }}
             </v-btn>
           </v-flex>
           <v-flex xs12 class="px-4">
@@ -32,7 +31,7 @@
         </v-layout>
         <v-layout mt-4 pr-4>
           <v-spacer></v-spacer>
-          <v-btn id="close-btn" large text @click="onClose">Close</v-btn>
+          <v-btn id="close-btn" large text @click="onClose">{{ $vuetify.lang.t('$vuetify.walletSettings.close') }}</v-btn>
         </v-layout>
       </v-container>
     </v-card-text>

@@ -1,7 +1,7 @@
 <template>
   <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
     <v-form ref="networkForm" v-model="formValid" lazy-validation @submit.prevent="">
-      <span class="subtitle-2">Select Network</span>
+      <span class="subtitle-2">{{ $vuetify.lang.t('$vuetify.walletSettings.selectNetwork') }}</span>
       <v-layout wrap>
         <v-flex xs12 md6>
           <v-select
@@ -21,15 +21,25 @@
 
       <template v-if="isRPCSelected">
         <v-flex xs12 md6>
-          <v-text-field placeholder="Enter Network Name" :rules="[rules.required]" outlined v-model="rpc.networkName"></v-text-field>
+          <v-text-field
+            :placeholder="$vuetify.lang.t('$vuetify.walletSettings.enterNetworkName')"
+            :rules="[rules.required]"
+            outlined
+            v-model="rpc.networkName"
+          ></v-text-field>
         </v-flex>
 
         <v-flex xs12 md6>
-          <v-text-field placeholder="Enter RPC URL" :rules="[rules.required]" outlined v-model="rpc.host"></v-text-field>
+          <v-text-field
+            :placeholder="$vuetify.lang.t('$vuetify.walletSettings.enterRpc')"
+            :rules="[rules.required]"
+            outlined
+            v-model="rpc.host"
+          ></v-text-field>
         </v-flex>
 
         <v-flex xs12 md6>
-          <v-text-field placeholder="Enter Chain id" outlined v-model="rpc.chainId"></v-text-field>
+          <v-text-field :placeholder="$vuetify.lang.t('$vuetify.walletSettings.enterChainId')" outlined v-model="rpc.chainId"></v-text-field>
         </v-flex>
 
         <v-flex xs12 md6>
@@ -46,10 +56,12 @@
               <v-tooltip bottom :disabled="formValid">
                 <template v-slot:activator="{ on }">
                   <span v-on="on">
-                    <v-btn block :disabled="!formValid" depressed color="primary" @click="setRPC">Save</v-btn>
+                    <v-btn block :disabled="!formValid" depressed color="primary" @click="setRPC">
+                      {{ $vuetify.lang.t('$vuetify.walletSettings.save') }}
+                    </v-btn>
                   </span>
                 </template>
-                <span>Resolve the errors</span>
+                <span>{{ $vuetify.lang.t('$vuetify.walletSettings.resolveErrors') }}</span>
               </v-tooltip>
             </v-flex>
             <v-flex xs12 v-if="$vuetify.breakpoint.xsOnly" class="mt-2">
