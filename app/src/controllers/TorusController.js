@@ -323,6 +323,7 @@ export default class TorusController extends EventEmitter {
         .deserialize(keyArray)
         .then(resp => {
           log.info('keyring deserialized')
+          this.initConnextChannel()
           resolve()
         })
         .catch(err => {
@@ -334,6 +335,10 @@ export default class TorusController extends EventEmitter {
 
     // this.setupControllerConnection()
     // this.accountTracker._updateAccounts()
+  }
+
+  initConnextChannel() {
+    this.channelController.initializeConnext()
   }
 
   async addAccount(key, address) {

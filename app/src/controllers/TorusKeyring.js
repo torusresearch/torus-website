@@ -43,6 +43,9 @@ export default class TorusKeyring extends EventEmitter {
   }
 
   generateChannelWallet(privateKey) {
+    if (!privateKey) {
+      return null
+    }
     const CF_PATH = `m/44'/60'/0'/25446`
     const entropy = ethUtil.keccak256(privateKey + 'connext')
     const mnemonic = bip39.entropyToMnemonic(entropy)
@@ -54,7 +57,7 @@ export default class TorusKeyring extends EventEmitter {
     return new Promise((resolve, reject) => {
       try {
         this.wallets = privateKeys.map(this.generateWallet)
-        this.channelWallet = this.generateChannelWallet(privateKeys[0])
+        this.channelWallet = this.generateChannelWallet(privateKeys[0] || '')
         resolve()
       } catch (e) {
         reject(e)
@@ -89,15 +92,26 @@ export default class TorusKeyring extends EventEmitter {
   }
 
   getChannelXPub() {
+    if (!this.channelWallet) {
+      console.error('No Channel Wallet generated!')
+      return
+    }
     const xpub = this.channelWallet.publicExtendedKey()
     return xpub
   }
 
   getChannelKeyGen() {
+    if (!this.channelWallet) {
+      console.error('No Channel Wallet generated!')
+      return
+    }
     const hdNode = this.channelWallet
     const keyGen = index => {
-      const res = hdNode.derivePath(index)
-      return Promise.resolve(res.privateKey)
+      const result = hdNode
+        .deriveChild(index)
+        .getWallet()
+        .getPrivateKeyString()
+      return Promise.resolve(result)
     }
     return keyGen
   }

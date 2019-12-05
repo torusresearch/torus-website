@@ -11,7 +11,6 @@ class ChannelController {
     this.networkController = opts.networkController
     this.keyringController = opts.keyringController
     this.store = opts.store
-    this.initializeConnext()
   }
 
   /**
@@ -37,10 +36,13 @@ class ChannelController {
       store: channelStore
     }
 
-    connext.connect(connectOpts).then(channel => {
-      // save channel in app storage
-      this.saveChannel(channel)
-    })
+    connext
+      .connect(connectOpts)
+      .then(channel => {
+        // save channel in app storage
+        this.saveChannel(channel)
+      })
+      .catch(error => console.error(error))
   }
 
   ///////////////////////////////////////////
@@ -149,7 +151,6 @@ class ChannelController {
   ///////////////////////////////////////////
   //// Getters / setters
   saveChannel(channel) {
-    console.log('[saveChannel] channel', channel)
     return this.store.updateState({ channel })
   }
 
