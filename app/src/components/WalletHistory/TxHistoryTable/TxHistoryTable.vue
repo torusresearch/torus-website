@@ -2,12 +2,7 @@
   <div class="activity-table" :data-count="transactions.length" :data-per-page="itemsPerPage" :data-count-transfer="nonTopupTransactionCount">
     <v-data-iterator :items="filteredTransactions" :items-per-page.sync="itemsPerPage" :page.sync="page" hide-default-footer>
       <template v-slot:default="props">
-        <transaction-details
-          v-for="transaction in props.items"
-          :key="transaction.id"
-          @onCancelTransaction="cancelTransaction"
-          :transaction="transaction"
-        />
+        <transaction-details v-for="transaction in props.items" :key="transaction.id" :transaction="transaction" />
       </template>
     </v-data-iterator>
 
@@ -54,7 +49,6 @@ export default {
       expanded: [],
       pagination: {},
       defaultSort: 'date',
-      speedUpTx: false,
       headers: [
         {
           text: 'Transaction',
@@ -197,9 +191,6 @@ export default {
     },
     formatTime(time) {
       return time.toTimeString().substring(0, 8)
-    },
-    cancelTransaction(data) {
-      console.log('cancelTransaction', data)
     }
   }
 }
