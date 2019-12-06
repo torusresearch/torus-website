@@ -37,6 +37,7 @@ import CloseIcon from './CloseIcon'
 import DownloadIcon from './DownloadIcon'
 import CollectibleIcon from './CollectibleIcon'
 import TokenIcon from './TokenIcon'
+import QrIcon from './QrIcon'
 
 export default {
   select: {
@@ -155,5 +156,8 @@ export default {
   },
   token: {
     component: TokenIcon
+  },
+  qr: {
+    component: QrIcon
   }
 }
