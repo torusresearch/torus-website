@@ -61,8 +61,8 @@
                 <network-display :network="transaction.networkType"></network-display>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item v-if="transaction.action !== ACTIVITY_ACTION_TOPUP">
-              <v-list-item-content class="details-value text_2--text text-right">
+            <v-list-item v-if="transaction.etherscanLink">
+              <v-list-item-content class="details-value text_2--text text-right mt-1">
                 <a class="etherscan-lnk" color="primary" :href="transaction.etherscanLink" target="_blank">View On Etherscan</a>
               </v-list-item-content>
             </v-list-item>

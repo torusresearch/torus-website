@@ -48,6 +48,7 @@ import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getE
 import torus from '../../torus'
 import { patch } from '../../utils/httpHelpers'
 import {
+  WYRE,
   WALLET_HEADERS_TRANSFER,
   ACTIVITY_ACTION_ALL,
   ACTIVITY_ACTION_SEND,
@@ -244,7 +245,7 @@ export default {
             currencyAmountString: x.currencyAmountString,
             amount: x.amount,
             status: x.status.toLowerCase(),
-            etherscanLink: x.etherscanLink || ''
+            etherscanLink: x.etherscanLink ? (x.from.toLowerCase() === WYRE ? 'https://etherscan.io/tx/' + x.etherscanLink : '') : ''
           })
 
           return acc
