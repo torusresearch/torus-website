@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="qrDialoag" width="450">
     <template v-slot:activator="{ on }">
-      <v-icon small class="primary--text" v-text="'$vuetify.icons.key'" v-on="on" />
+      <v-icon small class="primary--text" v-text="'$vuetify.icons.qr'" v-on="on" />
     </template>
     <v-card>
       <div class="text-right">
