@@ -41,8 +41,8 @@ let totalFailCount = 0
 // stream to send logged in status
 const statusStream = torus.communicationMux.getStream('status')
 const oauthStream = torus.communicationMux.getStream('oauth')
-
-var walletWindow
+const userInfoStream = torus.communicationMux.getStream('user_info')
+const providerChangeStream = torus.communicationMux.getStream('provider_change')
 
 export default {
   logOut({ commit, dispatch }, payload) {
@@ -116,13 +116,41 @@ export default {
       log.error('etherscan balance fetch failed')
     }
   },
-  showProviderChangePopup(context, payload) {
-    var bc = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
-    window.open(
-      `${baseRoute}providerchange?integrity=true&instanceId=${torus.instanceId}`,
-      '_blank',
-      'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
-    )
+  showProviderChangePopup({ dispatch }, payload) {
+    const { override, preopenInstanceId } = payload
+    const handleSuccess = () => {
+      setTimeout(() => {
+        providerChangeStream.write({
+          name: 'provider_change_status',
+          data: {
+            success: true
+          }
+        })
+      }, 100)
+    }
+
+    const handleDeny = err => {
+      providerChangeStream.write({
+        name: 'provider_change_status',
+        data: {
+          success: false,
+          err: err
+        }
+      })
+    }
+    if (override) {
+      return dispatch('setProviderType', payload)
+        .then(handleSuccess)
+        .catch(handleDeny)
+    }
+    const bc = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
+    const finalUrl = `${baseRoute}providerchange?integrity=true&instanceId=${torus.instanceId}`
+    const providerChangeWindow = new PopupHandler({
+      url: finalUrl,
+      preopenInstanceId,
+      target: '_blank',
+      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=600,width=500'
+    })
     bc.onmessage = async ev => {
       if (ev.data === 'popup-loaded') {
         await bc.postMessage({
@@ -131,17 +159,62 @@ export default {
             payload: payload
           }
         })
+      } else if (ev.data && ev.data.type === 'confirm-provider-change' && ev.data.approve) {
+        log.info('Provider change approved', ev.data.payload)
+        dispatch('setProviderType', ev.data.payload)
+          .then(() => {
+            handleSuccess()
+            bc.close()
+            providerChangeWindow.close()
+          })
+          .catch(err => {
+            handleDeny(err)
+            bc.close()
+            providerChangeWindow.close()
+          })
+      } else if (ev.data && ev.data.type === 'deny-provider-change') {
+        log.info('Provider change denied')
+        handleDeny(new Error('user denied provider change request'))
         bc.close()
+        providerChangeWindow.close()
       }
     }
+
+    providerChangeWindow.open()
+    providerChangeWindow.once('close', () => {
+      bc.close()
+      handleDeny(new Error('user denied provider change request'))
+    })
   },
-  showUserInfoRequestPopup(context, payload) {
+  showUserInfoRequestPopup({ dispatch, state }, payload) {
+    const { preopenInstanceId } = payload
+    log.info(preopenInstanceId, 'userinfo')
     var bc = new BroadcastChannel(`user_info_request_channel_${torus.instanceId}`, broadcastChannelOptions)
-    window.open(
-      `${baseRoute}userinforequest?integrity=true&instanceId=${torus.instanceId}`,
-      '_blank',
-      'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=600'
-    )
+    const finalUrl = `${baseRoute}userinforequest?integrity=true&instanceId=${torus.instanceId}`
+    const userInfoRequestWindow = new PopupHandler({
+      url: finalUrl,
+      preopenInstanceId,
+      target: '_blank',
+      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=600,width=500'
+    })
+
+    const handleDeny = () => {
+      log.info('User Info Request denied')
+      dispatch('updateUserInfoAccess', { approved: false })
+      userInfoStream.write({ name: 'user_info_response', data: { payload: {}, approved: false } })
+      bc.close()
+      userInfoRequestWindow.close()
+    }
+    const handleSuccess = () => {
+      log.info('User Info Request approved')
+      dispatch('updateUserInfoAccess', { approved: true })
+      const returnObj = JSON.parse(JSON.stringify(state.userInfo))
+      delete returnObj.verifierParams
+      userInfoStream.write({ name: 'user_info_response', data: { payload: returnObj, approved: true } })
+      bc.close()
+      userInfoRequestWindow.close()
+    }
+
     bc.onmessage = async ev => {
       if (ev.data === 'popup-loaded') {
         await bc.postMessage({
@@ -150,23 +223,24 @@ export default {
             payload: payload
           }
         })
-        bc.close()
+      } else if (ev.data && ev.data.type === 'confirm-user-info-request' && ev.data.approve) {
+        handleSuccess()
+      } else if (ev.data && ev.data.type === 'deny-user-info-request') {
+        handleDeny()
       }
     }
+
+    userInfoRequestWindow.open()
+    userInfoRequestWindow.once('close', () => {
+      handleDeny()
+    })
   },
   showWalletPopup(context, payload) {
-    walletWindow =
-      walletWindow ||
-      window.open(
-        `${baseRoute}wallet${payload.path || ''}?integrity=true&instanceId=${torus.instanceId}`,
-        '_blank',
-        'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=450,width=750'
-      )
-    walletWindow.blur()
-    setTimeout(walletWindow.focus(), 0)
-    walletWindow.onbeforeunload = function() {
-      walletWindow = undefined
-    }
+    const finalUrl = `${baseRoute}wallet${payload.path || ''}?integrity=true&instanceId=${torus.instanceId}`
+    const walletWindow = new PopupHandler({ url: finalUrl })
+    walletWindow.open()
+    walletWindow.window.blur()
+    setTimeout(walletWindow.window.focus(), 0)
   },
   updateUserInfo(context, payload) {
     context.commit('setUserInfo', payload.userInfo)
@@ -275,7 +349,7 @@ export default {
       return torus.torusController.networkController.setProviderType(networkType.host)
     }
   },
-  triggerLogin({ dispatch }, { calledFromEmbed, verifier }) {
+  triggerLogin({ dispatch }, { calledFromEmbed, verifier, preopenInstanceId }) {
     const { torusNodeEndpoints } = config
     const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
 
@@ -295,7 +369,7 @@ export default {
       const finalUrl =
         `https://accounts.google.com/o/oauth2/v2/auth?response_type=${response_type}&client_id=${config.GOOGLE_CLIENT_ID}` +
         `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}`
-      const googleWindow = new PopupHandler(finalUrl)
+      const googleWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         const {
@@ -338,6 +412,7 @@ export default {
       }
       googleWindow.open()
       googleWindow.once('close', () => {
+        bc.close()
         oauthStream.write({ err: 'user closed popup' })
       })
     } else if (verifier === FACEBOOK) {
@@ -354,7 +429,7 @@ export default {
       const finalUrl =
         `https://www.facebook.com/v5.0/dialog/oauth?response_type=${response_type}&client_id=${config.FACEBOOK_APP_ID}` +
         `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
-      const facebookWindow = new PopupHandler(finalUrl)
+      const facebookWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         const {
@@ -397,6 +472,7 @@ export default {
       }
       facebookWindow.open()
       facebookWindow.once('close', () => {
+        bc.close()
         oauthStream.write({ err: 'user closed popup' })
       })
     } else if (verifier === TWITCH) {
@@ -420,7 +496,7 @@ export default {
       const finalUrl =
         `https://id.twitch.tv/oauth2/authorize?client_id=${config.TWITCH_CLIENT_ID}&redirect_uri=` +
         `${config.redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`
-      const twitchWindow = new PopupHandler(finalUrl)
+      const twitchWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         const {
@@ -464,6 +540,7 @@ export default {
       }
       twitchWindow.open()
       twitchWindow.once('close', () => {
+        bc.close()
         oauthStream.write({ err: 'user closed popup' })
       })
     } else if (verifier === REDDIT) {
@@ -478,7 +555,7 @@ export default {
       const finalUrl =
         `https://www.reddit.com/api/v1/authorize?client_id=${config.REDDIT_CLIENT_ID}&redirect_uri=` +
         `${config.redirect_uri}&response_type=token&scope=identity&state=${state}`
-      const redditWindow = new PopupHandler(finalUrl)
+      const redditWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         const {
@@ -520,6 +597,7 @@ export default {
       }
       redditWindow.open()
       redditWindow.once('close', () => {
+        bc.close()
         oauthStream.write({ err: 'user closed popup' })
       })
     } else if (verifier === DISCORD) {
@@ -535,7 +613,7 @@ export default {
       const finalUrl =
         `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${config.DISCORD_CLIENT_ID}` +
         `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
-      const discordWindow = new PopupHandler(finalUrl)
+      const discordWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         const {
@@ -581,6 +659,7 @@ export default {
       }
       discordWindow.open()
       discordWindow.once('close', () => {
+        bc.close()
         oauthStream.write({ err: 'user closed popup' })
       })
     }

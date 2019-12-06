@@ -511,20 +511,18 @@ export default {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
       var gasHex = numberToHex(this.gasPrice * weiInGwei)
       await bc.postMessage({
+        name: 'tx-result',
         data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id, txType: this.type }
       })
       bc.close()
     },
     async triggerDeny(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
-      await bc.postMessage({ data: { type: 'deny-transaction', id: this.id, txType: this.type } })
+      await bc.postMessage({ name: 'tx-result', data: { type: 'deny-transaction', id: this.id, txType: this.type } })
       bc.close()
     },
     topUp() {
-      this.openWallet()
-    },
-    openWallet() {
-      this.$store.dispatch('showWalletPopup')
+      this.$store.dispatch('showWalletPopup', { path: '/topup' })
     },
     onSelectSpeed(data) {
       this.speedSelected = data.speedSelected
@@ -566,8 +564,14 @@ export default {
     ...mapActions({})
   },
   mounted() {
-    var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
+    const queryParams = new URLSearchParams(window.location.search)
+    const instanceId = queryParams.get('instanceId')
+    const queryParamId = queryParams.get('id')
+    var bc = new BroadcastChannel(`torus_channel_${instanceId}`, broadcastChannelOptions)
     bc.onmessage = async ev => {
+      if (ev.name !== 'send-params') return
+      if (ev.data && ev.data.txParams && ev.data.txParams.id.toString() !== queryParamId) return
+      bc.close()
       const { type, msgParams, txParams, origin, balance } = ev.data || {}
       let url = { hostname: '' }
       try {
@@ -575,7 +579,7 @@ export default {
       } catch (err) {
         log.info(err)
       }
-      log.info(txParams)
+      log.info(ev.data)
       this.origin = url.hostname // origin of tx: website url
       if (type !== TX_TRANSACTION) {
         var { message, typedMessages } = msgParams.msgParams || {}
@@ -694,9 +698,8 @@ export default {
         }
       }
       this.type = type // type of tx
-      bc.close()
     }
-    bc.postMessage({ data: 'popup-loaded' })
+    bc.postMessage({ name: 'popup-loaded', data: { id: queryParamId } })
   }
 }
 </script>
