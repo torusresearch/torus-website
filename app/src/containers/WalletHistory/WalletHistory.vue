@@ -125,7 +125,7 @@ export default {
       const transactions = this.calculateTransactions()
       finalTx = [...transactions, ...finalTx, ...pastTx]
       finalTx = finalTx.reduce((acc, x) => {
-        if (acc.findIndex(y => y.etherscanLink === x.etherscanLink) === -1) acc.push(x)
+        if (x.etherscanLink === '' || acc.findIndex(y => y.etherscanLink === x.etherscanLink) === -1) acc.push(x)
         return acc
       }, [])
       const sortedTx = finalTx.sort((a, b) => b.date - a.date) || []
@@ -229,7 +229,6 @@ export default {
       }
     )
       .then(response => {
-        console.log('common api', response)
         this.paymentTx = response.data.reduce((acc, x) => {
           acc.push({
             id: x.id,
