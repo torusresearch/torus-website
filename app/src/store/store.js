@@ -309,16 +309,12 @@ VuexStore.subscribe((mutation, state) => {
           from: toChecksumAddress(txMeta.txParams.from),
           to: toChecksumAddress(txMeta.txParams.to),
           total_amount: totalAmount,
-          gas: txMeta.txParams.gas,
-          gasPrice: txMeta.txParams.gasPrice,
           currency_amount: (getCurrencyMultiplier() * totalAmount).toString(),
           selected_currency: state.selectedCurrency,
           status: 'submitted',
           network: state.networkType.host,
           transaction_hash: txMeta.hash
         }
-        log.info('txMeta, store.js', txMeta, txObj, Date.now())
-
         if (state.pastTransactions.findIndex(x => x.transaction_hash === txObj.transaction_hash && x.network === txObj.network) === -1) {
           // User notification
           notifyUser(getEtherScanHashLink(txHash, state.networkType.host))

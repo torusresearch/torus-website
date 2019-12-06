@@ -161,11 +161,16 @@ export default {
         case 'rejected':
         case 'denied':
         case 'unapproved':
+        case 'failed':
           return ACTIVITY_STATUS_UNSUCCESSFUL
         case 'confirmed':
+        case 'completed':
+        case 'complete':
+        case 'success':
           return ACTIVITY_STATUS_SUCCESSFUL
         case 'pending':
         case 'submitted':
+        case 'processing':
           return ACTIVITY_STATUS_PENDING
         default:
           return ''

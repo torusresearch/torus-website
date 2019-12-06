@@ -229,6 +229,7 @@ export default {
       }
     )
       .then(response => {
+        console.log('common api', response)
         this.paymentTx = response.data.reduce((acc, x) => {
           acc.push({
             id: x.id,
@@ -243,8 +244,8 @@ export default {
             currencyAmount: x.currencyAmount,
             currencyAmountString: x.currencyAmountString,
             amount: x.amount,
-            status: x.status,
-            etherscanLink: ''
+            status: x.status.toLowerCase(),
+            etherscanLink: x.etherscanLink || ''
           })
 
           return acc
