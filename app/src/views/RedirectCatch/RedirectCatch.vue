@@ -68,7 +68,6 @@ export default {
             console.error(ev.error)
             bc.close()
           }
-          console.log(ev.data, ev.error)
           window.location.href = ev.data.payload.url
         }
       }

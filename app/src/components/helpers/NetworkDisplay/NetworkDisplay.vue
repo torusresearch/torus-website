@@ -36,9 +36,6 @@ export default {
       // Checks if input is a url including localhost, ip address and domain name
       return /^((?:http(s)?:\/\/)?([\w.-]+(?:\.[\w\.-]+)+|localhost?)[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+)$/.test(this.selectedNetwork)
     }
-  },
-  created() {
-    console.log('network', this.network)
   }
 }
 </script>
