@@ -11,7 +11,7 @@ var BN = require('bn.js')
 const setupMultiplex = require('./utils/setupMultiplex').default
 const toChecksumAddress = require('./utils/toChecksumAddress').default
 const ethUtil = require('ethereumjs-util')
-// const eccrypto = require('eccrypto')
+const eccrypto = require('eccrypto')
 
 // Make this a class. Use ES6
 class Torus {
@@ -115,7 +115,7 @@ class Torus {
           }
           return Promise.all(promiseArrRequest)
         })
-        .then(shareResponses => {
+        .then(async shareResponses => {
           /*
           ShareRequestResult struct {
             Keys []KeyAssignment
@@ -135,31 +135,23 @@ class Torus {
           }
           */
           log.info('completed')
-          var shares = []
+          var sharePromises = []
           var nodeIndex = []
           log.info(shareResponses)
           for (var i = 0; i < shareResponses.length; i++) {
             if (shareResponses[i] && shareResponses[i].result && shareResponses[i].result.keys && shareResponses[i].result.keys.length > 0) {
-              // let verifierEncrypted = {
-              //   ciphertext: Buffer.from(verifier.ciphertext.data, 'hex'),
-              //   mac: Buffer.from(verifier.mac.data, 'hex'),
-              //   iv: Buffer.from(verifier.iv.data, 'hex'),
-              //   ephemPublicKey: Buffer.from(verifier.ephemPublicKey.data, 'hex')
-              // }
-              // eccrypto
-              //   .decrypt(Buffer.from(window.oauthVars.privKey.toString(16, 64), 'hex'), verifierEncrypted)
-              //   .then(bufferVal => {
-              //     window.oauthVars.requestTokens[i].verifier = bufferVal.toString()
-              //     setOauthvars(window.oauthVars)
-              //   })
-              //   .catch(e => {
-              //     console.error(e)
-              //   })
-
-              shares.push(new BN(shareResponses[i].result.keys[0].Share, 16))
+              sharePromises.push(
+                eccrypto.decrypt(Buffer.from(tmpKey.toString('hex'), 'hex'), {
+                  ...shareResponses[i].result.keys[0].Metadata,
+                  ciphertext: shareResponses[i].result.keys[0].Share
+                })
+              )
               nodeIndex.push(new BN(indexes[i], 16))
             }
           }
+
+          const sharesResolved = await Promise.all(sharePromises)
+          var shares = sharesResolved.map(x => new BN(x, 16))
           log.info(shares, nodeIndex)
           var privateKey = this.lagrangeInterpolation(shares.slice(0, 3), nodeIndex.slice(0, 3))
           var ethAddress = this.generateAddressFromPrivKey(privateKey)
