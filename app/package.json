@@ -37,7 +37,7 @@
     "assert": "^2.0.0",
     "broadcast-channel": "^3.0.3",
     "copy-to-clipboard": "^3.2.0",
-    "core-js": "3.4.6",
+    "core-js": "3.4.8",
     "debounce": "^1.2.0",
     "eth-block-tracker": "^4.4.3",
     "eth-contract-metadata": "^1.11.0",
