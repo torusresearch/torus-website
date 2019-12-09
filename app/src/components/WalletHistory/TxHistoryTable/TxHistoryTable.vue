@@ -1,12 +1,18 @@
 <template>
   <div class="activity-table" :data-count="transactions.length" :data-per-page="itemsPerPage" :data-count-transfer="nonTopupTransactionCount">
-    <v-data-iterator :items="filteredTransactions" :items-per-page.sync="itemsPerPage" :page.sync="page" hide-default-footer>
+    <v-data-iterator
+      :disable-pagination="$vuetify.breakpoint.xsOnly"
+      :items="filteredTransactions"
+      :items-per-page.sync="itemsPerPage"
+      :page.sync="page"
+      hide-default-footer
+    >
       <template v-slot:default="props">
         <transaction-details v-for="transaction in props.items" :key="transaction.id" :transaction="transaction" />
       </template>
     </v-data-iterator>
 
-    <div class="text-center pt-6" v-if="pageCount > 1">
+    <div class="text-center pt-6" v-if="!$vuetify.breakpoint.xsOnly && pageCount > 1">
       <v-pagination
         class="activity-pagination"
         prev-icon="$vuetify.icons.page_prev"
