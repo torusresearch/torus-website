@@ -31,6 +31,7 @@ import {
 } from './controllerSubscriptions'
 import vuetify from '../plugins/vuetify'
 import themes from '../plugins/themes'
+import { handleEvent } from '../utils/utils'
 
 const accountImporter = require('../utils/accountImporter')
 
@@ -903,6 +904,10 @@ export default {
       }
     })
   },
+  async refreshNetwork({ state, dispatch }) {
+    handleEvent(window, 'online', dispatch('updateNetworkState', true))
+  },
+
   async rehydrate({ state, dispatch }, payload) {
     let {
       selectedAddress,

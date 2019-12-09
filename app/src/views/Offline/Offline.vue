@@ -16,15 +16,15 @@
             <img width="280px" height="auto" :src="require('../../../public/images/blublu-icon.svg')" />
           </div>
           <div class="px-6 py-12">
-            <div class="display-1 font-weight-bold py-4">Hmm… You are offline.</div>
+            <div class="display-1 font-weight-bold py-4">It seems you are offline.</div>
             <v-flex class="headline font-weight-normal" xs12 sm12 md12 lg10>
               <span>
-                Please connect to the internet and try again.
+                Check your network and try again.
               </span>
             </v-flex>
 
             <div class="py-6">
-              <v-btn large depressed color="primary" class="px-12 title" type="button">
+              <v-btn @click="refreshNetwork" large depressed color="primary" class="px-12 title" type="button">
                 RETRY
               </v-btn>
             </div>
@@ -36,7 +36,15 @@
 </template>
 
 <script>
-export default {}
+import { mapActions } from 'vuex'
+export default {
+  name: 'offline',
+  methods: {
+    ...mapActions({
+      refreshNetwork: 'refreshNetwork'
+    })
+  }
+}
 </script>
 
 <style lang="scss" scoped>
