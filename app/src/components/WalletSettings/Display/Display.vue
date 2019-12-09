@@ -2,7 +2,7 @@
   <div class="select-theme-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
     <div class="body-2 text_1--text mb-1 px-1">Select Theme</div>
     <v-layout wrap>
-      <v-flex xs12 px-1 mb-1>
+      <v-flex xs12 md6 px-1 mb-1>
         <v-menu class="" transition="slide-y-transition" bottom>
           <template v-slot:activator="{ on }">
             <v-chip class="select-theme" :style="themeOptionStyle(selectedTheme)" label outlined large v-on="on">
@@ -26,47 +26,52 @@
         </v-menu>
       </v-flex>
     </v-layout>
-    <v-flex class="pt-4 text-right">
-      <v-btn color="primary" depressed class="px-12 py-1 mt-4" @click="saveTheme()">Save</v-btn>
-    </v-flex>
-    <v-snackbar v-model="snackbar" :color="snackbarColor">
-      {{ snackbarText }}
-      <v-btn dark text @click="snackbar = false">
-        Close
-      </v-btn>
-    </v-snackbar>
+    <v-layout class="mt-4">
+      <v-flex xs12 md6>
+        <v-layout>
+          <v-flex xs8 class="pr-2">
+            <notification :alert-show="selectThemeAlert" :alert-text="selectThemeAlertText" :alert-type="selectThemeAlertType" />
+          </v-flex>
+          <v-flex xs4 class="pl-2">
+            <v-btn color="primary" block depressed class="px-12 py-1" @click="saveTheme()">Save</v-btn>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+    </v-layout>
   </div>
 </template>
 
 <script>
+import Notification from '../../helpers/Notification'
 import themes from '../../../plugins/themes'
 
 export default {
   name: 'displaySettings',
+  components: { Notification },
   data() {
     return {
       themes: themes,
       selectedTheme: '',
-      snackbar: false,
-      snackbarText: '',
-      snackbarColor: 'success'
+      selectThemeAlert: false,
+      selectThemeAlertText: '',
+      selectThemeAlertType: 'success'
     }
   },
   methods: {
     saveTheme() {
       this.$store
         .dispatch('setUserTheme', this.selectedTheme.name)
-        .then(() => {
+        .then(res => {
           this.selectedTheme = ''
-          this.snackbar = true
-          this.snackbarColor = 'success'
-          this.snackbarText = 'Successfully saved theme'
+          this.selectThemeAlert = true
+          this.selectThemeAlertType = 'success'
+          this.selectThemeAlertText = 'Successfully saved theme'
         })
         .catch(err => {
           this.selectedTheme = ''
-          this.snackbar = true
-          this.snackbarColor = 'error'
-          this.snackbarText = err
+          this.selectThemeAlert = true
+          this.selectThemeAlertType = 'error'
+          this.selectThemeAlertText = err
         })
     },
     themeOptionStyle(theme) {
