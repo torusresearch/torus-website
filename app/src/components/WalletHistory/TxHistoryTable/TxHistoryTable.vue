@@ -3,6 +3,7 @@
     <v-data-iterator
       :disable-pagination="$vuetify.breakpoint.xsOnly"
       :items="filteredTransactions"
+      item-key="id"
       :items-per-page.sync="itemsPerPage"
       :page.sync="page"
       hide-default-footer
