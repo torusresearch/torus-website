@@ -942,16 +942,6 @@ export default {
         dispatch('updateNetworkId', { networkId: networkId })
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: verifier })
         log.info('rehydrated wallet')
-        // torus.web3.eth.net
-        //   .getId()
-        //   .then(res => {
-        //     console.log(res)
-        //     setTimeout(function() {
-        //       dispatch('updateNetworkId', { networkId: toHex(res) })
-        //     })
-        //     // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-        //   })
-        //   .catch(e => log.error(e))
       }
     } catch (error) {
       log.error('Failed to rehydrate', error)

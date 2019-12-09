@@ -15,6 +15,7 @@ export default {
   baseRoute: baseRoute,
   torusIndexes: [1, 2, 3, 4, 5],
   supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH'],
+  commonApiHost: 'https://common-api.tor.us',
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',
   wyreApiHost: 'https://wyre-api.tor.us',
