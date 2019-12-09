@@ -1,5 +1,5 @@
 <template>
-  <div class="activity-table" :data-count="transactions.length" :data-per-page="itemsPerPage" :data-count-transfer="nonTopupTransactionCount">
+  <div class="activity-table">
     <v-data-iterator
       :disable-pagination="$vuetify.breakpoint.xsOnly"
       :items="filteredTransactions"
@@ -40,16 +40,13 @@ import {
   ACTIVITY_STATUS_PENDING
 } from '../../../utils/enums'
 
-import { formatDate } from '../../../utils/utils'
-
 export default {
-  props: ['transactions', 'selectedAction', 'selectedPeriod', 'nonTopupTransactionCount'],
+  props: ['transactions', 'selectedAction', 'selectedPeriod'],
   components: {
     TransactionDetails
   },
   data() {
     return {
-      mapper: SUPPORTED_NETWORK_TYPES,
       page: 1,
       itemsPerPage: 8,
       expanded: [],
@@ -101,43 +98,45 @@ export default {
     pageCount() {
       return Math.ceil(this.filteredTransactions.length / this.itemsPerPage)
     },
+    oneWeekAgoDate() {
+      let minDate = new Date()
+      return minDate.setDate(minDate.getDate() - 7)
+    },
+    oneMonthAgoDate() {
+      let minDate = new Date()
+      return minDate.setMonth(minDate.getMonth() - 1)
+    },
+    sixMonthAgoDate() {
+      let minDate = new Date()
+      return minDate.setMonth(minDate.getMonth() - 6)
+    },
     filteredTransactions() {
       const selectedAction = this.selectedAction === ACTIVITY_ACTION_ALL ? '' : this.selectedAction
       var regExAction = new RegExp(selectedAction, 'i')
 
-      return this.transactions
-        .map(item => {
-          item.actionIcon = this.getIcon(item.action)
-          item.actionText = this.getActionText(item.action, 'ETH')
-          item.statusText = this.getStatusText(item.status)
-          item.dateFormatted = this.formatDate(item.date)
-          item.timeFormatted = this.formatTime(item.date)
-          return item
-        })
-        .filter(item => {
-          // GET Date Scope
-          let isScoped = false
-          if (this.selectedPeriod === ACTIVITY_PERIOD_ALL) {
-            isScoped = true
+      return this.transactions.filter(item => {
+        // GET Date Scope
+        let isScoped = false
+        if (this.selectedPeriod === ACTIVITY_PERIOD_ALL) {
+          isScoped = true
+        } else {
+          let minDate
+          let itemDate = new Date(item.date)
+          if (this.selectedPeriod === ACTIVITY_PERIOD_WEEK_ONE) {
+            minDate = this.oneWeekAgoDate()
+          } else if (this.selectedPeriod === ACTIVITY_PERIOD_MONTH_ONE) {
+            minDate = this.oneMonthAgoDate()
           } else {
-            let minDate = new Date()
-            let itemDate = new Date(item.date)
-            if (this.selectedPeriod === ACTIVITY_PERIOD_WEEK_ONE) {
-              minDate.setDate(minDate.getDate() - 7)
-            } else if (this.selectedPeriod === ACTIVITY_PERIOD_MONTH_ONE) {
-              minDate.setMonth(minDate.getMonth() - 1)
-            } else {
-              minDate.setMonth(minDate.getMonth() - 6)
-            }
-
-            isScoped = minDate.getTime() <= itemDate.getTime()
+            minDate = this.sixMonthAgoDate()
           }
-          if (item.action) {
-            return item.action.match(regExAction) && isScoped
-          } else {
-            return isScoped
-          }
-        })
+          isScoped = minDate.getTime() <= itemDate.getTime()
+        }
+        if (item.action) {
+          return item.action.match(regExAction) && isScoped
+        } else {
+          return isScoped
+        }
+      })
     }
   },
   methods: {
@@ -155,48 +154,6 @@ export default {
       } else {
         this.expanded = [item]
       }
-    },
-    getStatusText(status) {
-      switch (status) {
-        case 'rejected':
-        case 'denied':
-        case 'unapproved':
-        case 'failed':
-          return ACTIVITY_STATUS_UNSUCCESSFUL
-        case 'confirmed':
-        case 'completed':
-        case 'complete':
-        case 'success':
-          return ACTIVITY_STATUS_SUCCESSFUL
-        case 'pending':
-        case 'submitted':
-        case 'processing':
-          return ACTIVITY_STATUS_PENDING
-        default:
-          return ''
-      }
-    },
-    getActionText(action, item) {
-      if (action === ACTIVITY_ACTION_SEND) {
-        return 'Send ' + item
-      } else if (action === ACTIVITY_ACTION_RECEIVE || action === ACTIVITY_ACTION_TOPUP) {
-        return 'Received ' + item
-      }
-    },
-    getIcon(action) {
-      if (action === ACTIVITY_ACTION_TOPUP) {
-        return '$vuetify.icons.coins_receive'
-      } else if (action === ACTIVITY_ACTION_SEND) {
-        return '$vuetify.icons.coins_send'
-      } else if (action === ACTIVITY_ACTION_RECEIVE) {
-        return '$vuetify.icons.coins_receive'
-      }
-    },
-    formatDate(date) {
-      return formatDate(date)
-    },
-    formatTime(time) {
-      return time.toTimeString().substring(0, 8)
     }
   }
 }

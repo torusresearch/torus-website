@@ -30,7 +30,6 @@
           :selectedAction="selectedAction"
           :selectedPeriod="selectedPeriod"
           :transactions="calculateFinalTransactions()"
-          :nonTopupTransactionCount="getNonTopupTransactionCount()"
         />
       </v-flex>
     </v-layout>
@@ -44,7 +43,7 @@ import { toChecksumAddress, toBN, fromWei } from 'web3-utils'
 import config from '../../config'
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
 import { getPastOrders } from '../../plugins/simplex'
-import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getEthTxStatus } from '../../utils/utils'
+import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getEthTxStatus, formatDate } from '../../utils/utils'
 import torus from '../../torus'
 import { patch } from '../../utils/httpHelpers'
 import {
@@ -57,7 +56,11 @@ import {
   ACTIVITY_PERIOD_ALL,
   ACTIVITY_PERIOD_WEEK_ONE,
   ACTIVITY_PERIOD_MONTH_ONE,
-  ACTIVITY_PERIOD_MONTH_SIX
+  ACTIVITY_PERIOD_MONTH_SIX,
+  ACTIVITY_STATUS_SUCCESSFUL,
+  ACTIVITY_STATUS_UNSUCCESSFUL,
+  SUPPORTED_NETWORK_TYPES,
+  ACTIVITY_STATUS_PENDING
 } from '../../utils/enums'
 
 export default {
@@ -117,8 +120,47 @@ export default {
     onCurrencyChange(value) {
       this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'history' })
     },
-    getNonTopupTransactionCount() {
-      return this.calculateFinalTransactions().filter(item => item.action !== ACTIVITY_ACTION_TOPUP).length
+    getStatusText(status) {
+      switch (status) {
+        case 'rejected':
+        case 'denied':
+        case 'unapproved':
+        case 'failed':
+          return ACTIVITY_STATUS_UNSUCCESSFUL
+        case 'confirmed':
+        case 'completed':
+        case 'complete':
+        case 'success':
+          return ACTIVITY_STATUS_SUCCESSFUL
+        case 'pending':
+        case 'submitted':
+        case 'processing':
+          return ACTIVITY_STATUS_PENDING
+        default:
+          return ''
+      }
+    },
+    getActionText(action, item) {
+      if (action === ACTIVITY_ACTION_SEND) {
+        return 'Send ' + item
+      } else if (action === ACTIVITY_ACTION_RECEIVE || action === ACTIVITY_ACTION_TOPUP) {
+        return 'Received ' + item
+      }
+    },
+    getIcon(action) {
+      if (action === ACTIVITY_ACTION_TOPUP) {
+        return '$vuetify.icons.coins_receive'
+      } else if (action === ACTIVITY_ACTION_SEND) {
+        return '$vuetify.icons.coins_send'
+      } else if (action === ACTIVITY_ACTION_RECEIVE) {
+        return '$vuetify.icons.coins_receive'
+      }
+    },
+    formatDate(date) {
+      return formatDate(date)
+    },
+    formatTime(time) {
+      return time.toTimeString().substring(0, 8)
     },
     calculateFinalTransactions() {
       let finalTx = this.paymentTx
@@ -126,11 +168,16 @@ export default {
       const transactions = this.calculateTransactions()
       finalTx = [...transactions, ...finalTx, ...pastTx]
       finalTx = finalTx.reduce((acc, x) => {
+        x.actionIcon = this.getIcon(x.action)
+        x.actionText = this.getActionText(x.action, 'ETH')
+        x.statusText = this.getStatusText(x.status)
+        x.dateFormatted = this.formatDate(x.date)
+        x.timeFormatted = this.formatTime(x.date)
         if (x.etherscanLink === '' || acc.findIndex(y => y.etherscanLink === x.etherscanLink) === -1) acc.push(x)
         return acc
       }, [])
       const sortedTx = finalTx.sort((a, b) => b.date - a.date) || []
-      log.info('sorted tx is', sortedTx)
+      // log.info('sorted tx is', sortedTx)
       return sortedTx
     },
     async calculatePastTransactions() {
