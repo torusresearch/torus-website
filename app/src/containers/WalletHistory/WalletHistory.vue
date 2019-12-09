@@ -245,7 +245,7 @@ export default {
             currencyAmountString: x.currencyAmountString,
             amount: x.amount,
             status: x.status.toLowerCase(),
-            etherscanLink: x.etherscanLink ? (x.from.toLowerCase() === WYRE ? 'https://etherscan.io/tx/' + x.etherscanLink : '') : ''
+            etherscanLink: x.etherscanLink || ''
           })
 
           return acc
