@@ -140,12 +140,14 @@ class Torus {
           log.info(shareResponses)
           for (var i = 0; i < shareResponses.length; i++) {
             if (shareResponses[i] && shareResponses[i].result && shareResponses[i].result.keys && shareResponses[i].result.keys.length > 0) {
-              sharePromises.push(
-                eccrypto.decrypt(Buffer.from(tmpKey.toString('hex'), 'hex'), {
-                  ...shareResponses[i].result.keys[0].Metadata,
-                  ciphertext: shareResponses[i].result.keys[0].Share
-                })
-              )
+              if (shareResponses[i].result.keys[0].Metadata)
+                sharePromises.push(
+                  eccrypto.decrypt(Buffer.from(tmpKey.toString('hex'), 'hex'), {
+                    ...shareResponses[i].result.keys[0].Metadata,
+                    ciphertext: shareResponses[i].result.keys[0].Share
+                  })
+                )
+              else sharePromises.push(Promise.resolve(shareResponses[i].result.keys[0].Share))
               nodeIndex.push(new BN(indexes[i], 16))
             }
           }
