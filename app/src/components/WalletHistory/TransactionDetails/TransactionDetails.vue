@@ -46,7 +46,7 @@
             <v-list-item>
               <v-list-item-content class="details-label">Rate:</v-list-item-content>
               <v-list-item-content class="details-value text_2--text">
-                <span v-if="transaction.action !== ACTIVITY_ACTION_TOPUP">1 ETH = {{ transaction.ethRate }} {{ transaction.currencyUsed }}</span>
+                <span>1 ETH = {{ transaction.ethRate }} {{ transaction.currencyUsed }}</span>
               </v-list-item-content>
             </v-list-item>
             <v-list-item>

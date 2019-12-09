@@ -244,8 +244,10 @@ export default {
             currencyAmount: x.currencyAmount,
             currencyAmountString: x.currencyAmountString,
             amount: x.amount,
+            ethRate: x.ethRate,
             status: x.status.toLowerCase(),
-            etherscanLink: x.etherscanLink || ''
+            etherscanLink: x.etherscanLink || '',
+            currencyUsed: x.currencyUsed
           })
 
           return acc
