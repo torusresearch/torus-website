@@ -113,7 +113,7 @@ describe('txUtils', function() {
           txUtils.validateFrom(txParams)
         },
         Error,
-        `Invalid from address`
+        'Invalid from address'
       )
 
       // should run

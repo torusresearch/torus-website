@@ -6,16 +6,23 @@
     :class="!isUrlNetwork ? `network-chip--${host} text-capitalize` : ''"
   >
     <v-icon size="12" class="black--text" v-text="'$vuetify.icons.network'"></v-icon>
-    {{ selectedNetwork }}
+    <span>{{ selectedNetwork }}</span>
   </v-chip>
 </template>
 
 <script>
+import { SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
+
 export default {
   props: ['network'],
   computed: {
     selectedNetwork() {
       let finalNetwork = ''
+
+      if (this.network) {
+        return SUPPORTED_NETWORK_TYPES[this.network].networkName
+      }
+
       finalNetwork =
         !this.$store.state.networkType.networkName || this.$store.state.networkType.networkName === ''
           ? this.$store.state.networkType.host

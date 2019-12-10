@@ -346,6 +346,14 @@ function validateVerifierId(selectedVerifier, value) {
   return true
 }
 
+function formatDate(date) {
+  const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  const day = date.getDate()
+  const month = monthList[date.getMonth()]
+  const year = date.getFullYear()
+  return `${day} ${month} ${year}`
+}
+
 const paymentProviders = {
   [SIMPLEX]: {
     line1: 'Pay with Credit / Debit Card',
@@ -480,6 +488,7 @@ module.exports = {
   broadcastChannelOptions,
   storageAvailable,
   validateVerifierId,
+  formatDate,
   paymentProviders,
   getPaymentProviders,
   formatTxMetaForRpcResult
