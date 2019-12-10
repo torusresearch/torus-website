@@ -62,14 +62,17 @@
               ></v-text-field>
             </v-flex>
 
-            <v-layout>
-              <v-flex xs8 class="pr-2">
+            <v-layout wrap>
+              <v-flex xs8 v-if="!$vuetify.breakpoint.xsOnly" class="pr-2">
                 <notification :alert-show="saveContactAlert" :alert-text="saveContactAlertText" :alert-type="saveContactAlertType" />
               </v-flex>
-              <v-flex xs4 class="pl-2">
-                <v-btn id="contact-submit-btn" type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">
+              <v-flex xs12 sm4 :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-2'">
+                <v-btn id="contact-submit-btn" block type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">
                   Add Contact
                 </v-btn>
+              </v-flex>
+              <v-flex xs12 v-if="$vuetify.breakpoint.xsOnly" class="mt-2">
+                <notification :alert-show="saveContactAlert" :alert-text="saveContactAlertText" :alert-type="saveContactAlertType" />
               </v-flex>
             </v-layout>
           </v-layout>

@@ -2,20 +2,25 @@
   <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
     <v-form ref="networkForm" v-model="formValid" lazy-validation @submit.prevent="">
       <span class="subtitle-2">Select Network</span>
-      <v-flex xs12 md6>
-        <v-select
-          id="select-network"
-          class="select-network-container"
-          outlined
-          :items="networks"
-          item-text="networkName"
-          item-value="host"
-          v-model="selectedNetwork"
-          @change="changeNetwork"
-          return-object
-          append-icon="$vuetify.icons.select"
-        ></v-select>
-      </v-flex>
+      <v-layout wrap>
+        <v-flex xs12 md6>
+          <v-select
+            id="select-network"
+            class="select-network-container"
+            outlined
+            :items="networks"
+            item-text="networkName"
+            item-value="host"
+            v-model="selectedNetwork"
+            @change="changeNetwork"
+            return-object
+            append-icon="$vuetify.icons.select"
+          ></v-select>
+        </v-flex>
+        <v-flex xs12 md6 v-if="!isRPCSelected" :class="$vuetify.breakpoint.xsOnly ? '' : 'pa-2'">
+          <notification :alert-show="updateProviderAlert" :alert-text="updateProviderAlertText" :alert-type="updateProviderAlertType" />
+        </v-flex>
+      </v-layout>
 
       <template v-if="isRPCSelected">
         <v-flex xs12 md6>
@@ -31,11 +36,11 @@
         </v-flex>
 
         <v-flex xs12 md6>
-          <v-layout>
-            <v-flex xs8 class="pr-2">
-              <notification :alert-show="updateProviderAlert" :alert-text="updateProviderAlertText" :alert-type="updateProviderAlertType" />
+          <v-layout wrap>
+            <v-flex xs8 v-if="!$vuetify.breakpoint.xsOnly" class="pr-2">
+              <notification :alert-show="updateProviderRPCAlert" :alert-text="updateProviderAlertText" :alert-type="updateProviderAlertType" />
             </v-flex>
-            <v-flex xs4 class="pl-2">
+            <v-flex xs12 sm4 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
               <v-tooltip bottom :disabled="formValid">
                 <template v-slot:activator="{ on }">
                   <span v-on="on">
@@ -44,6 +49,9 @@
                 </template>
                 <span>Resolve the errors</span>
               </v-tooltip>
+            </v-flex>
+            <v-flex xs12 v-if="$vuetify.breakpoint.xsOnly" class="mt-2">
+              <notification :alert-show="updateProviderRPCAlert" :alert-text="updateProviderAlertText" :alert-type="updateProviderAlertType" />
             </v-flex>
           </v-layout>
         </v-flex>
@@ -76,6 +84,7 @@ export default {
         required: value => !!value || 'Required'
       },
       updateProviderAlert: false,
+      updateProviderRPCAlert: false,
       updateProviderAlertText: '',
       updateProviderAlertType: 'success'
     }
@@ -86,17 +95,23 @@ export default {
     }
   },
   methods: {
+    showNotification() {
+      this.updateProviderRPCAlert = this.isRPCSelected
+      this.updateProviderAlert = !this.isRPCSelected
+      this.updateProviderAlertType = 'success'
+      this.updateProviderAlertText = 'Updated Network Provider'
+    },
     changeNetwork(value) {
-      if (value && value.host !== RPC) this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
+      if (value && value.host !== RPC) {
+        this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
+        this.showNotification()
+      }
     },
     setRPC() {
       if (this.$refs.networkForm.validate()) {
         // this.selectedNetwork = RPC
         this.$store.dispatch('setProviderType', { network: this.rpc, type: RPC })
-
-        this.updateProviderAlert = true
-        this.updateProviderAlertType = 'success'
-        this.updateProviderAlertText = 'Updated Network Provider'
+        this.showNotification()
       }
     }
   },

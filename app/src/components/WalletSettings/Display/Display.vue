@@ -28,12 +28,15 @@
     </v-layout>
     <v-layout class="mt-4">
       <v-flex xs12 md6>
-        <v-layout>
-          <v-flex xs8 class="pr-2">
+        <v-layout wrap>
+          <v-flex xs8 v-if="!$vuetify.breakpoint.xsOnly" class="pr-2">
             <notification :alert-show="selectThemeAlert" :alert-text="selectThemeAlertText" :alert-type="selectThemeAlertType" />
           </v-flex>
-          <v-flex xs4 class="pl-2">
+          <v-flex xs12 sm4 :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-2'">
             <v-btn color="primary" block depressed class="px-12 py-1" @click="saveTheme()">Save</v-btn>
+          </v-flex>
+          <v-flex xs12 v-if="$vuetify.breakpoint.xsOnly" class="mt-2">
+            <notification :alert-show="selectThemeAlert" :alert-text="selectThemeAlertText" :alert-type="selectThemeAlertType" />
           </v-flex>
         </v-layout>
       </v-flex>
