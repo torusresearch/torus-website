@@ -13,6 +13,12 @@ module.exports = {
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Cache-Control': 'max-age=3600'
+    },
+    historyApiFallback: {
+      rewrites: [
+        { from: /redirect/, to: '/redirect.html' },
+        { from: /./, to: '/index.html' }
+      ]
     }
   },
   css: {

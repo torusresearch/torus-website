@@ -83,7 +83,6 @@ export default {
         data: { type: 'confirm-provider-change', payload: this.payload, approve: true }
       })
       bc.close()
-      window.close()
     },
     async triggerDeny(event) {
       var bc = new BroadcastChannel(
@@ -92,7 +91,6 @@ export default {
       )
       await bc.postMessage({ data: { type: 'deny-provider-change', approve: false } })
       bc.close()
-      window.close()
     }
   },
   mounted() {

@@ -452,6 +452,7 @@ export default {
   },
   watch: {
     toAddress: async function(newValue, oldValue) {
+      log.info(newValue, oldValue, 'toAddress')
       if (newValue !== oldValue) this.gas = await this.calculateGas(newValue)
     },
     displayAmount: function(newValue, oldValue) {
