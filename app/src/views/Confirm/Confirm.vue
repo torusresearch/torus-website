@@ -69,7 +69,7 @@
         <v-flex xs12 mb-3 mt-3>
           <v-dialog v-model="detailsDialog" width="600px">
             <template v-slot:activator="{ on }">
-              <div id="more-details-link" class="subtitle-2 float-right primary--text mx-6" v-on="on">More Details</div>
+              <div id="more-details-link" class="subtitle-2 float-right dialog-launcher primary--text mx-6" v-on="on">More Details</div>
             </template>
             <v-card class="pa-4 more-details-container">
               <v-card-text class="text_1--text">

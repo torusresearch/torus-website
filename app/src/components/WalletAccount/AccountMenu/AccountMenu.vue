@@ -29,7 +29,7 @@
         <v-list-item-content>
           <div class="subtitle-2 mb-0">
             <v-icon class="mr-2 text_2--text" v-text="'$vuetify.icons.balance'" />
-            <span class="text_1--text">{{ totalPortfolioEthValue }} ETH / {{ `${totalPortfolioValue} ${selectedCurrency}` }}</span>
+            <span class="text_1--text">{{ `${totalPortfolioValue} ${selectedCurrency}` }}</span>
           </div>
         </v-list-item-content>
       </v-list-item>
@@ -164,12 +164,6 @@ export default {
     },
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
-    },
-    totalPortfolioEthValue() {
-      return significantDigits(
-        parseFloat(this.totalPortfolioValue.toString().includes(',') ? this.totalPortfolioValue.replace(',', '') : this.totalPortfolioValue) /
-          this.getCurrencyMultiplier
-      )
     },
     filteredMenu() {
       if (this.headerItems) {
