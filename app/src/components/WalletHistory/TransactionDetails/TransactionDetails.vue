@@ -21,7 +21,7 @@
       </v-flex>
       <v-flex xs2 v-if="!$vuetify.breakpoint.xsOnly"></v-flex>
       <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-right mt-4' : 'xs2 text-center'">
-        <v-chip class="status-chip" :color="getChipColor(transaction.statusText)" small>
+        <v-chip class="status-chip black--text" :color="getChipColor(transaction.statusText)" small>
           {{ transaction.statusText }}
         </v-chip>
       </v-flex>
