@@ -6,11 +6,11 @@ const redirect_uri = `${baseUrl}/redirect`
 
 export default {
   torusNodeEndpoints: [
-    'https://binance-main-3.torusnode.com/jrpc',
-    'https://waseda-main-3.torusnode.com/jrpc',
-    'https://vgr-main-3.torusnode.com/jrpc',
-    'https://torus-main-3.torusnode.com/jrpc',
-    'https://etc-main-3.torusnode.com/jrpc'
+    'https://binance-main-6.torusnode.com/jrpc',
+    'https://waseda-main-6.torusnode.com/jrpc',
+    'https://vgr-main-6.torusnode.com/jrpc',
+    'https://torus-main-6.torusnode.com/jrpc',
+    'https://etc-main-6.torusnode.com/jrpc'
   ],
   baseRoute: baseRoute,
   torusIndexes: [1, 2, 3, 4, 5],
