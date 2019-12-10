@@ -1,5 +1,6 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
+import { toChecksumAddress } from 'web3-utils'
 import config from '../config'
 import torus from '../torus'
 import {
@@ -103,7 +104,7 @@ export default {
       })
       const { data } = response
       data.forEach(obj => {
-        torus.torusController.detectTokensController.detectEtherscanTokenBalance(obj.contractAddress, {
+        torus.torusController.detectTokensController.detectEtherscanTokenBalance(toChecksumAddress(obj.contractAddress), {
           decimals: obj.tokenDecimal,
           erc20: true,
           logo: 'eth.svg',
