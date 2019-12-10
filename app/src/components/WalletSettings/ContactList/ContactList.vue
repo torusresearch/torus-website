@@ -64,7 +64,12 @@
 
             <v-layout wrap>
               <v-flex xs8 v-if="!$vuetify.breakpoint.xsOnly" class="pr-2">
-                <notification :alert-show="saveContactAlert" :alert-text="saveContactAlertText" :alert-type="saveContactAlertType" />
+                <notification
+                  :alert-show="saveContactAlert"
+                  :alert-text="saveContactAlertText"
+                  :alert-type="saveContactAlertType"
+                  @closeAlert="closeAlert"
+                />
               </v-flex>
               <v-flex xs12 sm4 :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-2'">
                 <v-btn id="contact-submit-btn" block type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">
@@ -72,7 +77,12 @@
                 </v-btn>
               </v-flex>
               <v-flex xs12 v-if="$vuetify.breakpoint.xsOnly" class="mt-2">
-                <notification :alert-show="saveContactAlert" :alert-text="saveContactAlertText" :alert-type="saveContactAlertType" />
+                <notification
+                  :alert-show="saveContactAlert"
+                  :alert-text="saveContactAlertText"
+                  :alert-type="saveContactAlertType"
+                  @closeAlert="closeAlert"
+                />
               </v-flex>
             </v-layout>
           </v-layout>
@@ -115,6 +125,9 @@ export default {
     }
   },
   methods: {
+    closeAlert() {
+      this.saveContactAlert = false
+    },
     checkDuplicates(value) {
       if (this.contacts) {
         return this.contacts.findIndex(x => x.contact.toLowerCase() === value.toLowerCase()) < 0 || 'Duplicate contact'

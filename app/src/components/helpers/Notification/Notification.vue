@@ -15,7 +15,7 @@ export default {
   props: ['alertShow', 'alertText', 'alertType'],
   methods: {
     hideAlert() {
-      this.alertShow = false
+      this.$emit('closeAlert')
     }
   }
 }

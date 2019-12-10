@@ -30,13 +30,23 @@
       <v-flex xs12 md6>
         <v-layout wrap>
           <v-flex xs8 v-if="!$vuetify.breakpoint.xsOnly" class="pr-2">
-            <notification :alert-show="selectThemeAlert" :alert-text="selectThemeAlertText" :alert-type="selectThemeAlertType" />
+            <notification
+              :alert-show="selectThemeAlert"
+              :alert-text="selectThemeAlertText"
+              :alert-type="selectThemeAlertType"
+              @closeAlert="closeAlert"
+            />
           </v-flex>
           <v-flex xs12 sm4 :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-2'">
-            <v-btn color="primary" block depressed class="px-12 py-1" @click="saveTheme()">Save</v-btn>
+            <v-btn color="primary" block depressed class="px-12 py-1" @click="saveTheme">Save</v-btn>
           </v-flex>
           <v-flex xs12 v-if="$vuetify.breakpoint.xsOnly" class="mt-2">
-            <notification :alert-show="selectThemeAlert" :alert-text="selectThemeAlertText" :alert-type="selectThemeAlertType" />
+            <notification
+              :alert-show="selectThemeAlert"
+              :alert-text="selectThemeAlertText"
+              :alert-type="selectThemeAlertType"
+              @closeAlert="closeAlert"
+            />
           </v-flex>
         </v-layout>
       </v-flex>
@@ -61,6 +71,9 @@ export default {
     }
   },
   methods: {
+    closeAlert() {
+      this.selectThemeAlert = false
+    },
     saveTheme() {
       this.$store
         .dispatch('setUserTheme', this.selectedTheme.name)

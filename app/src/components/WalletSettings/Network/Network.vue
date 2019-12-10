@@ -17,9 +17,6 @@
             append-icon="$vuetify.icons.select"
           ></v-select>
         </v-flex>
-        <v-flex xs12 md6 v-if="!isRPCSelected" :class="$vuetify.breakpoint.xsOnly ? '' : 'pa-2'">
-          <notification :alert-show="updateProviderAlert" :alert-text="updateProviderAlertText" :alert-type="updateProviderAlertType" />
-        </v-flex>
       </v-layout>
 
       <template v-if="isRPCSelected">
@@ -38,7 +35,12 @@
         <v-flex xs12 md6>
           <v-layout wrap>
             <v-flex xs8 v-if="!$vuetify.breakpoint.xsOnly" class="pr-2">
-              <notification :alert-show="updateProviderRPCAlert" :alert-text="updateProviderAlertText" :alert-type="updateProviderAlertType" />
+              <notification
+                :alert-show="updateProviderRPCAlert"
+                :alert-text="updateProviderAlertText"
+                :alert-type="updateProviderAlertType"
+                @closeAlert="closeAlert"
+              />
             </v-flex>
             <v-flex xs12 sm4 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
               <v-tooltip bottom :disabled="formValid">
@@ -51,7 +53,12 @@
               </v-tooltip>
             </v-flex>
             <v-flex xs12 v-if="$vuetify.breakpoint.xsOnly" class="mt-2">
-              <notification :alert-show="updateProviderRPCAlert" :alert-text="updateProviderAlertText" :alert-type="updateProviderAlertType" />
+              <notification
+                :alert-show="updateProviderRPCAlert"
+                :alert-text="updateProviderAlertText"
+                :alert-type="updateProviderAlertType"
+                @closeAlert="closeAlert"
+              />
             </v-flex>
           </v-layout>
         </v-flex>
@@ -83,7 +90,6 @@ export default {
       rules: {
         required: value => !!value || 'Required'
       },
-      updateProviderAlert: false,
       updateProviderRPCAlert: false,
       updateProviderAlertText: '',
       updateProviderAlertType: 'success'
@@ -95,23 +101,30 @@ export default {
     }
   },
   methods: {
-    showNotification() {
+    closeAlert() {
+      this.updateProviderRPCAlert = false
+    },
+    showNotification(success) {
       this.updateProviderRPCAlert = this.isRPCSelected
-      this.updateProviderAlert = !this.isRPCSelected
-      this.updateProviderAlertType = 'success'
-      this.updateProviderAlertText = 'Updated Network Provider'
+      this.updateProviderAlertType = success ? 'success' : 'error'
+      this.updateProviderAlertText = success ? 'Updated Network Provider' : 'Something went wrong'
     },
     changeNetwork(value) {
       if (value && value.host !== RPC) {
         this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
-        this.showNotification()
       }
     },
     setRPC() {
       if (this.$refs.networkForm.validate()) {
         // this.selectedNetwork = RPC
-        this.$store.dispatch('setProviderType', { network: this.rpc, type: RPC })
-        this.showNotification()
+        this.$store
+          .dispatch('setProviderType', { network: this.rpc, type: RPC })
+          .then(resp => {
+            this.showNotification(true)
+          })
+          .catch(err => {
+            this.showNotification(false)
+          })
       }
     }
   },
