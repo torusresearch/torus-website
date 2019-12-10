@@ -450,6 +450,8 @@ function handleEvent(handle, eventName, handler, handleArgs) {
     handle.removeEventListener(eventName, handlerWrapper)
   }
   handle.addEventListener(eventName, handlerWrapper)
+}
+
 function formatTxMetaForRpcResult(txMeta) {
   return {
     blockHash: txMeta.txReceipt ? txMeta.txReceipt.blockHash : null,
@@ -497,6 +499,6 @@ module.exports = {
   formatDate,
   paymentProviders,
   getPaymentProviders,
-  handleEvent
+  handleEvent,
   formatTxMetaForRpcResult
 }
