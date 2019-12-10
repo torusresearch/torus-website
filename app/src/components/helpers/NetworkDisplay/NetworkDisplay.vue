@@ -1,11 +1,6 @@
 <template>
-  <v-chip
-    v-if="selectedNetwork !== ''"
-    small
-    class="caption network-chip black--text"
-    :class="!isUrlNetwork ? `network-chip--${host} text-capitalize` : ''"
-  >
-    <v-icon size="12" class="black--text" v-text="'$vuetify.icons.network'"></v-icon>
+  <v-chip v-if="selectedNetwork !== ''" small class="caption network-chip" :class="!isUrlNetwork ? `network-chip--${host} text-capitalize` : ''">
+    <v-icon size="12" v-text="'$vuetify.icons.network'"></v-icon>
     <span>{{ selectedNetwork }}</span>
   </v-chip>
 </template>

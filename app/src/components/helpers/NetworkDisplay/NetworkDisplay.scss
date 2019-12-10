@@ -1,6 +1,11 @@
 .v-chip.network-chip {
   height: 20px;
   background: #FFE9B3;
+  color: #0F1222;
+
+  .v-icon {
+    color: #0F1222;
+  }
 
   &.network-chip--mainnet {
     background: #CDE0FF;
