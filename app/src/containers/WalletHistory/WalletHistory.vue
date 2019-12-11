@@ -9,6 +9,7 @@
             class="pt-0 mt-0 ml-2 subtitle-2 nav-selector transaction"
             height="25px"
             hide-details
+            :menu-props="{ bottom: true, offsetY: true }"
             :items="actionTypes"
             v-model="selectedAction"
             append-icon="$vuetify.icons.select"
@@ -18,6 +19,7 @@
             class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period"
             height="25px"
             hide-details
+            :menu-props="{ bottom: true, offsetY: true }"
             :items="periods"
             v-model="selectedPeriod"
             append-icon="$vuetify.icons.select"
