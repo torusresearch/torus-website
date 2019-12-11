@@ -762,62 +762,47 @@ export default {
   },
   handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
     dispatch('loginInProgress', true)
-    var p = new PromiseReference()
-    if (!nodeDetails.skip) {
-      nodeDetails.updated.promise.then(updatedNodeDetails => {
-        p.resolve(updatedNodeDetails)
-      })
-    } else {
-      p.resolve(nodeDetails)
-    }
     const {
       idToken,
       userInfo: { verifierId, verifier, verifierParams }
     } = state
-    p.promise
-      .then(updatedNodeDetails => {
-        const torusNodeEndpoints = updatedNodeDetails.torusNodeEndpoints
-        const torusIndexes = updatedNodeDetails.torusIndexes
-        torus
-          .getPubKeyAsync(torusNodeEndpoints[endPointNumber], { verifier, verifierId })
-          .then(res => {
-            log.info('New private key assigned to user at address ', res)
-            const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
-            const p2 = torus.getMessageForSigning(res)
-            return Promise.all([p1, p2])
-          })
-          .then(async response => {
-            const data = response[0]
-            const message = response[1]
-            dispatch('addWallet', data) // synchronous
-            dispatch('subscribeToControllers')
-            await Promise.all([
-              dispatch('initTorusKeyring', data),
-              dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
-            ])
-            dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
-            dispatch('setBillboard')
-            // continue enable function
-            var ethAddress = data.ethAddress
-            if (calledFromEmbed) {
-              setTimeout(function() {
-                torus.continueEnable(ethAddress)
-              }, 50)
-            }
-            statusStream.write({ loggedIn: true, rehydrate: false, verifier: verifier })
-            dispatch('loginInProgress', false)
-          })
-          .catch(err => {
-            totalFailCount += 1
-            let newEndPointNumber = endPointNumber
-            while (newEndPointNumber === endPointNumber) {
-              newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
-            }
-            if (totalFailCount < 3) dispatch('handleLogin', { calledFromEmbed, endPointNumber: newEndPointNumber })
-            log.error(err)
-          })
+    const { torusNodeEndpoints, torusIndexes } = nodeDetails
+    torus
+      .getPubKeyAsync(torusNodeEndpoints[endPointNumber], { verifier, verifierId })
+      .then(res => {
+        log.info('New private key assigned to user at address ', res)
+        const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
+        const p2 = torus.getMessageForSigning(res)
+        return Promise.all([p1, p2])
+      })
+      .then(async response => {
+        const data = response[0]
+        const message = response[1]
+        dispatch('addWallet', data) // synchronous
+        dispatch('subscribeToControllers')
+        await Promise.all([
+          dispatch('initTorusKeyring', data),
+          dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
+        ])
+        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
+        dispatch('setBillboard')
+        // continue enable function
+        var ethAddress = data.ethAddress
+        if (calledFromEmbed) {
+          setTimeout(function() {
+            torus.continueEnable(ethAddress)
+          }, 50)
+        }
+        statusStream.write({ loggedIn: true, rehydrate: false, verifier: verifier })
+        dispatch('loginInProgress', false)
       })
       .catch(err => {
+        totalFailCount += 1
+        let newEndPointNumber = endPointNumber
+        while (newEndPointNumber === endPointNumber) {
+          newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
+        }
+        if (totalFailCount < 3) dispatch('handleLogin', { calledFromEmbed, endPointNumber: newEndPointNumber })
         log.error(err)
       })
   },

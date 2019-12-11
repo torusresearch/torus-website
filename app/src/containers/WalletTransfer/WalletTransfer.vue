@@ -663,7 +663,7 @@ export default {
             while (newEndPointNumber === endPointNumber) {
               newEndPointNumber = getRandomNumber(nodeDetails.torusNodeEndpoints.length)
             }
-            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], {
+            toAddress = await torus.getPubKeyAsync(nodeDetails.torusNodeEndpoints[newEndPointNumber], {
               verifier: this.selectedVerifier,
               verifierId: this.toAddress
             })
