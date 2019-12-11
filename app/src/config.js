@@ -1,10 +1,16 @@
+import { PromiseReference } from './utils/utils'
 const baseUrl = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000'
 
 const baseRoute = baseUrl + process.env.BASE_URL
 
 const redirect_uri = `${baseUrl}/redirect`
 
-export default {
+export const nodeDetails = {
+  skip: false, // skip fetching of node details and use defaults below
+  updated: new PromiseReference(),
+  minEpoch: 12,
+  currentEpoch: 0,
+  nodeListAddress: '0x97c85658cd10b386fc37e4b32df90b916b689ee8',
   torusNodeEndpoints: [
     'https://binance-main-12.torusnode.com/jrpc',
     'https://waseda-main-12.torusnode.com/jrpc',
@@ -12,8 +18,12 @@ export default {
     'https://torus-main-12.torusnode.com/jrpc',
     'https://etc-main-12.torusnode.com/jrpc'
   ],
+  torusIndexes: [1, 2, 3, 4, 5]
+}
+
+export default {
+  MAINNET_JRPC_URL: 'https://mainnet.infura.io/metamask',
   baseRoute: baseRoute,
-  torusIndexes: [1, 2, 3, 4, 5],
   supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH'],
   commonApiHost: 'https://common-api.tor.us',
   simplexApiHost: 'https://simplex-api.tor.us',

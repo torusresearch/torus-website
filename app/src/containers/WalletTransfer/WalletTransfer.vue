@@ -275,6 +275,7 @@ import { isAddress, toChecksumAddress, toBN, toWei } from 'web3-utils'
 import torus from '../../torus'
 import { significantDigits, getRandomNumber, getEtherScanHashLink, validateVerifierId } from '../../utils/utils'
 import config from '../../config'
+import { nodeDetails } from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import ComponentLoader from '../../components/helpers/ComponentLoader'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
@@ -298,7 +299,6 @@ import {
   ALLOWED_VERIFIERS
 } from '../../utils/enums'
 
-const { torusNodeEndpoints } = config
 const erc20TransferABI = require('human-standard-token-abi')
 const erc721TransferABI = require('human-standard-collectible-abi')
 
@@ -651,9 +651,9 @@ export default {
         if (isAddress(this.toAddress)) {
           toAddress = toChecksumAddress(this.toAddress)
         } else {
-          const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
+          const endPointNumber = getRandomNumber(nodeDetails.torusNodeEndpoints.length)
           try {
-            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[endPointNumber], {
+            toAddress = await torus.getPubKeyAsync(nodeDetails.torusNodeEndpoints[endPointNumber], {
               verifier: this.selectedVerifier,
               verifierId: this.toAddress
             })
@@ -661,9 +661,9 @@ export default {
             log.error(err)
             let newEndPointNumber = endPointNumber
             while (newEndPointNumber === endPointNumber) {
-              newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
+              newEndPointNumber = getRandomNumber(nodeDetails.torusNodeEndpoints.length)
             }
-            toAddress = await torus.getPubKeyAsync(torusNodeEndpoints[newEndPointNumber], {
+            toAddress = await torus.getPubKeyAsync(nodeDetails.torusNodeEndpoints[newEndPointNumber], {
               verifier: this.selectedVerifier,
               verifierId: this.toAddress
             })
