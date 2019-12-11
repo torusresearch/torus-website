@@ -156,7 +156,7 @@ class Torus {
               //     console.error(e)
               //   })
 
-              shares.push(new BN(shareResponses[i].result.keys[0].Share, 16))
+              shares.push(new BN(Buffer.from(shareResponses[i].result.keys[0].Share, 16), 'base64'))
               nodeIndex.push(new BN(indexes[i], 16))
             }
           }

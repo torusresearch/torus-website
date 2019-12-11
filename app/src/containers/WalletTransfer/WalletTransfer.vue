@@ -451,10 +451,6 @@ export default {
     }
   },
   watch: {
-    toAddress: async function(newValue, oldValue) {
-      log.info(newValue, oldValue, 'toAddress')
-      if (newValue !== oldValue) this.gas = await this.calculateGas(newValue)
-    },
     displayAmount: function(newValue, oldValue) {
       if (this.toggle_exclusive === 0) {
         this.amount = this.displayAmount
