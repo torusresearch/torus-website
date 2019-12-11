@@ -69,7 +69,7 @@
         <v-flex xs12 mb-3 mt-3>
           <v-dialog v-model="detailsDialog" width="600px">
             <template v-slot:activator="{ on }">
-              <div id="more-details-link" class="subtitle-2 float-right primary--text mx-6" v-on="on">More Details</div>
+              <div id="more-details-link" class="subtitle-2 float-right dialog-launcher primary--text mx-6" v-on="on">More Details</div>
             </template>
             <v-card class="pa-4 more-details-container">
               <v-card-text class="text_1--text">
@@ -137,7 +137,9 @@
           <v-flex xs6>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
               <template v-slot:activator="{ on }">
-                <v-btn id="confirm-btn" :disabled="!canApprove" block depressed large color="primary" class="ml-2" v-on="on">Confirm</v-btn>
+                <v-btn id="confirm-btn" :disabled="topUpErrorShow || canShowError" block depressed large color="primary" class="ml-2" v-on="on">
+                  Confirm
+                </v-btn>
               </template>
               <transfer-confirm
                 :toAddress="receiver"
@@ -313,13 +315,12 @@ export default {
       totalEthCostDisplay: '',
       errorMsg: '',
       topUpErrorShow: '',
+      canShowError: false,
       txFees: 0,
       network: '',
       networkName: '',
       transactionCategory: '',
       dollarValue: 0,
-      canApprove: true,
-      canShowError: false,
       speed: '',
       typedMessages: {},
       id: 0,
@@ -488,19 +489,11 @@ export default {
       this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()] || 0)
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
-        this.canApprove = false
         this.topUpErrorShow = true
       }
     },
     gasKnob: function(newGasKnob, oldGasKnob) {
       this.gasPrice = calculateGasPrice(newGasKnob)
-    },
-    errorMsg: function(newErrorMsg, oldErrorMsg) {
-      if (newErrorMsg !== oldErrorMsg) {
-        const boolean = newErrorMsg && newErrorMsg !== ''
-        this.canShowError = boolean
-        this.canApprove = !boolean
-      }
     }
   },
   methods: {
@@ -690,10 +683,12 @@ export default {
         const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
         this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
         this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()] || 0)
-        if (reason) this.errorMsg = reason
+        if (reason) {
+          this.errorMsg = reason
+          this.canShowError = true
+        }
         if (parseFloat(this.balance) < ethCost && !this.canShowError) {
           this.errorMsg = 'Insufficient Funds'
-          this.canApprove = false
           this.topUpErrorShow = true
         }
       }

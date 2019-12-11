@@ -93,13 +93,6 @@
                 </a>
               </span>
             </v-flex>
-            <v-flex class="caption" xs9 sm7 ml-auto mr-auto>
-              <span>
-                Note : For first time users, kindly
-                <span class="primary--text">enable Pop-ups</span>
-                to gain access to your Torus Wallet
-              </span>
-            </v-flex>
           </v-layout>
           <v-layout v-else wrap align-center justify-center align-content-center>
             <v-flex text-center>

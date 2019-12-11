@@ -38,7 +38,7 @@ export default {
       address: state.selectedAddress,
       email: state.userInfo.email !== '' ? state.userInfo.email : undefined,
       amount: currentOrder.amountIn,
-      url: encodeURIComponent(`${config.coindirectApiHost}/transaction?url=${encodeURIComponent(`${config.redirect_uri}?state=${instanceState}`)}`)
+      url: `${config.coindirectApiHost}/transaction?url=${`${config.redirect_uri}?state=${instanceState}`}`
     }
     return dispatch('postCoindirectOrder', { path: config.coindirectLiveHost, params: params, preopenInstanceId })
   },

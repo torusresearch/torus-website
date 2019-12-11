@@ -140,20 +140,21 @@ class Torus {
           log.info(shareResponses)
           for (var i = 0; i < shareResponses.length; i++) {
             if (shareResponses[i] && shareResponses[i].result && shareResponses[i].result.keys && shareResponses[i].result.keys.length > 0) {
+              shareResponses[i].result.keys.sort((a, b) => a.Index.cmp(b.Index))
               if (shareResponses[i].result.keys[0].Metadata)
                 sharePromises.push(
                   eccrypto.decrypt(Buffer.from(tmpKey.toString('hex'), 'hex'), {
                     ...shareResponses[i].result.keys[0].Metadata,
-                    ciphertext: shareResponses[i].result.keys[0].Share
+                    ciphertext: Buffer.from(shareResponses[i].result.keys[0].Share, 'base64')
                   })
                 )
-              else sharePromises.push(Promise.resolve(shareResponses[i].result.keys[0].Share))
+              else sharePromises.push(Promise.resolve(Buffer.from(shareResponses[i].result.keys[0].Share, 'base64')))
               nodeIndex.push(new BN(indexes[i], 16))
             }
           }
 
           const sharesResolved = await Promise.all(sharePromises)
-          var shares = sharesResolved.map(x => new BN(x, 16))
+          var shares = sharesResolved.map(x => new BN(x))
           log.info(shares, nodeIndex)
           var privateKey = this.lagrangeInterpolation(shares.slice(0, 3), nodeIndex.slice(0, 3))
           var ethAddress = this.generateAddressFromPrivKey(privateKey)

@@ -6,15 +6,16 @@ const redirect_uri = `${baseUrl}/redirect`
 
 export default {
   torusNodeEndpoints: [
-    'https://binance-main-3.torusnode.com/jrpc',
-    'https://waseda-main-3.torusnode.com/jrpc',
-    'https://vgr-main-3.torusnode.com/jrpc',
-    'https://torus-main-3.torusnode.com/jrpc',
-    'https://etc-main-3.torusnode.com/jrpc'
+    'https://binance-main-12.torusnode.com/jrpc',
+    'https://waseda-main-12.torusnode.com/jrpc',
+    'https://vgr-main-12.torusnode.com/jrpc',
+    'https://torus-main-12.torusnode.com/jrpc',
+    'https://etc-main-12.torusnode.com/jrpc'
   ],
   baseRoute: baseRoute,
   torusIndexes: [1, 2, 3, 4, 5],
   supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH'],
+  commonApiHost: 'https://common-api.tor.us',
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',
   wyreApiHost: 'https://wyre-api.tor.us',

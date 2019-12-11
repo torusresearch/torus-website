@@ -1,5 +1,6 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
+import { toChecksumAddress } from 'web3-utils'
 import config from '../config'
 import torus from '../torus'
 import {
@@ -103,7 +104,7 @@ export default {
       })
       const { data } = response
       data.forEach(obj => {
-        torus.torusController.detectTokensController.detectEtherscanTokenBalance(obj.contractAddress, {
+        torus.torusController.detectTokensController.detectEtherscanTokenBalance(toChecksumAddress(obj.contractAddress), {
           decimals: obj.tokenDecimal,
           erc20: true,
           logo: 'eth.svg',
@@ -942,16 +943,6 @@ export default {
         dispatch('updateNetworkId', { networkId: networkId })
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: verifier })
         log.info('rehydrated wallet')
-        // torus.web3.eth.net
-        //   .getId()
-        //   .then(res => {
-        //     console.log(res)
-        //     setTimeout(function() {
-        //       dispatch('updateNetworkId', { networkId: toHex(res) })
-        //     })
-        //     // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-        //   })
-        //   .catch(e => log.error(e))
       }
     } catch (error) {
       log.error('Failed to rehydrate', error)

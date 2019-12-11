@@ -1,0 +1,45 @@
+.activity {
+  .info {
+    font-size: 10px;
+  }
+
+  .v-chip.status-chip {
+    color: #0F1222;
+    width: 100px;
+    ::v-deep .v-chip__content {
+      text-align: center;
+      display: block;
+      width: 100%;
+    }
+  }
+}
+
+.activity-details {
+  .v-list-item {
+    min-height: inherit;
+  }
+
+  .v-list-item__content {
+    padding: 4px 0;
+  }
+
+  .details-label {
+    font-weight: 400;
+    flex: 1;
+  }
+
+  .details-value {
+    flex: 4;
+  }
+  .network-chip {
+    max-width: 200px;
+  }
+  .amount-text {
+    div {
+      line-height: 1em;
+    }
+  }
+  .etherscan-lnk {
+    text-decoration: none;
+  }
+}

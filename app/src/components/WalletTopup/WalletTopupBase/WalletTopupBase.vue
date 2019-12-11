@@ -12,7 +12,7 @@
         <v-flex xs12>
           <v-form ref="paymentForm" v-model="formValid" lazy-validation @submit.prevent>
             <v-flex xs12>
-              <div class="subtitle-2">You wanna buy?</div>
+              <div class="subtitle-2">Buy</div>
               <v-select
                 id="cryptocurrency"
                 class="cryptocurrency-selector"
@@ -24,7 +24,7 @@
               ></v-select>
             </v-flex>
             <v-flex xs12>
-              <div class="subtitle-2">You send</div>
+              <div class="subtitle-2">Send</div>
               <v-text-field
                 id="you-send"
                 class="unique-hint"
