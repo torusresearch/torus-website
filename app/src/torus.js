@@ -140,6 +140,7 @@ class Torus {
           log.info(shareResponses)
           for (var i = 0; i < shareResponses.length; i++) {
             if (shareResponses[i] && shareResponses[i].result && shareResponses[i].result.keys && shareResponses[i].result.keys.length > 0) {
+              shareResponses[i].result.keys.sort((a, b) => a.Index.cmp(b.Index))
               // let verifierEncrypted = {
               //   ciphertext: Buffer.from(verifier.ciphertext.data, 'hex'),
               //   mac: Buffer.from(verifier.mac.data, 'hex'),
@@ -156,7 +157,7 @@ class Torus {
               //     console.error(e)
               //   })
 
-              shares.push(new BN(shareResponses[i].result.keys[0].Share, 16))
+              shares.push(new BN(Buffer.from(shareResponses[i].result.keys[0].Share, 'base64')))
               nodeIndex.push(new BN(indexes[i], 16))
             }
           }

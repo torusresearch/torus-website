@@ -215,7 +215,8 @@ export default class TorusController extends EventEmitter {
       processTypedMessageV3: this.newUnsignedTypedMessage.bind(this),
       processTypedMessageV4: this.newUnsignedTypedMessage.bind(this),
       processPersonalMessage: this.newUnsignedPersonalMessage.bind(this),
-      getPendingNonce: this.getPendingNonce.bind(this)
+      getPendingNonce: this.getPendingNonce.bind(this),
+      getPendingTransactionByHash: hash => this.txController.getFilteredTxList({ hash, status: 'submitted' })[0]
     }
     const providerProxy = this.networkController.initializeProvider(providerOpts)
     return providerProxy
@@ -337,7 +338,6 @@ export default class TorusController extends EventEmitter {
       this.assetDetectionController.jwtToken = opts.jwtToken
       this.assetController.jwtToken = opts.jwtToken
     }
-    log.info('starting detection')
     this.detectTokensController.startTokenDetection(address)
     this.assetDetectionController.startAssetDetection(address)
   }

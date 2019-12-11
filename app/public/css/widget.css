@@ -1,3 +1,49 @@
+.torus-alert {
+  z-index: 999999;
+  position: fixed;
+  overflow: hidden;
+  top: 34px;
+  right: 34px;
+  width: 260px;
+  box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16);
+  border-radius: 8px;
+  background: #ffffff;
+  font-family: 'Roboto', sans-serif !important;
+  padding: 20px;
+}
+
+.torus-alert h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 200;
+}
+
+.torus-alert p {
+  margin: 10px 0 0;
+  font-size: 14px;
+}
+
+.torus-alert .torus-alert-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+}
+
+.torus-alert .torus-alert-btn {
+  background-color: #0364ff;
+  padding: 14px;
+  width: 100px;
+  height: 40px;
+  border: 0;
+  cursor: pointer;
+  color: white;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+  background-size: 60%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 .widget {
   z-index: 999999;
   position: fixed;
@@ -356,4 +402,21 @@
   color: #0364ff;
   cursor: pointer;
   text-decoration: none;
+}
+
+/* Mobile */
+@media (max-width: 598px) {
+  .modal-container {
+    width: 100%;
+    padding: 0;
+  }
+
+  .modal-content {
+    padding: 0 40px;
+    font-family: 'Roboto', sans-serif !important;
+  }
+
+  .close-container {
+    padding: 10px 20px;
+  }
 }

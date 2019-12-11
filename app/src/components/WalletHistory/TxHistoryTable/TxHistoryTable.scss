@@ -47,4 +47,9 @@
       opacity: 1;
     }
   }
+
+  ::v-deep .v-data-iterator > div:not(.v-card) {
+    text-align: center;
+    padding-top: 20px;
+  }
 }

@@ -164,7 +164,9 @@ class TransactionStateManager extends EventEmitter {
         transactions.splice(index, 1)
       }
     }
-    transactions.push(txMeta)
+    const newTxIndex = transactions.findIndex(currentTxMeta => currentTxMeta.time > txMeta.time)
+
+    newTxIndex === -1 ? transactions.push(txMeta) : transactions.splice(newTxIndex, 0, txMeta)
     this._saveTxList(transactions)
     return txMeta
   }
@@ -281,17 +283,18 @@ class TransactionStateManager extends EventEmitter {
   /**
 
     @param key {string} - the key to check
-    @param value - the value your looking for
+    @param value - the value your looking for can also be a function that returns a bool
     @param [txList=this.getTxList()] {array} - the list to search. default is the txList
     from txStateManager#getTxList
     @returns {array} a list of txMetas who matches the search params
   */
   getTxsByMetaData(key, value, txList = this.getTxList()) {
+    const filter = typeof value === 'function' ? value : v => v === value
     return txList.filter(txMeta => {
       if (key in txMeta.txParams) {
-        return txMeta.txParams[key] === value
+        return filter(txMeta.txParams[key])
       } else {
-        return txMeta[key] === value
+        return filter(txMeta[key])
       }
     })
   }

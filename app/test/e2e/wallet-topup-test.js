@@ -55,7 +55,11 @@ describe('Tests Wallet Topup', () => {
 
       if (!provider.isComingSoon) {
         await click(page, `#${provider.provider}-link`)
-        await shouldExist(page, `.wallet-topup-${provider.provider}`)
+        if (provider.provider !== 'crypto') {
+          await waitForText(page, '.selected-provider', provider.provider, false)
+        } else {
+          await shouldExist(page, `.wallet-topup-${provider.provider}`)
+        }
       }
     }
   })

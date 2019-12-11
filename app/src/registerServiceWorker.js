@@ -127,8 +127,8 @@ if (
         log.info('Successfully registered secure service worker', updatedSwReg)
       })
       .catch(err => {
-        log.error('Could not complete service worker installation process, error: ', err)
-        throw new Error('Could not install service worker')
+        log.warn('Could not complete service worker installation process, error: ', err)
+        // throw new Error('Could not install service worker')
       })
   }
 }

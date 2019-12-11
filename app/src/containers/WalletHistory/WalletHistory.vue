@@ -9,6 +9,7 @@
             class="pt-0 mt-0 ml-2 subtitle-2 nav-selector transaction"
             height="25px"
             hide-details
+            :menu-props="{ bottom: true, offsetY: true }"
             :items="actionTypes"
             v-model="selectedAction"
             append-icon="$vuetify.icons.select"
@@ -18,6 +19,7 @@
             class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period"
             height="25px"
             hide-details
+            :menu-props="{ bottom: true, offsetY: true }"
             :items="periods"
             v-model="selectedPeriod"
             append-icon="$vuetify.icons.select"
@@ -26,20 +28,10 @@
       </v-flex>
       <v-flex xs12 px-4 mb-4>
         <tx-history-table
-          v-if="!$vuetify.breakpoint.xsOnly"
           :headers="headers"
           :selectedAction="selectedAction"
           :selectedPeriod="selectedPeriod"
           :transactions="calculateFinalTransactions()"
-          :nonTopupTransactionCount="getNonTopupTransactionCount()"
-        />
-        <tx-history-table-mobile
-          v-if="$vuetify.breakpoint.xsOnly"
-          :headers="headers"
-          :selectedAction="selectedAction"
-          :selectedPeriod="selectedPeriod"
-          :transactions="calculateFinalTransactions()"
-          :nonTopupTransactionCount="getNonTopupTransactionCount()"
         />
       </v-flex>
     </v-layout>
@@ -52,12 +44,12 @@ import log from 'loglevel'
 import { toChecksumAddress, toBN, fromWei } from 'web3-utils'
 import config from '../../config'
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
-import TxHistoryTableMobile from '../../components/WalletHistory/TxHistoryTableMobile'
 import { getPastOrders } from '../../plugins/simplex'
-import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getEthTxStatus } from '../../utils/utils'
+import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getEthTxStatus, formatDate } from '../../utils/utils'
 import torus from '../../torus'
 import { patch } from '../../utils/httpHelpers'
 import {
+  WYRE,
   WALLET_HEADERS_TRANSFER,
   ACTIVITY_ACTION_ALL,
   ACTIVITY_ACTION_SEND,
@@ -66,12 +58,16 @@ import {
   ACTIVITY_PERIOD_ALL,
   ACTIVITY_PERIOD_WEEK_ONE,
   ACTIVITY_PERIOD_MONTH_ONE,
-  ACTIVITY_PERIOD_MONTH_SIX
+  ACTIVITY_PERIOD_MONTH_SIX,
+  ACTIVITY_STATUS_SUCCESSFUL,
+  ACTIVITY_STATUS_UNSUCCESSFUL,
+  SUPPORTED_NETWORK_TYPES,
+  ACTIVITY_STATUS_PENDING
 } from '../../utils/enums'
 
 export default {
   name: 'walletHistory',
-  components: { TxHistoryTable, TxHistoryTableMobile },
+  components: { TxHistoryTable },
   data() {
     return {
       pageHeader: WALLET_HEADERS_TRANSFER,
@@ -126,8 +122,47 @@ export default {
     onCurrencyChange(value) {
       this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'history' })
     },
-    getNonTopupTransactionCount() {
-      return this.calculateFinalTransactions().filter(item => item.action !== ACTIVITY_ACTION_TOPUP).length
+    getStatusText(status) {
+      switch (status) {
+        case 'rejected':
+        case 'denied':
+        case 'unapproved':
+        case 'failed':
+          return ACTIVITY_STATUS_UNSUCCESSFUL
+        case 'confirmed':
+        case 'completed':
+        case 'complete':
+        case 'success':
+          return ACTIVITY_STATUS_SUCCESSFUL
+        case 'pending':
+        case 'submitted':
+        case 'processing':
+          return ACTIVITY_STATUS_PENDING
+        default:
+          return ''
+      }
+    },
+    getActionText(action, item) {
+      if (action === ACTIVITY_ACTION_SEND) {
+        return 'Send ' + item
+      } else if (action === ACTIVITY_ACTION_RECEIVE || action === ACTIVITY_ACTION_TOPUP) {
+        return 'Received ' + item
+      }
+    },
+    getIcon(action) {
+      if (action === ACTIVITY_ACTION_TOPUP) {
+        return '$vuetify.icons.coins_receive'
+      } else if (action === ACTIVITY_ACTION_SEND) {
+        return '$vuetify.icons.coins_send'
+      } else if (action === ACTIVITY_ACTION_RECEIVE) {
+        return '$vuetify.icons.coins_receive'
+      }
+    },
+    formatDate(date) {
+      return formatDate(date)
+    },
+    formatTime(time) {
+      return time.toTimeString().substring(0, 8)
     },
     calculateFinalTransactions() {
       let finalTx = this.paymentTx
@@ -135,10 +170,16 @@ export default {
       const transactions = this.calculateTransactions()
       finalTx = [...transactions, ...finalTx, ...pastTx]
       finalTx = finalTx.reduce((acc, x) => {
-        if (acc.findIndex(y => y.etherscanLink === x.etherscanLink) === -1) acc.push(x)
+        x.actionIcon = this.getIcon(x.action)
+        x.actionText = this.getActionText(x.action, 'ETH')
+        x.statusText = this.getStatusText(x.status)
+        x.dateFormatted = this.formatDate(x.date)
+        x.timeFormatted = this.formatTime(x.date)
+        if (x.etherscanLink === '' || acc.findIndex(y => y.etherscanLink === x.etherscanLink) === -1) acc.push(x)
         return acc
       }, [])
       const sortedTx = finalTx.sort((a, b) => b.date - a.date) || []
+      // log.info('sorted tx is', sortedTx)
       return sortedTx
     },
     async calculatePastTransactions() {
@@ -166,7 +207,6 @@ export default {
           to: x.to,
           slicedTo: addressSlicer(x.to),
           action: this.wallets.indexOf(x.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
-          gas: {},
           totalAmount: x.total_amount,
           totalAmountString: totalAmountString,
           currencyAmount: x.currency_amount,
@@ -197,10 +237,6 @@ export default {
           txObj.to = toChecksumAddress(txOld.txParams.to)
           txObj.slicedTo = addressSlicer(txOld.txParams.to)
           txObj.totalAmount = fromWei(toBN(txOld.txParams.value).add(toBN(txOld.txParams.gas).mul(toBN(txOld.txParams.gasPrice))))
-          txObj.gas = {
-            gas: web3Utils.fromWei(web3Utils.toBN(txOld.txParams.gas), 'gwei'),
-            gasPrice: web3Utils.fromWei(web3Utils.toBN(txOld.txParams.gasPrice), 'gwei')
-          }
           txObj.totalAmountString = `${significantDigits(txObj.totalAmount)} ETH`
           txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount
           txObj.currencyAmountString = `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`
@@ -211,7 +247,6 @@ export default {
           txObj.ethRate = significantDigits(parseFloat(txObj.currencyAmount) / parseFloat(txObj.totalAmount))
           txObj.currencyUsed = this.selectedCurrency
           finalTransactions.push(txObj)
-          console.log('txObj is', txObj)
         }
       }
       return finalTransactions
@@ -236,31 +271,33 @@ export default {
     }
   },
   mounted() {
-    const { selectedAddress: publicAddress } = this.$store.state
-    getPastOrders({}, { public_address: publicAddress })
+    const { selectedAddress: publicAddress, jwtToken } = this.$store.state
+    getPastOrders(
+      {},
+      {
+        Authorization: `Bearer ${jwtToken}`
+      }
+    )
       .then(response => {
-        this.paymentTx = response.result.reduce((acc, x) => {
-          if (!(x.status === 'SENT_TO_SIMPLEX' && new Date() - new Date(x.createdAt) > 86400 * 1000)) {
-            const totalAmountString = `${significantDigits(x.requested_digital_amount.amount)} ${x.requested_digital_amount.currency}`
-            const currencyAmountString = `${significantDigits(x.fiat_total_amount.amount)} ${x.fiat_total_amount.currency}`
-            acc.push({
-              id: x.createdAt,
-              date: new Date(x.createdAt),
-              from: 'Simplex',
-              slicedFrom: 'Simplex',
-              action: ACTIVITY_ACTION_TOPUP,
-              to: publicAddress,
-              slicedTo: addressSlicer(publicAddress),
-              totalAmount: x.requested_digital_amount.amount,
-              gas: {},
-              totalAmountString,
-              currencyAmount: x.fiat_total_amount.amount,
-              currencyAmountString,
-              amount: `${totalAmountString} / ${currencyAmountString}`,
-              status: getStatus(x.status),
-              etherscanLink: ''
-            })
-          }
+        this.paymentTx = response.data.reduce((acc, x) => {
+          acc.push({
+            id: x.id,
+            date: new Date(x.date),
+            from: x.from,
+            slicedFrom: x.slicedFrom,
+            action: x.action,
+            to: x.to,
+            slicedTo: x.slicedTo,
+            totalAmount: x.totalAmount,
+            totalAmountString: x.totalAmountString,
+            currencyAmount: x.currencyAmount,
+            currencyAmountString: x.currencyAmountString,
+            amount: x.amount,
+            ethRate: x.ethRate,
+            status: x.status.toLowerCase(),
+            etherscanLink: x.etherscanLink || '',
+            currencyUsed: x.currencyUsed
+          })
 
           return acc
           // }
