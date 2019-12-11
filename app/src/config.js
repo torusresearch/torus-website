@@ -6,9 +6,9 @@ const baseRoute = baseUrl + process.env.BASE_URL
 const redirect_uri = `${baseUrl}/redirect`
 
 export const nodeDetails = {
-  skip: true, // skip fetching of node details and use defaults below
+  skip: false, // skip fetching of node details and use defaults below
   updated: new PromiseReference(),
-  minEpoch: 3,
+  minEpoch: 12,
   currentEpoch: 0,
   nodeListAddress: '0x97c85658cd10b386fc37e4b32df90b916b689ee8',
   torusNodeEndpoints: [

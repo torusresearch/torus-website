@@ -361,6 +361,7 @@ function PromiseReference() {
   })
 }
 PromiseReference.prototype.constructor = PromiseReference
+
 function formatDate(date) {
   const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   const day = date.getDate()

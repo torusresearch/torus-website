@@ -78,9 +78,8 @@ function onloadTorus(torus) {
       var indexes = latestEpochInfo.nodeList.map((_, pos) => {
         return pos + 1
       })
-      latestEpochInfo.nodeList.map(async (nodeEthAddress, pos) => {
-        var req = getNodeEndpoint(torus._mainnetWeb3, nodeEthAddress)
-        nodeEndpointRequests.push(req)
+      latestEpochInfo.nodeList.map(nodeEthAddress => {
+        nodeEndpointRequests.push(getNodeEndpoint(torus._mainnetWeb3, nodeEthAddress))
       })
       const nodeEndpoints = await Promise.all(nodeEndpointRequests)
       const updatedNodeEndpoints = nodeEndpoints.map(x => {

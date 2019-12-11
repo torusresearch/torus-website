@@ -1,6 +1,7 @@
 import { nodeDetails } from '../config'
-const { minEpoch, nodeListAddress } = nodeDetails
 import log from 'loglevel'
+
+const { minEpoch, nodeListAddress } = nodeDetails
 const nodeListABI = [
   {
     constant: true,
@@ -503,12 +504,12 @@ const nodeListABI = [
 ]
 
 export const getLatestEpochInfo = async function(mainnetWeb3) {
-  var nodeListContract = new mainnetWeb3.eth.Contract(nodeListABI, nodeListAddress)
-  var epochInfo
-  var startingEpoch = minEpoch
+  const nodeListContract = new mainnetWeb3.eth.Contract(nodeListABI, nodeListAddress)
+  let epochInfo
+  let startingEpoch = minEpoch
   while (true) {
     try {
-      var fetchedEpochInfo = await nodeListContract.methods.getEpochInfo(startingEpoch).call()
+      const fetchedEpochInfo = await nodeListContract.methods.getEpochInfo(startingEpoch).call()
       if (Number(fetchedEpochInfo[0]) === 0) {
         break
       }
@@ -522,7 +523,7 @@ export const getLatestEpochInfo = async function(mainnetWeb3) {
   return epochInfo
 }
 
-export const getNodeEndpoint = async function(mainnetWeb3, nodeEthAddress) {
+export const getNodeEndpoint = function(mainnetWeb3, nodeEthAddress) {
   var nodeListContract = new mainnetWeb3.eth.Contract(nodeListABI, nodeListAddress)
   return nodeListContract.methods.getNodeDetails(nodeEthAddress).call()
 }
