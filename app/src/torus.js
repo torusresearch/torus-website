@@ -53,9 +53,11 @@ class Torus {
       } 
       */
       log.info(idToken)
-      var tmpKey = this.ec.genKeyPair()
-      var pubKey = tmpKey.getPublic()
-      var tokenCommitment = keccak256(idToken)
+      const tmpKey = eccrypto.generatePrivate()
+      const pubKey = eccrypto.getPublic(tmpKey).toString('hex')
+      const pubKeyX = pubKey.slice(2, 66)
+      const pubKeyY = pubKey.slice(66)
+      const tokenCommitment = keccak256(idToken)
       log.info(tokenCommitment)
       for (var i = 0; i < endpoints.length; i++) {
         var p = post(
@@ -63,8 +65,8 @@ class Torus {
           generateJsonRPCObject('CommitmentRequest', {
             messageprefix: 'mug00',
             tokencommitment: tokenCommitment.slice(2),
-            temppubx: pubKey.getX().toString('hex'),
-            temppuby: pubKey.getY().toString('hex'),
+            temppubx: pubKeyX,
+            temppuby: pubKeyY,
             timestamp: (Date.now() - 2000).toString().slice(0, 10),
             verifieridentifier: verifier
           })
@@ -106,6 +108,7 @@ class Torus {
             var p = post(
               endpoints[i],
               generateJsonRPCObject('ShareRequest', {
+                encrypted: 'yes',
                 item: [{ ...verifierParams, idtoken: idToken, nodesignatures: nodeSigs, verifieridentifier: verifier }]
               })
             ).catch(err => {
@@ -141,14 +144,22 @@ class Torus {
           for (var i = 0; i < shareResponses.length; i++) {
             if (shareResponses[i] && shareResponses[i].result && shareResponses[i].result.keys && shareResponses[i].result.keys.length > 0) {
               shareResponses[i].result.keys.sort((a, b) => a.Index.cmp(b.Index))
-              if (shareResponses[i].result.keys[0].Metadata)
+              if (shareResponses[i].result.keys[0].Metadata) {
+                const metadata = {
+                  ephemPublicKey: Buffer.from(shareResponses[i].result.keys[0].Metadata.ephemPublicKey, 'hex'),
+                  iv: Buffer.from(shareResponses[i].result.keys[0].Metadata.iv, 'hex'),
+                  mac: Buffer.from(shareResponses[i].result.keys[0].Metadata.mac, 'hex'),
+                  mode: Buffer.from(shareResponses[i].result.keys[0].Metadata.mode, 'hex')
+                }
                 sharePromises.push(
-                  eccrypto.decrypt(Buffer.from(tmpKey.toString('hex'), 'hex'), {
-                    ...shareResponses[i].result.keys[0].Metadata,
-                    ciphertext: Buffer.from(shareResponses[i].result.keys[0].Share, 'base64')
+                  eccrypto.decrypt(tmpKey, {
+                    ...metadata,
+                    ciphertext: Buffer.from(atob(shareResponses[i].result.keys[0].Share), 'hex')
                   })
                 )
-              else sharePromises.push(Promise.resolve(Buffer.from(shareResponses[i].result.keys[0].Share, 'base64')))
+              } else {
+                sharePromises.push(Promise.resolve(Buffer.from(shareResponses[i].result.keys[0].Share, 'base64')))
+              }
               nodeIndex.push(new BN(indexes[i], 16))
             }
           }
