@@ -158,7 +158,7 @@ class Torus {
                   })
                 )
               } else {
-                sharePromises.push(Promise.resolve(Buffer.from(shareResponses[i].result.keys[0].Share, 'base64')))
+                sharePromises.push(Promise.resolve(Buffer.from(shareResponses[i].result.keys[0].Share, 'hex')))
               }
               nodeIndex.push(new BN(indexes[i], 16))
             }
