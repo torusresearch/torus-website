@@ -39,6 +39,7 @@
     "copy-to-clipboard": "^3.2.0",
     "core-js": "3.5.0",
     "debounce": "^1.2.0",
+    "eccrypto": "^1.1.2",
     "eth-block-tracker": "^4.4.3",
     "eth-contract-metadata": "^1.11.0",
     "eth-json-rpc-errors": "1.1.0",
