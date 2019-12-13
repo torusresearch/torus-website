@@ -154,11 +154,11 @@ class Torus {
                 sharePromises.push(
                   eccrypto.decrypt(tmpKey, {
                     ...metadata,
-                    ciphertext: Buffer.from(atob(shareResponses[i].result.keys[0].Share), 'hex')
+                    ciphertext: Buffer.from(atob(shareResponses[i].result.keys[0].Share).padStart(64, '0'), 'hex')
                   })
                 )
               } else {
-                sharePromises.push(Promise.resolve(Buffer.from(shareResponses[i].result.keys[0].Share, 'hex')))
+                sharePromises.push(Promise.resolve(Buffer.from(shareResponses[i].result.keys[0].Share.padStart(64, '0'), 'hex')))
               }
               nodeIndex.push(new BN(indexes[i], 16))
             }
