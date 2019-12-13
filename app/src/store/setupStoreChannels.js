@@ -100,4 +100,16 @@ selectedAddressChannel.onmessage = function(ev) {
   }
 }
 
+// used for communication between popup and iframe
+var providerChangeChannel = new BroadcastChannel(`provider_change_${torus.instanceId}`, broadcastChannelOptions)
+providerChangeChannel.onmessage = function(ev) {
+  if (ev.data && ev.data.name == 'provider_change' && ev.data.payload) {
+    log.info('setting provider')
+    const { network } = ev.data.payload
+    if (VuexStore.state.networkType.host !== network.host) {
+      VuexStore.dispatch('setProviderType', ev.data.payload)
+    }
+  }
+}
+
 export default VuexStore
