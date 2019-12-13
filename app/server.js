@@ -47,6 +47,9 @@ app.get('/service-worker.js', function(req, res) {
 })
 app.use(express.static('dist'))
 
+app.get('/redirect', (req, res) => {
+  res.sendFile(path.join(__dirname, '/dist/redirect.html'))
+})
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/dist/index.html'))
 })

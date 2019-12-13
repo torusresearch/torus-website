@@ -15,8 +15,97 @@
         padding: 0;
         margin: 0;
       }
+
       .skeleton-holder {
         display: none;
+      }
+
+      .redirect-skeleton-container {
+        width:100%;
+        height:100%;
+        justify-content:center;
+        align-items:center;
+        flex-direction: column;
+      }
+
+      .redirect-skeleton-content {
+        text-align: center;
+        padding-top: 3px;
+        padding-right: 24px;
+      }
+
+      .redirect-skeleton-container h1.title {
+        font-size: 32px;
+        color: #FFFFFF;
+        font-family: 'Roboto', sans-serif !important;
+        margin: 0;
+        text-align: center;
+      }
+      .redirect-skeleton-container p.info {
+        font-size: 24px;
+        color: #FFFFFF;
+        font-family: 'Roboto', sans-serif !important;
+        margin: 26px 0 40px;
+      }
+
+      .redirect-skeleton-container .spinner .beat {
+        background-color: #ffffff;
+        height: 12px;
+        width: 12px;
+        margin: 2px;
+        border-radius: 100%;
+        -webkit-animation: beatStretchDelay 0.7s infinite linear;
+        animation: beatStretchDelay 0.7s infinite linear;
+        -webkit-animation-fill-mode: both;
+        animation-fill-mode: both;
+        display: inline-block;
+      }
+      .redirect-skeleton-container .spinner .beat-odd {
+        animation-delay: 0s;
+      }
+      .redirect-skeleton-container .spinner .beat-even {
+        animation-delay: 0.35s;
+      }
+      @-webkit-keyframes beatStretchDelay {
+        50% {
+          -webkit-transform: scale(0.75);
+          transform: scale(0.75);
+          -webkit-opacity: 0.2;
+          opacity: 0.2;
+        }
+        100% {
+          -webkit-transform: scale(1);
+          transform: scale(1);
+          -webkit-opacity: 1;
+          opacity: 1;
+        }
+      }
+      @keyframes beatStretchDelay {
+        50% {
+          -webkit-transform: scale(0.75);
+          transform: scale(0.75);
+          -webkit-opacity: 0.2;
+          opacity: 0.2;
+        }
+        100% {
+          -webkit-transform: scale(1);
+          transform: scale(1);
+          -webkit-opacity: 1;
+          opacity: 1;
+        }
+      }
+
+      @media (min-width: 768px) {
+        .redirect-skeleton-container h1.title {
+          font-size: 40px;
+        }
+        .redirect-skeleton-container p.info {
+          font-size: 28px;
+        }
+        .redirect-skeleton-container .spinner .beat {
+          height: 15px;
+          width: 15px;
+        }
       }
     </style>
   </head>
@@ -26,8 +115,21 @@
       <strong>We're sorry but app doesn't work properly without javascript enabled. Please enable it to continue.</strong>
     </noscript>
     <div id="app">
-      <!-- Login Loader -->
-      <svg id="light-skeleton-login" class="skeleton-holder" viewBox="0 0 400 500" version="1.1" preserveAspectRatio="xMidYMid meet">
+      <!-- REDIRECT LOADER -->
+      <div id="skeleton-redirect" class="redirect-skeleton-container skeleton-holder">
+        <div class="redirect-skeleton-content">
+          <h1 class="title content">You are being redirected</h1>
+          <p class="info content">Please wait</p>
+          <div class="spinner content">
+            <div class="beat beat-odd"></div>
+            <div class="beat beat-even"></div>
+            <div class="beat beat-odd"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOGIN LOADER -->
+      <svg id="skeleton-login" class="skeleton-holder" viewBox="0 0 400 500" version="1.1" preserveAspectRatio="xMidYMid meet">
         <rect clip-path="url(#r4m7x9xn1uj)" x="0" y="0" width="400" height="500" style='fill: url("#li27uzo4xxj");'></rect>
         <defs>
           <clipPath id="r4m7x9xn1uj">
@@ -55,8 +157,40 @@
           </linearGradient>
         </defs>
       </svg>
-      <!-- Home Loader -->
-      <svg id="light-skeleton-wallet-home" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
+
+      <!-- MOBILE LOGIN LOADER -->
+      <svg id="skeleton-login-mobile" class="skeleton-holder" viewBox="0 0 450 600" version="1.1" preserveAspectRatio="xMidYMid meet">
+        <rect clip-path="url(#rwmdlfuk7y)" x="0" y="0" width="450" height="600" style='fill: url("#0jvmda2kk075");'></rect>
+        <defs>
+          <clipPath id="rwmdlfuk7y">
+            <rect x="47.5" y="27.61" rx="0" ry="0" width="124.68" height="28.18"></rect>
+            <rect x="47.5" y="89.61" rx="0" ry="0" width="183.13" height="27.31"></rect>
+            <rect x="47.5" y="129.61" rx="0" ry="0" width="335.08" height="10.75"></rect>
+            <rect x="47.5" y="146.61" rx="0" ry="0" width="288.33" height="9.3"></rect>
+            <rect x="47.5" y="186.61" rx="0" ry="0" width="358.46" height="27.31"></rect>
+            <rect x="47.5" y="224.61" rx="0" ry="0" width="85.72" height="27.31"></rect>
+            <rect x="136.5" y="224.61" rx="0" ry="0" width="85.72" height="27.31"></rect>
+            <rect x="225.5" y="224.61" rx="0" ry="0" width="85.72" height="27.31"></rect>
+            <rect x="314.5" y="224.61" rx="0" ry="0" width="85.72" height="27.31"></rect>
+            <rect x="47.5" y="298.61" rx="0" ry="0" width="335.08" height="10.75"></rect>
+            <rect x="47.5" y="312.61" rx="0" ry="0" width="288.33" height="9.3"></rect>
+          </clipPath>
+          <linearGradient id="0jvmda2kk075">
+            <stop offset="0.32481" stop-color="#E7EDF3" stop-opacity="1">
+              <animate attributeName="offset" values="-2; 1" dur="2s" repeatCount="indefinite"></animate>
+            </stop>
+            <stop offset="0.82481" stop-color="#ecebeb" stop-opacity="1">
+              <animate attributeName="offset" values="-1.5; 1.5" dur="2s" repeatCount="indefinite"></animate>
+            </stop>
+            <stop offset="1.32481" stop-color="#E7EDF3" stop-opacity="1">
+              <animate attributeName="offset" values="-1; 2" dur="2s" repeatCount="indefinite"></animate>
+            </stop>
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <!-- HOME LOADER -->
+      <svg id="skeleton-wallet-home" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
         <rect clip-path="url(#y2ax1xa2psi)" x="0" y="0" width="400" height="160" style='fill: url("#38yvmt0qmd5");'></rect>
         <defs>
           <clipPath id="y2ax1xa2psi">
@@ -83,40 +217,41 @@
           </linearGradient>
         </defs>
       </svg>
-      <svg id="dark-skeleton-wallet-home" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
-        <rect clip-path="url(#fh3fzzvzm6t)" x="0" y="0" width="400" height="160" style='fill: url("#e3an2qpm38h");'></rect>
+
+      <!-- MOBILE HOME LOADER -->
+      <svg id="skeleton-wallet-home-mobile" class="skeleton-holder" viewBox="0 0 450 600" version="1.1" preserveAspectRatio="xMidYMid meet">
+        <rect clip-path="url(#utqp2l06zdi)" x="0" y="0" width="450" height="600" style='fill: url("#jqa3zzmrev");'></rect>
         <defs>
-          <clipPath id="fh3fzzvzm6t">
-            <rect x="27.59" y="33" rx="5" ry="5" width="94.6" height="9.6"></rect>
-            <rect x="0" y="0" rx="0" ry="0" width="399.77" height="21.2"></rect>
-            <rect x="318.15" y="32.81" rx="0" ry="0" width="53.12" height="8.8"></rect>
-            <rect x="259.15" y="32.81" rx="0" ry="0" width="53.12" height="8.8"></rect>
-            <rect x="27.63" y="45.81" rx="0" ry="0" width="343.86" height="38.4"></rect>
-            <rect x="27.59" y="97" rx="5" ry="5" width="94.6" height="9.6"></rect>
-            <rect x="276.59" y="97" rx="5" ry="5" width="94.6" height="9.6"></rect>
-            <rect x="26.63" y="113.81" rx="0" ry="0" width="167.74" height="38.4"></rect>
-            <rect x="202.63" y="113.81" rx="0" ry="0" width="167.74" height="38.4"></rect>
+          <clipPath id="utqp2l06zdi">
+            <rect x="15.5" y="17.61" rx="0" ry="0" width="46.13" height="28.18"></rect>
+            <rect x="15.5" y="63.61" rx="0" ry="0" width="139.18" height="22.12"></rect>
+            <rect x="15.5" y="92.61" rx="0" ry="0" width="418.85" height="66.41"></rect>
+            <rect x="15.5" y="238.61" rx="0" ry="0" width="85.72" height="27.31"></rect>
+            <rect x="105.5" y="238.61" rx="0" ry="0" width="85.72" height="27.31"></rect>
+            <rect x="15.5" y="161.61" rx="0" ry="0" width="418.85" height="66.41"></rect>
+            <rect x="15.5" y="267.61" rx="0" ry="0" width="418.85" height="66.41"></rect>
           </clipPath>
-          <linearGradient id="e3an2qpm38h">
-            <stop offset="-1.22145" stop-color="#2E3135" stop-opacity="1">
+          <linearGradient id="jqa3zzmrev">
+            <stop offset="-0.00404286" stop-color="#E7EDF3" stop-opacity="1">
               <animate attributeName="offset" values="-2; 1" dur="2s" repeatCount="indefinite"></animate>
             </stop>
-            <stop offset="-0.72145" stop-color="#2E3135" stop-opacity="1">
+            <stop offset="0.495957" stop-color="#ecebeb" stop-opacity="1">
               <animate attributeName="offset" values="-1.5; 1.5" dur="2s" repeatCount="indefinite"></animate>
             </stop>
-            <stop offset="-0.22145" stop-color="#2E3135" stop-opacity="1">
+            <stop offset="0.995957" stop-color="#E7EDF3" stop-opacity="1">
               <animate attributeName="offset" values="-1; 2" dur="2s" repeatCount="indefinite"></animate>
             </stop>
           </linearGradient>
         </defs>
       </svg>
-      <!-- Home Collectibles Loader -->
-      <svg id="light-skeleton-wallet-home-collectibles" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
+      
+      <!-- HOME COLLECTIBLES LOADER -->
+      <svg id="skeleton-wallet-home-collectibles" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
         <rect clip-path="url(#bwbe9amsswb)" x="0" y="0" width="400" height="160" style='fill: url("#zsmnc2xrer");'></rect>
         <defs>
           <clipPath id="bwbe9amsswb">
             <rect x="56.09" y="-55" rx="5" ry="5" width="94.6" height="9.6"></rect>
-            <rect x="4.33" y="3.61" rx="0" ry="0" width="394.2" height="23.1"></rect>
+            <rect x="0" y="0" rx="0" ry="0" width="394.2" height="23.1"></rect>
             <rect x="280.33" y="9.61" rx="0" ry="0" width="0" height="0"></rect>
             <rect x="42.41" y="42.61" rx="0" ry="0" width="126.14" height="8.1"></rect>
             <rect x="41.41" y="56.61" rx="0" ry="0" width="204.98" height="6"></rect>
@@ -137,34 +272,38 @@
           </linearGradient>
         </defs>
       </svg>
-      <svg id="dark-skeleton-wallet-home-collectibles" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
-        <rect clip-path="url(#cb6szccdj64)" x="0" y="0" width="400" height="160" style='fill: url("#cdgf6hwl1r5");'></rect>
+
+      <!-- HOME COLLECTIBLES LOADER -->
+      <svg id="skeleton-wallet-home-collectibles-mobile" class="skeleton-holder" viewBox="0 0 450 600" version="1.1" preserveAspectRatio="xMidYMid meet">
+        <rect clip-path="url(#4ur6mfxgjui)" x="0" y="0" width="450" height="600" style='fill: url("#9iwnmiv0ym");'></rect>
         <defs>
-          <clipPath id="cb6szccdj64">
-            <rect x="56.09" y="-55" rx="5" ry="5" width="94.6" height="9.6"></rect>
-            <rect x="4.33" y="3.61" rx="0" ry="0" width="394.2" height="23.1"></rect>
-            <rect x="280.33" y="9.61" rx="0" ry="0" width="0" height="0"></rect>
-            <rect x="42.41" y="42.61" rx="0" ry="0" width="126.14" height="8.1"></rect>
-            <rect x="41.41" y="56.61" rx="0" ry="0" width="204.98" height="6"></rect>
-            <rect x="41.41" y="68.81" rx="0" ry="0" width="27.59" height="27.9"></rect>
-            <rect x="74.41" y="68.81" rx="0" ry="0" width="27.59" height="27.9"></rect>
-            <rect x="108.41" y="68.81" rx="0" ry="0" width="27.59" height="27.9"></rect>
+          <clipPath id="4ur6mfxgjui">
+            <rect x="15.5" y="17.61" rx="0" ry="0" width="46.13" height="28.18"></rect>
+            <rect x="15.5" y="72.61" rx="0" ry="0" width="189.28" height="11.5"></rect>
+            <rect x="15.5" y="99.61" rx="0" ry="0" width="414.66" height="23.52"></rect>
+            <circle cx="47.75" cy="170.73" r="32.12"></circle>
+            <rect x="94.63" y="140.61" rx="0" ry="0" width="331.73" height="59.46"></rect>
+            <circle cx="47.75" cy="251.73" r="32.12"></circle>
+            <rect x="94.63" y="221.61" rx="0" ry="0" width="331.73" height="59.46"></rect>
+            <circle cx="47.75" cy="330.73" r="32.12"></circle>
+            <rect x="94.63" y="298.61" rx="0" ry="0" width="331.73" height="59.46"></rect>
           </clipPath>
-          <linearGradient id="cdgf6hwl1r5">
-            <stop offset="-1.21764" stop-color="#2E3135" stop-opacity="1">
+          <linearGradient id="9iwnmiv0ym">
+            <stop offset="0.636816" stop-color="#E7EDF3" stop-opacity="1">
               <animate attributeName="offset" values="-2; 1" dur="2s" repeatCount="indefinite"></animate>
             </stop>
-            <stop offset="-0.717642" stop-color="#2E3135" stop-opacity="1">
+            <stop offset="1.13682" stop-color="#ecebeb" stop-opacity="1">
               <animate attributeName="offset" values="-1.5; 1.5" dur="2s" repeatCount="indefinite"></animate>
             </stop>
-            <stop offset="-0.217642" stop-color="#2E3135" stop-opacity="1">
+            <stop offset="1.63682" stop-color="#E7EDF3" stop-opacity="1">
               <animate attributeName="offset" values="-1; 2" dur="2s" repeatCount="indefinite"></animate>
             </stop>
           </linearGradient>
         </defs>
       </svg>
-      <!-- Transfer Loader -->
-      <svg id="light-skeleton-wallet-transfer" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
+      
+      <!-- TRANSFER LOADER -->
+      <svg id="skeleton-wallet-transfer" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
         <rect clip-path="url(#kre75qxamg)" x="0" y="0" width="400" height="160" style='fill: url("#6nmjpmqqhkt");'></rect>
         <defs>
           <clipPath id="kre75qxamg">
@@ -191,35 +330,39 @@
           </linearGradient>
         </defs>
       </svg>
-      <svg id="dark-skeleton-wallet-transfer" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
-        <rect clip-path="url(#zekfppm4ir)" x="0" y="0" width="400" height="160" style='fill: url("#ry8387m27d");'></rect>
+
+      <!-- MOBILE TRANSFER LOADER -->
+      <svg id="skeleton-wallet-transfer-mobile" class="skeleton-holder" viewBox="0 0 450 600" version="1.1" preserveAspectRatio="xMidYMid meet">
+        <rect clip-path="url(#7zmyq7ve4u)" x="0" y="0" width="450" height="600" style='fill: url("#uv22bma6jya");'></rect>
         <defs>
-          <clipPath id="zekfppm4ir">
-            <rect x="27.59" y="33" rx="5" ry="5" width="94.6" height="9.6"></rect>
-            <rect x="0" y="0" rx="0" ry="0" width="399.77" height="21.2"></rect>
-            <rect x="28.15" y="50.81" rx="0" ry="0" width="174.76" height="12.41"></rect>
-            <rect x="28.15" y="70.81" rx="0" ry="0" width="174.76" height="12.41"></rect>
-            <rect x="28.15" y="90.81" rx="0" ry="0" width="174.76" height="12.41"></rect>
-            <rect x="28.15" y="110.81" rx="0" ry="0" width="86.05" height="12.41"></rect>
-            <rect x="117.15" y="110.81" rx="0" ry="0" width="86.05" height="12.41"></rect>
-            <rect x="28.15" y="130.81" rx="0" ry="0" width="174.76" height="12.41"></rect>
-            <rect x="133.63" y="150.81" rx="0" ry="0" width="70.12" height="12.41"></rect>
+          <clipPath id="7zmyq7ve4u">
+            <rect x="15.5" y="17.61" rx="0" ry="0" width="46.13" height="28.18"></rect>
+            <rect x="15.5" y="63.61" rx="0" ry="0" width="139.18" height="22.12"></rect>
+            <rect x="15.5" y="92.61" rx="0" ry="0" width="418.85" height="27.89"></rect>
+            <rect x="15.5" y="159.61" rx="0" ry="0" width="418.85" height="28.56"></rect>
+            <rect x="15.5" y="267.61" rx="0" ry="0" width="418.85" height="26.56"></rect>
+            <rect x="15.5" y="124.61" rx="0" ry="0" width="205.24" height="27.89"></rect>
+            <rect x="15.5" y="194.61" rx="0" ry="0" width="418.85" height="28.56"></rect>
+            <rect x="15.5" y="232.61" rx="0" ry="0" width="205.24" height="27.89"></rect>
+            <rect x="227.5" y="232.61" rx="0" ry="0" width="205.24" height="27.89"></rect>
+            <rect x="347.5" y="300.61" rx="0" ry="0" width="85.72" height="27.31"></rect>
           </clipPath>
-          <linearGradient id="ry8387m27d">
-            <stop offset="0.498979" stop-color="#2E3135" stop-opacity="1">
+          <linearGradient id="uv22bma6jya">
+            <stop offset="0.879926" stop-color="#E7EDF3" stop-opacity="1">
               <animate attributeName="offset" values="-2; 1" dur="2s" repeatCount="indefinite"></animate>
             </stop>
-            <stop offset="0.998979" stop-color="#2E3135" stop-opacity="1">
+            <stop offset="1.37993" stop-color="#ecebeb" stop-opacity="1">
               <animate attributeName="offset" values="-1.5; 1.5" dur="2s" repeatCount="indefinite"></animate>
             </stop>
-            <stop offset="1.49898" stop-color="#2E3135" stop-opacity="1">
+            <stop offset="1.87993" stop-color="#E7EDF3" stop-opacity="1">
               <animate attributeName="offset" values="-1; 2" dur="2s" repeatCount="indefinite"></animate>
             </stop>
           </linearGradient>
         </defs>
       </svg>
-      <!-- Topup Loader -->
-      <svg id="light-skeleton-wallet-topup" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
+
+      <!-- TOPUP LOADER -->
+      <svg id="skeleton-wallet-topup" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
         <rect clip-path="url(#8ciij7qtry9)" x="0" y="0" width="400" height="160" style='fill: url("#knxeakci7yn");'></rect>
         <defs>
           <clipPath id="8ciij7qtry9">
@@ -244,33 +387,37 @@
           </linearGradient>
         </defs>
       </svg>
-      <svg id="dark-skeleton-wallet-topup" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
-        <rect clip-path="url(#7llqbu8icgt)" x="0" y="0" width="400" height="160" style='fill: url("#rczua0tt68");'></rect>
+
+      <!-- MOBILE TOPUP LOADER -->
+      <svg id="skeleton-wallet-topup-mobile" class="skeleton-holder" viewBox="0 0 450 600" version="1.1" preserveAspectRatio="xMidYMid meet">
+        <rect clip-path="url(#gh4lzfd0tvs)" x="0" y="0" width="450" height="600" style='fill: url("#hlioij9ybvf");'></rect>
         <defs>
-          <clipPath id="7llqbu8icgt">
-            <rect x="27.59" y="33.61" rx="5" ry="5" width="174.06" height="9.02"></rect>
-            <rect x="0" y="0" rx="0" ry="0" width="399.77" height="21.2"></rect>
-            <rect x="28.15" y="50.81" rx="0" ry="0" width="174.76" height="86.94"></rect>
-            <rect x="212.15" y="74.81" rx="0" ry="0" width="138.64" height="12.41"></rect>
-            <rect x="324.63" y="146.81" rx="0" ry="0" width="56.31" height="17.78"></rect>
-            <rect x="210.59" y="50.61" rx="5" ry="5" width="171.23" height="8.93"></rect>
-            <rect x="212.15" y="101.81" rx="0" ry="0" width="138.64" height="12.41"></rect>
+          <clipPath id="gh4lzfd0tvs">
+            <rect x="15.5" y="17.61" rx="0" ry="0" width="46.13" height="28.18"></rect>
+            <rect x="15.5" y="63.61" rx="0" ry="0" width="139.18" height="22.12"></rect>
+            <rect x="15.5" y="92.61" rx="0" ry="0" width="418.85" height="51.14"></rect>
+            <rect x="15.5" y="330.61" rx="0" ry="0" width="412.23" height="9.83"></rect>
+            <rect x="15.5" y="148.61" rx="0" ry="0" width="418.85" height="51.14"></rect>
+            <rect x="15.5" y="205.61" rx="0" ry="0" width="418.85" height="51.14"></rect>
+            <rect x="15.5" y="263.61" rx="0" ry="0" width="418.85" height="51.14"></rect>
+            <rect x="15.5" y="345.61" rx="0" ry="0" width="255.58" height="8.74"></rect>
           </clipPath>
-          <linearGradient id="rczua0tt68">
-            <stop offset="0.895207" stop-color="#2E3135" stop-opacity="1">
+          <linearGradient id="hlioij9ybvf">
+            <stop offset="0.84961" stop-color="#E7EDF3" stop-opacity="1">
               <animate attributeName="offset" values="-2; 1" dur="2s" repeatCount="indefinite"></animate>
             </stop>
-            <stop offset="1.39521" stop-color="#2E3135" stop-opacity="1">
+            <stop offset="1.34961" stop-color="#ecebeb" stop-opacity="1">
               <animate attributeName="offset" values="-1.5; 1.5" dur="2s" repeatCount="indefinite"></animate>
             </stop>
-            <stop offset="1.89521" stop-color="#2E3135" stop-opacity="1">
+            <stop offset="1.84961" stop-color="#E7EDF3" stop-opacity="1">
               <animate attributeName="offset" values="-1; 2" dur="2s" repeatCount="indefinite"></animate>
             </stop>
           </linearGradient>
         </defs>
       </svg>
-      <!-- History Loader -->
-      <svg id="light-skeleton-wallet-history" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
+      
+      <!-- HISTORY LOADER -->
+      <svg id="skeleton-wallet-history" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
         <rect clip-path="url(#og7jt9w7ahp)" x="0" y="0" width="400" height="160" style='fill: url("#4cds1h1ijrb");'></rect>
         <defs>
           <clipPath id="og7jt9w7ahp">
@@ -293,31 +440,36 @@
           </linearGradient>
         </defs>
       </svg>
-      <svg id="dark-skeleton-wallet-history" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
-        <rect clip-path="url(#aiz23f36n4)" x="0" y="0" width="400" height="160" style='fill: url("#hf1lbi9awoe");'></rect>
+
+      <!-- MOBILE HISTORY LOADER -->
+      <svg id="skeleton-wallet-history-mobile" class="skeleton-holder" viewBox="0 0 450 600" version="1.1" preserveAspectRatio="xMidYMid meet">
+        <rect clip-path="url(#uuudzmk164k)" x="0" y="0" width="450" height="600" style='fill: url("#6gyuqyzjrt");'></rect>
         <defs>
-          <clipPath id="aiz23f36n4">
-            <rect x="27.59" y="33.61" rx="5" ry="5" width="87.98" height="9.02"></rect>
-            <rect x="0" y="0" rx="0" ry="0" width="399.77" height="21.2"></rect>
-            <rect x="28.15" y="64.81" rx="0" ry="0" width="341.03" height="16.02"></rect>
-            <rect x="27.59" y="47.61" rx="5" ry="5" width="344.34" height="9.98"></rect>
-            <rect x="283.59" y="32.61" rx="5" ry="5" width="87.98" height="9.02"></rect>
+          <clipPath id="uuudzmk164k">
+            <rect x="15.5" y="17.61" rx="0" ry="0" width="46.13" height="28.18"></rect>
+            <rect x="15.5" y="63.61" rx="0" ry="0" width="139.18" height="22.12"></rect>
+            <rect x="15.5" y="115.61" rx="0" ry="0" width="418.85" height="72.62"></rect>
+            <rect x="173.5" y="94.61" rx="0" ry="0" width="255.58" height="13.46"></rect>
+            <rect x="15.5" y="195.61" rx="0" ry="0" width="418.85" height="72.62"></rect>
+            <rect x="15.5" y="275.61" rx="0" ry="0" width="418.85" height="72.62"></rect>
+            <rect x="15.5" y="357.61" rx="0" ry="0" width="418.85" height="72.62"></rect>
           </clipPath>
-          <linearGradient id="hf1lbi9awoe">
-            <stop offset="0.549212" stop-color="#2E3135" stop-opacity="1">
+          <linearGradient id="6gyuqyzjrt">
+            <stop offset="-1.17568" stop-color="#E7EDF3" stop-opacity="1">
               <animate attributeName="offset" values="-2; 1" dur="2s" repeatCount="indefinite"></animate>
             </stop>
-            <stop offset="1.04921" stop-color="#2E3135" stop-opacity="1">
+            <stop offset="-0.675675" stop-color="#ecebeb" stop-opacity="1">
               <animate attributeName="offset" values="-1.5; 1.5" dur="2s" repeatCount="indefinite"></animate>
             </stop>
-            <stop offset="1.54921" stop-color="#2E3135" stop-opacity="1">
+            <stop offset="-0.175675" stop-color="#E7EDF3" stop-opacity="1">
               <animate attributeName="offset" values="-1; 2" dur="2s" repeatCount="indefinite"></animate>
             </stop>
           </linearGradient>
         </defs>
       </svg>
-      <!-- Settings Loader -->
-      <svg id="light-skeleton-wallet-settings" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
+      
+      <!-- SETTINGS LOADER -->
+      <svg id="skeleton-wallet-settings" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
         <rect clip-path="url(#4l1u4y2ybgq)" x="0" y="0" width="400" height="160" style='fill: url("#pgl79pa8jt");'></rect>
         <defs>
           <clipPath id="4l1u4y2ybgq">
@@ -347,38 +499,39 @@
           </linearGradient>
         </defs>
       </svg>
-      <svg id="dark-skeleton-wallet-settings" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
-        <rect clip-path="url(#mn7mwh458ga)" x="0" y="0" width="400" height="160" style='fill: url("#njvbjdj0rx");'></rect>
+
+      <!-- MOBILE SETTINGS LOADER -->
+      <svg id="skeleton-wallet-settings-mobile" class="skeleton-holder" viewBox="0 0 450 600" version="1.1" preserveAspectRatio="xMidYMid meet">
+        <rect clip-path="url(#vvvhn0w05ua)" x="0" y="0" width="450" height="600" style='fill: url("#od7oiec9f9");'></rect>
         <defs>
-          <clipPath id="mn7mwh458ga">
-            <rect x="27.59" y="33.61" rx="5" ry="5" width="87.98" height="12.67"></rect>
-            <rect x="0" y="0" rx="0" ry="0" width="399.77" height="21.2"></rect>
-            <rect x="47.59" y="52.61" rx="5" ry="5" width="145.68" height="12.67"></rect>
-            <circle cx="34.43" cy="59.41" r="6.8"></circle>
-            <rect x="47.59" y="71.61" rx="5" ry="5" width="145.68" height="12.67"></rect>
-            <rect x="47.59" y="90.61" rx="5" ry="5" width="145.68" height="12.67"></rect>
-            <rect x="47.59" y="108.61" rx="5" ry="5" width="145.68" height="12.67"></rect>
-            <rect x="47.59" y="126.61" rx="5" ry="5" width="145.68" height="12.67"></rect>
-            <circle cx="34.43" cy="78.41" r="6.8"></circle>
-            <circle cx="34.43" cy="97.41" r="6.8"></circle>
-            <circle cx="34.43" cy="115.41" r="6.8"></circle>
-            <circle cx="34.43" cy="133.41" r="6.8"></circle>
+          <clipPath id="vvvhn0w05ua">
+            <rect x="15.5" y="17.61" rx="0" ry="0" width="46.13" height="28.18"></rect>
+            <rect x="15.5" y="62.61" rx="0" ry="0" width="139.18" height="22.12"></rect>
+            <circle cx="31.46" cy="125.44" r="19.83"></circle>
+            <circle cx="31.46" cy="181.44" r="19.83"></circle>
+            <circle cx="31.46" cy="236.44" r="19.83"></circle>
+            <circle cx="31.46" cy="296.44" r="19.83"></circle>
+            <rect x="63.63" y="106.61" rx="0" ry="0" width="368.59" height="39.38"></rect>
+            <rect x="63.63" y="161.61" rx="0" ry="0" width="368.59" height="39.38"></rect>
+            <rect x="63.63" y="219.61" rx="0" ry="0" width="368.59" height="39.38"></rect>
+            <rect x="63.63" y="277.61" rx="0" ry="0" width="368.59" height="39.38"></rect>
           </clipPath>
-          <linearGradient id="njvbjdj0rx">
-            <stop offset="-0.150554" stop-color="#2E3135" stop-opacity="1">
+          <linearGradient id="od7oiec9f9">
+            <stop offset="-1.60037" stop-color="#E7EDF3" stop-opacity="1">
               <animate attributeName="offset" values="-2; 1" dur="2s" repeatCount="indefinite"></animate>
             </stop>
-            <stop offset="0.349446" stop-color="#2E3135" stop-opacity="1">
+            <stop offset="-1.10037" stop-color="#ecebeb" stop-opacity="1">
               <animate attributeName="offset" values="-1.5; 1.5" dur="2s" repeatCount="indefinite"></animate>
             </stop>
-            <stop offset="0.849446" stop-color="#2E3135" stop-opacity="1">
+            <stop offset="-0.60037" stop-color="#E7EDF3" stop-opacity="1">
               <animate attributeName="offset" values="-1; 2" dur="2s" repeatCount="indefinite"></animate>
             </stop>
           </linearGradient>
         </defs>
       </svg>
-      <!-- Popup / Confirm Loader -->
-      <svg id="light-skeleton-confirm" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
+      
+      <!-- POPUP / CONFIRM LOADER -->
+      <svg id="skeleton-confirm" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
         <rect clip-path="url(#5iqd7nt0f3s)" x="0" y="0" width="400" height="160" style='fill: url("#5tjcwydf8xj");'></rect>
         <defs>
           <clipPath id="5iqd7nt0f3s">
@@ -400,30 +553,9 @@
           </linearGradient>
         </defs>
       </svg>
-      <svg id="dark-skeleton-confirm" class="skeleton-holder" viewBox="0 0 400 160" version="1.1" preserveAspectRatio="xMidYMid meet">
-        <rect clip-path="url(#qxr77ypkne)" x="0" y="0" width="400" height="160" style='fill: url("#vl4guicdeob");'></rect>
-        <defs>
-          <clipPath id="qxr77ypkne">
-            <rect x="7" y="26" rx="4" ry="4" width="140.4" height="13.12"></rect>
-            <rect x="8" y="71.08" rx="3" ry="3" width="276.5" height="9.09"></rect>
-            <rect x="8" y="43.61" rx="3" ry="3" width="126.63" height="8.64"></rect>
-            <rect x="9" y="87" rx="3" ry="3" width="374.5" height="111.73"></rect>
-          </clipPath>
-          <linearGradient id="vl4guicdeob">
-            <stop offset="-1.9987" stop-color="#2E3135" stop-opacity="1">
-              <animate attributeName="offset" values="-2; 1" dur="2s" repeatCount="indefinite"></animate>
-            </stop>
-            <stop offset="-1.4987" stop-color="#2E3135" stop-opacity="1">
-              <animate attributeName="offset" values="-1.5; 1.5" dur="2s" repeatCount="indefinite"></animate>
-            </stop>
-            <stop offset="-0.998703" stop-color="#2E3135" stop-opacity="1">
-              <animate attributeName="offset" values="-1; 2" dur="2s" repeatCount="indefinite"></animate>
-            </stop>
-          </linearGradient>
-        </defs>
-      </svg>
     </div>
     <script>
+      const MOBILE_BREAKPOINT = 600
       const redirectPath = location.pathname
       let theme = 'light'
       function storageAvailable(type) {
@@ -462,24 +594,37 @@
 
       if (theme === 'dark') document.querySelector('body').style.backgroundColor = '#24252A'
 
-      let selectedLoader = 'skeleton-login'
+      const mobileTag = screen.width < MOBILE_BREAKPOINT ? '-mobile' : ''
+      let selectedLoader = 'skeleton-login' + mobileTag
       if (/\/wallet\/transfer/.test(redirectPath)) {
-        selectedLoader = 'skeleton-wallet-transfer'
+        selectedLoader = 'skeleton-wallet-transfer' + mobileTag
       } else if (/\/wallet\/topup/.test(redirectPath)) {
-        selectedLoader = 'skeleton-wallet-topup'
+        selectedLoader = 'skeleton-wallet-topup' + mobileTag
       } else if (/\/wallet\/history/.test(redirectPath)) {
-        selectedLoader = 'skeleton-wallet-history'
+        selectedLoader = 'skeleton-wallet-history' + mobileTag
       } else if (/\/wallet\/settings/.test(redirectPath)) {
-        selectedLoader = 'skeleton-wallet-settings'
+        selectedLoader = 'skeleton-wallet-settings' + mobileTag
       } else if (/\/wallet\/home\/collectibles/.test(redirectPath)) {
-        selectedLoader = 'skeleton-wallet-home-collectibles'
+        selectedLoader = 'skeleton-wallet-home-collectibles' + mobileTag
       } else if (/\/wallet\/home/.test(redirectPath)) {
-        selectedLoader = 'skeleton-wallet-home'
+        selectedLoader = 'skeleton-wallet-home' + mobileTag
       } else if (/\/popup/.test(redirectPath) || /\/confirm/.test(redirectPath) || /\/providerchange/.test(redirectPath) || /\/userinforequest/.test(redirectPath)) {
         selectedLoader = 'skeleton-confirm'
+      } else if (/\/redirect/.test(redirectPath)) {
+        document.querySelector('html').style.height = '100%'
+        document.querySelector('body').style.height = '100%'
+        document.querySelector('#app').style.height = '100%'
+        document.querySelector('#app').style.backgroundColor = '#006BE8'
+        selectedLoader = 'skeleton-redirect'
       }
 
-      document.querySelector('#' + theme + '-' + selectedLoader).style.display = 'block'
+      const loaderElement = document.querySelector('#' + selectedLoader)
+      if (theme === 'dark') {
+        loaderElement.querySelectorAll('linearGradient stop').forEach(function(stop) {
+          stop.setAttribute('stop-color', '#2E3135')
+        })
+      }
+      loaderElement.style.display = /\/redirect/.test(redirectPath) ? 'flex' : 'block'
     </script>
     <script>
       if (window.parent) {

@@ -346,6 +346,30 @@ function validateVerifierId(selectedVerifier, value) {
   return true
 }
 
+/**
+ * @class PromiseReference
+ * @type {Object}
+ * @property {function} resolve The resolve reference for the promise
+ * @property {function} reject The reject reference for the promise
+ * @property {Object} promise The promise
+ */
+function PromiseReference() {
+  var context = this
+  this.promise = new Promise(function(resolve, reject) {
+    context.resolve = resolve
+    context.reject = reject
+  })
+}
+PromiseReference.prototype.constructor = PromiseReference
+
+function formatDate(date) {
+  const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  const day = date.getDate()
+  const month = monthList[date.getMonth()]
+  const year = date.getFullYear()
+  return `${day} ${month} ${year}`
+}
+
 const paymentProviders = {
   [SIMPLEX]: {
     line1: 'Pay with Credit / Debit Card',
@@ -436,6 +460,25 @@ function getPaymentProviders(theme) {
   })
 }
 
+function formatTxMetaForRpcResult(txMeta) {
+  return {
+    blockHash: txMeta.txReceipt ? txMeta.txReceipt.blockHash : null,
+    blockNumber: txMeta.txReceipt ? txMeta.txReceipt.blockNumber : null,
+    from: txMeta.txParams.from,
+    gas: txMeta.txParams.gas,
+    gasPrice: txMeta.txParams.gasPrice,
+    hash: txMeta.hash,
+    input: txMeta.txParams.data || '0x',
+    nonce: txMeta.txParams.nonce,
+    to: txMeta.txParams.to,
+    transactionIndex: txMeta.txReceipt ? txMeta.txReceipt.transactionIndex : null,
+    value: txMeta.txParams.value || '0x0',
+    v: txMeta.v,
+    r: txMeta.r,
+    s: txMeta.s
+  }
+}
+
 module.exports = {
   removeListeners,
   applyListeners,
@@ -461,6 +504,9 @@ module.exports = {
   broadcastChannelOptions,
   storageAvailable,
   validateVerifierId,
+  PromiseReference,
+  formatDate,
   paymentProviders,
-  getPaymentProviders
+  getPaymentProviders,
+  formatTxMetaForRpcResult
 }

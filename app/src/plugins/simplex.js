@@ -43,7 +43,7 @@ const getPastOrders = (params = {}, headers) => {
         ...headers
       }
     }
-    const url = new URL(`${config.simplexApiHost}/pastorders`)
+    const url = new URL(`${config.commonApiHost}/transaction`)
     Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
     return get(url, options)
   } catch (e) {

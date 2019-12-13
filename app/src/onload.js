@@ -2,7 +2,10 @@
 import TorusController from './controllers/TorusController'
 import store from './store'
 import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE } from './utils/enums'
+import { getNodeEndpoint, getLatestEpochInfo } from './utils/nodeList'
 import { storageAvailable } from './utils/utils'
+import config from './config'
+import { nodeDetails } from './config'
 var log = require('loglevel')
 var Web3 = require('web3')
 var LocalMessageDuplexStream = require('post-message-stream')
@@ -61,9 +64,36 @@ function onloadTorus(torus) {
   torus.communicationMux.setMaxListeners(50)
   torusController.provider.setMaxListeners(100)
   torus.web3 = new Web3(torusController.provider)
-  torus.setProviderType = function(network, type) {
-    return store.dispatch('setProviderType', { network, type })
-  }
+  torus._mainnetWeb3 = new Web3(new Web3.providers.HttpProvider(config.MAINNET_JRPC_URL))
+
+  // update node details from nodeList
+  ;(async function() {
+    if (nodeDetails.skip) {
+      return
+    }
+    try {
+      const latestEpochInfo = await getLatestEpochInfo(torus._mainnetWeb3)
+      nodeDetails.currentEpoch = Number(latestEpochInfo.id)
+      var nodeEndpointRequests = []
+      var indexes = latestEpochInfo.nodeList.map((_, pos) => {
+        return pos + 1
+      })
+      latestEpochInfo.nodeList.map(nodeEthAddress => {
+        nodeEndpointRequests.push(getNodeEndpoint(torus._mainnetWeb3, nodeEthAddress))
+      })
+      const nodeEndpoints = await Promise.all(nodeEndpointRequests)
+      const updatedNodeEndpoints = nodeEndpoints.map(x => {
+        return `https://${x.declaredIp.split(':')[0]}/jrpc`
+      })
+      nodeDetails.torusIndexes = indexes
+      nodeDetails.torusNodeEndpoints = updatedNodeEndpoints
+      log.info(updatedNodeEndpoints)
+      nodeDetails.updated.resolve(nodeDetails)
+    } catch (err) {
+      nodeDetails.updated.reject(err)
+      log.error(err)
+    }
+  })()
 
   /* Stream setup block */
   // doesnt do anything.. just for logging
