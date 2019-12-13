@@ -15,11 +15,8 @@
           <v-list-item-subtitle>
             <div class="caption text_2--text">
               <span>{{ userEmail }}</span>
-              <v-btn id="show-address-btn" icon small class="primary--text float-right mr-5" @click="isShowSelectedAddress = !isShowSelectedAddress">
-                <v-icon small v-text="'$vuetify.icons.key'" />
-              </v-btn>
             </div>
-            <div v-if="isShowSelectedAddress" class="caption public-address-container">
+            <div class="caption public-address-container">
               <show-tool-tip :address="selectedAddress">{{ selectedAddress }}</show-tool-tip>
             </div>
           </v-list-item-subtitle>
@@ -112,8 +109,7 @@ export default {
   },
   data() {
     return {
-      accountImportDialog: false,
-      isShowSelectedAddress: false
+      accountImportDialog: false
     }
   },
   computed: {
