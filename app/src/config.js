@@ -23,6 +23,7 @@ export const nodeDetails = {
 
 export default {
   MAINNET_JRPC_URL: 'https://mainnet.infura.io/metamask',
+  baseUrl: baseUrl,
   baseRoute: baseRoute,
   supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH'],
   commonApiHost: 'https://common-api.tor.us',
