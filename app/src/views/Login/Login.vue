@@ -93,13 +93,6 @@
                 </a>
               </span>
             </v-flex>
-            <v-flex class="caption" xs9 sm7 ml-auto mr-auto>
-              <span>
-                Note : For first time users, kindly
-                <span class="primary--text">enable Pop-ups</span>
-                to gain access to your Torus Wallet
-              </span>
-            </v-flex>
           </v-layout>
           <v-layout v-else wrap align-center justify-center align-content-center>
             <v-flex text-center>
@@ -140,19 +133,26 @@
 import { mapActions, mapState } from 'vuex'
 import {
   WalletLoginLoader,
+  WalletLoginLoaderMobile,
   WalletHomeLoader,
+  WalletHomeLoaderMobile,
   WalletCollectiblesLoader,
+  WalletCollectiblesLoaderMobile,
   WalletTransferLoader,
+  WalletTransferLoaderMobile,
   WalletTopupLoader,
+  WalletTopupLoaderMobile,
   WalletActivityLoader,
-  WalletSettingsLoader
+  WalletActivityLoaderMobile,
+  WalletSettingsLoader,
+  WalletSettingsLoaderMobile
 } from '../../content-loader'
 import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../utils/enums'
 import config from '../../config'
 
 export default {
   name: 'login',
-  components: { WalletLoginLoader },
+  components: { WalletLoginLoader, WalletLoginLoaderMobile },
   data() {
     return {
       isLogout: false,
@@ -183,17 +183,17 @@ export default {
       const redirectPath = this.$route.query.redirect
 
       if (redirectPath === '/wallet/transfer') {
-        return WalletTransferLoader
+        return this.$vuetify.breakpoint.xsOnly ? WalletTransferLoaderMobile : WalletTransferLoader
       } else if (redirectPath === '/wallet/topup') {
-        return WalletTopupLoader
+        return this.$vuetify.breakpoint.xsOnly ? WalletTopupLoaderMobile : WalletTopupLoader
       } else if (redirectPath === '/wallet/history') {
-        return WalletActivityLoader
+        return this.$vuetify.breakpoint.xsOnly ? WalletActivityLoaderMobile : WalletActivityLoader
       } else if (redirectPath === '/wallet/settings') {
-        return WalletSettingsLoader
+        return this.$vuetify.breakpoint.xsOnly ? WalletSettingsLoaderMobile : WalletSettingsLoader
       } else if (/^\/wallet\/home\/collectibles/.test(redirectPath)) {
-        return WalletCollectiblesLoader
+        return this.$vuetify.breakpoint.xsOnly ? WalletCollectiblesLoaderMobile : WalletCollectiblesLoader
       } else {
-        return WalletHomeLoader
+        return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
       }
     }
   }),

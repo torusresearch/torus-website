@@ -32,11 +32,9 @@
     margin-top: -5px;
   }
   
-  .theme--light {
-    .v-tab {
-      &.v-tab--active {
-        color: var(--v-text_2-darken3);
-      }
+  .v-tab {
+    &.v-tab--active {
+      color: var(--v-primary);
     }
   }
   

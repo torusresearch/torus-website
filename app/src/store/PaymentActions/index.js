@@ -14,7 +14,25 @@ export default {
   ...moonpay,
   ...wyre,
   ...coindirect,
-  async initiateTopup({ state, dispatch }, { provider, params }) {
+  async initiateTopup({ state, dispatch }, { provider, params, preopenInstanceId }) {
+    const handleSuccess = success => {
+      topupStream.write({
+        name: 'topup_response',
+        data: {
+          success: success
+        }
+      })
+    }
+
+    const handleFailure = error => {
+      topupStream.write({
+        name: 'topup_response',
+        data: {
+          success: false,
+          error: error.message || 'Internal error'
+        }
+      })
+    }
     if (paymentProviders[provider] && paymentProviders[provider].api) {
       try {
         const selectedProvider = paymentProviders[provider]
@@ -35,64 +53,36 @@ export default {
         // simplex
         if (provider === SIMPLEX) {
           const { result: currentOrder } = await dispatch('fetchSimplexQuote', selectedParams)
-          const { success } = await dispatch('fetchSimplexOrder', { currentOrder })
-          topupStream.write({
-            name: 'topup_response',
-            data: {
-              success: success
-            }
-          })
+          const { success } = await dispatch('fetchSimplexOrder', { currentOrder, preopenInstanceId })
+          handleSuccess(success)
         }
         // moonpay
         else if (provider === MOONPAY) {
           const currentOrder = await dispatch('fetchMoonpayQuote', selectedParams)
-          const { success } = await dispatch('fetchMoonpayOrder', { currentOrder, colorCode: vuetify.framework.theme.themes.light.primary })
-          topupStream.write({
-            name: 'topup_response',
-            data: {
-              success: success
-            }
+          const { success } = await dispatch('fetchMoonpayOrder', {
+            currentOrder,
+            colorCode: vuetify.framework.theme.themes.light.primary,
+            preopenInstanceId
           })
+          handleSuccess(success)
         }
         // wyre
         else if (provider === WYRE) {
           const { data: currentOrder } = await dispatch('fetchWyreQuote', selectedParams)
-          const { success } = await dispatch('fetchWyreOrder', { currentOrder })
-          topupStream.write({
-            name: 'topup_response',
-            data: {
-              success: success
-            }
-          })
+          const { success } = await dispatch('fetchWyreOrder', { currentOrder, preopenInstanceId })
+          handleSuccess(success)
         }
         // coindirect
         else if (provider === COINDIRECT) {
           const currentOrder = await dispatch('fetchCoindirectQuote', selectedParams)
-          const { success } = await dispatch('fetchCoindirectOrder', { currentOrder })
-          topupStream.write({
-            name: 'topup_response',
-            data: {
-              success: success
-            }
-          })
+          const { success } = await dispatch('fetchCoindirectOrder', { currentOrder, preopenInstanceId })
+          handleSuccess(success)
         }
       } catch (error) {
-        topupStream.write({
-          name: 'topup_response',
-          data: {
-            success: false,
-            error: error.message || 'Internal error'
-          }
-        })
+        handleFailure(error)
       }
     } else {
-      topupStream.write({
-        name: 'topup_response',
-        data: {
-          success: false,
-          error: 'Unsupported/Invalid provider selected'
-        }
-      })
+      handleFailure(new Error('Unsupported/Invalid provider selected'))
     }
   }
 }
