@@ -117,7 +117,7 @@
             </v-card>
           </v-dialog>
         </v-flex>
-        <v-flex xs12 px-6 mb-6 class="text-right" v-if="canShowError">
+        <v-flex xs12 px-6 mb-6 class="text-right" v-if="topUpErrorShow">
           <div class="caption error--text">{{ errorMsg }}</div>
           <div class="caption mt-1" v-if="topUpErrorShow">
             Please
@@ -314,7 +314,7 @@ export default {
       totalEthCost: 0,
       totalEthCostDisplay: '',
       errorMsg: '',
-      topUpErrorShow: '',
+      topUpErrorShow: false,
       canShowError: false,
       txFees: 0,
       network: '',

@@ -239,17 +239,31 @@
         </v-layout>
         <v-layout mt-4 wrap>
           <v-flex xs12 px-4 sm6 class="text-right">
-            <v-btn
-              large
-              depressed
-              color="primary"
-              :disabled="!formValid || speedSelected === ''"
-              class="px-6"
-              type="submit"
-              id="wallet-transfer-submit"
-            >
-              Transfer
-            </v-btn>
+            <v-dialog v-model="confirmDialog" max-width="550" persistent>
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  large
+                  depressed
+                  color="primary"
+                  :disabled="!formValid || speedSelected === ''"
+                  class="px-6"
+                  id="wallet-transfer-submit"
+                  v-on="on"
+                >
+                  Transfer
+                </v-btn>
+              </template>
+              <transfer-confirm
+                :toAddress="toAddress"
+                :convertedAmount="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
+                :displayAmount="`${displayAmount} ${!toggle_exclusive ? selectedItem.symbol : selectedCurrency}`"
+                :speedSelected="timeTaken"
+                :transactionFee="gasPriceInCurrency"
+                :selectedCurrency="selectedCurrency"
+                @onClose="confirmDialog = false"
+                @onConfirm="sendCoin"
+              ></transfer-confirm>
+            </v-dialog>
           </v-flex>
         </v-layout>
 
@@ -280,6 +294,7 @@ import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSel
 import ComponentLoader from '../../components/helpers/ComponentLoader'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import AddContact from '../../components/WalletTransfer/AddContact'
+import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
 import {
@@ -311,7 +326,8 @@ export default {
     MessageModal,
     QrcodeCapture,
     AddContact,
-    ComponentLoader
+    ComponentLoader,
+    TransferConfirm
   },
   data() {
     return {
@@ -330,6 +346,7 @@ export default {
       toggle_exclusive: 0,
       gas: 21000,
       activeGasPrice: '',
+      gasPriceInCurrency: '',
       isFastChecked: false,
       speedSelected: '',
       totalCost: '',
@@ -346,6 +363,7 @@ export default {
       showModalMessage: false,
       modalMessageSuccess: null,
       isSendAll: false,
+      confirmDialog: false,
       CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
       CONTRACT_TYPE_ERC721
@@ -800,6 +818,8 @@ export default {
       const gasPriceInCurrency = gasPriceInEth * this.getCurrencyTokenRate
       const toSend = parseFloat(this.amount)
       const toSendConverted = toSend * this.getCurrencyTokenRate
+
+      this.gasPriceInCurrency = gasPriceInCurrency
 
       if (this.contractType === CONTRACT_TYPE_ETH) {
         this.totalCost = this.toggle_exclusive === 0 ? toSend + gasPriceInEth : toSendConverted + gasPriceInCurrency
