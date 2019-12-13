@@ -141,9 +141,12 @@ export default {
       })
     }
     if (override) {
-      return dispatch('setProviderType', payload)
-        .then(handleSuccess)
-        .catch(handleDeny)
+      setTimeout(() => {
+        dispatch('setProviderType', payload)
+          .then(handleSuccess)
+          .catch(handleDeny)
+      }, 1000)
+      return
     }
     const bc = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
     const finalUrl = `${baseRoute}providerchange?integrity=true&instanceId=${torus.instanceId}`
