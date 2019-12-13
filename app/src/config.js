@@ -6,17 +6,17 @@ const baseRoute = baseUrl + process.env.BASE_URL
 const redirect_uri = `${baseUrl}/redirect`
 
 export const nodeDetails = {
-  skip: false, // skip fetching of node details and use defaults below
+  skip: true, // skip fetching of node details and use defaults below
   updated: new PromiseReference(),
   minEpoch: 12,
   currentEpoch: 0,
   nodeListAddress: '0x97c85658cd10b386fc37e4b32df90b916b689ee8',
   torusNodeEndpoints: [
-    'https://binance-main-12.torusnode.com/jrpc',
-    'https://waseda-main-12.torusnode.com/jrpc',
-    'https://vgr-main-12.torusnode.com/jrpc',
-    'https://torus-main-12.torusnode.com/jrpc',
-    'https://etc-main-12.torusnode.com/jrpc'
+    'https://binance-main-3.torusnode.com/jrpc',
+    'https://waseda-main-3.torusnode.com/jrpc',
+    'https://vgr-main-3.torusnode.com/jrpc',
+    'https://torus-main-3.torusnode.com/jrpc',
+    'https://etc-main-3.torusnode.com/jrpc'
   ],
   torusIndexes: [1, 2, 3, 4, 5]
 }
