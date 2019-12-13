@@ -145,7 +145,7 @@ export default {
         dispatch('setProviderType', payload)
           .then(handleSuccess)
           .catch(handleDeny)
-      }, 1000)
+      }, 500)
       return
     }
     const bc = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
