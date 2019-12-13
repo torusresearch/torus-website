@@ -68,7 +68,11 @@
 </template>
 
 <script>
+import { BroadcastChannel } from 'broadcast-channel'
+import log from 'loglevel'
 import Notification from '../../helpers/Notification'
+import { broadcastChannelOptions } from '../../../utils/utils'
+
 const { RPC, RPC_DISPLAY_NAME, SUPPORTED_NETWORK_TYPES } = require('../../../utils/enums')
 
 export default {
@@ -111,20 +115,39 @@ export default {
     },
     changeNetwork(value) {
       if (value && value.host !== RPC) {
-        this.$store.dispatch('setProviderType', { network: this.selectedNetwork })
+        const payload = { network: this.selectedNetwork }
+        this.$store
+          .dispatch('setProviderType', payload)
+          .then(resp => this.sendToIframe(payload))
+          .catch(err => log.error(err))
       }
     },
     setRPC() {
       if (this.$refs.networkForm.validate()) {
         // this.selectedNetwork = RPC
+        const payload = { network: this.rpc, type: RPC }
         this.$store
-          .dispatch('setProviderType', { network: this.rpc, type: RPC })
+          .dispatch('setProviderType')
           .then(resp => {
             this.showNotification(true)
+            this.sendToIframe(payload)
           })
           .catch(err => {
             this.showNotification(false)
           })
+      }
+    },
+    async sendToIframe(payload) {
+      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+      if (urlInstance && urlInstance !== '') {
+        const providerChangeChannel = new BroadcastChannel(`provider_change_${urlInstance}`, broadcastChannelOptions)
+        await providerChangeChannel.postMessage({
+          data: {
+            name: 'provider_change',
+            payload: payload
+          }
+        })
+        providerChangeChannel.close()
       }
     }
   },
