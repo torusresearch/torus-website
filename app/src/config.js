@@ -12,11 +12,11 @@ export const nodeDetails = {
   currentEpoch: 0,
   nodeListAddress: '0x97c85658cd10b386fc37e4b32df90b916b689ee8',
   torusNodeEndpoints: [
-    'https://binance-main-3.torusnode.com/jrpc',
-    'https://waseda-main-3.torusnode.com/jrpc',
-    'https://vgr-main-3.torusnode.com/jrpc',
-    'https://torus-main-3.torusnode.com/jrpc',
-    'https://etc-main-3.torusnode.com/jrpc'
+    'https://binance-main-13.torusnode.com/jrpc',
+    'https://waseda-main-13.torusnode.com/jrpc',
+    'https://vgr-main-13.torusnode.com/jrpc',
+    'https://torus-main-13.torusnode.com/jrpc',
+    'https://etc-main-13.torusnode.com/jrpc'
   ],
   torusIndexes: [1, 2, 3, 4, 5]
 }

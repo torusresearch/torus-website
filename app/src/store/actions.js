@@ -769,6 +769,15 @@ export default {
     const { torusNodeEndpoints, torusIndexes } = nodeDetails
     torus
       .getPubKeyAsync(torusNodeEndpoints[endPointNumber], { verifier, verifierId })
+      .catch(err => {
+        totalFailCount += 1
+        let newEndPointNumber = endPointNumber
+        while (newEndPointNumber === endPointNumber) {
+          newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
+        }
+        if (totalFailCount < 3) dispatch('handleLogin', { calledFromEmbed, endPointNumber: newEndPointNumber })
+        log.error(err)
+      })
       .then(res => {
         log.info('New private key assigned to user at address ', res)
         const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
@@ -797,12 +806,6 @@ export default {
         dispatch('loginInProgress', false)
       })
       .catch(err => {
-        totalFailCount += 1
-        let newEndPointNumber = endPointNumber
-        while (newEndPointNumber === endPointNumber) {
-          newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
-        }
-        if (totalFailCount < 3) dispatch('handleLogin', { calledFromEmbed, endPointNumber: newEndPointNumber })
         log.error(err)
       })
   },
