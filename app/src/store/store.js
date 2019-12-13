@@ -74,16 +74,16 @@ var VuexStore = new Vuex.Store({
         confirmHandler.id = txParams.id
         confirmHandler.txType = TX_TRANSACTION
         confirmHandler.host = state.networkType.host
-        if (window.location.origin !== config.baseUrl) confirmHandler.open(handleConfirm, handleDeny)
       } else {
         const { msgParams, id, type } = getLatestMessageParams()
         confirmHandler.msgParams = msgParams
         confirmHandler.id = id
         confirmHandler.txType = type
-        if (window.location.origin !== config.baseUrl) confirmHandler.open(handleConfirm, handleDeny)
       }
-      if (window.location.origin === config.baseUrl) {
+      if (location === parent.location && location.origin === config.baseUrl) {
         handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
+      } else {
+        confirmHandler.open(handleConfirm, handleDeny)
       }
     }
   }
