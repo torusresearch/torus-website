@@ -127,7 +127,7 @@ export default {
         // this.selectedNetwork = RPC
         const payload = { network: this.rpc, type: RPC }
         this.$store
-          .dispatch('setProviderType')
+          .dispatch('setProviderType', payload)
           .then(resp => {
             this.showNotification(true)
             this.sendToIframe(payload)
