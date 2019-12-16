@@ -255,8 +255,16 @@
               </template>
               <transfer-confirm
                 :toAddress="toAddress"
-                :convertedAmount="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
-                :displayAmount="`${displayAmount} ${!toggle_exclusive ? selectedItem.symbol : selectedCurrency}`"
+                :convertedAmount="
+                  convertedAmount
+                    ? `~ ${convertedAmount} ${
+                        !!toggle_exclusive ? (contractType === CONTRACT_TYPE_ERC721 ? '' : selectedItem.symbol) : selectedCurrency
+                      }`
+                    : ''
+                "
+                :displayAmount="
+                  `${displayAmount} ${!toggle_exclusive ? (contractType === CONTRACT_TYPE_ERC721 ? '' : selectedItem.symbol) : selectedCurrency}`
+                "
                 :speedSelected="timeTaken"
                 :transactionFee="gasPriceInCurrency"
                 :selectedCurrency="selectedCurrency"
@@ -342,7 +350,7 @@ export default {
       convertedAmount: '',
       contactSelected: '',
       toAddress: '',
-      formValid: true,
+      formValid: false,
       toggle_exclusive: 0,
       gas: 21000,
       activeGasPrice: '',
@@ -803,6 +811,11 @@ export default {
       if (!this.displayAmount || this.activeGasPrice === '') {
         this.totalCost = ''
         this.convertedTotalCost = ''
+
+        if (this.activeGasPrice !== '') {
+          const gasPriceInEth = this.getEthAmount(this.gas, parseFloat(this.activeGasPrice))
+          this.gasPriceInCurrency = gasPriceInEth * this.getCurrencyTokenRate
+        }
         return
       }
 
