@@ -885,6 +885,36 @@ export default {
         })
     })
   },
+  setLocale({ commit }, payload) {
+    commit('setLocale', payload)
+
+    vuetify.framework.lang.current = payload
+  },
+  setUserLocale({ state, dispatch }, payload) {
+    return new Promise((resolve, reject) => {
+      patch(
+        `${config.api}/user/locale`,
+        {
+          locale: payload
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }
+      )
+        .then(response => {
+          dispatch('setLocale', payload)
+          log.info('successfully patched', response)
+          resolve(response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to patch locale')
+          reject('Unable to update locale')
+        })
+    })
+  },
   setUserInfoAction({ commit, dispatch, state }, payload) {
     // Fixes loading theme for too long
     dispatch('setTheme', state.theme)
@@ -899,12 +929,13 @@ export default {
         })
           .then(user => {
             if (user.data) {
-              const { transactions, contacts, default_currency, theme } = user.data || {}
+              const { transactions, contacts, default_currency, theme, locale } = user.data || {}
               commit('setPastTransactions', transactions)
               commit('setContacts', contacts)
               dispatch('setTheme', theme)
               dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
               dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
+              if (locale !== '') dispatch('setLocale', locale)
               resolve()
             }
           })

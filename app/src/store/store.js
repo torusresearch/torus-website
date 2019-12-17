@@ -47,6 +47,7 @@ if (storageAvailable('sessionStorage'))
         selectedCurrency: state.selectedCurrency,
         jwtToken: state.jwtToken,
         theme: state.theme,
+        locale: state.locale,
         billboard: state.billboard,
         contacts: state.contacts
         // pastTransactions: state.pastTransactions

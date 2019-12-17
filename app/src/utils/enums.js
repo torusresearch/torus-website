@@ -147,6 +147,22 @@ const CRYPTO = 'crypto'
 const PNG = 'png'
 const SVG = 'svg'
 
+const LOCALE_EN = 'en'
+const LOCALE_DE = 'de'
+const LOCALE_EN_LABEL = 'English'
+const LOCALE_DE_LABEL = 'German (Deutsch)'
+
+const LOCALES = [
+  {
+    name: LOCALE_EN_LABEL,
+    value: LOCALE_EN
+  },
+  {
+    name: LOCALE_DE_LABEL,
+    value: LOCALE_DE
+  }
+]
+
 module.exports = {
   ETH,
   ROPSTEN,
@@ -237,5 +253,10 @@ module.exports = {
   TX_MESSAGE,
   TX_TYPED_MESSAGE,
   TX_PERSONAL_MESSAGE,
-  TX_TRANSACTION
+  TX_TRANSACTION,
+  LOCALE_EN,
+  LOCALE_DE,
+  LOCALE_EN_LABEL,
+  LOCALE_DE_LABEL,
+  LOCALES
 }

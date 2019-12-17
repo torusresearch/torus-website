@@ -81,7 +81,7 @@ export default {
           this.selectedTheme = ''
           this.selectThemeAlert = true
           this.selectThemeAlertType = 'success'
-          this.selectThemeAlertText = $vuetify.lang.t('$vuetify.walletSettings.successSaveTheme')
+          this.selectThemeAlertText = this.$vuetify.lang.t('$vuetify.walletSettings.successSaveTheme')
         })
         .catch(err => {
           this.selectedTheme = ''

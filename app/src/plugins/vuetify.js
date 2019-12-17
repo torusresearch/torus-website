@@ -7,7 +7,10 @@ import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 Vue.use(Vuetify)
 
 import { languages } from './i18n'
-import { defaultLocale } from './i18n'
+
+let userLanguage = window.navigator.userLanguage || window.navigator.language
+userLanguage = userLanguage.split('-')
+userLanguage = userLanguage[0]
 
 export default new Vuetify({
   theme: {
@@ -25,6 +28,6 @@ export default new Vuetify({
   },
   lang: {
     locales: languages,
-    current: defaultLocale
+    current: userLanguage
   }
 })

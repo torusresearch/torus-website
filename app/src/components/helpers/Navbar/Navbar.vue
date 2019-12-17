@@ -1,6 +1,6 @@
 <template>
   <nav class="header-container pa-0">
-    <v-app-bar class="container" :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : 'px-2 py-0'">
+    <v-app-bar :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : 'px-2 py-0'">
       <router-link class="hidden-xs-only" :to="{ name: 'walletHome' }">
         <img
           class="home-link"
@@ -27,6 +27,7 @@
         <img :src="require('../../../../public/img/icons/menu-primary.svg')" />
       </v-btn>
 
+      <language-selector></language-selector>
       <v-menu offset-y bottom left z-index="20" :close-on-content-click="false">
         <template v-slot:activator="{ on }">
           <v-btn id="menu-dropdown-btn" class="hidden-xs-only" small text v-on="on">
@@ -47,27 +48,31 @@
 
 <script>
 import AccountMenu from '../../WalletAccount/AccountMenu'
+import LanguageSelector from '../LanguageSelector'
 
 export default {
   components: {
-    AccountMenu
+    AccountMenu,
+    LanguageSelector
   },
   data() {
     return {
       drawer: false,
-      selectedItem: 'home',
-      headerItems: [
+      selectedItem: 'home'
+    }
+  },
+  computed: {
+    userName() {
+      return this.$store.state.userInfo.name
+    },
+    headerItems() {
+      return [
         { name: 'home', display: this.$vuetify.lang.t('$vuetify.navBar.home'), route: '/wallet/home', icon: 'settings' },
         { name: 'transfer', display: this.$vuetify.lang.t('$vuetify.navBar.transfer'), route: '/wallet/transfer', icon: 'transaction' },
         { name: 'top-up', display: this.$vuetify.lang.t('$vuetify.navBar.topUp'), route: '/wallet/topup', icon: 'topup' },
         { name: 'activity', display: this.$vuetify.lang.t('$vuetify.navBar.activity'), route: '/wallet/history', icon: 'activities' },
         { name: 'settings', display: this.$vuetify.lang.t('$vuetify.navBar.settings'), route: '/wallet/settings', icon: 'settings' }
       ]
-    }
-  },
-  computed: {
-    userName() {
-      return this.$store.state.userInfo.name
     }
   }
 }

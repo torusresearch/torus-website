@@ -1,6 +1,9 @@
 const https = require('https')
 var fs = require('fs')
 
+const apiKey = process.env.AIRTABLE_API_KEY || 'keyZ491mmTxAHPvMC'
+const airtableLocaleUrl = 'https://api.airtable.com/v0/appL07XTwLGY3UBvF'
+
 const localGroups = [
   'locales-login',
   'locales-nav-bar',
@@ -35,7 +38,7 @@ Promise.all(promises).then(function(results) {
 
 function getLocale(localGroup) {
   return new Promise(function(resolve, reject) {
-    let request = https.get(`https://api.airtable.com/v0/appL07XTwLGY3UBvF/${localGroup}?api_key=keyZ491mmTxAHPvMC`, function(res) {
+    let request = https.get(`${airtableLocaleUrl}/${localGroup}?api_key=${apiKey}`, function(res) {
       var body = ''
       res.on('data', function(data) {
         body += data
