@@ -63,6 +63,10 @@
     border-color: var(--v-text_2-lighten3);
   }
 
+  .v-tab {
+    letter-spacing: inherit;
+  }
+
   /* Override Max widths */
   @media (min-width: 1904px) {
     .container {
