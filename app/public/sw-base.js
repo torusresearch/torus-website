@@ -24,19 +24,15 @@ function isOrigin() {
   }
 }
 
-function genRespTextReq() {
-  return new Request('https://iframeResponseText' + getIframeURL() + registration.scope)
-}
-
-function storeIframeResponseText(text) {
-  return caches.open('torus').then(function(cache) {
-    return cache.put(genRespTextReq(), new Response(new Blob([text])))
+function storeIframeResponseText(url) {
+  return caches.open('torus' + getScope()).then(function(cache) {
+    return cache.add(url)
   })
 }
 
 function getIframeResponseText() {
-  return caches.open('torus').then(function(cache) {
-    return cache.match(genRespTextReq())
+  return caches.open('torus' + getScope()).then(function(cache) {
+    return cache.match(getIframeURL())
   })
 }
 
@@ -149,20 +145,15 @@ function precache(entries) {
   if (entries.length > 0) {
     addEventListener('install', function(event) {
       self.skipWaiting()
-      fetch(getIframeURL())
-        .then(function(resp) {
-          return resp.text()
-        })
-        .then(function(respText) {
-          return storeIframeResponseText(respText)
-        })
-        .catch(console.error)
       var precacheController = getOrCreatePrecacheController()
       event.waitUntil(
-        precacheController.install({ event: event }).catch(function(err) {
-          console.error(err)
-          throw err
-        })
+        Promise.all([
+          storeIframeResponseText(getIframeURL()),
+          precacheController.install({ event: event }).catch(function(err) {
+            console.error(err)
+            throw err
+          })
+        ])
       )
     })
     addEventListener('activate', function(event) {
@@ -546,11 +537,14 @@ self.addEventListener('fetch', function(event) {
   if (event.request.url.indexOf('redirect') > -1) {
     event.respondWith(
       new Response(
-        new Blob([
-          `
+        new Blob(
+          [
+            `
 REDIRECT_HTML${''}
 `
-        ])
+          ],
+          { type: 'text/html' }
+        )
       )
     )
   } else if (event.request.url.indexOf('integrity=true') > -1 && !isOrigin() && event.request.url.indexOf(getScope()) > -1) {
@@ -567,16 +561,6 @@ REDIRECT_HTML${''}
         promRes(cachedResponse)
       } else {
         promRes(fetch(getIframeURL()))
-        fetch(getIframeURL())
-          .then(function(resp) {
-            return resp.text()
-          })
-          .then(function(respText) {
-            storeIframeResponseText(respText)
-          })
-          .catch(function(err) {
-            console.error(err)
-          })
       }
     })
   }

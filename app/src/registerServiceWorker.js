@@ -45,27 +45,22 @@ if (
     navigator.serviceWorker
       .getRegistration()
       .then(function(reg) {
-        let resolve
-        let response = {
-          err: null,
-          sw: null
-        }
-        let promise = new Promise(function(res, rej) {
-          resolve = res
-        })
-        if (reg === undefined) {
-          resolve({
-            err: new Error('no service worker installed')
-          })
-        } else if (reg.updateViaCache !== 'all') {
-          resolve({ err: new Error('updateViaCache should be "all"') })
-        } else if (new URL(reg.active.scriptURL).pathname !== swUrl) {
-          resolve({ err: new Error(`unexpected scriptURL ${new URL(reg.active.scriptURL).pathname}, expected ${swUrl}`) })
-        } else {
-          response.sw = reg
+        return new Promise((resolve, reject) => {
+          let response = {
+            err: null,
+            sw: null
+          }
+          if (reg === undefined) {
+            response.err = new Error('no service worker installed')
+          } else if (reg.updateViaCache !== 'all') {
+            response.err = new Error('updateViaCache should be "all"')
+          } else if (new URL(reg.active.scriptURL).pathname !== swUrl) {
+            response.err = new Error(`unexpected scriptURL ${new URL(reg.active.scriptURL).pathname}, expected ${swUrl}`)
+          } else {
+            response.sw = reg
+          }
           resolve(response)
-        }
-        return promise
+        })
       })
       .then(responseObj => {
         // if there were errors, we need to re-register the service worker
