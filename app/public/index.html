@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" />
     <style>
       body {
+        background: #FCFCFC;
         padding: 0;
         margin: 0;
       }
@@ -36,23 +37,17 @@
 
       .redirect-skeleton-container h1.title {
         font-size: 32px;
-        color: #FFFFFF;
+        color: #0F1222;
         font-family: 'Roboto', sans-serif !important;
         margin: 0;
         text-align: center;
       }
-      .redirect-skeleton-container p.info {
-        font-size: 24px;
-        color: #FFFFFF;
-        font-family: 'Roboto', sans-serif !important;
-        margin: 26px 0 40px;
-      }
 
       .redirect-skeleton-container .spinner .beat {
-        background-color: #ffffff;
+        background-color: #0364FF;
         height: 12px;
         width: 12px;
-        margin: 2px;
+        margin: 24px 2px;
         border-radius: 100%;
         -webkit-animation: beatStretchDelay 0.7s infinite linear;
         animation: beatStretchDelay 0.7s infinite linear;
@@ -118,8 +113,7 @@
       <!-- REDIRECT LOADER -->
       <div id="skeleton-redirect" class="redirect-skeleton-container skeleton-holder">
         <div class="redirect-skeleton-content">
-          <h1 class="title content">You are being redirected</h1>
-          <p class="info content">Please wait</p>
+          <h1 class="title content">Loading</h1>
           <div class="spinner content">
             <div class="beat beat-odd"></div>
             <div class="beat beat-even"></div>
@@ -614,7 +608,7 @@
         document.querySelector('html').style.height = '100%'
         document.querySelector('body').style.height = '100%'
         document.querySelector('#app').style.height = '100%'
-        document.querySelector('#app').style.backgroundColor = '#006BE8'
+        document.querySelector('#app').style.backgroundColor = '#FCFCFC'
         selectedLoader = 'skeleton-redirect'
       }
 
