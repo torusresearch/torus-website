@@ -265,6 +265,8 @@
                 :displayAmount="
                   `${displayAmount} ${!toggle_exclusive ? (contractType === CONTRACT_TYPE_ERC721 ? '' : selectedItem.symbol) : selectedCurrency}`
                 "
+                :assetSelected="contractType === CONTRACT_TYPE_ERC721 ? assetSelected : {}"
+                :isNonFungibleToken="contractType === CONTRACT_TYPE_ERC721"
                 :speedSelected="timeTaken"
                 :transactionFee="gasPriceInCurrency"
                 :selectedCurrency="selectedCurrency"
