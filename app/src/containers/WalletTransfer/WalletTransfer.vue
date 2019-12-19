@@ -239,21 +239,18 @@
         </v-layout>
         <v-layout mt-4 wrap>
           <v-flex xs12 px-4 sm6 class="text-right">
+            <v-btn
+              large
+              depressed
+              color="primary"
+              :disabled="!formValid || speedSelected === ''"
+              class="px-6"
+              id="wallet-transfer-submit"
+              @click="onTransferClick"
+            >
+              Transfer
+            </v-btn>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  large
-                  depressed
-                  color="primary"
-                  :disabled="!formValid || speedSelected === ''"
-                  class="px-6"
-                  id="wallet-transfer-submit"
-                  v-on="on"
-                  @click="onTransferClick"
-                >
-                  Transfer
-                </v-btn>
-              </template>
               <transfer-confirm
                 :toAddress="toEthAddress"
                 :convertedAmount="
@@ -672,6 +669,7 @@ export default {
         this.toEthAddress = toAddress
         this.gas = await this.calculateGas(toAddress)
         this.updateTotalCost()
+        this.confirmDialog = true
       }
     },
     changeSelectedToCurrency(value) {
