@@ -7,9 +7,11 @@
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title>
-            <div class="font-weight-bold headline">
-              <span id="account-name">{{ userName }}</span>
-              Account
+            <div class="font-weight-bold title d-flex">
+              <div class="torus-account--name mr-1" id="account-name">
+                <span>{{ userName }}</span>
+              </div>
+              <div>Account</div>
             </div>
           </v-list-item-title>
           <v-list-item-subtitle>
