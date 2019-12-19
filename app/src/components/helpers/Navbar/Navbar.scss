@@ -16,10 +16,6 @@
       margin-left: auto
     }
   }
-
-  .v-tab {
-    text-transform: inherit
-  }
   
   .beta-text {
     line-height: 1em;
@@ -33,6 +29,7 @@
   }
   
   .v-tab {
+    text-transform: inherit;
     &.v-tab--active {
       color: var(--v-primary);
     }
