@@ -117,7 +117,7 @@
             </v-card>
           </v-dialog>
         </v-flex>
-        <v-flex xs12 px-6 mb-6 class="text-right" v-if="topUpErrorShow">
+        <v-flex xs12 px-6 mb-6 class="text-right" v-if="topUpErrorShow || canShowError">
           <div class="caption error--text">{{ errorMsg }}</div>
           <div class="caption mt-1" v-if="topUpErrorShow">
             Please
