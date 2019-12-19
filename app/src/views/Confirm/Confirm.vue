@@ -473,7 +473,7 @@ export default {
       return currencyMultiplier
     },
     getCurrencyRate() {
-      const ethConverted = this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+      const ethConverted = this.getCurrencyMultiplier
       const tokenPriceConverted = this.isOtherToken ? this.tokenPrice * ethConverted : ethConverted
       const selectedToken = this.isOtherToken ? this.selectedToken : 'ETH'
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
@@ -482,15 +482,12 @@ export default {
   watch: {
     gasPrice: function(newGasPrice, oldGasPrice) {
       this.gasCost = newGasPrice * this.gasEstimate * 10 ** -9
-      this.txFees = this.gasCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+      this.txFees = this.gasCost * this.getCurrencyMultiplier
       const ethCost = parseFloat(this.value) + this.gasCost
       this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
       const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
       this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
-      this.totalUsdCost =
-        this.selectedCurrency.toLowerCase() === ETH
-          ? ethCost
-          : significantDigits(ethCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()] || 0)
+      this.totalUsdCost = significantDigits(ethCost * this.getCurrencyMultiplier)
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
         this.topUpErrorShow = true
@@ -646,10 +643,9 @@ export default {
             log.info(error)
           }
           const tokenPrice = //token price in eth
-            prices[checkSummedTo.toLowerCase()] && prices[checkSummedTo.toLowerCase()].eth ? prices[checkSummedTo.toLowerCase()].eth : 0
+            prices[checkSummedTo.toLowerCase()] && prices[checkSummedTo.toLowerCase()].eth ? prices[checkSummedTo.toLowerCase()].eth : 1
           this.tokenPrice = tokenPrice
-          this.amountTokenValueConverted =
-            tokenPrice * parseFloat(this.amountValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+          this.amountTokenValueConverted = tokenPrice * parseFloat(this.amountValue) * this.getCurrencyMultiplier
         } else if (methodParams && contractParams.erc721) {
           log.info(methodParams, contractParams)
           let assetDetails = {}
@@ -671,28 +667,22 @@ export default {
         this.currencyRateDate = this.getDate()
         this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
-        this.dollarValue =
-          this.selectedCurrency.toLowerCase() === ETH
-            ? finalValue
-            : significantDigits(parseFloat(finalValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()])
+        this.dollarValue = significantDigits(parseFloat(finalValue) * this.getCurrencyMultiplier)
         this.gasPrice = gweiGasPrice // gas price in gwei
         this.gasKnob = calculateGasKnob(gweiGasPrice)
         this.balance = balance // in eth
-        this.balanceUsd = significantDigits(parseFloat(balance) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]) // in usd
+        this.balanceUsd = significantDigits(parseFloat(balance) * this.getCurrencyMultiplier) // in usd
         this.gasEstimate = hexToNumber(gas) // gas number
         this.txData = data // data hex
         this.txDataParams = txDataParams !== '' ? JSON.stringify(txDataParams, null, 2) : ''
         this.sender = sender // address of sender
         this.gasCost = gweiGasPrice * this.gasEstimate * 10 ** -9
-        this.txFees = this.gasCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+        this.txFees = this.gasCost * this.getCurrencyMultiplier
         const ethCost = parseFloat(finalValue) + this.gasCost
         this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
         const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
         this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
-        this.totalUsdCost =
-          this.selectedCurrency.toLowerCase() === ETH
-            ? ethCost
-            : significantDigits(ethCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()] || 0)
+        this.totalUsdCost = significantDigits(ethCost * this.getCurrencyMultiplier)
         if (reason) {
           this.errorMsg = reason
           this.canShowError = true
