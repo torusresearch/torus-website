@@ -5,7 +5,7 @@
         <div class="font-weight-bold headline float-left">{{ pageHeader }}</div>
       </v-flex>
       <v-flex xs8 sm9 px-4 class="text-right hidden-xs-only">
-        <v-btn outlined large color="primary" :disabled="isFreshAccount" class="transfer-btn px-12 py-1 mr-4" @click="initiateTransfer">
+        <v-btn outlined large color="primary" class="transfer-btn px-12 py-1 mr-4" @click="initiateTransfer">
           <v-icon left>$vuetify.icons.send</v-icon>
           Transfer
         </v-btn>
