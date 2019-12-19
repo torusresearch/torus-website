@@ -249,12 +249,13 @@
                   class="px-6"
                   id="wallet-transfer-submit"
                   v-on="on"
+                  @click="onTransferClick"
                 >
                   Transfer
                 </v-btn>
               </template>
               <transfer-confirm
-                :toAddress="toAddress"
+                :toAddress="toEthAddress"
                 :convertedAmount="
                   convertedAmount
                     ? `~ ${convertedAmount} ${
@@ -347,6 +348,7 @@ export default {
       collectibleSelected: {},
       assetSelected: {},
       tokenAddress: '0x',
+      toEthAddress: '0x',
       amount: 0,
       displayAmount: '',
       convertedAmount: '',
@@ -642,6 +644,36 @@ export default {
       this.gas = await this.calculateGas(this.toAddress)
       this.updateTotalCost()
     },
+    async onTransferClick() {
+      if (this.$refs.form.validate()) {
+        let toAddress
+        log.info(this.toAddress, this.selectedVerifier)
+        if (isAddress(this.toAddress)) {
+          toAddress = toChecksumAddress(this.toAddress)
+        } else {
+          const endPointNumber = getRandomNumber(nodeDetails.torusNodeEndpoints.length)
+          try {
+            toAddress = await torus.getPubKeyAsync(nodeDetails.torusNodeEndpoints[endPointNumber], {
+              verifier: this.selectedVerifier,
+              verifierId: this.toAddress
+            })
+          } catch (err) {
+            log.error(err)
+            let newEndPointNumber = endPointNumber
+            while (newEndPointNumber === endPointNumber) {
+              newEndPointNumber = getRandomNumber(nodeDetails.torusNodeEndpoints.length)
+            }
+            toAddress = await torus.getPubKeyAsync(nodeDetails.torusNodeEndpoints[newEndPointNumber], {
+              verifier: this.selectedVerifier,
+              verifierId: this.toAddress
+            })
+          }
+        }
+        this.toEthAddress = toAddress
+        this.gas = await this.calculateGas(toAddress)
+        this.updateTotalCost()
+      }
+    },
     changeSelectedToCurrency(value) {
       this.toggle_exclusive = value
       const currencyRate = this.getCurrencyTokenRate
@@ -672,115 +704,90 @@ export default {
       this.changeSelectedToCurrency(0)
     },
     async sendCoin() {
-      if (this.$refs.form.validate()) {
-        const fastGasPrice = toBN((this.activeGasPrice * 10 ** 9).toString())
-        let toAddress
-        log.info(this.toAddress, this.selectedVerifier)
-        if (isAddress(this.toAddress)) {
-          toAddress = toChecksumAddress(this.toAddress)
-        } else {
-          const endPointNumber = getRandomNumber(nodeDetails.torusNodeEndpoints.length)
-          try {
-            toAddress = await torus.getPubKeyAsync(nodeDetails.torusNodeEndpoints[endPointNumber], {
-              verifier: this.selectedVerifier,
-              verifierId: this.toAddress
-            })
-          } catch (err) {
-            log.error(err)
-            let newEndPointNumber = endPointNumber
-            while (newEndPointNumber === endPointNumber) {
-              newEndPointNumber = getRandomNumber(nodeDetails.torusNodeEndpoints.length)
-            }
-            toAddress = await torus.getPubKeyAsync(nodeDetails.torusNodeEndpoints[newEndPointNumber], {
-              verifier: this.selectedVerifier,
-              verifierId: this.toAddress
-            })
-          }
-        }
-        this.gas = await this.calculateGas(toAddress)
-        const selectedAddress = this.$store.state.selectedAddress
-        if (this.contractType === CONTRACT_TYPE_ETH) {
-          log.info('TX SENT: ', {
+      const toAddress = this.toEthAddress
+      const fastGasPrice = toBN((this.activeGasPrice * 10 ** 9).toString())
+      const selectedAddress = this.$store.state.selectedAddress
+      if (this.contractType === CONTRACT_TYPE_ETH) {
+        log.info('TX SENT: ', {
+          from: selectedAddress,
+          to: toAddress,
+          value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
+          gas: this.gas === 0 ? undefined : this.gas.toString(),
+          gasPrice: fastGasPrice
+        })
+        torus.web3.eth.sendTransaction(
+          {
             from: selectedAddress,
             to: toAddress,
             value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
             gas: this.gas === 0 ? undefined : this.gas.toString(),
             gasPrice: fastGasPrice
-          })
-          torus.web3.eth.sendTransaction(
-            {
-              from: selectedAddress,
-              to: toAddress,
-              value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
-              gas: this.gas === 0 ? undefined : this.gas.toString(),
-              gasPrice: fastGasPrice
-            },
-            (err, transactionHash) => {
-              if (err) {
-                const regEx = new RegExp('User denied transaction signature', 'i')
-                if (!err.message.match(regEx)) {
-                  this.showModalMessage = true
-                  this.modalMessageSuccess = false
-                }
-                log.error(err)
-              } else {
-                // Send email to the user
-                this.sendEmail(this.selectedItem.symbol, transactionHash)
+          },
+          (err, transactionHash) => {
+            if (err) {
+              const regEx = new RegExp('User denied transaction signature', 'i')
+              if (!err.message.match(regEx)) {
+                this.showModalMessage = true
+                this.modalMessageSuccess = false
+              }
+              log.error(err)
+            } else {
+              // Send email to the user
+              this.sendEmail(this.selectedItem.symbol, transactionHash)
 
-                this.showModalMessage = true
-                this.modalMessageSuccess = true
-              }
+              this.showModalMessage = true
+              this.modalMessageSuccess = true
             }
-          )
-        } else if (this.contractType === CONTRACT_TYPE_ERC20) {
-          const value = Math.floor(parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()
-          this.getTransferMethod(this.contractType, selectedAddress, toAddress, value).send(
-            {
-              from: selectedAddress,
-              gas: this.gas === 0 ? undefined : this.gas.toString(),
-              gasPrice: fastGasPrice
-            },
-            (err, transactionHash) => {
-              if (err) {
-                const regEx = new RegExp('User denied transaction signature', 'i')
-                if (!err.message.match(regEx)) {
-                  this.showModalMessage = true
-                  this.modalMessageSuccess = false
-                }
-                log.error(err)
-              } else {
-                // Send email to the user
-                this.sendEmail(this.selectedItem.symbol, transactionHash)
+          }
+        )
+      } else if (this.contractType === CONTRACT_TYPE_ERC20) {
+        const value = Math.floor(parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()
+        this.getTransferMethod(this.contractType, selectedAddress, toAddress, value).send(
+          {
+            from: selectedAddress,
+            gas: this.gas === 0 ? undefined : this.gas.toString(),
+            gasPrice: fastGasPrice
+          },
+          (err, transactionHash) => {
+            if (err) {
+              const regEx = new RegExp('User denied transaction signature', 'i')
+              if (!err.message.match(regEx)) {
+                this.showModalMessage = true
+                this.modalMessageSuccess = false
+              }
+              log.error(err)
+            } else {
+              // Send email to the user
+              this.sendEmail(this.selectedItem.symbol, transactionHash)
 
-                this.showModalMessage = true
-                this.modalMessageSuccess = true
-              }
+              this.showModalMessage = true
+              this.modalMessageSuccess = true
             }
-          )
-        } else if (this.contractType === CONTRACT_TYPE_ERC721) {
-          this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId).send(
-            {
-              from: selectedAddress,
-              gas: this.gas === 0 ? undefined : this.gas.toString(),
-              gasPrice: fastGasPrice
-            },
-            (err, transactionHash) => {
-              if (err) {
-                const regEx = new RegExp('User denied transaction signature', 'i')
-                if (!err.message.match(regEx)) {
-                  this.showModalMessage = true
-                  this.modalMessageSuccess = false
-                }
-                log.error(err)
-              } else {
-                // Send email to the user
-                this.sendEmail(this.assetSelected.name, transactionHash)
+          }
+        )
+      } else if (this.contractType === CONTRACT_TYPE_ERC721) {
+        this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId).send(
+          {
+            from: selectedAddress,
+            gas: this.gas === 0 ? undefined : this.gas.toString(),
+            gasPrice: fastGasPrice
+          },
+          (err, transactionHash) => {
+            if (err) {
+              const regEx = new RegExp('User denied transaction signature', 'i')
+              if (!err.message.match(regEx)) {
                 this.showModalMessage = true
-                this.modalMessageSuccess = true
+                this.modalMessageSuccess = false
               }
+              log.error(err)
+            } else {
+              // Send email to the user
+              this.sendEmail(this.assetSelected.name, transactionHash)
+              this.showModalMessage = true
+              this.modalMessageSuccess = true
             }
-          )
-        }
+          }
+        )
       }
     },
     getGasDisplayString(fastGasPrice) {
