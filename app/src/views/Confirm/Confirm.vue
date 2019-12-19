@@ -643,7 +643,7 @@ export default {
             log.info(error)
           }
           const tokenPrice = //token price in eth
-            prices[checkSummedTo.toLowerCase()] && prices[checkSummedTo.toLowerCase()].eth ? prices[checkSummedTo.toLowerCase()].eth : 1
+            prices[checkSummedTo.toLowerCase()] && prices[checkSummedTo.toLowerCase()].eth ? prices[checkSummedTo.toLowerCase()].eth : 0
           this.tokenPrice = tokenPrice
           this.amountTokenValueConverted = tokenPrice * parseFloat(this.amountValue) * this.getCurrencyMultiplier
         } else if (methodParams && contractParams.erc721) {
