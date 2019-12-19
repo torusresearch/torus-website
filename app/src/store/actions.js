@@ -923,6 +923,7 @@ export default {
               }
             )
             commit('setNewUser', true)
+            dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
             dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
             resolve()
           })

@@ -146,6 +146,8 @@
                 :convertedAmount="displayAmountConverted"
                 :displayAmount="displayAmountValue"
                 :speedSelected="speed"
+                :assetSelected="assetDetails"
+                :isNonFungibleToken="isNonFungibleToken"
                 :transactionFee="txFees"
                 :selectedCurrency="selectedCurrency"
                 @onClose="confirmDialog = false"
@@ -325,6 +327,7 @@ export default {
       speed: '',
       typedMessages: {},
       id: 0,
+      isNonFungibleToken: false,
       assetDetails: {},
       COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
       TOKEN_METHOD_APPROVE,
@@ -648,6 +651,7 @@ export default {
           this.amountTokenValueConverted = tokenPrice * parseFloat(this.amountValue) * this.getCurrencyMultiplier
         } else if (methodParams && contractParams.erc721) {
           log.info(methodParams, contractParams)
+          this.isNonFungibleToken = true
           let assetDetails = {}
           try {
             const url = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
