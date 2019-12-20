@@ -43,15 +43,9 @@
       "react/jsx-filename-extension": 0
     }
   },
-  "eslint.provideLintTask": true,
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    {
-      "autoFix": true,
-      "language": "vue"
-    }
-  ],
+  "eslint.lintTask.enable": true,
+  "eslint.format.enable": true,
+  "eslint.validate": ["javascript", "javascriptreact", { "autoFix": true, "language": "vue" }],
   "eslint.workingDirectories": [
     {
       "changeProcessCWD": true,

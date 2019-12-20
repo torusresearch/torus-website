@@ -107,12 +107,14 @@ const FACEBOOK = 'facebook'
 const REDDIT = 'reddit'
 const DISCORD = 'discord'
 const TWITCH = 'twitch'
+const ENS = 'ENS'
 const ETH_LABEL = 'ETH Address'
 const GOOGLE_LABEL = 'Google Email'
 const FACEBOOK_LABEL = 'Facebook ID'
 const REDDIT_LABEL = 'Reddit Username'
 const DISCORD_LABEL = 'Discord ID'
 const TWITCH_LABEL = 'Twitch ID'
+const ENS_LABEL = 'ENS ID'
 
 // Format: [dark/light]-[colorName]
 const THEME_DARK_BLACK_NAME = 'dark-black'
@@ -136,6 +138,10 @@ const ALLOWED_VERIFIERS = [
   {
     name: DISCORD_LABEL,
     value: DISCORD
+  },
+  {
+    name: ENS_LABEL,
+    value: ENS
   }
 ]
 

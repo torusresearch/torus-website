@@ -64,6 +64,7 @@ function onloadTorus(torus) {
   torus.communicationMux.setMaxListeners(50)
   torusController.provider.setMaxListeners(100)
   torus.web3 = new Web3(torusController.provider)
+  window.torus = torus
   torus._mainnetWeb3 = new Web3(new Web3.providers.HttpProvider(config.MAINNET_JRPC_URL))
 
   // update node details from nodeList

@@ -641,12 +641,26 @@ export default {
       this.gas = await this.calculateGas(this.toAddress)
       this.updateTotalCost()
     },
+    async isENS(ens) {
+      console.log('is ENS', ens)
+      try {
+        const address = await torus.web3.eth.ens.getAddress(ens)
+        console.log(address)
+        this.toEthAddress = isAddress(address) ? toChecksumAddress(address) : this.toEthAddress
+        return true
+      } catch (e) {
+        log.error(e)
+        return false
+      }
+    },
     async onTransferClick() {
       if (this.$refs.form.validate()) {
         let toAddress
         log.info(this.toAddress, this.selectedVerifier)
         if (isAddress(this.toAddress)) {
           toAddress = toChecksumAddress(this.toAddress)
+        } else if (this.isENS(this.toAddress)) {
+          toAddress = this.toEthAddress
         } else {
           const endPointNumber = getRandomNumber(nodeDetails.torusNodeEndpoints.length)
           try {
