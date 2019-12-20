@@ -7,9 +7,11 @@
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title>
-            <div class="font-weight-bold headline">
-              <span id="account-name">{{ userName }}</span>
-              Account
+            <div class="font-weight-bold title d-flex">
+              <div class="torus-account--name mr-1" id="account-name">
+                <span>{{ userName }}</span>
+              </div>
+              <div>Account</div>
             </div>
           </v-list-item-title>
           <v-list-item-subtitle>
@@ -114,22 +116,13 @@ export default {
   },
   computed: {
     userEmail() {
-      let verifierLabel = ''
-      switch (this.userInfo.verifier) {
-        case FACEBOOK:
-        case REDDIT:
-        case TWITCH:
-        case DISCORD:
-          verifierLabel = this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1) + ': '
-          break
-        case GOOGLE:
-          verifierLabel = 'Gmail: '
-      }
+      const verifierLabel = this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1) + ': '
       return verifierLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
     },
     userName() {
-      const userName = this.userInfo.name.charAt(0).toUpperCase() + this.userInfo.name.slice(1)
-      return userName[userName.length - 1] === 's' ? `${userName}'` : `${userName}'s`
+      let userName = this.userInfo.name.charAt(0).toUpperCase() + this.userInfo.name.slice(1)
+      userName = userName.length > 20 ? userName.split(' ')[0] : userName
+      return `${userName}'s`
     },
     profileImage() {
       return this.userInfo.profileImage

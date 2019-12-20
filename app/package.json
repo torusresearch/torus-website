@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "0.2.9",
+  "version": "0.2.10",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -37,7 +37,7 @@
     "assert": "^2.0.0",
     "broadcast-channel": "^3.0.3",
     "copy-to-clipboard": "^3.2.0",
-    "core-js": "3.5.0",
+    "core-js": "3.6.0",
     "debounce": "^1.2.0",
     "eccrypto": "^1.1.2",
     "eth-block-tracker": "^4.4.3",
@@ -88,7 +88,7 @@
     "xtend": "^4.0.2"
   },
   "devDependencies": {
-    "@toruslabs/torus-embed": "^0.2.9",
+    "@toruslabs/torus-embed": "^0.2.10",
     "@vue/cli-plugin-babel": "^4.1.1",
     "@vue/cli-plugin-eslint": "^4.1.1",
     "@vue/cli-plugin-pwa": "^4.1.1",

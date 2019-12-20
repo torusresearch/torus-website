@@ -11,7 +11,7 @@
               <span class="display-2 font-weight-bold">Welcome to Torus</span>
             </v-flex>
             <v-flex class="body-1" mb-6 xs9 sm7 ml-auto mr-auto>
-              <span>You are just one step away from getting your digital wallet for your cryptocurrencies</span>
+              <span>You are just one step away from getting your digital wallet.</span>
             </v-flex>
             <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
               <v-btn
