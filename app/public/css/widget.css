@@ -1,4 +1,4 @@
-.torus-alert {
+#torusAlert {
   z-index: 999999;
   position: fixed;
   overflow: hidden;
@@ -12,27 +12,28 @@
   padding: 20px;
 }
 
-.torus-alert h1 {
+#torusAlert .torus-alert__title {
   margin: 0;
   font-size: 22px;
   font-weight: 200;
 }
 
-.torus-alert p {
+#torusAlert .torus-alert__desc {
   margin: 10px 0 0;
   font-size: 14px;
 }
 
-.torus-alert .torus-alert-close {
+#torusAlert .torus-alert-close {
   position: absolute;
   top: 20px;
   right: 20px;
   cursor: pointer;
 }
 
-.torus-alert .torus-alert-btn {
+#torusAlert .torus-alert-btn {
+  font-size: 14px;
   background-color: #0364ff;
-  padding: 14px;
+  margin: 5px 0 0;
   width: 100px;
   height: 40px;
   border: 0;
