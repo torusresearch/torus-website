@@ -1,6 +1,5 @@
 const connext = require('@connext/client')
-const CFTypes = require('@counterfactual/types')
-const channelStore = require('../utils/channelStore').default
+const ConnextStore = require('connext-store').default
 
 class ChannelController {
   /**
@@ -33,7 +32,7 @@ class ChannelController {
       ethProviderUrl: ETH_PROVIDER_URL || 'https://rinkeby.indra.connext.network/api/ethprovider', // default to nodes provider
       logLevel: LOG_LEVEL || 5, // default to log everything
       nodeUrl: NODE_URL || 'wss://rinkeby.indra.connext.network/api/messaging', // default to rinkeby
-      store: channelStore
+      store: new ConnextStore(window.localStorage)
     }
 
     connext
@@ -54,7 +53,7 @@ class ChannelController {
    * @param {string?} assetId token address to deposit (defaults to ETH)
    */
   deposit(amount, assetId) {
-    const channel = this.getInitdChannel()
+    const channel = this.getChannel()
     return channel.deposit({
       amount,
       assetId
@@ -67,7 +66,7 @@ class ChannelController {
    * @param {string} swapRate swap rate in
    */
   swap(amount, swapRate, toAssetId, fromAssetId) {
-    const channel = this.getInitdChannel()
+    const channel = this.getChannel()
     return channel.swap({
       amount,
       swapRate,
@@ -85,7 +84,7 @@ class ChannelController {
    * @param {string?} assetId asset to send, defaults to eth
    */
   linkTransfer(amount, assetId) {
-    const channel = this.getInitdChannel()
+    const channel = this.getChannel()
     const paymentId = connext.utils.createPaymentId()
     const preImage = connext.utils.createPreImage()
     return channel
@@ -107,7 +106,7 @@ class ChannelController {
    * @param {string?} assetId asset to send, defaults to eth
    */
   transfer(amount, recipient, assetId) {
-    const channel = this.getInitdChannel()
+    const channel = this.getChannel()
     return channel.conditionalTransfer({
       assetId,
       amount,
@@ -126,7 +125,7 @@ class ChannelController {
    * @param {string?} assetId asset to withdraw, defaults to eth
    */
   withdraw(amount, recipient, assetId) {
-    const channel = this.getInitdChannel()
+    const channel = this.getChannel()
     return channel.withdraw({
       amount,
       recipient,
@@ -144,7 +143,7 @@ class ChannelController {
    * @param {string?} assetId Address of asset you want balance of, defaults to ETH
    */
   getFreeBalance(assetId) {
-    const channel = this.getInitdChannel()
+    const channel = this.getChannel()
     return channel.getFreeBalance(assetId)
   }
 
@@ -163,16 +162,8 @@ class ChannelController {
   getChannel() {
     const channel = this.store.getFlatState().channel
     if (!channel) {
-      console.debug(`Make sure to call 'initializeConnext' before using channel`)
+      throw new Error('Channel has not been initialized, call initializeConnext')
       return
-    }
-    return channel
-  }
-
-  getInitdChannel() {
-    const channel = this.getChannel()
-    if (!channel) {
-      throw new Error(`Channel has not been initialized, call 'initializeConnext'`)
     }
     return channel
   }
@@ -188,21 +179,11 @@ class ChannelController {
   }
 
   async onPayload(payload) {
-    const channel = this.getInitdChannel()
+    const channel = this.getChannel()
 
     const { params, id, method } = payload
 
-    if (!params || typeof params !== 'object') {
-      throw new Error(`Invalid payload params. Payload: ${prettyPrint(payload)}`)
-    }
-
-    if (!id) {
-      throw new Error(`Invalid payload id. Payload: ${prettyPrint(payload)}`)
-    }
-
-    if (!method || typeof method !== 'string') {
-      throw new Error(`Invalid payload method. Payload: ${prettyPrint(payload)}`)
-    }
+    verifyPayload(payload)
 
     let errorMsg
     let result
@@ -226,6 +207,20 @@ class ChannelController {
 
 function prettyPrint(obj) {
   return JSON.stringify(obj, null, 2)
+}
+
+function verifyPayload(payload) {
+  if (!params || typeof params !== 'object') {
+    throw new Error(`Invalid payload params. Payload: ${prettyPrint(payload)}`)
+  }
+
+  if (!id) {
+    throw new Error(`Invalid payload id. Payload: ${prettyPrint(payload)}`)
+  }
+
+  if (!method || typeof method !== 'string') {
+    throw new Error(`Invalid payload method. Payload: ${prettyPrint(payload)}`)
+  }
 }
 
 export default ChannelController

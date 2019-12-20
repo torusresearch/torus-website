@@ -31,7 +31,8 @@
     "test:coveralls-upload": "if [ $COVERALLS_REPO_TOKEN ]; then nyc report --reporter=text-lcov | coveralls; fi",
     "test:e2e-loggedin": "node ./test/e2e/simple_puppeteer.js",
     "test:e2e:headful": "node ./test/e2e/puppeteer.js false",
-    "test:e2e:mobile": "env MOBILE_ENV=true mocha --timeout=60000 ./test/e2e"
+    "test:e2e:mobile": "env MOBILE_ENV=true mocha --timeout=60000 ./test/e2e",
+    "postinstall": ". ./scripts/fixNodeModules.sh"
   },
   "dependencies": {
     "@connext/client": "^1.2.12",
@@ -40,6 +41,7 @@
     "assert": "^2.0.0",
     "bip39": "^3.0.2",
     "broadcast-channel": "^3.0.3",
+    "connext-store": "^1.0.0",
     "copy-to-clipboard": "^3.2.0",
     "core-js": "3.4.6",
     "debounce": "^1.2.0",
