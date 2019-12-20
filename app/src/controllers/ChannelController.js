@@ -2,6 +2,8 @@ const { toWei } = require('web3-utils')
 const connext = require('@connext/client')
 const ConnextStore = require('connext-store').default
 
+const ERC20Mintable = require('../contracts/ERC20Mintable.json')
+
 const DEFAULT_COLLATERAL_MINIMUM = toWei('5')
 const DEFAULT_AMOUNT_TO_COLLATERALIZE = toWei('10')
 
