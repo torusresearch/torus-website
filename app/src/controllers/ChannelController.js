@@ -2,8 +2,6 @@ const { toWei } = require('web3-utils')
 const connext = require('@connext/client')
 const ConnextStore = require('connext-store').default
 
-const ERC20Mintable = require('../contracts/ERC20Mintable.json')
-
 const DEFAULT_COLLATERAL_MINIMUM = toWei('5')
 const DEFAULT_AMOUNT_TO_COLLATERALIZE = toWei('10')
 
@@ -44,13 +42,11 @@ class ChannelController {
     connext
       .connect(connectOpts)
       .then(channel => {
-        const token = new Contract(channel.config.contractAddresses.Token, ERC20Mintable.abi, new providers.JsonRpcProvider(ethProviderUrl))
-
         channel
           .addPaymentProfile({
             minimumMaintainedCollateral: DEFAULT_AMOUNT_TO_COLLATERALIZE,
             amountToCollateralize: DEFAULT_COLLATERAL_MINIMUM,
-            assetId: token.address
+            assetId: channel.config.contractAddresses.Token
           })
           .then(() => {
             this.saveChannel(channel)
