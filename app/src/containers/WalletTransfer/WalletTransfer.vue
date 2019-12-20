@@ -509,7 +509,7 @@ export default {
         const emailObject = {
           from_name: this.$store.state.userInfo.name,
           to_email: this.toAddress,
-          total_amount: this.amount.toString(),
+          total_amount: parseFloat(this.amount) === 0 ? '' : this.amount.toString(),
           token: typeToken.toString(),
           etherscanLink: etherscanLink
         }
