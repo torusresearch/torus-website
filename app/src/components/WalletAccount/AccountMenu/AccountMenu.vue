@@ -116,22 +116,13 @@ export default {
   },
   computed: {
     userEmail() {
-      let verifierLabel = ''
-      switch (this.userInfo.verifier) {
-        case FACEBOOK:
-        case REDDIT:
-        case TWITCH:
-        case DISCORD:
-          verifierLabel = this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1) + ': '
-          break
-        case GOOGLE:
-          verifierLabel = 'Gmail: '
-      }
+      const verifierLabel = this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1) + ': '
       return verifierLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
     },
     userName() {
-      const userName = this.userInfo.name.charAt(0).toUpperCase() + this.userInfo.name.slice(1)
-      return userName[userName.length - 1] === 's' ? `${userName}'` : `${userName}'s`
+      let userName = this.userInfo.name.charAt(0).toUpperCase() + this.userInfo.name.slice(1)
+      userName = userName.length > 20 ? userName.split(' ')[0] : userName
+      return `${userName}'s`
     },
     profileImage() {
       return this.userInfo.profileImage
