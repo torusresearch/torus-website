@@ -19,7 +19,7 @@
 }
 
 #torusAlert .torus-alert__desc {
-  margin: 10px 0 0;
+  margin: 16px 0 0;
   font-size: 14px;
 }
 
@@ -33,7 +33,7 @@
 #torusAlert .torus-alert-btn {
   font-size: 14px;
   background-color: #0364ff;
-  margin: 5px 0 0;
+  margin: 24px 0 0;
   width: 100px;
   height: 40px;
   border: 0;
