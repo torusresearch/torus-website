@@ -50,7 +50,7 @@ import torus from '../../torus'
 import { patch } from '../../utils/httpHelpers'
 import {
   WYRE,
-  WALLET_HEADERS_TRANSFER,
+  WALLET_HEADERS_ACTIVITY,
   ACTIVITY_ACTION_ALL,
   ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_RECEIVE,
@@ -70,7 +70,7 @@ export default {
   components: { TxHistoryTable },
   data() {
     return {
-      pageHeader: WALLET_HEADERS_TRANSFER,
+      pageHeader: WALLET_HEADERS_ACTIVITY,
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
       headers: [
         {

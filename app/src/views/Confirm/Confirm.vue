@@ -117,7 +117,7 @@
             </v-card>
           </v-dialog>
         </v-flex>
-        <v-flex xs12 px-6 mb-6 class="text-right" v-if="topUpErrorShow">
+        <v-flex xs12 px-6 mb-6 class="text-right" v-if="topUpErrorShow || canShowError">
           <div class="caption error--text">{{ errorMsg }}</div>
           <div class="caption mt-1" v-if="topUpErrorShow">
             Please
@@ -146,6 +146,8 @@
                 :convertedAmount="displayAmountConverted"
                 :displayAmount="displayAmountValue"
                 :speedSelected="speed"
+                :assetSelected="assetDetails"
+                :isNonFungibleToken="isNonFungibleToken"
                 :transactionFee="txFees"
                 :selectedCurrency="selectedCurrency"
                 @onClose="confirmDialog = false"
@@ -272,7 +274,8 @@ const {
   TX_MESSAGE,
   TX_TYPED_MESSAGE,
   TX_PERSONAL_MESSAGE,
-  TX_TRANSACTION
+  TX_TRANSACTION,
+  ETH
 } = require('../../utils/enums')
 
 const weiInGwei = 10 ** 9
@@ -324,6 +327,7 @@ export default {
       speed: '',
       typedMessages: {},
       id: 0,
+      isNonFungibleToken: false,
       assetDetails: {},
       COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
       TOKEN_METHOD_APPROVE,
@@ -472,7 +476,7 @@ export default {
       return currencyMultiplier
     },
     getCurrencyRate() {
-      const ethConverted = this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+      const ethConverted = this.getCurrencyMultiplier
       const tokenPriceConverted = this.isOtherToken ? this.tokenPrice * ethConverted : ethConverted
       const selectedToken = this.isOtherToken ? this.selectedToken : 'ETH'
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
@@ -481,12 +485,12 @@ export default {
   watch: {
     gasPrice: function(newGasPrice, oldGasPrice) {
       this.gasCost = newGasPrice * this.gasEstimate * 10 ** -9
-      this.txFees = this.gasCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+      this.txFees = this.gasCost * this.getCurrencyMultiplier
       const ethCost = parseFloat(this.value) + this.gasCost
       this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
       const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
       this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
-      this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()] || 0)
+      this.totalUsdCost = significantDigits(ethCost * this.getCurrencyMultiplier)
       if (parseFloat(this.balance) < ethCost && !this.canShowError) {
         this.errorMsg = 'Insufficient Funds'
         this.topUpErrorShow = true
@@ -644,10 +648,10 @@ export default {
           const tokenPrice = //token price in eth
             prices[checkSummedTo.toLowerCase()] && prices[checkSummedTo.toLowerCase()].eth ? prices[checkSummedTo.toLowerCase()].eth : 0
           this.tokenPrice = tokenPrice
-          this.amountTokenValueConverted =
-            tokenPrice * parseFloat(this.amountValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+          this.amountTokenValueConverted = tokenPrice * parseFloat(this.amountValue) * this.getCurrencyMultiplier
         } else if (methodParams && contractParams.erc721) {
           log.info(methodParams, contractParams)
+          this.isNonFungibleToken = true
           let assetDetails = {}
           try {
             const url = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
@@ -667,22 +671,22 @@ export default {
         this.currencyRateDate = this.getDate()
         this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
-        this.dollarValue = significantDigits(parseFloat(finalValue) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()])
+        this.dollarValue = significantDigits(parseFloat(finalValue) * this.getCurrencyMultiplier)
         this.gasPrice = gweiGasPrice // gas price in gwei
         this.gasKnob = calculateGasKnob(gweiGasPrice)
         this.balance = balance // in eth
-        this.balanceUsd = significantDigits(parseFloat(balance) * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]) // in usd
+        this.balanceUsd = significantDigits(parseFloat(balance) * this.getCurrencyMultiplier) // in usd
         this.gasEstimate = hexToNumber(gas) // gas number
         this.txData = data // data hex
         this.txDataParams = txDataParams !== '' ? JSON.stringify(txDataParams, null, 2) : ''
         this.sender = sender // address of sender
         this.gasCost = gweiGasPrice * this.gasEstimate * 10 ** -9
-        this.txFees = this.gasCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()]
+        this.txFees = this.gasCost * this.getCurrencyMultiplier
         const ethCost = parseFloat(finalValue) + this.gasCost
         this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
         const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
         this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
-        this.totalUsdCost = significantDigits(ethCost * this.$store.state.currencyData[this.selectedCurrency.toLowerCase()] || 0)
+        this.totalUsdCost = significantDigits(ethCost * this.getCurrencyMultiplier)
         if (reason) {
           this.errorMsg = reason
           this.canShowError = true
