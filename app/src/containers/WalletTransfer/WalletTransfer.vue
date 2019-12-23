@@ -354,7 +354,7 @@ export default {
       tokenAddress: '0x',
       toEthAddress: '0x',
       amount: 0,
-      displayAmount: '',
+      displayAmount: '0',
       convertedAmount: '',
       contactSelected: '',
       toAddress: '',
@@ -552,10 +552,6 @@ export default {
     },
     verifierChangedManual() {
       this.autoSelectVerifier = false
-      this.verifierChanged()
-    },
-    verifierChanged() {
-      this.$refs.form.validate()
     },
     contactChanged(event) {
       const contact = event && event.target ? event.target.value : event
@@ -566,10 +562,8 @@ export default {
       if (this.autoSelectVerifier) {
         if (/^0x/.test(this.toAddress)) {
           this.selectedVerifier = ETH
-          this.verifierChanged()
         } else if (/@/.test(this.toAddress)) {
           this.selectedVerifier = GOOGLE
-          this.verifierChanged()
         }
       }
     },
