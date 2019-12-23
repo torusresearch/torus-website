@@ -14,6 +14,7 @@ const initialState = {
   userInfoAccess: USER_INFO_REQUEST_NEW,
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
+  weiBalanceLoaded: false, // Use on showing spinners
   selectedAddress: '',
   selectedCurrency: 'USD',
   networkId: 0,

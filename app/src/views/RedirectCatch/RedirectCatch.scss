@@ -1,0 +1,21 @@
+.container {
+  background: #FCFCFC;
+  max-width: 100%;
+}
+
+.redirect-container {
+  .redirect-title {
+    font-size: 40px;
+  }
+  .redirect-info {
+    font-size: 28px;
+  }
+  &--mobile {
+    .redirect-title {
+      font-size: 32px;
+    }
+    .redirect-info {
+      font-size: 24px;
+    }
+  }
+}

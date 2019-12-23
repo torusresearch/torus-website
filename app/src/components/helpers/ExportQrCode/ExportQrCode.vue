@@ -1,7 +1,9 @@
 <template>
   <v-dialog v-model="qrDialoag" width="450">
     <template v-slot:activator="{ on }">
-      <v-icon small class="primary--text" v-text="'$vuetify.icons.key'" v-on="on" />
+      <v-btn icon small v-on="on" id="openQr" aria-label="Open QR">
+        <v-icon small class="primary--text" v-text="'$vuetify.icons.qr'" />
+      </v-btn>
     </template>
     <v-card>
       <div class="text-right">
@@ -10,7 +12,10 @@
         </v-btn>
       </div>
       <v-card-text class="text-center qr-container">
-        <div class="headline font-weight-bold mb-4">Your QR code</div>
+        <div class="headline font-weight-bold">Your Public Address</div>
+        <div class="caption text_2--text mb-4">
+          <show-tool-tip :address="selectedAddress">{{ slicedAddress }}</show-tool-tip>
+        </div>
         <vue-qr
           ref="address-qr"
           :logoSrc="require(`../../../../public/images/torus-circle.svg`)"
@@ -23,9 +28,6 @@
           :dotScale="1"
           :correctLevel="3"
         ></vue-qr>
-        <div class="caption text_2--text">
-          <show-tool-tip :address="selectedAddress">{{ slicedAddress }}</show-tool-tip>
-        </div>
         <div class="mt-8">
           <v-btn depressed color="primary" class="px-12" @click="downloadQr">
             <v-icon small>$vuetify.icons.download</v-icon>

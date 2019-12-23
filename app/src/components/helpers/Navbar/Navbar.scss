@@ -16,10 +16,6 @@
       margin-left: auto
     }
   }
-
-  .v-tab {
-    text-transform: inherit
-  }
   
   .beta-text {
     line-height: 1em;
@@ -32,11 +28,10 @@
     margin-top: -5px;
   }
   
-  .theme--light {
-    .v-tab {
-      &.v-tab--active {
-        color: var(--v-text_2-darken3);
-      }
+  .v-tab {
+    text-transform: inherit;
+    &.v-tab--active {
+      color: var(--v-primary);
     }
   }
   

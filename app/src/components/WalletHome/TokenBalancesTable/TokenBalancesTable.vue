@@ -1,18 +1,19 @@
 <template>
   <v-layout class="home-cards token-balance-tab-container" wrap align-center>
     <v-flex class="xs12 sm6 px-4 my-4" v-for="(balance, index) in tokenBalances" :key="index" :style="`order: ${index > 0 ? index + 1 : index}`">
-      <v-card color="card-shadow pb-6 pt-1">
+      <v-card color="card-shadow pb-6 pt-1" router-link :to="{ name: 'walletTransfer', query: { contract: balance.tokenAddress } }">
         <v-card-text class="text_1--text py-6 px-6">
           <v-layout>
-            <v-flex xs6>
+            <v-flex xs8>
               <img
                 :src="require(`../../../../public/images/logos/${balance.logo}`)"
                 class="inline-small d-inline-flex"
                 onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                :alt="balance.logo"
               />
-              <span class="subtitle-1 ml-2 d-inline-flex">{{ balance.name }}</span>
+              <span class="subtitle-1 ml-2">{{ balance.name }}</span>
             </v-flex>
-            <v-flex xs6 class="text-right">
+            <v-flex xs4 class="text-right">
               {{ balance.formattedBalance }}
             </v-flex>
           </v-layout>

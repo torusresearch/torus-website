@@ -8,6 +8,33 @@ var _cacheNameDetails = {
   prefix: 'workbox',
   suffix: registration.scope
 }
+function getScope() {
+  return self.registration.scope
+}
+function getIframeURL() {
+  return getScope() + 'popup'
+}
+var serviceWorkerScriptPath = '/service-worker.js'
+function isOrigin() {
+  try {
+    var newURL = new URL(getScope())
+    return newURL.href === newURL.origin
+  } catch (err) {
+    return false
+  }
+}
+
+function storeIframeResponseText(url) {
+  return caches.open('torus' + getScope()).then(function(cache) {
+    return cache.add(url)
+  })
+}
+
+function getIframeResponseText() {
+  return caches.open('torus' + getScope()).then(function(cache) {
+    return cache.match(getIframeURL())
+  })
+}
 
 function precacheAndRoute(entries, opts) {
   precache(entries)
@@ -117,12 +144,16 @@ function precache(entries) {
   precacheController.addToCacheList(entries)
   if (entries.length > 0) {
     addEventListener('install', function(event) {
+      self.skipWaiting()
       var precacheController = getOrCreatePrecacheController()
       event.waitUntil(
-        precacheController.install({ event: event }).catch(function(err) {
-          console.error(err)
-          throw err
-        })
+        Promise.all([
+          storeIframeResponseText(getIframeURL()),
+          precacheController.install({ event: event }).catch(function(err) {
+            console.error(err)
+            throw err
+          })
+        ])
       )
     })
     addEventListener('activate', function(event) {
@@ -506,13 +537,32 @@ self.addEventListener('fetch', function(event) {
   if (event.request.url.indexOf('redirect') > -1) {
     event.respondWith(
       new Response(
-        new Blob([
-          `
+        new Blob(
+          [
+            `
 REDIRECT_HTML${''}
 `
-        ])
+          ],
+          { type: 'text/html' }
+        )
       )
     )
+  } else if (event.request.url.indexOf('integrity=true') > -1 && !isOrigin() && event.request.url.indexOf(getScope()) > -1) {
+    var promRes
+    var promRej
+    var prom = new Promise(function(resolve, reject) {
+      promRes = resolve
+      promRej = reject
+    })
+
+    event.respondWith(prom)
+    getIframeResponseText().then(function(cachedResponse) {
+      if (cachedResponse !== undefined) {
+        promRes(cachedResponse)
+      } else {
+        promRes(fetch(getIframeURL()))
+      }
+    })
   }
 })
 

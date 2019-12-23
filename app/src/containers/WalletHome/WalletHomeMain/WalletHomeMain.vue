@@ -1,17 +1,17 @@
 <template>
   <div class="wallet-home">
-    <v-layout wrap align-center :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
-      <v-flex xs6 px-4>
+    <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
+      <v-flex xs4 sm3 pl-4>
         <div class="font-weight-bold headline float-left">{{ pageHeader }}</div>
       </v-flex>
-      <v-flex xs6 px-4 class="text-right hidden-xs-only">
-        <v-btn outlined large color="primary" :disabled="isFreshAccount" class="transfer-btn px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
+      <v-flex xs8 sm9 px-4 class="text-right hidden-xs-only">
+        <v-btn outlined large color="primary" class="transfer-btn px-12 py-1 mr-4" @click="initiateTransfer">
           <v-icon left>$vuetify.icons.send</v-icon>
           Transfer
         </v-btn>
         <v-tooltip top :value="isFreshAccount" class="hidden-xs-only">
           <template v-slot:activator="{ on }">
-            <v-btn depressed large color="primary" class="px-12 py-1 mt-4 topup-btn hidden-xs-only" @click="topup" v-on="on">
+            <v-btn depressed large color="primary" class="px-12 py-1 topup-btn hidden-xs-only" @click="topup" v-on="on">
               <v-icon left>$vuetify.icons.add</v-icon>
               Top up
             </v-btn>
@@ -37,7 +37,8 @@
                 </v-layout>
               </v-card-title>
               <v-card-text class="pb-8 px-6">
-                <h2 class="display-2 text_2--text font-weight-bold">
+                <component-loader class="mt-3" v-if="!weiBalanceLoaded" />
+                <h2 v-else class="display-2 text_2--text font-weight-bold">
                   {{ totalPortfolioValue }}
                   <span id="selected-currency" class="body-2 font-weight-light">{{ selectedCurrency }}</span>
                 </h2>
@@ -188,6 +189,7 @@ import config from '../../../config'
 import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
 import ExportQrCode from '../../../components/helpers/ExportQrCode'
+import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import LearnMore from '../../../components/WalletHome/LearnMore'
 import { MAINNET, WALLET_HEADERS_HOME } from '../../../utils/enums'
@@ -195,7 +197,7 @@ import { get } from '../../../utils/httpHelpers'
 
 export default {
   name: 'walletHome',
-  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore },
+  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore, ComponentLoader },
   data() {
     return {
       pageHeader: WALLET_HEADERS_HOME,
@@ -210,6 +212,9 @@ export default {
   computed: {
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
+    },
+    weiBalanceLoaded() {
+      return this.$store.state.weiBalanceLoaded
     },
     finalBalancesArray() {
       let balances = this.$store.getters.tokenBalances.finalBalancesArray

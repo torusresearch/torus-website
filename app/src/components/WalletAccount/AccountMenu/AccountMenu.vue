@@ -3,23 +3,22 @@
     <v-list>
       <v-list-item>
         <v-list-item-avatar class="mr-2 mt-4">
-          <img :src="profileImage" class="align-start" />
+          <img :src="profileImage" class="align-start" :alt="userName" />
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title>
-            <div class="font-weight-bold headline">
-              <span id="account-name">{{ userName }}</span>
-              Account
+            <div class="font-weight-bold title d-flex">
+              <div class="torus-account--name mr-1" id="account-name">
+                <span>{{ userName }}</span>
+              </div>
+              <div>Account</div>
             </div>
           </v-list-item-title>
           <v-list-item-subtitle>
             <div class="caption text_2--text">
               <span>{{ userEmail }}</span>
-              <v-btn id="show-address-btn" icon small class="primary--text float-right mr-5" @click="isShowSelectedAddress = !isShowSelectedAddress">
-                <v-icon small v-text="'$vuetify.icons.key'" />
-              </v-btn>
             </div>
-            <div v-if="isShowSelectedAddress" class="caption public-address-container">
+            <div class="caption public-address-container">
               <show-tool-tip :address="selectedAddress">{{ selectedAddress }}</show-tool-tip>
             </div>
           </v-list-item-subtitle>
@@ -29,7 +28,7 @@
         <v-list-item-content>
           <div class="subtitle-2 mb-0">
             <v-icon class="mr-2 text_2--text" v-text="'$vuetify.icons.balance'" />
-            <span class="text_1--text">{{ totalPortfolioEthValue }} ETH / {{ `${totalPortfolioValue} ${selectedCurrency}` }}</span>
+            <span class="text_1--text">{{ `${totalPortfolioValue} ${selectedCurrency}` }}</span>
           </div>
         </v-list-item-content>
       </v-list-item>
@@ -97,7 +96,7 @@
 </template>
 
 <script>
-import BroadcastChannel from 'broadcast-channel'
+import { BroadcastChannel } from 'broadcast-channel'
 import { significantDigits, addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import AccountImport from '../AccountImport'
@@ -112,28 +111,18 @@ export default {
   },
   data() {
     return {
-      accountImportDialog: false,
-      isShowSelectedAddress: false
+      accountImportDialog: false
     }
   },
   computed: {
     userEmail() {
-      let verifierLabel = ''
-      switch (this.userInfo.verifier) {
-        case FACEBOOK:
-        case REDDIT:
-        case TWITCH:
-        case DISCORD:
-          verifierLabel = this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1) + ': '
-          break
-        case GOOGLE:
-          verifierLabel = 'Gmail: '
-      }
+      const verifierLabel = this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1) + ': '
       return verifierLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
     },
     userName() {
-      const userName = this.userInfo.name.charAt(0).toUpperCase() + this.userInfo.name.slice(1)
-      return userName[userName.length - 1] === 's' ? `${userName}'` : `${userName}'s`
+      let userName = this.userInfo.name.charAt(0).toUpperCase() + this.userInfo.name.slice(1)
+      userName = userName.length > 20 ? userName.split(' ')[0] : userName
+      return `${userName}'s`
     },
     profileImage() {
       return this.userInfo.profileImage
@@ -164,12 +153,6 @@ export default {
     },
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
-    },
-    totalPortfolioEthValue() {
-      return significantDigits(
-        parseFloat(this.totalPortfolioValue.toString().includes(',') ? this.totalPortfolioValue.replace(',', '') : this.totalPortfolioValue) /
-          this.getCurrencyMultiplier
-      )
     },
     filteredMenu() {
       if (this.headerItems) {

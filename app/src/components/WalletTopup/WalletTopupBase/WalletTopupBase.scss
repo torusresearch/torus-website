@@ -1,0 +1,26 @@
+.wallet-topup {
+  .help-icon {
+    height: 13px;
+    vertical-align: middle;
+  }
+  
+  .unique-hint {
+    ::v-deep .v-text-field__details {
+      display: none;
+    }
+
+    ::v-deep .error--text {
+      .v-text-field__details {
+        display: inherit;
+      }
+    }
+
+    .v-btn {
+      border-style: dashed;
+    }
+  }
+
+  ::v-deep .v-text-field__details {
+    padding: 0;
+  }
+}

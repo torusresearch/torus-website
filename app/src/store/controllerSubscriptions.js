@@ -2,6 +2,15 @@ import log from 'loglevel'
 import store from './store'
 import torus from '../torus'
 
+/* 
+Edited to change networkId => network state. Has an implication of changing neworkVersion 
+to "loading" at times in the inpage API
+ */
+
+torus.torusController.networkController.networkStore.subscribe(function(state) {
+  store.dispatch('updateNetworkId', { networkId: state })
+})
+
 function accountTrackerHandler({ accounts }) {
   if (accounts) {
     for (const key in accounts) {
@@ -28,7 +37,6 @@ function transactionControllerHandler({ transactions }) {
 }
 
 function assetControllerHandler({ accounts }) {
-  log.info('received assets')
   for (const key in accounts) {
     if (Object.prototype.hasOwnProperty.call(accounts, key)) {
       const { allCollectibleContracts, allCollectibles, collectibleContracts, collectibles } = accounts[key]

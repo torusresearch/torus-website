@@ -1,8 +1,8 @@
 <template>
   <svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <g id="Invision-3" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-      <g id="Dark-theme-normal-state" transform="translate(-704.000000, -296.000000)" fill="currentColor" fill-rule="nonzero">
-        <g id="scan" transform="translate(704.000000, 296.000000)">
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+      <g transform="translate(-704.000000, -296.000000)" fill="currentColor" fill-rule="nonzero">
+        <g transform="translate(704.000000, 296.000000)">
           <path
             d="
               M0.00165775401,15.1186631 L0.00165775401,12.2660428 C0.00165775401,11.7934997 0.384729626,11.4104278
@@ -27,7 +27,6 @@
               13.1216578,7.98796791 C13.1216578,8.46051102 12.7385859,8.84358289 12.2660428,8.84358289 L3.70989305,8.84358289
               C3.23734996,8.84358289 2.85427811,8.460511 2.85427811,7.98796791 C2.85427811,7.51542483 3.23734996,7.13235294
               3.70989305,7.13235294 Z"
-            id="Shape"
           />
         </g>
       </g>

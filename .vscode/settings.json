@@ -1,4 +1,6 @@
 {
+  "editor.formatOnSave": false,
+  "eslint.autoFixOnSave": true,
   "eslint.options": {
     "env": {
       "browser": true,
@@ -43,7 +45,7 @@
       "react/jsx-filename-extension": 0
     }
   },
-  "eslint.provideLintTask": true,
+  "eslint.lintTask.enable": true,
   "eslint.validate": [
     "javascript",
     "javascriptreact",
@@ -58,7 +60,6 @@
       "directory": "./app"
     }
   ],
-  "prettier.eslintIntegration": true,
   "prettier.jsxBracketSameLine": true,
   "prettier.printWidth": 150
 }

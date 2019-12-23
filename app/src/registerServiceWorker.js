@@ -9,9 +9,10 @@ const swUrl = `${process.env.BASE_URL}service-worker.js`
 const expectedCacheControlHeader = 'max-age=3600'
 
 if (
-  process.env.VUE_APP_TORUS_BUILD_ENV === 'production' ||
-  process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ||
-  process.env.VUE_APP_TORUS_BUILD_ENV === 'testing'
+  'serviceWorker' in navigator &&
+  (process.env.VUE_APP_TORUS_BUILD_ENV === 'production' ||
+    process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ||
+    process.env.VUE_APP_TORUS_BUILD_ENV === 'testing')
 ) {
   // if swIntegrity is not calculated
   if (swIntegrity === ['SERVICE', 'WORKER', 'SHA', 'INTEGRITY'].join('_')) {
@@ -42,54 +43,38 @@ if (
     // Check on existing service worker registration(s)
     // if there are errors, remove all service workers first
     navigator.serviceWorker
-      .getRegistrations()
-      .then(function(regs) {
-        let resolve
-        let response = {
-          err: null,
-          sw: null
-        }
-        let promise = new Promise(function(res, rej) {
-          resolve = res
-        })
-        var removeRegsAndResolveWithError = function(errorMessage) {
-          response.err = new Error(errorMessage)
-          log.error(response.err)
-          const promises = []
-          navigator.serviceWorker.getRegistrations().then(function(arr) {
-            arr.map(function(reg) {
-              promises.push(reg.unregister())
-            })
-          })
-          Promise.all(promises).finally(function() {
-            resolve(response)
-          })
-        }
-        if (regs.length === 0) {
-          resolve({
-            err: new Error('no service worker installed')
-          })
-        } else if (regs.length > 1) {
-          removeRegsAndResolveWithError('Should only have one service worker registered')
-        } else if (regs[0].updateViaCache !== 'all') {
-          removeRegsAndResolveWithError('updateViaCache should be "all"')
-        } else if (new URL(regs[0].active.scriptURL).pathname !== swUrl) {
-          removeRegsAndResolveWithError(`unexpected scriptURL ${new URL(regs[0].active.scriptURL).pathname}, expected ${swUrl}`)
-        } else {
-          response.sw = regs[0]
+      .getRegistration()
+      .then(function(reg) {
+        return new Promise((resolve, reject) => {
+          let response = {
+            err: null,
+            sw: null
+          }
+          if (reg === undefined) {
+            response.err = new Error('no service worker installed')
+          } else if (reg.updateViaCache !== 'all') {
+            response.err = new Error('updateViaCache should be "all"')
+          } else if (new URL(reg.active.scriptURL).pathname !== swUrl) {
+            response.err = new Error(`unexpected scriptURL ${new URL(reg.active.scriptURL).pathname}, expected ${swUrl}`)
+          } else {
+            response.sw = reg
+          }
           resolve(response)
-        }
-        return promise
+        })
       })
       .then(responseObj => {
         // if there were errors, we need to re-register the service worker
         if (responseObj.err) {
-          return navigator.serviceWorker.register(swUrl, { updateViaCache: 'all', scope: '/' })
+          const finalArr = [navigator.serviceWorker.register(swUrl, { updateViaCache: 'all', scope: '/' })]
+          if (process.env.BASE_URL !== '/')
+            finalArr.push(navigator.serviceWorker.register(swUrl, { updateViaCache: 'all', scope: process.env.BASE_URL }))
+          return Promise.all(finalArr)
         } else {
-          return Promise.resolve(responseObj.sw)
+          return Promise.all([Promise.resolve(responseObj.sw)])
         }
       })
-      .then(swReg => {
+      .then(swRegs => {
+        log.info(swRegs, 'final regs')
         // Although the service worker is registered, its integrity has not been checked.
         // This is impossible to circumvent, service worker initial registrations always
         // bypass HTML cache. Instead, we ensure that the service worker was already registered,
@@ -115,19 +100,19 @@ if (
               throw new Error(`Service worker integrity check failed, expected ${swIntegrity} got ${integrity}`)
             }
             // update the service worker, which should fetch the file from cache
-            return swReg.update()
+            return swRegs && swRegs.forEach(x => x.update())
           })
           .catch(err => {
             // if failed to fetch, throw
             throw new Error('Could not fetch service worker from server, ' + err.toString())
           })
       })
-      .then(updatedSwReg => {
-        log.info('Successfully registered secure service worker', updatedSwReg)
+      .then(updatedSwRegs => {
+        log.info('Successfully registered secure service worker', updatedSwRegs)
       })
       .catch(err => {
-        log.error('Could not complete service worker installation process, error: ', err)
-        throw new Error('Could not install service worker')
+        log.warn('Could not complete service worker installation process, error: ', err)
+        // throw new Error('Could not install service worker')
       })
   }
 }
