@@ -645,12 +645,10 @@ export default {
       this.updateTotalCost()
     },
     async isENS(ens) {
-      console.log('is ENS', ens)
+      log.info('is ENS', ens)
       try {
         const address = await torus.web3.eth.ens.getAddress(ens)
-        console.log(this.toEthAddress)
         this.toEthAddress = isAddress(address) ? toChecksumAddress(address) : this.toEthAddress
-        console.log(this.toEthAddress)
         log.info('ENS true')
         return true
       } catch (e) {
