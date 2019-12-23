@@ -117,6 +117,8 @@
                   :items="contactList"
                   :placeholder="verifierPlaceholder"
                   required
+                  aria-autocomplete="off"
+                  autocomplete="off"
                   :rules="[contactRule, rules.required]"
                   outlined
                   item-text="name"
@@ -645,11 +647,13 @@ export default {
       console.log('is ENS', ens)
       try {
         const address = await torus.web3.eth.ens.getAddress(ens)
-        console.log(address)
+        console.log(this.toEthAddress)
         this.toEthAddress = isAddress(address) ? toChecksumAddress(address) : this.toEthAddress
+        console.log(this.toEthAddress)
+        log.info('ENS true')
         return true
       } catch (e) {
-        log.error(e)
+        log.info('ENS false')
         return false
       }
     },
@@ -659,7 +663,7 @@ export default {
         log.info(this.toAddress, this.selectedVerifier)
         if (isAddress(this.toAddress)) {
           toAddress = toChecksumAddress(this.toAddress)
-        } else if (this.isENS(this.toAddress)) {
+        } else if (this.selectedVerifier == 'ENS' && this.isENS(this.toAddress)) {
           toAddress = this.toEthAddress
         } else {
           const endPointNumber = getRandomNumber(nodeDetails.torusNodeEndpoints.length)
@@ -720,19 +724,27 @@ export default {
       const fastGasPrice = toBN((this.activeGasPrice * 10 ** 9).toString())
       const selectedAddress = this.$store.state.selectedAddress
       if (this.contractType === CONTRACT_TYPE_ETH) {
+        const requiredGas = Math.trunc(
+          (await torus.web3.eth.estimateGas({
+            to: toAddress,
+            data: ''
+          })) * 1.1
+        )
+
         log.info('TX SENT: ', {
           from: selectedAddress,
           to: toAddress,
           value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
-          gas: this.gas === 0 ? undefined : this.gas.toString(),
+          gas: requiredGas,
           gasPrice: fastGasPrice
         })
+
         torus.web3.eth.sendTransaction(
           {
             from: selectedAddress,
             to: toAddress,
             value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
-            gas: this.gas === 0 ? undefined : this.gas.toString(),
+            gas: requiredGas,
             gasPrice: fastGasPrice
           },
           (err, transactionHash) => {
