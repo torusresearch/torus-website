@@ -6,11 +6,6 @@ import torus from '../torus'
 import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, USER_INFO_REQUEST_NEW } from '../utils/enums'
 import VuexStore from './store'
 import { broadcastChannelOptions } from '../utils/utils'
-import config from '../config'
-const baseRoute = config.baseRoute
-
-var permissionsRequestWindow
-var iClosedPermissionsWindow
 
 // setup handlers for communicationStream
 var passthroughStream = new stream.PassThrough({ objectMode: true })

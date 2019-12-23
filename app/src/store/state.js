@@ -10,7 +10,6 @@ const initialState = {
     verifierParams: {} // general params
   },
   idToken: '',
-  permissions: {}, // Domain specific object
   userInfoAccess: USER_INFO_REQUEST_NEW,
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
