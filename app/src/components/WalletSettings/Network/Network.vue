@@ -15,6 +15,7 @@
             @change="changeNetwork"
             return-object
             append-icon="$vuetify.icons.select"
+            aria-label="Select Network"
           ></v-select>
         </v-flex>
       </v-layout>

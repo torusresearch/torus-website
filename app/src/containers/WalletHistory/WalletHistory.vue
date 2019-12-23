@@ -13,6 +13,7 @@
             :items="actionTypes"
             v-model="selectedAction"
             append-icon="$vuetify.icons.select"
+            aria-label="Filter Transacation Type"
           />
           <v-select
             id="period-selector"
@@ -23,6 +24,7 @@
             :items="periods"
             v-model="selectedPeriod"
             append-icon="$vuetify.icons.select"
+            aria-label="Filter Transacation Period"
           />
         </div>
       </v-flex>

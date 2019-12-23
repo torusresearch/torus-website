@@ -21,6 +21,7 @@
                 :items="selectedProviderObj.validCryptoCurrencies"
                 v-model="selectedCryptoCurrency"
                 @change="fetchQuote"
+                aria-label="Cryptocurrency Selector"
               ></v-select>
             </v-flex>
             <v-flex xs12>
@@ -33,6 +34,7 @@
                 :value="fiatValue"
                 @input="setFiatValue"
                 :rules="[rules.required, rules.validNumber, rules.maxValidation, rules.minValidation]"
+                aria-label="Amount to Buy"
               >
                 <template v-slot:append>
                   <v-btn outlined small color="primary" @click="setFiatValue(100)">100</v-btn>
@@ -81,6 +83,7 @@
                 hint="Please prepare your Identity Card/Passport to complete the purchase."
                 persistent-hint
                 outlined
+                aria-label="Amount to Receive"
               ></v-text-field>
             </v-flex>
           </v-form>
