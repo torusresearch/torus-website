@@ -19,6 +19,7 @@
                       "
                       height="20px"
                       onerror="if (this.src !== 'eth.svg') this.src = 'images/logos/eth.svg';"
+                      :alt="selectedItemDisplay.name"
                     />
                     <span class="select-coin-name">{{ selectedItemDisplay.name }}</span>
                     <div class="flex-grow-1 text-right pr-2">
@@ -38,6 +39,7 @@
                         :src="require(`../../../public/images/logos/${token.logo}`)"
                         height="20px"
                         onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                        :alt="token.name"
                       />
                     </v-list-item-icon>
                     <v-list-item-content>
@@ -55,6 +57,7 @@
                         :src="require(`../../../public/images/logos/${token.logo}`)"
                         height="20px"
                         onerror="if (this.src !== 'eth.svg') this.src = 'images/logos/eth.svg';"
+                        :alt="token.name"
                       />
                     </v-list-item-icon>
                     <v-list-item-content>
@@ -104,6 +107,7 @@
                   item-value="value"
                   v-model="selectedVerifier"
                   @blur="verifierChangedManual"
+                  aria-label="Recipient Selector"
                 ></v-select>
               </v-flex>
               <v-flex xs12 sm6 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
@@ -124,9 +128,10 @@
                   item-text="name"
                   item-value="value"
                   return-object
+                  aria-label="Recipient Address"
                 >
                   <template v-slot:append>
-                    <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()">
+                    <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()" aria-label="QR Capture Button">
                       <v-icon small>$vuetify.icons.scan</v-icon>
                     </v-btn>
                   </template>
@@ -168,12 +173,13 @@
               item-text="name"
               append-icon="$vuetify.icons.select"
               return-object
+              aria-label="Asset selector"
             >
               <template v-slot:prepend-inner>
-                <img :src="assetSelected.image" height="24px" />
+                <img :src="assetSelected.image" height="24px" :alt="assetSelected.name" />
               </template>
               <template v-slot:item="{ item }">
-                <img class="mr-2" :src="item.image" height="24px" />
+                <img class="mr-2" :src="item.image" height="24px" :alt="item.name" />
                 {{ item.name }}
               </template>
             </v-select>
@@ -188,6 +194,7 @@
               v-model="displayAmount"
               :readonly="isSendAll"
               :rules="[rules.required, lesserThan, moreThanZero]"
+              aria-label="Amount you send"
             >
               <template v-slot:append>
                 <v-btn
@@ -349,7 +356,7 @@ export default {
       tokenAddress: '0x',
       toEthAddress: '0x',
       amount: 0,
-      displayAmount: '',
+      displayAmount: '0',
       convertedAmount: '',
       contactSelected: '',
       toAddress: '',
@@ -511,7 +518,7 @@ export default {
         const emailObject = {
           from_name: this.$store.state.userInfo.name,
           to_email: this.toAddress,
-          total_amount: this.amount.toString(),
+          total_amount: parseFloat(this.amount) === 0 ? '' : this.amount.toString(),
           token: typeToken.toString(),
           etherscanLink: etherscanLink
         }
@@ -547,10 +554,6 @@ export default {
     },
     verifierChangedManual() {
       this.autoSelectVerifier = false
-      this.verifierChanged()
-    },
-    verifierChanged() {
-      this.$refs.form.validate()
     },
     contactChanged(event) {
       const contact = event && event.target ? event.target.value : event
@@ -561,10 +564,8 @@ export default {
       if (this.autoSelectVerifier) {
         if (/^0x/.test(this.toAddress)) {
           this.selectedVerifier = ETH
-          this.verifierChanged()
         } else if (/@/.test(this.toAddress)) {
           this.selectedVerifier = GOOGLE
-          this.verifierChanged()
         }
       }
     },

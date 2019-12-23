@@ -1,7 +1,9 @@
 <template>
   <v-dialog v-model="qrDialoag" width="450">
     <template v-slot:activator="{ on }">
-      <v-icon small class="primary--text" v-text="'$vuetify.icons.qr'" v-on="on" />
+      <v-btn icon small v-on="on" id="openQr" aria-label="Open QR">
+        <v-icon small class="primary--text" v-text="'$vuetify.icons.qr'" />
+      </v-btn>
     </template>
     <v-card>
       <div class="text-right">

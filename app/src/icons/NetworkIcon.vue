@@ -1,9 +1,9 @@
 <template>
   <svg width="12px" height="12px" viewBox="0 0 12 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <g id="Invision-4" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-      <g id="Desktop-Tx-(New)-Copy" transform="translate(-24.000000, -71.000000)" fill="currentColor" fill-rule="nonzero">
-        <g id="Group-2" transform="translate(24.000000, 68.000000)">
-          <g id="network" transform="translate(0.000000, 3.000000)">
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+      <g transform="translate(-24.000000, -71.000000)" fill="currentColor" fill-rule="nonzero">
+        <g transform="translate(24.000000, 68.000000)">
+          <g transform="translate(0.000000, 3.000000)">
             <path
               d="
                 M10.4562495,7.45270693 C11.2289893,7.45514445 11.8765126,6.86883072 11.9505687,6.09964389 
@@ -22,7 +22,6 @@
                 C9.93304361,8.85740625 9.23059238,9.3118019 9.02344306,10.0277785 L7.37969566,10.0277785 
                 L5.28421623,6.37213205 L9.02344306,6.37213205 C9.20698232,7.01130101 9.791251,7.45193697 
                 10.4562495,7.45270693 Z"
-              id="Path"
             />
           </g>
         </g>

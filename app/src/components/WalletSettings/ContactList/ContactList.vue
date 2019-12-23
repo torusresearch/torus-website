@@ -11,13 +11,13 @@
                   <v-list-item-title class="font-weight-regular caption">
                     <span>{{ contact.name }}</span>
                   </v-list-item-title>
-                  <v-list-item-subtitle class="font-weight-regular caption text_2--text text--lighten-2">
+                  <v-list-item-subtitle class="font-weight-regular caption text_2--text">
                     <span class="text-capitalize">{{ contact.verifier === ETH ? '' : `${contact.verifier}: ` }}</span>
                     <span>{{ contact.contact }}</span>
                   </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
-                  <v-btn class="delete-btn" color="text_2" icon small @click="deleteContact(contact.id)">
+                  <v-btn class="delete-btn" color="text_2" icon small @click="deleteContact(contact.id)" :aria-label="`Delete ${contact.name}`">
                     <v-icon size="10">$vuetify.icons.close</v-icon>
                   </v-btn>
                 </v-list-item-action>
@@ -41,6 +41,7 @@
                 item-value="value"
                 v-model="selectedVerifier"
                 @change="$refs.addContactForm.validate()"
+                aria-label="Select Contact Verifier"
               ></v-select>
             </v-flex>
             <v-flex xs12>
@@ -50,6 +51,7 @@
                 placeholder="Enter Contact Name"
                 :rules="[rules.required]"
                 outlined
+                aria-label="Contact Name"
               ></v-text-field>
             </v-flex>
             <v-flex xs12>
@@ -59,6 +61,7 @@
                 :placeholder="verifierPlaceholder"
                 :rules="[toAddressRule, rules.required, checkDuplicates]"
                 outlined
+                aria-label="Contact Value"
               ></v-text-field>
             </v-flex>
 

@@ -3,7 +3,7 @@
     <v-list>
       <v-list-item>
         <v-list-item-avatar class="mr-2 mt-4">
-          <img :src="profileImage" class="align-start" />
+          <img :src="profileImage" class="align-start" :alt="userName" />
         </v-list-item-avatar>
         <v-list-item-content>
           <v-list-item-title>
