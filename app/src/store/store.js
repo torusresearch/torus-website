@@ -230,13 +230,19 @@ VuexStore.subscribe((mutation, state) => {
         // insert into db here
 
         const txHash = txMeta.hash
-
+        log.info(txMeta)
         const totalAmount = fromWei(toBN(txMeta.txParams.value).add(toBN(txMeta.txParams.gas).mul(toBN(txMeta.txParams.gasPrice))))
         const txObj = {
           created_at: new Date(txMeta.time),
           from: toChecksumAddress(txMeta.txParams.from),
           to: toChecksumAddress(txMeta.txParams.to),
           total_amount: totalAmount,
+          gas: txMeta.txParams.gas,
+          gasPrice: txMeta.txParams.gasPrice,
+          nonce: txMeta.txParams.nonce,
+          type: txMeta.contractParams && txMeta.contractParams.erc20 ? 'erc20' : txMeta.contractParams.erc721 ? 'erc721' : 'eth',
+          type_name: txMeta.contractParams && txMeta.contractParams.name ? txMeta.contractParams.name : '',
+          type_image_link: txMeta.contractParams && txMeta.contractParams.logo ? txMeta.contractParams.logo : '',
           currency_amount: (getCurrencyMultiplier() * totalAmount).toString(),
           selected_currency: state.selectedCurrency,
           status: 'submitted',

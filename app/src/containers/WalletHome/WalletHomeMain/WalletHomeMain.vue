@@ -16,9 +16,9 @@
               Top up
             </v-btn>
           </template>
-          <div class="outline-tooltip hidden-xs-only">
+          <!-- <div class="outline-tooltip hidden-xs-only">
             <span>Get ETH!</span>
-          </div>
+          </div> -->
         </v-tooltip>
       </v-flex>
 
@@ -110,9 +110,9 @@
                   Top up
                 </v-btn>
               </template>
-              <div class="outline-tooltip hidden-sm-and-up">
+              <!-- <div class="outline-tooltip hidden-sm-and-up">
                 <span>Get ETH!</span>
-              </div>
+              </div> -->
             </v-tooltip>
           </v-flex>
         </v-layout>
