@@ -64,7 +64,9 @@ import {
   ACTIVITY_STATUS_SUCCESSFUL,
   ACTIVITY_STATUS_UNSUCCESSFUL,
   SUPPORTED_NETWORK_TYPES,
-  ACTIVITY_STATUS_PENDING
+  ACTIVITY_STATUS_PENDING,
+  CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ERC20
 } from '../../utils/enums'
 
 export default {
@@ -144,20 +146,20 @@ export default {
           return ''
       }
     },
-    getActionText(action, item) {
-      if (action === ACTIVITY_ACTION_SEND) {
-        return 'Send ' + item
-      } else if (action === ACTIVITY_ACTION_RECEIVE || action === ACTIVITY_ACTION_TOPUP) {
-        return 'Received ' + item
-      }
+    getActionText(activity) {
+      return `${activity.action === ACTIVITY_ACTION_SEND ? 'Send' : 'Received'} ${activity.type_name || activity.type.toUpperCase()}`
     },
     getIcon(activity) {
       if (activity.action === ACTIVITY_ACTION_TOPUP) {
         return `provider-${activity.from.toLowerCase()}.svg`
       } else if (activity.action === ACTIVITY_ACTION_SEND) {
-        return '$vuetify.icons.coins_send'
-      } else if (activity.action === ACTIVITY_ACTION_RECEIVE) {
-        return '$vuetify.icons.coins_receive'
+        if (activity.type === CONTRACT_TYPE_ERC721) {
+          return `dapp-${activity.type_image_link}`
+        } else if (activity.type === CONTRACT_TYPE_ERC20) {
+          return `logos/${activity.type_image_link}`
+        } else {
+          return `$vuetify.icons.coins_${ACTIVITY_ACTION_SEND.toLowerCase()}`
+        }
       }
     },
     formatDate(date) {
@@ -173,7 +175,7 @@ export default {
       finalTx = [...transactions, ...finalTx, ...pastTx]
       finalTx = finalTx.reduce((acc, x) => {
         x.actionIcon = this.getIcon(x)
-        x.actionText = this.getActionText(x.action, 'ETH')
+        x.actionText = this.getActionText(x)
         x.statusText = this.getStatusText(x.status)
         x.dateFormatted = this.formatDate(x.date)
         x.timeFormatted = this.formatTime(x.date)
@@ -199,7 +201,7 @@ export default {
           status = await getEthTxStatus(x.transaction_hash, torus.web3)
           if (publicAddress.toLowerCase() === x.from.toLowerCase()) this.patchTx(x, status, jwtToken)
         }
-        const totalAmountString = `${significantDigits(parseFloat(x.total_amount))} ETH`
+        const totalAmountString = x.type === CONTRACT_TYPE_ERC721 ? x.type_name : `${significantDigits(parseFloat(x.total_amount))} ETH`
         const currencyAmountString = `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
         const finalObj = {
           id: x.created_at.toString(),
@@ -218,10 +220,14 @@ export default {
           etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network),
           networkType: x.network,
           ethRate: significantDigits(parseFloat(x.currency_amount) / parseFloat(x.total_amount)),
-          currencyUsed: x.selected_currency
+          currencyUsed: x.selected_currency,
+          type: x.type,
+          type_name: x.type_name,
+          type_image_link: x.type_image_link
         }
         pastTx.push(finalObj)
       }
+      console.log('transactions', pastTx)
       this.pastTx = pastTx
     },
     calculateTransactions() {
