@@ -6,9 +6,17 @@
         <div class="info font-weight-light">{{ transaction.timeFormatted }}</div>
       </v-flex>
       <v-flex xs4>
-        <v-icon large color="primary" class="float-left mr-2">{{ transaction.actionIcon }}</v-icon>
+        <img
+          v-if="transaction.action === ACTIVITY_ACTION_TOPUP"
+          :src="require(`../../../../public/images/${transaction.actionIcon}`)"
+          :alt="transaction.from"
+          class="float-left mr-2"
+        />
+        <v-icon v-else large color="primary" class="float-left mx-3">
+          {{ transaction.actionIcon }}
+        </v-icon>
         <div class="caption font-weight-medium">
-          {{ transaction.actionText }}{{ transaction.action === ACTIVITY_ACTION_TOPUP ? ` - ${transaction.from}` : '' }}
+          {{ transaction.actionText }}
         </div>
         <div class="info font-weight-light">to {{ transaction.slicedTo }}</div>
       </v-flex>

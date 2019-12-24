@@ -151,12 +151,12 @@ export default {
         return 'Received ' + item
       }
     },
-    getIcon(action) {
-      if (action === ACTIVITY_ACTION_TOPUP) {
-        return '$vuetify.icons.coins_receive'
-      } else if (action === ACTIVITY_ACTION_SEND) {
+    getIcon(activity) {
+      if (activity.action === ACTIVITY_ACTION_TOPUP) {
+        return `provider-${activity.from.toLowerCase()}.svg`
+      } else if (activity.action === ACTIVITY_ACTION_SEND) {
         return '$vuetify.icons.coins_send'
-      } else if (action === ACTIVITY_ACTION_RECEIVE) {
+      } else if (activity.action === ACTIVITY_ACTION_RECEIVE) {
         return '$vuetify.icons.coins_receive'
       }
     },
@@ -172,7 +172,7 @@ export default {
       const transactions = this.calculateTransactions()
       finalTx = [...transactions, ...finalTx, ...pastTx]
       finalTx = finalTx.reduce((acc, x) => {
-        x.actionIcon = this.getIcon(x.action)
+        x.actionIcon = this.getIcon(x)
         x.actionText = this.getActionText(x.action, 'ETH')
         x.statusText = this.getStatusText(x.status)
         x.dateFormatted = this.formatDate(x.date)
