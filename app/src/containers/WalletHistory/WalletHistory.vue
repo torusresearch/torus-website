@@ -147,7 +147,10 @@ export default {
       }
     },
     getActionText(activity) {
-      return `${activity.action === ACTIVITY_ACTION_SEND ? 'Send' : 'Received'} ${activity.type_name || activity.type.toUpperCase()}`
+      // Handling tx from common-api schema and /tx schema separately.
+      return activity.type_name || activity.type
+        ? `${activity.action === ACTIVITY_ACTION_SEND ? 'Sent' : 'Received'} ${activity.type_name || activity.type.toUpperCase()}`
+        : `${activity.action + ' ' + activity.from} `
     },
     getIcon(activity) {
       if (activity.action === ACTIVITY_ACTION_TOPUP) {

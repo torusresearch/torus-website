@@ -655,6 +655,7 @@ class TransactionController extends EventEmitter {
       contractParams.erc20 = false
       contractParams.symbol = 'CK'
       contractParams.name = 'Cryptokitty'
+      contractParams.logo = 'cryptokitty.svg'
       contractParams.decimals = 0
     } else if (decodedERC20) {
       // fallback to erc20
