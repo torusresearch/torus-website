@@ -154,6 +154,7 @@ const PNG = 'png'
 const SVG = 'svg'
 
 module.exports = {
+  ENS,
   ETH,
   ROPSTEN,
   RINKEBY,

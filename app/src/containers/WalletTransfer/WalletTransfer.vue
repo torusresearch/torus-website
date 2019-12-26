@@ -97,26 +97,12 @@
               <v-flex xs12>
                 <span class="subtitle-2">Transfer Mode</span>
               </v-flex>
-              <v-flex xs12 sm6 class="recipient-verifier-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
-                <v-select
-                  id="recipient-verifier"
-                  outlined
-                  append-icon="$vuetify.icons.select"
-                  :items="verifierOptions"
-                  item-text="name"
-                  item-value="value"
-                  v-model="selectedVerifier"
-                  @blur="verifierChangedManual"
-                  aria-label="Recipient Selector"
-                ></v-select>
-              </v-flex>
-              <v-flex xs12 sm6 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
+              <v-flex xs12 sm6 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
                 <v-combobox
                   id="recipient-address"
                   class="recipient-address"
                   ref="contactSelected"
                   v-model="contactSelected"
-                  @keyup="contactChanged"
                   @change="contactChanged"
                   :items="contactList"
                   :placeholder="verifierPlaceholder"
@@ -144,6 +130,19 @@
                     </div>
                   </div>
                 </div>
+              </v-flex>
+              <v-flex xs12 sm6 class="recipient-verifier-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
+                <v-select
+                  id="recipient-verifier"
+                  outlined
+                  append-icon="$vuetify.icons.select"
+                  :items="verifierOptions"
+                  item-text="name"
+                  item-value="value"
+                  v-model="selectedVerifier"
+                  @blur="verifierChangedManual"
+                  aria-label="Recipient Selector"
+                ></v-select>
               </v-flex>
               <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid" x12 mb-2>
                 <add-contact :contact="contactSelected" :verifier="selectedVerifier"></add-contact>
@@ -320,6 +319,7 @@ import {
   REDDIT,
   DISCORD,
   ETH,
+  ENS,
   ETH_LABEL,
   GOOGLE_LABEL,
   REDDIT_LABEL,
@@ -566,10 +566,12 @@ export default {
           this.selectedVerifier = ETH
         } else if (/@/.test(this.toAddress)) {
           this.selectedVerifier = GOOGLE
+        } else if (/.eth$/.test(this.toAddress) || /.xyz$/.test(this.toAddress) || /.crypto$/.test(this.toAddress)) {
+          this.selectedVerifier = ENS
         }
       }
     },
-    async calculateGas(toAddress) {
+    calculateGas(toAddress) {
       if (isAddress(toAddress)) {
         return new Promise((resolve, reject) => {
           if (this.contractType === CONTRACT_TYPE_ETH) {
@@ -608,7 +610,7 @@ export default {
           }
         })
       } else {
-        return 21000
+        return Promise.resolve(21000)
       }
     },
     getTransferMethod(contractType, selectedAddress, toAddress, value) {
