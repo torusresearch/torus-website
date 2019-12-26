@@ -1,8 +1,8 @@
 <template>
-  <v-layout mt-1 wrap class="wallet-settings">
+  <v-layout mt-3 wrap class="wallet-settings">
     <div class="text-black font-weight-bold headline px-4 mb-4">Settings</div>
     <v-flex xs12 px-4>
-      <v-expansion-panels multiple>
+      <v-expansion-panels v-model="panel" multiple>
         <!-- Privacy and security settings -->
         <v-expansion-panel class="my-2 card-shadow">
           <v-expansion-panel-header
@@ -88,6 +88,11 @@ export default {
     ContactList,
     Network,
     Display
+  },
+  data() {
+    return {
+      panel: [0, 1, 2, 3]
+    }
   }
 }
 </script>

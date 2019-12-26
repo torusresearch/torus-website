@@ -13,6 +13,7 @@
             :items="actionTypes"
             v-model="selectedAction"
             append-icon="$vuetify.icons.select"
+            aria-label="Filter Transacation Type"
           />
           <v-select
             id="period-selector"
@@ -23,6 +24,7 @@
             :items="periods"
             v-model="selectedPeriod"
             append-icon="$vuetify.icons.select"
+            aria-label="Filter Transacation Period"
           />
         </div>
       </v-flex>
@@ -50,7 +52,7 @@ import torus from '../../torus'
 import { patch } from '../../utils/httpHelpers'
 import {
   WYRE,
-  WALLET_HEADERS_TRANSFER,
+  WALLET_HEADERS_ACTIVITY,
   ACTIVITY_ACTION_ALL,
   ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_RECEIVE,
@@ -70,7 +72,7 @@ export default {
   components: { TxHistoryTable },
   data() {
     return {
-      pageHeader: WALLET_HEADERS_TRANSFER,
+      pageHeader: WALLET_HEADERS_ACTIVITY,
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
       pastOrders: [],
       actionTypes: [ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_TOPUP],

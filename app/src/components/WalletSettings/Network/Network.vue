@@ -15,6 +15,7 @@
             @change="changeNetwork"
             return-object
             append-icon="$vuetify.icons.select"
+            aria-label="Select Network"
           ></v-select>
         </v-flex>
       </v-layout>
@@ -42,39 +43,38 @@
           <v-text-field :placeholder="$vuetify.lang.t('$vuetify.walletSettings.enterChainId')" outlined v-model="rpc.chainId"></v-text-field>
         </v-flex>
 
-        <v-flex xs12 md6>
-          <v-layout wrap>
-            <v-flex xs8 v-if="!$vuetify.breakpoint.xsOnly" class="pr-2">
-              <notification
-                :alert-show="updateProviderRPCAlert"
-                :alert-text="updateProviderAlertText"
-                :alert-type="updateProviderAlertType"
-                @closeAlert="closeAlert"
-              />
-            </v-flex>
-            <v-flex xs12 sm4 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
-              <v-tooltip bottom :disabled="formValid">
-                <template v-slot:activator="{ on }">
-                  <span v-on="on">
-                    <v-btn block :disabled="!formValid" depressed color="primary" @click="setRPC">
-                      {{ $vuetify.lang.t('$vuetify.walletSettings.save') }}
-                    </v-btn>
-                  </span>
-                </template>
-                <span>{{ $vuetify.lang.t('$vuetify.walletSettings.resolveErrors') }}</span>
-              </v-tooltip>
-            </v-flex>
-            <v-flex xs12 v-if="$vuetify.breakpoint.xsOnly" class="mt-2">
-              <notification
-                :alert-show="updateProviderRPCAlert"
-                :alert-text="updateProviderAlertText"
-                :alert-type="updateProviderAlertType"
-                @closeAlert="closeAlert"
-              />
-            </v-flex>
-          </v-layout>
+        <v-flex xs12 sm4 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
+          <v-tooltip bottom :disabled="formValid">
+            <template v-slot:activator="{ on }">
+              <span v-on="on">
+                <v-btn block :disabled="!formValid" depressed color="primary" @click="setRPC">
+                  {{ $vuetify.lang.t('$vuetify.walletSettings.save') }}
+                </v-btn>
+              </span>
+            </template>
+            <span>{{ $vuetify.lang.t('$vuetify.walletSettings.resolveErrors') }}</span>
+          </v-tooltip>
         </v-flex>
       </template>
+
+      <v-layout wrap mt-2>
+        <v-flex xs12 md6 v-if="!$vuetify.breakpoint.xsOnly">
+          <notification
+            :alert-show="updateProviderRPCAlert"
+            :alert-text="updateProviderAlertText"
+            :alert-type="updateProviderAlertType"
+            @closeAlert="closeAlert"
+          />
+        </v-flex>
+        <v-flex xs12 v-if="$vuetify.breakpoint.xsOnly" class="mt-2">
+          <notification
+            :alert-show="updateProviderRPCAlert"
+            :alert-text="updateProviderAlertText"
+            :alert-type="updateProviderAlertType"
+            @closeAlert="closeAlert"
+          />
+        </v-flex>
+      </v-layout>
     </v-form>
   </div>
 </template>
@@ -121,7 +121,7 @@ export default {
       this.updateProviderRPCAlert = false
     },
     showNotification(success) {
-      this.updateProviderRPCAlert = this.isRPCSelected
+      this.updateProviderRPCAlert = success
       this.updateProviderAlertType = success ? 'success' : 'error'
       this.updateProviderAlertText = success ? 'Updated Network Provider' : 'Something went wrong'
     },
@@ -130,8 +130,14 @@ export default {
         const payload = { network: this.selectedNetwork }
         this.$store
           .dispatch('setProviderType', payload)
-          .then(resp => this.sendToIframe(payload))
-          .catch(err => log.error(err))
+          .then(resp => {
+            this.sendToIframe(payload)
+            this.showNotification(true)
+          })
+          .catch(err => {
+            this.showNotification(false)
+            log.error(err)
+          })
       }
     },
     setRPC() {
@@ -139,13 +145,14 @@ export default {
         // this.selectedNetwork = RPC
         const payload = { network: this.rpc, type: RPC }
         this.$store
-          .dispatch('setProviderType')
+          .dispatch('setProviderType', payload)
           .then(resp => {
             this.showNotification(true)
             this.sendToIframe(payload)
           })
           .catch(err => {
             this.showNotification(false)
+            log.error(err)
           })
       }
     },

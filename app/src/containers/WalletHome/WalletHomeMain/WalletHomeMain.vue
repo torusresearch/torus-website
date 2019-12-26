@@ -1,17 +1,17 @@
 <template>
   <div class="wallet-home">
-    <v-layout wrap align-center :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
+    <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
       <v-flex xs4 sm3 pl-4>
         <div class="font-weight-bold headline float-left">{{ pageHeader }}</div>
       </v-flex>
       <v-flex xs8 sm9 px-4 class="text-right hidden-xs-only">
-        <v-btn outlined large color="primary" :disabled="isFreshAccount" class="transfer-btn px-12 py-1 mr-4 mt-4" @click="initiateTransfer">
+        <v-btn outlined large color="primary" class="transfer-btn px-12 py-1 mr-4" @click="initiateTransfer">
           <v-icon left>$vuetify.icons.send</v-icon>
           {{ $vuetify.lang.t('$vuetify.walletHome.transfer') }}
         </v-btn>
         <v-tooltip top :value="isFreshAccount" class="hidden-xs-only">
           <template v-slot:activator="{ on }">
-            <v-btn depressed large color="primary" class="px-12 py-1 mt-4 topup-btn hidden-xs-only" @click="topup" v-on="on">
+            <v-btn depressed large color="primary" class="px-12 py-1 topup-btn hidden-xs-only" @click="topup" v-on="on">
               <v-icon left>$vuetify.icons.add</v-icon>
               {{ $vuetify.lang.t('$vuetify.walletHome.topUp') }}
             </v-btn>

@@ -17,9 +17,10 @@
           hide-details
           append-icon="$vuetify.icons.select"
           return-object
+          aria-label="Selected contract"
         >
           <template v-slot:prepend-inner>
-            <img v-if="selectedContract" class="mr-1" :src="selectedContract.logo" height="24px" />
+            <img v-if="selectedContract" class="mr-1" :src="selectedContract.logo" :alt="selectedContract.name" height="24px" />
           </template>
         </v-select>
       </v-flex>
@@ -34,7 +35,7 @@
           <v-card class="mx-auto asset" max-width="344" :ripple="false" v-if="!$vuetify.breakpoint.xsOnly" @click="toggleDetails($event)">
             <!-- <v-img :src="asset.image" height="140px" :style="{ backgroundColor: asset.color }"></v-img> -->
             <div class="text-center">
-              <img :src="asset.image" style="width: auto; height: 140px" />
+              <img :src="asset.image" style="width: auto; height: 140px" :alt="asset.tokenId" />
             </div>
             <v-card-text class="asset-text py-1 px-3">
               <div class="body-2" :title="asset.name || `${selectedContract.name} #${asset.tokenId}`">
@@ -74,7 +75,7 @@
               </v-list-item-content>
 
               <v-list-item-avatar size="100" tile>
-                <v-img :src="asset.image"></v-img>
+                <v-img :src="asset.image" :alt="asset.tokenId" />
               </v-list-item-avatar>
             </v-list-item>
 

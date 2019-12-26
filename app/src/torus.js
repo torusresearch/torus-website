@@ -143,7 +143,7 @@ class Torus {
           log.info(shareResponses)
           for (var i = 0; i < shareResponses.length; i++) {
             if (shareResponses[i] && shareResponses[i].result && shareResponses[i].result.keys && shareResponses[i].result.keys.length > 0) {
-              shareResponses[i].result.keys.sort((a, b) => a.Index.cmp(b.Index))
+              shareResponses[i].result.keys.sort((a, b) => new BN(a.Index, 16).cmp(new BN(b.Index, 16)))
               if (shareResponses[i].result.keys[0].Metadata) {
                 const metadata = {
                   ephemPublicKey: Buffer.from(shareResponses[i].result.keys[0].Metadata.ephemPublicKey, 'hex'),
