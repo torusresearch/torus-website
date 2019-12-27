@@ -138,12 +138,13 @@
                   :items="verifierOptions"
                   item-text="name"
                   item-value="value"
+                  :rules="[rules.required]"
                   v-model="selectedVerifier"
                   @blur="verifierChangedManual"
                   aria-label="Recipient Selector"
                 ></v-select>
               </v-flex>
-              <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid" x12 mb-2>
+              <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" x12 mb-2>
                 <add-contact :contact="contactSelected" :verifier="selectedVerifier"></add-contact>
               </v-flex>
             </v-layout>
@@ -250,7 +251,7 @@
               large
               depressed
               color="primary"
-              :disabled="!formValid || speedSelected === ''"
+              :disabled="!formValid || speedSelected === '' || selectedVerifier === ''"
               class="px-6"
               id="wallet-transfer-submit"
               @click="onTransferClick"
@@ -556,6 +557,7 @@ export default {
     },
     verifierChangedManual() {
       this.autoSelectVerifier = false
+      this.$refs.form.validate()
     },
     contactChanged(event) {
       const contact = event && event.target ? event.target.value : event
