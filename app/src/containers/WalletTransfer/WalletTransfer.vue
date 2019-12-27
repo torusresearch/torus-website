@@ -2,7 +2,7 @@
   <v-layout wrap class="wallet-transfer" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
     <div class="text-black font-weight-bold headline px-4 mb-4">{{ pageHeader }}</div>
     <v-flex xs12 mb-4>
-      <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation>
+      <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation aria-autocomplete="off" autocomplete="off">
         <v-layout wrap>
           <v-flex xs12 sm6 px-4 mb-5>
             <span class="subtitle-2">Select item</span>
@@ -99,6 +99,7 @@
               </v-flex>
               <v-flex xs12 sm6 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
                 <v-combobox
+                  :name="randomName"
                   id="recipient-address"
                   class="recipient-address"
                   ref="contactSelected"
@@ -107,8 +108,6 @@
                   :items="contactList"
                   :placeholder="verifierPlaceholder"
                   required
-                  aria-autocomplete="off"
-                  autocomplete="off"
                   :rules="[contactRule, rules.required]"
                   outlined
                   item-text="name"
@@ -388,6 +387,9 @@ export default {
     }
   },
   computed: {
+    randomName() {
+      return `torus-${torus.instanceId}`
+    },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
     },
