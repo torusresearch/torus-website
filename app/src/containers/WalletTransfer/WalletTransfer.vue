@@ -110,6 +110,8 @@
                   required
                   :rules="[contactRule, rules.required]"
                   outlined
+                  :error="ensError !== ''"
+                  :error-messages="ensError"
                   item-text="name"
                   item-value="value"
                   return-object
@@ -361,6 +363,7 @@ export default {
       contactSelected: '',
       toAddress: '',
       formValid: false,
+      ensError: '',
       toggle_exclusive: 0,
       gas: 21000,
       activeGasPrice: '',
@@ -574,6 +577,7 @@ export default {
           this.selectedVerifier = ENS
         }
       }
+      this.ensError = ''
     },
     calculateGas(toAddress) {
       if (isAddress(toAddress)) {
@@ -650,17 +654,8 @@ export default {
       this.gas = await this.calculateGas(this.toAddress)
       this.updateTotalCost()
     },
-    async isENS(ens) {
-      log.info('is ENS', ens)
-      try {
-        const address = await torus.web3.eth.ens.getAddress(ens)
-        this.toEthAddress = isAddress(address) ? toChecksumAddress(address) : this.toEthAddress
-        log.info('ENS true')
-        return true
-      } catch (e) {
-        log.info('ENS false')
-        return false
-      }
+    getEnsAddress(ens) {
+      return torus.web3.eth.ens.getAddress(ens)
     },
     async onTransferClick() {
       if (this.$refs.form.validate()) {
@@ -668,8 +663,16 @@ export default {
         log.info(this.toAddress, this.selectedVerifier)
         if (isAddress(this.toAddress)) {
           toAddress = toChecksumAddress(this.toAddress)
-        } else if (this.selectedVerifier == 'ENS' && this.isENS(this.toAddress)) {
-          toAddress = this.toEthAddress
+        } else if (this.selectedVerifier == ENS) {
+          try {
+            const ethAddr = await this.getEnsAddress(this.toAddress)
+            log.info(ethAddr)
+            toAddress = ethAddr
+          } catch (error) {
+            log.error(error)
+            this.ensError = 'Invalid ENS address'
+            return
+          }
         } else {
           const endPointNumber = getRandomNumber(nodeDetails.torusNodeEndpoints.length)
           try {
