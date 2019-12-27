@@ -270,7 +270,6 @@ const {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   SEND_ETHER_ACTION_KEY,
   SUPPORTED_NETWORK_TYPES,
-  OLD_ERC721_LIST,
   TX_MESSAGE,
   TX_TYPED_MESSAGE,
   TX_PERSONAL_MESSAGE,
@@ -477,7 +476,7 @@ export default {
     },
     getCurrencyRate() {
       const ethConverted = this.getCurrencyMultiplier
-      const tokenPriceConverted = this.isOtherToken ? this.tokenPrice * ethConverted : ethConverted
+      const tokenPriceConverted = this.isOtherToken ? this.tokenPrice : ethConverted
       const selectedToken = this.isOtherToken ? this.selectedToken : 'ETH'
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
     }
@@ -618,14 +617,6 @@ export default {
         log.info(methodParams, 'params')
         const checkSummedTo = toChecksumAddress(to)
 
-        if (OLD_ERC721_LIST.includes(checkSummedTo.toLowerCase())) {
-          transactionCategory = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
-          contractParams.erc721 = true
-          contractParams.erc20 = false
-          contractParams.symbol = 'ERC721'
-          contractParams.decimals = 0
-        }
-
         const tokenObj = contractParams
         const decimals = tokenObj.decimals || 0
         this.selectedToken = tokenObj.symbol || 'ERC20'
@@ -637,18 +628,22 @@ export default {
         this.amountTo = amountTo ? amountTo.value : checkSummedTo
         this.amountValue = amountValue ? parseFloat(amountValue.value) / 10 ** parseFloat(decimals) : ''
         if (methodParams && contractParams.erc20) {
-          const pairs = checkSummedTo
-          const query = `contract_addresses=${pairs}&vs_currencies=eth`
-          let prices = {}
-          try {
-            prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
-          } catch (error) {
-            log.info(error)
+          const { tokenRates, selectedCurrency } = this.$store.state
+          let tokenRateMultiplier = tokenRates[checkSummedTo.toLowerCase()]
+          if (!tokenRateMultiplier) {
+            const pairs = checkSummedTo
+            const query = `contract_addresses=${pairs}&vs_currencies=eth`
+            let prices = {}
+            try {
+              prices = await get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?${query}`)
+              tokenRateMultiplier = //token price in eth
+                prices[checkSummedTo.toLowerCase()] && prices[checkSummedTo.toLowerCase()].eth ? prices[checkSummedTo.toLowerCase()].eth : 0
+            } catch (error) {
+              log.info(error)
+            }
           }
-          const tokenPrice = //token price in eth
-            prices[checkSummedTo.toLowerCase()] && prices[checkSummedTo.toLowerCase()].eth ? prices[checkSummedTo.toLowerCase()].eth : 0
-          this.tokenPrice = tokenPrice
-          this.amountTokenValueConverted = tokenPrice * parseFloat(this.amountValue) * this.getCurrencyMultiplier
+          this.tokenPrice = tokenRateMultiplier
+          this.amountTokenValueConverted = tokenRateMultiplier * parseFloat(this.amountValue) * this.getCurrencyMultiplier
         } else if (methodParams && contractParams.erc721) {
           log.info(methodParams, contractParams)
           this.isNonFungibleToken = true

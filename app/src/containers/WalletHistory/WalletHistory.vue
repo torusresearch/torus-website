@@ -157,7 +157,7 @@ export default {
         return `provider-${activity.from.toLowerCase()}.svg`
       } else if (activity.action === ACTIVITY_ACTION_SEND) {
         if (activity.type === CONTRACT_TYPE_ERC721) {
-          return `dapp-${activity.type_image_link}`
+          return activity.type_image_link // will be an opensea image url
         } else if (activity.type === CONTRACT_TYPE_ERC20) {
           return `logos/${activity.type_image_link}`
         } else {

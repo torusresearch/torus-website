@@ -8,9 +8,7 @@
       <v-flex xs4>
         <div class="icon-holder float-left">
           <img
-            v-if="
-              transaction.type === CONTRACT_TYPE_ERC721 || transaction.type === CONTRACT_TYPE_ERC20 || transaction.action === ACTIVITY_ACTION_TOPUP
-            "
+            v-if="transaction.type === CONTRACT_TYPE_ERC20 || transaction.action === ACTIVITY_ACTION_TOPUP"
             :src="require(`../../../../public/images/${transaction.actionIcon}`)"
             :alt="transaction.from"
             class="mr-2"

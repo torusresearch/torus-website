@@ -104,7 +104,7 @@
                   class="recipient-address"
                   ref="contactSelected"
                   v-model="contactSelected"
-                  @change="contactChanged"
+                  @input="contactChanged"
                   :items="contactList"
                   :placeholder="verifierPlaceholder"
                   required

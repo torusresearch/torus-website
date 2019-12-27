@@ -650,12 +650,10 @@ class TransactionController extends EventEmitter {
       contractParams = tokenObj
     } else if (OLD_ERC721_LIST.includes(checkSummedTo.toLowerCase())) {
       // For Cryptokitties
-      result = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
+      tokenMethodName = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
       contractParams.erc721 = true
       contractParams.erc20 = false
-      contractParams.symbol = 'CK'
-      contractParams.name = 'Cryptokitty'
-      contractParams.logo = 'cryptokitty.svg'
+      contractParams.symbol = 'ERC721'
       contractParams.decimals = 0
     } else if (decodedERC20) {
       // fallback to erc20
