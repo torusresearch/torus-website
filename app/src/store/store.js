@@ -2,11 +2,19 @@ import log from 'loglevel'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
+import { isArray } from 'util'
 import { fromWei, hexToUtf8, toBN, toChecksumAddress } from 'web3-utils'
 import config from '../config'
 import torus from '../torus'
 import { getEtherScanHashLink, storageAvailable } from '../utils/utils'
-import { TX_MESSAGE, TX_PERSONAL_MESSAGE, TX_TRANSACTION, TX_TYPED_MESSAGE } from '../utils/enums'
+import {
+  TX_MESSAGE,
+  TX_PERSONAL_MESSAGE,
+  TX_TRANSACTION,
+  TX_TYPED_MESSAGE,
+  TOKEN_METHOD_TRANSFER_FROM,
+  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
+} from '../utils/enums'
 import { post } from '../utils/httpHelpers.js'
 import { notifyUser } from '../utils/notifications'
 import state from './state'
@@ -231,11 +239,18 @@ VuexStore.subscribe((mutation, state) => {
 
         const txHash = txMeta.hash
         log.info(txMeta)
+        const { methodParams, transactionCategory } = txMeta
         const totalAmount = fromWei(toBN(txMeta.txParams.value).add(toBN(txMeta.txParams.gas).mul(toBN(txMeta.txParams.gasPrice))))
+        let amountTo
+        if (methodParams && isArray(methodParams)) {
+          if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
+            [, amountTo] = methodParams || []
+          else [amountTo] = methodParams || []
+        }
         const txObj = {
           created_at: new Date(txMeta.time),
           from: toChecksumAddress(txMeta.txParams.from),
-          to: toChecksumAddress(txMeta.txParams.to),
+          to: amountTo ? toChecksumAddress(amountTo.value) : toChecksumAddress(txMeta.txParams.to),
           total_amount: totalAmount,
           gas: txMeta.txParams.gas,
           gasPrice: txMeta.txParams.gasPrice,

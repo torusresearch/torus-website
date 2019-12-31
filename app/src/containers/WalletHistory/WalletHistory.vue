@@ -159,16 +159,14 @@ export default {
     getIcon(activity) {
       if (activity.action === ACTIVITY_ACTION_TOPUP) {
         return `provider-${activity.from.toLowerCase()}.svg`
-      } else if (activity.action === ACTIVITY_ACTION_SEND) {
+      } else if (activity.action === ACTIVITY_ACTION_SEND || activity.action === ACTIVITY_ACTION_RECEIVE) {
         if (activity.type === CONTRACT_TYPE_ERC721) {
           return activity.type_image_link // will be an opensea image url
         } else if (activity.type === CONTRACT_TYPE_ERC20) {
           return `logos/${activity.type_image_link}`
         } else {
-          return `$vuetify.icons.coins_${ACTIVITY_ACTION_SEND.toLowerCase()}`
+          return `$vuetify.icons.coins_${activity.action.toLowerCase()}`
         }
-      } else if (activity.action === ACTIVITY_ACTION_RECEIVE) {
-        return `$vuetify.icons.coins_${ACTIVITY_ACTION_RECEIVE.toLowerCase()}`
       }
     },
     formatDate(date) {
@@ -236,7 +234,6 @@ export default {
         }
         pastTx.push(finalObj)
       }
-      console.log('transactions', pastTx)
       this.pastTx = pastTx
     },
     calculateTransactions() {
