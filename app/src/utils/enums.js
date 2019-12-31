@@ -107,18 +107,28 @@ const FACEBOOK = 'facebook'
 const REDDIT = 'reddit'
 const DISCORD = 'discord'
 const TWITCH = 'twitch'
+const ENS = 'ENS'
 const ETH_LABEL = 'ETH Address'
 const GOOGLE_LABEL = 'Google Email'
 const FACEBOOK_LABEL = 'Facebook ID'
 const REDDIT_LABEL = 'Reddit Username'
 const DISCORD_LABEL = 'Discord ID'
 const TWITCH_LABEL = 'Twitch ID'
+const ENS_LABEL = 'ENS ID'
 
 // Format: [dark/light]-[colorName]
 const THEME_DARK_BLACK_NAME = 'dark-black'
 const THEME_LIGHT_BLUE_NAME = 'light-blue'
 
-const OLD_ERC721_LIST = ['0x06012c8cf97bead5deae237070f9587f8e7a266d']
+const OLD_ERC721_LIST = {
+  '0x06012c8cf97bead5deae237070f9587f8e7a266d': {
+    name: 'Cryptokitties',
+    logo: 'dapp-cryptokitty.svg',
+    erc20: true,
+    symbol: 'CK',
+    decimals: 0
+  }
+}
 
 const ALLOWED_VERIFIERS = [
   {
@@ -136,6 +146,10 @@ const ALLOWED_VERIFIERS = [
   {
     name: DISCORD_LABEL,
     value: DISCORD
+  },
+  {
+    name: ENS_LABEL,
+    value: ENS
   }
 ]
 
@@ -148,6 +162,7 @@ const PNG = 'png'
 const SVG = 'svg'
 
 module.exports = {
+  ENS,
   ETH,
   ROPSTEN,
   RINKEBY,

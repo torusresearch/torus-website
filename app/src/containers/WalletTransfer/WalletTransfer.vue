@@ -2,7 +2,7 @@
   <v-layout wrap class="wallet-transfer" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
     <div class="text-black font-weight-bold headline px-4 mb-4">{{ pageHeader }}</div>
     <v-flex xs12 mb-4>
-      <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation>
+      <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation aria-autocomplete="off" autocomplete="off">
         <v-layout wrap>
           <v-flex xs12 sm6 px-4 mb-5>
             <span class="subtitle-2">Select item</span>
@@ -97,32 +97,21 @@
               <v-flex xs12>
                 <span class="subtitle-2">Transfer Mode</span>
               </v-flex>
-              <v-flex xs12 sm6 class="recipient-verifier-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
-                <v-select
-                  id="recipient-verifier"
-                  outlined
-                  append-icon="$vuetify.icons.select"
-                  :items="verifierOptions"
-                  item-text="name"
-                  item-value="value"
-                  v-model="selectedVerifier"
-                  @blur="verifierChangedManual"
-                  aria-label="Recipient Selector"
-                ></v-select>
-              </v-flex>
-              <v-flex xs12 sm6 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
+              <v-flex xs12 sm6 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
                 <v-combobox
+                  :name="randomName"
                   id="recipient-address"
                   class="recipient-address"
                   ref="contactSelected"
                   v-model="contactSelected"
-                  @keyup="contactChanged"
-                  @change="contactChanged"
+                  @input="contactChanged"
                   :items="contactList"
                   :placeholder="verifierPlaceholder"
                   required
                   :rules="[contactRule, rules.required]"
                   outlined
+                  :error="ensError !== ''"
+                  :error-messages="ensError"
                   item-text="name"
                   item-value="value"
                   return-object
@@ -143,7 +132,21 @@
                   </div>
                 </div>
               </v-flex>
-              <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid" x12 mb-2>
+              <v-flex xs12 sm6 class="recipient-verifier-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
+                <v-select
+                  id="recipient-verifier"
+                  outlined
+                  append-icon="$vuetify.icons.select"
+                  :items="verifierOptions"
+                  item-text="name"
+                  item-value="value"
+                  :rules="[rules.required]"
+                  v-model="selectedVerifier"
+                  @blur="verifierChangedManual"
+                  aria-label="Recipient Selector"
+                ></v-select>
+              </v-flex>
+              <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" x12 mb-2>
                 <add-contact :contact="contactSelected" :verifier="selectedVerifier"></add-contact>
               </v-flex>
             </v-layout>
@@ -250,7 +253,7 @@
               large
               depressed
               color="primary"
-              :disabled="!formValid || speedSelected === ''"
+              :disabled="!formValid || speedSelected === '' || selectedVerifier === ''"
               class="px-6"
               id="wallet-transfer-submit"
               @click="onTransferClick"
@@ -318,6 +321,7 @@ import {
   REDDIT,
   DISCORD,
   ETH,
+  ENS,
   ETH_LABEL,
   GOOGLE_LABEL,
   REDDIT_LABEL,
@@ -359,6 +363,7 @@ export default {
       contactSelected: '',
       toAddress: '',
       formValid: false,
+      ensError: '',
       toggle_exclusive: 0,
       gas: 21000,
       activeGasPrice: '',
@@ -386,6 +391,9 @@ export default {
     }
   },
   computed: {
+    randomName() {
+      return `torus-${torus.instanceId}`
+    },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
     },
@@ -552,6 +560,7 @@ export default {
     },
     verifierChangedManual() {
       this.autoSelectVerifier = false
+      this.$refs.form.validate()
     },
     contactChanged(event) {
       const contact = event && event.target ? event.target.value : event
@@ -564,10 +573,13 @@ export default {
           this.selectedVerifier = ETH
         } else if (/@/.test(this.toAddress)) {
           this.selectedVerifier = GOOGLE
+        } else if (/.eth$/.test(this.toAddress) || /.xyz$/.test(this.toAddress) || /.crypto$/.test(this.toAddress)) {
+          this.selectedVerifier = ENS
         }
       }
+      this.ensError = ''
     },
-    async calculateGas(toAddress) {
+    calculateGas(toAddress) {
       if (isAddress(toAddress)) {
         return new Promise((resolve, reject) => {
           if (this.contractType === CONTRACT_TYPE_ETH) {
@@ -606,12 +618,12 @@ export default {
           }
         })
       } else {
-        return 21000
+        return Promise.resolve(21000)
       }
     },
     getTransferMethod(contractType, selectedAddress, toAddress, value) {
       // For support of older ERC721
-      if (OLD_ERC721_LIST.includes(this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
+      if (OLD_ERC721_LIST.hasOwnProperty(this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
         const contractInstance = new torus.web3.eth.Contract(erc20TransferABI, this.selectedTokenAddress)
         return contractInstance.methods.transfer(toAddress, value)
       } else if (contractType === CONTRACT_TYPE_ERC721) {
@@ -642,12 +654,25 @@ export default {
       this.gas = await this.calculateGas(this.toAddress)
       this.updateTotalCost()
     },
+    getEnsAddress(ens) {
+      return torus.web3.eth.ens.getAddress(ens)
+    },
     async onTransferClick() {
       if (this.$refs.form.validate()) {
         let toAddress
         log.info(this.toAddress, this.selectedVerifier)
         if (isAddress(this.toAddress)) {
           toAddress = toChecksumAddress(this.toAddress)
+        } else if (this.selectedVerifier == ENS) {
+          try {
+            const ethAddr = await this.getEnsAddress(this.toAddress)
+            log.info(ethAddr)
+            toAddress = ethAddr
+          } catch (error) {
+            log.error(error)
+            this.ensError = 'Invalid ENS address'
+            return
+          }
         } else {
           const endPointNumber = getRandomNumber(nodeDetails.torusNodeEndpoints.length)
           try {
@@ -707,19 +732,27 @@ export default {
       const fastGasPrice = toBN((this.activeGasPrice * 10 ** 9).toString())
       const selectedAddress = this.$store.state.selectedAddress
       if (this.contractType === CONTRACT_TYPE_ETH) {
+        const requiredGas = Math.trunc(
+          (await torus.web3.eth.estimateGas({
+            to: toAddress,
+            data: ''
+          })) * 1.1
+        )
+
         log.info('TX SENT: ', {
           from: selectedAddress,
           to: toAddress,
           value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
-          gas: this.gas === 0 ? undefined : this.gas.toString(),
+          gas: requiredGas,
           gasPrice: fastGasPrice
         })
+
         torus.web3.eth.sendTransaction(
           {
             from: selectedAddress,
             to: toAddress,
             value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
-            gas: this.gas === 0 ? undefined : this.gas.toString(),
+            gas: requiredGas,
             gasPrice: fastGasPrice
           },
           (err, transactionHash) => {

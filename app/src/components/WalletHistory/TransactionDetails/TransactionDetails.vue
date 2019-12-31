@@ -6,15 +6,26 @@
         <div class="info font-weight-light">{{ transaction.timeFormatted }}</div>
       </v-flex>
       <v-flex xs4>
-        <v-icon large color="primary" class="float-left mr-2">{{ transaction.actionIcon }}</v-icon>
+        <div class="icon-holder float-left">
+          <img
+            v-if="transaction.type === CONTRACT_TYPE_ERC20 || transaction.action === ACTIVITY_ACTION_TOPUP"
+            :src="require(`../../../../public/images/${transaction.actionIcon}`)"
+            :alt="transaction.from"
+            class="mr-2"
+            height="36"
+          />
+          <v-icon v-else large color="primary" class="float-left mx-3">
+            {{ transaction.actionIcon }}
+          </v-icon>
+        </div>
         <div class="caption font-weight-medium">
-          {{ transaction.actionText }}{{ transaction.action === ACTIVITY_ACTION_TOPUP ? ` - ${transaction.from}` : '' }}
+          {{ transaction.actionText }}
         </div>
         <div class="info font-weight-light">to {{ transaction.slicedTo }}</div>
       </v-flex>
       <v-flex class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'xs4' : 'xs2'">
         <div class="caption font-weight-medium">
-          <span v-if="transaction.action === ACTIVITY_ACTION_SEND" class="error--text">-</span>
+          <span v-if="transaction.type !== CONTRACT_TYPE_ERC721 && transaction.action === ACTIVITY_ACTION_SEND" class="error--text">-</span>
           {{ transaction.totalAmountString }}
         </div>
         <div class="info font-weight-light">{{ transaction.currencyAmountString }}</div>
@@ -77,7 +88,9 @@ const {
   ACTIVITY_STATUS_SUCCESSFUL,
   ACTIVITY_STATUS_UNSUCCESSFUL,
   ACTIVITY_STATUS_PENDING,
-  ACTIVITY_ACTION_TOPUP
+  ACTIVITY_ACTION_TOPUP,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721
 } = require('../../../utils/enums')
 
 import NetworkDisplay from '../../helpers/NetworkDisplay'
@@ -94,7 +107,9 @@ export default {
       ACTIVITY_STATUS_SUCCESSFUL,
       ACTIVITY_STATUS_UNSUCCESSFUL,
       ACTIVITY_STATUS_PENDING,
-      ACTIVITY_ACTION_TOPUP
+      ACTIVITY_ACTION_TOPUP,
+      CONTRACT_TYPE_ERC20,
+      CONTRACT_TYPE_ERC721
     }
   },
   methods: {

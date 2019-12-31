@@ -13,6 +13,7 @@ const tokenABIDecoder = new AbiDecoder(tokenAbi)
 const collectibleABIDecoder = new AbiDecoder(collectibleAbi)
 const { toChecksumAddress } = require('web3-utils')
 const erc20Contracts = require('eth-contract-metadata')
+const erc721Contracts = require('../assets/assets-map.json')
 
 const TransactionStateManager = require('./TransactionStateManager').default
 const TxGasUtil = require('../utils/TxGasUtil').default
@@ -29,6 +30,7 @@ const {
   TOKEN_METHOD_APPROVE,
   TOKEN_METHOD_TRANSFER,
   TOKEN_METHOD_TRANSFER_FROM,
+  OLD_ERC721_LIST,
   SEND_ETHER_ACTION_KEY,
   DEPLOY_CONTRACT_ACTION_KEY,
   CONTRACT_INTERACTION_KEY,
@@ -189,6 +191,7 @@ class TransactionController extends EventEmitter {
 
   async addUnapprovedTransaction(txParams) {
     // validate
+    log.debug(`MetaMaskController addUnapprovedTransaction ${JSON.stringify(txParams)}`)
     const normalizedTxParams = txUtils.normalizeTxParams(txParams)
     // Assert the from address is the selected address
     if (normalizedTxParams.from !== this.getSelectedAddress()) {
@@ -206,6 +209,7 @@ class TransactionController extends EventEmitter {
       txParams: normalizedTxParams,
       type: TRANSACTION_TYPE_STANDARD
     })
+
     const { transactionCategory, getCodeResponse, methodParams, contractParams } = await this._determineTransactionCategory(txParams)
     txMeta.transactionCategory = transactionCategory
     txMeta.methodParams = methodParams
@@ -629,6 +633,10 @@ class TransactionController extends EventEmitter {
     const checkSummedTo = toChecksumAddress(to)
     const decodedERC721 = data && collectibleABIDecoder.decodeMethod(data)
     const decodedERC20 = data && tokenABIDecoder.decodeMethod(data)
+    log.debug('_determineTransactionCategory', decodedERC20, decodedERC721)
+
+    let result
+    let code
     let tokenMethodName = ''
     let methodParams = {}
     let contractParams = {}
@@ -641,6 +649,10 @@ class TransactionController extends EventEmitter {
       )
       methodParams = params
       contractParams = tokenObj
+    } else if (OLD_ERC721_LIST.hasOwnProperty(checkSummedTo.toLowerCase())) {
+      // For Cryptokitties
+      tokenMethodName = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
+      contractParams = OLD_ERC721_LIST[checkSummedTo.toLowerCase()]
     } else if (decodedERC20) {
       // fallback to erc20
       const { name = '', params } = decodedERC20
@@ -656,34 +668,30 @@ class TransactionController extends EventEmitter {
       // transferFrom & approve of ERC721 can't be distinguished from ERC20
       tokenMethodName = [COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM].find(tokenMethodName => tokenMethodName.toLowerCase() === name.toLowerCase())
       methodParams = params
-      contractParams = tokenObj
-      contractParams.erc721 = true
-      contractParams.symbol = 'ERC721'
+      contractParams = erc721Contracts[checkSummedTo.toLowerCase()]
       contractParams.decimals = 0
     }
 
     // log.info(data, decodedERC20, decodedERC721, tokenMethodName, contractParams, methodParams)
 
-    let result
-    let code
-
-    if (txParams.data && tokenMethodName) {
-      result = tokenMethodName
-    } else if (txParams.data && !to) {
-      result = DEPLOY_CONTRACT_ACTION_KEY
-    }
     if (!result) {
-      try {
-        code = await this.query.getCode(to)
-      } catch (e) {
-        code = null
-        log.warn(e)
+      if (txParams.data && tokenMethodName) {
+        result = tokenMethodName
+      } else if (txParams.data && !to) {
+        result = DEPLOY_CONTRACT_ACTION_KEY
       }
-      const codeIsEmpty = !code || code === '0x' || code === '0x0'
+      if (!result) {
+        try {
+          code = await this.query.getCode(to)
+        } catch (e) {
+          code = null
+          log.warn(e)
+        }
+        const codeIsEmpty = !code || code === '0x' || code === '0x0'
 
-      result = codeIsEmpty ? SEND_ETHER_ACTION_KEY : CONTRACT_INTERACTION_KEY
+        result = codeIsEmpty ? SEND_ETHER_ACTION_KEY : CONTRACT_INTERACTION_KEY
+      }
     }
-
     return { transactionCategory: result, getCodeResponse: code, methodParams: methodParams, contractParams: contractParams }
   }
 
