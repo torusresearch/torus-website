@@ -202,7 +202,6 @@ export default {
         let status = x.status
         if (
           x.status !== 'confirmed' &&
-          x.status !== 'rejected' &&
           (publicAddress.toLowerCase() === x.from.toLowerCase() || publicAddress.toLowerCase() === x.to.toLowerCase())
         ) {
           status = await getEthTxStatus(x.transaction_hash, torus.web3)
@@ -234,6 +233,7 @@ export default {
         }
         pastTx.push(finalObj)
       }
+      console.log(pastTx)
       this.pastTx = pastTx
     },
     calculateTransactions() {
