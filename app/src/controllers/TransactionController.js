@@ -13,6 +13,7 @@ const tokenABIDecoder = new AbiDecoder(tokenAbi)
 const collectibleABIDecoder = new AbiDecoder(collectibleAbi)
 const { toChecksumAddress } = require('web3-utils')
 const erc20Contracts = require('eth-contract-metadata')
+const erc721Contracts = require('../assets/assets-map.json')
 
 const TransactionStateManager = require('./TransactionStateManager').default
 const TxGasUtil = require('../utils/TxGasUtil').default
@@ -648,13 +649,10 @@ class TransactionController extends EventEmitter {
       )
       methodParams = params
       contractParams = tokenObj
-    } else if (OLD_ERC721_LIST.includes(checkSummedTo.toLowerCase())) {
+    } else if (OLD_ERC721_LIST.hasOwnProperty(checkSummedTo.toLowerCase())) {
       // For Cryptokitties
       tokenMethodName = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
-      contractParams.erc721 = true
-      contractParams.erc20 = false
-      contractParams.symbol = 'ERC721'
-      contractParams.decimals = 0
+      contractParams = OLD_ERC721_LIST[checkSummedTo.toLowerCase()]
     } else if (decodedERC20) {
       // fallback to erc20
       const { name = '', params } = decodedERC20
@@ -670,9 +668,7 @@ class TransactionController extends EventEmitter {
       // transferFrom & approve of ERC721 can't be distinguished from ERC20
       tokenMethodName = [COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM].find(tokenMethodName => tokenMethodName.toLowerCase() === name.toLowerCase())
       methodParams = params
-      contractParams = tokenObj
-      contractParams.erc721 = true
-      contractParams.symbol = 'ERC721'
+      contractParams = erc721Contracts[checkSummedTo.toLowerCase()]
       contractParams.decimals = 0
     }
 

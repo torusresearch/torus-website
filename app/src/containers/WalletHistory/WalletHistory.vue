@@ -148,8 +148,12 @@ export default {
     },
     getActionText(activity) {
       // Handling tx from common-api schema and /tx schema separately.
-      return activity.type_name || activity.type
-        ? `${activity.action === ACTIVITY_ACTION_SEND ? 'Sent' : 'Received'} ${activity.type_name || activity.type.toUpperCase()}`
+      return activity.type_name === 'n/a' || activity.type === 'n/a'
+        ? `${activity.action === ACTIVITY_ACTION_SEND ? 'Sent' : 'Received'} ${
+            activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
+          }`
+        : activity.type_name || activity.type
+        ? `${activity.action === ACTIVITY_ACTION_SEND ? 'Sent' : 'Received'} ${activity.type_name}`
         : `${activity.action + ' ' + activity.from} `
     },
     getIcon(activity) {
@@ -163,6 +167,8 @@ export default {
         } else {
           return `$vuetify.icons.coins_${ACTIVITY_ACTION_SEND.toLowerCase()}`
         }
+      } else if (activity.action === ACTIVITY_ACTION_RECEIVE) {
+        return `$vuetify.icons.coins_${ACTIVITY_ACTION_RECEIVE.toLowerCase()}`
       }
     },
     formatDate(date) {
