@@ -835,6 +835,7 @@ export default {
     })
   },
   storeUserLogin({ state }, payload) {
+    const { verifier, verifierId } = state.userInfo
     let userOrigin = ''
     if (payload && payload.calledFromEmbed) {
       userOrigin = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
@@ -843,7 +844,9 @@ export default {
       post(
         `${config.api}/user/recordLogin`,
         {
-          hostname: userOrigin
+          hostname: userOrigin,
+          verifier,
+          verifierId
         },
         {
           headers: {
