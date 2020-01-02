@@ -938,6 +938,11 @@ export default {
       this.toAddress = ''
     }
 
+    // patch fix because vuetify stopped passing attributes to underlying component
+    if (this.$refs.contactSelected && this.$refs.contactSelected.$refs && this.$refs.contactSelected.$refs.input) {
+      this.$refs.contactSelected.$refs.input.name = this.randomName
+    }
+
     this.contactSelected = this.toAddress
 
     const collectiblesUnwatch = this.$watch('collectibles', function(newValue, oldValue) {
