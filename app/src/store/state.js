@@ -1,4 +1,4 @@
-import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, USER_INFO_REQUEST_NEW, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { ROPSTEN, ROPSTEN_DISPLAY_NAME, ROPSTEN_CODE, USER_INFO_REQUEST_NEW, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -17,7 +17,7 @@ const initialState = {
   selectedAddress: '',
   selectedCurrency: 'USD',
   networkId: 0,
-  networkType: { host: MAINNET, chainId: MAINNET_CODE, networkName: MAINNET_DISPLAY_NAME },
+  networkType: { host: ROPSTEN, chainId: ROPSTEN_CODE, networkName: ROPSTEN_DISPLAY_NAME },
   currencyData: {},
   tokenData: {}, // Account specific object
   tokenRates: {},

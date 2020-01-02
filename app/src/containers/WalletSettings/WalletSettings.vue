@@ -2,6 +2,10 @@
   <v-layout mt-3 wrap class="wallet-settings">
     <div class="text-black font-weight-bold headline px-4 mb-4">Settings</div>
     <v-flex xs12 px-4>
+      <v-text-field label="Enter subdomain name" v-model="ensName"></v-text-field>
+      <v-btn @click="createWallet()">
+        Create smart contract wallet
+      </v-btn>
       <v-expansion-panels v-model="panel" multiple>
         <!-- Privacy and security settings -->
         <v-expansion-panel class="my-2 card-shadow">
@@ -79,6 +83,9 @@ import PrivacySecurity from '../../components/WalletSettings/PrivacySecurity'
 import ContactList from '../../components/WalletSettings/ContactList'
 import Network from '../../components/WalletSettings/Network'
 import Display from '../../components/WalletSettings/Display'
+import { post, get } from '../../utils/httpHelpers.js'
+import config, { nodeDetails } from '../../config'
+
 import log from 'loglevel'
 
 export default {
@@ -91,7 +98,18 @@ export default {
   },
   data() {
     return {
-      panel: [0, 1, 2, 3]
+      panel: [0, 1, 2, 3],
+      ensName: ''
+    }
+  },
+  methods: {
+    async createWallet() {
+      const reqObj = {
+        ens: this.ensName,
+        owner: this.$store.state.selectedAddress
+      }
+      const response = await post(`${config.relayer}/createWallet`, reqObj)
+      console.log(response)
     }
   }
 }

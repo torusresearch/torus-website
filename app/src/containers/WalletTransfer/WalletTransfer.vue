@@ -736,7 +736,7 @@ export default {
           (await torus.web3.eth.estimateGas({
             to: toAddress,
             data: ''
-          })) * 1.1
+          })) * 1.2
         )
 
         log.info('TX SENT: ', {

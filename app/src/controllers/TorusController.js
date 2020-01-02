@@ -311,8 +311,9 @@ export default class TorusController extends EventEmitter {
 
   initTorusKeyring(keyArray, addresses) {
     return new Promise((resolve, reject) => {
+      const finalKeyArray = keyArray.filter(x => x)
       this.keyringController
-        .deserialize(keyArray)
+        .deserialize(finalKeyArray)
         .then(resp => {
           log.info('keyring deserialized')
           resolve()
@@ -329,7 +330,7 @@ export default class TorusController extends EventEmitter {
   }
 
   async addAccount(key, address) {
-    await this.keyringController.addAccount(key)
+    key && (await this.keyringController.addAccount(key))
     this.accountTracker.addAccounts([address])
   }
 

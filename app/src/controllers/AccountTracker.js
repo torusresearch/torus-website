@@ -181,6 +181,7 @@ export default class AccountTracker {
   async _updateAccounts() {
     const accounts = this.store.getState().accounts
     const addresses = Object.keys(accounts)
+    log.info(addresses)
     const currentNetwork = parseInt(this.network.getNetworkState())
     if (addresses.length > 0) {
       switch (currentNetwork) {
@@ -218,6 +219,7 @@ export default class AccountTracker {
     // query balance
     const balance = await this._query.getBalance(address)
     const result = { address, balance }
+    log.info('fallback', result)
     // update accounts state
     const { accounts } = this.store.getState()
     // only populate if the entry is still present

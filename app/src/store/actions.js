@@ -901,14 +901,18 @@ export default {
             Authorization: `Bearer ${token}`
           }
         })
-          .then(user => {
+          .then(async user => {
             if (user.data) {
-              const { transactions, contacts, default_currency, theme } = user.data || {}
+              const { transactions, contacts, default_currency, theme, scw } = user.data || {}
               commit('setPastTransactions', transactions)
               commit('setContacts', contacts)
               dispatch('setTheme', theme)
               dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
               dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
+              if (scw[0]) {
+                dispatch('addWallet', { ethAddress: scw[0].proxy_contract_address, privKey: null })
+                await torus.torusController.addAccount(null, scw[0].proxy_contract_address)
+              }
               resolve()
             }
           })
@@ -956,7 +960,7 @@ export default {
       }
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
       else await dispatch('setProviderType', { network: networkType, type: RPC })
-      if (selectedAddress && wallet[selectedAddress]) {
+      if (selectedAddress) {
         setTimeout(() => dispatch('subscribeToControllers'), 50)
         await Promise.all([
           torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet)),

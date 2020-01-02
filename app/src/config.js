@@ -50,6 +50,7 @@ export default {
   REDDIT_CLIENT_ID: 'dcQJYPaG481XyQ',
   DISCORD_CLIENT_ID: '630308572013527060',
   redirect_uri: redirect_uri,
-  // api: 'http://localhost:2020'
-  api: 'https://api.tor.us'
+  api: 'http://localhost:2020',
+  // api: 'https://api.tor.us',
+  relayer: 'http://localhost:2090'
 }
