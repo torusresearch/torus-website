@@ -10,7 +10,7 @@ import { languages } from './i18n'
 
 let userLanguage = window.navigator.userLanguage || window.navigator.language
 userLanguage = userLanguage.split('-')
-userLanguage = userLanguage[0]
+userLanguage = Object.prototype.hasOwnProperty.call(languages, userLanguage[0]) ? userLanguage[0] : 'en'
 
 export default new Vuetify({
   theme: {
