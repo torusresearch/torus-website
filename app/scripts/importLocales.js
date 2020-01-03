@@ -1,6 +1,7 @@
 const https = require('https')
-var fs = require('fs')
-var log = require('loglevel')
+const fs = require('fs')
+const path = require('path')
+const log = require('loglevel')
 
 const localeUrl = 'https://api.tor.us/locales'
 // const localeUrl = 'http://localhost:2020'
@@ -8,10 +9,16 @@ const localeUrl = 'https://api.tor.us/locales'
 getLocale()
   .then(result => {
     const locales = result.data
+    const folder = './src/plugins/i18n/'
+    const folderPath = path.resolve(folder)
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath)
+    }
     // Create json files
     for (var localeKey in locales) {
       if (Object.prototype.hasOwnProperty.call(locales, localeKey)) {
-        fs.writeFile(`src/plugins/i18n/${localeKey}.json`, JSON.stringify(locales[localeKey], null, 2), function(err) {
+        const filePath = path.resolve(`${folder}${localeKey}.json`)
+        fs.writeFile(filePath, JSON.stringify(locales[localeKey], null, 2), { flag: 'w' }, function(err) {
           if (err) throw err
         })
       }
