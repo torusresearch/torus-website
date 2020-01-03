@@ -2,7 +2,7 @@
   <div class="wallet-home">
     <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
       <v-flex xs4 sm3 pl-4>
-        <div class="font-weight-bold headline float-left">{{ pageHeader }}</div>
+        <div class="font-weight-bold headline float-left">{{ $vuetify.lang.t('$vuetify.walletHome.walletHome') }}</div>
       </v-flex>
       <v-flex xs8 sm9 px-4 class="text-right hidden-xs-only">
         <v-btn outlined large color="primary" class="transfer-btn px-12 py-1 mr-4" @click="initiateTransfer">
@@ -194,7 +194,7 @@ import ExportQrCode from '../../../components/helpers/ExportQrCode'
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import LearnMore from '../../../components/WalletHome/LearnMore'
-import { MAINNET, WALLET_HEADERS_HOME } from '../../../utils/enums'
+import { MAINNET } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
 
 export default {
@@ -202,7 +202,6 @@ export default {
   components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore, ComponentLoader },
   data() {
     return {
-      pageHeader: WALLET_HEADERS_HOME,
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
       selected: [],
       search: '',

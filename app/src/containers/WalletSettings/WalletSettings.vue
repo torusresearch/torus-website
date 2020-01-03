@@ -1,6 +1,6 @@
 <template>
   <v-layout mt-3 wrap class="wallet-settings">
-    <div class="text-black font-weight-bold headline px-4 mb-4">Settings</div>
+    <div class="text-black font-weight-bold headline px-4 mb-4">{{ $vuetify.lang.t('$vuetify.walletSettings.settings') }}</div>
     <v-flex xs12 px-4>
       <v-expansion-panels v-model="panel" multiple>
         <!-- Privacy and security settings -->

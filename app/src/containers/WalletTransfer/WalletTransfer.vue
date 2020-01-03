@@ -1,6 +1,6 @@
 <template>
   <v-layout wrap class="wallet-transfer" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
-    <div class="text-black font-weight-bold headline px-4 mb-4">{{ pageHeader }}</div>
+    <div class="text-black font-weight-bold headline px-4 mb-4">{{ $vuetify.lang.t('$vuetify.walletTransfer.transferDetails') }}</div>
     <v-flex xs12 mb-4>
       <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation aria-autocomplete="off" autocomplete="off">
         <v-layout wrap>
@@ -316,7 +316,6 @@ import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
 import {
-  WALLET_HEADERS_TRANSFER,
   GOOGLE,
   REDDIT,
   DISCORD,
@@ -350,7 +349,6 @@ export default {
   },
   data() {
     return {
-      pageHeader: WALLET_HEADERS_TRANSFER,
       contractType: CONTRACT_TYPE_ETH,
       isContract: false,
       collectibleSelected: {},

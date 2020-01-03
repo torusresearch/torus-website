@@ -2,11 +2,10 @@
   <v-flex xs12 sm6 mb-3>
     <div class="subtitle-2 mb-1 px-4">
       <span>
-        Select your Transaction Speed
+        {{ $vuetify.lang.t('$vuetify.walletTransfer.selectSpeed') }}
         <HelpTooltip
-          title="Transaction Fee"
-          description="This is a mandatory processing fee users pay to the Ethereum network for each transaction.
-          A higher fee will speed up the transaction process."
+          :title="$vuetify.lang.t('$vuetify.walletTransfer.transferFee')"
+          :description="$vuetify.lang.t('$vuetify.walletTransfer.transferFeeDesc')"
         />
       </span>
       <TransferAdvanceOption

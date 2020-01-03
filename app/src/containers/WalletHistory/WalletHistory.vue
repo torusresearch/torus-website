@@ -2,7 +2,7 @@
   <div class="wallet-activity">
     <v-layout mt-3 wrap>
       <v-flex xs12 px-4 mb-4>
-        <div class="text-black font-weight-bold headline float-left">{{ pageHeader }}</div>
+        <div class="text-black font-weight-bold headline float-left">{{ $vuetify.lang.t('$vuetify.walletActivity.transactionActivities') }}</div>
         <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
           <v-select
             id="transaction-selector"
@@ -52,7 +52,6 @@ import torus from '../../torus'
 import { patch } from '../../utils/httpHelpers'
 import {
   WYRE,
-  WALLET_HEADERS_ACTIVITY,
   ACTIVITY_ACTION_ALL,
   ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_RECEIVE,
@@ -74,7 +73,6 @@ export default {
   components: { TxHistoryTable },
   data() {
     return {
-      pageHeader: WALLET_HEADERS_ACTIVITY,
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
       pastOrders: [],
       actionTypes: [ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_TOPUP],
