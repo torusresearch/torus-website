@@ -2,12 +2,8 @@
   <v-flex xs12 sm6 mb-3>
     <div class="subtitle-2 mb-1 px-4">
       <span>
-        Select your Transaction Speed
-        <HelpTooltip
-          title="Transaction Fee"
-          description="This is a mandatory processing fee users pay to the Ethereum network for each transaction.
-          A higher fee will speed up the transaction process."
-        />
+        {{ t('walletTransfer.selectSpeed') }}
+        <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" />
       </span>
       <TransferAdvanceOption
         v-if="!$vuetify.breakpoint.xsOnly"

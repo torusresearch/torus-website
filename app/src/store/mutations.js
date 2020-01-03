@@ -66,6 +66,9 @@ export default {
   setTheme(state, payload) {
     state.theme = payload
   },
+  setLocale(state, payload) {
+    state.locale = payload
+  },
   setAssets(state, payload) {
     state.assets = { ...state.assets, ...payload }
   },

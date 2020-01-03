@@ -2,7 +2,7 @@
   <div class="contact-list-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'py-0 px-12'">
     <v-layout wrap>
       <v-flex xs12 md6 px-1 mb-1>
-        <div class="body-2">List of Contacts</div>
+        <div class="body-2">{{ t('walletSettings.listContacts') }}</div>
         <v-card class="card-shadow mt-2">
           <v-list dense flat class="pa-0 contact-list">
             <template v-for="contact in contacts">
@@ -26,7 +26,7 @@
           </v-list>
         </v-card>
 
-        <div class="body-2 mt-4">Add new contact</div>
+        <div class="body-2 mt-4">{{ t('walletSettings.addNewContact') }}</div>
 
         <v-form ref="addContactForm" v-model="contactFormValid" @submit="addContact" lazy-validation>
           <v-layout wrap class="mt-2">
@@ -76,7 +76,7 @@
               </v-flex>
               <v-flex xs12 sm4 :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-2'">
                 <v-btn id="contact-submit-btn" block type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">
-                  Add Contact
+                  {{ t('walletSettings.addContact') }}
                 </v-btn>
               </v-flex>
               <v-flex xs12 v-if="$vuetify.breakpoint.xsOnly" class="mt-2">

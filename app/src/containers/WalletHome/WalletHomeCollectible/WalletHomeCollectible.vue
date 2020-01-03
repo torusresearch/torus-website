@@ -109,13 +109,13 @@ export default {
     return {
       breadcrumb: [
         {
-          text: 'Home',
+          text: this.t('walletHome.home'),
           disabled: false,
           exact: true,
           to: '/wallet/home'
         },
         {
-          text: 'Collectibles',
+          text: this.t('walletHome.collectibles'),
           disabled: false,
           exact: true,
           to: '/wallet/home#collectibles'

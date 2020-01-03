@@ -1,4 +1,4 @@
-import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, USER_INFO_REQUEST_NEW, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, USER_INFO_REQUEST_NEW, THEME_LIGHT_BLUE_NAME, LOCALE_EN } from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -30,6 +30,7 @@ const initialState = {
   pastTransactions: [],
   isNewUser: false,
   theme: THEME_LIGHT_BLUE_NAME,
+  locale: LOCALE_EN,
   assets: {}, // Account specific object
   billboard: [],
   contacts: []
