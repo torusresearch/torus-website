@@ -52,44 +52,7 @@ export default {
       itemsPerPage: 8,
       expanded: [],
       pagination: {},
-      defaultSort: 'date',
-      headers: [
-        {
-          text: this.$vuetify.lang.t('$vuetify.walletActivity.headerTransaction'),
-          value: 'action',
-          align: 'left',
-          width: '120px'
-        },
-        {
-          text: this.$vuetify.lang.t('$vuetify.walletActivity.headerFrom'),
-          value: 'from',
-          align: 'left',
-          class: 'address-col'
-        },
-        {
-          text: this.$vuetify.lang.t('$vuetify.walletActivity.headerTo'),
-          value: 'to',
-          align: 'left',
-          class: 'address-col'
-        },
-        {
-          text: this.$vuetify.lang.t('$vuetify.walletActivity.headerAmount'),
-          value: 'amount',
-          align: 'right',
-          width: '200px'
-        },
-        {
-          text: this.$vuetify.lang.t('$vuetify.walletActivity.headerDate'),
-          value: 'date',
-          align: 'right',
-          width: '80px'
-        },
-        {
-          text: this.$vuetify.lang.t('$vuetify.walletActivity.headerStatus'),
-          value: 'status',
-          align: 'center'
-        }
-      ]
+      defaultSort: 'date'
     }
   },
   computed: {
@@ -124,13 +87,13 @@ export default {
           let minDate
           let itemDate = new Date(item.date)
           if (this.selectedPeriod === ACTIVITY_PERIOD_WEEK_ONE) {
-            minDate = this.oneWeekAgoDate()
+            minDate = this.oneWeekAgoDate
           } else if (this.selectedPeriod === ACTIVITY_PERIOD_MONTH_ONE) {
-            minDate = this.oneMonthAgoDate()
+            minDate = this.oneMonthAgoDate
           } else {
-            minDate = this.sixMonthAgoDate()
+            minDate = this.sixMonthAgoDate
           }
-          isScoped = minDate.getTime() <= itemDate.getTime()
+          isScoped = minDate <= itemDate.getTime()
         }
         if (item.action) {
           return item.action.match(regExAction) && isScoped

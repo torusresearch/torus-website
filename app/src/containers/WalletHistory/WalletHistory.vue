@@ -2,7 +2,7 @@
   <div class="wallet-activity">
     <v-layout mt-3 wrap>
       <v-flex xs12 px-4 mb-4>
-        <div class="text-black font-weight-bold headline float-left">{{ $vuetify.lang.t('$vuetify.walletActivity.transactionActivities') }}</div>
+        <div class="text-black font-weight-bold headline float-left">{{ t('walletActivity.transactionActivities') }}</div>
         <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
           <v-select
             id="transaction-selector"
@@ -29,12 +29,7 @@
         </div>
       </v-flex>
       <v-flex xs12 px-4 mb-4>
-        <tx-history-table
-          :headers="headers"
-          :selectedAction="selectedAction"
-          :selectedPeriod="selectedPeriod"
-          :transactions="calculateFinalTransactions()"
-        />
+        <tx-history-table :selectedAction="selectedAction" :selectedPeriod="selectedPeriod" :transactions="calculateFinalTransactions()" />
       </v-flex>
     </v-layout>
   </div>

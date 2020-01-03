@@ -51,10 +51,10 @@
       </v-tooltip>
 
       <div class="mt-4 py-4 px-1 text-gray caption">
-        <div>{{ $vuetify.lang.t('$vuetify.walletTopUp.otherMode') }}</div>
+        <div>{{ t('walletTopUp.otherMode') }}</div>
         <div>
-          <a href="mailto:hello@tor.us?Subject=Add%20Payment%20Method" target="_blank">{{ $vuetify.lang.t('$vuetify.walletTopUp.writeToUs') }}</a>
-          {{ $vuetify.lang.t('$vuetify.walletTopUp.otherModeDesc') }}
+          <a href="mailto:hello@tor.us?Subject=Add%20Payment%20Method" target="_blank">{{ t('walletTopUp.writeToUs') }}</a>
+          {{ t('walletTopUp.otherModeDesc') }}
         </div>
       </div>
     </template>

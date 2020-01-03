@@ -4,10 +4,10 @@
       <v-flex xs12 mb-2>
         <div class="text-black font-weight-bold headline px-4 mb-4">
           <span v-if="selectedProvider && !$vuetify.breakpoint.xsOnly">
-            {{ $vuetify.lang.t('$vuetify.walletTopUp.purchaseVia') }}
+            {{ t('walletTopUp.purchaseVia') }}
             <span class="text-capitalize">{{ selectedProvider }}</span>
           </span>
-          <span v-else>{{ $vuetify.lang.t('$vuetify.walletTopUp.selectProvider') }}</span>
+          <span v-else>{{ t('walletTopUp.selectProvider') }}</span>
         </div>
       </v-flex>
       <TopupProviders
@@ -23,7 +23,7 @@
       <v-flex xs12 mb-2 v-if="selectedProvider && $vuetify.breakpoint.xsOnly">
         <div class="text-black font-weight-bold headline px-4 mb-4">
           <span>
-            {{ $vuetify.lang.t('$vuetify.walletTopUp.purchaseVia') }}
+            {{ t('walletTopUp.purchaseVia') }}
             <span class="text-capitalize">{{ selectedProvider }}</span>
           </span>
         </div>

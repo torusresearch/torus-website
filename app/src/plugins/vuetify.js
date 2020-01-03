@@ -6,9 +6,9 @@ import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 
 Vue.use(Vuetify)
 
-import { languages } from './i18n'
+import languages from './locales'
 
-let userLanguage = window.navigator.userLanguage || window.navigator.language
+let userLanguage = window.navigator.userLanguage || window.navigator.language || 'en-US'
 userLanguage = userLanguage.split('-')
 userLanguage = Object.prototype.hasOwnProperty.call(languages, userLanguage[0]) ? userLanguage[0] : 'en'
 

@@ -11,7 +11,7 @@
               <div class="torus-account--name mr-1" id="account-name">
                 <span>{{ userName }}</span>
               </div>
-              <div>{{ $vuetify.lang.t('$vuetify.accountMenu.account') }}</div>
+              <div>{{ t('accountMenu.account') }}</div>
             </div>
           </v-list-item-title>
           <v-list-item-subtitle>
@@ -40,9 +40,7 @@
       <v-list-item v-for="acc in filteredWallets" :key="acc.id" @click="changeAccount(acc.address)">
         <v-list-item-content class="font-weight-bold">
           <v-list-item-title>
-            <div class="font-weight-bold headline text-capitalize text--lighten-4">
-              {{ $vuetify.lang.t('$vuetify.accountMenu.account') }} #{{ acc.id + 1 }}
-            </div>
+            <div class="font-weight-bold headline text-capitalize text--lighten-4">{{ t('accountMenu.account') }} #{{ acc.id + 1 }}</div>
           </v-list-item-title>
 
           <v-list-item-subtitle>{{ acc.address }}</v-list-item-subtitle>
@@ -57,7 +55,7 @@
         <v-list-item-action class="mr-2">
           <v-icon class="text_2--text" v-text="'$vuetify.icons.import'" />
         </v-list-item-action>
-        <v-list-item-content class="text_1--text font-weight-bold">{{ $vuetify.lang.t('$vuetify.accountMenu.importAccount') }}</v-list-item-content>
+        <v-list-item-content class="text_1--text font-weight-bold">{{ t('accountMenu.importAccount') }}</v-list-item-content>
       </v-list-item>
       <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
         <account-import @onClose="accountImportDialog = false" />
@@ -86,12 +84,12 @@
         <v-list-item-action class="mr-2">
           <v-icon :small="$vuetify.breakpoint.xsOnly" class="text_2--text" v-text="'$vuetify.icons.info'" />
         </v-list-item-action>
-        <v-list-item-content class="text_1--text font-weight-bold">{{ $vuetify.lang.t('$vuetify.accountMenu.infoSupport') }}</v-list-item-content>
+        <v-list-item-content class="text_1--text font-weight-bold">{{ t('accountMenu.infoSupport') }}</v-list-item-content>
       </v-list-item>
     </v-list>
 
     <v-card-actions>
-      <v-btn text class="text_1--text font-weight-bold mb-6 ml-2" @click="logout">{{ $vuetify.lang.t('$vuetify.accountMenu.logOut') }}</v-btn>
+      <v-btn text class="text_1--text font-weight-bold mb-6 ml-2" @click="logout">{{ t('accountMenu.logOut') }}</v-btn>
       <v-spacer></v-spacer>
     </v-card-actions>
   </v-card>

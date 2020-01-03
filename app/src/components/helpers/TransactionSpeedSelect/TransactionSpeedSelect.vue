@@ -2,11 +2,8 @@
   <v-flex xs12 sm6 mb-3>
     <div class="subtitle-2 mb-1 px-4">
       <span>
-        {{ $vuetify.lang.t('$vuetify.walletTransfer.selectSpeed') }}
-        <HelpTooltip
-          :title="$vuetify.lang.t('$vuetify.walletTransfer.transferFee')"
-          :description="$vuetify.lang.t('$vuetify.walletTransfer.transferFeeDesc')"
-        />
+        {{ t('walletTransfer.selectSpeed') }}
+        <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" />
       </span>
       <TransferAdvanceOption
         v-if="!$vuetify.breakpoint.xsOnly"

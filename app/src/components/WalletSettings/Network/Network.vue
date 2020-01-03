@@ -1,7 +1,7 @@
 <template>
   <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
     <v-form ref="networkForm" v-model="formValid" lazy-validation @submit.prevent="">
-      <span class="subtitle-2">{{ $vuetify.lang.t('$vuetify.walletSettings.selectNetwork') }}</span>
+      <span class="subtitle-2">{{ t('walletSettings.selectNetwork') }}</span>
       <v-layout wrap>
         <v-flex xs12 md6>
           <v-select
@@ -23,7 +23,7 @@
       <template v-if="isRPCSelected">
         <v-flex xs12 md6>
           <v-text-field
-            :placeholder="$vuetify.lang.t('$vuetify.walletSettings.enterNetworkName')"
+            :placeholder="t('walletSettings.enterNetworkName')"
             :rules="[rules.required]"
             outlined
             v-model="rpc.networkName"
@@ -31,16 +31,11 @@
         </v-flex>
 
         <v-flex xs12 md6>
-          <v-text-field
-            :placeholder="$vuetify.lang.t('$vuetify.walletSettings.enterRpc')"
-            :rules="[rules.required]"
-            outlined
-            v-model="rpc.host"
-          ></v-text-field>
+          <v-text-field :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined v-model="rpc.host"></v-text-field>
         </v-flex>
 
         <v-flex xs12 md6>
-          <v-text-field :placeholder="$vuetify.lang.t('$vuetify.walletSettings.enterChainId')" outlined v-model="rpc.chainId"></v-text-field>
+          <v-text-field :placeholder="t('walletSettings.enterChainId')" outlined v-model="rpc.chainId"></v-text-field>
         </v-flex>
 
         <v-flex xs12 sm4 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
@@ -48,11 +43,11 @@
             <template v-slot:activator="{ on }">
               <span v-on="on">
                 <v-btn block :disabled="!formValid" depressed color="primary" @click="setRPC">
-                  {{ $vuetify.lang.t('$vuetify.walletSettings.save') }}
+                  {{ t('walletSettings.save') }}
                 </v-btn>
               </span>
             </template>
-            <span>{{ $vuetify.lang.t('$vuetify.walletSettings.resolveErrors') }}</span>
+            <span>{{ t('walletSettings.resolveErrors') }}</span>
           </v-tooltip>
         </v-flex>
       </template>

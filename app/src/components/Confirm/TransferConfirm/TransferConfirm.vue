@@ -3,23 +3,17 @@
     <v-card-text class="text_1--text py-12">
       <v-layout wrap>
         <v-flex xs12 px-4>
-          <div class="font-weight-bold headline">{{ $vuetify.lang.t('$vuetify.walletTransfer.transferConfirm') }}</div>
+          <div class="font-weight-bold headline">{{ t('walletTransfer.transferConfirm') }}</div>
         </v-flex>
         <v-flex xs12 mt-4>
           <v-layout wrap>
             <v-flex xs12 px-4 pb-4>
-              <div class="subtitle-2">{{ $vuetify.lang.t('$vuetify.walletTransfer.sendingTo') }}:</div>
+              <div class="subtitle-2">{{ t('walletTransfer.sendingTo') }}:</div>
               <v-divider class="my-1" />
               <div class="caption text_2--text">{{ toAddress }}</div>
             </v-flex>
             <v-flex xs12 px-4 pb-4>
-              <div class="subtitle-2">
-                {{
-                  isNonFungibleToken
-                    ? $vuetify.lang.t('$vuetify.walletTransfer.assetToSend')
-                    : $vuetify.lang.t('$vuetify.walletTransfer.amountToSend')
-                }}:
-              </div>
+              <div class="subtitle-2">{{ isNonFungibleToken ? t('walletTransfer.assetToSend') : t('walletTransfer.amountToSend') }}:</div>
               <v-divider class="my-1" />
               <div class="mt-2" v-if="isNonFungibleToken">
                 <img class="mr-2 float-left" :src="assetSelected.image" height="24px" />
@@ -33,7 +27,7 @@
               </div>
             </v-flex>
             <v-flex xs12 px-4 pb-4>
-              <div class="subtitle-2">{{ $vuetify.lang.t('$vuetify.walletTransfer.transferFee') }}:</div>
+              <div class="subtitle-2">{{ t('walletTransfer.transferFee') }}:</div>
               <v-divider class="my-1" />
               <div>
                 <div class="float-right text-right">
@@ -47,9 +41,9 @@
       </v-layout>
       <v-layout mt-4 pr-4>
         <v-spacer></v-spacer>
-        <v-btn large text @click="onCancel">{{ $vuetify.lang.t('$vuetify.walletTransfer.cancel') }}</v-btn>
+        <v-btn large text @click="onCancel">{{ t('walletTransfer.cancel') }}</v-btn>
         <v-btn id="confirm-transfer-btn" large color="primary" class="ml-4" type="button" @click="onConfirm">
-          {{ $vuetify.lang.t('$vuetify.walletTransfer.confirm') }}
+          {{ t('walletTransfer.confirm') }}
         </v-btn>
       </v-layout>
     </v-card-text>

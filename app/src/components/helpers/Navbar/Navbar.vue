@@ -68,11 +68,11 @@ export default {
     },
     headerItems() {
       return [
-        { name: 'home', display: this.$vuetify.lang.t('$vuetify.navBar.home'), route: '/wallet/home', icon: 'settings' },
-        { name: 'transfer', display: this.$vuetify.lang.t('$vuetify.navBar.transfer'), route: '/wallet/transfer', icon: 'transaction' },
-        { name: 'top-up', display: this.$vuetify.lang.t('$vuetify.navBar.topUp'), route: '/wallet/topup', icon: 'topup' },
-        { name: 'activity', display: this.$vuetify.lang.t('$vuetify.navBar.activity'), route: '/wallet/history', icon: 'activities' },
-        { name: 'settings', display: this.$vuetify.lang.t('$vuetify.navBar.settings'), route: '/wallet/settings', icon: 'settings' }
+        { name: 'home', display: this.t('navBar.home'), route: '/wallet/home', icon: 'settings' },
+        { name: 'transfer', display: this.t('navBar.transfer'), route: '/wallet/transfer', icon: 'transaction' },
+        { name: 'top-up', display: this.t('navBar.topUp'), route: '/wallet/topup', icon: 'topup' },
+        { name: 'activity', display: this.t('navBar.activity'), route: '/wallet/history', icon: 'activities' },
+        { name: 'settings', display: this.t('navBar.settings'), route: '/wallet/settings', icon: 'settings' }
       ]
     }
   }

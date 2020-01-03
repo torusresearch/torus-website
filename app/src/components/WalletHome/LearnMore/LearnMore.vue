@@ -5,7 +5,7 @@
         <v-img :src="require(`../../../../public/images/learn-more-intro.svg`)">
           <v-layout>
             <v-flex xs12 class="mt-12 ml-12">
-              <div class="display-1 primary--text text--darken-4 font-weight-bold mb-2">{{ $vuetify.lang.t('$vuetify.walletHome.welcome') }}</div>
+              <div class="display-1 primary--text text--darken-4 font-weight-bold mb-2">{{ t('walletHome.welcome') }}</div>
               <img width="150" :src="require(`../../../../public/images/torus-logo-blue.svg`)" />
             </v-flex>
           </v-layout>
@@ -48,41 +48,41 @@ export default {
       e1: 1,
       contents: [
         {
-          title: this.$vuetify.lang.t('$vuetify.walletHome.gettingStarted'),
-          subtitle: this.$vuetify.lang.t('$vuetify.walletHome.gettingStartedDesc'),
+          title: this.t('walletHome.gettingStarted'),
+          subtitle: this.t('walletHome.gettingStartedDesc'),
           step: 2,
           list: [
             {
               icon: 't.svg',
-              name: `${this.$vuetify.lang.t('$vuetify.walletHome.whatIs')} Torus?`,
-              content: this.$vuetify.lang.t('$vuetify.walletHome.whatIsDesc')
+              name: `${this.t('walletHome.whatIs')} Torus?`,
+              content: this.t('walletHome.whatIsDesc')
             },
             {
               icon: 'wallet.svg',
-              name: this.$vuetify.lang.t('$vuetify.walletHome.knowYourWallet'),
-              content: this.$vuetify.lang.t('$vuetify.walletHome.knowYourWalletDesc')
+              name: this.t('walletHome.knowYourWallet'),
+              content: this.t('walletHome.knowYourWalletDesc')
             },
             {
               icon: 'money.svg',
-              name: this.$vuetify.lang.t('$vuetify.walletHome.getDigital'),
-              content: this.$vuetify.lang.t('$vuetify.walletHome.getDigitalDesc')
+              name: this.t('walletHome.getDigital'),
+              content: this.t('walletHome.getDigitalDesc')
             }
           ]
         },
         {
-          title: this.$vuetify.lang.t('$vuetify.walletHome.privacySecurity'),
-          subtitle: this.$vuetify.lang.t('$vuetify.walletHome.privacySecurityDesc'),
+          title: this.t('walletHome.privacySecurity'),
+          subtitle: this.t('walletHome.privacySecurityDesc'),
           step: 3,
           list: [
             {
               icon: 'key-large.svg',
-              name: this.$vuetify.lang.t('$vuetify.walletHome.privateKey'),
-              content: this.$vuetify.lang.t('$vuetify.walletHome.privateKeyDesc')
+              name: this.t('walletHome.privateKey'),
+              content: this.t('walletHome.privateKeyDesc')
             },
             {
               icon: 'password.svg',
-              name: this.$vuetify.lang.t('$vuetify.walletHome.accountRecovery'),
-              content: this.$vuetify.lang.t('$vuetify.walletHome.accountRecoveryDesc')
+              name: this.t('walletHome.accountRecovery'),
+              content: this.t('walletHome.accountRecoveryDesc')
             }
           ]
         }
