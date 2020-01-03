@@ -1,8 +1,9 @@
-const http = require('http')
+const https = require('https')
 var fs = require('fs')
 var log = require('loglevel')
 
-const localeUrl = 'http://localhost:2020/locales'
+const localeUrl = 'https://api.tor.us/locales'
+// const localeUrl = 'http://localhost:2020'
 
 getLocale()
   .then(result => {
@@ -22,7 +23,7 @@ getLocale()
 
 function getLocale() {
   return new Promise(function(resolve, reject) {
-    let request = http.get(`${localeUrl}`, function(res) {
+    let request = https.get(`${localeUrl}`, function(res) {
       var body = ''
       res.on('data', function(data) {
         body += data
