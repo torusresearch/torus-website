@@ -163,8 +163,14 @@ const SVG = 'svg'
 
 const LOCALE_EN = 'en'
 const LOCALE_DE = 'de'
+const LOCALE_JA = 'ja'
+const LOCALE_KO = 'ko'
+const LOCALE_ZH = 'zh'
 const LOCALE_EN_LABEL = 'English'
 const LOCALE_DE_LABEL = 'German (Deutsch)'
+const LOCALE_JA_LABEL = 'Japanese'
+const LOCALE_KO_LABEL = 'Korean'
+const LOCALE_ZH_LABEL = 'Mandarin'
 
 const LOCALES = [
   {
@@ -174,6 +180,18 @@ const LOCALES = [
   {
     name: LOCALE_DE_LABEL,
     value: LOCALE_DE
+  },
+  {
+    name: LOCALE_JA_LABEL,
+    value: LOCALE_JA
+  },
+  {
+    name: LOCALE_KO_LABEL,
+    value: LOCALE_KO
+  },
+  {
+    name: LOCALE_ZH_LABEL,
+    value: LOCALE_ZH
   }
 ]
 
