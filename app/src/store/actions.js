@@ -825,6 +825,12 @@ export default {
           signed_message: signedMessage
         })
         commit('setJwtToken', response.token)
+        if (response.token) {
+          const decoded = jwtDecode(response.token)
+          setTimeout(() => {
+            dispatch('logOut')
+          }, decoded.exp * 1000 - Date.now())
+        }
         await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed: calledFromEmbed, rehydrate: false })
 
         resolve()
@@ -952,6 +958,10 @@ export default {
         if (Date.now() / 1000 > decoded.exp) {
           dispatch('logOut')
           return
+        } else {
+          setTimeout(() => {
+            dispatch('logOut')
+          }, decoded.exp * 1000 - Date.now())
         }
       }
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
