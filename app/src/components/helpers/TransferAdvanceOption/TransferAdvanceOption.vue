@@ -139,8 +139,7 @@ export default {
   computed: {
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
-      let currencyMultiplierNum = 1
-      if (selectedCurrency !== 'ETH') currencyMultiplierNum = currencyData[selectedCurrency.toLowerCase()] || 1
+      const currencyMultiplierNum = selectedCurrency !== 'ETH' ? currencyData[selectedCurrency.toLowerCase()] || 1 : 1
       const currencyMultiplier = new BigNumber(currencyMultiplierNum)
       return currencyMultiplier
     },
