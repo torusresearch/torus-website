@@ -553,7 +553,6 @@ export default {
     },
     contactChanged(event) {
       this.contactSelected = event
-      log.info(this.contactSelected, event)
       const contact = event && event.target ? event.target.value : event
       log.info(event, 'contactChanged')
       if (contact) this.toAddress = typeof contact === 'string' ? contact : contact.value
@@ -579,9 +578,8 @@ export default {
               .estimateGas({ to: toAddress })
               .then(response => {
                 let resolved = new BigNumber(response || '0')
-                if (resolved.eq(new BigNumber('21000'))) {
+                if (!resolved.eq(new BigNumber('21000'))) {
                   resolved = resolved.times(new BigNumber('1.1'))
-                  log.info(this.isSendAll)
                   this.sendEthToContractError = this.isSendAll
                 }
                 resolve(resolved)
@@ -694,7 +692,6 @@ export default {
         this.gas = await this.calculateGas(toAddress)
         this.updateTotalCost()
         this.confirmDialog = true
-        log.info(this.amount.toString(), this.gas.toString(), this.activeGasPrice.toString())
       }
     },
     changeSelectedToCurrency(value) {
