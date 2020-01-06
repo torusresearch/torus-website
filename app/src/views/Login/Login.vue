@@ -186,6 +186,9 @@ export default {
       // this.$router.push({ path: '/' }).catch(err => {})
       // this.isLogout = false
       window.location.href = process.env.BASE_URL
+    },
+    triggerEmailLogin() {
+      console.log('We move')
     }
   },
   computed: mapState({
