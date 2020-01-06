@@ -1,21 +1,26 @@
 <template>
-  <content-loader :height="600" :width="450" :speed="2" primaryColor="#E7EDF3" secondaryColor="#ecebeb">
-    <rect x="15.5" y="17.61" rx="0" ry="0" width="46.13" height="28.18" />
-    <rect x="15.5" y="63.61" rx="0" ry="0" width="139.18" height="22.12" />
-    <rect x="15.5" y="92.61" rx="0" ry="0" width="418.85" height="66.41" />
-    <rect x="15.5" y="238.61" rx="0" ry="0" width="85.72" height="27.31" />
-    <rect x="105.5" y="238.61" rx="0" ry="0" width="85.72" height="27.31" />
-    <rect x="15.5" y="161.61" rx="0" ry="0" width="418.85" height="66.41" />
-    <rect x="15.5" y="267.61" rx="0" ry="0" width="418.85" height="66.41" />
-  </content-loader>
+  <div class="sk-grid">
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 35px;"></div></div>
+
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 20px;"></div></div>
+    <div class="sk-grid__col-mob-2"></div>
+
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 130px; margin-bottom: 30px;"></div></div>
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 130px; margin-bottom: 30px;"></div></div>
+
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 5px;"></div></div>
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 5px;"></div></div>
+
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 15px; margin-bottom: 15px;"></div></div>
+
+    <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 50px; margin-bottom: 2px;"></div></div>
+    <div class="sk-grid__col-mob-1"><div class="sk-loader" style="height: 50px; margin-bottom: 2px;"></div></div>
+    <div class="sk-grid__col-mob-2"></div>
+
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 150px; margin-bottom: 5px;"></div></div>
+  </div>
 </template>
 
 <script>
-import { ContentLoader } from 'vue-content-loader'
-
-export default {
-  components: {
-    ContentLoader
-  }
-}
+export default {}
 </script>

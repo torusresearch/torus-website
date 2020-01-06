@@ -39,7 +39,8 @@
                     id="gas-price"
                     :placeholder="t('walletTransfer.enterValue')"
                     outlined
-                    v-model="advancedActiveGasPrice"
+                    :value="advancedActiveGasPrice"
+                    @change="onChangeActiveGasPrice"
                     required
                     type="number"
                   ></v-text-field>
@@ -167,6 +168,9 @@ export default {
     }
   },
   methods: {
+    onChangeActiveGasPrice(value) {
+      this.advancedActiveGasPrice = new BigNumber(value)
+    },
     onCancel(step) {
       this.dialog = false
     },

@@ -103,7 +103,7 @@
                   id="recipient-address"
                   class="recipient-address"
                   ref="contactSelected"
-                  v-model="contactSelected"
+                  :value="contactSelected"
                   @input="contactChanged"
                   :items="contactList"
                   :placeholder="verifierPlaceholder"
@@ -192,7 +192,8 @@
               type="number"
               outlined
               required
-              v-model="displayAmount"
+              :value="displayAmount"
+              @change="onChangeDisplayAmount"
               :readonly="isSendAll"
               :rules="[rules.required, lesserThan, moreThanZero]"
               aria-label="Amount you send"
@@ -280,6 +281,7 @@
                 :selectedCurrency="selectedCurrency"
                 @onClose="confirmDialog = false"
                 @onConfirm="sendCoin"
+                :sendEthToContractError="sendEthToContractError"
               ></transfer-confirm>
             </v-dialog>
           </v-flex>
@@ -350,14 +352,15 @@ export default {
   },
   data() {
     return {
+      sendEthToContractError: false,
       contractType: CONTRACT_TYPE_ETH,
       isContract: false,
       collectibleSelected: {},
       assetSelected: {},
       tokenAddress: '0x',
       toEthAddress: '0x',
-      amount: new BigNumber(0),
-      displayAmount: '0',
+      amount: new BigNumber('0'),
+      displayAmount: new BigNumber('0'),
       convertedAmount: '',
       contactSelected: '',
       toAddress: '',
@@ -475,24 +478,25 @@ export default {
       return addressFound === undefined
     }
   },
-  watch: {
-    displayAmount: function(newValue, oldValue) {
-      if (this.toggle_exclusive === 0) {
-        this.amount = new BigNumber(this.displayAmount || '0')
-      } else {
-        this.amount = this.getCurrencyTokenRate.gt(new BigNumber('0'))
-          ? new BigNumber(this.displayAmount).div(this.getCurrencyTokenRate)
-          : new BigNumber(this.displayAmount).times(this.getCurrencyTokenRate)
-      }
-
-      this.convertedAmount = this.toggle_exclusive
-        ? significantDigits(new BigNumber(this.displayAmount || '0').div(this.getCurrencyTokenRate).toFormat())
-        : significantDigits(new BigNumber(this.displayAmount || '0').times(this.getCurrencyTokenRate).toFormat())
-
-      this.updateTotalCost()
-    }
-  },
   methods: {
+    onChangeDisplayAmount(value) {
+      if ((BigNumber.isBigNumber(value) && !this.displayAmount.eq(value)) || !BigNumber.isBigNumber(value)) {
+        this.displayAmount = BigNumber.isBigNumber(value) ? value : new BigNumber(value || '0')
+        if (this.toggle_exclusive === 0) {
+          this.amount = this.displayAmount
+        } else {
+          this.amount = this.getCurrencyTokenRate.gt(new BigNumber('0'))
+            ? this.displayAmount.div(this.getCurrencyTokenRate)
+            : this.displayAmount.times(this.getCurrencyTokenRate)
+        }
+
+        this.convertedAmount = this.toggle_exclusive
+          ? significantDigits(this.displayAmount.div(this.getCurrencyTokenRate).toFormat())
+          : significantDigits(this.displayAmount.times(this.getCurrencyTokenRate).toFormat())
+
+        this.updateTotalCost()
+      }
+    },
     updateFieldsBasedOnRoute() {
       if (Object.prototype.hasOwnProperty.call(this.$route.query, 'contract')) {
         this.selectedItemChanged(
@@ -509,7 +513,7 @@ export default {
         const emailObject = {
           from_name: this.$store.state.userInfo.name,
           to_email: this.toAddress,
-          total_amount: this.amount.eq(new BigNumber('0')) ? '' : this.amount.toNumber(),
+          total_amount: this.amount.eq(new BigNumber('0')) ? '' : this.amount.toString(),
           token: typeToken.toString(),
           etherscanLink: etherscanLink
         }
@@ -548,6 +552,8 @@ export default {
       this.$refs.form.validate()
     },
     contactChanged(event) {
+      this.contactSelected = event
+      log.info(this.contactSelected, event)
       const contact = event && event.target ? event.target.value : event
       log.info(event, 'contactChanged')
       if (contact) this.toAddress = typeof contact === 'string' ? contact : contact.value
@@ -565,13 +571,20 @@ export default {
       this.ensError = ''
     },
     calculateGas(toAddress) {
+      this.sendEthToContractError = false
       if (isAddress(toAddress)) {
         return new Promise((resolve, reject) => {
           if (this.contractType === CONTRACT_TYPE_ETH) {
             torus.web3.eth
               .estimateGas({ to: toAddress })
               .then(response => {
-                resolve(new BigNumber(response || '0').times(new BigNumber('1.1')))
+                let resolved = new BigNumber(response || '0')
+                if (resolved.eq(new BigNumber('21000'))) {
+                  resolved = resolved.times(new BigNumber('1.1'))
+                  log.info(this.isSendAll)
+                  this.sendEthToContractError = this.isSendAll
+                }
+                resolve(resolved)
               })
               .catch(err => {
                 log.error(err)
@@ -681,15 +694,16 @@ export default {
         this.gas = await this.calculateGas(toAddress)
         this.updateTotalCost()
         this.confirmDialog = true
+        log.info(this.amount.toString(), this.gas.toString(), this.activeGasPrice.toString())
       }
     },
     changeSelectedToCurrency(value) {
       this.toggle_exclusive = value
       const currencyRate = this.getCurrencyTokenRate
       if (value === 0) {
-        this.displayAmount = new BigNumber(this.displayAmount || '0').div(currencyRate).toNumber()
+        this.onChangeDisplayAmount(this.displayAmount.div(currencyRate))
       } else if (value === 1) {
-        this.displayAmount = new BigNumber(this.displayAmount || '0').times(currencyRate).toNumber()
+        this.onChangeDisplayAmount(this.displayAmount.times(currencyRate))
       }
     },
     sendAll() {
@@ -701,13 +715,13 @@ export default {
       this.isSendAll = true
 
       if (this.toggle_exclusive === 0) {
-        this.displayAmount = ethBalance.minus(ethGasPrice).toNumber()
+        this.onChangeDisplayAmount(ethBalance.minus(ethGasPrice))
       } else {
-        this.displayAmount = currencyBalance.minus(currencyGasPrice).toNumber()
+        this.onChangeDisplayAmount(currencyBalance.minus(currencyGasPrice))
       }
     },
     resetSendAll() {
-      this.displayAmount = ''
+      this.onChangeDisplayAmount(new BigNumber('0'))
       this.resetSpeed = true
       this.isSendAll = false
       this.changeSelectedToCurrency(0)
@@ -809,13 +823,13 @@ export default {
       }
     },
     updateTotalCost() {
-      if (!this.displayAmount || this.activeGasPrice === '') {
+      if (this.displayAmount.isZero() || this.activeGasPrice === '') {
         this.totalCost = ''
         this.convertedTotalCost = ''
 
         if (this.activeGasPrice !== '') {
           const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
-          this.gasPriceInCurrency = gasPriceInEth * this.getCurrencyTokenRate
+          this.gasPriceInCurrency = gasPriceInEth.times(this.getCurrencyTokenRate)
         }
         return
       }
@@ -829,24 +843,24 @@ export default {
       }
 
       const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
-      const gasPriceInCurrency = gasPriceInEth * this.getCurrencyTokenRate
-      const toSend = parseFloat(this.amount)
-      const toSendConverted = toSend * this.getCurrencyTokenRate
+      const gasPriceInCurrency = gasPriceInEth.times(this.getCurrencyTokenRate)
+      const toSend = this.amount
+      const toSendConverted = toSend.times(this.getCurrencyTokenRate)
 
       this.gasPriceInCurrency = gasPriceInCurrency
 
       if (this.contractType === CONTRACT_TYPE_ETH) {
-        this.totalCost = this.toggle_exclusive === 0 ? toSend + gasPriceInEth : toSendConverted + gasPriceInCurrency
+        this.totalCost = this.toggle_exclusive === 0 ? toSend.plus(gasPriceInEth) : toSendConverted.plus(gasPriceInCurrency)
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
         const displayedCurrency = this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency
-        this.totalCost = `${this.displayAmount} ${displayedCurrency} + ${significantDigits(
+        this.totalCost = `${this.displayAmount.toString()} ${displayedCurrency} + ${significantDigits(
           this.getEthAmount(this.gas, this.activeGasPrice),
           false,
-          5
+          18
         )} ETH`
       }
 
-      this.convertedTotalCost = gasPriceInCurrency + toSendConverted
+      this.convertedTotalCost = gasPriceInCurrency.plus(toSendConverted)
     },
     onSelectSpeed(data) {
       log.info('SET DATA: ', data)
