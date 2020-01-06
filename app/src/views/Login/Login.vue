@@ -19,19 +19,19 @@
                 color="white"
                 large
                 :block="$vuetify.breakpoint.xsOnly"
-                class="body-2 login-btn"
+                class="body-2 home-btn"
                 @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
               >
                 <img :src="require('../../../public/img/icons/google.svg')" class="mr-2" />
                 {{ t('login.signIn') }} Google
               </v-btn>
             </v-flex>
-            <v-flex class="body-1" mb-2 xs9 sm7 ml-auto mr-auto>
+            <v-flex class="caption" mb-2 xs9 sm7 ml-auto mr-auto>
               <span>{{ t('login.otherAccount') }}:</span>
             </v-flex>
             <v-flex xs9 sm7 ml-auto mr-auto mb-2>
               <v-layout wrap class="other-login-container">
-                <v-flex xs3 px-1>
+                <v-flex xs4 px-1>
                   <v-btn
                     :large="!$vuetify.breakpoint.xsOnly"
                     outlined
@@ -44,7 +44,7 @@
                     <img width="24" :src="require('../../../public/img/icons/facebook.svg')" />
                   </v-btn>
                 </v-flex>
-                <v-flex xs3 px-1>
+                <v-flex xs4 px-1>
                   <v-btn
                     :large="!$vuetify.breakpoint.xsOnly"
                     outlined
@@ -57,7 +57,7 @@
                     <img width="32" :src="require('../../../public/img/icons/reddit.svg')" />
                   </v-btn>
                 </v-flex>
-                <v-flex xs3 px-1>
+                <v-flex xs4 px-1>
                   <v-btn
                     :large="!$vuetify.breakpoint.xsOnly"
                     outlined
@@ -70,7 +70,7 @@
                     <img width="24" :src="require('../../../public/img/icons/twitch.svg')" />
                   </v-btn>
                 </v-flex>
-                <v-flex xs3 px-1>
+                <v-flex xs4 px-1>
                   <v-btn
                     :large="!$vuetify.breakpoint.xsOnly"
                     outlined
@@ -83,6 +83,17 @@
                     <img width="24" :src="require('../../../public/img/icons/discord.svg')" />
                   </v-btn>
                 </v-flex>
+              </v-layout>
+            </v-flex>
+            <v-flex class="caption" mb-2 xs9 sm7 ml-auto mr-auto>
+              <span>Alternatively,</span>
+            </v-flex>
+            <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
+              <v-layout wrap class="other-container">
+                <v-btn id="loginBtn" large outlined :block="$vuetify.breakpoint.xsOnly" class="body-2 alternate-login" @click="triggerEmailLogin">
+                  <img :src="require('../../../public/images/email.svg')" class="mr-2" />
+                  Sign up/in with Email
+                </v-btn>
               </v-layout>
             </v-flex>
             <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
@@ -103,9 +114,7 @@
             </v-flex>
             <v-flex xs12 mt-4>
               <div class="text-center">
-                <v-btn large depressed color="primary" class="px-12 title" type="button" @click="returnHome">
-                  {{ t('login.returnHome') }}
-                </v-btn>
+                <v-btn large depressed color="primary" class="px-12 title" type="button" @click="returnHome">{{ t('login.returnHome') }}</v-btn>
               </div>
             </v-flex>
           </v-layout>
@@ -115,9 +124,7 @@
             <v-flex class="mb-3 text-center" xs9 sm7 ml-auto mr-auto>
               <div class="display-1 white--text font-weight-bold">{{ t('login.frictionless') }}</div>
               <div class="display-1 white--text mb-3">{{ t('login.forDapps') }}</div>
-              <div class="caption white--text">
-                {{ t('login.simpleSecure') }}
-              </div>
+              <div class="caption white--text">{{ t('login.simpleSecure') }}</div>
             </v-flex>
           </v-layout>
         </v-flex>
@@ -171,6 +178,9 @@ export default {
       // this.$router.push({ path: '/' }).catch(err => {})
       // this.isLogout = false
       window.location.href = process.env.BASE_URL
+    },
+    triggerEmailLogin() {
+      console.log('We move')
     }
   },
   computed: mapState({
