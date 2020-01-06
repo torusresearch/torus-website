@@ -548,7 +548,7 @@ export default {
       return `${hours}:${minutes}:${seconds} ${ampm}`
     },
     amountDisplay(amount) {
-      return significantDigits(parseFloat(amount).toFixed(5)) ? significantDigits(parseFloat(amount).toFixed(5)) : parseFloat('0.00').toFixed(2)
+      return significantDigits(amount || new BigNumber('0'))
     },
     significantDigits: significantDigits,
     getHeaderByDapp() {
