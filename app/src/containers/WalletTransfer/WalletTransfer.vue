@@ -114,7 +114,7 @@
                   :error-messages="ensError"
                   item-text="name"
                   item-value="value"
-                  return-object
+                  :return-object="false"
                   aria-label="Recipient Address"
                 >
                   <template v-slot:append>
@@ -367,9 +367,9 @@ export default {
       formValid: false,
       ensError: '',
       toggle_exclusive: 0,
-      gas: new BigNumber(21000),
-      activeGasPrice: new BigNumber(0),
-      gasPriceInCurrency: '',
+      gas: new BigNumber('21000'),
+      activeGasPrice: new BigNumber('0'),
+      gasPriceInCurrency: new BigNumber('0'),
       isFastChecked: false,
       speedSelected: '',
       totalCost: '',
@@ -473,7 +473,7 @@ export default {
     newContact() {
       if (!this.contactSelected) return false
 
-      const targetContact = typeof this.contactSelected === 'string' ? this.contactSelected : this.contactSelected.value
+      const targetContact = this.contactSelected
       const addressFound = this.contactList.find(contact => contact.value.toLowerCase() === targetContact.toLowerCase())
       return addressFound === undefined
     }
@@ -491,8 +491,8 @@ export default {
         }
 
         this.convertedAmount = this.toggle_exclusive
-          ? significantDigits(this.displayAmount.div(this.getCurrencyTokenRate).toFormat())
-          : significantDigits(this.displayAmount.times(this.getCurrencyTokenRate).toFormat())
+          ? significantDigits(this.displayAmount.div(this.getCurrencyTokenRate).toFormat(), false, 4)
+          : significantDigits(this.displayAmount.times(this.getCurrencyTokenRate).toFormat(), false, 4)
 
         this.updateTotalCost()
       }
@@ -503,8 +503,6 @@ export default {
           this.$route.query.contract,
           Object.prototype.hasOwnProperty.call(this.$route.query, 'asset') ? this.$route.query.asset : ''
         )
-      } else {
-        this.toAddress = ''
       }
     },
     sendEmail(typeToken, transactionHash) {
@@ -554,8 +552,8 @@ export default {
     contactChanged(event) {
       this.contactSelected = event
       const contact = event && event.target ? event.target.value : event
-      log.info(event, 'contactChanged')
-      if (contact) this.toAddress = typeof contact === 'string' ? contact : contact.value
+      log.info(event, contact, 'contactChanged')
+      if (contact) this.toAddress = contact
 
       // Autoupdate selected verifier
       if (this.autoSelectVerifier) {
@@ -712,9 +710,9 @@ export default {
       this.isSendAll = true
 
       if (this.toggle_exclusive === 0) {
-        this.onChangeDisplayAmount(ethBalance.minus(ethGasPrice))
+        this.onChangeDisplayAmount(this.contractType === CONTRACT_TYPE_ETH ? ethBalance.minus(ethGasPrice) : ethBalance)
       } else {
-        this.onChangeDisplayAmount(currencyBalance.minus(currencyGasPrice))
+        this.onChangeDisplayAmount(this.contractType === CONTRACT_TYPE_ETH ? currencyBalance.minus(currencyGasPrice) : currencyBalance)
       }
     },
     resetSendAll() {
