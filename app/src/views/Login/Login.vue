@@ -188,7 +188,8 @@ export default {
       window.location.href = process.env.BASE_URL
     },
     triggerEmailLogin() {
-      console.log('We move')
+      let redirect_uri = `${config.baseUrl}/redirect`
+      window.open(`${config.verifierUrl}?redirect_uri=${redirect_uri}`)
     }
   },
   computed: mapState({
