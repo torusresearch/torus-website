@@ -90,7 +90,14 @@
             </v-flex>
             <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
               <v-layout wrap class="other-container">
-                <v-btn id="loginBtn" large outlined :block="$vuetify.breakpoint.xsOnly" class="body-2 alternate-login" @click="triggerEmailLogin">
+                <v-btn
+                  id="loginBtn"
+                  large
+                  outlined
+                  :block="$vuetify.breakpoint.xsOnly"
+                  class="body-2 alternate-login"
+                  @click="triggerLogin({ verifier: TORUS, calledFromEmbed: false })"
+                >
                   <img :src="require('../../../public/images/email.svg')" class="mr-2" />
                   Sign up/in with Email
                 </v-btn>
@@ -154,7 +161,7 @@ import {
   WalletSettingsLoader,
   WalletSettingsLoaderMobile
 } from '../../content-loader'
-import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../utils/enums'
+import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD, TORUS } from '../../utils/enums'
 import config from '../../config'
 
 export default {
@@ -167,7 +174,8 @@ export default {
       GOOGLE: GOOGLE,
       TWITCH: TWITCH,
       REDDIT: REDDIT,
-      DISCORD: DISCORD
+      DISCORD: DISCORD,
+      TORUS: TORUS
     }
   },
   methods: {
@@ -178,10 +186,6 @@ export default {
       // this.$router.push({ path: '/' }).catch(err => {})
       // this.isLogout = false
       window.location.href = process.env.BASE_URL
-    },
-    triggerEmailLogin() {
-      let redirect_uri = `${config.baseUrl}/redirect`
-      window.open(`${config.verifierUrl}?redirect_uri=${redirect_uri}`)
     }
   },
   computed: mapState({

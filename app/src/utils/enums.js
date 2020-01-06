@@ -107,14 +107,16 @@ const FACEBOOK = 'facebook'
 const REDDIT = 'reddit'
 const DISCORD = 'discord'
 const TWITCH = 'twitch'
+const TORUS = 'torus'
 const ENS = 'ENS'
-const ETH_LABEL = 'walletSettings.ethAddress'
-const GOOGLE_LABEL = 'walletSettings.googleId'
-const FACEBOOK_LABEL = 'walletSettings.facebookId'
-const REDDIT_LABEL = 'walletSettings.redditId'
-const DISCORD_LABEL = 'walletSettings.discordId'
-const TWITCH_LABEL = 'walletSettings.twitchId'
-const ENS_LABEL = 'walletSettings.ensId'
+const ETH_LABEL = 'ETH Address'
+const GOOGLE_LABEL = 'Google Email'
+const FACEBOOK_LABEL = 'Facebook ID'
+const REDDIT_LABEL = 'Reddit Username'
+const DISCORD_LABEL = 'Discord ID'
+const TWITCH_LABEL = 'Twitch ID'
+const TORUS_LABEL = 'Torus ID'
+const ENS_LABEL = 'ENS ID'
 
 // Format: [dark/light]-[colorName]
 const THEME_DARK_BLACK_NAME = 'dark-black'
@@ -257,6 +259,7 @@ module.exports = {
   GOOGLE,
   FACEBOOK,
   TWITCH,
+  TORUS,
   REDDIT,
   DISCORD,
   ETH_LABEL,
@@ -265,6 +268,7 @@ module.exports = {
   REDDIT_LABEL,
   DISCORD_LABEL,
   TWITCH_LABEL,
+  TORUS_LABEL,
   THEME_DARK_BLACK_NAME,
   THEME_LIGHT_BLUE_NAME,
   ERC721METADATA_INTERFACE_ID,

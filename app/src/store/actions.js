@@ -14,6 +14,7 @@ import {
   TWITCH,
   REDDIT,
   DISCORD,
+  TORUS,
   THEME_LIGHT_BLUE_NAME
 } from '../utils/enums'
 import { getRandomNumber, broadcastChannelOptions, storageAvailable } from '../utils/utils'
@@ -666,6 +667,67 @@ export default {
         discordWindow.open()
         discordWindow.once('close', () => {
           bc.close()
+          oauthStream.write({ err: 'user closed popup' })
+        })
+      } else if (verifier === TORUS) {
+        const state = encodeURIComponent(
+          window.btoa(
+            JSON.stringify({
+              instanceId: torus.instanceId,
+              verifier: TORUS
+            })
+          )
+        )
+        const finalUrl = `http://localhost:8080?state=${state}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
+        const torusWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+        const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+        bc.onmessage = async ev => {
+          try {
+            //   const {
+            //     instanceParams: { verifier },
+            //     hashParams: verifierParams
+            //   } = ev.data || {}
+            //   if (ev.error && ev.error !== '') {
+            //     log.error(ev.error)
+            //     oauthStream.write({ err: ev.error })
+            //   } else if (ev.data && verifier === TORUS) {
+            //     console.log(ev, verifierParams)
+            //     // const { access_token: accessToken } = verifierParams
+            //     // const userInfo = await get('https://discordapp.com/api/users/@me', {
+            //     //   headers: {
+            //     //     Authorization: `Bearer ${accessToken}`
+            //     //   }
+            //     // })
+            //     // const { id, avatar, email, username: name, discriminator } = userInfo || {}
+            //     // const profileImage =
+            //     //   avatar === null
+            //     //     ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
+            //     //     : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`
+            //     // dispatch('updateIdToken', { idToken: accessToken })
+            //     // dispatch('updateUserInfo', {
+            //     //   userInfo: {
+            //     //     profileImage,
+            //     //     name: `${name}#${discriminator}`,
+            //     //     email,
+            //     //     verifierId: id.toString(),
+            //     //     verifier: DISCORD,
+            //     //     verifierParams: { verifier_id: id.toString() }
+            //     //   }
+            //     // })
+            //     // dispatch('handleLogin', { calledFromEmbed, endPointNumber })
+            //   }
+          } catch (error) {
+            log.error(error)
+            console.log('error ', error)
+            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+          } finally {
+            // bc.close()
+            // torusWindow.close()
+          }
+        }
+        torusWindow.open()
+        torusWindow.once('close', () => {
+          // bc.close()
           oauthStream.write({ err: 'user closed popup' })
         })
       }
