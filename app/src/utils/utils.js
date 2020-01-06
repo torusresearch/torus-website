@@ -395,8 +395,8 @@ const paymentProviders = {
     api: true
   },
   [WYRE]: {
-    line1: 'Pay with Google/Apple/Masterpass',
-    line2: '<span class="font-weight-medium">Fee</span> : 2.9% + 30¢',
+    line1: 'Pay with Apple Pay/Debit Card',
+    line2: '<span class="font-weight-medium">Fee</span> : 1.5% + 30¢',
     line3: 'Limits: $250/day',
     line4: 'Currencies: ETH, DAI, WETH, USDC',
     status: ACTIVE,
@@ -410,17 +410,17 @@ const paymentProviders = {
     api: true
   },
   [COINDIRECT]: {
-    line1: 'Pay with Credit Card',
-    line2: '<span class="font-weight-medium">Fee</span> : Varies',
+    line1: 'Pay with Credit / Debit Card',
+    line2: '<span class="font-weight-medium">Fee</span> : 2.99%',
     line3: 'Limits: N/A',
-    line4: 'Currencies: ETH',
+    line4: 'Currencies: ETH, DAI, USDT',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://help.coindirect.com/hc/en-us',
     minOrderValue: 20,
     maxOrderValue: 1000,
     validCurrencies: ['EUR'],
-    validCryptoCurrencies: ['ETH'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'USDT'],
     includeFees: true,
     api: true
   },
