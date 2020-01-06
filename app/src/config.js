@@ -1,12 +1,9 @@
 import { PromiseReference } from './utils/utils'
-// on development, update the localhost port number to your app port.
-const baseUrl = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000'
+const baseUrl = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3001'
 
 const baseRoute = baseUrl + process.env.BASE_URL
 
 const redirect_uri = `${baseUrl}/redirect`
-
-const verifierUrl = process.env.VERIFIER_URI || 'http://localhost:8080'
 
 export const nodeDetails = {
   skip: true, // skip fetching of node details and use defaults below
