@@ -259,14 +259,6 @@ function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', thousands
   return null
 }
 
-function calculateGasKnob(gasPrice) {
-  return gasPrice < 20 ? gasPrice * 100 : (gasPrice + 60) * 25
-}
-
-function calculateGasPrice(gasKnob) {
-  return gasKnob < 2000 ? gasKnob / 100 : Math.round(gasKnob / 25) - 60
-}
-
 async function isSmartContractAddress(address, web3) {
   const code = await web3.eth.getCode(address)
   // Geth will return '0x', and ganache-core v2.2.1 will return '0x0'
@@ -493,8 +485,6 @@ module.exports = {
   hexToText,
   addressSlicer,
   significantDigits,
-  calculateGasKnob,
-  calculateGasPrice,
   isSmartContractAddress,
   extractHostname,
   formatCurrencyNumber,

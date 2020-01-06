@@ -191,11 +191,11 @@
             <v-list-item class="pa-0">
               <v-list-item-content flat class="pa-1 background lighten-3">
                 <v-card flat class="body-2 text-left pa-2 word-break typedMessageBox">
-                  <v-expansion-panels v-if="typeof message === 'string'">
+                  <v-expansion-panels v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE">
                     <p :class="$vuetify.theme.dark ? 'text_1--text' : 'text_2--text'" style="text-align:left">{{ message }}</p>
                   </v-expansion-panels>
 
-                  <v-expansion-panels v-else-if="!Array.isArray(typedMessages)">
+                  <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && !Array.isArray(typedMessages)">
                     <v-expansion-panel v-for="(value, index) in typedMessages" :key="index">
                       <v-expansion-panel-header>{{ index }}</v-expansion-panel-header>
                       <v-expansion-panel-content>
@@ -204,7 +204,7 @@
                     </v-expansion-panel>
                   </v-expansion-panels>
 
-                  <v-expansion-panels v-else-if="Array.isArray(typedMessages)">
+                  <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && Array.isArray(typedMessages)">
                     <v-expansion-panel>
                       <v-expansion-panel-header>data</v-expansion-panel-header>
                       <v-expansion-panel-content v-for="value in typedMessages" :key="value">
@@ -243,13 +243,14 @@ import { mapActions } from 'vuex' // Maybe dispatch a bc to show popup from that
 import VueJsonPretty from 'vue-json-pretty'
 import { BroadcastChannel } from 'broadcast-channel'
 import { numberToHex, fromWei, toChecksumAddress, hexToNumber } from 'web3-utils'
+import BigNumber from 'bignumber.js'
 import ShowToolTip from '../../components/helpers/ShowToolTip'
 import { PopupScreenLoader } from '../../content-loader'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import torus from '../../torus'
-import { significantDigits, calculateGasKnob, calculateGasPrice, addressSlicer, broadcastChannelOptions } from '../../utils/utils'
+import { significantDigits, addressSlicer, broadcastChannelOptions } from '../../utils/utils'
 import { get } from '../../utils/httpHelpers'
 import config from '../../config'
 import { isArray } from 'util'
@@ -277,7 +278,7 @@ const {
   ETH
 } = require('../../utils/enums')
 
-const weiInGwei = 10 ** 9
+const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
 
 export default {
   name: 'confirm',
@@ -295,34 +296,32 @@ export default {
       detailsDialog: false,
       type: 'none',
       origin: 'unknown',
-      gasPrice: 10,
-      gasKnob: 10,
-      balance: 0,
-      value: 0,
+      balance: new BigNumber('0'),
+      gasPrice: new BigNumber('10'),
+      value: new BigNumber('0'),
       amountTo: '',
       amountValue: '',
-      tokenPrice: 0,
-      amountTokenValueConverted: 0,
+      tokenPrice: new BigNumber('0'),
+      amountTokenValueConverted: new BigNumber('0'),
       currencyRateDate: '',
       receiver: 'unknown',
       message: '',
       selectedToken: '',
-      gasCost: 0,
-      gasEstimate: 0,
+      gasCost: new BigNumber('0'),
+      gasEstimate: new BigNumber('0'),
       txData: '',
       txDataParams: '',
       sender: '',
-      totalUsdCost: 0,
-      totalEthCost: 0,
+      totalUsdCost: new BigNumber('0'),
+      totalEthCost: new BigNumber('0'),
       totalEthCostDisplay: '',
       errorMsg: '',
       topUpErrorShow: false,
       canShowError: false,
-      txFees: 0,
-      network: '',
+      txFees: new BigNumber('0'),
       networkName: '',
       transactionCategory: '',
-      dollarValue: 0,
+      dollarValue: new BigNumber('0'),
       speed: '',
       typedMessages: {},
       id: 0,
@@ -460,7 +459,9 @@ export default {
       //`+ ${significantDigits(this.gasCost)}`
     },
     costOfTransactionConverted() {
-      const totalCost = this.isOtherToken ? significantDigits(this.totalUsdCost + this.amountTokenValueConverted, false, 5) : this.totalUsdCost
+      const totalCost = this.isOtherToken
+        ? significantDigits(this.totalUsdCost + this.amountTokenValueConverted.toNumber(), false, 5)
+        : this.totalUsdCost
       return `~ ${totalCost} ${this.selectedCurrency}`
     },
     imageType() {
@@ -470,8 +471,9 @@ export default {
     },
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
-      let currencyMultiplier = 1
-      if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+      let currencyMultiplierNum = 1
+      if (selectedCurrency !== 'ETH') currencyMultiplierNum = currencyData[selectedCurrency.toLowerCase()] || 1
+      const currencyMultiplier = new BigNumber(currencyMultiplierNum)
       return currencyMultiplier
     },
     getCurrencyRate() {
@@ -483,20 +485,19 @@ export default {
   },
   watch: {
     gasPrice: function(newGasPrice, oldGasPrice) {
-      this.gasCost = newGasPrice * this.gasEstimate * 10 ** -9
-      this.txFees = this.gasCost * this.getCurrencyMultiplier
-      const ethCost = parseFloat(this.value) + this.gasCost
-      this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
-      const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
-      this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
-      this.totalUsdCost = significantDigits(ethCost * this.getCurrencyMultiplier)
-      if (parseFloat(this.balance) < ethCost && !this.canShowError) {
-        this.errorMsg = 'Insufficient Funds'
-        this.topUpErrorShow = true
+      if (!newGasPrice.eq(oldGasPrice)) {
+        this.gasCost = newGasPrice.times(this.gasEstimate).div(new BigNumber('10').pow(new BigNumber('9')))
+        this.txFees = this.gasCost.times(this.getCurrencyMultiplier)
+        const ethCost = this.value.plus(this.gasCost)
+        this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
+        const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
+        this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
+        this.totalUsdCost = significantDigits(ethCost.times(this.getCurrencyMultiplier))
+        if (this.balance.lt(ethCost) && !this.canShowError) {
+          this.errorMsg = 'Insufficient Funds'
+          this.topUpErrorShow = true
+        }
       }
-    },
-    gasKnob: function(newGasKnob, oldGasKnob) {
-      this.gasPrice = calculateGasPrice(newGasKnob)
     }
   },
   methods: {
@@ -505,7 +506,7 @@ export default {
     },
     async triggerSign(event) {
       var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
-      var gasHex = numberToHex(this.gasPrice * weiInGwei)
+      var gasHex = '0x' + this.gasPrice.times(weiInGwei).toString(16)
       await bc.postMessage({
         name: 'tx-result',
         data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id, txType: this.type }
@@ -527,7 +528,7 @@ export default {
       this.gas = data.gas
 
       if (data.isReset) {
-        this.gasPrice = calculateGasPrice(this.gasPrice)
+        this.gasPrice = this.speedSelected === '' ? '' : this.gasPrice
       }
     },
     getNetworkName(targetNetwork) {
@@ -560,6 +561,7 @@ export default {
     ...mapActions({})
   },
   mounted() {
+    // get eth balance from store
     const queryParams = new URLSearchParams(window.location.search)
     const instanceId = queryParams.get('instanceId')
     const queryParamId = queryParams.get('id')
@@ -569,13 +571,14 @@ export default {
       if (ev.data && ev.data.txParams && ev.data.txParams.id.toString() !== queryParamId) return
       bc.close()
       const { type, msgParams, txParams, origin, balance } = ev.data || {}
+      this.balance = new BigNumber(balance)
       let url = { hostname: '' }
       try {
         url = new URL(origin)
       } catch (err) {
         log.info(err)
       }
-      log.info(ev.data)
+      log.info({ msgParams, txParams })
       this.origin = url.hostname // origin of tx: website url
       if (type !== TX_TRANSACTION) {
         var { message, typedMessages } = msgParams.msgParams || {}
@@ -590,24 +593,23 @@ export default {
         this.id = id
         this.message = message
         this.typedMessages = typedMessages
-        this.messageType = typedMessages ? 'typed' : 'normal'
       } else {
-        let finalValue = 0
-        const { value, to, data, from: sender, gas, gasPrice } = txParams.txParams || {}
-        let { simulationFails, network, id, transactionCategory, methodParams, contractParams } = txParams || {}
+        let finalValue = new BigNumber('0')
+        let { simulationFails, network, id, transactionCategory, methodParams, contractParams, txParams: txObject } = txParams || {}
+        const { value, to, data, from: sender, gas, gasPrice } = txObject || {}
         const { reason } = simulationFails || {}
         if (value) {
-          finalValue = fromWei(value.toString())
+          finalValue = new BigNumber(fromWei(value.toString()))
         }
         this.origin = this.origin.trim().length === 0 ? 'Wallet' : this.origin
-        // GET data params
+        // Get ABI for method
         let txDataParams = ''
         if (contractParams.erc721) {
           txDataParams = collectibleABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
         } else if (contractParams.erc20) {
           txDataParams = collectibleABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
         }
-        // log.info(methodParams, 'params')
+        // Get Params from method type ABI
         let amountTo, amountValue, amountFrom
         if (methodParams && isArray(methodParams)) {
           if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
@@ -616,17 +618,18 @@ export default {
         }
         log.info(methodParams, 'params')
         const checkSummedTo = toChecksumAddress(to)
-
         const tokenObj = contractParams
-        const decimals = tokenObj.decimals || 0
+        const decimals = new BigNumber(tokenObj.decimals || '0')
         this.selectedToken = tokenObj.symbol || 'ERC20'
         this.id = id
-        this.network = network
         this.networkName = this.getNetworkName(network)
         this.transactionCategory = transactionCategory
-        var gweiGasPrice = hexToNumber(gasPrice) / weiInGwei
+        var gweiGasPrice = new BigNumber(hexToNumber(gasPrice)).div(weiInGwei)
+        // sending to who
         this.amountTo = amountTo ? amountTo.value : checkSummedTo
-        this.amountValue = amountValue ? parseFloat(amountValue.value) / 10 ** parseFloat(decimals) : ''
+        // sending what value
+        this.amountValue = amountValue ? new BigNumber(amountValue.value).div(new BigNumber(10).pow(new BigNumber(decimals))) : new BigNumber('0')
+        // Get token and collectible info
         if (methodParams && contractParams.erc20) {
           const { tokenRates, selectedCurrency } = this.$store.state
           let tokenRateMultiplier = tokenRates[checkSummedTo.toLowerCase()]
@@ -642,8 +645,8 @@ export default {
               log.info(error)
             }
           }
-          this.tokenPrice = tokenRateMultiplier
-          this.amountTokenValueConverted = tokenRateMultiplier * parseFloat(this.amountValue) * this.getCurrencyMultiplier
+          this.tokenPrice = new BigNumber(tokenRateMultiplier)
+          this.amountTokenValueConverted = tokenRateMultiplier.times(this.amountValue).times(this.getCurrencyMultiplier)
         } else if (methodParams && contractParams.erc721) {
           log.info(methodParams, contractParams)
           this.isNonFungibleToken = true
@@ -666,27 +669,25 @@ export default {
         this.currencyRateDate = this.getDate()
         this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
-        this.dollarValue = significantDigits(parseFloat(finalValue) * this.getCurrencyMultiplier)
+        this.dollarValue = significantDigits(finalValue.times(this.getCurrencyMultiplier))
         this.gasPrice = gweiGasPrice // gas price in gwei
-        this.gasKnob = calculateGasKnob(gweiGasPrice)
-        this.balance = balance // in eth
-        this.balanceUsd = significantDigits(parseFloat(balance) * this.getCurrencyMultiplier) // in usd
-        this.gasEstimate = hexToNumber(gas) // gas number
+        this.balanceUsd = significantDigits(this.balance.times(this.getCurrencyMultiplier)) // in usd
+        this.gasEstimate = new BigNumber(hexToNumber(gas)) // gas number
         this.txData = data // data hex
         this.txDataParams = txDataParams !== '' ? JSON.stringify(txDataParams, null, 2) : ''
         this.sender = sender // address of sender
-        this.gasCost = gweiGasPrice * this.gasEstimate * 10 ** -9
-        this.txFees = this.gasCost * this.getCurrencyMultiplier
-        const ethCost = parseFloat(finalValue) + this.gasCost
+        this.gasCost = gweiGasPrice.times(this.gasEstimate).div(new BigNumber('10').pow(new BigNumber('9')))
+        this.txFees = this.gasCost.times(this.getCurrencyMultiplier)
+        const ethCost = finalValue.plus(this.gasCost)
         this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
         const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
         this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
-        this.totalUsdCost = significantDigits(ethCost * this.getCurrencyMultiplier)
+        this.totalUsdCost = significantDigits(ethCost.times(this.getCurrencyMultiplier))
         if (reason) {
           this.errorMsg = reason
           this.canShowError = true
         }
-        if (parseFloat(this.balance) < ethCost && !this.canShowError) {
+        if (this.balance.lt(ethCost) && !this.canShowError) {
           this.errorMsg = 'Insufficient Funds'
           this.topUpErrorShow = true
         }

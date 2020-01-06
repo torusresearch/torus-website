@@ -4,6 +4,7 @@ const { warn } = require('loglevel')
 const ObservableStore = require('obs-store')
 const { MAINNET } = require('../utils/enums')
 const { toHex } = require('web3-utils')
+const BigNumber = require('bignumber.js')
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
 
@@ -79,7 +80,7 @@ class DetectTokensController {
       nonZeroTokens.push({
         ...data,
         tokenAddress: contractAddress,
-        balance: toHex(parseFloat(data.balance) * 10 ** data.decimals)
+        balance: new BigNumber(data.balance).times(new BigNumber(10).pow(new BigNumber(data.decimals))).toString(16)
       })
       this.detectedTokensStore.putState({ tokens: nonZeroTokens })
     }
