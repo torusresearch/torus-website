@@ -490,8 +490,8 @@ export default {
         }
 
         this.convertedAmount = this.toggle_exclusive
-          ? significantDigits(this.displayAmount.div(this.getCurrencyTokenRate).toFormat(), false, 4)
-          : significantDigits(this.displayAmount.times(this.getCurrencyTokenRate).toFormat(), false, 4)
+          ? significantDigits(this.displayAmount.div(this.getCurrencyTokenRate), false, 4)
+          : significantDigits(this.displayAmount.times(this.getCurrencyTokenRate), false, 4)
 
         this.updateTotalCost()
       }

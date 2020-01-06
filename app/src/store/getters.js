@@ -49,12 +49,12 @@ const tokenBalances = state => {
       ...x,
       id: x.symbol,
       computedBalance: computedBalance,
-      formattedBalance: `${x.symbol} ${significantDigits(computedBalance.toFormat(3), false, formatter + 1)}`,
-      currencyBalance: `${selectedCurrency} ${significantDigits(currencyBalance.toFormat(formatter), false, formatter + 1)}`,
+      formattedBalance: `${x.symbol} ${significantDigits(computedBalance, false, formatter + 1)}`,
+      currencyBalance: `${selectedCurrency} ${significantDigits(currencyBalance, false, formatter + 1)}`,
       currencyRateText: `1 ${x.symbol} = ${currencyRate.toFormat(formatter)} ${selectedCurrency}`
     }
   })
-  const totalPortfolioValueReturn = significantDigits(totalPortfolioValue.toFormat(formatter), false, formatter + 1)
+  const totalPortfolioValueReturn = significantDigits(totalPortfolioValue, false, formatter + 1)
   return { finalBalancesArray, totalPortfolioValue: totalPortfolioValueReturn }
 }
 
