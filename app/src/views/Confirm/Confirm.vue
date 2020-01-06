@@ -645,7 +645,7 @@ export default {
             }
           }
           this.tokenPrice = new BigNumber(tokenRateMultiplier)
-          this.amountTokenValueConverted = tokenRateMultiplier.times(this.amountValue).times(this.getCurrencyMultiplier)
+          this.amountTokenValueConverted = this.tokenPrice.times(this.amountValue).times(this.getCurrencyMultiplier)
         } else if (methodParams && contractParams.erc721) {
           log.info(methodParams, contractParams)
           this.isNonFungibleToken = true
