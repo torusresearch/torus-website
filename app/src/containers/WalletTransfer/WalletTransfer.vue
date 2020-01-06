@@ -511,7 +511,7 @@ export default {
         const emailObject = {
           from_name: this.$store.state.userInfo.name,
           to_email: this.toAddress,
-          total_amount: this.amount.eq(new BigNumber('0')) ? '' : this.amount.toString(),
+          total_amount: this.amount.toString(),
           token: typeToken.toString(),
           etherscanLink: etherscanLink
         }

@@ -80,7 +80,7 @@ class DetectTokensController {
       nonZeroTokens.push({
         ...data,
         tokenAddress: contractAddress,
-        balance: new BigNumber(data.balance).times(new BigNumber(10).pow(new BigNumber(data.decimals))).toString(16)
+        balance: '0x' + new BigNumber(data.balance).times(new BigNumber(10).pow(new BigNumber(data.decimals))).toString(16)
       })
       this.detectedTokensStore.putState({ tokens: nonZeroTokens })
     }
