@@ -15,11 +15,15 @@
   }
 }
 
-.login-btn {
-  width: 70%;
-  ::v-deep .v-btn__content {
-    justify-content: left; 
+.body-2 {
+  .v-btn__content {
+    justify-content: start;
   }
+}
+
+.home-btn {
+  width: 100%;
+  justify-content: flex-start;
 }
 
 a {
@@ -53,6 +57,12 @@ a {
 .login-subtitle {
   max-width: 514px;
   margin: 0 auto;
+}
+
+.alternate-login {
+  border: 2px solid #e9eaea;
+  text-transform: unset;
+  @extend .home-btn;
 }
 
 .default {
