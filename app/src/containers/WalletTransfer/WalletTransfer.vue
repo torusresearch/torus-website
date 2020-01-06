@@ -331,6 +331,7 @@ import {
   OLD_ERC721_LIST,
   ALLOWED_VERIFIERS
 } from '../../utils/enums'
+import BigNumber from 'bignumber.js'
 
 const erc20TransferABI = require('human-standard-token-abi')
 const erc721TransferABI = require('human-standard-collectible-abi')
@@ -355,7 +356,7 @@ export default {
       assetSelected: {},
       tokenAddress: '0x',
       toEthAddress: '0x',
-      amount: 0,
+      amount: new BigNumber(0),
       displayAmount: '0',
       convertedAmount: '',
       contactSelected: '',
@@ -363,8 +364,8 @@ export default {
       formValid: false,
       ensError: '',
       toggle_exclusive: 0,
-      gas: 21000,
-      activeGasPrice: '',
+      gas: new BigNumber(21000),
+      activeGasPrice: new BigNumber(0),
       gasPriceInCurrency: '',
       isFastChecked: false,
       speedSelected: '',
@@ -394,9 +395,6 @@ export default {
     },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
-    },
-    currentEthBalance() {
-      return this.$store.state.weiBalance[this.$store.state.selectedAddress]
     },
     finalBalancesArray() {
       return this.$store.getters.tokenBalances.finalBalancesArray || []
@@ -429,40 +427,27 @@ export default {
     },
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
-      let currencyMultiplier = 1
-      if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+      let currencyMultiplierNum = 1
+      if (selectedCurrency !== 'ETH') currencyMultiplierNum = currencyData[selectedCurrency.toLowerCase()] || 1
+      const currencyMultiplier = new BigNumber(currencyMultiplierNum)
       return currencyMultiplier
     },
     getCurrencyTokenRate() {
       const { tokenRates } = this.$store.state
       const currencyMultiplier = this.getCurrencyMultiplier
-      let tokenRateMultiplier = 1
-      if (this.contractType === CONTRACT_TYPE_ERC20) tokenRateMultiplier = tokenRates[this.selectedTokenAddress.toLowerCase()] || 0
-      return currencyMultiplier * tokenRateMultiplier
-    },
-    gasDisplayString() {
-      const currencyMultiplier = this.getCurrencyMultiplier
-      const ethFee = this.gas * this.fastGasPrice * 10 ** -9
-      const currencyFee = ethFee * currencyMultiplier
-      return `${significantDigits(currencyFee)} ${this.selectedCurrency} / ${significantDigits(ethFee)} ETH`
-    },
-    fastGasDisplayString() {
-      const currencyMultiplier = this.getCurrencyMultiplier
-      const ethFee = this.gas * this.fastestGasPrice * 10 ** -9
-      const currencyFee = ethFee * currencyMultiplier
-      return `Faster with ${significantDigits(currencyFee)} ${this.selectedCurrency} / ${significantDigits(ethFee)} ETH`
-    },
-    remainingBalanceString() {
-      if (this.selectedItem) return `${this.selectedItem.currencyBalance} / ${this.selectedItem.formattedBalance}`
-      return ''
+      let tokenRateMultiplierNum = 1
+      if (this.contractType === CONTRACT_TYPE_ERC20) tokenRateMultiplierNum = tokenRates[this.selectedTokenAddress.toLowerCase()] || 0
+      const tokenRateMultiplier = new BigNumber(tokenRateMultiplierNum)
+      return currencyMultiplier.times(tokenRateMultiplier)
     },
     convertedTotalCostDisplay() {
+      // TODO
       return `~ ${significantDigits(this.convertedTotalCost)} ${this.selectedCurrency}`
     },
     currencyBalanceDisplay() {
       // = 390.00 USD
       // USD 4,138.16
-      const getNumber = this.selectedItem.currencyBalance.split(' ')[1].replace(',', '')
+      const getNumber = this.selectedItem.currencyBalance.split(' ')[1]
       return `= ${getNumber} ${this.selectedCurrency}`
     },
     totalCostSuffix() {
@@ -493,14 +478,16 @@ export default {
   watch: {
     displayAmount: function(newValue, oldValue) {
       if (this.toggle_exclusive === 0) {
-        this.amount = this.displayAmount
+        this.amount = new BigNumber(this.displayAmount || '0')
       } else {
-        this.amount = this.getCurrencyTokenRate > 0 ? this.displayAmount / this.getCurrencyTokenRate : this.displayAmount * this.getCurrencyTokenRate
+        this.amount = this.getCurrencyTokenRate.gt(new BigNumber('0'))
+          ? new BigNumber(this.displayAmount).div(this.getCurrencyTokenRate)
+          : new BigNumber(this.displayAmount).times(this.getCurrencyTokenRate)
       }
 
       this.convertedAmount = this.toggle_exclusive
-        ? significantDigits(this.displayAmount / this.getCurrencyTokenRate)
-        : significantDigits(this.displayAmount * this.getCurrencyTokenRate)
+        ? significantDigits(new BigNumber(this.displayAmount || '0').div(this.getCurrencyTokenRate).toFormat())
+        : significantDigits(new BigNumber(this.displayAmount || '0').times(this.getCurrencyTokenRate).toFormat())
 
       this.updateTotalCost()
     }
@@ -522,7 +509,7 @@ export default {
         const emailObject = {
           from_name: this.$store.state.userInfo.name,
           to_email: this.toAddress,
-          total_amount: parseFloat(this.amount) === 0 ? '' : this.amount.toString(),
+          total_amount: this.amount.eq(new BigNumber('0')) ? '' : this.amount.toNumber(),
           token: typeToken.toString(),
           etherscanLink: etherscanLink
         }
@@ -538,17 +525,17 @@ export default {
     },
     moreThanZero(value) {
       if (this.selectedItem) {
-        return parseFloat(value) > 0 || 'Invalid amount'
+        return new BigNumber(value || '0').gt(new BigNumber('0')) || 'Invalid amount'
       }
       return ''
     },
     lesserThan(value) {
       if (this.selectedItem) {
-        let amount = value
+        let amount = new BigNumber(value || '0')
         if (this.toggle_exclusive === 1) {
-          amount = amount / this.getCurrencyTokenRate
+          amount = amount.div(this.getCurrencyTokenRate)
         }
-        return parseFloat(amount) <= this.selectedItem.computedBalance || 'Insufficient balance for transaction'
+        return amount.lte(this.selectedItem.computedBalance) || 'Insufficient balance for transaction'
       }
       return ''
     },
@@ -584,39 +571,39 @@ export default {
             torus.web3.eth
               .estimateGas({ to: toAddress })
               .then(response => {
-                resolve(response)
+                resolve(new BigNumber(response || '0').times(new BigNumber('1.1')))
               })
               .catch(err => {
                 log.error(err)
-                resolve(0)
+                resolve(new BigNumber('0'))
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC20) {
             const selectedAddress = this.$store.state.selectedAddress
-            const value = Math.floor(parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()
+            const value = '0x' + this.amount.times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals))).toString(16)
             this.getTransferMethod(this.contractType, selectedAddress, toAddress, value)
               .estimateGas({ from: selectedAddress })
               .then(response => {
-                resolve(response)
+                resolve(new BigNumber(response || '0'))
               })
               .catch(err => {
                 log.error(err)
-                resolve(0)
+                resolve(new BigNumber('0'))
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC721) {
             const selectedAddress = this.$store.state.selectedAddress
             this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId)
               .estimateGas({ from: selectedAddress })
               .then(response => {
-                resolve(response)
+                resolve(new BigNumber(response || '0'))
               })
               .catch(err => {
                 log.error(err)
-                resolve(0)
+                resolve(new BigNumber('0'))
               })
           }
         })
       } else {
-        return Promise.resolve(21000)
+        return Promise.resolve(new BigNumber('21000'))
       }
     },
     getTransferMethod(contractType, selectedAddress, toAddress, value) {
@@ -700,23 +687,23 @@ export default {
       this.toggle_exclusive = value
       const currencyRate = this.getCurrencyTokenRate
       if (value === 0) {
-        this.displayAmount = this.displayAmount / currencyRate
+        this.displayAmount = new BigNumber(this.displayAmount || '0').div(currencyRate).toNumber()
       } else if (value === 1) {
-        this.displayAmount = this.displayAmount * currencyRate
+        this.displayAmount = new BigNumber(this.displayAmount || '0').times(currencyRate).toNumber()
       }
     },
     sendAll() {
       const ethBalance = this.selectedItem.computedBalance
-      const currencyBalance = ethBalance * this.getCurrencyTokenRate
+      const currencyBalance = ethBalance.times(this.getCurrencyTokenRate)
       const ethGasPrice = this.getEthAmount(this.gas, this.activeGasPrice)
-      const currencyGasPrice = ethGasPrice * this.getCurrencyTokenRate
+      const currencyGasPrice = ethGasPrice.times(this.getCurrencyTokenRate)
 
       this.isSendAll = true
 
       if (this.toggle_exclusive === 0) {
-        this.displayAmount = ethBalance - ethGasPrice
+        this.displayAmount = ethBalance.minus(ethGasPrice).toNumber()
       } else {
-        this.displayAmount = currencyBalance - currencyGasPrice
+        this.displayAmount = currencyBalance.minus(currencyGasPrice).toNumber()
       }
     },
     resetSendAll() {
@@ -727,30 +714,16 @@ export default {
     },
     async sendCoin() {
       const toAddress = this.toEthAddress
-      const fastGasPrice = toBN((this.activeGasPrice * 10 ** 9).toString())
+      const fastGasPrice = '0x' + this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)
       const selectedAddress = this.$store.state.selectedAddress
       if (this.contractType === CONTRACT_TYPE_ETH) {
-        const requiredGas = Math.trunc(
-          (await torus.web3.eth.estimateGas({
-            to: toAddress,
-            data: ''
-          })) * 1.1
-        )
-
-        log.info('TX SENT: ', {
-          from: selectedAddress,
-          to: toAddress,
-          value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
-          gas: requiredGas,
-          gasPrice: fastGasPrice
-        })
-
+        const value = '0x' + this.amount.times(new BigNumber(10).pow(new BigNumber(18))).toString(16)
         torus.web3.eth.sendTransaction(
           {
             from: selectedAddress,
             to: toAddress,
-            value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
-            gas: requiredGas,
+            value,
+            gas: this.gas.eq(new BigNumber('0')) ? undefined : '0x' + this.gas.toString(16),
             gasPrice: fastGasPrice
           },
           (err, transactionHash) => {
@@ -771,11 +744,11 @@ export default {
           }
         )
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
-        const value = Math.floor(parseFloat(this.amount) * 10 ** parseFloat(this.selectedItem.decimals)).toString()
+        const value = '0x' + this.amount.times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals))).toString(16)
         this.getTransferMethod(this.contractType, selectedAddress, toAddress, value).send(
           {
             from: selectedAddress,
-            gas: this.gas === 0 ? undefined : this.gas.toString(),
+            gas: this.gas.eq(new BigNumber('0')) ? undefined : '0x' + this.gas.toString(16),
             gasPrice: fastGasPrice
           },
           (err, transactionHash) => {
@@ -799,7 +772,7 @@ export default {
         this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId).send(
           {
             from: selectedAddress,
-            gas: this.gas === 0 ? undefined : this.gas.toString(),
+            gas: this.gas.eq(new BigNumber('0')) ? undefined : '0x' + this.gas.toString(16),
             gasPrice: fastGasPrice
           },
           (err, transactionHash) => {
@@ -820,19 +793,8 @@ export default {
         )
       }
     },
-    getGasDisplayString(fastGasPrice) {
-      const currencyFee = this.getGasAmount(fastGasPrice)
-      return `${significantDigits(currencyFee)} ${this.selectedCurrency}`
-    },
-    getGasAmount(fastGasPrice) {
-      const currencyMultiplier = this.getCurrencyMultiplier
-      const ethFee = this.getEthAmount(this.gas, fastGasPrice)
-      const currencyFee = ethFee * currencyMultiplier
-
-      return currencyFee
-    },
     getEthAmount(gas, gasPrice) {
-      return gas * gasPrice * 10 ** -9
+      return gas.times(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
     },
     goBack() {
       this.$router.go(-1)
@@ -852,7 +814,7 @@ export default {
         this.convertedTotalCost = ''
 
         if (this.activeGasPrice !== '') {
-          const gasPriceInEth = this.getEthAmount(this.gas, parseFloat(this.activeGasPrice))
+          const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
           this.gasPriceInCurrency = gasPriceInEth * this.getCurrencyTokenRate
         }
         return

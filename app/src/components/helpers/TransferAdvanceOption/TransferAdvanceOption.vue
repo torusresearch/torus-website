@@ -120,6 +120,7 @@
 <script>
 import { significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'
+import BigNumber from 'bignumber.js'
 
 export default {
   components: {
@@ -130,15 +131,16 @@ export default {
     return {
       dialog: false,
       advanceOptionFormValid: true,
-      advancedActiveGasPrice: 0,
-      advancedGas: 0
+      advancedActiveGasPrice: new BigNumber('0'),
+      advancedGas: new BigNumber('0')
     }
   },
   computed: {
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
-      let currencyMultiplier = 1
-      if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+      let currencyMultiplierNum = 1
+      if (selectedCurrency !== 'ETH') currencyMultiplierNum = currencyData[selectedCurrency.toLowerCase()] || 1
+      const currencyMultiplier = new BigNumber(currencyMultiplierNum)
       return currencyMultiplier
     },
     selectedCurrency() {
@@ -146,10 +148,10 @@ export default {
     },
     totalCost() {
       const maxLength = Math.max(this.gasAmountDisplay.toString().length, this.displayAmount.toString().length)
-      return significantDigits(parseFloat(this.displayAmount) + parseFloat(this.gasAmount), false, maxLength - 2)
+      return significantDigits(new BigNumber(this.displayAmount).plus(this.gasAmount).toString(), false, maxLength - 2)
     },
     gasAmount() {
-      return this.advancedGas * this.advancedActiveGasPrice * 10 ** -9
+      return this.advancedGas.times(this.advancedActiveGasPrice).times(new BigNumber(10).pow(new BigNumber(-9)))
     },
     gasAmountDisplay() {
       return significantDigits(this.gasAmount)
@@ -158,7 +160,7 @@ export default {
       return this.convertedDisplay(this.gasAmount)
     },
     displayAmountConverted() {
-      return this.convertedDisplay(parseFloat(this.displayAmount))
+      return this.convertedDisplay(this.displayAmount)
     },
     totalCostConverted() {
       return this.convertedDisplay(this.totalCost)
@@ -174,6 +176,7 @@ export default {
           advancedGas: this.advancedGas,
           advancedActiveGasPrice: this.advancedActiveGasPrice
         }
+        console.log('TCL: saveOptions -> payload', payload)
 
         this.$emit('onSave', payload)
         this.dialog = false
@@ -186,7 +189,8 @@ export default {
     },
     convertedDisplay(amount) {
       const currencyMultiplier = this.getCurrencyMultiplier
-      const converted = significantDigits(amount * currencyMultiplier)
+      const bigNum = !BigNumber.isBigNumber(amount) ? new BigNumber(amount).times(currencyMultiplier) : amount.times(currencyMultiplier)
+      const converted = significantDigits(bigNum)
 
       return `~ ${converted} ${this.selectedCurrency}`
     }
