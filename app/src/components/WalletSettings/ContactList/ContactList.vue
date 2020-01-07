@@ -66,7 +66,7 @@
             </v-flex>
 
             <v-layout wrap>
-              <v-flex xs6 :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-2'">
+              <v-flex xs12 sm12 md6 :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-2'">
                 <notification
                   :alert-show="saveContactAlert"
                   :alert-text="saveContactAlertText"
@@ -74,18 +74,10 @@
                   @closeAlert="closeAlert"
                 />
               </v-flex>
-              <v-flex xs6 :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-2'">
+              <v-flex xs12 sm12 md6 :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'pl-2'">
                 <v-btn id="contact-submit-btn" block type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">
                   {{ t('walletSettings.addContact') }}
                 </v-btn>
-              </v-flex>
-              <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'mt-2'">
-                <notification
-                  :alert-show="saveContactAlert"
-                  :alert-text="saveContactAlertText"
-                  :alert-type="saveContactAlertType"
-                  @closeAlert="closeAlert"
-                />
               </v-flex>
             </v-layout>
           </v-layout>
