@@ -12,7 +12,7 @@
         </v-btn>
       </div>
       <v-card-text class="text-center qr-container">
-        <div class="headline font-weight-bold">Your Public Address</div>
+        <div class="headline font-weight-bold">{{ t('walletHome.yourPublicAddress') }}</div>
         <div class="caption text_2--text mb-4">
           <show-tool-tip :address="selectedAddress">{{ slicedAddress }}</show-tool-tip>
         </div>

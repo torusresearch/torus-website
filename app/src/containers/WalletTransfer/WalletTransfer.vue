@@ -164,7 +164,9 @@
               >
                 {{ t('walletTransfer.sendAll') }}
               </a>
-              <a id="send-all-reset-btn" class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">Reset</a>
+              <a id="send-all-reset-btn" class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">
+                {{ t('walletTransfer.reset') }}
+              </a>
             </div>
             <v-select
               v-if="contractType === CONTRACT_TYPE_ERC721"
@@ -259,7 +261,7 @@
               id="wallet-transfer-submit"
               @click="onTransferClick"
             >
-              Transfer
+              {{ t('walletTransfer.youSend') }}
             </v-btn>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
               <transfer-confirm
@@ -381,7 +383,7 @@ export default {
       selectedVerifier: '',
       verifierOptions: ALLOWED_VERIFIERS,
       rules: {
-        required: value => !!value || 'Required'
+        required: value => !!value || this.t('walletTransfer.required')
       },
       nodeDetails: {},
       showModalMessage: false,
@@ -527,7 +529,7 @@ export default {
     },
     moreThanZero(value) {
       if (this.selectedItem) {
-        return new BigNumber(value || '0').gt(new BigNumber('0')) || 'Invalid amount'
+        return new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount')
       }
       return ''
     },
@@ -537,7 +539,7 @@ export default {
         if (this.toggle_exclusive === 1) {
           amount = amount.div(this.getCurrencyTokenRate)
         }
-        return amount.lte(this.selectedItem.computedBalance) || 'Insufficient balance for transaction'
+        return amount.lte(this.selectedItem.computedBalance) || this.t('walletTransfer.insufficient')
       }
       return ''
     },

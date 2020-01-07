@@ -43,38 +43,38 @@
       <v-flex x12 class="activity-details">
         <v-list class="mx-n4 caption">
           <v-list-item>
-            <v-list-item-content class="details-label">Started at:</v-list-item-content>
+            <v-list-item-content class="details-label">{{ t('walletActivity.startedAt') }}:</v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
               <span>{{ transaction.timeFormatted }} - {{ transaction.dateFormatted }}</span>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-list-item-content class="details-label">Send to:</v-list-item-content>
+            <v-list-item-content class="details-label">{{ t('walletActivity.sendTo') }}:</v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
               <span>{{ transaction.to }}</span>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-list-item-content class="details-label">Rate:</v-list-item-content>
+            <v-list-item-content class="details-label">{{ t('walletActivity.rate') }}:</v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
               <span>1 ETH = {{ transaction.ethRate }} {{ transaction.currencyUsed }}</span>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-list-item-content class="details-label">Amount:</v-list-item-content>
+            <v-list-item-content class="details-label">{{ t('walletActivity.amount') }}:</v-list-item-content>
             <v-list-item-content class="details-value text_2--text amount-text">
               {{ transaction.totalAmountString }} /{{ transaction.currencyAmountString }}
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-list-item-content class="details-label">Network:</v-list-item-content>
+            <v-list-item-content class="details-label">{{ t('walletActivity.network') }}:</v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
               <network-display :network="transaction.networkType"></network-display>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-if="transaction.etherscanLink">
             <v-list-item-content class="details-value text_2--text text-right mt-1">
-              <a class="etherscan-lnk" color="primary" :href="transaction.etherscanLink" target="_blank">View On Etherscan</a>
+              <a class="etherscan-lnk" color="primary" :href="transaction.etherscanLink" target="_blank">{{ t('walletActivity.viewOnEtherscan') }}</a>
             </v-list-item-content>
           </v-list-item>
         </v-list>

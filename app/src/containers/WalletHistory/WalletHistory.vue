@@ -130,11 +130,11 @@ export default {
     getActionText(activity) {
       // Handling tx from common-api schema and /tx schema separately.
       return activity.type_name === 'n/a' || activity.type === 'n/a'
-        ? `${activity.action === ACTIVITY_ACTION_SEND ? 'Sent' : 'Received'} ${
+        ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
             activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
           }`
         : activity.type_name || activity.type
-        ? `${activity.action === ACTIVITY_ACTION_SEND ? 'Sent' : 'Received'} ${activity.type_name}`
+        ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${activity.type_name}`
         : `${activity.action + ' ' + activity.from} `
     },
     getIcon(activity) {

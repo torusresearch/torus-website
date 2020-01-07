@@ -48,7 +48,7 @@
               <v-text-field
                 id="contact-name"
                 v-model="newContactName"
-                placeholder="Enter Contact Name"
+                :placeholder="t('walletSettings.enterContact')"
                 :rules="[rules.required]"
                 outlined
                 aria-label="Contact Name"
@@ -102,7 +102,7 @@ export default {
       newContact: '',
       newContactName: '',
       rules: {
-        required: value => !!value || 'Required'
+        required: value => !!value || this.t('walletSettings.required')
       },
       verifierOptions: ALLOWED_VERIFIERS,
       ETH,
@@ -125,7 +125,7 @@ export default {
     },
     checkDuplicates(value) {
       if (this.contacts) {
-        return this.contacts.findIndex(x => x.contact.toLowerCase() === value.toLowerCase()) < 0 || 'Duplicate contact'
+        return this.contacts.findIndex(x => x.contact.toLowerCase() === value.toLowerCase()) < 0 || this.t('walletSettings.duplicateContact')
       }
       return ''
     },
