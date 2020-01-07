@@ -18,11 +18,10 @@
             {{ transaction.actionIcon }}
           </v-icon>
         </div>
-        <div class="caption font-weight-medium">
-          {{ transaction.actionText }}
+        <div class="caption font-weight-medium">{{ transaction.actionText }}</div>
+        <div class="info font-weight-light">
+          {{ transaction.action === ACTIVITY_ACTION_SEND ? t('walletActivity.to') : t('walletActivity.from') }} {{ transaction.slicedTo }}
         </div>
-        <div v-if="transaction.actionText.split(' ')[0] === 'Sent'" class="info font-weight-light">to {{ transaction.slicedTo }}</div>
-        <div v-else-if="transaction.actionText.split(' ')[0] === 'Received'" class="info font-weight-light">from {{ transaction.slicedTo }}</div>
       </v-flex>
       <v-flex class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'xs4' : 'xs2'">
         <div class="caption font-weight-medium">
@@ -34,7 +33,7 @@
       <v-flex xs2 v-if="!$vuetify.breakpoint.xsOnly"></v-flex>
       <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-right mt-4' : 'xs2 text-center'">
         <v-chip class="status-chip black--text" :color="getChipColor(transaction.statusText)" small>
-          {{ transaction.statusText }}
+          {{ t(transaction.statusText) }}
         </v-chip>
       </v-flex>
     </v-layout>
@@ -86,6 +85,7 @@
 <script>
 const {
   ACTIVITY_ACTION_SEND,
+  ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_STATUS_SUCCESSFUL,
   ACTIVITY_STATUS_UNSUCCESSFUL,
   ACTIVITY_STATUS_PENDING,
@@ -105,6 +105,7 @@ export default {
     return {
       showDetails: false,
       ACTIVITY_ACTION_SEND,
+      ACTIVITY_ACTION_RECEIVE,
       ACTIVITY_STATUS_SUCCESSFUL,
       ACTIVITY_STATUS_UNSUCCESSFUL,
       ACTIVITY_STATUS_PENDING,

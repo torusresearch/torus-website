@@ -70,15 +70,53 @@ export default {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
       pastOrders: [],
-      actionTypes: [ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_TOPUP],
       selectedAction: ACTIVITY_ACTION_ALL,
-      periods: [ACTIVITY_PERIOD_ALL, ACTIVITY_PERIOD_WEEK_ONE, ACTIVITY_PERIOD_MONTH_ONE, ACTIVITY_PERIOD_MONTH_SIX],
       selectedPeriod: ACTIVITY_PERIOD_ALL,
       paymentTx: [],
       pastTx: []
     }
   },
   computed: {
+    actionTypes() {
+      return [
+        {
+          text: this.t(ACTIVITY_ACTION_ALL),
+          value: ACTIVITY_ACTION_ALL
+        },
+        {
+          text: this.t(ACTIVITY_ACTION_SEND),
+          value: ACTIVITY_ACTION_SEND
+        },
+        {
+          text: this.t(ACTIVITY_ACTION_RECEIVE),
+          value: ACTIVITY_ACTION_RECEIVE
+        },
+        {
+          text: this.t(ACTIVITY_ACTION_TOPUP),
+          value: ACTIVITY_ACTION_TOPUP
+        }
+      ]
+    },
+    periods() {
+      return [
+        {
+          text: this.t(ACTIVITY_PERIOD_ALL),
+          value: ACTIVITY_PERIOD_ALL
+        },
+        {
+          text: this.t(ACTIVITY_PERIOD_WEEK_ONE),
+          value: ACTIVITY_PERIOD_WEEK_ONE
+        },
+        {
+          text: this.t(ACTIVITY_PERIOD_MONTH_ONE),
+          value: ACTIVITY_PERIOD_MONTH_ONE
+        },
+        {
+          text: this.t(ACTIVITY_PERIOD_MONTH_SIX),
+          value: ACTIVITY_PERIOD_MONTH_SIX
+        }
+      ]
+    },
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
     },
@@ -135,7 +173,7 @@ export default {
           }`
         : activity.type_name || activity.type
         ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${activity.type_name}`
-        : `${activity.action + ' ' + activity.from} `
+        : `${this.t(activity.action) + ' ' + activity.from} `
     },
     getIcon(activity) {
       if (activity.action === ACTIVITY_ACTION_TOPUP) {
@@ -146,7 +184,7 @@ export default {
         } else if (activity.type === CONTRACT_TYPE_ERC20) {
           return `logos/${activity.type_image_link}`
         } else {
-          return `$vuetify.icons.coins_${activity.action.toLowerCase()}`
+          return `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}`
         }
       }
     },
@@ -275,12 +313,17 @@ export default {
     )
       .then(response => {
         this.paymentTx = response.data.reduce((acc, x) => {
+          let action = ''
+          if (ACTIVITY_ACTION_TOPUP.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_TOPUP
+          else if (ACTIVITY_ACTION_SEND.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_SEND
+          else if (ACTIVITY_ACTION_RECEIVE.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_RECEIVE
+
           acc.push({
             id: x.id,
             date: new Date(x.date),
             from: x.from,
             slicedFrom: x.slicedFrom,
-            action: x.action,
+            action,
             to: x.to,
             slicedTo: x.slicedTo,
             totalAmount: x.totalAmount,

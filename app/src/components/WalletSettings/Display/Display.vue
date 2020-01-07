@@ -20,7 +20,7 @@
               v-for="theme in themes"
               :key="`${theme.name}`"
             >
-              {{ theme.label }}
+              {{ t(theme.label) }}
             </v-list-item>
           </v-list>
         </v-menu>

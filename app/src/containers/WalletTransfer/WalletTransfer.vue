@@ -381,7 +381,6 @@ export default {
       qrErrorMsg: '',
       autoSelectVerifier: true,
       selectedVerifier: '',
-      verifierOptions: ALLOWED_VERIFIERS,
       rules: {
         required: value => !!value || this.t('walletTransfer.required')
       },
@@ -396,6 +395,13 @@ export default {
     }
   },
   computed: {
+    verifierOptions() {
+      const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
+      return verifiers.map(verifier => {
+        verifier.name = this.t(verifier.name)
+        return verifier
+      })
+    },
     randomName() {
       return `torus-${torus.instanceId}`
     },
@@ -459,7 +465,9 @@ export default {
       return this.contractType === CONTRACT_TYPE_ETH ? (this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency) : ''
     },
     verifierPlaceholder() {
-      return this.selectedVerifier ? `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}` : ''
+      return this.selectedVerifier
+        ? `${this.t('walletSettings.enter')} ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
+        : ''
     },
     contactList() {
       return this.$store.state.contacts.reduce((mappedObj, contact) => {

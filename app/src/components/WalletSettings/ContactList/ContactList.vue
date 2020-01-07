@@ -104,7 +104,6 @@ export default {
       rules: {
         required: value => !!value || this.t('walletSettings.required')
       },
-      verifierOptions: ALLOWED_VERIFIERS,
       ETH,
       saveContactAlert: false,
       saveContactAlertText: '',
@@ -112,8 +111,16 @@ export default {
     }
   },
   computed: {
+    verifierOptions() {
+      const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
+      return verifiers.map(verifier => {
+        verifier.name = this.t(verifier.name)
+        return verifier
+      })
+    },
     verifierPlaceholder() {
-      return `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
+      const verifierLocale = ALLOWED_VERIFIERS.find(verifier => verifier.value === this.selectedVerifier).name
+      return `${this.t('walletSettings.enter')} ${this.t(verifierLocale)}`
     },
     contacts() {
       return this.$store.state.contacts
