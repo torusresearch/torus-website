@@ -1,22 +1,22 @@
 <template>
-  <content-loader :height="600" :width="450" :speed="2" primaryColor="#E7EDF3" secondaryColor="#ecebeb">
-    <rect x="15.5" y="17.61" rx="0" ry="0" width="46.13" height="28.18" />
-    <rect x="15.5" y="63.61" rx="0" ry="0" width="139.18" height="22.12" />
-    <rect x="15.5" y="92.61" rx="0" ry="0" width="418.85" height="51.14" />
-    <rect x="15.5" y="330.61" rx="0" ry="0" width="412.23" height="9.83" />
-    <rect x="15.5" y="148.61" rx="0" ry="0" width="418.85" height="51.14" />
-    <rect x="15.5" y="205.61" rx="0" ry="0" width="418.85" height="51.14" />
-    <rect x="15.5" y="263.61" rx="0" ry="0" width="418.85" height="51.14" />
-    <rect x="15.5" y="345.61" rx="0" ry="0" width="255.58" height="8.74" />
-  </content-loader>
+  <div class="sk-grid">
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 35px;"></div></div>
+
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 20px;"></div></div>
+    <div class="sk-grid__col-mob-2"></div>
+
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 85px; margin-bottom: 20px;"></div></div>
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 85px; margin-bottom: 20px;"></div></div>
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 85px; margin-bottom: 20px;"></div></div>
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 85px; margin-bottom: 20px;"></div></div>
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 85px; margin-bottom: 20px;"></div></div>
+
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+    <div class="sk-grid__col-mob-2"></div>
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+  </div>
 </template>
 
 <script>
-import { ContentLoader } from 'vue-content-loader'
-
-export default {
-  components: {
-    ContentLoader
-  }
-}
+export default {}
 </script>
