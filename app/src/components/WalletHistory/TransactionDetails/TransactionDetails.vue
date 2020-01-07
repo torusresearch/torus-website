@@ -21,8 +21,8 @@
         <div class="caption font-weight-medium">
           {{ transaction.actionText }}
         </div>
-        <div v-if="transaction.actionText.split(' ')[0] === 'Send'" class="info font-weight-light">to {{ transaction.slicedTo }}</div>
-        <div v-else-if="transaction.actionText.split(' ')[0] === 'Receive'" class="info font-weight-light">from {{ transaction.slicedTo }}</div>
+        <div v-if="transaction.actionText.split(' ')[0] === 'Sent'" class="info font-weight-light">to {{ transaction.slicedTo }}</div>
+        <div v-else-if="transaction.actionText.split(' ')[0] === 'Received'" class="info font-weight-light">from {{ transaction.slicedTo }}</div>
       </v-flex>
       <v-flex class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'xs4' : 'xs2'">
         <div class="caption font-weight-medium">
