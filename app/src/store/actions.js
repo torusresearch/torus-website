@@ -691,7 +691,13 @@ export default {
           Authorization: `Bearer ${state.jwtToken}`
         }
       }).then(resp => {
-        if (resp.data) commit('setBillboard', resp.data)
+        const events = []
+        resp.data.forEach(event => {
+          if (events[event.callToActionLink] === undefined) events[event.callToActionLink] = {}
+          events[event.callToActionLink][event.locale] = event
+        })
+
+        if (events) commit('setBillboard', events)
       })
     } catch (error) {
       reject(error)
