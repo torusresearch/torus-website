@@ -1,4 +1,5 @@
 import randomId from 'random-id'
+import Torus from 'torus.js'
 import config from './config.js'
 import onloadTorus from './onload.js'
 import { post } from './utils/httpHelpers.js'
@@ -8,8 +9,9 @@ const setupMultiplex = require('./utils/setupMultiplex').default
 const ethUtil = require('ethereumjs-util')
 
 // Make this a class. Use ES6
-class Torus {
+class TorusExtended extends Torus {
   constructor() {
+    super()
     this.instanceId = randomId()
     this.setupMultiplex = setupMultiplex
   }
@@ -54,6 +56,6 @@ class Torus {
 }
 
 /* Inialize torus object on load */
-const torus = onloadTorus(new Torus())
+const torus = onloadTorus(new TorusExtended())
 
 export default torus

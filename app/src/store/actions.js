@@ -762,7 +762,7 @@ export default {
     } = state
     const { torusNodeEndpoints, torusIndexes } = await NodeDetailManager.getNodeDetails()
     torus
-      .getPubKeyAsync(torusNodeEndpoints[endPointNumber], { verifier, verifierId })
+      .getPubKeyAsync(torusNodeEndpoints, { verifier, verifierId })
       .catch(err => {
         totalFailCount += 1
         log.error(err)

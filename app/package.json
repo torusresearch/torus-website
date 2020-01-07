@@ -74,6 +74,7 @@
     "register-service-worker": "^1.6.2",
     "single-call-balance-checker-abi": "^1.0.0",
     "swappable-obj-proxy": "^1.1.0",
+    "torus.js": "file:../../torus.js/torus.js-1.0.0.tgz",
     "ua-parser-js": "^0.7.21",
     "vue": "^2.6.11",
     "vue-content-loader": "^0.2.2",
