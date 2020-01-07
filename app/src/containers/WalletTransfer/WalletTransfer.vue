@@ -818,8 +818,8 @@ export default {
     },
     updateTotalCost() {
       if (this.displayAmount.isZero() || this.activeGasPrice === '') {
-        this.totalCost = ''
-        this.convertedTotalCost = ''
+        this.totalCost = '0'
+        this.convertedTotalCost = '0'
 
         if (this.activeGasPrice !== '') {
           const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
@@ -828,8 +828,8 @@ export default {
         return
       }
 
-      this.totalCost = ''
-      this.convertedTotalCost = ''
+      this.totalCost = '0'
+      this.convertedTotalCost = '0'
 
       // Updated you send value if send all
       if (this.isSendAll) {
