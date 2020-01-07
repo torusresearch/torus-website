@@ -306,10 +306,10 @@
 <script>
 import { QrcodeCapture } from 'vue-qrcode-reader'
 import { isAddress, toChecksumAddress, toBN, toWei } from 'web3-utils'
+import NodeDetailManager from '@toruslabs/fetch-node-details'
 import torus from '../../torus'
 import { significantDigits, getRandomNumber, getEtherScanHashLink, validateVerifierId } from '../../utils/utils'
 import config from '../../config'
-import { nodeDetails } from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import ComponentLoader from '../../components/helpers/ComponentLoader'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
@@ -383,6 +383,7 @@ export default {
       rules: {
         required: value => !!value || 'Required'
       },
+      nodeDetails: {},
       showModalMessage: false,
       modalMessageSuccess: null,
       isSendAll: false,
@@ -667,9 +668,9 @@ export default {
             return
           }
         } else {
-          const endPointNumber = getRandomNumber(nodeDetails.torusNodeEndpoints.length)
+          const endPointNumber = getRandomNumber(this.nodeDetails.torusNodeEndpoints.length)
           try {
-            toAddress = await torus.getPubKeyAsync(nodeDetails.torusNodeEndpoints[endPointNumber], {
+            toAddress = await torus.getPubKeyAsync(this.nodeDetails.torusNodeEndpoints[endPointNumber], {
               verifier: this.selectedVerifier,
               verifierId: this.toAddress
             })
@@ -677,9 +678,9 @@ export default {
             log.error(err)
             let newEndPointNumber = endPointNumber
             while (newEndPointNumber === endPointNumber) {
-              newEndPointNumber = getRandomNumber(nodeDetails.torusNodeEndpoints.length)
+              newEndPointNumber = getRandomNumber(this.nodeDetails.torusNodeEndpoints.length)
             }
-            toAddress = await torus.getPubKeyAsync(nodeDetails.torusNodeEndpoints[newEndPointNumber], {
+            toAddress = await torus.getPubKeyAsync(this.nodeDetails.torusNodeEndpoints[newEndPointNumber], {
               verifier: this.selectedVerifier,
               verifierId: this.toAddress
             })
@@ -927,6 +928,10 @@ export default {
     })
 
     this.updateFieldsBasedOnRoute()
+
+    NodeDetailManager.getNodeDetails().then(nodeDetails => {
+      this.nodeDetails = nodeDetails
+    })
   }
 }
 </script>

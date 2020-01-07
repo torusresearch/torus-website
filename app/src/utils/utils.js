@@ -339,22 +339,6 @@ function validateVerifierId(selectedVerifier, value) {
   return true
 }
 
-/**
- * @class PromiseReference
- * @type {Object}
- * @property {function} resolve The resolve reference for the promise
- * @property {function} reject The reject reference for the promise
- * @property {Object} promise The promise
- */
-function PromiseReference() {
-  var context = this
-  this.promise = new Promise(function(resolve, reject) {
-    context.resolve = resolve
-    context.reject = reject
-  })
-}
-PromiseReference.prototype.constructor = PromiseReference
-
 function formatDate(date) {
   const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   const day = date.getDate()
@@ -495,7 +479,6 @@ module.exports = {
   broadcastChannelOptions,
   storageAvailable,
   validateVerifierId,
-  PromiseReference,
   formatDate,
   paymentProviders,
   getPaymentProviders,
