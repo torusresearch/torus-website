@@ -1,9 +1,9 @@
 import { BroadcastChannel } from 'broadcast-channel'
+import NodeDetailManager from '@toruslabs/fetch-node-details'
 import log from 'loglevel'
-import config, { nodeDetails } from '../config'
+import config from '../config'
 import { toChecksumAddress } from 'web3-utils'
 import torus from '../torus'
-import { PromiseReference } from '../utils/utils'
 import {
   RPC,
   USER_INFO_REQUEST_APPROVED,
@@ -355,16 +355,7 @@ export default {
     }
   },
   triggerLogin({ dispatch }, { calledFromEmbed, verifier, preopenInstanceId }) {
-    var p = new PromiseReference()
-    if (!nodeDetails.skip) {
-      nodeDetails.updated.promise.then(updatedNodeDetails => {
-        p.resolve(updatedNodeDetails)
-      })
-    } else {
-      p.resolve(nodeDetails)
-    }
-
-    p.promise.then(updatedNodeDetails => {
+    NodeDetailManager.getNodeDetails().then(updatedNodeDetails => {
       const { torusNodeEndpoints } = updatedNodeDetails
       const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
 
@@ -763,13 +754,13 @@ export default {
         })
     })
   },
-  handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
+  async handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
     dispatch('loginInProgress', true)
     const {
       idToken,
       userInfo: { verifierId, verifier, verifierParams }
     } = state
-    const { torusNodeEndpoints, torusIndexes } = nodeDetails
+    const { torusNodeEndpoints, torusIndexes } = await NodeDetailManager.getNodeDetails()
     torus
       .getPubKeyAsync(torusNodeEndpoints[endPointNumber], { verifier, verifierId })
       .catch(err => {
