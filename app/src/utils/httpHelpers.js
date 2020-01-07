@@ -1,4 +1,14 @@
-function post(url = '', data = {}, opts = {}) {
+export const promiseTimeout = (ms, promise) => {
+  const timeout = new Promise((resolve, reject) => {
+    const id = setTimeout(() => {
+      clearTimeout(id)
+      reject(new Error('Timed out in ' + ms + 'ms'))
+    }, ms)
+  })
+  return Promise.race([promise, timeout])
+}
+
+export const post = (url = '', data = {}, opts = {}) => {
   const defaultOptions = {
     mode: 'cors',
     cache: 'no-cache',
@@ -12,14 +22,17 @@ function post(url = '', data = {}, opts = {}) {
     ...opts,
     ...{ method: 'POST' }
   }
-  return fetch(url, options).then(response => {
-    if (response.ok) {
-      return response.json()
-    } else throw new Error('Could not connect', response)
-  })
+  return promiseTimeout(
+    30000,
+    fetch(url, options).then(response => {
+      if (response.ok) {
+        return response.json()
+      } else throw new Error('Could not connect', response)
+    })
+  )
 }
 
-function remove(url = '', data = {}, opts = {}) {
+export const remove = (url = '', data = {}, opts = {}) => {
   const defaultOptions = {
     mode: 'cors',
     cache: 'no-cache',
@@ -39,7 +52,7 @@ function remove(url = '', data = {}, opts = {}) {
   })
 }
 
-function get(url = '', opts = {}) {
+export const get = (url = '', opts = {}) => {
   const defaultOptions = {
     mode: 'cors',
     cache: 'no-cache'
@@ -56,7 +69,7 @@ function get(url = '', opts = {}) {
   })
 }
 
-function patch(url = '', data = {}, opts = {}) {
+export const patch = (url = '', data = {}, opts = {}) => {
   const defaultOptions = {
     mode: 'cors',
     cache: 'no-cache',
@@ -77,7 +90,7 @@ function patch(url = '', data = {}, opts = {}) {
   })
 }
 
-function generateJsonRPCObject(method, params) {
+export const generateJsonRPCObject = (method, params) => {
   return {
     jsonrpc: '2.0',
     method: method,
@@ -86,7 +99,7 @@ function generateJsonRPCObject(method, params) {
   }
 }
 
-function promiseRace(url, options, timeout, counter) {
+export const promiseRace = (url, options, timeout, counter) => {
   return Promise.race([
     get(url, options),
     new Promise((resolve, reject) => {
@@ -96,5 +109,3 @@ function promiseRace(url, options, timeout, counter) {
     })
   ])
 }
-
-export { get, post, patch, remove, generateJsonRPCObject, promiseRace }
