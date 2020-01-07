@@ -39,7 +39,7 @@ export default {
   moonpayTestAPIKEY: 'pk_test_j6AnwGJD0XTJDg3bTO37OczjFsddYpS',
   wyreHost: 'https://pay.sendwyre.com/purchase',
   wyreAccountId: 'AC_RUQMPNP7QQY',
-  coindirectHost: 'https://api.sandbox.coindirect.com',
+  coindirectHost: 'https://api.coindirect.com',
   coindirectTestHost: 'https://business.sandbox.coindirect.com/buy',
   coindirectTestMerchantID: 'c21e690c-bb95-42fe-ae17-f962c582b26c',
   coindirectLiveHost: 'https://business.coindirect.com/buy',
