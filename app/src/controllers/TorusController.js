@@ -128,6 +128,7 @@ export default class TorusController extends EventEmitter {
       getNetwork: this.networkController.getNetworkState.bind(this),
       // signs ethTx
       signTransaction: this.keyringController.signTransaction.bind(this.keyringController),
+      getWallet: this.keyringController.exportAccount.bind(this.keyringController),
       provider: this.provider,
       blockTracker: this.blockTracker,
       getGasPrice: this.getGasPrice.bind(this),
@@ -310,8 +311,10 @@ export default class TorusController extends EventEmitter {
   // =============================================================================
 
   initTorusKeyring(keyArray, addresses) {
+    log.info('initToruskeyring, toruscontroller.js', keyArray, addresses)
     return new Promise((resolve, reject) => {
-      const finalKeyArray = keyArray.filter(x => x)
+      const finalKeyArray = keyArray.flatMap(x => x.privateKey).filter(x => x)
+      log.info('initToruskeyring, toruscontroller.js, finalKeyArray', finalKeyArray)
       this.keyringController
         .deserialize(finalKeyArray)
         .then(resp => {

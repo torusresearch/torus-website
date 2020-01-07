@@ -1,8 +1,9 @@
 import AbiDecoder from '../utils/abiDecoder'
+import { relayer } from '../config'
 const EventEmitter = require('safe-event-emitter')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
-const { sha3 } = require('web3-utils')
+const { sha3, toChecksumAddress } = require('web3-utils')
 const Transaction = require('ethereumjs-tx')
 const EthQuery = require('ethjs-query')
 const tokenAbi = require('human-standard-token-abi')
@@ -11,9 +12,15 @@ const { errors: rpcErrors } = require('eth-json-rpc-errors')
 
 const tokenABIDecoder = new AbiDecoder(tokenAbi)
 const collectibleABIDecoder = new AbiDecoder(collectibleAbi)
-const { toChecksumAddress } = require('web3-utils')
 const erc20Contracts = require('eth-contract-metadata')
 const erc721Contracts = require('../assets/assets-map.json')
+
+// Gasless transactions functions
+const Web3 = require('web3')
+const TransferManager = require('../assets/TransferManager.json')
+const signOffchain = require('../utils/signOffchain')
+const getNonceForRelay = require('../utils/getNonceForRelay')
+const { get, post } = require('../utils/httpHelpers')
 
 const TransactionStateManager = require('./TransactionStateManager').default
 const TxGasUtil = require('../utils/TxGasUtil').default
@@ -78,6 +85,8 @@ class TransactionController extends EventEmitter {
     this.inProcessOfSigning = new Set()
     this.memStore = new ObservableStore({})
     this.query = new EthQuery(this.provider)
+    this.web3 = new Web3(this.provider)
+    this.getWallet = opts.getWallet
     this.txGasUtil = new TxGasUtil(this.provider)
     this.opts = opts
     this._mapMethods()
@@ -87,7 +96,6 @@ class TransactionController extends EventEmitter {
       getNetwork: this.getNetwork.bind(this)
     })
     this._onBootCleanUp()
-
     this.store = this.txStateManager.store
     this.nonceTracker = new NonceTracker({
       provider: this.provider,
@@ -192,6 +200,7 @@ class TransactionController extends EventEmitter {
   async addUnapprovedTransaction(txParams) {
     // validate
     log.debug(`MetaMaskController addUnapprovedTransaction ${JSON.stringify(txParams)}`)
+    const relayer = txParams.relayer
     const normalizedTxParams = txUtils.normalizeTxParams(txParams)
     // Assert the from address is the selected address
     if (normalizedTxParams.from !== this.getSelectedAddress()) {
@@ -209,11 +218,13 @@ class TransactionController extends EventEmitter {
       txParams: normalizedTxParams,
       type: TRANSACTION_TYPE_STANDARD
     })
+    log.debug(`MetaMaskController addUnapprovedTransaction ${JSON.stringify(txMeta)}`)
 
     const { transactionCategory, getCodeResponse, methodParams, contractParams } = await this._determineTransactionCategory(txParams)
     txMeta.transactionCategory = transactionCategory
     txMeta.methodParams = methodParams
     txMeta.contractParams = contractParams
+    txMeta.relayer = relayer
 
     this.addTx(txMeta)
 
@@ -424,26 +435,73 @@ class TransactionController extends EventEmitter {
   */
   async signTransaction(txId) {
     const txMeta = this.txStateManager.getTx(txId)
+    log.info('Transaction Controller, signTransaction', txMeta)
+    let rawTx
     // add network/chain id
     const chainId = this.getChainId()
-    const txParams = Object.assign({}, txMeta.txParams, { chainId })
-    // sign tx
-    const fromAddress = txParams.from
-    const ethTx = new Transaction(txParams)
-    await this.signEthTx(ethTx, fromAddress)
+    let txParams = Object.assign({}, txMeta.txParams, { chainId })
 
-    // add r,s,v values for provider request purposes see createMetamaskMiddleware
-    // and JSON rpc standard for further explanation
-    txMeta.r = ethUtil.bufferToHex(ethTx.r)
-    txMeta.s = ethUtil.bufferToHex(ethTx.s)
-    txMeta.v = ethUtil.bufferToHex(ethTx.v)
+    if (txMeta.relayer) {
+      // sign tx
+      // Currently only for ETH token
+      const ETH_TOKEN = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+      const ZERO_BYTES32 = '0x0000000000000000000000000000000000000000000000000000000000000000'
 
-    this.txStateManager.updateTx(txMeta, 'transactions#signTransaction: add r, s, v values')
+      const fromSCW = txParams.from
+      const to = txParams.to
+      log.info(`fromSCW ${fromSCW}, to ${to}`)
 
-    // set state to signed
-    this.txStateManager.setTxStatusSigned(txMeta.id)
-    const rawTx = ethUtil.bufferToHex(ethTx.serialize())
-    return rawTx
+      const nonce = await getNonceForRelay(this.web3)
+      // console.log('nonce', nonce)
+      const localWeb3 = this.web3
+      const TransferModule = new localWeb3.eth.Contract(TransferManager.abi, '0xD45256EEf4bFB182B108Cd8e0bCB4A9369342C1d')
+      const methodData = TransferModule.methods.transferToken(to, ETH_TOKEN, fromSCW, txParams.value.toString(), ZERO_BYTES32).encodeABI()
+      //txParams.data = methodData
+      //const ethTx = new Transaction(txParams)
+
+      const selectedEOA = this.getSelectedEOA()
+      console.log('selectedEOA is', selectedEOA)
+
+      const privateKey = await this.getWallet(selectedEOA)
+      console.log('privateKey is', privateKey)
+
+      const walletAccount = this.web3.eth.accounts.privateKeyToAccount('0x' + privateKey)
+      log.info([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 700000)
+
+      const signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 700000)
+      const reqObj = {
+        wallet: fromSCW,
+        nonce,
+        methodData,
+        signatures
+      }
+
+      this.txStateManager.setTxStatusSigned(txMeta.id)
+
+      console.log('TransactionController', reqObj, relayer)
+
+      const relayerTransfer = await post('http://localhost:2090/transfer/eth', reqObj)
+      return relayerTransfer
+    } else {
+      // sign tx
+      const fromAddress = txParams.from
+      const ethTx = new Transaction(txParams)
+      await this.signEthTx(ethTx, fromAddress)
+
+      // add r,s,v values for provider request purposes see createMetamaskMiddleware
+      // and JSON rpc standard for further explanation
+      txMeta.r = ethUtil.bufferToHex(ethTx.r)
+      txMeta.s = ethUtil.bufferToHex(ethTx.s)
+      txMeta.v = ethUtil.bufferToHex(ethTx.v)
+
+      this.txStateManager.updateTx(txMeta, 'transactions#signTransaction: add r, s, v values')
+
+      // set state to signed
+      this.txStateManager.setTxStatusSigned(txMeta.id)
+      rawTx = ethUtil.bufferToHex(ethTx.serialize())
+      console.log('Transaction Controller', rawTx)
+      return rawTx
+    }
   }
 
   /**
@@ -542,6 +600,14 @@ class TransactionController extends EventEmitter {
       if (typeof this.opts.storeProps === 'function') {
         const { selectedAddress } = this.opts.storeProps() || {}
         return (selectedAddress && selectedAddress.toLowerCase()) || ''
+      } else return ''
+    }
+    /**  */
+    this.getSelectedEOA = () => {
+      if (typeof this.opts.storeProps === 'function') {
+        console.log(this.opts.storeProps())
+        const { selectedEOA } = this.opts.storeProps() || {}
+        return (selectedEOA && selectedEOA.toLowerCase()) || ''
       } else return ''
     }
     /** Returns an array of transactions whos status is unapproved */

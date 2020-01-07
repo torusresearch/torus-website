@@ -314,6 +314,7 @@ import MessageModal from '../../components/WalletTransfer/MessageModal'
 import AddContact from '../../components/WalletTransfer/AddContact'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import { get, post } from '../../utils/httpHelpers'
+import TransferManagerJSON from '../../assets/TransferManager.json'
 import log from 'loglevel'
 import {
   WALLET_HEADERS_TRANSFER,
@@ -730,21 +731,18 @@ export default {
     async sendCoin() {
       const toAddress = this.toEthAddress
       const fastGasPrice = toBN((this.activeGasPrice * 10 ** 9).toString())
+      log.info('sendCoin, this.contracttype', this.contractType)
       const selectedAddress = this.$store.state.selectedAddress
       if (this.contractType === CONTRACT_TYPE_ETH) {
-        const requiredGas = Math.trunc(
-          (await torus.web3.eth.estimateGas({
-            to: toAddress,
-            data: ''
-          })) * 1.2
-        )
+        const requiredGas = Math.trunc(this.gas * 1.2).toString()
 
         log.info('TX SENT: ', {
           from: selectedAddress,
           to: toAddress,
           value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
           gas: requiredGas,
-          gasPrice: fastGasPrice
+          gasPrice: fastGasPrice,
+          relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
         })
 
         torus.web3.eth.sendTransaction(
@@ -753,7 +751,8 @@ export default {
             to: toAddress,
             value: toWei(parseFloat(this.amount.toString()).toFixed(18)),
             gas: requiredGas,
-            gasPrice: fastGasPrice
+            gasPrice: fastGasPrice,
+            relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
           },
           (err, transactionHash) => {
             if (err) {

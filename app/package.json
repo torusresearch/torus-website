@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "assert": "^2.0.0",
+    "bn.js": "^5.1.1",
     "broadcast-channel": "^3.0.3",
     "copy-to-clipboard": "^3.2.0",
     "core-js": "3.6.1",

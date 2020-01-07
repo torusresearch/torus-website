@@ -45,6 +45,7 @@ if (storageAvailable('sessionStorage'))
         userInfoAccess: state.userInfoAccess,
         idToken: state.idToken,
         wallet: state.wallet,
+        selectedEOA: state.selectedEOA,
         // weiBalance: state.weiBalance,
         selectedAddress: state.selectedAddress,
         networkType: state.networkType,

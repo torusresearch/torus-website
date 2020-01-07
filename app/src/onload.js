@@ -38,8 +38,8 @@ function onloadTorus(torus) {
     openPopup: triggerUi.bind(window, 'bindopenPopup'),
     storeProps: () => {
       const { state } = store || {}
-      let { selectedAddress, wallet } = state || {}
-      return { selectedAddress, wallet }
+      let { selectedAddress, wallet, selectedEOA } = state || {}
+      return { selectedAddress, wallet, selectedEOA }
     },
     rehydrate: function() {
       store.dispatch('rehydrate')

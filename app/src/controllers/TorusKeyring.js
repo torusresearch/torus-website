@@ -10,6 +10,7 @@ export default class TorusKeyring extends EventEmitter {
     super()
     this.type = type
     this.wallets = []
+    log.info('toruskeyring', opts)
     this.deserialize(opts)
       .then(() => {
         log.info('wallet initialised')
@@ -18,6 +19,7 @@ export default class TorusKeyring extends EventEmitter {
   }
 
   serialize() {
+    log.info('torusKeyRing, serialise', this.wallets)
     return new Promise((resolve, reject) => {
       try {
         const keys = this.wallets.map(this.generatePrivKey)
@@ -29,7 +31,10 @@ export default class TorusKeyring extends EventEmitter {
   }
 
   generatePrivKey(wallet) {
-    return wallet.getPrivateKey().toString('hex')
+    log.info('generatePrivKey')
+    const test = wallet.privateKey.getPrivateKey().toString('hex')
+    log.info('generatePrivKey', wallet, test)
+    return test
   }
 
   generateWallet(privateKey) {
@@ -42,6 +47,7 @@ export default class TorusKeyring extends EventEmitter {
   deserialize(privateKeys = []) {
     return new Promise((resolve, reject) => {
       try {
+        log.info('deserialize', privateKeys)
         this.wallets = privateKeys.map(this.generateWallet)
         resolve()
       } catch (e) {
@@ -83,6 +89,7 @@ export default class TorusKeyring extends EventEmitter {
 
   // tx is an instance of the ethereumjs-transaction class.
   signTransaction(tx, address) {
+    log.info('signTransaction', tx, address)
     return new Promise((resolve, reject) => {
       try {
         const wallet = this._getWalletForAccount(address)
@@ -177,8 +184,11 @@ export default class TorusKeyring extends EventEmitter {
   /* PRIVATE METHODS */
 
   _getWalletForAccount(account) {
+    console.log('_getWalletForAccount account', account)
     const address = sigUtil.normalize(account)
+
     let wallet = this.wallets.find(w => ethUtil.bufferToHex(w.getAddress()) === address)
+    console.log('_getWalletForAccount wallet', this.wallets)
     if (!wallet) throw new Error('Torus Keyring - Unable to find matching address.')
     return wallet
   }

@@ -254,8 +254,10 @@ export default {
     context.commit('setIdToken', payload.idToken)
   },
   addWallet(context, payload) {
+    log.info('add Wallet', payload)
     if (payload.ethAddress) {
-      context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
+      //context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
+      context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: { privateKey: payload.privKey, type: payload.type || 'EOA' } })
     }
   },
   removeWallet(context, payload) {
@@ -294,7 +296,7 @@ export default {
       const { privKey } = payload
       const address = torus.generateAddressFromPrivKey(privKey)
       torus.torusController.setSelectedAccount(address, { jwtToken: state.jwtToken })
-      dispatch('addWallet', { ethAddress: address, privKey: privKey })
+      dispatch('addWallet', { ethAddress: address, privKey: privKey, type: 'EOA' })
       dispatch('updateSelectedAddress', { selectedAddress: address })
       torus.torusController
         .addAccount(privKey, address)
@@ -334,9 +336,15 @@ export default {
     commit('setTokenRates', payload.tokenRates)
   },
   updateSelectedAddress({ commit, state }, payload) {
+    log.info('update selected address', payload)
     commit('setSelectedAddress', payload.selectedAddress)
     torus.updateStaticData({ selectedAddress: payload.selectedAddress })
     torus.torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
+  },
+  updateSelectedEOA({ commit }, payload) {
+    console.log('updateSelectedEOA', payload)
+    commit('updateSelectedEOA', payload.selectedAddress)
+    // torus.updateStaticData({ selectedEOA: payload.selectedAddress })
   },
   updateNetworkId(context, payload) {
     context.commit('setNetworkId', payload.networkId)
@@ -691,7 +699,8 @@ export default {
     torus.torusController.tokenRatesController.store.subscribe(tokenRatesControllerHandler)
   },
   initTorusKeyring({ state, dispatch }, payload) {
-    return torus.torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
+    log.info('dispatch, initTorusKeyring', payload)
+    return torus.torusController.initTorusKeyring([{ privateKey: [payload.privKey], type: 'EOA' }], [payload.ethAddress])
   },
   setBillboard({ commit, state }) {
     try {
@@ -791,13 +800,14 @@ export default {
       .then(async response => {
         const data = response[0]
         const message = response[1]
-        dispatch('addWallet', data) // synchronous
+        dispatch('addWallet', { ...data, type: 'EOA' }) // synchronous
         dispatch('subscribeToControllers')
+        dispatch('updateSelectedEOA', { selectedAddress: data.ethAddress }) // synchronous
+        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
         await Promise.all([
           dispatch('initTorusKeyring', data),
           dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
         ])
-        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
         dispatch('setBillboard')
         // continue enable function
         var ethAddress = data.ethAddress
@@ -904,14 +914,17 @@ export default {
           .then(async user => {
             if (user.data) {
               const { transactions, contacts, default_currency, theme, scw } = user.data || {}
+              log.info(scw, state.networkType.host, state.networkId)
               commit('setPastTransactions', transactions)
               commit('setContacts', contacts)
               dispatch('setTheme', theme)
               dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
               dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
-              if (scw[0]) {
-                dispatch('addWallet', { ethAddress: scw[0].proxy_contract_address, privKey: null })
-                await torus.torusController.addAccount(null, scw[0].proxy_contract_address)
+              const selectedNetworkContract = scw.filter(x => x.network == state.networkType.host)
+              if (selectedNetworkContract[0]) {
+                dispatch('addWallet', { ethAddress: selectedNetworkContract[0].proxy_contract_address, privKey: null, type: 'SC' })
+                await torus.torusController.addAccount(null, selectedNetworkContract[0].proxy_contract_address)
+                dispatch('updateSelectedAddress', { selectedAddress: selectedNetworkContract[0].proxy_contract_address }) // synchronous
               }
               resolve()
             }
@@ -943,6 +956,7 @@ export default {
   async rehydrate({ state, dispatch }, payload) {
     let {
       selectedAddress,
+      selectedEOA,
       wallet,
       networkType,
       networkId,
@@ -967,6 +981,7 @@ export default {
           dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true })
         ])
         dispatch('updateSelectedAddress', { selectedAddress })
+        dispatch('updateSelectedEOA', { selectedAddress: selectedEOA })
         dispatch('updateNetworkId', { networkId: networkId })
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: verifier })
         log.info('rehydrated wallet')

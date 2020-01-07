@@ -14,6 +14,7 @@ const initialState = {
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
   weiBalanceLoaded: false, // Use on showing spinners
+  selectedEOA: '', // For signing
   selectedAddress: '',
   selectedCurrency: 'USD',
   networkId: 0,
@@ -35,4 +36,10 @@ const initialState = {
   contacts: []
 }
 
+/** new wallet object
+wallet: {
+  publickey: {privatekey: "sdfjlaskdjfljasdf", type: "EOA"}
+  contractAddress: {privatekey: null, type:"SC"}
+}
+*/
 export default initialState
