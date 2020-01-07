@@ -1,6 +1,7 @@
 const ethUtil = require('ethereumjs-util')
 const assert = require('assert')
 const BN = require('bn.js')
+const BigNumber = require('bignumber.js')
 const {
   ENVIRONMENT_TYPE_POPUP,
   ENVIRONMENT_TYPE_NOTIFICATION,
@@ -215,19 +216,19 @@ function addressSlicer(address = '') {
 }
 
 function significantDigits(number, perc = false, len = 2) {
-  let input = number
-  if (input === 0) return input
+  let input = !BigNumber.isBigNumber(number) ? new BigNumber(number) : number
+  if (input.isZero()) return input
   if (perc) {
-    input *= 100
+    input = input.times(new BigNumber(100))
   }
   let depth
-  if (input >= 1) {
+  if (input.gte(new BigNumber(1))) {
     depth = 2
   } else {
-    depth = len - 1 + Math.ceil(Math.log10(1 / input))
+    depth = len - 1 + Math.ceil(Math.log10(new BigNumber('1').div(input).toNumber()))
   }
-  const shift = Math.pow(10, depth)
-  const roundedNum = Math.round(shift * input) / shift
+  const shift = new BigNumber(10).pow(new BigNumber(depth))
+  const roundedNum = Math.round(shift.times(input).toNumber()) / shift
   return roundedNum
 }
 
@@ -256,14 +257,6 @@ function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', thousands
     log.error(e)
   }
   return null
-}
-
-function calculateGasKnob(gasPrice) {
-  return gasPrice < 20 ? gasPrice * 100 : (gasPrice + 60) * 25
-}
-
-function calculateGasPrice(gasKnob) {
-  return gasKnob < 2000 ? gasKnob / 100 : Math.round(gasKnob / 25) - 60
 }
 
 async function isSmartContractAddress(address, web3) {
@@ -402,8 +395,8 @@ const paymentProviders = {
     api: true
   },
   [WYRE]: {
-    line1: 'Pay with Google/Apple/Masterpass',
-    line2: '<span class="font-weight-medium">Fee</span> : 2.9% + 30¢',
+    line1: 'Pay with Apple Pay/Debit Card',
+    line2: '<span class="font-weight-medium">Fee</span> : 1.5% + 30¢',
     line3: 'Limits: $250/day',
     line4: 'Currencies: ETH, DAI, WETH, USDC',
     status: ACTIVE,
@@ -417,17 +410,17 @@ const paymentProviders = {
     api: true
   },
   [COINDIRECT]: {
-    line1: 'Pay with Credit Card',
-    line2: '<span class="font-weight-medium">Fee</span> : Varies',
+    line1: 'Pay with Credit / Debit Card',
+    line2: '<span class="font-weight-medium">Fee</span> : 2.99%',
     line3: 'Limits: N/A',
-    line4: 'Currencies: ETH',
+    line4: 'Currencies: ETH, DAI, USDT',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://help.coindirect.com/hc/en-us',
     minOrderValue: 20,
     maxOrderValue: 1000,
     validCurrencies: ['EUR'],
-    validCryptoCurrencies: ['ETH'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'USDT'],
     includeFees: true,
     api: true
   },
@@ -492,8 +485,6 @@ module.exports = {
   hexToText,
   addressSlicer,
   significantDigits,
-  calculateGasKnob,
-  calculateGasPrice,
   isSmartContractAddress,
   extractHostname,
   formatCurrencyNumber,
