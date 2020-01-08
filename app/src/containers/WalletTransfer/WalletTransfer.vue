@@ -577,7 +577,7 @@ export default {
               .then(response => {
                 let resolved = new BigNumber(response || '0')
                 if (!resolved.eq(new BigNumber('21000'))) {
-                  resolved = resolved.times(new BigNumber('1.1'))
+                  resolved = new BigNumber(resolved.times(new BigNumber('1.1')).toFixed(0))
                   this.sendEthToContractError = this.isSendAll
                 }
                 resolve(resolved)
@@ -727,6 +727,7 @@ export default {
       const selectedAddress = this.$store.state.selectedAddress
       if (this.contractType === CONTRACT_TYPE_ETH) {
         const value = '0x' + this.amount.times(new BigNumber(10).pow(new BigNumber(18))).toString(16)
+        log.info(this.gas.toString())
         torus.web3.eth.sendTransaction(
           {
             from: selectedAddress,
