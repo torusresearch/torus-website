@@ -408,7 +408,7 @@ class TransactionController extends EventEmitter {
       txMeta.nonceDetails = nonceLock.nonceDetails
       this.txStateManager.updateTx(txMeta, 'transactions#approveTransaction')
       // sign transaction
-      const rawTx = await this.signTransaction(txId)
+      const rawTx = await this.signTransaction(txId, nonceLock)
 
       // Handling different transaction scenarios
       if (rawTx != 'TransactionRelayed') {
@@ -437,7 +437,7 @@ class TransactionController extends EventEmitter {
     @param txId {number} - the tx's Id
     @returns - rawTx {string}
   */
-  async signTransaction(txId) {
+  async signTransaction(txId, nonceLock) {
     const txMeta = this.txStateManager.getTx(txId)
     log.info('Transaction Controller, signTransaction', txMeta)
     let rawTx
@@ -485,12 +485,12 @@ class TransactionController extends EventEmitter {
       this.txStateManager.updateTx(txMeta, 'transactions#publishTransaction')
 
       log.info('TransactionController', reqObj, relayer)
-      post('http://localhost:2090/transfer/eth', reqObj)
-        .then(res => {
-          log.info(res)
-          this.txStateManager.setTxStatusSubmitted(txMeta.id)
-        })
-        .catch(console.error)
+
+      const relayerRequest = await post('http://localhost:2090/transfer/eth', reqObj)
+      log.info(relayerRequest)
+      this.setTxHash(txId, relayerRequest.tx.transactionHash)
+      this.txStateManager.setTxStatusSubmitted(txMeta.id)
+      nonceLock.releaseLock()
 
       return 'TransactionRelayed'
     } else {

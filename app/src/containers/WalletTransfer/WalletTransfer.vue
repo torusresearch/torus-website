@@ -706,14 +706,17 @@ export default {
       const ethBalance = this.selectedItem.computedBalance
       const currencyBalance = ethBalance.times(this.getCurrencyTokenRate)
       const ethGasPrice = this.getEthAmount(this.gas, this.activeGasPrice)
+      const transferFromSC = this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
       const currencyGasPrice = ethGasPrice.times(this.getCurrencyTokenRate)
 
       this.isSendAll = true
 
       if (this.toggle_exclusive === 0) {
-        this.onChangeDisplayAmount(this.contractType === CONTRACT_TYPE_ETH ? ethBalance.minus(ethGasPrice) : ethBalance)
+        this.onChangeDisplayAmount(this.contractType === CONTRACT_TYPE_ETH && !transferFromSC ? ethBalance.minus(ethGasPrice) : ethBalance)
       } else {
-        this.onChangeDisplayAmount(this.contractType === CONTRACT_TYPE_ETH ? currencyBalance.minus(currencyGasPrice) : currencyBalance)
+        this.onChangeDisplayAmount(
+          this.contractType === CONTRACT_TYPE_ETH && !transferFromSC ? currencyBalance.minus(currencyGasPrice) : currencyBalance
+        )
       }
     },
     resetSendAll() {
@@ -851,13 +854,17 @@ export default {
 
       const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
       const gasPriceInCurrency = gasPriceInEth.times(this.getCurrencyTokenRate)
-      const toSend = this.amount
-      const toSendConverted = toSend.times(this.getCurrencyTokenRate)
-
       this.gasPriceInCurrency = gasPriceInCurrency
 
+      const transferFromSC = this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
+
+      const toSend = transferFromSC ? this.amount : this.amount.plus(gasPriceInEth)
+      const toSendConverted = transferFromSC
+        ? toSend.times(this.getCurrencyTokenRate)
+        : toSend.times(this.getCurrencyTokenRate).plus(gasPriceInCurrency)
+
       if (this.contractType === CONTRACT_TYPE_ETH) {
-        this.totalCost = this.toggle_exclusive === 0 ? toSend.plus(gasPriceInEth) : toSendConverted.plus(gasPriceInCurrency)
+        this.totalCost = this.toggle_exclusive === 0 ? toSend : toSendConverted
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
         const displayedCurrency = this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency
         this.totalCost = `${this.displayAmount.toString()} ${displayedCurrency} + ${significantDigits(

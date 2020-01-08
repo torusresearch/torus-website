@@ -22,9 +22,7 @@ export default {
     state.selectedAddress = selectedAddress
   },
   updateSelectedEOA(state, selectedEOA) {
-    console.log('mutations file triggered', state.selectedEOA)
     state.selectedEOA = selectedEOA
-    console.log('mutations file triggered', state.selectedEOA)
   },
   setNetworkId(state, networkId) {
     state.networkId = networkId
