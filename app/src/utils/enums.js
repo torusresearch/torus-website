@@ -168,9 +168,9 @@ const LOCALE_KO = 'ko'
 const LOCALE_ZH = 'zh'
 const LOCALE_EN_LABEL = 'English'
 const LOCALE_DE_LABEL = 'German (Deutsch)'
-const LOCALE_JA_LABEL = 'Japanese'
-const LOCALE_KO_LABEL = 'Korean'
-const LOCALE_ZH_LABEL = 'Mandarin'
+const LOCALE_JA_LABEL = 'Japanese (日本語)'
+const LOCALE_KO_LABEL = 'Korean (한국어)'
+const LOCALE_ZH_LABEL = 'Mandarin (中文)'
 
 const LOCALES = [
   {
