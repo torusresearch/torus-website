@@ -106,10 +106,14 @@ export default {
     async createWallet() {
       const reqObj = {
         ens: this.ensName,
-        owner: this.$store.state.selectedAddress
+        owner: this.$store.state.selectedEOA
       }
-      const response = await post(`${config.relayer}/createWallet`, reqObj)
-      console.log(response)
+      try {
+        const response = await post(`${config.relayer}/createWallet`, reqObj)
+        console.log(response)
+      } catch (e) {
+        console.error(e)
+      }
     }
   }
 }

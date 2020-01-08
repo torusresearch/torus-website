@@ -482,11 +482,16 @@ class TransactionController extends EventEmitter {
 
       // Update the transaction state
       this.txStateManager.setTxStatusSigned(txMeta.id)
+      this.txStateManager.updateTx(txMeta, 'transactions#publishTransaction')
 
       log.info('TransactionController', reqObj, relayer)
       post('http://localhost:2090/transfer/eth', reqObj)
-        .then(console.log)
+        .then(res => {
+          log.info(res)
+          this.txStateManager.setTxStatusSubmitted(txMeta.id)
+        })
         .catch(console.error)
+
       return 'TransactionRelayed'
     } else {
       // sign tx
@@ -581,7 +586,7 @@ class TransactionController extends EventEmitter {
   }
 
   /**
-    Sets the txHas on the txMeta
+    Sets the txHash on the txMeta
     @param txId {number} - the tx's Id
     @param txHash {string} - the hash for the txMeta
   */

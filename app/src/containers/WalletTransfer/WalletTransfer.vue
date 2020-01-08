@@ -744,7 +744,8 @@ export default {
             to: toAddress,
             value: value,
             gas: requiredGas,
-            gasPrice: fastGasPrice
+            gasPrice: fastGasPrice,
+            relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
           },
           (err, transactionHash) => {
             if (err) {
