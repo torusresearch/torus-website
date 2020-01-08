@@ -336,13 +336,13 @@ export default {
     commit('setTokenRates', payload.tokenRates)
   },
   updateSelectedAddress({ commit, state }, payload) {
-    log.info('update selected address', payload)
+    // log.info('update selected address', payload)
     commit('setSelectedAddress', payload.selectedAddress)
     torus.updateStaticData({ selectedAddress: payload.selectedAddress })
     torus.torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
   },
   updateSelectedEOA({ commit }, payload) {
-    console.log('updateSelectedEOA', payload)
+    // console.log('updateSelectedEOA', payload)
     commit('updateSelectedEOA', payload.selectedAddress)
     // torus.updateStaticData({ selectedEOA: payload.selectedAddress })
   },
@@ -920,12 +920,19 @@ export default {
               dispatch('setTheme', theme)
               dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
               dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
+
               const selectedNetworkContract = scw.filter(x => x.network == state.networkType.host)
               if (selectedNetworkContract[0]) {
+                // Remove existing scw/s for the old network
+                Object.keys(state.wallet).filter(x => {
+                  state.wallet[x].type == 'SC' ? delete state.wallet[x] : void [0]
+                })
+
                 dispatch('addWallet', { ethAddress: selectedNetworkContract[0].proxy_contract_address, privKey: null, type: 'SC' })
                 await torus.torusController.addAccount(null, selectedNetworkContract[0].proxy_contract_address)
                 dispatch('updateSelectedAddress', { selectedAddress: selectedNetworkContract[0].proxy_contract_address }) // synchronous
               }
+
               resolve()
             }
           })

@@ -409,9 +409,13 @@ class TransactionController extends EventEmitter {
       this.txStateManager.updateTx(txMeta, 'transactions#approveTransaction')
       // sign transaction
       const rawTx = await this.signTransaction(txId)
-      await this.publishTransaction(txId, rawTx)
-      // must set transaction to submitted/failed before releasing lock
-      nonceLock.releaseLock()
+
+      // Handling different transaction scenarios
+      if (rawTx != 'TransactionRelayed') {
+        await this.publishTransaction(txId, rawTx)
+        // must set transaction to submitted/failed before releasing lock
+        nonceLock.releaseLock()
+      }
     } catch (err) {
       // this is try-catch wrapped so that we can guarantee that the nonceLock is released
       try {
@@ -455,15 +459,15 @@ class TransactionController extends EventEmitter {
       // console.log('nonce', nonce)
       const localWeb3 = this.web3
       const TransferModule = new localWeb3.eth.Contract(TransferManager.abi, '0xD45256EEf4bFB182B108Cd8e0bCB4A9369342C1d')
-      const methodData = TransferModule.methods.transferToken(to, ETH_TOKEN, fromSCW, txParams.value.toString(), ZERO_BYTES32).encodeABI()
+      const methodData = TransferModule.methods.transferToken(fromSCW, ETH_TOKEN, to, txParams.value.toString(), ZERO_BYTES32).encodeABI()
       //txParams.data = methodData
       //const ethTx = new Transaction(txParams)
 
       const selectedEOA = this.getSelectedEOA()
-      console.log('selectedEOA is', selectedEOA)
+      log.info('selectedEOA is', selectedEOA)
 
       const privateKey = await this.getWallet(selectedEOA)
-      console.log('privateKey is', privateKey)
+      log.info('privateKey is', privateKey)
 
       const walletAccount = this.web3.eth.accounts.privateKeyToAccount('0x' + privateKey)
       log.info([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 700000)
@@ -476,12 +480,14 @@ class TransactionController extends EventEmitter {
         signatures
       }
 
+      // Update the transaction state
       this.txStateManager.setTxStatusSigned(txMeta.id)
 
-      console.log('TransactionController', reqObj, relayer)
-
-      const relayerTransfer = await post('http://localhost:2090/transfer/eth', reqObj)
-      return relayerTransfer
+      log.info('TransactionController', reqObj, relayer)
+      post('http://localhost:2090/transfer/eth', reqObj)
+        .then(console.log)
+        .catch(console.error)
+      return 'TransactionRelayed'
     } else {
       // sign tx
       const fromAddress = txParams.from
