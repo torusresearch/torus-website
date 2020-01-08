@@ -578,7 +578,7 @@ export default {
               .then(response => {
                 let resolved = new BigNumber(response || '0')
                 if (!resolved.eq(new BigNumber('21000'))) {
-                  resolved = resolved.times(new BigNumber('1.1'))
+                  resolved = new BigNumber(resolved.times(new BigNumber('1.1')).toFixed(0))
                   this.sendEthToContractError = this.isSendAll
                 }
                 resolve(resolved)
