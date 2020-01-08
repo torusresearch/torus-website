@@ -2,12 +2,8 @@
   <v-flex xs12 sm6 mb-3>
     <div class="subtitle-2 mb-1 px-4">
       <span>
-        Select your Transaction Speed
-        <HelpTooltip
-          title="Transaction Fee"
-          description="This is a mandatory processing fee users pay to the Ethereum network for each transaction.
-          A higher fee will speed up the transaction process."
-        />
+        {{ t('walletTransfer.selectSpeed') }}
+        <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" />
       </span>
       <TransferAdvanceOption
         v-if="!$vuetify.breakpoint.xsOnly"
@@ -79,6 +75,7 @@ import { significantDigits } from '../../../utils/utils'
 import TransferAdvanceOption from '../TransferAdvanceOption'
 import HelpTooltip from '../HelpTooltip'
 import log from 'loglevel'
+import BigNumber from 'bignumber.js'
 
 export default {
   components: {
@@ -90,9 +87,9 @@ export default {
     return {
       isAdvanceOption: false,
       speedSelected: '',
-      averageGasPrice: '5',
-      fastestGasPrice: '20',
-      activeGasPrice: '',
+      averageGasPrice: new BigNumber('5'),
+      fastestGasPrice: new BigNumber('20'),
+      activeGasPrice: new BigNumber(''),
       averageGasPriceSpeed: '',
       fastestGasPriceSpeed: ''
     }
@@ -103,17 +100,17 @@ export default {
     },
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
-      let currencyMultiplier = 1
-      if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+      const currencyMultiplierNum = selectedCurrency !== 'ETH' ? currencyData[selectedCurrency.toLowerCase()] || 1 : 1
+      const currencyMultiplier = new BigNumber(currencyMultiplierNum)
       return currencyMultiplier
     }
   },
   methods: {
     onSaveAdvanceOptions(details) {
-      this.activeGasPrice = parseFloat(details.advancedActiveGasPrice)
+      this.activeGasPrice = details.advancedActiveGasPrice
 
       this.isAdvanceOption = true
-      this.updateCosts(false, parseFloat(details.advancedGas))
+      this.updateCosts(false, details.advancedGas)
     },
     resetAdvanceOption() {
       if (this.speedSelected === 'fastest') {
@@ -135,20 +132,20 @@ export default {
     },
     getGasDisplayString(gasPrice) {
       const currencyFee = this.getGasAmount(gasPrice)
-      return `Pay ${significantDigits(currencyFee)} ${this.selectedCurrency}`
+      return `Pay ${significantDigits(currencyFee.toString())} ${this.selectedCurrency}`
     },
     getGasAmount(gasPrice) {
       const currencyMultiplier = this.getCurrencyMultiplier
       const ethFee = this.getEthAmount(this.gas, gasPrice)
-      const currencyFee = ethFee * currencyMultiplier
+      const currencyFee = ethFee.times(currencyMultiplier)
 
       return currencyFee
     },
     getEthAmount(gas, gasPrice) {
-      return gas * gasPrice * 10 ** -9
+      return gas.times(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
     },
     getEthAmountDisplay(gas, gasPrice) {
-      return `${significantDigits(this.getEthAmount(gas, gasPrice))} ETH`
+      return `${significantDigits(this.getEthAmount(gas, gasPrice).toString())} ETH`
     },
     updateCosts(isReset, updatedGas) {
       const speed = this.speedSelected === 'average' ? this.averageGasPriceSpeed : this.fastestGasPriceSpeed
@@ -163,12 +160,12 @@ export default {
     },
     setSelectedSpeed() {
       let selectedType = ''
-      let selectedGasPrice = 0
+      let selectedGasPrice = new BigNumber('0')
 
-      if (this.fastestGasPrice === this.activeGasPriceConfirm) {
+      if (this.fastestGasPrice.eq(this.activeGasPriceConfirm)) {
         selectedType = 'fastest'
         selectedGasPrice = this.fastestGasPrice
-      } else if (this.averageGasPrice === this.activeGasPriceConfirm) {
+      } else if (this.averageGasPrice.eq(this.activeGasPriceConfirm)) {
         selectedType = 'average'
         selectedGasPrice = this.averageGasPrice
       } else {
@@ -214,9 +211,8 @@ export default {
           safeLowWait,
           speed
         }) => {
-          const [average, fastest] = [averageTimes10, fastestTimes10].map(price => parseFloat(price) / 10)
-          this.averageGasPrice = average
-          this.fastestGasPrice = fastest
+          this.averageGasPrice = new BigNumber(averageTimes10).div(new BigNumber('10'))
+          this.fastestGasPrice = new BigNumber(fastestTimes10).div(new BigNumber('10'))
 
           this.averageGasPriceSpeed = avgWait
           this.fastestGasPriceSpeed = fastestWait
@@ -225,7 +221,7 @@ export default {
           if (this.activeGasPriceConfirm) {
             this.setSelectedSpeed()
           } else {
-            this.selectSpeed('average', average)
+            this.selectSpeed('average', this.averageGasPrice)
           }
         }
       )

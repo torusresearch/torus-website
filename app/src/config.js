@@ -1,28 +1,10 @@
-import { PromiseReference } from './utils/utils'
 const baseUrl = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000'
 
 const baseRoute = baseUrl + process.env.BASE_URL
 
 const redirect_uri = `${baseUrl}/redirect`
 
-export const nodeDetails = {
-  skip: true, // skip fetching of node details and use defaults below
-  updated: new PromiseReference(),
-  minEpoch: 12,
-  currentEpoch: 0,
-  nodeListAddress: '0x97c85658cd10b386fc37e4b32df90b916b689ee8',
-  torusNodeEndpoints: [
-    'https://binance-main-13.torusnode.com/jrpc',
-    'https://waseda-main-13.torusnode.com/jrpc',
-    'https://vgr-main-13.torusnode.com/jrpc',
-    'https://torus-main-13.torusnode.com/jrpc',
-    'https://etc-main-13.torusnode.com/jrpc'
-  ],
-  torusIndexes: [1, 2, 3, 4, 5]
-}
-
 export default {
-  MAINNET_JRPC_URL: 'https://mainnet.infura.io/metamask',
   baseUrl: baseUrl,
   baseRoute: baseRoute,
   supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH'],
@@ -39,7 +21,7 @@ export default {
   moonpayTestAPIKEY: 'pk_test_j6AnwGJD0XTJDg3bTO37OczjFsddYpS',
   wyreHost: 'https://pay.sendwyre.com/purchase',
   wyreAccountId: 'AC_RUQMPNP7QQY',
-  coindirectHost: 'https://api.sandbox.coindirect.com',
+  coindirectHost: 'https://api.coindirect.com',
   coindirectTestHost: 'https://business.sandbox.coindirect.com/buy',
   coindirectTestMerchantID: 'c21e690c-bb95-42fe-ae17-f962c582b26c',
   coindirectLiveHost: 'https://business.coindirect.com/buy',

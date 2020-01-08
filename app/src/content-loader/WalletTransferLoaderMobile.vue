@@ -1,24 +1,36 @@
 <template>
-  <content-loader :height="600" :width="450" :speed="2" primaryColor="#E7EDF3" secondaryColor="#ecebeb">
-    <rect x="15.5" y="17.61" rx="0" ry="0" width="46.13" height="28.18" />
-    <rect x="15.5" y="63.61" rx="0" ry="0" width="139.18" height="22.12" />
-    <rect x="15.5" y="92.61" rx="0" ry="0" width="418.85" height="27.89" />
-    <rect x="15.5" y="159.61" rx="0" ry="0" width="418.85" height="28.56" />
-    <rect x="15.5" y="267.61" rx="0" ry="0" width="418.85" height="26.56" />
-    <rect x="15.5" y="124.61" rx="0" ry="0" width="205.24" height="27.89" />
-    <rect x="15.5" y="194.61" rx="0" ry="0" width="418.85" height="28.56" />
-    <rect x="15.5" y="232.61" rx="0" ry="0" width="205.24" height="27.89" />
-    <rect x="227.5" y="232.61" rx="0" ry="0" width="205.24" height="27.89" />
-    <rect x="347.5" y="300.61" rx="0" ry="0" width="85.72" height="27.31" />
-  </content-loader>
+  <div class="sk-grid">
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 35px;"></div></div>
+
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 20px;"></div></div>
+    <div class="sk-grid__col-mob-2"></div>
+
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+    <div class="sk-grid__col-mob-3"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 2px;"></div></div>
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+    <div class="sk-grid__col-mob-2"></div>
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 2px;"></div></div>
+    <div class="sk-grid__col-mob-2 sk-grid__col-mob-shift-2"><div class="sk-loader" style="height: 15px; margin-bottom: 30px;"></div></div>
+
+    <div class="sk-grid__col-mob-2 sk-grid__col-mob-shift-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+  </div>
 </template>
 
 <script>
-import { ContentLoader } from 'vue-content-loader'
-
-export default {
-  components: {
-    ContentLoader
-  }
-}
+export default {}
 </script>

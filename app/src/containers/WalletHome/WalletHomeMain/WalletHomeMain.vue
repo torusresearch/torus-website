@@ -2,22 +2,22 @@
   <div class="wallet-home">
     <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
       <v-flex xs4 sm3 pl-4>
-        <div class="font-weight-bold headline float-left">{{ pageHeader }}</div>
+        <div class="font-weight-bold headline float-left">{{ t('walletHome.walletHome') }}</div>
       </v-flex>
       <v-flex xs8 sm9 px-4 class="text-right hidden-xs-only">
         <v-btn outlined large color="primary" class="transfer-btn px-12 py-1 mr-4" @click="initiateTransfer">
           <v-icon left>$vuetify.icons.send</v-icon>
-          Transfer
+          {{ t('walletHome.transfer') }}
         </v-btn>
         <v-tooltip top :value="isFreshAccount" class="hidden-xs-only">
           <template v-slot:activator="{ on }">
             <v-btn depressed large color="primary" class="px-12 py-1 topup-btn hidden-xs-only" @click="topup" v-on="on">
               <v-icon left>$vuetify.icons.add</v-icon>
-              Top up
+              {{ t('walletHome.topUp') }}
             </v-btn>
           </template>
           <!-- <div class="outline-tooltip hidden-xs-only">
-            <span>Get ETH!</span>
+            <span>{{ t('walletHome.getEth') }}!</span>
           </div> -->
         </v-tooltip>
       </v-flex>
@@ -29,7 +29,7 @@
               <v-card-title class="font-weight-bold subtitle-2 pt-6 px-6">
                 <v-layout>
                   <v-flex>
-                    <span>TOTAL VALUE</span>
+                    <span>{{ t('walletHome.totalValue') }}</span>
                   </v-flex>
                   <v-flex text-right>
                     <export-qr-code></export-qr-code>
@@ -53,12 +53,14 @@
                     class="text_1--text pt-4"
                     :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'"
                   >
-                    <div class="body-1 font-weight-bold">Welcome to Torus.</div>
+                    <div class="body-1 font-weight-bold">{{ t('walletHome.welcome') }} Torus.</div>
                     <v-dialog v-model="dialogLearnMore" max-width="700">
                       <template v-slot:activator="{ on }">
                         <div class="body-2'">
-                          <a id="learn-more-btn" class="primary--text font-weight-bold" v-on="on">Learn more</a>
-                          about your wallet today.
+                          <a id="learn-more-btn" class="primary--text font-weight-bold" v-on="on">
+                            {{ t('walletHome.learnMore') }}
+                          </a>
+                          {{ t('walletHome.aboutWallet') }}.
                         </div>
                       </template>
                       <LearnMore @onClose="dialogLearnMore = false" />
@@ -99,7 +101,7 @@
               @click="initiateTransfer"
             >
               <v-icon left>$vuetify.icons.send</v-icon>
-              Transfer
+              {{ t('walletHome.transfer') }}
             </v-btn>
           </v-flex>
           <v-flex xs6 class="pl-1">
@@ -107,11 +109,11 @@
               <template v-slot:activator="{ on }">
                 <v-btn depressed large block color="primary" class="px-12 py-1 mt-4 topup-btn-mobile hidden-sm-and-up" @click="topup" v-on="on">
                   <v-icon left>$vuetify.icons.add</v-icon>
-                  Top up
+                  {{ t('walletHome.topUp') }}
                 </v-btn>
               </template>
               <!-- <div class="outline-tooltip hidden-sm-and-up">
-                <span>Get ETH!</span>
+                <span>{{ t('walletHome.getEth') }}!</span>
               </div> -->
             </v-tooltip>
           </v-flex>
@@ -138,10 +140,10 @@
             <v-layout>
               <v-flex xs7 class="refresh">
                 <v-icon color="primary" @click="refreshBalances()" small>$vuetify.icons.refresh</v-icon>
-                <span class="caption text_2--text">Last update {{ lastUpdated }}</span>
+                <span class="caption text_2--text">{{ t('walletHome.lastUpdate') }} {{ lastUpdated }}</span>
               </v-flex>
               <v-flex xs5 class="text-right currency">
-                <span class="caption text_2--text">CURRENCY:</span>
+                <span class="caption text_2--text">{{ t('walletHome.currency') }}:</span>
                 <v-select
                   id="currency-selector"
                   class="pt-0 mt-0 ml-1 caption currency-selector e2e-currency-selector-container"
@@ -162,11 +164,11 @@
         <v-tabs v-model="activeTab">
           <v-tab class="home-tab-token">
             <v-icon left>$vuetify.icons.token</v-icon>
-            Tokens
+            {{ t('walletHome.tokens') }}
           </v-tab>
           <v-tab class="home-tab-collectibles">
             <v-icon left>$vuetify.icons.collectibles</v-icon>
-            Collectibles
+            {{ t('walletHome.collectibles') }}
           </v-tab>
         </v-tabs>
       </v-flex>
@@ -192,7 +194,7 @@ import ExportQrCode from '../../../components/helpers/ExportQrCode'
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import LearnMore from '../../../components/WalletHome/LearnMore'
-import { MAINNET, WALLET_HEADERS_HOME } from '../../../utils/enums'
+import { MAINNET } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
 
 export default {
@@ -200,7 +202,6 @@ export default {
   components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore, ComponentLoader },
   data() {
     return {
-      pageHeader: WALLET_HEADERS_HOME,
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
       selected: [],
       search: '',

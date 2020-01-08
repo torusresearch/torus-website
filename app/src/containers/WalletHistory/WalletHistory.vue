@@ -2,7 +2,7 @@
   <div class="wallet-activity">
     <v-layout mt-3 wrap>
       <v-flex xs12 px-4 mb-4>
-        <div class="text-black font-weight-bold headline float-left">{{ pageHeader }}</div>
+        <div class="text-black font-weight-bold headline float-left">{{ t('walletActivity.transactionActivities') }}</div>
         <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
           <v-select
             id="transaction-selector"
@@ -29,12 +29,7 @@
         </div>
       </v-flex>
       <v-flex xs12 px-4 mb-4>
-        <tx-history-table
-          :headers="headers"
-          :selectedAction="selectedAction"
-          :selectedPeriod="selectedPeriod"
-          :transactions="calculateFinalTransactions()"
-        />
+        <tx-history-table :selectedAction="selectedAction" :selectedPeriod="selectedPeriod" :transactions="calculateFinalTransactions()" />
       </v-flex>
     </v-layout>
   </div>
@@ -52,7 +47,6 @@ import torus from '../../torus'
 import { patch } from '../../utils/httpHelpers'
 import {
   WYRE,
-  WALLET_HEADERS_ACTIVITY,
   ACTIVITY_ACTION_ALL,
   ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_RECEIVE,
@@ -74,20 +68,7 @@ export default {
   components: { TxHistoryTable },
   data() {
     return {
-      pageHeader: WALLET_HEADERS_ACTIVITY,
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
-      headers: [
-        {
-          text: 'Date',
-          align: 'left',
-          value: 'date'
-        },
-        { text: 'From', value: 'slicedFrom', align: 'center' },
-        { text: 'To', value: 'slicedTo', align: 'center' },
-        { text: 'Amount', value: 'totalAmountString', align: 'center' },
-        { text: 'Value', value: 'currencyAmountString', align: 'center' },
-        { text: 'Status', value: 'status', align: 'center' }
-      ],
       pastOrders: [],
       actionTypes: [ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_TOPUP],
       selectedAction: ACTIVITY_ACTION_ALL,

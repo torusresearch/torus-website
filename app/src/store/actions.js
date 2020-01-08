@@ -1,9 +1,9 @@
 import { BroadcastChannel } from 'broadcast-channel'
+import NodeDetailManager from '@toruslabs/fetch-node-details'
 import log from 'loglevel'
-import config, { nodeDetails } from '../config'
+import config from '../config'
 import { toChecksumAddress } from 'web3-utils'
 import torus from '../torus'
-import { PromiseReference } from '../utils/utils'
 import {
   RPC,
   USER_INFO_REQUEST_APPROVED,
@@ -363,16 +363,7 @@ export default {
     }
   },
   triggerLogin({ dispatch }, { calledFromEmbed, verifier, preopenInstanceId }) {
-    var p = new PromiseReference()
-    if (!nodeDetails.skip) {
-      nodeDetails.updated.promise.then(updatedNodeDetails => {
-        p.resolve(updatedNodeDetails)
-      })
-    } else {
-      p.resolve(nodeDetails)
-    }
-
-    p.promise.then(updatedNodeDetails => {
+    NodeDetailManager.getNodeDetails().then(updatedNodeDetails => {
       const { torusNodeEndpoints } = updatedNodeDetails
       const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
 
@@ -772,13 +763,13 @@ export default {
         })
     })
   },
-  handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
+  async handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
     dispatch('loginInProgress', true)
     const {
       idToken,
       userInfo: { verifierId, verifier, verifierParams }
     } = state
-    const { torusNodeEndpoints, torusIndexes } = nodeDetails
+    const { torusNodeEndpoints, torusIndexes } = await NodeDetailManager.getNodeDetails()
     torus
       .getPubKeyAsync(torusNodeEndpoints[endPointNumber], { verifier, verifierId })
       .catch(err => {
@@ -835,6 +826,12 @@ export default {
           signed_message: signedMessage
         })
         commit('setJwtToken', response.token)
+        if (response.token) {
+          const decoded = jwtDecode(response.token)
+          setTimeout(() => {
+            dispatch('logOut')
+          }, decoded.exp * 1000 - Date.now())
+        }
         await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed: calledFromEmbed, rehydrate: false })
 
         resolve()
@@ -899,6 +896,36 @@ export default {
         })
     })
   },
+  setLocale({ commit }, payload) {
+    commit('setLocale', payload)
+
+    vuetify.framework.lang.current = payload
+  },
+  setUserLocale({ state, dispatch }, payload) {
+    return new Promise((resolve, reject) => {
+      patch(
+        `${config.api}/user/locale`,
+        {
+          locale: payload
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }
+      )
+        .then(response => {
+          dispatch('setLocale', payload)
+          log.info('successfully patched', response)
+          resolve(response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to patch locale')
+          reject('Unable to update locale')
+        })
+    })
+  },
   setUserInfoAction({ commit, dispatch, state }, payload) {
     // Fixes loading theme for too long
     dispatch('setTheme', state.theme)
@@ -913,7 +940,7 @@ export default {
         })
           .then(async user => {
             if (user.data) {
-              const { transactions, contacts, default_currency, theme, scw } = user.data || {}
+              const { transactions, contacts, default_currency, theme, scw, locale } = user.data || {}
               log.info(scw, state.networkType.host, state.networkId)
               commit('setPastTransactions', transactions)
               commit('setContacts', contacts)
@@ -921,6 +948,7 @@ export default {
               dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
               dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
 
+              // Adding SCW to vue state
               const selectedNetworkContract = scw.filter(x => x.network == state.networkType.host)
               if (selectedNetworkContract[0]) {
                 // Remove existing scw/s for the old network
@@ -933,6 +961,7 @@ export default {
                 dispatch('updateSelectedAddress', { selectedAddress: selectedNetworkContract[0].proxy_contract_address }) // synchronous
               }
 
+              if (locale !== '') dispatch('setLocale', locale)
               resolve()
             }
           })
@@ -977,6 +1006,10 @@ export default {
         if (Date.now() / 1000 > decoded.exp) {
           dispatch('logOut')
           return
+        } else {
+          setTimeout(() => {
+            dispatch('logOut')
+          }, decoded.exp * 1000 - Date.now())
         }
       }
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
