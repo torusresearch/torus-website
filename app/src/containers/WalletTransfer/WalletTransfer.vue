@@ -164,7 +164,9 @@
               >
                 {{ t('walletTransfer.sendAll') }}
               </a>
-              <a id="send-all-reset-btn" class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">Reset</a>
+              <a id="send-all-reset-btn" class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">
+                {{ t('walletTransfer.reset') }}
+              </a>
             </div>
             <v-select
               v-if="contractType === CONTRACT_TYPE_ERC721"
@@ -259,7 +261,7 @@
               id="wallet-transfer-submit"
               @click="onTransferClick"
             >
-              Transfer
+              {{ t('walletTransfer.youSend') }}
             </v-btn>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
               <transfer-confirm
@@ -379,9 +381,8 @@ export default {
       qrErrorMsg: '',
       autoSelectVerifier: true,
       selectedVerifier: '',
-      verifierOptions: ALLOWED_VERIFIERS,
       rules: {
-        required: value => !!value || 'Required'
+        required: value => !!value || this.t('walletTransfer.required')
       },
       nodeDetails: {},
       showModalMessage: false,
@@ -394,6 +395,13 @@ export default {
     }
   },
   computed: {
+    verifierOptions() {
+      const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
+      return verifiers.map(verifier => {
+        verifier.name = this.t(verifier.name)
+        return verifier
+      })
+    },
     randomName() {
       return `torus-${torus.instanceId}`
     },
@@ -457,7 +465,9 @@ export default {
       return this.contractType === CONTRACT_TYPE_ETH ? (this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency) : ''
     },
     verifierPlaceholder() {
-      return this.selectedVerifier ? `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}` : ''
+      return this.selectedVerifier
+        ? `${this.t('walletSettings.enter')} ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
+        : ''
     },
     contactList() {
       return this.$store.state.contacts.reduce((mappedObj, contact) => {
@@ -527,7 +537,7 @@ export default {
     },
     moreThanZero(value) {
       if (this.selectedItem) {
-        return new BigNumber(value || '0').gt(new BigNumber('0')) || 'Invalid amount'
+        return new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount')
       }
       return ''
     },
@@ -537,7 +547,7 @@ export default {
         if (this.toggle_exclusive === 1) {
           amount = amount.div(this.getCurrencyTokenRate)
         }
-        return amount.lte(this.selectedItem.computedBalance) || 'Insufficient balance for transaction'
+        return amount.lte(this.selectedItem.computedBalance) || this.t('walletTransfer.insufficient')
       }
       return ''
     },

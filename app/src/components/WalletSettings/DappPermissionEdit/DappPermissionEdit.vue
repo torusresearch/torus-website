@@ -8,12 +8,7 @@
         <v-flex xs9>
           <v-layout wrap>
             <v-flex xs8>
-              <v-text-field
-                class="custom-text-input"
-                placeholder="Enter New Dapp Website Here E.g. www.etheremon.com"
-                solo
-                v-model="dappWebsite"
-              ></v-text-field>
+              <v-text-field class="custom-text-input" :placeholder="t('walletSettings.enterNewDapp')" solo v-model="dappWebsite"></v-text-field>
             </v-flex>
           </v-layout>
         </v-flex>
@@ -27,24 +22,24 @@
 
       <v-layout>
         <v-flex xs2>
-          <small class="font-weight-bold text-gray">Type:</small>
+          <small class="font-weight-bold text-gray">{{ t('walletSettings.type') }}:</small>
         </v-flex>
         <v-flex xs9>
           <v-layout wrap>
             <v-flex xs4>
               <div class="mb-6">
                 <div>
-                  <input type="checkbox" v-model="type.deployment" name="ontractDeployment" id="test-simplex" />
+                  <input type="checkbox" v-model="type.deployment" name="contractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
-                    <small>Contract Deployment</small>
+                    <small>{{ t('walletSettings.contractDeployment') }}</small>
                   </label>
                 </div>
               </div>
               <div class="mb-6">
                 <div>
-                  <input type="checkbox" v-model="type.interaction" name="ontractDeployment" id="test-simplex" />
+                  <input type="checkbox" v-model="type.interaction" name="contractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
-                    <small>Contract Interaction</small>
+                    <small>{{ t('walletSettings.contractInteraction') }}</small>
                   </label>
                 </div>
               </div>
@@ -55,7 +50,7 @@
                 <div>
                   <input type="checkbox" v-model="type.ercTransaction" name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
-                    <small>ERC 20 Transactions</small>
+                    <small>{{ t('walletSettings.erc20Transactions') }}</small>
                   </label>
                 </div>
               </div>
@@ -63,7 +58,7 @@
                 <div>
                   <input type="checkbox" v-model="type.changeNetwork" name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
-                    <small>Change of Network</small>
+                    <small>{{ t('walletSettings.changeNetwork') }}</small>
                   </label>
                 </div>
               </div>
@@ -74,7 +69,7 @@
                 <div>
                   <input type="checkbox" v-model="type.sendEth" name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
-                    <small>Send ETH</small>
+                    <small>{{ t('walletSettings.sendEth') }}</small>
                   </label>
                 </div>
               </div>
@@ -83,7 +78,7 @@
         </v-flex>
 
         <v-flex xs2 class="text-right">
-          <small class="section-note">Please choose the type(s)</small>
+          <small class="section-note">{{ t('walletSettings.chooseTypes') }}</small>
         </v-flex>
       </v-layout>
 
@@ -91,7 +86,7 @@
 
       <v-layout>
         <v-flex xs2>
-          <small class="font-weight-bold text-gray">Amount:</small>
+          <small class="font-weight-bold text-gray">{{ t('walletSettings.amount') }}:</small>
         </v-flex>
         <v-flex xs9>
           <v-layout wrap>
@@ -100,7 +95,7 @@
                 <div>
                   <input type="checkbox" v-model="amount.maxTenUsd" name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
-                    <small>Max 10.00 USD</small>
+                    <small>{{ t('walletSettings.max10') }}</small>
                   </label>
                 </div>
               </div>
@@ -108,7 +103,7 @@
                 <div class="other-input">
                   <input type="checkbox" v-model="amount.other" name="contractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="mx-2">
-                    <small>Others:</small>
+                    <small>{{ t('walletSettings.others') }}:</small>
                   </label>
 
                   <v-text-field
@@ -117,7 +112,7 @@
                     text
                     type="text"
                     name="max-transaction"
-                    label="Enter Max Transaction Limit"
+                    :label="t('walletSettings.enterMaxTransaction')"
                     class="max-transaction-input"
                     v-model="amount.customMaxTransaction"
                   ></v-text-field>
@@ -130,7 +125,7 @@
                 <div>
                   <input type="checkbox" v-model="amount.maxHundredThousandUsd" name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
-                    <small>Max 100.00 USD</small>
+                    <small>{{ t('walletSettings.max100') }}</small>
                   </label>
                 </div>
               </div>
@@ -147,7 +142,7 @@
 
       <v-layout>
         <v-flex xs2>
-          <small class="font-weight-bold section-note text-gray">Period of Validity:</small>
+          <small class="font-weight-bold section-note text-gray">{{ t('walletSettings.periodValidity') }}:</small>
         </v-flex>
         <v-flex xs9>
           <v-layout wrap>
@@ -156,7 +151,7 @@
                 <div>
                   <input type="checkbox" v-model="validity.oneHour" name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
-                    <small>Within 1 Hour</small>
+                    <small>{{ t('walletSettings.withinOneHour') }}</small>
                   </label>
                 </div>
               </div>
@@ -164,7 +159,7 @@
                 <div class="other-input">
                   <input type="checkbox" v-model="validity.oneMonth" value name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="mx-2">
-                    <small>Within 1 Month</small>
+                    <small>{{ t('walletSettings.withinOneMonth') }}</small>
                   </label>
                 </div>
               </div>
@@ -175,7 +170,7 @@
                 <div>
                   <input type="checkbox" v-model="validity.oneWeek" name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="ml-2">
-                    <small>Within 1 Week</small>
+                    <small>{{ t('walletSettings.withinOneWeek') }}</small>
                   </label>
                 </div>
               </div>
@@ -183,7 +178,7 @@
                 <div class="other-input">
                   <input type="checkbox" v-model="validity.oneYear" value name="ontractDeployment" id="test-simplex" />
                   <label for="contractDeployment" class="mx-2">
-                    <small>Within 1 Year</small>
+                    <small>{{ t('walletSettings.withinOneYear') }}</small>
                   </label>
                 </div>
               </div>
@@ -192,15 +187,15 @@
         </v-flex>
 
         <v-flex xs2 class="text-right">
-          <small class="section-note">Please select a period</small>
+          <small class="section-note">{{ t('walletSettings.selectPeriod') }}</small>
         </v-flex>
       </v-layout>
 
       <hr class="mt-2 mb-6" />
 
       <v-flex class="save-container">
-        <v-btn color="white" class="px-12 py-1 mt-4 mr-4 btn-cancel text-gray" @click="onCancel">Cancel</v-btn>
-        <v-btn color="primary" class="px-12 py-1 mt-4">Save</v-btn>
+        <v-btn color="white" class="px-12 py-1 mt-4 mr-4 btn-cancel text-gray" @click="onCancel">{{ t('walletSettings.cancel') }}</v-btn>
+        <v-btn color="primary" class="px-12 py-1 mt-4">{{ t('walletSettings.save') }}</v-btn>
       </v-flex>
     </v-container>
   </v-card>

@@ -18,7 +18,7 @@
                 <v-flex xs12 sm6 px-4>
                   <span class="subtitle-2">
                     {{ t('walletTransfer.gasPrice') }} (GWEI)
-                    <HelpTooltip title="Gas Price">
+                    <HelpTooltip :title="t('walletTransfer.gasPrice')">
                       <template v-slot:description>
                         <div class="body-2 text-justify">
                           <span class="font-weight-medium">{{ t('walletTransfer.gasPriceDesc1') }}</span>
@@ -110,7 +110,9 @@
           <v-layout mt-4 pr-4>
             <v-spacer></v-spacer>
             <v-btn large text @click="onCancel">{{ t('walletTransfer.cancel') }}</v-btn>
-            <v-btn id="adv-opt-submit-btn" large depressed color="primary" class="ml-4" type="submit" :disabled="!advanceOptionFormValid">Save</v-btn>
+            <v-btn id="adv-opt-submit-btn" large depressed color="primary" class="ml-4" type="submit" :disabled="!advanceOptionFormValid">
+              {{ t('walletTransfer.save') }}
+            </v-btn>
           </v-layout>
         </v-form>
       </v-container>

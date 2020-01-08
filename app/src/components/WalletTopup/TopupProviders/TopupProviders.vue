@@ -18,10 +18,13 @@
             <img :src="require(`../../../../public/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
           </v-list-item-avatar>
           <v-list-item-content class="align-self-center text-right caption">
-            <div>{{ targetProvider.line1 }}</div>
-            <div v-html="targetProvider.line2"></div>
-            <div>{{ targetProvider.line3 }}</div>
-            <div>{{ targetProvider.line4 }}</div>
+            <div>{{ t('walletTopUp.paywith') }} {{ targetProvider.line1 }}</div>
+            <div>
+              <span class="font-weight-medium">{{ t('walletTopUp.fees') }}</span>
+              : {{ targetProvider.line2 }}
+            </div>
+            <div>{{ t('walletTopUp.limits') }}: {{ targetProvider.line3 }}</div>
+            <div>{{ t('walletTopUp.currencies') }}: {{ targetProvider.line4 }}</div>
           </v-list-item-content>
         </v-list-item>
       </router-link>

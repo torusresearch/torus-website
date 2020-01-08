@@ -25,7 +25,7 @@
           :class="speedSelected === 'average' ? 'selected' : ''"
           @click="selectSpeed('average', averageGasPrice)"
         >
-          <span>~ {{ averageGasPriceSpeed }} Mins</span>
+          <span>~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</span>
           <span class="font-weight-light body-2">{{ getGasDisplayString(averageGasPrice) }}</span>
         </v-btn>
       </v-flex>
@@ -39,7 +39,7 @@
           :class="speedSelected === 'fastest' ? 'selected' : ''"
           @click="selectSpeed('fastest', fastestGasPrice)"
         >
-          <span>~ {{ fastestGasPriceSpeed }} Mins</span>
+          <span>~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</span>
           <span class="font-weight-light body-2">{{ getGasDisplayString(fastestGasPrice) }}</span>
         </v-btn>
       </v-flex>
@@ -52,7 +52,7 @@
         </div>
       </v-flex>
       <v-flex xs4 px-4 class="text-right">
-        <v-btn id="adv-reset-btn" outlined color="primary" @click="resetAdvanceOption">Reset</v-btn>
+        <v-btn id="adv-reset-btn" outlined color="primary" @click="resetAdvanceOption">{{ t('walletTransfer.reset') }}</v-btn>
       </v-flex>
     </v-layout>
     <v-layout>
@@ -132,7 +132,7 @@ export default {
     },
     getGasDisplayString(gasPrice) {
       const currencyFee = this.getGasAmount(gasPrice)
-      return `Pay ${significantDigits(currencyFee.toString())} ${this.selectedCurrency}`
+      return `${this.t('walletTransfer.reset')} ${significantDigits(currencyFee.toString())} ${this.selectedCurrency}`
     },
     getGasAmount(gasPrice) {
       const currencyMultiplier = this.getCurrencyMultiplier

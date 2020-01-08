@@ -48,7 +48,7 @@
               <v-text-field
                 id="contact-name"
                 v-model="newContactName"
-                placeholder="Enter Contact Name"
+                :placeholder="t('walletSettings.enterContact')"
                 :rules="[rules.required]"
                 outlined
                 aria-label="Contact Name"
@@ -102,9 +102,8 @@ export default {
       newContact: '',
       newContactName: '',
       rules: {
-        required: value => !!value || 'Required'
+        required: value => !!value || this.t('walletSettings.required')
       },
-      verifierOptions: ALLOWED_VERIFIERS,
       ETH,
       saveContactAlert: false,
       saveContactAlertText: '',
@@ -112,8 +111,16 @@ export default {
     }
   },
   computed: {
+    verifierOptions() {
+      const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
+      return verifiers.map(verifier => {
+        verifier.name = this.t(verifier.name)
+        return verifier
+      })
+    },
     verifierPlaceholder() {
-      return `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
+      const verifierLocale = ALLOWED_VERIFIERS.find(verifier => verifier.value === this.selectedVerifier).name
+      return `${this.t('walletSettings.enter')} ${this.t(verifierLocale)}`
     },
     contacts() {
       return this.$store.state.contacts
@@ -125,7 +132,7 @@ export default {
     },
     checkDuplicates(value) {
       if (this.contacts) {
-        return this.contacts.findIndex(x => x.contact.toLowerCase() === value.toLowerCase()) < 0 || 'Duplicate contact'
+        return this.contacts.findIndex(x => x.contact.toLowerCase() === value.toLowerCase()) < 0 || this.t('walletSettings.duplicateContact')
       }
       return ''
     },

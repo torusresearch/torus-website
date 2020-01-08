@@ -28,7 +28,7 @@
         <img :src="require('../../../../public/img/icons/menu-primary.svg')" alt="Burger Icon" />
       </v-btn>
 
-      <language-selector></language-selector>
+      <language-selector v-if="!$vuetify.breakpoint.xsOnly"></language-selector>
       <v-menu offset-y bottom left z-index="20" :close-on-content-click="false">
         <template v-slot:activator="{ on }">
           <v-btn id="menu-dropdown-btn" class="hidden-xs-only" small text v-on="on">
