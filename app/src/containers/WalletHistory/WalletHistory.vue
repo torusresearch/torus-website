@@ -184,7 +184,8 @@ export default {
         } else if (activity.type === CONTRACT_TYPE_ERC20) {
           return `logos/${activity.type_image_link}`
         } else {
-          return `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}`
+          const action = activity.action.split('.')
+          return action.length >= 1 ? `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}` : ''
         }
       }
     },
