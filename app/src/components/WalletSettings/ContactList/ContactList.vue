@@ -48,7 +48,7 @@
               <v-text-field
                 id="contact-name"
                 v-model="newContactName"
-                placeholder="Enter Contact Name"
+                :placeholder="t('walletSettings.enterContact')"
                 :rules="[rules.required]"
                 outlined
                 aria-label="Contact Name"
@@ -66,7 +66,7 @@
             </v-flex>
 
             <v-layout wrap>
-              <v-flex xs8 v-if="!$vuetify.breakpoint.xsOnly" class="pr-2">
+              <v-flex xs12 sm12 md6 :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-2'">
                 <notification
                   :alert-show="saveContactAlert"
                   :alert-text="saveContactAlertText"
@@ -74,18 +74,10 @@
                   @closeAlert="closeAlert"
                 />
               </v-flex>
-              <v-flex xs12 sm4 :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-2'">
+              <v-flex xs12 sm12 md6 :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'pl-2'">
                 <v-btn id="contact-submit-btn" block type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">
                   {{ t('walletSettings.addContact') }}
                 </v-btn>
-              </v-flex>
-              <v-flex xs12 v-if="$vuetify.breakpoint.xsOnly" class="mt-2">
-                <notification
-                  :alert-show="saveContactAlert"
-                  :alert-text="saveContactAlertText"
-                  :alert-type="saveContactAlertType"
-                  @closeAlert="closeAlert"
-                />
               </v-flex>
             </v-layout>
           </v-layout>
@@ -110,9 +102,8 @@ export default {
       newContact: '',
       newContactName: '',
       rules: {
-        required: value => !!value || 'Required'
+        required: value => !!value || this.t('walletSettings.required')
       },
-      verifierOptions: ALLOWED_VERIFIERS,
       ETH,
       saveContactAlert: false,
       saveContactAlertText: '',
@@ -120,8 +111,16 @@ export default {
     }
   },
   computed: {
+    verifierOptions() {
+      const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
+      return verifiers.map(verifier => {
+        verifier.name = this.t(verifier.name)
+        return verifier
+      })
+    },
     verifierPlaceholder() {
-      return `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
+      const verifierLocale = ALLOWED_VERIFIERS.find(verifier => verifier.value === this.selectedVerifier).name
+      return `${this.t('walletSettings.enter')} ${this.t(verifierLocale)}`
     },
     contacts() {
       return this.$store.state.contacts
@@ -133,7 +132,7 @@ export default {
     },
     checkDuplicates(value) {
       if (this.contacts) {
-        return this.contacts.findIndex(x => x.contact.toLowerCase() === value.toLowerCase()) < 0 || 'Duplicate contact'
+        return this.contacts.findIndex(x => x.contact.toLowerCase() === value.toLowerCase()) < 0 || this.t('walletSettings.duplicateContact')
       }
       return ''
     },

@@ -164,7 +164,9 @@
               >
                 {{ t('walletTransfer.sendAll') }}
               </a>
-              <a id="send-all-reset-btn" class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">Reset</a>
+              <a id="send-all-reset-btn" class="float-right primary--text subtitle-2" v-if="isSendAll" @click="resetSendAll">
+                {{ t('walletTransfer.reset') }}
+              </a>
             </div>
             <v-select
               v-if="contractType === CONTRACT_TYPE_ERC721"
@@ -259,7 +261,7 @@
               id="wallet-transfer-submit"
               @click="onTransferClick"
             >
-              Transfer
+              {{ t('walletTransfer.youSend') }}
             </v-btn>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
               <transfer-confirm
@@ -306,10 +308,10 @@
 <script>
 import { QrcodeCapture } from 'vue-qrcode-reader'
 import { isAddress, toChecksumAddress, toBN, toWei } from 'web3-utils'
+import NodeDetailManager from '@toruslabs/fetch-node-details'
 import torus from '../../torus'
 import { significantDigits, getRandomNumber, getEtherScanHashLink, validateVerifierId } from '../../utils/utils'
 import config from '../../config'
-import { nodeDetails } from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import ComponentLoader from '../../components/helpers/ComponentLoader'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
@@ -379,10 +381,10 @@ export default {
       qrErrorMsg: '',
       autoSelectVerifier: true,
       selectedVerifier: '',
-      verifierOptions: ALLOWED_VERIFIERS,
       rules: {
-        required: value => !!value || 'Required'
+        required: value => !!value || this.t('walletTransfer.required')
       },
+      nodeDetails: {},
       showModalMessage: false,
       modalMessageSuccess: null,
       isSendAll: false,
@@ -393,6 +395,13 @@ export default {
     }
   },
   computed: {
+    verifierOptions() {
+      const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
+      return verifiers.map(verifier => {
+        verifier.name = this.t(verifier.name)
+        return verifier
+      })
+    },
     randomName() {
       return `torus-${torus.instanceId}`
     },
@@ -456,7 +465,9 @@ export default {
       return this.contractType === CONTRACT_TYPE_ETH ? (this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency) : ''
     },
     verifierPlaceholder() {
-      return this.selectedVerifier ? `Enter ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}` : ''
+      return this.selectedVerifier
+        ? `${this.t('walletSettings.enter')} ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
+        : ''
     },
     contactList() {
       return this.$store.state.contacts.reduce((mappedObj, contact) => {
@@ -526,7 +537,7 @@ export default {
     },
     moreThanZero(value) {
       if (this.selectedItem) {
-        return new BigNumber(value || '0').gt(new BigNumber('0')) || 'Invalid amount'
+        return new BigNumber(value || '0').gt(new BigNumber('0')) || this.t('walletTransfer.invalidAmount')
       }
       return ''
     },
@@ -536,7 +547,7 @@ export default {
         if (this.toggle_exclusive === 1) {
           amount = amount.div(this.getCurrencyTokenRate)
         }
-        return amount.lte(this.selectedItem.computedBalance) || 'Insufficient balance for transaction'
+        return amount.lte(this.selectedItem.computedBalance) || this.t('walletTransfer.insufficient')
       }
       return ''
     },
@@ -576,7 +587,7 @@ export default {
               .then(response => {
                 let resolved = new BigNumber(response || '0')
                 if (!resolved.eq(new BigNumber('21000'))) {
-                  resolved = resolved.times(new BigNumber('1.1'))
+                  resolved = new BigNumber(resolved.times(new BigNumber('1.1')).toFixed(0))
                   this.sendEthToContractError = this.isSendAll
                 }
                 resolve(resolved)
@@ -667,9 +678,9 @@ export default {
             return
           }
         } else {
-          const endPointNumber = getRandomNumber(nodeDetails.torusNodeEndpoints.length)
+          const endPointNumber = getRandomNumber(this.nodeDetails.torusNodeEndpoints.length)
           try {
-            toAddress = await torus.getPubKeyAsync(nodeDetails.torusNodeEndpoints[endPointNumber], {
+            toAddress = await torus.getPubKeyAsync(this.nodeDetails.torusNodeEndpoints[endPointNumber], {
               verifier: this.selectedVerifier,
               verifierId: this.toAddress
             })
@@ -677,9 +688,9 @@ export default {
             log.error(err)
             let newEndPointNumber = endPointNumber
             while (newEndPointNumber === endPointNumber) {
-              newEndPointNumber = getRandomNumber(nodeDetails.torusNodeEndpoints.length)
+              newEndPointNumber = getRandomNumber(this.nodeDetails.torusNodeEndpoints.length)
             }
-            toAddress = await torus.getPubKeyAsync(nodeDetails.torusNodeEndpoints[newEndPointNumber], {
+            toAddress = await torus.getPubKeyAsync(this.nodeDetails.torusNodeEndpoints[newEndPointNumber], {
               verifier: this.selectedVerifier,
               verifierId: this.toAddress
             })
@@ -726,6 +737,7 @@ export default {
       const selectedAddress = this.$store.state.selectedAddress
       if (this.contractType === CONTRACT_TYPE_ETH) {
         const value = '0x' + this.amount.times(new BigNumber(10).pow(new BigNumber(18))).toString(16)
+        log.info(this.gas.toString())
         torus.web3.eth.sendTransaction(
           {
             from: selectedAddress,
@@ -818,8 +830,8 @@ export default {
     },
     updateTotalCost() {
       if (this.displayAmount.isZero() || this.activeGasPrice === '') {
-        this.totalCost = ''
-        this.convertedTotalCost = ''
+        this.totalCost = '0'
+        this.convertedTotalCost = '0'
 
         if (this.activeGasPrice !== '') {
           const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
@@ -828,8 +840,8 @@ export default {
         return
       }
 
-      this.totalCost = ''
-      this.convertedTotalCost = ''
+      this.totalCost = '0'
+      this.convertedTotalCost = '0'
 
       // Updated you send value if send all
       if (this.isSendAll) {
@@ -927,6 +939,10 @@ export default {
     })
 
     this.updateFieldsBasedOnRoute()
+
+    NodeDetailManager.getNodeDetails().then(nodeDetails => {
+      this.nodeDetails = nodeDetails
+    })
   }
 }
 </script>

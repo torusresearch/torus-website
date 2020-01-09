@@ -1,5 +1,5 @@
 import { PromiseReference } from './utils/utils'
-const baseUrl = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3001'
+const baseUrl = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000'
 
 const baseRoute = baseUrl + process.env.BASE_URL
 
@@ -23,8 +23,8 @@ export const nodeDetails = {
   torusIndexes: [1, 2, 3, 4, 5]
 }
 
+
 export default {
-  MAINNET_JRPC_URL: 'https://mainnet.infura.io/metamask',
   baseUrl: baseUrl,
   baseRoute: baseRoute,
   supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH'],

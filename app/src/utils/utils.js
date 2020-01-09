@@ -339,22 +339,6 @@ function validateVerifierId(selectedVerifier, value) {
   return true
 }
 
-/**
- * @class PromiseReference
- * @type {Object}
- * @property {function} resolve The resolve reference for the promise
- * @property {function} reject The reject reference for the promise
- * @property {Object} promise The promise
- */
-function PromiseReference() {
-  var context = this
-  this.promise = new Promise(function(resolve, reject) {
-    context.resolve = resolve
-    context.reject = reject
-  })
-}
-PromiseReference.prototype.constructor = PromiseReference
-
 function formatDate(date) {
   const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   const day = date.getDate()
@@ -365,10 +349,10 @@ function formatDate(date) {
 
 const paymentProviders = {
   [SIMPLEX]: {
-    line1: 'Pay with Credit / Debit Card',
-    line2: '<span class="font-weight-medium">Fee</span> : 5% or 10 USD',
-    line3: 'Limits: $20,000/day, $50,000/mo',
-    line4: 'Currencies: ETH',
+    line1: 'Credit / Debit Card',
+    line2: '5% or 10 USD',
+    line3: '$20,000/day, $50,000/mo',
+    line4: 'ETH',
     status: ACTIVE,
     logoExtension: PNG,
     supportPage: 'https://www.simplex.com/support/',
@@ -380,10 +364,10 @@ const paymentProviders = {
     api: true
   },
   [MOONPAY]: {
-    line1: 'Pay with Credit / Debit Card',
-    line2: '<span class="font-weight-medium">Fee</span> : 4.5% or 5 USD',
-    line3: 'Limits: 2,000€/day, 10,000€/mo',
-    line4: 'Currencies: ETH, DAI, TUSD, USDC, USDT',
+    line1: 'Credit / Debit Card',
+    line2: '4.5% or 5 USD',
+    line3: '2,000€/day, 10,000€/mo',
+    line4: 'ETH, DAI, TUSD, USDC, USDT',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://help.moonpay.io/en/',
@@ -395,10 +379,10 @@ const paymentProviders = {
     api: true
   },
   [WYRE]: {
-    line1: 'Pay with Apple Pay/Debit Card',
-    line2: '<span class="font-weight-medium">Fee</span> : 1.5% + 30¢',
-    line3: 'Limits: $250/day',
-    line4: 'Currencies: ETH, DAI, WETH, USDC',
+    line1: 'Apple Pay/Debit Card',
+    line2: '1.5% + 30¢',
+    line3: '$250/day',
+    line4: 'ETH, DAI, WETH, USDC',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://support.sendwyre.com/en/',
@@ -410,10 +394,10 @@ const paymentProviders = {
     api: true
   },
   [COINDIRECT]: {
-    line1: 'Pay with Credit / Debit Card',
-    line2: '<span class="font-weight-medium">Fee</span> : 2.99%',
-    line3: 'Limits: N/A',
-    line4: 'Currencies: ETH, DAI, USDT',
+    line1: 'Credit / Debit Card',
+    line2: '2.99%',
+    line3: 'N/A',
+    line4: 'ETH, DAI, USDT',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://help.coindirect.com/hc/en-us',
@@ -425,10 +409,10 @@ const paymentProviders = {
     api: true
   },
   [CRYPTO]: {
-    line1: 'Pay with Credit Card',
-    line2: '<span class="font-weight-medium">Fee</span> : Varies',
-    line3: 'Limits: N/A',
-    line4: 'Currencies: ETH, tokens',
+    line1: 'Credit Card',
+    line2: 'Varies',
+    line3: 'N/A',
+    line4: 'ETH, tokens',
     status: ACTIVE,
     logoExtension: PNG,
     supportPage: 'https://help.crypto.com/en/',
@@ -495,7 +479,6 @@ module.exports = {
   broadcastChannelOptions,
   storageAvailable,
   validateVerifierId,
-  PromiseReference,
   formatDate,
   paymentProviders,
   getPaymentProviders,
