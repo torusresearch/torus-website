@@ -8,6 +8,7 @@
       :page.sync="page"
       hide-default-footer
       :loading="loadingTransactions"
+      no-data-text=""
     >
       <template v-slot:default="props">
         <transaction-details v-for="transaction in props.items" :key="transaction.id" :transaction="transaction" />

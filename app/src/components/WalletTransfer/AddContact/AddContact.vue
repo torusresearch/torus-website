@@ -52,8 +52,15 @@ export default {
       newContactName: '',
       rules: {
         required: value => !!value || this.t('walletSettings.required')
-      },
-      verifierLabels: VERIFIER_LABELS
+      }
+    }
+  },
+  computed: {
+    verifierLabels() {
+      return Object.keys(VERIFIER_LABELS).reduce((acc, curr) => {
+        acc[curr] = this.t(VERIFIER_LABELS[curr])
+        return acc
+      }, {})
     }
   },
   methods: {
