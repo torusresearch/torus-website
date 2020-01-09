@@ -5,6 +5,8 @@ const baseRoute = baseUrl + process.env.BASE_URL
 
 const redirect_uri = `${baseUrl}/redirect`
 
+const verifier_uri = process.env.VERIFIER_URI || 'http://localhost:8080'
+
 export const nodeDetails = {
   skip: true, // skip fetching of node details and use defaults below
   updated: new PromiseReference(),
@@ -51,5 +53,6 @@ export default {
   DISCORD_CLIENT_ID: '630308572013527060',
   redirect_uri: redirect_uri,
   // api: 'http://localhost:2020'
-  api: 'https://api.tor.us'
+  api: 'https://api.tor.us',
+  verifier_uri
 }
