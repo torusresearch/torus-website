@@ -678,36 +678,28 @@ export default {
     return torus.torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
   },
   setBillboard({ commit, state }) {
-    try {
-      get(`${config.api}/billboard`, {
-        headers: {
-          Authorization: `Bearer ${state.jwtToken}`
-        }
-      }).then(resp => {
-        const events = []
-        resp.data.forEach(event => {
-          if (events[event.callToActionLink] === undefined) events[event.callToActionLink] = {}
-          events[event.callToActionLink][event.locale] = event
-        })
-
-        if (events) commit('setBillboard', events)
+    get(`${config.api}/billboard`, {
+      headers: {
+        Authorization: `Bearer ${state.jwtToken}`
+      }
+    }).then(resp => {
+      const events = []
+      resp.data.forEach(event => {
+        if (events[event.callToActionLink] === undefined) events[event.callToActionLink] = {}
+        events[event.callToActionLink][event.locale] = event
       })
-    } catch (error) {
-      reject(error)
-    }
+
+      if (events) commit('setBillboard', events)
+    })
   },
   setContacts({ commit, state }) {
-    try {
-      get(`${config.api}/contact`, {
-        headers: {
-          Authorization: `Bearer ${state.jwtToken}`
-        }
-      }).then(resp => {
-        if (resp.data) commit('setContacts', resp.data)
-      })
-    } catch (error) {
-      reject(error)
-    }
+    get(`${config.api}/contact`, {
+      headers: {
+        Authorization: `Bearer ${state.jwtToken}`
+      }
+    }).then(resp => {
+      if (resp.data) commit('setContacts', resp.data)
+    })
   },
   addContact({ commit, state }, payload) {
     return new Promise((resolve, reject) => {
@@ -909,52 +901,71 @@ export default {
         })
     })
   },
+  setVerifier({ state }, payload) {
+    const { verifier, verifierId } = state.userInfo
+    patch(
+      `${config.api}/user/verifier`,
+      { verifier, verifierId },
+      {
+        headers: {
+          Authorization: `Bearer ${state.jwtToken}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      }
+    )
+      .then(response => {
+        log.info('successfully patched', response)
+      })
+      .catch(err => {
+        log.error(err, 'unable to patch verifier info')
+      })
+  },
   setUserInfoAction({ commit, dispatch, state }, payload) {
-    // Fixes loading theme for too long
-    dispatch('setTheme', state.theme)
-
     return new Promise(async (resolve, reject) => {
+      // Fixes loading theme for too long
+      dispatch('setTheme', state.theme)
       const { token, calledFromEmbed, rehydrate } = payload
-      try {
-        get(`${config.api}/user`, {
-          headers: {
-            Authorization: `Bearer ${token}`
+      get(`${config.api}/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then(user => {
+          if (user.data) {
+            const { transactions, contacts, default_currency, theme, locale, verifier, verifier_id } = user.data || {}
+            commit('setPastTransactions', transactions)
+            commit('setContacts', contacts)
+            dispatch('setTheme', theme)
+            dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
+            dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
+            if (locale !== '') dispatch('setLocale', locale)
+            if (!verifier || !verifier_id) dispatch('setVerifier')
+            resolve()
           }
         })
-          .then(user => {
-            if (user.data) {
-              const { transactions, contacts, default_currency, theme, locale } = user.data || {}
-              commit('setPastTransactions', transactions)
-              commit('setContacts', contacts)
-              dispatch('setTheme', theme)
-              dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
-              dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
-              if (locale !== '') dispatch('setLocale', locale)
-              resolve()
-            }
-          })
-          .catch(async error => {
-            await post(
-              `${config.api}/user`,
-              {
-                default_currency: state.selectedCurrency,
-                theme: state.theme
-              },
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  'Content-Type': 'application/json; charset=utf-8'
-                }
+        .catch(async error => {
+          const { userInfo, selectedCurrency, theme } = state
+          const { verifier, verifierId } = userInfo
+          await post(
+            `${config.api}/user`,
+            {
+              default_currency: selectedCurrency,
+              theme,
+              verifier,
+              verifierId
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json; charset=utf-8'
               }
-            )
-            commit('setNewUser', true)
-            dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
-            dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
-            resolve()
-          })
-      } catch (error) {
-        reject(error)
-      }
+            }
+          )
+          commit('setNewUser', true)
+          dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
+          dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
+          resolve()
+        })
     })
   },
   async rehydrate({ state, dispatch }, payload) {
