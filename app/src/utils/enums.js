@@ -109,8 +109,6 @@ const DISCORD = 'discord'
 const TWITCH = 'twitch'
 const TORUS = 'torus'
 const ENS = 'ENS'
-<<<<<<< HEAD
-<<<<<<< HEAD
 const ETH_LABEL = 'walletSettings.ethAddress'
 const GOOGLE_LABEL = 'walletSettings.googleId'
 const FACEBOOK_LABEL = 'walletSettings.facebookId'
@@ -118,21 +116,7 @@ const REDDIT_LABEL = 'walletSettings.redditId'
 const DISCORD_LABEL = 'walletSettings.discordId'
 const TWITCH_LABEL = 'walletSettings.twitchId'
 const ENS_LABEL = 'walletSettings.ensId'
-=======
-=======
->>>>>>> Update torus login
-const ETH_LABEL = 'ETH Address'
-const GOOGLE_LABEL = 'Google Email'
-const FACEBOOK_LABEL = 'Facebook ID'
-const REDDIT_LABEL = 'Reddit Username'
-const DISCORD_LABEL = 'Discord ID'
-const TWITCH_LABEL = 'Twitch ID'
 const TORUS_LABEL = 'Torus ID'
-const ENS_LABEL = 'ENS ID'
-<<<<<<< HEAD
->>>>>>> Update torus login
-=======
->>>>>>> Update torus login
 
 // Format: [dark/light]-[colorName]
 const THEME_DARK_BLACK_NAME = 'dark-black'

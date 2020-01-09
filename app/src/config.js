@@ -1,4 +1,4 @@
-const baseUrl = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000'
+const baseUrl = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3001'
 
 const baseRoute = baseUrl + process.env.BASE_URL
 
