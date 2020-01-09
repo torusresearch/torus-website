@@ -47,13 +47,13 @@
               </div>
             </v-card-text>
             <v-card-text class="asset-more py-1 px-3">
-              <div class="font-weight-medium">Description</div>
+              <div class="font-weight-medium">{{ t('walletHome.description') }}</div>
               <div class="ml-2 text_2--text">{{ asset.description }}</div>
               <div class="font-weight-medium mt-2">ID</div>
               <div class="ml-2 text_2--text">#{{ asset.tokenId }}</div>
               <div class="mt-4">
-                <v-btn block depressed color="primary" @click="transferAsset(asset)">Transfer</v-btn>
-                <v-btn block text @click.stop="toggleDetails($event)">Close</v-btn>
+                <v-btn block depressed color="primary" @click="transferAsset(asset)">{{ t('walletHome.transfer') }}</v-btn>
+                <v-btn block text @click.stop="toggleDetails($event)">{{ t('walletHome.close') }}</v-btn>
               </div>
             </v-card-text>
           </v-card>
@@ -80,7 +80,7 @@
             </v-list-item>
 
             <v-card-text class="asset-more py-1 px-3">
-              <div class="font-weight-medium">Description</div>
+              <div class="font-weight-medium">{{ t('walletHome.description') }}</div>
               <div class="ml-2 text_2--text">{{ asset.description }}</div>
               <div class="font-weight-medium mt-2">ID</div>
               <div class="ml-2 text_2--text">#{{ asset.tokenId }}</div>
@@ -88,12 +88,12 @@
 
             <v-card-actions>
               <v-flex xs6>
-                <v-btn block small text class="more-info-show" @click.stop="toggleDetails($event)">More Info</v-btn>
-                <v-btn block small text class="more-info-hide" @click.stop="toggleDetails($event)">Less Info</v-btn>
+                <v-btn block small text class="more-info-show" @click.stop="toggleDetails($event)">{{ t('walletHome.moreInfo') }}</v-btn>
+                <v-btn block small text class="more-info-hide" @click.stop="toggleDetails($event)">{{ t('walletHome.lessInfo') }}</v-btn>
               </v-flex>
               <v-divider inset vertical></v-divider>
               <v-flex xs6>
-                <v-btn block small text color="primary" @click="transferAsset(asset)">Transfer</v-btn>
+                <v-btn block small text color="primary" @click="transferAsset(asset)">{{ t('walletHome.transfer') }}</v-btn>
               </v-flex>
             </v-card-actions>
           </v-card>

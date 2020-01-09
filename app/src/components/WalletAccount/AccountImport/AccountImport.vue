@@ -3,11 +3,11 @@
     <v-container>
       <v-layout wrap my-4>
         <v-flex xs12 px-4>
-          <div class="font-weight-bold headline">Import Account</div>
+          <div class="font-weight-bold headline">{{ t('accountMenu.importAccount') }}</div>
         </v-flex>
         <v-flex xs12 px-4>
           <v-flex xs12 mt-4>
-            <span class="subtitle-2">Select Import type:</span>
+            <span class="subtitle-2">{{ t('accountMenu.selectImportType') }}:</span>
             <v-select
               outlined
               append-icon="$vuetify.icons.select"
@@ -24,14 +24,14 @@
             <v-form ref="privateKeyForm" @submit.prevent="" v-model="privateKeyFormValid" lazy-validation>
               <v-layout wrap>
                 <v-flex xs12 px-4>
-                  <span class="subtitle-2">Input Private Key:</span>
+                  <span class="subtitle-2">{{ t('accountMenu.inputPrivateKey') }}:</span>
                   <v-text-field
                     outlined
                     :type="showPrivateKey ? 'text' : 'password'"
                     :rules="[rules.required]"
                     :append-icon="showPrivateKey ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                     name="private-key"
-                    label="Private Key"
+                    :label="t('accountMenu.privateKey')"
                     @input="canShowError = false"
                     @click:append="togglePrivShow"
                     v-model="privateKey"
@@ -44,7 +44,7 @@
                 <v-flex xs12 px-4 class="text-right">
                   <v-spacer></v-spacer>
                   <v-btn text @click="onClose">
-                    Back
+                    {{ t('accountMenu.back') }}
                   </v-btn>
                   <v-btn
                     color="primary"
@@ -53,7 +53,7 @@
                     :loading="isLoadingPrivate"
                     :disabled="!privateKeyFormValid || isLoadingPrivate"
                   >
-                    Import
+                    {{ t('accountMenu.import') }}
                   </v-btn>
                 </v-flex>
               </v-layout>
@@ -67,31 +67,28 @@
                 <v-flex xs12 px-4>
                   <v-layout align-center justify-space-between>
                     <v-flex grow>
-                      Please upload your JSON File
-                      <HelpTooltip
-                        title="JSON File"
-                        description="This is a type of file format that your stores information on your Private Key."
-                      ></HelpTooltip>
+                      {{ t('accountMenu.uploadJsonLabel') }}
+                      <HelpTooltip :title="t('accountMenu.uploadJsonTitle')" :description="t('accountMenu.uploadJsonDesc')"></HelpTooltip>
                     </v-flex>
                     <v-flex shrink>
                       <v-btn outlined @click.prevent="$refs.keystoreUpload.click()" class="upload-button" color="primary">
                         <v-icon left>$vuetify.icons.question</v-icon>
-                        Upload
+                        {{ t('accountMenu.upload') }}
                       </v-btn>
                       <input v-show="false" ref="keystoreUpload" multiple="false" type="file" @change="processFile" />
                     </v-flex>
                   </v-layout>
-                  <div class="text-right" v-show="selectedFileName !== ''">Selected File: {{ selectedFileName }}</div>
+                  <div class="text-right" v-show="selectedFileName !== ''">{{ t('accountMenu.selectedFile') }}: {{ selectedFileName }}</div>
                 </v-flex>
                 <v-flex xs12 px-4>
-                  <span class="subtitle-2">Enter your password:</span>
+                  <span class="subtitle-2">{{ t('accountMenu.enterPassword') }}:</span>
                   <v-text-field
                     outlined
                     name="password"
                     :rules="[rules.required]"
                     :append-icon="showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                     :type="showJsonPassword ? 'text' : 'password'"
-                    placeholder="Password"
+                    :placeholder="t('accountMenu.password')"
                     v-model="jsonPassword"
                     @click:append="toggleJsonPasswordShow"
                   ></v-text-field>
@@ -102,7 +99,7 @@
                 <v-flex xs12 px-4 class="text-right">
                   <v-spacer></v-spacer>
                   <v-btn text @click="onClose">
-                    Back
+                    {{ t('accountMenu.back') }}
                   </v-btn>
                   <v-btn
                     color="primary"
@@ -111,7 +108,7 @@
                     :loading="isLoadingKeystore"
                     :disabled="!jsonFileFormValid || isLoadingKeystore"
                   >
-                    Import
+                    {{ t('accountMenu.import') }}
                   </v-btn>
                 </v-flex>
               </v-layout>
@@ -140,11 +137,11 @@ export default {
       selectedType: 'private',
       options: [
         {
-          name: 'Private Key',
+          name: this.t('accountMenu.privateKey'),
           value: 'private'
         },
         {
-          name: 'Keystore',
+          name: this.t('accountMenu.keystore'),
           value: 'keystore'
         }
       ],
@@ -161,7 +158,7 @@ export default {
       isLoadingPrivate: false,
       isLoadingKeystore: false,
       rules: {
-        required: value => !!value || 'Required.'
+        required: value => !!value || this.t('accountMenu.required')
       }
     }
   },

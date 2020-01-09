@@ -1,5 +1,5 @@
 <template>
-  <v-card width="400" class="account-menu">
+  <v-card :flat="$vuetify.breakpoint.xsOnly" width="400" class="account-menu">
     <v-list>
       <v-list-item>
         <v-list-item-avatar class="mr-2 mt-4">
@@ -88,10 +88,16 @@
       </v-list-item>
     </v-list>
 
-    <v-card-actions>
-      <v-btn text class="text_1--text font-weight-bold mb-6 ml-2" @click="logout">{{ t('accountMenu.logOut') }}</v-btn>
-      <v-spacer></v-spacer>
-    </v-card-actions>
+    <v-divider v-if="$vuetify.breakpoint.xsOnly"></v-divider>
+    <v-list v-if="$vuetify.breakpoint.xsOnly">
+      <language-selector></language-selector>
+    </v-list>
+
+    <v-list>
+      <v-list-item @click="logout">
+        <v-list-item-content class="text_1--text font-weight-bold body-1">{{ t('accountMenu.logOut') }}</v-list-item-content>
+      </v-list-item>
+    </v-list>
   </v-card>
 </template>
 
@@ -99,6 +105,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import { significantDigits, addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
 import ShowToolTip from '../../helpers/ShowToolTip'
+import LanguageSelector from '../../helpers/LanguageSelector'
 import AccountImport from '../AccountImport'
 import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../../utils/enums'
 import torus from '../../../torus'
@@ -107,7 +114,8 @@ export default {
   props: ['headerItems'],
   components: {
     ShowToolTip,
-    AccountImport
+    AccountImport,
+    LanguageSelector
   },
   data() {
     return {

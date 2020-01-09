@@ -5,11 +5,9 @@
         <slot></slot>
       </span>
     </template>
-    <template v-if="copied">
-      Copied!
-    </template>
+    <template v-if="copied">{{ t('walletHome.copy') }}!</template>
     <template v-else>
-      Copy to clipboard
+      {{ t('walletHome.copyToClipboard') }}
     </template>
   </v-tooltip>
 </template>
