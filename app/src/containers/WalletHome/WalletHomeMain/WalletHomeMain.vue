@@ -194,7 +194,7 @@ import ExportQrCode from '../../../components/helpers/ExportQrCode'
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import LearnMore from '../../../components/WalletHome/LearnMore'
-import { MAINNET } from '../../../utils/enums'
+import { MAINNET, LOCALE_EN } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
 
 export default {
@@ -240,7 +240,17 @@ export default {
       return this.$store.state.isNewUser
     },
     events() {
-      return this.$store.state.billboard
+      const events = []
+      const lang = this.$vuetify.lang.current
+      const billboard = this.$store.state.billboard
+
+      Object.keys(billboard).forEach(key => {
+        const event = billboard[key]
+        const finalEvent = event[lang] || event[LOCALE_EN]
+        events.push(finalEvent)
+      })
+
+      return events
     }
   },
   methods: {

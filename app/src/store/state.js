@@ -23,6 +23,7 @@ const initialState = {
   tokenData: {}, // Account specific object
   tokenRates: {},
   transactions: [],
+  loadingUserTransactions: true,
   unapprovedTypedMessages: {},
   unapprovedPersonalMsgs: {},
   unapprovedMsgs: {},

@@ -6,7 +6,7 @@
         <v-menu class="" transition="slide-y-transition" bottom>
           <template v-slot:activator="{ on }">
             <v-chip class="select-theme" :style="themeOptionStyle(selectedTheme)" label outlined large v-on="on">
-              <span>{{ selectedTheme ? selectedTheme.label : 'Select a theme' }}</span>
+              <span>{{ selectedTheme ? selectedTheme.label : t('walletSettings.selectTheme') }}</span>
               <div class="flex-grow-1 text-right pr-2">
                 <v-icon right>$vuetify.icons.select</v-icon>
               </div>
@@ -20,7 +20,7 @@
               v-for="theme in themes"
               :key="`${theme.name}`"
             >
-              {{ theme.label }}
+              {{ t(theme.label) }}
             </v-list-item>
           </v-list>
         </v-menu>

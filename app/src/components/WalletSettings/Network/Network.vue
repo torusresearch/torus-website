@@ -118,7 +118,7 @@ export default {
     showNotification(success) {
       this.updateProviderRPCAlert = success
       this.updateProviderAlertType = success ? 'success' : 'error'
-      this.updateProviderAlertText = success ? 'Updated Network Provider' : 'Something went wrong'
+      this.updateProviderAlertText = success ? this.t('walletSettings.updatedProvider') : this.t('walletSettings.somethingWrong')
     },
     changeNetwork(value) {
       if (value && value.host !== RPC) {

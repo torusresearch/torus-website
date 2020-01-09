@@ -53,7 +53,7 @@
                         <span v-html="selectedProviderObj.line2 || ''"></span>
                         <HelpTooltip
                           :title="t('walletTopUp.serviceFee')"
-                          :description="`${t('walletTopUp.serviceFeeDesc1')} ${selectedProvider} ${t('$vuetify.walletTopUp.serviceFeeDesc2')}`"
+                          :description="`${t('walletTopUp.serviceFeeDesc1')} ${selectedProvider} ${t('walletTopUp.serviceFeeDesc2')}`"
                         ></HelpTooltip>
                       </v-flex>
                       <v-flex grow-shrink-0>
