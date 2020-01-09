@@ -29,7 +29,12 @@
         </div>
       </v-flex>
       <v-flex xs12 px-4 mb-4>
-        <tx-history-table :selectedAction="selectedAction" :selectedPeriod="selectedPeriod" :transactions="calculateFinalTransactions()" />
+        <tx-history-table
+          :selectedAction="selectedAction"
+          :selectedPeriod="selectedPeriod"
+          :loadingTransactions="loadingPastTransactions || loadingOrders || loadingUserTransactions"
+          :transactions="calculateFinalTransactions()"
+        />
       </v-flex>
     </v-layout>
   </div>
@@ -73,10 +78,15 @@ export default {
       selectedAction: ACTIVITY_ACTION_ALL,
       selectedPeriod: ACTIVITY_PERIOD_ALL,
       paymentTx: [],
-      pastTx: []
+      pastTx: [],
+      loadingPastTransactions: true,
+      loadingOrders: true
     }
   },
   computed: {
+    loadingUserTransactions() {
+      return this.$store.state.loadingUserTransactions
+    },
     actionTypes() {
       return [
         {
@@ -253,7 +263,8 @@ export default {
         }
         pastTx.push(finalObj)
       }
-      console.log(pastTx)
+
+      this.loadingPastTransactions = false
       this.pastTx = pastTx
     },
     calculateTransactions() {
@@ -344,6 +355,7 @@ export default {
           return acc
           // }
         }, [])
+        this.loadingOrders = false
       })
       .catch(err => log.error(err))
     this.calculatePastTransactions()
