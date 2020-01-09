@@ -40,7 +40,7 @@
     "assert": "^2.0.0",
     "bip39": "^3.0.2",
     "broadcast-channel": "^3.0.3",
-    "connext-store": "^1.0.0",
+    "connext-store": "^1.1.7",
     "copy-to-clipboard": "^3.2.0",
     "core-js": "3.4.6",
     "debounce": "^1.2.0",
