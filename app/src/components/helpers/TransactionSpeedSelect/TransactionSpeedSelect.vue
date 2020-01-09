@@ -132,7 +132,7 @@ export default {
     },
     getGasDisplayString(gasPrice) {
       const currencyFee = this.getGasAmount(gasPrice)
-      return `${this.t('walletTransfer.reset')} ${significantDigits(currencyFee.toString())} ${this.selectedCurrency}`
+      return `${this.t('walletTransfer.pay')} ${significantDigits(currencyFee.toString())} ${this.selectedCurrency}`
     },
     getGasAmount(gasPrice) {
       const currencyMultiplier = this.getCurrencyMultiplier
