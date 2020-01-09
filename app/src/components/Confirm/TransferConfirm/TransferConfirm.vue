@@ -32,8 +32,13 @@
               <div>
                 <div class="float-right text-right">
                   <div class="body-1 font-weight-bold">~ {{ speedSelected }} Mins</div>
-                  <div class="caption text_2--text">{{ significantDigits(transactionFee) }} {{ selectedCurrency }}</div>
+                  <div class="caption text_2--text">{{ transactionFee }} {{ selectedCurrency }}</div>
                 </div>
+              </div>
+            </v-flex>
+            <v-flex>
+              <div class="float-right text-right red--text" v-if="sendEthToContractError">
+                It looks like you're sending ETH to a Contract. Gas Estimation is incorrect and some ETH may be left
               </div>
             </v-flex>
           </v-layout>
@@ -63,7 +68,8 @@ export default {
     'speedSelected',
     'transactionFee',
     'assetSelected',
-    'isNonFungibleToken'
+    'isNonFungibleToken',
+    'sendEthToContractError'
   ],
   methods: {
     onCancel(step) {
