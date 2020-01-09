@@ -678,22 +678,13 @@ export default {
             return
           }
         } else {
-          const endPointNumber = getRandomNumber(this.nodeDetails.torusNodeEndpoints.length)
           try {
-            toAddress = await torus.getPubKeyAsync(this.nodeDetails.torusNodeEndpoints[endPointNumber], {
+            toAddress = await torus.getPubKeyAsync(this.nodeDetails.torusNodeEndpoints, {
               verifier: this.selectedVerifier,
               verifierId: this.toAddress
             })
           } catch (err) {
             log.error(err)
-            let newEndPointNumber = endPointNumber
-            while (newEndPointNumber === endPointNumber) {
-              newEndPointNumber = getRandomNumber(this.nodeDetails.torusNodeEndpoints.length)
-            }
-            toAddress = await torus.getPubKeyAsync(this.nodeDetails.torusNodeEndpoints[newEndPointNumber], {
-              verifier: this.selectedVerifier,
-              verifierId: this.toAddress
-            })
           }
         }
         this.toEthAddress = toAddress
