@@ -6,10 +6,8 @@
  * @returns {hex string} Nonce
  */
 async function getNonceForRelay(web3) {
-  console.log(web3)
   const block = await web3.eth.getBlockNumber()
   const timestamp = new Date().getTime()
-  console.log('getNonceForRelay', block, timestamp)
 
   /** @notice Some Utility functions used by getNonceForRelay */
   const hex = value => web3.utils.toHex(value)

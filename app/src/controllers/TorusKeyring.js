@@ -29,7 +29,7 @@ export default class TorusKeyring extends EventEmitter {
   }
 
   generatePrivKey(wallet) {
-    const test = wallet.privateKey.getPrivateKey().toString('hex')
+    const test = wallet.getPrivateKey().toString('hex')
     return test
   }
 

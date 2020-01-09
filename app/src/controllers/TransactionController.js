@@ -1,5 +1,5 @@
 import AbiDecoder from '../utils/abiDecoder'
-import { relayer } from '../config'
+import config from '../config'
 const EventEmitter = require('safe-event-emitter')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
@@ -41,6 +41,7 @@ const {
   SEND_ETHER_ACTION_KEY,
   DEPLOY_CONTRACT_ACTION_KEY,
   CONTRACT_INTERACTION_KEY,
+  ZERO_BYTES32,
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
 } = require('../utils/enums')
 
@@ -391,11 +392,16 @@ class TransactionController extends EventEmitter {
       if (this.inProcessOfSigning.has(txId)) {
         return
       }
+      const txMeta = this.txStateManager.getTx(txId)
+      if (txMeta.relayer) {
+        await this.signTransaction(txId)
+        return
+      }
       this.inProcessOfSigning.add(txId)
       // approve
       this.txStateManager.setTxStatusApproved(txId)
       // get next nonce
-      const txMeta = this.txStateManager.getTx(txId)
+
       const fromAddress = txMeta.txParams.from
       // wait for a nonce
       nonceLock = await this.nonceTracker.getNonceLock(fromAddress)
@@ -408,14 +414,11 @@ class TransactionController extends EventEmitter {
       txMeta.nonceDetails = nonceLock.nonceDetails
       this.txStateManager.updateTx(txMeta, 'transactions#approveTransaction')
       // sign transaction
-      const rawTx = await this.signTransaction(txId, nonceLock)
+      const rawTx = await this.signTransaction(txId)
 
-      // Handling different transaction scenarios
-      if (rawTx != 'TransactionRelayed') {
-        await this.publishTransaction(txId, rawTx)
-        // must set transaction to submitted/failed before releasing lock
-        nonceLock.releaseLock()
-      }
+      await this.publishTransaction(txId, rawTx)
+      // must set transaction to submitted/failed before releasing lock
+      nonceLock.releaseLock()
     } catch (err) {
       // this is try-catch wrapped so that we can guarantee that the nonceLock is released
       try {
@@ -448,9 +451,10 @@ class TransactionController extends EventEmitter {
     if (txMeta.relayer) {
       // sign tx
 
-      let transferValue, to
-      let ETH_TOKEN = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
-      const ZERO_BYTES32 = '0x0000000000000000000000000000000000000000000000000000000000000000'
+      let transferValue, to, ETH_TOKEN
+      //console.log(config.relayer)
+      const relayerURL = config.relayer.concat(txMeta.contractParams.erc721 ? '/transfer/nft' : '/transfer/eth')
+      console.log(relayerURL)
       const fromSCW = txParams.from
 
       // Handling Tokens
@@ -467,23 +471,27 @@ class TransactionController extends EventEmitter {
           .shift()
           .toString()
       } else {
+        ETH_TOKEN = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
         transferValue = txParams.value.toString()
         to = txParams.to
       }
 
+      // Get nonce
       const nonce = await getNonceForRelay(this.web3)
       log.info(`fromSCW ${fromSCW}, to ${to}, ETH_TOKEN ${ETH_TOKEN}, value ${transferValue}, nonce ${nonce}`)
 
+      // Encode method Data
       const TransferModule = new this.web3.eth.Contract(TransferManager.abi, '0x7D5A3fa10D0f7dBD4dFE37851b25AD7285D995E1')
       const methodData = TransferModule.methods.transferToken(fromSCW, ETH_TOKEN, to, transferValue, ZERO_BYTES32).encodeABI()
 
+      // Get EOA wallet to sign the transactions
       const selectedEOA = this.getSelectedEOA()
       log.info('selectedEOA is', selectedEOA)
       const privateKey = await this.getWallet(selectedEOA)
-
       const walletAccount = this.web3.eth.accounts.privateKeyToAccount('0x' + privateKey)
       log.info([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 700000)
 
+      // Sign the transaction
       const signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 700000)
       const reqObj = {
         wallet: fromSCW,
@@ -491,19 +499,19 @@ class TransactionController extends EventEmitter {
         methodData,
         signatures
       }
+      log.info('TransactionController', reqObj)
 
       // Update the transaction state
       this.txStateManager.setTxStatusSigned(txMeta.id)
       this.txStateManager.updateTx(txMeta, 'transactions#publishTransaction')
 
-      log.info('TransactionController', reqObj)
-
-      const relayerRequest = await post('http://localhost:2090/transfer/eth', reqObj)
+      // Call the relayer
+      const relayerRequest = await post(relayerURL, reqObj)
       log.info(relayerRequest)
+
+      // Set tx state
       this.setTxHash(txId, relayerRequest.txHash)
       this.txStateManager.setTxStatusSubmitted(txMeta.id)
-      nonceLock.releaseLock()
-
       return 'TransactionRelayed'
     } else {
       // sign tx
@@ -742,6 +750,10 @@ class TransactionController extends EventEmitter {
       // For Cryptokitties
       tokenMethodName = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
       contractParams = OLD_ERC721_LIST[checkSummedTo.toLowerCase()]
+      const ck20 = data && tokenABIDecoder.decodeMethod(data)
+      delete contractParams['erc20']
+      contractParams.erc721 = true
+      methodParams = ck20.params
     } else if (decodedERC20) {
       // fallback to erc20
       const { name = '', params } = decodedERC20
