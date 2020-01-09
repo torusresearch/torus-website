@@ -1,5 +1,5 @@
 import randomId from 'random-id'
-import Torus from 'torus.js'
+import Torus from '@toruslabs/torus.js'
 import config from './config.js'
 import onloadTorus from './onload.js'
 import { post } from './utils/httpHelpers.js'

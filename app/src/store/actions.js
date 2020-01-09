@@ -38,8 +38,6 @@ const accountImporter = require('../utils/accountImporter')
 
 const baseRoute = config.baseRoute
 
-let totalFailCount = 0
-
 // stream to send logged in status
 const statusStream = torus.communicationMux.getStream('status')
 const oauthStream = torus.communicationMux.getStream('oauth')
@@ -764,14 +762,8 @@ export default {
     torus
       .getPubKeyAsync(torusNodeEndpoints, { verifier, verifierId })
       .catch(err => {
-        totalFailCount += 1
         log.error(err)
-        let newEndPointNumber = endPointNumber
-        while (newEndPointNumber === endPointNumber) {
-          newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
-        }
-        if (totalFailCount < 3) dispatch('handleLogin', { calledFromEmbed, endPointNumber: newEndPointNumber })
-        return Promise.reject('Invalid response from node')
+        return Promise.reject(err)
       })
       .then(res => {
         log.info('New private key assigned to user at address ', res)
