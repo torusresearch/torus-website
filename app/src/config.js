@@ -33,5 +33,6 @@ export default {
   DISCORD_CLIENT_ID: '630308572013527060',
   redirect_uri: redirect_uri,
   // api: 'http://localhost:2020'
-  api: 'https://api.tor.us'
+  api: 'https://api.tor.us',
+  verifier_uri
 }
