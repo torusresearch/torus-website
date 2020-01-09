@@ -280,6 +280,9 @@ export default {
           txObj.networkType = networkType.host
           txObj.ethRate = significantDigits(parseFloat(txObj.currencyAmount) / parseFloat(txObj.totalAmount))
           txObj.currencyUsed = this.selectedCurrency
+          txObj.type = txOld.contractParams && txOld.contractParams.erc20 ? 'erc20' : txOld.contractParams.erc721 ? 'erc721' : 'eth'
+          txObj.type_name = txOld.contractParams && txOld.contractParams.name ? txOld.contractParams.name : 'n/a'
+          txObj.type_image_link = txOld.contractParams && txOld.contractParams.logo ? txOld.contractParams.logo : 'n/a'
           finalTransactions.push(txObj)
         }
       }
