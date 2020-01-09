@@ -1,10 +1,10 @@
-const baseUrl = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3001'
+const baseUrl = process.env.VUE_APP_BASE_ROUTE || 'https://localhost:3000'
 
 const baseRoute = baseUrl + process.env.BASE_URL
 
 const redirect_uri = `${baseUrl}/redirect`
 
-const verifier_uri = process.env.VERIFIER_URI || 'http://localhost:8080'
+const verifier_uri = 'https://verifier.tor.us' || 'http://localhost:8080'
 
 export default {
   baseUrl: baseUrl,
