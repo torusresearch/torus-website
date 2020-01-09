@@ -261,7 +261,7 @@
               id="wallet-transfer-submit"
               @click="onTransferClick"
             >
-              {{ t('walletTransfer.youSend') }}
+              {{ t('walletTransfer.transfer') }}
             </v-btn>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
               <transfer-confirm
