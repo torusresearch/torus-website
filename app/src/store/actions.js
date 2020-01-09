@@ -16,7 +16,7 @@ import {
   DISCORD,
   THEME_LIGHT_BLUE_NAME
 } from '../utils/enums'
-import { getRandomNumber, broadcastChannelOptions, storageAvailable } from '../utils/utils'
+import { broadcastChannelOptions, storageAvailable } from '../utils/utils'
 import { post, get, patch, remove } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import initialState from './state'
@@ -353,321 +353,316 @@ export default {
     }
   },
   triggerLogin({ dispatch }, { calledFromEmbed, verifier, preopenInstanceId }) {
-    NodeDetailManager.getNodeDetails().then(updatedNodeDetails => {
-      const { torusNodeEndpoints } = updatedNodeDetails
-      const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
+    log.info('Verifier: ', verifier)
 
-      log.info('Verifier: ', verifier)
-
-      if (verifier === GOOGLE) {
-        const state = encodeURIComponent(
-          window.btoa(
-            JSON.stringify({
-              instanceId: torus.instanceId,
-              verifier: GOOGLE
-            })
-          )
+    if (verifier === GOOGLE) {
+      const state = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: torus.instanceId,
+            verifier: GOOGLE
+          })
         )
-        const scope = 'profile email openid'
-        const response_type = 'token id_token'
-        const finalUrl =
-          `https://accounts.google.com/o/oauth2/v2/auth?response_type=${response_type}&client_id=${config.GOOGLE_CLIENT_ID}` +
-          `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}`
-        const googleWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
-        const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-        bc.onmessage = async ev => {
-          try {
-            const {
-              instanceParams: { verifier },
-              hashParams: verifierParams
-            } = ev.data || {}
-            if (ev.error && ev.error !== '') {
-              log.error(ev.error)
-              oauthStream.write({ err: ev.error })
-            } else if (ev.data && verifier === GOOGLE) {
-              log.info(ev.data)
-              const { access_token: accessToken, id_token: idToken } = verifierParams
-              const userInfo = await get('https://www.googleapis.com/userinfo/v2/me', {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`
-                }
-              })
-              const { picture: profileImage, email, name, id } = userInfo || {}
-              dispatch('updateIdToken', { idToken })
-              dispatch('updateUserInfo', {
-                userInfo: {
-                  profileImage,
-                  name,
-                  email,
-                  verifierId: email.toString().toLowerCase(),
-                  verifier: GOOGLE,
-                  verifierParams: { verifier_id: email.toString().toLowerCase() }
-                }
-              })
-              dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-            }
-          } catch (error) {
-            log.error(error)
-            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
-          } finally {
-            bc.close()
-            googleWindow.close()
-          }
-        }
-        googleWindow.open()
-        googleWindow.once('close', () => {
-          bc.close()
-          oauthStream.write({ err: 'user closed popup' })
-        })
-      } else if (verifier === FACEBOOK) {
-        const state = encodeURIComponent(
-          window.btoa(
-            JSON.stringify({
-              instanceId: torus.instanceId,
-              verifier: FACEBOOK
+      )
+      const scope = 'profile email openid'
+      const response_type = 'token id_token'
+      const finalUrl =
+        `https://accounts.google.com/o/oauth2/v2/auth?response_type=${response_type}&client_id=${config.GOOGLE_CLIENT_ID}` +
+        `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}`
+      const googleWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      bc.onmessage = async ev => {
+        try {
+          const {
+            instanceParams: { verifier },
+            hashParams: verifierParams
+          } = ev.data || {}
+          if (ev.error && ev.error !== '') {
+            log.error(ev.error)
+            oauthStream.write({ err: ev.error })
+          } else if (ev.data && verifier === GOOGLE) {
+            log.info(ev.data)
+            const { access_token: accessToken, id_token: idToken } = verifierParams
+            const userInfo = await get('https://www.googleapis.com/userinfo/v2/me', {
+              headers: {
+                Authorization: `Bearer ${accessToken}`
+              }
             })
-          )
-        )
-        const scope = 'public_profile email'
-        const response_type = 'token'
-        const finalUrl =
-          `https://www.facebook.com/v5.0/dialog/oauth?response_type=${response_type}&client_id=${config.FACEBOOK_APP_ID}` +
-          `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
-        const facebookWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
-        const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-        bc.onmessage = async ev => {
-          try {
-            const {
-              instanceParams: { verifier },
-              hashParams: verifierParams
-            } = ev.data || {}
-            if (ev.error && ev.error !== '') {
-              log.error(ev.error)
-              oauthStream.write({ err: ev.error })
-            } else if (ev.data && verifier === FACEBOOK) {
-              log.info(ev.data)
-              const { access_token: accessToken } = verifierParams
-              const userInfo = await get('https://graph.facebook.com/me?fields=name,email,picture.type(large)', {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`
-                }
-              })
-              const { name, id, picture, email } = userInfo || {}
-              dispatch('updateIdToken', { idToken: accessToken })
-              dispatch('updateUserInfo', {
-                userInfo: {
-                  profileImage: picture.data.url,
-                  name,
-                  email: email,
-                  verifierId: id.toString(),
-                  verifier: FACEBOOK,
-                  verifierParams: { verifier_id: id.toString() }
-                }
-              })
-              dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-            }
-          } catch (error) {
-            log.error(error)
-            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
-          } finally {
-            bc.close()
-            facebookWindow.close()
-          }
-        }
-        facebookWindow.open()
-        facebookWindow.once('close', () => {
-          bc.close()
-          oauthStream.write({ err: 'user closed popup' })
-        })
-      } else if (verifier === TWITCH) {
-        const state = encodeURIComponent(
-          window.btoa(
-            JSON.stringify({
-              instanceId: torus.instanceId,
-              verifier: TWITCH
+            const { picture: profileImage, email, name, id } = userInfo || {}
+            dispatch('updateIdToken', { idToken })
+            dispatch('updateUserInfo', {
+              userInfo: {
+                profileImage,
+                name,
+                email,
+                verifierId: email.toString().toLowerCase(),
+                verifier: GOOGLE,
+                verifierParams: { verifier_id: email.toString().toLowerCase() }
+              }
             })
-          )
-        )
-        const claims = JSON.stringify({
-          id_token: {
-            email: null
-          },
-          userinfo: {
-            picture: null,
-            preferred_username: null
+            dispatch('handleLogin', { calledFromEmbed })
           }
-        })
-        const finalUrl =
-          `https://id.twitch.tv/oauth2/authorize?client_id=${config.TWITCH_CLIENT_ID}&redirect_uri=` +
-          `${config.redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`
-        const twitchWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
-        const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-        bc.onmessage = async ev => {
-          try {
-            const {
-              instanceParams: { verifier },
-              hashParams: verifierParams
-            } = ev.data || {}
-            if (ev.error && ev.error !== '') {
-              log.error(ev.error)
-              oauthStream.write({ err: ev.error })
-            } else if (ev.data && verifier === TWITCH) {
-              const { access_token: accessToken, id_token: idtoken } = verifierParams
-              const userInfo = await get('https://id.twitch.tv/oauth2/userinfo', {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`
-                }
-              })
-              const tokenInfo = jwtDecode(idtoken)
-              const { picture: profileImage, preferred_username: name } = userInfo || {}
-              const { email } = tokenInfo || {}
-              dispatch('updateIdToken', { idToken: accessToken.toString() })
-              dispatch('updateUserInfo', {
-                userInfo: {
-                  profileImage,
-                  name,
-                  email,
-                  verifierId: userInfo.sub.toString(),
-                  verifier: TWITCH,
-                  verifierParams: { verifier_id: userInfo.sub.toString() }
-                }
-              })
-              dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-            }
-          } catch (error) {
-            log.error(error)
-            oauthStream.write({ err: 'something went wrong.' })
-          } finally {
-            bc.close()
-            twitchWindow.close()
-          }
-        }
-        twitchWindow.open()
-        twitchWindow.once('close', () => {
+        } catch (error) {
+          log.error(error)
+          oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+        } finally {
           bc.close()
-          oauthStream.write({ err: 'user closed popup' })
-        })
-      } else if (verifier === REDDIT) {
-        const state = encodeURIComponent(
-          window.btoa(
-            JSON.stringify({
-              instanceId: torus.instanceId,
-              verifier: REDDIT
-            })
-          )
-        )
-        const finalUrl =
-          `https://www.reddit.com/api/v1/authorize?client_id=${config.REDDIT_CLIENT_ID}&redirect_uri=` +
-          `${config.redirect_uri}&response_type=token&scope=identity&state=${state}`
-        const redditWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
-        const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-        bc.onmessage = async ev => {
-          try {
-            const {
-              instanceParams: { verifier },
-              hashParams: verifierParams
-            } = ev.data || {}
-            if (ev.error && ev.error !== '') {
-              log.error(ev.error)
-              oauthStream.write({ err: ev.error })
-            } else if (ev.data && verifier === REDDIT) {
-              const { access_token: accessToken } = verifierParams
-              const userInfo = await get('https://oauth.reddit.com/api/v1/me', {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`
-                }
-              })
-              const { id, icon_img: profileImage, name } = userInfo || {}
-              dispatch('updateIdToken', { idToken: accessToken })
-              dispatch('updateUserInfo', {
-                userInfo: {
-                  profileImage: profileImage.split('?').length > 0 ? profileImage.split('?')[0] : profileImage,
-                  name,
-                  email: '',
-                  verifierId: name.toString().toLowerCase(),
-                  verifier: REDDIT,
-                  verifierParams: { verifier_id: name.toString().toLowerCase() }
-                }
-              })
-              dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-            }
-          } catch (error) {
-            log.error(error)
-            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
-          } finally {
-            bc.close()
-            redditWindow.close()
-          }
+          googleWindow.close()
         }
-        redditWindow.open()
-        redditWindow.once('close', () => {
-          bc.close()
-          oauthStream.write({ err: 'user closed popup' })
-        })
-      } else if (verifier === DISCORD) {
-        const state = encodeURIComponent(
-          window.btoa(
-            JSON.stringify({
-              instanceId: torus.instanceId,
-              verifier: DISCORD
-            })
-          )
-        )
-        const scope = encodeURIComponent('identify email')
-        const finalUrl =
-          `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${config.DISCORD_CLIENT_ID}` +
-          `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
-        const discordWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
-        const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-        bc.onmessage = async ev => {
-          try {
-            const {
-              instanceParams: { verifier },
-              hashParams: verifierParams
-            } = ev.data || {}
-            if (ev.error && ev.error !== '') {
-              log.error(ev.error)
-              oauthStream.write({ err: ev.error })
-            } else if (ev.data && verifier === DISCORD) {
-              const { access_token: accessToken } = verifierParams
-              const userInfo = await get('https://discordapp.com/api/users/@me', {
-                headers: {
-                  Authorization: `Bearer ${accessToken}`
-                }
-              })
-              const { id, avatar, email, username: name, discriminator } = userInfo || {}
-              const profileImage =
-                avatar === null
-                  ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
-                  : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`
-              dispatch('updateIdToken', { idToken: accessToken })
-              dispatch('updateUserInfo', {
-                userInfo: {
-                  profileImage,
-                  name: `${name}#${discriminator}`,
-                  email,
-                  verifierId: id.toString(),
-                  verifier: DISCORD,
-                  verifierParams: { verifier_id: id.toString() }
-                }
-              })
-              dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-            }
-          } catch (error) {
-            log.error(error)
-            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
-          } finally {
-            bc.close()
-            discordWindow.close()
-          }
-        }
-        discordWindow.open()
-        discordWindow.once('close', () => {
-          bc.close()
-          oauthStream.write({ err: 'user closed popup' })
-        })
       }
-    })
+      googleWindow.open()
+      googleWindow.once('close', () => {
+        bc.close()
+        oauthStream.write({ err: 'user closed popup' })
+      })
+    } else if (verifier === FACEBOOK) {
+      const state = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: torus.instanceId,
+            verifier: FACEBOOK
+          })
+        )
+      )
+      const scope = 'public_profile email'
+      const response_type = 'token'
+      const finalUrl =
+        `https://www.facebook.com/v5.0/dialog/oauth?response_type=${response_type}&client_id=${config.FACEBOOK_APP_ID}` +
+        `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
+      const facebookWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      bc.onmessage = async ev => {
+        try {
+          const {
+            instanceParams: { verifier },
+            hashParams: verifierParams
+          } = ev.data || {}
+          if (ev.error && ev.error !== '') {
+            log.error(ev.error)
+            oauthStream.write({ err: ev.error })
+          } else if (ev.data && verifier === FACEBOOK) {
+            log.info(ev.data)
+            const { access_token: accessToken } = verifierParams
+            const userInfo = await get('https://graph.facebook.com/me?fields=name,email,picture.type(large)', {
+              headers: {
+                Authorization: `Bearer ${accessToken}`
+              }
+            })
+            const { name, id, picture, email } = userInfo || {}
+            dispatch('updateIdToken', { idToken: accessToken })
+            dispatch('updateUserInfo', {
+              userInfo: {
+                profileImage: picture.data.url,
+                name,
+                email: email,
+                verifierId: id.toString(),
+                verifier: FACEBOOK,
+                verifierParams: { verifier_id: id.toString() }
+              }
+            })
+            dispatch('handleLogin', { calledFromEmbed })
+          }
+        } catch (error) {
+          log.error(error)
+          oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+        } finally {
+          bc.close()
+          facebookWindow.close()
+        }
+      }
+      facebookWindow.open()
+      facebookWindow.once('close', () => {
+        bc.close()
+        oauthStream.write({ err: 'user closed popup' })
+      })
+    } else if (verifier === TWITCH) {
+      const state = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: torus.instanceId,
+            verifier: TWITCH
+          })
+        )
+      )
+      const claims = JSON.stringify({
+        id_token: {
+          email: null
+        },
+        userinfo: {
+          picture: null,
+          preferred_username: null
+        }
+      })
+      const finalUrl =
+        `https://id.twitch.tv/oauth2/authorize?client_id=${config.TWITCH_CLIENT_ID}&redirect_uri=` +
+        `${config.redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`
+      const twitchWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      bc.onmessage = async ev => {
+        try {
+          const {
+            instanceParams: { verifier },
+            hashParams: verifierParams
+          } = ev.data || {}
+          if (ev.error && ev.error !== '') {
+            log.error(ev.error)
+            oauthStream.write({ err: ev.error })
+          } else if (ev.data && verifier === TWITCH) {
+            const { access_token: accessToken, id_token: idtoken } = verifierParams
+            const userInfo = await get('https://id.twitch.tv/oauth2/userinfo', {
+              headers: {
+                Authorization: `Bearer ${accessToken}`
+              }
+            })
+            const tokenInfo = jwtDecode(idtoken)
+            const { picture: profileImage, preferred_username: name } = userInfo || {}
+            const { email } = tokenInfo || {}
+            dispatch('updateIdToken', { idToken: accessToken.toString() })
+            dispatch('updateUserInfo', {
+              userInfo: {
+                profileImage,
+                name,
+                email,
+                verifierId: userInfo.sub.toString(),
+                verifier: TWITCH,
+                verifierParams: { verifier_id: userInfo.sub.toString() }
+              }
+            })
+            dispatch('handleLogin', { calledFromEmbed })
+          }
+        } catch (error) {
+          log.error(error)
+          oauthStream.write({ err: 'something went wrong.' })
+        } finally {
+          bc.close()
+          twitchWindow.close()
+        }
+      }
+      twitchWindow.open()
+      twitchWindow.once('close', () => {
+        bc.close()
+        oauthStream.write({ err: 'user closed popup' })
+      })
+    } else if (verifier === REDDIT) {
+      const state = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: torus.instanceId,
+            verifier: REDDIT
+          })
+        )
+      )
+      const finalUrl =
+        `https://www.reddit.com/api/v1/authorize?client_id=${config.REDDIT_CLIENT_ID}&redirect_uri=` +
+        `${config.redirect_uri}&response_type=token&scope=identity&state=${state}`
+      const redditWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      bc.onmessage = async ev => {
+        try {
+          const {
+            instanceParams: { verifier },
+            hashParams: verifierParams
+          } = ev.data || {}
+          if (ev.error && ev.error !== '') {
+            log.error(ev.error)
+            oauthStream.write({ err: ev.error })
+          } else if (ev.data && verifier === REDDIT) {
+            const { access_token: accessToken } = verifierParams
+            const userInfo = await get('https://oauth.reddit.com/api/v1/me', {
+              headers: {
+                Authorization: `Bearer ${accessToken}`
+              }
+            })
+            const { id, icon_img: profileImage, name } = userInfo || {}
+            dispatch('updateIdToken', { idToken: accessToken })
+            dispatch('updateUserInfo', {
+              userInfo: {
+                profileImage: profileImage.split('?').length > 0 ? profileImage.split('?')[0] : profileImage,
+                name,
+                email: '',
+                verifierId: name.toString().toLowerCase(),
+                verifier: REDDIT,
+                verifierParams: { verifier_id: name.toString().toLowerCase() }
+              }
+            })
+            dispatch('handleLogin', { calledFromEmbed })
+          }
+        } catch (error) {
+          log.error(error)
+          oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+        } finally {
+          bc.close()
+          redditWindow.close()
+        }
+      }
+      redditWindow.open()
+      redditWindow.once('close', () => {
+        bc.close()
+        oauthStream.write({ err: 'user closed popup' })
+      })
+    } else if (verifier === DISCORD) {
+      const state = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: torus.instanceId,
+            verifier: DISCORD
+          })
+        )
+      )
+      const scope = encodeURIComponent('identify email')
+      const finalUrl =
+        `https://discordapp.com/api/oauth2/authorize?response_type=token&client_id=${config.DISCORD_CLIENT_ID}` +
+        `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
+      const discordWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      bc.onmessage = async ev => {
+        try {
+          const {
+            instanceParams: { verifier },
+            hashParams: verifierParams
+          } = ev.data || {}
+          if (ev.error && ev.error !== '') {
+            log.error(ev.error)
+            oauthStream.write({ err: ev.error })
+          } else if (ev.data && verifier === DISCORD) {
+            const { access_token: accessToken } = verifierParams
+            const userInfo = await get('https://discordapp.com/api/users/@me', {
+              headers: {
+                Authorization: `Bearer ${accessToken}`
+              }
+            })
+            const { id, avatar, email, username: name, discriminator } = userInfo || {}
+            const profileImage =
+              avatar === null
+                ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
+                : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`
+            dispatch('updateIdToken', { idToken: accessToken })
+            dispatch('updateUserInfo', {
+              userInfo: {
+                profileImage,
+                name: `${name}#${discriminator}`,
+                email,
+                verifierId: id.toString(),
+                verifier: DISCORD,
+                verifierParams: { verifier_id: id.toString() }
+              }
+            })
+            dispatch('handleLogin', { calledFromEmbed })
+          }
+        } catch (error) {
+          log.error(error)
+          oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+        } finally {
+          bc.close()
+          discordWindow.close()
+        }
+      }
+      discordWindow.open()
+      discordWindow.once('close', () => {
+        bc.close()
+        oauthStream.write({ err: 'user closed popup' })
+      })
+    }
   },
   subscribeToControllers(context, payload) {
     torus.torusController.accountTracker.store.subscribe(accountTrackerHandler)
@@ -758,18 +753,18 @@ export default {
         })
     })
   },
-  async handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
+  async handleLogin({ state, dispatch }, { calledFromEmbed }) {
     dispatch('loginInProgress', true)
     const {
       idToken,
       userInfo: { verifierId, verifier, verifierParams }
     } = state
-    const { torusNodeEndpoints, torusIndexes } = await NodeDetailManager.getNodeDetails()
-    torus
-      .getPubKeyAsync(torusNodeEndpoints, { verifier, verifierId })
-      .catch(err => {
-        log.error(err)
-        return Promise.reject(err)
+    let torusNodeEndpoints, torusIndexes
+    return NodeDetailManager.getNodeDetails()
+      .then(({ torusNodeEndpoints: torusNodeEndpointsVal, torusIndexes: torusIndexesVal }) => {
+        torusNodeEndpoints = torusNodeEndpointsVal
+        torusIndexes = torusIndexesVal
+        return torus.getPubKeyAsync(torusNodeEndpoints, { verifier, verifierId })
       })
       .then(res => {
         log.info('New private key assigned to user at address ', res)
