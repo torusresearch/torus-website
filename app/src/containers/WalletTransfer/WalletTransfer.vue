@@ -773,7 +773,8 @@ export default {
           {
             from: selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : '0x' + this.gas.toString(16),
-            gasPrice: fastGasPrice
+            gasPrice: fastGasPrice,
+            relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
           },
           (err, transactionHash) => {
             if (err) {
@@ -797,7 +798,8 @@ export default {
           {
             from: selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : '0x' + this.gas.toString(16),
-            gasPrice: fastGasPrice
+            gasPrice: fastGasPrice,
+            relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
           },
           (err, transactionHash) => {
             if (err) {

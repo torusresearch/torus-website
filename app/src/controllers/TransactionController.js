@@ -447,27 +447,39 @@ class TransactionController extends EventEmitter {
 
     if (txMeta.relayer) {
       // sign tx
-      // Currently only for ETH token
-      const ETH_TOKEN = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
-      const ZERO_BYTES32 = '0x0000000000000000000000000000000000000000000000000000000000000000'
 
+      let transferValue, to
+      let ETH_TOKEN = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+      const ZERO_BYTES32 = '0x0000000000000000000000000000000000000000000000000000000000000000'
       const fromSCW = txParams.from
-      const to = txParams.to
-      log.info(`fromSCW ${fromSCW}, to ${to}`)
+
+      // Handling Tokens
+      if (txMeta.contractParams.erc20 || txMeta.contractParams.erc721) {
+        ETH_TOKEN = txMeta.txParams.to
+        transferValue = txMeta.methodParams
+          .filter(x => x.name == '_value')
+          .map(x => x.value)
+          .shift()
+          .toString()
+        to = txMeta.methodParams
+          .filter(x => x.name == '_to')
+          .map(x => x.value)
+          .shift()
+          .toString()
+      } else {
+        transferValue = txParams.value.toString()
+        to = txParams.to
+      }
 
       const nonce = await getNonceForRelay(this.web3)
-      // console.log('nonce', nonce)
-      const localWeb3 = this.web3
-      const TransferModule = new localWeb3.eth.Contract(TransferManager.abi, '0xD45256EEf4bFB182B108Cd8e0bCB4A9369342C1d')
-      const methodData = TransferModule.methods.transferToken(fromSCW, ETH_TOKEN, to, txParams.value.toString(), ZERO_BYTES32).encodeABI()
-      //txParams.data = methodData
-      //const ethTx = new Transaction(txParams)
+      log.info(`fromSCW ${fromSCW}, to ${to}, ETH_TOKEN ${ETH_TOKEN}, value ${transferValue}, nonce ${nonce}`)
+
+      const TransferModule = new this.web3.eth.Contract(TransferManager.abi, '0x7D5A3fa10D0f7dBD4dFE37851b25AD7285D995E1')
+      const methodData = TransferModule.methods.transferToken(fromSCW, ETH_TOKEN, to, transferValue, ZERO_BYTES32).encodeABI()
 
       const selectedEOA = this.getSelectedEOA()
       log.info('selectedEOA is', selectedEOA)
-
       const privateKey = await this.getWallet(selectedEOA)
-      log.info('privateKey is', privateKey)
 
       const walletAccount = this.web3.eth.accounts.privateKeyToAccount('0x' + privateKey)
       log.info([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 700000)
@@ -484,11 +496,11 @@ class TransactionController extends EventEmitter {
       this.txStateManager.setTxStatusSigned(txMeta.id)
       this.txStateManager.updateTx(txMeta, 'transactions#publishTransaction')
 
-      log.info('TransactionController', reqObj, relayer)
+      log.info('TransactionController', reqObj)
 
       const relayerRequest = await post('http://localhost:2090/transfer/eth', reqObj)
       log.info(relayerRequest)
-      this.setTxHash(txId, relayerRequest.tx.transactionHash)
+      this.setTxHash(txId, relayerRequest.txHash)
       this.txStateManager.setTxStatusSubmitted(txMeta.id)
       nonceLock.releaseLock()
 
