@@ -656,6 +656,7 @@ class TransactionController extends EventEmitter {
       const ck20 = data && tokenABIDecoder.decodeMethod(data)
       delete contractParams['erc20']
       contractParams.erc721 = true
+      contractParams.isSpecial = true
       methodParams = ck20.params
     } else if (decodedERC20) {
       // fallback to erc20
@@ -675,6 +676,8 @@ class TransactionController extends EventEmitter {
       contractParams = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
         ? erc721Contracts[checkSummedTo.toLowerCase()]
         : {}
+      contractParams.erc721 = true
+
       contractParams.decimals = 0
     }
 
