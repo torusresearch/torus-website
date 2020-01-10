@@ -237,7 +237,12 @@ export default {
           status = await getEthTxStatus(x.transaction_hash, torus.web3)
           if (publicAddress.toLowerCase() === x.from.toLowerCase()) this.patchTx(x, status, jwtToken)
         }
-        const totalAmountString = x.type === CONTRACT_TYPE_ERC721 ? x.type_name : `${significantDigits(parseFloat(x.total_amount))} ETH`
+        const totalAmountString =
+          x.type === CONTRACT_TYPE_ERC721
+            ? x.type_name
+            : x.type == CONTRACT_TYPE_ERC20
+            ? `${significantDigits(parseFloat(x.total_amount))} ${x.symbol}`
+            : `${significantDigits(parseFloat(x.total_amount))} ETH`
         const currencyAmountString = `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
         const finalObj = {
           id: x.created_at.toString(),

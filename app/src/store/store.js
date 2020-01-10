@@ -241,7 +241,13 @@ VuexStore.subscribe((mutation, state) => {
         const txHash = txMeta.hash
         log.info(txMeta)
         const { methodParams, transactionCategory } = txMeta
-        const totalAmount = fromWei(toBN(txMeta.txParams.value).add(toBN(txMeta.txParams.gas).mul(toBN(txMeta.txParams.gasPrice))))
+        const value = txMeta.contractParams.erc20
+          ? methodParams
+              .filter(x => x.name == '_value')
+              .map(x => x.value)
+              .shift()
+          : txMeta.txParams.value
+        const totalAmount = fromWei(toBN(value).add(toBN(txMeta.txParams.gas).mul(toBN(txMeta.txParams.gasPrice))))
         let amountTo
         if (methodParams && isArray(methodParams)) {
           if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
@@ -255,6 +261,7 @@ VuexStore.subscribe((mutation, state) => {
           total_amount: totalAmount,
           gas: txMeta.txParams.gas,
           gasPrice: txMeta.txParams.gasPrice,
+          symbol: (txMeta.contractParams && txMeta.contractParams.symbol) || 'ETH',
           nonce: txMeta.txParams.nonce,
           type: txMeta.contractParams && txMeta.contractParams.erc20 ? 'erc20' : txMeta.contractParams.erc721 ? 'erc721' : 'eth',
           type_name: txMeta.contractParams && txMeta.contractParams.name ? txMeta.contractParams.name : 'n/a',
