@@ -65,7 +65,9 @@ import {
   SUPPORTED_NETWORK_TYPES,
   ACTIVITY_STATUS_PENDING,
   CONTRACT_TYPE_ERC721,
-  CONTRACT_TYPE_ERC20
+  CONTRACT_TYPE_ERC20,
+  TOKEN_METHOD_TRANSFER_FROM,
+  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
 } from '../../utils/enums'
 
 export default {
@@ -273,11 +275,22 @@ export default {
       this.pastTx = pastTx
     },
     calculateTransactions() {
-      const { networkId, transactions, networkType } = this.$store.state || {}
+      const { networkId, transactions, networkType, tokenRates } = this.$store.state || {}
       const finalTransactions = []
       for (let tx in transactions) {
         const txOld = transactions[tx]
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
+          const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txOld
+          let amountTo, amountValue
+          if (methodParams && Array.isArray(methodParams)) {
+            if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
+              [, amountTo, amountValue] = methodParams || []
+            else [amountTo, amountValue] = methodParams || []
+          }
+          const tokenRate = contractParams.erc20 ? tokenRates[txParams.to] : 1
+
+          const totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
+
           const txObj = {}
           txObj.id = txOld.time.toString()
           txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
@@ -286,9 +299,12 @@ export default {
           txObj.slicedFrom = addressSlicer(txOld.txParams.from)
           txObj.to = toChecksumAddress(txOld.txParams.to)
           txObj.slicedTo = addressSlicer(txOld.txParams.to)
-          txObj.totalAmount = fromWei(toBN(txOld.txParams.value).add(toBN(txOld.txParams.gas).mul(toBN(txOld.txParams.gasPrice))))
-          txObj.totalAmountString = `${significantDigits(txObj.totalAmount)} ETH`
-          txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount
+          txObj.totalAmount = totalAmount
+          txObj.totalAmountString =
+            txOld.contractParams && txOld.contractParams.symbol
+              ? `${significantDigits(txObj.totalAmount)} ${txOld.contractParams.symbol}`
+              : `${significantDigits(txObj.totalAmount)} ETH`
+          txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount * tokenRate
           txObj.currencyAmountString = `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`
           txObj.amount = `${txObj.totalAmountString} / ${txObj.currencyAmountString}`
           txObj.status = txOld.status

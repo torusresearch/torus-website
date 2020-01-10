@@ -237,44 +237,36 @@ VuexStore.subscribe((mutation, state) => {
       const txMeta = txs[id]
       if (txMeta.status === 'submitted' && id >= 0) {
         // insert into db here
-
-        const txHash = txMeta.hash
-        log.info(txMeta)
-        const { methodParams, transactionCategory } = txMeta
-        const value = txMeta.contractParams.erc20
-          ? methodParams
-              .filter(x => x.name == '_value')
-              .map(x => x.value)
-              .shift()
-          : txMeta.txParams.value
-        const totalAmount = fromWei(toBN(value).add(toBN(txMeta.txParams.gas).mul(toBN(txMeta.txParams.gasPrice))))
-        let amountTo
+        const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txMeta
+        let amountTo, amountValue
         if (methodParams && isArray(methodParams)) {
           if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
-            [, amountTo] = methodParams || []
-          else [amountTo] = methodParams || []
+            [, amountTo, amountValue] = methodParams || []
+          else [amountTo, amountValue] = methodParams || []
         }
+        const totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
+        const tokenRate = contractParams.erc20 ? state.tokenRates[txParams.to] : 1
         const txObj = {
-          created_at: new Date(txMeta.time),
-          from: toChecksumAddress(txMeta.txParams.from),
-          to: amountTo ? toChecksumAddress(amountTo.value) : toChecksumAddress(txMeta.txParams.to),
+          created_at: new Date(time),
+          from: toChecksumAddress(txParams.from),
+          to: amountTo ? toChecksumAddress(amountTo.value) : toChecksumAddress(txParams.to),
           total_amount: totalAmount,
-          gas: txMeta.txParams.gas,
-          gasPrice: txMeta.txParams.gasPrice,
-          symbol: (txMeta.contractParams && txMeta.contractParams.symbol) || 'ETH',
-          nonce: txMeta.txParams.nonce,
-          type: txMeta.contractParams && txMeta.contractParams.erc20 ? 'erc20' : txMeta.contractParams.erc721 ? 'erc721' : 'eth',
-          type_name: txMeta.contractParams && txMeta.contractParams.name ? txMeta.contractParams.name : 'n/a',
-          type_image_link: txMeta.contractParams && txMeta.contractParams.logo ? txMeta.contractParams.logo : 'n/a',
-          currency_amount: (getCurrencyMultiplier() * totalAmount).toString(),
+          gas: txParams.gas,
+          gasPrice: txParams.gasPrice,
+          symbol: (contractParams && contractParams.symbol) || 'ETH',
+          nonce: txParams.nonce,
+          type: contractParams && contractParams.erc20 ? 'erc20' : contractParams.erc721 ? 'erc721' : 'eth',
+          type_name: contractParams && contractParams.name ? contractParams.name : 'n/a',
+          type_image_link: contractParams && contractParams.logo ? contractParams.logo : 'n/a',
+          currency_amount: (getCurrencyMultiplier() * totalAmount * tokenRate).toString(),
           selected_currency: state.selectedCurrency,
           status: 'submitted',
           network: state.networkType.host,
-          transaction_hash: txMeta.hash
+          transaction_hash: hash
         }
         if (state.pastTransactions.findIndex(x => x.transaction_hash === txObj.transaction_hash && x.network === txObj.network) === -1) {
           // User notification
-          notifyUser(getEtherScanHashLink(txHash, state.networkType.host))
+          notifyUser(getEtherScanHashLink(hash, state.networkType.host))
 
           post(`${config.api}/transaction`, txObj, {
             headers: {

@@ -653,6 +653,10 @@ class TransactionController extends EventEmitter {
       // For Cryptokitties
       tokenMethodName = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
       contractParams = OLD_ERC721_LIST[checkSummedTo.toLowerCase()]
+      const ck20 = data && tokenABIDecoder.decodeMethod(data)
+      delete contractParams['erc20']
+      contractParams.erc721 = true
+      methodParams = ck20.params
     } else if (decodedERC20) {
       // fallback to erc20
       const { name = '', params } = decodedERC20
