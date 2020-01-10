@@ -1,5 +1,5 @@
 <template>
-  <v-flex xs12 sm5 mb-4 px-4 class="topup-providers">
+  <v-flex xs12 sm6 md5 mb-4 px-4 class="topup-providers">
     <v-card
       class="mb-4 topup-provider"
       :class="{ active: innerProvider === targetProvider.name }"
