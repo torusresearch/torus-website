@@ -346,7 +346,7 @@
 
 #torus-login-modal__login-subtitle {
   font-size: 14px;
-  margin: 0 0 8px;
+  margin: 0 0 16px;
 }
 
 #torus-login-modal__login-google {
@@ -359,7 +359,7 @@
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  margin: 0 0 8px;
+  margin: 8px 0 8px;
   padding: 15px;
   font-size: 14px;
   font-weight: 500;
