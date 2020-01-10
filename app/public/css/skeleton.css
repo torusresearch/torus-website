@@ -13,7 +13,7 @@
     width: 88.2352941176%;
   }
 }
-@media screen and (max-width: 620px) {
+@media screen and (max-width: 600px) {
   .sk-grid {
     width: 97.4193548387%;
   }
@@ -290,7 +290,7 @@
     margin-left: 100%;
   }
 }
-@media screen and (max-width: 620px) {
+@media screen and (max-width: 600px) {
   .sk-grid__col-mob-0 {
     margin-bottom: 4px;
     box-sizing: border-box;
