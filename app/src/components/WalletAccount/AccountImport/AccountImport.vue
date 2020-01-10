@@ -239,7 +239,8 @@ export default {
       }
     },
     setErrorState(err) {
-      this.error = err
+      log.info(err)
+      this.error = err && err.message && err.message.includes('wrong passphrase') ? this.t('accountMenu.incorrectPassword') : err
       this.canShowError = true
       log.error(err)
       this.isLoadingKeystore = false
