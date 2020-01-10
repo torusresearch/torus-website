@@ -18,6 +18,9 @@
             <div class="caption text_2--text">
               <span>{{ userEmail }}</span>
             </div>
+            <div class="caption text_2--text">
+              <span>{{ userId }}</span>
+            </div>
             <div class="caption public-address-container">
               <show-tool-tip :address="selectedAddress">{{ selectedAddress }}</show-tool-tip>
             </div>
@@ -126,6 +129,9 @@ export default {
     userEmail() {
       const verifierLabel = this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1) + ': '
       return verifierLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
+    },
+    userId() {
+      return this.userInfo.verifier === DISCORD ? `Discord ID: ${this.userInfo.verifierId.toString()}` : ''
     },
     userName() {
       let userName = this.userInfo.name.charAt(0).toUpperCase() + this.userInfo.name.slice(1)
