@@ -18,7 +18,7 @@
                 id="loginBtn"
                 color="white"
                 large
-                :block="$vuetify.breakpoint.xsOnly"
+                block
                 class="body-2 login-btn"
                 @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
               >
