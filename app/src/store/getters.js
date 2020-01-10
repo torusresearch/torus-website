@@ -23,7 +23,7 @@ const tokenBalances = state => {
   const currencyMultiplier = new BigNumber(currencyMultiplierNum)
   let full = [
     {
-      balance: weiBalance[selectedAddress],
+      balance: weiBalance[selectedAddress] || '0',
       decimals: 18,
       erc20: false,
       logo: 'eth.svg',

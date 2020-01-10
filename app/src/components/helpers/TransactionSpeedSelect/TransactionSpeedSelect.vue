@@ -1,21 +1,23 @@
 <template>
   <v-flex xs12 sm6 mb-3>
-    <div class="subtitle-2 mb-1 px-4">
-      <span>
-        {{ t('walletTransfer.selectSpeed') }}
-        <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" />
-      </span>
-      <TransferAdvanceOption
-        v-if="!$vuetify.breakpoint.xsOnly"
-        :symbol="symbol"
-        :displayAmount="displayAmount"
-        :gas="gas"
-        :activeGasPrice="activeGasPrice"
-        @onSave="onSaveAdvanceOptions"
-      />
-    </div>
-    <v-layout xs12 justify-space-between wrap v-if="!isAdvanceOption">
-      <v-flex xs6 px-4 mb-1>
+    <v-layout px-4>
+      <v-flex class="subtitle-2">
+        <span>
+          {{ t('walletTransfer.selectSpeed') }}
+          <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" />
+        </span>
+        <TransferAdvanceOption
+          v-if="!$vuetify.breakpoint.xsOnly"
+          :symbol="symbol"
+          :displayAmount="displayAmount"
+          :gas="gas"
+          :activeGasPrice="activeGasPrice"
+          @onSave="onSaveAdvanceOptions"
+        />
+      </v-flex>
+    </v-layout>
+    <v-layout px-4 mx-n1 xs12 v-if="!isAdvanceOption">
+      <v-flex xs6 px-1 mb-1>
         <v-btn
           id="average-speed-btn"
           block
@@ -29,7 +31,7 @@
           <span class="font-weight-light body-2">{{ getGasDisplayString(averageGasPrice) }}</span>
         </v-btn>
       </v-flex>
-      <v-flex xs6 px-4 mb-1>
+      <v-flex xs6 px-1 mb-1>
         <v-btn
           id="fastest-speed-btn"
           block
