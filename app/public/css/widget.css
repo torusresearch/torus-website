@@ -269,7 +269,7 @@
 /* Torus multiple login */
 
 /* Background */
-.torus-login-modal {
+#torus-login-modal {
   position: fixed;
   z-index: 1;
   left: 0;
@@ -283,74 +283,78 @@
 }
 
 /* Modal Container */
-.torus-login-modal__modal-container {
-  background-image: linear-gradient(to right, #565aff, #0364ff);
+#torus-login-modal__modal-container {
+  background: #ffffff;
   width: 375px;
   margin: 5% auto;
-  padding: 45px 0 0;
-  border: 1px solid #979797;
+  padding: 0;
+  border: 1px solid #f5f5f5;
   border-radius: 6px;
   position: relative;
 }
 
 /* Contents */
-.torus-login-modal__close-container {
+#torus-login-modal__close-container {
   position: absolute;
   right: 16px;
   top: 14px;
 }
 
-.torus-login-modal__close {
-  font-size: 24px;
-  color: #ffffff;
-  font-weight: normal;
+#torus-login-modal__close {
+  font-size: 30px;
+  color: #dfdfdf;
+  font-weight: 500;
 }
 
-.torus-login-modal__close:hover,
-.torus-login-modal__close:focus {
+#torus-login-modal__close:hover,
+#torus-login-modal__close:focus {
   text-decoration: none;
   cursor: pointer;
 }
 
-.torus-login-modal__modal-content {
+#torus-login-modal__modal-content {
   padding: 0;
   border: 0px solid white !important;
   font-family: 'Roboto', sans-serif !important;
+  color: #5c6c7f;
   text-align: center;
 }
 
-.torus-login-modal__header-container img {
+#torus-login-modal__header-container {
+  padding: 30px 0 20px;
+  box-shadow: 0 14px 28px 0 rgba(46, 91, 255, 0.06);
+}
+
+#torus-login-modal__header-container img {
   height: 30px;
   width: auto;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
 }
 
-.torus-login-modal__login-header {
+#torus-login-modal__login-header {
   font-size: 24px;
-  line-height: 1em;
-  color: #ffffff;
-  font-weight: 400;
-  margin: 0 0 34px;
+  font-weight: bold;
+  line-height: 32px;
+  margin: 0;
 }
 
-.torus-login-modal__form-container {
+#torus-login-modal__form-container {
   text-align: left;
-  background-color: #ffffff;
-  padding: 32px 24px;
-  border-radius: 20px 20px 6px 6px;
+  padding: 16px 24px 50px;
+  border-radius: 0 0 6px 6px;
 }
 
-.torus-login-modal__login-subtitle {
-  font-size: 16px;
-  margin: 0 0 24px;
+#torus-login-modal__login-subtitle {
+  font-size: 14px;
+  margin: 0 0 8px;
 }
 
-.torus-login-modal__login-google {
+#torus-login-modal__login-google {
   box-sizing: border-box;
   height: 50px;
   width: 100%;
-  border: 2px solid #f1f2f6;
-  border-radius: 9px;
+  border: 1px solid #f1f2f6;
+  border-radius: 6px;
   background-color: #ffffff;
   cursor: pointer;
   display: inline-flex;
@@ -359,14 +363,15 @@
   padding: 15px;
   font-size: 14px;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.54);
+  box-shadow: 0 14px 28px 0 rgba(46, 91, 255, 0.06);
+  color: #5c6c7f;
 }
 
-.torus-login-modal__login-google img {
+#torus-login-modal__login-google img {
   margin-right: 20px;
 }
 
-.torus-login-modal__login-list {
+#torus-login-modal__login-list {
   list-style: none;
   padding: 0;
   display: flex;
@@ -375,7 +380,7 @@
   flex-wrap: wrap;
 }
 
-.torus-login-modal__login-list li {
+#torus-login-modal__login-list li {
   flex-basis: 50%;
   flex-grow: 0;
   max-width: 50%;
@@ -383,36 +388,36 @@
   box-sizing: border-box;
 }
 
-.torus-login-modal__login-list button {
+#torus-login-modal__login-list button {
   box-sizing: border-box;
   height: 50px;
   width: 100%;
-  border: 2px solid #f1f2f6;
-  border-radius: 9px;
+  border: 1px solid #f1f2f6;
+  border-radius: 6px;
   background-color: #ffffff;
   cursor: pointer;
   margin: 0;
+  box-shadow: 0 14px 28px 0 rgba(46, 91, 255, 0.06);
 }
 
-.torus-login-modal__login-list img {
+#torus-login-modal__login-list img {
   height: 24px;
   width: auto;
 }
 
-.torus-login-modal__login-btn.login-btn--reddit {
+#torus-login-modal__login-btn--reddit {
   padding: 6px 0;
 }
 
-.torus-login-modal__login-btn.login-btn--reddit img {
+#torus-login-modal__login-btn--reddit img {
   height: 32px;
 }
 
-.torus-login-modal__login-note {
-  color: rgba(0, 0, 0, 0.54);
+#torus-login-modal__login-note {
   font-size: 12px;
 }
 
-.torus-login-modal__login-note a {
+#torus-login-modal__login-note a {
   color: #5495f7;
   cursor: pointer;
   text-decoration: none;
@@ -420,11 +425,11 @@
 
 /* Mobile */
 @media (max-width: 598px) {
-  .torus-login-modal__modal-container {
+  #torus-login-modal__modal-container {
     width: 100%;
   }
 
-  .torus-login-modal__modal-content {
+  #torus-login-modal__modal-content {
     font-family: 'Roboto', sans-serif !important;
   }
 }
