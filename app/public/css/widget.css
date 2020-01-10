@@ -12,25 +12,25 @@
   padding: 20px;
 }
 
-#torusAlert .torus-alert__title {
+#torusAlert #torusAlert__title {
   margin: 0;
   font-size: 22px;
   font-weight: 200;
 }
 
-#torusAlert .torus-alert__desc {
+#torusAlert #torusAlert__desc {
   margin: 16px 0 0;
   font-size: 14px;
 }
 
-#torusAlert .torus-alert-close {
+#torusAlert #torusAlert__close {
   position: absolute;
   top: 20px;
   right: 20px;
   cursor: pointer;
 }
 
-#torusAlert .torus-alert-btn {
+#torusAlert #torusAlert__btn {
   font-size: 14px;
   background-color: #0364ff;
   margin: 24px 0 0;
@@ -45,28 +45,28 @@
   background-position: center;
 }
 
-.widget {
+#torusWidget {
   z-index: 999999;
   position: fixed;
 }
 
 /* FAB Speed dial */
-.speed-dial-list {
+#torusWidget #torusWidget__speed-dial-list {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.speed-dial-list li {
+#torusWidget #torusWidget__speed-dial-list li {
   margin-bottom: 16px;
   opacity: 0;
 }
 
-.speed-dial-list.active li {
+#torusWidget #torusWidget__speed-dial-list.active li {
   opacity: 1;
 }
 
-.torus-btn {
+#torusWidget .torus-btn {
   border-radius: 30px;
   background-color: #0364ff;
   padding: 14px;
@@ -81,33 +81,33 @@
   background-position: center;
 }
 
-.torus-btn--loading {
+#torusWidget .torus-btn--loading {
   display: none;
   padding: 0;
 }
 
-.torus-btn--loading.active {
+#torusWidget .torus-btn--loading.active {
   display: block;
 }
 
-.torus-btn--login {
+#torusWidget .torus-btn--login {
   background-image: url('/images/login.png');
   transition: width 0.3s;
 }
 
-.torus-btn--login:hover {
+#torusWidget .torus-btn--login:hover {
   width: 150px;
   background-image: url('/images/login-with-torus.png');
   background-size: 85%;
   transition: width 0.3s;
 }
 
-.torus-btn img {
+#torusWidget .torus-btn img {
   width: 100%;
   height: auto;
 }
 
-.torus-btn--main {
+#torusWidget .torus-btn--main {
   display: none;
   padding: 10px 8px 10px 12px;
   transition: transform 0.3s;
@@ -116,7 +116,7 @@
   background-position: 55% 52%;
 }
 
-.torus-btn--main.active {
+#torusWidget .torus-btn--main.active {
   padding: 12px;
   background-color: #eef2f4;
   transform: scale(0.7);
@@ -125,7 +125,7 @@
   background-image: url('/img/icons/torus-icon-dark.svg');
 }
 
-.torus-btn--text {
+#torusWidget .torus-btn--text {
   padding: 10px;
   font-family: 'Roboto', sans-serif !important;
   font-size: 14px;
@@ -134,23 +134,23 @@
   line-height: 19px;
 }
 
-.torus-btn--home {
+#torusWidget .torus-btn--home {
   background-image: url('/img/icons/home.svg');
 }
 
-.torus-btn--transfer {
+#torusWidget .torus-btn--transfer {
   background-image: url('/img/icons/indent-increase.svg');
 }
 
-.torus-btn:focus {
+#torusWidget .torus-btn:focus {
   outline: none;
 }
 
-.tooltip {
+#torusWidget .torus-tooltip {
   position: relative;
 }
 
-.tooltip-text {
+#torusWidget .torus-tooltip-text {
   display: none;
   position: absolute;
   opacity: 0.8;
@@ -166,27 +166,27 @@
   transform: translate(70px, 10px);
 }
 
-.tooltip-copied {
+#torusWidget .torus-tooltip-copied {
   transform: translate(70px, 20px);
 }
 
-.tooltip-copied.tooltip-text.active {
+#torusWidget .torus-tooltip-copied.torus-tooltip-text.active {
   display: block;
 }
 
-.tooltip-note.tooltip-text {
+#torusWidget .torus-tooltip-note.torus-tooltip-text {
   width: 150px;
 }
 
-.tooltip-note.tooltip-text.active {
+#torusWidget .torus-tooltip-note.torus-tooltip-text.active {
   display: none;
 }
 
-.tooltip:hover .tooltip-note:not(.active) {
+#torusWidget .torus-tooltip:hover .torus-tooltip-note:not(.active) {
   display: block;
 }
 
-.spinner .beat {
+#torusSpinner .torusSpinner__beat {
   background-color: #ffffff;
   height: 10px;
   width: 10px;
@@ -198,10 +198,10 @@
   animation-fill-mode: both;
   display: inline-block;
 }
-.spinner .beat-odd {
+#torusSpinner .torusSpinner__beat.beat-odd {
   animation-delay: 0s;
 }
-.spinner .beat-even {
+#torusSpinner .torusSpinner__beat.beat-even {
   animation-delay: 0.35s;
 }
 @-webkit-keyframes beatStretchDelay {
@@ -269,7 +269,7 @@
 /* Torus multiple login */
 
 /* Background */
-.login-modal {
+#torus-login-modal {
   position: fixed;
   z-index: 1;
   left: 0;
@@ -277,150 +277,159 @@
   width: 100%;
   height: 100%;
   overflow: auto;
-  color: black;
+  color: #0f1222;
   background-color: rgb(33, 33, 33, 0.46);
   border-color: rgb(33, 33, 33, 0.46);
 }
 
 /* Modal Container */
-.modal-container {
-  background-color: #ffffff;
-  width: 500px;
+#torus-login-modal__modal-container {
+  background: #ffffff;
+  width: 375px;
   margin: 5% auto;
-  padding: 30px;
-  border: 1px solid #979797;
+  padding: 0;
+  border: 1px solid #f5f5f5;
   border-radius: 6px;
+  position: relative;
 }
 
 /* Contents */
-.close-container {
-  text-align: right;
+#torus-login-modal__close-container {
+  position: absolute;
+  right: 16px;
+  top: 14px;
 }
 
-.close {
-  color: #0f1222;
-  font-size: 18px;
-  font-weight: bold;
+#torus-login-modal__close {
+  font-size: 30px;
+  color: #dfdfdf;
+  font-weight: 500;
 }
 
-.close:hover,
-.close:focus {
-  color: black;
+#torus-login-modal__close:hover,
+#torus-login-modal__close:focus {
   text-decoration: none;
   cursor: pointer;
 }
 
-.modal-content {
-  padding: 0 50px;
+#torus-login-modal__modal-content {
+  padding: 0;
   border: 0px solid white !important;
   font-family: 'Roboto', sans-serif !important;
+  color: #5c6c7f;
+  text-align: center;
 }
 
-.logo-container img {
+#torus-login-modal__header-container {
+  padding: 30px 0 20px;
+  box-shadow: 0 14px 28px 0 rgba(46, 91, 255, 0.06);
+}
+
+#torus-login-modal__header-container img {
   height: 30px;
   width: auto;
+  margin-bottom: 8px;
 }
 
-.login-header {
-  font-size: 32px;
-  font-weight: 500;
-  margin: 24px 0 5px;
+#torus-login-modal__login-header {
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 32px;
+  margin: 0;
 }
 
-.login-subtitle {
+#torus-login-modal__form-container {
+  text-align: left;
+  padding: 16px 24px 50px;
+  border-radius: 0 0 6px 6px;
+}
+
+#torus-login-modal__login-subtitle {
   font-size: 14px;
-  margin: 0 0 15px;
+  margin: 0 0 8px;
 }
 
-.login-google {
-  color: rgba(0, 0, 0, 0.54);
+#torus-login-modal__login-google {
+  box-sizing: border-box;
+  height: 50px;
+  width: 100%;
+  border: 1px solid #f1f2f6;
+  border-radius: 6px;
+  background-color: #ffffff;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  border-radius: 4px;
-  padding: 15px 10px;
-  margin: 0 0 16px;
-  text-align: left;
+  margin: 0 0 8px;
+  padding: 15px;
   font-size: 14px;
-  height: 50px;
-  width: 100%;
-  border: 0;
-  background-color: #ffffff;
-  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  font-weight: 500;
+  box-shadow: 0 14px 28px 0 rgba(46, 91, 255, 0.06);
+  color: #5c6c7f;
 }
 
-.login-google img {
+#torus-login-modal__login-google img {
   margin-right: 20px;
 }
 
-.login-list {
+#torus-login-modal__login-list {
   list-style: none;
   padding: 0;
   display: flex;
-  margin: 16px -4px;
+  margin: 0 -4px 16px;
   flex-direction: row;
   flex-wrap: wrap;
 }
 
-.login-list li {
-  flex-basis: 33.3333333333%;
+#torus-login-modal__login-list li {
+  flex-basis: 50%;
   flex-grow: 0;
-  max-width: 33.3333333333%;
+  max-width: 50%;
   padding: 0 4px 8px;
   box-sizing: border-box;
 }
 
-.login-list button {
-  cursor: pointer;
-  padding: 10px 0;
-  margin: 0;
+#torus-login-modal__login-list button {
   box-sizing: border-box;
+  height: 50px;
   width: 100%;
-  height: inherit;
-  border: 2px solid #e9eaea;
-  border-radius: 2px;
+  border: 1px solid #f1f2f6;
+  border-radius: 6px;
   background-color: #ffffff;
+  cursor: pointer;
+  margin: 0;
+  box-shadow: 0 14px 28px 0 rgba(46, 91, 255, 0.06);
 }
 
-.login-list img {
+#torus-login-modal__login-list img {
   height: 24px;
   width: auto;
 }
 
-.login-btn.login-btn--reddit {
+#torus-login-modal__login-btn--reddit {
   padding: 6px 0;
 }
 
-.login-btn.login-btn--reddit img {
+#torus-login-modal__login-btn--reddit img {
   height: 32px;
 }
 
-.login-note {
-  color: rgba(0, 0, 0, 0.54);
+#torus-login-modal__login-note {
   font-size: 12px;
-  margin-bottom: 50px;
 }
 
-.login-note a {
-  color: #0364ff;
+#torus-login-modal__login-note a {
+  color: #5495f7;
   cursor: pointer;
   text-decoration: none;
 }
 
 /* Mobile */
 @media (max-width: 598px) {
-  .modal-container {
+  #torus-login-modal__modal-container {
     width: 100%;
-    padding: 0;
   }
 
-  .modal-content {
-    padding: 0 40px;
-    border: 0px solid white !important;
+  #torus-login-modal__modal-content {
     font-family: 'Roboto', sans-serif !important;
-  }
-
-  .close-container {
-    padding: 10px 20px;
   }
 }
