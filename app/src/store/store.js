@@ -3,7 +3,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
 import { isArray } from 'util'
-import { fromWei, hexToUtf8, toBN, toChecksumAddress } from 'web3-utils'
+import { fromWei, hexToUtf8, toBN, toChecksumAddress, isAddress } from 'web3-utils'
 import config from '../config'
 import torus from '../torus'
 import { getEtherScanHashLink, storageAvailable } from '../utils/utils'
@@ -238,42 +238,70 @@ VuexStore.subscribe((mutation, state) => {
       if (txMeta.status === 'submitted' && id >= 0) {
         // insert into db here
         const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txMeta
-        let amountTo, amountValue, tokenName, assetName
-        if (methodParams && isArray(methodParams)) {
-          if (
-            transactionCategory === TOKEN_METHOD_TRANSFER_FROM ||
-            (transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM && !contractParams.isSpecial)
-          )
-            [, amountTo, amountValue] = methodParams || []
-          else [amountTo, amountValue] = methodParams || []
-        }
-        console.log(amountTo, amountValue, state.assets[state.selectedAddress])
+        let amountTo, amountValue, assetName, tokenRate, symbol, type, type_name, type_image_link
 
         if (contractParams.erc721) {
+          // Handling cryptokitties
+          if (contractParams.isSpecial == true) {
+            ;[amountTo, amountValue] = methodParams || []
+          }
+          // Rest of the 721s
+          else {
+            ;[, amountTo, amountValue] = methodParams || []
+          }
+
+          // Get asset name of the 721
           const [contract] = state.assets[state.selectedAddress].filter(x => x.name.toLowerCase() == contractParams.name.toLowerCase()) || []
-          log.info(contract)
+          // log.info(contract)
           const [assetObject] = contract['assets'].filter(x => x.tokenId == amountValue.value) || []
           log.info(assetObject)
-          //log.info(assetName.name)
-          assetName = assetObject.name
+          // log.info(assetName.name)
+          assetName = assetObject.name || ''
           log.info(assetName)
+
+          // Change the transfered Value to 0 for toal
           amountValue.value = 0
+          symbol = assetName
+          type = 'erc721'
+          type_name = contractParams.name
+          type_image_link = contractParams.logo
+        } else if (contractParams.erc20) {
+          // ERC20 transfer
+          tokenRate = contractParams.erc20 ? state.tokenRates[txParams.to] : 1
+          if (methodParams && isArray(methodParams)) {
+            if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
+              [, amountTo, amountValue] = methodParams || []
+            else {
+              ;[amountTo, amountValue] = methodParams || []
+            }
+          }
+          symbol = contractParams.symbol
+          type = 'erc20'
+          type_name = contractParams.name
+          type_image_link = contractParams.logo
+        } else {
+          // ETH transfers
+          tokenRate = 1
+          symbol = 'ETH'
+          type = 'eth'
+          type_name = 'eth'
+          type_image_link = 'n/a'
         }
+
         const totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
-        const tokenRate = contractParams.erc20 ? state.tokenRates[txParams.to] : 1
         const txObj = {
           created_at: new Date(time),
           from: toChecksumAddress(txParams.from),
-          to: amountTo && toChecksumAddress(amountTo.value) ? toChecksumAddress(amountTo.value) : toChecksumAddress(txParams.to),
+          to: amountTo && isAddress(amountTo.value) ? toChecksumAddress(amountTo.value) : toChecksumAddress(txParams.to),
           total_amount: totalAmount,
           gas: txParams.gas,
           gasPrice: txParams.gasPrice,
-          symbol: contractParams.erc721 ? assetName : (contractParams && contractParams.symbol) || 'ETH',
+          symbol: symbol,
           nonce: txParams.nonce,
-          type: contractParams && contractParams.erc20 ? 'erc20' : contractParams.erc721 ? 'erc721' : 'eth',
-          type_name: contractParams && contractParams.name ? contractParams.name : 'n/a',
-          type_image_link: contractParams && contractParams.logo ? contractParams.logo : 'n/a',
-          currency_amount: (getCurrencyMultiplier() * totalAmount * tokenRate).toString(),
+          type: type,
+          type_name: type_name,
+          type_image_link: type_image_link,
+          currency_amount: (getCurrencyMultiplier() * parseFloat(totalAmount) * tokenRate).toString(),
           selected_currency: state.selectedCurrency,
           status: 'submitted',
           network: state.networkType.host,

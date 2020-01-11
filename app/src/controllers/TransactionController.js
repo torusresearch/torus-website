@@ -652,7 +652,9 @@ class TransactionController extends EventEmitter {
     } else if (OLD_ERC721_LIST.hasOwnProperty(checkSummedTo.toLowerCase())) {
       // For Cryptokitties
       tokenMethodName = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
-      contractParams = OLD_ERC721_LIST[checkSummedTo.toLowerCase()]
+      contractParams = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
+        ? erc721Contracts[checkSummedTo.toLowerCase()]
+        : {}
       const ck20 = data && tokenABIDecoder.decodeMethod(data)
       delete contractParams['erc20']
       contractParams.erc721 = true
