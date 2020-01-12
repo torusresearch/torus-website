@@ -7,9 +7,14 @@
       :items-per-page.sync="itemsPerPage"
       :page.sync="page"
       hide-default-footer
+      :loading="loadingTransactions"
+      no-data-text=""
     >
       <template v-slot:default="props">
         <transaction-details v-for="transaction in props.items" :key="transaction.id" :transaction="transaction" />
+      </template>
+      <template v-slot:loading>
+        <component-loader class="mt-2" />
       </template>
     </v-data-iterator>
 
@@ -27,6 +32,7 @@
 
 <script>
 import TransactionDetails from '../TransactionDetails'
+import ComponentLoader from '../../helpers/ComponentLoader'
 import {
   SUPPORTED_NETWORK_TYPES,
   ACTIVITY_ACTION_ALL,
@@ -42,9 +48,10 @@ import {
 } from '../../../utils/enums'
 
 export default {
-  props: ['transactions', 'selectedAction', 'selectedPeriod'],
+  props: ['transactions', 'selectedAction', 'selectedPeriod', 'loadingTransactions'],
   components: {
-    TransactionDetails
+    TransactionDetails,
+    ComponentLoader
   },
   data() {
     return {
@@ -52,44 +59,7 @@ export default {
       itemsPerPage: 8,
       expanded: [],
       pagination: {},
-      defaultSort: 'date',
-      headers: [
-        {
-          text: 'Transaction',
-          value: 'action',
-          align: 'left',
-          width: '120px'
-        },
-        {
-          text: 'From',
-          value: 'from',
-          align: 'left',
-          class: 'address-col'
-        },
-        {
-          text: 'To',
-          value: 'to',
-          align: 'left',
-          class: 'address-col'
-        },
-        {
-          text: 'Amount',
-          value: 'amount',
-          align: 'right',
-          width: '200px'
-        },
-        {
-          text: 'Date',
-          value: 'date',
-          align: 'right',
-          width: '80px'
-        },
-        {
-          text: 'Status',
-          value: 'status',
-          align: 'center'
-        }
-      ]
+      defaultSort: 'date'
     }
   },
   computed: {
@@ -124,14 +94,15 @@ export default {
           let minDate
           let itemDate = new Date(item.date)
           if (this.selectedPeriod === ACTIVITY_PERIOD_WEEK_ONE) {
-            minDate = this.oneWeekAgoDate()
+            minDate = this.oneWeekAgoDate
           } else if (this.selectedPeriod === ACTIVITY_PERIOD_MONTH_ONE) {
-            minDate = this.oneMonthAgoDate()
+            minDate = this.oneMonthAgoDate
           } else {
-            minDate = this.sixMonthAgoDate()
+            minDate = this.sixMonthAgoDate
           }
-          isScoped = minDate.getTime() <= itemDate.getTime()
+          isScoped = minDate <= itemDate.getTime()
         }
+
         if (item.action) {
           return item.action.match(regExAction) && isScoped
         } else {

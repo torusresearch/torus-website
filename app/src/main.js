@@ -38,8 +38,14 @@ switch (buildEnv) {
 }
 log.info('VUE_APP_TORUS_BUILD_ENV', process.env.VUE_APP_TORUS_BUILD_ENV)
 
-// Object.defineProperty(Vue.prototype, 'torus', { value: torus })
-// Object.defineProperty(Vue.prototype, 'Buffer', { value: Buffer })
+Vue.mixin({
+  methods: {
+    t(data) {
+      return vuetify.framework.lang.t(`$vuetify.${data}`)
+    }
+  }
+})
+
 new Vue({
   router,
   store,

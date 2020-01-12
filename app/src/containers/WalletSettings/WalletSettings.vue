@@ -1,6 +1,6 @@
 <template>
   <v-layout mt-3 wrap class="wallet-settings">
-    <div class="text-black font-weight-bold headline px-4 mb-4">Settings</div>
+    <div class="text-black font-weight-bold headline px-4 mb-4">{{ t('walletSettings.settings') }}</div>
     <v-flex xs12 px-4>
       <v-expansion-panels v-model="panel" multiple>
         <!-- Privacy and security settings -->
@@ -12,7 +12,7 @@
           >
             <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.lock'" />
             <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'subtitle-1'">
-              Privacy and Security
+              {{ t('walletSettings.privacySecurity') }}
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
@@ -29,7 +29,7 @@
           >
             <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.globe'" />
             <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'subtitle-1'">
-              Network
+              {{ t('walletSettings.network') }}
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
@@ -46,7 +46,7 @@
           >
             <v-icon size="12" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.list'" />
             <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'subtitle-1'">
-              Address Book
+              {{ t('walletSettings.addressBook') }}
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
@@ -63,7 +63,7 @@
           >
             <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.server'" />
             <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'subtitle-1'">
-              Display
+              {{ t('walletSettings.display') }}
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>

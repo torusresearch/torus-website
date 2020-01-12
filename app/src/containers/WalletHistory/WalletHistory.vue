@@ -2,7 +2,7 @@
   <div class="wallet-activity">
     <v-layout mt-3 wrap>
       <v-flex xs12 px-4 mb-4>
-        <div class="text-black font-weight-bold headline float-left">{{ pageHeader }}</div>
+        <div class="text-black font-weight-bold headline float-left">{{ t('walletActivity.transactionActivities') }}</div>
         <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
           <v-select
             id="transaction-selector"
@@ -30,9 +30,9 @@
       </v-flex>
       <v-flex xs12 px-4 mb-4>
         <tx-history-table
-          :headers="headers"
           :selectedAction="selectedAction"
           :selectedPeriod="selectedPeriod"
+          :loadingTransactions="loadingPastTransactions || loadingOrders || loadingUserTransactions"
           :transactions="calculateFinalTransactions()"
         />
       </v-flex>
@@ -52,7 +52,6 @@ import torus from '../../torus'
 import { patch } from '../../utils/httpHelpers'
 import {
   WYRE,
-  WALLET_HEADERS_ACTIVITY,
   ACTIVITY_ACTION_ALL,
   ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_RECEIVE,
@@ -64,7 +63,9 @@ import {
   ACTIVITY_STATUS_SUCCESSFUL,
   ACTIVITY_STATUS_UNSUCCESSFUL,
   SUPPORTED_NETWORK_TYPES,
-  ACTIVITY_STATUS_PENDING
+  ACTIVITY_STATUS_PENDING,
+  CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ERC20
 } from '../../utils/enums'
 
 export default {
@@ -72,30 +73,60 @@ export default {
   components: { TxHistoryTable },
   data() {
     return {
-      pageHeader: WALLET_HEADERS_ACTIVITY,
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
-      headers: [
-        {
-          text: 'Date',
-          align: 'left',
-          value: 'date'
-        },
-        { text: 'From', value: 'slicedFrom', align: 'center' },
-        { text: 'To', value: 'slicedTo', align: 'center' },
-        { text: 'Amount', value: 'totalAmountString', align: 'center' },
-        { text: 'Value', value: 'currencyAmountString', align: 'center' },
-        { text: 'Status', value: 'status', align: 'center' }
-      ],
       pastOrders: [],
-      actionTypes: [ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_TOPUP],
       selectedAction: ACTIVITY_ACTION_ALL,
-      periods: [ACTIVITY_PERIOD_ALL, ACTIVITY_PERIOD_WEEK_ONE, ACTIVITY_PERIOD_MONTH_ONE, ACTIVITY_PERIOD_MONTH_SIX],
       selectedPeriod: ACTIVITY_PERIOD_ALL,
       paymentTx: [],
-      pastTx: []
+      pastTx: [],
+      loadingPastTransactions: true,
+      loadingOrders: true
     }
   },
   computed: {
+    loadingUserTransactions() {
+      return this.$store.state.loadingUserTransactions
+    },
+    actionTypes() {
+      return [
+        {
+          text: this.t(ACTIVITY_ACTION_ALL),
+          value: ACTIVITY_ACTION_ALL
+        },
+        {
+          text: this.t(ACTIVITY_ACTION_SEND),
+          value: ACTIVITY_ACTION_SEND
+        },
+        {
+          text: this.t(ACTIVITY_ACTION_RECEIVE),
+          value: ACTIVITY_ACTION_RECEIVE
+        },
+        {
+          text: this.t(ACTIVITY_ACTION_TOPUP),
+          value: ACTIVITY_ACTION_TOPUP
+        }
+      ]
+    },
+    periods() {
+      return [
+        {
+          text: this.t(ACTIVITY_PERIOD_ALL),
+          value: ACTIVITY_PERIOD_ALL
+        },
+        {
+          text: this.t(ACTIVITY_PERIOD_WEEK_ONE),
+          value: ACTIVITY_PERIOD_WEEK_ONE
+        },
+        {
+          text: this.t(ACTIVITY_PERIOD_MONTH_ONE),
+          value: ACTIVITY_PERIOD_MONTH_ONE
+        },
+        {
+          text: this.t(ACTIVITY_PERIOD_MONTH_SIX),
+          value: ACTIVITY_PERIOD_MONTH_SIX
+        }
+      ]
+    },
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
     },
@@ -144,20 +175,28 @@ export default {
           return ''
       }
     },
-    getActionText(action, item) {
-      if (action === ACTIVITY_ACTION_SEND) {
-        return 'Send ' + item
-      } else if (action === ACTIVITY_ACTION_RECEIVE || action === ACTIVITY_ACTION_TOPUP) {
-        return 'Received ' + item
-      }
+    getActionText(activity) {
+      // Handling tx from common-api schema and /tx schema separately.
+      return activity.type_name === 'n/a' || activity.type === 'n/a'
+        ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+            activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
+          }`
+        : activity.type_name || activity.type
+        ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${activity.type_name}`
+        : `${this.t(activity.action) + ' ' + activity.from} `
     },
-    getIcon(action) {
-      if (action === ACTIVITY_ACTION_TOPUP) {
-        return '$vuetify.icons.coins_receive'
-      } else if (action === ACTIVITY_ACTION_SEND) {
-        return '$vuetify.icons.coins_send'
-      } else if (action === ACTIVITY_ACTION_RECEIVE) {
-        return '$vuetify.icons.coins_receive'
+    getIcon(activity) {
+      if (activity.action === ACTIVITY_ACTION_TOPUP) {
+        return `provider-${activity.from.toLowerCase()}.svg`
+      } else if (activity.action === ACTIVITY_ACTION_SEND || activity.action === ACTIVITY_ACTION_RECEIVE) {
+        if (activity.type === CONTRACT_TYPE_ERC721) {
+          return activity.type_image_link // will be an opensea image url
+        } else if (activity.type === CONTRACT_TYPE_ERC20) {
+          return `logos/${activity.type_image_link}`
+        } else {
+          const action = activity.action.split('.')
+          return action.length >= 1 ? `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}` : ''
+        }
       }
     },
     formatDate(date) {
@@ -172,8 +211,8 @@ export default {
       const transactions = this.calculateTransactions()
       finalTx = [...transactions, ...finalTx, ...pastTx]
       finalTx = finalTx.reduce((acc, x) => {
-        x.actionIcon = this.getIcon(x.action)
-        x.actionText = this.getActionText(x.action, 'ETH')
+        x.actionIcon = this.getIcon(x)
+        x.actionText = this.getActionText(x)
         x.statusText = this.getStatusText(x.status)
         x.dateFormatted = this.formatDate(x.date)
         x.timeFormatted = this.formatTime(x.date)
@@ -193,13 +232,12 @@ export default {
         let status = x.status
         if (
           x.status !== 'confirmed' &&
-          x.status !== 'rejected' &&
           (publicAddress.toLowerCase() === x.from.toLowerCase() || publicAddress.toLowerCase() === x.to.toLowerCase())
         ) {
           status = await getEthTxStatus(x.transaction_hash, torus.web3)
           if (publicAddress.toLowerCase() === x.from.toLowerCase()) this.patchTx(x, status, jwtToken)
         }
-        const totalAmountString = `${significantDigits(parseFloat(x.total_amount))} ETH`
+        const totalAmountString = x.type === CONTRACT_TYPE_ERC721 ? x.type_name : `${significantDigits(parseFloat(x.total_amount))} ETH`
         const currencyAmountString = `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
         const finalObj = {
           id: x.created_at.toString(),
@@ -218,10 +256,15 @@ export default {
           etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network),
           networkType: x.network,
           ethRate: significantDigits(parseFloat(x.currency_amount) / parseFloat(x.total_amount)),
-          currencyUsed: x.selected_currency
+          currencyUsed: x.selected_currency,
+          type: x.type,
+          type_name: x.type_name,
+          type_image_link: x.type_image_link
         }
         pastTx.push(finalObj)
       }
+
+      this.loadingPastTransactions = false
       this.pastTx = pastTx
     },
     calculateTransactions() {
@@ -248,6 +291,9 @@ export default {
           txObj.networkType = networkType.host
           txObj.ethRate = significantDigits(parseFloat(txObj.currencyAmount) / parseFloat(txObj.totalAmount))
           txObj.currencyUsed = this.selectedCurrency
+          txObj.type = txOld.contractParams && txOld.contractParams.erc20 ? 'erc20' : txOld.contractParams.erc721 ? 'erc721' : 'eth'
+          txObj.type_name = txOld.contractParams && txOld.contractParams.name ? txOld.contractParams.name : 'n/a'
+          txObj.type_image_link = txOld.contractParams && txOld.contractParams.logo ? txOld.contractParams.logo : 'n/a'
           finalTransactions.push(txObj)
         }
       }
@@ -282,12 +328,17 @@ export default {
     )
       .then(response => {
         this.paymentTx = response.data.reduce((acc, x) => {
+          let action = ''
+          if (ACTIVITY_ACTION_TOPUP.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_TOPUP
+          else if (ACTIVITY_ACTION_SEND.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_SEND
+          else if (ACTIVITY_ACTION_RECEIVE.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_RECEIVE
+
           acc.push({
             id: x.id,
             date: new Date(x.date),
             from: x.from,
             slicedFrom: x.slicedFrom,
-            action: x.action,
+            action,
             to: x.to,
             slicedTo: x.slicedTo,
             totalAmount: x.totalAmount,
@@ -304,6 +355,7 @@ export default {
           return acc
           // }
         }, [])
+        this.loadingOrders = false
       })
       .catch(err => log.error(err))
     this.calculatePastTransactions()

@@ -1,6 +1,6 @@
-import { hexToNumberString } from 'web3-utils'
 import { MAINNET } from '../utils/enums'
-import { formatCurrencyNumber, significantDigits } from '../utils/utils'
+import { significantDigits } from '../utils/utils'
+import BigNumber from 'bignumber.js'
 
 const unApprovedTransactions = state => {
   const transactions = []
@@ -17,11 +17,13 @@ const tokenBalances = state => {
     tokenData = {}
     tokenRates = {}
   }
-  let currencyMultiplier = 1
-  if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+  let currencyMultiplierNum = 1
+  const formatter = selectedCurrency !== 'ETH' ? 2 : 3
+  if (selectedCurrency !== 'ETH') currencyMultiplierNum = currencyData[selectedCurrency.toLowerCase()] || 1
+  const currencyMultiplier = new BigNumber(currencyMultiplierNum)
   let full = [
     {
-      balance: weiBalance[selectedAddress],
+      balance: weiBalance[selectedAddress] || '0',
       decimals: 18,
       erc20: false,
       logo: 'eth.svg',
@@ -34,27 +36,26 @@ const tokenBalances = state => {
   if (tokenData && tokenData[selectedAddress] && Object.keys(tokenData[selectedAddress]).length > 0) {
     full = [...full, ...tokenData[selectedAddress]]
   }
-  let totalPortfolioValue = 0
+  let totalPortfolioValue = new BigNumber(0)
   const finalBalancesArray = full.map(x => {
-    const computedBalance = parseFloat(hexToNumberString(x.balance)) / 10 ** parseFloat(x.decimals) || 0
-    let tokenRateMultiplier = 1
-    if (x.tokenAddress !== '0x') tokenRateMultiplier = tokenRates[x.tokenAddress.toLowerCase()] || 0
-    const currencyRate = currencyMultiplier * tokenRateMultiplier
-    let currencyBalance = significantDigits(computedBalance * currencyRate || 0, false, 3)
-    totalPortfolioValue += currencyBalance
-    if (selectedCurrency !== 'ETH') currencyBalance = formatCurrencyNumber(currencyBalance)
+    const computedBalance = new BigNumber(x.balance).dividedBy(new BigNumber(10).pow(new BigNumber(x.decimals))) || new BigNumber(0)
+    let tokenRateMultiplierNum = 1
+    if (x.tokenAddress !== '0x') tokenRateMultiplierNum = tokenRates[x.tokenAddress.toLowerCase()] || 0
+    const tokenRateMultiplier = new BigNumber(tokenRateMultiplierNum)
+    const currencyRate = currencyMultiplier.times(tokenRateMultiplier)
+    let currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
+    totalPortfolioValue = totalPortfolioValue.plus(currencyBalance)
     return {
       ...x,
       id: x.symbol,
       computedBalance: computedBalance,
-      formattedBalance: `${x.symbol} ${significantDigits(computedBalance || 0, false, 3)}`,
-      currencyBalance: `${selectedCurrency} ${currencyBalance}`,
-      currencyRateText: `1 ${x.symbol} = ${significantDigits(currencyRate || 0)} ${selectedCurrency}`
+      formattedBalance: `${x.symbol} ${significantDigits(computedBalance, false, formatter + 1)}`,
+      currencyBalance: `${selectedCurrency} ${significantDigits(currencyBalance, false, formatter + 1)}`,
+      currencyRateText: `1 ${x.symbol} = ${currencyRate.toFormat(formatter)} ${selectedCurrency}`
     }
   })
-  totalPortfolioValue = significantDigits(totalPortfolioValue, false, 3) || 0
-  if (selectedCurrency !== 'ETH') totalPortfolioValue = formatCurrencyNumber(totalPortfolioValue)
-  return { finalBalancesArray, totalPortfolioValue }
+  const totalPortfolioValueReturn = significantDigits(totalPortfolioValue, false, formatter + 1)
+  return { finalBalancesArray, totalPortfolioValue: totalPortfolioValueReturn }
 }
 
 const collectibleBalances = state => {
