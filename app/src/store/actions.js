@@ -756,7 +756,7 @@ export default {
       .then(({ torusNodeEndpoints: torusNodeEndpointsVal, torusIndexes: torusIndexesVal }) => {
         torusNodeEndpoints = torusNodeEndpointsVal
         torusIndexes = torusIndexesVal
-        return torus.getPubKeyAsync(torusNodeEndpoints, { verifier, verifierId })
+        return torus.getPublicAddress(torusNodeEndpoints, { verifier, verifierId })
       })
       .then(res => {
         log.info('New private key assigned to user at address ', res)

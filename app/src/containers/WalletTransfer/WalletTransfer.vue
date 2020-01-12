@@ -679,7 +679,7 @@ export default {
           }
         } else {
           try {
-            toAddress = await torus.getPubKeyAsync(this.nodeDetails.torusNodeEndpoints, {
+            toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, {
               verifier: this.selectedVerifier,
               verifierId: this.toAddress
             })
