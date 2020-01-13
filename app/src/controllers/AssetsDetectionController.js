@@ -118,7 +118,7 @@ export default class AssetsDetectionController {
     for (let index = 0; index < apiCollectibles.length; index++) {
       const {
         token_id,
-        image_original_url,
+        image_url,
         name,
         description,
         asset_contract: {
@@ -135,7 +135,7 @@ export default class AssetsDetectionController {
         Number(token_id),
         {
           description,
-          image: image_original_url,
+          image: image_url || contractImage.replace('=s60', '=s180'),
           name,
           contractAddress,
           contractName,
