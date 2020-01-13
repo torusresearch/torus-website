@@ -1,24 +1,28 @@
 <template>
-  <content-loader
-    :height="160"
-    :width="400"
-    :speed="2"
-    :primaryColor="this.$vuetify.theme.dark ? '#2E3135' : '#f3f3f3'"
-    :secondaryColor="this.$vuetify.theme.dark ? '#2E3135' : '#ecebeb'"
-  >
-    <rect x="7" y="26" rx="4" ry="4" width="140.4" height="13.12" />
-    <rect x="8" y="71.08" rx="3" ry="3" width="276.5" height="9.09" />
-    <rect x="8" y="43.61" rx="3" ry="3" width="126.63" height="8.64" />
-    <rect x="9" y="87" rx="3" ry="3" width="374.5" height="111.73" />
-  </content-loader>
+  <div class="sk-grid">
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 2px;"></div></div>
+    <div class="sk-grid__col-mob-2"></div>
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 10px; margin-bottom: 20px;"></div></div>
+    <div class="sk-grid__col-mob-2"></div>
+
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2;"></div></div>
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 15px;"></div></div>
+
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+    <div class="sk-grid__col-mob-2"></div>
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2;"></div></div>
+    <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 15px;"></div></div>
+
+    <div class="sk-grid__col-mob-2 sk-grid__col-mob-shift-2"><div class="sk-loader" style="height: 15px; margin-bottom: 30px;"></div></div>
+
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+    <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+  </div>
 </template>
 
 <script>
-import { ContentLoader } from 'vue-content-loader'
-
-export default {
-  components: {
-    ContentLoader
-  }
-}
+export default {}
 </script>

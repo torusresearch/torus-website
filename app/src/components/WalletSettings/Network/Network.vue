@@ -1,7 +1,7 @@
 <template>
   <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
     <v-form ref="networkForm" v-model="formValid" lazy-validation @submit.prevent="">
-      <span class="subtitle-2">Select Network</span>
+      <span class="subtitle-2">{{ t('walletSettings.selectNetwork') }}</span>
       <v-layout wrap>
         <v-flex xs12 md6>
           <v-select
@@ -15,31 +15,39 @@
             @change="changeNetwork"
             return-object
             append-icon="$vuetify.icons.select"
+            aria-label="Select Network"
           ></v-select>
         </v-flex>
       </v-layout>
 
       <template v-if="isRPCSelected">
         <v-flex xs12 md6>
-          <v-text-field placeholder="Enter Network Name" :rules="[rules.required]" outlined v-model="rpc.networkName"></v-text-field>
+          <v-text-field
+            :placeholder="t('walletSettings.enterNetworkName')"
+            :rules="[rules.required]"
+            outlined
+            v-model="rpc.networkName"
+          ></v-text-field>
         </v-flex>
 
         <v-flex xs12 md6>
-          <v-text-field placeholder="Enter RPC URL" :rules="[rules.required]" outlined v-model="rpc.host"></v-text-field>
+          <v-text-field :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined v-model="rpc.host"></v-text-field>
         </v-flex>
 
         <v-flex xs12 md6>
-          <v-text-field placeholder="Enter Chain id" outlined v-model="rpc.chainId"></v-text-field>
+          <v-text-field :placeholder="t('walletSettings.enterChainId')" outlined v-model="rpc.chainId"></v-text-field>
         </v-flex>
 
         <v-flex xs12 sm4 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
           <v-tooltip bottom :disabled="formValid">
             <template v-slot:activator="{ on }">
               <span v-on="on">
-                <v-btn block :disabled="!formValid" depressed color="primary" @click="setRPC">Save</v-btn>
+                <v-btn block :disabled="!formValid" depressed color="primary" @click="setRPC">
+                  {{ t('walletSettings.save') }}
+                </v-btn>
               </span>
             </template>
-            <span>Resolve the errors</span>
+            <span>{{ t('walletSettings.resolveErrors') }}</span>
           </v-tooltip>
         </v-flex>
       </template>
@@ -110,7 +118,7 @@ export default {
     showNotification(success) {
       this.updateProviderRPCAlert = success
       this.updateProviderAlertType = success ? 'success' : 'error'
-      this.updateProviderAlertText = success ? 'Updated Network Provider' : 'Something went wrong'
+      this.updateProviderAlertText = success ? this.t('walletSettings.updatedProvider') : this.t('walletSettings.somethingWrong')
     },
     changeNetwork(value) {
       if (value && value.host !== RPC) {

@@ -140,7 +140,7 @@ export default class AssetsDetectionController {
           contractAddress,
           contractName,
           contractSymbol,
-          contractImage,
+          contractImage: contractImage.replace('=s60', '=s180'),
           contractSupply,
           contractDescription
         },

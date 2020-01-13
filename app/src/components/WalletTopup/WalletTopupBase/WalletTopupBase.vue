@@ -5,14 +5,14 @@
         <v-flex xs12>
           <p class="body-2">
             <span class="text-capitalize selected-provider">{{ selectedProvider }}</span>
-            is a secure way to buy cryptocurrency with your payment method. Start by entering an amount below to get a quote before making a purchase
+            {{ t('walletTopUp.description') }}
           </p>
         </v-flex>
 
         <v-flex xs12>
           <v-form ref="paymentForm" v-model="formValid" lazy-validation @submit.prevent>
             <v-flex xs12>
-              <div class="subtitle-2">Buy</div>
+              <div class="subtitle-2">{{ t('walletTopUp.wannaBuy') }}</div>
               <v-select
                 id="cryptocurrency"
                 class="cryptocurrency-selector"
@@ -21,10 +21,11 @@
                 :items="selectedProviderObj.validCryptoCurrencies"
                 v-model="selectedCryptoCurrency"
                 @change="fetchQuote"
+                aria-label="Cryptocurrency Selector"
               ></v-select>
             </v-flex>
             <v-flex xs12>
-              <div class="subtitle-2">Send</div>
+              <div class="subtitle-2">{{ t('walletTopUp.youSend') }}</div>
               <v-text-field
                 id="you-send"
                 class="unique-hint"
@@ -33,6 +34,7 @@
                 :value="fiatValue"
                 @input="setFiatValue"
                 :rules="[rules.required, rules.validNumber, rules.maxValidation, rules.minValidation]"
+                aria-label="Amount to Buy"
               >
                 <template v-slot:append>
                   <v-btn outlined small color="primary" @click="setFiatValue(100)">100</v-btn>
@@ -46,18 +48,18 @@
                   <div class="v-messages__wrapper">
                     <div class="v-messages__message d-flex text_2--text">
                       <v-flex class="font-weight-medium">
-                        <span v-if="selectedProviderObj.includeFees">Includes &nbsp;&nbsp;</span>
-                        <span v-else>Doesn't Include &nbsp;&nbsp;</span>
+                        <span v-if="selectedProviderObj.includeFees">{{ t('walletTopUp.includes') }} &nbsp;&nbsp;</span>
+                        <span v-else>{{ t('walletTopUp.doesntInclude') }} &nbsp;&nbsp;</span>
                         <span v-html="selectedProviderObj.line2 || ''"></span>
                         <HelpTooltip
-                          title="Service Fee"
-                          :description="
-                            `This fee goes entirely to ${selectedProvider} for their services in card processing, mitigation and fraud detection`
-                          "
+                          :title="t('walletTopUp.serviceFee')"
+                          :description="`${t('walletTopUp.serviceFeeDesc1')} ${selectedProvider} ${t('walletTopUp.serviceFeeDesc2')}`"
                         ></HelpTooltip>
                       </v-flex>
                       <v-flex grow-shrink-0>
-                        <span>min {{ minOrderValue }}, max {{ maxOrderValue }} {{ selectedCurrency }}*</span>
+                        <span>
+                          {{ t('walletTopUp.min') }} {{ minOrderValue }}, {{ t('walletTopUp.max') }} {{ maxOrderValue }} {{ selectedCurrency }}*
+                        </span>
                       </v-flex>
                     </div>
                   </div>
@@ -67,9 +69,9 @@
 
             <v-flex xs12>
               <div class="subtitle-2">
-                Receive
+                {{ t('walletTopUp.receive') }}
                 <span class="caption float-right text_2--text">
-                  Rate : 1 {{ selectedCryptoCurrency }} = {{ displayRateString }} {{ selectedCurrency }}
+                  {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency }} = {{ displayRateString }} {{ selectedCurrency }}
                 </span>
               </div>
               <v-text-field
@@ -78,9 +80,10 @@
                 placeholder="0.00"
                 :suffix="selectedCryptoCurrency"
                 :value="cryptoCurrencyValue"
-                hint="Please prepare your Identity Card/Passport to complete the purchase."
+                :hint="t('walletTopUp.receiveHint')"
                 persistent-hint
                 outlined
+                aria-label="Amount to Receive"
               ></v-text-field>
             </v-flex>
           </v-form>
@@ -91,27 +94,37 @@
             <v-tooltip bottom :disabled="formValid">
               <template v-slot:activator="{ on }">
                 <span v-on="on">
-                  <v-btn class="px-10" :disabled="!formValid" x-large depressed color="primary" type="submit" @click.prevent="sendOrder">
-                    Continue
+                  <v-btn
+                    class="px-10"
+                    :disabled="!formValid || !isQuoteFetched"
+                    x-large
+                    depressed
+                    color="primary"
+                    type="submit"
+                    @click.prevent="sendOrder"
+                  >
+                    {{ t('walletTopUp.continue') }}
                   </v-btn>
                 </span>
               </template>
-              <span>Resolve the errors</span>
+              <span>{{ t('walletTopUp.resolveErrors') }}</span>
             </v-tooltip>
-            <div class="caption text_2--text">You will be redirected to the third party page</div>
+            <div class="caption text_2--text">{{ t('walletTopUp.redirectMessage') }}</div>
           </div>
         </v-flex>
 
         <v-flex class="mt-10 text-center text_2--text caption">
-          Feel free to
-          <a href="mailto:hello@tor.us?Subject=Topup%20Support%20or%20Inquiry" target="_blank">contact us</a>
-          for support or any inquiry
+          {{ t('walletTopUp.contact1') }}
+          <a href="mailto:hello@tor.us?Subject=Topup%20Support%20or%20Inquiry" target="_blank">
+            {{ t('walletTopUp.contact2') }}
+          </a>
+          {{ t('walletTopUp.contact3') }}
         </v-flex>
       </v-layout>
     </v-card>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
       {{ snackbarText }}
-      <v-btn dark text @click="snackbar = false">Close</v-btn>
+      <v-btn dark text @click="snackbar = false">{{ t('walletTopUp.close') }}</v-btn>
     </v-snackbar>
   </div>
 </template>
@@ -129,6 +142,7 @@ export default {
   props: ['selectedProvider', 'cryptoCurrencyValue', 'currencyRate'],
   data() {
     return {
+      isQuoteFetched: false,
       formValid: true,
       fiatValue: '',
       selectedCryptoCurrency: '',
@@ -165,6 +179,13 @@ export default {
     displayRateString() {
       if (parseFloat(this.currencyRate) !== 0) return significantDigits(1 / this.currencyRate)
       else return 0
+    }
+  },
+  watch: {
+    cryptoCurrencyValue(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        if (parseFloat(newValue) > 0) this.isQuoteFetched = true
+      }
     }
   },
   methods: {

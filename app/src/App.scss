@@ -3,7 +3,7 @@
   // Input Related Styles
   input::placeholder {
     color: var(--v-text_2-base) !important;
-    font-size: 14px;
+    font-size: 16px;
     opacity: 0.7;
   }
 
@@ -23,7 +23,7 @@
   }
 
   .v-input {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .v-input__slot {
@@ -160,4 +160,18 @@
   .v-tab.v-tab--active {
     color: #ffffff;
   }
+}
+
+.text-clamp-one {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.text-clamp-two {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

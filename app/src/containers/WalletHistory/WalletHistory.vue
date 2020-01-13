@@ -2,7 +2,7 @@
   <div class="wallet-activity">
     <v-layout mt-3 wrap>
       <v-flex xs12 px-4 mb-4>
-        <div class="text-black font-weight-bold headline float-left">{{ pageHeader }}</div>
+        <div class="text-black font-weight-bold headline float-left">{{ t('walletActivity.transactionActivities') }}</div>
         <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
           <v-select
             id="transaction-selector"
@@ -13,6 +13,7 @@
             :items="actionTypes"
             v-model="selectedAction"
             append-icon="$vuetify.icons.select"
+            aria-label="Filter Transacation Type"
           />
           <v-select
             id="period-selector"
@@ -23,14 +24,15 @@
             :items="periods"
             v-model="selectedPeriod"
             append-icon="$vuetify.icons.select"
+            aria-label="Filter Transacation Period"
           />
         </div>
       </v-flex>
       <v-flex xs12 px-4 mb-4>
         <tx-history-table
-          :headers="headers"
           :selectedAction="selectedAction"
           :selectedPeriod="selectedPeriod"
+          :loadingTransactions="loadingPastTransactions || loadingOrders || loadingUserTransactions"
           :transactions="calculateFinalTransactions()"
         />
       </v-flex>
@@ -41,7 +43,7 @@
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
 import log from 'loglevel'
-import { toChecksumAddress, toBN, fromWei } from 'web3-utils'
+import { toChecksumAddress, toBN, fromWei, isAddress } from 'web3-utils'
 import config from '../../config'
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
 import { getPastOrders } from '../../plugins/simplex'
@@ -50,7 +52,6 @@ import torus from '../../torus'
 import { patch } from '../../utils/httpHelpers'
 import {
   WYRE,
-  WALLET_HEADERS_ACTIVITY,
   ACTIVITY_ACTION_ALL,
   ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_RECEIVE,
@@ -62,7 +63,11 @@ import {
   ACTIVITY_STATUS_SUCCESSFUL,
   ACTIVITY_STATUS_UNSUCCESSFUL,
   SUPPORTED_NETWORK_TYPES,
-  ACTIVITY_STATUS_PENDING
+  ACTIVITY_STATUS_PENDING,
+  CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ERC20,
+  TOKEN_METHOD_TRANSFER_FROM,
+  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
 } from '../../utils/enums'
 
 export default {
@@ -70,30 +75,60 @@ export default {
   components: { TxHistoryTable },
   data() {
     return {
-      pageHeader: WALLET_HEADERS_ACTIVITY,
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
-      headers: [
-        {
-          text: 'Date',
-          align: 'left',
-          value: 'date'
-        },
-        { text: 'From', value: 'slicedFrom', align: 'center' },
-        { text: 'To', value: 'slicedTo', align: 'center' },
-        { text: 'Amount', value: 'totalAmountString', align: 'center' },
-        { text: 'Value', value: 'currencyAmountString', align: 'center' },
-        { text: 'Status', value: 'status', align: 'center' }
-      ],
       pastOrders: [],
-      actionTypes: [ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_TOPUP],
       selectedAction: ACTIVITY_ACTION_ALL,
-      periods: [ACTIVITY_PERIOD_ALL, ACTIVITY_PERIOD_WEEK_ONE, ACTIVITY_PERIOD_MONTH_ONE, ACTIVITY_PERIOD_MONTH_SIX],
       selectedPeriod: ACTIVITY_PERIOD_ALL,
       paymentTx: [],
-      pastTx: []
+      pastTx: [],
+      loadingPastTransactions: true,
+      loadingOrders: true
     }
   },
   computed: {
+    loadingUserTransactions() {
+      return this.$store.state.loadingUserTransactions
+    },
+    actionTypes() {
+      return [
+        {
+          text: this.t(ACTIVITY_ACTION_ALL),
+          value: ACTIVITY_ACTION_ALL
+        },
+        {
+          text: this.t(ACTIVITY_ACTION_SEND),
+          value: ACTIVITY_ACTION_SEND
+        },
+        {
+          text: this.t(ACTIVITY_ACTION_RECEIVE),
+          value: ACTIVITY_ACTION_RECEIVE
+        },
+        {
+          text: this.t(ACTIVITY_ACTION_TOPUP),
+          value: ACTIVITY_ACTION_TOPUP
+        }
+      ]
+    },
+    periods() {
+      return [
+        {
+          text: this.t(ACTIVITY_PERIOD_ALL),
+          value: ACTIVITY_PERIOD_ALL
+        },
+        {
+          text: this.t(ACTIVITY_PERIOD_WEEK_ONE),
+          value: ACTIVITY_PERIOD_WEEK_ONE
+        },
+        {
+          text: this.t(ACTIVITY_PERIOD_MONTH_ONE),
+          value: ACTIVITY_PERIOD_MONTH_ONE
+        },
+        {
+          text: this.t(ACTIVITY_PERIOD_MONTH_SIX),
+          value: ACTIVITY_PERIOD_MONTH_SIX
+        }
+      ]
+    },
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
     },
@@ -142,20 +177,28 @@ export default {
           return ''
       }
     },
-    getActionText(action, item) {
-      if (action === ACTIVITY_ACTION_SEND) {
-        return 'Send ' + item
-      } else if (action === ACTIVITY_ACTION_RECEIVE || action === ACTIVITY_ACTION_TOPUP) {
-        return 'Received ' + item
-      }
+    getActionText(activity) {
+      // Handling tx from common-api schema and /tx schema separately.
+      return activity.type_name === 'n/a' || activity.type === 'n/a'
+        ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+            activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
+          }`
+        : activity.type_name || activity.type
+        ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${activity.type_name}`
+        : `${this.t(activity.action) + ' ' + activity.from} `
     },
-    getIcon(action) {
-      if (action === ACTIVITY_ACTION_TOPUP) {
-        return '$vuetify.icons.coins_receive'
-      } else if (action === ACTIVITY_ACTION_SEND) {
-        return '$vuetify.icons.coins_send'
-      } else if (action === ACTIVITY_ACTION_RECEIVE) {
-        return '$vuetify.icons.coins_receive'
+    getIcon(activity) {
+      if (activity.action === ACTIVITY_ACTION_TOPUP) {
+        return `provider-${activity.from.toLowerCase()}.svg`
+      } else if (activity.action === ACTIVITY_ACTION_SEND || activity.action === ACTIVITY_ACTION_RECEIVE) {
+        if (activity.type === CONTRACT_TYPE_ERC721) {
+          return activity.type_image_link // will be an opensea image url
+        } else if (activity.type === CONTRACT_TYPE_ERC20) {
+          return `logos/${activity.type_image_link}`
+        } else {
+          const action = activity.action.split('.')
+          return action.length >= 1 ? `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}` : ''
+        }
       }
     },
     formatDate(date) {
@@ -170,8 +213,8 @@ export default {
       const transactions = this.calculateTransactions()
       finalTx = [...transactions, ...finalTx, ...pastTx]
       finalTx = finalTx.reduce((acc, x) => {
-        x.actionIcon = this.getIcon(x.action)
-        x.actionText = this.getActionText(x.action, 'ETH')
+        x.actionIcon = this.getIcon(x)
+        x.actionText = this.getActionText(x)
         x.statusText = this.getStatusText(x.status)
         x.dateFormatted = this.formatDate(x.date)
         x.timeFormatted = this.formatTime(x.date)
@@ -191,14 +234,19 @@ export default {
         let status = x.status
         if (
           x.status !== 'confirmed' &&
-          x.status !== 'rejected' &&
           (publicAddress.toLowerCase() === x.from.toLowerCase() || publicAddress.toLowerCase() === x.to.toLowerCase())
         ) {
           status = await getEthTxStatus(x.transaction_hash, torus.web3)
           if (publicAddress.toLowerCase() === x.from.toLowerCase()) this.patchTx(x, status, jwtToken)
         }
-        const totalAmountString = `${significantDigits(parseFloat(x.total_amount))} ETH`
-        const currencyAmountString = `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
+        const totalAmountString =
+          x.type === CONTRACT_TYPE_ERC721
+            ? x.symbol
+            : x.type === CONTRACT_TYPE_ERC20
+            ? `${significantDigits(parseFloat(x.total_amount))} ${x.symbol}`
+            : `${significantDigits(parseFloat(x.total_amount))} ETH`
+        const currencyAmountString =
+          x.type === CONTRACT_TYPE_ERC721 ? '' : `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
         const finalObj = {
           id: x.created_at.toString(),
           date: new Date(x.created_at),
@@ -215,37 +263,91 @@ export default {
           status: status,
           etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network),
           networkType: x.network,
-          ethRate: significantDigits(parseFloat(x.currency_amount) / parseFloat(x.total_amount)),
-          currencyUsed: x.selected_currency
+          ethRate: `1 ${x.symbol} = ${significantDigits(parseFloat(x.currency_amount) / parseFloat(x.total_amount))}`,
+          currencyUsed: x.selected_currency,
+          type: x.type,
+          type_name: x.type_name,
+          type_image_link: x.type_image_link
         }
         pastTx.push(finalObj)
       }
+
+      this.loadingPastTransactions = false
       this.pastTx = pastTx
     },
     calculateTransactions() {
-      const { networkId, transactions, networkType } = this.$store.state || {}
+      const { networkId, transactions, networkType, tokenRates, assets, selectedAddress } = this.$store.state || {}
       const finalTransactions = []
       for (let tx in transactions) {
         const txOld = transactions[tx]
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
+          const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txOld
+          let amountTo,
+            amountValue,
+            assetName,
+            totalAmountString,
+            totalAmount,
+            finalTo,
+            tokenRate = 1
+
+          if (contractParams.erc721) {
+            // Handling cryptokitties
+            if (contractParams.isSpecial) {
+              ;[amountTo, amountValue] = methodParams || []
+            }
+            // Rest of the 721s
+            else {
+              ;[, amountTo, amountValue] = methodParams || []
+            }
+
+            // Get asset name of the 721
+            const [contract] = assets[selectedAddress].filter(x => x.name.toLowerCase() === contractParams.name.toLowerCase()) || []
+            const [assetObject] = contract['assets'].filter(x => x.tokenId.toString() === amountValue.value.toString()) || []
+            assetName = assetObject.name || ''
+            totalAmountString = assetName
+            finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+          } else if (contractParams.erc20) {
+            // ERC20 transfer
+            tokenRate = contractParams.erc20 ? tokenRates[txParams.to] : 1
+            if (methodParams && Array.isArray(methodParams)) {
+              if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
+                [, amountTo, amountValue] = methodParams || []
+              else {
+                ;[amountTo, amountValue] = methodParams || []
+              }
+            }
+            totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
+            totalAmountString = `${significantDigits(parseFloat(totalAmount))} ${contractParams.symbol}`
+            finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+          } else {
+            tokenRate = 1
+            totalAmount = fromWei(toBN(txParams.value))
+            totalAmountString = `${significantDigits(parseFloat(totalAmount))} ETH`
+            finalTo = toChecksumAddress(txOld.txParams.to)
+          }
           const txObj = {}
           txObj.id = txOld.time.toString()
           txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
           txObj.date = new Date(txOld.time)
           txObj.from = toChecksumAddress(txOld.txParams.from)
           txObj.slicedFrom = addressSlicer(txOld.txParams.from)
-          txObj.to = toChecksumAddress(txOld.txParams.to)
-          txObj.slicedTo = addressSlicer(txOld.txParams.to)
-          txObj.totalAmount = fromWei(toBN(txOld.txParams.value).add(toBN(txOld.txParams.gas).mul(toBN(txOld.txParams.gasPrice))))
-          txObj.totalAmountString = `${significantDigits(txObj.totalAmount)} ETH`
-          txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount
-          txObj.currencyAmountString = `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`
+          txObj.to = finalTo
+          txObj.slicedTo = addressSlicer(finalTo)
+          txObj.totalAmount = totalAmount
+          txObj.totalAmountString = totalAmountString
+          txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount * tokenRate
+          txObj.currencyAmountString = contractParams.erc721 ? '' : `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`
           txObj.amount = `${txObj.totalAmountString} / ${txObj.currencyAmountString}`
           txObj.status = txOld.status
           txObj.etherscanLink = getEtherScanHashLink(txOld.hash, networkType.host)
           txObj.networkType = networkType.host
-          txObj.ethRate = significantDigits(parseFloat(txObj.currencyAmount) / parseFloat(txObj.totalAmount))
+          txObj.ethRate = `1 ${(contractParams && contractParams.symbol) || 'ETH'} = ${significantDigits(
+            parseFloat(txObj.currencyAmount) / parseFloat(txObj.totalAmount)
+          )}`
           txObj.currencyUsed = this.selectedCurrency
+          txObj.type = contractParams && contractParams.erc20 ? 'erc20' : contractParams.erc721 ? 'erc721' : 'eth'
+          txObj.type_name = contractParams && contractParams.name ? contractParams.name : 'n/a'
+          txObj.type_image_link = contractParams && contractParams.logo ? contractParams.logo : 'n/a'
           finalTransactions.push(txObj)
         }
       }
@@ -280,12 +382,17 @@ export default {
     )
       .then(response => {
         this.paymentTx = response.data.reduce((acc, x) => {
+          let action = ''
+          if (ACTIVITY_ACTION_TOPUP.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_TOPUP
+          else if (ACTIVITY_ACTION_SEND.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_SEND
+          else if (ACTIVITY_ACTION_RECEIVE.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_RECEIVE
+
           acc.push({
             id: x.id,
             date: new Date(x.date),
             from: x.from,
             slicedFrom: x.slicedFrom,
-            action: x.action,
+            action,
             to: x.to,
             slicedTo: x.slicedTo,
             totalAmount: x.totalAmount,
@@ -302,6 +409,7 @@ export default {
           return acc
           // }
         }, [])
+        this.loadingOrders = false
       })
       .catch(err => log.error(err))
     this.calculatePastTransactions()

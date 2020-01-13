@@ -63,10 +63,10 @@ export default {
   question: {
     component: QuestionIcon
   },
-  radio_checked: {
+  radioOn: {
     component: RadioCheckedIcon
   },
-  radio_unchecked: {
+  radioOff: {
     component: RadioUncheckedIcon
   },
   visibility_on: {

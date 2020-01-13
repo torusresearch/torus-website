@@ -17,9 +17,10 @@
           hide-details
           append-icon="$vuetify.icons.select"
           return-object
+          aria-label="Selected contract"
         >
           <template v-slot:prepend-inner>
-            <img v-if="selectedContract" class="mr-1" :src="selectedContract.logo" height="24px" />
+            <img v-if="selectedContract" class="mr-1" :src="selectedContract.logo" :alt="selectedContract.name" height="24px" />
           </template>
         </v-select>
       </v-flex>
@@ -34,10 +35,10 @@
           <v-card class="mx-auto asset" max-width="344" :ripple="false" v-if="!$vuetify.breakpoint.xsOnly" @click="toggleDetails($event)">
             <!-- <v-img :src="asset.image" height="140px" :style="{ backgroundColor: asset.color }"></v-img> -->
             <div class="text-center">
-              <img :src="asset.image" style="width: auto; height: 140px" />
+              <img :src="asset.image" style="width: auto; height: 140px" :alt="asset.tokenId" />
             </div>
             <v-card-text class="asset-text py-1 px-3">
-              <div class="body-2" :title="asset.name || `${selectedContract.name} #${asset.tokenId}`">
+              <div class="body-2" :class="assetActive ? '' : 'text-clamp-two'" :title="asset.name || `${selectedContract.name} #${asset.tokenId}`">
                 {{ asset.name || `${selectedContract.name} #${asset.tokenId}` }}
               </div>
               <div class="text-right asset-details mt-1">
@@ -46,13 +47,13 @@
               </div>
             </v-card-text>
             <v-card-text class="asset-more py-1 px-3">
-              <div class="font-weight-medium">Description</div>
+              <div class="font-weight-medium">{{ t('walletHome.description') }}</div>
               <div class="ml-2 text_2--text">{{ asset.description }}</div>
               <div class="font-weight-medium mt-2">ID</div>
               <div class="ml-2 text_2--text">#{{ asset.tokenId }}</div>
               <div class="mt-4">
-                <v-btn block depressed color="primary" @click="transferAsset(asset)">Transfer</v-btn>
-                <v-btn block text @click.stop="toggleDetails($event)">Close</v-btn>
+                <v-btn block depressed color="primary" @click="transferAsset(asset)">{{ t('walletHome.transfer') }}</v-btn>
+                <v-btn block text @click.stop="toggleDetails($event)">{{ t('walletHome.close') }}</v-btn>
               </div>
             </v-card-text>
           </v-card>
@@ -74,12 +75,12 @@
               </v-list-item-content>
 
               <v-list-item-avatar size="100" tile>
-                <v-img :src="asset.image"></v-img>
+                <v-img :src="asset.image" :alt="asset.tokenId" />
               </v-list-item-avatar>
             </v-list-item>
 
             <v-card-text class="asset-more py-1 px-3">
-              <div class="font-weight-medium">Description</div>
+              <div class="font-weight-medium">{{ t('walletHome.description') }}</div>
               <div class="ml-2 text_2--text">{{ asset.description }}</div>
               <div class="font-weight-medium mt-2">ID</div>
               <div class="ml-2 text_2--text">#{{ asset.tokenId }}</div>
@@ -87,12 +88,12 @@
 
             <v-card-actions>
               <v-flex xs6>
-                <v-btn block small text class="more-info-show" @click.stop="toggleDetails($event)">More Info</v-btn>
-                <v-btn block small text class="more-info-hide" @click.stop="toggleDetails($event)">Less Info</v-btn>
+                <v-btn block small text class="more-info-show" @click.stop="toggleDetails($event)">{{ t('walletHome.moreInfo') }}</v-btn>
+                <v-btn block small text class="more-info-hide" @click.stop="toggleDetails($event)">{{ t('walletHome.lessInfo') }}</v-btn>
               </v-flex>
               <v-divider inset vertical></v-divider>
               <v-flex xs6>
-                <v-btn block small text color="primary" @click="transferAsset(asset)">Transfer</v-btn>
+                <v-btn block small text color="primary" @click="transferAsset(asset)">{{ t('walletHome.transfer') }}</v-btn>
               </v-flex>
             </v-card-actions>
           </v-card>
@@ -108,13 +109,13 @@ export default {
     return {
       breadcrumb: [
         {
-          text: 'Home',
+          text: this.t('walletHome.home'),
           disabled: false,
           exact: true,
           to: '/wallet/home'
         },
         {
-          text: 'Collectibles',
+          text: this.t('walletHome.collectibles'),
           disabled: false,
           exact: true,
           to: '/wallet/home#collectibles'
@@ -124,7 +125,8 @@ export default {
           disabled: true
         }
       ],
-      selectedContract: ''
+      selectedContract: '',
+      assetActive: false
     }
   },
   computed: {
@@ -152,8 +154,10 @@ export default {
     toggleDetails(event) {
       if (event.target.closest('.asset').classList.contains('asset--active')) {
         event.target.closest('.asset').classList.remove('asset--active')
+        this.assetActive = false
       } else {
         event.target.closest('.asset').classList.add('asset--active')
+        this.assetActive = true
       }
     },
     transferAsset(asset) {
