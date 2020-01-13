@@ -337,6 +337,8 @@ import {
 } from '../../utils/enums'
 import BigNumber from 'bignumber.js'
 
+const randomId = require('random-id')
+
 const erc20TransferABI = require('human-standard-token-abi')
 const erc721TransferABI = require('human-standard-collectible-abi')
 
@@ -556,6 +558,7 @@ export default {
       return validateVerifierId(this.selectedVerifier, value)
     },
     verifierChangedManual() {
+      this.setRandomId()
       this.autoSelectVerifier = false
       this.$refs.form.validate()
     },
@@ -886,8 +889,6 @@ export default {
           this.toAddress = ''
           this.qrErrorMsg = 'Incorrect QR Code'
         }
-
-        this.contactSelected = this.toAddress
       } catch (error) {
         if (isAddress(result)) {
           this.selectedVerifier = ETH
@@ -896,8 +897,14 @@ export default {
           this.toAddress = ''
           this.qrErrorMsg = 'Incorrect QR Code'
         }
-
+      } finally {
         this.contactSelected = this.toAddress
+      }
+    },
+    setRandomId() {
+      // patch fix because vuetify stopped passing attributes to underlying component
+      if (this.$refs.contactSelected && this.$refs.contactSelected.$refs && this.$refs.contactSelected.$refs.input) {
+        this.$refs.contactSelected.$refs.input.name = randomId()
       }
     }
   },
@@ -909,10 +916,7 @@ export default {
       this.toAddress = ''
     }
 
-    // patch fix because vuetify stopped passing attributes to underlying component
-    if (this.$refs.contactSelected && this.$refs.contactSelected.$refs && this.$refs.contactSelected.$refs.input) {
-      this.$refs.contactSelected.$refs.input.name = this.randomName
-    }
+    this.setRandomId()
 
     this.contactSelected = this.toAddress
 

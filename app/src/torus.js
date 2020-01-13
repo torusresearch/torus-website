@@ -1,12 +1,13 @@
-import randomId from 'random-id'
 import Torus from '@toruslabs/torus.js'
 import config from './config.js'
 import onloadTorus from './onload.js'
 import { post } from './utils/httpHelpers.js'
 
-var log = require('loglevel')
-const setupMultiplex = require('./utils/setupMultiplex').default
+const log = require('loglevel')
 const ethUtil = require('ethereumjs-util')
+const randomId = require('random-id')
+
+const setupMultiplex = require('./utils/setupMultiplex').default
 
 // Make this a class. Use ES6
 class TorusExtended extends Torus {
