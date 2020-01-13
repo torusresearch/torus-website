@@ -675,10 +675,10 @@ class TransactionController extends EventEmitter {
       // transferFrom & approve of ERC721 can't be distinguished from ERC20
       tokenMethodName = [COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM].find(tokenMethodName => tokenMethodName.toLowerCase() === name.toLowerCase())
       methodParams = params
-      contractParams = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
+      ;(contractParams = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
         ? erc721Contracts[checkSummedTo.toLowerCase()]
-        : {}
-      contractParams.erc721 = true
+        : {}),
+        (contractParams.erc721 = true)
 
       contractParams.decimals = 0
     }

@@ -279,16 +279,20 @@ export default {
       const { networkId, transactions, networkType, tokenRates, assets, selectedAddress } = this.$store.state || {}
       const finalTransactions = []
       for (let tx in transactions) {
+        log.info('Calculate Transactions executed')
+
         const txOld = transactions[tx]
+        console.log(txOld)
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
           const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txOld
-          let amountTo, amountValue, assetName
-          if (methodParams && Array.isArray(methodParams)) {
-            if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
-              [, amountTo, amountValue] = methodParams || []
-            else [amountTo, amountValue] = methodParams || []
-          }
-          console.log(contractParams)
+          let amountTo,
+            amountValue,
+            assetName,
+            totalAmountString,
+            totalAmount,
+            tokenRate = 1
+
+          console.log(contractParams, methodParams)
 
           if (contractParams.erc721) {
             // Handling cryptokitties
@@ -308,15 +312,28 @@ export default {
             // log.info(assetName.name)
             assetName = assetObject.name || ''
             log.info(assetName)
+            totalAmountString = assetName
+          } else if (contractParams.erc20) {
+            // ERC20 transfer
+            tokenRate = contractParams.erc20 ? tokenRates[txParams.to] : 1
+            if (methodParams && Array.isArray(methodParams)) {
+              if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
+                [, amountTo, amountValue] = methodParams || []
+              else {
+                ;[amountTo, amountValue] = methodParams || []
+              }
+            }
+            totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
+            totalAmountString = `${significantDigits(parseFloat(totalAmount))} ${contractParams.symbol}`
+            log.info(totalAmount, totalAmountString)
+          } else {
+            tokenRate = 1
+            totalAmount = fromWei(toBN(txParams.value))
+            totalAmountString = `${significantDigits(parseFloat(totalAmount))} ETH`
           }
-          const tokenRate = contractParams.erc20 ? tokenRates[txParams.to] : 1
-          const totalAmountString = contractParams.erc721
-            ? assetName
-            : contractParams.erc20
-            ? `${significantDigits(parseFloat(txOld.totalAmount))} ${txOld.symbol}`
-            : `${significantDigits(parseFloat(txOld.totalAmount))} ETH`
+          //totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
+          // totalAmountString = totalAmountString ||
 
-          const totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
           const txObj = {}
           txObj.id = txOld.time.toString()
           txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
@@ -340,6 +357,7 @@ export default {
           txObj.type = contractParams && contractParams.erc20 ? 'erc20' : contractParams.erc721 ? 'erc721' : 'eth'
           txObj.type_name = contractParams && contractParams.name ? contractParams.name : 'n/a'
           txObj.type_image_link = contractParams && contractParams.logo ? contractParams.logo : 'n/a'
+          log.info(txObj)
           finalTransactions.push(txObj)
         }
       }

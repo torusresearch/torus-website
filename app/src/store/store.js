@@ -238,7 +238,7 @@ VuexStore.subscribe((mutation, state) => {
       if (txMeta.status === 'submitted' && id >= 0) {
         // insert into db here
         const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txMeta
-        let amountTo, amountValue, assetName, tokenRate, symbol, type, type_name, type_image_link
+        let amountTo, amountValue, assetName, tokenRate, symbol, type, type_name, type_image_link, totalAmount
 
         if (contractParams.erc721) {
           // Handling cryptokitties
@@ -260,11 +260,12 @@ VuexStore.subscribe((mutation, state) => {
           log.info(assetName)
 
           // Change the transfered Value to 0 for toal
-          amountValue.value = 0
+          /// amountValue.value = 0
           symbol = assetName
           type = 'erc721'
           type_name = contractParams.name
           type_image_link = contractParams.logo
+          totalAmount = fromWei(toBN(txParams.value))
         } else if (contractParams.erc20) {
           // ERC20 transfer
           tokenRate = contractParams.erc20 ? state.tokenRates[txParams.to] : 1
@@ -279,6 +280,7 @@ VuexStore.subscribe((mutation, state) => {
           type = 'erc20'
           type_name = contractParams.name
           type_image_link = contractParams.logo
+          totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
         } else {
           // ETH transfers
           tokenRate = 1
@@ -286,9 +288,8 @@ VuexStore.subscribe((mutation, state) => {
           type = 'eth'
           type_name = 'eth'
           type_image_link = 'n/a'
+          totalAmount = fromWei(toBN(txParams.value))
         }
-
-        const totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
         const txObj = {
           created_at: new Date(time),
           from: toChecksumAddress(txParams.from),
