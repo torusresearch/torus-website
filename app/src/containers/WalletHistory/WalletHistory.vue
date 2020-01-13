@@ -65,7 +65,9 @@ import {
   SUPPORTED_NETWORK_TYPES,
   ACTIVITY_STATUS_PENDING,
   CONTRACT_TYPE_ERC721,
-  CONTRACT_TYPE_ERC20
+  CONTRACT_TYPE_ERC20,
+  TOKEN_METHOD_TRANSFER_FROM,
+  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
 } from '../../utils/enums'
 
 export default {
@@ -237,8 +239,14 @@ export default {
           status = await getEthTxStatus(x.transaction_hash, torus.web3)
           if (publicAddress.toLowerCase() === x.from.toLowerCase()) this.patchTx(x, status, jwtToken)
         }
-        const totalAmountString = x.type === CONTRACT_TYPE_ERC721 ? x.type_name : `${significantDigits(parseFloat(x.total_amount))} ETH`
-        const currencyAmountString = `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
+        const totalAmountString =
+          x.type === CONTRACT_TYPE_ERC721
+            ? x.symbol
+            : x.type === CONTRACT_TYPE_ERC20
+            ? `${significantDigits(parseFloat(x.total_amount))} ${x.symbol}`
+            : `${significantDigits(parseFloat(x.total_amount))} ETH`
+        const currencyAmountString =
+          x.type === CONTRACT_TYPE_ERC721 ? '' : `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
         const finalObj = {
           id: x.created_at.toString(),
           date: new Date(x.created_at),
@@ -255,7 +263,7 @@ export default {
           status: status,
           etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network),
           networkType: x.network,
-          ethRate: significantDigits(parseFloat(x.currency_amount) / parseFloat(x.total_amount)),
+          ethRate: `1 ${x.symbol} = ${significantDigits(parseFloat(x.currency_amount) / parseFloat(x.total_amount))}`,
           currencyUsed: x.selected_currency,
           type: x.type,
           type_name: x.type_name,
@@ -268,11 +276,53 @@ export default {
       this.pastTx = pastTx
     },
     calculateTransactions() {
-      const { networkId, transactions, networkType } = this.$store.state || {}
+      const { networkId, transactions, networkType, tokenRates, assets, selectedAddress } = this.$store.state || {}
       const finalTransactions = []
       for (let tx in transactions) {
+        log.info('Calculate Transactions executed')
+
         const txOld = transactions[tx]
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
+          const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txOld
+          let amountTo,
+            amountValue,
+            assetName,
+            totalAmountString,
+            totalAmount,
+            tokenRate = 1
+
+          if (contractParams.erc721) {
+            // Handling cryptokitties
+            if (contractParams.isSpecial) {
+              ;[amountTo, amountValue] = methodParams || []
+            }
+            // Rest of the 721s
+            else {
+              ;[, amountTo, amountValue] = methodParams || []
+            }
+
+            // Get asset name of the 721
+            const [contract] = assets[selectedAddress].filter(x => x.name.toLowerCase() === contractParams.name.toLowerCase()) || []
+            const [assetObject] = contract['assets'].filter(x => x.tokenId === amountValue.value) || []
+            assetName = assetObject.name || ''
+            totalAmountString = assetName
+          } else if (contractParams.erc20) {
+            // ERC20 transfer
+            tokenRate = contractParams.erc20 ? tokenRates[txParams.to] : 1
+            if (methodParams && Array.isArray(methodParams)) {
+              if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
+                [, amountTo, amountValue] = methodParams || []
+              else {
+                ;[amountTo, amountValue] = methodParams || []
+              }
+            }
+            totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
+            totalAmountString = `${significantDigits(parseFloat(totalAmount))} ${contractParams.symbol}`
+          } else {
+            tokenRate = 1
+            totalAmount = fromWei(toBN(txParams.value))
+            totalAmountString = `${significantDigits(parseFloat(totalAmount))} ETH`
+          }
           const txObj = {}
           txObj.id = txOld.time.toString()
           txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
@@ -281,19 +331,21 @@ export default {
           txObj.slicedFrom = addressSlicer(txOld.txParams.from)
           txObj.to = toChecksumAddress(txOld.txParams.to)
           txObj.slicedTo = addressSlicer(txOld.txParams.to)
-          txObj.totalAmount = fromWei(toBN(txOld.txParams.value).add(toBN(txOld.txParams.gas).mul(toBN(txOld.txParams.gasPrice))))
-          txObj.totalAmountString = `${significantDigits(txObj.totalAmount)} ETH`
-          txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount
-          txObj.currencyAmountString = `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`
+          txObj.totalAmount = totalAmount
+          txObj.totalAmountString = totalAmountString
+          txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount * tokenRate
+          txObj.currencyAmountString = contractParams.erc721 ? '' : `${significantDigits(txObj.currencyAmount)} ${this.selectedCurrency}`
           txObj.amount = `${txObj.totalAmountString} / ${txObj.currencyAmountString}`
           txObj.status = txOld.status
           txObj.etherscanLink = getEtherScanHashLink(txOld.hash, networkType.host)
           txObj.networkType = networkType.host
-          txObj.ethRate = significantDigits(parseFloat(txObj.currencyAmount) / parseFloat(txObj.totalAmount))
+          txObj.ethRate = `1 ${(contractParams && contractParams.symbol) || 'ETH'} = ${significantDigits(
+            parseFloat(txObj.currencyAmount) / parseFloat(txObj.totalAmount)
+          )}`
           txObj.currencyUsed = this.selectedCurrency
-          txObj.type = txOld.contractParams && txOld.contractParams.erc20 ? 'erc20' : txOld.contractParams.erc721 ? 'erc721' : 'eth'
-          txObj.type_name = txOld.contractParams && txOld.contractParams.name ? txOld.contractParams.name : 'n/a'
-          txObj.type_image_link = txOld.contractParams && txOld.contractParams.logo ? txOld.contractParams.logo : 'n/a'
+          txObj.type = contractParams && contractParams.erc20 ? 'erc20' : contractParams.erc721 ? 'erc721' : 'eth'
+          txObj.type_name = contractParams && contractParams.name ? contractParams.name : 'n/a'
+          txObj.type_image_link = contractParams && contractParams.logo ? contractParams.logo : 'n/a'
           finalTransactions.push(txObj)
         }
       }
