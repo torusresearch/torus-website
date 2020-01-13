@@ -252,7 +252,7 @@ VuexStore.subscribe((mutation, state) => {
 
           // Get asset name of the 721
           const [contract] = state.assets[state.selectedAddress].filter(x => x.name.toLowerCase() === contractParams.name.toLowerCase()) || []
-          const [assetObject] = contract['assets'].filter(x => x.tokenId === amountValue.value) || []
+          const [assetObject] = contract['assets'].filter(x => x.tokenId.toString() === amountValue.value.toString()) || []
           assetName = assetObject.name || ''
 
           symbol = assetName

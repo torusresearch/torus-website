@@ -43,7 +43,7 @@
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
 import log from 'loglevel'
-import { toChecksumAddress, toBN, fromWei } from 'web3-utils'
+import { toChecksumAddress, toBN, fromWei, isAddress } from 'web3-utils'
 import config from '../../config'
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
 import { getPastOrders } from '../../plugins/simplex'
@@ -279,8 +279,6 @@ export default {
       const { networkId, transactions, networkType, tokenRates, assets, selectedAddress } = this.$store.state || {}
       const finalTransactions = []
       for (let tx in transactions) {
-        log.info('Calculate Transactions executed')
-
         const txOld = transactions[tx]
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
           const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txOld
@@ -289,6 +287,7 @@ export default {
             assetName,
             totalAmountString,
             totalAmount,
+            finalTo,
             tokenRate = 1
 
           if (contractParams.erc721) {
@@ -303,9 +302,10 @@ export default {
 
             // Get asset name of the 721
             const [contract] = assets[selectedAddress].filter(x => x.name.toLowerCase() === contractParams.name.toLowerCase()) || []
-            const [assetObject] = contract['assets'].filter(x => x.tokenId === amountValue.value) || []
+            const [assetObject] = contract['assets'].filter(x => x.tokenId.toString() === amountValue.value.toString()) || []
             assetName = assetObject.name || ''
             totalAmountString = assetName
+            finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
           } else if (contractParams.erc20) {
             // ERC20 transfer
             tokenRate = contractParams.erc20 ? tokenRates[txParams.to] : 1
@@ -318,10 +318,12 @@ export default {
             }
             totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
             totalAmountString = `${significantDigits(parseFloat(totalAmount))} ${contractParams.symbol}`
+            finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
           } else {
             tokenRate = 1
             totalAmount = fromWei(toBN(txParams.value))
             totalAmountString = `${significantDigits(parseFloat(totalAmount))} ETH`
+            finalTo = toChecksumAddress(txOld.txParams.to)
           }
           const txObj = {}
           txObj.id = txOld.time.toString()
@@ -329,8 +331,8 @@ export default {
           txObj.date = new Date(txOld.time)
           txObj.from = toChecksumAddress(txOld.txParams.from)
           txObj.slicedFrom = addressSlicer(txOld.txParams.from)
-          txObj.to = toChecksumAddress(txOld.txParams.to)
-          txObj.slicedTo = addressSlicer(txOld.txParams.to)
+          txObj.to = finalTo
+          txObj.slicedTo = addressSlicer(finalTo)
           txObj.totalAmount = totalAmount
           txObj.totalAmountString = totalAmountString
           txObj.currencyAmount = this.getCurrencyMultiplier * txObj.totalAmount * tokenRate
