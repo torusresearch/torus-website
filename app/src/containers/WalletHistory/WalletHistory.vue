@@ -242,7 +242,7 @@ export default {
         const totalAmountString =
           x.type === CONTRACT_TYPE_ERC721
             ? x.symbol
-            : x.type == CONTRACT_TYPE_ERC20
+            : x.type === CONTRACT_TYPE_ERC20
             ? `${significantDigits(parseFloat(x.total_amount))} ${x.symbol}`
             : `${significantDigits(parseFloat(x.total_amount))} ETH`
         const currencyAmountString =
@@ -282,7 +282,6 @@ export default {
         log.info('Calculate Transactions executed')
 
         const txOld = transactions[tx]
-        console.log(txOld)
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
           const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txOld
           let amountTo,
@@ -292,11 +291,9 @@ export default {
             totalAmount,
             tokenRate = 1
 
-          console.log(contractParams, methodParams)
-
           if (contractParams.erc721) {
             // Handling cryptokitties
-            if (contractParams.isSpecial == true) {
+            if (contractParams.isSpecial) {
               ;[amountTo, amountValue] = methodParams || []
             }
             // Rest of the 721s
@@ -305,13 +302,9 @@ export default {
             }
 
             // Get asset name of the 721
-            const [contract] = assets[selectedAddress].filter(x => x.name.toLowerCase() == contractParams.name.toLowerCase()) || []
-            const [assetObject] = contract['assets'].filter(x => x.tokenId == amountValue.value) || []
-            log.info(amountTo, amountValue, contract['assets'])
-            log.info(assetObject)
-            // log.info(assetName.name)
+            const [contract] = assets[selectedAddress].filter(x => x.name.toLowerCase() === contractParams.name.toLowerCase()) || []
+            const [assetObject] = contract['assets'].filter(x => x.tokenId === amountValue.value) || []
             assetName = assetObject.name || ''
-            log.info(assetName)
             totalAmountString = assetName
           } else if (contractParams.erc20) {
             // ERC20 transfer
@@ -325,15 +318,11 @@ export default {
             }
             totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
             totalAmountString = `${significantDigits(parseFloat(totalAmount))} ${contractParams.symbol}`
-            log.info(totalAmount, totalAmountString)
           } else {
             tokenRate = 1
             totalAmount = fromWei(toBN(txParams.value))
             totalAmountString = `${significantDigits(parseFloat(totalAmount))} ETH`
           }
-          //totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
-          // totalAmountString = totalAmountString ||
-
           const txObj = {}
           txObj.id = txOld.time.toString()
           txObj.action = this.wallets.indexOf(txOld.txParams.to) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
@@ -357,7 +346,6 @@ export default {
           txObj.type = contractParams && contractParams.erc20 ? 'erc20' : contractParams.erc721 ? 'erc721' : 'eth'
           txObj.type_name = contractParams && contractParams.name ? contractParams.name : 'n/a'
           txObj.type_image_link = contractParams && contractParams.logo ? contractParams.logo : 'n/a'
-          log.info(txObj)
           finalTransactions.push(txObj)
         }
       }

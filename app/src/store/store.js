@@ -242,7 +242,7 @@ VuexStore.subscribe((mutation, state) => {
 
         if (contractParams.erc721) {
           // Handling cryptokitties
-          if (contractParams.isSpecial == true) {
+          if (contractParams.isSpecial) {
             ;[amountTo, amountValue] = methodParams || []
           }
           // Rest of the 721s
@@ -251,16 +251,10 @@ VuexStore.subscribe((mutation, state) => {
           }
 
           // Get asset name of the 721
-          const [contract] = state.assets[state.selectedAddress].filter(x => x.name.toLowerCase() == contractParams.name.toLowerCase()) || []
-          // log.info(contract)
-          const [assetObject] = contract['assets'].filter(x => x.tokenId == amountValue.value) || []
-          log.info(assetObject)
-          // log.info(assetName.name)
+          const [contract] = state.assets[state.selectedAddress].filter(x => x.name.toLowerCase() === contractParams.name.toLowerCase()) || []
+          const [assetObject] = contract['assets'].filter(x => x.tokenId === amountValue.value) || []
           assetName = assetObject.name || ''
-          log.info(assetName)
 
-          // Change the transfered Value to 0 for toal
-          /// amountValue.value = 0
           symbol = assetName
           type = 'erc721'
           type_name = contractParams.name
