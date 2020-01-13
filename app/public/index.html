@@ -377,6 +377,23 @@
         <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
         <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
       </div>
+
+      <!-- POPUP / USER INFO / CHANGE PROVIDER LOADER -->
+      <div id="skeleton-user-info-and-provider" class="skeleton-holder sk-grid">
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-mob-2"></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 10px; margin-bottom: 20px;"></div></div>
+        <div class="sk-grid__col-mob-2"></div>
+    
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 15px;"></div></div>
+        
+        <div class="sk-grid__col-mob-3"><div class="sk-loader" style="height: 15px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-1"></div>
+        
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+      </div>
     </div>
     <script>
       const MOBILE_BREAKPOINT = 600
@@ -432,7 +449,9 @@
         selectedLoader = 'skeleton-wallet-home-collectibles' + mobileTag
       } else if (/\/wallet\/home/.test(redirectPath)) {
         selectedLoader = 'skeleton-wallet-home' + mobileTag
-      } else if (/\/popup/.test(redirectPath) || /\/confirm/.test(redirectPath) || /\/providerchange/.test(redirectPath) || /\/userinforequest/.test(redirectPath)) {
+      } else if (/\/userinforequest/.test(redirectPath) || /\/providerchange/.test(redirectPath)) {
+        selectedLoader = 'skeleton-user-info-and-provider'
+      } else if (/\/popup/.test(redirectPath) || /\/confirm/.test(redirectPath)) {
         selectedLoader = 'skeleton-confirm'
       } else if (/\/redirect/.test(redirectPath)) {
         document.querySelector('html').style.height = '100%'
