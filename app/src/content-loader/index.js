@@ -6,6 +6,8 @@ import WalletActivityLoader from './WalletActivityLoader'
 import WalletSettingsLoader from './WalletSettingsLoader'
 import WalletLoginLoader from './WalletLoginLoader'
 import PopupScreenLoader from './PopupScreenLoader'
+import UserInfoScreenLoader from './UserInfoScreenLoader'
+import ChangeProviderScreenLoader from './ChangeProviderScreenLoader'
 
 import WalletLoginLoaderMobile from './WalletLoginLoaderMobile'
 import WalletHomeLoaderMobile from './WalletHomeLoaderMobile'
@@ -30,5 +32,7 @@ export {
   WalletActivityLoaderMobile,
   WalletSettingsLoader,
   WalletSettingsLoaderMobile,
-  PopupScreenLoader
+  PopupScreenLoader,
+  UserInfoScreenLoader,
+  ChangeProviderScreenLoader
 }
