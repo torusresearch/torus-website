@@ -14,9 +14,8 @@
             class="mr-2"
             height="36"
           />
-          <v-icon v-else large color="primary" class="float-left mx-3">
-            {{ transaction.actionIcon }}
-          </v-icon>
+          <img v-else-if="transaction.type === CONTRACT_TYPE_ERC721" :src="transaction.actionIcon" class="mr-2" height="36" large color="primary" />
+          <v-icon v-else class="float-left mx-3" large color="primary">{{ transaction.actionIcon }}</v-icon>
         </div>
         <div class="caption font-weight-medium">{{ transaction.actionText }}</div>
         <div class="info font-weight-light">
@@ -53,13 +52,13 @@
               <span>{{ transaction.to }}</span>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item>
+          <v-list-item v-if="transaction.type !== CONTRACT_TYPE_ERC721">
             <v-list-item-content class="details-label">{{ t('walletActivity.rate') }}:</v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
-              <span>1 ETH = {{ transaction.ethRate }} {{ transaction.currencyUsed }}</span>
+              <span>{{ transaction.ethRate }} {{ transaction.currencyUsed }}</span>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item>
+          <v-list-item v-if="transaction.type !== CONTRACT_TYPE_ERC721">
             <v-list-item-content class="details-label">{{ t('walletActivity.amount') }}:</v-list-item-content>
             <v-list-item-content class="details-value text_2--text amount-text">
               {{ transaction.totalAmountString }} /{{ transaction.currencyAmountString }}

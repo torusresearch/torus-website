@@ -360,7 +360,7 @@ const paymentProviders = {
     api: true
   },
   [MOONPAY]: {
-    line1: 'Credit / Debit Card',
+    line1: 'Credit / Debit Card / Apple Pay',
     line2: '4.5% or 5 USD',
     line3: '2,000€/day, 10,000€/mo',
     line4: 'ETH, DAI, TUSD, USDC, USDT',

@@ -94,7 +94,15 @@
             <v-tooltip bottom :disabled="formValid">
               <template v-slot:activator="{ on }">
                 <span v-on="on">
-                  <v-btn class="px-10" :disabled="!formValid" x-large depressed color="primary" type="submit" @click.prevent="sendOrder">
+                  <v-btn
+                    class="px-10"
+                    :disabled="!formValid || !isQuoteFetched"
+                    x-large
+                    depressed
+                    color="primary"
+                    type="submit"
+                    @click.prevent="sendOrder"
+                  >
                     {{ t('walletTopUp.continue') }}
                   </v-btn>
                 </span>
@@ -134,6 +142,7 @@ export default {
   props: ['selectedProvider', 'cryptoCurrencyValue', 'currencyRate'],
   data() {
     return {
+      isQuoteFetched: false,
       formValid: true,
       fiatValue: '',
       selectedCryptoCurrency: '',
@@ -170,6 +179,13 @@ export default {
     displayRateString() {
       if (parseFloat(this.currencyRate) !== 0) return significantDigits(1 / this.currencyRate)
       else return 0
+    }
+  },
+  watch: {
+    cryptoCurrencyValue(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        if (parseFloat(newValue) > 0) this.isQuoteFetched = true
+      }
     }
   },
   methods: {

@@ -38,7 +38,7 @@
               <img :src="asset.image" style="width: auto; height: 140px" :alt="asset.tokenId" />
             </div>
             <v-card-text class="asset-text py-1 px-3">
-              <div class="body-2" :title="asset.name || `${selectedContract.name} #${asset.tokenId}`">
+              <div class="body-2" :class="assetActive ? '' : 'text-clamp-two'" :title="asset.name || `${selectedContract.name} #${asset.tokenId}`">
                 {{ asset.name || `${selectedContract.name} #${asset.tokenId}` }}
               </div>
               <div class="text-right asset-details mt-1">
@@ -125,7 +125,8 @@ export default {
           disabled: true
         }
       ],
-      selectedContract: ''
+      selectedContract: '',
+      assetActive: false
     }
   },
   computed: {
@@ -153,8 +154,10 @@ export default {
     toggleDetails(event) {
       if (event.target.closest('.asset').classList.contains('asset--active')) {
         event.target.closest('.asset').classList.remove('asset--active')
+        this.assetActive = false
       } else {
         event.target.closest('.asset').classList.add('asset--active')
+        this.assetActive = true
       }
     },
     transferAsset(asset) {

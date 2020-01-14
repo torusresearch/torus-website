@@ -1,25 +1,32 @@
 <template>
   <div class="wallet-home">
     <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
-      <v-flex xs4 sm3 pl-4>
+      <v-flex xs12 sm4 pl-4>
         <div class="font-weight-bold headline float-left">{{ t('walletHome.walletHome') }}</div>
       </v-flex>
-      <v-flex xs8 sm9 px-4 class="text-right hidden-xs-only">
-        <v-btn outlined large color="primary" class="transfer-btn px-12 py-1 mr-4" @click="initiateTransfer">
+      <v-flex xs8 sm8 px-4 class="text-right hidden-xs-only">
+        <v-btn
+          outlined
+          large
+          color="primary"
+          class="transfer-btn py-1 mr-4"
+          :class="$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12'"
+          @click="initiateTransfer"
+        >
           <v-icon left>$vuetify.icons.send</v-icon>
           {{ t('walletHome.transfer') }}
         </v-btn>
-        <v-tooltip top :value="isFreshAccount" class="hidden-xs-only">
-          <template v-slot:activator="{ on }">
-            <v-btn depressed large color="primary" class="px-12 py-1 topup-btn hidden-xs-only" @click="topup" v-on="on">
-              <v-icon left>$vuetify.icons.add</v-icon>
-              {{ t('walletHome.topUp') }}
-            </v-btn>
-          </template>
-          <!-- <div class="outline-tooltip hidden-xs-only">
-            <span>{{ t('walletHome.getEth') }}!</span>
-          </div> -->
-        </v-tooltip>
+        <v-btn
+          depressed
+          large
+          color="primary"
+          class="py-1 topup-btn hidden-xs-only"
+          :class="$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12'"
+          @click="topup"
+        >
+          <v-icon left>$vuetify.icons.add</v-icon>
+          {{ t('walletHome.topUp') }}
+        </v-btn>
       </v-flex>
 
       <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'mb-2'">
@@ -38,7 +45,7 @@
               </v-card-title>
               <v-card-text class="pb-8 px-6">
                 <component-loader class="mt-3" v-if="!weiBalanceLoaded" />
-                <h2 v-else class="display-2 text_2--text font-weight-bold">
+                <h2 v-else :class="$vuetify.breakpoint.smAndDown ? 'display-1' : 'display-2'" class="text_2--text font-weight-bold text-clamp-one">
                   {{ totalPortfolioValue }}
                   <span id="selected-currency" class="body-2 font-weight-light">{{ selectedCurrency }}</span>
                 </h2>
@@ -97,7 +104,7 @@
               block
               color="primary"
               :disabled="isFreshAccount"
-              class="transfer-btn-mobile px-12 py-1 mr-4 mt-4"
+              class="transfer-btn-mobile py-1 mr-4 mt-4"
               @click="initiateTransfer"
             >
               <v-icon left>$vuetify.icons.send</v-icon>
@@ -105,17 +112,10 @@
             </v-btn>
           </v-flex>
           <v-flex xs6 class="pl-1">
-            <v-tooltip top :value="isFreshAccount" class="hidden-sm-and-up">
-              <template v-slot:activator="{ on }">
-                <v-btn depressed large block color="primary" class="px-12 py-1 mt-4 topup-btn-mobile hidden-sm-and-up" @click="topup" v-on="on">
-                  <v-icon left>$vuetify.icons.add</v-icon>
-                  {{ t('walletHome.topUp') }}
-                </v-btn>
-              </template>
-              <!-- <div class="outline-tooltip hidden-sm-and-up">
-                <span>{{ t('walletHome.getEth') }}!</span>
-              </div> -->
-            </v-tooltip>
+            <v-btn depressed large block color="primary" class="py-1 mt-4 topup-btn-mobile hidden-sm-and-up" @click="topup">
+              <v-icon left>$vuetify.icons.add</v-icon>
+              {{ t('walletHome.topUp') }}
+            </v-btn>
           </v-flex>
         </v-layout>
       </v-flex>
