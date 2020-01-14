@@ -481,7 +481,7 @@ class TransactionController extends EventEmitter {
       log.info(`fromSCW ${fromSCW}, to ${to}, ETH_TOKEN ${ETH_TOKEN}, value ${transferValue}, nonce ${nonce}`)
 
       // Encode method Data
-      const TransferModule = new this.web3.eth.Contract(TransferManager.abi, '0x7D5A3fa10D0f7dBD4dFE37851b25AD7285D995E1')
+      const TransferModule = new this.web3.eth.Contract(TransferManager.abi, '0xD45256EEf4bFB182B108Cd8e0bCB4A9369342C1d')
       const methodData = TransferModule.methods.transferToken(fromSCW, ETH_TOKEN, to, transferValue, ZERO_BYTES32).encodeABI()
 
       // Get EOA wallet to sign the transactions

@@ -940,19 +940,6 @@ export default {
           Authorization: `Bearer ${token}`
         }
       })
-        .then(user => {
-          if (user.data) {
-            const { transactions, contacts, default_currency, theme, locale, verifier, verifier_id } = user.data || {}
-            commit('setPastTransactions', transactions)
-            commit('setContacts', contacts)
-            dispatch('setTheme', theme)
-            dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
-            dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
-            if (locale !== '') dispatch('setLocale', locale)
-            if (!verifier || !verifier_id) dispatch('setVerifier')
-            resolve()
-          }
-        })
         .then(async user => {
           if (user.data) {
             const { transactions, contacts, default_currency, theme, scw, locale } = user.data || {}
@@ -981,6 +968,7 @@ export default {
           }
         })
         .catch(async error => {
+          console.log(error)
           const { userInfo, selectedCurrency, theme } = state
           const { verifier, verifierId } = userInfo
           await post(
