@@ -153,6 +153,7 @@ const ALLOWED_VERIFIERS = [
   }
 ]
 
+const RAMPNETWORK = 'rampnetwork'
 const SIMPLEX = 'simplex'
 const MOONPAY = 'moonpay'
 const WYRE = 'wyre'
@@ -276,6 +277,7 @@ module.exports = {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   OLD_ERC721_LIST,
   ALLOWED_VERIFIERS,
+  RAMPNETWORK,
   SIMPLEX,
   MOONPAY,
   COINDIRECT,

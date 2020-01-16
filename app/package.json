@@ -39,6 +39,7 @@
   "dependencies": {
     "@toruslabs/fetch-node-details": "^2.0.0",
     "@toruslabs/torus.js": "^1.0.5",
+    "@ramp-network/ramp-instant-sdk": "^1.7.0",
     "assert": "^2.0.0",
     "bignumber.js": "^9.0.0",
     "broadcast-channel": "^3.0.3",

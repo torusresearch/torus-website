@@ -14,6 +14,7 @@ import WalletSettings from './containers/WalletSettings'
 import WalletTransfer from './containers/WalletTransfer'
 import {
   WalletTopupHome,
+  WalletTopupRampNetwork,
   WalletTopupSimplex,
   WalletTopupMoonpay,
   WalletTopupWyre,
@@ -123,6 +124,11 @@ const router = new Router({
           name: 'walletTopup',
           component: WalletTopupHome,
           children: [
+            {
+              path: 'rampnetwork',
+              name: 'walletTopupRampNetwork',
+              component: WalletTopupRampNetwork
+            },
             {
               path: 'simplex',
               name: 'walletTopupSimplex',

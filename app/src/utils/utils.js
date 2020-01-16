@@ -15,6 +15,7 @@ const {
   GOOGLE,
   REDDIT,
   DISCORD,
+  RAMPNETWORK,
   SIMPLEX,
   MOONPAY,
   COINDIRECT,
@@ -344,6 +345,21 @@ function formatDate(date) {
 }
 
 const paymentProviders = {
+  [RAMPNETWORK]: {
+    line1: 'Bank transfer',
+    line2: '2.5%',
+    line3: '€500/purchase, €5,000/mo',
+    line4: 'ETH, DAI',
+    status: ACTIVE,
+    logoExtension: SVG,
+    supportPage: 'https://instant.ramp.network/',
+    minOrderValue: 1,
+    maxOrderValue: 500,
+    validCurrencies: ['EUR', 'GBP'],
+    validCryptoCurrencies: ['ETH', 'DAI'],
+    includeFees: true,
+    api: false
+  },
   [SIMPLEX]: {
     line1: 'Credit / Debit Card',
     line2: '5% or 10 USD',
