@@ -114,7 +114,6 @@
                   :error-messages="ensError"
                   item-text="name"
                   item-value="value"
-                  :return-object="false"
                   aria-label="Recipient Address"
                 >
                   <template v-slot:append>
