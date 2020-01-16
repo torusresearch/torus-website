@@ -1,6 +1,6 @@
 <template>
   <v-layout wrap class="wallet-topup-rampnetwork">
-    <span>Ramp Network is a secure way to buy cryptocurrency with simple bank transfer.</span>
+    <span>Ramp lets you get your crypto in minutes without extracting your ID or credit cards.</span>
 
     <div class="mt-3 text-right link-container">
       <v-btn depressed color="primary" @click="showWidget">Buy</v-btn>
