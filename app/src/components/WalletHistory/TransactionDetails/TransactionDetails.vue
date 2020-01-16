@@ -38,7 +38,7 @@
     </v-layout>
     <v-divider v-if="this.showDetails" class="mt-2"></v-divider>
     <v-layout wrap v-if="this.showDetails">
-      <v-flex x12 class="activity-details">
+      <v-flex xs12 class="activity-details">
         <v-list class="mx-n4 caption">
           <v-list-item>
             <v-list-item-content class="details-label">{{ t('walletActivity.startedAt') }}:</v-list-item-content>

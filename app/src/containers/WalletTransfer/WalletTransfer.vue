@@ -146,7 +146,7 @@
                   aria-label="Recipient Selector"
                 ></v-select>
               </v-flex>
-              <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" x12 mb-2>
+              <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" xs12 mb-2>
                 <add-contact :contact="contactSelected" :verifier="selectedVerifier"></add-contact>
               </v-flex>
             </v-layout>

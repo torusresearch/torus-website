@@ -6,13 +6,10 @@ import './registerServiceWorker'
 import './reset.css'
 import router from './router'
 import store from './store'
-import { initNotifications } from './utils/notifications'
 // import torus from './torus'
 
 log.enableAll()
 Vue.config.productionTip = false
-
-initNotifications()
 
 // Loglevel init
 const buildEnv = process.env.VUE_APP_TORUS_BUILD_ENV
