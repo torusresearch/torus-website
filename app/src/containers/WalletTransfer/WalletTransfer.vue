@@ -308,7 +308,6 @@
 <script>
 import { QrcodeCapture } from 'vue-qrcode-reader'
 import { isAddress, toChecksumAddress, toBN, toWei } from 'web3-utils'
-import NodeDetailManager from '@toruslabs/fetch-node-details'
 import torus from '../../torus'
 import { significantDigits, getEtherScanHashLink, validateVerifierId } from '../../utils/utils'
 import config from '../../config'
@@ -682,7 +681,7 @@ export default {
           }
         } else {
           try {
-            toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, {
+            toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
               verifier: this.selectedVerifier,
               verifierId: this.toAddress
             })
@@ -935,7 +934,7 @@ export default {
 
     this.updateFieldsBasedOnRoute()
 
-    NodeDetailManager.getNodeDetails().then(nodeDetails => {
+    torus.nodeDetailManager.getNodeDetails().then(nodeDetails => {
       this.nodeDetails = nodeDetails
     })
   }

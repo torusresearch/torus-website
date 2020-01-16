@@ -140,6 +140,22 @@ jobs:
           paths:
             - .
       - <<: *step_save_cache
+  build-lrc:
+        <<: *job_common
+        steps:
+          - checkout:
+              path: ~/torus-website
+          - <<: *step_restore_cache
+          - <<: *step_setup_global_packages
+          - run:
+              name: "Build code for torus lrc website"
+              command: |
+                npm run build:lrc
+          - persist_to_workspace:
+              root: ~/torus-website/
+              paths:
+                - .
+          - <<: *step_save_cache
   deploy-testing:
     <<: *job_common
     steps:
@@ -153,6 +169,19 @@ jobs:
             ssh torus@testing.tor.us "rm -rf ~/testing-torus-website/*"
             tar czf - dist/ | ssh torus@testing.tor.us "cat > ~/testing-torus-website/dist.tgz"
             ssh torus@testing.tor.us "cd ~/testing-torus-website && tar zxvf dist.tgz"
+  deploy-lrc:
+    <<: *job_common
+    steps:
+      - attach_workspace:
+          at: ~/torus-website
+      - add_ssh_keys
+      - run:
+          name: "Deploy Over SSH"
+          command: |
+            ssh-keyscan -H lrc.tor.us >> ~/.ssh/known_hosts
+            ssh torus@lrc.tor.us "rm -rf ~/lrc-torus-website/*"
+            tar czf - dist/ | ssh torus@lrc.tor.us "cat > ~/lrc-torus-website/dist.tgz"
+            ssh torus@lrc.tor.us "cd ~/lrc-torus-website && tar zxvf dist.tgz"
 
 workflows:
   version: 2
@@ -221,6 +250,19 @@ workflows:
       - deploy-testing:
           requires:
             - build-testing
+            - test-coverage
+          filters:
+            branches:
+              only:
+                - develop
+      - build-lrc:
+          filters:
+            branches:
+              only:
+                - develop
+      - deploy-lrc:
+          requires:
+            - build-lrc
             - test-coverage
           filters:
             branches:
