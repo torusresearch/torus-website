@@ -7,6 +7,8 @@ import { SIMPLEX } from '../../utils/enums'
 import { BroadcastChannel } from 'broadcast-channel'
 import torus from '../../torus'
 
+const randomId = require('random-id')
+
 export default {
   fetchSimplexQuote({ state }, payload) {
     // returns a promise
@@ -23,6 +25,17 @@ export default {
     )
   },
   fetchSimplexOrder({ state, dispatch }, payload) {
+    let preopenInstanceId = payload.preopenInstanceId
+    if (!preopenInstanceId) {
+      preopenInstanceId = randomId()
+      const finalUrl = config.baseUrl + `/redirect?preopenInstanceId=${preopenInstanceId}`
+      const handledWindow = new PopupHandler({ url: finalUrl, target: 'form-target' })
+      handledWindow.open()
+
+      handledWindow.once('close', () => {
+        throw new Error('user closed simplex popup')
+      })
+    }
     const instanceState = encodeURIComponent(
       window.btoa(
         JSON.stringify({
@@ -75,7 +88,7 @@ export default {
         payment_post_url
       } = result.result
       return dispatch('postSimplexOrder', {
-        preopenInstanceId: payload.preopenInstanceId,
+        preopenInstanceId,
         path: payment_post_url,
         params: {
           payment_flow_type: 'wallet',
