@@ -170,7 +170,7 @@
         <v-flex xs12 mb-6 mx-6>
           <div class="subtitle-2 text_2--text">Request from:</div>
 
-          <v-card flat class="background lighten-3">
+          <v-card flat class="grey lighten-3">
             <v-card-text>
               <div class="subtitle-2 primary--text request-from">
                 <a :href="originHref" target="_blank">{{ origin }}</a>
@@ -193,7 +193,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="pa-0">
-              <v-list-item-content flat class="pa-1 background lighten-3">
+              <v-list-item-content flat class="pa-1 background" :class="$vuetify.theme.dark ? 'lighten-4' : 'lighten-3'">
                 <v-card flat class="body-2 text-left pa-2 word-break typedMessageBox">
                   <v-expansion-panels v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE">
                     <p :class="$vuetify.theme.dark ? 'text_1--text' : 'text_2--text'" style="text-align:left">{{ message }}</p>
