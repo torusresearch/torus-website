@@ -129,8 +129,8 @@
                   v-model="search"
                   outlined
                   hide-details
-                  class="caption search-field"
-                  placeholder="Search"
+                  class="search-field"
+                  placeholder="Search for Tokens"
                   append-icon="$vuetify.icons.search"
                 ></v-text-field>
               </v-flex>
