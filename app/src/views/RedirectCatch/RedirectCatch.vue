@@ -2,10 +2,10 @@
   <v-container fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <div class="redirect-title font-weight-bold mb-6">
+        <beat-loader :color="$vuetify.theme.themes.dark.primary" />
+        <div class="redirect-title font-weight-bold mt-3">
           Loading
         </div>
-        <beat-loader :color="$vuetify.theme.themes.dark.primary" />
       </v-flex>
     </v-layout>
   </v-container>
