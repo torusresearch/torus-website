@@ -1,7 +1,7 @@
 <template>
   <v-flex xs12 sm6 md5 mb-4 px-4 class="topup-providers">
     <v-card
-      class="mb-4 topup-provider"
+      class="mb-4 topup-provider card-shadow"
       :class="{ active: innerProvider === targetProvider.name }"
       v-for="targetProvider in activeProviders"
       @click="innerProvider = targetProvider.name"

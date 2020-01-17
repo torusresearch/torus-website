@@ -1,11 +1,14 @@
 <template>
   <v-card color="card-shadow activity mb-4 pa-5" :ripple="false" @click="showDetails = !showDetails">
     <v-layout wrap>
-      <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs4' : 'xs2'">
+      <v-flex
+        :class="$vuetify.breakpoint.xsOnly ? 'xs6 order-2 pt-2' : 'xs2 order-0'"
+        :style="{ paddingLeft: $vuetify.breakpoint.xsOnly ? '50px' : '0' }"
+      >
         <div class="caption font-weight-medium">{{ transaction.dateFormatted }}</div>
         <div class="info font-weight-light">{{ transaction.timeFormatted }}</div>
       </v-flex>
-      <v-flex xs4>
+      <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs8 order-0' : 'xs4 order-1'">
         <div class="icon-holder float-left">
           <img
             v-if="transaction.type === CONTRACT_TYPE_ERC20 || transaction.action === ACTIVITY_ACTION_TOPUP"
@@ -22,15 +25,15 @@
           {{ transaction.action === ACTIVITY_ACTION_SEND ? t('walletActivity.to') : t('walletActivity.from') }} {{ transaction.slicedTo }}
         </div>
       </v-flex>
-      <v-flex class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'xs4' : 'xs2'">
+      <v-flex class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'xs4 order-1' : 'xs2 order-2'">
         <div class="caption font-weight-medium">
           <span v-if="transaction.type !== CONTRACT_TYPE_ERC721 && transaction.action === ACTIVITY_ACTION_SEND" class="error--text">-</span>
           {{ transaction.totalAmountString }}
         </div>
         <div class="info font-weight-light">{{ transaction.currencyAmountString }}</div>
       </v-flex>
-      <v-flex xs2 v-if="!$vuetify.breakpoint.xsOnly"></v-flex>
-      <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-right mt-4' : 'xs2 text-center'">
+      <v-flex class="order-3" xs2 v-if="!$vuetify.breakpoint.xsOnly"></v-flex>
+      <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs6 text-right mt-3 order-3' : 'xs2 text-center order-4'">
         <v-chip class="status-chip black--text" :color="getChipColor(transaction.statusText)" small>
           {{ t(transaction.statusText) }}
         </v-chip>
