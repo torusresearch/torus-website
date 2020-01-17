@@ -475,7 +475,8 @@ export default {
         if (contact.verifier === this.selectedVerifier || this.selectedVerifier === '') {
           mappedObj.push({
             name: `${contact.name} (${contact.contact})`,
-            value: contact.contact
+            value: contact.contact,
+            verifier: contact.verifier
           })
         }
         return mappedObj
@@ -568,12 +569,17 @@ export default {
 
       // Autoupdate selected verifier
       if (this.autoSelectVerifier) {
-        if (/^0x/.test(this.toAddress)) {
-          this.selectedVerifier = ETH
-        } else if (/@/.test(this.toAddress)) {
-          this.selectedVerifier = GOOGLE
-        } else if (/.eth$/.test(this.toAddress) || /.xyz$/.test(this.toAddress) || /.crypto$/.test(this.toAddress)) {
-          this.selectedVerifier = ENS
+        const contactFound = this.contactList.find(item => item.value === contact)
+        if (contactFound) {
+          this.selectedVerifier = contactFound.verifier
+        } else {
+          if (/^0x/.test(this.toAddress)) {
+            this.selectedVerifier = ETH
+          } else if (/@/.test(this.toAddress)) {
+            this.selectedVerifier = GOOGLE
+          } else if (/.eth$/.test(this.toAddress) || /.xyz$/.test(this.toAddress) || /.crypto$/.test(this.toAddress)) {
+            this.selectedVerifier = ENS
+          }
         }
       }
       this.ensError = ''
