@@ -114,8 +114,8 @@
                   :error-messages="ensError"
                   item-text="name"
                   item-value="value"
-                  :return-object="false"
                   aria-label="Recipient Address"
+                  :return-object="false"
                 >
                   <template v-slot:append>
                     <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()" aria-label="QR Capture Button">
@@ -472,10 +472,11 @@ export default {
     },
     contactList() {
       return this.$store.state.contacts.reduce((mappedObj, contact) => {
-        if (contact.verifier === this.selectedVerifier) {
+        if (contact.verifier === this.selectedVerifier || this.selectedVerifier === '') {
           mappedObj.push({
             name: `${contact.name} (${contact.contact})`,
-            value: contact.contact
+            value: contact.contact,
+            verifier: contact.verifier
           })
         }
         return mappedObj
@@ -561,20 +562,24 @@ export default {
       this.autoSelectVerifier = false
       this.$refs.form.validate()
     },
-    contactChanged(event) {
-      this.contactSelected = event
-      const contact = event && event.target ? event.target.value : event
-      log.info(event, contact, 'contactChanged')
+    contactChanged(contact) {
+      this.contactSelected = contact
       if (contact) this.toAddress = contact
+      log.info(event, contact, 'contactChanged')
 
       // Autoupdate selected verifier
       if (this.autoSelectVerifier) {
-        if (/^0x/.test(this.toAddress)) {
-          this.selectedVerifier = ETH
-        } else if (/@/.test(this.toAddress)) {
-          this.selectedVerifier = GOOGLE
-        } else if (/.eth$/.test(this.toAddress) || /.xyz$/.test(this.toAddress) || /.crypto$/.test(this.toAddress)) {
-          this.selectedVerifier = ENS
+        const contactFound = this.contactList.find(item => item.value === contact)
+        if (contactFound) {
+          this.selectedVerifier = contactFound.verifier
+        } else {
+          if (/^0x/.test(this.toAddress)) {
+            this.selectedVerifier = ETH
+          } else if (/@/.test(this.toAddress)) {
+            this.selectedVerifier = GOOGLE
+          } else if (/.eth$/.test(this.toAddress) || /.xyz$/.test(this.toAddress) || /.crypto$/.test(this.toAddress)) {
+            this.selectedVerifier = ENS
+          }
         }
       }
       this.ensError = ''
