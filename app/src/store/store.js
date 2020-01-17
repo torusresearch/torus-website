@@ -304,7 +304,11 @@ VuexStore.subscribe((mutation, state) => {
         }
         if (state.pastTransactions.findIndex(x => x.transaction_hash === txObj.transaction_hash && x.network === txObj.network) === -1) {
           // User notification
-          notifyUser(getEtherScanHashLink(hash, state.networkType.host))
+          try {
+            notifyUser(getEtherScanHashLink(hash, state.networkType.host))
+          } catch (error) {
+            log.error(error)
+          }
 
           post(`${config.api}/transaction`, txObj, {
             headers: {

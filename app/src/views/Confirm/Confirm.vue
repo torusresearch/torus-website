@@ -102,7 +102,7 @@
                       </v-card-text>
                     </v-card>
                   </v-flex>
-                  <v-flex x12 mt-4 v-if="txData">
+                  <v-flex xs12 mt-4 v-if="txData">
                     <div class="mb-1">Hex Data:</div>
                     <v-card flat color="background_3" style="word-break: break-all">
                       <v-card-text>{{ txData }}</v-card-text>
@@ -172,9 +172,13 @@
 
           <v-card flat class="background lighten-3">
             <v-card-text>
-              <div class="subtitle-2 primary--text">{{ origin }}</div>
+              <div class="subtitle-2 primary--text request-from">
+                <a :href="originHref" target="_blank">{{ origin }}</a>
+                <a :href="originHref" target="_blank" class="float-right">
+                  <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
+                </a>
+              </div>
             </v-card-text>
-            <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
           </v-card>
         </v-flex>
 
@@ -296,6 +300,7 @@ export default {
       detailsDialog: false,
       type: 'none',
       origin: 'unknown',
+      originHref: '',
       balance: new BigNumber('0'),
       gasPrice: new BigNumber('10'),
       value: new BigNumber('0'),
@@ -571,13 +576,14 @@ export default {
       bc.close()
       const { type, msgParams, txParams, origin, balance } = ev.data || {}
       this.balance = new BigNumber(balance)
-      let url = { hostname: '' }
+      let url = { hostname: '', href: '' }
       try {
         url = new URL(origin)
       } catch (err) {
         log.info(err)
       }
       log.info({ msgParams, txParams })
+      this.originHref = url.href
       this.origin = url.hostname // origin of tx: website url
       if (type !== TX_TRANSACTION) {
         var { message, typedMessages } = msgParams.msgParams || {}

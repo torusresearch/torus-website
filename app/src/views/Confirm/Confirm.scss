@@ -126,10 +126,11 @@ hr {
   padding: 12px;
 }
 
+.request-from a {
+  text-decoration: none;
+}
+
 .card-upper-icon {
-  position: absolute;
-  top: 8px;
-  right: 8px;
   width: 12px;
   height: 12px;
 }

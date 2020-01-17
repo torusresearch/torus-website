@@ -6,13 +6,10 @@ import './registerServiceWorker'
 import './reset.css'
 import router from './router'
 import store from './store'
-import { initNotifications } from './utils/notifications'
 // import torus from './torus'
 
 log.enableAll()
 Vue.config.productionTip = false
-
-initNotifications()
 
 // Loglevel init
 const buildEnv = process.env.VUE_APP_TORUS_BUILD_ENV
@@ -22,11 +19,7 @@ switch (buildEnv) {
     logLevel = 'info'
     log.setDefaultLevel(logLevel)
     break
-  case 'testing':
-    logLevel = 'debug'
-    log.setDefaultLevel(logLevel)
-    break
-  case 'development':
+  case 'testing' || 'development' || 'lrc':
     logLevel = 'debug'
     log.setDefaultLevel(logLevel)
     break

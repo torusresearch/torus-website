@@ -1,7 +1,7 @@
 <template>
   <v-container py-6 px-0>
     <template v-if="type === 'none'">
-      <popup-screen-loader />
+      <user-info-screen-loader />
     </template>
     <template v-else>
       <v-layout align-center mx-6 mb-6>
@@ -14,9 +14,13 @@
 
           <v-card flat class="grey lighten-3">
             <v-card-text>
-              <div class="subtitle-2 primary--text">{{ origin }}</div>
+              <div class="subtitle-2 primary--text request-from">
+                <a :href="originHref" target="_blank">{{ origin }}</a>
+                <a :href="originHref" target="_blank" class="float-right">
+                  <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
+                </a>
+              </div>
             </v-card-text>
-            <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
           </v-card>
         </v-flex>
         <v-flex xs12 mb-4 mx-6>
@@ -55,18 +59,19 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import { PopupScreenLoader } from '../../content-loader'
+import { UserInfoScreenLoader } from '../../content-loader'
 import { broadcastChannelOptions } from '../../utils/utils'
 import log from 'loglevel'
 
 export default {
   name: 'userInfoRequest',
   components: {
-    PopupScreenLoader
+    UserInfoScreenLoader
   },
   data() {
     return {
       origin: '',
+      originHref: '',
       type: 'none',
       message: ''
     }
@@ -98,12 +103,13 @@ export default {
     )
     bc.onmessage = async ev => {
       const { payload, origin } = ev.data || {}
-      let url = { hostname: '' }
+      let url = { hostname: '', href: '' }
       try {
         url = new URL(origin)
       } catch (err) {
         log.error(err)
       }
+      this.originHref = url.href
       this.origin = url.hostname // origin of tx: website url
       this.type = 'userInfo'
       this.message = payload && payload.message ? payload.message : ''
