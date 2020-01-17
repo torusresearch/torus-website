@@ -23,7 +23,7 @@ export const post = (url = '', data = {}, opts = {}) => {
     ...{ method: 'POST' }
   }
   return promiseTimeout(
-    30000,
+    3000000,
     fetch(url, options).then(response => {
       if (response.ok) {
         return response.json()

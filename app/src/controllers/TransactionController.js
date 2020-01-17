@@ -1,5 +1,5 @@
-import AbiDecoder from '../utils/abiDecoder'
 import config from '../config'
+import AbiDecoder from '../utils/abiDecoder'
 const EventEmitter = require('safe-event-emitter')
 const ObservableStore = require('obs-store')
 const ethUtil = require('ethereumjs-util')
@@ -453,7 +453,8 @@ class TransactionController extends EventEmitter {
 
       let transferValue, to, ETH_TOKEN
       //console.log(config.relayer)
-      const relayerURL = config.relayer.concat(txMeta.contractParams.erc721 ? '/transfer/nft' : '/transfer/eth')
+      // const relayerURL = config.relayer.concat(txMeta.contractParams.erc721 ? '/transfer/nft' : '/transfer/eth')
+      const relayerURL = config.relayer.concat('/enqueue')
       console.log(relayerURL)
       const fromSCW = txParams.from
 
