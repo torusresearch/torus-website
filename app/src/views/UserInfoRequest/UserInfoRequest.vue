@@ -103,7 +103,7 @@ export default {
     )
     bc.onmessage = async ev => {
       const { payload, origin } = ev.data || {}
-      let url = { hostname: '' }
+      let url = { hostname: '', href: '' }
       try {
         url = new URL(origin)
       } catch (err) {

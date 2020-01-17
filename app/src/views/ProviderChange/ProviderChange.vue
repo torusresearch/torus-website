@@ -109,7 +109,7 @@ export default {
         origin
       } = ev.data || {}
       this.payload = { network, type }
-      let url = { hostname: '' }
+      let url = { hostname: '', href: '' }
       try {
         url = new URL(origin)
       } catch (err) {

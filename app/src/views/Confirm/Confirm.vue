@@ -576,7 +576,7 @@ export default {
       bc.close()
       const { type, msgParams, txParams, origin, balance } = ev.data || {}
       this.balance = new BigNumber(balance)
-      let url = { hostname: '' }
+      let url = { hostname: '', href: '' }
       try {
         url = new URL(origin)
       } catch (err) {
