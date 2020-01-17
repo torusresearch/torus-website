@@ -14,7 +14,7 @@
         <v-flex xs12 mb-2 mx-6>
           <div class="subtitle-2 text_2--text">Request from:</div>
 
-          <v-card flat class="background lighten-3">
+          <v-card flat class="grey lighten-3">
             <v-card-text>
               <div class="subtitle-2 primary--text request-from">
                 <a :href="originHref" target="_blank">{{ origin }}</a>
