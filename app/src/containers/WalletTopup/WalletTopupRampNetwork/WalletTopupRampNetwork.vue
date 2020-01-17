@@ -17,14 +17,11 @@ import { RampInstantSDK } from '@ramp-network/ramp-instant-sdk'
 export default {
   methods: {
     showWidget() {
-      console.log(arguments)
       new RampInstantSDK({
         hostAppName: 'Tor.us',
         hostLogoUrl: 'https://tor.us/assets/img/torus-logo.svg',
         userAddress: this.$store.state.selectedAddress
-      })
-        //.on('*', event => console.log(event))
-        .show()
+      }).show()
     }
   }
 }
