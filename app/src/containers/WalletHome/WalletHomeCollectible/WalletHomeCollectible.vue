@@ -24,9 +24,7 @@
           </template>
         </v-select>
       </v-flex>
-      <v-flex xs12 sm6 px-4 class="body-2 text_2--text text-capitalize" :class="$vuetify.breakpoint.xsOnly ? 'text-right mt-1' : 'pb-1'">
-        {{ platform }}
-      </v-flex>
+      <v-flex xs12 sm6 px-4 class="body-2 text_2--text text-capitalize" :class="$vuetify.breakpoint.xsOnly ? 'text-right mt-1' : 'pb-1'"></v-flex>
     </v-layout>
     <v-layout wrap align-top mt-10 v-if="selectedContract">
       <v-flex xs12 sm3 md2 px-4 pb-4 v-for="asset in selectedContract.assets" :key="asset.tokenId">
