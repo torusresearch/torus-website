@@ -64,6 +64,9 @@ export default {
   patchPastTransactions(state, payload) {
     state.pastTransactions = [...state.pastTransactions, payload]
   },
+  setEtherscanTransactions(state, payload) {
+    state.etherscanTransactions = payload
+  },
   setTheme(state, payload) {
     state.theme = payload
   },

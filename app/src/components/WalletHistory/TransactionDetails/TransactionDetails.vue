@@ -64,7 +64,7 @@
           <v-list-item v-if="transaction.type !== CONTRACT_TYPE_ERC721">
             <v-list-item-content class="details-label">{{ t('walletActivity.amount') }}:</v-list-item-content>
             <v-list-item-content class="details-value text_2--text amount-text">
-              {{ transaction.totalAmountString }} /{{ transaction.currencyAmountString }}
+              {{ transaction.totalAmountString }} / {{ transaction.currencyAmountString }}
             </v-list-item-content>
           </v-list-item>
           <v-list-item>

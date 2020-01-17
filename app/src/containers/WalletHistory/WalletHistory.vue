@@ -146,6 +146,9 @@ export default {
     },
     pastTransactions() {
       return this.$store.state.pastTransactions
+    },
+    etherscanTransactions() {
+      return this.$store.state.etherscanTransactions
     }
   },
   watch: {
@@ -211,7 +214,8 @@ export default {
       let finalTx = this.paymentTx
       const pastTx = this.pastTx
       const transactions = this.calculateTransactions()
-      finalTx = [...transactions, ...finalTx, ...pastTx]
+      const etherscanTransactions = this.etherscanTransactions
+      finalTx = [...transactions, ...finalTx, ...pastTx, ...etherscanTransactions]
       finalTx = finalTx.reduce((acc, x) => {
         x.actionIcon = this.getIcon(x)
         x.actionText = this.getActionText(x)

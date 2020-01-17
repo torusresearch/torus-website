@@ -1,7 +1,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import config from '../config'
-import { toChecksumAddress } from 'web3-utils'
+import { toChecksumAddress, toBN, fromWei } from 'web3-utils'
 import torus from '../torus'
 import {
   RPC,
@@ -13,9 +13,14 @@ import {
   TWITCH,
   REDDIT,
   DISCORD,
-  THEME_LIGHT_BLUE_NAME
+  THEME_LIGHT_BLUE_NAME,
+  OLD_ERC721_LIST,
+  CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ERC20,
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_SEND
 } from '../utils/enums'
-import { broadcastChannelOptions, storageAvailable } from '../utils/utils'
+import { broadcastChannelOptions, storageAvailable, significantDigits, addressSlicer, getEtherScanHashLink } from '../utils/utils'
 import { post, get, patch, remove } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import initialState from './state'
@@ -34,6 +39,13 @@ import themes from '../plugins/themes'
 import PopupHandler from '../utils/PopupHandler'
 
 const accountImporter = require('../utils/accountImporter')
+
+import AbiDecoder from '../utils/abiDecoder'
+const tokenAbi = require('human-standard-token-abi')
+const collectibleAbi = require('human-standard-collectible-abi')
+const tokenABIDecoder = new AbiDecoder(tokenAbi)
+const collectibleABIDecoder = new AbiDecoder(collectibleAbi)
+const erc20Contracts = require('eth-contract-metadata')
 
 const baseRoute = config.baseRoute
 
@@ -689,6 +701,102 @@ export default {
       })
 
       if (events) commit('setBillboard', events)
+    })
+  },
+  setEtherscanTransactions({ commit, state }) {
+    get(`${config.api}/transaction/etherscan`, {
+      headers: {
+        Authorization: `Bearer ${state.jwtToken}`
+      }
+    }).then(resp => {
+      const { selectedAddress, selectedCurrency, currencyData, tokenRates, wallet, networkType } = state || {}
+
+      const wallets = Object.keys(wallet).filter(acc => acc !== selectedAddress)
+      let currencyMultiplier = 1
+      if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+
+      const transactions = resp.data
+      const finalTransactions = []
+      transactions.forEach(transaction => {
+        let tokenObj
+        const checkSummedTo = toChecksumAddress(transaction.to)
+        const decodedERC20 = tokenABIDecoder.decodeMethod(transaction.input)
+        const decodedERC721 = collectibleABIDecoder.decodeMethod(transaction.input)
+        let totalAmount,
+          totalAmountString,
+          tokenRate = 1,
+          type = 'n/a',
+          typeName = 'n/a',
+          typeImageLink = 'n/a'
+
+        if (transaction.input !== '0x') {
+          tokenObj = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
+          const decoded = decodedERC721 || decodedERC20
+
+          if (tokenObj && tokenObj.erc20) {
+            // ERC20
+            tokenObj.to = decoded.params.find(param => param.name === '_to').value
+            totalAmount = fromWei(toBN(decoded.params.find(param => param.name === '_value').value))
+            totalAmountString = `${significantDigits(parseFloat(totalAmount))} ${tokenObj.symbol}`
+            tokenRate = tokenRates[transaction.to]
+            type = CONTRACT_TYPE_ERC20
+            typeName = tokenObj.name
+            typeImageLink = tokenObj.logo
+          } else if (OLD_ERC721_LIST.hasOwnProperty(checkSummedTo.toLowerCase())) {
+            tokenObj.to = decoded.params.find(param => param.name === '_to').value
+            if (OLD_ERC721_LIST.hasOwnProperty(checkSummedTo.toLowerCase())) {
+              tokenObj.tokenId = decoded.params.find(param => param.name === '_value').value
+            } else {
+              tokenObj.tokenId = decoded.params.find(param => param.name === '_tokenId').value
+            }
+            type = CONTRACT_TYPE_ERC721
+            typeName = 'n/a'
+            typeImageLink = 'n/a'
+          }
+
+          if (tokenObj.erc721) {
+            // GET DETAILS FROM OPENSEA
+            // https://api.opensea.io/api/v1/asset/asset_contract_address/token_id/
+            // https://api.opensea.io/api/v1/assets?token_ids=1204545
+          }
+        } else {
+          totalAmount = fromWei(toBN(transaction.value))
+          totalAmountString = `${totalAmount} ETH`
+          type = 'eth'
+          typeName = 'ETH'
+        }
+
+        const sendTo = tokenObj ? tokenObj.to : transaction.to
+
+        const dateCreated = new Date(parseInt(transaction.timeStamp) * 1000)
+        const currencyAmount = currencyMultiplier * totalAmount * tokenRate
+        const currencyAmountString = tokenObj && tokenObj.erc721 ? '' : `${significantDigits(currencyAmount)} ${selectedCurrency}`
+        const finalObj = {
+          id: dateCreated.toISOString(),
+          date: dateCreated,
+          from: transaction.from,
+          slicedFrom: addressSlicer(transaction.from),
+          to: sendTo,
+          slicedTo: addressSlicer(sendTo),
+          action: wallets.indexOf(sendTo) >= 0 ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
+          totalAmount: totalAmount,
+          totalAmountString: totalAmountString,
+          currencyAmount: currencyAmount,
+          currencyAmountString: currencyAmountString,
+          amount: `${totalAmountString} / ${currencyAmountString}`,
+          status: transaction.txreceipt_status ? 'confirmed' : 'failed',
+          etherscanLink: getEtherScanHashLink(transaction.hash, networkType.host),
+          networkType: networkType.host,
+          ethRate: `1 ${(tokenObj && tokenObj.symbol) || 'ETH'} = ${significantDigits(parseFloat(currencyAmount) / parseFloat(totalAmount))}`,
+          currencyUsed: 'ETH',
+          type: type,
+          type_name: typeName,
+          type_image_link: typeImageLink
+        }
+
+        finalTransactions.push(finalObj)
+      })
+      commit('setEtherscanTransactions', finalTransactions)
     })
   },
   setContacts({ commit, state }) {

@@ -29,6 +29,7 @@ const initialState = {
   loginInProgress: false,
   jwtToken: '',
   pastTransactions: [],
+  etherscanTransactions: [],
   isNewUser: false,
   theme: THEME_LIGHT_BLUE_NAME,
   locale: LOCALE_EN,
