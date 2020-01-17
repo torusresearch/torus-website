@@ -115,6 +115,7 @@
                   item-text="name"
                   item-value="value"
                   aria-label="Recipient Address"
+                  :return-object="false"
                 >
                   <template v-slot:append>
                     <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()" aria-label="QR Capture Button">
@@ -471,7 +472,7 @@ export default {
     },
     contactList() {
       return this.$store.state.contacts.reduce((mappedObj, contact) => {
-        if (contact.verifier === this.selectedVerifier) {
+        if (contact.verifier === this.selectedVerifier || this.selectedVerifier === '') {
           mappedObj.push({
             name: `${contact.name} (${contact.contact})`,
             value: contact.contact
@@ -560,11 +561,10 @@ export default {
       this.autoSelectVerifier = false
       this.$refs.form.validate()
     },
-    contactChanged(event) {
-      this.contactSelected = event
-      const contact = event && event.target ? event.target.value : event
-      log.info(event, contact, 'contactChanged')
+    contactChanged(contact) {
+      this.contactSelected = contact
       if (contact) this.toAddress = contact
+      log.info(event, contact, 'contactChanged')
 
       // Autoupdate selected verifier
       if (this.autoSelectVerifier) {
