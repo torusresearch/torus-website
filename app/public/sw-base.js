@@ -566,6 +566,19 @@ REDIRECT_HTML${''}
   }
 })
 
+self.addEventListener('notificationclick', function(e) {
+  var notification = e.notification
+  var url = notification.data.url
+  var action = e.action
+
+  if (action === 'close') {
+    notification.close()
+  } else {
+    url && clients.openWindow(url)
+    notification.close()
+  }
+})
+
 self.__precacheManifest = [
   {
     url: '/js/app.js'

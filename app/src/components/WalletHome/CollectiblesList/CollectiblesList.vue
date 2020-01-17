@@ -5,7 +5,7 @@
         <v-list-item class="py-4" router-link :to="{ name: 'walletHomeCollectible', params: { address: collectible.address } }">
           <v-list-item-content class="subtitle-1 font-weight-bold">{{ collectible.name }}</v-list-item-content>
           <v-list-item-avatar size="100">
-            <v-img :src="collectible.logo"></v-img>
+            <v-img :src="collectible.logo" :alt="collectible.name"></v-img>
           </v-list-item-avatar>
         </v-list-item>
       </v-card>

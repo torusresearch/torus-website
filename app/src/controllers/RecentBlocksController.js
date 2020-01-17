@@ -29,7 +29,7 @@ class RecentBlocksController {
     const { blockTracker, provider, networkController } = opts
     this.blockTracker = blockTracker
     this.ethQuery = new EthQuery(provider)
-    this.historyLength = opts.historyLength || 40
+    this.historyLength = opts.historyLength || 15
 
     const initState = extend(
       {

@@ -23,7 +23,7 @@
       }
       
       h1.title {
-        font-size: 32px;
+        font-size: 14px;
         color: #0F1222;
         font-family: 'Roboto', sans-serif !important;
         margin: 0;
@@ -33,7 +33,7 @@
         background-color: #0364FF;
         height: 12px;
         width: 12px;
-        margin: 24px 2px;
+        margin: 24px 2px 10px;
         border-radius: 100%;
         -webkit-animation: beatStretchDelay 0.7s infinite linear;
         animation: beatStretchDelay 0.7s infinite linear;
@@ -78,27 +78,27 @@
 
       @media (min-width: 768px) {
         h1.title {
-          font-size: 40px;
+          font-size: 14px;
         }
         p.info {
           font-size: 28px;
         }
 
         .spinner .beat {
-          height: 15px;
-          width: 15px;
+          height: 12px;
+          width: 12px;
         }
       }
     </style>
   </head>
   <body>
     <div id="message" class="container">
-      <h1 class="title content">Loading</h1>
       <div class="spinner content">
         <div class="beat beat-odd"></div>
         <div class="beat beat-even"></div>
         <div class="beat beat-odd"></div>
       </div>
+      <h1 class="title content">Loading</h1>
     </div>
     <script>
       // broadcast-channel

@@ -88,37 +88,47 @@ const WALLET_HEADERS_TRANSFER = 'Transfer Details'
 const WALLET_HEADERS_ACTIVITY = 'Transaction Activities'
 const WALLET_HEADERS_CONFIRM = 'Confirm your Transfer'
 
-const ACTIVITY_ACTION_ALL = 'All Transactions'
-const ACTIVITY_ACTION_SEND = 'Send'
-const ACTIVITY_ACTION_RECEIVE = 'Receive'
-const ACTIVITY_ACTION_TOPUP = 'Topup'
+const ACTIVITY_ACTION_ALL = 'walletActivity.allTransactions'
+const ACTIVITY_ACTION_SEND = 'walletActivity.send'
+const ACTIVITY_ACTION_RECEIVE = 'walletActivity.receive'
+const ACTIVITY_ACTION_TOPUP = 'walletActivity.topup'
 
-const ACTIVITY_PERIOD_ALL = 'All'
-const ACTIVITY_PERIOD_WEEK_ONE = 'Last 1 Week'
-const ACTIVITY_PERIOD_MONTH_ONE = 'Last 1 Month'
-const ACTIVITY_PERIOD_MONTH_SIX = 'Last 6 Months'
+const ACTIVITY_PERIOD_ALL = 'walletActivity.all'
+const ACTIVITY_PERIOD_WEEK_ONE = 'walletActivity.lastOneWeek'
+const ACTIVITY_PERIOD_MONTH_ONE = 'walletActivity.lastOneMonth'
+const ACTIVITY_PERIOD_MONTH_SIX = 'walletActivity.lastSixMonts'
 
-const ACTIVITY_STATUS_SUCCESSFUL = 'Successful'
-const ACTIVITY_STATUS_UNSUCCESSFUL = 'Unsuccessful'
-const ACTIVITY_STATUS_PENDING = 'Pending'
+const ACTIVITY_STATUS_SUCCESSFUL = 'walletActivity.successful'
+const ACTIVITY_STATUS_UNSUCCESSFUL = 'walletActivity.unsuccessful'
+const ACTIVITY_STATUS_PENDING = 'walletActivity.pending'
 
 const GOOGLE = 'google'
 const FACEBOOK = 'facebook'
 const REDDIT = 'reddit'
 const DISCORD = 'discord'
 const TWITCH = 'twitch'
-const ETH_LABEL = 'ETH Address'
-const GOOGLE_LABEL = 'Google Email'
-const FACEBOOK_LABEL = 'Facebook ID'
-const REDDIT_LABEL = 'Reddit Username'
-const DISCORD_LABEL = 'Discord ID'
-const TWITCH_LABEL = 'Twitch ID'
+const ENS = 'ENS'
+const ETH_LABEL = 'walletSettings.ethAddress'
+const GOOGLE_LABEL = 'walletSettings.googleId'
+const FACEBOOK_LABEL = 'walletSettings.facebookId'
+const REDDIT_LABEL = 'walletSettings.redditId'
+const DISCORD_LABEL = 'walletSettings.discordId'
+const TWITCH_LABEL = 'walletSettings.twitchId'
+const ENS_LABEL = 'walletSettings.ensId'
 
 // Format: [dark/light]-[colorName]
 const THEME_DARK_BLACK_NAME = 'dark-black'
 const THEME_LIGHT_BLUE_NAME = 'light-blue'
 
-const OLD_ERC721_LIST = ['0x06012c8cf97bead5deae237070f9587f8e7a266d']
+const OLD_ERC721_LIST = {
+  '0x06012c8cf97bead5deae237070f9587f8e7a266d': {
+    name: 'Cryptokitties',
+    logo: 'dapp-cryptokitty.svg',
+    erc20: true,
+    symbol: 'CK',
+    decimals: 0
+  }
+}
 
 const ALLOWED_VERIFIERS = [
   {
@@ -136,6 +146,10 @@ const ALLOWED_VERIFIERS = [
   {
     name: DISCORD_LABEL,
     value: DISCORD
+  },
+  {
+    name: ENS_LABEL,
+    value: ENS
   }
 ]
 
@@ -147,7 +161,42 @@ const CRYPTO = 'crypto'
 const PNG = 'png'
 const SVG = 'svg'
 
+const LOCALE_EN = 'en'
+const LOCALE_DE = 'de'
+const LOCALE_JA = 'ja'
+const LOCALE_KO = 'ko'
+const LOCALE_ZH = 'zh'
+const LOCALE_EN_LABEL = 'English'
+const LOCALE_DE_LABEL = 'German (Deutsch)'
+const LOCALE_JA_LABEL = 'Japanese (日本語)'
+const LOCALE_KO_LABEL = 'Korean (한국어)'
+const LOCALE_ZH_LABEL = 'Mandarin (中文)'
+
+const LOCALES = [
+  {
+    name: LOCALE_EN_LABEL,
+    value: LOCALE_EN
+  },
+  {
+    name: LOCALE_DE_LABEL,
+    value: LOCALE_DE
+  },
+  {
+    name: LOCALE_JA_LABEL,
+    value: LOCALE_JA
+  },
+  {
+    name: LOCALE_KO_LABEL,
+    value: LOCALE_KO
+  },
+  {
+    name: LOCALE_ZH_LABEL,
+    value: LOCALE_ZH
+  }
+]
+
 module.exports = {
+  ENS,
   ETH,
   ROPSTEN,
   RINKEBY,
@@ -237,5 +286,10 @@ module.exports = {
   TX_MESSAGE,
   TX_TYPED_MESSAGE,
   TX_PERSONAL_MESSAGE,
-  TX_TRANSACTION
+  TX_TRANSACTION,
+  LOCALE_EN,
+  LOCALE_DE,
+  LOCALE_EN_LABEL,
+  LOCALE_DE_LABEL,
+  LOCALES
 }

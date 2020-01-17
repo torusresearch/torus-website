@@ -1,0 +1,7 @@
+.more-details-container {
+  position: absolute;
+  bottom: 24px;
+  @media screen and (max-width: 600px) {
+    position: inherit;
+  }
+}

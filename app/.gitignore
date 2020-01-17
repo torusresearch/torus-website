@@ -23,3 +23,4 @@ service-worker.js
 embed.min.js
 .nyc_output
 coverage
+src/plugins/i18n
