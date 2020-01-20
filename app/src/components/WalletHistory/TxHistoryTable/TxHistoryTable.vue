@@ -3,7 +3,7 @@
     <v-data-iterator
       :disable-pagination="$vuetify.breakpoint.xsOnly"
       :items="filteredTransactions"
-      item-key="id"
+      item-key="etherscanLink"
       :items-per-page.sync="itemsPerPage"
       :page.sync="page"
       hide-default-footer
@@ -11,7 +11,7 @@
       no-data-text=""
     >
       <template v-slot:default="props">
-        <transaction-details v-for="transaction in props.items" :key="transaction.id" :transaction="transaction" />
+        <transaction-details v-for="transaction in props.items" :key="transaction.etherscanLink" :transaction="transaction" />
       </template>
       <template v-slot:loading>
         <component-loader class="mt-2" />

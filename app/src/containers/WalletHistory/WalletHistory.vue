@@ -149,6 +149,9 @@ export default {
     },
     etherscanTransactions() {
       return this.$store.state.etherscanTransactions
+    },
+    assetTokens() {
+      return this.$store.state.assetTokens
     }
   },
   watch: {
@@ -157,6 +160,18 @@ export default {
     }
   },
   methods: {
+    getAssetTokenDetails(tokenId) {
+      const token = this.assetTokens.find(asset => asset.tokenId === tokenId)
+      return token
+        ? token
+        : {
+            tokenId: '',
+            tokenName: '',
+            contractAddress: '',
+            contractName: '',
+            contractImage: ''
+          }
+    },
     onCurrencyChange(value) {
       this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'history' })
     },
@@ -181,10 +196,14 @@ export default {
       }
     },
     getActionText(activity) {
-      // Handling tx from common-api schema and /tx schema separately.
+      let tokenContractName = ''
+      if (activity.fromEtherscan && this.assetTokens) {
+        tokenContractName = this.getAssetTokenDetails(activity.tokenId).contractName
+      }
+
       return activity.type_name === 'n/a' || activity.type === 'n/a'
         ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
-            activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
+            activity.type_name !== 'n/a' ? activity.type_name : tokenContractName !== '' ? tokenContractName : activity.type.toUpperCase()
           }`
         : activity.type_name || activity.type
         ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${activity.type_name}`
@@ -195,6 +214,9 @@ export default {
         return `provider-${activity.from.toLowerCase()}.svg`
       } else if (activity.action === ACTIVITY_ACTION_SEND || activity.action === ACTIVITY_ACTION_RECEIVE) {
         if (activity.type === CONTRACT_TYPE_ERC721) {
+          if (activity.fromEtherscan && this.assetTokens) {
+            return this.getAssetTokenDetails(activity.tokenId).contractImage
+          }
           return activity.type_image_link // will be an opensea image url
         } else if (activity.type === CONTRACT_TYPE_ERC20) {
           return `logos/${activity.type_image_link}`
@@ -217,15 +239,19 @@ export default {
       const etherscanTransactions = this.etherscanTransactions
       finalTx = [...transactions, ...finalTx, ...pastTx, ...etherscanTransactions]
       finalTx = finalTx.reduce((acc, x) => {
+        if (x.fromEtherscan && x.type === CONTRACT_TYPE_ERC721) {
+          x.totalAmountString = this.assetTokens && this.getAssetTokenDetails(x.tokenId).tokenName
+          x.currencyAmountString = ''
+        }
         x.actionIcon = this.getIcon(x)
         x.actionText = this.getActionText(x)
         x.statusText = this.getStatusText(x.status)
-        x.dateFormatted = this.formatDate(x.date)
-        x.timeFormatted = this.formatTime(x.date)
+        x.dateFormatted = this.formatDate(new Date(x.date))
+        x.timeFormatted = this.formatTime(new Date(x.date))
         if (x.etherscanLink === '' || acc.findIndex(y => y.etherscanLink === x.etherscanLink) === -1) acc.push(x)
         return acc
       }, [])
-      const sortedTx = finalTx.sort((a, b) => b.date - a.date) || []
+      const sortedTx = finalTx.sort((a, b) => new Date(b.date) - new Date(a.date)) || []
       // log.info('sorted tx is', sortedTx)
       return sortedTx
     },

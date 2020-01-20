@@ -30,6 +30,7 @@ const initialState = {
   jwtToken: '',
   pastTransactions: [],
   etherscanTransactions: [],
+  assetTokens: [],
   isNewUser: false,
   theme: THEME_LIGHT_BLUE_NAME,
   locale: LOCALE_EN,

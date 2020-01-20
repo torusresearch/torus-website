@@ -703,7 +703,29 @@ export default {
       if (events) commit('setBillboard', events)
     })
   },
-  setEtherscanTransactions({ commit, state }) {
+  setTokenList({ commit, state }, payload) {
+    var tokenURI = new URL('https://api.opensea.io/api/v1/assets')
+    payload.tokenIdList.forEach(tokenId => tokenURI.searchParams.append('token_ids', tokenId))
+    payload.tokenContractList.forEach(tokenContract => tokenURI.searchParams.append('asset_contract_addresses', tokenContract))
+    get(`${config.api}/opensea?url=${encodeURIComponent(tokenURI)}`, {
+      headers: {
+        Authorization: `Bearer ${state.jwtToken}`
+      }
+    }).then(resp => {
+      const tokens = []
+      resp.data.assets.forEach(token => {
+        tokens.push({
+          tokenId: token.token_id,
+          tokenName: token.name,
+          contractAddress: token.asset_contract.address,
+          contractName: token.asset_contract.name,
+          contractImage: token.asset_contract.image_url
+        })
+      })
+      commit('setTokenList', tokens)
+    })
+  },
+  setEtherscanTransactions({ commit, state, dispatch }) {
     get(`${config.api}/transaction/etherscan`, {
       headers: {
         Authorization: `Bearer ${state.jwtToken}`
@@ -717,6 +739,8 @@ export default {
 
       const transactions = resp.data
       const finalTransactions = []
+      const tokenIdList = []
+      const tokenContractList = []
       transactions.forEach(transaction => {
         let tokenObj
         const checkSummedTo = toChecksumAddress(transaction.to)
@@ -727,7 +751,9 @@ export default {
           tokenRate = 1,
           type = 'n/a',
           typeName = 'n/a',
-          typeImageLink = 'n/a'
+          typeImageLink = '',
+          tokenId = '',
+          tokenContract = ''
 
         if (transaction.input !== '0x') {
           tokenObj = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
@@ -742,22 +768,19 @@ export default {
             type = CONTRACT_TYPE_ERC20
             typeName = tokenObj.name
             typeImageLink = tokenObj.logo
-          } else if (OLD_ERC721_LIST.hasOwnProperty(checkSummedTo.toLowerCase())) {
+          } else if (decoded) {
             tokenObj.to = decoded.params.find(param => param.name === '_to').value
             if (OLD_ERC721_LIST.hasOwnProperty(checkSummedTo.toLowerCase())) {
-              tokenObj.tokenId = decoded.params.find(param => param.name === '_value').value
+              tokenId = decoded.params.find(param => param.name === '_value').value
             } else {
-              tokenObj.tokenId = decoded.params.find(param => param.name === '_tokenId').value
+              tokenId = decoded.params.find(param => param.name === '_tokenId').value
             }
+            tokenContract = transaction.to
             type = CONTRACT_TYPE_ERC721
             typeName = 'n/a'
-            typeImageLink = 'n/a'
-          }
-
-          if (tokenObj.erc721) {
-            // GET DETAILS FROM OPENSEA
-            // https://api.opensea.io/api/v1/asset/asset_contract_address/token_id/
-            // https://api.opensea.io/api/v1/assets?token_ids=1204545
+            typeImageLink = ''
+            if (tokenIdList.indexOf(tokenId) < 0) tokenIdList.push(tokenId)
+            if (tokenContractList.indexOf(tokenContract) < 0) tokenContractList.push(tokenContract)
           }
         } else {
           totalAmount = fromWei(toBN(transaction.value))
@@ -789,13 +812,18 @@ export default {
           networkType: networkType.host,
           ethRate: `1 ${(tokenObj && tokenObj.symbol) || 'ETH'} = ${significantDigits(parseFloat(currencyAmount) / parseFloat(totalAmount))}`,
           currencyUsed: 'ETH',
+          tokenId,
+          tokenContract,
+          fromEtherscan: true,
           type: type,
           type_name: typeName,
           type_image_link: typeImageLink
         }
-
-        finalTransactions.push(finalObj)
+        if (finalObj.type !== 'n/a') {
+          finalTransactions.push(finalObj)
+        }
       })
+      dispatch('setTokenList', { tokenIdList, tokenContractList })
       commit('setEtherscanTransactions', finalTransactions)
     })
   },
@@ -883,6 +911,7 @@ export default {
         ])
         dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
         dispatch('setBillboard')
+        dispatch('setEtherscanTransactions')
         // continue enable function
         var ethAddress = data.ethAddress
         if (calledFromEmbed) {

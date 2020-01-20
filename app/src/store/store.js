@@ -57,7 +57,9 @@ if (storageAvailable('sessionStorage'))
         theme: state.theme,
         locale: state.locale,
         billboard: state.billboard,
-        contacts: state.contacts
+        contacts: state.contacts,
+        etherscanTransactions: state.etherscanTransactions,
+        assetTokens: state.assetTokens
         // pastTransactions: state.pastTransactions
       }
     }

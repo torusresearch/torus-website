@@ -67,6 +67,9 @@ export default {
   setEtherscanTransactions(state, payload) {
     state.etherscanTransactions = payload
   },
+  setTokenList(state, payload) {
+    state.assetTokens = payload
+  },
   setTheme(state, payload) {
     state.theme = payload
   },
