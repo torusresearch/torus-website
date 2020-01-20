@@ -447,7 +447,7 @@
       const loaderElement = document.querySelector('#' + selectedLoader)
       if (theme === 'dark') {
         loaderElement.querySelectorAll('.sk-loader').forEach(function(loader) {
-          loader.style.background =  '#2E3135'
+          loader.classList.add('dark')
         })
       }
       // loaderElement.style.display = /\/redirect/.test(redirectPath) || mobileTag ? 'flex' : 'flex'

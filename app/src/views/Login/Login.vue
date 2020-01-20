@@ -19,6 +19,7 @@
                 color="white"
                 large
                 block
+                light
                 class="body-2 login-btn"
                 @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
               >

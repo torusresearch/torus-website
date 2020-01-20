@@ -354,6 +354,10 @@
   border-radius: 10px;
 }
 
+.sk-loader.dark {
+  background: #2e3135;
+}
+
 .sk-loader--box {
   border-radius: 0;
 }
