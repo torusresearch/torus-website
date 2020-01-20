@@ -114,8 +114,8 @@
                   :error-messages="ensError"
                   item-text="name"
                   item-value="value"
-                  :return-object="false"
                   aria-label="Recipient Address"
+                  :return-object="false"
                 >
                   <template v-slot:append>
                     <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()" aria-label="QR Capture Button">
@@ -146,7 +146,7 @@
                   aria-label="Recipient Selector"
                 ></v-select>
               </v-flex>
-              <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" x12 mb-2>
+              <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" xs12 mb-2>
                 <add-contact :contact="contactSelected" :verifier="selectedVerifier"></add-contact>
               </v-flex>
             </v-layout>
@@ -308,7 +308,6 @@
 <script>
 import { QrcodeCapture } from 'vue-qrcode-reader'
 import { isAddress, toChecksumAddress, toBN, toWei } from 'web3-utils'
-import NodeDetailManager from '@toruslabs/fetch-node-details'
 import torus from '../../torus'
 import { significantDigits, getEtherScanHashLink, validateVerifierId } from '../../utils/utils'
 import config from '../../config'
@@ -336,6 +335,8 @@ import {
   ALLOWED_VERIFIERS
 } from '../../utils/enums'
 import BigNumber from 'bignumber.js'
+
+const randomId = require('random-id')
 
 const erc20TransferABI = require('human-standard-token-abi')
 const erc721TransferABI = require('human-standard-collectible-abi')
@@ -471,10 +472,11 @@ export default {
     },
     contactList() {
       return this.$store.state.contacts.reduce((mappedObj, contact) => {
-        if (contact.verifier === this.selectedVerifier) {
+        if (contact.verifier === this.selectedVerifier || this.selectedVerifier === '') {
           mappedObj.push({
             name: `${contact.name} (${contact.contact})`,
-            value: contact.contact
+            value: contact.contact,
+            verifier: contact.verifier
           })
         }
         return mappedObj
@@ -556,23 +558,28 @@ export default {
       return validateVerifierId(this.selectedVerifier, value)
     },
     verifierChangedManual() {
+      this.setRandomId()
       this.autoSelectVerifier = false
       this.$refs.form.validate()
     },
-    contactChanged(event) {
-      this.contactSelected = event
-      const contact = event && event.target ? event.target.value : event
-      log.info(event, contact, 'contactChanged')
+    contactChanged(contact) {
+      this.contactSelected = contact
       if (contact) this.toAddress = contact
+      log.info(event, contact, 'contactChanged')
 
       // Autoupdate selected verifier
       if (this.autoSelectVerifier) {
-        if (/^0x/.test(this.toAddress)) {
-          this.selectedVerifier = ETH
-        } else if (/@/.test(this.toAddress)) {
-          this.selectedVerifier = GOOGLE
-        } else if (/.eth$/.test(this.toAddress) || /.xyz$/.test(this.toAddress) || /.crypto$/.test(this.toAddress)) {
-          this.selectedVerifier = ENS
+        const contactFound = this.contactList.find(item => item.value === contact)
+        if (contactFound) {
+          this.selectedVerifier = contactFound.verifier
+        } else {
+          if (/^0x/.test(this.toAddress)) {
+            this.selectedVerifier = ETH
+          } else if (/@/.test(this.toAddress)) {
+            this.selectedVerifier = GOOGLE
+          } else if (/.eth$/.test(this.toAddress) || /.xyz$/.test(this.toAddress) || /.crypto$/.test(this.toAddress)) {
+            this.selectedVerifier = ENS
+          }
         }
       }
       this.ensError = ''
@@ -679,7 +686,7 @@ export default {
           }
         } else {
           try {
-            toAddress = await torus.getPubKeyAsync(this.nodeDetails.torusNodeEndpoints, {
+            toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
               verifier: this.selectedVerifier,
               verifierId: this.toAddress
             })
@@ -886,8 +893,6 @@ export default {
           this.toAddress = ''
           this.qrErrorMsg = 'Incorrect QR Code'
         }
-
-        this.contactSelected = this.toAddress
       } catch (error) {
         if (isAddress(result)) {
           this.selectedVerifier = ETH
@@ -896,8 +901,14 @@ export default {
           this.toAddress = ''
           this.qrErrorMsg = 'Incorrect QR Code'
         }
-
+      } finally {
         this.contactSelected = this.toAddress
+      }
+    },
+    setRandomId() {
+      // patch fix because vuetify stopped passing attributes to underlying component
+      if (this.$refs.contactSelected && this.$refs.contactSelected.$refs && this.$refs.contactSelected.$refs.input) {
+        this.$refs.contactSelected.$refs.input.name = randomId()
       }
     }
   },
@@ -909,10 +920,7 @@ export default {
       this.toAddress = ''
     }
 
-    // patch fix because vuetify stopped passing attributes to underlying component
-    if (this.$refs.contactSelected && this.$refs.contactSelected.$refs && this.$refs.contactSelected.$refs.input) {
-      this.$refs.contactSelected.$refs.input.name = this.randomName
-    }
+    this.setRandomId()
 
     this.contactSelected = this.toAddress
 
@@ -931,7 +939,7 @@ export default {
 
     this.updateFieldsBasedOnRoute()
 
-    NodeDetailManager.getNodeDetails().then(nodeDetails => {
+    torus.nodeDetailManager.getNodeDetails().then(nodeDetails => {
       this.nodeDetails = nodeDetails
     })
   }

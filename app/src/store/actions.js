@@ -1,5 +1,4 @@
 import { BroadcastChannel } from 'broadcast-channel'
-import NodeDetailManager from '@toruslabs/fetch-node-details'
 import log from 'loglevel'
 import config from '../config'
 import { toChecksumAddress } from 'web3-utils'
@@ -752,11 +751,12 @@ export default {
       userInfo: { verifierId, verifier, verifierParams }
     } = state
     let torusNodeEndpoints, torusIndexes
-    return NodeDetailManager.getNodeDetails()
-      .then(({ torusNodeEndpoints: torusNodeEndpointsVal, torusIndexes: torusIndexesVal }) => {
+    return torus.nodeDetailManager
+      .getNodeDetails()
+      .then(({ torusNodeEndpoints: torusNodeEndpointsVal, torusNodePub, torusIndexes: torusIndexesVal }) => {
         torusNodeEndpoints = torusNodeEndpointsVal
         torusIndexes = torusIndexesVal
-        return torus.getPubKeyAsync(torusNodeEndpoints, { verifier, verifierId })
+        return torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
       })
       .then(res => {
         log.info('New private key assigned to user at address ', res)

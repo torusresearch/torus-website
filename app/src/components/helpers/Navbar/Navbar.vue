@@ -19,7 +19,7 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-tabs centered v-if="!$vuetify.breakpoint.smAndDown">
-        <v-tab v-for="headerItem in headerItems" :key="headerItem.name" :id="`${headerItem.name}-link`" :to="headerItem.route">
+        <v-tab v-for="headerItem in headerItems" :key="headerItem.display" :id="`${headerItem.name}-link`" :to="headerItem.route">
           {{ headerItem.display }}
         </v-tab>
       </v-tabs>

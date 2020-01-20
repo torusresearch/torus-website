@@ -1,7 +1,7 @@
 <template>
   <v-container py-6 px-0>
     <template v-if="type === 'none'">
-      <popup-screen-loader />
+      <change-provider-screen-loader />
     </template>
     <template v-else>
       <v-layout wrap align-center mx-6 mb-6>
@@ -14,11 +14,15 @@
         <v-flex xs12 mb-2 mx-6>
           <div class="subtitle-2 text_2--text">Request from:</div>
 
-          <v-card flat class="background lighten-3">
+          <v-card flat class="grey lighten-3">
             <v-card-text>
-              <div class="subtitle-2 primary--text">{{ origin }}</div>
+              <div class="subtitle-2 primary--text request-from">
+                <a :href="originHref" target="_blank">{{ origin }}</a>
+                <a :href="originHref" target="_blank" class="float-right">
+                  <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
+                </a>
+              </div>
             </v-card-text>
-            <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
           </v-card>
         </v-flex>
 
@@ -53,7 +57,7 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import { PopupScreenLoader } from '../../content-loader'
+import { ChangeProviderScreenLoader } from '../../content-loader'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import { broadcastChannelOptions } from '../../utils/utils'
 import log from 'loglevel'
@@ -61,12 +65,13 @@ import log from 'loglevel'
 export default {
   name: 'confirm',
   components: {
-    PopupScreenLoader,
+    ChangeProviderScreenLoader,
     NetworkDisplay
   },
   data() {
     return {
       origin: '',
+      originHref: '',
       type: 'none',
       network: '',
       rpcNetwork: {},
@@ -104,12 +109,13 @@ export default {
         origin
       } = ev.data || {}
       this.payload = { network, type }
-      let url = { hostname: '' }
+      let url = { hostname: '', href: '' }
       try {
         url = new URL(origin)
       } catch (err) {
         log.error(err)
       }
+      this.originHref = url.href
       this.origin = url.hostname // origin of tx: website url
       if (type && type === 'rpc') {
         this.rpcNetwork = network

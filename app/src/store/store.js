@@ -3,7 +3,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
 import { isArray } from 'util'
-import { fromWei, hexToUtf8, toBN, toChecksumAddress } from 'web3-utils'
+import { fromWei, hexToUtf8, toBN, toChecksumAddress, isAddress } from 'web3-utils'
 import config from '../config'
 import torus from '../torus'
 import { getEtherScanHashLink, storageAvailable } from '../utils/utils'
@@ -237,37 +237,78 @@ VuexStore.subscribe((mutation, state) => {
       const txMeta = txs[id]
       if (txMeta.status === 'submitted' && id >= 0) {
         // insert into db here
+        const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txMeta
+        let amountTo, amountValue, assetName, tokenRate, symbol, type, type_name, type_image_link, totalAmount
 
-        const txHash = txMeta.hash
-        log.info(txMeta)
-        const { methodParams, transactionCategory } = txMeta
-        const totalAmount = fromWei(toBN(txMeta.txParams.value).add(toBN(txMeta.txParams.gas).mul(toBN(txMeta.txParams.gasPrice))))
-        let amountTo
-        if (methodParams && isArray(methodParams)) {
-          if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
-            [, amountTo] = methodParams || []
-          else [amountTo] = methodParams || []
+        if (contractParams.erc721) {
+          // Handling cryptokitties
+          if (contractParams.isSpecial) {
+            ;[amountTo, amountValue] = methodParams || []
+          }
+          // Rest of the 721s
+          else {
+            ;[, amountTo, amountValue] = methodParams || []
+          }
+
+          // Get asset name of the 721
+          const [contract] = state.assets[state.selectedAddress].filter(x => x.name.toLowerCase() === contractParams.name.toLowerCase()) || []
+          const [assetObject] = contract['assets'].filter(x => x.tokenId.toString() === amountValue.value.toString()) || []
+          assetName = assetObject.name || ''
+
+          symbol = assetName
+          type = 'erc721'
+          type_name = contractParams.name
+          type_image_link = contractParams.logo
+          totalAmount = fromWei(toBN(txParams.value))
+        } else if (contractParams.erc20) {
+          // ERC20 transfer
+          tokenRate = contractParams.erc20 ? state.tokenRates[txParams.to] : 1
+          if (methodParams && isArray(methodParams)) {
+            if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
+              [, amountTo, amountValue] = methodParams || []
+            else {
+              ;[amountTo, amountValue] = methodParams || []
+            }
+          }
+          symbol = contractParams.symbol
+          type = 'erc20'
+          type_name = contractParams.name
+          type_image_link = contractParams.logo
+          totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
+        } else {
+          // ETH transfers
+          tokenRate = 1
+          symbol = 'ETH'
+          type = 'eth'
+          type_name = 'eth'
+          type_image_link = 'n/a'
+          totalAmount = fromWei(toBN(txParams.value))
         }
         const txObj = {
-          created_at: new Date(txMeta.time),
-          from: toChecksumAddress(txMeta.txParams.from),
-          to: amountTo ? toChecksumAddress(amountTo.value) : toChecksumAddress(txMeta.txParams.to),
+          created_at: new Date(time),
+          from: toChecksumAddress(txParams.from),
+          to: amountTo && isAddress(amountTo.value) ? toChecksumAddress(amountTo.value) : toChecksumAddress(txParams.to),
           total_amount: totalAmount,
-          gas: txMeta.txParams.gas,
-          gasPrice: txMeta.txParams.gasPrice,
-          nonce: txMeta.txParams.nonce,
-          type: txMeta.contractParams && txMeta.contractParams.erc20 ? 'erc20' : txMeta.contractParams.erc721 ? 'erc721' : 'eth',
-          type_name: txMeta.contractParams && txMeta.contractParams.name ? txMeta.contractParams.name : 'n/a',
-          type_image_link: txMeta.contractParams && txMeta.contractParams.logo ? txMeta.contractParams.logo : 'n/a',
-          currency_amount: (getCurrencyMultiplier() * totalAmount).toString(),
+          gas: txParams.gas,
+          gasPrice: txParams.gasPrice,
+          symbol: symbol,
+          nonce: txParams.nonce,
+          type: type,
+          type_name: type_name,
+          type_image_link: type_image_link,
+          currency_amount: (getCurrencyMultiplier() * parseFloat(totalAmount) * tokenRate).toString(),
           selected_currency: state.selectedCurrency,
           status: 'submitted',
           network: state.networkType.host,
-          transaction_hash: txMeta.hash
+          transaction_hash: hash
         }
         if (state.pastTransactions.findIndex(x => x.transaction_hash === txObj.transaction_hash && x.network === txObj.network) === -1) {
           // User notification
-          notifyUser(getEtherScanHashLink(txHash, state.networkType.host))
+          try {
+            notifyUser(getEtherScanHashLink(hash, state.networkType.host))
+          } catch (error) {
+            log.error(error)
+          }
 
           post(`${config.api}/transaction`, txObj, {
             headers: {
