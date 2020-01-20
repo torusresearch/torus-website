@@ -293,11 +293,12 @@ export default {
           status: status,
           etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network),
           networkType: x.network,
-          ethRate: `1 ${x.symbol} = ${significantDigits(parseFloat(x.currency_amount) / parseFloat(x.total_amount))}`,
+          ethRate: `1 ${x.symbol || 'ETH'} = ${significantDigits(parseFloat(x.currency_amount) / parseFloat(x.total_amount))}`,
           currencyUsed: x.selected_currency,
           type: x.type,
-          type_name: x.type_name,
-          type_image_link: x.type_image_link
+          type_name: x.type_name || 'n/a',
+          type_image_link: x.type_image_link,
+          fromEtherscan: x.fromEtherscan
         }
         pastTx.push(finalObj)
       }
