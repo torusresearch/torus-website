@@ -35,12 +35,11 @@
     "test:e2e:mobile": "env MOBILE_ENV=true mocha --timeout=60000 ./test/e2e"
   },
   "dependencies": {
-    "@connext/client": "^1.4.1",
-    "@connext/types": "^1.4.1",
+    "@connext/client": "^3.0.1",
+    "@connext/types": "^3.0.1",
     "assert": "^2.0.0",
     "bip39": "^3.0.2",
     "broadcast-channel": "^3.0.3",
-    "connext-store": "^1.1.7",
     "copy-to-clipboard": "^3.2.0",
     "core-js": "3.4.6",
     "debounce": "^1.2.0",

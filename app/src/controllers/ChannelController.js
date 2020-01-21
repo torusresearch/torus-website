@@ -1,6 +1,5 @@
 const { toWei } = require('web3-utils')
 const connext = require('@connext/client')
-const ConnextStore = require('connext-store').default
 
 const DEFAULT_COLLATERAL_MINIMUM = toWei('5')
 const DEFAULT_AMOUNT_TO_COLLATERALIZE = toWei('10')
@@ -35,25 +34,14 @@ class ChannelController {
       keyGen,
       ethProviderUrl: ETH_PROVIDER_URL || 'https://rinkeby.indra.connext.network/api/ethprovider', // default to nodes provider
       logLevel: LOG_LEVEL || 5, // default to log everything
-      nodeUrl: NODE_URL || 'wss://rinkeby.indra.connext.network/api/messaging', // default to rinkeby
-      store: new ConnextStore(window.localStorage)
+      nodeUrl: NODE_URL || 'wss://rinkeby.indra.connext.network/api/messaging' // default to rinkeby
     }
     console.log('Initializing Channel...')
     connext
       .connect(connectOpts)
       .then(channel => {
         console.log('Channel Connected!')
-        channel
-          .addPaymentProfile({
-            minimumMaintainedCollateral: DEFAULT_AMOUNT_TO_COLLATERALIZE,
-            amountToCollateralize: DEFAULT_COLLATERAL_MINIMUM,
-            assetId: channel.config.contractAddresses.Token
-          })
-          .then(paymentProfile => {
-            console.log('Added payment profile to channel:', paymentProfile)
-            this.saveChannel(channel)
-          })
-          .catch(error => console.error(error))
+        this.saveChannel(channel)
       })
       .catch(error => console.error(error))
   }

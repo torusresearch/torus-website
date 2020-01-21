@@ -10,7 +10,6 @@
 
 ```sh
 npm install
-find ./node_modules -name ".git" -type d -exec rm -rf {} +
 ```
 
 ### Compiles and hot-reloads for development
