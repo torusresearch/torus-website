@@ -431,7 +431,7 @@ export default {
           return this.t('dappTransfer.notApplicable')
           break
         default:
-          return t('dappTransfer.transactionRequest')
+          return this.t('dappTransfer.transactionRequest')
           break
       }
     },
