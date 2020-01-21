@@ -70,7 +70,7 @@ class TxGasUtil {
       if (codeIsEmpty) {
         // if there's data in the params, but there's no contract code, it's not a valid transaction
         if (txParams.data) {
-          const err = new Error('TxGasUtil - Trying to call a function on a non-contract address')
+          const err = new Error('dappTransfer.txGasUtil')
           // set error key so ui can display localized error message
           err.errorKey = 'transactionErrorNoContract'
 
