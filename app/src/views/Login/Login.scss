@@ -1,13 +1,25 @@
 .login-panel-right {
-  background-image: url('/images/login-bg.png');
+  background-image: url('/images/login-bg.jpeg');
   background-repeat: no-repeat;
   background-position: left top;
-  background-size: auto 100%;
+  background-size: 100% 100%;
   background-color: #0364FF;
 
   .caption {
     width: 80%;
     margin: auto
+  }
+
+  &.torus-dark {
+    background-image: url('/images/login-bg-dark.jpeg');
+    background-color: #242529;
+  }
+
+  .right-panel-header {
+    font-size: 24px;
+    @media only screen and (min-width: 960px) {
+      font-size: 32px;
+    }
   }
 }
 
@@ -15,6 +27,16 @@
   width: 70%;
   ::v-deep .v-btn__content {
     justify-content: left; 
+  }
+
+  &.torus-dark {
+    padding-left: 2px;
+    background-color: #4285F4 !important; //temporary until v8 is global
+    color: #ffffff !important;
+
+    img {
+      height: 39px;
+    }
   }
 }
 
@@ -25,10 +47,11 @@ a {
 .other-login-container {
   margin: 0 -4px;
   .other-login-btn {
-    border: 2px solid #E9EAEA;
-    border-radius: 2px;
     height: 50px;
     margin-bottom: 8px;
+    &.torus-dark {
+      border: 1px solid #343539;
+    }
   }
 }
 
