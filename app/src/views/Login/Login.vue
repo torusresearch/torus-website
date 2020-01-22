@@ -140,9 +140,9 @@
           :class="$vuetify.theme.dark ? 'torus-dark' : ''"
         >
           <v-layout class="pb-8" wrap fill-height align-end>
-            <v-flex class="mb-3 text-center" xs9 sm8 ml-auto mr-auto>
+            <v-flex class="mb-3 text-center" xs9 sm8 md10 ml-auto mr-auto>
               <div class="right-panel-header white--text font-weight-bold mb-2">{{ t('login.frictionless') }}</div>
-              <div class="body-2 white--text">
+              <div class="body-2 right-panel-subheader white--text mx-auto">
                 {{ t('login.simpleSecure') }}
               </div>
             </v-flex>

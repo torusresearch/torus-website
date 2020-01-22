@@ -1,9 +1,13 @@
 .login-panel-right {
-  background-image: url('/images/login-bg.jpeg');
+  background-image: url('/images/login-bg.jpg');
   background-repeat: no-repeat;
-  background-position: left top;
-  background-size: 100% 100%;
+  background-size: auto 100%;
   background-color: #0364FF;
+  background-position: 70% bottom;
+
+  @media only screen and (min-width: 960px) {
+    background-position: 80% bottom;
+  }
 
   .caption {
     width: 80%;
@@ -11,7 +15,7 @@
   }
 
   &.torus-dark {
-    background-image: url('/images/login-bg-dark.jpeg');
+    background-image: url('/images/login-bg-dark.jpg');
     background-color: #242529;
   }
 
@@ -19,6 +23,15 @@
     font-size: 24px;
     @media only screen and (min-width: 960px) {
       font-size: 32px;
+    }
+  }
+  .right-panel-subheader {
+    width: 100%;
+    @media only screen and (min-width: 960px) {
+      width: 80%;
+    }
+    @media only screen and (min-width: 1400px) {
+      width: 60%;
     }
   }
 }
