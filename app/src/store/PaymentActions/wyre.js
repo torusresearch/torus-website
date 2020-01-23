@@ -21,7 +21,7 @@ export default {
       }
     )
   },
-  fetchWyreOrder({ state, dispatch }, { currentOrder, preopenInstanceId }) {
+  fetchWyreOrder({ state, dispatch }, { currentOrder, preopenInstanceId, selectedAddress }) {
     const instanceState = encodeURIComponent(
       window.btoa(
         JSON.stringify({
@@ -34,7 +34,7 @@ export default {
       destCurrency: currentOrder.destCurrency,
       sourceAmount: currentOrder.sourceAmount,
       redirectUrl: `${config.redirect_uri}?state=${instanceState}`,
-      dest: `ethereum:${state.selectedAddress}`,
+      dest: `ethereum:${selectedAddress || state.selectedAddress}`,
       accountId: config.wyreAccountId,
       referenceId: state.selectedAddress
     }
