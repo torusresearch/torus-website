@@ -101,20 +101,6 @@
       <h1 class="title content">Loading</h1>
     </div>
     <script>
-      // set theme
-      let theme = 'light'
-      if (storageAvailable('localStorage')) {
-        const torusTheme = localStorage.getItem('torus-theme')
-        if (torusTheme) {
-          theme = torusTheme.split('-')[0]
-        }
-      }
-      console.log(theme)
-
-      if (theme === 'dark') {
-        document.querySelector('h1.title').style.color = '#d3d3d4'
-        document.querySelector('body').style.backgroundColor = '#24252A'
-      }
 
       function storageAvailable(type) {
         var storage
@@ -141,6 +127,19 @@
             storage.length !== 0
           )
         }
+      }
+      // set theme
+      let theme = 'light'
+      if (storageAvailable('localStorage')) {
+        const torusTheme = localStorage.getItem('torus-theme')
+        if (torusTheme) {
+          theme = torusTheme.split('-')[0]
+        }
+      }
+
+      if (theme === 'dark') {
+        document.querySelector('h1.title').style.color = '#d3d3d4'
+        document.querySelector('body').style.backgroundColor = '#24252A'
       }
       // broadcast-channel
       /* eslint no-param-reassign: 0 */
