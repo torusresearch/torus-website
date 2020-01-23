@@ -10,7 +10,7 @@
     }
     &:not(.active):hover{
       border-radius: 6px;
-      background-color: #E9EEFE;
+      background-color: var(--v-primary-lighten5);
     }
   }
 }
