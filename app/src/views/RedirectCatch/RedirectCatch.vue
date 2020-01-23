@@ -4,7 +4,7 @@
       <v-flex text-center>
         <beat-loader :color="$vuetify.theme.themes.dark.primary" />
         <div class="redirect-title font-weight-bold mt-3">
-          Loading
+          {{ t('dappGeneral.loading') }}
         </div>
       </v-flex>
     </v-layout>
