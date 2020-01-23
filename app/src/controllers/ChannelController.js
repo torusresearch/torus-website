@@ -1,8 +1,4 @@
-const { toWei } = require('web3-utils')
 const connext = require('@connext/client')
-
-const DEFAULT_COLLATERAL_MINIMUM = toWei('5')
-const DEFAULT_AMOUNT_TO_COLLATERALIZE = toWei('10')
 
 class ChannelController {
   /**
