@@ -5,12 +5,12 @@
     </template>
     <template v-else>
       <v-layout align-center mx-6 mb-6>
-        <div class="text-black font-weight-bold headline float-left">Permission</div>
+        <div class="text-black font-weight-bold headline float-left">{{ t('dappInfo.permission') }}</div>
         <img :src="require('../../../public/img/icons/lock.svg')" width="16" class="ml-2" />
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-2 mx-6>
-          <div class="subtitle-2 text_2--text">Request from:</div>
+          <div class="subtitle-2 text_2--text">{{ t('dappInfo.requestFrom') }}:</div>
 
           <v-card flat class="grey lighten-3">
             <v-card-text>
@@ -30,7 +30,7 @@
                 <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
               </v-list-item-icon>
               <v-list-item-content class="pa-1">
-                <div class="caption text_2--text">To access your Google Email, Photo and Name</div>
+                <div class="caption text_2--text">{{ t('dappInfo.toAccessGoogle') }}</div>
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="pa-0" v-if="message !== ''">
@@ -46,10 +46,10 @@
 
         <v-layout px-6 mx-3>
           <v-flex xs6>
-            <v-btn block text large class="text_2--text" @click="triggerDeny">Cancel</v-btn>
+            <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappInfo.cancel') }}</v-btn>
           </v-flex>
           <v-flex xs6>
-            <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">Confirm</v-btn>
+            <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">{{ t('dappInfo.confirm') }}</v-btn>
           </v-flex>
         </v-layout>
       </v-layout>
