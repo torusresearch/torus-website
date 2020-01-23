@@ -165,20 +165,17 @@
   "lint-staged": {
     "*.js": [
       "npm run lint:js --",
-      "prettier --write **/*.js",
-      "git add"
+      "prettier --write **/*.js"
     ],
     "*.vue": [
       "npm run lint:vue --",
-      "prettier --write **/*.vue",
-      "git add"
+      "prettier --write **/*.vue"
     ],
     "*.{json,css,yaml,yml}": [
       "prettier --write **/*.json",
       "prettier --write **/*.css",
       "prettier --write **/*.yml",
-      "prettier --write **/*.yaml",
-      "git add"
+      "prettier --write **/*.yaml"
     ]
   },
   "mocha": {
