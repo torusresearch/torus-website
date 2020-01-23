@@ -6,6 +6,8 @@ export default {
   text_1: '#0F1222',
   text_2: '#5C6C7F',
   primary: '#0364FF',
+  infoBanner: '#FFF4D8',
+  infoBannerText: '#FC902D',
   // Rarely changed
   success: '#2dcc70',
   error: '#e20d0d',
