@@ -2,7 +2,7 @@
   <v-container fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <beat-loader :color="$vuetify.theme.themes.dark.primary" />
+        <beat-loader :color="$vuetify.theme.themes.dark.primary.base" />
         <div class="redirect-title font-weight-bold mt-3">
           {{ t('dappGeneral.loading') }}
         </div>

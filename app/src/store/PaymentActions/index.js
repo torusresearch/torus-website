@@ -61,7 +61,7 @@ export default {
           const currentOrder = await dispatch('fetchMoonpayQuote', selectedParams)
           const { success } = await dispatch('fetchMoonpayOrder', {
             currentOrder,
-            colorCode: vuetify.framework.theme.themes.light.primary,
+            colorCode: vuetify.framework.theme.themes.light.primary.base,
             preopenInstanceId
           })
           handleSuccess(success)

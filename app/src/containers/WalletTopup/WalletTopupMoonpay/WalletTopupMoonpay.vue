@@ -39,7 +39,7 @@ export default {
       }, 0)()
     },
     sendOrder(cb) {
-      cb(this.$store.dispatch('fetchMoonpayOrder', { currentOrder: this.currentOrder, colorCode: this.$vuetify.theme.themes.light.primary }))
+      cb(this.$store.dispatch('fetchMoonpayOrder', { currentOrder: this.currentOrder, colorCode: this.$vuetify.theme.themes.light.primary.base }))
     }
   }
 }

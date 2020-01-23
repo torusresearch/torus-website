@@ -5,7 +5,10 @@ export default {
   background: '#2F3136',
   text_1: '#D3D3D4',
   text_2: '#7F8186',
-  primary: '#0364FF',
+  primary: {
+    base: '#0364FF',
+    lighten5: '#3F4147'
+  },
   infoBanner: '#F6A608',
   infoBannerText: '#FFFFFF',
   // Rarely changed
