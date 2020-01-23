@@ -1,5 +1,5 @@
 <template>
-  <v-menu offset-y :bottom="!$vuetify.breakpoint.xsOnly" :top="$vuetify.breakpoint.xsOnly" left z-index="20" :close-on-content-click="false">
+  <v-menu offset-y :bottom="!$vuetify.breakpoint.xsOnly" :top="$vuetify.breakpoint.xsOnly" left z-index="20">
     <template v-slot:activator="{ on }">
       <v-btn v-if="!$vuetify.breakpoint.xsOnly" id="locale-dropdown-btn" class="locale-selector" small text v-on="on">
         <img :src="require('../../../../public/img/icons/globe.svg')" width="15" height="30" alt="Torus language globe" />
@@ -20,10 +20,21 @@
       </v-list-item>
     </template>
 
-    <v-card class="pa-4">
-      <v-radio-group :value="localeSelected" @change="changeLocale" hide-details column class="ma-0">
-        <v-radio v-for="locale in LOCALES" :label="locale.name" :value="locale.value" :key="locale.value"></v-radio>
-      </v-radio-group>
+    <v-card class="pa-3">
+      <v-list min-width="190" dense>
+        <v-list-item-group color="primary">
+          <v-list-item
+            :class="localeSelected === locale.value ? 'active' : ''"
+            v-for="locale in LOCALES"
+            :key="locale.value"
+            @click="changeLocale(locale.value)"
+          >
+            <v-list-item-content>
+              <v-list-item-title>{{ locale.name }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
     </v-card>
   </v-menu>
 </template>
