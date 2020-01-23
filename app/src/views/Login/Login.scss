@@ -37,19 +37,39 @@
 }
 
 .login-btn {
-  width: 70%;
+  &.v-btn {
+    width: 70%;
+    border-radius: 9px;
+    height: 60px;
+    border: 1px solid #F1F2F6;
+    img {
+      height: 26px;
+    }
+  }
   ::v-deep .v-btn__content {
     justify-content: left; 
   }
 
   &.torus-dark {
+    border: 1px solid #36373B;
     padding-left: 2px;
     background-color: #4285F4 !important; //temporary until v8 is global
     color: #ffffff !important;
 
     img {
-      height: 39px;
+      height: 56px;
     }
+  }
+}
+
+.logout-btn {
+  &.v-btn{
+    border: 1px solid #F1F2F6 !important;
+    height: inherit;
+  }
+  &.theme--dark.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+    border: 1px solid #343539;
+    background-color: #424242;
   }
 }
 
@@ -60,10 +80,12 @@ a {
 .other-login-container {
   margin: 0 -4px;
   .other-login-btn {
-    height: 50px;
+    border-radius: 9px;
+    height: 60px;
     margin-bottom: 8px;
-    &.torus-dark {
+    &.theme--dark.torus-dark {
       border: 1px solid #343539;
+      background-color: #424242;
     }
   }
 }

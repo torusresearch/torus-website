@@ -17,7 +17,6 @@
               <v-btn
                 id="loginBtn"
                 :color="$vuetify.theme.dark ? '' : 'white'"
-                large
                 block
                 :class="$vuetify.theme.dark ? 'torus-dark' : ''"
                 class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn"
@@ -116,11 +115,10 @@
             <v-flex xs12 mt-4>
               <div class="text-center">
                 <v-btn
-                  large
                   :color="$vuetify.theme.dark ? '' : 'white'"
-                  :class="$vuetify.theme.dark ? 'torus-dark' : 'card-shadow-v8 primary--text'"
+                  :class="$vuetify.theme.dark ? 'torus-dark' : 'card-shadow-v8'"
                   :depressed="$vuetify.theme.dark"
-                  class="px-12 font-weight-bold body-1 text-uppercase"
+                  class="px-12 pa-3 font-weight-bold body-1 text-uppercase primary--text logout-btn"
                   type="button"
                   @click="returnHome"
                 >

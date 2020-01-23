@@ -84,6 +84,7 @@
 .torus-app.theme--light {
   &.v-sheet {
     background: var(--v-background-base);
+    background-color: var(--v-background-base);
   }
   &.v-tabs .v-tabs-bar {
     background: var(--v-background-base);
@@ -136,6 +137,7 @@
   & .v-tabs > .v-tabs-bar,
   & .v-sheet {
     background: var(--v-background-base);
+    background-color: var(--v-background-base);
   }
 
   .card-shadow {
