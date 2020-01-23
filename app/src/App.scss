@@ -38,6 +38,10 @@
   .theme--dark.v-messages {
     color: var(--v-text_2-base);
   }
+  .theme--light.v-system-bar.info,
+  .theme--dark.v-system-bar.info {
+    color: var(--v-infoBannerText-base);
+  }
 
   .v-btn {
     text-transform: inherit;

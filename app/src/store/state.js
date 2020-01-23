@@ -9,32 +9,39 @@ const initialState = {
     verifierId: '', // usually email or facebook id
     verifierParams: {} // general params
   },
+  // loaders
+  loginInProgress: false,
+  weiBalanceLoaded: false, // Use on showing spinners
+  loadingUserTransactions: true,
+  isNewUser: false,
+  // account handled
   idToken: '',
-  userInfoAccess: USER_INFO_REQUEST_NEW,
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
-  weiBalanceLoaded: false, // Use on showing spinners
-  selectedAddress: '',
-  selectedCurrency: 'USD',
   networkId: 0,
   networkType: { host: MAINNET, chainId: MAINNET_CODE, networkName: MAINNET_DISPLAY_NAME },
   currencyData: {},
   tokenData: {}, // Account specific object
+  assets: {}, // Account specific object
   tokenRates: {},
   transactions: [],
-  loadingUserTransactions: true,
   unapprovedTypedMessages: {},
   unapprovedPersonalMsgs: {},
   unapprovedMsgs: {},
-  loginInProgress: false,
+  // preferences
+  selectedAddress: '',
   jwtToken: '',
+
+  selectedCurrency: 'USD',
   pastTransactions: [],
-  isNewUser: false,
   theme: THEME_LIGHT_BLUE_NAME,
   locale: LOCALE_EN,
-  assets: {}, // Account specific object
   billboard: [],
-  contacts: []
+  contacts: [],
+  permissions: {},
+  userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate
+  errorMsg: '',
+  successMsg: ''
 }
 
 export default initialState
