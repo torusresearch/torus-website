@@ -734,7 +734,12 @@ export default {
       const fastGasPrice = '0x' + this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)
       const selectedAddress = this.$store.state.selectedAddress
       if (this.contractType === CONTRACT_TYPE_ETH) {
-        const value = '0x' + this.amount.times(new BigNumber(10).pow(new BigNumber(18))).toString(16)
+        const value =
+          '0x' +
+          this.amount
+            .times(new BigNumber(10).pow(new BigNumber(18)))
+            .dp(0, BigNumber.ROUND_DOWN)
+            .toString(16)
         log.info(this.gas.toString())
         torus.web3.eth.sendTransaction(
           {
@@ -762,7 +767,12 @@ export default {
           }
         )
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
-        const value = '0x' + this.amount.times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals))).toString(16)
+        const value =
+          '0x' +
+          this.amount
+            .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
+            .dp(0, BigNumber.ROUND_DOWN)
+            .toString(16)
         this.getTransferMethod(this.contractType, selectedAddress, toAddress, value).send(
           {
             from: selectedAddress,
