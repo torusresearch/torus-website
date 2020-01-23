@@ -409,11 +409,10 @@
           )
         }
       }
-      if (storageAvailable('sessionStorage')) {
-        const sessionData = sessionStorage.getItem('torus-app')
-        const torusAppSession = JSON.parse(sessionData) || {}
-        if (torusAppSession && Object.prototype.hasOwnProperty.call(torusAppSession, 'theme')) {
-          theme = torusAppSession.theme.split('-')[0]
+      if (storageAvailable('localStorage')) {
+        const torusTheme = localStorage.getItem('torus-theme')
+        if (torusTheme) {
+          theme = torusTheme.split('-')[0]
         }
       }
 
@@ -448,7 +447,7 @@
       const loaderElement = document.querySelector('#' + selectedLoader)
       if (theme === 'dark') {
         loaderElement.querySelectorAll('.sk-loader').forEach(function(loader) {
-          loader.style.background =  '#2E3135'
+          loader.classList.add('dark')
         })
       }
       // loaderElement.style.display = /\/redirect/.test(redirectPath) || mobileTag ? 'flex' : 'flex'

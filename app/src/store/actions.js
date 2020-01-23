@@ -46,7 +46,7 @@ const providerChangeStream = torus.communicationMux.getStream('provider_change')
 export default {
   logOut({ commit, dispatch }, payload) {
     commit('logOut', initialState)
-    dispatch('setTheme', THEME_LIGHT_BLUE_NAME)
+    // dispatch('setTheme', THEME_LIGHT_BLUE_NAME)
     if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
     statusStream.write({ loggedIn: false })
     torus.torusController.accountTracker.store.unsubscribe(accountTrackerHandler)
@@ -845,6 +845,8 @@ export default {
     const theme = themes[payload || THEME_LIGHT_BLUE_NAME]
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
+    // set theme to localStorage
+    localStorage.setItem('torus-theme', payload)
   },
   setUserTheme({ state, dispatch }, payload) {
     return new Promise((resolve, reject) => {

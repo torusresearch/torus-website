@@ -327,4 +327,11 @@ VuexStore.subscribe((mutation, state) => {
   }
 })
 
+if (storageAvailable('localStorage')) {
+  const torusTheme = localStorage.getItem('torus-theme')
+  if (torusTheme) {
+    VuexStore.dispatch('setTheme', torusTheme)
+  }
+}
+
 export default VuexStore
