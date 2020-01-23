@@ -18,9 +18,9 @@ export default {
       requested_amount: +parseFloat(payload.fiatValue)
     })
   },
-  fetchMoonpayOrder({ state, dispatch }, { currentOrder, colorCode, preopenInstanceId }) {
+  fetchMoonpayOrder({ state, dispatch }, { currentOrder, colorCode, preopenInstanceId: preopenInstanceIdPayload, selectedAddress }) {
     return new Promise((resolve, reject) => {
-      let preopenInstanceId = preopenInstanceId
+      let preopenInstanceId = preopenInstanceIdPayload
       if (!preopenInstanceId) {
         preopenInstanceId = randomId()
         const finalUrl = config.baseUrl + `/redirect?preopenInstanceId=${preopenInstanceId}`
@@ -43,7 +43,7 @@ export default {
         apiKey: config.moonpayLiveAPIKEY,
         enabledPaymentMethods: 'credit_debit_card,sepa_bank_transfer,gbp_bank_transfer',
         currencyCode: currentOrder.currency.code,
-        walletAddress: state.selectedAddress,
+        walletAddress: selectedAddress || state.selectedAddress,
         colorCode: colorCode,
         baseCurrencyAmount: currentOrder.baseCurrencyAmount,
         baseCurrencyCode: currentOrder.baseCurrency.code,

@@ -64,7 +64,7 @@ export default {
               },
               destination_wallet: {
                 currency: payload.currentOrder.digital_money.currency,
-                address: state.selectedAddress
+                address: payload.selectedAddress || state.selectedAddress
               }
             }
           }
