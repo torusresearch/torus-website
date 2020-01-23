@@ -217,6 +217,7 @@ export default {
             this.snackbar = true
             this.snackbarColor = 'error'
             this.snackbarText = err
+            this.fetchQuote()
           })
         }
         this.$emit('sendOrder', cb)
