@@ -144,7 +144,7 @@ class PendingTransactionTracker extends EventEmitter {
     }
 
     // *note to self* hard failure point
-    const transactionReceipt = await this.query.getTransactionReceipt(txHash)
+    const transactionReceipt = (await this.query.getTransactionReceipt(txHash)) || {}
 
     // If another tx with the same nonce is mined, set as failed.
     const taken = await this._checkIfNonceIsTaken(txMeta)
@@ -180,7 +180,7 @@ class PendingTransactionTracker extends EventEmitter {
 
     // get latest transaction status
     try {
-      const { blockNumber } = transactionReceipt
+      const { blockNumber } = transactionReceipt || {}
       if (blockNumber) {
         this.emit('tx:confirmed', txId, transactionReceipt)
       }
@@ -200,7 +200,7 @@ class PendingTransactionTracker extends EventEmitter {
     @returns {boolean}
   */
 
-  async _checkIftxWasDropped(txMeta, { blockNumber }) {
+  async _checkIftxWasDropped(txMeta, { blockNumber = '' }) {
     const {
       txParams: { nonce, from }
     } = txMeta

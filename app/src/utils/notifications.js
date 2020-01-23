@@ -18,17 +18,18 @@ function notifyUser(url) {
       return
     }
     navigator.serviceWorker.getRegistration().then(registration => {
-      registration.showNotification('Sent Transaction', {
-        body: 'Check Tx Status',
-        icon: 'favicon.png',
-        actions: [{ action: 'close', title: 'Close Notification', icon: 'img/icons/close.svg' }],
-        vibrate: [100, 50, 100],
-        tag: 'transaction-status',
-        data: {
-          dateOfArrival: Date.now(),
-          url: url
-        }
-      })
+      registration &&
+        registration.showNotification('Sent Transaction', {
+          body: 'Check Tx Status',
+          icon: 'favicon.png',
+          actions: [{ action: 'close', title: 'Close Notification', icon: 'img/icons/close.svg' }],
+          vibrate: [100, 50, 100],
+          tag: 'transaction-status',
+          data: {
+            dateOfArrival: Date.now(),
+            url: url
+          }
+        })
     })
   })
 }
