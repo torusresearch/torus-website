@@ -21,4 +21,20 @@ const getQuote = reqObj => {
   }
 }
 
-export { getQuote }
+const getSignature = reqObj => {
+  try {
+    const options = {
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: `Bearer ${reqObj.token}`
+      }
+    }
+    return get(`${config.moonpayApiHost}/sign?url=${reqObj.url}`, options)
+  } catch (e) {
+    log.error(e)
+  }
+}
+
+export { getQuote, getSignature }

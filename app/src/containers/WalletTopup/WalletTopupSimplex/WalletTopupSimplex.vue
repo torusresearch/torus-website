@@ -3,6 +3,7 @@
     selectedProvider="simplex"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
+    @clearQuote="clearQuote"
     :cryptoCurrencyValue="cryptoCurrencyValue"
     :currencyRate="currencyRate"
   />
@@ -40,6 +41,12 @@ export default {
     },
     sendOrder(cb) {
       cb(this.$store.dispatch('fetchSimplexOrder', { currentOrder: this.currentOrder }))
+    },
+    clearQuote(payload) {
+      this.cryptoCurrencyValue = 0
+      this.currencyRate = 0
+      this.currentOrder = {}
+      this.fetchQuote(payload)
     }
   }
 }

@@ -9,6 +9,8 @@ export default {
     base: '#0364FF',
     lighten5: '#E9EEFE'
   },
+  infoBanner: '#FFF4D8',
+  infoBannerText: '#FC902D',
   // Rarely changed
   success: '#2dcc70',
   error: '#e20d0d',
