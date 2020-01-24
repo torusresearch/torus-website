@@ -1,3 +1,6 @@
+import themes from '../plugins/themes'
+import vuetify from '../plugins/vuetify'
+
 export default {
   setUserInfo(state, userInfo) {
     state.userInfo = userInfo
@@ -9,7 +12,7 @@ export default {
     state.wallet = wallet
   },
   setWeiBalance(state, weiBalance) {
-    state.weiBalance = weiBalance
+    state.weiBalance = { ...state.weiBalance, ...weiBalance }
     state.weiBalanceLoaded = true
   },
   setTokenData(state, tokenData) {
@@ -36,7 +39,7 @@ export default {
   setCurrencyData(state, data) {
     state.currencyData = { ...state.currencyData, [data.currentCurrency]: data.conversionRate }
   },
-  setCurrency(state, currency) {
+  setSelectedCurrency(state, currency) {
     state.selectedCurrency = currency
   },
   setTypedMessages(state, unapprovedTypedMessages) {
@@ -66,9 +69,15 @@ export default {
   },
   setTheme(state, payload) {
     state.theme = payload
+    // Update vuetify theme
+    const theme = themes[payload || THEME_LIGHT_BLUE_NAME]
+    vuetify.framework.theme.dark = theme.isDark
+    vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
+    localStorage.setItem('torus-theme', payload)
   },
   setLocale(state, payload) {
     state.locale = payload
+    vuetify.framework.lang.current = payload
   },
   setAssets(state, payload) {
     state.assets = { ...state.assets, ...payload }
@@ -79,15 +88,18 @@ export default {
   setContacts(state, payload) {
     state.contacts = payload
   },
-  addContacts(state, payload) {
-    state.contacts = [...state.contacts, ...payload]
-  },
-  deleteContact(state, payload) {
-    state.contacts.splice(payload, 1)
-  },
   logOut(state, payload) {
     Object.keys(state).forEach(key => {
       state[key] = payload[key] // or = initialState[key]
     })
+  },
+  setPermissions(state, payload) {
+    state.permissions = payload
+  },
+  setErrorMsg(state, payload) {
+    state.errorMsg = payload
+  },
+  setSuccessMsg(state, payload) {
+    state.successMsg = payload
   }
 }

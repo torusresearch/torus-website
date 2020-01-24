@@ -452,6 +452,10 @@ function formatTxMetaForRpcResult(txMeta) {
   }
 }
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
 module.exports = {
   removeListeners,
   applyListeners,
@@ -477,5 +481,6 @@ module.exports = {
   formatDate,
   paymentProviders,
   getPaymentProviders,
-  formatTxMetaForRpcResult
+  formatTxMetaForRpcResult,
+  capitalizeFirstLetter
 }

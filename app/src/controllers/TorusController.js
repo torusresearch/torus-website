@@ -12,6 +12,7 @@ const TokenRatesController = require('./TokenRatesController').default
 const AssetDetectionController = require('./AssetsDetectionController').default
 const AssetController = require('./AssetsController').default
 const AssetContractController = require('./AssetsContractController').default
+const PreferencesController = require('./PreferencesController').default
 const toChecksumAddress = require('../utils/toChecksumAddress').default
 const BN = require('ethereumjs-util').BN
 const GWEI_BN = new BN('1000000000')
@@ -160,6 +161,8 @@ export default class TorusController extends EventEmitter {
       assetController: this.assetController,
       assetContractController: this.assetContractController
     })
+
+    this.prefsController = new PreferencesController()
 
     this.networkController.lookupNetwork()
     this.messageManager = new MessageManager()
@@ -337,9 +340,11 @@ export default class TorusController extends EventEmitter {
     if (opts.jwtToken) {
       this.assetDetectionController.jwtToken = opts.jwtToken
       this.assetController.jwtToken = opts.jwtToken
+      this.prefsController.jwtToken = opts.jwtToken
     }
     this.detectTokensController.startTokenDetection(address)
     this.assetDetectionController.startAssetDetection(address)
+    this.prefsController.setSelectedAddress(address)
   }
 
   /**
@@ -808,19 +813,24 @@ export default class TorusController extends EventEmitter {
    * @param {string} currencyCode - The code of the preferred currency.
    * @param {Function} cb - A callback function returning currency info.
    */
-  async setCurrentCurrency(currencyCode, cb) {
+  async setCurrentCurrency(payload, cb) {
     const { ticker } = this.networkController.getNetworkConfig()
     try {
-      this.currencyController.setNativeCurrency(ticker)
-      this.currencyController.setCurrentCurrency(currencyCode)
-      await this.currencyController.updateConversionRate()
+      if (payload.selectedCurrency !== 'ETH') {
+        this.currencyController.setNativeCurrency(ticker)
+        this.currencyController.setCurrentCurrency(payload.selectedCurrency.toLowerCase())
+        await this.currencyController.updateConversionRate()
+      }
       const data = {
         nativeCurrency: ticker || 'ETH',
         conversionRate: this.currencyController.getConversionRate(),
         currentCurrency: this.currencyController.getCurrentCurrency(),
         conversionDate: this.currencyController.getConversionDate()
       }
-      cb(null, data)
+      if (payload.origin && payload.origin !== 'store') {
+        this.prefsController.setSelectedCurrency(payload)
+      }
+      cb && cb(null, data)
     } catch (err) {
       cb(err)
     }

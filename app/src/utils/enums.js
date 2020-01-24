@@ -195,6 +195,12 @@ const LOCALES = [
   }
 ]
 
+const WALLET_METHOD_PREFIX = 'wallet'
+const TORUS_METHOD_PREFIX = 'torus'
+
+const ERROR_TIME = 5 * 1000
+const SUCCESS_TIME = 5 * 1000
+
 module.exports = {
   ENS,
   ETH,
@@ -291,5 +297,9 @@ module.exports = {
   LOCALE_DE,
   LOCALE_EN_LABEL,
   LOCALE_DE_LABEL,
-  LOCALES
+  LOCALES,
+  WALLET_METHOD_PREFIX,
+  TORUS_METHOD_PREFIX,
+  ERROR_TIME,
+  SUCCESS_TIME
 }
