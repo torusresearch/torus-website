@@ -104,8 +104,7 @@ class PreferencesController {
       .then(user => {
         if (user.data) {
           const { transactions, contacts, theme, locale, verifier, verifier_id } = user.data || {}
-          this.store.updateState({ contacts, pastTransactions: transactions, theme })
-          if (locale !== '') this.store.updateState({ locale })
+          this.store.updateState({ contacts, pastTransactions: transactions, theme, locale })
           if (!verifier || !verifier_id) this.setVerifier(verifier, verifier_id)
           cb && cb(user)
         }
@@ -312,6 +311,8 @@ class PreferencesController {
     }
     this._handle = setInterval(() => {
       // call here
+      if (!this._jwtToken) return
+      this.sync()
     }, interval)
   }
 }
