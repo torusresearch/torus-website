@@ -46,7 +46,6 @@ import log from 'loglevel'
 import { toChecksumAddress, toBN, fromWei, isAddress } from 'web3-utils'
 import config from '../../config'
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
-import { getPastOrders } from '../../plugins/simplex'
 import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getEthTxStatus, formatDate } from '../../utils/utils'
 import torus from '../../torus'
 import { patch } from '../../utils/httpHelpers'
@@ -353,6 +352,38 @@ export default {
       }
       return finalTransactions
     },
+    calculatePaymentTransactions() {
+      const { paymentTx: response } = this.$store.state || {}
+      this.paymentTx = response.reduce((acc, x) => {
+        let action = ''
+        if (ACTIVITY_ACTION_TOPUP.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_TOPUP
+        else if (ACTIVITY_ACTION_SEND.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_SEND
+        else if (ACTIVITY_ACTION_RECEIVE.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_RECEIVE
+
+        acc.push({
+          id: x.id,
+          date: new Date(x.date),
+          from: x.from,
+          slicedFrom: x.slicedFrom,
+          action,
+          to: x.to,
+          slicedTo: x.slicedTo,
+          totalAmount: x.totalAmount,
+          totalAmountString: x.totalAmountString,
+          currencyAmount: x.currencyAmount,
+          currencyAmountString: x.currencyAmountString,
+          amount: x.amount,
+          ethRate: x.ethRate,
+          status: x.status.toLowerCase(),
+          etherscanLink: x.etherscanLink || '',
+          currencyUsed: x.currencyUsed
+        })
+
+        return acc
+        // }
+      }, [])
+      this.loadingOrders = false
+    },
     patchTx(x, status, jwtToken) {
       // patch tx
       patch(
@@ -373,45 +404,7 @@ export default {
     }
   },
   mounted() {
-    const { selectedAddress: publicAddress, jwtToken } = this.$store.state
-    getPastOrders(
-      {},
-      {
-        Authorization: `Bearer ${jwtToken}`
-      }
-    )
-      .then(response => {
-        this.paymentTx = response.data.reduce((acc, x) => {
-          let action = ''
-          if (ACTIVITY_ACTION_TOPUP.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_TOPUP
-          else if (ACTIVITY_ACTION_SEND.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_SEND
-          else if (ACTIVITY_ACTION_RECEIVE.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_RECEIVE
-
-          acc.push({
-            id: x.id,
-            date: new Date(x.date),
-            from: x.from,
-            slicedFrom: x.slicedFrom,
-            action,
-            to: x.to,
-            slicedTo: x.slicedTo,
-            totalAmount: x.totalAmount,
-            totalAmountString: x.totalAmountString,
-            currencyAmount: x.currencyAmount,
-            currencyAmountString: x.currencyAmountString,
-            amount: x.amount,
-            ethRate: x.ethRate,
-            status: x.status.toLowerCase(),
-            etherscanLink: x.etherscanLink || '',
-            currencyUsed: x.currencyUsed
-          })
-
-          return acc
-          // }
-        }, [])
-        this.loadingOrders = false
-      })
-      .catch(err => log.error(err))
+    this.calculatePaymentTransactions()
     this.calculatePastTransactions()
   }
 }

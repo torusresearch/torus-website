@@ -2,7 +2,7 @@ import ObservableStore from 'obs-store'
 import log from 'loglevel'
 import { addInternalMethodPrefix, addTorusMethodPrefix, prettyPrintData, isErrorObj } from '../utils/permissionUtils'
 import config from '../config'
-import { patch, get, post } from '../utils/httpHelpers'
+import { patch, get, post, getPastOrders } from '../utils/httpHelpers'
 import { LOCALE_EN, THEME_LIGHT_BLUE_NAME, ERROR_TIME, SUCCESS_TIME } from '../utils/enums'
 
 // By default, poll every 1 minute
@@ -34,6 +34,7 @@ class PreferencesController {
       billboard: [],
       contacts: [],
       permissions: {},
+      paymentTx: [],
       ...opts.initState
     }
 
@@ -98,20 +99,21 @@ class PreferencesController {
   }
 
   sync(cb, errorCb) {
-    get(`${config.api}/user`, {
-      headers: this.headers
-    })
-      .then(user => {
-        if (user.data) {
-          const { transactions, contacts, theme, locale, verifier, verifier_id } = user.data || {}
-          this.store.updateState({ contacts, pastTransactions: transactions, theme, locale })
-          if (!verifier || !verifier_id) this.setVerifier(verifier, verifier_id)
-          cb && cb(user)
-        }
-      })
-      .catch(_ => {
+    Promise.all([
+      get(`${config.api}/user`, {
+        headers: this.headers
+      }).catch(_ => {
         errorCb && errorCb()
-      })
+      }),
+      getPastOrders({}, this.headers)
+    ]).then(([user, paymentTx]) => {
+      if (user.data) {
+        const { transactions, contacts, theme, locale, verifier, verifier_id } = user.data || {}
+        this.store.updateState({ contacts, pastTransactions: transactions, theme, locale, paymentTx: paymentTx.data })
+        if (!verifier || !verifier_id) this.setVerifier(verifier, verifier_id)
+        cb && cb(user)
+      }
+    })
   }
 
   createUser(selectedCurrency, theme, verifier, verifierId) {

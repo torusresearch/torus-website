@@ -112,7 +112,6 @@ export default class AssetsDetectionController {
     if (!selectedAddress) {
       return
     }
-    log.info('starting asset detection')
     this.assetController.setSelectedAddress(selectedAddress)
     const apiCollectibles = await this.getOwnerCollectibles()
     for (let index = 0; index < apiCollectibles.length; index++) {

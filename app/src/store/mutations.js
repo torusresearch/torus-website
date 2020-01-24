@@ -96,6 +96,9 @@ export default {
   setPermissions(state, payload) {
     state.permissions = payload
   },
+  setPaymentTx(state, payload) {
+    state.paymentTx = payload
+  },
   setErrorMsg(state, payload) {
     state.errorMsg = payload
   },
