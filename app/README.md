@@ -10,6 +10,7 @@
 
 ```sh
 npm install
+find ./node_modules -name ".git" -type d -exec rm -rf {} +
 ```
 
 ### Compiles and hot-reloads for development
@@ -31,9 +32,7 @@ npm run test:unit
 ```
 
 ### Run your E2E tests
-
 Start local application first before running the e2e test
-
 ```sh
 npm run serve
 npm run test:e2e
@@ -51,7 +50,6 @@ npm run lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ### Current Issues
-
 To get rid of the websocket error,
 use the following command in the project root (where package.json lives)
 
@@ -65,8 +63,8 @@ Website: *.tor.us
 
 | Test/Browser                              | Chrome             | Safari             | Brave              | Firefox            | Edge Beta          | iOS Safari         | iOS Chrome         | Android Chrome    |
 | ----------------------------------------- | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ----------------- |
-| Test login on google/discord oauths | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
-| Skale Network Change | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
-| Import Account | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
-| Test wallet transfer | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
-| Test on torus-embed vue-app all buttons | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
+| Test login on google/discord oauths       | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:| 
+| Skale Network Change                      | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
+| Import Account                            | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
+| Test wallet transfer                      | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
+| Test on torus-embed vue-app all buttons   | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
