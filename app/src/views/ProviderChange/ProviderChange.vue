@@ -1,24 +1,28 @@
 <template>
   <v-container py-6 px-0>
     <template v-if="type === 'none'">
-      <popup-screen-loader />
+      <change-provider-screen-loader />
     </template>
     <template v-else>
       <v-layout wrap align-center mx-6 mb-6>
-        <v-flex xs12 class="text_1--text font-weight-bold headline float-left">Permission</v-flex>
+        <v-flex xs12 class="text_1--text font-weight-bold headline float-left">{{ t('dappInfo.permission') }}</v-flex>
         <v-flex xs12>
           <network-display></network-display>
         </v-flex>
       </v-layout>
       <v-layout wrap>
         <v-flex xs12 mb-2 mx-6>
-          <div class="subtitle-2 text_2--text">Request from:</div>
+          <div class="subtitle-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
 
-          <v-card flat class="background lighten-3">
+          <v-card flat class="grey lighten-3">
             <v-card-text>
-              <div class="subtitle-2 primary--text">{{ origin }}</div>
+              <div class="subtitle-2 primary--text request-from">
+                <a :href="originHref" target="_blank">{{ origin }}</a>
+                <a :href="originHref" target="_blank" class="float-right">
+                  <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
+                </a>
+              </div>
             </v-card-text>
-            <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
           </v-card>
         </v-flex>
 
@@ -30,7 +34,7 @@
               </v-list-item-icon>
               <v-list-item-content class="pa-1">
                 <div class="caption text_2--text">
-                  To change your network to
+                  {{ t('dappProvider.toChangeNetwork') }}
                   <span class="text-capitalize">{{ type && type === 'rpc' ? `${rpcNetwork.networkName} : ${rpcNetwork.host}` : network.host }}</span>
                 </div>
               </v-list-item-content>
@@ -40,10 +44,10 @@
 
         <v-layout px-6 mx-3>
           <v-flex xs6>
-            <v-btn block text large class="text_2--text" @click="triggerDeny">Cancel</v-btn>
+            <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappProvider.cancel') }}</v-btn>
           </v-flex>
           <v-flex xs6>
-            <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">Confirm</v-btn>
+            <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">{{ t('dappProvider.confirm') }}</v-btn>
           </v-flex>
         </v-layout>
       </v-layout>
@@ -53,7 +57,7 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import { PopupScreenLoader } from '../../content-loader'
+import { ChangeProviderScreenLoader } from '../../content-loader'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import { broadcastChannelOptions } from '../../utils/utils'
 import log from 'loglevel'
@@ -61,12 +65,13 @@ import log from 'loglevel'
 export default {
   name: 'confirm',
   components: {
-    PopupScreenLoader,
+    ChangeProviderScreenLoader,
     NetworkDisplay
   },
   data() {
     return {
       origin: '',
+      originHref: '',
       type: 'none',
       network: '',
       rpcNetwork: {},
@@ -104,12 +109,13 @@ export default {
         origin
       } = ev.data || {}
       this.payload = { network, type }
-      let url = { hostname: '' }
+      let url = { hostname: '', href: '' }
       try {
         url = new URL(origin)
       } catch (err) {
         log.error(err)
       }
+      this.originHref = url.href
       this.origin = url.hostname // origin of tx: website url
       if (type && type === 'rpc') {
         this.rpcNetwork = network

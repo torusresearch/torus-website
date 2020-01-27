@@ -1,4 +1,4 @@
-import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, USER_INFO_REQUEST_NEW, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, USER_INFO_REQUEST_NEW, THEME_LIGHT_BLUE_NAME, LOCALE_EN } from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -9,30 +9,39 @@ const initialState = {
     verifierId: '', // usually email or facebook id
     verifierParams: {} // general params
   },
+  // loaders
+  loginInProgress: false,
+  weiBalanceLoaded: false, // Use on showing spinners
+  loadingUserTransactions: true,
+  isNewUser: false,
+  // account handled
   idToken: '',
-  userInfoAccess: USER_INFO_REQUEST_NEW,
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
-  weiBalanceLoaded: false, // Use on showing spinners
-  selectedAddress: '',
-  selectedCurrency: 'USD',
   networkId: 0,
   networkType: { host: MAINNET, chainId: MAINNET_CODE, networkName: MAINNET_DISPLAY_NAME },
   currencyData: {},
   tokenData: {}, // Account specific object
+  assets: {}, // Account specific object
   tokenRates: {},
   transactions: [],
   unapprovedTypedMessages: {},
   unapprovedPersonalMsgs: {},
   unapprovedMsgs: {},
-  loginInProgress: false,
+  // preferences
+  selectedAddress: '',
   jwtToken: '',
+
+  selectedCurrency: 'USD',
   pastTransactions: [],
-  isNewUser: false,
   theme: THEME_LIGHT_BLUE_NAME,
-  assets: {}, // Account specific object
+  locale: LOCALE_EN,
   billboard: [],
-  contacts: []
+  contacts: [],
+  permissions: {},
+  userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate
+  errorMsg: '',
+  successMsg: ''
 }
 
 export default initialState

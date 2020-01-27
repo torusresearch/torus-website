@@ -6,7 +6,7 @@
           <v-icon :small="$vuetify.breakpoint.xsOnly" class="mr-4 text_2--text" v-text="'$vuetify.icons.key'" />
         </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-title class="text_1--text">Private Key</v-list-item-title>
+          <v-list-item-title class="text_1--text">{{ t('walletSettings.privateKey') }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
       <v-list-item id="dapp-permisson-btn" @click="dappPermissionDialog = true">
@@ -14,7 +14,7 @@
           <v-icon :size="$vuetify.breakpoint.xsOnly ? 12 : 16" class="mr-4 text_2--text" v-text="'$vuetify.icons.list'" />
         </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-title class="text_1--text">DApp Permission</v-list-item-title>
+          <v-list-item-title class="text_1--text">{{ t('walletSettings.dappPermission') }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
     </v-list>

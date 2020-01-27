@@ -1,22 +1,31 @@
 <template>
-  <content-loader :height="160" :width="400" :speed="2" primaryColor="#E7EDF3" secondaryColor="#ecebeb">
-    <rect x="56.09" y="-55" rx="5" ry="5" width="94.6" height="9.6" />
-    <rect x="0" y="0" rx="0" ry="0" width="394.2" height="23.1" />
-    <rect x="280.33" y="9.61" rx="0" ry="0" width="0" height="0" />
-    <rect x="42.41" y="42.61" rx="0" ry="0" width="126.14" height="8.1" />
-    <rect x="41.41" y="56.61" rx="0" ry="0" width="204.98" height="6" />
-    <rect x="41.41" y="68.81" rx="0" ry="0" width="27.59" height="27.9" />
-    <rect x="74.41" y="68.81" rx="0" ry="0" width="27.59" height="27.9" />
-    <rect x="108.41" y="68.81" rx="0" ry="0" width="27.59" height="27.9" />
-  </content-loader>
+  <div class="sk-grid">
+    <div class="sk-grid__col-desk-12">
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div>
+    </div>
+
+    <div class="sk-grid__col-desk-3">
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 25px; margin-bottom: 25px"></div>
+    </div>
+    <div class="sk-grid__col-desk-9"></div>
+
+    <div class="sk-grid__col-desk-6">
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 50px; margin-bottom: 35px;"></div>
+    </div>
+    <div class="sk-grid__col-desk-2" style="align-self: flex-end">
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 15px; margin-bottom: 35px;"></div>
+    </div>
+    <div class="sk-grid__col-desk-4"></div>
+
+    <div class="sk-grid__col-desk-2">
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 180px; margin-bottom: 15px;"></div>
+    </div>
+    <div class="sk-grid__col-desk-2">
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 180px; margin-bottom: 15px;"></div>
+    </div>
+  </div>
 </template>
 
 <script>
-import { ContentLoader } from 'vue-content-loader'
-
-export default {
-  components: {
-    ContentLoader
-  }
-}
+export default {}
 </script>

@@ -1,4 +1,5 @@
 import './vueKnobControl'
 import vuetify from './vuetify'
+import languages from './locales'
 
-export { vuetify }
+export { vuetify, languages }

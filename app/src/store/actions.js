@@ -1,6 +1,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import config from '../config'
+import { toChecksumAddress } from 'web3-utils'
 import torus from '../torus'
 import {
   RPC,
@@ -14,7 +15,7 @@ import {
   DISCORD,
   THEME_LIGHT_BLUE_NAME
 } from '../utils/enums'
-import { getRandomNumber, broadcastChannelOptions, storageAvailable } from '../utils/utils'
+import { broadcastChannelOptions, storageAvailable } from '../utils/utils'
 import { post, get, patch, remove } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import initialState from './state'
@@ -36,8 +37,6 @@ const accountImporter = require('../utils/accountImporter')
 
 const baseRoute = config.baseRoute
 
-let totalFailCount = 0
-
 // stream to send logged in status
 const statusStream = torus.communicationMux.getStream('status')
 const oauthStream = torus.communicationMux.getStream('oauth')
@@ -47,7 +46,7 @@ const providerChangeStream = torus.communicationMux.getStream('provider_change')
 export default {
   logOut({ commit, dispatch }, payload) {
     commit('logOut', initialState)
-    dispatch('setTheme', THEME_LIGHT_BLUE_NAME)
+    // dispatch('setTheme', THEME_LIGHT_BLUE_NAME)
     if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
     statusStream.write({ loggedIn: false })
     torus.torusController.accountTracker.store.unsubscribe(accountTrackerHandler)
@@ -103,7 +102,7 @@ export default {
       })
       const { data } = response
       data.forEach(obj => {
-        torus.torusController.detectTokensController.detectEtherscanTokenBalance(obj.contractAddress, {
+        torus.torusController.detectTokensController.detectEtherscanTokenBalance(toChecksumAddress(obj.contractAddress), {
           decimals: obj.tokenDecimal,
           erc20: true,
           logo: 'eth.svg',
@@ -139,9 +138,12 @@ export default {
       })
     }
     if (override) {
-      return dispatch('setProviderType', payload)
-        .then(handleSuccess)
-        .catch(handleDeny)
+      setTimeout(() => {
+        dispatch('setProviderType', payload)
+          .then(handleSuccess)
+          .catch(handleDeny)
+      }, 500)
+      return
     }
     const bc = new BroadcastChannel(`torus_provider_change_channel_${torus.instanceId}`, broadcastChannelOptions)
     const finalUrl = `${baseRoute}providerchange?integrity=true&instanceId=${torus.instanceId}`
@@ -350,9 +352,6 @@ export default {
     }
   },
   triggerLogin({ dispatch }, { calledFromEmbed, verifier, preopenInstanceId }) {
-    const { torusNodeEndpoints } = config
-    const endPointNumber = getRandomNumber(torusNodeEndpoints.length)
-
     log.info('Verifier: ', verifier)
 
     if (verifier === GOOGLE) {
@@ -372,15 +371,15 @@ export default {
       const googleWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
-        const {
-          instanceParams: { verifier },
-          hashParams: verifierParams
-        } = ev.data || {}
-        if (ev.error && ev.error !== '') {
-          log.error(ev.error)
-          oauthStream.write({ err: ev.error })
-        } else if (ev.data && verifier === GOOGLE) {
-          try {
+        try {
+          const {
+            instanceParams: { verifier },
+            hashParams: verifierParams
+          } = ev.data || {}
+          if (ev.error && ev.error !== '') {
+            log.error(ev.error)
+            oauthStream.write({ err: ev.error })
+          } else if (ev.data && verifier === GOOGLE) {
             log.info(ev.data)
             const { access_token: accessToken, id_token: idToken } = verifierParams
             const userInfo = await get('https://www.googleapis.com/userinfo/v2/me', {
@@ -400,14 +399,14 @@ export default {
                 verifierParams: { verifier_id: email.toString().toLowerCase() }
               }
             })
-            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-          } catch (error) {
-            log.error(error)
-            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
-          } finally {
-            bc.close()
-            googleWindow.close()
+            dispatch('handleLogin', { calledFromEmbed })
           }
+        } catch (error) {
+          log.error(error)
+          oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+        } finally {
+          bc.close()
+          googleWindow.close()
         }
       }
       googleWindow.open()
@@ -432,15 +431,15 @@ export default {
       const facebookWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
-        const {
-          instanceParams: { verifier },
-          hashParams: verifierParams
-        } = ev.data || {}
-        if (ev.error && ev.error !== '') {
-          log.error(ev.error)
-          oauthStream.write({ err: ev.error })
-        } else if (ev.data && verifier === FACEBOOK) {
-          try {
+        try {
+          const {
+            instanceParams: { verifier },
+            hashParams: verifierParams
+          } = ev.data || {}
+          if (ev.error && ev.error !== '') {
+            log.error(ev.error)
+            oauthStream.write({ err: ev.error })
+          } else if (ev.data && verifier === FACEBOOK) {
             log.info(ev.data)
             const { access_token: accessToken } = verifierParams
             const userInfo = await get('https://graph.facebook.com/me?fields=name,email,picture.type(large)', {
@@ -460,14 +459,14 @@ export default {
                 verifierParams: { verifier_id: id.toString() }
               }
             })
-            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-          } catch (error) {
-            log.error(error)
-            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
-          } finally {
-            bc.close()
-            facebookWindow.close()
+            dispatch('handleLogin', { calledFromEmbed })
           }
+        } catch (error) {
+          log.error(error)
+          oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+        } finally {
+          bc.close()
+          facebookWindow.close()
         }
       }
       facebookWindow.open()
@@ -499,15 +498,15 @@ export default {
       const twitchWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
-        const {
-          instanceParams: { verifier },
-          hashParams: verifierParams
-        } = ev.data || {}
-        if (ev.error && ev.error !== '') {
-          log.error(ev.error)
-          oauthStream.write({ err: ev.error })
-        } else if (ev.data && verifier === TWITCH) {
-          try {
+        try {
+          const {
+            instanceParams: { verifier },
+            hashParams: verifierParams
+          } = ev.data || {}
+          if (ev.error && ev.error !== '') {
+            log.error(ev.error)
+            oauthStream.write({ err: ev.error })
+          } else if (ev.data && verifier === TWITCH) {
             const { access_token: accessToken, id_token: idtoken } = verifierParams
             const userInfo = await get('https://id.twitch.tv/oauth2/userinfo', {
               headers: {
@@ -528,14 +527,14 @@ export default {
                 verifierParams: { verifier_id: userInfo.sub.toString() }
               }
             })
-            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-          } catch (error) {
-            log.error(error)
-            oauthStream.write({ err: 'something went wrong.' })
-          } finally {
-            bc.close()
-            twitchWindow.close()
+            dispatch('handleLogin', { calledFromEmbed })
           }
+        } catch (error) {
+          log.error(error)
+          oauthStream.write({ err: 'something went wrong.' })
+        } finally {
+          bc.close()
+          twitchWindow.close()
         }
       }
       twitchWindow.open()
@@ -558,15 +557,15 @@ export default {
       const redditWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
-        const {
-          instanceParams: { verifier },
-          hashParams: verifierParams
-        } = ev.data || {}
-        if (ev.error && ev.error !== '') {
-          log.error(ev.error)
-          oauthStream.write({ err: ev.error })
-        } else if (ev.data && verifier === REDDIT) {
-          try {
+        try {
+          const {
+            instanceParams: { verifier },
+            hashParams: verifierParams
+          } = ev.data || {}
+          if (ev.error && ev.error !== '') {
+            log.error(ev.error)
+            oauthStream.write({ err: ev.error })
+          } else if (ev.data && verifier === REDDIT) {
             const { access_token: accessToken } = verifierParams
             const userInfo = await get('https://oauth.reddit.com/api/v1/me', {
               headers: {
@@ -585,14 +584,14 @@ export default {
                 verifierParams: { verifier_id: name.toString().toLowerCase() }
               }
             })
-            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-          } catch (error) {
-            log.error(error)
-            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
-          } finally {
-            bc.close()
-            redditWindow.close()
+            dispatch('handleLogin', { calledFromEmbed })
           }
+        } catch (error) {
+          log.error(error)
+          oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+        } finally {
+          bc.close()
+          redditWindow.close()
         }
       }
       redditWindow.open()
@@ -616,15 +615,15 @@ export default {
       const discordWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
-        const {
-          instanceParams: { verifier },
-          hashParams: verifierParams
-        } = ev.data || {}
-        if (ev.error && ev.error !== '') {
-          log.error(ev.error)
-          oauthStream.write({ err: ev.error })
-        } else if (ev.data && verifier === DISCORD) {
-          try {
+        try {
+          const {
+            instanceParams: { verifier },
+            hashParams: verifierParams
+          } = ev.data || {}
+          if (ev.error && ev.error !== '') {
+            log.error(ev.error)
+            oauthStream.write({ err: ev.error })
+          } else if (ev.data && verifier === DISCORD) {
             const { access_token: accessToken } = verifierParams
             const userInfo = await get('https://discordapp.com/api/users/@me', {
               headers: {
@@ -647,14 +646,14 @@ export default {
                 verifierParams: { verifier_id: id.toString() }
               }
             })
-            dispatch('handleLogin', { calledFromEmbed, endPointNumber })
-          } catch (error) {
-            log.error(error)
-            oauthStream.write({ err: 'User cancelled login or something went wrong.' })
-          } finally {
-            bc.close()
-            discordWindow.close()
+            dispatch('handleLogin', { calledFromEmbed })
           }
+        } catch (error) {
+          log.error(error)
+          oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+        } finally {
+          bc.close()
+          discordWindow.close()
         }
       }
       discordWindow.open()
@@ -678,30 +677,28 @@ export default {
     return torus.torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
   },
   setBillboard({ commit, state }) {
-    try {
-      get(`${config.api}/billboard`, {
-        headers: {
-          Authorization: `Bearer ${state.jwtToken}`
-        }
-      }).then(resp => {
-        if (resp.data) commit('setBillboard', resp.data)
+    get(`${config.api}/billboard`, {
+      headers: {
+        Authorization: `Bearer ${state.jwtToken}`
+      }
+    }).then(resp => {
+      const events = []
+      resp.data.forEach(event => {
+        if (events[event.callToActionLink] === undefined) events[event.callToActionLink] = {}
+        events[event.callToActionLink][event.locale] = event
       })
-    } catch (error) {
-      reject(error)
-    }
+
+      if (events) commit('setBillboard', events)
+    })
   },
   setContacts({ commit, state }) {
-    try {
-      get(`${config.api}/contact`, {
-        headers: {
-          Authorization: `Bearer ${state.jwtToken}`
-        }
-      }).then(resp => {
-        if (resp.data) commit('setContacts', resp.data)
-      })
-    } catch (error) {
-      reject(error)
-    }
+    get(`${config.api}/contact`, {
+      headers: {
+        Authorization: `Bearer ${state.jwtToken}`
+      }
+    }).then(resp => {
+      if (resp.data) commit('setContacts', resp.data)
+    })
   },
   addContact({ commit, state }, payload) {
     return new Promise((resolve, reject) => {
@@ -747,15 +744,20 @@ export default {
         })
     })
   },
-  handleLogin({ state, dispatch }, { endPointNumber, calledFromEmbed }) {
-    const { torusNodeEndpoints, torusIndexes } = config
+  async handleLogin({ state, dispatch }, { calledFromEmbed }) {
+    dispatch('loginInProgress', true)
     const {
       idToken,
       userInfo: { verifierId, verifier, verifierParams }
     } = state
-    dispatch('loginInProgress', true)
-    torus
-      .getPubKeyAsync(torusNodeEndpoints[endPointNumber], { verifier, verifierId })
+    let torusNodeEndpoints, torusIndexes
+    return torus.nodeDetailManager
+      .getNodeDetails()
+      .then(({ torusNodeEndpoints: torusNodeEndpointsVal, torusNodePub, torusIndexes: torusIndexesVal }) => {
+        torusNodeEndpoints = torusNodeEndpointsVal
+        torusIndexes = torusIndexesVal
+        return torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
+      })
       .then(res => {
         log.info('New private key assigned to user at address ', res)
         const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
@@ -765,13 +767,13 @@ export default {
       .then(async response => {
         const data = response[0]
         const message = response[1]
-        dispatch('addWallet', data) // synchronus
+        dispatch('addWallet', data) // synchronous
         dispatch('subscribeToControllers')
         await Promise.all([
           dispatch('initTorusKeyring', data),
           dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
         ])
-        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) //synchronus
+        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
         dispatch('setBillboard')
         // continue enable function
         var ethAddress = data.ethAddress
@@ -784,12 +786,6 @@ export default {
         dispatch('loginInProgress', false)
       })
       .catch(err => {
-        totalFailCount += 1
-        let newEndPointNumber = endPointNumber
-        while (newEndPointNumber === endPointNumber) {
-          newEndPointNumber = getRandomNumber(torusNodeEndpoints.length)
-        }
-        if (totalFailCount < 3) dispatch('handleLogin', { calledFromEmbed, endPointNumber: newEndPointNumber })
         log.error(err)
       })
   },
@@ -805,6 +801,12 @@ export default {
           signed_message: signedMessage
         })
         commit('setJwtToken', response.token)
+        if (response.token) {
+          const decoded = jwtDecode(response.token)
+          setTimeout(() => {
+            dispatch('logOut')
+          }, decoded.exp * 1000 - Date.now())
+        }
         await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed: calledFromEmbed, rehydrate: false })
 
         resolve()
@@ -815,6 +817,7 @@ export default {
     })
   },
   storeUserLogin({ state }, payload) {
+    const { verifier, verifierId } = state.userInfo
     let userOrigin = ''
     if (payload && payload.calledFromEmbed) {
       userOrigin = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
@@ -823,7 +826,9 @@ export default {
       post(
         `${config.api}/user/recordLogin`,
         {
-          hostname: userOrigin
+          hostname: userOrigin,
+          verifier,
+          verifierId
         },
         {
           headers: {
@@ -840,6 +845,8 @@ export default {
     const theme = themes[payload || THEME_LIGHT_BLUE_NAME]
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
+    // set theme to localStorage
+    localStorage.setItem('torus-theme', payload)
   },
   setUserTheme({ state, dispatch }, payload) {
     return new Promise((resolve, reject) => {
@@ -866,50 +873,101 @@ export default {
         })
     })
   },
-  setUserInfoAction({ commit, dispatch, state }, payload) {
-    // Fixes loading theme for too long
-    dispatch('setTheme', state.theme)
+  setLocale({ commit }, payload) {
+    commit('setLocale', payload)
 
-    return new Promise(async (resolve, reject) => {
-      const { token, calledFromEmbed, rehydrate } = payload
-      try {
-        get(`${config.api}/user`, {
+    vuetify.framework.lang.current = payload
+  },
+  setUserLocale({ state, dispatch }, payload) {
+    return new Promise((resolve, reject) => {
+      patch(
+        `${config.api}/user/locale`,
+        {
+          locale: payload
+        },
+        {
           headers: {
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }
+      )
+        .then(response => {
+          dispatch('setLocale', payload)
+          log.info('successfully patched', response)
+          resolve(response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to patch locale')
+          reject('Unable to update locale')
+        })
+    })
+  },
+  setVerifier({ state }, payload) {
+    const { verifier, verifierId } = state.userInfo
+    patch(
+      `${config.api}/user/verifier`,
+      { verifier, verifierId },
+      {
+        headers: {
+          Authorization: `Bearer ${state.jwtToken}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      }
+    )
+      .then(response => {
+        log.info('successfully patched', response)
+      })
+      .catch(err => {
+        log.error(err, 'unable to patch verifier info')
+      })
+  },
+  setUserInfoAction({ commit, dispatch, state }, payload) {
+    return new Promise(async (resolve, reject) => {
+      // Fixes loading theme for too long
+      dispatch('setTheme', state.theme)
+      const { token, calledFromEmbed, rehydrate } = payload
+      get(`${config.api}/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+        .then(user => {
+          if (user.data) {
+            const { transactions, contacts, default_currency, theme, locale, verifier, verifier_id } = user.data || {}
+            commit('setPastTransactions', transactions)
+            commit('setContacts', contacts)
+            dispatch('setTheme', theme)
+            dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
+            dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
+            if (locale !== '') dispatch('setLocale', locale)
+            if (!verifier || !verifier_id) dispatch('setVerifier')
+            resolve()
           }
         })
-          .then(user => {
-            if (user.data) {
-              const { transactions, contacts, default_currency, theme } = user.data || {}
-              commit('setPastTransactions', transactions)
-              commit('setContacts', contacts)
-              dispatch('setTheme', theme)
-              dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
-              dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
-              resolve()
-            }
-          })
-          .catch(async error => {
-            await post(
-              `${config.api}/user`,
-              {
-                default_currency: state.selectedCurrency,
-                theme: state.theme
-              },
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  'Content-Type': 'application/json; charset=utf-8'
-                }
+        .catch(async error => {
+          const { userInfo, selectedCurrency, theme } = state
+          const { verifier, verifierId } = userInfo
+          await post(
+            `${config.api}/user`,
+            {
+              default_currency: selectedCurrency,
+              theme,
+              verifier,
+              verifierId
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json; charset=utf-8'
               }
-            )
-            commit('setNewUser', true)
-            dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
-            resolve()
-          })
-      } catch (error) {
-        reject(error)
-      }
+            }
+          )
+          commit('setNewUser', true)
+          dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
+          dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
+          resolve()
+        })
     })
   },
   async rehydrate({ state, dispatch }, payload) {
@@ -928,6 +986,10 @@ export default {
         if (Date.now() / 1000 > decoded.exp) {
           dispatch('logOut')
           return
+        } else {
+          setTimeout(() => {
+            dispatch('logOut')
+          }, decoded.exp * 1000 - Date.now())
         }
       }
       if (SUPPORTED_NETWORK_TYPES[networkType.host]) await dispatch('setProviderType', { network: networkType })
@@ -942,16 +1004,6 @@ export default {
         dispatch('updateNetworkId', { networkId: networkId })
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: verifier })
         log.info('rehydrated wallet')
-        // torus.web3.eth.net
-        //   .getId()
-        //   .then(res => {
-        //     console.log(res)
-        //     setTimeout(function() {
-        //       dispatch('updateNetworkId', { networkId: toHex(res) })
-        //     })
-        //     // publicConfigOutStream.write(JSON.stringify({networkVersion: res}))
-        //   })
-        //   .catch(e => log.error(e))
       }
     } catch (error) {
       log.error('Failed to rehydrate', error)

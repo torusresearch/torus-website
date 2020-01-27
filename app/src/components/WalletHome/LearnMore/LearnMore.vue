@@ -5,7 +5,7 @@
         <v-img :src="require(`../../../../public/images/learn-more-intro.svg`)">
           <v-layout>
             <v-flex xs12 class="mt-12 ml-12">
-              <div class="display-1 primary--text text--darken-4 font-weight-bold mb-2">Welcome to</div>
+              <div class="display-1 primary--text text--darken-4 font-weight-bold mb-2">{{ t('walletHome.welcome') }}</div>
               <img width="150" :src="require(`../../../../public/images/torus-logo-blue.svg`)" />
             </v-flex>
           </v-layout>
@@ -48,43 +48,41 @@ export default {
       e1: 1,
       contents: [
         {
-          title: 'Getting Started',
-          subtitle: 'Here are some key terms to guide you along',
+          title: this.t('walletHome.gettingStarted'),
+          subtitle: this.t('walletHome.gettingStartedDesc'),
           step: 2,
           list: [
             {
               icon: 't.svg',
-              name: 'What is Torus?',
-              content: 'Torus is a key management solution that aims to provide an easy access to services running on Blockchain.'
+              name: `${this.t('walletHome.whatIs')} Torus?`,
+              content: this.t('walletHome.whatIsDesc')
             },
             {
               icon: 'wallet.svg',
-              name: 'Know your Wallet Address',
-              content: `A wallet address is similar to a bank account number. 
-                It's a unique combination of letters and numbers that looks like this: 0x09438E46Ea66647EA65E4b104C125c82076FDcE5`
+              name: this.t('walletHome.knowYourWallet'),
+              content: this.t('walletHome.knowYourWalletDesc')
             },
             {
               icon: 'money.svg',
-              name: 'Get Digital Currency and Tokens',
-              content: 'You can share your wallet address with others to receive digital currency and tokens.'
+              name: this.t('walletHome.getDigital'),
+              content: this.t('walletHome.getDigitalDesc')
             }
           ]
         },
         {
-          title: 'Privacy and Security',
-          subtitle: 'Your Privacy are our top priority',
+          title: this.t('walletHome.privacySecurity'),
+          subtitle: this.t('walletHome.privacySecurityDesc'),
           step: 3,
           list: [
             {
               icon: 'key-large.svg',
-              name: 'Private Key',
-              content: `This is your password to verify account ownership. Only you are able to access it.
-                If you lose this, you potentially lose ownership of your account and ALL your money.`
+              name: this.t('walletHome.privateKey'),
+              content: this.t('walletHome.privateKeyDesc')
             },
             {
               icon: 'password.svg',
-              name: 'Account Recovery',
-              content: 'Torus uses Google/Facebook 2 Factor-Authentication for account recovery.'
+              name: this.t('walletHome.accountRecovery'),
+              content: this.t('walletHome.accountRecoveryDesc')
             }
           ]
         }

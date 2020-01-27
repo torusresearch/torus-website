@@ -1,13 +1,14 @@
-// import WebsocketSubprovider from './websocket.js'
+import NodeDetailManager from '@toruslabs/fetch-node-details'
+import log from 'loglevel'
+import Web3 from 'web3'
 import TorusController from './controllers/TorusController'
 import store from './store'
 import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE } from './utils/enums'
 import { storageAvailable } from './utils/utils'
-var log = require('loglevel')
-var Web3 = require('web3')
-var LocalMessageDuplexStream = require('post-message-stream')
-const setupMultiplex = require('./utils/setupMultiplex').default
+
+const LocalMessageDuplexStream = require('post-message-stream')
 const stream = require('stream')
+const setupMultiplex = require('./utils/setupMultiplex').default
 
 function onloadTorus(torus) {
   function triggerUi(type) {
@@ -69,9 +70,10 @@ function onloadTorus(torus) {
   torus.channelMux.setMaxListeners(50)
   torusController.provider.setMaxListeners(100)
   torus.web3 = new Web3(torusController.provider)
-  torus.setProviderType = function(network, type) {
-    return store.dispatch('setProviderType', { network, type })
-  }
+
+  // update node details
+  torus.nodeDetailManager = new NodeDetailManager({ network: process.env.VUE_APP_PROXY_NETWORK, proxyAddress: process.env.VUE_APP_PROXY_ADDRESS })
+  torus.nodeDetailManager.getNodeDetails().then(() => {})
 
   /* Stream setup block */
   // doesnt do anything.. just for logging

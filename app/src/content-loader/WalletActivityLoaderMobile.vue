@@ -1,21 +1,39 @@
 <template>
-  <content-loader :height="600" :width="450" :speed="2" primaryColor="#E7EDF3" secondaryColor="#ecebeb">
-    <rect x="15.5" y="17.61" rx="0" ry="0" width="46.13" height="28.18" />
-    <rect x="15.5" y="63.61" rx="0" ry="0" width="139.18" height="22.12" />
-    <rect x="15.5" y="115.61" rx="0" ry="0" width="418.85" height="72.62" />
-    <rect x="173.5" y="94.61" rx="0" ry="0" width="255.58" height="13.46" />
-    <rect x="15.5" y="195.61" rx="0" ry="0" width="418.85" height="72.62" />
-    <rect x="15.5" y="275.61" rx="0" ry="0" width="418.85" height="72.62" />
-    <rect x="15.5" y="357.61" rx="0" ry="0" width="418.85" height="72.62" />
-  </content-loader>
+  <div class="sk-grid">
+    <div class="sk-grid__col-mob-4">
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 50px; margin-bottom: 35px;"></div>
+    </div>
+
+    <div class="sk-grid__col-mob-2">
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 25px; margin-bottom: 20px;"></div>
+    </div>
+    <div class="sk-grid__col-mob-2"></div>
+
+    <div class="sk-grid__col-mob-3 sk-grid__col-mob-shift-1">
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 20px; margin-bottom: 20px;"></div>
+    </div>
+
+    <div class="sk-grid__col-mob-4">
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 100px; margin-bottom: 15px;"></div>
+    </div>
+    <div class="sk-grid__col-mob-4">
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 100px; margin-bottom: 15px;"></div>
+    </div>
+    <div class="sk-grid__col-mob-4">
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 100px; margin-bottom: 15px;"></div>
+    </div>
+    <div class="sk-grid__col-mob-4">
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 100px; margin-bottom: 15px;"></div>
+    </div>
+    <div class="sk-grid__col-mob-4">
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 100px; margin-bottom: 15px;"></div>
+    </div>
+    <div class="sk-grid__col-mob-4">
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 100px; margin-bottom: 15px;"></div>
+    </div>
+  </div>
 </template>
 
 <script>
-import { ContentLoader } from 'vue-content-loader'
-
-export default {
-  components: {
-    ContentLoader
-  }
-}
+export default {}
 </script>

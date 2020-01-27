@@ -1,83 +1,24 @@
 <template>
-  <div class="activity-table" :data-count="transactions.length" :data-per-page="itemsPerPage" :data-count-transfer="nonTopupTransactionCount">
-    <v-data-table
-      :headers="headers"
+  <div class="activity-table">
+    <v-data-iterator
+      :disable-pagination="$vuetify.breakpoint.xsOnly"
       :items="filteredTransactions"
-      :expanded.sync="expanded"
       item-key="id"
-      single-expand
-      @click:row="rowClicked"
-      hide-default-footer
+      :items-per-page.sync="itemsPerPage"
       :page.sync="page"
-      :items-per-page="itemsPerPage"
-      @page-count="pageCount = $event"
+      hide-default-footer
+      :loading="loadingTransactions"
+      no-data-text=""
     >
-      <template v-slot:item.action="{ item }">
-        <span>
-          <v-icon>{{ item.actionIcon }}</v-icon>
-          <span class="transaction-action">{{ item.action }}</span>
-        </span>
+      <template v-slot:default="props">
+        <transaction-details v-for="transaction in props.items" :key="transaction.id" :transaction="transaction" />
       </template>
-      <template v-slot:item.from="{ item }">
-        <span style="word-break: break-all">{{ item.from }}</span>
+      <template v-slot:loading>
+        <component-loader class="mt-2" />
       </template>
-      <template v-slot:item.to="{ item }">
-        <span style="word-break: break-all">{{ item.to }}</span>
-      </template>
-      <template v-slot:item.date="{ item }">
-        <span class="transaction-date">{{ item.dateFormatted }}</span>
-      </template>
-      <template v-slot:item.status="{ item }">
-        <span class="text-capitalize" :class="`text-${item.status.toLowerCase()}`">{{ item.statusText }}</span>
-      </template>
-      <template v-slot:expanded-item="{ headers, item }">
-        <td :colspan="headers.length" class="pa-0 ma-0" style="height: inherit" v-show="item.etherscanLink !== ''">
-          <v-flex xs12 class="pa-4" :class="$vuetify.theme.dark ? 'background lighten-2' : ''">
-            <v-layout wrap>
-              <v-flex xs4 sm1 pr-2>
-                Rate
-                <span class="float-right">:</span>
-              </v-flex>
-              <v-flex xs8 sm11>1 ETH = {{ item.ethRate }} {{ item.currencyUsed }} @ {{ item.timeFormatted }}</v-flex>
-              <v-flex xs4 sm1 pr-2>
-                Network
-                <span class="float-right">:</span>
-              </v-flex>
-              <v-flex xs8 sm11>{{ (mapper[item.networkType] && mapper[item.networkType].networkName) || '' }}</v-flex>
+    </v-data-iterator>
 
-              <!-- <v-flex xs12 class="text-right" v-if="Object.keys(item.gas).length">
-                <v-btn color="primary" class="px-6" @click="speedUpTx = true">Speed up transaction</v-btn>
-              </v-flex> -->
-
-              <!-- <v-dialog v-model="speedUpTx" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly">
-                <SpeedUpTransaction :gas="item.gas" @onClose="speedUpTx = false" />
-              </v-dialog> -->
-              <!-- <v-flex xs4 sm1 pr-2>
-                Type
-                <span class="float-right">:</span>
-              </v-flex>
-              <v-flex xs8 sm11>Contract Interaction</v-flex>-->
-              <!-- <v-flex xs4 sm1 pr-2>
-                Data
-                <span class="float-right">:</span>
-              </v-flex>
-              <v-flex xs8 sm11>
-                <v-card flat class="grey lighten-3">
-                  <v-card-text></v-card-text>
-                </v-card>
-              </v-flex>-->
-              <v-flex xs12 class="text-right">
-                <a class="v-btn" color="primary" :href="item.etherscanLink" target="_blank">View On Etherscan</a>
-              </v-flex>
-            </v-layout>
-          </v-flex>
-        </td>
-      </template>
-      <template v-slot:no-data>
-        <v-flex xs12 class="text-center">No Transaction Activity!</v-flex>
-      </template>
-    </v-data-table>
-    <div class="text-center pt-6" v-if="pageCount > 1">
+    <div class="text-center pt-6" v-if="!$vuetify.breakpoint.xsOnly && pageCount > 1">
       <v-pagination
         class="activity-pagination"
         prev-icon="$vuetify.icons.page_prev"
@@ -90,67 +31,86 @@
 </template>
 
 <script>
-import TxHistoryMixin from '../TxHistoryMixin'
-import SpeedUpTransaction from '../SpeedUpTransaction'
+import TransactionDetails from '../TransactionDetails'
+import ComponentLoader from '../../helpers/ComponentLoader'
+import {
+  SUPPORTED_NETWORK_TYPES,
+  ACTIVITY_ACTION_ALL,
+  ACTIVITY_ACTION_TOPUP,
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_PERIOD_ALL,
+  ACTIVITY_PERIOD_MONTH_ONE,
+  ACTIVITY_PERIOD_WEEK_ONE,
+  ACTIVITY_STATUS_SUCCESSFUL,
+  ACTIVITY_STATUS_UNSUCCESSFUL,
+  ACTIVITY_STATUS_PENDING
+} from '../../../utils/enums'
 
 export default {
-  mixins: [TxHistoryMixin],
+  props: ['transactions', 'selectedAction', 'selectedPeriod', 'loadingTransactions'],
+  components: {
+    TransactionDetails,
+    ComponentLoader
+  },
   data() {
     return {
       page: 1,
-      pageCount: 0,
       itemsPerPage: 8,
       expanded: [],
       pagination: {},
-      defaultSort: 'date',
-      speedUpTx: false,
-      headers: [
-        {
-          text: 'Transaction',
-          value: 'action',
-          align: 'left',
-          width: '120px'
-        },
-        {
-          text: 'From',
-          value: 'from',
-          align: 'left',
-          class: 'address-col'
-        },
-        {
-          text: 'To',
-          value: 'to',
-          align: 'left',
-          class: 'address-col'
-        },
-        {
-          text: 'Amount',
-          value: 'amount',
-          align: 'right',
-          width: '200px'
-        },
-        {
-          text: 'Date',
-          value: 'date',
-          align: 'right',
-          width: '80px'
-        },
-        {
-          text: 'Status',
-          value: 'status',
-          align: 'center'
-        }
-      ]
+      defaultSort: 'date'
     }
   },
   computed: {
     showFooter() {
       return this.transactions && this.transactions.length > 5
+    },
+    pageCount() {
+      return Math.ceil(this.filteredTransactions.length / this.itemsPerPage)
+    },
+    oneWeekAgoDate() {
+      let minDate = new Date()
+      return minDate.setDate(minDate.getDate() - 7)
+    },
+    oneMonthAgoDate() {
+      let minDate = new Date()
+      return minDate.setMonth(minDate.getMonth() - 1)
+    },
+    sixMonthAgoDate() {
+      let minDate = new Date()
+      return minDate.setMonth(minDate.getMonth() - 6)
+    },
+    filteredTransactions() {
+      const selectedAction = this.selectedAction === ACTIVITY_ACTION_ALL ? '' : this.selectedAction
+      var regExAction = new RegExp(selectedAction, 'i')
+
+      return this.transactions.filter(item => {
+        // GET Date Scope
+        let isScoped = false
+        if (this.selectedPeriod === ACTIVITY_PERIOD_ALL) {
+          isScoped = true
+        } else {
+          let minDate
+          let itemDate = new Date(item.date)
+          if (this.selectedPeriod === ACTIVITY_PERIOD_WEEK_ONE) {
+            minDate = this.oneWeekAgoDate
+          } else if (this.selectedPeriod === ACTIVITY_PERIOD_MONTH_ONE) {
+            minDate = this.oneMonthAgoDate
+          } else {
+            minDate = this.sixMonthAgoDate
+          }
+          isScoped = minDate <= itemDate.getTime()
+        }
+
+        if (item.action) {
+          return item.action.match(regExAction) && isScoped
+        } else {
+          return isScoped
+        }
+      })
     }
   },
-  // components: {
-  //   SpeedUpTransaction: SpeedUpTransaction
-  // },
   methods: {
     changeSort(column) {
       if (this.pagination.sortBy === column) {

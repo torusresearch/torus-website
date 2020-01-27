@@ -60,10 +60,10 @@ find ./node_modules -name ".git" -type d -exec rm -rf {} +
 ```
 
 ### Release notes
+Checklist: 
+Website: *.tor.us
 
-Checklist:
-Website: \*.tor.us
-| Test/Browser | Chrome | Safari | Brave | Firefox | Edge Beta | iOS Safari | iOS Chrome | Android Chrome |
+| Test/Browser                              | Chrome             | Safari             | Brave              | Firefox            | Edge Beta          | iOS Safari         | iOS Chrome         | Android Chrome    |
 | ----------------------------------------- | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ------------------ | ----------------- |
 | Test login on google/discord oauths | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:|
 | Skale Network Change | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark:|

@@ -1,15 +1,13 @@
 <template>
   <v-tooltip bottom>
     <template v-slot:activator="{ on }">
-      <span class="selected-account" :color="$vuetify.theme.torus_accept" size="18" v-on="on" @click="copyToClip(address)">
+      <span class="selected-account" :color="$vuetify.theme.torus_accept" size="18" v-on="on" @click.stop="copyToClip(address)">
         <slot></slot>
       </span>
     </template>
-    <template v-if="copied">
-      Copied!
-    </template>
+    <template v-if="copied">{{ t('walletHome.copy') }}!</template>
     <template v-else>
-      Copy to clipboard
+      {{ t('walletHome.copyToClipboard') }}
     </template>
   </v-tooltip>
 </template>

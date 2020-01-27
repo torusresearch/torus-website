@@ -5,16 +5,10 @@ const baseRoute = baseUrl + process.env.BASE_URL
 const redirect_uri = `${baseUrl}/redirect`
 
 export default {
-  torusNodeEndpoints: [
-    'https://binance-main-3.torusnode.com/jrpc',
-    'https://waseda-main-3.torusnode.com/jrpc',
-    'https://vgr-main-3.torusnode.com/jrpc',
-    'https://torus-main-3.torusnode.com/jrpc',
-    'https://etc-main-3.torusnode.com/jrpc'
-  ],
+  baseUrl: baseUrl,
   baseRoute: baseRoute,
-  torusIndexes: [1, 2, 3, 4, 5],
   supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH'],
+  commonApiHost: 'https://common-api.tor.us',
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',
   wyreApiHost: 'https://wyre-api.tor.us',
@@ -27,7 +21,7 @@ export default {
   moonpayTestAPIKEY: 'pk_test_j6AnwGJD0XTJDg3bTO37OczjFsddYpS',
   wyreHost: 'https://pay.sendwyre.com/purchase',
   wyreAccountId: 'AC_RUQMPNP7QQY',
-  coindirectHost: 'https://api.sandbox.coindirect.com',
+  coindirectHost: 'https://api.coindirect.com',
   coindirectTestHost: 'https://business.sandbox.coindirect.com/buy',
   coindirectTestMerchantID: 'c21e690c-bb95-42fe-ae17-f962c582b26c',
   coindirectLiveHost: 'https://business.coindirect.com/buy',

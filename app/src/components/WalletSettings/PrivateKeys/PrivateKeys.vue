@@ -3,7 +3,7 @@
     <v-card-text class="text_1--text py-6">
       <v-layout wrap>
         <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
-          <div class="font-weight-bold headline">Private Key</div>
+          <div class="font-weight-bold headline">{{ t('walletSettings.privateKey') }}</div>
         </v-flex>
         <v-flex xs12 mt-4 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
           <v-list>
@@ -12,7 +12,7 @@
                 <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require('../../../../public/img/icons/file-text-grey.svg')" />
               </v-list-item-icon>
               <v-list-item-content>
-                <div class="subtitle-1 flex-grow-1 font-weight-bold">Download soft copy (JSON)</div>
+                <div class="subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.downloadSoftCopy') }} (JSON)</div>
                 <v-expand-transition>
                   <v-layout wrap align-center justify-space-between v-if="isShowGetPassword" class="mt-2 download-form-container">
                     <v-flex>
@@ -36,10 +36,10 @@
                               :loading="isLoadingDownloadWallet"
                               @click="downloadWallet"
                             >
-                              Confirm
+                              {{ t('walletSettings.confirm') }}
                             </v-btn>
                             <v-btn id="json-file-download-btn" depressed color="primary" v-if="walletJson" :href="walletJson" :download="name">
-                              Download wallet
+                              {{ t('walletSettings.downloadWallet') }}
                             </v-btn>
                           </template>
                         </v-text-field>
@@ -54,10 +54,10 @@
                         :loading="isLoadingDownloadWallet"
                         @click="downloadWallet"
                       >
-                        Confirm
+                        {{ t('walletSettings.confirm') }}
                       </v-btn>
                       <v-btn id="mobile-json-file-download-btn" color="primary" v-if="walletJson" :href="walletJson" :download="name">
-                        Download wallet
+                        {{ t('walletSettings.downloadWallet') }}
                       </v-btn>
                     </v-flex>
                   </v-layout>
@@ -77,28 +77,26 @@
                 <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require(`../../../../public/img/icons/key.svg`)" />
               </v-list-item-icon>
               <v-list-item-content>
-                <div class="subtitle-1 flex-grow-1 font-weight-bold">Show Private Key</div>
-                <v-expand-transition>
-                  <v-layout wrap align-center justify-space-between v-if="isShowPrivateKey" class="mt-2">
-                    <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12' : ''">
-                      <div class="text_2--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''" style="word-break: break-all">
-                        {{ selectedKey }}
-                      </div>
-                    </v-flex>
-                    <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : ''">
-                      <show-tool-tip :address="selectedKey">
-                        <v-btn id="click-to-copy-btn" text small class="primary--text" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'caption'">
-                          <img
-                            :src="require('../../../../public/img/icons/copy-primary.svg')"
-                            class="mr-1"
-                            :width="$vuetify.breakpoint.xsOnly ? '12' : '20'"
-                          />
-                          Click to copy
-                        </v-btn>
-                      </show-tool-tip>
-                    </v-flex>
-                  </v-layout>
-                </v-expand-transition>
+                <div class="subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.showPrivateKey') }}</div>
+                <v-layout wrap align-center justify-space-between v-if="isShowPrivateKey" class="mt-2">
+                  <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12' : ''">
+                    <div class="text_2--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''" style="word-break: break-all">
+                      {{ selectedKey }}
+                    </div>
+                  </v-flex>
+                  <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : ''">
+                    <show-tool-tip :address="selectedKey">
+                      <v-btn id="click-to-copy-btn" text small class="primary--text" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'caption'">
+                        <img
+                          :src="require('../../../../public/img/icons/copy-primary.svg')"
+                          class="mr-1"
+                          :width="$vuetify.breakpoint.xsOnly ? '12' : '20'"
+                        />
+                        {{ t('walletSettings.clickCopy') }}
+                      </v-btn>
+                    </show-tool-tip>
+                  </v-flex>
+                </v-layout>
               </v-list-item-content>
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'ma-1' : ''">
                 <v-btn id="show-private-key-btn" icon small @click="isShowPrivateKey = !isShowPrivateKey">
@@ -114,7 +112,7 @@
       </v-layout>
       <v-layout mt-4 pr-4>
         <v-spacer></v-spacer>
-        <v-btn id="close-btn" large text @click="onClose">Close</v-btn>
+        <v-btn id="close-btn" large text @click="onClose">{{ t('walletSettings.close') }}</v-btn>
       </v-layout>
     </v-card-text>
   </v-card>

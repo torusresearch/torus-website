@@ -2,13 +2,10 @@
   <v-container fill-height text-center>
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
-        <div class="redirect-title white--text font-weight-bold mb-6">
-          You are being redirected
+        <beat-loader :color="$vuetify.theme.themes.dark.primary.base" />
+        <div class="redirect-title font-weight-bold mt-3">
+          {{ t('dappGeneral.loading') }}
         </div>
-        <div class="redirect-info white--text mb-8">
-          Please wait
-        </div>
-        <beat-loader color="white" />
       </v-flex>
     </v-layout>
   </v-container>
@@ -68,7 +65,6 @@ export default {
             console.error(ev.error)
             bc.close()
           }
-          console.log(ev.data, ev.error)
           window.location.href = ev.data.payload.url
         }
       }

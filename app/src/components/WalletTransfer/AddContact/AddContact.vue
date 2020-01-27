@@ -2,7 +2,7 @@
   <v-dialog v-model="addContactDialoag" width="400">
     <template v-slot:activator="{ on }">
       <v-btn depressed x-small block class="caption primary lighten-5 primary--text add-contact-alert" v-on="on">
-        Click here to add Contact to your Address Book
+        {{ t('walletTransfer.clickToAddContact') }}
       </v-btn>
     </template>
     <v-card class="add-contact-container">
@@ -10,23 +10,23 @@
         <v-card-text class="text_1--text py-6">
           <v-layout wrap>
             <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
-              <div class="font-weight-bold headline">Add Contact</div>
+              <div class="font-weight-bold headline">{{ t('walletTransfer.addContact') }}</div>
               <v-chip small class="caption" light color="#CAF1FE">{{ verifierLabels[verifier] }}</v-chip>
             </v-flex>
             <v-flex xs12 mt-6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
-              <span class="subtitle-2">Contact Account Name</span>
-              <v-text-field v-model="newContactName" placeholder="Enter the name here" :rules="[rules.required]" outlined></v-text-field>
+              <span class="subtitle-2">{{ t('walletTransfer.contactName') }}</span>
+              <v-text-field v-model="newContactName" :placeholder="t('walletTransfer.enterName')" :rules="[rules.required]" outlined></v-text-field>
             </v-flex>
           </v-layout>
         </v-card-text>
 
         <v-card-actions class="pb-6">
           <v-flex xs6>
-            <v-btn block text color="text_2" @click="addContactDialoag = false">Cancel</v-btn>
+            <v-btn block text color="text_2" @click="addContactDialoag = false">{{ t('walletTransfer.cancel') }}</v-btn>
           </v-flex>
           <v-divider vertical></v-divider>
           <v-flex xs6>
-            <v-btn type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">Confirm</v-btn>
+            <v-btn type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">{{ t('walletTransfer.confirm') }}</v-btn>
           </v-flex>
         </v-card-actions>
       </v-form>
@@ -51,9 +51,16 @@ export default {
       contactFormValid: true,
       newContactName: '',
       rules: {
-        required: value => !!value || 'Required'
-      },
-      verifierLabels: VERIFIER_LABELS
+        required: value => !!value || this.t('walletSettings.required')
+      }
+    }
+  },
+  computed: {
+    verifierLabels() {
+      return Object.keys(VERIFIER_LABELS).reduce((acc, curr) => {
+        acc[curr] = this.t(VERIFIER_LABELS[curr])
+        return acc
+      }, {})
     }
   },
   methods: {

@@ -4,10 +4,10 @@
       <v-flex xs12 mb-2>
         <div class="text-black font-weight-bold headline px-4 mb-4">
           <span v-if="selectedProvider && !$vuetify.breakpoint.xsOnly">
-            Purchase Cryptocurrency via
+            {{ t('walletTopUp.purchaseVia') }}
             <span class="text-capitalize">{{ selectedProvider }}</span>
           </span>
-          <span v-else>Select a Provider</span>
+          <span v-else>{{ t('walletTopUp.selectProvider') }}</span>
         </div>
       </v-flex>
       <TopupProviders
@@ -23,13 +23,13 @@
       <v-flex xs12 mb-2 v-if="selectedProvider && $vuetify.breakpoint.xsOnly">
         <div class="text-black font-weight-bold headline px-4 mb-4">
           <span>
-            Purchase Cryptocurrency via
+            {{ t('walletTopUp.purchaseVia') }}
             <span class="text-capitalize">{{ selectedProvider }}</span>
           </span>
         </div>
       </v-flex>
 
-      <v-flex xs12 sm7 mb-4 px-4>
+      <v-flex xs12 sm6 md7 mb-4 px-4>
         <router-view></router-view>
       </v-flex>
     </v-layout>

@@ -1,12 +1,12 @@
 <template>
   <div class="select-theme-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
-    <div class="body-2 text_1--text mb-1 px-1">Select Theme</div>
+    <div class="body-2 text_1--text mb-1 px-1">{{ t('walletSettings.selectTheme') }}</div>
     <v-layout wrap>
-      <v-flex xs12 px-1 mb-1>
+      <v-flex xs12 md6 px-1 mb-1>
         <v-menu class="" transition="slide-y-transition" bottom>
           <template v-slot:activator="{ on }">
             <v-chip class="select-theme" :style="themeOptionStyle(selectedTheme)" label outlined large v-on="on">
-              <span>{{ selectedTheme ? selectedTheme.label : 'Select a theme' }}</span>
+              <span>{{ selectedTheme ? t(selectedTheme.label) : t('walletSettings.selectTheme') }}</span>
               <div class="flex-grow-1 text-right pr-2">
                 <v-icon right>$vuetify.icons.select</v-icon>
               </div>
@@ -20,61 +20,82 @@
               v-for="theme in themes"
               :key="`${theme.name}`"
             >
-              {{ theme.label }}
+              {{ t(theme.label) }}
             </v-list-item>
           </v-list>
         </v-menu>
       </v-flex>
     </v-layout>
-    <v-flex class="pt-4 text-right">
-      <v-btn color="primary" depressed class="px-12 py-1 mt-4" @click="saveTheme()">Save</v-btn>
-    </v-flex>
-    <v-snackbar v-model="snackbar" :color="snackbarColor">
-      {{ snackbarText }}
-      <v-btn dark text @click="snackbar = false">
-        Close
-      </v-btn>
-    </v-snackbar>
+    <v-layout class="mt-4">
+      <v-flex xs12 md6>
+        <v-layout wrap>
+          <v-flex xs8 v-if="!$vuetify.breakpoint.xsOnly" class="pr-2">
+            <notification
+              :alert-show="selectThemeAlert"
+              :alert-text="selectThemeAlertText"
+              :alert-type="selectThemeAlertType"
+              @closeAlert="closeAlert"
+            />
+          </v-flex>
+          <v-flex xs12 sm4 :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-2'">
+            <v-btn color="primary" block depressed class="px-12 py-1" @click="saveTheme">{{ t('walletSettings.save') }}</v-btn>
+          </v-flex>
+          <v-flex xs12 v-if="$vuetify.breakpoint.xsOnly" class="mt-2">
+            <notification
+              :alert-show="selectThemeAlert"
+              :alert-text="selectThemeAlertText"
+              :alert-type="selectThemeAlertType"
+              @closeAlert="closeAlert"
+            />
+          </v-flex>
+        </v-layout>
+      </v-flex>
+    </v-layout>
   </div>
 </template>
 
 <script>
+import Notification from '../../helpers/Notification'
 import themes from '../../../plugins/themes'
 
 export default {
   name: 'displaySettings',
+  components: { Notification },
   data() {
     return {
       themes: themes,
       selectedTheme: '',
-      snackbar: false,
-      snackbarText: '',
-      snackbarColor: 'success'
+      selectThemeAlert: false,
+      selectThemeAlertText: '',
+      selectThemeAlertType: 'success'
     }
   },
   methods: {
+    closeAlert() {
+      this.selectThemeAlert = false
+    },
     saveTheme() {
       this.$store
         .dispatch('setUserTheme', this.selectedTheme.name)
-        .then(() => {
+        .then(res => {
           this.selectedTheme = ''
-          this.snackbar = true
-          this.snackbarColor = 'success'
-          this.snackbarText = 'Successfully saved theme'
+          this.selectThemeAlert = true
+          this.selectThemeAlertType = 'success'
+          this.selectThemeAlertText = this.t('walletSettings.successSaveTheme')
         })
         .catch(err => {
           this.selectedTheme = ''
-          this.snackbar = true
-          this.snackbarColor = 'error'
-          this.snackbarText = err
+          this.selectThemeAlert = true
+          this.selectThemeAlertType = 'error'
+          this.selectThemeAlertText = err
         })
     },
     themeOptionStyle(theme) {
       if (theme)
         return {
-          color: `${theme.theme.primary} !important`,
+          color: `${theme.theme.primary.base} !important`,
           backgroundColor: `${theme.theme.background_body_1} !important`,
-          borderColor: theme.theme.primary,
+          borderColor: theme.theme.primary.base,
           borderWidth: '1px',
           borderStyle: 'solid'
         }

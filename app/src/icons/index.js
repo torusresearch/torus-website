@@ -13,6 +13,8 @@ import ArrowUpCircleIcon from './ArrowUpCircleIcon'
 import ArrowDownCircleIcon from './ArrowDownCircleIcon'
 import ArrowLeftCircleIcon from './ArrowLeftCircleIcon'
 import ArrowRightCircleIcon from './ArrowRightCircleIcon'
+import CheckCircleIcon from './CheckCircleIcon'
+import CloseCircleIcon from './CloseCircleIcon'
 import CoinsSendIcon from './CoinsSendIcon'
 import CoinsReceiveIcon from './CoinsReceiveIcon'
 import CoinsTopupIcon from './CoinsTopupIcon'
@@ -37,6 +39,7 @@ import CloseIcon from './CloseIcon'
 import DownloadIcon from './DownloadIcon'
 import CollectibleIcon from './CollectibleIcon'
 import TokenIcon from './TokenIcon'
+import QrIcon from './QrIcon'
 
 export default {
   select: {
@@ -60,10 +63,10 @@ export default {
   question: {
     component: QuestionIcon
   },
-  radio_checked: {
+  radioOn: {
     component: RadioCheckedIcon
   },
-  radio_unchecked: {
+  radioOff: {
     component: RadioUncheckedIcon
   },
   visibility_on: {
@@ -83,6 +86,12 @@ export default {
   },
   arrow_right_circle: {
     component: ArrowRightCircleIcon
+  },
+  check_circle: {
+    component: CheckCircleIcon
+  },
+  close_circle: {
+    component: CloseCircleIcon
   },
   coins_send: {
     component: CoinsSendIcon
@@ -155,5 +164,8 @@ export default {
   },
   token: {
     component: TokenIcon
+  },
+  qr: {
+    component: QrIcon
   }
 }

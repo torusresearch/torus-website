@@ -19,11 +19,11 @@ export default {
       amountIn: +parseFloat(payload.fiatValue),
       payOutInstruction: {
         code: 'crypto',
-        address: state.selectedAddress
+        address: payload.selectedAddress
       }
     })
   },
-  fetchCoindirectOrder({ state, dispatch }, { currentOrder, preopenInstanceId }) {
+  fetchCoindirectOrder({ state, dispatch }, { currentOrder, preopenInstanceId, selectedAddress }) {
     const instanceState = encodeURIComponent(
       window.btoa(
         JSON.stringify({
@@ -35,10 +35,10 @@ export default {
     const params = {
       merchantId: config.coindirectLiveMerchantID,
       to: currentOrder.to,
-      address: state.selectedAddress,
+      address: selectedAddress || state.selectedAddress,
       email: state.userInfo.email !== '' ? state.userInfo.email : undefined,
       amount: currentOrder.amountIn,
-      url: encodeURIComponent(`${config.coindirectApiHost}/transaction?url=${encodeURIComponent(`${config.redirect_uri}?state=${instanceState}`)}`)
+      url: `${config.coindirectApiHost}/transaction?url=${`${config.redirect_uri}?state=${instanceState}`}`
     }
     return dispatch('postCoindirectOrder', { path: config.coindirectLiveHost, params: params, preopenInstanceId })
   },

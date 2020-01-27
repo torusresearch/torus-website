@@ -59,12 +59,16 @@ export default {
   },
   setPastTransactions(state, payload) {
     state.pastTransactions = payload
+    state.loadingUserTransactions = false
   },
   patchPastTransactions(state, payload) {
     state.pastTransactions = [...state.pastTransactions, payload]
   },
   setTheme(state, payload) {
     state.theme = payload
+  },
+  setLocale(state, payload) {
+    state.locale = payload
   },
   setAssets(state, payload) {
     state.assets = { ...state.assets, ...payload }

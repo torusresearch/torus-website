@@ -1,4 +1,7 @@
 ::v-deep .button-speed {
+  &.v-size--large {
+    padding: inherit;
+  }
   &.v-btn {
     height: inherit;
     border: 1px solid var(--v-text_2-lighten3);
