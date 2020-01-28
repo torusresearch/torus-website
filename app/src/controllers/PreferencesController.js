@@ -109,7 +109,7 @@ class PreferencesController {
     ]).then(([user, paymentTx]) => {
       if (user.data) {
         const { transactions, contacts, theme, locale, verifier, verifier_id } = user.data || {}
-        this.store.updateState({ contacts, pastTransactions: transactions, theme, locale, paymentTx: paymentTx.data })
+        this.store.updateState({ contacts, pastTransactions: transactions, theme, locale: locale || LOCALE_EN, paymentTx: paymentTx.data })
         if (!verifier || !verifier_id) this.setVerifier(verifier, verifier_id)
         cb && cb(user)
       }
