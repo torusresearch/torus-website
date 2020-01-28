@@ -691,7 +691,7 @@ export default {
       // Fixes loading theme for too long
       commit('setTheme', state.theme)
       const { calledFromEmbed, rehydrate, token } = payload
-      const { userInfo, selectedCurrency, theme } = state
+      const { userInfo, selectedCurrency, theme, locale } = state
       const { verifier, verifierId } = userInfo
       prefsController.jwtToken = token
       prefsController.sync(
@@ -704,7 +704,7 @@ export default {
           }
         },
         async () => {
-          await prefsController.createUser(selectedCurrency, theme, verifier, verifierId)
+          await prefsController.createUser(selectedCurrency, theme, verifier, verifierId, locale)
           commit('setNewUser', true)
           dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
           prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })

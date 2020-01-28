@@ -107,7 +107,7 @@ class PreferencesController {
       }),
       getPastOrders({}, this.headers)
     ]).then(([user, paymentTx]) => {
-      if (user.data) {
+      if (user && user.data) {
         const { transactions, contacts, theme, locale, verifier, verifier_id } = user.data || {}
         this.store.updateState({ contacts, pastTransactions: transactions, theme, locale: locale || LOCALE_EN, paymentTx: paymentTx.data })
         if (!verifier || !verifier_id) this.setVerifier(verifier, verifier_id)
@@ -116,14 +116,15 @@ class PreferencesController {
     })
   }
 
-  createUser(selectedCurrency, theme, verifier, verifierId) {
+  createUser(selectedCurrency, theme, verifier, verifierId, locale) {
     return post(
       `${config.api}/user`,
       {
         default_currency: selectedCurrency,
         theme,
         verifier,
-        verifierId
+        verifierId,
+        locale
       },
       {
         headers: this.headers
