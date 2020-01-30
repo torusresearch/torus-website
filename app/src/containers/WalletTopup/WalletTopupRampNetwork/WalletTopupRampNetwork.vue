@@ -32,7 +32,7 @@ export default {
           .dispatch('fetchRampNetworkQuote', payload)
           .then(result => {
             let asset = result.assets.find(asset => asset.symbol === payload.selectedCryptoCurrency)
-            console.log(payload, asset)
+
             let fiat = payload.fiatValue
             let fee = asset.maxFeePercent[payload.selectedCurrency] / 100
             let rate = asset.price[payload.selectedCurrency]

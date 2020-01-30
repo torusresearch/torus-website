@@ -26,8 +26,6 @@ export default {
       )
     )
 
-    console.log('currentOrder:', currentOrder)
-
     const params = {
       userAddress: state.selectedAddress,
       swapAsset: currentOrder.cryptoCurrencySymbol,
