@@ -103,7 +103,7 @@ const router = new Router({
             },
             {
               path: 'badges',
-              name: 'walletHomeBadges',
+              name: 'walletBadges',
               component: WalletBadges
             }
           ]
