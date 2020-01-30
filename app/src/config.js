@@ -12,6 +12,8 @@ export default {
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',
   wyreApiHost: 'https://wyre-api.tor.us',
+  rampInstantWidget: 'https://widget-instant.ramp.network',
+  rampInstantAssets: 'https://api-instant.ramp.network/api/host-api/assets',
   cryptoApiHost: 'https://crypto-api.tor.us',
   coindirectApiHost: 'https://coindirect-api.tor.us',
   moonpayHost: 'https://buy.moonpay.io',

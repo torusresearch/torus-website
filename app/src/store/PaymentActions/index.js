@@ -1,9 +1,10 @@
 import simplex from './simplex'
+import rampnetwork from './rampnetwork'
 import moonpay from './moonpay'
 import wyre from './wyre'
 import coindirect from './coindirect'
 import { paymentProviders } from '../../utils/utils'
-import { SIMPLEX, MOONPAY, WYRE, COINDIRECT, ETH } from '../../utils/enums'
+import { SIMPLEX, MOONPAY, WYRE, COINDIRECT, RAMPNETWORK, ETH } from '../../utils/enums'
 import torus from '../../torus'
 import vuetify from '../../plugins/vuetify'
 
@@ -11,6 +12,7 @@ const topupStream = torus.communicationMux.getStream('topup')
 
 export default {
   ...simplex,
+  ...rampnetwork,
   ...moonpay,
   ...wyre,
   ...coindirect,
@@ -59,6 +61,12 @@ export default {
             preopenInstanceId,
             selectedAddress: selectedParams.selectedAddress
           })
+          handleSuccess(success)
+        }
+        // rampnetwork
+        else if (provider === RAMPNETWORK) {
+          const currentOrder = await dispatch('fetchRampNetworkQuote', selectedParams)
+          const { success } = await dispatch('fetchRampNetworkOrder', { currentOrder, preopenInstanceId })
           handleSuccess(success)
         }
         // moonpay

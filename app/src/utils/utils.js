@@ -348,17 +348,18 @@ const paymentProviders = {
   [RAMPNETWORK]: {
     line1: 'Bank transfer',
     line2: '2.5%',
-    line3: '€500/purchase, €5,000/mo',
+    line3: '£500/purchase, £5,000/mo',
     line4: 'ETH, DAI',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://instant.ramp.network/',
     minOrderValue: 1,
-    maxOrderValue: 500,
-    validCurrencies: ['EUR', 'GBP'],
+    maxOrderValue: 600,
+    validCurrencies: ['GBP'],
     validCryptoCurrencies: ['ETH', 'DAI'],
     includeFees: true,
-    api: false
+    api: true,
+    receiveHint: 'You don’t need an ID to complete this transaction!'
   },
   [SIMPLEX]: {
     line1: 'Credit / Debit Card',

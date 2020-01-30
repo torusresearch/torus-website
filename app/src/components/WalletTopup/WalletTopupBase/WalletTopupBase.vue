@@ -80,7 +80,7 @@
                 placeholder="0.00"
                 :suffix="selectedCryptoCurrency"
                 :value="cryptoCurrencyValue"
-                :hint="t('walletTopUp.receiveHint')"
+                :hint="selectedProviderObj.receiveHint || t('walletTopUp.receiveHint')"
                 persistent-hint
                 outlined
                 aria-label="Amount to Receive"
@@ -168,7 +168,7 @@ export default {
     selectedCurrency() {
       if (this.selectedProviderObj && this.selectedProviderObj.validCurrencies.includes(this.$store.state.selectedCurrency))
         return this.$store.state.selectedCurrency
-      return this.selectedProvider === COINDIRECT ? 'EUR' : 'USD'
+      return this.selectedProviderObj.validCurrencies[0]
     },
     maxOrderValue() {
       return this.selectedProviderObj.maxOrderValue

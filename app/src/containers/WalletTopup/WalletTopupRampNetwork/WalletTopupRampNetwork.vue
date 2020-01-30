@@ -1,27 +1,57 @@
 <template>
-  <v-layout wrap class="wallet-topup-rampnetwork">
-    <span>Ramp Instant is a secure way to buy crypto without using your ID or credit card.</span>
-
-    <div class="mt-3 text-right link-container">
-      <v-btn depressed color="primary" @click="showWidget">Buy</v-btn>
-    </div>
-  </v-layout>
+  <WalletTopupBase
+    selectedProvider="rampnetwork"
+    @fetchQuote="fetchQuote"
+    @sendOrder="sendOrder"
+    :cryptoCurrencyValue="cryptoCurrencyValue"
+    :currencyRate="currencyRate"
+  />
 </template>
 
 <script>
-import { post } from '../../../utils/httpHelpers'
-import config from '../../../config'
+import throttle from 'lodash.throttle'
+import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 import log from 'loglevel'
-import { RampInstantSDK } from '@ramp-network/ramp-instant-sdk'
 
 export default {
+  components: {
+    WalletTopupBase
+  },
+  data() {
+    return {
+      cryptoCurrencyValue: 0,
+      currencyRate: 0,
+      currentOrder: {}
+    }
+  },
   methods: {
-    showWidget() {
-      new RampInstantSDK({
-        hostAppName: 'Tor.us',
-        hostLogoUrl: 'https://tor.us/assets/img/torus-logo.svg',
-        userAddress: this.$store.state.selectedAddress
-      }).show()
+    fetchQuote(payload) {
+      const self = this
+      throttle(() => {
+        self.$store
+          .dispatch('fetchRampNetworkQuote', payload)
+          .then(result => {
+            let asset = result.assets.find(asset => asset.symbol === payload.selectedCryptoCurrency)
+            console.log(payload, asset)
+            let fiat = payload.fiatValue
+            let fee = asset.maxFeePercent[payload.selectedCurrency] / 100
+            let rate = asset.price[payload.selectedCurrency]
+            let finalFiatValue = fiat - fiat * fee // Real amount of fiat that will be converted to crypto
+            let cryptoValue = finalFiatValue / rate // Final Crypto Value
+
+            self.cryptoCurrencyValue = cryptoValue
+            self.cryptoCurrencySymbol = asset.symbol
+            self.currencyRate = asset.price[payload.selectedCurrency]
+            self.currentOrder = {
+              cryptoCurrencyValue: cryptoValue * Math.pow(10, asset.decimals),
+              cryptoCurrencySymbol: asset.symbol
+            }
+          })
+          .catch(err => log.error(err))
+      }, 0)()
+    },
+    sendOrder(cb) {
+      cb(this.$store.dispatch('fetchRampNetworkOrder', { currentOrder: this.currentOrder, colorCode: this.$vuetify.theme.themes.light.primary }))
     }
   }
 }
