@@ -49,6 +49,7 @@ export default {
         event => {
           if (event.data.type === 'WIDGET_CLOSE') {
             rampInstantWindow.close()
+            reject(new Error('User closed Ramp Instant Widget'))
           }
           if (event.data.type === 'PURCHASE_CREATED') {
             resolve({ success: true })
@@ -58,7 +59,6 @@ export default {
       )
 
       rampInstantWindow.once('close', () => {
-        bc.close()
         reject(new Error('User closed Ramp Instant Widget'))
       })
     })

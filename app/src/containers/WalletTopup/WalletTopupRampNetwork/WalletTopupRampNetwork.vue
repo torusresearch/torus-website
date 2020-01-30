@@ -31,13 +31,13 @@ export default {
         self.$store
           .dispatch('fetchRampNetworkQuote', payload)
           .then(result => {
-            let asset = result.assets.find(asset => asset.symbol === payload.selectedCryptoCurrency)
+            const asset = result.assets.find(asset => asset.symbol === payload.selectedCryptoCurrency)
 
-            let fiat = payload.fiatValue
-            let fee = asset.maxFeePercent[payload.selectedCurrency] / 100
-            let rate = asset.price[payload.selectedCurrency]
-            let finalFiatValue = fiat - fiat * fee // Real amount of fiat that will be converted to crypto
-            let cryptoValue = finalFiatValue / rate // Final Crypto Value
+            const fiat = payload.fiatValue
+            const feeRate = asset.maxFeePercent[payload.selectedCurrency] / 100
+            const rate = asset.price[payload.selectedCurrency]
+            const fiatWithoutFee = fiat / (1 + feeRate) // Final amount of fiat that will be converted to crypto
+            const cryptoValue = fiatWithoutFee / rate // Final Crypto amount
 
             self.cryptoCurrencyValue = cryptoValue
             self.cryptoCurrencySymbol = asset.symbol
