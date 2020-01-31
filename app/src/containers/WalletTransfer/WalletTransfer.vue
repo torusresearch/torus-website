@@ -738,18 +738,6 @@ export default {
       const fastGasPrice = '0x' + this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)
       const selectedAddress = this.$store.state.selectedAddress
       if (this.contractType === CONTRACT_TYPE_ETH) {
-        // const value = '0x' + this.amount.times(new BigNumber(10).pow(new BigNumber(18))).toString(16)
-        // const requiredGas = this.gas.eq(new BigNumber('0')) ? undefined : '0x' + this.gas.toString(16)
-
-        // log.info('TX SENT: ', {
-        //   from: selectedAddress,
-        //   to: toAddress,
-        //   value: value,
-        //   gas: requiredGas,
-        //   gasPrice: fastGasPrice,
-        //   relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
-        // })
-
         const value =
           '0x' +
           this.amount
@@ -757,12 +745,13 @@ export default {
             .dp(0, BigNumber.ROUND_DOWN)
             .toString(16)
         log.info(this.gas.toString())
+
         torus.web3.eth.sendTransaction(
           {
             from: selectedAddress,
             to: toAddress,
-            value: value,
-            gas: requiredGas,
+            value,
+            gas: this.gas.eq(new BigNumber('0')) ? undefined : '0x' + this.gas.toString(16),
             gasPrice: fastGasPrice,
             relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
           },
