@@ -1,5 +1,4 @@
 import { BroadcastChannel } from 'broadcast-channel'
-import NodeDetailManager from '@toruslabs/fetch-node-details'
 import log from 'loglevel'
 import config from '../config'
 import { toChecksumAddress } from 'web3-utils'
@@ -47,7 +46,7 @@ const providerChangeStream = torus.communicationMux.getStream('provider_change')
 export default {
   logOut({ commit, dispatch }, payload) {
     commit('logOut', initialState)
-    dispatch('setTheme', THEME_LIGHT_BLUE_NAME)
+    // dispatch('setTheme', THEME_LIGHT_BLUE_NAME)
     if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
     statusStream.write({ loggedIn: false })
     torus.torusController.accountTracker.store.unsubscribe(accountTrackerHandler)
@@ -761,11 +760,12 @@ export default {
       userInfo: { verifierId, verifier, verifierParams }
     } = state
     let torusNodeEndpoints, torusIndexes
-    return NodeDetailManager.getNodeDetails()
-      .then(({ torusNodeEndpoints: torusNodeEndpointsVal, torusIndexes: torusIndexesVal }) => {
+    return torus.nodeDetailManager
+      .getNodeDetails()
+      .then(({ torusNodeEndpoints: torusNodeEndpointsVal, torusNodePub, torusIndexes: torusIndexesVal }) => {
         torusNodeEndpoints = torusNodeEndpointsVal
         torusIndexes = torusIndexesVal
-        return torus.getPublicAddress(torusNodeEndpoints, { verifier, verifierId })
+        return torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
       })
       .then(res => {
         log.info('New private key assigned to user at address ', res)
@@ -855,6 +855,8 @@ export default {
     const theme = themes[payload || THEME_LIGHT_BLUE_NAME]
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
+    // set theme to localStorage
+    localStorage.setItem('torus-theme', payload)
   },
   setUserTheme({ state, dispatch }, payload) {
     return new Promise((resolve, reject) => {

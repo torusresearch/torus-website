@@ -305,7 +305,11 @@ VuexStore.subscribe((mutation, state) => {
         }
         if (state.pastTransactions.findIndex(x => x.transaction_hash === txObj.transaction_hash && x.network === txObj.network) === -1) {
           // User notification
-          notifyUser(getEtherScanHashLink(hash, state.networkType.host))
+          try {
+            notifyUser(getEtherScanHashLink(hash, state.networkType.host))
+          } catch (error) {
+            log.error(error)
+          }
 
           post(`${config.api}/transaction`, txObj, {
             headers: {
@@ -323,5 +327,12 @@ VuexStore.subscribe((mutation, state) => {
     }
   }
 })
+
+if (storageAvailable('localStorage')) {
+  const torusTheme = localStorage.getItem('torus-theme')
+  if (torusTheme) {
+    VuexStore.dispatch('setTheme', torusTheme)
+  }
+}
 
 export default VuexStore

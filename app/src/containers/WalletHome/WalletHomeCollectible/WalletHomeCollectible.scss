@@ -31,6 +31,9 @@
   .more-info-hide {
     display: none;
   }
+  .v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined).transfer-btn {
+    background-color: var(--v-primary-lighten5);
+  }
 
   .v-divider--vertical.v-divider--inset {
     margin-top: 0;

@@ -42,6 +42,7 @@ export default {
         if (!selectedParams.selectedCurrency) selectedParams.selectedCurrency = 'USD'
         if (!selectedParams.fiatValue) selectedParams.fiatValue = selectedProvider.minOrderValue
         if (!selectedParams.selectedCryptoCurrency) selectedParams.selectedCryptoCurrency = 'ETH'
+        if (!selectedParams.selectedAddress) selectedParams.selectedAddress = state.selectedAddress
 
         // validations
         const requestedOrderAmount = +parseFloat(selectedParams.fiatValue)
@@ -53,7 +54,11 @@ export default {
         // simplex
         if (provider === SIMPLEX) {
           const { result: currentOrder } = await dispatch('fetchSimplexQuote', selectedParams)
-          const { success } = await dispatch('fetchSimplexOrder', { currentOrder, preopenInstanceId })
+          const { success } = await dispatch('fetchSimplexOrder', {
+            currentOrder,
+            preopenInstanceId,
+            selectedAddress: selectedParams.selectedAddress
+          })
           handleSuccess(success)
         }
         // moonpay
@@ -61,21 +66,26 @@ export default {
           const currentOrder = await dispatch('fetchMoonpayQuote', selectedParams)
           const { success } = await dispatch('fetchMoonpayOrder', {
             currentOrder,
-            colorCode: vuetify.framework.theme.themes.light.primary,
-            preopenInstanceId
+            colorCode: vuetify.framework.theme.themes.light.primary.base,
+            preopenInstanceId,
+            selectedAddress: selectedParams.selectedAddress
           })
           handleSuccess(success)
         }
         // wyre
         else if (provider === WYRE) {
           const { data: currentOrder } = await dispatch('fetchWyreQuote', selectedParams)
-          const { success } = await dispatch('fetchWyreOrder', { currentOrder, preopenInstanceId })
+          const { success } = await dispatch('fetchWyreOrder', { currentOrder, preopenInstanceId, selectedAddress: selectedParams.selectedAddress })
           handleSuccess(success)
         }
         // coindirect
         else if (provider === COINDIRECT) {
           const currentOrder = await dispatch('fetchCoindirectQuote', selectedParams)
-          const { success } = await dispatch('fetchCoindirectOrder', { currentOrder, preopenInstanceId })
+          const { success } = await dispatch('fetchCoindirectOrder', {
+            currentOrder,
+            preopenInstanceId,
+            selectedAddress: selectedParams.selectedAddress
+          })
           handleSuccess(success)
         }
       } catch (error) {

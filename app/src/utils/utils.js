@@ -403,22 +403,22 @@ const paymentProviders = {
     validCryptoCurrencies: ['ETH', 'DAI', 'USDT'],
     includeFees: true,
     api: true
-  },
-  [CRYPTO]: {
-    line1: 'Credit Card',
-    line2: 'Varies',
-    line3: 'N/A',
-    line4: 'ETH, tokens',
-    status: ACTIVE,
-    logoExtension: PNG,
-    supportPage: 'https://help.crypto.com/en/',
-    minOrderValue: 10,
-    maxOrderValue: 1000,
-    validCurrencies: ['USD'],
-    validCryptoCurrencies: ['ETH'],
-    includeFees: true,
-    api: false
   }
+  // [CRYPTO]: {
+  //   line1: 'Credit Card',
+  //   line2: 'Varies',
+  //   line3: 'N/A',
+  //   line4: 'ETH, tokens',
+  //   status: ACTIVE,
+  //   logoExtension: PNG,
+  //   supportPage: 'https://help.crypto.com/en/',
+  //   minOrderValue: 10,
+  //   maxOrderValue: 1000,
+  //   validCurrencies: ['USD'],
+  //   validCryptoCurrencies: ['ETH'],
+  //   includeFees: true,
+  //   api: false
+  // }
 }
 
 function getPaymentProviders(theme) {

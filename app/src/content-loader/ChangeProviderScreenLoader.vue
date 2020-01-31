@@ -6,11 +6,7 @@
     <div class="sk-grid__col-mob-2"></div>
 
     <div class="sk-grid__col-mob-4">
-      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 50px; margin-bottom: 20px;"></div>
-    </div>
-
-    <div class="sk-grid__col-mob-4">
-      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 80px; margin-bottom: 20px;"></div>
+      <div :class="$vuetify.theme.dark ? 'dark' : ''" class="sk-loader" style="height: 100px; margin-bottom: 20px;"></div>
     </div>
 
     <div class="sk-grid__col-mob-2">

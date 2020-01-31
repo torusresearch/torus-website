@@ -38,6 +38,10 @@
   .theme--dark.v-messages {
     color: var(--v-text_2-base);
   }
+  .theme--light.v-system-bar.info,
+  .theme--dark.v-system-bar.info {
+    color: var(--v-infoBannerText-base);
+  }
 
   .v-btn {
     text-transform: inherit;
@@ -84,6 +88,7 @@
 .torus-app.theme--light {
   &.v-sheet {
     background: var(--v-background-base);
+    background-color: var(--v-background-base);
   }
   &.v-tabs .v-tabs-bar {
     background: var(--v-background-base);
@@ -96,11 +101,17 @@
   }
 
   .card-shadow {
-    box-shadow: 0 14px 28px 0 rgba(0, 0, 0, 0.06);
+    box-shadow: 0 14px 28px 0 rgba(46, 91, 256, 0.06);
     border: 1px solid #f5f5f5;
     border-radius: 3px;
   }
 
+  .card-shadow-v8 {
+    border: 1px solid #F1F2F6;
+    box-shadow: 0px 18px 36px rgba(46, 91, 255, 0.06);
+    border-radius: 9px;
+  }
+  
   // Srollbars
   /* width */
   ::-webkit-scrollbar {
@@ -130,6 +141,7 @@
   & .v-tabs > .v-tabs-bar,
   & .v-sheet {
     background: var(--v-background-base);
+    background-color: var(--v-background-base);
   }
 
   .card-shadow {

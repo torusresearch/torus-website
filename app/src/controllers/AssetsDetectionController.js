@@ -135,12 +135,12 @@ export default class AssetsDetectionController {
         Number(token_id),
         {
           description,
-          image: image_url || contractImage.replace('=s60', '=s180'),
+          image: image_url || contractImage.replace('=s60', '=s240'),
           name,
           contractAddress,
           contractName,
           contractSymbol,
-          contractImage: contractImage.replace('=s60', '=s180'),
+          contractImage: contractImage.replace('=s60', '=s240'),
           contractSupply,
           contractDescription
         },

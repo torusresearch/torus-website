@@ -114,8 +114,8 @@
                   :error-messages="ensError"
                   item-text="name"
                   item-value="value"
-                  :return-object="false"
                   aria-label="Recipient Address"
+                  :return-object="false"
                 >
                   <template v-slot:append>
                     <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()" aria-label="QR Capture Button">
@@ -146,7 +146,7 @@
                   aria-label="Recipient Selector"
                 ></v-select>
               </v-flex>
-              <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" x12 mb-2>
+              <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" xs12 mb-2>
                 <add-contact :contact="contactSelected" :verifier="selectedVerifier"></add-contact>
               </v-flex>
             </v-layout>
@@ -308,7 +308,6 @@
 <script>
 import { QrcodeCapture } from 'vue-qrcode-reader'
 import { isAddress, toChecksumAddress, toBN, toWei } from 'web3-utils'
-import NodeDetailManager from '@toruslabs/fetch-node-details'
 import torus from '../../torus'
 import { significantDigits, getEtherScanHashLink, validateVerifierId } from '../../utils/utils'
 import config from '../../config'
@@ -474,10 +473,11 @@ export default {
     },
     contactList() {
       return this.$store.state.contacts.reduce((mappedObj, contact) => {
-        if (contact.verifier === this.selectedVerifier) {
+        if (contact.verifier === this.selectedVerifier || this.selectedVerifier === '') {
           mappedObj.push({
             name: `${contact.name} (${contact.contact})`,
-            value: contact.contact
+            value: contact.contact,
+            verifier: contact.verifier
           })
         }
         return mappedObj
@@ -563,20 +563,24 @@ export default {
       this.autoSelectVerifier = false
       this.$refs.form.validate()
     },
-    contactChanged(event) {
-      this.contactSelected = event
-      const contact = event && event.target ? event.target.value : event
-      log.info(event, contact, 'contactChanged')
+    contactChanged(contact) {
+      this.contactSelected = contact
       if (contact) this.toAddress = contact
+      log.info(event, contact, 'contactChanged')
 
       // Autoupdate selected verifier
       if (this.autoSelectVerifier) {
-        if (/^0x/.test(this.toAddress)) {
-          this.selectedVerifier = ETH
-        } else if (/@/.test(this.toAddress)) {
-          this.selectedVerifier = GOOGLE
-        } else if (/.eth$/.test(this.toAddress) || /.xyz$/.test(this.toAddress) || /.crypto$/.test(this.toAddress)) {
-          this.selectedVerifier = ENS
+        const contactFound = this.contactList.find(item => item.value === contact)
+        if (contactFound) {
+          this.selectedVerifier = contactFound.verifier
+        } else {
+          if (/^0x/.test(this.toAddress)) {
+            this.selectedVerifier = ETH
+          } else if (/@/.test(this.toAddress)) {
+            this.selectedVerifier = GOOGLE
+          } else if (/.eth$/.test(this.toAddress) || /.xyz$/.test(this.toAddress) || /.crypto$/.test(this.toAddress)) {
+            this.selectedVerifier = ENS
+          }
         }
       }
       this.ensError = ''
@@ -683,7 +687,7 @@ export default {
           }
         } else {
           try {
-            toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, {
+            toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
               verifier: this.selectedVerifier,
               verifierId: this.toAddress
             })
@@ -734,17 +738,25 @@ export default {
       const fastGasPrice = '0x' + this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)
       const selectedAddress = this.$store.state.selectedAddress
       if (this.contractType === CONTRACT_TYPE_ETH) {
-        const value = '0x' + this.amount.times(new BigNumber(10).pow(new BigNumber(18))).toString(16)
-        const requiredGas = this.gas.eq(new BigNumber('0')) ? undefined : '0x' + this.gas.toString(16)
+        // const value = '0x' + this.amount.times(new BigNumber(10).pow(new BigNumber(18))).toString(16)
+        // const requiredGas = this.gas.eq(new BigNumber('0')) ? undefined : '0x' + this.gas.toString(16)
 
-        log.info('TX SENT: ', {
-          from: selectedAddress,
-          to: toAddress,
-          value: value,
-          gas: requiredGas,
-          gasPrice: fastGasPrice,
-          relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
-        })
+        // log.info('TX SENT: ', {
+        //   from: selectedAddress,
+        //   to: toAddress,
+        //   value: value,
+        //   gas: requiredGas,
+        //   gasPrice: fastGasPrice,
+        //   relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
+        // })
+
+        const value =
+          '0x' +
+          this.amount
+            .times(new BigNumber(10).pow(new BigNumber(18)))
+            .dp(0, BigNumber.ROUND_DOWN)
+            .toString(16)
+        log.info(this.gas.toString())
         torus.web3.eth.sendTransaction(
           {
             from: selectedAddress,
@@ -772,7 +784,12 @@ export default {
           }
         )
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
-        const value = '0x' + this.amount.times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals))).toString(16)
+        const value =
+          '0x' +
+          this.amount
+            .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
+            .dp(0, BigNumber.ROUND_DOWN)
+            .toString(16)
         this.getTransferMethod(this.contractType, selectedAddress, toAddress, value).send(
           {
             from: selectedAddress,
@@ -955,7 +972,7 @@ export default {
 
     this.updateFieldsBasedOnRoute()
 
-    NodeDetailManager.getNodeDetails().then(nodeDetails => {
+    torus.nodeDetailManager.getNodeDetails().then(nodeDetails => {
       this.nodeDetails = nodeDetails
     })
   }

@@ -8,25 +8,30 @@ function initNotifications() {
 }
 
 function notifyUser(url) {
-  if (!Notification) {
-    alert('Desktop notifications not available in your browser. Try Chromium.')
+  if (!Notification || !navigator.serviceWorker) {
+    log.info('Desktop notifications not available')
     return
   }
-
-  if (Notification.permission !== 'granted') {
-    log.info('Notification permission not granted.')
-    Notification.requestPermission()
-  } else {
-    //log.info(url)
-    log.info('notification permission granted.')
-    var notification = new Notification('Sent Transaction', {
-      body: 'View on Etherscan'
-    })
-
-    notification.onclick = function() {
-      window.open(url)
+  Notification.requestPermission().then(result => {
+    // do sth
+    if (result !== 'granted') {
+      return
     }
-  }
+    navigator.serviceWorker.getRegistration().then(registration => {
+      registration &&
+        registration.showNotification('Sent Transaction', {
+          body: 'Check Tx Status',
+          icon: 'favicon.png',
+          actions: [{ action: 'close', title: 'Close Notification', icon: 'img/icons/close.svg' }],
+          vibrate: [100, 50, 100],
+          tag: 'transaction-status',
+          data: {
+            dateOfArrival: Date.now(),
+            url: url
+          }
+        })
+    })
+  })
 }
 
 export { initNotifications, notifyUser }

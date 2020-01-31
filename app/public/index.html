@@ -33,12 +33,12 @@
       <!-- REDIRECT LOADER -->
       <div id="skeleton-redirect" class="redirect-skeleton-container skeleton-holder">
         <div class="redirect-skeleton-content">
-          <h1 class="title content">Loading</h1>
           <div class="spinner content">
             <div class="beat beat-odd"></div>
             <div class="beat beat-even"></div>
             <div class="beat beat-odd"></div>
           </div>
+          <h1 class="title content">Loading</h1>
         </div>
       </div>
 
@@ -356,24 +356,25 @@
       
       <!-- POPUP / CONFIRM LOADER -->
       <div id="skeleton-confirm" class="skeleton-holder sk-grid">
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 25px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-top: 30px; margin-bottom: 20px;"></div></div>
         <div class="sk-grid__col-mob-2"></div>
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 10px; margin-bottom: 20px;"></div></div>
-        <div class="sk-grid__col-mob-2"></div>
-
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 15px;"></div></div>
+    
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 20px;"></div></div>
         
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2px;"></div></div>
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 80px; margin-bottom: 20px;"></div></div>
+        
+        
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
+      </div>
+
+      <!-- POPUP / USER INFO / CHANGE PROVIDER LOADER -->
+      <div id="skeleton-user-info-and-provider" class="skeleton-holder sk-grid">
+        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-top: 30px; margin-bottom: 20px;"></div></div>
         <div class="sk-grid__col-mob-2"></div>
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
-
-        <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 15px; margin-bottom: 2;"></div></div>
-        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 50px; margin-bottom: 15px;"></div></div>
-
-        <div class="sk-grid__col-mob-2 sk-grid__col-mob-shift-2"><div class="sk-loader" style="height: 15px; margin-bottom: 30px;"></div></div>
-
+    
+        <div class="sk-grid__col-mob-4"><div class="sk-loader" style="height: 100px; margin-bottom: 20px;"></div></div>
+    
         <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
         <div class="sk-grid__col-mob-2"><div class="sk-loader" style="height: 50px; margin-bottom: 30px;"></div></div>
       </div>
@@ -408,11 +409,10 @@
           )
         }
       }
-      if (storageAvailable('sessionStorage')) {
-        const sessionData = sessionStorage.getItem('torus-app')
-        const torusAppSession = JSON.parse(sessionData) || {}
-        if (torusAppSession && Object.prototype.hasOwnProperty.call(torusAppSession, 'theme')) {
-          theme = torusAppSession.theme.split('-')[0]
+      if (storageAvailable('localStorage')) {
+        const torusTheme = localStorage.getItem('torus-theme')
+        if (torusTheme) {
+          theme = torusTheme.split('-')[0]
         }
       }
 
@@ -432,7 +432,9 @@
         selectedLoader = 'skeleton-wallet-home-collectibles' + mobileTag
       } else if (/\/wallet\/home/.test(redirectPath)) {
         selectedLoader = 'skeleton-wallet-home' + mobileTag
-      } else if (/\/popup/.test(redirectPath) || /\/confirm/.test(redirectPath) || /\/providerchange/.test(redirectPath) || /\/userinforequest/.test(redirectPath)) {
+      } else if (/\/userinforequest/.test(redirectPath) || /\/providerchange/.test(redirectPath)) {
+        selectedLoader = 'skeleton-user-info-and-provider'
+      } else if (/\/popup/.test(redirectPath) || /\/confirm/.test(redirectPath)) {
         selectedLoader = 'skeleton-confirm'
       } else if (/\/redirect/.test(redirectPath)) {
         document.querySelector('html').style.height = '100%'
@@ -445,7 +447,7 @@
       const loaderElement = document.querySelector('#' + selectedLoader)
       if (theme === 'dark') {
         loaderElement.querySelectorAll('.sk-loader').forEach(function(loader) {
-          loader.style.background =  '#2E3135'
+          loader.classList.add('dark')
         })
       }
       // loaderElement.style.display = /\/redirect/.test(redirectPath) || mobileTag ? 'flex' : 'flex'
