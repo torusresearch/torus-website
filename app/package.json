@@ -122,7 +122,7 @@
     "esm": "^3.2.25",
     "eth-phishing-detect": "^1.1.13",
     "fibers": "^4.0.2",
-    "ganache-core": "2.8.0",
+    "ganache-core": "2.10.1",
     "husky": "^4.2.1",
     "isomorphic-fetch": "^2.2.1",
     "jsdom": "^16.0.1",
