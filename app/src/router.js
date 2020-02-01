@@ -106,6 +106,12 @@ const router = new Router({
       meta: { requiresAuth: false }
     },
     {
+      path: '/torusLogin',
+      name: 'torusLogin',
+      component: TorusLogin,
+      meta: { requiresAuth: false }
+    },
+    {
       path: '/popup',
       name: 'popup',
       component: Popup,
