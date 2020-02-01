@@ -452,6 +452,22 @@ function formatTxMetaForRpcResult(txMeta) {
   }
 }
 
+function xor(firstHex, secondHex) {
+  var a = Buffer.from(firstHex, 'hex')
+  var b = Buffer.from(secondHex, 'hex')
+  var res = []
+  if (a.length > b.length) {
+    for (var i = 0; i < b.length; i++) {
+      res.push(a[i] ^ b[i])
+    }
+  } else {
+    for (var i = 0; i < a.length; i++) {
+      res.push(a[i] ^ b[i])
+    }
+  }
+  return Buffer.from(res).toString('hex')
+}
+
 module.exports = {
   removeListeners,
   applyListeners,
@@ -477,5 +493,6 @@ module.exports = {
   formatDate,
   paymentProviders,
   getPaymentProviders,
-  formatTxMetaForRpcResult
+  formatTxMetaForRpcResult,
+  xor
 }
