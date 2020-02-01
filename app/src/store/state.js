@@ -9,6 +9,7 @@ const initialState = {
     verifierId: '', // usually email or facebook id
     verifierParams: {} // general params
   },
+  extendedPassword: '', // torus-login password
   // loaders
   loginInProgress: false,
   weiBalanceLoaded: false, // Use on showing spinners
