@@ -2,6 +2,12 @@ export default {
   setUserInfo(state, userInfo) {
     state.userInfo = userInfo
   },
+  setExtendedPassword(state, extendedPassword) {
+    state.extendedPassword = extendedPassword
+  },
+  setIdToken(state, idToken) {
+    state.idToken = idToken
+  },
   setWallet(state, wallet) {
     state.wallet = wallet
   },

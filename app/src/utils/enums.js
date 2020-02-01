@@ -102,6 +102,7 @@ const ACTIVITY_STATUS_SUCCESSFUL = 'walletActivity.successful'
 const ACTIVITY_STATUS_UNSUCCESSFUL = 'walletActivity.unsuccessful'
 const ACTIVITY_STATUS_PENDING = 'walletActivity.pending'
 
+const TORUS = 'torus'
 const GOOGLE = 'google'
 const FACEBOOK = 'facebook'
 const REDDIT = 'reddit'
@@ -254,6 +255,7 @@ module.exports = {
   ACTIVITY_STATUS_SUCCESSFUL,
   ACTIVITY_STATUS_UNSUCCESSFUL,
   ACTIVITY_STATUS_PENDING,
+  TORUS,
   GOOGLE,
   FACEBOOK,
   TWITCH,

@@ -64,7 +64,8 @@ function onloadTorus(torus) {
   torus.web3 = new Web3(torusController.provider)
 
   // update node details
-  torus.nodeDetailManager = new NodeDetailManager({ network: process.env.VUE_APP_PROXY_NETWORK, proxyAddress: process.env.VUE_APP_PROXY_ADDRESS })
+  // torus.nodeDetailManager = new NodeDetailManager({ network: process.env.VUE_APP_PROXY_NETWORK, proxyAddress: process.env.VUE_APP_PROXY_ADDRESS })
+  torus.nodeDetailManager = new NodeDetailManager({ network: 'ropsten', proxyAddress: '0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183' })
   torus.nodeDetailManager.getNodeDetails().then(() => {})
 
   /* Stream setup block */

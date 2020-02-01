@@ -5,6 +5,7 @@ import Popup from './views/Popup'
 import ProviderChange from './views/ProviderChange'
 import UserInfoRequest from './views/UserInfoRequest'
 import RedirectCatch from './views/RedirectCatch'
+import TorusLogin from './views/TorusLogin'
 import Login from './views/Login'
 import Confirm from './views/Confirm'
 import Wallet from './views/Wallet'
@@ -46,6 +47,12 @@ const router = new Router({
       path: '/logout',
       name: 'logout',
       component: Login,
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/torusLogin',
+      name: 'torusLogin',
+      component: TorusLogin,
       meta: { requiresAuth: false }
     },
     {
