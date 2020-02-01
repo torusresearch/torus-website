@@ -40,7 +40,7 @@ export default {
   data: function() {
     return {
       state: '',
-      verifier_id: 'lentan1029@gmail.com',
+      verifier_id: 'leonard@tor.us',
       password: 'password',
       extendedPassword: '',
       redirect_uri: '',

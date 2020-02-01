@@ -16,7 +16,7 @@ import {
   DISCORD,
   THEME_LIGHT_BLUE_NAME
 } from '../utils/enums'
-import { broadcastChannelOptions, storageAvailable } from '../utils/utils'
+import { broadcastChannelOptions, storageAvailable, xor } from '../utils/utils'
 import { post, get, patch, remove } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import initialState from './state'
@@ -391,7 +391,7 @@ export default {
               }
             })
             dispatch('updateExtendedPassword', { extendedPassword: hashParams.extendedPassword })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, torusLogin: true })
           }
         } catch (error) {
           log.error(error)
@@ -794,7 +794,8 @@ export default {
         })
     })
   },
-  async handleLogin({ state, dispatch }, { calledFromEmbed, idToken }) {
+  async handleLogin({ state, dispatch }, { calledFromEmbed, torusLogin }) {
+    console.log('handlelogin called with', state)
     dispatch('loginInProgress', true)
     const {
       userInfo: { verifierId, verifier, verifierParams }
@@ -807,11 +808,22 @@ export default {
         torusIndexes = torusIndexesVal
         return torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
       })
-      .then(res => {
-        log.info('New private key assigned to user at address ', res)
-        const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
-        const p2 = torus.getMessageForSigning(res)
-        return Promise.all([p1, p2])
+      .then(async res => {
+        if (torusLogin) {
+          var data = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
+          console.log('TKEY', data, state.extendedPassword)
+          data.privKey = xor(data.privKey, state.extendedPassword)
+          data.ethAddress = torus.web3.eth.accounts.privateKeyToAccount('0x' + data.privKey).address
+          log.info('New private key assigned to user at address ', data.ethAddress)
+          console.log('DATA', data)
+          const message = await torus.getMessageForSigning(data.ethAddress)
+          return [data, message]
+        } else {
+          log.info('New private key assigned to user at address ', res)
+          const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
+          const p2 = torus.getMessageForSigning(res)
+          return Promise.all([p1, p2])
+        }
       })
       .then(async response => {
         const data = response[0]
