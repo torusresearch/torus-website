@@ -903,6 +903,25 @@ export default {
         })
     })
   },
+  loadBadges({ state, dispatch }) {
+    return new Promise((resolve, reject) => {
+      get(`${config.api}/badges`, {
+        headers: {
+          Authorization: `Bearer ${state.jwtToken}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      })
+        .then(response => {
+          dispatch('setBadges', payload)
+          log.info('successfully patched', response)
+          resolve(response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to load badges')
+          reject('Unable to load bages')
+        })
+    })
+  },
   setVerifier({ state }, payload) {
     const { verifier, verifierId } = state.userInfo
     patch(
@@ -934,10 +953,11 @@ export default {
       })
         .then(user => {
           if (user.data) {
-            const { transactions, contacts, default_currency, theme, locale, verifier, verifier_id } = user.data || {}
+            const { transactions, contacts, default_currency, theme, locale, verifier, verifier_id, badges } = user.data || {}
             commit('setPastTransactions', transactions)
             commit('setContacts', contacts)
             dispatch('setTheme', theme)
+            dispatch('setMyBadges', badges)
             dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
             dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
             if (locale !== '') dispatch('setLocale', locale)

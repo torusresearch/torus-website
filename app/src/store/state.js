@@ -25,6 +25,8 @@ const initialState = {
   assets: {}, // Account specific object
   tokenRates: {},
   transactions: [],
+  myBadges: [],
+  badges: [],
   unapprovedTypedMessages: {},
   unapprovedPersonalMsgs: {},
   unapprovedMsgs: {},

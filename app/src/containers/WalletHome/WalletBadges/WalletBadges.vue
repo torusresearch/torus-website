@@ -11,7 +11,7 @@
           Each badge represents a chance to win prizes up to 1ETH!
         </div>
       </v-flex>
-      <v-flex class="xs12 sm4 md3 px-4 my-4" v-for="(badge, index) in badges" :key="index">
+      <v-flex class="xs12 sm6 md4 lg3 px-4 my-4" v-for="(badge, index) in badges" :key="index">
         <wallet-badge @openModal="openModal" :badge="badge" />
       </v-flex>
     </v-layout>
@@ -100,10 +100,21 @@ export default {
       ]
     }
   },
+  created() {
+    this.loadBadges()
+  },
+  computed: {
+    // badges() {
+    //   return this.$store.state.badges
+    // },
+  },
   methods: {
     openModal(badge) {
       this.showModalMessage = true
       this.badgeTitle = badge
+    },
+    loadBadges() {
+      this.$store.dispatch('loadBadges')
     }
   }
 }
