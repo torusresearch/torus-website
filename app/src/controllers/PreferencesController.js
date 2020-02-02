@@ -33,7 +33,7 @@ class PreferencesController {
       locale: LOCALE_EN,
       billboard: [],
       contacts: [],
-      permissions: {},
+      permissions: [],
       paymentTx: [],
       ...opts.initState
     }
@@ -108,8 +108,15 @@ class PreferencesController {
       getPastOrders({}, this.headers)
     ]).then(([user, paymentTx]) => {
       if (user && user.data) {
-        const { transactions, contacts, theme, locale, verifier, verifier_id } = user.data || {}
-        this.store.updateState({ contacts, pastTransactions: transactions, theme, locale: locale || LOCALE_EN, paymentTx: paymentTx.data })
+        const { transactions, contacts, theme, locale, verifier, verifier_id, permissions } = user.data || {}
+        this.store.updateState({
+          contacts,
+          pastTransactions: transactions,
+          theme,
+          locale: locale || LOCALE_EN,
+          paymentTx: paymentTx.data,
+          permissions
+        })
         if (!verifier || !verifier_id) this.setVerifier(verifier, verifier_id)
         cb && cb(user)
       }
@@ -173,6 +180,18 @@ class PreferencesController {
           errorMsg: 'unable to update theme'
         }
       )
+  }
+
+  setPermissions(payload) {
+    post(`${config.api}/permissions`, payload, {
+      headers: this.headers
+    })
+      .then(response => {
+        log.info('successfully set permissions', response)
+      })
+      .catch(err => {
+        log.error(err, 'unable to patch permissions info')
+      })
   }
 
   setUserLocale(payload) {
