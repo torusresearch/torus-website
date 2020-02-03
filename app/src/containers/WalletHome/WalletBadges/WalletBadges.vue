@@ -12,18 +12,17 @@
         </div>
       </v-flex>
       <v-flex class="xs12 sm6 md4 lg3 px-4 my-4" v-for="(badge, index) in badges" :key="index">
-        <wallet-badge @openModal="openModal" :badge="badge" />
+        <wallet-badge @openModal="openModal" :badge="badge" :index="index" />
       </v-flex>
     </v-layout>
     <v-layout mt-4 pr-2 wrap>
       <v-spacer></v-spacer>
       <v-dialog v-model="showModalMessage" max-width="500">
         <badge-modal
-          @onClose="showModalMessage = false"
-          :badgeTitle="badgeTitle"
+          @onClose="closeModal"
           :text="
             !isCompleted
-              ? badgeTitle
+              ? badge.title
               : 'You have completed all your Badges. In order to participate for the prizes we need to access your information'
           "
           :isCompleted="isCompleted"
@@ -59,62 +58,42 @@ export default {
       ],
       showModalMessage: false,
       isCompleted: false,
-      badgeTitle: '',
-      badges: [
-        {
-          title: 'Create Torus Wallet Account',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere nisl neque, eu rutrum dolor feugiat eu.',
-          action: 'account',
-          status: true
-        },
-        {
-          title: 'Conduct First Transaction',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere nisl neque, eu rutrum dolor feugiat eu.',
-          type: 'transfer',
-          status: false
-        },
-        {
-          title: 'Top-up your wallet',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere nisl neque, eu rutrum dolor feugiat eu.',
-          type: 'transfer',
-          status: false
-        },
-        {
-          title: 'Log in to Augur',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere nisl neque, eu rutrum dolor feugiat eu.',
-          type: 'augur',
-          status: false
-        },
-        {
-          title: 'Conduct a swap on Totle',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere nisl neque, eu rutrum dolor feugiat eu.',
-          type: 'totle',
-          status: false
-        },
-        {
-          title: 'Use QR Code',
-          description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere nisl neque, eu rutrum dolor feugiat eu.',
-          type: 'scan',
-          status: false
-        }
-      ]
+      badge: {}
     }
   },
   created() {
     this.loadBadges()
   },
   computed: {
-    // badges() {
-    //   return this.$store.state.badges
-    // },
+    badges() {
+      let badges = []
+      this.$store.state.badges.filter(badge => {
+        if (this.$store.state.myBadges.includes(badge.id)) {
+          badges.push({
+            ...badge,
+            isCompleted: true
+          })
+        } else {
+          badges.push({
+            ...badge,
+            isCompleted: false
+          })
+        }
+      })
+      return badges
+    }
   },
   methods: {
     openModal(badge) {
       this.showModalMessage = true
-      this.badgeTitle = badge
+      this.badge = badge
     },
     loadBadges() {
       this.$store.dispatch('loadBadges')
+    },
+    closeModal() {
+      this.showModalMessage = false
+      this.badge = {}
     }
   }
 }

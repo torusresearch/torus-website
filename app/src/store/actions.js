@@ -903,7 +903,7 @@ export default {
         })
     })
   },
-  loadBadges({ state, dispatch }) {
+  loadBadges({ state, commit }) {
     return new Promise((resolve, reject) => {
       get(`${config.api}/badges`, {
         headers: {
@@ -912,7 +912,7 @@ export default {
         }
       })
         .then(response => {
-          dispatch('setBadges', payload)
+          commit('setBadges', response)
           log.info('successfully patched', response)
           resolve(response)
         })
@@ -957,7 +957,7 @@ export default {
             commit('setPastTransactions', transactions)
             commit('setContacts', contacts)
             dispatch('setTheme', theme)
-            dispatch('setMyBadges', badges)
+            commit('setMyBadges', badges)
             dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
             dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
             if (locale !== '') dispatch('setLocale', locale)
