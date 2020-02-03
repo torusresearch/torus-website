@@ -1,0 +1,64 @@
+.panel-left {
+	background-color: #ffffff;
+  }
+  
+  .panel-right {
+	background-image: url("/images/login-bg.png");
+	background-repeat: no-repeat;
+	background-position: left top;
+	background-size: auto 100%;
+	background-color: #0364ff;
+  
+	.caption {
+	  width: 80%;
+	  margin: auto;
+	}
+  }
+  
+  .default {
+	height: 100vh;
+  }
+  
+  .field {
+	.v-text-field__details {
+	  display: none;
+	}
+  
+	.error--text {
+	  .v-text-field__details {
+		display: inherit;
+	  }
+	}
+  
+	.v-btn {
+	  border-style: dashed;
+	}
+  }
+  
+  .v-text-field__details {
+	padding: 0;
+  }
+  
+  .link {
+	font-weight: normal;
+	font-size: 12px;
+	padding: 0;
+	box-shadow: none;
+	background-color: white !important;
+	text-transform: unset;
+	color: #0364ff !important;
+	&:hover {
+	  background-color: white !important;
+	}
+  }
+  
+  a {
+	text-decoration: none;
+  }
+  
+  body,
+  html {
+	height: 100vh;
+	overflow-y: hidden;
+  }
+  

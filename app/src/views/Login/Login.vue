@@ -108,6 +108,20 @@
                 </v-flex>
               </v-layout>
             </v-flex>
+            <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
+              <v-btn
+                id="torusLogin"
+                :color="$vuetify.theme.dark ? '' : 'white'"
+                block
+                :class="$vuetify.theme.dark ? 'torus-dark' : ''"
+                class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn"
+                type="button"
+                :to="{ name: 'torusLogin' }"
+              >
+                <img :src="require('../../../public/images/email.svg')" :class="$vuetify.theme.dark ? 'mr-4 torus-dark' : 'mr-6'" />
+                Sign up/in with Email
+              </v-btn>
+            </v-flex>
             <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
               <span class="text_2--text body-1">
                 {{ t('login.acceptTerms') }}
