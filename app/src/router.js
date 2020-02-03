@@ -5,7 +5,7 @@ import Popup from './views/Popup'
 import ProviderChange from './views/ProviderChange'
 import UserInfoRequest from './views/UserInfoRequest'
 import RedirectCatch from './views/RedirectCatch'
-import TorusLogin from './views/TorusLogin'
+import { TorusLogin, TorusRegister, TorusVerify } from './views/TorusLogin'
 import Login from './views/Login'
 import Confirm from './views/Confirm'
 import Wallet from './views/Wallet'
@@ -50,7 +50,32 @@ const router = new Router({
       meta: { requiresAuth: false }
     },
     {
-      path: '/torusLogin',
+      path: '/torus-login',
+      name: 'torusLogin',
+      component: TorusLogin,
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/torus-register',
+      name: 'torusRegister',
+      component: TorusRegister,
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/torus-verify',
+      name: 'torusVerify',
+      component: TorusVerify,
+      meta: { requiresAuth: false },
+      beforeEnter: (to, from, next) => {
+        if (typeof to.query.email !== 'undefined') {
+          next()
+        } else {
+          next(from.path)
+        }
+      }
+    },
+    {
+      path: '/torus-login',
       name: 'torusLogin',
       component: TorusLogin,
       meta: { requiresAuth: false }

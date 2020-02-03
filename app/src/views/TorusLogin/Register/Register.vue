@@ -1,0 +1,148 @@
+<template>
+  <div class="default">
+    <v-layout wrap fill-height align-center justify-center class="register-panel-left">
+      <v-flex xs12 md6>
+        <v-layout wrap>
+          <v-flex class="mb-5" xs9 sm7 ml-auto mr-auto>
+            <img width="117" :src="require('../../../../public/images/torus-logo-blue.svg')" />
+          </v-flex>
+          <v-flex class="mb-3" xs9 sm7 ml-auto mr-auto>
+            <span class="display-1 font-weight-bold">Sign Up</span>
+          </v-flex>
+          <v-flex xs9 sm7 ml-auto mb-2 pt-4 mr-auto>
+            <v-flex xs12>
+              <v-form @submit.prevent lazy-validation>
+                <v-layout wrap>
+                  <v-flex xs12>
+                    <v-text-field outlined type="text" name="verifier_id" label="Email/Phone" v-model="verifier_id" single-line>
+                      <template v-slot:prepend-inner>
+                        <img class="mr-2 mt-1" :src="require(`../../../../public/images/email.svg`)" height="16px" />
+                      </template>
+                    </v-text-field>
+                  </v-flex>
+                  <v-flex xs12>
+                    <v-text-field
+                      outlined
+                      name="password"
+                      @click:append="toggleShowPassword"
+                      label="Enter Password"
+                      v-model="password"
+                      :append-icon="showPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
+                      :type="showPassword ? 'text' : 'password'"
+                      single-line
+                    >
+                      <template v-slot:prepend-inner>
+                        <img class="mr-2" :src="require(`../../../../public/images/lock.svg`)" height="20px" />
+                      </template>
+                    </v-text-field>
+                  </v-flex>
+                  <v-flex xs12>
+                    <v-text-field
+                      outlined
+                      name="confirmPassword"
+                      label="Confirm Password"
+                      @click:append="toggleShowConfirmPassword"
+                      class="password"
+                      v-model="confirmPassword"
+                      :append-icon="showConfirmPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
+                      :type="showConfirmPassword ? 'text' : 'password'"
+                      single-line
+                    >
+                      <template v-slot:prepend-inner>
+                        <img class="mr-2" :src="require(`../../../../public/images/lock.svg`)" height="20px" />
+                      </template>
+                    </v-text-field>
+                    <div class="v-text-field__details mb-6">
+                      <div class="v-messages">
+                        <div class="v-messages__wrapper">
+                          <div class="v-messages__message d-flex text_2--text">
+                            <v-flex></v-flex>
+                            <v-flex grow-shrink-0>
+                              Already have an account? Log in
+                              <router-link :to="{ name: 'torusLogin' }">here</router-link>
+                            </v-flex>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </v-flex>
+
+                  <v-flex xs12>
+                    <v-btn color="primary" @click="registerAccount" large depressed block>Sign Up</v-btn>
+                  </v-flex>
+                </v-layout>
+              </v-form>
+            </v-flex>
+          </v-flex>
+          <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
+            <span>
+              By clicking Login, you accept our
+              <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
+                <span class="primary--text">Terms and Conditions</span>
+              </a>
+            </span>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+      <v-flex xs12 md6 fill-height class="hidden-sm-and-down register-panel-right">
+        <v-layout class="pb-8" wrap fill-height align-end>
+          <v-flex class="mb-3 text-center" xs9 sm7 ml-auto mr-auto>
+            <div class="display-1 white--text font-weight-bold">
+              Frictionless Logins
+            </div>
+            <div class="display-1 white--text mb-3">for DApps</div>
+            <div class="caption white--text">
+              A simple and secure gateway to the decentralized ecosystem via OAuth logins
+            </div>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+    </v-layout>
+  </div>
+</template>
+
+<script>
+import Web3 from 'web3'
+import log from 'loglevel'
+import { post } from '../../../utils/httpHelpers'
+import config from '../../../config'
+export default {
+  data() {
+    return {
+      password: '',
+      confirmPassword: '',
+      verifier_id: '',
+      verifier_id_type: '',
+      showPassword: false,
+      showConfirmPassword: false
+    }
+  },
+  methods: {
+    toggleShowPassword(event) {
+      event.preventDefault()
+      this.showPassword != this.showPassword
+    },
+    toggleShowConfirmPassword(event) {
+      event.preventDefault()
+      this.showConfirmPassword != this.showConfirmPassword
+    },
+    registerAccount() {
+      this.updateExtendedPassword()
+      post('https://verifier.dev.tor.us/register', {
+        verifier_id: this.verifier_id,
+        verifier_id_type: this.verifier_id.indexOf('@') > 0 ? 'email' : 'phone',
+        hash: Web3.utils.sha3(this.extendedPassword).replace('0x', '')
+      })
+        .then(data => this.$router.push(`torus-verify?email=${this.verifier_id}`))
+        .catch(err => log.error(err))
+    },
+    updateExtendedPassword: function() {
+      this.extendedPassword = Web3.utils.sha3(this.password).replace('0x', '')
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+@import 'Register.scss';
+</style>
