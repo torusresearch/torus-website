@@ -10,8 +10,16 @@
             <div class="text-gray subtitle">
               {{ badge.description }}
             </div>
-            <v-btn block large v-if="badge.isCompleted || index === 0" disabled class="status-btn mt-2 mr-4">Completed</v-btn>
-            <v-btn block large v-else @click="openModal(badge)" depressed class="status-btn mt-2 mr-4">Go to {{ badge.action }}</v-btn>
+            <v-btn
+              block
+              large
+              :disabled="index === 0 || badge.isCompleted || index === 9"
+              @click="openModal(badge)"
+              depressed
+              class="status-btn mt-2 mr-4"
+            >
+              {{ badge.isCompleted ? 'Completed' : index === 0 ? 'Completed' : `Go to ${badge.action}` }}
+            </v-btn>
           </v-flex>
         </v-layout>
       </v-card-text>
