@@ -1,6 +1,6 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
-import randomId from 'random-id'
+import randomId from '@chaitanyapotti/random-id'
 import { broadcastChannelOptions } from './utils'
 import torus from '../torus'
 
