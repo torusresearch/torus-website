@@ -336,7 +336,7 @@ import {
 } from '../../utils/enums'
 import BigNumber from 'bignumber.js'
 
-const randomId = require('random-id')
+const randomId = require('@chaitanyapotti/random-id')
 
 const erc20TransferABI = require('human-standard-token-abi')
 const erc721TransferABI = require('human-standard-collectible-abi')

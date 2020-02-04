@@ -5,7 +5,7 @@ import { post } from './utils/httpHelpers.js'
 
 const log = require('loglevel')
 const ethUtil = require('ethereumjs-util')
-const randomId = require('random-id')
+const randomId = require('@chaitanyapotti/random-id')
 
 const setupMultiplex = require('./utils/setupMultiplex').default
 
