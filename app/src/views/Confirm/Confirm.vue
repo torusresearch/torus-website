@@ -162,7 +162,8 @@
     </template>
 
     <template v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE || type === TX_TYPED_MESSAGE">
-      <v-layout wrap align-center mx-6 mb-6>
+      <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
+      <!-- <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left">{{ t('dappTransfer.permissions') }}</v-flex>
         <v-flex xs12>
           <network-display></network-display>
@@ -223,11 +224,6 @@
             </v-list-item>
           </v-list>
         </v-flex>
-        <!-- <v-flex xs12 mt-12 mb-5 mx-7>
-          <div class="caption text_2--text">
-            Note : You may re-adjust the dapp permission later under ‘Settings > Dapp Permission’
-          </div>
-        </v-flex>-->
         <v-layout px-6 mx-3>
           <v-flex xs6>
             <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappTransfer.cancel') }}</v-btn>
@@ -236,7 +232,7 @@
             <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">{{ t('dappTransfer.confirm') }}</v-btn>
           </v-flex>
         </v-layout>
-      </v-layout>
+      </v-layout> -->
     </template>
     <template v-if="type === 'none'">
       <popup-screen-loader />
@@ -255,6 +251,7 @@ import { PopupScreenLoader } from '../../content-loader'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
+import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
 import torus from '../../torus'
 import { significantDigits, addressSlicer, broadcastChannelOptions } from '../../utils/utils'
 import { get } from '../../utils/httpHelpers'
@@ -292,7 +289,7 @@ export default {
     PopupScreenLoader,
     TransactionSpeedSelect,
     TransferConfirm,
-    VueJsonPretty,
+    PermissionConfirm,
     NetworkDisplay,
     ShowToolTip
   },
