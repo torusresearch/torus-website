@@ -241,7 +241,7 @@ export default class AssetController {
    */
   async addToken(address2, symbol, decimals, image) {
     try {
-      address = toChecksumAddress(address2)
+      let address = toChecksumAddress(address2)
       const selectedAddress = this.selectedAddress
       const initState = this.store.getState().accounts[selectedAddress]
       const { allTokens, tokens } = initState
@@ -266,7 +266,7 @@ export default class AssetController {
       })
       return newTokens
     } catch (error) {
-      log.error(err)
+      log.error(error)
     }
   }
 
