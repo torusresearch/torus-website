@@ -57,6 +57,7 @@ export default {
     torus.torusController.messageManager.store.unsubscribe(messageManagerHandler)
     torus.torusController.detectTokensController.detectedTokensStore.unsubscribe(detectTokensControllerHandler)
     torus.torusController.tokenRatesController.store.unsubscribe(tokenRatesControllerHandler)
+    torus.updateStaticData({ isUnlocked: false })
   },
   loginInProgress(context, payload) {
     context.commit('setLoginInProgress', payload)
@@ -784,6 +785,7 @@ export default {
         }
         statusStream.write({ loggedIn: true, rehydrate: false, verifier: verifier })
         dispatch('loginInProgress', false)
+        torus.updateStaticData({ isUnlocked: true })
       })
       .catch(err => {
         log.error(err)
@@ -1004,6 +1006,7 @@ export default {
         dispatch('updateNetworkId', { networkId: networkId })
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: verifier })
         log.info('rehydrated wallet')
+        torus.updateStaticData({ isUnlocked: true })
       }
     } catch (error) {
       log.error('Failed to rehydrate', error)

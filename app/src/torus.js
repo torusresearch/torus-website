@@ -31,6 +31,8 @@ class TorusExtended extends Torus {
       publicConfigOutStream.write(JSON.stringify({ selectedAddress: payload.selectedAddress }))
     } else if (payload.networkId) {
       publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
+    } else if (payload.isUnlocked) {
+      publicConfigOutStream.write(JSON.stringify({ isUnlocked: payload.isUnlocked }))
     }
   }
 
