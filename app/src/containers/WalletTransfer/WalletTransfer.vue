@@ -295,8 +295,12 @@
             <message-modal
               @onClose="showModalMessage = false"
               :modal-type="modalMessageSuccess"
-              :title="modalMessageSuccess ? 'Your transfer is being processed' : 'Your transfer cannot be processed'"
-              :detail-text="modalMessageSuccess ? `Your transaction will be completed in approximately ${timeTaken} min` : 'Please try again later'"
+              :title="modalMessageSuccess ? t('walletTransfer.transferSuccessTitle') : t('walletTransfer.transferFailTitle')"
+              :detail-text="
+                modalMessageSuccess
+                  ? t('walletTransfer.transferSuccessMessage').replace(/\{time\}/gi, timeTaken)
+                  : t('walletTransfer.transferFailMessage')
+              "
             />
           </v-dialog>
         </v-layout>
