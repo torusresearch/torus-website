@@ -12,7 +12,7 @@
         </div>
       </v-flex>
       <v-flex class="xs12 sm6 md4 lg3 px-4 my-4" v-for="(badge, index) in badges" :key="index">
-        <wallet-badge @openModal="openModal" :badge="badge" :index="index" />
+        <wallet-badge @openModal="showBadgeModal" :badge="badge" :lastBadgeIndex="badges.length" :index="index" />
       </v-flex>
     </v-layout>
     <v-layout mt-4 pr-2 wrap>
@@ -26,6 +26,7 @@
               : 'You have completed all your Badges. In order to participate for the prizes we need to access your information'
           "
           :isCompleted="isCompleted"
+          :badge="badge"
         />
       </v-dialog>
     </v-layout>
@@ -53,7 +54,7 @@ export default {
           text: 'Badges',
           disabled: false,
           exact: true,
-          to: '/wallet/home/adges'
+          to: '/wallet/home/badges'
         }
       ],
       showModalMessage: false,
@@ -68,7 +69,7 @@ export default {
     badges() {
       let badges = []
       this.$store.state.badges.filter(badge => {
-        if (this.$store.state.myBadges.includes(badge.id)) {
+        if (this.$store.state.myBadges.map(myBadge => myBadge.badgeId).includes(badge.id)) {
           badges.push({
             ...badge,
             isCompleted: true
@@ -84,7 +85,7 @@ export default {
     }
   },
   methods: {
-    openModal(badge) {
+    showBadgeModal(badge) {
       this.showModalMessage = true
       this.badge = badge
     },
@@ -92,8 +93,27 @@ export default {
       this.$store.dispatch('loadBadges')
     },
     closeModal() {
+      this.badge = {
+        title: '',
+        description: '',
+        action: '',
+        unCompletedImageUrl: [
+          {
+            url: ''
+          }
+        ],
+        completedImageUrl: [
+          {
+            url: ''
+          }
+        ],
+        winningBadge: [
+          {
+            url: ''
+          }
+        ]
+      }
       this.showModalMessage = false
-      this.badge = {}
     }
   }
 }

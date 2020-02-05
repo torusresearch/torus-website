@@ -122,6 +122,20 @@
         </v-flex>
       </v-layout>
     </v-card>
+    <v-layout mt-4 pr-2 wrap>
+      <v-spacer></v-spacer>
+      <v-dialog v-model="showBadgeDialog" max-width="500">
+        <badge-modal
+          @onCloseBadgeModal="showBadgeDialog = false"
+          :text="
+            !badge.isCompleted
+              ? badge.title
+              : 'You have completed all your Badges. In order to participate for the prizes we need to access your information'
+          "
+          :badge="badge"
+        />
+      </v-dialog>
+    </v-layout>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
       {{ snackbarText }}
       <v-btn dark text @click="snackbar = false">{{ t('walletTopUp.close') }}</v-btn>
@@ -134,10 +148,12 @@ import config from '../../../config'
 import { paymentProviders, formatCurrencyNumber, significantDigits } from '../../../utils/utils'
 import { COINDIRECT } from '../../../utils/enums'
 import HelpTooltip from '../../helpers/HelpTooltip'
+import { BadgeModal } from '../../WalletBadges'
 
 export default {
   components: {
-    HelpTooltip
+    HelpTooltip,
+    BadgeModal
   },
   props: ['selectedProvider', 'cryptoCurrencyValue', 'currencyRate'],
   data() {
@@ -155,6 +171,8 @@ export default {
       },
       snackbar: false,
       snackbarText: '',
+      showBadgeDialog: false,
+      badge: {},
       snackbarColor: 'success'
     }
   },
@@ -189,6 +207,13 @@ export default {
     }
   },
   methods: {
+    taskComplete(badgeId) {
+      if (!this.$store.state.myBadges.includes(badgeId)) {
+        this.badge = this.$store.state.badges[badgeId]
+        this.showBadgeDialog = true
+        this.$store.dispatch('addBadge', { badgeId: this.badge.id })
+      }
+    },
     significantDigits: significantDigits,
     setFiatValue(newValue) {
       this.fiatValue = newValue
@@ -207,8 +232,12 @@ export default {
       if (this.$refs.paymentForm.validate()) {
         const cb = p => {
           p.then(({ success }) => {
-            if (success) this.$router.push({ name: 'walletHistory' })
-            else {
+            if (success) {
+              this.taskComplete(2)
+              setTimeout(() => {
+                this.$router.push({ name: 'walletHistory' })
+              }, 2000)
+            } else {
               this.snackbar = true
               this.snackbarColor = 'error'
               this.snackbarText = 'Something went wrong'

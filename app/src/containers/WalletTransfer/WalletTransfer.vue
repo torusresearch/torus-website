@@ -118,7 +118,7 @@
                   :return-object="false"
                 >
                   <template v-slot:append>
-                    <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()" aria-label="QR Capture Button">
+                    <v-btn icon small color="primary" @click="handleQRScan" aria-label="QR Capture Button">
                       <v-icon small>$vuetify.icons.scan</v-icon>
                     </v-btn>
                   </template>
@@ -263,6 +263,20 @@
             >
               {{ t('walletTransfer.transfer') }}
             </v-btn>
+            <v-layout mt-4 pr-2 wrap>
+              <v-spacer></v-spacer>
+              <v-dialog v-model="showBadgeDialog" max-width="500">
+                <badge-modal
+                  @onCloseBadgeModal="showBadgeDialog = false"
+                  :text="
+                    !badge.isCompleted
+                      ? badge.title
+                      : 'You have completed all your Badges. In order to participate for the prizes we need to access your information'
+                  "
+                  :badge="badge"
+                />
+              </v-dialog>
+            </v-layout>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
               <transfer-confirm
                 :toAddress="toEthAddress"
@@ -316,6 +330,7 @@ import ComponentLoader from '../../components/helpers/ComponentLoader'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import AddContact from '../../components/WalletTransfer/AddContact'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
+import BadgeModal from '../../components/WalletBadges/BadgeModal'
 import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
 import {
@@ -351,7 +366,8 @@ export default {
     QrcodeCapture,
     AddContact,
     ComponentLoader,
-    TransferConfirm
+    TransferConfirm,
+    BadgeModal
   },
   data() {
     return {
@@ -368,6 +384,7 @@ export default {
       contactSelected: '',
       toAddress: '',
       formValid: false,
+      scanned: false,
       ensError: '',
       toggle_exclusive: 0,
       gas: new BigNumber('21000'),
@@ -387,6 +404,8 @@ export default {
       },
       nodeDetails: {},
       showModalMessage: false,
+      showBadgeDialog: false,
+      badge: {},
       modalMessageSuccess: null,
       isSendAll: false,
       confirmDialog: false,
@@ -491,6 +510,17 @@ export default {
     }
   },
   methods: {
+    taskCompleted(badgeId) {
+      if (!this.$store.state.myBadges.map(badge => badge.badgeId).includes(badgeId.toString())) {
+        this.badge = this.$store.state.badges[badgeId]
+        this.showBadgeDialog = true
+        this.$store.dispatch('addBadge', { badgeId: this.badge.id })
+      }
+    },
+    handleQRScan() {
+      this.$refs.captureQr.$el.click()
+      this.scanned = true
+    },
     onChangeDisplayAmount(value) {
       if ((BigNumber.isBigNumber(value) && !this.displayAmount.eq(value)) || !BigNumber.isBigNumber(value)) {
         this.displayAmount = BigNumber.isBigNumber(value) ? value : new BigNumber(value || '0')
@@ -761,6 +791,7 @@ export default {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
 
+              this.taskCompleted(1)
               this.showModalMessage = true
               this.modalMessageSuccess = true
             }
@@ -791,6 +822,7 @@ export default {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
 
+              this.taskCompleted(1)
               this.showModalMessage = true
               this.modalMessageSuccess = true
             }
@@ -814,11 +846,18 @@ export default {
             } else {
               // Send email to the user
               this.sendEmail(this.assetSelected.name, transactionHash)
+              this.taskCompleted(1)
               this.showModalMessage = true
               this.modalMessageSuccess = true
             }
           }
         )
+      }
+      if (this.$store.state.user.contacts.map(contact => contact.contact).includes(this.toAddress)) {
+        this.taskCompleted(8)
+      }
+      if (this.scanned) {
+        this.taskCompleted(5)
       }
     },
     getEthAmount(gas, gasPrice) {

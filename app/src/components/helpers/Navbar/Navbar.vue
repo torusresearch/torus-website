@@ -77,6 +77,9 @@ export default {
       selectedItem: 'home'
     }
   },
+  created() {
+    this.$store.dispatch('loadBadges')
+  },
   computed: {
     bannerColor() {
       return this.$vuetify.theme.isDark ? this.$vuetify.theme.themes.dark.infoBanner : this.$vuetify.theme.themes.light.infoBanner

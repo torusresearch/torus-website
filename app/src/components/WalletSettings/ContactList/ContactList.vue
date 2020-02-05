@@ -84,17 +84,32 @@
         </v-form>
       </v-flex>
     </v-layout>
+    <v-layout mt-4 pr-2 wrap>
+      <v-spacer></v-spacer>
+      <v-dialog v-model="showBadgeDialog" max-width="500">
+        <badge-modal
+          @onCloseBadgeModal="showBadgeDialog = false"
+          :text="
+            !badge.isCompleted
+              ? badge.title
+              : 'You have completed all your Badges. In order to participate for the prizes we need to access your information'
+          "
+          :badge="badge"
+        />
+      </v-dialog>
+    </v-layout>
   </div>
 </template>
 
 <script>
 import Notification from '../../helpers/Notification'
+import { BadgeModal } from '../../WalletBadges'
 const { ALLOWED_VERIFIERS, ETH } = require('../../../utils/enums')
 const { validateVerifierId } = require('../../../utils/utils')
 
 export default {
   name: 'networkSettings',
-  components: { Notification },
+  components: { Notification, BadgeModal },
   data() {
     return {
       contactFormValid: true,
@@ -107,6 +122,8 @@ export default {
       ETH,
       saveContactAlert: false,
       saveContactAlertText: '',
+      showBadgeDialog: false,
+      badge: {},
       saveContactAlertType: 'success'
     }
   },
@@ -127,6 +144,13 @@ export default {
     }
   },
   methods: {
+    taskComplete(badgeId) {
+      if (!this.$store.state.myBadges.includes(badgeId)) {
+        this.badge = this.$store.state.badges[badgeId]
+        this.showBadgeDialog = true
+        this.$store.dispatch('addBadge', { badgeId: this.badge.id })
+      }
+    },
     closeAlert() {
       this.saveContactAlert = false
     },
@@ -153,6 +177,7 @@ export default {
             this.saveContactAlert = true
             this.saveContactAlertType = 'success'
             this.saveContactAlertText = response.message
+            this.taskComplete(7)
           })
           .catch(err => {
             this.saveContactAlert = true

@@ -7,18 +7,18 @@
             <img width="150" v-if="badge.isCompleted" :src="badge.completedImageUrl[0].url" />
             <img width="150" v-else :src="badge.unCompletedImageUrl[0].url" />
             <div class="font-weight-bold font-fit">{{ badge.title }}</div>
-            <div class="text-gray subtitle">
+            <div class="text-gray subtitle mh-4">
               {{ badge.description }}
             </div>
             <v-btn
               block
+              :disabled="index === 0 || badge.isCompleted || index === lastBadgeIndex - 1"
               large
-              :disabled="index === 0 || badge.isCompleted || index === 9"
-              @click="openModal(badge)"
+              @click="openBadgeModal"
               depressed
               class="status-btn mt-2 mr-4"
             >
-              {{ badge.isCompleted ? 'Completed' : index === 0 ? 'Completed' : `Go to ${badge.action}` }}
+              {{ badge.isCompleted ? 'Completed' : index === 0 ? 'Completed' : `${badge.action}` }}
             </v-btn>
           </v-flex>
         </v-layout>
@@ -29,10 +29,10 @@
 
 <script>
 export default {
-  props: ['badge', 'index'],
+  props: ['badge', 'index', 'lastBadgeIndex'],
   methods: {
-    openModal(badge) {
-      this.$emit('openModal', badge)
+    openBadgeModal() {
+      this.$root.$emit('showBadgeModal', this.index)
     }
   }
 }

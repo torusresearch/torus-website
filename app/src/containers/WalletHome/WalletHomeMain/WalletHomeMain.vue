@@ -183,6 +183,20 @@
         <collectibles-list></collectibles-list>
       </v-tab-item>
     </v-tabs-items>
+    <v-layout mt-4 pr-2 wrap>
+      <v-spacer></v-spacer>
+      <v-dialog v-model="showBadgeDialog" max-width="500">
+        <badge-modal
+          @onCloseBadgeModal="showBadgeDialog = false"
+          :text="
+            !badge.isCompleted
+              ? badge.title
+              : 'You have completed all your Badges. In order to participate for the prizes we need to access your information'
+          "
+          :badge="badge"
+        />
+      </v-dialog>
+    </v-layout>
   </div>
 </template>
 
@@ -195,12 +209,13 @@ import ExportQrCode from '../../../components/helpers/ExportQrCode'
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import LearnMore from '../../../components/WalletHome/LearnMore'
+import { BadgeModal } from '../../../components/WalletBadges'
 import { MAINNET, LOCALE_EN } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
 
 export default {
   name: 'walletHome',
-  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore, ComponentLoader },
+  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore, ComponentLoader, BadgeModal },
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
@@ -208,7 +223,9 @@ export default {
       search: '',
       lastUpdated: '',
       dialogLearnMore: false,
-      activeTab: 0
+      activeTab: 0,
+      showBadgeDialog: false,
+      badge: {}
     }
   },
   computed: {
@@ -258,6 +275,13 @@ export default {
     }
   },
   methods: {
+    taskCompleted(badgeId) {
+      if (!this.$store.state.myBadges.map(badge => badge.badgeId).includes(badgeId.toString())) {
+        this.badge = this.$store.state.badges[badgeId]
+        this.showBadgeDialog = true
+        // this.$store.dispatch('addBadge', { badgeId: this.badge.id })
+      }
+    },
     select(selectedItem) {
       // this is so that we don't break their api
       this.selected = []
@@ -303,6 +327,11 @@ export default {
         .padStart(2, '0')
       const time = `${hours}:${mins}`
       this.lastUpdated = `${date}, ${time}`
+    }
+  },
+  created() {
+    if (this.isFreshAccount) {
+      this.taskCompleted(0)
     }
   },
   mounted() {

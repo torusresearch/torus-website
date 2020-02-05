@@ -8,8 +8,7 @@
     <v-card-text class="text_1--text pa-0">
       <v-layout wrap class="image-container text-center">
         <v-flex xs12 px-4 mt-6>
-          <img v-if="!isCompleted" width="240" :src="require('../../../../public/images/task_complete.svg')" />
-          <img v-else :src="require('../../../../public/images/tasks_complete.svg')" />
+          <img width="240" :src="badge.winningBadge[0].url" />
         </v-flex>
       </v-layout>
       <v-layout wrap class="badge-info">
@@ -34,10 +33,10 @@
 
 <script>
 export default {
-  props: ['text', 'isCompleted'],
+  props: ['text', 'isCompleted', 'badge'],
   methods: {
     onCancel() {
-      this.$emit('onClose')
+      this.$emit('onCloseBadgeModal')
     }
   }
 }

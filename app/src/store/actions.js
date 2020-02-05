@@ -913,12 +913,36 @@ export default {
       })
         .then(response => {
           commit('setBadges', response)
-          log.info('successfully patched', response)
+          log.info('successfully loaded', response)
           resolve(response)
         })
         .catch(err => {
           log.error(err, 'unable to load badges')
           reject('Unable to load bages')
+        })
+    })
+  },
+  addBadge({ state }, payload) {
+    return new Promise((resolve, reject) => {
+      post(
+        `${config.api}/badges`,
+        {
+          badgeId: payload.badgeId
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }
+      )
+        .then(response => {
+          log.info('successfully added', response)
+          resolve(response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to add badge')
+          reject('Unable to add badge')
         })
     })
   },
