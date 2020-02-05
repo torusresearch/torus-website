@@ -248,9 +248,6 @@ export default {
   updateUserInfo(context, payload) {
     context.commit('setUserInfo', payload.userInfo)
   },
-  updateIdToken(context, payload) {
-    context.commit('setIdToken', payload.idToken)
-  },
   addWallet(context, payload) {
     if (payload.ethAddress) {
       context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
@@ -389,7 +386,6 @@ export default {
               }
             })
             const { picture: profileImage, email, name, id } = userInfo || {}
-            dispatch('updateIdToken', { idToken })
             dispatch('updateUserInfo', {
               userInfo: {
                 profileImage,
@@ -400,7 +396,7 @@ export default {
                 verifierParams: { verifier_id: email.toString().toLowerCase() }
               }
             })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, idToken })
           }
         } catch (error) {
           log.error(error)
@@ -449,7 +445,6 @@ export default {
               }
             })
             const { name, id, picture, email } = userInfo || {}
-            dispatch('updateIdToken', { idToken: accessToken })
             dispatch('updateUserInfo', {
               userInfo: {
                 profileImage: picture.data.url,
@@ -460,7 +455,7 @@ export default {
                 verifierParams: { verifier_id: id.toString() }
               }
             })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
           }
         } catch (error) {
           log.error(error)
@@ -517,7 +512,6 @@ export default {
             const tokenInfo = jwtDecode(idtoken)
             const { picture: profileImage, preferred_username: name } = userInfo || {}
             const { email } = tokenInfo || {}
-            dispatch('updateIdToken', { idToken: accessToken.toString() })
             dispatch('updateUserInfo', {
               userInfo: {
                 profileImage,
@@ -528,7 +522,7 @@ export default {
                 verifierParams: { verifier_id: userInfo.sub.toString() }
               }
             })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken.toString() })
           }
         } catch (error) {
           log.error(error)
@@ -574,7 +568,6 @@ export default {
               }
             })
             const { id, icon_img: profileImage, name } = userInfo || {}
-            dispatch('updateIdToken', { idToken: accessToken })
             dispatch('updateUserInfo', {
               userInfo: {
                 profileImage: profileImage.split('?').length > 0 ? profileImage.split('?')[0] : profileImage,
@@ -585,7 +578,7 @@ export default {
                 verifierParams: { verifier_id: name.toString().toLowerCase() }
               }
             })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
           }
         } catch (error) {
           log.error(error)
@@ -636,7 +629,6 @@ export default {
               avatar === null
                 ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
                 : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`
-            dispatch('updateIdToken', { idToken: accessToken })
             dispatch('updateUserInfo', {
               userInfo: {
                 profileImage,
@@ -647,7 +639,7 @@ export default {
                 verifierParams: { verifier_id: id.toString() }
               }
             })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
           }
         } catch (error) {
           log.error(error)
@@ -745,10 +737,9 @@ export default {
         })
     })
   },
-  async handleLogin({ state, dispatch }, { calledFromEmbed }) {
+  async handleLogin({ state, dispatch }, { calledFromEmbed, idToken }) {
     dispatch('loginInProgress', true)
     const {
-      idToken,
       userInfo: { verifierId, verifier, verifierParams }
     } = state
     let torusNodeEndpoints, torusIndexes
