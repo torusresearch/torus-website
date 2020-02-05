@@ -2,7 +2,7 @@
   background-image: url('/images/login-bg.jpg');
   background-repeat: no-repeat;
   background-size: auto 100%;
-  background-color: #0364FF;
+  background-color: #0364ff;
   background-position: 70% bottom;
 
   @media only screen and (min-width: 960px) {
@@ -11,7 +11,7 @@
 
   .caption {
     width: 80%;
-    margin: auto
+    margin: auto;
   }
 
   &.torus-dark {
@@ -41,19 +41,19 @@
     width: 70%;
     border-radius: 9px;
     height: 60px;
-    border: 1px solid #F1F2F6;
+    border: 1px solid #f1f2f6;
     img {
       height: 26px;
     }
   }
   ::v-deep .v-btn__content {
-    justify-content: left; 
+    justify-content: left;
   }
 
   &.torus-dark {
-    border: 1px solid #36373B;
+    border: 1px solid #36373b;
     padding-left: 2px;
-    background-color: #4285F4 !important; //temporary until v8 is global
+    background-color: #4285f4 !important; //temporary until v8 is global
     color: #ffffff !important;
 
     img {
@@ -62,9 +62,27 @@
   }
 }
 
+.torus-login-btn {
+  &.v-btn {
+    width: 70%;
+    border-radius: 9px;
+    height: 60px;
+    border: 1px solid #f1f2f6;
+  }
+  ::v-deep .v-btn__content {
+    justify-content: left;
+  }
+
+  &.torus-dark {
+    border: 1px solid #36373b;
+    padding-left: 2px;
+    color: #ffffff !important;
+  }
+}
+
 .logout-btn {
-  &.v-btn{
-    border: 1px solid #F1F2F6 !important;
+  &.v-btn {
+    border: 1px solid #f1f2f6 !important;
     height: inherit;
   }
   &.theme--dark.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {

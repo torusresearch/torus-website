@@ -14,7 +14,7 @@
               <v-form @submit.prevent lazy-validation>
                 <v-layout wrap>
                   <v-flex xs12>
-                    <v-text-field outlined type="text" name="verifier_id" label="Email/Phone" v-model="verifier_id" single-line>
+                    <v-text-field outlined type="text" name="verifier_id" label="Enter Email" v-model="verifier_id" single-line>
                       <template v-slot:prepend-inner>
                         <img class="mr-2 mt-1" :src="require(`../../../../public/images/email.svg`)" height="16px" />
                       </template>
@@ -40,7 +40,7 @@
                     <v-text-field
                       outlined
                       name="confirmPassword"
-                      label="Confirm Password"
+                      label="Enter Password"
                       @click:append="toggleShowConfirmPassword"
                       class="password"
                       v-model="confirmPassword"
@@ -58,8 +58,10 @@
                           <div class="v-messages__message d-flex text_2--text">
                             <v-flex></v-flex>
                             <v-flex grow-shrink-0>
-                              Already have an account? Log in
-                              <router-link :to="{ name: 'torusLogin' }">here</router-link>
+                              <span class="caption">
+                                Already have an account? Log in
+                                <router-link :to="{ name: 'torusLogin' }">here</router-link>
+                              </span>
                             </v-flex>
                           </div>
                         </div>
@@ -68,31 +70,38 @@
                   </v-flex>
 
                   <v-flex xs12>
-                    <v-btn color="primary" @click="registerAccount" large depressed block>Sign Up</v-btn>
+                    <v-btn color="primary" class="body-1 font-weight-bold card-shadow-v8 register-btn" @click="registerAccount" large depressed block>
+                      Sign Up
+                    </v-btn>
                   </v-flex>
                 </v-layout>
               </v-form>
             </v-flex>
           </v-flex>
           <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
-            <span>
-              By clicking Login, you accept our
+            <span class="text_2--text body-1">
+              {{ t('login.acceptTerms') }}
               <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
-                <span class="primary--text">Terms and Conditions</span>
+                <span class="primary--text">{{ t('login.termsAndConditions') }}</span>
               </a>
             </span>
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex xs12 md6 fill-height class="hidden-sm-and-down register-panel-right">
+      <v-flex
+        v-if="$vuetify.breakpoint.smAndUp"
+        xs12
+        sm4
+        md6
+        fill-height
+        class="register-panel-right"
+        :class="$vuetify.theme.dark ? 'torus-dark' : ''"
+      >
         <v-layout class="pb-8" wrap fill-height align-end>
-          <v-flex class="mb-3 text-center" xs9 sm7 ml-auto mr-auto>
-            <div class="display-1 white--text font-weight-bold">
-              Frictionless Logins
-            </div>
-            <div class="display-1 white--text mb-3">for DApps</div>
-            <div class="caption white--text">
-              A simple and secure gateway to the decentralized ecosystem via OAuth logins
+          <v-flex class="mb-3 text-center" xs9 sm8 md10 ml-auto mr-auto>
+            <div class="right-panel-header white--text font-weight-bold mb-2">{{ t('login.frictionless') }}</div>
+            <div class="body-2 right-panel-subheader white--text mx-auto">
+              {{ t('login.simpleSecure') }}
             </div>
           </v-flex>
         </v-layout>
@@ -143,6 +152,6 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import 'Register.scss';
 </style>

@@ -30,7 +30,21 @@
                       single-line
                     >
                       <template v-slot:append>
-                        <img class="mr-2" :src="require(`../../../../public/images/shield.svg`)" height="20px" />
+                        <img class="mr-2" v-if="!response && !error" :src="require(`../../../../public/images/shield.svg`)" height="20px" />
+                        <img
+                          class="mr-2"
+                          v-if="response && !error"
+                          :src="require(`../../../../public/images/valid-check.svg`)"
+                          height="20px"
+                          title="You have successfully verified your account"
+                        />
+                        <img
+                          class="mr-2"
+                          v-if="!response && error"
+                          :src="require(`../../../../public/images/invalid-check.svg`)"
+                          height="20px"
+                          title="An error occured. Please try again"
+                        />
                       </template>
                     </v-text-field>
                     <div class="v-text-field__details mb-6">
@@ -85,7 +99,9 @@ export default {
   data() {
     return {
       code: '',
-      verifier_id: ''
+      verifier_id: '',
+      response: false,
+      error: false
     }
   },
   created() {
@@ -106,13 +122,13 @@ export default {
         verifier_id: this.verifier_id,
         code: this.code
       })
-        .then(() => alert('verification successful'))
-        .catch(err => log.error(err))
+        .then(() => (this.response = true))
+        .catch(err => (this.error = true))
     }
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import 'Verification.scss';
 </style>
