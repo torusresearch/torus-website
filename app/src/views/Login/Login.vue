@@ -40,21 +40,6 @@
                     block
                     class="other-login-btn"
                     type="button"
-                    :title="`${t('login.loginWith')} Torus`"
-                    @click="triggerLogin({ verifier: TORUS, calledFromEmbed: false })"
-                  >
-                    <img height="32" :src="require(`../../../public/img/icons/facebook${$vuetify.theme.dark ? '-dark' : ''}.svg`)" />
-                  </v-btn>
-                </v-flex>
-                <v-flex xs6 px-1>
-                  <v-btn
-                    :large="!$vuetify.breakpoint.xsOnly"
-                    :color="$vuetify.theme.dark ? '' : 'white'"
-                    :class="$vuetify.theme.dark ? 'torus-dark' : 'card-shadow-v8'"
-                    :depressed="$vuetify.theme.dark"
-                    block
-                    class="other-login-btn"
-                    type="button"
                     :title="`${t('login.loginWith')} Facebook`"
                     @click="triggerLogin({ verifier: FACEBOOK, calledFromEmbed: false })"
                   >
@@ -111,14 +96,17 @@
             <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
               <v-btn
                 id="torusLogin"
+                :large="!$vuetify.breakpoint.xsOnly"
                 :color="$vuetify.theme.dark ? '' : 'white'"
+                :class="$vuetify.theme.dark ? 'torus-dark' : 'card-shadow-v8'"
+                :depressed="$vuetify.theme.dark"
                 block
-                :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-                class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn"
+                class="body-1 font-weight-bold card-shadow-v8 text_2--text torus-login-btn"
                 type="button"
-                :to="{ name: 'torusLogin' }"
+                :title="`${t('login.loginWith')} Torus`"
+                @click="triggerLogin({ verifier: TORUS, calledFromEmbed: false })"
               >
-                <img :src="require('../../../public/images/email.svg')" :class="$vuetify.theme.dark ? 'mr-4 torus-dark' : 'mr-6'" />
+                <img height="32" :src="require('../../../public/images/email.svg')" :class="$vuetify.theme.dark ? 'ml-4 mr-4 torus-dark' : 'mr-6'" />
                 Sign up/in with Email
               </v-btn>
             </v-flex>

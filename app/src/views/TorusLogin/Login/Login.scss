@@ -1,17 +1,38 @@
-.login-panel-left {
-  background-color: #ffffff;
-}
-
 .login-panel-right {
-  background-image: url("/images/login-bg.png");
+  background-image: url('/images/login-bg.jpg');
   background-repeat: no-repeat;
-  background-position: left top;
   background-size: auto 100%;
   background-color: #0364ff;
+  background-position: 70% bottom;
+
+  @media only screen and (min-width: 960px) {
+    background-position: 80% bottom;
+  }
 
   .caption {
     width: 80%;
     margin: auto;
+  }
+
+  &.torus-dark {
+    background-image: url('/images/login-bg-dark.jpg');
+    background-color: #242529;
+  }
+
+  .right-panel-header {
+    font-size: 24px;
+    @media only screen and (min-width: 960px) {
+      font-size: 32px;
+    }
+  }
+  .right-panel-subheader {
+    width: 100%;
+    @media only screen and (min-width: 960px) {
+      width: 80%;
+    }
+    @media only screen and (min-width: 1400px) {
+      width: 60%;
+    }
   }
 }
 
@@ -60,4 +81,37 @@ body,
 html {
   height: 100vh;
   overflow-y: hidden;
+}
+
+.text-field__shadow {
+  .v-input__control {
+    box-sizing: border-box;
+    box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06);
+  }
+}
+
+.login-btn {
+  &.v-btn {
+    width: 70%;
+    border-radius: 9px;
+    height: 60px;
+    border: 1px solid #f1f2f6;
+    img {
+      height: 26px;
+    }
+  }
+  ::v-deep .v-btn__content {
+    justify-content: center;
+  }
+
+  &.torus-dark {
+    border: 1px solid #36373b;
+    padding-left: 2px;
+    background-color: #4285f4 !important;
+    color: #ffffff !important;
+
+    img {
+      height: 56px;
+    }
+  }
 }

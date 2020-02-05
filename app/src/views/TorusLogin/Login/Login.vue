@@ -1,5 +1,5 @@
 <template>
-  <div class="default">
+  <div :class="[{ 'background-login': !loggedIn }, 'default']">
     <v-layout wrap fill-height align-center justify-center class="login-panel-left">
       <v-flex xs12 md6>
         <v-layout wrap>
@@ -8,6 +8,9 @@
           </v-flex>
           <v-flex class="mb-3" xs9 sm7 ml-auto mr-auto>
             <span class="display-1 font-weight-bold">Log in</span>
+          </v-flex>
+          <v-flex :class="$vuetify.theme.dark ? '' : 'text_1--text'" class="body-2" mb-8 xs9 sm7 ml-auto mr-auto>
+            <span>{{ t('login.message') }}</span>
           </v-flex>
           <v-flex xs9 sm7 ml-auto mb-2 pt-4 mr-auto>
             <v-flex xs12>
@@ -18,7 +21,8 @@
                       outlined
                       type="text"
                       name="verifier_id"
-                      label="Email/Phone"
+                      label="Enter Email"
+                      elevation="4"
                       v-model="verifier_id"
                       :rules="[rules.required]"
                       single-line
@@ -32,7 +36,7 @@
                     <v-text-field
                       outlined
                       name="password"
-                      label="Password"
+                      label="Enter Password"
                       @click:append="toggleShowPassword"
                       :rules="[rules.required, rules.minLength]"
                       v-model="password"
@@ -50,11 +54,15 @@
                         <div class="v-messages__wrapper">
                           <div class="v-messages__message d-flex text_2--text">
                             <v-flex>
-                              <router-link :to="{ path: 'forgot' }">Forgot password?</router-link>
+                              <span class="caption">
+                                <router-link :to="{ path: 'forgot' }">Forgot password?</router-link>
+                              </span>
                             </v-flex>
                             <v-flex grow-shrink-0>
-                              Don't have an account?
-                              <router-link :to="{ name: 'torusRegister' }">Sign up here</router-link>
+                              <span class="caption">
+                                Don't have an account?
+                                <router-link :to="{ name: 'torusRegister' }">Sign up here</router-link>
+                              </span>
                             </v-flex>
                           </div>
                         </div>
@@ -63,31 +71,30 @@
                   </v-flex>
 
                   <v-flex xs12>
-                    <v-btn color="primary" large depressed block type="submit">Login</v-btn>
+                    <v-btn color="primary" class="body-1 font-weight-bold card-shadow-v8 login-btn" large depressed block type="submit">
+                      Login
+                    </v-btn>
                   </v-flex>
                 </v-layout>
               </v-form>
             </v-flex>
           </v-flex>
           <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
-            <span>
-              By clicking Login, you accept our
+            <span class="text_2--text body-1">
+              {{ t('login.acceptTerms') }}
               <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
-                <span class="primary--text">Terms and Conditions</span>
+                <span class="primary--text">{{ t('login.termsAndConditions') }}</span>
               </a>
             </span>
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex xs12 md6 fill-height class="hidden-sm-and-down login-panel-right">
+      <v-flex v-if="$vuetify.breakpoint.smAndUp" xs12 sm4 md6 fill-height class="login-panel-right" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
         <v-layout class="pb-8" wrap fill-height align-end>
-          <v-flex class="mb-3 text-center" xs9 sm7 ml-auto mr-auto>
-            <div class="display-1 white--text font-weight-bold">
-              Frictionless Logins
-            </div>
-            <div class="display-1 white--text mb-3">for DApps</div>
-            <div class="caption white--text">
-              A simple and secure gateway to the decentralized ecosystem via OAuth logins
+          <v-flex class="mb-3 text-center" xs9 sm8 md10 ml-auto mr-auto>
+            <div class="right-panel-header white--text font-weight-bold mb-2">{{ t('login.frictionless') }}</div>
+            <div class="body-2 right-panel-subheader white--text mx-auto">
+              {{ t('login.simpleSecure') }}
             </div>
           </v-flex>
         </v-layout>
@@ -146,6 +153,6 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import 'Login.scss';
 </style>

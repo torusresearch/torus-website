@@ -75,7 +75,7 @@ const router = new Router({
       }
     },
     {
-      path: '/torus-login',
+      path: '/torusLogin',
       name: 'torusLogin',
       component: TorusLogin,
       meta: { requiresAuth: false }
