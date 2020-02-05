@@ -322,7 +322,6 @@ export default {
               }
             })
             const { picture: profileImage, email, name, id } = userInfo || {}
-            commit('setIdToken', idToken)
             commit('setUserInfo', {
               profileImage,
               name,
@@ -331,7 +330,7 @@ export default {
               verifier: GOOGLE,
               verifierParams: { verifier_id: email.toString().toLowerCase() }
             })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, idToken })
           }
         } catch (error) {
           log.error(error)
@@ -380,7 +379,6 @@ export default {
               }
             })
             const { name, id, picture, email } = userInfo || {}
-            commit('setIdToken', accessToken)
             commit('setUserInfo', {
               profileImage: picture.data.url,
               name,
@@ -389,7 +387,7 @@ export default {
               verifier: FACEBOOK,
               verifierParams: { verifier_id: id.toString() }
             })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
           }
         } catch (error) {
           log.error(error)
@@ -446,7 +444,6 @@ export default {
             const tokenInfo = jwtDecode(idtoken)
             const { picture: profileImage, preferred_username: name } = userInfo || {}
             const { email } = tokenInfo || {}
-            commit('setIdToken', accessToken.toString())
             commit('setUserInfo', {
               profileImage,
               name,
@@ -455,7 +452,7 @@ export default {
               verifier: TWITCH,
               verifierParams: { verifier_id: userInfo.sub.toString() }
             })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken.toString() })
           }
         } catch (error) {
           log.error(error)
@@ -501,7 +498,6 @@ export default {
               }
             })
             const { id, icon_img: profileImage, name } = userInfo || {}
-            commit('setIdToken', accessToken)
             commit('setUserInfo', {
               profileImage: profileImage.split('?').length > 0 ? profileImage.split('?')[0] : profileImage,
               name,
@@ -510,7 +506,7 @@ export default {
               verifier: REDDIT,
               verifierParams: { verifier_id: name.toString().toLowerCase() }
             })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
           }
         } catch (error) {
           log.error(error)
@@ -561,7 +557,6 @@ export default {
               avatar === null
                 ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
                 : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`
-            commit('setIdToken', accessToken)
             commit('setUserInfo', {
               profileImage,
               name: `${name}#${discriminator}`,
@@ -570,7 +565,7 @@ export default {
               verifier: DISCORD,
               verifierParams: { verifier_id: id.toString() }
             })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
           }
         } catch (error) {
           log.error(error)
@@ -609,10 +604,9 @@ export default {
   deleteContact({ commit, state }, payload) {
     prefsController.deleteContact(payload)
   },
-  async handleLogin({ state, dispatch, commit }, { calledFromEmbed }) {
+  async handleLogin({ state, dispatch, commit }, { calledFromEmbed, idToken }) {
     commit('setLoginInProgress', true)
     const {
-      idToken,
       userInfo: { verifierId, verifier, verifierParams }
     } = state
     let torusNodeEndpoints, torusIndexes

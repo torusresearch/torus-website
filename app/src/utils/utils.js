@@ -327,7 +327,7 @@ function validateVerifierId(selectedVerifier, value) {
       ) || 'Invalid Email Address'
     )
   } else if (selectedVerifier === REDDIT) {
-    return (/[\w-]+/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
+    return (/^[\w-]+$/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
   } else if (selectedVerifier === DISCORD) {
     return (/^[0-9]*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
   }

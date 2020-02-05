@@ -534,35 +534,41 @@ self.addEventListener('message', function(event) {
 })
 
 self.addEventListener('fetch', function(event) {
-  if (event.request.url.indexOf('redirect') > -1) {
-    event.respondWith(
-      new Response(
-        new Blob(
-          [
-            `
-REDIRECT_HTML${''}
-`
-          ],
-          { type: 'text/html' }
+  try {
+    const url = new URL(event.request.url)
+    const integrityParam = url.searchParams.get('integrity')
+    if (url.pathname.includes('/redirect') && url.href.includes(getScope())) {
+      event.respondWith(
+        new Response(
+          new Blob(
+            [
+              `
+  REDIRECT_HTML${''}
+  `
+            ],
+            { type: 'text/html' }
+          )
         )
       )
-    )
-  } else if (event.request.url.indexOf('integrity=true') > -1 && !isOrigin() && event.request.url.indexOf(getScope()) > -1) {
-    var promRes
-    var promRej
-    var prom = new Promise(function(resolve, reject) {
-      promRes = resolve
-      promRej = reject
-    })
+    } else if (integrityParam && integrityParam === 'true' && !isOrigin() && url.href.includes(getScope())) {
+      var promRes
+      var promRej
+      var prom = new Promise(function(resolve, reject) {
+        promRes = resolve
+        promRej = reject
+      })
 
-    event.respondWith(prom)
-    getIframeResponseText().then(function(cachedResponse) {
-      if (cachedResponse !== undefined) {
-        promRes(cachedResponse)
-      } else {
-        promRes(fetch(getIframeURL()))
-      }
-    })
+      event.respondWith(prom)
+      getIframeResponseText().then(function(cachedResponse) {
+        if (cachedResponse !== undefined) {
+          promRes(cachedResponse)
+        } else {
+          promRes(fetch(getIframeURL()))
+        }
+      })
+    }
+  } catch (error) {
+    console.error(error)
   }
 })
 
