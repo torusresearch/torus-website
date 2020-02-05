@@ -593,8 +593,15 @@ export default {
       if (isAddress(toAddress)) {
         return new Promise((resolve, reject) => {
           if (this.contractType === CONTRACT_TYPE_ETH) {
+            const value =
+              '0x' +
+              this.amount
+                .times(new BigNumber(10).pow(new BigNumber(18)))
+                .dp(0, BigNumber.ROUND_DOWN)
+                .toString(16)
+            log.info(this.gas.toString())
             torus.web3.eth
-              .estimateGas({ to: toAddress })
+              .estimateGas({ to: toAddress, value: value })
               .then(response => {
                 let resolved = new BigNumber(response || '0')
                 if (!resolved.eq(new BigNumber('21000'))) {
@@ -609,7 +616,12 @@ export default {
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC20) {
             const selectedAddress = this.$store.state.selectedAddress
-            const value = '0x' + this.amount.times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals))).toString(16)
+            const value =
+              '0x' +
+              this.amount
+                .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
+                .dp(0, BigNumber.ROUND_DOWN)
+                .toString(16)
             this.getTransferMethod(this.contractType, selectedAddress, toAddress, value)
               .estimateGas({ from: selectedAddress })
               .then(response => {
