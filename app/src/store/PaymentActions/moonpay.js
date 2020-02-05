@@ -7,7 +7,7 @@ import { BroadcastChannel } from 'broadcast-channel'
 import { broadcastChannelOptions } from '../../utils/utils'
 import PopupHandler from '../../utils/PopupHandler'
 
-const randomId = require('random-id')
+const randomId = require('@chaitanyapotti/random-id')
 
 export default {
   fetchMoonpayQuote(context, payload) {

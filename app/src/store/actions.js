@@ -74,6 +74,7 @@ export default {
     prefsController.store.unsubscribe(prefsControllerHandler)
     prefsController.successStore.unsubscribe(successMsgHandler)
     prefsController.errorStore.unsubscribe(errorMsgHandler)
+    torus.updateStaticData({ isUnlocked: false })
   },
   setSelectedCurrency({ commit, state }, payload) {
     torusController.setCurrentCurrency(payload)
@@ -648,6 +649,7 @@ export default {
         }
         statusStream.write({ loggedIn: true, rehydrate: false, verifier: verifier })
         commit('setLoginInProgress', false)
+        torus.updateStaticData({ isUnlocked: true })
       })
       .catch(err => {
         log.error(err)
@@ -747,6 +749,7 @@ export default {
         dispatch('updateNetworkId', { networkId: networkId })
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: verifier })
         log.info('rehydrated wallet')
+        torus.updateStaticData({ isUnlocked: true })
       }
     } catch (error) {
       log.error('Failed to rehydrate', error)
