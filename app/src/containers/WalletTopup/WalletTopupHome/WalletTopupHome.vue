@@ -20,7 +20,7 @@
         "
       />
 
-      <v-flex xs12 mb-2 v-if="selectedProvider && $vuetify.breakpoint.xsOnly">
+      <v-flex id="providerForm" xs12 mb-2 v-if="selectedProvider && $vuetify.breakpoint.xsOnly">
         <div class="text-black font-weight-bold headline px-4 mb-4">
           <span>
             {{ t('walletTopUp.purchaseVia') }}
