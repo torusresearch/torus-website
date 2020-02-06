@@ -74,15 +74,12 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex xs12 md6 fill-height class="hidden-sm-and-down panel-right">
+      <v-flex v-if="$vuetify.breakpoint.smAndUp" xs12 sm4 md6 fill-height class="panel-right" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
         <v-layout class="pb-8" wrap fill-height align-end>
-          <v-flex class="mb-3 text-center" xs9 sm7 ml-auto mr-auto>
-            <div class="display-1 white--text font-weight-bold">
-              Frictionless Logins
-            </div>
-            <div class="display-1 white--text mb-3">for DApps</div>
-            <div class="caption white--text">
-              A simple and secure gateway to the decentralized ecosystem via OAuth logins
+          <v-flex class="mb-3 text-center" xs9 sm8 md10 ml-auto mr-auto>
+            <div class="right-panel-header white--text font-weight-bold mb-2">{{ t('login.frictionless') }}</div>
+            <div class="body-2 right-panel-subheader white--text mx-auto">
+              {{ t('login.simpleSecure') }}
             </div>
           </v-flex>
         </v-layout>

@@ -1,64 +1,84 @@
-.panel-left {
-	background-color: #ffffff;
-  }
-  
-  .panel-right {
-	background-image: url("/images/login-bg.png");
+.panel-right {
+	background-image: url('/images/login-bg.jpg');
 	background-repeat: no-repeat;
-	background-position: left top;
 	background-size: auto 100%;
 	background-color: #0364ff;
+	background-position: 70% bottom;
+  
+	@media only screen and (min-width: 960px) {
+	  background-position: 80% bottom;
+	}
   
 	.caption {
 	  width: 80%;
 	  margin: auto;
 	}
-  }
   
-  .default {
-	height: 100vh;
-  }
-  
-  .field {
-	.v-text-field__details {
-	  display: none;
+	&.torus-dark {
+	  background-image: url('/images/login-bg-dark.jpg');
+	  background-color: #242529;
 	}
   
-	.error--text {
-	  .v-text-field__details {
-		display: inherit;
+	.right-panel-header {
+	  font-size: 24px;
+	  @media only screen and (min-width: 960px) {
+		font-size: 32px;
 	  }
 	}
-  
-	.v-btn {
-	  border-style: dashed;
+	.right-panel-subheader {
+	  width: 100%;
+	  @media only screen and (min-width: 960px) {
+		width: 80%;
+	  }
+	  @media only screen and (min-width: 1400px) {
+		width: 60%;
+	  }
 	}
   }
-  
+
+.default {
+  height: 100vh;
+}
+
+.field {
   .v-text-field__details {
-	padding: 0;
+    display: none;
   }
-  
-  .link {
-	font-weight: normal;
-	font-size: 12px;
-	padding: 0;
-	box-shadow: none;
-	background-color: white !important;
-	text-transform: unset;
-	color: #0364ff !important;
-	&:hover {
-	  background-color: white !important;
-	}
+
+  .error--text {
+    .v-text-field__details {
+      display: inherit;
+    }
   }
-  
-  a {
-	text-decoration: none;
+
+  .v-btn {
+    border-style: dashed;
   }
-  
-  body,
-  html {
-	height: 100vh;
-	overflow-y: hidden;
+}
+
+.v-text-field__details {
+  padding: 0;
+}
+
+.link {
+  font-weight: normal;
+  font-size: 12px;
+  padding: 0;
+  box-shadow: none;
+  background-color: white !important;
+  text-transform: unset;
+  color: #0364ff !important;
+  &:hover {
+    background-color: white !important;
   }
-  
+}
+
+a {
+  text-decoration: none;
+}
+
+body,
+html {
+  height: 100vh;
+  overflow-y: hidden;
+}
