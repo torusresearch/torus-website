@@ -1,3 +1,4 @@
+const log = require('loglevel')
 const connext = require('@connext/client')
 
 class ChannelController {
@@ -20,26 +21,29 @@ class ChannelController {
    * @returns Promise<void>
    */
   initializeConnext() {
-    const { ETH_PROVIDER_URL, NODE_URL, LOG_LEVEL } = process.env
+    const { LOG_LEVEL } = process.env
 
     const xpub = this.keyringController.getChannelXPub()
     const keyGen = this.keyringController.getChannelKeyGen()
 
-    const connectOpts = {
-      xpub,
-      keyGen,
-      ethProviderUrl: ETH_PROVIDER_URL || 'https://rinkeby.indra.connext.network/api/ethprovider', // default to nodes provider
-      logLevel: LOG_LEVEL || 5, // default to log everything
-      nodeUrl: NODE_URL || 'wss://rinkeby.indra.connext.network/api/messaging' // default to rinkeby
+    const network = this.networkController.store.getFlatState().network
+    if (!['mainnet', 'rinkeby'].includes(network)) {
+      log.error(`Channel can't be initialized with network: ${network}`)
+      return
     }
-    console.log('Initializing Channel...')
+
+    log.debug('Initializing Channel...')
     connext
-      .connect(connectOpts)
+      .connect(network, {
+        xpub,
+        keyGen,
+        logLevel: LOG_LEVEL || 5 // default to log everything
+      })
       .then(channel => {
-        console.log('Channel Connected!')
+        log.debug('Channel Connected!')
         this.saveChannel(channel)
       })
-      .catch(error => console.error(error))
+      .catch(error => log.error(error))
   }
 
   ///////////////////////////////////////////
@@ -196,7 +200,7 @@ class ChannelController {
       channelRpcStream.write({ id, result })
     } else {
       channelRpcStream.write({ id, error: { message: errorMsg || 'ChannelProvider error: Missing error message' } })
-      console.error(errorMsg)
+      log.error(errorMsg)
     }
   }
 }
