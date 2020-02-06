@@ -7,7 +7,7 @@ import { SIMPLEX } from '../../utils/enums'
 import { BroadcastChannel } from 'broadcast-channel'
 import torus from '../../torus'
 
-const randomId = require('random-id')
+const randomId = require('@chaitanyapotti/random-id')
 
 export default {
   fetchSimplexQuote({ state }, payload) {
@@ -153,7 +153,9 @@ export default {
         }
       }
       simplexWindow.open()
-      form.submit()
+      setTimeout(() => {
+        form.submit()
+      }, 2000)
 
       simplexWindow.once('close', () => {
         bc.close()

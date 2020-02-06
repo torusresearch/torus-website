@@ -5,7 +5,7 @@ import { post } from './utils/httpHelpers.js'
 
 const log = require('loglevel')
 const ethUtil = require('ethereumjs-util')
-const randomId = require('random-id')
+const randomId = require('@chaitanyapotti/random-id')
 
 const setupMultiplex = require('./utils/setupMultiplex').default
 
@@ -31,6 +31,8 @@ class TorusExtended extends Torus {
       publicConfigOutStream.write(JSON.stringify({ selectedAddress: payload.selectedAddress }))
     } else if (payload.networkId) {
       publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
+    } else if (payload.isUnlocked) {
+      publicConfigOutStream.write(JSON.stringify({ isUnlocked: payload.isUnlocked }))
     }
   }
 

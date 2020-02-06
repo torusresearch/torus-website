@@ -57,6 +57,7 @@ export default {
     torus.torusController.messageManager.store.unsubscribe(messageManagerHandler)
     torus.torusController.detectTokensController.detectedTokensStore.unsubscribe(detectTokensControllerHandler)
     torus.torusController.tokenRatesController.store.unsubscribe(tokenRatesControllerHandler)
+    torus.updateStaticData({ isUnlocked: false })
   },
   loginInProgress(context, payload) {
     context.commit('setLoginInProgress', payload)
@@ -247,9 +248,6 @@ export default {
   updateUserInfo(context, payload) {
     context.commit('setUserInfo', payload.userInfo)
   },
-  updateIdToken(context, payload) {
-    context.commit('setIdToken', payload.idToken)
-  },
   addWallet(context, payload) {
     if (payload.ethAddress) {
       context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
@@ -388,7 +386,6 @@ export default {
               }
             })
             const { picture: profileImage, email, name, id } = userInfo || {}
-            dispatch('updateIdToken', { idToken })
             dispatch('updateUserInfo', {
               userInfo: {
                 profileImage,
@@ -399,7 +396,7 @@ export default {
                 verifierParams: { verifier_id: email.toString().toLowerCase() }
               }
             })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, idToken })
           }
         } catch (error) {
           log.error(error)
@@ -426,7 +423,7 @@ export default {
       const scope = 'public_profile email'
       const response_type = 'token'
       const finalUrl =
-        `https://www.facebook.com/v5.0/dialog/oauth?response_type=${response_type}&client_id=${config.FACEBOOK_APP_ID}` +
+        `https://www.facebook.com/v6.0/dialog/oauth?response_type=${response_type}&client_id=${config.FACEBOOK_APP_ID}` +
         `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
       const facebookWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
@@ -448,7 +445,6 @@ export default {
               }
             })
             const { name, id, picture, email } = userInfo || {}
-            dispatch('updateIdToken', { idToken: accessToken })
             dispatch('updateUserInfo', {
               userInfo: {
                 profileImage: picture.data.url,
@@ -459,7 +455,7 @@ export default {
                 verifierParams: { verifier_id: id.toString() }
               }
             })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
           }
         } catch (error) {
           log.error(error)
@@ -499,6 +495,7 @@ export default {
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         try {
+          log.info(ev.data)
           const {
             instanceParams: { verifier },
             hashParams: verifierParams
@@ -516,7 +513,6 @@ export default {
             const tokenInfo = jwtDecode(idtoken)
             const { picture: profileImage, preferred_username: name } = userInfo || {}
             const { email } = tokenInfo || {}
-            dispatch('updateIdToken', { idToken: accessToken.toString() })
             dispatch('updateUserInfo', {
               userInfo: {
                 profileImage,
@@ -527,7 +523,7 @@ export default {
                 verifierParams: { verifier_id: userInfo.sub.toString() }
               }
             })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken.toString() })
           }
         } catch (error) {
           log.error(error)
@@ -562,6 +558,7 @@ export default {
             instanceParams: { verifier },
             hashParams: verifierParams
           } = ev.data || {}
+          log.info(ev.data)
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             oauthStream.write({ err: ev.error })
@@ -573,7 +570,6 @@ export default {
               }
             })
             const { id, icon_img: profileImage, name } = userInfo || {}
-            dispatch('updateIdToken', { idToken: accessToken })
             dispatch('updateUserInfo', {
               userInfo: {
                 profileImage: profileImage.split('?').length > 0 ? profileImage.split('?')[0] : profileImage,
@@ -584,7 +580,7 @@ export default {
                 verifierParams: { verifier_id: name.toString().toLowerCase() }
               }
             })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
           }
         } catch (error) {
           log.error(error)
@@ -620,6 +616,7 @@ export default {
             instanceParams: { verifier },
             hashParams: verifierParams
           } = ev.data || {}
+          log.info(ev.data)
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             oauthStream.write({ err: ev.error })
@@ -635,7 +632,6 @@ export default {
               avatar === null
                 ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
                 : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`
-            dispatch('updateIdToken', { idToken: accessToken })
             dispatch('updateUserInfo', {
               userInfo: {
                 profileImage,
@@ -646,7 +642,7 @@ export default {
                 verifierParams: { verifier_id: id.toString() }
               }
             })
-            dispatch('handleLogin', { calledFromEmbed })
+            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
           }
         } catch (error) {
           log.error(error)
@@ -744,10 +740,9 @@ export default {
         })
     })
   },
-  async handleLogin({ state, dispatch }, { calledFromEmbed }) {
+  async handleLogin({ state, dispatch }, { calledFromEmbed, idToken }) {
     dispatch('loginInProgress', true)
     const {
-      idToken,
       userInfo: { verifierId, verifier, verifierParams }
     } = state
     let torusNodeEndpoints, torusIndexes
@@ -784,10 +779,36 @@ export default {
         }
         statusStream.write({ loggedIn: true, rehydrate: false, verifier: verifier })
         dispatch('loginInProgress', false)
+        torus.updateStaticData({ isUnlocked: true })
+        dispatch('cleanupOAuth', { idToken })
       })
       .catch(err => {
         log.error(err)
       })
+  },
+  cleanupOAuth({ state }, payload) {
+    const {
+      userInfo: { verifier }
+    } = state
+    const { idToken } = payload
+    if (verifier === FACEBOOK) {
+      remove(`https://graph.facebook.com/me/permissions?access_token=${idToken}`)
+        .then(resp => log.info(resp))
+        .catch(err => log.error(err))
+    } else if (verifier === DISCORD) {
+      post(
+        `${config.api}/revoke/discord`,
+        { token: idToken },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }
+      )
+        .then(resp => log.info(resp))
+        .catch(err => log.error(err))
+    }
   },
   processAuthMessage({ commit, dispatch }, payload) {
     return new Promise(async (resolve, reject) => {
@@ -1004,6 +1025,7 @@ export default {
         dispatch('updateNetworkId', { networkId: networkId })
         statusStream.write({ loggedIn: true, rehydrate: true, verifier: verifier })
         log.info('rehydrated wallet')
+        torus.updateStaticData({ isUnlocked: true })
       }
     } catch (error) {
       log.error('Failed to rehydrate', error)

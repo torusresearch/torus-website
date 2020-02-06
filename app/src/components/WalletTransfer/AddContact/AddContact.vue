@@ -35,13 +35,14 @@
 </template>
 
 <script>
-import { GOOGLE, REDDIT, DISCORD, ETH, ETH_LABEL, GOOGLE_LABEL, REDDIT_LABEL, DISCORD_LABEL } from '../../../utils/enums'
+import { GOOGLE, REDDIT, DISCORD, ENS, ETH, ETH_LABEL, GOOGLE_LABEL, REDDIT_LABEL, DISCORD_LABEL, ENS_LABEL } from '../../../utils/enums'
 
 const VERIFIER_LABELS = {
   [ETH]: ETH_LABEL,
   [GOOGLE]: GOOGLE_LABEL,
   [REDDIT]: REDDIT_LABEL,
-  [DISCORD]: DISCORD_LABEL
+  [DISCORD]: DISCORD_LABEL,
+  [ENS]: ENS_LABEL
 }
 export default {
   props: ['verifier', 'contact'],
@@ -80,6 +81,9 @@ export default {
           })
       }
     }
+  },
+  mounted() {
+    console.log(this.verifier)
   }
 }
 </script>
