@@ -30,6 +30,7 @@
                       :append-icon="showPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                       :type="showPassword ? 'text' : 'password'"
                       single-line
+                      :rules="[rules.required]"
                     >
                       <template v-slot:prepend-inner>
                         <img class="mr-2" :src="require(`../../../../public/images/lock.svg`)" height="20px" />
@@ -47,6 +48,7 @@
                       :append-icon="showConfirmPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                       :type="showConfirmPassword ? 'text' : 'password'"
                       single-line
+                      :rules="[rules.required, rules.confirmPassword]"
                     >
                       <template v-slot:prepend-inner>
                         <img class="mr-2" :src="require(`../../../../public/images/lock.svg`)" height="20px" />
@@ -123,7 +125,12 @@ export default {
       verifier_id: '',
       verifier_id_type: '',
       showPassword: false,
-      showConfirmPassword: false
+      showConfirmPassword: false,
+      rules: {
+        required: value => !!value || 'Required',
+        minLength: value => value.length > 8 || 'Password length must be greater than 8 characters',
+        confirmPassword: value => value === this.password || 'Passwords do not match'
+      }
     }
   },
   methods: {
