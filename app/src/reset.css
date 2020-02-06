@@ -1,9 +1,9 @@
 body,
 html {
   height: inherit;
-  /* overflow-y: auto !important; Causes window.scrollTo to stop working */
+  overflow-y: auto !important;
   max-width: 100%;
-  /* overflow-x: hidden; Causes window.scrollTo to stop working */
+  overflow-x: hidden;
 }
 
 /* .container.fill-height {
