@@ -22,7 +22,11 @@
         </div>
         <div class="caption font-weight-medium">{{ transaction.actionText }}</div>
         <div class="info font-weight-light">
-          {{ transaction.action === ACTIVITY_ACTION_SEND ? t('walletActivity.to') : t('walletActivity.from') }} {{ transaction.slicedTo }}
+          {{
+            transaction.action === ACTIVITY_ACTION_SEND
+              ? `${t('walletActivity.to')} ${transaction.slicedTo}`
+              : `${t('walletActivity.from')} ${transaction.slicedFrom}`
+          }}
         </div>
       </v-flex>
       <v-flex class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'xs4 order-1' : 'xs2 order-2'">
@@ -50,9 +54,11 @@
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-list-item-content class="details-label">{{ t('walletActivity.sendTo') }}:</v-list-item-content>
+            <v-list-item-content class="details-label">
+              {{ transaction.action === ACTIVITY_ACTION_SEND ? t('walletActivity.sendTo') : t('walletActivity.receiveFrom') }}:
+            </v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
-              <span>{{ transaction.to }}</span>
+              <span>{{ transaction.action === ACTIVITY_ACTION_SEND ? transaction.to : transaction.from }}</span>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-if="transaction.type !== CONTRACT_TYPE_ERC721">
