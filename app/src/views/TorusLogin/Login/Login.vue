@@ -1,5 +1,5 @@
 <template>
-  <div :class="[{ 'background-login': !loggedIn }, 'default']">
+  <div :class="[{ 'background-login': false }, 'default']">
     <v-layout wrap fill-height align-center justify-center class="login-panel-left">
       <v-flex xs12 md6>
         <v-layout wrap>
