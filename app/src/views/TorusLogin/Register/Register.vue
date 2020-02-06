@@ -43,7 +43,6 @@
                       name="confirmPassword"
                       label="Enter Password"
                       @click:append="toggleShowConfirmPassword"
-                      class="password"
                       v-model="confirmPassword"
                       :append-icon="showConfirmPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                       :type="showConfirmPassword ? 'text' : 'password'"
@@ -121,7 +120,7 @@ export default {
   data() {
     return {
       password: '',
-      confirmPassword: '',
+      confirmPassword: 'undefined',
       verifier_id: '',
       verifier_id_type: '',
       showPassword: false,
@@ -136,11 +135,11 @@ export default {
   methods: {
     toggleShowPassword(event) {
       event.preventDefault()
-      this.showPassword != this.showPassword
+      this.showPassword = this.showPassword === true ? false : true
     },
     toggleShowConfirmPassword(event) {
       event.preventDefault()
-      this.showConfirmPassword != this.showConfirmPassword
+      this.showConfirmPassword = this.showConfirmPassword === true ? false : true
     },
     registerAccount() {
       this.updateExtendedPassword()
