@@ -3,6 +3,7 @@
     selectedProvider="wyre"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
+    @clearQuote="clearQuote"
     :cryptoCurrencyValue="cryptoCurrencyValue"
     :currencyRate="currencyRate"
   />
@@ -31,9 +32,6 @@ export default {
         self.$store
           .dispatch('fetchWyreQuote', payload)
           .then(result => {
-            // self.currencyRate = result[payload.selectedCryptoCurrency + payload.selectedCurrency] || 0
-            // self.cryptoCurrencyValue = ((payload.fiatValue - 0.3) / 1.029) * self.currencyRate
-            // self.currentOrder = { ...payload, fiatValue: (payload.fiatValue - 0.3) / 1.029 }
             self.currencyRate = parseFloat(result.data.exchangeRate)
             self.cryptoCurrencyValue = result.data.destAmount
             self.currentOrder = result.data
@@ -43,6 +41,12 @@ export default {
     },
     sendOrder(cb) {
       cb(this.$store.dispatch('fetchWyreOrder', { currentOrder: this.currentOrder }))
+    },
+    clearQuote(payload) {
+      this.cryptoCurrencyValue = 0
+      this.currencyRate = 0
+      this.currentOrder = {}
+      this.fetchQuote(payload)
     }
   }
 }

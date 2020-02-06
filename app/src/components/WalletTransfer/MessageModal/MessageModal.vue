@@ -15,7 +15,7 @@
           <div class="font-weight-bold headline mt-4 mb-2">{{ title }}</div>
         </v-flex>
 
-        <v-flex xs10 md6 mx-auto px-4 text-center mb-6>
+        <v-flex xs10 md8 mx-auto px-4 text-center mb-6>
           <p>{{ detailText }}</p>
         </v-flex>
 

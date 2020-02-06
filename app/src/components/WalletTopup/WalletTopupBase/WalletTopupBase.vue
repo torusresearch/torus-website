@@ -217,6 +217,12 @@ export default {
             this.snackbar = true
             this.snackbarColor = 'error'
             this.snackbarText = err
+            this.isQuoteFetched = false
+            this.$emit('clearQuote', {
+              selectedCurrency: this.selectedCurrency,
+              fiatValue: this.fiatValue,
+              selectedCryptoCurrency: this.selectedCryptoCurrency
+            })
           })
         }
         this.$emit('sendOrder', cb)

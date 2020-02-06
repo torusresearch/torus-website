@@ -23,6 +23,7 @@
           class="py-1 topup-btn hidden-xs-only"
           :class="$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12'"
           @click="topup"
+          v-show="canShowLrc"
         >
           <v-icon left>$vuetify.icons.add</v-icon>
           {{ t('walletHome.topUp') }}
@@ -129,8 +130,8 @@
                   v-model="search"
                   outlined
                   hide-details
-                  class="caption search-field"
-                  placeholder="Search"
+                  class="search-field"
+                  placeholder="Search for Tokens"
                   append-icon="$vuetify.icons.search"
                 ></v-text-field>
               </v-flex>
@@ -162,11 +163,11 @@
 
       <v-flex xs12 px-4 mt-5>
         <v-tabs v-model="activeTab">
-          <v-tab class="home-tab-token">
+          <v-tab class="home-tab-token" :key="t('walletHome.tokens')">
             <v-icon left>$vuetify.icons.token</v-icon>
             {{ t('walletHome.tokens') }}
           </v-tab>
-          <v-tab class="home-tab-collectibles">
+          <v-tab class="home-tab-collectibles" :key="t('walletHome.collectibles')">
             <v-icon left>$vuetify.icons.collectibles</v-icon>
             {{ t('walletHome.collectibles') }}
           </v-tab>
@@ -211,6 +212,9 @@ export default {
     }
   },
   computed: {
+    canShowLrc() {
+      return process.env.VUE_APP_TORUS_BUILD_ENV !== 'lrc'
+    },
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
     },

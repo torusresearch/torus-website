@@ -19,7 +19,7 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-tabs centered v-if="!$vuetify.breakpoint.smAndDown">
-        <v-tab v-for="headerItem in headerItems" :key="headerItem.name" :id="`${headerItem.name}-link`" :to="headerItem.route">
+        <v-tab v-for="headerItem in headerItems" :key="headerItem.display" :id="`${headerItem.name}-link`" :to="headerItem.route">
           {{ headerItem.display }}
         </v-tab>
       </v-tabs>
@@ -40,6 +40,21 @@
         <account-menu></account-menu>
       </v-menu>
     </v-app-bar>
+    <v-system-bar v-show="successMsg" color="success">
+      <v-spacer />
+      <span class="font-weight-medium">{{ successMsg }}</span>
+      <v-spacer />
+    </v-system-bar>
+    <v-system-bar v-show="errorMsg" color="error">
+      <v-spacer />
+      <span class="font-weight-medium">{{ errorMsg }}</span>
+      <v-spacer />
+    </v-system-bar>
+    <v-system-bar v-show="lrcMsg" :color="bannerColor" class="info">
+      <v-spacer />
+      <span class="font-weight-medium">{{ lrcMsg }}</span>
+      <v-spacer />
+    </v-system-bar>
 
     <v-navigation-drawer v-model="drawer" disable-resize-watcher app right :width="$vuetify.breakpoint.xsOnly ? '80%' : ''">
       <account-menu :headerItems="headerItems"></account-menu>
@@ -63,17 +78,35 @@ export default {
     }
   },
   computed: {
+    bannerColor() {
+      return this.$vuetify.theme.isDark ? this.$vuetify.theme.themes.dark.infoBanner : this.$vuetify.theme.themes.light.infoBanner
+    },
     userName() {
       return this.$store.state.userInfo.name
     },
+    successMsg() {
+      return this.$store.state.successMsg
+    },
+    errorMsg() {
+      return this.$store.state.errorMsg
+    },
     headerItems() {
-      return [
+      const items = [
         { name: 'home', display: this.t('navBar.home'), route: '/wallet/home', icon: 'settings' },
         { name: 'transfer', display: this.t('navBar.transfer'), route: '/wallet/transfer', icon: 'transaction' },
-        { name: 'top-up', display: this.t('navBar.topUp'), route: '/wallet/topup', icon: 'topup' },
         { name: 'activity', display: this.t('navBar.activity'), route: '/wallet/history', icon: 'activities' },
         { name: 'settings', display: this.t('navBar.settings'), route: '/wallet/settings', icon: 'settings' }
       ]
+      if (process.env.VUE_APP_TORUS_BUILD_ENV !== 'lrc') {
+        items.splice(2, 0, { name: 'top-up', display: this.t('navBar.topUp'), route: '/wallet/topup', icon: 'topup' })
+      }
+      return items
+    },
+    lrcMsg() {
+      if (process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc') {
+        return 'You are using the test cluster on torus network'
+      }
+      return ''
     }
   }
 }

@@ -43,7 +43,6 @@ if (storageAvailable('sessionStorage'))
       return {
         userInfo: state.userInfo,
         userInfoAccess: state.userInfoAccess,
-        idToken: state.idToken,
         wallet: state.wallet,
         // weiBalance: state.weiBalance,
         selectedAddress: state.selectedAddress,
@@ -326,5 +325,12 @@ VuexStore.subscribe((mutation, state) => {
     }
   }
 })
+
+if (storageAvailable('localStorage')) {
+  const torusTheme = localStorage.getItem('torus-theme')
+  if (torusTheme) {
+    VuexStore.dispatch('setTheme', torusTheme)
+  }
+}
 
 export default VuexStore

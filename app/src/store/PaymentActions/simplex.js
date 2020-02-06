@@ -7,7 +7,7 @@ import { SIMPLEX } from '../../utils/enums'
 import { BroadcastChannel } from 'broadcast-channel'
 import torus from '../../torus'
 
-const randomId = require('random-id')
+const randomId = require('@chaitanyapotti/random-id')
 
 export default {
   fetchSimplexQuote({ state }, payload) {
@@ -25,86 +25,90 @@ export default {
     )
   },
   fetchSimplexOrder({ state, dispatch }, payload) {
-    let preopenInstanceId = payload.preopenInstanceId
-    if (!preopenInstanceId) {
-      preopenInstanceId = randomId()
-      const finalUrl = config.baseUrl + `/redirect?preopenInstanceId=${preopenInstanceId}`
-      const handledWindow = new PopupHandler({ url: finalUrl, target: 'form-target' })
-      handledWindow.open()
+    return new Promise((resolve, reject) => {
+      let preopenInstanceId = payload.preopenInstanceId
+      if (!preopenInstanceId) {
+        preopenInstanceId = randomId()
+        const finalUrl = config.baseUrl + `/redirect?preopenInstanceId=${preopenInstanceId}`
+        const handledWindow = new PopupHandler({ url: finalUrl, target: 'form-target' })
+        handledWindow.open()
 
-      handledWindow.once('close', () => {
-        throw new Error('user closed simplex popup')
-      })
-    }
-    const instanceState = encodeURIComponent(
-      window.btoa(
-        JSON.stringify({
-          instanceId: torus.instanceId,
-          provider: SIMPLEX
+        handledWindow.once('close', () => {
+          reject(new Error('user closed simplex popup'))
         })
+      }
+      const instanceState = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: torus.instanceId,
+            provider: SIMPLEX
+          })
+        )
       )
-    )
-    return postOrder(
-      {
-        'g-recaptcha-response': '',
-        account_details: {
-          app_end_user_id: payload.currentOrder.user_id
-        },
-        return_url: `${config.redirect_uri}?state=${instanceState}`,
-        transaction_details: {
-          payment_details: {
-            fiat_total_amount: {
-              currency: payload.currentOrder.fiat_money.currency,
-              amount: payload.currentOrder.fiat_money.total_amount
-            },
-            requested_digital_amount: {
-              currency: payload.currentOrder.digital_money.currency,
-              amount: payload.currentOrder.digital_money.amount
-            },
-            destination_wallet: {
-              currency: payload.currentOrder.digital_money.currency,
-              address: state.selectedAddress
+      postOrder(
+        {
+          'g-recaptcha-response': '',
+          account_details: {
+            app_end_user_id: payload.currentOrder.user_id
+          },
+          return_url: `${config.redirect_uri}?state=${instanceState}`,
+          transaction_details: {
+            payment_details: {
+              fiat_total_amount: {
+                currency: payload.currentOrder.fiat_money.currency,
+                amount: payload.currentOrder.fiat_money.total_amount
+              },
+              requested_digital_amount: {
+                currency: payload.currentOrder.digital_money.currency,
+                amount: payload.currentOrder.digital_money.amount
+              },
+              destination_wallet: {
+                currency: payload.currentOrder.digital_money.currency,
+                address: payload.selectedAddress || state.selectedAddress
+              }
             }
           }
+        },
+        {
+          Authorization: `Bearer ${state.jwtToken}`
         }
-      },
-      {
-        Authorization: `Bearer ${state.jwtToken}`
-      }
-    ).then(result => {
-      const {
-        version,
-        partner,
-        return_url,
-        quote_id,
-        payment_id,
-        user_id,
-        destination_wallet_address,
-        destination_wallet_currency,
-        fiat_total_amount_amount,
-        fiat_total_amount_currency,
-        digital_total_amount_amount,
-        digital_total_amount_currency,
-        payment_post_url
-      } = result.result
-      return dispatch('postSimplexOrder', {
-        preopenInstanceId,
-        path: payment_post_url,
-        params: {
-          payment_flow_type: 'wallet',
+      ).then(result => {
+        const {
           version,
           partner,
           return_url,
           quote_id,
           payment_id,
           user_id,
-          'destination_wallet[address]': destination_wallet_address,
-          'destination_wallet[currency]': destination_wallet_currency,
-          'fiat_total_amount[amount]': fiat_total_amount_amount,
-          'fiat_total_amount[currency]': fiat_total_amount_currency,
-          'digital_total_amount[amount]': digital_total_amount_amount,
-          'digital_total_amount[currency]': digital_total_amount_currency
-        }
+          destination_wallet_address,
+          destination_wallet_currency,
+          fiat_total_amount_amount,
+          fiat_total_amount_currency,
+          digital_total_amount_amount,
+          digital_total_amount_currency,
+          payment_post_url
+        } = result.result
+        dispatch('postSimplexOrder', {
+          preopenInstanceId,
+          path: payment_post_url,
+          params: {
+            payment_flow_type: 'wallet',
+            version,
+            partner,
+            return_url,
+            quote_id,
+            payment_id,
+            user_id,
+            'destination_wallet[address]': destination_wallet_address,
+            'destination_wallet[currency]': destination_wallet_currency,
+            'fiat_total_amount[amount]': fiat_total_amount_amount,
+            'fiat_total_amount[currency]': fiat_total_amount_currency,
+            'digital_total_amount[amount]': digital_total_amount_amount,
+            'digital_total_amount[currency]': digital_total_amount_currency
+          }
+        })
+          .then(res => resolve(res))
+          .catch(err => reject(err))
       })
     })
   },
@@ -149,7 +153,9 @@ export default {
         }
       }
       simplexWindow.open()
-      form.submit()
+      setTimeout(() => {
+        form.submit()
+      }, 2000)
 
       simplexWindow.once('close', () => {
         bc.close()
