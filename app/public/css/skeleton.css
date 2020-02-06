@@ -355,7 +355,11 @@
 }
 
 .sk-loader.dark {
-  background: #2e3135;
+  background: linear-gradient(270deg, #2e3135, #2d2f34, #2e3135, #2d2f34);
+  background-size: 300% 300%;
+  -webkit-animation: sk-animation 3s ease infinite;
+  -moz-animation: sk-animation 3s ease infinite;
+  animation: sk-animation 3s ease infinite;
 }
 
 .sk-loader--box {

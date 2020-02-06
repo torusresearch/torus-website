@@ -3,27 +3,18 @@
     <div class="body-2 text_1--text mb-1 px-1">{{ t('walletSettings.selectTheme') }}</div>
     <v-layout wrap>
       <v-flex xs12 md6 px-1 mb-1>
-        <v-menu class="" transition="slide-y-transition" bottom>
-          <template v-slot:activator="{ on }">
-            <v-chip class="select-theme" :style="themeOptionStyle(selectedTheme)" label outlined large v-on="on">
-              <span>{{ selectedTheme ? t(selectedTheme.label) : t('walletSettings.selectTheme') }}</span>
-              <div class="flex-grow-1 text-right pr-2">
-                <v-icon right>$vuetify.icons.select</v-icon>
-              </div>
-            </v-chip>
-          </template>
-          <v-list class="select-theme-list pa-0">
-            <v-list-item
-              @click="selectedTheme = theme"
-              :style="themeOptionStyle(theme)"
-              class="select-theme-item"
-              v-for="theme in themes"
-              :key="`${theme.name}`"
-            >
-              {{ t(theme.label) }}
-            </v-list-item>
-          </v-list>
-        </v-menu>
+        <v-select
+          id="select-theme"
+          class="select-theme-container"
+          outlined
+          :items="themes"
+          item-text="label"
+          item-value="name"
+          v-model="selectedTheme"
+          append-icon="$vuetify.icons.select"
+          aria-label="Select Theme"
+          return-object
+        ></v-select>
       </v-flex>
     </v-layout>
     <v-layout class="mt-4">
@@ -63,7 +54,6 @@ export default {
   components: { Notification },
   data() {
     return {
-      themes: themes,
       selectedTheme: '',
       selectThemeAlert: false,
       selectThemeAlertText: '',
@@ -78,28 +68,29 @@ export default {
       this.$store
         .dispatch('setUserTheme', this.selectedTheme.name)
         .then(res => {
-          this.selectedTheme = ''
           this.selectThemeAlert = true
           this.selectThemeAlertType = 'success'
           this.selectThemeAlertText = this.t('walletSettings.successSaveTheme')
         })
         .catch(err => {
-          this.selectedTheme = ''
           this.selectThemeAlert = true
           this.selectThemeAlertType = 'error'
           this.selectThemeAlertText = err
         })
-    },
-    themeOptionStyle(theme) {
-      if (theme)
-        return {
-          color: `${theme.theme.primary.base} !important`,
-          backgroundColor: `${theme.theme.background_body_1} !important`,
-          borderColor: theme.theme.primary.base,
-          borderWidth: '1px',
-          borderStyle: 'solid'
-        }
     }
+  },
+  computed: {
+    themes() {
+      const finalThemes = JSON.parse(JSON.stringify(Object.values(themes)))
+      return finalThemes.map(finalTheme => {
+        finalTheme.label = this.t(finalTheme.label)
+        return finalTheme
+      })
+      return finalThemes
+    }
+  },
+  mounted() {
+    this.selectedTheme = themes[this.$store.state.theme]
   }
 }
 </script>
