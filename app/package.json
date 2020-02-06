@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "serve": "npm run locale && vue-cli-service serve",
-    "postinstall": "./scripts/postinstall.sh",
     "build": "npm run build-embed:production && npm run pre-build && vue-cli-service build && npm run post-build",
     "lint": "vue-cli-service lint",
     "build-embed:dev": "cross-env VUE_APP_TORUS_BUILD_ENV=development node ./scripts/createEmbed.js",
