@@ -89,7 +89,7 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex v-if="$vuetify.breakpoint.smAndUp" xs12 sm4 md6 fill-height class="login-panel-right" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
+      <v-flex v-if="$vuetify.breakpoint.smAndUp" xs12 sm12 md6 fill-height class="login-panel-right" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
         <v-layout class="pb-8" wrap fill-height align-end>
           <v-flex class="mb-3 text-center" xs9 sm8 md10 ml-auto mr-auto>
             <div class="right-panel-header white--text font-weight-bold mb-2">{{ t('login.frictionless') }}</div>
