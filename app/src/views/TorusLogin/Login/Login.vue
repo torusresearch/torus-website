@@ -122,6 +122,11 @@ export default {
       }
     }
   },
+  mounted() {
+    const queryParams = this.$router.currentRoute.query
+    this.state = queryParams.state
+    this.redirect_uri = queryParams.redirect_uri
+  },
   methods: {
     toggleShowPassword(event) {
       event.preventDefault()

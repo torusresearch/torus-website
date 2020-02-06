@@ -104,15 +104,6 @@ export default {
   created() {
     this.verifier_id = this.$route.query.email
   },
-  async mounted() {
-    const queryParams = this.$router.currentRoute.query
-    this.state = queryParams.state
-    this.redirect_uri = queryParams.redirect_uri
-    var self = this
-    setInterval(function() {
-      log.debug(self.state)
-    }, 2000)
-  },
   methods: {
     verifyAccount() {
       post('https://verifier.dev.tor.us/verify', {

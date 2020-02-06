@@ -252,9 +252,6 @@ export default {
   updateExtendedPassword(context, payload) {
     context.commit('setExtendedPassword', payload.extendedPassword)
   },
-  updateIdToken(context, payload) {
-    context.commit('setIdToken', payload.idToken)
-  },
   addWallet(context, payload) {
     if (payload.ethAddress) {
       context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
@@ -381,7 +378,6 @@ export default {
           } else if (ev.data && verifier === TORUS) {
             log.info('toruslogin data', ev.data)
             const { hashParams } = ev.data || {}
-            dispatch('updateIdToken', { idToken: hashParams.idtoken })
             dispatch('updateUserInfo', {
               userInfo: {
                 name: hashParams.verifier_id,
@@ -391,7 +387,7 @@ export default {
               }
             })
             dispatch('updateExtendedPassword', { extendedPassword: hashParams.extendedPassword })
-            dispatch('handleLogin', { calledFromEmbed, torusLogin: true })
+            dispatch('handleLogin', { calledFromEmbed, idToken: hashParams.idtoken, torusLogin: true })
           }
         } catch (error) {
           log.error(error)
@@ -794,7 +790,7 @@ export default {
         })
     })
   },
-  async handleLogin({ state, dispatch }, { calledFromEmbed, torusLogin }) {
+  async handleLogin({ state, dispatch }, { calledFromEmbed, idToken, torusLogin }) {
     console.log('handlelogin called with', state)
     dispatch('loginInProgress', true)
     const {
@@ -859,6 +855,19 @@ export default {
     const { idToken } = payload
     if (verifier === FACEBOOK) {
       remove(`https://graph.facebook.com/me/permissions?access_token=${idToken}`)
+        .then(resp => log.info(resp))
+        .catch(err => log.error(err))
+    } else if (verifier === DISCORD) {
+      post(
+        `${config.api}/revoke/discord`,
+        { token: idToken },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }
+      )
         .then(resp => log.info(resp))
         .catch(err => log.error(err))
     }
