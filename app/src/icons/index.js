@@ -40,6 +40,7 @@ import DownloadIcon from './DownloadIcon'
 import CollectibleIcon from './CollectibleIcon'
 import TokenIcon from './TokenIcon'
 import QrIcon from './QrIcon'
+import SmartContractIcon from './SmartContractIcon'
 
 export default {
   select: {
@@ -167,5 +168,8 @@ export default {
   },
   qr: {
     component: QrIcon
+  },
+  smart_contract: {
+    component: SmartContractIcon
   }
 }

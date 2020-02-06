@@ -2,25 +2,38 @@
   <v-layout mt-3 wrap class="wallet-settings">
     <div class="text-black font-weight-bold headline px-4 mb-4">{{ t('walletSettings.settings') }}</div>
     <v-flex xs12 px-4>
-      <v-text-field label="Enter subdomain name" v-model="ensName"></v-text-field>
-      <v-btn @click="createWallet()">
-        Create smart contract wallet
-      </v-btn>
+      <!-- Privacy and security settings -->
+      <v-expansion-panel class="my-2 card-shadow">
+        <v-expansion-panel-header
+          id="privacy-panel-header"
+          :class="$vuetify.breakpoint.xsOnly ? 'py-0 px-4' : 'py-4 px-6'"
+          expand-icon="$vuetify.icons.select"
+        >
+          <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.lock'" />
+          <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'subtitle-1'">
+            {{ t('walletSettings.privacySecurity') }}
+          </div>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <privacy-security />
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+
       <v-expansion-panels v-model="panel" multiple>
-        <!-- Privacy and security settings -->
+        <!-- Smart Contract Wallet Settings -->
         <v-expansion-panel class="my-2 card-shadow">
           <v-expansion-panel-header
-            id="privacy-panel-header"
+            id="smart-contract-header"
             :class="$vuetify.breakpoint.xsOnly ? 'py-0 px-4' : 'py-4 px-6'"
             expand-icon="$vuetify.icons.select"
           >
-            <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.lock'" />
+            <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.smart_contract'" />
             <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'subtitle-1'">
-              {{ t('walletSettings.privacySecurity') }}
+              Smart Contract Wallet
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <privacy-security />
+            <smart-contract />
           </v-expansion-panel-content>
         </v-expansion-panel>
 
@@ -83,6 +96,7 @@ import PrivacySecurity from '../../components/WalletSettings/PrivacySecurity'
 import ContactList from '../../components/WalletSettings/ContactList'
 import Network from '../../components/WalletSettings/Network'
 import Display from '../../components/WalletSettings/Display'
+import SmartContract from '../../components/WalletSettings/SmartContract'
 import { post, get } from '../../utils/httpHelpers.js'
 import config, { nodeDetails } from '../../config'
 
@@ -94,26 +108,12 @@ export default {
     PrivacySecurity,
     ContactList,
     Network,
-    Display
+    Display,
+    SmartContract
   },
   data() {
     return {
-      panel: [0, 1, 2, 3],
-      ensName: ''
-    }
-  },
-  methods: {
-    async createWallet() {
-      const reqObj = {
-        ens: this.ensName,
-        owner: this.$store.state.selectedEOA
-      }
-      try {
-        const response = await post(`${config.relayer}/createWallet`, reqObj)
-        console.log(response)
-      } catch (e) {
-        console.error(e)
-      }
+      panel: [0, 1, 2, 3, 4]
     }
   }
 }
