@@ -857,6 +857,19 @@ export default {
       remove(`https://graph.facebook.com/me/permissions?access_token=${idToken}`)
         .then(resp => log.info(resp))
         .catch(err => log.error(err))
+    } else if (verifier === DISCORD) {
+      post(
+        `${config.api}/revoke/discord`,
+        { token: idToken },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }
+      )
+        .then(resp => log.info(resp))
+        .catch(err => log.error(err))
     }
   },
   processAuthMessage({ commit, dispatch }, payload) {

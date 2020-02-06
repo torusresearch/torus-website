@@ -94,10 +94,7 @@ export default {
       if (theme)
         return {
           color: `${theme.theme.primary.base} !important`,
-          backgroundColor: `${theme.theme.background_body_1} !important`,
-          borderColor: theme.theme.primary.base,
-          borderWidth: '1px',
-          borderStyle: 'solid'
+          backgroundColor: `${theme.theme.background_body_1} !important`
         }
     }
   }
