@@ -454,7 +454,7 @@ class TransactionController extends EventEmitter {
       let transferValue, to, ETH_TOKEN
       //console.log(config.relayer)
       // const relayerURL = config.relayer.concat(txMeta.contractParams.erc721 ? '/transfer/nft' : '/transfer/eth')
-      const relayerURL = config.relayer.concat('/enqueue')
+      const relayerURL = config.relayer.concat('/transfer/eth')
       console.log(relayerURL)
       const fromSCW = txParams.from
 
