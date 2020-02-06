@@ -922,7 +922,7 @@ export default {
         })
     })
   },
-  addBadge({ state }, payload) {
+  addBadge({ state, commit }, payload) {
     return new Promise((resolve, reject) => {
       post(
         `${config.api}/badges`,
@@ -938,6 +938,8 @@ export default {
       )
         .then(response => {
           log.info('successfully added', response)
+          commit('setMyBadges', { ...state.myBadges, ...response.response })
+          log.info('myBadges', state.myBadges)
           resolve(response)
         })
         .catch(err => {

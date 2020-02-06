@@ -243,6 +243,7 @@ export default {
               this.snackbarText = 'Something went wrong'
             }
           }).catch(err => {
+            this.taskComplete(3)
             this.snackbar = true
             this.snackbarColor = 'error'
             this.snackbarText = err

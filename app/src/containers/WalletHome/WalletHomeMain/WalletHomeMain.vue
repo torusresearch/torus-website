@@ -183,20 +183,6 @@
         <collectibles-list></collectibles-list>
       </v-tab-item>
     </v-tabs-items>
-    <v-layout mt-4 pr-2 wrap>
-      <v-spacer></v-spacer>
-      <v-dialog v-model="showBadgeDialog" max-width="500">
-        <badge-modal
-          @onCloseBadgeModal="showBadgeDialog = false"
-          :text="
-            !badge.isCompleted
-              ? badge.title
-              : 'You have completed all your Badges. In order to participate for the prizes we need to access your information'
-          "
-          :badge="badge"
-        />
-      </v-dialog>
-    </v-layout>
   </div>
 </template>
 
@@ -209,13 +195,12 @@ import ExportQrCode from '../../../components/helpers/ExportQrCode'
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import LearnMore from '../../../components/WalletHome/LearnMore'
-import { BadgeModal } from '../../../components/WalletBadges'
 import { MAINNET, LOCALE_EN } from '../../../utils/enums'
 import { get } from '../../../utils/httpHelpers'
 
 export default {
   name: 'walletHome',
-  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore, ComponentLoader, BadgeModal },
+  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore, ComponentLoader },
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
@@ -279,7 +264,7 @@ export default {
       if (!this.$store.state.myBadges.map(badge => badge.badgeId).includes(badgeId.toString())) {
         this.badge = this.$store.state.badges[badgeId]
         this.showBadgeDialog = true
-        // this.$store.dispatch('addBadge', { badgeId: this.badge.id })
+        this.$store.dispatch('addBadge', { badgeId: this.badge.id })
       }
     },
     select(selectedItem) {
@@ -330,7 +315,7 @@ export default {
     }
   },
   created() {
-    if (this.isFreshAccount) {
+    if (this.isFreshAccount && this.$store.state.badges.length > 0) {
       this.taskCompleted(0)
     }
   },
