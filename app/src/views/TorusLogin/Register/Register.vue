@@ -92,7 +92,7 @@
       <v-flex
         v-if="$vuetify.breakpoint.smAndUp"
         xs12
-        sm4
+        sm12
         md6
         fill-height
         class="register-panel-right"
@@ -120,7 +120,7 @@ export default {
   data() {
     return {
       password: '',
-      confirmPassword: 'undefined',
+      confirmPassword: '',
       verifier_id: '',
       verifier_id_type: '',
       showPassword: false,
