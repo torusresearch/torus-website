@@ -354,6 +354,11 @@
   border-radius: 10px;
 }
 
+.sk-loader.dark {
+  background: linear-gradient(270deg, #2e3135, #2d2f34, #2e3135, #2d2f34);
+  background-size: 300% 300%;
+}
+
 .sk-loader--box {
   border-radius: 0;
 }

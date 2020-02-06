@@ -9,7 +9,7 @@
       :data-provider="targetProvider.name"
     >
       <router-link :to="targetProvider.link">
-        <v-list-item three-line :id="`${targetProvider.name}-link`">
+        <v-list-item three-line :id="`${targetProvider.name}-link`" @click="scrollToPosition">
           <v-list-item-icon class="mr-2 align-self-center">
             <v-icon class="primary--text" v-if="innerProvider === targetProvider.name">$vuetify.icons.radioOn</v-icon>
             <v-icon class="text_2--text" v-else>$vuetify.icons.radioOff</v-icon>
@@ -93,6 +93,17 @@ export default {
     },
     selectedProvider(newVal, oldVal) {
       if (oldVal !== newVal) this.innerProvider = newVal
+    }
+  },
+  methods: {
+    scrollToPosition() {
+      const elem = document.querySelector('#providerForm')
+      setTimeout(() => {
+        elem &&
+          elem.scrollIntoView({
+            behavior: 'smooth'
+          })
+      }, 0)
     }
   },
   mounted() {

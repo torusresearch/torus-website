@@ -31,6 +31,7 @@ export default function createMetamaskMiddleware({
       processTypedMessageV4,
       processPersonalMessage
     }),
+    createRequestAccountsMiddleware({ getAccounts }),
     createPendingNonceMiddleware({ getPendingNonce }),
     createPendingTxMiddleware({ getPendingTransactionByHash })
   ])
@@ -50,14 +51,24 @@ export function createPendingNonceMiddleware({ getPendingNonce }) {
 export function createPendingTxMiddleware({ getPendingTransactionByHash }) {
   return createAsyncMiddleware(async (req, res, next) => {
     const { method, params } = req
-    if (method !== 'eth_getTransactionByHash') {
-      return next()
-    }
+    if (method !== 'eth_getTransactionByHash') return next()
+
     const [hash] = params
     const txMeta = getPendingTransactionByHash(hash)
     if (!txMeta) {
       return next()
     }
     res.result = formatTxMetaForRpcResult(txMeta)
+  })
+}
+
+export function createRequestAccountsMiddleware({ getAccounts }) {
+  return createAsyncMiddleware(async (req, res, next) => {
+    const { method } = req
+    if (method !== 'eth_requestAccounts') return next()
+
+    if (!getAccounts) throw new Error('WalletMiddleware - opts.getAccounts not provided')
+    const accounts = await getAccounts(req)
+    res.result = accounts
   })
 }
