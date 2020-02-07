@@ -156,7 +156,7 @@ jobs:
               paths:
                 - .
           - <<: *step_save_cache
-  build-alpha:
+  build-alpha2:
         <<: *job_common
         steps:
           - checkout:
@@ -164,9 +164,9 @@ jobs:
           - <<: *step_restore_cache
           - <<: *step_setup_global_packages
           - run:
-              name: "Build code for torus alpha website"
+              name: "Build code for torus alpha2 website"
               command: |
-                npm run build:alpha
+                npm run build:alpha2
           - persist_to_workspace:
               root: ~/torus-website/
               paths:
@@ -198,7 +198,7 @@ jobs:
             ssh torus@lrc.tor.us "rm -rf ~/lrc-torus-website/*"
             tar czf - dist/ | ssh torus@lrc.tor.us "cat > ~/lrc-torus-website/dist.tgz"
             ssh torus@lrc.tor.us "cd ~/lrc-torus-website && tar zxvf dist.tgz"
-  deploy-alpha:
+  deploy-alpha2:
     <<: *job_common
     steps:
       - attach_workspace:
@@ -207,10 +207,10 @@ jobs:
       - run:
           name: "Deploy Over SSH"
           command: |
-            ssh-keyscan -H alpha.tor.us >> ~/.ssh/known_hosts
-            ssh torus@alpha.tor.us "rm -rf ~/alpha-torus-website/*"
-            tar czf - dist/ | ssh torus@alpha.tor.us "cat > ~/alpha-torus-website/dist.tgz"
-            ssh torus@alpha.tor.us "cd ~/alpha-torus-website && tar zxvf dist.tgz"
+            ssh-keyscan -H alpha2.tor.us >> ~/.ssh/known_hosts
+            ssh torus@alpha2.tor.us "rm -rf ~/alpha2-torus-website/*"
+            tar czf - dist/ | ssh torus@alpha2.tor.us "cat > ~/alpha2-torus-website/dist.tgz"
+            ssh torus@alpha2.tor.us "cd ~/alpha2-torus-website && tar zxvf dist.tgz"
 
 workflows:
   version: 2
@@ -297,16 +297,16 @@ workflows:
             branches:
               only:
                 - develop
-      - build-alpha:
+      - build-alpha2:
           filters:
             branches:
               only:
-                - alpha
-      - deploy-alpha:
+                - alpha2
+      - deploy-alpha2:
           requires:
-            - build-alpha
+            - build-alpha2
             - test-coverage
           filters:
             branches:
               only:
-                - alpha
+                - alpha2
