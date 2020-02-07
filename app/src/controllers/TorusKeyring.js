@@ -1,4 +1,5 @@
 const EventEmitter = require('events').EventEmitter
+const { CF_PATH } = require('@connext/client')
 const Wallet = require('ethereumjs-wallet')
 const hdkey = require('ethereumjs-wallet/hdkey')
 const bip39 = require('bip39')
@@ -46,7 +47,6 @@ export default class TorusKeyring extends EventEmitter {
     if (!privateKey) {
       return null
     }
-    const CF_PATH = `m/44'/60'/0'/25446`
     const entropy = ethUtil.keccak256(privateKey + 'connext')
     const mnemonic = bip39.entropyToMnemonic(entropy)
     const hdNode = hdkey.fromMasterSeed(mnemonic).derivePath(CF_PATH)
@@ -93,7 +93,7 @@ export default class TorusKeyring extends EventEmitter {
 
   getChannelXPub() {
     if (!this.channelWallet) {
-      console.error('No Channel Wallet generated!')
+      log.error('No Channel Wallet generated!')
       return
     }
     const xpub = this.channelWallet.publicExtendedKey()
@@ -102,7 +102,7 @@ export default class TorusKeyring extends EventEmitter {
 
   getChannelKeyGen() {
     if (!this.channelWallet) {
-      console.error('No Channel Wallet generated!')
+      log.error('No Channel Wallet generated!')
       return
     }
     const hdNode = this.channelWallet
