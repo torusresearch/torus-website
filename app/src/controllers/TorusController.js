@@ -186,8 +186,7 @@ export default class TorusController extends EventEmitter {
     // // channel method management
     this.channelController = new ChannelController({
       keyringController: this.keyringController,
-      networkController: this.networkController,
-      store: this.store
+      networkController: this.networkController
     })
   }
 

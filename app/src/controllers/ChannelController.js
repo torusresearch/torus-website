@@ -1,4 +1,6 @@
 const log = require('loglevel')
+const ObservableStore = require('obs-store')
+
 const connext = require('@connext/client')
 
 class ChannelController {
@@ -7,9 +9,13 @@ class ChannelController {
    * @param {Object} opts
    */
   constructor(opts) {
+    const initState = {
+      channel: undefined,
+      links: []
+    }
+    this.store = new ObservableStore(initState)
     this.networkController = opts.networkController
     this.keyringController = opts.keyringController
-    this.store = opts.store
   }
 
   /**
@@ -156,13 +162,13 @@ class ChannelController {
   }
 
   saveLinkInfo(paymentId, preImage) {
-    const links = this.store.getFlatState().links || []
+    const links = this.store.getState().links || []
     links.push({ paymentId, preImage })
     return this.store.updateState({ links })
   }
 
   getChannel() {
-    const channel = this.store.getFlatState().channel
+    const channel = this.store.getState().channel
     if (!channel) {
       throw new Error('Channel has not been initialized, call initializeConnext')
       return
