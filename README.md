@@ -11,6 +11,8 @@ Ask one of the developers for these keys.
 To install dependencies and build the website,
 see [README here](app/README.md)
 
+You can read the combined change-log for torus-embed and torus-website [here](https://docs.tor.us/features/changelog)
+
 
 To see the current production app, navigate to https://app.tor.us
 
