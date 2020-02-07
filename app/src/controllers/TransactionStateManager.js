@@ -1,4 +1,3 @@
-const extend = require('xtend')
 const EventEmitter = require('safe-event-emitter')
 const ObservableStore = require('obs-store')
 const log = require('loglevel')
@@ -31,14 +30,10 @@ class TransactionStateManager extends EventEmitter {
   constructor({ initState, txHistoryLimit, getNetwork }) {
     super()
 
-    this.store = new ObservableStore(
-      extend(
-        {
-          transactions: []
-        },
-        initState
-      )
-    )
+    this.store = new ObservableStore({
+      transactions: [],
+      ...initState
+    })
     this.txHistoryLimit = txHistoryLimit
     this.getNetwork = getNetwork
   }
@@ -50,16 +45,14 @@ class TransactionStateManager extends EventEmitter {
   generateTxMeta(opts) {
     const netId = this.getNetwork()
     if (netId === 'loading') throw new Error('MetaMask is having trouble connecting to the network')
-    return extend(
-      {
-        id: createId(),
-        time: new Date().getTime(),
-        status: 'unapproved',
-        metamaskNetworkId: netId,
-        loadingDefaults: true
-      },
-      opts
-    )
+    return {
+      id: createId(),
+      time: new Date().getTime(),
+      status: 'unapproved',
+      metamaskNetworkId: netId,
+      loadingDefaults: true,
+      ...opts
+    }
   }
 
   /**
@@ -223,7 +216,7 @@ class TransactionStateManager extends EventEmitter {
   */
   updateTxParams(txId, txParams) {
     const txMeta = this.getTx(txId)
-    txMeta.txParams = extend(txMeta.txParams, txParams)
+    txMeta.txParams = { ...txMeta.txParams, ...txParams }
     this.updateTx(txMeta, 'txStateManager#updateTxParams')
   }
 

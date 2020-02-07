@@ -1,5 +1,4 @@
 const ObservableStore = require('obs-store')
-const extend = require('xtend')
 const log = require('loglevel')
 
 // every ten minutes
@@ -24,15 +23,13 @@ class CurrencyController {
    *
    */
   constructor(opts = {}) {
-    const initState = extend(
-      {
-        currentCurrency: 'usd',
-        conversionRate: 0,
-        conversionDate: 'N/A',
-        nativeCurrency: 'ETH'
-      },
-      opts.initState
-    )
+    const initState = {
+      currentCurrency: 'usd',
+      conversionRate: 0,
+      conversionDate: 'N/A',
+      nativeCurrency: 'ETH',
+      ...opts.initState
+    }
     this.store = new ObservableStore(initState)
   }
 

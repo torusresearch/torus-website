@@ -3,7 +3,6 @@ const EventEmitter = require('events')
 const ObservableStore = require('obs-store')
 const ComposedStore = require('obs-store/lib/composed')
 const log = require('loglevel')
-const extend = require('extend')
 const mergeMiddleware = require('json-rpc-engine/src/mergeMiddleware')
 const createScaffoldMiddleware = require('json-rpc-engine/src/createScaffoldMiddleware')
 const createBlockReRefMiddleware = require('eth-json-rpc-middleware/block-ref')
@@ -285,7 +284,7 @@ export default class NetworkController extends EventEmitter {
     var settings = {
       network: chainId
     }
-    settings = extend(settings, networks.networkList['rpc'])
+    settings = { ...settings, ...networks.networkList['rpc'] }
     this.networkConfig.putState(settings)
     this._setNetworkClient(networkClient)
   }

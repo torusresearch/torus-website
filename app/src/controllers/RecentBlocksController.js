@@ -1,5 +1,4 @@
 const ObservableStore = require('obs-store')
-const extend = require('xtend')
 const EthQuery = require('eth-query')
 const log = require('loglevel')
 const pify = require('pify')
@@ -31,12 +30,10 @@ class RecentBlocksController {
     this.ethQuery = new EthQuery(provider)
     this.historyLength = opts.historyLength || 15
 
-    const initState = extend(
-      {
-        recentBlocks: []
-      },
-      opts.initState
-    )
+    const initState = {
+      recentBlocks: [],
+      ...opts.initState
+    }
     this.store = new ObservableStore(initState)
 
     const blockListner = async newBlockNumberHex => {
@@ -126,11 +123,12 @@ class RecentBlocksController {
    *
    */
   mapTransactionsToPrices(newBlock) {
-    const block = extend(newBlock, {
+    const block = {
+      ...newBlock,
       gasPrices: newBlock.transactions.map(tx => {
         return tx.gasPrice
       })
-    })
+    }
     delete block.transactions
     return block
   }
