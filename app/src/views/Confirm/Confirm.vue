@@ -688,7 +688,7 @@ export default {
         this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
         this.totalUsdCost = significantDigits(ethCost.times(this.getCurrencyMultiplier))
         if (reason) {
-          this.errorMsg = this.t(reason)
+          this.errorMsg = reason
           this.canShowError = true
         }
         if (this.balance.lt(ethCost) && !this.canShowError) {

@@ -357,7 +357,7 @@ export default {
       const scope = 'public_profile email'
       const response_type = 'token'
       const finalUrl =
-        `https://www.facebook.com/v5.0/dialog/oauth?response_type=${response_type}&client_id=${config.FACEBOOK_APP_ID}` +
+        `https://www.facebook.com/v6.0/dialog/oauth?response_type=${response_type}&client_id=${config.FACEBOOK_APP_ID}` +
         `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
       const facebookWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
@@ -427,6 +427,7 @@ export default {
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         try {
+          log.info(ev.data)
           const {
             instanceParams: { verifier },
             hashParams: verifierParams
@@ -487,6 +488,7 @@ export default {
             instanceParams: { verifier },
             hashParams: verifierParams
           } = ev.data || {}
+          log.info(ev.data)
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             oauthStream.write({ err: ev.error })
@@ -542,6 +544,7 @@ export default {
             instanceParams: { verifier },
             hashParams: verifierParams
           } = ev.data || {}
+          log.info(ev.data)
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             oauthStream.write({ err: ev.error })
@@ -644,10 +647,35 @@ export default {
         statusStream.write({ loggedIn: true, rehydrate: false, verifier: verifier })
         commit('setLoginInProgress', false)
         torus.updateStaticData({ isUnlocked: true })
+        dispatch('cleanupOAuth', { idToken })
       })
       .catch(err => {
         log.error(err)
       })
+  },
+  cleanupOAuth({ state }, payload) {
+    const {
+      userInfo: { verifier }
+    } = state
+    const { idToken } = payload
+    if (verifier === FACEBOOK) {
+      remove(`https://graph.facebook.com/me/permissions?access_token=${idToken}`)
+        .then(resp => log.info(resp))
+        .catch(err => log.error(err))
+    } else if (verifier === DISCORD) {
+      post(
+        `${config.api}/revoke/discord`,
+        { token: idToken },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }
+      )
+        .then(resp => log.info(resp))
+        .catch(err => log.error(err))
+    }
   },
   processAuthMessage({ commit, dispatch }, payload) {
     return new Promise(async (resolve, reject) => {
