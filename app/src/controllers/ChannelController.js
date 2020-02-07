@@ -27,7 +27,7 @@ class ChannelController {
    * @returns Promise<void>
    */
   initializeConnext() {
-    const { LOG_LEVEL } = process.env
+    const { VUE_APP_TORUS_BUILD_ENV } = process.env
 
     const xpub = this.keyringController.getChannelXPub()
     const keyGen = this.keyringController.getChannelKeyGen()
@@ -43,7 +43,7 @@ class ChannelController {
       .connect(network, {
         xpub,
         keyGen,
-        logLevel: LOG_LEVEL || 5 // default to log everything
+        logLevel: VUE_APP_TORUS_BUILD_ENV === 'production' ? 1 : 5 // default to log everything
       })
       .then(channel => {
         log.debug('Channel Connected!')
