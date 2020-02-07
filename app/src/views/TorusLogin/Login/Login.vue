@@ -4,7 +4,7 @@
       <v-flex xs12 md6>
         <v-layout wrap>
           <v-flex class="mb-5" xs9 sm7 ml-auto mr-auto>
-            <img width="117" :src="require('../../../../public/images/torus-logo-blue.svg')" />
+            <img width="117" :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
           </v-flex>
           <v-flex class="mb-3" xs9 sm7 ml-auto mr-auto>
             <span class="display-1 font-weight-bold">Log in</span>

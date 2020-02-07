@@ -40,6 +40,8 @@ import DownloadIcon from './DownloadIcon'
 import CollectibleIcon from './CollectibleIcon'
 import TokenIcon from './TokenIcon'
 import QrIcon from './QrIcon'
+import InvalidCheckIcon from './InvalidCheckIcon'
+import ValidCheckIcon from './ValidCheckIcon'
 
 export default {
   select: {
@@ -167,5 +169,11 @@ export default {
   },
   qr: {
     component: QrIcon
+  },
+  check_error: {
+    component: InvalidCheckIcon
+  },
+  check_success: {
+    component: ValidCheckIcon
   }
 }

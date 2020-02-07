@@ -4,7 +4,7 @@
       <v-flex xs12 md6>
         <v-layout wrap>
           <v-flex class="mb-5" xs9 sm7 ml-auto mr-auto>
-            <img width="117" :src="require('../../../../public/images/torus-logo-blue.svg')" />
+            <img width="117" :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
           </v-flex>
           <v-flex class="mb-3" xs9 sm7 ml-auto mr-auto>
             <span class="display-1 font-weight-bold">Sign Up</span>
@@ -14,7 +14,15 @@
               <v-form @submit.prevent lazy-validation>
                 <v-layout wrap>
                   <v-flex xs12>
-                    <v-text-field outlined type="text" name="verifier_id" label="Enter Email" v-model="verifier_id" single-line>
+                    <v-text-field
+                      outlined
+                      type="text"
+                      name="verifier_id"
+                      label="Enter Email"
+                      v-model="verifier_id"
+                      single-line
+                      :rules="[rules.email, rules.required]"
+                    >
                       <template v-slot:prepend-inner>
                         <img class="mr-2 mt-1" :src="require(`../../../../public/images/email.svg`)" height="16px" />
                       </template>
@@ -41,7 +49,7 @@
                     <v-text-field
                       outlined
                       name="confirmPassword"
-                      label="Enter Password"
+                      label="Confirm Password"
                       @click:append="toggleShowConfirmPassword"
                       v-model="confirmPassword"
                       :append-icon="showConfirmPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
@@ -126,6 +134,7 @@ export default {
       showPassword: false,
       showConfirmPassword: false,
       rules: {
+        email: value => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value) || 'Invalid email address format',
         required: value => !!value || 'Required',
         minLength: value => value.length > 8 || 'Password length must be greater than 8 characters',
         confirmPassword: value => value === this.password || 'Passwords do not match'
