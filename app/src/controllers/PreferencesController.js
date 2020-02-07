@@ -319,6 +319,18 @@ class PreferencesController {
     )
   }
 
+  revokeDiscord(idToken) {
+    post(
+      `${config.api}/revoke/discord`,
+      { token: idToken },
+      {
+        headers: this.headers
+      }
+    )
+      .then(resp => log.info(resp))
+      .catch(err => log.error(err))
+  }
+
   setSelectedAddress(address) {
     this.store.updateState({ selectedAddress: address })
   }

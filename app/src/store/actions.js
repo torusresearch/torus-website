@@ -12,8 +12,7 @@ import {
   GOOGLE,
   TWITCH,
   REDDIT,
-  DISCORD,
-  THEME_LIGHT_BLUE_NAME
+  DISCORD
 } from '../utils/enums'
 import { broadcastChannelOptions, storageAvailable } from '../utils/utils'
 import { post, get } from '../utils/httpHelpers.js'
@@ -48,7 +47,8 @@ const {
   detectTokensController,
   tokenRatesController,
   prefsController,
-  networkController
+  networkController,
+  assetDetectionController
 } = torusController
 
 // stream to send logged in status
@@ -58,7 +58,7 @@ const userInfoStream = torus.communicationMux.getStream('user_info')
 const providerChangeStream = torus.communicationMux.getStream('provider_change')
 
 export default {
-  logOut({ commit, dispatch }, payload) {
+  logOut({ commit }, payload) {
     commit('logOut', initialState)
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
@@ -663,18 +663,7 @@ export default {
         .then(resp => log.info(resp))
         .catch(err => log.error(err))
     } else if (verifier === DISCORD) {
-      post(
-        `${config.api}/revoke/discord`,
-        { token: idToken },
-        {
-          headers: {
-            Authorization: `Bearer ${state.jwtToken}`,
-            'Content-Type': 'application/json; charset=utf-8'
-          }
-        }
-      )
-        .then(resp => log.info(resp))
-        .catch(err => log.error(err))
+      prefsController.revokeDiscord(idToken)
     }
   },
   processAuthMessage({ commit, dispatch }, payload) {
