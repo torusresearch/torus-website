@@ -28,8 +28,7 @@ export default class AssetController {
 
   setSelectedAddress(address) {
     this.selectedAddress = address
-    if (!Object.keys(this.store.getState().accounts).includes(address))
-      this.store.updateState({ accounts: { ...this.store.getState().accounts, [address]: initStateObj } })
+    this.store.updateState({ accounts: { ...this.store.getState().accounts, [address]: initStateObj } })
   }
 
   setJwtToken(jwtToken) {

@@ -522,7 +522,7 @@ export default {
       bc.close()
     },
     topUp() {
-      this.$store.dispatch('showWalletPopup', { path: '/topup' })
+      this.$router.push({ path: '/wallet/topup' }).catch(err => {})
     },
     onSelectSpeed(data) {
       this.speedSelected = data.speedSelected

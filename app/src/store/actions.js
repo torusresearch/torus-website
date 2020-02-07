@@ -61,7 +61,7 @@ export default {
   logOut({ commit }, payload) {
     commit('logOut', initialState)
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
-    if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
+    // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
     statusStream.write({ loggedIn: false })
     accountTracker.store.unsubscribe(accountTrackerHandler)
     txController.store.unsubscribe(transactionControllerHandler)
