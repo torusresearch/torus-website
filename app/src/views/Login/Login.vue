@@ -93,6 +93,23 @@
                 </v-flex>
               </v-layout>
             </v-flex>
+            <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
+              <v-btn
+                id="torusLogin"
+                :large="!$vuetify.breakpoint.xsOnly"
+                :color="$vuetify.theme.dark ? '' : 'white'"
+                :class="$vuetify.theme.dark ? 'torus-dark' : 'card-shadow-v8'"
+                :depressed="$vuetify.theme.dark"
+                block
+                class="body-1 font-weight-bold card-shadow-v8 text_2--text torus-login-btn"
+                type="button"
+                :title="`${t('login.loginWith')} Torus`"
+                @click="triggerLogin({ verifier: TORUS, calledFromEmbed: false })"
+              >
+                <img height="32" :src="require('../../../public/images/email.svg')" :class="$vuetify.theme.dark ? 'ml-4 mr-4 torus-dark' : 'mr-6'" />
+                Sign up/in with Email
+              </v-btn>
+            </v-flex>
             <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
               <span class="text_2--text body-1">
                 {{ t('login.acceptTerms') }}
@@ -172,7 +189,7 @@ import {
   WalletSettingsLoader,
   WalletSettingsLoaderMobile
 } from '../../content-loader'
-import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../utils/enums'
+import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD, TORUS } from '../../utils/enums'
 import config from '../../config'
 
 export default {
@@ -185,7 +202,8 @@ export default {
       GOOGLE: GOOGLE,
       TWITCH: TWITCH,
       REDDIT: REDDIT,
-      DISCORD: DISCORD
+      DISCORD: DISCORD,
+      TORUS: TORUS
     }
   },
   methods: {

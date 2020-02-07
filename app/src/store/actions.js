@@ -8,6 +8,7 @@ import {
   USER_INFO_REQUEST_APPROVED,
   USER_INFO_REQUEST_REJECTED,
   SUPPORTED_NETWORK_TYPES,
+  TORUS,
   FACEBOOK,
   GOOGLE,
   TWITCH,
@@ -15,7 +16,7 @@ import {
   DISCORD,
   THEME_LIGHT_BLUE_NAME
 } from '../utils/enums'
-import { broadcastChannelOptions, storageAvailable } from '../utils/utils'
+import { broadcastChannelOptions, storageAvailable, xor } from '../utils/utils'
 import { post, get, patch, remove } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import initialState from './state'
@@ -248,6 +249,9 @@ export default {
   updateUserInfo(context, payload) {
     context.commit('setUserInfo', payload.userInfo)
   },
+  updateExtendedPassword(context, payload) {
+    context.commit('setExtendedPassword', payload.extendedPassword)
+  },
   addWallet(context, payload) {
     if (payload.ethAddress) {
       context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
@@ -352,7 +356,53 @@ export default {
   triggerLogin({ dispatch }, { calledFromEmbed, verifier, preopenInstanceId }) {
     log.info('Verifier: ', verifier)
 
-    if (verifier === GOOGLE) {
+    if (verifier === TORUS) {
+      const state = encodeURIComponent(
+        window.btoa(
+          JSON.stringify({
+            instanceId: torus.instanceId,
+            verifier: 'torus'
+          })
+        )
+      )
+      const finalUrl = `${config.baseRoute}torusLogin?state=${state}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${
+        torus.instanceId
+      }`
+      const torusLoginWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      bc.onmessage = async ev => {
+        try {
+          if (ev.error && ev.error !== '') {
+            log.error(ev.error)
+            oauthStream.write({ err: ev.error })
+          } else if (ev.data && verifier === TORUS) {
+            log.info('toruslogin data', ev.data)
+            const { hashParams } = ev.data || {}
+            dispatch('updateUserInfo', {
+              userInfo: {
+                name: hashParams.verifier_id,
+                verifierId: hashParams.verifier_id,
+                verifier,
+                verifierParams: { ...hashParams, id_token: hashParams.idtoken }
+              }
+            })
+            dispatch('updateExtendedPassword', { extendedPassword: hashParams.extendedPassword })
+            dispatch('handleLogin', { calledFromEmbed, idToken: hashParams.idtoken, torusLogin: true })
+          }
+        } catch (error) {
+          log.error(error)
+          oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+        } finally {
+          bc.close()
+          torusLoginWindow.close()
+        }
+      }
+      torusLoginWindow.open()
+      torusLoginWindow.once('close', () => {
+        bc.close()
+        oauthStream.write({ err: 'user closed popup' })
+      })
+    } else if (verifier === GOOGLE) {
       const state = encodeURIComponent(
         window.btoa(
           JSON.stringify({
@@ -370,15 +420,15 @@ export default {
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         try {
-          const {
-            instanceParams: { verifier },
-            hashParams: verifierParams
-          } = ev.data || {}
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             oauthStream.write({ err: ev.error })
           } else if (ev.data && verifier === GOOGLE) {
             log.info(ev.data)
+            const {
+              instanceParams: { verifier },
+              hashParams: verifierParams
+            } = ev.data || {}
             const { access_token: accessToken, id_token: idToken } = verifierParams
             const userInfo = await get('https://www.googleapis.com/userinfo/v2/me', {
               headers: {
@@ -740,7 +790,8 @@ export default {
         })
     })
   },
-  async handleLogin({ state, dispatch }, { calledFromEmbed, idToken }) {
+  async handleLogin({ state, dispatch }, { calledFromEmbed, idToken, torusLogin }) {
+    console.log('handlelogin called with', state)
     dispatch('loginInProgress', true)
     const {
       userInfo: { verifierId, verifier, verifierParams }
@@ -753,11 +804,22 @@ export default {
         torusIndexes = torusIndexesVal
         return torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
       })
-      .then(res => {
-        log.info('New private key assigned to user at address ', res)
-        const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
-        const p2 = torus.getMessageForSigning(res)
-        return Promise.all([p1, p2])
+      .then(async res => {
+        if (torusLogin) {
+          var data = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
+          console.log('TKEY', data, state.extendedPassword)
+          data.privKey = xor(data.privKey, state.extendedPassword)
+          data.ethAddress = torus.web3.eth.accounts.privateKeyToAccount('0x' + data.privKey).address
+          log.info('New private key assigned to user at address ', data.ethAddress)
+          console.log('DATA', data)
+          const message = await torus.getMessageForSigning(data.ethAddress)
+          return [data, message]
+        } else {
+          log.info('New private key assigned to user at address ', res)
+          const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
+          const p2 = torus.getMessageForSigning(res)
+          return Promise.all([p1, p2])
+        }
       })
       .then(async response => {
         const data = response[0]
