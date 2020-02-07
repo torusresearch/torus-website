@@ -2,24 +2,23 @@
   <v-layout mt-3 wrap class="wallet-settings">
     <div class="text-black font-weight-bold headline px-4 mb-4">{{ t('walletSettings.settings') }}</div>
     <v-flex xs12 px-4>
-      <!-- Privacy and security settings -->
-      <v-expansion-panel class="my-2 card-shadow">
-        <v-expansion-panel-header
-          id="privacy-panel-header"
-          :class="$vuetify.breakpoint.xsOnly ? 'py-0 px-4' : 'py-4 px-6'"
-          expand-icon="$vuetify.icons.select"
-        >
-          <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.lock'" />
-          <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'subtitle-1'">
-            {{ t('walletSettings.privacySecurity') }}
-          </div>
-        </v-expansion-panel-header>
-        <v-expansion-panel-content>
-          <privacy-security />
-        </v-expansion-panel-content>
-      </v-expansion-panel>
-
       <v-expansion-panels v-model="panel" multiple>
+        <!-- Privacy and security settings -->
+        <v-expansion-panel class="my-2 card-shadow">
+          <v-expansion-panel-header
+            id="privacy-panel-header"
+            :class="$vuetify.breakpoint.xsOnly ? 'py-0 px-4' : 'py-4 px-6'"
+            expand-icon="$vuetify.icons.select"
+          >
+            <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.lock'" />
+            <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'subtitle-1'">
+              {{ t('walletSettings.privacySecurity') }}
+            </div>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <privacy-security />
+          </v-expansion-panel-content>
+        </v-expansion-panel>
         <!-- Smart Contract Wallet Settings -->
         <v-expansion-panel class="my-2 card-shadow">
           <v-expansion-panel-header
