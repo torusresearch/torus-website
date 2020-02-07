@@ -156,6 +156,22 @@ jobs:
               paths:
                 - .
           - <<: *step_save_cache
+  build-alpha:
+        <<: *job_common
+        steps:
+          - checkout:
+              path: ~/torus-website
+          - <<: *step_restore_cache
+          - <<: *step_setup_global_packages
+          - run:
+              name: "Build code for torus alpha website"
+              command: |
+                npm run build:alpha
+          - persist_to_workspace:
+              root: ~/torus-website/
+              paths:
+                - .
+          - <<: *step_save_cache
   deploy-testing:
     <<: *job_common
     steps:
@@ -182,6 +198,19 @@ jobs:
             ssh torus@lrc.tor.us "rm -rf ~/lrc-torus-website/*"
             tar czf - dist/ | ssh torus@lrc.tor.us "cat > ~/lrc-torus-website/dist.tgz"
             ssh torus@lrc.tor.us "cd ~/lrc-torus-website && tar zxvf dist.tgz"
+  deploy-alpha:
+    <<: *job_common
+    steps:
+      - attach_workspace:
+          at: ~/torus-website
+      - add_ssh_keys
+      - run:
+          name: "Deploy Over SSH"
+          command: |
+            ssh-keyscan -H alpha.tor.us >> ~/.ssh/known_hosts
+            ssh torus@alpha.tor.us "rm -rf ~/alpha-torus-website/*"
+            tar czf - dist/ | ssh torus@alpha.tor.us "cat > ~/alpha-torus-website/dist.tgz"
+            ssh torus@alpha.tor.us "cd ~/alpha-torus-website && tar zxvf dist.tgz"
 
 workflows:
   version: 2
@@ -268,3 +297,16 @@ workflows:
             branches:
               only:
                 - develop
+      - build-alpha:
+          filters:
+            branches:
+              only:
+                - alpha
+      - deploy-alpha:
+          requires:
+            - build-alpha
+            - test-coverage
+          filters:
+            branches:
+              only:
+                - alpha

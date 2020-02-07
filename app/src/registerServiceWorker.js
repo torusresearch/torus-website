@@ -13,7 +13,8 @@ if (
   (process.env.VUE_APP_TORUS_BUILD_ENV === 'production' ||
     process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ||
     process.env.VUE_APP_TORUS_BUILD_ENV === 'testing' ||
-    process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc')
+    process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc' ||
+    process.env.VUE_APP_TORUS_BUILD_ENV === 'alpha')
 ) {
   // if swIntegrity is not calculated
   if (swIntegrity === ['SERVICE', 'WORKER', 'SHA', 'INTEGRITY'].join('_')) {
