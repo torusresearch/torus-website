@@ -183,7 +183,9 @@ export default {
             activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
           }`
         : activity.type_name || activity.type
-        ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${activity.type_name}`
+        ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+            activity.type == 'eth' ? activity.type_name.toUpperCase() : activity.type_name
+          }`
         : `${this.t(activity.action) + ' ' + activity.from} `
     },
     getIcon(activity) {

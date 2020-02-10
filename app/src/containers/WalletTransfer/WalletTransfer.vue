@@ -492,6 +492,14 @@ export default {
       const targetContact = this.contactSelected
       const addressFound = this.contactList.find(contact => contact.value.toLowerCase() === targetContact.toLowerCase())
       return addressFound === undefined
+    },
+    selectedAddress() {
+      return this.$store.state.selectedAddress
+    }
+  },
+  watch: {
+    selectedAddress(newValue, oldValue) {
+      if (newValue !== oldValue) this.calculateGas(newValue)
     }
   },
   methods: {
@@ -615,7 +623,7 @@ export default {
                 resolve(new BigNumber('0'))
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC20) {
-            const selectedAddress = this.$store.state.selectedAddress
+            const selectedAddress = this.selectedAddress
             const value =
               '0x' +
               this.amount
@@ -632,7 +640,7 @@ export default {
                 resolve(new BigNumber('0'))
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC721) {
-            const selectedAddress = this.$store.state.selectedAddress
+            const selectedAddress = this.selectedAddress
             this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId)
               .estimateGas({ from: selectedAddress })
               .then(response => {
@@ -748,7 +756,7 @@ export default {
     async sendCoin() {
       const toAddress = this.toEthAddress
       const fastGasPrice = '0x' + this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)
-      const selectedAddress = this.$store.state.selectedAddress
+      const selectedAddress = this.selectedAddress
       if (this.contractType === CONTRACT_TYPE_ETH) {
         const value =
           '0x' +
