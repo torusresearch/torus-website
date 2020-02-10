@@ -37,13 +37,10 @@
     "test:e2e:mobile": "env MOBILE_ENV=true mocha --timeout=60000 ./test/e2e"
   },
   "dependencies": {
-    "@connext/client": "^4.0.10",
-    "@connext/types": "^4.0.10",
     "@toruslabs/fetch-node-details": "^2.0.1",
     "@toruslabs/torus.js": "^1.0.6",
     "assert": "^2.0.0",
     "bignumber.js": "^9.0.0",
-    "bip39": "^3.0.2",
     "broadcast-channel": "^3.0.3",
     "copy-to-clipboard": "^3.2.1",
     "core-js": "3.6.4",

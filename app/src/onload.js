@@ -56,18 +56,10 @@ function onloadTorus(torus) {
     targetWindow: window.parent
   })
 
-  var channelStream = new LocalMessageDuplexStream({
-    name: 'iframe_chan',
-    target: 'embed_chan',
-    targetWindow: window.parent
-  })
-
   torus.torusController = torusController
   torus.metamaskMux = setupMultiplex(metamaskStream)
   torus.communicationMux = setupMultiplex(communicationStream)
   torus.communicationMux.setMaxListeners(50)
-  torus.channelMux = setupMultiplex(channelStream)
-  torus.channelMux.setMaxListeners(50)
   torusController.provider.setMaxListeners(100)
   torus.web3 = new Web3(torusController.provider)
 
@@ -92,8 +84,6 @@ function onloadTorus(torus) {
   const providerOutStream = torus.metamaskMux.getStream('provider')
 
   torusController.setupTrustedCommunication(providerOutStream, 'metamask')
-
-  torusController.channelController.setupChannelRpcStream(torus.channelMux)
 
   return torus
 }

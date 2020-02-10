@@ -34,7 +34,6 @@ const TypedMessageManager = require('./TypedMessageManager').default
 const ObservableStore = require('obs-store')
 const nodeify = require('../utils/nodeify').default
 const KeyringController = require('./TorusKeyring').default
-const ChannelController = require('./ChannelController').default
 
 // defaults and constants
 const version = '0.0.1'
@@ -182,12 +181,6 @@ export default class TorusController extends EventEmitter {
         opts.rehydrate()
       }, 50)
     }
-
-    // // channel method management
-    this.channelController = new ChannelController({
-      keyringController: this.keyringController,
-      networkController: this.networkController
-    })
   }
 
   /**
@@ -322,7 +315,6 @@ export default class TorusController extends EventEmitter {
         .deserialize(keyArray)
         .then(resp => {
           log.info('keyring deserialized')
-          this.initConnextChannel()
           resolve()
         })
         .catch(err => {
@@ -334,10 +326,6 @@ export default class TorusController extends EventEmitter {
 
     // this.setupControllerConnection()
     // this.accountTracker._updateAccounts()
-  }
-
-  initConnextChannel() {
-    this.channelController.initializeConnext()
   }
 
   async addAccount(key, address) {

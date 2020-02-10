@@ -1,8 +1,5 @@
 const EventEmitter = require('events').EventEmitter
-const { CF_PATH } = require('@connext/client')
 const Wallet = require('ethereumjs-wallet')
-const hdkey = require('ethereumjs-wallet/hdkey')
-const bip39 = require('bip39')
 const ethUtil = require('ethereumjs-util')
 const sigUtil = require('eth-sig-util')
 const log = require('loglevel')
@@ -13,7 +10,6 @@ export default class TorusKeyring extends EventEmitter {
     super()
     this.type = type
     this.wallets = []
-    this.channelWallet = null
     this.deserialize(opts)
       .then(() => {
         log.info('wallet initialised')
@@ -43,21 +39,10 @@ export default class TorusKeyring extends EventEmitter {
     return wallet
   }
 
-  generateChannelWallet(privateKey) {
-    if (!privateKey) {
-      return null
-    }
-    const entropy = ethUtil.keccak256(privateKey + 'connext')
-    const mnemonic = bip39.entropyToMnemonic(entropy)
-    const hdNode = hdkey.fromMasterSeed(mnemonic).derivePath(CF_PATH)
-    return hdNode
-  }
-
   deserialize(privateKeys = []) {
     return new Promise((resolve, reject) => {
       try {
         this.wallets = privateKeys.map(this.generateWallet)
-        this.channelWallet = this.generateChannelWallet(privateKeys[0] || '')
         resolve()
       } catch (e) {
         reject(e)
@@ -89,31 +74,6 @@ export default class TorusKeyring extends EventEmitter {
     this.wallets = this.wallets.concat(newWallets)
     const hexWallets = newWallets.map(w => ethUtil.bufferToHex(w.getAddress()))
     return Promise.resolve(hexWallets)
-  }
-
-  getChannelXPub() {
-    if (!this.channelWallet) {
-      log.error('No Channel Wallet generated!')
-      return
-    }
-    const xpub = this.channelWallet.publicExtendedKey()
-    return xpub
-  }
-
-  getChannelKeyGen() {
-    if (!this.channelWallet) {
-      log.error('No Channel Wallet generated!')
-      return
-    }
-    const hdNode = this.channelWallet
-    const keyGen = index => {
-      const result = hdNode
-        .deriveChild(index)
-        .getWallet()
-        .getPrivateKeyString()
-      return Promise.resolve(result)
-    }
-    return keyGen
   }
 
   // Not using
