@@ -39,6 +39,27 @@
 
     <v-divider></v-divider>
 
+    <v-list v-if="smartContractStatus === 'pending'">
+      <v-list-item two-line>
+        <v-list-item-action class="mr-2">
+          <v-icon class="text_2--text" v-text="'$vuetify.icons.smart_contract'" />
+        </v-list-item-action>
+        <v-list-item-content class="text_1--text font-weight-bold">
+          <v-list-item-title class="mb-2">Smart Contract Wallet</v-list-item-title>
+          <v-list-item-subtitle>
+            <v-layout>
+              <v-flex xs10 class="pr-1">
+                <v-progress-linear background-color="#EEF2F4" class="mt-2" color="#C4C4C4" height="6" value="15"></v-progress-linear>
+              </v-flex>
+              <v-flex xs2 class="text-right pr-1"><span class="caption">Pending</span></v-flex>
+            </v-layout>
+          </v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+    </v-list>
+
+    <v-divider v-if="smartContractStatus === 'pending'"></v-divider>
+
     <v-list v-if="wallets.length > 1">
       <v-list-item v-for="acc in filteredWallets" :key="acc.id" @click="changeAccount(acc.address)">
         <v-list-item-content class="font-weight-bold">
@@ -126,6 +147,9 @@ export default {
     }
   },
   computed: {
+    smartContractStatus() {
+      return 'pending'
+    },
     userEmail() {
       const verifierLabel = this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1) + ': '
       return verifierLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
