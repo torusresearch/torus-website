@@ -1,6 +1,6 @@
 const ethUtil = require('ethereumjs-util')
 const assert = require('assert')
-const BN = require('bn.js')
+const BN = ethUtil.BN
 const BigNumber = require('bignumber.js')
 const {
   ENVIRONMENT_TYPE_POPUP,
