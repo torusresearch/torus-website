@@ -1,11 +1,12 @@
-const EventEmitter = require('events')
-const ObservableStore = require('obs-store')
-const { errors: rpcErrors } = require('eth-json-rpc-errors')
-const createId = require('../utils/random-id').default
-const assert = require('assert')
-const sigUtil = require('eth-sig-util')
-const log = require('loglevel')
-const jsonschema = require('jsonschema')
+import EventEmitter from 'events'
+import ObservableStore from 'obs-store'
+import { errors as rpcErrors } from 'eth-json-rpc-errors'
+import assert from 'assert'
+import sigUtil from 'eth-sig-util'
+import log from 'loglevel'
+import jsonschema from 'jsonschema'
+
+import createId from '../utils/random-id'
 
 /**
  * Represents, and contains data about, an 'eth_signTypedData' type signature request. These are created when a

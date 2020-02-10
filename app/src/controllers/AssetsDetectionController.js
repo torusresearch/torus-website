@@ -3,11 +3,11 @@
  * Controller that passively polls on a set interval for assets auto detection
  */
 
-const log = require('loglevel')
-const utils = require('../utils/httpHelpers')
-const config = require('../config').default
-// const contractMap = require('eth-contract-metadata')
-const { MAINNET } = require('../utils/enums')
+import log from 'loglevel'
+
+import { get } from '../utils/httpHelpers'
+import config from '../config'
+import { MAINNET } from '../utils/enums'
 const DEFAULT_INTERVAL = 60000
 
 export default class AssetsDetectionController {
@@ -64,7 +64,7 @@ export default class AssetsDetectionController {
     const api = this.getOwnerCollectiblesApi(selectedAddress)
     let response
     try {
-      response = await utils.get(`${config.api}/opensea?url=${api}`, {
+      response = await get(`${config.api}/opensea?url=${api}`, {
         headers: {
           Authorization: `Bearer ${this.jwtToken}`
         }

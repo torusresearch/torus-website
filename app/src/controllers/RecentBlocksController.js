@@ -1,9 +1,9 @@
-const ObservableStore = require('obs-store')
-const EthQuery = require('eth-query')
-const log = require('loglevel')
-const pify = require('pify')
+import ObservableStore from 'obs-store'
+import EthQuery from 'eth-query'
+import log from 'loglevel'
+import pify from 'pify'
 
-const { ROPSTEN, RINKEBY, KOVAN, MAINNET } = require('../utils/enums')
+import { ROPSTEN, RINKEBY, KOVAN, MAINNET } from '../utils/enums'
 const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
 
 class RecentBlocksController {

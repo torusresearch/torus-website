@@ -1,5 +1,5 @@
-const ObservableStore = require('obs-store')
-const log = require('loglevel')
+import ObservableStore from 'obs-store'
+import log from 'loglevel'
 
 // every ten minutes
 const POLLING_INTERVAL = 600000

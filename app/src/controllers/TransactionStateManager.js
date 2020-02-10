@@ -1,9 +1,10 @@
-const EventEmitter = require('safe-event-emitter')
-const ObservableStore = require('obs-store')
-const log = require('loglevel')
-const txStateHistoryHelper = require('../utils/tx-state-history-helper').default
-const createId = require('../utils/random-id').default
-const { getFinalStates, normalizeTxParams } = require('../utils/txUtils')
+import EventEmitter from 'safe-event-emitter'
+import ObservableStore from 'obs-store'
+import log from 'loglevel'
+
+import txStateHistoryHelper from '../utils/tx-state-history-helper'
+import createId from '../utils/random-id'
+import { getFinalStates, normalizeTxParams } from '../utils/txUtils'
 /**
   TransactionStateManager is responsible for the state of a transaction and
   storing the transaction
