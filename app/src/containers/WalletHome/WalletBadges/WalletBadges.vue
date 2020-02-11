@@ -14,9 +14,9 @@
       <v-flex class="xs12 sm6 md4 lg3 px-4 my-4" v-for="(badge, index) in badges" :key="index">
         <wallet-badge @openModal="showBadgeModal" :badge="badge" :lastBadgeIndex="badges.length" :index="index" />
       </v-flex>
-      <v-layout justify-center mt-6>
+      <v-layout justify-center py-12>
         <v-flex text-center xs4>
-          <badge-submit></badge-submit>
+          <badge-submit :enabled="enableScoreCard"></badge-submit>
         </v-flex>
       </v-layout>
     </v-layout>
@@ -79,6 +79,9 @@ export default {
         }
       })
       return badges
+    },
+    enableScoreCard() {
+      return this.$store.state.myBadges.length > 8
     }
   },
   methods: {

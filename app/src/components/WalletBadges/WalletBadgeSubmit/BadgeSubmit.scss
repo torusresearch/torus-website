@@ -4,13 +4,10 @@
 
 .scorecard-btn {
   &.v-btn {
-    width: 50%;
     border-radius: 9px;
     height: 60px;
-    border: 1px solid #f1f2f6;
   }
   &.torus-dark {
-    border: 1px solid #36373b;
     padding-left: 2px;
     background-color: #4285f4 !important; //temporary until v8 is global
     color: #ffffff !important;
