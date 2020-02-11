@@ -85,28 +85,7 @@
           </v-flex>
 
           <v-flex mb-4 xs12>
-            <v-dialog v-model="addMoreFundsDialoag" width="400">
-              <template v-slot:activator="{ on }">
-                <v-btn block depressed outlined color="primary" small v-on="on">
-                  Add more funds
-                </v-btn>
-              </template>
-              <v-card>
-                <div class="text-right"><v-btn small text @click="addMoreFundsDialoag = false">x</v-btn></div>
-                <v-layout>
-                  <v-flex py-12 xs12 class="text-center">
-                    <div class="title mb-10">Select you preferred method</div>
-                    <div class="mb-2">
-                      <v-btn depressed outlined color="primary">Top up from providers</v-btn>
-                    </div>
-                    <div class="mb-2 body-2">or</div>
-                    <div>
-                      <v-btn depressed outlined color="primary">Use my other wallet</v-btn>
-                    </div>
-                  </v-flex>
-                </v-layout>
-              </v-card>
-            </v-dialog>
+            <add-funds></add-funds>
           </v-flex>
         </v-layout>
       </v-flex>
@@ -129,9 +108,10 @@
 <script>
 import { SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 import TransactionFeeSelect from '../../components/helpers/TransactionFeeSelect'
+import AddFunds from '../../components/helpers/AddFunds'
 
 export default {
-  components: { TransactionFeeSelect },
+  components: { TransactionFeeSelect, AddFunds },
   data() {
     return {
       addMoreFundsDialoag: false
