@@ -5,6 +5,7 @@ import Popup from './views/Popup'
 import ProviderChange from './views/ProviderChange'
 import UserInfoRequest from './views/UserInfoRequest'
 import RedirectCatch from './views/RedirectCatch'
+import SmartContractConfirm from './views/SmartContractConfirm'
 import Login from './views/Login'
 import Confirm from './views/Confirm'
 import Wallet from './views/Wallet'
@@ -74,6 +75,11 @@ const router = new Router({
       path: '/userinforequest',
       name: 'userInfoRequest',
       component: UserInfoRequest
+    },
+    {
+      path: '/smart-contract-confirm',
+      name: 'smartContractConfirm',
+      component: SmartContractConfirm
     },
     {
       path: '/wallet',

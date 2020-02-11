@@ -1,0 +1,18 @@
+::v-deep .button-speed {
+  &.v-size--large {
+    padding: inherit;
+  }
+  .v-btn__content {
+    flex-direction: column;
+    padding: 12px 0;
+    line-height: 1em;
+  }
+}
+
+.others-pay {
+  .others-pay-selected {
+    width: 100%;
+  }
+}
+
+// ::v-deep .theme--dark.button-speed {}

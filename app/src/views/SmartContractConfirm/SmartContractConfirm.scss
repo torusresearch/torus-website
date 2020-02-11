@@ -1,0 +1,40 @@
+.smart-contract-confirm-container {
+  .logo-container {
+    width: 48px;
+    height: 48px;
+    background: #FFFFFF;
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+    border-radius: 50%;
+    overflow: hidden;
+  
+    img {
+      height: 100%;
+      &.logo-padded {
+        height: 20px;
+      }
+    }
+  
+    .logo-caption {
+      position: absolute;
+      width: 80px;
+    }
+  }
+  
+  .logo-label {
+    margin-right: -14px;
+    width: 75px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    &--right {
+      margin-left: -14px;
+    }
+  }
+  
+  .network-container {
+    border-top: 2px solid #F1F6FD;
+    font-size: 10px;
+    width: 100%;
+    text-align: center;
+    margin-top: 24px;
+  }
+}
