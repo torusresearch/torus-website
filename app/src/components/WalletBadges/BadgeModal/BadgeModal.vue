@@ -5,9 +5,9 @@
         <v-icon size="8">$vuetify.icons.close</v-icon>
       </v-btn>
     </div>
-    <v-card-text class="text_1--text pa-0">
-      <v-layout wrap class="image-container text-center">
-        <v-flex xs12 px-4 mt-6>
+    <v-card-text text-center class="text_1--text pa-0">
+      <v-layout wrap justify-center class="image-container text-center">
+        <v-flex xs6 text-center>
           <img width="240" :src="badge.winningBadge[0].url" />
         </v-flex>
       </v-layout>
@@ -17,14 +17,12 @@
         </v-flex>
 
         <v-flex xs10 md9 mx-auto text-center mb-6>
-          <div v-if="!isCompleted" class="badge-title subtitle-1">You have completed the Badge:</div>
-          <div v-if="!isCompleted" class="font-weight-bold badge-task-is-complete subtitle-1">"{{ text }}"</div>
-          <div v-else class="font-weight-bold badge-is-completed subtitle-1">{{ text }}</div>
+          <span class="title text-gray">Would you like to share this information with the system?</span>
         </v-flex>
 
-        <v-flex xs12 mx-auto px-4 text-center pb-4>
-          <v-btn v-if="!isCompleted" large depressed class="px-12 return-btn" @click="onCancel">Return</v-btn>
-          <v-btn v-else color="primary" large depressed class="px-12">Allow</v-btn>
+        <v-flex xs6 mx-auto px-4 mt-6 text-center pb-4>
+          <v-btn color="primary" large block depressed class="px-12 allow-btn">Allow</v-btn>
+          <v-btn text large block depressed class="px-12 mt-3 return-btn" @click="onCancel">No, do not share</v-btn>
         </v-flex>
       </v-layout>
     </v-card-text>

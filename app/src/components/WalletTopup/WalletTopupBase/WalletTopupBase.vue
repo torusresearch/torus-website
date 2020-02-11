@@ -208,9 +208,10 @@ export default {
   },
   methods: {
     taskComplete(badgeId) {
-      if (!this.$store.state.myBadges.includes(badgeId)) {
-        this.badge = this.$store.state.badges[badgeId]
+      let checkDuplicates = this.$store.state.myBadges.map(badge => Number(badge.badgeId)).includes(badgeId)
+      if (!checkDuplicates) {
         this.showBadgeDialog = true
+        this.badge = this.$store.state.badges[badgeId]
         this.$store.dispatch('addBadge', { badgeId: this.badge.id })
       }
     },
@@ -243,7 +244,6 @@ export default {
               this.snackbarText = 'Something went wrong'
             }
           }).catch(err => {
-            this.taskComplete(3)
             this.snackbar = true
             this.snackbarColor = 'error'
             this.snackbarText = err

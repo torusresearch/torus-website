@@ -510,10 +510,11 @@ export default {
     }
   },
   methods: {
-    taskCompleted(badgeId) {
-      if (!this.$store.state.myBadges.map(badge => badge.badgeId).includes(badgeId.toString())) {
-        this.badge = this.$store.state.badges[badgeId]
+    taskComplete(badgeId) {
+      let checkDuplicates = this.$store.state.myBadges.map(badge => Number(badge.badgeId)).includes(badgeId)
+      if (!checkDuplicates) {
         this.showBadgeDialog = true
+        this.badge = this.$store.state.badges[badgeId]
         this.$store.dispatch('addBadge', { badgeId: this.badge.id })
       }
     },

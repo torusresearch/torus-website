@@ -79,6 +79,7 @@ export default {
   },
   created() {
     this.$store.dispatch('loadBadges')
+    this.$store.dispatch('loadMyBadges')
   },
   computed: {
     bannerColor() {

@@ -6,20 +6,20 @@
           <v-flex xs12 lg12 text-center>
             <img width="150" v-if="badge.isCompleted" :src="badge.completedImageUrl[0].url" />
             <img width="150" v-else :src="badge.unCompletedImageUrl[0].url" />
-            <div class="font-weight-bold font-fit">{{ badge.title }}</div>
-            <div class="text-gray subtitle mh-4">
+            <div class="font-weight-bold title font-fit mh-2">{{ badge.title }}</div>
+            <div class="text-gray body-1 mt-2 mh-4">
               {{ badge.description }}
             </div>
-            <v-btn
-              block
-              :disabled="index === 0 || badge.isCompleted || index === lastBadgeIndex - 1"
-              large
-              @click="openBadgeModal"
-              depressed
-              class="status-btn mt-2 mr-4"
-            >
-              {{ badge.isCompleted ? 'Completed' : index === 0 ? 'Completed' : `${badge.action}` }}
-            </v-btn>
+            <div v-if="badge.isCompleted || index === 0">
+              <img src="../../../../public/images/check-icon.svg" alt="Completed icon" />
+              <div class="body-1">Completed</div>
+            </div>
+            <div v-else>
+              <v-btn v-if="badge.action" block large @click="handleLinkOpen(badge.link)" depressed class="status-btn mt-2 mr-4">
+                {{ badge.action }}
+              </v-btn>
+              <div v-else class="mh-1"></div>
+            </div>
           </v-flex>
         </v-layout>
       </v-card-text>
@@ -31,8 +31,12 @@
 export default {
   props: ['badge', 'index', 'lastBadgeIndex'],
   methods: {
-    openBadgeModal() {
-      this.$root.$emit('showBadgeModal', this.index)
+    handleLinkOpen(name) {
+      if (name.startsWith('https') || name.startsWith('http')) {
+        window.open(name, '_blank')
+      } else {
+        this.$router.push({ name })
+      }
     }
   }
 }

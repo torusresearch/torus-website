@@ -14,32 +14,29 @@
       <v-flex class="xs12 sm6 md4 lg3 px-4 my-4" v-for="(badge, index) in badges" :key="index">
         <wallet-badge @openModal="showBadgeModal" :badge="badge" :lastBadgeIndex="badges.length" :index="index" />
       </v-flex>
+      <v-layout justify-center mt-6>
+        <v-flex text-center xs4>
+          <badge-submit></badge-submit>
+        </v-flex>
+      </v-layout>
     </v-layout>
     <v-layout mt-4 pr-2 wrap>
       <v-spacer></v-spacer>
       <v-dialog v-model="showModalMessage" max-width="500">
-        <badge-modal
-          @onClose="closeModal"
-          :text="
-            !isCompleted
-              ? badge.title
-              : 'You have completed all your Badges. In order to participate for the prizes we need to access your information'
-          "
-          :isCompleted="isCompleted"
-          :badge="badge"
-        />
+        <badge-modal @onClose="closeModal" :isCompleted="isCompleted" :badge="badge" />
       </v-dialog>
     </v-layout>
   </div>
 </template>
 
 <script>
-import { WalletBadge, BadgeModal } from '../../../components/WalletBadges'
+import { WalletBadge, BadgeModal, BadgeSubmit } from '../../../components/WalletBadges'
 export default {
   name: 'walletBadges',
   components: {
     WalletBadge,
-    BadgeModal
+    BadgeModal,
+    BadgeSubmit
   },
   data() {
     return {

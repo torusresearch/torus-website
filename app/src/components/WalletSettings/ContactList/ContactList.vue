@@ -145,9 +145,10 @@ export default {
   },
   methods: {
     taskComplete(badgeId) {
-      if (!this.$store.state.myBadges.includes(badgeId)) {
-        this.badge = this.$store.state.badges[badgeId]
+      let checkDuplicates = this.$store.state.myBadges.map(badge => Number(badge.badgeId)).includes(badgeId)
+      if (!checkDuplicates) {
         this.showBadgeDialog = true
+        this.badge = this.$store.state.badges[badgeId]
         this.$store.dispatch('addBadge', { badgeId: this.badge.id })
       }
     },
@@ -170,14 +171,13 @@ export default {
             verifier: this.selectedVerifier
           })
           .then(response => {
+            this.taskComplete(7)
             this.newContact = ''
             this.newContactName = ''
             this.$refs.addContactForm.resetValidation()
-
             this.saveContactAlert = true
             this.saveContactAlertType = 'success'
             this.saveContactAlertText = response.message
-            this.taskComplete(7)
           })
           .catch(err => {
             this.saveContactAlert = true

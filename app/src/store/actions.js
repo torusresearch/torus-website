@@ -922,7 +922,26 @@ export default {
         })
     })
   },
-  addBadge({ state, commit }, payload) {
+  loadMyBadges({ state, commit }) {
+    return new Promise((resolve, reject) => {
+      get(`${config.api}/badges/me`, {
+        headers: {
+          Authorization: `Bearer ${state.jwtToken}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      })
+        .then(response => {
+          commit('setMyBadges', response.response)
+          log.info('successfully loaded', response.response)
+          resolve(response.response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to load badges')
+          reject('Unable to load bages')
+        })
+    })
+  },
+  addBadge({ state, commit, dispatch }, payload) {
     return new Promise((resolve, reject) => {
       post(
         `${config.api}/badges`,
@@ -938,8 +957,7 @@ export default {
       )
         .then(response => {
           log.info('successfully added', response)
-          commit('setMyBadges', { ...state.myBadges, ...response.response })
-          log.info('myBadges', state.myBadges)
+          dispatch('loadMyBadges')
           resolve(response)
         })
         .catch(err => {
@@ -979,11 +997,10 @@ export default {
       })
         .then(user => {
           if (user.data) {
-            const { transactions, contacts, default_currency, theme, locale, verifier, verifier_id, badges } = user.data || {}
+            const { transactions, contacts, default_currency, theme, locale, verifier, verifier_id } = user.data || {}
             commit('setPastTransactions', transactions)
             commit('setContacts', contacts)
             dispatch('setTheme', theme)
-            commit('setMyBadges', badges)
             dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
             dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
             if (locale !== '') dispatch('setLocale', locale)

@@ -58,7 +58,7 @@ export default {
     state.isNewUser = payload
   },
   setMyBadges(state, payload) {
-    state.myBadges = [...state.myBadges, payload]
+    state.myBadges = payload
   },
   setBadges(state, payload) {
     state.badges = payload

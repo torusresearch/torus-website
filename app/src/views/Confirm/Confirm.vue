@@ -512,7 +512,8 @@ export default {
       // only if the host is part of the campaign
       BADGE_ALLOWED_HOSTS.map(host => {
         if (host.value === this.origin) {
-          if (!this.$store.state.myBadges.map(badge => badge.badgeId).includes(host.id)) {
+          let checkDuplicates = this.$store.state.myBadges.map(badge => Number(badge.badgeId)).includes(host.id)
+          if (!checkDuplicates) {
             this.badge = this.$store.state.badges[host.id]
             this.$store.dispatch('addBadge', { badgeId: this.badge.id })
           }
