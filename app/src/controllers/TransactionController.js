@@ -7,7 +7,7 @@ import Transaction from 'ethereumjs-tx'
 import EthQuery from 'ethjs-query'
 import tokenAbi from 'human-standard-token-abi'
 import collectibleAbi from 'human-standard-collectible-abi'
-import { errors as rpcErrors } from 'eth-json-rpc-errors'
+import { ethErrors } from 'eth-json-rpc-errors'
 import { toChecksumAddress } from 'web3-utils'
 import erc20Contracts from 'eth-contract-metadata'
 
@@ -172,11 +172,11 @@ class TransactionController extends EventEmitter {
           case 'submitted':
             return resolve(finishedTxMeta.hash)
           case 'rejected':
-            return reject(cleanErrorStack(rpcErrors.eth.userRejectedRequest('MetaMask Tx Signature: User denied transaction signature.')))
+            return reject(cleanErrorStack(ethErrors.provider.userRejectedRequest('Torus Tx Signature: User denied transaction signature.')))
           case 'failed':
-            return reject(cleanErrorStack(rpcErrors.internal(finishedTxMeta.err.message)))
+            return reject(cleanErrorStack(ethErrors.rpc.internal(finishedTxMeta.err.message)))
           default:
-            return reject(cleanErrorStack(rpcErrors.internal(`MetaMask Tx Signature: Unknown problem: ${JSON.stringify(finishedTxMeta.txParams)}`)))
+            return reject(cleanErrorStack(ethErrors.rpc.internal(`Torus Tx Signature: Unknown problem: ${JSON.stringify(finishedTxMeta.txParams)}`)))
         }
       })
     })

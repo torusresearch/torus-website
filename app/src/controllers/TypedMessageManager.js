@@ -1,6 +1,6 @@
 import EventEmitter from 'events'
 import ObservableStore from 'obs-store'
-import { errors as rpcErrors } from 'eth-json-rpc-errors'
+import { ethErrors } from 'eth-json-rpc-errors'
 import assert from 'assert'
 import sigUtil from 'eth-sig-util'
 import log from 'loglevel'
@@ -84,11 +84,11 @@ export default class TypedMessageManager extends EventEmitter {
           case 'signed':
             return resolve(data.rawSig)
           case 'rejected':
-            return reject(rpcErrors.eth.userRejectedRequest('MetaMask Message Signature: User denied message signature.'))
+            return reject(ethErrors.provider.userRejectedRequest('Torus Message Signature: User denied message signature.'))
           case 'errored':
-            return reject(new Error(`MetaMask Message Signature: ${data.error}`))
+            return reject(new Error(`Torus Message Signature: ${data.error}`))
           default:
-            return reject(new Error(`MetaMask Message Signature: Unknown problem: ${JSON.stringify(msgParams)}`))
+            return reject(new Error(`Torus Message Signature: Unknown problem: ${JSON.stringify(msgParams)}`))
         }
       })
     })
