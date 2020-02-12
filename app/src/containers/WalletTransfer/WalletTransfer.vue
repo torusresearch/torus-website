@@ -263,20 +263,6 @@
             >
               {{ t('walletTransfer.transfer') }}
             </v-btn>
-            <v-layout mt-4 pr-2 wrap>
-              <v-spacer></v-spacer>
-              <v-dialog v-model="showBadgeDialog" max-width="500">
-                <badge-modal
-                  @onCloseBadgeModal="showBadgeDialog = false"
-                  :text="
-                    !badge.isCompleted
-                      ? badge.title
-                      : 'You have completed all your Badges. In order to participate for the prizes we need to access your information'
-                  "
-                  :badge="badge"
-                />
-              </v-dialog>
-            </v-layout>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
               <transfer-confirm
                 :toAddress="toEthAddress"
@@ -330,7 +316,6 @@ import ComponentLoader from '../../components/helpers/ComponentLoader'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import AddContact from '../../components/WalletTransfer/AddContact'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
-import BadgeModal from '../../components/WalletBadges/BadgeModal'
 import { get, post } from '../../utils/httpHelpers'
 import log from 'loglevel'
 import {
@@ -366,8 +351,7 @@ export default {
     QrcodeCapture,
     AddContact,
     ComponentLoader,
-    TransferConfirm,
-    BadgeModal
+    TransferConfirm
   },
   data() {
     return {
@@ -513,9 +497,13 @@ export default {
     taskComplete(badgeId) {
       let checkDuplicates = this.$store.state.myBadges.map(badge => Number(badge.badgeId)).includes(badgeId)
       if (!checkDuplicates) {
-        this.showBadgeDialog = true
         this.badge = this.$store.state.badges[badgeId]
         this.$store.dispatch('addBadge', { badgeId: this.badge.id })
+        this.$store.dispatch('setToastNotification', {
+          alert: true,
+          text: `You've earned the ${this.badge.title} badge`,
+          type: 'success'
+        })
       }
     },
     handleQRScan() {

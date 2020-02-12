@@ -218,6 +218,12 @@ const LOCALES = [
   }
 ]
 
+const ALERT_OBJ = {
+  alert: false,
+  text: '',
+  type: 'info'
+}
+
 module.exports = {
   ENS,
   ETH,
@@ -315,5 +321,6 @@ module.exports = {
   LOCALE_EN_LABEL,
   LOCALE_DE_LABEL,
   LOCALES,
-  BADGE_ALLOWED_HOSTS
+  BADGE_ALLOWED_HOSTS,
+  ALERT_OBJ
 }

@@ -122,20 +122,6 @@
         </v-flex>
       </v-layout>
     </v-card>
-    <v-layout mt-4 pr-2 wrap>
-      <v-spacer></v-spacer>
-      <v-dialog v-model="showBadgeDialog" max-width="500">
-        <badge-modal
-          @onCloseBadgeModal="showBadgeDialog = false"
-          :text="
-            !badge.isCompleted
-              ? badge.title
-              : 'You have completed all your Badges. In order to participate for the prizes we need to access your information'
-          "
-          :badge="badge"
-        />
-      </v-dialog>
-    </v-layout>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
       {{ snackbarText }}
       <v-btn dark text @click="snackbar = false">{{ t('walletTopUp.close') }}</v-btn>
@@ -148,12 +134,10 @@ import config from '../../../config'
 import { paymentProviders, formatCurrencyNumber, significantDigits } from '../../../utils/utils'
 import { COINDIRECT } from '../../../utils/enums'
 import HelpTooltip from '../../helpers/HelpTooltip'
-import { BadgeModal } from '../../WalletBadges'
 
 export default {
   components: {
-    HelpTooltip,
-    BadgeModal
+    HelpTooltip
   },
   props: ['selectedProvider', 'cryptoCurrencyValue', 'currencyRate'],
   data() {
@@ -210,9 +194,13 @@ export default {
     taskComplete(badgeId) {
       let checkDuplicates = this.$store.state.myBadges.map(badge => Number(badge.badgeId)).includes(badgeId)
       if (!checkDuplicates) {
-        this.showBadgeDialog = true
         this.badge = this.$store.state.badges[badgeId]
         this.$store.dispatch('addBadge', { badgeId: this.badge.id })
+        this.$store.dispatch('setToastNotification', {
+          alert: true,
+          text: `You've earned the ${this.badge.title} badge`,
+          type: 'success'
+        })
       }
     },
     significantDigits: significantDigits,

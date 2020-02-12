@@ -84,32 +84,19 @@
         </v-form>
       </v-flex>
     </v-layout>
-    <v-layout mt-4 pr-2 wrap>
-      <v-spacer></v-spacer>
-      <v-dialog v-model="showBadgeDialog" max-width="500">
-        <badge-modal
-          @onCloseBadgeModal="showBadgeDialog = false"
-          :text="
-            !badge.isCompleted
-              ? badge.title
-              : 'You have completed all your Badges. In order to participate for the prizes we need to access your information'
-          "
-          :badge="badge"
-        />
-      </v-dialog>
-    </v-layout>
   </div>
 </template>
 
 <script>
 import Notification from '../../helpers/Notification'
-import { BadgeModal } from '../../WalletBadges'
 const { ALLOWED_VERIFIERS, ETH } = require('../../../utils/enums')
 const { validateVerifierId } = require('../../../utils/utils')
 
 export default {
   name: 'networkSettings',
-  components: { Notification, BadgeModal },
+  components: {
+    Notification
+  },
   data() {
     return {
       contactFormValid: true,
@@ -122,7 +109,6 @@ export default {
       ETH,
       saveContactAlert: false,
       saveContactAlertText: '',
-      showBadgeDialog: false,
       badge: {},
       saveContactAlertType: 'success'
     }
@@ -147,9 +133,13 @@ export default {
     taskComplete(badgeId) {
       let checkDuplicates = this.$store.state.myBadges.map(badge => Number(badge.badgeId)).includes(badgeId)
       if (!checkDuplicates) {
-        this.showBadgeDialog = true
         this.badge = this.$store.state.badges[badgeId]
         this.$store.dispatch('addBadge', { badgeId: this.badge.id })
+        this.$store.dispatch('setToastNotification', {
+          alert: true,
+          text: `You've earned the ${this.badge.title} badge`,
+          type: 'success'
+        })
       }
     },
     closeAlert() {

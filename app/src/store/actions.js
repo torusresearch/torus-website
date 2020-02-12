@@ -878,6 +878,9 @@ export default {
 
     vuetify.framework.lang.current = payload
   },
+  setToastNotification({ commit }, payload) {
+    commit('setNotification', payload)
+  },
   setUserLocale({ state, dispatch }, payload) {
     return new Promise((resolve, reject) => {
       patch(

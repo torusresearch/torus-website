@@ -76,6 +76,9 @@ export default {
   setLocale(state, payload) {
     state.locale = payload
   },
+  setNotification(state, payload) {
+    state.toastNotification = payload
+  },
   setAssets(state, payload) {
     state.assets = { ...state.assets, ...payload }
   },
