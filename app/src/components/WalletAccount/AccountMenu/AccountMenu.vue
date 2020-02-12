@@ -211,6 +211,6 @@ export default {
 
 <style lang="scss" scoped>
 .margin-top-30 {
-  margin-top: -20px;
+  margin-top: -16px;
 }
 </style>
