@@ -1,4 +1,4 @@
-.login-panel-right {
+.register-panel-right {
   background-image: url('/images/login-bg.jpg');
   background-repeat: no-repeat;
   background-size: auto 100%;
@@ -40,22 +40,6 @@
   height: 100vh;
 }
 
-.password {
-  .v-text-field__details {
-    display: none;
-  }
-
-  .error--text {
-    .v-text-field__details {
-      display: inherit;
-    }
-  }
-
-  .v-btn {
-    border-style: dashed;
-  }
-}
-
 .v-text-field__details {
   padding: 0;
 }
@@ -83,14 +67,7 @@ html {
   overflow-y: hidden;
 }
 
-.text-field__shadow {
-  .v-input__control {
-    box-sizing: border-box;
-    box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06);
-  }
-}
-
-.login-btn {
+.register-btn {
   &.v-btn {
     width: 70%;
     border-radius: 9px;
@@ -113,5 +90,61 @@ html {
     img {
       height: 56px;
     }
+  }
+}
+
+.vue-tel-input {
+  height: 55px;
+  margin-bottom: 1rem;
+}
+
+.vue-tel-input:focus-within {
+  border: 2px solid #bbb;
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #bbb !important;
+}
+
+.vue-tel-input:focus {
+  outline: none !important;
+}
+
+.vti__input {
+  font-size: 16px;
+  border: none;
+}
+
+.vti__input::-webkit-input-placeholder {
+  color: var(--v-text_1-base);
+}
+
+.vti__input:-ms-input-placeholder {
+  color: var(--v-text_1-base);
+}
+
+.vti__input::placeholder {
+  color: var(--v-text_1-base);
+}
+
+.vti__dropdown.open {
+  background-color: transparent !important;
+}
+
+.vti__dropdown-list.below {
+  top: 55px !important;
+}
+
+.vti__dropdown:focus,
+:hover :active,
+:not(ul) {
+  background-color: transparent !important;
+  outline: none;
+}
+
+.vti__dropdown-list.below {
+  background-color: #ffffff !important;
+  li {
+    color: #000000;
+    padding: 10px 0 !important;
   }
 }

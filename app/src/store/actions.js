@@ -353,7 +353,7 @@ export default {
       return torus.torusController.networkController.setProviderType(networkType.host)
     }
   },
-  triggerLogin({ dispatch }, { calledFromEmbed, verifier, preopenInstanceId }) {
+  triggerLogin({ dispatch }, { calledFromEmbed, verifier, preopenInstanceId, loginType }) {
     log.info('Verifier: ', verifier)
 
     if (verifier === TORUS) {
@@ -365,7 +365,7 @@ export default {
           })
         )
       )
-      const finalUrl = `${config.baseRoute}torusLogin?state=${state}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${
+      const finalUrl = `${config.baseRoute}${loginType}?state=${state}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${
         torus.instanceId
       }`
       const torusLoginWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })

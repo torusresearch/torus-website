@@ -4,7 +4,7 @@
       <v-flex xs12 md6>
         <v-layout wrap>
           <v-flex class="mb-5" xs9 sm7 ml-auto mr-auto>
-            <img width="117" :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
+            <img width="117" :src="require(`../../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
           </v-flex>
           <v-flex class="mb-3" xs9 sm7 ml-auto mr-auto>
             <span class="display-1 font-weight-bold">Verification</span>
@@ -36,16 +36,21 @@
                         <img
                           v-if="!responseMessage && response"
                           class="mr-2"
-                          :src="require(`../../../../public/images/valid-check.svg`)"
+                          :src="require(`../../../../../public/images/valid-check.svg`)"
                           height="20px"
                         />
                         <img
                           v-else-if="responseMessage && !response"
                           class="mr-2"
-                          :src="require(`../../../../public/images/invalid-check.svg`)"
+                          :src="require(`../../../../../public/images/invalid-check.svg`)"
                           height="20px"
                         />
-                        <img v-if="!responseMessage && !response" class="mr-2" :src="require(`../../../../public/images/shield.svg`)" height="20px" />
+                        <img
+                          v-if="!responseMessage && !response"
+                          class="mr-2"
+                          :src="require(`../../../../../public/images/shield.svg`)"
+                          height="20px"
+                        />
                       </template>
                     </v-text-field>
                     <div class="v-text-field__details mb-6">
@@ -91,8 +96,8 @@
 
 <script>
 import log from 'loglevel'
-import { post } from '../../../utils/httpHelpers'
-import config from '../../../config'
+import { post } from '../../../../utils/httpHelpers'
+import config from '../../../../config'
 export default {
   data() {
     return {
@@ -126,6 +131,7 @@ export default {
         .then(() => {
           this.responseMessage = ''
           this.response = true
+          this.$router.push({ name: 'torusPhoneLogin' })
         })
         .catch(err => {
           this.responseMessage = 'Invalid verification code'
