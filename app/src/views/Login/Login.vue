@@ -93,7 +93,7 @@
                 </v-flex>
               </v-layout>
             </v-flex>
-            <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
+            <v-flex v-show="canShowLrc" xs9 sm7 ml-auto mb-2 mr-auto>
               <v-btn
                 id="torusLogin"
                 :large="!$vuetify.breakpoint.xsOnly"
@@ -110,7 +110,7 @@
                 Sign up/in with Email
               </v-btn>
             </v-flex>
-            <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
+            <v-flex v-show="canShowLrc" xs9 sm7 ml-auto mb-2 mr-auto>
               <v-btn
                 id="torusLogin"
                 :large="!$vuetify.breakpoint.xsOnly"
@@ -259,6 +259,9 @@ export default {
       } else {
         return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
       }
+    },
+    canShowLrc() {
+      return process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc'
     }
   }),
   watch: {
