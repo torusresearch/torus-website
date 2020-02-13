@@ -61,7 +61,6 @@ export default {
     state.myBadges = payload
   },
   setTrackBadge(state, payload) {
-    console.log(payload)
     state.track_badges = payload
   },
   setBadges(state, payload) {

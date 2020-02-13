@@ -881,7 +881,7 @@ export default {
   setToastNotification({ commit }, payload) {
     commit('setNotification', payload)
   },
-  setUserBadgeTrack({ state, dispatch }, payload) {
+  setUserBadgeTrack({ state, commit }, payload) {
     return new Promise((resolve, reject) => {
       patch(
         `${config.api}/user/track-badge`,
@@ -896,7 +896,7 @@ export default {
         }
       )
         .then(response => {
-          dispatch('setTrackBadge', payload)
+          commit('setTrackBadge', payload)
           log.info('successfully patched', response)
           resolve(response)
         })
@@ -1028,23 +1028,24 @@ export default {
             const { transactions, contacts, default_currency, theme, locale, verifier, verifier_id, track_badges } = user.data || {}
             commit('setPastTransactions', transactions)
             commit('setContacts', contacts)
+            commit('setTrackBadge', track_badge)
             dispatch('setTheme', theme)
             dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
             dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
-            dispatch('setTrackBadge', track_badge)
             if (locale !== '') dispatch('setLocale', locale)
             if (!verifier || !verifier_id) dispatch('setVerifier')
             resolve()
           }
         })
         .catch(async error => {
-          const { userInfo, selectedCurrency, theme } = state
+          const { userInfo, selectedCurrency, theme, track_badge } = state
           const { verifier, verifierId } = userInfo
           await post(
             `${config.api}/user`,
             {
               default_currency: selectedCurrency,
               theme,
+              track_badge,
               verifier,
               verifierId
             },
@@ -1056,6 +1057,7 @@ export default {
             }
           )
           commit('setNewUser', true)
+          commit('setTrackBadge', track_badge)
           dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
           dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
           resolve()
