@@ -1,7 +1,7 @@
 import log from 'loglevel'
 import store from './store'
 import torus from '../torus'
-
+import { capitalizeFirstLetter } from '../utils/utils'
 /* 
 Edited to change networkId => network state. Has an implication of changing neworkVersion 
 to "loading" at times in the inpage API
@@ -11,18 +11,18 @@ torus.torusController.networkController.networkStore.subscribe(function(state) {
   store.dispatch('updateNetworkId', { networkId: state })
 })
 
-function accountTrackerHandler({ accounts }) {
+export function accountTrackerHandler({ accounts }) {
   if (accounts) {
     for (const key in accounts) {
       if (Object.prototype.hasOwnProperty.call(accounts, key)) {
         const account = accounts[key]
-        store.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
+        if (account.address) store.commit('setWeiBalance', { [account.address]: account.balance })
       }
     }
   }
 }
 
-function transactionControllerHandler({ transactions }) {
+export function transactionControllerHandler({ transactions }) {
   if (transactions) {
     // these transactions have negative index
     const updatedTransactions = []
@@ -32,59 +32,64 @@ function transactionControllerHandler({ transactions }) {
       }
     }
     // log.info(updatedTransactions, 'txs')
-    store.dispatch('updateTransactions', { transactions: updatedTransactions })
+    store.commit('setTransactions', updatedTransactions)
   }
 }
 
-function assetControllerHandler({ accounts }) {
+export function assetControllerHandler({ accounts }) {
   for (const key in accounts) {
     if (Object.prototype.hasOwnProperty.call(accounts, key)) {
-      const { allCollectibleContracts, allCollectibles, collectibleContracts, collectibles } = accounts[key]
-      store.dispatch('updateAssets', {
-        allCollectibleContracts: allCollectibleContracts,
-        allCollectibles: allCollectibles,
-        collectibleContracts: collectibleContracts,
-        collectibles: collectibles,
-        selectedAddress: key
+      const { collectibleContracts, collectibles } = accounts[key]
+      const finalCollectibles = collectibleContracts.map(contract => {
+        contract.assets = collectibles.filter(asset => {
+          return asset.address === contract.address
+        })
+        return contract
+      })
+      store.commit('setAssets', {
+        [key]: finalCollectibles
       })
     }
   }
 }
 
-function typedMessageManagerHandler({ unapprovedTypedMessages }) {
-  store.dispatch('updateTypedMessages', { unapprovedTypedMessages: unapprovedTypedMessages })
+export function typedMessageManagerHandler({ unapprovedTypedMessages }) {
+  store.commit('setTypedMessages', unapprovedTypedMessages)
 }
 
-function personalMessageManagerHandler({ unapprovedPersonalMsgs }) {
-  store.dispatch('updatePersonalMessages', { unapprovedPersonalMsgs: unapprovedPersonalMsgs })
+export function personalMessageManagerHandler({ unapprovedPersonalMsgs }) {
+  store.commit('setPersonalMessages', unapprovedPersonalMsgs)
 }
 
-function messageManagerHandler({ unapprovedMsgs }) {
-  store.dispatch('updateMessages', { unapprovedMsgs: unapprovedMsgs })
+export function messageManagerHandler({ unapprovedMsgs }) {
+  store.commit('setMessages', unapprovedMsgs)
 }
 
-function detectTokensControllerHandler({ tokens }) {
+export function detectTokensControllerHandler({ tokens }) {
   if (tokens.length > 0) {
-    store.dispatch('updateTokenData', {
-      tokenData: tokens,
-      address: torus.torusController.detectTokensController.selectedAddress
+    store.commit('setTokenData', {
+      [torus.torusController.detectTokensController.selectedAddress]: tokens
     })
   }
 }
 
-function tokenRatesControllerHandler({ contractExchangeRates }) {
+export function tokenRatesControllerHandler({ contractExchangeRates }) {
   if (contractExchangeRates) {
-    store.dispatch('updateTokenRates', { tokenRates: contractExchangeRates })
+    store.commit('setTokenRates', contractExchangeRates)
   }
 }
 
-export {
-  accountTrackerHandler,
-  transactionControllerHandler,
-  assetControllerHandler,
-  typedMessageManagerHandler,
-  personalMessageManagerHandler,
-  messageManagerHandler,
-  detectTokensControllerHandler,
-  tokenRatesControllerHandler
+export function prefsControllerHandler(state) {
+  console.log(state, 'hek')
+  Object.keys(state).forEach(x => {
+    store.commit(`set${capitalizeFirstLetter(x)}`, state[x])
+  })
+}
+
+export function successMsgHandler(msg) {
+  store.commit('setSuccessMsg', msg)
+}
+
+export function errorMsgHandler(err) {
+  store.commit('setErrorMsg', err)
 }

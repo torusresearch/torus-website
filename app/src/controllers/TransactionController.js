@@ -1,35 +1,32 @@
 import config from '../config'
 import AbiDecoder from '../utils/abiDecoder'
-const EventEmitter = require('safe-event-emitter')
-const ObservableStore = require('obs-store')
-const ethUtil = require('ethereumjs-util')
-const { sha3, toChecksumAddress } = require('web3-utils')
-const Transaction = require('ethereumjs-tx')
-const EthQuery = require('ethjs-query')
-const tokenAbi = require('human-standard-token-abi')
-const collectibleAbi = require('human-standard-collectible-abi')
-const { errors: rpcErrors } = require('eth-json-rpc-errors')
+import EventEmitter from 'safe-event-emitter'
+import ObservableStore from 'obs-store'
+import * as ethUtil from 'ethereumjs-util'
+import { sha3 } from 'web3-utils'
+import Transaction from 'ethereumjs-tx'
+import EthQuery from 'ethjs-query'
+import tokenAbi from 'human-standard-token-abi'
+import collectibleAbi from 'human-standard-collectible-abi'
+import { ethErrors } from 'eth-json-rpc-errors'
+import { toChecksumAddress } from 'web3-utils'
+import erc20Contracts from 'eth-contract-metadata'
+import erc721Contracts from '../assets/assets-map.json'
+import TransactionStateManager from './TransactionStateManager'
+import TxGasUtil from '../utils/TxGasUtil'
+import PendingTransactionTracker from './PendingTransactionTracker'
+import NonceTracker from './NonceTracker'
+import * as txUtils from '../utils/txUtils'
+import cleanErrorStack from '../utils/cleanErrorStack'
+import log from 'loglevel'
 
-const tokenABIDecoder = new AbiDecoder(tokenAbi)
-const collectibleABIDecoder = new AbiDecoder(collectibleAbi)
-const erc20Contracts = require('eth-contract-metadata')
-const erc721Contracts = require('../assets/assets-map.json')
+import { Web3 } from 'web3'
+import TransferManager from '../assets/TransferManager.json'
+import signOffchain from '../utils/signOffchain'
+import getNonceForRelay from '../utils/getNonceForRelay'
+import { get, post } from '../utils/httpHelpers'
 
-// Gasless transactions functions
-const Web3 = require('web3')
-const TransferManager = require('../assets/TransferManager.json')
-const signOffchain = require('../utils/signOffchain')
-const getNonceForRelay = require('../utils/getNonceForRelay')
-const { get, post } = require('../utils/httpHelpers')
-
-const TransactionStateManager = require('./TransactionStateManager').default
-const TxGasUtil = require('../utils/TxGasUtil').default
-const PendingTransactionTracker = require('./PendingTransactionTracker').default
-const NonceTracker = require('./NonceTracker').default
-const txUtils = require('../utils/txUtils')
-const cleanErrorStack = require('../utils/cleanErrorStack').default
-const log = require('loglevel')
-const {
+import {
   TRANSACTION_TYPE_CANCEL,
   TRANSACTION_TYPE_RETRY,
   TRANSACTION_TYPE_STANDARD,
@@ -43,9 +40,12 @@ const {
   CONTRACT_INTERACTION_KEY,
   ZERO_BYTES32,
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
-} = require('../utils/enums')
+} from '../utils/enums'
 
-const { hexToBn, bnToHex, BnMultiplyByFraction } = require('../utils/utils')
+import { hexToBn, bnToHex, BnMultiplyByFraction } from '../utils/utils'
+
+const tokenABIDecoder = new AbiDecoder(tokenAbi)
+const collectibleABIDecoder = new AbiDecoder(collectibleAbi)
 
 /**
   Transaction Controller is an aggregate of sub-controllers and trackers
@@ -181,11 +181,11 @@ class TransactionController extends EventEmitter {
           case 'submitted':
             return resolve(finishedTxMeta.hash)
           case 'rejected':
-            return reject(cleanErrorStack(rpcErrors.eth.userRejectedRequest('MetaMask Tx Signature: User denied transaction signature.')))
+            return reject(cleanErrorStack(ethErrors.provider.userRejectedRequest('Torus Tx Signature: User denied transaction signature.')))
           case 'failed':
-            return reject(cleanErrorStack(rpcErrors.internal(finishedTxMeta.err.message)))
+            return reject(cleanErrorStack(ethErrors.rpc.internal(finishedTxMeta.err.message)))
           default:
-            return reject(cleanErrorStack(rpcErrors.internal(`MetaMask Tx Signature: Unknown problem: ${JSON.stringify(finishedTxMeta.txParams)}`)))
+            return reject(cleanErrorStack(ethErrors.rpc.internal(`Torus Tx Signature: Unknown problem: ${JSON.stringify(finishedTxMeta.txParams)}`)))
         }
       })
     })

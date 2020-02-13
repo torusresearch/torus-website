@@ -1,41 +1,42 @@
-const debounce = require('debounce')
-const EventEmitter = require('events')
-const ComposableObservableStore = require('../utils/ComposableObservableStore').default
-const { toChecksumAddress } = require('web3-utils')
-const log = require('loglevel')
-const NetworkController = require('./NetworkController').default
-const AccountTracker = require('./AccountTracker').default
-const TransactionController = require('./TransactionController').default
-const RecentBlocksController = require('./RecentBlocksController').default
-const CurrencyController = require('./CurrencyController').default
-const DetectTokensController = require('./DetectTokensController').default
-const TokenRatesController = require('./TokenRatesController').default
-const AssetDetectionController = require('./AssetsDetectionController').default
-const AssetController = require('./AssetsController').default
-const AssetContractController = require('./AssetsContractController').default
-const BN = require('ethereumjs-util').BN
-const GWEI_BN = new BN('1000000000')
-const percentile = require('percentile')
-const sigUtil = require('eth-sig-util')
-// const Dnode = require('dnode')
-const pump = require('pump')
-const setupMultiplex = require('../utils/setupMultiplex').default
-const asStream = require('obs-store/lib/asStream')
-const RpcEngine = require('json-rpc-engine')
-const createFilterMiddleware = require('eth-json-rpc-filters')
-const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionManager')
-const createOriginMiddleware = require('../utils/createOriginMiddleware')
-const createLoggerMiddleware = require('../utils/createLoggerMiddleware')
-const providerAsMiddleware = require('eth-json-rpc-middleware/providerAsMiddleware')
-const createEngineStream = require('json-rpc-middleware-stream/engineStream')
-const MessageManager = require('./MessageManager').default
-const PersonalMessageManager = require('./PersonalMessageManager').default
-const TypedMessageManager = require('./TypedMessageManager').default
-const ObservableStore = require('obs-store')
-const nodeify = require('../utils/nodeify').default
-const KeyringController = require('./TorusKeyring').default
+import debounce from 'lodash.debounce'
+import EventEmitter from 'events'
+import { toChecksumAddress } from 'web3-utils'
+import log from 'loglevel'
+import { BN } from 'ethereumjs-util'
+import percentile from 'percentile'
+import pump from 'pump'
+import sigUtil from 'eth-sig-util'
+import asStream from 'obs-store/lib/asStream'
+import RpcEngine from 'json-rpc-engine'
+import createFilterMiddleware from 'eth-json-rpc-filters'
+import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
+import providerAsMiddleware from 'eth-json-rpc-middleware/providerAsMiddleware'
+import createEngineStream from 'json-rpc-middleware-stream/engineStream'
+import ObservableStore from 'obs-store'
+import nodeify from '../utils/nodeify'
 
+import NetworkController from './NetworkController'
+import AccountTracker from './AccountTracker'
+import TransactionController from './TransactionController'
+import RecentBlocksController from './RecentBlocksController'
+import CurrencyController from './CurrencyController'
+import DetectTokensController from './DetectTokensController'
+import TokenRatesController from './TokenRatesController'
+import AssetDetectionController from './AssetsDetectionController'
+import AssetController from './AssetsController'
+import AssetContractController from './AssetsContractController'
+import PreferencesController from './PreferencesController'
+import MessageManager from './MessageManager'
+import PersonalMessageManager from './PersonalMessageManager'
+import TypedMessageManager from './TypedMessageManager'
+import KeyringController from './TorusKeyring'
+import ComposableObservableStore from '../utils/ComposableObservableStore'
+import setupMultiplex from '../utils/setupMultiplex'
+import createOriginMiddleware from '../utils/createOriginMiddleware'
+import createLoggerMiddleware from '../utils/createLoggerMiddleware'
+// const Dnode = require('dnode')
 // defaults and constants
+const GWEI_BN = new BN('1000000000')
 const version = '0.0.1'
 
 export default class TorusController extends EventEmitter {
@@ -161,6 +162,8 @@ export default class TorusController extends EventEmitter {
       assetController: this.assetController,
       assetContractController: this.assetContractController
     })
+
+    this.prefsController = new PreferencesController()
 
     this.networkController.lookupNetwork()
     this.messageManager = new MessageManager()
@@ -341,9 +344,11 @@ export default class TorusController extends EventEmitter {
     if (opts.jwtToken) {
       this.assetDetectionController.jwtToken = opts.jwtToken
       this.assetController.jwtToken = opts.jwtToken
+      this.prefsController.jwtToken = opts.jwtToken
     }
     this.detectTokensController.startTokenDetection(address)
     this.assetDetectionController.startAssetDetection(address)
+    this.prefsController.setSelectedAddress(address)
   }
 
   /**
@@ -812,19 +817,24 @@ export default class TorusController extends EventEmitter {
    * @param {string} currencyCode - The code of the preferred currency.
    * @param {Function} cb - A callback function returning currency info.
    */
-  async setCurrentCurrency(currencyCode, cb) {
+  async setCurrentCurrency(payload, cb) {
     const { ticker } = this.networkController.getNetworkConfig()
     try {
-      this.currencyController.setNativeCurrency(ticker)
-      this.currencyController.setCurrentCurrency(currencyCode)
-      await this.currencyController.updateConversionRate()
+      if (payload.selectedCurrency !== 'ETH') {
+        this.currencyController.setNativeCurrency(ticker)
+        this.currencyController.setCurrentCurrency(payload.selectedCurrency.toLowerCase())
+        await this.currencyController.updateConversionRate()
+      }
       const data = {
         nativeCurrency: ticker || 'ETH',
         conversionRate: this.currencyController.getConversionRate(),
         currentCurrency: this.currencyController.getCurrentCurrency(),
         conversionDate: this.currencyController.getConversionDate()
       }
-      cb(null, data)
+      if (payload.origin && payload.origin !== 'store') {
+        this.prefsController.setSelectedCurrency(payload)
+      }
+      cb && cb(null, data)
     } catch (err) {
       cb(err)
     }

@@ -4,11 +4,12 @@
  * Controller that interacts with contracts on mainnet through web3
  * @author Shubham, Chaitanya
  */
-const Web3 = require('web3')
-const abiERC20 = require('human-standard-token-abi')
-const abiERC721 = require('human-standard-collectible-abi')
-const abiSingleCallBalancesContract = require('single-call-balance-checker-abi')
-const { ERC721METADATA_INTERFACE_ID, ERC721ENUMERABLE_INTERFACE_ID, SINGLE_CALL_BALANCES_ADDRESS } = require('../utils/enums')
+import Web3 from 'web3'
+import abiERC20 from 'human-standard-token-abi'
+import abiERC721 from 'human-standard-collectible-abi'
+import abiSingleCallBalancesContract from 'single-call-balance-checker-abi'
+
+import { ERC721METADATA_INTERFACE_ID, ERC721ENUMERABLE_INTERFACE_ID, SINGLE_CALL_BALANCES_ADDRESS } from '../utils/enums'
 
 export default class AssetContractController {
   /**

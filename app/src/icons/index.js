@@ -23,6 +23,8 @@ import ChevronRightIcon from './ChevronRightIcon'
 import ChevronDoubleRightIcon from './ChevronDoubleRightIcon'
 import ScanIcon from './ScanIcon'
 import NetworkIcon from './NetworkIcon'
+import TimeIcon from './TimeIcon'
+import PersonIcon from './PersonIcon'
 import LockIcon from './LockIcon'
 import KeyIcon from './KeyIcon'
 import ListIcon from './ListIcon'
@@ -118,6 +120,9 @@ export default {
   network: {
     component: NetworkIcon
   },
+  time: {
+    component: TimeIcon
+  },
   lock: {
     component: LockIcon
   },
@@ -147,6 +152,9 @@ export default {
   },
   topup: {
     component: TopupIcon
+  },
+  person: {
+    component: PersonIcon
   },
   activities: {
     component: ActivitiesIcon

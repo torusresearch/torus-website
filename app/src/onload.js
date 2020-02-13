@@ -1,14 +1,13 @@
 import NodeDetailManager from '@toruslabs/fetch-node-details'
 import log from 'loglevel'
 import Web3 from 'web3'
+import LocalMessageDuplexStream from 'post-message-stream'
+
 import TorusController from './controllers/TorusController'
 import store from './store'
 import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE } from './utils/enums'
 import { storageAvailable } from './utils/utils'
-
-const LocalMessageDuplexStream = require('post-message-stream')
-const stream = require('stream')
-const setupMultiplex = require('./utils/setupMultiplex').default
+import setupMultiplex from './utils/setupMultiplex'
 
 function onloadTorus(torus) {
   function triggerUi(type) {
@@ -65,7 +64,7 @@ function onloadTorus(torus) {
 
   // update node details
   torus.nodeDetailManager = new NodeDetailManager({ network: process.env.VUE_APP_PROXY_NETWORK, proxyAddress: process.env.VUE_APP_PROXY_ADDRESS })
-  torus.nodeDetailManager.getNodeDetails().then(() => {})
+  torus.nodeDetailManager.getNodeDetails().then(nodeDetails => log.info(nodeDetails))
 
   /* Stream setup block */
   // doesnt do anything.. just for logging

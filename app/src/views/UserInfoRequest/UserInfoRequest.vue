@@ -1,10 +1,11 @@
 <template>
-  <v-container py-6 px-0>
+  <v-container pa-0>
     <template v-if="type === 'none'">
       <user-info-screen-loader />
     </template>
     <template v-else>
-      <v-layout align-center mx-6 mb-6>
+      <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
+      <!-- <v-layout align-center mx-6 mb-6>
         <div class="text-black font-weight-bold headline float-left">{{ t('dappInfo.permission') }}</div>
         <img :src="require('../../../public/img/icons/lock.svg')" width="16" class="ml-2" />
       </v-layout>
@@ -52,7 +53,7 @@
             <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">{{ t('dappInfo.confirm') }}</v-btn>
           </v-flex>
         </v-layout>
-      </v-layout>
+      </v-layout> -->
     </template>
   </v-container>
 </template>
@@ -61,12 +62,14 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import { UserInfoScreenLoader } from '../../content-loader'
 import { broadcastChannelOptions } from '../../utils/utils'
+import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
 import log from 'loglevel'
 
 export default {
   name: 'userInfoRequest',
   components: {
-    UserInfoScreenLoader
+    UserInfoScreenLoader,
+    PermissionConfirm
   },
   data() {
     return {

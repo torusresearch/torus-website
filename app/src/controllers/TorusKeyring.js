@@ -1,8 +1,9 @@
-const EventEmitter = require('events').EventEmitter
-const Wallet = require('ethereumjs-wallet')
-const ethUtil = require('ethereumjs-util')
-const sigUtil = require('eth-sig-util')
-const log = require('loglevel')
+import { EventEmitter } from 'events'
+import Wallet from 'ethereumjs-wallet'
+import * as ethUtil from 'ethereumjs-util'
+import sigUtil from 'eth-sig-util'
+import log from 'loglevel'
+
 const type = 'Torus Keyring'
 
 export default class TorusKeyring extends EventEmitter {
