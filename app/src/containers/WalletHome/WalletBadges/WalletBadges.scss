@@ -1,0 +1,12 @@
+.text-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.track {
+  display: flex;
+  .v-input--selection-controls {
+    margin: 0;
+    padding: 0;
+  }
+}

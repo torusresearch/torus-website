@@ -1,14 +1,23 @@
 <template>
   <div>
-    <v-breadcrumbs class="px-4 subtitle-1 font-weight-bold" :items="breadcrumb">
-      <template v-slot:divider>
-        <v-icon small>$vuetify.icons.page_next_double</v-icon>
-      </template>
-    </v-breadcrumbs>
-    <v-layout wrap align-end>
-      <v-flex xs12 px-4>
+    <v-layout>
+      <v-breadcrumbs class="px-4 subtitle-1 font-weight-bold" :items="breadcrumb">
+        <template v-slot:divider>
+          <v-icon small>$vuetify.icons.page_next_double</v-icon>
+        </template>
+      </v-breadcrumbs>
+    </v-layout>
+    <v-layout wrap>
+      <v-flex xs6 px-4>
         <div class="subtitle-1 text-clamp-two">
           Each badge represents a chance to win prizes up to 1ETH!
+        </div>
+      </v-flex>
+      <v-flex xs6 class="text-end">
+        <div class="track">
+          <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" />
+          <span>Track Badges</span>
+          <v-switch color="primary" v-model="trackBadge" @change="checkTrackStatus" class="mx-2"></v-switch>
         </div>
       </v-flex>
       <v-flex class="xs12 sm6 md4 lg3 px-4 my-4" v-for="(badge, index) in badges" :key="index">
@@ -26,17 +35,26 @@
         <badge-modal @onClose="closeModal" :isCompleted="isCompleted" :badge="badge" />
       </v-dialog>
     </v-layout>
+    <v-layout mt-4 pr-2 wrap>
+      <v-spacer></v-spacer>
+      <v-dialog v-model="showActionModal" max-width="500">
+        <badge-consent-modal @onClose="closeActionModal" />
+      </v-dialog>
+    </v-layout>
   </div>
 </template>
 
 <script>
-import { WalletBadge, BadgeModal, BadgeSubmit } from '../../../components/WalletBadges'
+import { WalletBadge, BadgeModal, BadgeSubmit, BadgeConsentModal } from '../../../components/WalletBadges'
+import HelpTooltip from '../../../components/helpers/HelpTooltip'
 export default {
   name: 'walletBadges',
   components: {
     WalletBadge,
     BadgeModal,
-    BadgeSubmit
+    BadgeSubmit,
+    BadgeConsentModal,
+    HelpTooltip
   },
   data() {
     return {
@@ -55,8 +73,10 @@ export default {
         }
       ],
       showModalMessage: false,
+      showActionModal: false,
       isCompleted: false,
-      badge: {}
+      badge: {},
+      trackBadge: false
     }
   },
   created() {
@@ -85,6 +105,15 @@ export default {
     }
   },
   methods: {
+    closeActionModal() {
+      this.showActionModal = false
+      this.trackBadge = false
+    },
+    checkTrackStatus() {
+      if (this.trackBadge) {
+        this.showActionModal = true
+      }
+    },
     showBadgeModal(badge) {
       this.showModalMessage = true
       this.badge = badge

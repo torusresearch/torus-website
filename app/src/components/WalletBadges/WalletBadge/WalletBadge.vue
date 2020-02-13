@@ -12,7 +12,7 @@
             </div>
             <div v-if="badge.isCompleted || index === 0">
               <img src="../../../../public/images/check-icon.svg" alt="Completed icon" />
-              <div class="body-1">Completed</div>
+              <div class="body-1 font-weight-bold text-complete">Completed</div>
             </div>
             <div v-else>
               <v-btn v-if="badge.action" block large @click="handleLinkOpen(badge.link)" depressed class="status-btn mt-2 mr-4">
