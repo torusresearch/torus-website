@@ -20,7 +20,7 @@ import * as txUtils from '../utils/txUtils'
 import cleanErrorStack from '../utils/cleanErrorStack'
 import log from 'loglevel'
 
-import { Web3 } from 'web3'
+import Web3 from 'web3'
 import TransferManager from '../assets/TransferManager.json'
 import signOffchain from '../utils/signOffchain'
 import getNonceForRelay from '../utils/getNonceForRelay'
@@ -38,7 +38,7 @@ import {
   SEND_ETHER_ACTION_KEY,
   DEPLOY_CONTRACT_ACTION_KEY,
   CONTRACT_INTERACTION_KEY,
-  ZERO_BYTES32,
+  ZERO_ADDRESS,
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
 } from '../utils/enums'
 
@@ -483,7 +483,7 @@ class TransactionController extends EventEmitter {
 
       // Encode method Data
       const TransferModule = new this.web3.eth.Contract(TransferManager.abi, '0xD45256EEf4bFB182B108Cd8e0bCB4A9369342C1d')
-      const methodData = TransferModule.methods.transferToken(fromSCW, ETH_TOKEN, to, transferValue, ZERO_BYTES32).encodeABI()
+      const methodData = TransferModule.methods.transferToken(fromSCW, ETH_TOKEN, to, transferValue, ZERO_ADDRESS).encodeABI()
 
       // Get EOA wallet to sign the transactions
       const selectedEOA = this.getSelectedEOA()
