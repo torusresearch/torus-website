@@ -31,12 +31,19 @@
                               id="json-file-confirm-btn"
                               color="primary"
                               depressed
+                              width="155px"
                               :disabled="!downloadFormValid || isLoadingDownloadWallet"
                               v-if="!walletJson"
                               :loading="isLoadingDownloadWallet"
                               @click="downloadWallet"
                             >
                               {{ t('walletSettings.confirm') }}
+                              <template v-slot:loader>
+                                <span>
+                                  Encrypting
+                                  <v-progress-circular :indeterminate="true" size="24" value="0" width="4" color="text_2" />
+                                </span>
+                              </template>
                             </v-btn>
                             <v-btn id="json-file-download-btn" depressed color="primary" v-if="walletJson" :href="walletJson" :download="name">
                               {{ t('walletSettings.downloadWallet') }}

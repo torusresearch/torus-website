@@ -43,7 +43,6 @@ if (storageAvailable('sessionStorage'))
       return {
         userInfo: state.userInfo,
         userInfoAccess: state.userInfoAccess,
-        idToken: state.idToken,
         wallet: state.wallet,
         selectedEOA: state.selectedEOA,
         // weiBalance: state.weiBalance,

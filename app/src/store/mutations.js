@@ -2,9 +2,6 @@ export default {
   setUserInfo(state, userInfo) {
     state.userInfo = userInfo
   },
-  setIdToken(state, idToken) {
-    state.idToken = idToken
-  },
   setWallet(state, wallet) {
     state.wallet = wallet
   },
