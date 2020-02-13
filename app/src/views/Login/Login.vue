@@ -259,7 +259,7 @@ export default {
       } else {
         return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
       }
-    },
+    }
   }),
   watch: {
     selectedAddress: function(newAddress, oldAddress) {
