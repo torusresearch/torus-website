@@ -260,9 +260,6 @@ export default {
         return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
       }
     },
-    canShowLrc() {
-      return process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc'
-    }
   }),
   watch: {
     selectedAddress: function(newAddress, oldAddress) {
