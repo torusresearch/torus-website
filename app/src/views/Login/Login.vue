@@ -93,7 +93,7 @@
                 </v-flex>
               </v-layout>
             </v-flex>
-            <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
+            <v-flex v-show="canShowLrc" xs9 sm7 ml-auto mb-2 mr-auto>
               <v-btn
                 id="torusLogin"
                 :large="!$vuetify.breakpoint.xsOnly"
@@ -104,10 +104,31 @@
                 class="body-1 font-weight-bold card-shadow-v8 text_2--text torus-login-btn"
                 type="button"
                 :title="`${t('login.loginWith')} Torus`"
-                @click="triggerLogin({ verifier: TORUS, calledFromEmbed: false })"
+                @click="triggerLogin({ verifier: TORUS, calledFromEmbed: false, loginType: 'torusEmailLogin' })"
               >
-                <img height="32" :src="require('../../../public/images/email.svg')" :class="$vuetify.theme.dark ? 'ml-4 mr-4 torus-dark' : 'mr-6'" />
+                <img height="24" :src="require('../../../public/images/email.svg')" :class="$vuetify.theme.dark ? 'ml-4 mr-4 torus-dark' : 'mr-6'" />
                 Sign up/in with Email
+              </v-btn>
+            </v-flex>
+            <v-flex v-show="canShowLrc" xs9 sm7 ml-auto mb-2 mr-auto>
+              <v-btn
+                id="torusLogin"
+                :large="!$vuetify.breakpoint.xsOnly"
+                :color="$vuetify.theme.dark ? '' : 'white'"
+                :class="$vuetify.theme.dark ? 'torus-dark' : 'card-shadow-v8'"
+                :depressed="$vuetify.theme.dark"
+                block
+                class="body-1 font-weight-bold card-shadow-v8 text_2--text torus-login-btn"
+                type="button"
+                :title="`${t('login.loginWith')} Torus`"
+                @click="triggerLogin({ verifier: TORUS, calledFromEmbed: false, loginType: 'torusPhoneLogin' })"
+              >
+                <img
+                  height="24"
+                  :src="require('../../../public/images/phone-icon.svg')"
+                  :class="$vuetify.theme.dark ? 'ml-4 mr-4 torus-dark' : 'mr-6'"
+                />
+                Sign up/in with Phone
               </v-btn>
             </v-flex>
             <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
@@ -238,6 +259,9 @@ export default {
       } else {
         return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
       }
+    },
+    canShowLrc() {
+      return process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc'
     }
   }),
   watch: {

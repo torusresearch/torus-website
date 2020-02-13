@@ -1,24 +1,20 @@
 <template>
   <div class="default">
     <v-layout wrap fill-height align-center justify-center class="register-panel-left">
-      <v-flex xs12 md6>
+      <v-flex xs10 md6>
         <v-layout wrap>
-          <v-flex class="mb-5" xs9 sm7 ml-auto mr-auto>
-            <img width="117" :src="require('../../../../public/images/torus-logo-blue.svg')" />
+          <v-flex class="mb-5" xs12 sm12 ml-auto mr-auto>
+            <img width="117" :src="require(`../../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
           </v-flex>
-          <v-flex class="mb-3" xs9 sm7 ml-auto mr-auto>
+          <v-flex class="mb-3" xs12 sm12 ml-auto mr-auto>
             <span class="display-1 font-weight-bold">Sign Up</span>
           </v-flex>
-          <v-flex xs9 sm7 ml-auto mb-2 pt-4 mr-auto>
+          <v-flex xs12 sm12 ml-auto mb-2 pt-4 mr-auto>
             <v-flex xs12>
-              <v-form @submit.prevent lazy-validation>
+              <v-form @submit.prevent="registerAccount" lazy-validation>
                 <v-layout wrap>
                   <v-flex xs12>
-                    <v-text-field outlined type="text" name="verifier_id" label="Enter Email" v-model="verifier_id" single-line>
-                      <template v-slot:prepend-inner>
-                        <img class="mr-2 mt-1" :src="require(`../../../../public/images/email.svg`)" height="16px" />
-                      </template>
-                    </v-text-field>
+                    <vue-tel-input v-model="verifier_id" required mode="international" autocomplete="off" :autofocus="true"></vue-tel-input>
                   </v-flex>
                   <v-flex xs12>
                     <v-text-field
@@ -33,7 +29,7 @@
                       :rules="[rules.required]"
                     >
                       <template v-slot:prepend-inner>
-                        <img class="mr-2" :src="require(`../../../../public/images/lock.svg`)" height="20px" />
+                        <img class="mr-2" :src="require(`../../../../../public/images/lock.svg`)" height="20px" />
                       </template>
                     </v-text-field>
                   </v-flex>
@@ -41,7 +37,7 @@
                     <v-text-field
                       outlined
                       name="confirmPassword"
-                      label="Enter Password"
+                      label="Confirm Password"
                       @click:append="toggleShowConfirmPassword"
                       v-model="confirmPassword"
                       :append-icon="showConfirmPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
@@ -50,7 +46,7 @@
                       :rules="[rules.required, rules.confirmPassword]"
                     >
                       <template v-slot:prepend-inner>
-                        <img class="mr-2" :src="require(`../../../../public/images/lock.svg`)" height="20px" />
+                        <img class="mr-2" :src="require(`../../../../../public/images/lock.svg`)" height="20px" />
                       </template>
                     </v-text-field>
                     <div class="v-text-field__details mb-6">
@@ -61,7 +57,7 @@
                             <v-flex grow-shrink-0>
                               <span class="caption">
                                 Already have an account? Log in
-                                <router-link :to="{ name: 'torusLogin' }">here</router-link>
+                                <router-link :to="{ name: 'torusPhoneLogin' }">here</router-link>
                               </span>
                             </v-flex>
                           </div>
@@ -71,7 +67,14 @@
                   </v-flex>
 
                   <v-flex xs12>
-                    <v-btn color="primary" class="body-1 font-weight-bold card-shadow-v8 register-btn" @click="registerAccount" large depressed block>
+                    <v-btn
+                      color="primary"
+                      :disabled="!formComplete"
+                      class="body-1 font-weight-bold card-shadow-v8 register-btn"
+                      large
+                      depressed
+                      block
+                    >
                       Sign Up
                     </v-btn>
                   </v-flex>
@@ -79,7 +82,7 @@
               </v-form>
             </v-flex>
           </v-flex>
-          <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
+          <v-flex class="caption" mb-6 xs12 sm12 ml-auto mr-auto>
             <span class="text_2--text body-1">
               {{ t('login.acceptTerms') }}
               <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
@@ -89,47 +92,38 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex
-        v-if="$vuetify.breakpoint.smAndUp"
-        xs12
-        sm4
-        md6
-        fill-height
-        class="register-panel-right"
-        :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-      >
-        <v-layout class="pb-8" wrap fill-height align-end>
-          <v-flex class="mb-3 text-center" xs9 sm8 md10 ml-auto mr-auto>
-            <div class="right-panel-header white--text font-weight-bold mb-2">{{ t('login.frictionless') }}</div>
-            <div class="body-2 right-panel-subheader white--text mx-auto">
-              {{ t('login.simpleSecure') }}
-            </div>
-          </v-flex>
-        </v-layout>
-      </v-flex>
     </v-layout>
   </div>
 </template>
 
 <script>
 import Web3 from 'web3'
+import { VueTelInput } from 'vue-tel-input'
 import log from 'loglevel'
-import { post } from '../../../utils/httpHelpers'
-import config from '../../../config'
+import { post } from '../../../../utils/httpHelpers'
+import config from '../../../../config'
 export default {
+  components: {
+    VueTelInput
+  },
   data() {
     return {
       password: '',
-      confirmPassword: 'undefined',
+      confirmPassword: '',
       verifier_id: '',
-      verifier_id_type: '',
       showPassword: false,
       showConfirmPassword: false,
       rules: {
+        email: value => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value) || 'Invalid email address format',
         required: value => !!value || 'Required',
         minLength: value => value.length > 8 || 'Password length must be greater than 8 characters',
         confirmPassword: value => value === this.password || 'Passwords do not match'
       }
+    }
+  },
+  computed: {
+    formComplete() {
+      return this.verifier_id.length >= 11 && this.password.length >= 8 && this.confirmPassword === this.password
     }
   },
   methods: {
@@ -145,10 +139,10 @@ export default {
       this.updateExtendedPassword()
       post('https://verifier.dev.tor.us/register', {
         verifier_id: this.verifier_id,
-        verifier_id_type: this.verifier_id.indexOf('@') > 0 ? 'email' : 'phone',
+        verifier_id_type: 'phone',
         hash: Web3.utils.sha3(this.extendedPassword).replace('0x', '')
       })
-        .then(data => this.$router.push(`torus-verify?email=${this.verifier_id}`))
+        .then(data => this.$router.push(`torus-phone-verify?email=${this.verifier_id}`))
         .catch(err => log.error(err))
     },
     updateExtendedPassword: function() {
@@ -158,6 +152,6 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-@import 'Register.scss';
+<style lang="scss">
+@import 'PhoneRegister.scss';
 </style>
