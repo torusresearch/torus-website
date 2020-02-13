@@ -131,15 +131,17 @@ export default {
   },
   methods: {
     taskComplete(badgeId) {
-      let checkDuplicates = this.$store.state.myBadges.map(badge => Number(badge.badgeId)).includes(badgeId)
-      if (!checkDuplicates) {
-        this.badge = this.$store.state.badges[badgeId]
-        this.$store.dispatch('addBadge', { badgeId: this.badge.id })
-        this.$store.dispatch('setToastNotification', {
-          alert: true,
-          text: `You've earned the ${this.badge.title} badge`,
-          type: 'success'
-        })
+      if (this.$store.state.track_badges) {
+        let checkDuplicates = this.$store.state.myBadges.map(badge => Number(badge.badgeId)).includes(badgeId)
+        if (!checkDuplicates) {
+          this.badge = this.$store.state.badges[badgeId]
+          this.$store.dispatch('addBadge', { badgeId: this.badge.id })
+          this.$store.dispatch('setToastNotification', {
+            alert: true,
+            text: `You've earned the ${this.badge.title} badge`,
+            type: 'success'
+          })
+        }
       }
     },
     closeAlert() {
