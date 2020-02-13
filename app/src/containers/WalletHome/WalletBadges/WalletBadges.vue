@@ -75,12 +75,13 @@ export default {
       showModalMessage: false,
       showActionModal: false,
       isCompleted: false,
-      badge: {},
-      trackBadge: false
+      badge: {}
+      // trackBadge: false
     }
   },
   created() {
     this.loadBadges()
+    this.trackBadge()
   },
   computed: {
     badges() {
@@ -105,14 +106,16 @@ export default {
     }
   },
   methods: {
+    trackBadge() {
+      this.trackBadge = this.$store.state.track_badges
+    },
     closeActionModal() {
       this.showActionModal = false
-      this.trackBadge = false
+      this.trackBadge = this.$store.state.track_badges
+      console.log(this.trackBadge)
     },
     checkTrackStatus() {
-      if (this.trackBadge) {
-        this.showActionModal = true
-      }
+      this.showActionModal = true
     },
     showBadgeModal(badge) {
       this.showModalMessage = true

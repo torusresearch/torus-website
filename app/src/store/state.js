@@ -44,7 +44,8 @@ const initialState = {
   userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate
   errorMsg: '',
   successMsg: '',
-  toastNotification: ALERT_OBJ
+  toastNotification: ALERT_OBJ,
+  track_badges: false
 }
 
 export default initialState

@@ -896,7 +896,7 @@ export default {
         }
       )
         .then(response => {
-          dispatch('setBadgeTrack', payload)
+          dispatch('setTrackBadge', payload)
           log.info('successfully patched', response)
           resolve(response)
         })
@@ -1025,12 +1025,13 @@ export default {
       })
         .then(user => {
           if (user.data) {
-            const { transactions, contacts, default_currency, theme, locale, verifier, verifier_id } = user.data || {}
+            const { transactions, contacts, default_currency, theme, locale, verifier, verifier_id, track_badges } = user.data || {}
             commit('setPastTransactions', transactions)
             commit('setContacts', contacts)
             dispatch('setTheme', theme)
             dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
             dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
+            dispatch('setTrackBadge', track_badge)
             if (locale !== '') dispatch('setLocale', locale)
             if (!verifier || !verifier_id) dispatch('setVerifier')
             resolve()
