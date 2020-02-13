@@ -13,6 +13,6 @@ export default {
   infoBannerText: '#FFFFFF',
   // Rarely changed
   success: '#2dcc70',
-  error: '#e20d0d',
+  error: '#FF5A55',
   disabled: '#403F43'
 }

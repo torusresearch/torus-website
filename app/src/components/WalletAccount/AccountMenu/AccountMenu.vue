@@ -2,18 +2,20 @@
   <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu">
     <v-list>
       <v-list-item>
-        <v-list-item-avatar class="mr-2 mt-4">
+        <v-list-item-title>
+          <div class="font-weight-bold title d-flex">
+            <div class="torus-account--name mr-1" id="account-name">
+              <span>{{ userName }}</span>
+            </div>
+            <div>{{ t('accountMenu.account') }}</div>
+          </div>
+        </v-list-item-title>
+      </v-list-item>
+      <v-list-item class="margin-top-30">
+        <v-list-item-avatar class="mr-2">
           <img :src="profileImage" class="align-start" :alt="userName" />
         </v-list-item-avatar>
         <v-list-item-content>
-          <v-list-item-title>
-            <div class="font-weight-bold title d-flex">
-              <div class="torus-account--name mr-1" id="account-name">
-                <span>{{ userName }}</span>
-              </div>
-              <div>{{ t('accountMenu.account') }}</div>
-            </div>
-          </v-list-item-title>
           <v-list-item-subtitle>
             <div class="caption text_2--text">
               <span>{{ userEmail }}</span>
@@ -230,3 +232,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.margin-top-30 {
+  margin-top: -16px;
+}
+</style>

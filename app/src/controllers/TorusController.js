@@ -1,6 +1,7 @@
 const debounce = require('debounce')
 const EventEmitter = require('events')
 const ComposableObservableStore = require('../utils/ComposableObservableStore').default
+const { toChecksumAddress } = require('web3-utils')
 const log = require('loglevel')
 const NetworkController = require('./NetworkController').default
 const AccountTracker = require('./AccountTracker').default
@@ -12,7 +13,6 @@ const TokenRatesController = require('./TokenRatesController').default
 const AssetDetectionController = require('./AssetsDetectionController').default
 const AssetController = require('./AssetsController').default
 const AssetContractController = require('./AssetsContractController').default
-const toChecksumAddress = require('../utils/toChecksumAddress').default
 const BN = require('ethereumjs-util').BN
 const GWEI_BN = new BN('1000000000')
 const percentile = require('percentile')
