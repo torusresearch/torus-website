@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "0.2.14",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "serve": "npm run locale && vue-cli-service serve",
@@ -90,7 +90,7 @@
     "web3": "^1.2.6"
   },
   "devDependencies": {
-    "@toruslabs/torus-embed": "^0.2.14",
+    "@toruslabs/torus-embed": "^1.0.0",
     "@vue/cli-plugin-babel": "^4.2.2",
     "@vue/cli-plugin-eslint": "^4.2.2",
     "@vue/cli-plugin-pwa": "^4.2.2",
