@@ -1,13 +1,13 @@
 import Torus from '@toruslabs/torus.js'
-import config from './config.js'
-import onloadTorus from './onload.js'
-import { post } from './utils/httpHelpers.js'
+import log from 'loglevel'
+import * as ethUtil from 'ethereumjs-util'
+import randomId from '@chaitanyapotti/random-id'
 
-const log = require('loglevel')
-const ethUtil = require('ethereumjs-util')
-const randomId = require('@chaitanyapotti/random-id')
-
-const setupMultiplex = require('./utils/setupMultiplex').default
+import setupMultiplex from './utils/setupMultiplex'
+import config from './config'
+import onloadTorus from './onload'
+import { post } from './utils/httpHelpers'
+import { selectChainId } from './utils/utils'
 
 // Make this a class. Use ES6
 class TorusExtended extends Torus {
@@ -31,6 +31,8 @@ class TorusExtended extends Torus {
       publicConfigOutStream.write(JSON.stringify({ selectedAddress: payload.selectedAddress }))
     } else if (payload.networkId) {
       publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
+      if (payload.networkId !== 'loading')
+        publicConfigOutStream.write(JSON.stringify({ chainId: selectChainId(payload.networkId.toString(), this.torusController.provider) }))
     } else if (payload.isUnlocked) {
       publicConfigOutStream.write(JSON.stringify({ isUnlocked: payload.isUnlocked }))
     }

@@ -140,7 +140,9 @@
           <v-flex xs12 sm6 px-4 class="balance-filter" :class="showSearch ? 'pt-2' : ''">
             <v-layout>
               <v-flex xs7 class="refresh">
-                <v-icon color="primary" @click="refreshBalances()" small>$vuetify.icons.refresh</v-icon>
+                <v-btn @click="refreshBalances()" small icon>
+                  <v-icon color="primary" small>$vuetify.icons.refresh</v-icon>
+                </v-btn>
                 <span class="caption text_2--text">{{ t('walletHome.lastUpdate') }} {{ lastUpdated }}</span>
               </v-flex>
               <v-flex xs5 class="text-right currency">
