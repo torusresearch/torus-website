@@ -31,14 +31,14 @@
     </v-layout>
     <v-layout mt-4 pr-2 wrap>
       <v-spacer></v-spacer>
-      <v-dialog v-model="showModalMessage" max-width="500">
+      <v-dialog v-model="showModalMessage" max-width="100">
         <badge-modal @onClose="closeModal" :isCompleted="isCompleted" :badge="badge" />
       </v-dialog>
     </v-layout>
     <v-layout mt-4 pr-2 wrap>
       <v-spacer></v-spacer>
       <v-dialog v-model="showActionModal" max-width="500">
-        <badge-consent-modal @onClose="closeActionModal" />
+        <badge-consent-modal @onConfirm="updateTrackBadge" @onClose="closeActionModal" />
       </v-dialog>
     </v-layout>
   </div>
@@ -120,6 +120,9 @@ export default {
     },
     loadBadges() {
       this.$store.dispatch('loadBadges')
+    },
+    updateTrackBadge() {
+      this.$store.dispatch('setUserBadgeTrack', this.trackBadge)
     },
     closeModal() {
       this.badge = {

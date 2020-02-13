@@ -881,6 +881,31 @@ export default {
   setToastNotification({ commit }, payload) {
     commit('setNotification', payload)
   },
+  setUserBadgeTrack({ state, dispatch }, payload) {
+    return new Promise((resolve, reject) => {
+      patch(
+        `${config.api}/user/track-badge`,
+        {
+          track_badge: payload
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }
+      )
+        .then(response => {
+          dispatch('setBadgeTrack', payload)
+          log.info('successfully patched', response)
+          resolve(response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to patch badge consent')
+          reject('Unable to update badge consent')
+        })
+    })
+  },
   setUserLocale({ state, dispatch }, payload) {
     return new Promise((resolve, reject) => {
       patch(
