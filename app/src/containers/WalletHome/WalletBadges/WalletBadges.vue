@@ -15,7 +15,11 @@
       </v-flex>
       <v-flex xs6 class="text-end">
         <div class="track">
-          <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" />
+          <HelpTooltip
+            title="Track Badges"
+            description="To qualify for the badge contest, users have to allow their badges to be tracked by the system. 
+            Disable badges tracking to opt out of the contest."
+          />
           <span>Track Badges</span>
           <v-switch color="primary" v-model="trackBadge" @change="checkTrackStatus" class="mx-2"></v-switch>
         </div>
@@ -127,7 +131,11 @@ export default {
     },
     updateTrackBadge() {
       this.$store.dispatch('setUserBadgeTrack', this.trackBadge)
+      if (!this.trackBadge) {
+        this.$store.dispatch('removeMyBadges')
+      }
       this.showActionModal = false
+      console.log(this.$store.state.track_badges)
     },
     closeModal() {
       this.badge = {

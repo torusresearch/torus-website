@@ -969,30 +969,57 @@ export default {
         })
     })
   },
-  addBadge({ state, commit, dispatch }, payload) {
-    return new Promise((resolve, reject) => {
-      post(
-        `${config.api}/badges`,
-        {
-          badgeId: payload.badgeId
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${state.jwtToken}`,
-            'Content-Type': 'application/json; charset=utf-8'
+  removeMyBadges({ state, commit, dispatch }) {
+    if (state.track_badges) {
+      return new Promise((resolve, reject) => {
+        remove(
+          `${config.api}/badges`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${state.jwtToken}`
+            }
           }
-        }
-      )
-        .then(response => {
-          log.info('successfully added', response)
-          dispatch('loadMyBadges')
-          resolve(response)
-        })
-        .catch(err => {
-          log.error(err, 'unable to add badge')
-          reject('Unable to add badge')
-        })
-    })
+        )
+          .then(response => {
+            commit('setMyBadges', [])
+            dispatch('loadMyBadges')
+            log.info('successfully removed')
+            resolve([])
+          })
+          .catch(err => {
+            log.error(err, 'unable to remove badges')
+            reject('Unable to remove bages')
+          })
+      })
+    }
+  },
+  addBadge({ state, commit, dispatch }, payload) {
+    if (state.track_badges) {
+      return new Promise((resolve, reject) => {
+        post(
+          `${config.api}/badges`,
+          {
+            badgeId: payload.badgeId
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${state.jwtToken}`,
+              'Content-Type': 'application/json; charset=utf-8'
+            }
+          }
+        )
+          .then(response => {
+            log.info('successfully added', response)
+            dispatch('loadMyBadges')
+            resolve(response)
+          })
+          .catch(err => {
+            log.error(err, 'unable to add badge')
+            reject('Unable to add badge')
+          })
+      })
+    }
   },
   setVerifier({ state }, payload) {
     const { verifier, verifierId } = state.userInfo
