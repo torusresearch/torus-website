@@ -10,12 +10,10 @@
           :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
         />
       </router-link>
-      <div class="beta-text caption pr-4 hidden-xs-only">Beta</div>
       <v-toolbar-title class="mt-1 hidden-sm-and-up">
         <router-link id="logo-home-lnk" :to="{ name: 'walletHome' }">
           <img :src="require('../../../../public/img/icons/t-fill.svg')" width="35" height="30" alt="Torus Logo" />
         </router-link>
-        <div class="primary--text subtitle-2 beta-text-mobile">Beta</div>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-tabs centered v-if="!$vuetify.breakpoint.smAndDown">
