@@ -67,6 +67,12 @@ export default {
           }
           window.location.href = ev.data.payload.url
         }
+        bc.postMessage({
+          data: {
+            preopenInstanceId,
+            message: 'popup_loaded'
+          }
+        })
       }
     } catch (error) {
       log.info(error, 'something went wrong')
