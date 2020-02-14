@@ -10,7 +10,7 @@
             <div class="text-gray body-1 mt-2 mh-4">
               {{ badge.description }}
             </div>
-            <div v-if="badge.isCompleted || index === 0">
+            <div v-if="badge.isCompleted">
               <img src="../../../../public/images/check-icon.svg" alt="Completed icon" />
               <div class="body-1 font-weight-bold text-complete">Completed</div>
             </div>
@@ -29,7 +29,7 @@
 
 <script>
 export default {
-  props: ['badge', 'index', 'lastBadgeIndex'],
+  props: ['badge'],
   methods: {
     handleLinkOpen(name) {
       if (name.startsWith('https') || name.startsWith('http')) {

@@ -25,13 +25,8 @@
         </div>
       </v-flex>
       <v-flex class="xs12 sm6 md4 lg3 px-4 my-4" v-for="(badge, index) in badges" :key="index">
-        <wallet-badge @openModal="showBadgeModal" :badge="badge" :lastBadgeIndex="badges.length" :index="index" />
+        <wallet-badge @openModal="showBadgeModal" :badge="badge" />
       </v-flex>
-      <v-layout justify-center py-12>
-        <v-flex text-center xs4>
-          <badge-submit :enabled="enableScoreCard"></badge-submit>
-        </v-flex>
-      </v-layout>
     </v-layout>
     <v-layout mt-4 pr-2 wrap>
       <v-spacer></v-spacer>
@@ -49,14 +44,13 @@
 </template>
 
 <script>
-import { WalletBadge, BadgeModal, BadgeSubmit, BadgeConsentModal } from '../../../components/WalletBadges'
+import { WalletBadge, BadgeModal, BadgeConsentModal } from '../../../components/WalletBadges'
 import HelpTooltip from '../../../components/helpers/HelpTooltip'
 export default {
   name: 'walletBadges',
   components: {
     WalletBadge,
     BadgeModal,
-    BadgeSubmit,
     BadgeConsentModal,
     HelpTooltip
   },
@@ -118,7 +112,7 @@ export default {
       this.trackBadge = this.$store.state.track_badges
     },
     checkTrackStatus() {
-      if (this.trackBadge != this.$store.state.track_badges) {
+      if (!this.trackBadge) {
         this.showActionModal = true
       }
     },
