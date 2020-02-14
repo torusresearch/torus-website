@@ -30,21 +30,24 @@ class StreamWindow {
     const bc = new BroadcastChannel(`preopen_channel_${this.preopenInstanceId}`, broadcastChannelOptions)
     log.info('setting up bc', this.preopenInstanceId)
     this.url = url
-    setTimeout(() => {
-      bc.postMessage({
-        data: {
-          origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-          payload: { url: this.url }
-        }
-      })
-        .then(() => {
-          bc.close()
+    bc.onmessage = ev => {
+      const { preopenInstanceId: openedId, message } = ev.data
+      log.info(ev.data)
+      if (this.preopenInstanceId === openedId && message === 'popup_loaded') {
+        bc.postMessage({
+          data: {
+            origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+            payload: { url: this.url }
+          }
         })
-        .catch(err => {
-          log.error('Failed to communicate via preopen_channel', err)
-          bc.close()
-        })
-    }, 1000)
+          .catch(err => {
+            log.error('Failed to communicate via preopen_channel', err)
+          })
+          .finally(() => {
+            bc.close()
+          })
+      }
+    }
     const preopenHandler = chunk => {
       const { preopenInstanceId, closed } = chunk.data
       if (preopenInstanceId === this.preopenInstanceId && closed) {
