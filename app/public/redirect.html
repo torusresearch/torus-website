@@ -2128,7 +2128,7 @@
             const { preopenInstanceId: oldId, payload, message } = ev.data
             if (oldId === preopenInstanceId && payload && payload.url) {
               window.location.href = payload.url
-            } else if (oldId === preopenInstanceId && message) {
+            } else if (oldId === preopenInstanceId && message === 'setup_complete') {
               bc.postMessage({
                 data: {
                   preopenInstanceId: preopenInstanceId,
