@@ -17,10 +17,6 @@ const initialState = {
   // account handled
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
-  weiBalanceLoaded: false, // Use on showing spinners
-  selectedEOA: '', // For signing
-  selectedAddress: '',
-  selectedCurrency: 'USD',
   networkId: 0,
   networkType: { host: ROPSTEN, chainId: ROPSTEN_CODE, networkName: ROPSTEN_DISPLAY_NAME },
   currencyData: {},
@@ -31,8 +27,10 @@ const initialState = {
   unapprovedTypedMessages: {},
   unapprovedPersonalMsgs: {},
   unapprovedMsgs: {},
+
   // preferences
   selectedAddress: '',
+  selectedEOA: '',
   jwtToken: '',
 
   selectedCurrency: 'USD',
@@ -48,10 +46,4 @@ const initialState = {
   successMsg: ''
 }
 
-/** new wallet object
-wallet: {
-  publickey: {privatekey: "sdfjlaskdjfljasdf", type: "EOA"}
-  contractAddress: {privatekey: null, type:"SC"}
-}
-*/
 export default initialState
