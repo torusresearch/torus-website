@@ -151,7 +151,7 @@ export default {
         verifier_id_type: 'email',
         hash: Web3.utils.sha3(this.extendedPassword).replace('0x', '')
       })
-        .then(data => this.$router.push(`torus-verify?email=${this.verifier_id}`))
+        .then(data => this.$router.push(`torus-email-verify?email=${this.verifier_id}`))
         .catch(err => log.error(err))
     },
     updateExtendedPassword: function() {
