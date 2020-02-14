@@ -39,7 +39,6 @@
     "test:e2e:mobile": "env MOBILE_ENV=true mocha --timeout=60000 ./test/e2e"
   },
   "dependencies": {
-    "@chaitanyapotti/random-id": "^1.0.3",
     "@toruslabs/fetch-node-details": "^2.0.1",
     "@toruslabs/torus.js": "^1.0.6",
     "assert": "^2.0.0",
@@ -75,6 +74,7 @@
     "percentile": "^1.2.2",
     "pify": "^4.0.1",
     "post-message-stream": "^3.0.0",
+    "@chaitanyapotti/random-id": "^1.0.3",
     "readable-stream": "^3.5.0",
     "register-service-worker": "^1.6.2",
     "single-call-balance-checker-abi": "^1.0.0",
@@ -89,7 +89,6 @@
     "vue-qrcode-reader": "^2.1.1",
     "vue-router": "^3.1.5",
     "vue-spinner": "^1.0.3",
-    "vue-tel-input": "^4.3.0",
     "vuetify": "2.1.16",
     "vuex": "^3.1.2",
     "vuex-persist": "^2.2.0",
