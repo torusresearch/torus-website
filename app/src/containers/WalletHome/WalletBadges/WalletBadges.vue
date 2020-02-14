@@ -114,6 +114,8 @@ export default {
     checkTrackStatus() {
       if (!this.trackBadge) {
         this.showActionModal = true
+      } else {
+        this.$store.dispatch('setUserBadgeTrack', this.trackBadge)
       }
     },
     showBadgeModal(badge) {
@@ -129,7 +131,6 @@ export default {
         this.$store.dispatch('removeMyBadges')
       }
       this.showActionModal = false
-      console.log(this.$store.state.track_badges)
     },
     closeModal() {
       this.badge = {

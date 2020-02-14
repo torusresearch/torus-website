@@ -1051,7 +1051,7 @@ export default {
             const { transactions, contacts, default_currency, theme, locale, verifier, verifier_id, track_badges } = user.data || {}
             commit('setPastTransactions', transactions)
             commit('setContacts', contacts)
-            commit('setTrackBadge', track_badge)
+            commit('setTrackBadge', track_badges)
             dispatch('setTheme', theme)
             dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
             dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
@@ -1061,14 +1061,13 @@ export default {
           }
         })
         .catch(async error => {
-          const { userInfo, selectedCurrency, theme, track_badge } = state
+          const { userInfo, selectedCurrency, theme } = state
           const { verifier, verifierId } = userInfo
           await post(
             `${config.api}/user`,
             {
               default_currency: selectedCurrency,
               theme,
-              track_badge,
               verifier,
               verifierId
             },

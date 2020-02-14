@@ -7,7 +7,7 @@
             <img width="150" v-if="badge.isCompleted" :src="badge.completedImageUrl[0].url" />
             <img width="150" v-else :src="badge.unCompletedImageUrl[0].url" />
             <div class="font-weight-bold title font-fit mh-2">{{ badge.title }}</div>
-            <div class="text-gray body-1 mt-2 mh-4">
+            <div class="text-gray body-1 mt--2 mh-4">
               {{ badge.description }}
             </div>
             <div v-if="badge.isCompleted">

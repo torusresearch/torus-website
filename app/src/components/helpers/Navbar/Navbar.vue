@@ -80,6 +80,9 @@ export default {
   created() {
     this.$store.dispatch('loadBadges')
     this.$store.dispatch('loadMyBadges')
+    if (this.$store.state.isNewUser) {
+      this.taskComplete(0)
+    }
   },
   computed: {
     bannerColor() {
@@ -111,6 +114,17 @@ export default {
         return 'You are using the test cluster on torus network'
       }
       return ''
+    }
+  },
+  methods: {
+    taskComplete(badgeId) {
+      if (this.$store.state.track_badges) {
+        let checkDuplicates = this.$store.state.myBadges.map(badge => Number(badge.badgeId)).includes(badgeId)
+        if (!checkDuplicates) {
+          this.badge = this.$store.state.badges[badgeId]
+          this.$store.dispatch('addBadge', { badgeId: this.badge.id })
+        }
+      }
     }
   }
 }
