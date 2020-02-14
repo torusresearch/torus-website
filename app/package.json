@@ -70,7 +70,7 @@
     "obj-multiplex": "^1.0.0",
     "obs-store": "^4.0.3",
     "percentile": "^1.2.2",
-    "pify": "^4.0.1",
+    "pify": "^5.0.0",
     "post-message-stream": "^3.0.0",
     "@chaitanyapotti/random-id": "^1.0.3",
     "readable-stream": "^3.5.0",
