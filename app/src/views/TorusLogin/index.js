@@ -1,8 +1,5 @@
-import EmailLogin from './Email/Login'
-import EmailRegister from './Email/Register'
-import EmailVerify from './Email/Verification'
-import PhoneLogin from './Phone/PhoneLogin'
-import PhoneRegister from './Phone/PhoneRegister'
-import PhoneVerify from './Phone/PhoneVerification'
+import TorusLogin from './Login'
+import TorusRegister from './Register'
+import TorusVerify from './Verification'
 
-export { EmailLogin, EmailRegister, EmailVerify, PhoneLogin, PhoneRegister, PhoneVerify }
+export { TorusLogin, TorusRegister, TorusVerify }

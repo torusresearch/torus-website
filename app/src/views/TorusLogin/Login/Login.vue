@@ -1,18 +1,18 @@
 <template>
   <div class="default">
     <v-layout wrap fill-height align-center justify-center class="login-panel-left">
-      <v-flex xs10 md10>
+      <v-flex xs12 md6>
         <v-layout wrap>
-          <v-flex class="mb-5" xs12 sm12 ml-auto mr-auto>
-            <img width="117" :src="require(`../../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
+          <v-flex class="mb-5" xs9 sm7 ml-auto mr-auto>
+            <img width="117" :src="require('../../../../public/images/torus-logo-blue.svg')" />
           </v-flex>
-          <v-flex class="mb-3" xs12 sm12 ml-auto mr-auto>
+          <v-flex class="mb-3" xs9 sm7 ml-auto mr-auto>
             <span class="display-1 font-weight-bold">Log in</span>
           </v-flex>
-          <v-flex :class="$vuetify.theme.dark ? '' : 'text_1--text'" class="body-2" mb-8 xs12 sm12 ml-auto mr-auto>
+          <v-flex :class="$vuetify.theme.dark ? '' : 'text_1--text'" class="body-2" mb-8 xs9 sm7 ml-auto mr-auto>
             <span>{{ t('login.message') }}</span>
           </v-flex>
-          <v-flex xs12 sm12 ml-auto mb-2 pt-4 mr-auto>
+          <v-flex xs9 sm7 ml-auto mb-2 pt-4 mr-auto>
             <v-flex xs12>
               <v-form @submit.prevent="login" lazy-validation>
                 <v-layout wrap>
@@ -28,7 +28,7 @@
                       single-line
                     >
                       <template v-slot:prepend-inner>
-                        <img class="mr-2 mt-1" :src="require(`../../../../../public/images/email.svg`)" height="16px" />
+                        <img class="mr-2 mt-1" :src="require(`../../../../public/images/email.svg`)" height="16px" />
                       </template>
                     </v-text-field>
                   </v-flex>
@@ -46,7 +46,7 @@
                       single-line
                     >
                       <template v-slot:prepend-inner>
-                        <img class="mr-2 mt-1" :src="require(`../../../../../public/images/lock.svg`)" height="20px" />
+                        <img class="mr-2 mt-1" :src="require(`../../../../public/images/lock.svg`)" height="20px" />
                       </template>
                     </v-text-field>
                     <div class="v-text-field__details mb-6">
@@ -61,7 +61,7 @@
                             <v-flex grow-shrink-0>
                               <span class="caption">
                                 Don't have an account?
-                                <router-link :to="{ name: 'torusEmailRegister' }">Sign up here</router-link>
+                                <router-link :to="{ name: 'torusRegister' }">Sign up here</router-link>
                               </span>
                             </v-flex>
                           </div>
@@ -71,15 +71,7 @@
                   </v-flex>
 
                   <v-flex xs12>
-                    <v-btn
-                      color="primary"
-                      :disabled="!formComplete"
-                      class="body-1 font-weight-bold card-shadow-v8 login-btn"
-                      large
-                      depressed
-                      block
-                      type="submit"
-                    >
+                    <v-btn color="primary" class="body-1 font-weight-bold card-shadow-v8 login-btn" large depressed block type="submit">
                       Login
                     </v-btn>
                   </v-flex>
@@ -87,13 +79,23 @@
               </v-form>
             </v-flex>
           </v-flex>
-          <v-flex class="headline" mb-6 xs12 sm12 ml-auto mr-auto>
+          <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
             <span class="text_2--text body-1">
               {{ t('login.acceptTerms') }}
               <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
                 <span class="primary--text">{{ t('login.termsAndConditions') }}</span>
               </a>
             </span>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+      <v-flex v-if="$vuetify.breakpoint.smAndUp" xs12 sm4 md6 fill-height class="login-panel-right" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
+        <v-layout class="pb-8" wrap fill-height align-end>
+          <v-flex class="mb-3 text-center" xs9 sm8 md10 ml-auto mr-auto>
+            <div class="right-panel-header white--text font-weight-bold mb-2">{{ t('login.frictionless') }}</div>
+            <div class="body-2 right-panel-subheader white--text mx-auto">
+              {{ t('login.simpleSecure') }}
+            </div>
           </v-flex>
         </v-layout>
       </v-flex>
@@ -104,8 +106,8 @@
 <script>
 import Web3 from 'web3'
 import log from 'loglevel'
-import { post } from '../../../../utils/httpHelpers'
-import config from '../../../../config'
+import { post } from '../../../utils/httpHelpers'
+import config from '../../../config'
 export default {
   data() {
     return {
@@ -124,11 +126,6 @@ export default {
     const queryParams = this.$router.currentRoute.query
     this.state = queryParams.state
     this.redirect_uri = queryParams.redirect_uri
-  },
-  computed: {
-    formComplete() {
-      return this.verifier_id.length >= 11 && this.password.length >= 8
-    }
   },
   methods: {
     toggleShowPassword(event) {
