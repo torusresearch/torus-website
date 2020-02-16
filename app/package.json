@@ -133,7 +133,7 @@
     "mocha-eslint": "^6.0.0",
     "mocha-jsdom": "^2.0.0",
     "mocha-sinon": "^2.1.0",
-    "nock": "^11.7.2",
+    "nock": "^12.0.0",
     "nyc": "^15.0.0",
     "puppeteer": "^2.1.0",
     "sass": "^1.25.0",
