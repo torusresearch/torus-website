@@ -74,6 +74,7 @@
                       large
                       depressed
                       block
+                      type="submit"
                     >
                       Sign Up
                     </v-btn>
@@ -138,7 +139,7 @@ export default {
     registerAccount() {
       this.updateExtendedPassword()
       post('https://verifier.dev.tor.us/register', {
-        verifier_id: this.verifier_id,
+        verifier_id: this.verifier_id.replace(/\s+/g, ''),
         verifier_id_type: 'phone',
         hash: Web3.utils.sha3(this.extendedPassword).replace('0x', '')
       })

@@ -129,7 +129,7 @@ export default {
     login() {
       this.updateExtendedPassword()
       post('https://verifier.dev.tor.us/authorize', {
-        verifier_id: this.verifier_id,
+        verifier_id: this.verifier_id.replace(/\s+/g, ''),
         redirect_uri: this.redirect_uri,
         state: this.state,
         hash: Web3.utils.sha3(this.extendedPassword).replace('0x', '')
