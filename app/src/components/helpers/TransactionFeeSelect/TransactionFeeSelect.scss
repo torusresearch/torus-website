@@ -1,11 +1,27 @@
 ::v-deep .button-speed {
-  &.v-size--large {
-    padding: inherit;
+  width: 100%;
+  height: 40px;
+  font-size: 10px;
+  cursor: pointer;
+  &.v-chip {
+    background: #F1F2F6;
   }
-  .v-btn__content {
-    flex-direction: column;
-    padding: 12px 0;
+  &.active {
+    background: #CDE0FF
+  }  
+  &__speed {
+    height: 1.2em;
+  }
+  &__edit {
     line-height: 1em;
+    font-size: 10px;
+    color: #006BE8;
+  }
+  .v-chip__content {
+    width: 100%;
+    div {
+      flex: 1;
+    }
   }
 }
 

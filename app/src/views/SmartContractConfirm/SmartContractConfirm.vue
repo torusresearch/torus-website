@@ -1,9 +1,9 @@
 <template>
-  <v-container pa-0 class="smart-contract-confirm-container">
+  <v-container pa-0 class="smart-contract-confirm-container torus-v8">
     <v-layout wrap>
       <v-flex class="card-shadow text-center" py-10 mb-4 xs12>
         <img :src="require(`../../../public/images/torus-logo-blue.svg`)" width="115" />
-        <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="headline font-weight-bold">
+        <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="title font-weight-bold">
           Confirm Transaction
         </div>
       </v-flex>
@@ -16,17 +16,13 @@
             </div>
             <br />
             <br />
-            <div
-              :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'"
-              class="float-right caption text-center logo-label"
-              title="carlos@tor.us"
-            >
-              carlos.lastres@tor.us
+            <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="float-right caption text-center logo-label" :title="from">
+              {{ from }}
             </div>
           </v-flex>
           <v-flex xs6>
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="pt-2 network-container">
-              <v-icon size="12" v-text="'$vuetify.icons.network'"></v-icon>
+              <v-icon size="10" v-text="'$vuetify.icons.network'" style="margin-top: -2px"></v-icon>
               <span class="">{{ selectedNetwork }}</span>
             </div>
           </v-flex>
@@ -40,50 +36,34 @@
             <div
               :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'"
               class="float-left caption text-center logo-label logo-label--right"
-              title="23898023"
+              :title="to"
             >
-              23898023
+              {{ to }}
             </div>
           </v-flex>
         </v-layout>
       </v-flex>
       <v-flex mx-6 mb-4 xs12>
-        <v-layout wrap>
+        <v-divider class="mb-4"></v-divider>
+        <v-layout wrap class="mb-4">
           <v-flex xs4 mb-4>
-            <div :class="'text_2--text'" class="caption mt-4">You Pay</div>
+            <div :class="'text_1--text'" class="caption mt-2">You Pay</div>
           </v-flex>
           <v-flex xs8 mb-4>
-            <v-text-field
-              value="0.1938 ETH"
-              id="total-cost"
-              :hint="`~23.54 USD`"
-              persistent-hint
-              type="number"
-              outlined
-              required
-              aria-label="Total Cost"
-            />
+            <v-text-field class="text_1--text caption you-pay" value="522.54 ETH" :hint="`~23.54 USD`" persistent-hint outlined readonly />
           </v-flex>
-          <v-flex xs12 mb-4>
+          <v-flex xs12>
             <transaction-fee-select></transaction-fee-select>
           </v-flex>
-
+        </v-layout>
+        <v-divider class="mb-4"></v-divider>
+        <v-layout wrap>
           <v-flex xs4 mb-4>
-            <div :class="'text_2--text'" class="caption mt-4">Total Cost</div>
+            <div :class="'text_1--text'" class="caption mt-4">Total Cost</div>
           </v-flex>
           <v-flex xs8 mb-4>
-            <v-text-field id="total-cost" :hint="`~23.54 USD`" persistent-hint type="number" outlined required aria-label="Total Cost">
-              <template v-slot:append>
-                <v-btn small>
-                  ETH
-                </v-btn>
-                <v-btn small>
-                  USD
-                </v-btn>
-              </template>
-            </v-text-field>
+            <v-text-field class="text_1--text caption total-cost" value="522.54 ETH" :hint="`~23.54 USD`" persistent-hint outlined readonly />
           </v-flex>
-
           <v-flex mb-4 xs12>
             <add-funds></add-funds>
           </v-flex>
@@ -114,7 +94,9 @@ export default {
   components: { TransactionFeeSelect, AddFunds },
   data() {
     return {
-      addMoreFundsDialoag: false
+      addMoreFundsDialoag: false,
+      from: 'sampleemail@gmail.com',
+      to: '12345678'
     }
   },
   computed: {

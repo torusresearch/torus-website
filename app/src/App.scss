@@ -149,3 +149,16 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+.torus-v8 {
+  // .v-text-field--filled > .v-input__control > .v-input__slot, .v-text-field--full-width > .v-input__control > .v-input__slot, .v-text-field--outlined > .v-input__control > .v-input__slot
+  .v-text-field .v-input__control {
+    & > .v-input__slot {
+      min-height: 40px;
+    }
+  }
+
+  .v-input.v-input--is-readonly .v-input__slot {
+    background: #F1F2F6;
+  }
+}

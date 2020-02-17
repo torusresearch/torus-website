@@ -1,7 +1,7 @@
 <template>
   <v-layout wrap>
     <v-flex xs4>
-      <div :class="'text_2--text'" class="caption mt-4">Transaction Fee</div>
+      <div class="text_1--text caption mt-2">Transaction Fee</div>
     </v-flex>
     <v-flex xs8>
       <v-layout v-if="freeTransaction">
@@ -27,20 +27,26 @@
       </v-layout>
       <v-layout mx-n2 v-else>
         <v-flex xs6 mx-2>
-          <v-btn class="button-speed" block large depressed>
-            <span>~ 30Mins Pay</span>
-            <span>0.12 USD</span>
-          </v-btn>
+          <v-chip class="button-speed active" label v-on="on">
+            <img :src="require(`../../../../public/img/icons/speed-bicycle.svg`)" />
+            <div class="text-center">
+              <div class="font-weight-bold button-speed__speed">~ 30Mins</div>
+              <div class="text_2--text">0.12 USD</div>
+            </div>
+          </v-chip>
         </v-flex>
         <v-flex xs6 mx-2>
-          <v-btn class="button-speed" block large depressed>
-            <span>~ 30Mins Pay</span>
-            <span>0.12 USD</span>
-          </v-btn>
+          <v-chip class="button-speed" label v-on="on">
+            <img :src="require(`../../../../public/img/icons/speed-car.svg`)" />
+            <div class="text-center">
+              <div class="font-weight-bold button-speed__speed">~ 30Mins</div>
+              <div class="text_2--text">0.12 USD</div>
+            </div>
+          </v-chip>
         </v-flex>
       </v-layout>
     </v-flex>
-    <v-flex xs12 class="text-right">
+    <v-flex xs12 class="text-right mt-1 button-speed__edit">
       <span>Edit</span>
     </v-flex>
   </v-layout>
@@ -50,7 +56,7 @@
 export default {
   data() {
     return {
-      freeTransaction: true
+      freeTransaction: false
     }
   }
 }
