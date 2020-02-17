@@ -77,7 +77,10 @@ export default {
     torus.updateStaticData({ isUnlocked: false })
   },
   setSelectedCurrency({ commit, state }, payload) {
-    torusController.setCurrentCurrency(payload)
+    torusController.setCurrentCurrency(payload, (err, data) => {
+      if (err) log.error('currency fetch failed')
+      else commit('setCurrencyData', data)
+    })
   },
   async forceFetchTokens({ state }, payload) {
     detectTokensController.refreshTokenBalances()
