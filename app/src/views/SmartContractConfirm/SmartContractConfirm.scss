@@ -37,4 +37,29 @@
     text-align: center;
     margin-top: 24px;
   }
+
+  ::v-deep .v-input, 
+  ::v-deep .v-input {
+    fieldset {
+      border: 0;
+      border-radius: 6px;
+    }
+    .v-text-field__details {
+      padding-right: 0;
+      .v-messages__message {
+        text-align: right;
+        font-size: 10px;
+      }
+    }
+  }
+
+  ::v-deep .total-cost {
+    .v-text-field__slot {
+      font-weight: 500;
+    }
+  }
+  
+  .v-divider {
+    border: 1px solid #F1F2F6;
+  }
 }

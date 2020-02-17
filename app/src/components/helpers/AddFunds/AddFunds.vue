@@ -1,45 +1,92 @@
 <template>
   <v-dialog v-model="addMoreFundsDialoag" fullscreen width="400">
     <template v-slot:activator="{ on }">
-      <v-btn block depressed outlined color="primary" small v-on="on">
+      <v-btn block depressed class="add-funds-btn" outlined v-on="on">
         Add more funds
       </v-btn>
     </template>
-    <v-card>
-      <div class="text-right"><v-btn small text @click="addMoreFundsDialoag = false">x</v-btn></div>
-      <v-layout>
-        <v-flex py-12 xs12 class="text-center">
-          <div class="title mb-10">Select you preferred method</div>
-          <div class="mb-2">
-            <v-btn depressed outlined color="primary">Top up from providers</v-btn>
+    <v-card class="torus-v8">
+      <v-layout wrap style="height: 100%">
+        <v-flex class="card-shadow text-center" py-10 xs12>
+          <img :src="require(`../../../../public/images/torus-logo-blue.svg`)" width="115" />
+          <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="title font-weight-bold">
+            Confirm Transaction
           </div>
-          <div class="mb-2 body-2">or</div>
-          <div>
-            <v-dialog v-model="fundsFromWalletDialog" fullscreen width="400">
-              <template v-slot:activator="{ on }">
-                <v-btn depressed outlined color="primary" v-on="on">Use my other wallet</v-btn>
-              </template>
-              <v-card>
-                <div class="text-right"><v-btn small text @click="fundsFromWalletDialog = false">x</v-btn></div>
-                <v-layout>
-                  <v-flex py-12 xs12 px-5 class="text-center">
-                    <div class="title mb-10">Please select your wallet</div>
-                    <v-card>
-                      <v-layout pa-4>
-                        <v-flex xs6>
-                          <div>carlos.lastres.sancho@gmail.com</div>
-                          <div>0x069a0fa242707754078c6d649acc3c8e6bff76c3aecd169bf23818cd5b558d33</div>
-                        </v-flex>
-                        <v-flex xs6>
-                          <div>1,000.23 USD</div>
-                          <div>4.75 ETH</div>
-                        </v-flex>
-                      </v-layout>
-                    </v-card>
-                  </v-flex>
-                </v-layout>
-              </v-card>
-            </v-dialog>
+        </v-flex>
+        <v-flex mx-6 mb-4 xs12 class="preferred-method-container">
+          <div class="text_2--text title font-weight-bold text-center mb-6">
+            Select your preferred method
+          </div>
+          <v-btn block depressed class="preferred-method-btn mb-6" outlined>
+            Top up from providers
+          </v-btn>
+          <v-dialog v-model="fundsFromWalletDialog" fullscreen width="400">
+            <template v-slot:activator="{ on }">
+              <v-btn block depressed class="preferred-method-btn" outlined v-on="on">
+                Use my other wallet
+              </v-btn>
+            </template>
+            <v-card class="torus-v8">
+              <v-layout wrap style="height: 100%">
+                <v-flex class="card-shadow text-center" py-10 mb-4 xs12>
+                  <img :src="require(`../../../../public/images/torus-logo-blue.svg`)" width="115" />
+                  <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="title font-weight-bold">
+                    Confirm Transaction
+                  </div>
+                </v-flex>
+                <v-flex mx-6 mb-4 xs12>
+                  <div class="text_2--text title font-weight-bold text-center mb-6">
+                    Please select your wallet
+                  </div>
+                  <v-card class="card-shadow wallet-item mb-4">
+                    <v-layout pa-4>
+                      <v-flex xs8>
+                        <div class="caption">carlos.lastres.sancho@gmail.com</div>
+                        <div class="wallet-item__details">0xCC00De14EaF13008EBdC12C18a4679E837ab8E50</div>
+                      </v-flex>
+                      <v-flex xs4 class="text-right">
+                        <div class="caption">1,000.23 USD</div>
+                        <div class="wallet-item__details">4.75ETH</div>
+                      </v-flex>
+                    </v-layout>
+                  </v-card>
+                  <v-card class="card-shadow wallet-item mb-4">
+                    <v-layout pa-4>
+                      <v-flex xs8>
+                        <div class="caption">carlos.lastres.sancho@gmail.com</div>
+                        <div class="wallet-item__details">0xCC00De14EaF13008EBdC12C18a4679E837ab8E50</div>
+                      </v-flex>
+                      <v-flex xs4 class="text-right">
+                        <div class="caption">1,000.23 USD</div>
+                        <div class="wallet-item__details">4.75ETH</div>
+                      </v-flex>
+                    </v-layout>
+                  </v-card>
+                  <v-card class="card-shadow wallet-item mb-4">
+                    <v-layout pa-4>
+                      <v-flex xs8>
+                        <div class="caption">carlos.lastres.sancho@gmail.com</div>
+                        <div class="wallet-item__details">0xCC00De14EaF13008EBdC12C18a4679E837ab8E50</div>
+                      </v-flex>
+                      <v-flex xs4 class="text-right">
+                        <div class="caption">1,000.23 USD</div>
+                        <div class="wallet-item__details">4.75ETH</div>
+                      </v-flex>
+                    </v-layout>
+                  </v-card>
+                </v-flex>
+                <v-flex class="return">
+                  <div class="text-center">
+                    <v-btn class="return__btn" text @click="fundsFromWalletDialog = false">Return</v-btn>
+                  </div>
+                </v-flex>
+              </v-layout>
+            </v-card>
+          </v-dialog>
+        </v-flex>
+        <v-flex class="return">
+          <div class="text-center">
+            <v-btn class="return__btn" text @click="addMoreFundsDialoag = false">Return</v-btn>
           </div>
         </v-flex>
       </v-layout>
@@ -51,7 +98,7 @@
 export default {
   data() {
     return {
-      addMoreFundsDialoag: false,
+      addMoreFundsDialoag: true,
       fundsFromWalletDialog: false
     }
   }
