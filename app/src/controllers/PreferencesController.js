@@ -107,6 +107,7 @@ class PreferencesController {
         })
         if (!verifier || !verifier_id) this.setVerifier(verifier, verifier_id)
         cb && cb(user)
+        // this.permissionsController._initializePermissions(permissions)
       }
     })
   }
@@ -244,6 +245,7 @@ class PreferencesController {
 
   setSelectedAddress(address) {
     this.store.updateState({ selectedAddress: address })
+    this.sync()
   }
 
   /**
