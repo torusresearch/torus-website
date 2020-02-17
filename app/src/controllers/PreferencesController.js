@@ -53,8 +53,10 @@ class PreferencesController {
 
   get headers() {
     return {
-      Authorization: `Bearer ${this._jwtToken}`,
-      'Content-Type': 'application/json; charset=utf-8'
+      headers: {
+        Authorization: `Bearer ${this._jwtToken}`,
+        'Content-Type': 'application/json; charset=utf-8'
+      }
     }
   }
 
@@ -86,26 +88,12 @@ class PreferencesController {
     setTimeout(() => this.successStore.putState(''), SUCCESS_TIME)
   }
 
-  handlePromise(promise, { successCb, successMsg }, { errorCb, errorMsg }) {
-    promise
-      .then(resp => {
-        this.handleSuccess(successMsg || (resp && resp.data) || resp)
-        successCb && successCb(resp)
-      })
-      .catch(err => {
-        this.handleError(errorMsg || err)
-        errorCb && errorCb()
-      })
-  }
-
   sync(cb, errorCb) {
     Promise.all([
-      get(`${config.api}/user`, {
-        headers: this.headers
-      }).catch(_ => {
+      get(`${config.api}/user`, this.headers).catch(_ => {
         errorCb && errorCb()
       }),
-      getPastOrders({}, this.headers)
+      getPastOrders({}, this.headers.headers)
     ]).then(([user, paymentTx]) => {
       if (user && user.data) {
         const { transactions, contacts, theme, locale, verifier, verifier_id, permissions } = user.data || {}
@@ -133,9 +121,7 @@ class PreferencesController {
         verifierId,
         locale
       },
-      {
-        headers: this.headers
-      }
+      this.headers
     )
   }
 
@@ -152,183 +138,108 @@ class PreferencesController {
           verifier,
           verifierId
         },
-        {
-          headers: this.headers
-        }
+        this.headers
       )
   }
 
-  setUserTheme(payload) {
-    if (payload !== this.store.getState().theme)
-      this.handlePromise(
-        patch(
-          `${config.api}/user/theme`,
-          {
-            theme: payload
-          },
-          {
-            headers: this.headers
-          }
-        ),
-        {
-          successCb: () => {
-            this.store.updateState({ theme: payload })
-          },
-          successMsg: 'successfully updated theme'
-        },
-        {
-          errorMsg: 'unable to update theme'
-        }
-      )
+  async setUserTheme(payload) {
+    if (payload === this.store.getState().theme) return
+    try {
+      const resp = await patch(`${config.api}/user/theme`, { theme: payload }, this.headers)
+      this.handleSuccess('successfully updated theme' || (resp && resp.data) || resp)
+      this.store.updateState({ theme: payload })
+    } catch (error) {
+      this.handleError('unable to update theme')
+    }
   }
 
-  setPermissions(payload) {
-    post(`${config.api}/permissions`, payload, {
-      headers: this.headers
-    })
-      .then(response => {
-        log.info('successfully set permissions', response)
-      })
-      .catch(err => {
-        log.error(err, 'unable to patch permissions info')
-      })
+  async setPermissions(payload) {
+    try {
+      const response = await post(`${config.api}/permissions`, payload, this.headers)
+      log.info('successfully set permissions', response)
+    } catch (error) {
+      log.error('unable to patch permissions info', error)
+    }
   }
 
-  setUserLocale(payload) {
-    if (payload !== this.store.getState().locale)
-      this.handlePromise(
-        patch(
-          `${config.api}/user/locale`,
-          {
-            locale: payload
-          },
-          {
-            headers: this.headers
-          }
-        ),
-        {
-          successCb: () => {
-            this.store.updateState({ locale: payload })
-          },
-          successMsg: 'successfully updated locale'
-        },
-        {
-          errorMsg: 'unable to update locale'
-        }
-      )
+  async setUserLocale(payload) {
+    if (payload === this.store.getState().locale) return
+    try {
+      await patch(`${config.api}/user/locale`, { locale: payload }, this.headers)
+      this.store.updateState({ locale: payload })
+      this.handleSuccess('successfully updated locale')
+    } catch (error) {
+      this.handleError('unable to update locale')
+    }
   }
 
-  setSelectedCurrency(payload) {
-    if (payload.selectedCurrency !== this.store.getState().selectedCurrency)
-      this.handlePromise(
-        patch(
-          `${config.api}/user`,
-          {
-            default_currency: payload.selectedCurrency
-          },
-          {
-            headers: this.headers
-          }
-        ),
-        {
-          successCb: () => {
-            this.store.updateState({ selectedCurrency: payload.selectedCurrency })
-          },
-          successMsg: 'successfully patched currency info'
-        },
-        {
-          errorMsg: 'unable to patch currency info'
-        }
-      )
+  async setSelectedCurrency(payload) {
+    if (payload.selectedCurrency === this.store.getState().selectedCurrency) return
+    try {
+      await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers)
+      this.store.updateState({ selectedCurrency: payload.selectedCurrency })
+      this.handleSuccess('successfully patched currency info')
+    } catch (error) {
+      this.handleError('unable to patch currency info')
+    }
   }
 
-  setVerifier(verifier, verifierId) {
-    patch(
-      `${config.api}/user/verifier`,
-      { verifier, verifierId },
-      {
-        headers: this.headers
-      }
-    )
-      .then(response => {
-        log.info('successfully patched', response)
-      })
-      .catch(err => {
-        log.error(err, 'unable to patch verifier info')
-      })
+  async setVerifier(verifier, verifierId) {
+    try {
+      await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers)
+      log.info('successfully patched', response)
+    } catch (error) {
+      log.error('unable to patch verifier info', error)
+    }
   }
 
   getEtherScanTokenBalances() {
-    return get(`${config.api}/tokenbalances`, {
-      headers: this.headers
-    })
+    return get(`${config.api}/tokenbalances`, this.headers)
   }
 
-  getBillboardContents() {
-    get(`${config.api}/billboard`, {
-      headers: this.headers
-    })
-      .then(resp => {
-        const events = []
-        resp.data.forEach(event => {
-          if (!events[event.callToActionLink]) events[event.callToActionLink] = {}
-          events[event.callToActionLink][event.locale] = event
-        })
+  async getBillboardContents() {
+    try {
+      const resp = await get(`${config.api}/billboard`, this.headers)
+      const events = resp.data.reduce((acc, event) => {
+        if (!acc[event.callToActionLink]) acc[event.callToActionLink] = {}
+        acc[event.callToActionLink][event.locale] = event
+        return acc
+      }, [])
 
-        if (events) this.store.updateState({ billboard: events })
-      })
-      .catch(err => log.error(err))
+      if (events) this.store.updateState({ billboard: events })
+    } catch (error) {
+      log.error(error)
+    }
   }
 
-  addContact(payload) {
-    this.handlePromise(
-      post(`${config.api}/contact`, payload, {
-        headers: this.headers
-      }),
-      {
-        successCb: response => {
-          this.store.updateState({ contacts: [...this.store.getState().contacts, response.data] })
-        },
-        successMsg: 'successfully added contact'
-      },
-      {
-        errorMsg: 'Unable to add contact'
-      }
-    )
+  async addContact(payload) {
+    try {
+      await post(`${config.api}/contact`, payload, this.headers)
+      this.store.updateState({ contacts: [...this.store.getState().contacts, response.data] })
+      this.handleSuccess('successfully added contact')
+    } catch (error) {
+      this.handleError('Unable to add contact')
+    }
   }
 
-  deleteContact(payload) {
-    this.handlePromise(
-      remove(
-        `${config.api}/contact/${payload}`,
-        {},
-        {
-          headers: this.headers
-        }
-      ),
-      {
-        successCb: response => {
-          const finalContacts = this.store.getState().contacts.filter(contact => contact.id !== response.data.id)
-          this.store.updateState({ contacts: finalContacts })
-        },
-        successMsg: 'Successfully deleted contact'
-      },
-      {
-        errorMsg: 'Unable to delete contact'
-      }
-    )
+  async deleteContact(payload) {
+    try {
+      const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers)
+      const finalContacts = this.store.getState().contacts.filter(contact => contact.id !== response.data.id)
+      this.store.updateState({ contacts: finalContacts })
+      this.handleSuccess('Successfully deleted contact')
+    } catch (error) {
+      this.handleError('Unable to delete contact')
+    }
   }
 
-  revokeDiscord(idToken) {
-    post(
-      `${config.api}/revoke/discord`,
-      { token: idToken },
-      {
-        headers: this.headers
-      }
-    )
-      .then(resp => log.info(resp))
-      .catch(err => log.error(err))
+  async revokeDiscord(idToken) {
+    try {
+      const resp = await post(`${config.api}/revoke/discord`, { token: idToken }, this.headers)
+      log.info(resp)
+    } catch (error) {
+      log.error(error)
+    }
   }
 
   setSelectedAddress(address) {
