@@ -82,7 +82,6 @@
     "vue-content-loader": "^0.2.2",
     "vue-json-pretty": "^1.6.3",
     "vue-json-tree": "^0.4.1",
-    "vue-knob-control": "^1.6.0",
     "vue-qr": "^2.2.1",
     "vue-qrcode-reader": "^2.1.1",
     "vue-router": "^3.1.5",
