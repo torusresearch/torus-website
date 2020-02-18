@@ -58,9 +58,4 @@ describe('#AssetsContractController', () => {
     const tokenId = await assetsContractController.getOwnerOf(GODSADDRESS, 148332)
     assert.notEqual(tokenId, '')
   })
-
-  // it('should get balances in a single call', async () => {
-  //   const balances = await assetsContractController.getBalancesInSingleCall(SAI_ADDRESS, [SAI_ADDRESS])
-  //   assert.notEqual(balances[SAI_ADDRESS], '0x')
-  // })
 })
