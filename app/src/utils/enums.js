@@ -239,6 +239,8 @@ export const NOTIFICATION_NAMES = {
 export const LOG_IGNORE_METHODS = ['wallet_sendDomainMetadata']
 
 export const SAFE_METHODS = [
+  'eth_accounts',
+  'eth_requestAccounts',
   'web3_sha3',
   'net_listening',
   'net_peerCount',

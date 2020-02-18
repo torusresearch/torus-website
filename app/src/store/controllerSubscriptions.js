@@ -93,3 +93,7 @@ export function successMsgHandler(msg) {
 export function errorMsgHandler(err) {
   store.commit('setErrorMsg', err)
 }
+
+export function metadataHandler(state) {
+  store.commit('setMetaData', state)
+}

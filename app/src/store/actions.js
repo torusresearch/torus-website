@@ -29,7 +29,8 @@ import {
   tokenRatesControllerHandler,
   prefsControllerHandler,
   successMsgHandler,
-  errorMsgHandler
+  errorMsgHandler,
+  metadataHandler
 } from './controllerSubscriptions'
 import PopupHandler from '../utils/PopupHandler'
 
@@ -56,6 +57,9 @@ const statusStream = (torus.communicationMux && torus.communicationMux.getStream
 const oauthStream = (torus.communicationMux && torus.communicationMux.getStream('oauth')) || fakeStream
 const userInfoStream = (torus.communicationMux && torus.communicationMux.getStream('user_info')) || fakeStream
 const providerChangeStream = (torus.communicationMux && torus.communicationMux.getStream('provider_change')) || fakeStream
+
+// Have to do this here cause embed calls on init
+prefsController.metadataStore.subscribe(metadataHandler)
 
 export default {
   logOut({ commit, state }, payload) {

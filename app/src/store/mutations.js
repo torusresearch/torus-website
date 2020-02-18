@@ -101,5 +101,14 @@ export default {
   },
   setSuccessMsg(state, payload) {
     state.successMsg = payload
+  },
+  setMetaData(state, payload) {
+    const keys = Object.keys(payload)
+    const key = keys[keys.length - 1] || ''
+    const value = payload[key] || { name: '', icon: '' }
+    state.iframeMetadata = {
+      origin: key,
+      ...value
+    }
   }
 }

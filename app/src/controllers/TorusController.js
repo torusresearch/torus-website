@@ -32,7 +32,7 @@ import PersonalMessageManager from './PersonalMessageManager'
 import TypedMessageManager from './TypedMessageManager'
 import KeyringController from './TorusKeyring'
 import ComposableObservableStore from '../utils/ComposableObservableStore'
-import setupMultiplex from '../utils/setupMultiplex'
+// import setupMultiplex from '../utils/setupMultiplex'
 import createOriginMiddleware from '../utils/createOriginMiddleware'
 import createLoggerMiddleware from '../utils/createLoggerMiddleware'
 // const Dnode = require('dnode')
@@ -127,7 +127,7 @@ export default class TorusController extends EventEmitter {
 
     this.permissionsController = new PermissionsController({
       getKeyringAccounts: this.keyringController.getAccounts.bind(this.keyringController),
-      prefsController: this.prefsController
+      setSiteMetadata: this.prefsController.setSiteMetadata.bind(this.prefsController)
     })
 
     // tx mgmt
@@ -756,7 +756,7 @@ export default class TorusController extends EventEmitter {
     engine.push(filterMiddleware)
     engine.push(subscriptionManager.middleware)
     // permissions
-    // engine.push(this.permissionsController.createMiddleware({ origin }))
+    engine.push(this.permissionsController.createMiddleware({ origin }))
     // watch asset
     // engine.push(this.preferencesController.requestWatchAsset.bind(this.preferencesController))
     // forward to metamask primary provider

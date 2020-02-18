@@ -42,6 +42,7 @@ class PreferencesController {
     this.jwtToken = ''
     this._jwtToken = ''
     this.store = new ObservableStore(initState)
+    this.metadataStore = new ObservableStore({})
     this.errorStore = new ObservableStore('')
     this.successStore = new ObservableStore('')
   }
@@ -241,6 +242,10 @@ class PreferencesController {
     } catch (error) {
       log.error(error)
     }
+  }
+
+  setSiteMetadata(origin, domainMetadata) {
+    this.metadataStore.updateState({ [origin]: domainMetadata })
   }
 
   setSelectedAddress(address) {
