@@ -16,6 +16,9 @@
     line-height: 1em;
     font-size: 10px;
     color: #006BE8;
+    &--transfer {
+      font-size: 14px;
+    }
   }
   .v-chip__content {
     width: 100%;
@@ -23,11 +26,33 @@
       flex: 1;
     }
   }
+  &--transfer {
+    height: 54px;
+    .v-chip__content {
+      padding: 12px;
+      display: block;
+      & > div {
+        display: inline-block;
+        margin-left: 4px;
+        margin-right: 4px;
+      }
+    }
+  }
 }
 
 .others-pay {
   .others-pay-selected {
+    display: flex;
     width: 100%;
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
+    border-color: var(--v-text_2-base);
+    color: var(--v-text_1-base);
+    border-radius: 6px;
+    font-size: 16px;
+    ::v-deep .v-chip__content {
+      width: 100%;
+    }
   }
 }
 

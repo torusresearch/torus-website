@@ -94,7 +94,6 @@ export default {
   components: { TransactionFeeSelect, AddFunds },
   data() {
     return {
-      addMoreFundsDialoag: false,
       from: 'sampleemail@gmail.com',
       to: '12345678'
     }

@@ -1,15 +1,22 @@
 <template>
   <v-layout wrap>
-    <v-flex xs4>
-      <div class="text_1--text caption mt-2">Transaction Fee</div>
+    <v-flex xs4 sm12>
+      <div v-if="isTransfer" class="text_1--text body-2">
+        <span>Transfer Fee</span>
+        <span v-if="isTransfer" class="float-right mt-1 button-speed__edit button-speed__edit--transfer">Edit</span>
+      </div>
+      <div v-else class="text_1--text caption mt-2">Transaction Fee</div>
     </v-flex>
-    <v-flex xs8>
-      <v-layout v-if="freeTransaction">
+    <v-flex xs8 sm12>
+      <v-layout class="mb-3" v-if="false">
         <v-flex xs12 class="others-pay">
           <v-menu transition="slide-y-transition" bottom>
             <template v-slot:activator="{ on }">
-              <v-chip class="others-pay-selected" label outlined v-on="on">
-                <span>FREE (paid by DApp) (~ 10mins)</span>
+              <v-chip class="others-pay-selected" label large v-on="on">
+                <span>FREE (paid by DApp)</span>
+                <div class="flex-grow-1 text-right pr-2">
+                  <v-icon right>$vuetify.icons.select</v-icon>
+                </div>
               </v-chip>
             </template>
             <v-list>
@@ -25,20 +32,20 @@
           </v-menu>
         </v-flex>
       </v-layout>
-      <v-layout mx-n2 v-else>
+      <v-layout mx-n2>
         <v-flex xs6 mx-2>
-          <v-chip class="button-speed active" label v-on="on">
+          <v-chip class="button-speed active text-center" :class="isTransfer ? 'button-speed--transfer' : ''" label>
             <img :src="require(`../../../../public/img/icons/speed-bicycle.svg`)" />
-            <div class="text-center">
+            <div>
               <div class="font-weight-bold button-speed__speed">~ 30Mins</div>
               <div class="text_2--text">0.12 USD</div>
             </div>
           </v-chip>
         </v-flex>
         <v-flex xs6 mx-2>
-          <v-chip class="button-speed" label v-on="on">
+          <v-chip class="button-speed text-center" :class="isTransfer ? 'button-speed--transfer' : ''" label>
             <img :src="require(`../../../../public/img/icons/speed-car.svg`)" />
-            <div class="text-center">
+            <div>
               <div class="font-weight-bold button-speed__speed">~ 30Mins</div>
               <div class="text_2--text">0.12 USD</div>
             </div>
@@ -46,7 +53,7 @@
         </v-flex>
       </v-layout>
     </v-flex>
-    <v-flex xs12 class="text-right mt-1 button-speed__edit">
+    <v-flex v-if="!isTransfer" xs12 class="text-right mt-1 button-speed__edit">
       <span>Edit</span>
     </v-flex>
   </v-layout>
@@ -54,9 +61,10 @@
 
 <script>
 export default {
+  props: ['isTransfer'],
   data() {
     return {
-      freeTransaction: false
+      freeTransaction: true
     }
   }
 }

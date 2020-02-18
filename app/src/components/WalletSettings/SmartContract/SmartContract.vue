@@ -19,14 +19,8 @@
       </v-layout>
     </template>
     <template v-else>
-      <div class="body-2 text_1--text mb-1 px-1">Enter your ETH subdomain here</div>
       <v-layout wrap>
-        <v-flex xs12 md6 px-1 mb-1>
-          <v-text-field id="eth-subdomain" v-model="ensName" placeholder="Enter the subdomain here" outlined aria-label="Subdomain"></v-text-field>
-        </v-flex>
-      </v-layout>
-      <v-layout wrap>
-        <v-flex xs12 md6 class="text-right">
+        <v-flex xs12 md6>
           <v-btn id="create-contract-btn" color="primary" depressed class="py-1" @click="createWallet()">
             Create Smart Contract Wallet
           </v-btn>

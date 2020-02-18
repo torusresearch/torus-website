@@ -1,7 +1,275 @@
 <template>
-  <v-layout wrap class="wallet-transfer" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
-    <div class="text-black font-weight-bold headline px-4 mb-4">{{ t('walletTransfer.transferDetails') }}</div>
-    <v-flex xs12 mb-4>
+  <v-layout wrap class="wallet-transfer torus-v8" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
+    <v-flex xs12>
+      <div class="text_2--text font-weight-bold headline px-4 mb-4">{{ t('walletTransfer.transferDetails') }}</div>
+      <v-layout>
+        <v-flex mx-4 xs6>
+          <v-card class="card-shadow pa-6">
+            <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation aria-autocomplete="off" autocomplete="off">
+              <v-layout wrap>
+                <v-flex xs12 mb-4>
+                  <span class="text_1--text body-2">Select item to transfer</span>
+                  <div v-if="selectedItemDisplay">
+                    <v-menu transition="slide-y-transition" bottom>
+                      <template v-slot:activator="{ on }">
+                        <v-chip class="select-coin" label large v-on="on">
+                          <span class="select-coin-name">{{ selectedItemDisplay.name }}</span>
+                          <div class="flex-grow-1 text-right pr-2">
+                            <v-icon right>$vuetify.icons.select</v-icon>
+                          </div>
+                        </v-chip>
+                      </template>
+                      <v-list class="select-item-list">
+                        <v-list-item
+                          class="select-coin-eth"
+                          v-for="token in finalBalancesArrayEthOnly"
+                          :key="token.id"
+                          @click="selectedItemChanged(token.tokenAddress)"
+                        >
+                          <v-list-item-icon class="mr-1">
+                            <img
+                              :src="require(`../../../public/images/logos/${token.logo}`)"
+                              height="20px"
+                              onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                              :alt="token.name"
+                            />
+                          </v-list-item-icon>
+                          <v-list-item-content>
+                            <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                        <v-divider class="mx-3"></v-divider>
+                        <v-subheader class="body-2" v-if="finalBalancesArrayTokens.length > 0">
+                          <v-icon small left class="mr-2">$vuetify.icons.token</v-icon>
+                          {{ t('walletTransfer.tokens') }}
+                        </v-subheader>
+                        <v-list-item v-for="token in finalBalancesArrayTokens" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
+                          <v-list-item-icon class="ml-8 mr-1">
+                            <img
+                              :src="require(`../../../public/images/logos/${token.logo}`)"
+                              height="20px"
+                              onerror="if (this.src !== 'eth.svg') this.src = 'images/logos/eth.svg';"
+                              :alt="token.name"
+                            />
+                          </v-list-item-icon>
+                          <v-list-item-content>
+                            <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                        <v-divider class="mx-3"></v-divider>
+                        <v-subheader class="body-2" v-if="collectibles.length > 0">
+                          <v-icon small left class="mr-2">$vuetify.icons.collectibles</v-icon>
+                          {{ t('walletTransfer.collectibles') }}
+                        </v-subheader>
+                        <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
+                          <v-list-item-icon class="ml-8 mr-1">
+                            <img :src="collectible.logo" height="20px" />
+                          </v-list-item-icon>
+                          <v-list-item-content>
+                            <v-list-item-title class="body-2">{{ collectible.name }}</v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </div>
+                </v-flex>
+                <v-flex xs12 mb-0>
+                  <v-layout wrap>
+                    <v-flex xs12>
+                      <span class="text_1--text body-2">Send to</span>
+                    </v-flex>
+                    <v-flex xs12 sm8 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
+                      <v-combobox
+                        :name="randomName"
+                        id="recipient-address"
+                        class="recipient-address"
+                        ref="contactSelected"
+                        :value="contactSelected"
+                        @input="contactChanged"
+                        :items="contactList"
+                        :placeholder="verifierPlaceholder"
+                        required
+                        :rules="[contactRule, rules.required]"
+                        outlined
+                        :error="ensError !== ''"
+                        :error-messages="ensError"
+                        item-text="name"
+                        item-value="value"
+                        aria-label="Recipient Address"
+                        :return-object="false"
+                      >
+                        <template v-slot:append>
+                          <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()" aria-label="QR Capture Button">
+                            <v-icon small>$vuetify.icons.scan</v-icon>
+                          </v-btn>
+                        </template>
+                      </v-combobox>
+                      <qrcode-capture @decode="onDecodeQr" ref="captureQr" style="display: none" />
+                      <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
+                        <div class="v-messages">
+                          <div class="v-messages__wrapper">
+                            <div class="v-messages__message d-flex error--text px-3">{{ qrErrorMsg }}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </v-flex>
+                    <v-flex xs12 sm4 class="recipient-verifier-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
+                      <v-select
+                        id="recipient-verifier"
+                        outlined
+                        append-icon="$vuetify.icons.select"
+                        :items="verifierOptions"
+                        item-text="name"
+                        item-value="value"
+                        :rules="[rules.required]"
+                        v-model="selectedVerifier"
+                        @blur="verifierChangedManual"
+                        aria-label="Recipient Selector"
+                      ></v-select>
+                    </v-flex>
+                    <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" xs12 mb-2>
+                      <add-contact :contact="contactSelected" :verifier="selectedVerifier"></add-contact>
+                    </v-flex>
+                  </v-layout>
+                </v-flex>
+                <v-flex xs12 mb-0 class="you-send-container">
+                  <div>
+                    <span class="text_1--text body-2">Amount</span>
+                    <a
+                      id="send-all-btn"
+                      class="float-right primary--text body-2"
+                      v-if="contractType !== CONTRACT_TYPE_ERC721 && !isSendAll"
+                      @click="sendAll"
+                    >
+                      {{ t('walletTransfer.sendAll') }}
+                    </a>
+                    <a id="send-all-reset-btn" class="float-right primary--text body-2" v-if="isSendAll" @click="resetSendAll">
+                      {{ t('walletTransfer.reset') }}
+                    </a>
+                  </div>
+                  <v-select
+                    v-if="contractType === CONTRACT_TYPE_ERC721"
+                    v-model="assetSelected"
+                    :items="collectibleSelected.assets"
+                    outlined
+                    item-text="name"
+                    append-icon="$vuetify.icons.select"
+                    return-object
+                    aria-label="Asset selector"
+                  >
+                    <template v-slot:prepend-inner>
+                      <img :src="assetSelected.image" height="24px" :alt="assetSelected.name" />
+                    </template>
+                    <template v-slot:item="{ item }">
+                      <img class="mr-2" :src="item.image" height="24px" :alt="item.name" />
+                      {{ item.name }}
+                    </template>
+                  </v-select>
+                  <v-text-field
+                    v-if="contractType !== CONTRACT_TYPE_ERC721"
+                    id="you-send"
+                    :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
+                    persistent-hint
+                    type="number"
+                    outlined
+                    required
+                    :value="displayAmount"
+                    @change="onChangeDisplayAmount"
+                    :readonly="isSendAll"
+                    :rules="[rules.required, lesserThan, moreThanZero]"
+                    aria-label="Amount you send"
+                  />
+                </v-flex>
+                <v-flex xs12 mb-4>
+                  <transaction-fee-select isTransfer="true"></transaction-fee-select>
+                </v-flex>
+                <v-flex xs12 mb-6 v-if="contractType !== CONTRACT_TYPE_ERC721" class="text-right">
+                  <div class="subtitle-2 text_1--text">{{ t('walletTransfer.totalCost') }}</div>
+                  <div class="headline text_2--text">{{ totalCost || 0 }} {{ totalCostSuffix }}</div>
+                  <div v-if="convertedTotalCost" class="caption text_2--text">{{ convertedTotalCostDisplay }}</div>
+                  <!-- <div>
+                    <span class="subtitle-2">{{ t('walletTransfer.totalCost') }}</span>
+                  </div>
+                  <v-text-field
+                    id="total-cost"
+                    :suffix="totalCostSuffix"
+                    :hint="convertedTotalCost ? convertedTotalCostDisplay : ''"
+                    persistent-hint
+                    outlined
+                    readonly
+                    :value="totalCost"
+                  ></v-text-field> -->
+                </v-flex>
+                <v-flex xs12 mb-6 class="text-right">
+                  <v-btn
+                    large
+                    depressed
+                    color="primary"
+                    :disabled="!formValid || speedSelected === '' || selectedVerifier === ''"
+                    class="px-6 wallet-transfer-submit"
+                    id="wallet-transfer-submit"
+                    @click="onTransferClick"
+                  >
+                    {{ t('walletTransfer.transfer') }}
+                  </v-btn>
+                  <v-dialog v-model="confirmDialog" max-width="550" persistent>
+                    <transfer-confirm
+                      :toAddress="toEthAddress"
+                      :convertedAmount="
+                        convertedAmount
+                          ? `~ ${convertedAmount} ${
+                              !!toggle_exclusive ? (contractType === CONTRACT_TYPE_ERC721 ? '' : selectedItem.symbol) : selectedCurrency
+                            }`
+                          : ''
+                      "
+                      :displayAmount="
+                        `${displayAmount} ${
+                          !toggle_exclusive ? (contractType === CONTRACT_TYPE_ERC721 ? '' : selectedItem.symbol) : selectedCurrency
+                        }`
+                      "
+                      :assetSelected="contractType === CONTRACT_TYPE_ERC721 ? assetSelected : {}"
+                      :isNonFungibleToken="contractType === CONTRACT_TYPE_ERC721"
+                      :speedSelected="timeTaken"
+                      :transactionFee="gasPriceInCurrency"
+                      :selectedCurrency="selectedCurrency"
+                      @onClose="confirmDialog = false"
+                      @onConfirm="sendCoin"
+                      :sendEthToContractError="sendEthToContractError"
+                    ></transfer-confirm>
+                  </v-dialog>
+                </v-flex>
+              </v-layout>
+            </v-form>
+          </v-card>
+        </v-flex>
+        <v-flex mx-4 xs6>
+          <v-card class="card-shadow pa-6" v-if="selectedItem">
+            <v-layout>
+              <v-flex xs7>
+                <div class="subtitle-2">{{ t('walletTransfer.accountBalance') }}</div>
+                <div class="text_2--text">
+                  <span class="display-1 mr-1">{{ significantDigits(selectedItem.computedBalance, false, 4) }}</span>
+                  <span class="caption">{{ selectedItem.symbol }}</span>
+                </div>
+              </v-flex>
+              <v-flex xs5 class="text-right">
+                <network-display></network-display>
+                <div class="text-right text_2--text caption mt-4">{{ selectedItem.currencyRateText }}</div>
+              </v-flex>
+            </v-layout>
+            <!-- <span class="subtitle-2">{{ t('walletTransfer.accountBalance') }}</span>
+            <component-loader class="mt-2" v-if="!weiBalanceLoaded" />
+            <div v-else>
+              <span id="account-balance" class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
+              <span class="caption text_2--text">{{ currencyBalanceDisplay }}</span>
+            </div>
+            <div class="caption font-weight-regular text_2--text">{{ selectedItem.currencyRateText }}</div> -->
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </v-flex>
+
+    <!-- <v-flex xs12 mb-4>
       <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation aria-autocomplete="off" autocomplete="off">
         <v-layout wrap>
           <v-flex xs12 sm6 px-4 mb-5>
@@ -305,7 +573,7 @@
           </v-dialog>
         </v-layout>
       </v-form>
-    </v-flex>
+    </v-flex> -->
   </v-layout>
 </template>
 
@@ -316,10 +584,12 @@ import torus from '../../torus'
 import { significantDigits, getEtherScanHashLink, validateVerifierId } from '../../utils/utils'
 import config from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
+import TransactionFeeSelect from '../../components/helpers/TransactionFeeSelect'
 import ComponentLoader from '../../components/helpers/ComponentLoader'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import AddContact from '../../components/WalletTransfer/AddContact'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
+import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import { get, post } from '../../utils/httpHelpers'
 import TransferManagerJSON from '../../assets/TransferManager.json'
 import log from 'loglevel'
@@ -351,12 +621,16 @@ const MAX_GAS = 6721975
 export default {
   name: 'walletTransfer',
   components: {
-    TransactionSpeedSelect,
-    MessageModal,
+    TransactionFeeSelect,
+    TransferConfirm,
     QrcodeCapture,
-    AddContact,
-    ComponentLoader,
-    TransferConfirm
+    NetworkDisplay,
+    AddContact
+    // TransactionSpeedSelect,
+    // MessageModal,
+    // AddContact,
+    // ComponentLoader,
+    // TransferConfirm
   },
   data() {
     return {
@@ -504,6 +778,7 @@ export default {
     }
   },
   methods: {
+    significantDigits: significantDigits,
     onChangeDisplayAmount(value) {
       if ((BigNumber.isBigNumber(value) && !this.displayAmount.eq(value)) || !BigNumber.isBigNumber(value)) {
         this.displayAmount = BigNumber.isBigNumber(value) ? value : new BigNumber(value || '0')

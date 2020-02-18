@@ -98,7 +98,7 @@
 export default {
   data() {
     return {
-      addMoreFundsDialoag: true,
+      addMoreFundsDialoag: false,
       fundsFromWalletDialog: false
     }
   }

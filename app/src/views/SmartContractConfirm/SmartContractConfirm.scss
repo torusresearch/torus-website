@@ -1,4 +1,12 @@
 .smart-contract-confirm-container {
+  
+  // .v-text-field--filled > .v-input__control > .v-input__slot, .v-text-field--full-width > .v-input__control > .v-input__slot, .v-text-field--outlined > .v-input__control > .v-input__slot
+  .v-text-field .v-input__control {
+    & > .v-input__slot {
+      min-height: 40px;
+    }
+  }
+  
   .logo-container {
     width: 48px;
     height: 48px;
