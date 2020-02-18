@@ -1,4 +1,3 @@
-import './vueKnobControl'
 import vuetify from './vuetify'
 import languages from './locales'
 

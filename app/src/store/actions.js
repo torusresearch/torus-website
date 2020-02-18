@@ -224,7 +224,7 @@ export default {
         await bc.postMessage({
           data: {
             origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-            payload: payload
+            payload: { ...payload, verifier: state.userInfo.verifier }
           }
         })
       } else if (ev.data && ev.data.type === 'confirm-user-info-request' && ev.data.approve) {
