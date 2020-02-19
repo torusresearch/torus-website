@@ -269,6 +269,15 @@
       </v-layout>
     </v-flex>
 
+    <v-dialog v-model="messageModalShow" max-width="375" persistent>
+      <message-modal
+        @onClose="messageModalShow = false"
+        :modal-type="messageModalType"
+        :title="messageModalTitle"
+        :detail-text="messageModalDetails"
+      />
+    </v-dialog>
+
     <!-- <v-flex xs12 mb-4>
       <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation aria-autocomplete="off" autocomplete="off">
         <v-layout wrap>
@@ -559,13 +568,13 @@
 
         <v-layout mt-4 pr-2 wrap>
           <v-spacer></v-spacer>
-          <v-dialog v-model="showModalMessage" max-width="500" persistent>
+          <v-dialog v-model="messageModalShow" max-width="500" persistent>
             <message-modal
-              @onClose="showModalMessage = false"
-              :modal-type="modalMessageSuccess"
-              :title="modalMessageSuccess ? t('walletTransfer.transferSuccessTitle') : t('walletTransfer.transferFailTitle')"
+              @onClose="messageModalShow = false"
+              :modal-type="messageModalType"
+              :title="messageModalType ? t('walletTransfer.transferSuccessTitle') : t('walletTransfer.transferFailTitle')"
               :detail-text="
-                modalMessageSuccess
+                messageModalType
                   ? t('walletTransfer.transferSuccessMessage').replace(/\{time\}/gi, timeTaken)
                   : t('walletTransfer.transferFailMessage')
               "
@@ -607,7 +616,10 @@ import {
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   OLD_ERC721_LIST,
-  ALLOWED_VERIFIERS
+  ALLOWED_VERIFIERS,
+  MESSAGE_MODAL_TYPE_SUCCESS,
+  MESSAGE_MODAL_TYPE_FAIL,
+  MESSAGE_MODAL_TYPE_PENDING
 } from '../../utils/enums'
 import BigNumber from 'bignumber.js'
 
@@ -625,7 +637,8 @@ export default {
     TransferConfirm,
     QrcodeCapture,
     NetworkDisplay,
-    AddContact
+    AddContact,
+    MessageModal
     // TransactionSpeedSelect,
     // MessageModal,
     // AddContact,
@@ -665,8 +678,10 @@ export default {
         required: value => !!value || this.t('walletTransfer.required')
       },
       nodeDetails: {},
-      showModalMessage: false,
-      modalMessageSuccess: null,
+      messageModalShow: false,
+      messageModalType: '',
+      messageModalTitle: '',
+      messageModalDetails: '',
       isSendAll: false,
       confirmDialog: false,
       CONTRACT_TYPE_ETH,
@@ -1058,16 +1073,20 @@ export default {
             if (err) {
               const regEx = new RegExp('User denied transaction signature', 'i')
               if (!err.message.match(regEx)) {
-                this.showModalMessage = true
-                this.modalMessageSuccess = false
+                this.messageModalShow = true
+                this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+                this.messageModalTitle = 'Your transfer cannot be processed'
+                this.messageModalDetails = 'Please try again'
               }
               log.error(err)
             } else {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
 
-              this.showModalMessage = true
-              this.modalMessageSuccess = true
+              this.messageModalShow = true
+              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+              this.messageModalTitle = 'Your transfer is being processed'
+              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
             }
           }
         )
@@ -1089,16 +1108,20 @@ export default {
             if (err) {
               const regEx = new RegExp('User denied transaction signature', 'i')
               if (!err.message.match(regEx)) {
-                this.showModalMessage = true
-                this.modalMessageSuccess = false
+                this.messageModalShow = true
+                this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+                this.messageModalTitle = 'Your transfer cannot be processed'
+                this.messageModalDetails = 'Please try again'
               }
               log.error(err)
             } else {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
 
-              this.showModalMessage = true
-              this.modalMessageSuccess = true
+              this.messageModalShow = true
+              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+              this.messageModalTitle = 'Your transfer is being processed'
+              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
             }
           }
         )
@@ -1114,15 +1137,19 @@ export default {
             if (err) {
               const regEx = new RegExp('User denied transaction signature', 'i')
               if (!err.message.match(regEx)) {
-                this.showModalMessage = true
-                this.modalMessageSuccess = false
+                this.messageModalShow = true
+                this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+                this.messageModalTitle = 'Your transfer cannot be processed'
+                this.messageModalDetails = 'Please try again'
               }
               log.error(err)
             } else {
               // Send email to the user
               this.sendEmail(this.assetSelected.name, transactionHash)
-              this.showModalMessage = true
-              this.modalMessageSuccess = true
+              this.messageModalShow = true
+              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+              this.messageModalTitle = 'Your transfer is being processed'
+              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
             }
           }
         )

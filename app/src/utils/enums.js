@@ -219,3 +219,7 @@ export const TORUS_METHOD_PREFIX = 'torus'
 
 export const ERROR_TIME = 5 * 1000
 export const SUCCESS_TIME = 5 * 1000
+
+export const MESSAGE_MODAL_TYPE_SUCCESS = 'success'
+export const MESSAGE_MODAL_TYPE_FAIL = 'fail'
+export const MESSAGE_MODAL_TYPE_PENDING = 'pending'
