@@ -137,7 +137,7 @@
     "puppeteer": "^2.1.0",
     "sass": "^1.25.0",
     "sass-loader": "^8.0.2",
-    "sinon": "^8.1.1",
+    "sinon": "^9.0.0",
     "sri-toolbox": "^0.2.0",
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
