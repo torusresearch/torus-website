@@ -15,6 +15,7 @@ import createEngineStream from 'json-rpc-middleware-stream/engineStream'
 import ObservableStore from 'obs-store'
 import nodeify from '../utils/nodeify'
 
+import SmartContractWalletController from './SmartContractWalletController'
 import NetworkController from './NetworkController'
 import AccountTracker from './AccountTracker'
 import TransactionController from './TransactionController'
@@ -122,9 +123,13 @@ export default class TorusController extends EventEmitter {
     this.keyringController = new KeyringController()
     this.publicConfigStore = this.initPublicConfigStore()
 
+    // SCW controller
+    this.scwController = new SmartContractWalletController()
+
     // tx mgmt
     this.txController = new TransactionController({
       networkStore: this.networkController.networkStore,
+      scwController: this.SmartContractWalletController,
       txHistoryLimit: 40,
       getNetwork: this.networkController.getNetworkState.bind(this),
       // signs ethTx
