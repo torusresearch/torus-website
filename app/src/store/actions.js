@@ -48,7 +48,8 @@ const {
   tokenRatesController,
   prefsController,
   networkController,
-  assetDetectionController
+  assetDetectionController,
+  scwController
 } = torusController
 
 // stream to send logged in status
@@ -281,11 +282,6 @@ export default {
         .then(response => resolve(privKey))
         .catch(err => reject(err))
     })
-  },
-  addWallet(context, payload) {
-    if (payload.ethAddress) {
-      context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
-    }
   },
   updateUserInfoAccess({ commit }, payload) {
     if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
@@ -632,7 +628,7 @@ export default {
     prefsController.errorStore.subscribe(errorMsgHandler)
   },
   initTorusKeyring({ state, dispatch }, payload) {
-    return torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
+    return torusController.initTorusKeyring(Object.values(state.wallet), Object.keys(state.wallet))
   },
   addContact({ commit, state }, payload) {
     prefsController.addContact(payload)
@@ -665,7 +661,7 @@ export default {
         dispatch('addWallet', { ...data, type: 'EOA' }) // synchronous
         dispatch('subscribeToControllers')
         dispatch('updateSelectedEOA', { selectedAddress: data.ethAddress }) // synchronous
-        dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
+        // dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
         await Promise.all([
           dispatch('initTorusKeyring', data),
           dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
@@ -745,16 +741,17 @@ export default {
       prefsController.sync(
         user => {
           if (user.data) {
-            const { default_currency } = user.data || {}
+            const { default_currency, scw } = user.data || {}
             dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
             prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })
+            console.log(scw)
 
             // Adding SCW to vue state
-            const selectedNetworkContract = scw.filter(x => x.network == state.networkType.host)
+            const selectedNetworkContract = scw && scw.filter(x => x.network == state.networkType.host)
             if (selectedNetworkContract[0]) {
               // Remove existing scw/s for the old network
               Object.keys(state.wallet).filter(x => {
-                state.wallet[x].type == 'SC' ? delete state.wallet[x] : void [0]
+                state.wallet[x].type == 'SC' ? delete state.wallet[x] : void 0
               })
 
               dispatch('addWallet', { ethAddress: selectedNetworkContract[0].proxy_contract_address, privKey: null, type: 'SC' })
@@ -762,7 +759,6 @@ export default {
                 dispatch('updateSelectedAddress', { selectedAddress: selectedNetworkContract[0].proxy_contract_address }) // synchronous
               })
             }
-
             resolve()
           }
         },

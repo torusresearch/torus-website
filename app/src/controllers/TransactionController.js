@@ -21,10 +21,6 @@ import cleanErrorStack from '../utils/cleanErrorStack'
 import log from 'loglevel'
 
 import Web3 from 'web3'
-import TransferManager from '../assets/TransferManager.json'
-import signOffchain from '../utils/signOffchain'
-import getNonceForRelay from '../utils/getNonceForRelay'
-import { get, post } from '../utils/httpHelpers'
 
 import {
   TRANSACTION_TYPE_CANCEL,
@@ -89,6 +85,7 @@ class TransactionController extends EventEmitter {
     this.web3 = new Web3(this.provider)
     this.getWallet = opts.getWallet
     this.txGasUtil = new TxGasUtil(this.provider)
+    this.scwController = opts.scwController
     this.opts = opts
     this._mapMethods()
     this.txStateManager = new TransactionStateManager({
@@ -394,7 +391,7 @@ class TransactionController extends EventEmitter {
       }
       const txMeta = this.txStateManager.getTx(txId)
       if (txMeta.relayer) {
-        await this.signTransaction(txId)
+        await this.scwController.signTransaction(txId, this.txStateManager, this.getChainId())
         return
       }
       this.inProcessOfSigning.add(txId)
@@ -440,100 +437,28 @@ class TransactionController extends EventEmitter {
     @param txId {number} - the tx's Id
     @returns - rawTx {string}
   */
-  async signTransaction(txId, nonceLock) {
+  async signTransaction(txId) {
     const txMeta = this.txStateManager.getTx(txId)
-    log.info('Transaction Controller, signTransaction', txMeta)
-    let rawTx
     // add network/chain id
     const chainId = this.getChainId()
-    let txParams = Object.assign({}, txMeta.txParams, { chainId })
+    const txParams = Object.assign({}, txMeta.txParams, { chainId })
+    // sign tx
+    const fromAddress = txParams.from
+    const ethTx = new Transaction(txParams)
+    await this.signEthTx(ethTx, fromAddress)
 
-    if (txMeta.relayer) {
-      // sign tx
+    // add r,s,v values for provider request purposes see createMetamaskMiddleware
+    // and JSON rpc standard for further explanation
+    txMeta.r = ethUtil.bufferToHex(ethTx.r)
+    txMeta.s = ethUtil.bufferToHex(ethTx.s)
+    txMeta.v = ethUtil.bufferToHex(ethTx.v)
 
-      let transferValue, to, ETH_TOKEN
-      //console.log(config.relayer)
-      // const relayerURL = config.relayer.concat(txMeta.contractParams.erc721 ? '/transfer/nft' : '/transfer/eth')
-      const relayerURL = config.relayer.concat('/transfer/eth')
-      console.log(relayerURL)
-      const fromSCW = txParams.from
+    this.txStateManager.updateTx(txMeta, 'transactions#signTransaction: add r, s, v values')
 
-      // Handling Tokens
-      if (txMeta.contractParams.erc20 || txMeta.contractParams.erc721) {
-        ETH_TOKEN = txMeta.txParams.to
-        transferValue = txMeta.methodParams
-          .filter(x => x.name == '_value')
-          .map(x => x.value)
-          .shift()
-          .toString()
-        to = txMeta.methodParams
-          .filter(x => x.name == '_to')
-          .map(x => x.value)
-          .shift()
-          .toString()
-      } else {
-        ETH_TOKEN = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
-        transferValue = txParams.value.toString()
-        to = txParams.to
-      }
-
-      // Get nonce
-      const nonce = await getNonceForRelay(this.web3)
-      log.info(`fromSCW ${fromSCW}, to ${to}, ETH_TOKEN ${ETH_TOKEN}, value ${transferValue}, nonce ${nonce}`)
-
-      // Encode method Data
-      const TransferModule = new this.web3.eth.Contract(TransferManager.abi, '0xD45256EEf4bFB182B108Cd8e0bCB4A9369342C1d')
-      const methodData = TransferModule.methods.transferToken(fromSCW, ETH_TOKEN, to, transferValue, ZERO_ADDRESS).encodeABI()
-
-      // Get EOA wallet to sign the transactions
-      const selectedEOA = this.getSelectedEOA()
-      log.info('selectedEOA is', selectedEOA)
-      const privateKey = await this.getWallet(selectedEOA)
-      const walletAccount = this.web3.eth.accounts.privateKeyToAccount('0x' + privateKey)
-      log.info([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 700000)
-
-      // Sign the transaction
-      const signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 700000)
-      const reqObj = {
-        wallet: fromSCW,
-        nonce,
-        methodData,
-        signatures
-      }
-      log.info('TransactionController', reqObj)
-
-      // Update the transaction state
-      this.txStateManager.setTxStatusSigned(txMeta.id)
-      this.txStateManager.updateTx(txMeta, 'transactions#publishTransaction')
-
-      // Call the relayer
-      const relayerRequest = await post(relayerURL, reqObj)
-      log.info(relayerRequest)
-
-      // Set tx state
-      this.setTxHash(txId, relayerRequest.txHash)
-      this.txStateManager.setTxStatusSubmitted(txMeta.id)
-      return 'TransactionRelayed'
-    } else {
-      // sign tx
-      const fromAddress = txParams.from
-      const ethTx = new Transaction(txParams)
-      await this.signEthTx(ethTx, fromAddress)
-
-      // add r,s,v values for provider request purposes see createMetamaskMiddleware
-      // and JSON rpc standard for further explanation
-      txMeta.r = ethUtil.bufferToHex(ethTx.r)
-      txMeta.s = ethUtil.bufferToHex(ethTx.s)
-      txMeta.v = ethUtil.bufferToHex(ethTx.v)
-
-      this.txStateManager.updateTx(txMeta, 'transactions#signTransaction: add r, s, v values')
-
-      // set state to signed
-      this.txStateManager.setTxStatusSigned(txMeta.id)
-      rawTx = ethUtil.bufferToHex(ethTx.serialize())
-      console.log('Transaction Controller', rawTx)
-      return rawTx
-    }
+    // set state to signed
+    this.txStateManager.setTxStatusSigned(txMeta.id)
+    const rawTx = ethUtil.bufferToHex(ethTx.serialize())
+    return rawTx
   }
 
   /**
