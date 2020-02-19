@@ -151,14 +151,28 @@
 }
 
 .torus-v8 {
-  // .v-text-field--filled > .v-input__control > .v-input__slot, .v-text-field--full-width > .v-input__control > .v-input__slot, .v-text-field--outlined > .v-input__control > .v-input__slot
-  .v-text-field .v-input__control {
-    & > .v-input__slot {
-      min-height: 40px;
+  .v-input {
+    &.v-input--is-readonly .v-input__slot {
+      background: #F1F2F6;
+    }
+    &.v-text-field--outlined:not(.error--text) > .v-input__control {
+      padding-top: 0;
+      margin-top: 0;
+      & > .v-input__slot {
+        background: #FFFFFF;
+        box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
+        border-radius: 6px;
+        min-height: 54px;
+        fieldset {
+          border: 0;
+        }
+      }
+    }
+    &.error--text {
+      fieldset {
+        border: 1px solid var(--v-error-base);
+      }
     }
   }
-
-  .v-input.v-input--is-readonly .v-input__slot {
-    background: #F1F2F6;
-  }
+  
 }

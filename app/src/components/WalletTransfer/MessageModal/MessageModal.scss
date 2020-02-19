@@ -1,8 +1,11 @@
 .message-modal {
-  .close-icon {
+  .close-btn {
     position: absolute;
-    right: 20px;
-    top: 20px;
+    right: 0;
+    top: 0  ;
+  }
+  .skip-btn {
+    color: #D8D8D8;
   }
   .image-container {
     background-color: #2dcc70;

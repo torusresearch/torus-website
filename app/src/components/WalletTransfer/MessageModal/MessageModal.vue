@@ -1,5 +1,35 @@
 <template>
-  <v-card class="advance-option message-modal">
+  <v-card class="torus-v8 message-modal">
+    <v-btn class="close-btn" icon @click="onCancel">
+      <v-icon>$vuetify.icons.close</v-icon>
+    </v-btn>
+    <v-layout wrap>
+      <v-flex class="card-shadow text-center" py-8 mb-4 xs12>
+        <img :src="require(`../../../../public/images/status-${modalType}.svg`)" width="64" />
+      </v-flex>
+
+      <v-flex xs12 mx-10 class="text-center">
+        <div class="mb-4 font-weight-bold text_2--text headline">{{ title }}</div>
+        <div class="mb-6 text_2--text caption">{{ detailText }}</div>
+        <template v-if="isLoading">
+          <div class="body-2 mb-6 font-weight-medium primary--text">Loading...</div>
+          <v-btn text class="body-2 skip-btn mb-10" @click="onCancel">Skip</v-btn>
+        </template>
+        <v-btn
+          v-else
+          :color="modalType === MESSAGE_MODAL_TYPE_SUCCESS ? 'success' : modalType === MESSAGE_MODAL_TYPE_FAIL ? 'error' : ''"
+          :outlined="modalType != MESSAGE_MODAL_TYPE_PENDING"
+          :depressed="modalType === MESSAGE_MODAL_TYPE_PENDING"
+          class="mb-10 px-12"
+          :class="modalType === MESSAGE_MODAL_TYPE_PENDING ? 'primary--text' : ''"
+          @click="onCancel"
+        >
+          Return
+        </v-btn>
+      </v-flex>
+    </v-layout>
+  </v-card>
+  <!-- <v-card class="message-modal">
     <v-card-text class="text_1--text pa-0">
       <v-layout wrap class="image-container text-center" :class="modalType ? 'image-container-success' : 'image-container-danger'">
         <v-flex xs12 px-4>
@@ -28,12 +58,22 @@
         </v-flex>
       </v-layout>
     </v-card-text>
-  </v-card>
+  </v-card> -->
 </template>
 
 <script>
+import { MESSAGE_MODAL_TYPE_SUCCESS, MESSAGE_MODAL_TYPE_PENDING, MESSAGE_MODAL_TYPE_FAIL } from '../../../utils/enums'
+
 export default {
   props: ['modalType', 'title', 'detailText'],
+  data() {
+    return {
+      MESSAGE_MODAL_TYPE_SUCCESS,
+      MESSAGE_MODAL_TYPE_PENDING,
+      MESSAGE_MODAL_TYPE_FAIL,
+      isLoading: true
+    }
+  },
   methods: {
     onCancel() {
       this.$emit('onClose')

@@ -1,7 +1,7 @@
 <template>
   <v-container pa-0 class="smart-contract-confirm-container torus-v8">
     <v-layout wrap>
-      <v-flex class="card-shadow text-center" py-10 mb-4 xs12>
+      <v-flex class="card-shadow text-center" py-6 mb-4 xs12>
         <img :src="require(`../../../public/images/torus-logo-blue.svg`)" width="115" />
         <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="title font-weight-bold">
           Confirm Transaction
@@ -59,12 +59,12 @@
         <v-divider class="mb-4"></v-divider>
         <v-layout wrap>
           <v-flex xs4 mb-4>
-            <div :class="'text_1--text'" class="caption mt-4">Total Cost</div>
+            <div :class="'text_1--text'" class="caption mt-2">Total Cost</div>
           </v-flex>
           <v-flex xs8 mb-4>
             <v-text-field class="text_1--text caption total-cost" value="522.54 ETH" :hint="`~23.54 USD`" persistent-hint outlined readonly />
           </v-flex>
-          <v-flex mb-4 xs12>
+          <v-flex mb-2 xs12>
             <add-funds></add-funds>
           </v-flex>
         </v-layout>
@@ -94,7 +94,6 @@ export default {
   components: { TransactionFeeSelect, AddFunds },
   data() {
     return {
-      addMoreFundsDialoag: false,
       from: 'sampleemail@gmail.com',
       to: '12345678'
     }
