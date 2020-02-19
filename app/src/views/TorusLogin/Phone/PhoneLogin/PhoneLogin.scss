@@ -115,3 +115,59 @@ html {
     }
   }
 }
+
+.vue-tel-input {
+  height: 55px;
+  margin-bottom: 1rem;
+}
+
+.vue-tel-input:focus-within {
+  border: 2px solid #bbb;
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #bbb !important;
+}
+
+.vue-tel-input:focus {
+  outline: none !important;
+}
+
+.vti__input {
+  font-size: 16px;
+  border: none;
+}
+
+.vti__input::-webkit-input-placeholder {
+  color: var(--v-text_1-base);
+}
+
+.vti__input:-ms-input-placeholder {
+  color: var(--v-text_1-base);
+}
+
+.vti__input::placeholder {
+  color: var(--v-text_1-base);
+}
+
+.vti__dropdown.open {
+  background-color: transparent !important;
+}
+
+.vti__dropdown-list.below {
+  top: 55px !important;
+}
+
+.vti__dropdown:focus,
+:hover :active,
+:not(ul) {
+  background-color: transparent !important;
+  outline: none;
+}
+
+.vti__dropdown-list.below {
+  background-color: #ffffff !important;
+  li {
+    color: #000000;
+    padding: 10px 0 !important;
+  }
+}
