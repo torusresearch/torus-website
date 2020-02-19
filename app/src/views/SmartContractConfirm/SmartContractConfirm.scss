@@ -1,9 +1,10 @@
 .smart-contract-confirm-container {
   
   // .v-text-field--filled > .v-input__control > .v-input__slot, .v-text-field--full-width > .v-input__control > .v-input__slot, .v-text-field--outlined > .v-input__control > .v-input__slot
-  .v-text-field .v-input__control {
+  ::v-deep .v-input.v-text-field > .v-input__control {
     & > .v-input__slot {
       min-height: 40px;
+      height: 40px;
     }
   }
   

@@ -181,7 +181,7 @@
                   />
                 </v-flex>
                 <v-flex xs12 mb-4>
-                  <transaction-fee-select isTransfer="true"></transaction-fee-select>
+                  <transaction-fee-select isWalletTransfer="true"></transaction-fee-select>
                 </v-flex>
                 <v-flex xs12 mb-6 v-if="contractType !== CONTRACT_TYPE_ERC721" class="text-right">
                   <div class="subtitle-2 text_1--text">{{ t('walletTransfer.totalCost') }}</div>
