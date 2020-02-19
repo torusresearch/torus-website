@@ -4,7 +4,7 @@
       <v-flex xs12 md6>
         <v-layout wrap>
           <v-flex class="mb-5" xs9 sm7 ml-auto mr-auto>
-            <img width="117" :src="require('../../../../public/images/torus-logo-blue.svg')" />
+            <img width="117" :src="require(`../../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
           </v-flex>
           <v-flex class="mb-3" xs9 sm7 ml-auto mr-auto>
             <span class="display-1 font-weight-bold">Verification</span>
@@ -30,18 +30,18 @@
                       single-line
                     >
                       <template v-slot:append>
-                        <img class="mr-2" v-if="!response && !error" :src="require(`../../../../public/images/shield.svg`)" height="20px" />
+                        <img class="mr-2" v-if="!response && !error" :src="require(`../../../../../public/images/shield.svg`)" height="20px" />
                         <img
                           class="mr-2"
-                          v-if="response && !error"
-                          :src="require(`../../../../public/images/valid-check.svg`)"
+                          :src="require(`../../../../../public/images/valid-check.svg`)"
                           height="20px"
                           title="You have successfully verified your account"
                         />
+                        <img class="mr-2" :src="require(`../../../../../public/images/invalid-check.svg`)" height="20px" />
                         <img
+                          v-if="!responseMessage && !response"
                           class="mr-2"
-                          v-if="!response && error"
-                          :src="require(`../../../../public/images/invalid-check.svg`)"
+                          :src="require(`../../../../../public/images/shield.svg`)"
                           height="20px"
                           title="An error occured. Please try again"
                         />
@@ -90,8 +90,8 @@
 
 <script>
 import log from 'loglevel'
-import { post } from '../../../utils/httpHelpers'
-import config from '../../../config'
+import { post } from '../../../../utils/httpHelpers'
+import config from '../../../../config'
 export default {
   data() {
     return {
@@ -110,8 +110,15 @@ export default {
         verifier_id: this.verifier_id,
         code: this.code
       })
-        .then(() => (this.response = true))
-        .catch(err => (this.error = true))
+        .then(() => {
+          this.responseMessage = ''
+          this.response = true
+          this.$router.push({ name: 'torusEmailLogin' })
+        })
+        .catch(err => {
+          this.responseMessage = 'Invalid verification code'
+          this.response = false
+        })
     }
   }
 }
