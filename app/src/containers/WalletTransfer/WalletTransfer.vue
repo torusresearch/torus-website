@@ -38,7 +38,7 @@
                             <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
-                        <v-divider class="mx-3"></v-divider>
+                        <v-divider v-if="finalBalancesArrayTokens.length > 0" class="mx-3"></v-divider>
                         <v-subheader class="body-2" v-if="finalBalancesArrayTokens.length > 0">
                           <v-icon small left class="mr-2">$vuetify.icons.token</v-icon>
                           {{ t('walletTransfer.tokens') }}
@@ -56,7 +56,7 @@
                             <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
-                        <v-divider class="mx-3"></v-divider>
+                        <v-divider v-if="collectibles.length > 0" class="mx-3"></v-divider>
                         <v-subheader class="body-2" v-if="collectibles.length > 0">
                           <v-icon small left class="mr-2">$vuetify.icons.collectibles</v-icon>
                           {{ t('walletTransfer.collectibles') }}
@@ -180,13 +180,23 @@
                     aria-label="Amount you send"
                   />
                 </v-flex>
-                <v-flex xs12 mb-4>
+                <!-- <v-flex xs12 mb-4>
                   <transaction-fee-select isWalletTransfer="true"></transaction-fee-select>
+                </v-flex> -->
+                <v-flex xs12 mb-4>
+                  <transaction-speed-select
+                    isWalletTransfer="true"
+                    :resetSpeed="resetSpeed"
+                    :symbol="contractType !== CONTRACT_TYPE_ERC721 ? selectedItem.symbol : 'ETH'"
+                    :gas="gas"
+                    :displayAmount="displayAmount"
+                    @onSelectSpeed="onSelectSpeed"
+                  />
                 </v-flex>
                 <v-flex xs12 mb-6 v-if="contractType !== CONTRACT_TYPE_ERC721" class="text-right">
                   <div class="subtitle-2 text_1--text">{{ t('walletTransfer.totalCost') }}</div>
                   <div class="headline text_2--text">{{ totalCost || 0 }} {{ totalCostSuffix }}</div>
-                  <div v-if="convertedTotalCost" class="caption text_2--text">{{ convertedTotalCostDisplay }}</div>
+                  <div class="caption text_2--text">{{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}</div>
                   <!-- <div>
                     <span class="subtitle-2">{{ t('walletTransfer.totalCost') }}</span>
                   </div>
@@ -246,15 +256,15 @@
           <v-card class="card-shadow pa-6" v-if="selectedItem">
             <v-layout>
               <v-flex xs7>
-                <div class="subtitle-2">{{ t('walletTransfer.accountBalance') }}</div>
+                <div class="body-2 mb-4">{{ t('walletTransfer.accountBalance') }}</div>
                 <div class="text_2--text">
-                  <span class="display-1 mr-1">{{ significantDigits(selectedItem.computedBalance, false, 4) }}</span>
+                  <span class="display-1 font-weight-bold mr-1">{{ significantDigits(selectedItem.computedBalance, false, 4) }}</span>
                   <span class="caption">{{ selectedItem.symbol }}</span>
                 </div>
               </v-flex>
               <v-flex xs5 class="text-right">
                 <network-display></network-display>
-                <div class="text-right text_2--text caption mt-4">{{ selectedItem.currencyRateText }}</div>
+                <div class="text-right text_2--text caption currency-rate">{{ selectedItem.currencyRateText }}</div>
               </v-flex>
             </v-layout>
             <!-- <span class="subtitle-2">{{ t('walletTransfer.accountBalance') }}</span>
@@ -633,15 +643,13 @@ const MAX_GAS = 6721975
 export default {
   name: 'walletTransfer',
   components: {
-    TransactionFeeSelect,
     TransferConfirm,
     QrcodeCapture,
     NetworkDisplay,
     AddContact,
-    MessageModal
-    // TransactionSpeedSelect,
+    MessageModal,
+    TransactionSpeedSelect
     // MessageModal,
-    // AddContact,
     // ComponentLoader,
     // TransferConfirm
   },

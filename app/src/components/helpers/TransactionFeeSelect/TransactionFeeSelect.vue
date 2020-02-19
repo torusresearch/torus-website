@@ -38,7 +38,7 @@
       <v-layout mx-n2 v-else>
         <v-flex xs6 mx-2>
           <v-chip class="button-speed active text-center" :class="isWalletTransfer ? 'button-speed--transfer' : ''" label>
-            <img :src="require(`../../../../public/img/icons/speed-bicycle.svg`)" />
+            <img :src="require(`../../../../public/img/icons/speed-bicycle.svg`)" class="mr-2" />
             <div>
               <div class="font-weight-bold button-speed__speed">~ 30Mins</div>
               <div class="text_2--text">0.12 USD</div>
@@ -47,7 +47,7 @@
         </v-flex>
         <v-flex xs6 mx-2>
           <v-chip class="button-speed text-center" :class="isWalletTransfer ? 'button-speed--transfer' : ''" label>
-            <img :src="require(`../../../../public/img/icons/speed-car.svg`)" />
+            <img :src="require(`../../../../public/img/icons/speed-car.svg`)" class="mr-2" />
             <div>
               <div class="font-weight-bold button-speed__speed">~ 30Mins</div>
               <div class="text_2--text">0.12 USD</div>

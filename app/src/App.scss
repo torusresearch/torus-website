@@ -155,7 +155,7 @@
     &.v-input--is-readonly .v-input__slot {
       background: #F1F2F6;
     }
-    &.v-text-field--outlined:not(.error--text) > .v-input__control {
+    &.v-text-field--outlined > .v-input__control {
       padding-top: 0;
       margin-top: 0;
       & > .v-input__slot {
@@ -163,12 +163,17 @@
         box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
         border-radius: 6px;
         min-height: 54px;
-        fieldset {
-          border: 0;
-        }
+      }
+      .v-input__icon--append .v-icon {
+        color: #D3D5E2;
       }
     }
-    &.error--text {
+    &.v-text-field--outlined:not(.error--text) {
+      fieldset {
+        border: 0;
+      }
+    }
+    &.v-text-field--outlined.error--text {
       fieldset {
         border: 1px solid var(--v-error-base);
       }

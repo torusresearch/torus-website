@@ -4,7 +4,9 @@
   font-size: 10px;
   cursor: pointer;
   &.v-chip {
-    background: #F1F2F6;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
+    border-radius: 6px;
   }
   &.active {
     background: #CDE0FF

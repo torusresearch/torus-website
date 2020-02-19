@@ -52,8 +52,11 @@
           <v-flex xs8 mb-4>
             <v-text-field class="text_1--text caption you-pay" value="522.54 ETH" :hint="`~23.54 USD`" persistent-hint outlined readonly />
           </v-flex>
-          <v-flex xs12>
-            <transaction-fee-select></transaction-fee-select>
+          <v-flex xs4>
+            <div :class="'text_1--text'" class="caption mt-2">Transaction Fee</div>
+          </v-flex>
+          <v-flex xs8>
+            <v-text-field class="text_1--text caption you-pay" hide-details value="FREE (paid by Dapp) (~10 mins)" outlined readonly />
           </v-flex>
         </v-layout>
         <v-divider class="mb-4"></v-divider>
@@ -88,10 +91,11 @@
 <script>
 import { SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 import TransactionFeeSelect from '../../components/helpers/TransactionFeeSelect'
+import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import AddFunds from '../../components/helpers/AddFunds'
 
 export default {
-  components: { TransactionFeeSelect, AddFunds },
+  components: { AddFunds },
   data() {
     return {
       from: 'sampleemail@gmail.com',

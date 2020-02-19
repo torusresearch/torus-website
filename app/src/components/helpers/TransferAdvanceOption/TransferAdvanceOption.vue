@@ -1,8 +1,9 @@
 <template>
   <v-dialog v-model="dialog" persistent>
     <template v-slot:activator="{ on }">
-      <a id="advance-option-link" class="float-right primary--text subtitle-2" v-show="displayAmount" v-on="on">
-        {{ t('walletTransfer.advancedOptions') }}
+      <a id="advance-option-link" class="float-right primary--text body-2" v-show="displayAmount" v-on="on">
+        <!-- {{ t('walletTransfer.advancedOptions') }} -->
+        Edit
       </a>
     </template>
     <v-card class="advance-option py-4">
