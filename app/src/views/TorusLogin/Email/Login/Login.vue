@@ -1,7 +1,7 @@
 <template>
   <div class="default">
     <v-layout wrap fill-height align-center justify-center class="login-panel-left">
-      <v-flex xs10 md10>
+      <v-flex xs10 md6>
         <v-layout wrap>
           <v-flex class="mb-5" xs12 sm12 ml-auto mr-auto>
             <img width="117" :src="require(`../../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />

@@ -4,11 +4,7 @@
       <v-flex xs12 md6>
         <v-layout wrap>
           <v-flex class="mb-5" xs9 sm7 ml-auto mr-auto>
-<<<<<<< HEAD:app/src/views/TorusLogin/Verification/Verification.vue
-            <img width="117" :src="require('../../../../public/images/torus-logo-blue.svg')" />
-=======
             <img width="117" :src="require(`../../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
->>>>>>> Fix login changes:app/src/views/TorusLogin/Email/Verification/Verification.vue
           </v-flex>
           <v-flex class="mb-3" xs9 sm7 ml-auto mr-auto>
             <span class="display-1 font-weight-bold">Verification</span>
@@ -34,18 +30,14 @@
                       single-line
                     >
                       <template v-slot:append>
-                        <img class="mr-2" v-if="!response && !error" :src="require(`../../../../public/images/shield.svg`)" height="20px" />
+                        <img class="mr-2" v-if="!response && !error" :src="require(`../../../../../public/images/shield.svg`)" height="20px" />
                         <img
                           class="mr-2"
                           :src="require(`../../../../../public/images/valid-check.svg`)"
                           height="20px"
                           title="You have successfully verified your account"
                         />
-                        <img
-                          class="mr-2"
-                          :src="require(`../../../../../public/images/invalid-check.svg`)"
-                          height="20px"
-                        />
+                        <img class="mr-2" :src="require(`../../../../../public/images/invalid-check.svg`)" height="20px" />
                         <img
                           v-if="!responseMessage && !response"
                           class="mr-2"

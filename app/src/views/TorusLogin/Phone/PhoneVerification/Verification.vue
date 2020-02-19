@@ -1,7 +1,7 @@
 <template>
   <div class="default">
     <v-layout wrap fill-height align-center justify-center class="panel-left">
-      <v-flex xs12 md6>
+      <v-flex xs10 md6>
         <v-layout wrap>
           <v-flex class="mb-5" xs9 sm7 ml-auto mr-auto>
             <img width="117" :src="require(`../../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
@@ -33,23 +33,20 @@
                       :rules="[rules.required, rules.validLength]"
                     >
                       <template v-slot:append>
+                        <img class="mr-2" v-if="!response && !error" :src="require(`../../../../../public/images/shield.svg`)" height="20px" />
                         <img
-                          v-if="!responseMessage && response"
                           class="mr-2"
                           :src="require(`../../../../../public/images/valid-check.svg`)"
                           height="20px"
+                          title="You have successfully verified your account"
                         />
-                        <img
-                          v-else-if="responseMessage && !response"
-                          class="mr-2"
-                          :src="require(`../../../../../public/images/invalid-check.svg`)"
-                          height="20px"
-                        />
+                        <img class="mr-2" :src="require(`../../../../../public/images/invalid-check.svg`)" height="20px" />
                         <img
                           v-if="!responseMessage && !response"
                           class="mr-2"
                           :src="require(`../../../../../public/images/shield.svg`)"
                           height="20px"
+                          title="An error occured. Please try again"
                         />
                       </template>
                     </v-text-field>
