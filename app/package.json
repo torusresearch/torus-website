@@ -39,7 +39,7 @@
     "test:e2e:mobile": "env MOBILE_ENV=true mocha --timeout=60000 ./test/e2e"
   },
   "dependencies": {
-    "@toruslabs/fetch-node-details": "^2.0.1",
+    "@toruslabs/fetch-node-details": "^2.0.2",
     "@toruslabs/torus.js": "^1.0.7",
     "assert": "^2.0.0",
     "bignumber.js": "^9.0.0",
