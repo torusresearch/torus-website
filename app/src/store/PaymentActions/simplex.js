@@ -152,10 +152,7 @@ export default {
           simplexWindow.close()
         }
       }
-      simplexWindow.open()
-      setTimeout(() => {
-        form.submit()
-      }, 2000)
+      simplexWindow.open().then(() => form.submit())
 
       simplexWindow.once('close', () => {
         bc.close()

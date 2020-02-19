@@ -72,15 +72,15 @@ function onloadTorus(torus) {
   // doesnt do anything.. just for logging
   // since the stack traces are constrained to a single javascript context
   // we use a passthrough stream to log method calls
-  var receivePassThroughStream = new stream.PassThrough({ objectMode: true })
-  receivePassThroughStream.on('data', function() {
-    log.info('receivePassThroughStream', arguments)
-  })
+  // var receivePassThroughStream = new stream.PassThrough({ objectMode: true })
+  // receivePassThroughStream.on('data', function() {
+  //   log.info('receivePassThroughStream', arguments)
+  // })
 
-  var sendPassThroughStream = new stream.PassThrough({ objectMode: true })
-  sendPassThroughStream.on('data', function() {
-    log.info('sendPassThroughStream', arguments)
-  })
+  // var sendPassThroughStream = new stream.PassThrough({ objectMode: true })
+  // sendPassThroughStream.on('data', function() {
+  //   log.info('sendPassThroughStream', arguments)
+  // })
 
   const providerOutStream = torus.metamaskMux.getStream('provider')
 

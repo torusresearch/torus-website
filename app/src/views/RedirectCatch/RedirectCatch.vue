@@ -21,58 +21,64 @@ export default {
   name: 'redirect',
   components: { BeatLoader },
   async mounted() {
-    // let bc
-    // try {
-    //   const hash = this.$router.currentRoute.hash.substr(1)
-    //   const hashParams = hash.split('&').reduce(function(result, item) {
-    //     const parts = item.split('=')
-    //     result[parts[0]] = parts[1]
-    //     return result
-    //   }, {})
-    //   const queryParams = this.$router.currentRoute.query
-    //   // reddit error - hash params
-    //   // error: "access_denied"
-    //   // state: "eyJpbnN0YW5jZUlkIjoiTjFhRHNmaGN4dGNzc1dhc2pPV2tzSThPclI2eHBIIiwidmVyaWZpZXIiOiJyZWRkaXQifQ%3D%3D"
-    //   // twitch error - query params
-    //   // error: "access_denied"
-    //   // error_description: "The user denied you access"
-    //   // state: "eyJpbnN0YW5jZUlkIjoiTjFhRHNmaGN4dGNzc1dhc2pPV2tzSThPclI2eHBIIiwidmVyaWZpZXIiOiJ0d2l0Y2gifQ=="
-    //   log.info(hashParams, queryParams)
-    //   if (!queryParams.preopenInstanceId) {
-    //     this.textVisible = true
-    //     let instanceParams = {}
-    //     let error = ''
-    //     if (Object.keys(hashParams).length > 0 && hashParams.state) {
-    //       instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {}
-    //       if (hashParams.error) error = hashParams.error
-    //     } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
-    //       instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {}
-    //       if (queryParams.error) error = queryParams.error
-    //     }
-    //     bc = new BroadcastChannel(`redirect_channel_${instanceParams.instanceId}`, broadcastChannelOptions)
-    //     await bc.postMessage({
-    //       data: {
-    //         instanceParams: instanceParams,
-    //         hashParams: hashParams
-    //       },
-    //       error: error
-    //     })
-    //     bc.close()
-    //   } else {
-    //     bc = new BroadcastChannel('preopen_channel_' + queryParams.preopenInstanceId, broadcastChannelOptions)
-    //     bc.onmessage = function(ev) {
-    //       if (ev.error && ev.error !== '') {
-    //         console.error(ev.error)
-    //         bc.close()
-    //       }
-    //       window.location.href = ev.data.payload.url
-    //     }
-    //   }
-    // } catch (error) {
-    //   log.info(error, 'something went wrong')
-    //   bc.close()
-    //   window.close()
-    // }
+    let bc
+    try {
+      const hash = this.$router.currentRoute.hash.substr(1)
+      const hashParams = hash.split('&').reduce(function(result, item) {
+        const parts = item.split('=')
+        result[parts[0]] = parts[1]
+        return result
+      }, {})
+      const queryParams = this.$router.currentRoute.query
+      // reddit error - hash params
+      // error: "access_denied"
+      // state: "eyJpbnN0YW5jZUlkIjoiTjFhRHNmaGN4dGNzc1dhc2pPV2tzSThPclI2eHBIIiwidmVyaWZpZXIiOiJyZWRkaXQifQ%3D%3D"
+      // twitch error - query params
+      // error: "access_denied"
+      // error_description: "The user denied you access"
+      // state: "eyJpbnN0YW5jZUlkIjoiTjFhRHNmaGN4dGNzc1dhc2pPV2tzSThPclI2eHBIIiwidmVyaWZpZXIiOiJ0d2l0Y2gifQ=="
+      log.info(hashParams, queryParams)
+      if (!queryParams.preopenInstanceId) {
+        this.textVisible = true
+        let instanceParams = {}
+        let error = ''
+        if (Object.keys(hashParams).length > 0 && hashParams.state) {
+          instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(hashParams.state)))) || {}
+          if (hashParams.error) error = hashParams.error
+        } else if (Object.keys(queryParams).length > 0 && queryParams.state) {
+          instanceParams = JSON.parse(window.atob(decodeURIComponent(decodeURIComponent(queryParams.state)))) || {}
+          if (queryParams.error) error = queryParams.error
+        }
+        bc = new BroadcastChannel(`redirect_channel_${instanceParams.instanceId}`, broadcastChannelOptions)
+        await bc.postMessage({
+          data: {
+            instanceParams: instanceParams,
+            hashParams: hashParams
+          },
+          error: error
+        })
+        bc.close()
+      } else {
+        bc = new BroadcastChannel('preopen_channel_' + queryParams.preopenInstanceId, broadcastChannelOptions)
+        bc.onmessage = function(ev) {
+          if (ev.error && ev.error !== '') {
+            console.error(ev.error)
+            bc.close()
+          }
+          window.location.href = ev.data.payload.url
+        }
+        bc.postMessage({
+          data: {
+            preopenInstanceId,
+            message: 'popup_loaded'
+          }
+        })
+      }
+    } catch (error) {
+      log.info(error, 'something went wrong')
+      bc.close()
+      window.close()
+    }
   }
 }
 </script>
