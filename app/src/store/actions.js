@@ -899,6 +899,34 @@ export default {
 
     vuetify.framework.lang.current = payload
   },
+  setToastNotification({ commit }, payload) {
+    commit('setNotification', payload)
+  },
+  setUserBadgeTrack({ state, commit }, payload) {
+    return new Promise((resolve, reject) => {
+      patch(
+        `${config.api}/user/track-badge`,
+        {
+          track_badge: payload
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }
+      )
+        .then(response => {
+          commit('setTrackBadge', payload)
+          log.info('successfully patched', response)
+          resolve(response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to patch badge consent')
+          reject('Unable to update badge consent')
+        })
+    })
+  },
   setUserLocale({ state, dispatch }, payload) {
     return new Promise((resolve, reject) => {
       patch(
@@ -921,6 +949,92 @@ export default {
         .catch(err => {
           log.error(err, 'unable to patch locale')
           reject('Unable to update locale')
+        })
+    })
+  },
+  loadBadges({ state, commit }) {
+    return new Promise((resolve, reject) => {
+      get(`${config.api}/badges`, {
+        headers: {
+          Authorization: `Bearer ${state.jwtToken}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      })
+        .then(response => {
+          commit('setBadges', response)
+          log.info('successfully loaded', response)
+          resolve(response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to load badges')
+          reject('Unable to load bages')
+        })
+    })
+  },
+  loadMyBadges({ state, commit }) {
+    return new Promise((resolve, reject) => {
+      get(`${config.api}/badges/me`, {
+        headers: {
+          Authorization: `Bearer ${state.jwtToken}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      })
+        .then(response => {
+          commit('setMyBadges', response.response)
+          log.info('successfully loaded', response.response)
+          resolve(response.response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to load badges')
+          reject('Unable to load bages')
+        })
+    })
+  },
+  removeMyBadges({ state, commit, dispatch }) {
+    return new Promise((resolve, reject) => {
+      remove(
+        `${config.api}/badges`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`
+          }
+        }
+      )
+        .then(response => {
+          commit('setMyBadges', [])
+          dispatch('loadMyBadges')
+          log.info('successfully removed')
+          resolve([])
+        })
+        .catch(err => {
+          log.error(err, 'unable to remove badges')
+          reject('Unable to remove bages')
+        })
+    })
+  },
+  addBadge({ state, dispatch }, payload) {
+    return new Promise((resolve, reject) => {
+      post(
+        `${config.api}/badges`,
+        {
+          badgeId: payload.badgeId
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${state.jwtToken}`,
+            'Content-Type': 'application/json; charset=utf-8'
+          }
+        }
+      )
+        .then(response => {
+          log.info('successfully added', response)
+          dispatch('loadMyBadges')
+          resolve(response)
+        })
+        .catch(err => {
+          log.error(err, 'unable to add badge')
+          reject('Unable to add badge')
         })
     })
   },
@@ -955,9 +1069,10 @@ export default {
       })
         .then(user => {
           if (user.data) {
-            const { transactions, contacts, default_currency, theme, locale, verifier, verifier_id } = user.data || {}
+            const { transactions, contacts, default_currency, theme, locale, verifier, verifier_id, track_badges } = user.data || {}
             commit('setPastTransactions', transactions)
             commit('setContacts', contacts)
+            commit('setTrackBadge', track_badges)
             dispatch('setTheme', theme)
             dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
             dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
@@ -985,6 +1100,7 @@ export default {
             }
           )
           commit('setNewUser', true)
+          commit('setTrackBadge', track_badge)
           dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
           dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
           resolve()

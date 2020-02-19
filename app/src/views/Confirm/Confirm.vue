@@ -281,7 +281,8 @@ const {
   TX_TYPED_MESSAGE,
   TX_PERSONAL_MESSAGE,
   TX_TRANSACTION,
-  ETH
+  ETH,
+  BADGE_ALLOWED_HOSTS
 } = require('../../utils/enums')
 
 const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
@@ -507,6 +508,18 @@ export default {
     }
   },
   methods: {
+    taskComplete() {
+      // only if the host is part of the campaign
+      BADGE_ALLOWED_HOSTS.map(host => {
+        if (host.value === this.origin) {
+          let checkDuplicates = this.$store.state.myBadges.map(badge => Number(badge.badgeId)).includes(host.id)
+          if (!checkDuplicates) {
+            this.badge = this.$store.state.badges[host.id]
+            this.$store.dispatch('addBadge', { badgeId: this.badge.id })
+          }
+        }
+      })
+    },
     slicedAddress(user) {
       return addressSlicer(user) || '0x'
     },
@@ -517,6 +530,7 @@ export default {
         name: 'tx-result',
         data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id, txType: this.type }
       })
+      this.taskComplete()
       bc.close()
     },
     async triggerDeny(event) {

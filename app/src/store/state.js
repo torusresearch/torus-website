@@ -1,4 +1,4 @@
-import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, USER_INFO_REQUEST_NEW, THEME_LIGHT_BLUE_NAME, LOCALE_EN } from '../utils/enums'
+import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, USER_INFO_REQUEST_NEW, THEME_LIGHT_BLUE_NAME, LOCALE_EN, ALERT_OBJ } from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -24,6 +24,8 @@ const initialState = {
   assets: {}, // Account specific object
   tokenRates: {},
   transactions: [],
+  myBadges: [],
+  badges: [],
   unapprovedTypedMessages: {},
   unapprovedPersonalMsgs: {},
   unapprovedMsgs: {},
@@ -40,7 +42,9 @@ const initialState = {
   permissions: {},
   userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate
   errorMsg: '',
-  successMsg: ''
+  successMsg: '',
+  toastNotification: ALERT_OBJ,
+  track_badges: false
 }
 
 export default initialState

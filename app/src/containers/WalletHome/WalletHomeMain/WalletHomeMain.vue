@@ -210,7 +210,9 @@ export default {
       search: '',
       lastUpdated: '',
       dialogLearnMore: false,
-      activeTab: 0
+      activeTab: 0,
+      showBadgeDialog: false,
+      badge: {}
     }
   },
   computed: {
@@ -260,6 +262,13 @@ export default {
     }
   },
   methods: {
+    taskCompleted(badgeId) {
+      if (!this.$store.state.myBadges.map(badge => badge.badgeId).includes(badgeId.toString())) {
+        this.badge = this.$store.state.badges[badgeId]
+        this.showBadgeDialog = true
+        this.$store.dispatch('addBadge', { badgeId: this.badge.id })
+      }
+    },
     select(selectedItem) {
       // this is so that we don't break their api
       this.selected = []
@@ -305,6 +314,11 @@ export default {
         .padStart(2, '0')
       const time = `${hours}:${mins}`
       this.lastUpdated = `${date}, ${time}`
+    }
+  },
+  created() {
+    if (this.isFreshAccount && this.$store.state.badges.length > 0) {
+      this.taskCompleted(0)
     }
   },
   mounted() {

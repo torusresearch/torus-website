@@ -155,6 +155,8 @@ export default {
       },
       snackbar: false,
       snackbarText: '',
+      showBadgeDialog: false,
+      badge: {},
       snackbarColor: 'success'
     }
   },
@@ -189,6 +191,20 @@ export default {
     }
   },
   methods: {
+    taskComplete(badgeId) {
+      if (this.$store.state.track_badges) {
+        let checkDuplicates = this.$store.state.myBadges.map(badge => Number(badge.badgeId)).includes(badgeId)
+        if (!checkDuplicates) {
+          this.badge = this.$store.state.badges[badgeId]
+          this.$store.dispatch('addBadge', { badgeId: this.badge.id })
+          this.$store.dispatch('setToastNotification', {
+            alert: true,
+            text: `You've earned the ${this.badge.title} badge`,
+            type: 'success'
+          })
+        }
+      }
+    },
     significantDigits: significantDigits,
     setFiatValue(newValue) {
       this.fiatValue = newValue
@@ -207,8 +223,12 @@ export default {
       if (this.$refs.paymentForm.validate()) {
         const cb = p => {
           p.then(({ success }) => {
-            if (success) this.$router.push({ name: 'walletHistory' })
-            else {
+            if (success) {
+              this.taskComplete(2)
+              setTimeout(() => {
+                this.$router.push({ name: 'walletHistory' })
+              }, 2000)
+            } else {
               this.snackbar = true
               this.snackbarColor = 'error'
               this.snackbarText = 'Something went wrong'

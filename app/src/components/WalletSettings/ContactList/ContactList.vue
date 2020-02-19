@@ -94,7 +94,9 @@ const { validateVerifierId } = require('../../../utils/utils')
 
 export default {
   name: 'networkSettings',
-  components: { Notification },
+  components: {
+    Notification
+  },
   data() {
     return {
       contactFormValid: true,
@@ -107,6 +109,7 @@ export default {
       ETH,
       saveContactAlert: false,
       saveContactAlertText: '',
+      badge: {},
       saveContactAlertType: 'success'
     }
   },
@@ -127,6 +130,20 @@ export default {
     }
   },
   methods: {
+    taskComplete(badgeId) {
+      if (this.$store.state.track_badges) {
+        let checkDuplicates = this.$store.state.myBadges.map(badge => Number(badge.badgeId)).includes(badgeId)
+        if (!checkDuplicates) {
+          this.badge = this.$store.state.badges[badgeId]
+          this.$store.dispatch('addBadge', { badgeId: this.badge.id })
+          this.$store.dispatch('setToastNotification', {
+            alert: true,
+            text: `You've earned the ${this.badge.title} badge`,
+            type: 'success'
+          })
+        }
+      }
+    },
     closeAlert() {
       this.saveContactAlert = false
     },
@@ -146,10 +163,10 @@ export default {
             verifier: this.selectedVerifier
           })
           .then(response => {
+            this.taskComplete(7)
             this.newContact = ''
             this.newContactName = ''
             this.$refs.addContactForm.resetValidation()
-
             this.saveContactAlert = true
             this.saveContactAlertType = 'success'
             this.saveContactAlertText = response.message

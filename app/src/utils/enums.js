@@ -153,6 +153,29 @@ const ALLOWED_VERIFIERS = [
   }
 ]
 
+const BADGE_ALLOWED_HOSTS = [
+  {
+    id: '100',
+    name: 'localhost',
+    value: 'localhost'
+  },
+  {
+    id: '3',
+    name: 'augur',
+    value: 'augur.net'
+  },
+  {
+    id: '4',
+    name: 'totle',
+    value: 'swap.totle.com'
+  },
+  {
+    id: '6',
+    name: 'ddex',
+    value: 'ddex.io'
+  }
+]
+
 const SIMPLEX = 'simplex'
 const MOONPAY = 'moonpay'
 const WYRE = 'wyre'
@@ -194,6 +217,12 @@ const LOCALES = [
     value: LOCALE_ZH
   }
 ]
+
+const ALERT_OBJ = {
+  alert: false,
+  text: '',
+  type: 'info'
+}
 
 module.exports = {
   ENS,
@@ -292,5 +321,7 @@ module.exports = {
   LOCALE_DE,
   LOCALE_EN_LABEL,
   LOCALE_DE_LABEL,
-  LOCALES
+  LOCALES,
+  BADGE_ALLOWED_HOSTS,
+  ALERT_OBJ
 }

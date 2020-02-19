@@ -8,7 +8,7 @@ import RedirectCatch from './views/RedirectCatch'
 import Login from './views/Login'
 import Confirm from './views/Confirm'
 import Wallet from './views/Wallet'
-import { WalletHome, WalletHomeMain, WalletHomeCollectible } from './containers/WalletHome'
+import { WalletHome, WalletHomeMain, WalletHomeCollectible, WalletBadges } from './containers/WalletHome'
 import WalletHistory from './containers/WalletHistory'
 import WalletSettings from './containers/WalletSettings'
 import WalletTransfer from './containers/WalletTransfer'
@@ -100,6 +100,11 @@ const router = new Router({
               path: 'collectibles/:address',
               name: 'walletHomeCollectible',
               component: WalletHomeCollectible
+            },
+            {
+              path: 'badges',
+              name: 'walletBadges',
+              component: WalletBadges
             }
           ]
         },

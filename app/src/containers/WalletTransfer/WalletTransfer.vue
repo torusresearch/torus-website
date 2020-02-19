@@ -118,7 +118,7 @@
                   :return-object="false"
                 >
                   <template v-slot:append>
-                    <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()" aria-label="QR Capture Button">
+                    <v-btn icon small color="primary" @click="handleQRScan" aria-label="QR Capture Button">
                       <v-icon small>$vuetify.icons.scan</v-icon>
                     </v-btn>
                   </template>
@@ -372,6 +372,7 @@ export default {
       contactSelected: '',
       toAddress: '',
       formValid: false,
+      scanned: false,
       ensError: '',
       toggle_exclusive: 0,
       gas: new BigNumber('21000'),
@@ -391,6 +392,8 @@ export default {
       },
       nodeDetails: {},
       showModalMessage: false,
+      showBadgeDialog: false,
+      badge: {},
       modalMessageSuccess: null,
       isSendAll: false,
       confirmDialog: false,
@@ -495,6 +498,24 @@ export default {
     }
   },
   methods: {
+    taskComplete(badgeId) {
+      if (this.$store.state.track_badges) {
+        let checkDuplicates = this.$store.state.myBadges.map(badge => Number(badge.badgeId)).includes(badgeId)
+        if (!checkDuplicates) {
+          this.badge = this.$store.state.badges[badgeId]
+          this.$store.dispatch('addBadge', { badgeId: this.badge.id })
+          this.$store.dispatch('setToastNotification', {
+            alert: true,
+            text: `You've earned the ${this.badge.title} badge`,
+            type: 'success'
+          })
+        }
+      }
+    },
+    handleQRScan() {
+      this.$refs.captureQr.$el.click()
+      this.scanned = true
+    },
     onChangeDisplayAmount(value) {
       if ((BigNumber.isBigNumber(value) && !this.displayAmount.eq(value)) || !BigNumber.isBigNumber(value)) {
         this.displayAmount = BigNumber.isBigNumber(value) ? value : new BigNumber(value || '0')
@@ -777,6 +798,7 @@ export default {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
 
+              this.taskCompleted(1)
               this.showModalMessage = true
               this.modalMessageSuccess = true
             }
@@ -807,6 +829,7 @@ export default {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
 
+              this.taskCompleted(1)
               this.showModalMessage = true
               this.modalMessageSuccess = true
             }
@@ -830,11 +853,18 @@ export default {
             } else {
               // Send email to the user
               this.sendEmail(this.assetSelected.name, transactionHash)
+              this.taskCompleted(1)
               this.showModalMessage = true
               this.modalMessageSuccess = true
             }
           }
         )
+      }
+      if (this.$store.state.user.contacts.map(contact => contact.contact).includes(this.toAddress)) {
+        this.taskCompleted(8)
+      }
+      if (this.scanned) {
+        this.taskCompleted(5)
       }
     },
     getEthAmount(gas, gasPrice) {

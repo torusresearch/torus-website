@@ -1,0 +1,19 @@
+.text-gray {
+  color: #b3c0ce;
+}
+
+.scorecard-btn {
+  &.v-btn {
+    border-radius: 9px;
+    height: 60px;
+  }
+  &.torus-dark {
+    padding-left: 2px;
+    background-color: #4285f4 !important; //temporary until v8 is global
+    color: #ffffff !important;
+  }
+}
+
+.text {
+  width: 100%;
+}

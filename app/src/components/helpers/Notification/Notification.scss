@@ -3,16 +3,45 @@
     color: var(--v-text_1-base) !important;
   }
 
+  .container {
+    padding: 0;
+  }
+
   ::v-deep .v-alert__icon {
     display: none;
   }
 
   &.error-bg {
     background-color: #e20d0d !important;
-  }
-  
-  &.success-bg {
-    background-color: #2dcc70 !important;
+    color: #ffffff;
+    svg {
+      fill: #e20d0d;
+    }
   }
 
+  &.success-bg {
+    background-color: #00d065 !important;
+    color: #ffffff;
+    svg {
+      fill: #e20d0d;
+    }
+  }
+}
+
+.items {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .message {
+    display: flex;
+    align-items: center;
+    span {
+      margin-left: 1rem;
+    }
+  }
+}
+
+.v-btn:hover {
+  background-color: transparent;
 }

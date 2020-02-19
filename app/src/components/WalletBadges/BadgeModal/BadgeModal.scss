@@ -1,0 +1,44 @@
+.badge-info {
+  margin-top: -3rem;
+}
+
+.badge-title {
+  color: #5c6c7f;
+}
+
+.badge-task-is-complete {
+  color: var(--v-primary-base);
+}
+
+.badge-is-completed {
+  color: #5c6c7f;
+}
+
+.close-btn {
+  color: #dfdfdf;
+}
+
+.flex {
+  display: flex;
+  flex-direction: column;
+}
+
+.allow-btn {
+  &.v-btn {
+    border-radius: 6px;
+    height: 60px;
+  }
+  &.torus-dark {
+    padding-left: 2px;
+    background-color: #4285f4 !important; //temporary until v8 is global
+    color: #ffffff !important;
+  }
+}
+
+.return-btn {
+  @extend .allow-btn;
+}
+
+.text-gray {
+  color: #5c6c7f;
+}

@@ -40,6 +40,7 @@ import DownloadIcon from './DownloadIcon'
 import CollectibleIcon from './CollectibleIcon'
 import TokenIcon from './TokenIcon'
 import QrIcon from './QrIcon'
+import BadgeIcon from './BadgeIcon'
 
 export default {
   select: {
@@ -167,5 +168,8 @@ export default {
   },
   qr: {
     component: QrIcon
+  },
+  badge: {
+    component: BadgeIcon
   }
 }
