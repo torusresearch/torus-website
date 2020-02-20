@@ -215,7 +215,7 @@
                     large
                     depressed
                     color="primary"
-                    :disabled="!formValid || speedSelected === '' || selectedVerifier === ''"
+                    :disabled="!formValid || selectedVerifier === ''"
                     class="px-6 wallet-transfer-submit"
                     id="wallet-transfer-submit"
                     @click="onTransferClick"
@@ -700,6 +700,7 @@ export default {
   },
   computed: {
     isSmartContract() {
+      console.log(this.$store.state.wallet, this.$store.state)
       return this.$store.state.wallet[this.$store.state.selectedAddress].type === 'SC'
     },
     verifierOptions() {

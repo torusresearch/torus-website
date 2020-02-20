@@ -10,10 +10,45 @@ import TransferManager from '../assets/TransferManager.json'
 import signOffchain from '../utils/signOffchain'
 import { post } from '../utils/httpHelpers'
 import log from 'loglevel'
-
+import Web3 from 'web3'
+import { ZERO_ADDRESS } from '../utils/enums'
 export default class SmartContractWalletController {
-  constructor(opts = {}) {}
+  constructor(opts = {}) {
+    this.opts = opts
+    this.web3 = new Web3(opts.provider)
+    this.getWallet = opts.getWallet
+    this._mapMethods()
+  }
 
+  //
+  //           PRIVATE METHODS
+  //
+  /** maps methods for convenience */
+  _mapMethods() {
+    /** @returns the user selected address */
+    this.getSelectedAddress = () => {
+      if (typeof this.opts.storeProps === 'function') {
+        const { selectedAddress } = this.opts.storeProps() || {}
+        return (selectedAddress && selectedAddress.toLowerCase()) || ''
+      } else return ''
+    }
+    /**  */
+    this.getSelectedEOA = () => {
+      if (typeof this.opts.storeProps === 'function') {
+        console.log(this.opts.storeProps())
+        const { selectedEOA } = this.opts.storeProps() || {}
+        return (selectedEOA && selectedEOA.toLowerCase()) || ''
+      } else return ''
+    }
+  }
+
+  getSelectedEOA() {
+    if (typeof this.opts.storeProps === 'function') {
+      console.log(this.opts.storeProps())
+      const { selectedEOA } = this.opts.storeProps() || {}
+      return (selectedEOA && selectedEOA.toLowerCase()) || ''
+    } else return ''
+  }
   createSmartContractWallet() {
     // Make an API call to relayer to create a smart contract wallet
     // Update the Vue state to processing
@@ -85,16 +120,16 @@ export default class SmartContractWalletController {
     log.info('TransactionController', reqObj)
 
     // Update the transaction state
-    this.txStateManager.setTxStatusSigned(txMeta.id)
-    this.txStateManager.updateTx(txMeta, 'transactions#publishTransaction')
+    // this.txStateManager.setTxStatusSigned(txMeta.id)
+    // this.txStateManager.updateTx(txMeta, 'transactions#publishTransaction')
 
     // Call the relayer
     const relayerRequest = await post(relayerURL, reqObj)
     log.info(relayerRequest)
 
-    // Set tx state
-    this.setTxHash(txId, relayerRequest.txHash)
-    this.txStateManager.setTxStatusSubmitted(txMeta.id)
+    // // Set tx state
+    // this.setTxHash(txId, relayerRequest.txHash)
+    // this.txStateManager.setTxStatusSubmitted(txMeta.id)
     return 'TransactionRelayed'
   }
 }
