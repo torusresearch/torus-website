@@ -43,7 +43,8 @@ const initialState = {
   permissions: [],
   userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate
   errorMsg: '',
-  successMsg: ''
+  successMsg: '',
+  iframeMetadata: { origin: '', name: '', icon: '' }
 }
 
 export default initialState

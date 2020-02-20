@@ -38,6 +38,7 @@ import {
   GOERLI_CODE,
   MATIC_CODE
 } from './enums'
+import config from '../config'
 
 const BN = ethUtil.BN
 
@@ -480,4 +481,15 @@ export const standardNetworkId = {
 export function selectChainId(network, provider) {
   const { chainId } = provider
   return standardNetworkId[network] || `0x${parseInt(chainId, 10).toString(16)}`
+}
+
+export const isMain = location === parent.location && location.origin === config.baseUrl
+
+export const getIFrameOrigin = () => {
+  const originHref = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
+  return originHref
+}
+
+export const fakeStream = {
+  write: () => {}
 }

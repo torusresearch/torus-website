@@ -27,12 +27,13 @@ import AssetDetectionController from './AssetsDetectionController'
 import AssetController from './AssetsController'
 import AssetContractController from './AssetsContractController'
 import PreferencesController from './PreferencesController'
+import PermissionsController from './PermissionsController'
 import MessageManager from './MessageManager'
 import PersonalMessageManager from './PersonalMessageManager'
 import TypedMessageManager from './TypedMessageManager'
 import KeyringController from './TorusKeyring'
 import ComposableObservableStore from '../utils/ComposableObservableStore'
-import setupMultiplex from '../utils/setupMultiplex'
+// import setupMultiplex from '../utils/setupMultiplex'
 import createOriginMiddleware from '../utils/createOriginMiddleware'
 import createLoggerMiddleware from '../utils/createLoggerMiddleware'
 // const Dnode = require('dnode')
@@ -121,16 +122,25 @@ export default class TorusController extends EventEmitter {
 
     // key mgmt
     this.keyringController = new KeyringController()
+    this.prefsController = new PreferencesController()
+
     this.publicConfigStore = this.initPublicConfigStore()
 
     // SCW controller
     this.scwController = new SmartContractWalletController()
+
+    // Permissions controller
+    this.permissionsController = new PermissionsController({
+      getKeyringAccounts: this.keyringController.getAccounts.bind(this.keyringController),
+      setSiteMetadata: this.prefsController.setSiteMetadata.bind(this.prefsController)
+    })
 
     // tx mgmt
     this.txController = new TransactionController({
       networkStore: this.networkController.networkStore,
       scwController: this.SmartContractWalletController,
       txHistoryLimit: 40,
+      // TODO: pass in methods to check permissions for transactions. Do the same for other types of txs
       getNetwork: this.networkController.getNetworkState.bind(this),
       // signs ethTx
       signTransaction: this.keyringController.signTransaction.bind(this.keyringController),
@@ -168,13 +178,13 @@ export default class TorusController extends EventEmitter {
       assetContractController: this.assetContractController
     })
 
-    this.prefsController = new PreferencesController()
-
     this.networkController.lookupNetwork()
     this.messageManager = new MessageManager()
     this.personalMessageManager = new PersonalMessageManager()
     this.typedMessageManager = new TypedMessageManager({ networkController: this.networkController })
     this.store.updateStructure({
+      AssetController: this.assetController.store,
+      // PermissionsController: this.permissionsController.permissions,
       TransactionController: this.txController.store,
       NetworkController: this.networkController.store,
       MessageManager: this.messageManager.store,
@@ -654,10 +664,10 @@ export default class TorusController extends EventEmitter {
    */
   setupUntrustedCommunication(connectionStream, originDomain) {
     // setup multiplexing
-    const mux = setupMultiplex(connectionStream)
+    // const mux = setupMultiplex(connectionStream)
     // connect features && for test cases
-    this.setupProviderConnection(mux.createStream('test'), mux.createStream('provider'), originDomain)
-    this.setupPublicConfig(mux.createStream('publicConfig'))
+    this.setupProviderConnection(connectionStream, originDomain)
+    // this.setupPublicConfig(mux.createStream('publicConfig'))
   }
 
   /**
@@ -709,10 +719,13 @@ export default class TorusController extends EventEmitter {
   /**
    * A method for serving our ethereum provider over a given stream.
    * @param {*} outStream - The stream to provide over.
-   * @param {string} origin - The URI of the requesting resource.
+   * @param {string} sender - The URI of the requesting resource.
    */
-  setupProviderConnection(outStream, origin) {
-    const engine = this.setupProviderEngine(origin)
+  setupProviderConnection(outStream, sender) {
+    // break violently
+    const senderUrl = new URL(sender)
+
+    const engine = this.setupProviderEngine({ origin: senderUrl.hostname, location: sender })
 
     // setup connection
     const providerStream = createEngineStream({ engine })
@@ -734,7 +747,7 @@ export default class TorusController extends EventEmitter {
   /**
    * A method for creating a provider that is safely restricted for the requesting domain.
    **/
-  setupProviderEngine(origin, getSiteMetadata) {
+  setupProviderEngine({ origin }) {
     // setup json rpc engine stack
     const engine = new RpcEngine()
     const provider = this.provider
@@ -752,7 +765,8 @@ export default class TorusController extends EventEmitter {
     // filter and subscription polyfills
     engine.push(filterMiddleware)
     engine.push(subscriptionManager.middleware)
-    // permissions controller
+    // permissions
+    engine.push(this.permissionsController.createMiddleware({ origin }))
     // watch asset
     // engine.push(this.preferencesController.requestWatchAsset.bind(this.preferencesController))
     // forward to metamask primary provider

@@ -35,9 +35,10 @@ class PopupHandler extends EventEmitter {
       if (!this.window) {
         this.window = new StreamWindow(undefined, this.url)
       }
+      return Promise.resolve()
     } else {
       this.window = new StreamWindow(this.preopenInstanceId)
-      this.window.open(this.url)
+      return this.window.open(this.url)
     }
   }
 
