@@ -180,10 +180,10 @@
                     aria-label="Amount you send"
                   />
                 </v-flex>
-                <!-- <v-flex xs12 mb-4>
+                <v-flex xs12 mb-4 v-if="isSmartContract">
                   <transaction-fee-select isWalletTransfer="true"></transaction-fee-select>
-                </v-flex> -->
-                <v-flex xs12 mb-4>
+                </v-flex>
+                <v-flex xs12 mb-4 v-else>
                   <transaction-speed-select
                     isWalletTransfer="true"
                     :resetSpeed="resetSpeed"
@@ -648,7 +648,8 @@ export default {
     NetworkDisplay,
     AddContact,
     MessageModal,
-    TransactionSpeedSelect
+    TransactionSpeedSelect,
+    TransactionFeeSelect
     // MessageModal,
     // ComponentLoader,
     // TransferConfirm
@@ -698,6 +699,9 @@ export default {
     }
   },
   computed: {
+    isSmartContract() {
+      return this.$store.state.wallet[this.$store.state.selectedAddress].type === 'SC'
+    },
     verifierOptions() {
       const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
       return verifiers.map(verifier => {

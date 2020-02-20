@@ -1,16 +1,12 @@
 <template>
   <v-layout wrap>
     <v-flex xs4 sm12>
-      <div v-if="isWalletTransfer" class="text_1--text body-2">
-        <span>Transfer Fee</span>
-        <span class="float-right mt-1 button-speed__edit button-speed__edit--transfer">Edit</span>
-      </div>
-      <div v-else class="text_1--text caption mt-2">Transaction Fee</div>
+      <span class="text_1--text body-2">Transfer Fee</span>
     </v-flex>
     <v-flex xs8 sm12>
-      <v-layout class="mb-3" v-if="!isWalletTransfer">
+      <v-layout class="mb-3">
         <v-flex xs12 class="others-pay">
-          <v-chip class="others-pay-selected caption" label large v-on="on">
+          <v-chip class="others-pay-selected caption" :class="isWalletTransfer ? 'others-pay-selected--transfer' : ''" label large>
             <span>FREE (paid by DApp)</span>
           </v-chip>
           <!-- <v-menu transition="slide-y-transition" bottom>
@@ -35,7 +31,7 @@
           </v-menu> -->
         </v-flex>
       </v-layout>
-      <v-layout mx-n2 v-else>
+      <!-- <v-layout mx-n2>
         <v-flex xs6 mx-2>
           <v-chip class="button-speed active text-center" :class="isWalletTransfer ? 'button-speed--transfer' : ''" label>
             <img :src="require(`../../../../public/img/icons/speed-bicycle.svg`)" class="mr-2" />
@@ -54,11 +50,8 @@
             </div>
           </v-chip>
         </v-flex>
-      </v-layout>
+      </v-layout> -->
     </v-flex>
-    <!-- <v-flex v-if="!isWalletTransfer" xs12 class="text-right mt-1 button-speed__edit">
-      <span>Edit</span>
-    </v-flex> -->
   </v-layout>
 </template>
 

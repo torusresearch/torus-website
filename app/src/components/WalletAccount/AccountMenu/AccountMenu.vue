@@ -180,7 +180,16 @@ export default {
       return this.$store.state.selectedCurrency
     },
     wallets() {
-      return Object.keys(this.$store.state.wallet).map((wallet, id) => ({ id: id, address: wallet }))
+      const storeWallet = this.$store.state.wallet
+      return Object.keys(storeWallet)
+        .reduce((accts, x) => {
+          console.log(x.network, this.$store.state.networkType.host)
+          if (storeWallet[x].type === 'EOA' || (storeWallet[x].type === 'SC' && storeWallet[x].network === this.$store.state.networkType.host))
+            accts.push(x)
+          return accts
+        }, [])
+        .map((wallet, id) => ({ id: id, address: wallet }))
+      // return Object.keys(this.$store.state.wallet).map((wallet, id) => ({ id: id, address: wallet }))
     },
     filteredWallets() {
       return this.wallets.filter(acc => acc.address !== this.selectedAddress)

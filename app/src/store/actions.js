@@ -236,7 +236,10 @@ export default {
     log.info('add Wallet', payload)
     if (payload.ethAddress) {
       //context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
-      context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: { privateKey: payload.privKey, type: payload.type || 'EOA' } })
+      context.commit('setWallet', {
+        ...context.state.wallet,
+        [payload.ethAddress]: { privateKey: payload.privKey, network: payload.network || '', type: payload.type || 'EOA' }
+      })
     }
   },
   removeWallet(context, payload) {
@@ -744,17 +747,23 @@ export default {
             const { default_currency, scw } = user.data || {}
             dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
             prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })
-            console.log(scw)
+            console.log('scw', scw)
 
             // Adding SCW to vue state
             const selectedNetworkContract = scw && scw.filter(x => x.network == state.networkType.host)
+            console.log('selectedNetworkContract', selectedNetworkContract)
             if (selectedNetworkContract[0]) {
               // Remove existing scw/s for the old network
               Object.keys(state.wallet).filter(x => {
                 state.wallet[x].type == 'SC' ? delete state.wallet[x] : void 0
               })
 
-              dispatch('addWallet', { ethAddress: selectedNetworkContract[0].proxy_contract_address, privKey: null, type: 'SC' })
+              dispatch('addWallet', {
+                ethAddress: selectedNetworkContract[0].proxy_contract_address,
+                network: selectedNetworkContract[0].network,
+                privKey: null,
+                type: 'SC'
+              })
               torus.torusController.addAccount(null, selectedNetworkContract[0].proxy_contract_address).then(() => {
                 dispatch('updateSelectedAddress', { selectedAddress: selectedNetworkContract[0].proxy_contract_address }) // synchronous
               })
