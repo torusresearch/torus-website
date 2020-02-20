@@ -19,6 +19,10 @@
     .v-icon--right {
       color: #D3D5E2;
     }
+    &.theme--dark {
+      box-shadow: none;
+      border-color: inherit;
+    }
   }
   .recipient-address {
     ::v-deep .v-input__icon.v-input__icon--clear {
@@ -26,14 +30,25 @@
         height: 16px;
       }
     }
-    &.v-input.v-text-field ::v-deep .v-input__append-inner {
-      margin-top: 12px;
+    &.v-input {
+      &.v-text-field ::v-deep .v-input__append-inner {
+        margin-top: 12px;
+      }
     }
   }
   .wallet-transfer-submit {
     width: 190px;
   }
   .currency-rate {
-    margin-top: 30px;
+    margin-bottom: 2px;
+  }
+  .transfer-form-container--flat {
+    background-color: transparent;
+    .select-coin {
+      &.theme--dark {
+        background: var(--v-background-base);
+        box-shadow: none;
+      }
+    }
   }
 }

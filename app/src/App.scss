@@ -188,5 +188,17 @@
       }
     }
   }
+  .v-input.theme--dark {
+    &.v-text-field--outlined > .v-input__control {
+      & > .v-input__slot {
+        background: inherit;
+        box-shadow: inherit;
+      }
+      fieldset {
+        border-style: solid;
+        border-width: 1px;
+      }
+    }
+  }
   
 }
