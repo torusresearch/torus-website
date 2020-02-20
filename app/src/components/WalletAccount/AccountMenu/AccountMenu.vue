@@ -70,9 +70,9 @@
                 <show-tool-tip :address="acc.address">
                   <v-icon size="12" class="text_2--text" v-text="'$vuetify.icons.copy'" />
                 </show-tool-tip>
-                <v-btn icon x-small>
-                  <v-icon size="12" class="text_2--text" v-text="'$vuetify.icons.qr'" />
-                </v-btn>
+                <export-qr-code :customAddress="acc.address">
+                  <v-icon x-small v-text="'$vuetify.icons.qr'" />
+                </export-qr-code>
               </v-flex>
             </v-layout>
           </v-list-item-subtitle>
@@ -160,6 +160,8 @@ import { significantDigits, addressSlicer, broadcastChannelOptions } from '../..
 import ShowToolTip from '../../helpers/ShowToolTip'
 import LanguageSelector from '../../helpers/LanguageSelector'
 import AccountImport from '../AccountImport'
+import ExportQrCode from '../../helpers/ExportQrCode'
+
 import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../../utils/enums'
 import torus from '../../../torus'
 import BigNumber from 'bignumber.js'
@@ -170,7 +172,8 @@ export default {
   components: {
     ShowToolTip,
     AccountImport,
-    LanguageSelector
+    LanguageSelector,
+    ExportQrCode
   },
   data() {
     return {
@@ -216,10 +219,10 @@ export default {
       let { wallet: storeWallet, weiBalance: storeWalletBalance } = this.$store.state || {}
 
       const wallets = Object.keys(storeWallet).reduce((accts, x) => {
-        accts.push({ address: x, balance: storeWalletBalance[x], ...storeWallet[x] })
+        if (storeWallet[x].type === 'EOA' || (storeWallet[x].type === 'SC' && storeWallet[x].network === this.$store.state.networkType.host))
+          accts.push({ address: x, balance: storeWalletBalance[x], ...storeWallet[x] })
         return accts
       }, [])
-      console.log('wallets', wallets)
       return wallets
     },
     getCurrencyMultiplier() {

@@ -2,7 +2,7 @@
   <v-dialog v-model="qrDialoag" width="450">
     <template v-slot:activator="{ on }">
       <v-btn icon small v-on="on" id="openQr" aria-label="Open QR">
-        <v-icon small class="primary--text" v-text="'$vuetify.icons.qr'" />
+        <slot></slot>
       </v-btn>
     </template>
     <v-card>
@@ -45,6 +45,7 @@ import config from '../../../config'
 const baseRoute = config.baseRoute
 
 export default {
+  props: ['customAddress'],
   components: {
     ShowToolTip,
     VueQr
@@ -56,7 +57,7 @@ export default {
   },
   computed: {
     selectedAddress() {
-      return this.$store.state.selectedAddress
+      return this.customAddress || this.$store.state.selectedAddress
     },
     slicedAddress() {
       return `${this.selectedAddress.slice(0, 20)}...${this.selectedAddress.slice(-10)}`

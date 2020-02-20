@@ -40,7 +40,9 @@
                     <span>{{ t('walletHome.totalValue') }}</span>
                   </v-flex>
                   <v-flex text-right>
-                    <export-qr-code></export-qr-code>
+                    <export-qr-code>
+                      <v-icon small class="primary--text" v-text="'$vuetify.icons.qr'" />
+                    </export-qr-code>
                   </v-flex>
                 </v-layout>
               </v-card-title>
