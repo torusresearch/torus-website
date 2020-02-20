@@ -2,9 +2,9 @@
   <v-layout wrap class="wallet-transfer torus-v8" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
     <v-flex xs12>
       <div class="text_2--text font-weight-bold headline px-4 mb-4">{{ t('walletTransfer.transferDetails') }}</div>
-      <v-layout>
-        <v-flex mx-4 xs6>
-          <v-card class="card-shadow pa-6">
+      <v-layout wrap>
+        <v-flex px-4 xs12 sm6 :style="{ order: $vuetify.breakpoint.xsOnly ? 1 : 0 }">
+          <v-card class="pa-6" :flat="$vuetify.breakpoint.xsOnly" :class="{ 'card-shadow-v8': !$vuetify.breakpoint.xsOnly }">
             <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation aria-autocomplete="off" autocomplete="off">
               <v-layout wrap>
                 <v-flex xs12 mb-4>
@@ -252,8 +252,8 @@
             </v-form>
           </v-card>
         </v-flex>
-        <v-flex mx-4 xs6>
-          <v-card class="card-shadow pa-6" v-if="selectedItem">
+        <v-flex px-4 xs12 sm6 :style="{ order: $vuetify.breakpoint.xsOnly ? 0 : 1 }">
+          <v-card class="card-shadow-v8 pa-6" v-if="selectedItem">
             <v-layout>
               <v-flex xs7>
                 <div class="body-2 mb-4">{{ t('walletTransfer.accountBalance') }}</div>

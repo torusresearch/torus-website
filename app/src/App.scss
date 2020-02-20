@@ -1,3 +1,6 @@
+
+@import './scss/card-shadow.mixin';
+
 .torus-app.theme--dark,
 .torus-app.theme--light {
   // Input Related Styles
@@ -107,11 +110,17 @@
   }
 
   .card-shadow-v8 {
-    border: 1px solid #F1F2F6;
-    box-shadow: 0px 18px 36px rgba(46, 91, 255, 0.06);
+    @include cardShadow();
+    &.v-card {
+      border-radius: 6px;
+    }
+  }
+
+  .v-menu__content {
+    @include cardShadow();
     border-radius: 9px;
   }
-  
+
   .v-tab.v-tab--active {
     color: var(--v-secondary-darken3);
   }

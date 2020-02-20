@@ -22,7 +22,7 @@ export default {
       copied: false
     }
   },
-  props: ['address'],
+  props: ['address', 'isBtn'],
   methods: {
     copyToClip(address) {
       this.copied = true

@@ -1,0 +1,18 @@
+@import '../../../scss/card-shadow.mixin';
+
+.account-list {
+  .v-list-item {
+    margin: 0 12px;
+    &:hover, &.active {
+      @include cardShadow();
+      border-radius: 9px;
+    }
+  }
+  .v-avatar {
+    align-self: start;
+  }
+  &__address {
+    font-size: 8px;
+    color: #8F9FB4;
+  }
+}

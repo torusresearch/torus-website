@@ -43,8 +43,12 @@ import CollectibleIcon from './CollectibleIcon'
 import TokenIcon from './TokenIcon'
 import QrIcon from './QrIcon'
 import SmartContractIcon from './SmartContractIcon'
+import CopyIcon from './CopyIcon'
 
 export default {
+  copy: {
+    component: CopyIcon
+  },
   select: {
     component: SelectIcon
   },

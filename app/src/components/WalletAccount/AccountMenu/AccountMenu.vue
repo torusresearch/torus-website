@@ -1,9 +1,12 @@
 <template>
-  <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu">
-    <v-list>
+  <v-card :flat="$vuetify.breakpoint.smAndDown" width="340" class="account-menu card-shadow-v8">
+    <v-list class="pb-0">
       <v-list-item>
+        <v-list-item-avatar class="ml-2 mr-3">
+          <img :src="profileImage" class="align-start" :alt="userName" />
+        </v-list-item-avatar>
         <v-list-item-title>
-          <div class="font-weight-bold title d-flex">
+          <div class="font-weight-bold subtitle-1 d-flex">
             <div class="torus-account--name mr-1" id="account-name">
               <span>{{ userName }}</span>
             </div>
@@ -11,7 +14,9 @@
           </div>
         </v-list-item-title>
       </v-list-item>
-      <v-list-item class="margin-top-30">
+    </v-list>
+    <!-- <v-list>
+      <v-list-item>
         <v-list-item-avatar class="mr-2">
           <img :src="profileImage" class="align-start" :alt="userName" />
         </v-list-item-avatar>
@@ -37,9 +42,45 @@
           </div>
         </v-list-item-content>
       </v-list-item>
+    </v-list> -->
+
+    <v-list v-if="wallets.length > 0" class="account-list">
+      <v-list-item
+        :class="{ active: acc.address === selectedAddress }"
+        v-for="acc in wallets"
+        :key="acc.address"
+        @click="changeAccount(acc.address)"
+        class="mb-2"
+      >
+        <v-list-item-avatar class="mr-2">
+          <v-icon v-if="acc.type === 'SC'" size="20">$vuetify.icons.smart_contract</v-icon>
+          <img v-else :src="require(`../../../../public/img/icons/google-dark.svg`)" style="width: 16px" />
+        </v-list-item-avatar>
+        <v-list-item-content class="font-weight-bold">
+          <v-list-item-title class="mb-2 caption">
+            <span class="font-weight-bold">{{ acc.type === 'SC' ? 'Smart Contract Wallet' : userInfo.email }}</span>
+            <span class="float-right">{{ acc.balance }}</span>
+          </v-list-item-title>
+          <v-list-item-subtitle>
+            <v-layout>
+              <v-flex>
+                <span class="account-list__address">{{ acc.address }}</span>
+              </v-flex>
+              <v-flex>
+                <show-tool-tip :address="acc.address">
+                  <v-icon size="12" class="text_2--text" v-text="'$vuetify.icons.copy'" />
+                </show-tool-tip>
+                <v-btn icon x-small>
+                  <v-icon size="12" class="text_2--text" v-text="'$vuetify.icons.qr'" />
+                </v-btn>
+              </v-flex>
+            </v-layout>
+          </v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
     </v-list>
 
-    <v-divider></v-divider>
+    <v-divider v-if="wallets.length > 0"></v-divider>
 
     <v-list v-if="hasPendingSmartContract">
       <v-list-item two-line>
@@ -61,20 +102,6 @@
     </v-list>
 
     <v-divider v-if="hasPendingSmartContract"></v-divider>
-
-    <v-list v-if="wallets.length > 1">
-      <v-list-item v-for="acc in filteredWallets" :key="acc.id" @click="changeAccount(acc.address)">
-        <v-list-item-content class="font-weight-bold">
-          <v-list-item-title>
-            <div class="font-weight-bold headline text-capitalize text--lighten-4">{{ t('accountMenu.account') }} #{{ acc.id + 1 }}</div>
-          </v-list-item-title>
-
-          <v-list-item-subtitle>{{ acc.address }}</v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
-    </v-list>
-
-    <v-divider v-if="wallets.length > 1"></v-divider>
 
     <v-list>
       <v-list-item id="import-account-btn" @click="accountImportDialog = true">
@@ -135,6 +162,8 @@ import LanguageSelector from '../../helpers/LanguageSelector'
 import AccountImport from '../AccountImport'
 import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../../utils/enums'
 import torus from '../../../torus'
+import BigNumber from 'bignumber.js'
+import copyToClipboard from 'copy-to-clipboard'
 
 export default {
   props: ['headerItems'],
@@ -184,19 +213,14 @@ export default {
       return this.$store.state.selectedCurrency
     },
     wallets() {
-      const storeWallet = this.$store.state.wallet
-      return Object.keys(storeWallet)
-        .reduce((accts, x) => {
-          console.log(x.network, this.$store.state.networkType.host)
-          if (storeWallet[x].type === 'EOA' || (storeWallet[x].type === 'SC' && storeWallet[x].network === this.$store.state.networkType.host))
-            accts.push(x)
-          return accts
-        }, [])
-        .map((wallet, id) => ({ id: id, address: wallet }))
-      // return Object.keys(this.$store.state.wallet).map((wallet, id) => ({ id: id, address: wallet }))
-    },
-    filteredWallets() {
-      return this.wallets.filter(acc => acc.address !== this.selectedAddress)
+      let { wallet: storeWallet, weiBalance: storeWalletBalance } = this.$store.state || {}
+
+      const wallets = Object.keys(storeWallet).reduce((accts, x) => {
+        accts.push({ address: x, balance: storeWalletBalance[x], ...storeWallet[x] })
+        return accts
+      }, [])
+      console.log('wallets', wallets)
+      return wallets
     },
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
@@ -247,7 +271,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.margin-top-30 {
-  margin-top: -16px;
-}
+@import 'AccountMenu.scss';
 </style>
