@@ -168,9 +168,8 @@ class TransactionController extends EventEmitter {
 
   async newUnapprovedTransaction(txParams, opts = {}) {
     log.debug(`MetaMaskController newUnapprovedTransaction ${JSON.stringify(txParams)}`)
-    const initialTxMeta = await this.addUnapprovedTransaction(txParams)
-    initialTxMeta.origin = opts.origin
-    this.txStateManager.updateTx(initialTxMeta, '#newUnapprovedTransaction - adding the origin')
+    const initialTxMeta = await this.addUnapprovedTransaction(txParams, opts.origin)
+
     // listen for tx completion (success, fail)
     return new Promise((resolve, reject) => {
       this.txStateManager.once(`${initialTxMeta.id}:finished`, finishedTxMeta => {
@@ -195,17 +194,13 @@ class TransactionController extends EventEmitter {
   @returns {txMeta}
   */
 
-  async addUnapprovedTransaction(txParams) {
+  async addUnapprovedTransaction(txParams, origin) {
     // validate
     log.debug(`MetaMaskController addUnapprovedTransaction ${JSON.stringify(txParams)}`)
     const relayer = txParams.relayer
     const normalizedTxParams = txUtils.normalizeTxParams(txParams)
-    // Assert the from address is the selected address
-    if (normalizedTxParams.from !== this.getSelectedAddress()) {
-      // eslint-disable-next-line prettier/prettier
-      throw new Error('Transaction from address is not valid for this account')
-    }
     txUtils.validateTxParams(normalizedTxParams)
+
     /**
     `generateTxMeta` adds the default txMeta properties to the passed object.
     These include the tx's `id`. As we use the id for determining order of
@@ -217,6 +212,29 @@ class TransactionController extends EventEmitter {
       type: TRANSACTION_TYPE_STANDARD
     })
     log.debug(`MetaMaskController addUnapprovedTransaction ${JSON.stringify(txMeta)}`)
+
+    if (origin === 'metamask') {
+      // Assert the from address is the selected address
+      if (normalizedTxParams.from !== this.getSelectedAddress()) {
+        throw ethErrors.rpc.internal({
+          message: 'Internally initiated transaction is using invalid account.',
+          data: {
+            origin,
+            fromAddress: normalizedTxParams.from,
+            selectedAddress: this.getSelectedAddress()
+          }
+        })
+      }
+    } else {
+      // Assert that the origin has permissions to initiate transactions from
+      // the specified address
+      const permittedAddresses = [await this.getSelectedAddress()]
+      if (!permittedAddresses.includes(normalizedTxParams.from)) {
+        throw ethErrors.provider.unauthorized({ data: { origin } })
+      }
+    }
+
+    txMeta['origin'] = origin
 
     const { transactionCategory, getCodeResponse, methodParams, contractParams } = await this._determineTransactionCategory(txParams)
     txMeta.transactionCategory = transactionCategory

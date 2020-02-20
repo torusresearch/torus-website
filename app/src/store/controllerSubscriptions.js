@@ -80,7 +80,7 @@ export function tokenRatesControllerHandler({ contractExchangeRates }) {
 }
 
 export function prefsControllerHandler(state) {
-  console.log(state, 'hek')
+  // console.log(state, 'hek')
   Object.keys(state).forEach(x => {
     store.commit(`set${capitalizeFirstLetter(x)}`, state[x])
   })
@@ -92,4 +92,8 @@ export function successMsgHandler(msg) {
 
 export function errorMsgHandler(err) {
   store.commit('setErrorMsg', err)
+}
+
+export function metadataHandler(state) {
+  store.commit('setMetaData', state)
 }

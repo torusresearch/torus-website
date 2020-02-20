@@ -5,61 +5,32 @@ import log from 'loglevel'
 import { CapabilitiesController as RpcCap } from 'rpc-cap'
 import { ethErrors } from 'eth-json-rpc-errors'
 
-import getRestrictedMethods from './restrictedMethods'
-import createMethodMiddleware from './methodMiddleware'
-import PermissionsLogController from './permissionsLog'
+import getRestrictedMethods from '../utils/restrictedMethods'
+import createMethodMiddleware from '../utils/methodMiddleware'
 
 // Methods that do not require any permissions to use:
 import {
   SAFE_METHODS, // methods that do not require any permissions to use
   WALLET_PREFIX,
-  METADATA_STORE_KEY,
-  LOG_STORE_KEY,
-  HISTORY_STORE_KEY,
-  CAVEAT_NAMES,
-  NOTIFICATION_NAMES
-} from './enums'
+  CAVEAT_NAMES
+} from '../utils/enums'
 
-export class PermissionsController {
-  constructor({ platform, notifyDomain, notifyAllDomains, getKeyringAccounts } = {}, restoredPermissions = {}, restoredState = {}) {
-    this.store = new ObservableStore({
-      [METADATA_STORE_KEY]: restoredState[METADATA_STORE_KEY] || {},
-      [LOG_STORE_KEY]: restoredState[LOG_STORE_KEY] || [],
-      [HISTORY_STORE_KEY]: restoredState[HISTORY_STORE_KEY] || {}
-    })
-
-    this._notifyDomain = notifyDomain
-    this.notifyAllDomains = notifyAllDomains
+export default class PermissionsController {
+  constructor({ getKeyringAccounts, setSiteMetadata } = {}) {
     this.getKeyringAccounts = getKeyringAccounts
-    this._platform = platform
+    this.setSiteMetadata = setSiteMetadata
     this._restrictedMethods = getRestrictedMethods(this)
-    this.permissionsLogController = new PermissionsLogController({
-      restrictedMethods: Object.keys(this._restrictedMethods),
-      store: this.store
-    })
-    this._initializePermissions(restoredPermissions)
+    this._initializePermissions({})
   }
 
-  createMiddleware({ origin, extensionId }) {
-    if (extensionId) {
-      this.store.updateState({
-        [METADATA_STORE_KEY]: {
-          ...this.store.getState()[METADATA_STORE_KEY],
-          [origin]: { extensionId }
-        }
-      })
-    }
-
+  createMiddleware({ origin }) {
     const engine = new JsonRpcEngine()
-
-    engine.push(this.permissionsLogController.createMiddleware())
 
     engine.push(
       createMethodMiddleware({
-        store: this.store,
-        storeKey: METADATA_STORE_KEY,
         getAccounts: this.getAccounts.bind(this, origin),
-        requestAccountsPermission: this._requestPermissions.bind(this, origin, { eth_accounts: {} })
+        requestAccountsPermission: this._requestPermissions.bind(this, origin, { eth_accounts: {} }),
+        setSiteMetadata: this.setSiteMetadata.bind(this)
       })
     )
 
@@ -162,67 +133,6 @@ export class PermissionsController {
   }
 
   /**
-   * Grants the given origin the eth_accounts permission for the given account(s).
-   * This method should ONLY be called as a result of direct user action in the UI,
-   * with the intention of supporting legacy dapps that don't support EIP 1102.
-   *
-   * @param {string} origin - The origin to expose the account(s) to.
-   * @param {Array<string>} accounts - The account(s) to expose.
-   */
-  async legacyExposeAccounts(origin, accounts) {
-    const permissions = {
-      eth_accounts: {}
-    }
-
-    await this.finalizePermissionsRequest(permissions, accounts)
-
-    let error
-    try {
-      await new Promise((resolve, reject) => {
-        this.permissions.grantNewPermissions(origin, permissions, {}, err => (err ? resolve() : reject(err)))
-      })
-    } catch (err) {
-      error = err
-    }
-
-    if (error) {
-      if (error.code === 4001) {
-        throw error
-      } else {
-        throw ethErrors.rpc.internal({
-          message: `Failed to add 'eth_accounts' to '${origin}'.`,
-          data: {
-            originalError: error,
-            accounts
-          }
-        })
-      }
-    }
-  }
-
-  /**
-   * Update the accounts exposed to the given origin. Changes the eth_accounts
-   * permissions and emits accountsChanged.
-   * At least one account must be exposed. If no accounts are to be exposed, the
-   * eth_accounts permissions should be removed completely.
-   *
-   * Throws error if the update fails.
-   *
-   * @param {string} origin - The origin to change the exposed accounts for.
-   * @param {string[]} accounts - The new account(s) to expose.
-   */
-  async updatePermittedAccounts(origin, accounts) {
-    await this.validatePermittedAccounts(accounts)
-
-    this.permissions.updateCaveatFor(origin, 'eth_accounts', CAVEAT_NAMES.exposedAccounts, accounts)
-
-    this.notifyDomain(origin, {
-      method: NOTIFICATION_NAMES.accountsChanged,
-      result: accounts
-    })
-  }
-
-  /**
    * Finalizes a permissions request.
    * Throws if request validation fails.
    *
@@ -270,23 +180,6 @@ export class PermissionsController {
     })
   }
 
-  notifyDomain(origin, payload) {
-    // if the accounts changed from the perspective of the dapp,
-    // update "last seen" time for the origin and account(s)
-    // exception: no accounts -> no times to update
-    if (payload.method === NOTIFICATION_NAMES.accountsChanged && Array.isArray(payload.result)) {
-      this.permissionsLogController.updateAccountsHistory(origin, payload.result)
-    }
-
-    this._notifyDomain(origin, payload)
-
-    // NOTE:
-    // we don't check for accounts changing in the notifyAllDomains case,
-    // because the log only records when accounts were last seen,
-    // and the accounts only change for all domains at once when permissions
-    // are removed
-  }
-
   /**
    * Removes the given permissions for the given domain.
    * @param {Object} domains { origin: [permissions] }
@@ -296,10 +189,6 @@ export class PermissionsController {
       this.permissions.removePermissionsFor(
         origin,
         perms.map(methodName => {
-          if (methodName === 'eth_accounts') {
-            this.notifyDomain(origin, { method: NOTIFICATION_NAMES.accountsChanged, result: [] })
-          }
-
           return { parentCapability: methodName }
         })
       )
@@ -307,36 +196,10 @@ export class PermissionsController {
   }
 
   /**
-   * When a new account is selected in the UI for 'origin', emit accountsChanged
-   * to 'origin' if the selected account is permitted.
-   * @param {string} origin - The origin.
-   * @param {string} account - The newly selected account's address.
-   */
-  async handleNewAccountSelected(origin, account) {
-    const permittedAccounts = await this.getAccounts(origin)
-
-    // do nothing if the account is not permitted for the origin, or
-    // if it's already first in the array of permitted accounts
-    if (!account || !permittedAccounts.includes(account) || permittedAccounts[0] === account) {
-      return
-    }
-
-    const newPermittedAccounts = [account].concat(permittedAccounts.filter(_account => _account !== account))
-
-    // update permitted accounts to ensure that accounts are returned
-    // in the same order every time
-    this.updatePermittedAccounts(origin, newPermittedAccounts)
-  }
-
-  /**
    * Removes all known domains and their related permissions.
    */
   clearPermissions() {
     this.permissions.clearDomains()
-    this.notifyAllDomains({
-      method: NOTIFICATION_NAMES.accountsChanged,
-      result: []
-    })
   }
 
   /**

@@ -14,7 +14,7 @@ import {
   REDDIT,
   DISCORD
 } from '../utils/enums'
-import { broadcastChannelOptions, storageAvailable } from '../utils/utils'
+import { broadcastChannelOptions, fakeStream } from '../utils/utils'
 import { post, get } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import initialState from './state'
@@ -29,7 +29,8 @@ import {
   tokenRatesControllerHandler,
   prefsControllerHandler,
   successMsgHandler,
-  errorMsgHandler
+  errorMsgHandler,
+  metadataHandler
 } from './controllerSubscriptions'
 import PopupHandler from '../utils/PopupHandler'
 
@@ -53,14 +54,17 @@ const {
 } = torusController
 
 // stream to send logged in status
-const statusStream = torus.communicationMux.getStream('status')
-const oauthStream = torus.communicationMux.getStream('oauth')
-const userInfoStream = torus.communicationMux.getStream('user_info')
-const providerChangeStream = torus.communicationMux.getStream('provider_change')
+const statusStream = (torus.communicationMux && torus.communicationMux.getStream('status')) || fakeStream
+const oauthStream = (torus.communicationMux && torus.communicationMux.getStream('oauth')) || fakeStream
+const userInfoStream = (torus.communicationMux && torus.communicationMux.getStream('user_info')) || fakeStream
+const providerChangeStream = (torus.communicationMux && torus.communicationMux.getStream('provider_change')) || fakeStream
+
+// Have to do this here cause embed calls on init
+prefsController.metadataStore.subscribe(metadataHandler)
 
 export default {
-  logOut({ commit }, payload) {
-    commit('logOut', initialState)
+  logOut({ commit, state }, payload) {
+    commit('logOut', { ...initialState, networkType: state.networkType, networkId: state.networkId })
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
     statusStream.write({ loggedIn: false })
@@ -78,7 +82,10 @@ export default {
     torus.updateStaticData({ isUnlocked: false })
   },
   setSelectedCurrency({ commit, state }, payload) {
-    torusController.setCurrentCurrency(payload)
+    torusController.setCurrentCurrency(payload, (err, data) => {
+      if (err) log.error('currency fetch failed')
+      else commit('setCurrencyData', data)
+    })
   },
   async forceFetchTokens({ state }, payload) {
     detectTokensController.refreshTokenBalances()
@@ -207,7 +214,7 @@ export default {
         await bc.postMessage({
           data: {
             origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-            payload: payload
+            payload: { ...payload, verifier: state.userInfo.verifier }
           }
         })
       } else if (ev.data && ev.data.type === 'confirm-user-info-request' && ev.data.approve) {
