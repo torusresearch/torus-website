@@ -368,7 +368,8 @@ export default {
       const finalUrl = `${config.baseRoute}${loginType}?state=${state}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${
         torus.instanceId
       }`
-      const torusLoginWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+      const features = 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=700,width=500'
+      const torusLoginWindow = new PopupHandler({ url: finalUrl, features, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
         try {

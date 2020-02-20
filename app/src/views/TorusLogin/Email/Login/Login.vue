@@ -24,7 +24,7 @@
                       label="Enter Email"
                       elevation="4"
                       v-model="verifier_id"
-                      :rules="[rules.required]"
+                      :rules="[rules.required, rules.validEmail]"
                       single-line
                     >
                       <template v-slot:prepend-inner>
@@ -116,7 +116,8 @@ export default {
       state: '',
       rules: {
         required: value => !!value || 'Required',
-        minLength: value => value.length > 8 || 'Password length must be greater than 8 characters'
+        minLength: value => value.length > 8 || 'Password length must be greater than 8 characters',
+        validEmail: value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || 'Invalid email address'
       }
     }
   },

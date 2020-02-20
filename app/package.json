@@ -40,8 +40,8 @@
   },
   "dependencies": {
     "@chaitanyapotti/random-id": "^1.0.3",
-    "@toruslabs/fetch-node-details": "^2.0.1",
-    "@toruslabs/torus.js": "^1.0.6",
+    "@toruslabs/fetch-node-details": "^2.0.2",
+    "@toruslabs/torus.js": "^1.0.7",
     "assert": "^2.0.0",
     "bignumber.js": "^9.0.0",
     "broadcast-channel": "^3.0.3",
