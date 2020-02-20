@@ -41,7 +41,7 @@
 
     <v-divider></v-divider>
 
-    <v-list v-if="smartContractStatus === 'pending'">
+    <v-list v-if="hasPendingSmartContract">
       <v-list-item two-line>
         <v-list-item-action class="mr-2">
           <v-icon class="text_2--text" v-text="'$vuetify.icons.smart_contract'" />
@@ -60,7 +60,7 @@
       </v-list-item>
     </v-list>
 
-    <v-divider v-if="smartContractStatus === 'pending'"></v-divider>
+    <v-divider v-if="hasPendingSmartContract"></v-divider>
 
     <v-list v-if="wallets.length > 1">
       <v-list-item v-for="acc in filteredWallets" :key="acc.id" @click="changeAccount(acc.address)">
@@ -149,8 +149,12 @@ export default {
     }
   },
   computed: {
-    smartContractStatus() {
-      return 'pending'
+    hasPendingSmartContract() {
+      const pending = false
+      const hasSmartContract = Object.values(this.$store.state.wallet).filter(
+        x => x.type === 'SC' && x.network === this.$store.state.networkType.host
+      ).length
+      return !hasSmartContract && pending
     },
     userEmail() {
       const verifierLabel = this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1) + ': '
