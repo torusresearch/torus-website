@@ -49,11 +49,19 @@ export default class SmartContractWalletController {
       return (selectedEOA && selectedEOA.toLowerCase()) || ''
     } else return ''
   }
-  createSmartContractWallet() {
+
+  /**
+   * Request relayer to create a smart contract wallet
+   */
+  async createSmartContractWallet() {
     // Make an API call to relayer to create a smart contract wallet
     // Update the Vue state to processing
     try {
-      const scw = post(`${config.relayer}/createWallet`)
+      const obj = {
+        ens: this.getSelectedEOA(),
+        owner: this.getSelectedEOA()
+      }
+      const scw = await post(`${config.relayer}/createWallet`, obj)
       log.info(scw)
     } catch (err) {
       log.error(err)
@@ -61,7 +69,7 @@ export default class SmartContractWalletController {
   }
 
   /**
-    adds the chain id and signs the transaction and set the status to signed
+    Sign the transaction and submit to the relayer
     @param txId {number} - the tx's Id
     @returns - rawTx {string}
   */
@@ -107,10 +115,10 @@ export default class SmartContractWalletController {
     log.info('selectedEOA is', selectedEOA)
     const privateKey = await this.getWallet(selectedEOA)
     const walletAccount = this.web3.eth.accounts.privateKeyToAccount('0x' + privateKey)
-    log.info([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 700000)
+    log.info([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 0)
 
     // Sign the transaction
-    const signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 700000)
+    const signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 0)
     const reqObj = {
       wallet: fromSCW,
       nonce,

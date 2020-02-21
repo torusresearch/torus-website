@@ -31,6 +31,9 @@
 </template>
 
 <script>
+import { post } from '../../../utils/httpHelpers'
+import config from '../../../config'
+
 export default {
   name: 'smartContractSettings',
   data() {
@@ -42,7 +45,7 @@ export default {
   methods: {
     async createWallet() {
       const reqObj = {
-        ens: this.ensName,
+        ens: this.$store.state.selectedEOA,
         owner: this.$store.state.selectedEOA
       }
       try {
