@@ -1,15 +1,15 @@
 @import '../../../scss/card-shadow.mixin';
 
 .account-list {
-  .v-list-item {
-    margin: 0 12px;
+  &__item {
+    cursor: pointer;
     &:hover, &.active {
       @include cardShadow();
       border-radius: 9px;
     }
   }
-  .v-avatar {
-    align-self: start;
+  &__details {
+    width: 100%;
   }
   &__address {
     font-size: 8px;

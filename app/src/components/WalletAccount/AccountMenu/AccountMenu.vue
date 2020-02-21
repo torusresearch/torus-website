@@ -1,6 +1,6 @@
 <template>
   <v-card :flat="$vuetify.breakpoint.smAndDown" width="340" class="account-menu card-shadow-v8">
-    <v-list class="pb-0">
+    <v-list class="pb-0 mb-2">
       <v-list-item>
         <v-list-item-avatar class="ml-2 mr-3">
           <img :src="profileImage" class="align-start" :alt="userName" />
@@ -44,47 +44,43 @@
       </v-list-item>
     </v-list> -->
 
-    <v-list v-if="wallets.length > 0" class="account-list">
-      <v-list-item
+    <div class="px-3 account-list">
+      <div
+        class="d-flex account-list__item mb-2 pa-1"
         :class="{ active: acc.address === selectedAddress }"
         v-for="acc in wallets"
         :key="acc.address"
         @click="changeAccount(acc.address)"
-        class="mb-2"
       >
-        <v-list-item-avatar class="mr-2">
-          <v-icon v-if="acc.type === 'SC'" size="20">$vuetify.icons.smart_contract</v-icon>
-          <img v-else :src="require(`../../../../public/img/icons/google-dark.svg`)" style="width: 16px" />
-        </v-list-item-avatar>
-        <v-list-item-content class="font-weight-bold">
-          <v-list-item-title class="mb-2 caption">
+        <div>
+          <v-icon v-if="acc.type === 'SC'" size="16">$vuetify.icons.smart_contract</v-icon>
+          <img v-else :src="require(`../../../../public/img/icons/google-dark.svg`)" style="width: 16px" class="ma-1" />
+        </div>
+        <div class="d-flex flex-column account-list__details px-1">
+          <div class="caption">
             <span class="font-weight-bold">{{ acc.type === 'SC' ? 'Smart Contract Wallet' : userInfo.email }}</span>
             <span class="float-right">{{ acc.balance }}</span>
-          </v-list-item-title>
-          <v-list-item-subtitle>
-            <v-layout>
-              <v-flex>
-                <span class="account-list__address">{{ acc.address }}</span>
-              </v-flex>
-              <v-flex>
-                <show-tool-tip :address="acc.address">
-                  <v-icon size="12" class="text_2--text" v-text="'$vuetify.icons.copy'" />
-                </show-tool-tip>
-                <export-qr-code :customAddress="acc.address">
-                  <v-icon x-small v-text="'$vuetify.icons.qr'" />
-                </export-qr-code>
-              </v-flex>
-            </v-layout>
-          </v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
-    </v-list>
+          </div>
+          <div class="caption">
+            <span class="account-list__address">{{ acc.address }}</span>
+            <span class="float-right">
+              <show-tool-tip :address="acc.address">
+                <v-icon size="12" :class="{ 'text_2--text': !$vuetify.theme.dark }" v-text="'$vuetify.icons.copy'" />
+              </show-tool-tip>
+              <export-qr-code :customAddress="acc.address">
+                <v-icon x-small v-text="'$vuetify.icons.qr'" />
+              </export-qr-code>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <v-divider v-if="wallets.length > 0"></v-divider>
 
     <v-list v-if="hasPendingSmartContract">
       <v-list-item two-line>
-        <v-list-item-action class="mr-2">
+        <v-list-item-action class="mr-2 mt-n3">
           <v-icon class="text_2--text" v-text="'$vuetify.icons.smart_contract'" />
         </v-list-item-action>
         <v-list-item-content class="text_1--text font-weight-bold">
@@ -170,9 +166,9 @@ import copyToClipboard from 'copy-to-clipboard'
 export default {
   props: ['headerItems'],
   components: {
-    ShowToolTip,
     AccountImport,
     LanguageSelector,
+    ShowToolTip,
     ExportQrCode
   },
   data() {
