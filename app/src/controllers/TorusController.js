@@ -127,7 +127,11 @@ export default class TorusController extends EventEmitter {
     this.publicConfigStore = this.initPublicConfigStore()
 
     // SCW controller
-    this.scwController = new SmartContractWalletController()
+    this.scwController = new SmartContractWalletController({
+      provider: this.provider,
+      storeProps: this.opts.storeProps,
+      getWallet: this.keyringController.exportAccount.bind(this.keyringController)
+    })
 
     // Permissions controller
     this.permissionsController = new PermissionsController({
@@ -138,7 +142,7 @@ export default class TorusController extends EventEmitter {
     // tx mgmt
     this.txController = new TransactionController({
       networkStore: this.networkController.networkStore,
-      scwController: this.SmartContractWalletController,
+      scwController: this.scwController,
       txHistoryLimit: 40,
       // TODO: pass in methods to check permissions for transactions. Do the same for other types of txs
       getNetwork: this.networkController.getNetworkState.bind(this),

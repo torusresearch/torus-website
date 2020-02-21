@@ -34,5 +34,5 @@ export default {
   redirect_uri: redirect_uri,
   api: 'http://localhost:2020',
   // api: 'https://api.tor.us',
-  relayer: 'http://relayer.relayer.dev.tor.us/relayer'
+  relayer: 'https://relayer.relayer.dev.tor.us'
 }
