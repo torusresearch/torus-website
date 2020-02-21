@@ -1,8 +1,14 @@
 <template>
-  <v-chip v-if="selectedNetwork !== ''" small class="caption network-chip" :class="!isUrlNetwork ? `network-chip--${host} text-capitalize` : ''">
-    <v-icon size="12" v-text="'$vuetify.icons.network'"></v-icon>
-    <span>{{ selectedNetwork }}</span>
-  </v-chip>
+  <div class="d-inline-flex network-chip align-center" :class="!isUrlNetwork ? `network-chip--${host} text-capitalize` : ''">
+    <v-icon v-text="'$vuetify.icons.network'"></v-icon>
+    <span class="network-chip__name text-clamp-one" :class="{ 'network-chip__name--mobile': $vuetify.breakpoint.xsOnly }">{{ selectedNetwork }}</span>
+  </div>
+  <!-- <v-chip v-if="selectedNetwork !== ''" small class="network-chip" :class="!isUrlNetwork ? `network-chip--${host} text-capitalize` : ''">
+    <div class="d-flex align-center">
+      <v-icon class="mr-1" size="12" v-text="'$vuetify.icons.network'"></v-icon>
+      <span :class="{ caption: !$vuetify.breakpoint.xsOnly, caption: $vuetify.breakpoint.xsOnly }">{{ selectedNetwork }}</span>
+    </div>
+  </v-chip> -->
 </template>
 
 <script>

@@ -21,6 +21,7 @@
       <v-flex xs6 px-1 mb-1>
         <v-chip
           class="button-speed text-center"
+          :outlined="$vuetify.theme.dark"
           :class="[speedSelected === 'average' ? 'selected' : '', isWalletTransfer ? 'button-speed--transfer' : '']"
           label
           @click="selectSpeed('average', averageGasPrice)"
@@ -28,7 +29,7 @@
           <img :src="require(`../../../../public/img/icons/speed-bicycle.svg`)" class="mr-2" />
           <div>
             <div class="font-weight-bold button-speed__speed">~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
-            <div class="text_2--text">{{ getGasDisplayString(averageGasPrice) }}</div>
+            <div :class="{ 'text_2--text': !$vuetify.theme.dark }">{{ getGasDisplayString(averageGasPrice) }}</div>
           </div>
         </v-chip>
         <!-- <v-btn
@@ -47,6 +48,7 @@
       <v-flex xs6 px-1 mb-1>
         <v-chip
           class="button-speed text-center"
+          :outlined="$vuetify.theme.dark"
           :class="[speedSelected === 'fastest' ? 'selected' : '', isWalletTransfer ? 'button-speed--transfer' : '']"
           label
           @click="selectSpeed('fastest', averageGasPrice)"
@@ -54,7 +56,7 @@
           <img :src="require(`../../../../public/img/icons/speed-car.svg`)" class="mr-2" />
           <div>
             <div class="font-weight-bold button-speed__speed">~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
-            <div class="text_2--text">{{ getGasDisplayString(fastestGasPrice) }}</div>
+            <div :class="{ 'text_2--text': !$vuetify.theme.dark }">{{ getGasDisplayString(fastestGasPrice) }}</div>
           </div>
         </v-chip>
         <!-- <v-btn

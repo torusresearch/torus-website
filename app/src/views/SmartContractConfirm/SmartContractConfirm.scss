@@ -71,4 +71,21 @@
   .v-divider {
     border: 1px solid #F1F2F6;
   }
+
+  &.theme--dark {
+    .logo-container {
+      background: #2F3136;
+      .v-icon {
+        color: #7F8FA4;
+      }
+    }
+
+    .v-divider {
+      border: 1px solid #2F3136;
+    }
+    
+    .card-shadow {
+      border-bottom: 1px solid #343539;
+    }
+  }
 }

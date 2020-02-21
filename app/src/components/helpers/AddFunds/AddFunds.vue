@@ -1,13 +1,13 @@
 <template>
   <v-dialog v-model="addMoreFundsDialoag" fullscreen width="400">
     <template v-slot:activator="{ on }">
-      <v-btn block depressed class="add-funds-btn" outlined v-on="on">
+      <v-btn block depressed class="add-funds-btn" :outlined="!$vuetify.theme.dark" v-on="on">
         Add more funds
       </v-btn>
     </template>
     <v-card class="torus-v8">
       <v-layout wrap style="height: 100%">
-        <v-flex class="card-shadow text-center" py-10 xs12>
+        <v-flex class="card-shadow funds-header text-center" py-6 xs12>
           <img :src="require(`../../../../public/images/torus-logo-blue.svg`)" width="115" />
           <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="title font-weight-bold">
             Confirm Transaction
@@ -28,7 +28,7 @@
             </template>
             <v-card class="torus-v8">
               <v-layout wrap style="height: 100%">
-                <v-flex class="card-shadow text-center" py-10 mb-4 xs12>
+                <v-flex class="card-shadow funds-header text-center" py-6 mb-4 xs12>
                   <img :src="require(`../../../../public/images/torus-logo-blue.svg`)" width="115" />
                   <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="title font-weight-bold">
                     Confirm Transaction

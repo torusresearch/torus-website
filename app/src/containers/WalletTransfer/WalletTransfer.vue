@@ -3,8 +3,15 @@
     <v-flex xs12>
       <div class="text_2--text font-weight-bold headline px-4 mb-4">{{ t('walletTransfer.transferDetails') }}</div>
       <v-layout wrap>
-        <v-flex px-4 xs12 sm6 :style="{ order: $vuetify.breakpoint.xsOnly ? 1 : 0 }">
-          <v-card class="pa-6" :flat="$vuetify.breakpoint.xsOnly" :class="{ 'card-shadow-v8': !$vuetify.breakpoint.xsOnly }">
+        <v-flex xs12 sm6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'" :style="{ order: $vuetify.breakpoint.xsOnly ? 1 : 0 }">
+          <v-card
+            :flat="$vuetify.breakpoint.xsOnly"
+            :class="{
+              'pa-6 card-shadow-v8': !$vuetify.breakpoint.xsOnly,
+              'py-6 px-4': $vuetify.breakpoint.xsOnly,
+              'transfer-form-container--flat': $vuetify.breakpoint.xsOnly && $vuetify.theme.dark
+            }"
+          >
             <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation aria-autocomplete="off" autocomplete="off">
               <v-layout wrap>
                 <v-flex xs12 mb-4>
@@ -12,7 +19,7 @@
                   <div v-if="selectedItemDisplay">
                     <v-menu transition="slide-y-transition" bottom>
                       <template v-slot:activator="{ on }">
-                        <v-chip class="select-coin" label large v-on="on">
+                        <v-chip class="select-coin" label large :outlined="$vuetify.theme.dark" v-on="on">
                           <span class="select-coin-name">{{ selectedItemDisplay.name }}</span>
                           <div class="flex-grow-1 text-right pr-2">
                             <v-icon right>$vuetify.icons.select</v-icon>
@@ -78,7 +85,7 @@
                     <v-flex xs12>
                       <span class="text_1--text body-2">Send to</span>
                     </v-flex>
-                    <v-flex xs12 sm8 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
+                    <v-flex xs12 md8 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
                       <v-combobox
                         :name="randomName"
                         id="recipient-address"
@@ -113,7 +120,7 @@
                         </div>
                       </div>
                     </v-flex>
-                    <v-flex xs12 sm4 class="recipient-verifier-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
+                    <v-flex xs12 md4 class="recipient-verifier-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
                       <v-select
                         id="recipient-verifier"
                         outlined
@@ -132,7 +139,7 @@
                     </v-flex>
                   </v-layout>
                 </v-flex>
-                <v-flex xs12 mb-0 class="you-send-container">
+                <v-flex xs12 mb-4 class="you-send-container">
                   <div>
                     <span class="text_1--text body-2">Amount</span>
                     <a
@@ -210,7 +217,7 @@
                     :value="totalCost"
                   ></v-text-field> -->
                 </v-flex>
-                <v-flex xs12 mb-6 class="text-right">
+                <v-flex xs12 mb-4 class="text-right">
                   <v-btn
                     large
                     depressed
@@ -252,18 +259,22 @@
             </v-form>
           </v-card>
         </v-flex>
-        <v-flex px-4 xs12 sm6 :style="{ order: $vuetify.breakpoint.xsOnly ? 0 : 1 }">
-          <v-card class="card-shadow-v8 pa-6" v-if="selectedItem">
-            <v-layout>
-              <v-flex xs7>
-                <div class="body-2 mb-4">{{ t('walletTransfer.accountBalance') }}</div>
+        <v-flex px-4 xs12 sm6 mb-2 :style="{ order: $vuetify.breakpoint.xsOnly ? 0 : 1 }">
+          <v-card :flat="$vuetify.theme.dark" class="card-shadow-v8 pa-6" v-if="selectedItem">
+            <v-layout wrap align-center>
+              <v-flex xs6 class="mb-2">
+                <div class="body-2">{{ t('walletTransfer.accountBalance') }}</div>
+              </v-flex>
+              <v-flex xs6 class="text-right mb-2">
+                <network-display></network-display>
+              </v-flex>
+              <v-flex xs6>
                 <div class="text_2--text">
                   <span class="display-1 font-weight-bold mr-1">{{ significantDigits(selectedItem.computedBalance, false, 4) }}</span>
                   <span class="caption">{{ selectedItem.symbol }}</span>
                 </div>
               </v-flex>
-              <v-flex xs5 class="text-right">
-                <network-display></network-display>
+              <v-flex xs6 class="align-self-end text-right">
                 <div class="text-right text_2--text caption currency-rate">{{ selectedItem.currencyRateText }}</div>
               </v-flex>
             </v-layout>
