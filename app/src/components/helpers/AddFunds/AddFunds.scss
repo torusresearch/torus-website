@@ -43,3 +43,31 @@
     color: #B3C0CE;
   }
 }
+
+.theme--dark {
+  .v-card {
+    background: #242529;
+  }
+  .funds-header {
+    border-bottom: 1px solid #343539;
+  }
+  .v-btn.add-funds-btn {
+    background-color: #2F3136 !important;
+    color: #D3D3D4;
+  }
+  .v-btn.preferred-method-btn {
+    background-color: #2F3136 !important;
+    color: #D3D3D4;
+  }
+  .wallet-item {
+    background: #2F3136;
+    &__details {
+      color: #EEF2F4
+    }
+    &:hover {
+      background: #5C6C7F;
+      border: 1px solid #5C6C7F;
+      box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+    }
+  }
+}

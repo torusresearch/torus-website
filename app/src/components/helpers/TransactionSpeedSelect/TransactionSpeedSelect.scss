@@ -60,6 +60,19 @@
       }
     }
   }
+
+  &.theme--dark {
+    &.v-chip {
+      background: #2F3136;
+      .v-chip__content {
+        color: var(--v-text_1-base);
+      }
+    }
+    &.selected {
+      border-color: var(--v-text_2-lighten3);
+      background: #5C6C7F !important;
+    }
+  }
 }
 
 ::v-deep .theme--dark.button-speed {

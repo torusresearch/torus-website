@@ -1,8 +1,8 @@
 <template>
-  <v-container pa-0 class="smart-contract-confirm-container torus-v8">
+  <v-container pa-0 class="smart-contract-confirm-container torus-v8" :class="{ 'theme--dark': $vuetify.theme.dark }">
     <v-layout wrap>
       <v-flex class="card-shadow text-center" py-6 mb-4 xs12>
-        <img :src="require(`../../../public/images/torus-logo-blue.svg`)" width="115" />
+        <img :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" width="115" />
         <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="title font-weight-bold">
           Confirm Transaction
         </div>
@@ -10,7 +10,7 @@
       <v-flex mx-6 mb-4 xs12>
         <v-layout align="top" no-gutters>
           <v-flex xs3 style="position: relative">
-            <div class="logo-container d-flex align-center justify-center float-right">
+            <div :class="{ 'logo-container--dark': $vuetify.theme.dark }" class="logo-container d-flex align-center justify-center float-right">
               <!-- Update with proper logo -->
               <img class="logo-padded" :src="require(`../../../public/img/icons/google-dark.svg`)" />
             </div>
@@ -28,7 +28,7 @@
           </v-flex>
           <v-flex xs3>
             <!-- Update with proper target -->
-            <div class="logo-container d-flex align-center justify-center float-left">
+            <div :class="{ 'logo-container--dark': $vuetify.theme.dark }" class="logo-container d-flex align-center justify-center float-left">
               <v-icon size="20">$vuetify.icons.smart_contract</v-icon>
             </div>
             <br />
