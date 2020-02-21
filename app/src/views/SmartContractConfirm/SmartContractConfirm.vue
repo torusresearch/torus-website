@@ -56,7 +56,7 @@
             <div :class="'text_1--text'" class="caption mt-2">Transaction Fee</div>
           </v-flex>
           <v-flex xs8>
-            <v-text-field class="text_1--text caption you-pay" hide-details value="FREE (paid by Dapp) (~10 mins)" outlined readonly />
+            <v-text-field class="text_1--text caption you-pay" hide-details value="FREE (paid by Torus)" outlined readonly />
           </v-flex>
         </v-layout>
         <v-divider class="mb-4"></v-divider>

@@ -1,13 +1,13 @@
 <template>
   <v-layout wrap>
-    <v-flex xs4 sm12>
+    <v-flex :class="isWalletTransfer ? 'xs12' : 'xs4 sm12'">
       <span class="text_1--text body-2">Transfer Fee</span>
     </v-flex>
-    <v-flex xs8 sm12>
+    <v-flex :class="isWalletTransfer ? 'xs12' : 'xs8 sm12'">
       <v-layout class="mb-3">
         <v-flex xs12 class="others-pay">
           <v-chip class="others-pay-selected caption" :class="isWalletTransfer ? 'others-pay-selected--transfer' : ''" label large>
-            <span>FREE (paid by DApp)</span>
+            <span>FREE (paid by Torus)</span>
           </v-chip>
           <!-- <v-menu transition="slide-y-transition" bottom>
             <template v-slot:activator="{ on }">
