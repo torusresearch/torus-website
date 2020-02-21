@@ -28,3 +28,9 @@
     text-transform: initial;
   }
 }
+
+.theme--dark {  
+  .card-shadow {
+    border-bottom: 1px solid #343539;
+  }
+}

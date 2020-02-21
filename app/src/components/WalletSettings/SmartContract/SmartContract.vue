@@ -27,16 +27,34 @@
         </v-flex>
       </v-layout>
     </template>
+    <v-dialog v-model="messageModalShow" max-width="375" persistent>
+      <message-modal
+        @onClose="messageModalShow = false"
+        :modal-type="messageModalType"
+        :title="messageModalTitle"
+        :is-reload="messageModalIsReload"
+      />
+    </v-dialog>
   </div>
 </template>
 
 <script>
+import MessageModal from '../../../components/WalletTransfer/MessageModal'
+import config from '../../../config'
+import { post } from '../../../utils/httpHelpers'
+import { MESSAGE_MODAL_TYPE_SUCCESS, MESSAGE_MODAL_TYPE_FAIL } from '../../../utils/enums'
+
 export default {
   name: 'smartContractSettings',
+  components: { MessageModal },
   data() {
     return {
       smartContractStatus: '',
-      ensName: ''
+      ensName: '',
+      messageModalShow: false,
+      messageModalType: '',
+      messageModalTitle: '',
+      messageModalIsReload: false
     }
   },
   methods: {
@@ -45,11 +63,18 @@ export default {
         ens: this.ensName,
         owner: this.$store.state.selectedEOA
       }
+
       try {
         const response = await post(`${config.relayer}/createWallet`, reqObj)
-        console.log(response)
+        this.messageModalShow = true
+        this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+        this.messageModalTitle = 'Your Smart Contract Wallet has been created'
+        this.messageModalIsReload = true
       } catch (e) {
-        console.error(e)
+        this.messageModalShow = true
+        this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+        this.messageModalTitle = 'Your Smart Contract Wallet creation failed'
+        this.messageModalIsReload = false
       }
     }
   }

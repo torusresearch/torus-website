@@ -10,11 +10,12 @@
 
       <v-flex xs12 mx-10 class="text-center">
         <div class="mb-4 font-weight-bold text_2--text headline">{{ title }}</div>
-        <div class="mb-6 text_2--text caption">{{ detailText }}</div>
+        <div v-if="detailText" class="mb-6 text_2--text caption">{{ detailText }}</div>
         <template v-if="isLoading">
           <div class="body-2 mb-6 font-weight-medium primary--text">Loading...</div>
           <v-btn text class="body-2 skip-btn mb-10" @click="onCancel">Skip</v-btn>
         </template>
+        <div class="text_2--text mb-10 caption" v-else-if="isReload">Reloading in {{ reloadTime }} sec...</div>
         <v-btn
           v-else
           :color="modalType === MESSAGE_MODAL_TYPE_SUCCESS ? 'success' : modalType === MESSAGE_MODAL_TYPE_FAIL ? 'error' : ''"
@@ -65,18 +66,38 @@
 import { MESSAGE_MODAL_TYPE_SUCCESS, MESSAGE_MODAL_TYPE_PENDING, MESSAGE_MODAL_TYPE_FAIL } from '../../../utils/enums'
 
 export default {
-  props: ['modalType', 'title', 'detailText'],
+  props: {
+    modalType: String,
+    title: String,
+    detailText: String,
+    isLoading: Boolean,
+    isReload: Boolean,
+    reloadTime: {
+      default: 5
+    }
+  },
   data() {
     return {
       MESSAGE_MODAL_TYPE_SUCCESS,
       MESSAGE_MODAL_TYPE_PENDING,
-      MESSAGE_MODAL_TYPE_FAIL,
-      isLoading: true
+      MESSAGE_MODAL_TYPE_FAIL
     }
   },
   methods: {
     onCancel() {
       this.$emit('onClose')
+    }
+  },
+  created() {
+    if (this.isReload) {
+      const origTime = this.reloadTime
+      setInterval(() => {
+        this.reloadTime--
+        if (this.reloadTime === 0) {
+          this.reloadTime = origTime
+          location.reload()
+        }
+      }, 1000)
     }
   }
 }
