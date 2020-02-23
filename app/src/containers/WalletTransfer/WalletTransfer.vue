@@ -711,7 +711,6 @@ export default {
   },
   computed: {
     isSmartContract() {
-      console.log(this.$store.state.wallet, this.$store.state)
       return this.$store.state.wallet[this.$store.state.selectedAddress].type === 'SC'
     },
     verifierOptions() {
@@ -1108,8 +1107,8 @@ export default {
               this.sendEmail(this.selectedItem.symbol, transactionHash)
 
               this.messageModalShow = true
-              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = 'Your transfer is being processed'
+              this.messageModalType = this.isSmartContract ? MESSAGE_MODAL_TYPE_PENDING : MESSAGE_MODAL_TYPE_SUCCESS
+              this.messageModalTitle = this.isSmartContract ? 'Your transfer is being submitted' : 'Your transfer is being processed'
               this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
             }
           }
@@ -1143,8 +1142,8 @@ export default {
               this.sendEmail(this.selectedItem.symbol, transactionHash)
 
               this.messageModalShow = true
-              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = 'Your transfer is being processed'
+              this.messageModalType = this.isSmartContract ? MESSAGE_MODAL_TYPE_PENDING : MESSAGE_MODAL_TYPE_SUCCESS
+              this.messageModalTitle = this.isSmartContract ? 'Your transfer is being submitted' : 'Your transfer is being processed'
               this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
             }
           }
@@ -1171,8 +1170,8 @@ export default {
               // Send email to the user
               this.sendEmail(this.assetSelected.name, transactionHash)
               this.messageModalShow = true
-              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = 'Your transfer is being processed'
+              this.messageModalType = this.isSmartContract ? MESSAGE_MODAL_TYPE_PENDING : MESSAGE_MODAL_TYPE_SUCCESS
+              this.messageModalTitle = this.isSmartContract ? 'Your transfer is being submitted' : 'Your transfer is being processed'
               this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
             }
           }
