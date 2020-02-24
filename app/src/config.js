@@ -8,6 +8,7 @@ export default {
   baseUrl: baseUrl,
   baseRoute: baseRoute,
   supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH'],
+  torusVerifierHost: 'https://verifier.tor.us',
   commonApiHost: 'https://common-api.tor.us',
   simplexApiHost: 'https://simplex-api.tor.us',
   moonpayApiHost: 'https://moonpay-api.tor.us',

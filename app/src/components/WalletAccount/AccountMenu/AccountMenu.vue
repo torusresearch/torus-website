@@ -141,7 +141,7 @@ export default {
       return `${userName}'s`
     },
     profileImage() {
-      return this.userInfo.profileImage
+      return this.userInfo.profileImage || require('../../../../public/images/fake_user.jpeg')
     },
     userInfo() {
       return this.$store.state.userInfo

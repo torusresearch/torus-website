@@ -16,7 +16,7 @@
           </v-flex>
           <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
             <v-flex xs12>
-              <v-form @submit.prevent lazy-validation>
+              <v-form @submit.prevent lazy-validation v-model="formValid" ref="form">
                 <v-layout wrap>
                   <v-flex xs12 mb-4>
                     <v-text-field
@@ -25,29 +25,24 @@
                       name="code"
                       v-model="code"
                       class="field"
-                      v-on:keyup.enter="verifyAccount"
+                      :rules="[rules.required, rules.minLength]"
+                      @keyup.prevent="verifyAccount"
                       label="Enter your verification code"
                       single-line
                     >
                       <template v-slot:append>
-                        <img class="mr-2" v-if="!response && !error" :src="require(`../../../../../public/images/shield.svg`)" height="20px" />
+                        <img class="mr-2" v-if="status === ''" :src="require(`../../../../../public/images/shield.svg`)" height="20px" />
                         <img
                           class="mr-2"
                           :src="require(`../../../../../public/images/valid-check.svg`)"
                           height="20px"
                           title="You have successfully verified your account"
+                          v-if="status === 'success'"
                         />
-                        <img class="mr-2" :src="require(`../../../../../public/images/invalid-check.svg`)" height="20px" />
-                        <img
-                          v-if="!responseMessage && !response"
-                          class="mr-2"
-                          :src="require(`../../../../../public/images/shield.svg`)"
-                          height="20px"
-                          title="An error occured. Please try again"
-                        />
+                        <img class="mr-2" v-if="status === 'error'" :src="require(`../../../../../public/images/invalid-check.svg`)" height="20px" />
                       </template>
                     </v-text-field>
-                    <div class="v-text-field__details mb-6">
+                    <!-- <div class="v-text-field__details mb-6">
                       <div class="v-messages">
                         <div class="v-messages__wrapper">
                           <div class="v-messages__message d-flex text_2--text">
@@ -66,7 +61,7 @@
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div> -->
                   </v-flex>
                 </v-layout>
               </v-form>
@@ -97,29 +92,36 @@ export default {
     return {
       code: '',
       verifier_id: '',
-      response: false,
-      error: false
+      status: '',
+      formValid: true,
+      rules: {
+        required: value => !!value || 'Required',
+        minLength: value => value.length === 6 || 'Code must of length 6'
+      }
     }
-  },
-  created() {
-    this.verifier_id = this.$route.query.email
   },
   methods: {
     verifyAccount() {
-      post('https://verifier.dev.tor.us/verify', {
-        verifier_id: this.verifier_id,
-        code: this.code
-      })
-        .then(() => {
-          this.responseMessage = ''
-          this.response = true
-          this.$router.push({ name: 'torusEmailLogin' })
+      if (this.$refs.form.validate()) {
+        post(`${config.torusVerifierHost}/verify`, {
+          verifier_id: this.verifier_id,
+          verifier_id_type: 'email',
+          code: this.code
         })
-        .catch(err => {
-          this.responseMessage = 'Invalid verification code'
-          this.response = false
-        })
+          .then(() => {
+            this.status = 'success'
+            let finalRoutePath = { name: 'torusEmailLogin' }
+            if (!Object.prototype.hasOwnProperty.call(this.$route.query, 'state')) finalRoutePath = { path: '/' }
+            this.$router.push(finalRoutePath).catch(err => {})
+          })
+          .catch(err => {
+            this.status = 'error'
+          })
+      }
     }
+  },
+  mounted() {
+    this.verifier_id = this.$route.query.email
   }
 }
 </script>

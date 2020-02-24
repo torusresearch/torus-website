@@ -22,15 +22,6 @@ import {
   WalletTopupCoinDirect
 } from './containers/WalletTopup'
 
-// const Popup = () => import('./views/Popup.vue')
-// const Confirm = () => import('./views/Confirm.vue')
-// const Wallet = () => import('./views/Wallet.vue')
-// const Login = () => import('./containers/Login.vue')
-// const WalletHome = () => import('./containers/WalletHome.vue')
-// const WalletHistory = () => import('./containers/WalletHistory.vue')
-// const WalletSettings = () => import('./containers/WalletSettings.vue')
-// const WalletAccounts = () => import('./containers/WalletAccounts.vue')
-
 Vue.use(Router)
 
 const router = new Router({
@@ -49,12 +40,6 @@ const router = new Router({
       component: Login,
       meta: { requiresAuth: false }
     },
-    // {
-    //   path: '/torus-login',
-    //   name: 'torusLogin',
-    //   component: EmailLogin,
-    //   meta: { requiresAuth: false }
-    // },
     {
       path: '/torus-email-register',
       name: 'torusEmailRegister',
@@ -73,7 +58,7 @@ const router = new Router({
       component: EmailVerify,
       meta: { requiresAuth: false },
       beforeEnter: (to, from, next) => {
-        if (typeof to.query.email !== 'undefined') {
+        if (to.query.email) {
           next()
         } else {
           next(from.path)
@@ -86,7 +71,7 @@ const router = new Router({
       component: PhoneVerify,
       meta: { requiresAuth: false },
       beforeEnter: (to, from, next) => {
-        if (typeof to.query.email !== 'undefined') {
+        if (to.query.email) {
           next()
         } else {
           next(from.path)
@@ -94,16 +79,30 @@ const router = new Router({
       }
     },
     {
-      path: '/torusEmailLogin',
+      path: '/torus-email-login',
       name: 'torusEmailLogin',
       component: EmailLogin,
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false },
+      beforeEnter: (to, from, next) => {
+        if ((to.query.state && to.query.redirect_uri) || (from.query.state && from.query.redirect_uri)) {
+          next()
+        } else {
+          next(from.path)
+        }
+      }
     },
     {
-      path: '/torusPhoneLogin',
+      path: '/torus-phone-login',
       name: 'torusPhoneLogin',
       component: PhoneLogin,
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false },
+      beforeEnter: (to, from, next) => {
+        if ((to.query.state && to.query.redirect_uri) || (from.query.state && from.query.redirect_uri)) {
+          next()
+        } else {
+          next(from.path)
+        }
+      }
     },
     {
       path: '/popup',
@@ -214,7 +213,7 @@ const router = new Router({
 })
 
 function hasQueryParams(route) {
-  return Object.prototype.hasOwnProperty.call(route.query, 'instanceId')
+  return Object.prototype.hasOwnProperty.call(route.query, 'instanceId') || Object.prototype.hasOwnProperty.call(route.query, 'state')
 }
 
 router.beforeResolve((to, from, next) => {

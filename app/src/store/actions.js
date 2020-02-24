@@ -249,9 +249,6 @@ export default {
   updateUserInfo(context, payload) {
     context.commit('setUserInfo', payload.userInfo)
   },
-  updateExtendedPassword(context, payload) {
-    context.commit('setExtendedPassword', payload.extendedPassword)
-  },
   addWallet(context, payload) {
     if (payload.ethAddress) {
       context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
@@ -382,13 +379,13 @@ export default {
             dispatch('updateUserInfo', {
               userInfo: {
                 name: hashParams.verifier_id,
+                email: loginType === 'torus-email-login' ? hashParams.verifier_id : '',
                 verifierId: hashParams.verifier_id,
                 verifier,
                 verifierParams: { ...hashParams, id_token: hashParams.idtoken }
               }
             })
-            dispatch('updateExtendedPassword', { extendedPassword: hashParams.extendedPassword })
-            dispatch('handleLogin', { calledFromEmbed, idToken: hashParams.idtoken, torusLogin: true })
+            dispatch('handleLogin', { calledFromEmbed, idToken: hashParams.idtoken, torusLogin: true, extendedPassword: hashParams.extendedPassword })
           }
         } catch (error) {
           log.error(error)
@@ -791,7 +788,7 @@ export default {
         })
     })
   },
-  async handleLogin({ state, dispatch }, { calledFromEmbed, idToken, torusLogin }) {
+  async handleLogin({ state, dispatch }, { calledFromEmbed, idToken, torusLogin, extendedPassword }) {
     console.log('handlelogin called with', state)
     dispatch('loginInProgress', true)
     const {
@@ -808,11 +805,9 @@ export default {
       .then(async res => {
         if (torusLogin) {
           var data = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
-          console.log('TKEY', data, state.extendedPassword)
-          data.privKey = xor(data.privKey, state.extendedPassword)
+          data.privKey = xor(data.privKey, extendedPassword)
           data.ethAddress = torus.web3.eth.accounts.privateKeyToAccount('0x' + data.privKey).address
           log.info('New private key assigned to user at address ', data.ethAddress)
-          console.log('DATA', data)
           const message = await torus.getMessageForSigning(data.ethAddress)
           return [data, message]
         } else {

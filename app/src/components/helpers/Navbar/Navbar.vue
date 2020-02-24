@@ -30,7 +30,7 @@
       <v-menu v-if="!$vuetify.breakpoint.smAndDown" offset-y bottom left z-index="20" :close-on-content-click="false">
         <template v-slot:activator="{ on }">
           <v-btn id="menu-dropdown-btn" small text v-on="on">
-            <span class="text-capitalize subtitle-2">{{ userName }}</span>
+            <span :class="verifier === TORUS ? 'subtitle-2' : 'text-capitalize subtitle-2'">{{ userName }}</span>
             <v-icon class="ml-2 mt-0" small>$vuetify.icons.select</v-icon>
           </v-btn>
         </template>
@@ -61,6 +61,7 @@
 </template>
 
 <script>
+import { TORUS } from '../../../utils/enums'
 import AccountMenu from '../../WalletAccount/AccountMenu'
 import LanguageSelector from '../LanguageSelector'
 
@@ -72,7 +73,8 @@ export default {
   data() {
     return {
       drawer: false,
-      selectedItem: 'home'
+      selectedItem: 'home',
+      TORUS: TORUS
     }
   },
   computed: {
@@ -81,6 +83,9 @@ export default {
     },
     userName() {
       return this.$store.state.userInfo.name
+    },
+    verifier() {
+      return this.$store.state.userInfo.verifier
     },
     successMsg() {
       return this.$store.state.successMsg
