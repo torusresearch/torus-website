@@ -71,7 +71,7 @@ const router = new Router({
       component: PhoneVerify,
       meta: { requiresAuth: false },
       beforeEnter: (to, from, next) => {
-        if (to.query.email) {
+        if (to.query.phone) {
           next()
         } else {
           next(from.path)

@@ -14,7 +14,7 @@
           </v-flex>
           <v-flex xs12 sm12 ml-auto mb-2 pt-4 mr-auto>
             <v-flex xs12>
-              <v-form @submit.prevent="login" lazy-validation>
+              <v-form @submit.prevent="login" lazy-validation v-model="formValid" ref="form">
                 <v-layout wrap>
                   <v-flex xs12>
                     <vue-tel-input v-model="verifier_id" required mode="international" autocomplete="off" :autofocus="true"></vue-tel-input>
@@ -24,7 +24,7 @@
                       outlined
                       name="password"
                       label="Enter Password"
-                      @click:append="toggleShowPassword"
+                      @click:append.prevent="showPassword = !showPassword"
                       :rules="[rules.required, rules.minLength]"
                       v-model="password"
                       :append-icon="showPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
@@ -60,7 +60,7 @@
                   <v-flex xs12>
                     <v-btn
                       color="primary"
-                      :disabled="!formComplete"
+                      :disabled="!formValid"
                       class="body-1 font-weight-bold card-shadow-v8 login-btn"
                       large
                       depressed
@@ -69,6 +69,12 @@
                     >
                       Login
                     </v-btn>
+                  </v-flex>
+                  <v-flex xs12 v-if="notRegistered">
+                    <span>
+                      You are not registered yet. Please
+                      <router-link :to="{ name: 'torusPhoneRegister' }">Sign up here</router-link>
+                    </span>
                   </v-flex>
                 </v-layout>
               </v-form>
@@ -89,7 +95,8 @@
 </template>
 
 <script>
-import Web3 from 'web3'
+import { sha3 } from 'web3-utils'
+import * as ethUtil from 'ethereumjs-util'
 import { VueTelInput } from 'vue-tel-input'
 import log from 'loglevel'
 import { post } from '../../../../utils/httpHelpers'
@@ -103,8 +110,10 @@ export default {
       showPassword: false,
       verifier_id: '',
       password: '',
+      formValid: true,
       redirect_uri: '',
       state: '',
+      notRegistered: false,
       rules: {
         required: value => !!value || 'Required',
         minLength: value => value.length > 8 || 'Password length must be greater than 8 characters'
@@ -117,33 +126,31 @@ export default {
     this.redirect_uri = queryParams.redirect_uri
   },
   computed: {
-    formComplete() {
-      return this.verifier_id.length >= 11 && this.password.length >= 8
+    extendedPassword() {
+      return ethUtil.stripHexPrefix(sha3(this.password))
     }
   },
   methods: {
-    toggleShowPassword(event) {
-      event.preventDefault()
-      this.showPassword = !this.showPassword
-    },
     login() {
-      this.updateExtendedPassword()
-      post('https://verifier.dev.tor.us/authorize', {
-        verifier_id: this.verifier_id.replace(/\s+/g, ''),
-        redirect_uri: this.redirect_uri,
-        state: this.state,
-        hash: Web3.utils.sha3(this.extendedPassword).replace('0x', '')
-      })
-        .then(data => {
-          let completeRedirectURI = new URL(data.redirect_uri)
-          completeRedirectURI.searchParams.set('state', data.state)
-          completeRedirectURI.hash = `idtoken=${data.idtoken}&timestamp=${data.timestamp}\
-          &verifier_id=${data.verifier_id}&extendedPassword=${this.extendedPassword}`
-          window.location.href = completeRedirectURI.toString()
+      if (this.$refs.form.validate()) {
+        post(`${config.torusVerifierHost}/authorize`, {
+          verifier_id: this.verifier_id.replace(/\s+/g, ''),
+          verifier_id_type: 'phone',
+          redirect_uri: this.redirect_uri,
+          state: this.state,
+          hash: ethUtil.stripHexPrefix(sha3(this.extendedPassword))
         })
-        .catch(err => {
-          log.error(err)
-        })
+          .then(data => {
+            let completeRedirectURI = new URL(data.redirect_uri)
+            completeRedirectURI.hash = `idtoken=${data.idtoken}&timestamp=${data.timestamp}\
+          &verifier_id=${data.verifier_id}&extendedPassword=${this.extendedPassword}&state=${data.state}`
+            window.location.href = completeRedirectURI.href
+          })
+          .catch(err => {
+            if (err && err.status === 404) this.notRegistered = true
+            log.error(err)
+          })
+      }
     },
     updateExtendedPassword: function() {
       this.extendedPassword = Web3.utils.sha3(this.password).replace('0x', '')
