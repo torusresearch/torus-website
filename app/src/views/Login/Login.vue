@@ -104,7 +104,7 @@
                 class="body-1 font-weight-bold card-shadow-v8 text_2--text torus-login-btn"
                 type="button"
                 :title="`${t('login.loginWith')} Torus`"
-                @click="triggerLogin({ verifier: TORUS, calledFromEmbed: false, loginType: 'torusEmailLogin' })"
+                @click="triggerLogin({ verifier: TORUS, calledFromEmbed: false, loginType: 'torus-email-login' })"
               >
                 <img height="20" :src="require('../../../public/images/email.svg')" :class="$vuetify.theme.dark ? 'ml-4 mr-4 torus-dark' : 'mr-6'" />
                 Sign up/in with Email
@@ -121,7 +121,7 @@
                 class="body-1 font-weight-bold card-shadow-v8 text_2--text torus-login-btn"
                 type="button"
                 :title="`${t('login.loginWith')} Torus`"
-                @click="triggerLogin({ verifier: TORUS, calledFromEmbed: false, loginType: 'torusPhoneLogin' })"
+                @click="triggerLogin({ verifier: TORUS, calledFromEmbed: false, loginType: 'torus-phone-login' })"
               >
                 <img
                   height="20"

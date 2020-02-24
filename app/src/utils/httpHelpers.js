@@ -25,9 +25,8 @@ export const post = (url = '', data = {}, opts = {}) => {
   return promiseTimeout(
     30000,
     fetch(url, options).then(response => {
-      if (response.ok) {
-        return response.json()
-      } else throw new Error('Could not connect', response)
+      if (response.ok) return response.json()
+      return Promise.reject(response)
     })
   )
 }
@@ -46,9 +45,8 @@ export const remove = (url = '', data = {}, opts = {}) => {
     ...{ method: 'DELETE' }
   }
   return fetch(url, options).then(response => {
-    if (response.ok) {
-      return response.json()
-    } else throw new Error('Could not connect', response)
+    if (response.ok) return response.json()
+    return Promise.reject(response)
   })
 }
 
@@ -63,9 +61,8 @@ export const get = (url = '', opts = {}) => {
     ...{ method: 'GET' }
   }
   return fetch(url, options).then(response => {
-    if (response.ok) {
-      return response.json()
-    } else throw new Error('Could not connect', response)
+    if (response.ok) return response.json()
+    return Promise.reject(response)
   })
 }
 
@@ -84,9 +81,8 @@ export const patch = (url = '', data = {}, opts = {}) => {
     ...{ method: 'PATCH' }
   }
   return fetch(url, options).then(response => {
-    if (response.ok) {
-      return response.json()
-    } else throw new Error('Could not connect', response)
+    if (response.ok) return response.json()
+    return Promise.reject(response)
   })
 }
 
