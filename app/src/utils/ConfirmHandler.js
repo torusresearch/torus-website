@@ -61,14 +61,15 @@ class ConfirmHandler {
   }
 
   handle = async ev => {
-    if (ev.name === 'popup-loaded' && ev.data && ev.data.id.toString() === this.id.toString()) {
+    const { name, data: { id = '', type = '', txType = '' } = {} } = ev
+    if (name === 'popup-loaded' && id.toString() === this.id.toString()) {
       if (this.isTx) this.sendTx()
       else this.sendMessage()
-    } else if (ev.name === 'tx-result' && ev.data && this.id.toString() === ev.data.id.toString()) {
-      if (ev.data.type === 'confirm-transaction') {
+    } else if (name === 'tx-result' && this.id.toString() === id.toString()) {
+      if (type === 'confirm-transaction') {
         this.handleConfirm(ev)
-      } else if (ev.data.type === 'deny-transaction') {
-        this.handleDeny(ev.data.id, ev.data.txType)
+      } else if (type === 'deny-transaction') {
+        this.handleDeny(id, txType)
       }
       this.bc.close()
       this.id = undefined
