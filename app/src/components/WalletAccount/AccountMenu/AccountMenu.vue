@@ -212,11 +212,15 @@ export default {
       return this.$store.state.selectedCurrency
     },
     wallets() {
-      let { wallet: storeWallet, weiBalance: storeWalletBalance } = this.$store.state || {}
+      let { wallet: storeWallet, weiBalance: storeWalletBalance, selectedCurrency } = this.$store.state || {}
 
       const wallets = Object.keys(storeWallet).reduce((accts, x) => {
+        const computedBalance = new BigNumber(storeWalletBalance[x]).dividedBy(new BigNumber(10).pow(new BigNumber(18))) || new BigNumber(0)
+        const tokenRateMultiplier = new BigNumber(1)
+        const currencyRate = new BigNumber(this.getCurrencyMultiplier).times(tokenRateMultiplier)
+        let currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
         if (storeWallet[x].type === 'EOA' || (storeWallet[x].type === 'SC' && storeWallet[x].network === this.$store.state.networkType.host))
-          accts.push({ address: x, balance: storeWalletBalance[x], ...storeWallet[x] })
+          accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${selectedCurrency}`, ...storeWallet[x] })
         return accts
       }, [])
       return wallets

@@ -11,6 +11,7 @@
       <v-flex xs12 mx-10 class="text-center">
         <div class="mb-4 font-weight-bold text_2--text headline">{{ title }}</div>
         <div v-if="detailText" class="mb-6 text_2--text caption">{{ detailText }}</div>
+        <slot name="link"></slot>
         <template v-if="isLoading">
           <div class="body-2 mb-6 font-weight-medium primary--text">Loading...</div>
           <v-btn text class="body-2 skip-btn mb-10" @click="onCancel">Skip</v-btn>
@@ -23,9 +24,9 @@
           :depressed="modalType === MESSAGE_MODAL_TYPE_PENDING"
           class="mb-10 px-12"
           :class="modalType === MESSAGE_MODAL_TYPE_PENDING ? 'primary--text' : ''"
-          @click="onCancel"
+          @click="goTo ? redirectTo() : onCancel()"
         >
-          Return
+          {{ goTo ? 'Continue' : 'Return' }}
         </v-btn>
       </v-flex>
     </v-layout>
@@ -74,7 +75,8 @@ export default {
     isReload: Boolean,
     reloadTime: {
       default: 5
-    }
+    },
+    goTo: String
   },
   data() {
     return {
@@ -86,6 +88,9 @@ export default {
   methods: {
     onCancel() {
       this.$emit('onClose')
+    },
+    redirectTo() {
+      this.$router.push({ name: this.goTo })
     }
   },
   created() {

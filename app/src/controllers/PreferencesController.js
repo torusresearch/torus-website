@@ -253,6 +253,20 @@ class PreferencesController {
     this.sync()
   }
 
+  async updateWalletNotified(payload) {
+    try {
+      const resp = await patch(
+        `${config.api}/user/wallet-notified`,
+        { proxy_contract_address: payload.address, network: payload.network },
+        this.headers
+      )
+      this.handleSuccess('Successfully updated wallet status')
+    } catch (error) {
+      log.error(error)
+      this.handleError('unable to update wallet notification status')
+    }
+  }
+
   /**
    * @param {number} interval
    */

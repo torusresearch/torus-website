@@ -25,6 +25,7 @@ import ScanIcon from './ScanIcon'
 import NetworkIcon from './NetworkIcon'
 import TimeIcon from './TimeIcon'
 import PersonIcon from './PersonIcon'
+import PersonCircleIcon from './PersonCircleIcon'
 import LockIcon from './LockIcon'
 import KeyIcon from './KeyIcon'
 import ListIcon from './ListIcon'
@@ -159,6 +160,9 @@ export default {
   },
   person: {
     component: PersonIcon
+  },
+  person_circle: {
+    component: PersonCircleIcon
   },
   activities: {
     component: ActivitiesIcon

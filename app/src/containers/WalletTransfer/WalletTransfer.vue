@@ -268,13 +268,15 @@
               <v-flex xs6 class="text-right mb-2">
                 <network-display></network-display>
               </v-flex>
-              <v-flex xs6>
+              <v-flex xs8>
                 <div class="text_2--text">
-                  <span class="display-1 font-weight-bold mr-1">{{ significantDigits(selectedItem.computedBalance, false, 4) }}</span>
-                  <span class="caption">{{ selectedItem.symbol }}</span>
+                  <span class="display-1 font-weight-bold mr-1">
+                    {{ significantDigits(selectedItem.computedBalance, false, 4) }}
+                    <span class="caption">{{ selectedItem.symbol }}</span>
+                  </span>
                 </div>
               </v-flex>
-              <v-flex xs6 class="align-self-end text-right">
+              <v-flex xs4 class="align-self-end text-right">
                 <div class="text-right text_2--text caption currency-rate">{{ selectedItem.currencyRateText }}</div>
               </v-flex>
             </v-layout>
@@ -295,7 +297,8 @@
         @onClose="messageModalShow = false"
         :modal-type="messageModalType"
         :title="messageModalTitle"
-        :detail-text="messageModalDetails"
+        :detail-text="messageModalType === MESSAGE_MODAL_TYPE_FAIL ? messageModalDetails : messageModalDetails.replace(/\{time\}/gi, timeTaken)"
+        goTo="walletHistory"
       />
     </v-dialog>
 
@@ -706,7 +709,8 @@ export default {
       confirmDialog: false,
       CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
-      CONTRACT_TYPE_ERC721
+      CONTRACT_TYPE_ERC721,
+      MESSAGE_MODAL_TYPE_FAIL
     }
   },
   computed: {
@@ -1075,6 +1079,7 @@ export default {
       const fastGasPrice = '0x' + this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)
       const selectedAddress = this.selectedAddress
       if (this.contractType === CONTRACT_TYPE_ETH) {
+        debugger
         const value =
           '0x' +
           this.amount
@@ -1093,6 +1098,7 @@ export default {
             relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
           },
           (err, transactionHash) => {
+            console.log('transactionHash', transactionHash)
             if (err) {
               const regEx = new RegExp('User denied transaction signature', 'i')
               if (!err.message.match(regEx)) {

@@ -245,7 +245,12 @@ export default {
       //context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
       context.commit('setWallet', {
         ...context.state.wallet,
-        [payload.ethAddress]: { privateKey: payload.privKey, network: payload.network || '', type: payload.type || 'EOA' }
+        [payload.ethAddress]: {
+          privateKey: payload.privKey,
+          network: payload.network || '',
+          notified: payload.notified === undefined ? true : payload.notified,
+          type: payload.type || 'EOA'
+        }
       })
     }
   },
@@ -260,6 +265,11 @@ export default {
         context.commit('setBalance', { ...stateBalance })
       }
     }
+  },
+  async updateWalletNotified(context, payload) {
+    await prefsController.updateWalletNotified(payload)
+    var stateWallet = { ...context.state.wallet }
+    if (stateWallet[payload.address].network === payload.network) stateWallet[payload.address].notified = true
   },
   updateWeiBalance({ commit, state }, payload) {
     if (payload.address) {
@@ -768,6 +778,7 @@ export default {
               dispatch('addWallet', {
                 ethAddress: selectedNetworkContract[0].proxy_contract_address,
                 network: selectedNetworkContract[0].network,
+                notified: selectedNetworkContract[0].notified,
                 privKey: null,
                 type: 'SC'
               })

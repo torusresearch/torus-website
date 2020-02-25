@@ -20,7 +20,7 @@
           </v-expansion-panel-content>
         </v-expansion-panel>
         <!-- Smart Contract Wallet Settings -->
-        <v-expansion-panel v-if="!hasSmartContract" class="my-2 card-shadow">
+        <v-expansion-panel class="my-2 card-shadow">
           <v-expansion-panel-header
             id="smart-contract-header"
             :class="$vuetify.breakpoint.xsOnly ? 'py-0 px-4' : 'py-4 px-6'"
@@ -113,11 +113,6 @@ export default {
   data() {
     return {
       panel: [0, 1, 2, 3, 4]
-    }
-  },
-  computed: {
-    hasSmartContract() {
-      return Object.values(this.$store.state.wallet).filter(x => x.type === 'SC' && x.network === this.$store.state.networkType.host).length
     }
   }
 }

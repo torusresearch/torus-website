@@ -51,7 +51,7 @@
           :outlined="$vuetify.theme.dark"
           :class="[speedSelected === 'fastest' ? 'selected' : '', isWalletTransfer ? 'button-speed--transfer' : '']"
           label
-          @click="selectSpeed('fastest', averageGasPrice)"
+          @click="selectSpeed('fastest', fastestGasPrice)"
         >
           <img :src="require(`../../../../public/img/icons/speed-car.svg`)" class="mr-2" />
           <div>
