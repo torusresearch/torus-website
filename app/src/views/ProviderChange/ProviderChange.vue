@@ -4,8 +4,8 @@
       <change-provider-screen-loader />
     </template>
     <template v-else>
-      <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
-      <!-- <v-layout wrap align-center mx-6 mb-6>
+      <!-- <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" /> -->
+      <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left">{{ t('dappInfo.permission') }}</v-flex>
         <v-flex xs12>
           <network-display></network-display>
@@ -51,7 +51,7 @@
             <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">{{ t('dappProvider.confirm') }}</v-btn>
           </v-flex>
         </v-layout>
-      </v-layout> -->
+      </v-layout>
     </template>
   </v-container>
 </template>
@@ -66,8 +66,8 @@ import log from 'loglevel'
 export default {
   name: 'confirm',
   components: {
-    ChangeProviderScreenLoader,
-    PermissionConfirm
+    ChangeProviderScreenLoader
+    // PermissionConfirm
   },
   data() {
     return {
