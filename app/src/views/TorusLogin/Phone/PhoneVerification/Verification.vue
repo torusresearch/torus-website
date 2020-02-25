@@ -26,7 +26,7 @@
                       v-model="code"
                       class="field"
                       :rules="[rules.required, rules.minLength]"
-                      @keyup.prevent="verifyAccount"
+                      @change="verifyAccount"
                       label="Enter your verification code"
                       single-line
                     >
@@ -101,22 +101,20 @@ export default {
     }
   },
   methods: {
-    verifyAccount() {
-      if (this.$refs.form.validate()) {
-        post(`${config.torusVerifierHost}/verify`, {
+    async verifyAccount() {
+      if (!this.$refs.form.validate()) return
+      try {
+        await post(`${config.torusVerifierHost}/verify`, {
           verifier_id: this.verifier_id,
           verifier_id_type: 'phone',
           code: this.code
         })
-          .then(() => {
-            this.status = 'success'
-            let finalRoutePath = { name: 'torusPhoneLogin' }
-            if (!Object.prototype.hasOwnProperty.call(this.$route.query, 'state')) finalRoutePath = { path: '/' }
-            this.$router.push(finalRoutePath).catch(err => {})
-          })
-          .catch(err => {
-            this.status = 'error'
-          })
+        this.status = 'success'
+        let finalRoutePath = { name: 'torusPhoneLogin', query: { ...this.$route.query, phone: this.verifier_id } }
+        if (!Object.prototype.hasOwnProperty.call(this.$route.query, 'state')) finalRoutePath = { path: '/' }
+        this.$router.push(finalRoutePath).catch(err => {})
+      } catch (err) {
+        this.status = 'error'
       }
     }
   },

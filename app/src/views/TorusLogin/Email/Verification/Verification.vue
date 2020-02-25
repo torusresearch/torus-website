@@ -26,7 +26,7 @@
                       v-model="code"
                       class="field"
                       :rules="[rules.required, rules.minLength]"
-                      @keyup.prevent="verifyAccount"
+                      @change="verifyAccount"
                       label="Enter your verification code"
                       single-line
                     >
@@ -101,27 +101,29 @@ export default {
     }
   },
   methods: {
-    verifyAccount() {
-      if (this.$refs.form.validate()) {
-        post(`${config.torusVerifierHost}/verify`, {
+    async verifyAccount() {
+      try {
+        if (!this.$refs.form.validate()) return
+        await post(`${config.torusVerifierHost}/verify`, {
           verifier_id: this.verifier_id,
           verifier_id_type: 'email',
           code: this.code
         })
-          .then(() => {
-            this.status = 'success'
-            let finalRoutePath = { name: 'torusEmailLogin' }
-            if (!Object.prototype.hasOwnProperty.call(this.$route.query, 'state')) finalRoutePath = { path: '/' }
-            this.$router.push(finalRoutePath).catch(err => {})
-          })
-          .catch(err => {
-            this.status = 'error'
-          })
+        this.status = 'success'
+        let finalRoutePath = { name: 'torusEmailLogin', query: { ...this.$route.query, email: this.verifier_id } }
+        if (!Object.prototype.hasOwnProperty.call(this.$route.query, 'state')) finalRoutePath = { path: '/' }
+        this.$router.push(finalRoutePath).catch(err => {})
+      } catch (error) {
+        this.status = 'error'
+        log.error(error)
       }
     }
   },
   mounted() {
-    this.verifier_id = this.$route.query.email
+    const { email, state, redirect_uri } = this.$route.query
+    this.verifier_id = email
+    this.state = state
+    this.redirect_uri = redirect_uri
   }
 }
 </script>
