@@ -1079,7 +1079,6 @@ export default {
       const fastGasPrice = '0x' + this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)
       const selectedAddress = this.selectedAddress
       if (this.contractType === CONTRACT_TYPE_ETH) {
-        debugger
         const value =
           '0x' +
           this.amount

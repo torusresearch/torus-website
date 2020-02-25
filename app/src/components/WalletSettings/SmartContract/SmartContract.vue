@@ -19,7 +19,7 @@
       </v-layout>
     </template>
     <template v-else-if="smartContractAccount">
-      <div class="body-2 text_1--text mb-8">Your Smart Contract Wallet</div>
+      <div class="body-2 text_1--text mb-2">Your Smart Contract Wallet</div>
       <v-layout wrap>
         <v-flex xs12 md6 class="body-2 text_2--text">
           <span class="account-list__address">{{ smartContractAccount.address }}</span>
@@ -62,6 +62,7 @@ import ExportQrCode from '../../helpers/ExportQrCode'
 import config from '../../../config'
 import { post } from '../../../utils/httpHelpers'
 import { MESSAGE_MODAL_TYPE_SUCCESS, MESSAGE_MODAL_TYPE_FAIL, MESSAGE_MODAL_TYPE_PENDING } from '../../../utils/enums'
+const randomId = require('@chaitanyapotti/random-id')
 
 export default {
   name: 'smartContractSettings',
@@ -90,27 +91,16 @@ export default {
   methods: {
     async createWallet() {
       const reqObj = {
-        ens: this.$store.state.selectedEOA,
+        ens: randomId(),
         owner: this.$store.state.selectedEOA
       }
 
+      post(`${config.relayer}/createWallet`, reqObj)
       this.messageModalShow = true
       this.messageModalType = MESSAGE_MODAL_TYPE_PENDING
       this.messageModalTitle = 'Your request has been submitted'
       this.messageModalDetails = 'It will take sometime to create your Smart Contract Wallet. You will be notified when it is ready'
-      return false
-      try {
-        const response = await post(`${config.relayer}/createWallet`, reqObj)
-        this.messageModalShow = true
-        this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-        this.messageModalTitle = 'Your request has been submitted'
-        this.messageModalDetails = 'It will take sometime to create your Smart Contract Wallet. You will be notified when it is ready'
-      } catch (e) {
-        this.messageModalShow = true
-        this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-        this.messageModalTitle = 'Your Smart Contract Wallet creation failed'
-        this.messageModalDetails = ''
-      }
+      this.smartContractStatus = 'pending'
     }
   }
 }
