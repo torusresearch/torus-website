@@ -4,17 +4,17 @@
       <div class="body-2 text_1--text mb-2 px-1">Your smart contract wallet is still being created</div>
       <v-layout wrap>
         <v-flex xs12 md6 px-1 mb-1>
-          <v-layout align-center wrap>
-            <v-flex xs1>
+          <div class="d-flex">
+            <div>
               <span class="body-2 text_1--text">Status</span>
-            </v-flex>
-            <v-flex xs6 px-2>
+            </div>
+            <div class="flex-grow-1 mx-3 mt-2">
               <v-progress-linear background-color="#EEF2F4" color="#C4C4C4" class="mt-1" height="6" value="15"></v-progress-linear>
-            </v-flex>
-            <v-flex xs1>
+            </div>
+            <div>
               <span class="status-text text_2--text">Pending</span>
-            </v-flex>
-          </v-layout>
+            </div>
+          </div>
         </v-flex>
       </v-layout>
     </template>
@@ -35,7 +35,7 @@
       </v-layout>
     </template>
     <template v-else>
-      <div class="body-2 text_1--text mb-8 px-1">Create a Smart Contract Wallet to transact withouth fee</div>
+      <div class="body-2 text_1--text mb-8 px-1">Create a Smart Contract Wallet to transact without fee</div>
       <v-layout wrap>
         <v-flex xs12 md6 class="text-right">
           <v-btn id="create-contract-btn" color="primary" depressed class="py-1" @click="createWallet()">
@@ -69,7 +69,7 @@ export default {
   components: { MessageModal, ShowToolTip, ExportQrCode },
   data() {
     return {
-      smartContractStatus: '',
+      smartContractStatus: 'pending',
       ensName: '',
       messageModalShow: false,
       messageModalType: '',

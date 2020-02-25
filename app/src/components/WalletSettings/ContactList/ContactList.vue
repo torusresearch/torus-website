@@ -18,7 +18,7 @@
                 </v-list-item-content>
                 <v-list-item-action>
                   <v-btn class="delete-btn" color="text_2" icon small @click="deleteContact(contact.id)" :aria-label="`Delete ${contact.name}`">
-                    <v-icon size="10">$vuetify.icons.close</v-icon>
+                    <v-icon>$vuetify.icons.close</v-icon>
                   </v-btn>
                 </v-list-item-action>
               </v-list-item>
@@ -66,14 +66,7 @@
             </v-flex>
 
             <v-layout wrap>
-              <v-flex xs12 sm12 md6 :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-2'">
-                <notification
-                  :alert-show="saveContactAlert"
-                  :alert-text="saveContactAlertText"
-                  :alert-type="saveContactAlertType"
-                  @closeAlert="closeAlert"
-                />
-              </v-flex>
+              <v-flex xs12 sm12 md6 :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-2'"></v-flex>
               <v-flex xs12 sm12 md6 :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'pl-2'">
                 <v-btn id="contact-submit-btn" block type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">
                   {{ t('walletSettings.addContact') }}
@@ -94,7 +87,6 @@ const { validateVerifierId } = require('../../../utils/utils')
 
 export default {
   name: 'networkSettings',
-  components: { Notification },
   data() {
     return {
       contactFormValid: true,
@@ -104,10 +96,7 @@ export default {
       rules: {
         required: value => !!value || this.t('walletSettings.required')
       },
-      ETH,
-      saveContactAlert: false,
-      saveContactAlertText: '',
-      saveContactAlertType: 'success'
+      ETH
     }
   },
   computed: {
@@ -127,9 +116,6 @@ export default {
     }
   },
   methods: {
-    closeAlert() {
-      this.saveContactAlert = false
-    },
     checkDuplicates(value) {
       if (this.contacts) {
         return this.contacts.findIndex(x => x.contact.toLowerCase() === value.toLowerCase()) < 0 || this.t('walletSettings.duplicateContact')
@@ -150,14 +136,10 @@ export default {
             this.newContactName = ''
             this.$refs.addContactForm.resetValidation()
 
-            this.saveContactAlert = true
-            this.saveContactAlertType = 'success'
-            this.saveContactAlertText = response.message
+            this.$store.dispatch('setSuccessMessage', response.message)
           })
           .catch(err => {
-            this.saveContactAlert = true
-            this.saveContactAlertType = 'error'
-            this.saveContactAlertText = err
+            this.$store.dispatch('setErrorMessage', err)
           })
       }
     },
@@ -165,14 +147,10 @@ export default {
       this.$store
         .dispatch('deleteContact', contactId)
         .then(response => {
-          this.saveContactAlert = true
-          this.saveContactAlertType = 'success'
-          this.saveContactAlertText = response.message
+          this.$store.dispatch('setSuccessMessage', response.message)
         })
         .catch(err => {
-          this.saveContactAlert = true
-          this.saveContactAlertType = 'error'
-          this.saveContactAlertText = err
+          this.$store.dispatch('setErrorMessage', err)
         })
     },
     toAddressRule(value) {

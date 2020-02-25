@@ -40,13 +40,13 @@
   font-size: 12px;
 }
 
-.theme--dark {
+.theme--dark .account-link {
   box-shadow: none;
   .v-icon {
     width: 36px;
     height: 36px;
   }
-  .account-link.v-btn.v-size--large {
+  &.v-btn.v-size--large {
     background: #434343;
   }
 }

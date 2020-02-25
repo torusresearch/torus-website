@@ -51,25 +51,6 @@
           </v-tooltip>
         </v-flex>
       </template>
-
-      <v-layout wrap mt-2>
-        <v-flex xs12 md6 v-if="!$vuetify.breakpoint.xsOnly">
-          <notification
-            :alert-show="updateProviderRPCAlert"
-            :alert-text="updateProviderAlertText"
-            :alert-type="updateProviderAlertType"
-            @closeAlert="closeAlert"
-          />
-        </v-flex>
-        <v-flex xs12 v-if="$vuetify.breakpoint.xsOnly" class="mt-2">
-          <notification
-            :alert-show="updateProviderRPCAlert"
-            :alert-text="updateProviderAlertText"
-            :alert-type="updateProviderAlertType"
-            @closeAlert="closeAlert"
-          />
-        </v-flex>
-      </v-layout>
     </v-form>
   </div>
 </template>
@@ -77,14 +58,12 @@
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
-import Notification from '../../helpers/Notification'
 import { broadcastChannelOptions } from '../../../utils/utils'
 
 const { RPC, RPC_DISPLAY_NAME, SUPPORTED_NETWORK_TYPES } = require('../../../utils/enums')
 
 export default {
   name: 'networkSettings',
-  components: { Notification },
   data() {
     return {
       selectedNetwork: {},
@@ -100,10 +79,7 @@ export default {
       formValid: true,
       rules: {
         required: value => !!value || 'Required'
-      },
-      updateProviderRPCAlert: false,
-      updateProviderAlertText: '',
-      updateProviderAlertType: 'success'
+      }
     }
   },
   computed: {
@@ -112,13 +88,11 @@ export default {
     }
   },
   methods: {
-    closeAlert() {
-      this.updateProviderRPCAlert = false
-    },
     showNotification(success) {
-      this.updateProviderRPCAlert = success
-      this.updateProviderAlertType = success ? 'success' : 'error'
-      this.updateProviderAlertText = success ? this.t('walletSettings.updatedProvider') : this.t('walletSettings.somethingWrong')
+      this.$store.dispatch(
+        success ? 'setSuccessMessage' : 'setErrorMessage',
+        success ? this.t('walletSettings.updatedProvider') : this.t('walletSettings.somethingWrong')
+      )
     },
     changeNetwork(value) {
       if (value && value.host !== RPC) {
