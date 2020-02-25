@@ -1,10 +1,10 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import randomId from '@chaitanyapotti/random-id'
-import { broadcastChannelOptions } from './utils'
+import { broadcastChannelOptions, fakeStream } from './utils'
 import torus from '../torus'
 
-const windowStream = torus.communicationMux.getStream('window')
+const windowStream = (torus.communicationMux && torus.communicationMux.getStream('window')) || fakeStream
 
 class StreamWindow {
   constructor(preopenInstanceId, url) {

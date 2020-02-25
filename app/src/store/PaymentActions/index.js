@@ -2,12 +2,12 @@ import simplex from './simplex'
 import moonpay from './moonpay'
 import wyre from './wyre'
 import coindirect from './coindirect'
-import { paymentProviders } from '../../utils/utils'
+import { paymentProviders, fakeStream } from '../../utils/utils'
 import { SIMPLEX, MOONPAY, WYRE, COINDIRECT, ETH } from '../../utils/enums'
 import torus from '../../torus'
 import vuetify from '../../plugins/vuetify'
 
-const topupStream = torus.communicationMux.getStream('topup')
+const topupStream = (torus.communicationMux && torus.communicationMux.getStream('topup')) || fakeStream
 
 export default {
   ...simplex,
