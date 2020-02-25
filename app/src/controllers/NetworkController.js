@@ -316,11 +316,6 @@ export default class NetworkController extends EventEmitter {
     provider.setMaxListeners(100)
     this._blockTracker = blockTracker
   }
-
-  _logBlock(block) {
-    log.info(`BLOCK CHANGED: #${block.number.toString('hex')} 0x${block.hash.toString('hex')}`)
-    this.verifyNetwork()
-  }
 }
 
 function createInfuraClient({ network }) {

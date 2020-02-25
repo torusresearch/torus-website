@@ -79,17 +79,6 @@ export function storageAvailable(type) {
 }
 
 /**
- * Generates an example stack trace
- *
- * @returns {string} A stack trace
- *
- */
-export function getStack() {
-  const stack = new Error('Stack trace generator - not an error').stack
-  return stack
-}
-
-/**
  * Used to determine the window type through which the app is being viewed.
  *  - 'popup' refers to the extension opened through the browser app icon (in top right corner in chrome and firefox)
  *  - 'responsive' refers to the main browser window
@@ -191,18 +180,6 @@ export function BnMultiplyByFraction(targetBN, numerator, denominator) {
   const numBN = new BN(numerator)
   const denomBN = new BN(denominator)
   return targetBN.mul(numBN).div(denomBN)
-}
-
-export function applyListeners(listeners, emitter) {
-  Object.keys(listeners).forEach(key => {
-    emitter.on(key, listeners[key])
-  })
-}
-
-export function removeListeners(listeners, emitter) {
-  Object.keys(listeners).forEach(key => {
-    emitter.removeListener(key, listeners[key])
-  })
 }
 
 /**
