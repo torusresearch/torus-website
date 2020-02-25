@@ -297,7 +297,7 @@
         @onClose="messageModalShow = false"
         :modal-type="messageModalType"
         :title="messageModalTitle"
-        :detail-text="messageModalType === MESSAGE_MODAL_TYPE_FAIL ? messageModalDetails : messageModalDetails.replace(/\{time\}/gi, timeTaken)"
+        :detail-text="messageModalDetails.replace(/\{time\}/gi, timeTaken)"
         goTo="walletHistory"
       />
     </v-dialog>
@@ -1114,7 +1114,9 @@ export default {
               this.messageModalShow = true
               this.messageModalType = this.isSmartContract ? MESSAGE_MODAL_TYPE_PENDING : MESSAGE_MODAL_TYPE_SUCCESS
               this.messageModalTitle = this.isSmartContract ? 'Your transfer is being submitted' : 'Your transfer is being processed'
-              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
+              this.messageModalDetails = this.isSmartContract
+                ? 'It will take some time. Check your activity page later.'
+                : 'Your transaction will be completed in approximately {time} min'
             }
           }
         )
@@ -1149,7 +1151,9 @@ export default {
               this.messageModalShow = true
               this.messageModalType = this.isSmartContract ? MESSAGE_MODAL_TYPE_PENDING : MESSAGE_MODAL_TYPE_SUCCESS
               this.messageModalTitle = this.isSmartContract ? 'Your transfer is being submitted' : 'Your transfer is being processed'
-              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
+              this.messageModalDetails = this.isSmartContract
+                ? 'It will take some time. Check your activity page later.'
+                : 'Your transaction will be completed in approximately {time} min'
             }
           }
         )
@@ -1177,7 +1181,9 @@ export default {
               this.messageModalShow = true
               this.messageModalType = this.isSmartContract ? MESSAGE_MODAL_TYPE_PENDING : MESSAGE_MODAL_TYPE_SUCCESS
               this.messageModalTitle = this.isSmartContract ? 'Your transfer is being submitted' : 'Your transfer is being processed'
-              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
+              this.messageModalDetails = this.isSmartContract
+                ? 'It will take some time. Check your activity page later.'
+                : 'Your transaction will be completed in approximately {time} min'
             }
           }
         )
