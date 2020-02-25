@@ -1,7 +1,7 @@
 #torusAlert {
   color: black;
   height: auto;
-  z-index: 999999;
+  z-index: 99999999;
   position: fixed;
   overflow: hidden;
   top: 34px;
