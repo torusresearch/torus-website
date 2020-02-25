@@ -35,10 +35,10 @@ import ComposableObservableStore from '../utils/ComposableObservableStore'
 // import setupMultiplex from '../utils/setupMultiplex'
 import createOriginMiddleware from '../utils/createOriginMiddleware'
 import createLoggerMiddleware from '../utils/createLoggerMiddleware'
+import { version } from '../../package.json'
 // const Dnode = require('dnode')
 // defaults and constants
 const GWEI_BN = new BN('1000000000')
-const version = '0.0.1'
 
 export default class TorusController extends EventEmitter {
   /**
