@@ -4,8 +4,8 @@
       <user-info-screen-loader />
     </template>
     <template v-else>
-      <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
-      <!-- <v-layout align-center mx-6 mb-6>
+      <!-- <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" /> -->
+      <v-layout align-center mx-6 mb-6>
         <div class="text-black font-weight-bold headline float-left">{{ t('dappInfo.permission') }}</div>
         <img :src="require('../../../public/img/icons/lock.svg')" width="16" class="ml-2" />
       </v-layout>
@@ -53,7 +53,7 @@
             <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">{{ t('dappInfo.confirm') }}</v-btn>
           </v-flex>
         </v-layout>
-      </v-layout> -->
+      </v-layout>
     </template>
   </v-container>
 </template>
@@ -68,8 +68,8 @@ import log from 'loglevel'
 export default {
   name: 'userInfoRequest',
   components: {
-    UserInfoScreenLoader,
-    PermissionConfirm
+    UserInfoScreenLoader
+    // PermissionConfirm
   },
   data() {
     return {
