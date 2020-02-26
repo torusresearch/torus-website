@@ -160,8 +160,8 @@ html {
 .vti__dropdown:focus,
 :hover :active,
 :not(ul) {
-  background-color: transparent !important;
-  outline: none;
+  background-color: unset;
+  outline: none !important;
 }
 
 .vti__dropdown-list.below {

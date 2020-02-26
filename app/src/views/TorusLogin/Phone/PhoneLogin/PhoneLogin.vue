@@ -16,7 +16,7 @@
             <v-flex xs12>
               <v-form @submit.prevent="login" lazy-validation v-model="formValid" ref="form">
                 <v-layout wrap>
-                  <v-flex xs12>
+                  <v-flex xs12 class="phone-login">
                     <vue-tel-input v-model="verifier_id" required mode="international" autocomplete="off" :autofocus="true"></vue-tel-input>
                   </v-flex>
                   <v-flex xs12>
@@ -159,6 +159,6 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import 'PhoneLogin.scss';
 </style>
