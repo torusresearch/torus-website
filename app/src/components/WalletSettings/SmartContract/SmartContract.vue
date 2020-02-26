@@ -69,7 +69,7 @@ export default {
   components: { MessageModal, ShowToolTip, ExportQrCode },
   data() {
     return {
-      smartContractStatus: 'pending',
+      smartContractStatus: '',
       ensName: '',
       messageModalShow: false,
       messageModalType: '',
