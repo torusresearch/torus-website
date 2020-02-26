@@ -612,7 +612,7 @@ export default {
     prefsController.addContact(payload)
   },
   deleteContact({ commit, state }, payload) {
-    prefsController.deleteContact(payload)
+    return prefsController.deleteContact(payload)
   },
   async handleLogin({ state, dispatch, commit }, { calledFromEmbed, idToken }) {
     commit('setLoginInProgress', true)
@@ -700,10 +700,10 @@ export default {
       }
     })
   },
-  setUserTheme({ state, commit }, payload) {
-    prefsController.setUserTheme(payload)
+  setUserTheme(context, payload) {
+    return prefsController.setUserTheme(payload)
   },
-  setUserLocale({ state, commit }, payload) {
+  setUserLocale(context, payload) {
     prefsController.setUserLocale(payload)
   },
   setUserInfoAction({ commit, dispatch, state }, payload) {
