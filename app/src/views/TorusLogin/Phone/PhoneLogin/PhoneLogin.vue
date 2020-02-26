@@ -121,9 +121,10 @@ export default {
     }
   },
   mounted() {
-    const queryParams = this.$router.currentRoute.query
-    this.state = queryParams.state
-    this.redirect_uri = queryParams.redirect_uri
+    const { state, redirect_uri, phone } = this.$route.query
+    this.state = state
+    this.redirect_uri = redirect_uri
+    this.verifier_id = phone || ''
   },
   computed: {
     extendedPassword() {
@@ -131,29 +132,24 @@ export default {
     }
   },
   methods: {
-    login() {
-      if (this.$refs.form.validate()) {
-        post(`${config.torusVerifierHost}/authorize`, {
+    async login() {
+      if (!this.$refs.form.validate()) return
+      try {
+        const data = await post(`${config.torusVerifierHost}/authorize`, {
           verifier_id: this.verifier_id.replace(/\s+/g, ''),
           verifier_id_type: 'phone',
           redirect_uri: this.redirect_uri,
           state: this.state,
           hash: ethUtil.stripHexPrefix(sha3(this.extendedPassword))
         })
-          .then(data => {
-            let completeRedirectURI = new URL(data.redirect_uri)
-            completeRedirectURI.hash = `idtoken=${data.idtoken}&timestamp=${data.timestamp}\
+        let completeRedirectURI = new URL(data.redirect_uri)
+        completeRedirectURI.hash = `idtoken=${data.idtoken}&timestamp=${data.timestamp}\
           &verifier_id=${data.verifier_id}&extendedPassword=${this.extendedPassword}&state=${data.state}`
-            window.location.href = completeRedirectURI.href
-          })
-          .catch(err => {
-            if (err && err.status === 404) this.notRegistered = true
-            log.error(err)
-          })
+        window.location.href = completeRedirectURI.href
+      } catch (err) {
+        if (err && err.status === 404) this.notRegistered = true
+        log.error(err)
       }
-    },
-    updateExtendedPassword: function() {
-      this.extendedPassword = Web3.utils.sha3(this.password).replace('0x', '')
     }
   }
 }

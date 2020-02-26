@@ -135,32 +135,19 @@ export default {
     }
   },
   methods: {
-    toggleShowPassword(event) {
-      event.preventDefault()
-      this.showPassword = this.showPassword === true ? false : true
-    },
-    toggleShowConfirmPassword(event) {
-      event.preventDefault()
-      this.showConfirmPassword = this.showConfirmPassword === true ? false : true
-    },
-    registerAccount() {
-      if (this.$refs.form.validate()) {
-        post(`${config.torusVerifierHost}/register`, {
+    async registerAccount() {
+      if (!this.$refs.form.validate()) return
+      try {
+        const data = await post(`${config.torusVerifierHost}/register`, {
           verifier_id: this.verifier_id.replace(/\s+/g, ''),
           verifier_id_type: 'phone',
           hash: ethUtil.stripHexPrefix(sha3(this.extendedPassword))
         })
-          .then(data => {
-            this.$router.push({ name: 'torusPhoneVerify', query: { ...this.$route.query, phone: this.verifier_id } }).catch(err => {})
-          })
-          .catch(err => {
-            if (err && err.status === 403) this.duplicate = true
-            log.error(err)
-          })
+        this.$router.push({ name: 'torusPhoneVerify', query: { ...this.$route.query, phone: this.verifier_id } }).catch(err => {})
+      } catch (err) {
+        if (err && err.status === 403) this.duplicate = true
+        log.error(err)
       }
-    },
-    updateExtendedPassword: function() {
-      this.extendedPassword = Web3.utils.sha3(this.password).replace('0x', '')
     }
   }
 }
