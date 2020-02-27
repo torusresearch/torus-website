@@ -7,8 +7,8 @@
     </template>
     <v-card>
       <div class="text-right">
-        <v-btn icon small @click="qrDialoag = false">
-          <v-icon size="8">$vuetify.icons.close</v-icon>
+        <v-btn large icon @click="qrDialoag = false">
+          <v-icon size="48" large>$vuetify.icons.close</v-icon>
         </v-btn>
       </div>
       <v-card-text class="text-center qr-container">

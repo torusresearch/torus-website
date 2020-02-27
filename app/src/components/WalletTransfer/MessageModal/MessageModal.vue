@@ -3,7 +3,7 @@
     <v-card-text class="text_1--text pa-0">
       <v-layout wrap class="image-container text-center" :class="modalType ? 'image-container-success' : 'image-container-danger'">
         <v-flex xs12 px-4>
-          <img @click="onCancel" height="6px" width="6px" class="close-icon" :src="require('../../../../public/img/icons/close.svg')" />
+          <img @click="onCancel" height="16px" width="16px" class="close-icon" :src="require('../../../../public/img/icons/close.svg')" />
 
           <img v-if="modalType" height="87px" width="87px" :src="require('../../../../public/img/icons/check-circle-white.svg')" />
 
