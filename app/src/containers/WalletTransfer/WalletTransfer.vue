@@ -231,6 +231,8 @@
             :symbol="contractType !== CONTRACT_TYPE_ERC721 ? selectedItem.symbol : 'ETH'"
             :gas="gas"
             :displayAmount="displayAmount"
+            :selectedCurrency="selectedCurrency"
+            :currencyMultiplier="getCurrencyMultiplier"
             @onSelectSpeed="onSelectSpeed"
           />
         </v-layout>
@@ -589,7 +591,12 @@ export default {
             this.selectedVerifier = ETH
           } else if (/@/.test(this.toAddress)) {
             this.selectedVerifier = GOOGLE
-          } else if (/.eth$/.test(this.toAddress) || /.xyz$/.test(this.toAddress) || /.crypto$/.test(this.toAddress)) {
+          } else if (
+            /.eth$/.test(this.toAddress) ||
+            /.xyz$/.test(this.toAddress) ||
+            /.crypto$/.test(this.toAddress) ||
+            /.kred$/i.test(this.toAddress)
+          ) {
             this.selectedVerifier = ENS
           }
         }

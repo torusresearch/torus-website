@@ -9,16 +9,17 @@
       "es6": true,
       "node": true
     },
-    "extends": ["@vue/standard", "plugin:vue/essential", "prettier"],
+    "extends": ["@vue/standard", "plugin:vue/essential", "prettier", "eslint:recommended"],
     "parserOptions": {
       "ecmaVersion": 6,
       "parser": "babel-eslint"
     },
     "plugins": ["prettier", "vue"],
     "rules": {
-      "import/prefer-default-export": 0,
       "jsx-a11y/label-has-for": 0,
       "linebreak-style": 0,
+      "no-extra-semi": 0,
+      "no-unused-vars": [2, {"args": "after-used", "argsIgnorePattern": "_"}],
       "max-len": [
         2,
         {
@@ -26,7 +27,7 @@
         }
       ],
       "no-confusing-arrow": 0,
-      "no-console": 0,
+      "no-console": 2,
       "no-nested-ternary": 0,
       "no-param-reassign": [
         "error",

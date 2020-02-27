@@ -181,7 +181,6 @@ export default {
           advancedGas: this.advancedGas,
           advancedActiveGasPrice: this.advancedActiveGasPrice
         }
-        console.log('TCL: saveOptions -> payload', payload)
 
         this.$emit('onSave', payload)
         this.dialog = false
