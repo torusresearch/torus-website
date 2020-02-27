@@ -351,7 +351,9 @@
   margin: 0 0 16px;
 }
 
-#torus-login-modal__login-google {
+#torus-login-modal__login-google,
+#torus-login-modal__login-email,
+#torus-login-modal__login-phone {
   box-sizing: border-box;
   height: 50px;
   width: 100%;
@@ -369,8 +371,14 @@
   color: #5c6c7f;
 }
 
-#torus-login-modal__login-google img {
+#torus-login-modal__login-google img,
+#torus-login-modal__login-email img,
+#torus-login-modal__login-phone img {
   margin-right: 20px;
+}
+
+#torus-login-modal__login-email {
+  margin-bottom: 0;
 }
 
 #torus-login-modal__login-list {
