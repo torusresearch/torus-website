@@ -106,7 +106,7 @@ export default class SmartContractWalletController {
 
     // Get nonce
     const nonce = await getNonceForRelay(this.web3)
-    //log.info(`fromSCW ${fromSCW}, to ${to}, ETH_TOKEN ${ETH_TOKEN}, value ${transferValue}, nonce ${nonce}`)
+    // log.info(`fromSCW ${fromSCW}, to ${to}, ETH_TOKEN ${ETH_TOKEN}, value ${transferValue}, nonce ${nonce}`)
 
     // Encode method Data
     const TransferModule = new this.web3.eth.Contract(TransferManager.abi, '0xD45256EEf4bFB182B108Cd8e0bCB4A9369342C1d')
@@ -119,6 +119,11 @@ export default class SmartContractWalletController {
     const walletAccount = this.web3.eth.accounts.privateKeyToAccount('0x' + privateKey)
     // log.info([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 0)
 
+    // Set temp tx ash
+    const tempTxHash = 'PENDING_'.concat(txMeta.id)
+    txMeta.hash = tempTxHash
+    txStateManager.updateTx(txMeta, 'transactions#setTxHash')
+
     // Sign the transaction
     const signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 0)
     const reqObj = {
@@ -126,20 +131,18 @@ export default class SmartContractWalletController {
       nonce,
       methodData,
       signatures,
-      uniqueId: 'PENDING_'.concat(txMeta.id)
+      uniqueId: tempTxHash
     }
 
     log.info('SmartContractWalletController', txMeta)
 
-    const relayerRequest = await post(relayerURL, reqObj)
-    txMeta.hash = relayerRequest.txHash
-    txStateManager.updateTx(txMeta, 'transactions#setTxHash')
+    const relayerRequest = post(relayerURL, reqObj).then(res => {
+      // Incase it resolves
+      txMeta.hash = res.txHash
+      txStateManager.updateTx(txMeta, 'transactions#setTxHash')
+    })
+    //Poll and update the txhash
 
-    log.info('relayerRequest', relayerRequest)
-    //return txMeta
-    // // Set tx state
-    // this.setTxHash(txId, relayerRequest.txHash)
-    // this.txStateManager.setTxStatusSubmitted(txMeta.id)
-    return txMeta.hash
+    return tempTxHash
   }
 }

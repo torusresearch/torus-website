@@ -143,7 +143,7 @@ class PendingTransactionTracker extends EventEmitter {
       noTxHashErr.name = 'NoTxHashError'
       this.emit('tx:failed', txId, noTxHashErr)
       return
-    }
+    } else if (txHash.indexOf('PENDING_') !== -1) return
 
     // *note to self* hard failure point
     const transactionReceipt = (await this.query.getTransactionReceipt(txHash)) || {}

@@ -15,7 +15,7 @@ import {
   TOKEN_METHOD_TRANSFER_FROM,
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
 } from '../utils/enums'
-import { post } from '../utils/httpHelpers.js'
+import { post, patch } from '../utils/httpHelpers.js'
 import { notifyUser } from '../utils/notifications'
 import state from './state'
 import actions from './actions'
@@ -312,18 +312,36 @@ VuexStore.subscribe((mutation, state) => {
             log.error(error)
           }
           const transactionsAPI = `${config.api}/transaction${relayer ? 'SCW' : ''}`
-          log.info('transactionAPI', transactionsAPI)
-          post(transactionsAPI, txObj, {
-            headers: {
-              Authorization: `Bearer ${state.jwtToken}`,
-              'Content-Type': 'application/json; charset=utf-8'
-            }
-          })
-            .then(response => {
-              if (response.response.length > 0) VuexStore.commit('patchPastTransactions', { ...txObj, id: response.response[0] })
-              log.info('successfully added', response)
+
+          // Check if its a second request on the same object when the txhash isupdated
+          const apiMethod = relayer && txObj.transaction_hash.indexOf('PENDING_') == -1 ? 'patch' : 'post'
+          log.info('transactionAPI', transactionsAPI, apiMethod)
+
+          if (apiMethod === 'patch') {
+            patch(transactionsAPI, txObj, {
+              headers: {
+                Authorization: `Bearer ${state.jwtToken}`,
+                'Content-Type': 'application/json; charset=utf-8'
+              }
             })
-            .catch(err => log.error(err, 'unable to insert transaction'))
+              .then(response => {
+                if (response.response.length > 0) VuexStore.commit('patchPastTransactions', { ...txObj, id: response.response[0] })
+                log.info('successfully added', response)
+              })
+              .catch(err => log.error(err, 'unable to insert transaction'))
+          } else {
+            post(transactionsAPI, txObj, {
+              headers: {
+                Authorization: `Bearer ${state.jwtToken}`,
+                'Content-Type': 'application/json; charset=utf-8'
+              }
+            })
+              .then(response => {
+                if (response.response.length > 0) VuexStore.commit('patchPastTransactions', { ...txObj, id: response.response[0] })
+                log.info('successfully added', response)
+              })
+              .catch(err => log.error(err, 'unable to insert transaction'))
+          }
         }
       }
     }
