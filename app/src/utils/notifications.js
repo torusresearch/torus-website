@@ -17,13 +17,27 @@ function notifyUser(url) {
     notifyUrl(url)
     return
   }
-  Notification.requestPermission().then(result => {
-    // do sth
-    if (result !== 'granted') {
-      return
+  // for safari
+  try {
+    Notification.requestPermission().then(result => {
+      // do sth
+      if (result !== 'granted') {
+        return
+      }
+      notifyUrl(url)
+    })
+  } catch (error) {
+    log.error(error)
+    if (error instanceof TypeError) {
+      Notification.requestPermission(result => {
+        // do sth
+        if (result !== 'granted') {
+          return
+        }
+        notifyUrl(url)
+      })
     }
-    notifyUrl(url)
-  })
+  }
 }
 
 function notifyUrl(url) {
