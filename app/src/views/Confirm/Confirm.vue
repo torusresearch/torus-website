@@ -6,7 +6,7 @@
           {{ t('dappTransfer.permission') }}
         </v-flex>
         <v-flex xs12>
-          <network-display></network-display>
+          <network-display :network="network" :storeNetworkType="network"></network-display>
         </v-flex>
       </v-layout>
       <v-layout wrap>
@@ -53,6 +53,8 @@
             :displayAmount="value"
             :activeGasPriceConfirm="gasPrice"
             @onSelectSpeed="onSelectSpeed"
+            :selectedCurrency="selectedCurrency"
+            :currencyMultiplier="getCurrencyMultiplier"
             :symbol="'ETH'"
           />
         </v-flex>
@@ -88,7 +90,7 @@
                     <span class="float-right mr-4">:</span>
                   </v-flex>
                   <v-flex xs8 sm10 class="text_2--text">
-                    <span id="network" class="text-capitalize">{{ networkName }}</span>
+                    <span id="network" class="text-capitalize">{{ network.networkName || network.host }}</span>
                   </v-flex>
                   <v-flex xs4 sm2>
                     {{ t('dappTransfer.type') }}
@@ -166,7 +168,7 @@
       <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left">{{ t('dappTransfer.permissions') }}</v-flex>
         <v-flex xs12>
-          <network-display></network-display>
+          <network-display :network="network" :storeNetworkType="network"></network-display>
         </v-flex>
       </v-layout>
       <v-layout wrap>
@@ -176,8 +178,8 @@
           <v-card flat class="grey lighten-3">
             <v-card-text>
               <div class="subtitle-2 primary--text request-from">
-                <a :href="originHref" target="_blank">{{ origin }}</a>
-                <a :href="originHref" target="_blank" class="float-right">
+                <a :href="origin.href" target="_blank">{{ origin.hostname }}</a>
+                <a :href="origin.href" target="_blank" class="float-right">
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
                 </a>
               </div>
@@ -214,7 +216,7 @@
                   <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && Array.isArray(typedMessages)">
                     <v-expansion-panel>
                       <v-expansion-panel-header>{{ t('dappTransfer.dataSmall') }}</v-expansion-panel-header>
-                      <v-expansion-panel-content v-for="value in typedMessages" :key="value">
+                      <v-expansion-panel-content v-for="(value, index) in typedMessages" :key="index">
                         <vue-json-pretty :path="'res'" :data="value" :showline="true" :deep="5"></vue-json-pretty>
                       </v-expansion-panel-content>
                     </v-expansion-panel>
@@ -226,10 +228,10 @@
         </v-flex>
         <v-layout px-6 mx-3>
           <v-flex xs6>
-            <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappTransfer.cancel') }}</v-btn>
+            <v-btn block text large class="text_2--text" @click.prevent="triggerDeny">{{ t('dappTransfer.cancel') }}</v-btn>
           </v-flex>
           <v-flex xs6>
-            <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">{{ t('dappTransfer.confirm') }}</v-btn>
+            <v-btn block depressed large color="primary" class="ml-2" @click.prevent="triggerSign">{{ t('dappTransfer.confirm') }}</v-btn>
           </v-flex>
         </v-layout>
       </v-layout>
@@ -241,31 +243,25 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex' // Maybe dispatch a bc to show popup from that instance
 import VueJsonPretty from 'vue-json-pretty'
 import { BroadcastChannel } from 'broadcast-channel'
-import { numberToHex, fromWei, toChecksumAddress, hexToNumber } from 'web3-utils'
+import { fromWei, toChecksumAddress, hexToNumber } from 'web3-utils'
 import BigNumber from 'bignumber.js'
+import log from 'loglevel'
+import tokenABI from 'human-standard-token-abi'
+import collectibleABI from 'human-standard-collectible-abi'
+import { isArray } from 'util'
+
 import ShowToolTip from '../../components/helpers/ShowToolTip'
 import { PopupScreenLoader } from '../../content-loader'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
-import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
-import torus from '../../torus'
+// import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
 import { significantDigits, addressSlicer, broadcastChannelOptions } from '../../utils/utils'
 import { get } from '../../utils/httpHelpers'
 import config from '../../config'
-import { isArray } from 'util'
-
-const tokenABI = require('human-standard-token-abi')
-const collectibleABI = require('human-standard-collectible-abi')
-const contracts = require('eth-contract-metadata')
-const log = require('loglevel')
-
-const {
-  RPC,
-  RPC_DISPLAY_NAME,
+import {
   CONTRACT_INTERACTION_KEY,
   DEPLOY_CONTRACT_ACTION_KEY,
   TOKEN_METHOD_APPROVE,
@@ -273,19 +269,18 @@ const {
   TOKEN_METHOD_TRANSFER_FROM,
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   SEND_ETHER_ACTION_KEY,
-  SUPPORTED_NETWORK_TYPES,
   TX_MESSAGE,
   TX_TYPED_MESSAGE,
   TX_PERSONAL_MESSAGE,
-  TX_TRANSACTION,
-  ETH
-} = require('../../utils/enums')
+  TX_TRANSACTION
+} from '../../utils/enums'
 
 const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
 
 export default {
   name: 'confirm',
   components: {
+    VueJsonPretty,
     PopupScreenLoader,
     TransactionSpeedSelect,
     TransferConfirm,
@@ -298,8 +293,7 @@ export default {
       confirmDialog: false,
       detailsDialog: false,
       type: 'none',
-      origin: 'unknown',
-      originHref: '',
+      origin: { href: '', hostname: '' },
       balance: new BigNumber('0'),
       gasPrice: new BigNumber('10'),
       value: new BigNumber('0'),
@@ -323,7 +317,7 @@ export default {
       topUpErrorShow: false,
       canShowError: false,
       txFees: new BigNumber('0'),
-      networkName: '',
+      network: '',
       transactionCategory: '',
       dollarValue: new BigNumber('0'),
       speed: '',
@@ -331,6 +325,9 @@ export default {
       id: 0,
       isNonFungibleToken: false,
       assetDetails: {},
+      channel: '',
+      selectedCurrency: '',
+      currencyData: {},
       COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
       TOKEN_METHOD_APPROVE,
       TOKEN_METHOD_TRANSFER,
@@ -340,52 +337,34 @@ export default {
       TX_TRANSACTION,
       TX_TYPED_MESSAGE,
       TX_PERSONAL_MESSAGE,
-      TX_MESSAGE,
-      networks: [
-        ...Object.values(SUPPORTED_NETWORK_TYPES),
-        {
-          networkName: RPC_DISPLAY_NAME,
-          host: RPC,
-          chainId: ''
-        }
-      ]
+      TX_MESSAGE
     }
   },
   computed: {
-    selectedCurrency() {
-      return this.$store.state.selectedCurrency
-    },
     header() {
       switch (this.transactionCategory) {
         case DEPLOY_CONTRACT_ACTION_KEY:
           // return 'Contract Deployment'
           return this.t('dappTransfer.deploy')
-          break
         case CONTRACT_INTERACTION_KEY:
           return this.getHeaderByDapp()
-          break
         case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
           // return 'ERC721 SafeTransferFrom'
           return this.t('dappTransfer.collectibleSafe')
-          break
         case TOKEN_METHOD_APPROVE:
           // return 'ERC20 Approve'
           return this.t('dappTransfer.approve')
-          break
         case TOKEN_METHOD_TRANSFER:
         case SEND_ETHER_ACTION_KEY:
           // return 'ERC2O Transfer'
           // return 'Send Ether'
           return this.t('dappTransfer.transfer')
-          break
         case TOKEN_METHOD_TRANSFER_FROM:
           // return 'ERC2O Transfer From'
           return this.t('dappTransfer.transferFrom')
-          break
         default:
           // return 'Transaction Request'
           return this.t('dappTransfer.transaction')
-          break
       }
     },
     isLightHeader() {
@@ -397,17 +376,13 @@ export default {
         case TOKEN_METHOD_TRANSFER:
         case TOKEN_METHOD_TRANSFER_FROM:
           return `${this.t('dappTransfer.to')}: ${this.slicedAddress(this.amountTo)}`
-          break
         case SEND_ETHER_ACTION_KEY:
         case CONTRACT_INTERACTION_KEY:
           return `${this.t('dappTransfer.to')}: ${this.slicedAddress(this.receiver)}`
-          break
         case DEPLOY_CONTRACT_ACTION_KEY:
           return this.t('dappTransfer.newContract')
-          break
         default:
           return this.t('dappTransfer.transactionRequest')
-          break
       }
     },
     displayAmountValue() {
@@ -416,20 +391,15 @@ export default {
         case TOKEN_METHOD_TRANSFER:
         case TOKEN_METHOD_TRANSFER_FROM:
           return `${this.amountDisplay(this.amountValue)} ${this.selectedToken}`
-          break
         case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
           return `ID: ${this.amountValue}`
-          break
         case SEND_ETHER_ACTION_KEY:
         case CONTRACT_INTERACTION_KEY:
           return `${this.amountDisplay(this.value)} ETH`
-          break
         case DEPLOY_CONTRACT_ACTION_KEY:
           return this.t('dappTransfer.notApplicable')
-          break
         default:
           return this.t('dappTransfer.transactionRequest')
-          break
       }
     },
     displayAmountConverted() {
@@ -438,17 +408,13 @@ export default {
         case TOKEN_METHOD_TRANSFER:
         case TOKEN_METHOD_TRANSFER_FROM:
           return `~ ${significantDigits(this.amountTokenValueConverted)} ${this.selectedCurrency}`
-          break
         case SEND_ETHER_ACTION_KEY:
         case CONTRACT_INTERACTION_KEY:
           return `~ ${this.dollarValue} ${this.selectedCurrency}`
-          break
         case DEPLOY_CONTRACT_ACTION_KEY:
           return ''
-          break
         default:
           return ''
-          break
       }
     },
     costOfTransaction() {
@@ -474,8 +440,8 @@ export default {
         : 'images/user.svg'
     },
     getCurrencyMultiplier() {
-      const { selectedCurrency, currencyData } = this.$store.state || {}
-      const currencyMultiplierNum = selectedCurrency !== 'ETH' ? currencyData[selectedCurrency.toLowerCase()] || 1 : 1
+      log.info(this.selectedCurrency)
+      const currencyMultiplierNum = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
       const currencyMultiplier = new BigNumber(currencyMultiplierNum)
       return currencyMultiplier
     },
@@ -507,8 +473,8 @@ export default {
     slicedAddress(user) {
       return addressSlicer(user) || '0x'
     },
-    async triggerSign(event) {
-      var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
+    async triggerSign() {
+      var bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       var gasHex = '0x' + this.gasPrice.times(weiInGwei).toString(16)
       await bc.postMessage({
         name: 'tx-result',
@@ -516,13 +482,13 @@ export default {
       })
       bc.close()
     },
-    async triggerDeny(event) {
-      var bc = new BroadcastChannel(`torus_channel_${new URLSearchParams(window.location.search).get('instanceId')}`, broadcastChannelOptions)
+    async triggerDeny() {
+      var bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({ name: 'tx-result', data: { type: 'deny-transaction', id: this.id, txType: this.type } })
       bc.close()
     },
     topUp() {
-      this.$router.push({ path: '/wallet/topup' }).catch(err => {})
+      this.$router.push({ path: '/wallet/topup' }).catch(_ => {})
     },
     onSelectSpeed(data) {
       this.speedSelected = data.speedSelected
@@ -533,11 +499,6 @@ export default {
       if (data.isReset) {
         this.gasPrice = this.speedSelected === '' ? '' : this.gasPrice
       }
-    },
-    getNetworkName(targetNetwork) {
-      const foundNetwork = this.networks.find(network => network.host === targetNetwork)
-      if (!foundNetwork || foundNetwork === -1) return this.t('dappTransfer.unknownNetwork')
-      return Object.prototype.hasOwnProperty.call(foundNetwork, 'networkName') ? foundNetwork.networkName : this.t('dappTransfer.unknownNetwork')
     },
     getDate() {
       const currentDateTime = new Date()
@@ -555,69 +516,55 @@ export default {
     },
     significantDigits: significantDigits,
     getHeaderByDapp() {
-      // For partner integration
-      if (this.origin === 'www.etheremon.com') {
-        return this.t('dappTransfer.claimMon')
-      }
       return this.t('dappTransfer.contractInteraction')
-    },
-    ...mapActions({})
+    }
   },
   mounted() {
-    // get eth balance from store
     const queryParams = new URLSearchParams(window.location.search)
     const instanceId = queryParams.get('instanceId')
     const queryParamId = queryParams.get('id')
-    var bc = new BroadcastChannel(`torus_channel_${instanceId}`, broadcastChannelOptions)
+    this.channel = `torus_channel_${instanceId}`
+    const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.onmessage = async ev => {
       if (ev.name !== 'send-params') return
-      if (ev.data && ev.data.txParams && ev.data.txParams.id.toString() !== queryParamId) return
+      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, currencyData, network } = ev.data || {}
+      this.selectedCurrency = selectedCurrency
+      this.currencyData = currencyData
+      if (txParams && txParams.id.toString() !== queryParamId) return
       bc.close()
-      const { type, msgParams, txParams, origin, balance } = ev.data || {}
       this.balance = new BigNumber(balance)
-      let url = { hostname: '', href: '' }
-      try {
-        url = new URL(origin)
-      } catch (err) {
-        log.info(err)
-      }
       log.info({ msgParams, txParams })
-      this.originHref = url.href
-      this.origin = url.hostname // origin of tx: website url
+      this.origin = origin
       if (type !== TX_TRANSACTION) {
-        var { message, typedMessages } = msgParams.msgParams || {}
-        if (typedMessages) {
-          try {
-            typedMessages = JSON.parse(typedMessages)
-          } catch (e) {
-            log.error(e)
-          }
+        let { msgParams: { message, typedMessages } = {}, id = '' } = msgParams
+        try {
+          typedMessages = typedMessages && JSON.parse(typedMessages)
+        } catch (e) {
+          log.error(e)
         }
-        const { id } = msgParams || {}
         this.id = id
         this.message = message
         this.typedMessages = typedMessages
       } else {
         let finalValue = new BigNumber('0')
-        let { simulationFails, network, id, transactionCategory, methodParams, contractParams, txParams: txObject } = txParams || {}
+        let { simulationFails, id, transactionCategory, methodParams, contractParams, txParams: txObject } = txParams || {}
         const { value, to, data, from: sender, gas, gasPrice } = txObject || {}
-        const { reason } = simulationFails || {}
+        const { reason = '' } = simulationFails || {}
         if (value) {
           finalValue = new BigNumber(fromWei(value.toString()))
         }
-        this.origin = this.origin.trim().length === 0 ? this.t('dappTransfer.wallet') : this.origin
         // Get ABI for method
         let txDataParams = ''
         if (contractParams.erc721) {
           txDataParams = collectibleABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
         } else if (contractParams.erc20) {
-          txDataParams = collectibleABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          txDataParams = tokenABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
         }
         // Get Params from method type ABI
-        let amountTo, amountValue, amountFrom
+        let amountTo, amountValue
         if (methodParams && isArray(methodParams)) {
           if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
-            [amountFrom, amountTo, amountValue] = methodParams || []
+            [amountTo, amountValue] = methodParams || []
           else [amountTo, amountValue] = methodParams || []
         }
         log.info(methodParams, 'params')
@@ -626,7 +573,7 @@ export default {
         const decimals = new BigNumber(tokenObj.decimals || '0')
         this.selectedToken = tokenObj.symbol || 'ERC20'
         this.id = id
-        this.networkName = this.getNetworkName(network)
+        this.network = network
         this.transactionCategory = transactionCategory
         var gweiGasPrice = new BigNumber(hexToNumber(gasPrice)).div(weiInGwei)
         // sending to who
@@ -635,7 +582,6 @@ export default {
         this.amountValue = amountValue ? new BigNumber(amountValue.value).div(new BigNumber(10).pow(new BigNumber(decimals))) : new BigNumber('0')
         // Get token and collectible info
         if (methodParams && contractParams.erc20) {
-          const { tokenRates, selectedCurrency } = this.$store.state
           let tokenRateMultiplier = tokenRates[checkSummedTo.toLowerCase()]
           if (!tokenRateMultiplier) {
             const pairs = checkSummedTo
@@ -659,7 +605,7 @@ export default {
             const url = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
             assetDetails = await get(`${config.api}/opensea?url=${url}`, {
               headers: {
-                Authorization: `Bearer ${this.$store.state.jwtToken}`
+                Authorization: `Bearer ${jwtToken}`
               }
             })
             this.assetDetails = {

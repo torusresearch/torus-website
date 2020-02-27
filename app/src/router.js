@@ -63,17 +63,20 @@ const router = new Router({
     {
       path: '/confirm',
       name: 'confirm',
-      component: Confirm
+      component: Confirm,
+      meta: { requiresAuth: false }
     },
     {
       path: '/providerchange',
       name: 'providerchange',
-      component: ProviderChange
+      component: ProviderChange,
+      meta: { requiresAuth: false }
     },
     {
       path: '/userinforequest',
       name: 'userInfoRequest',
-      component: UserInfoRequest
+      component: UserInfoRequest,
+      meta: { requiresAuth: false }
     },
     {
       path: '/wallet',

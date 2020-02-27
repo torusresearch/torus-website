@@ -467,6 +467,16 @@ export const getIFrameOrigin = () => {
   return originHref
 }
 
+export const getIFrameOriginObj = () => {
+  try {
+    const url = new URL(getIFrameOrigin())
+    return { href: url.href, hostname: url.hostname }
+  } catch (error) {
+    log.error('invalid url')
+    return { href: location.href, hostname: location.hostname }
+  }
+}
+
 export const fakeStream = {
   write: () => {}
 }

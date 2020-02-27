@@ -1,6 +1,6 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
-import { broadcastChannelOptions } from './utils'
+import { broadcastChannelOptions, getIFrameOriginObj } from './utils'
 import torus from '../torus'
 import PopupHandler from './PopupHandler'
 import config from '../config'
@@ -28,6 +28,8 @@ class ConfirmHandler {
     this.handleConfirm = handleConfirm
     this.handleDeny = handleDeny
 
+    this.origin = getIFrameOriginObj()
+
     this.confirmWindow.once('close', () => {
       this.bc.close()
       log.error('user closed popup')
@@ -41,10 +43,15 @@ class ConfirmHandler {
     await this.bc.postMessage({
       name: 'send-params',
       data: {
-        origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+        origin: this.origin,
         type: this.txType,
-        txParams: { ...this.txParams, network: this.host },
-        balance: this.balance
+        txParams: this.txParams,
+        balance: this.balance,
+        selectedCurrency: this.selectedCurrency,
+        tokenRates: this.tokenRates,
+        jwtToken: this.jwtToken,
+        currencyData: this.currencyData,
+        network: this.networkType
       }
     })
   }
@@ -53,9 +60,14 @@ class ConfirmHandler {
     await this.bc.postMessage({
       name: 'send-params',
       data: {
-        origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+        origin: this.origin,
         type: this.txType,
-        msgParams: { msgParams: this.msgParams, id: this.id }
+        msgParams: { msgParams: this.msgParams, id: this.id },
+        selectedCurrency: this.selectedCurrency,
+        tokenRates: this.tokenRates,
+        jwtToken: this.jwtToken,
+        currencyData: this.currencyData,
+        network: this.networkType
       }
     })
   }

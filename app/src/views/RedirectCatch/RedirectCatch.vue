@@ -73,7 +73,7 @@ export default {
             })
           }
           if (ev.error && ev.error !== '') {
-            console.error(ev.error)
+            log.error(ev.error)
             bc.close()
           }
         }

@@ -74,14 +74,17 @@ var VuexStore = new Vuex.Store({
       const confirmHandler = new ConfirmHandler()
       const isTx = isTorusTransaction()
       confirmHandler.isTx = isTx
+      confirmHandler.selectedCurrency = state.selectedCurrency
+      confirmHandler.balance = fromWei(state.weiBalance[state.selectedAddress].toString())
+      confirmHandler.tokenRates = state.tokenRates
+      confirmHandler.jwtToken = state.jwtToken
+      confirmHandler.currencyData = state.currencyData
+      confirmHandler.networkType = state.networkType
       if (isTx) {
-        const balance = fromWei(this.state.weiBalance[this.state.selectedAddress].toString())
         const txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
         confirmHandler.txParams = txParams
-        confirmHandler.balance = balance
         confirmHandler.id = txParams.id
         confirmHandler.txType = TX_TRANSACTION
-        confirmHandler.host = state.networkType.host
       } else {
         const { msgParams, id, type } = getLatestMessageParams()
         confirmHandler.msgParams = msgParams

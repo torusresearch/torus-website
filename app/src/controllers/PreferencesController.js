@@ -4,6 +4,7 @@ import { prettyPrintData, isErrorObj } from '../utils/permissionUtils'
 import config from '../config'
 import { patch, get, post, remove, getPastOrders } from '../utils/httpHelpers'
 import { LOCALE_EN, THEME_LIGHT_BLUE_NAME, ERROR_TIME, SUCCESS_TIME } from '../utils/enums'
+import { getIFrameOrigin } from '../utils/utils'
 
 // By default, poll every 1 minute
 const DEFAULT_INTERVAL = 180 * 1000
@@ -130,7 +131,7 @@ class PreferencesController {
   storeUserLogin(verifier, verifierId, payload) {
     let userOrigin = ''
     if (payload && payload.calledFromEmbed) {
-      userOrigin = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
+      userOrigin = getIFrameOrigin()
     } else userOrigin = window.location.origin
     if (!payload.rehydrate)
       post(

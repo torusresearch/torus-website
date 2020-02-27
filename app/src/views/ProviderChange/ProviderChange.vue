@@ -8,7 +8,7 @@
       <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left">{{ t('dappInfo.permission') }}</v-flex>
         <v-flex xs12>
-          <network-display></network-display>
+          <network-display :network="currentNetwork.host" :storeNetworkType="currentNetwork"></network-display>
         </v-flex>
       </v-layout>
       <v-layout wrap>
@@ -18,8 +18,8 @@
           <v-card flat class="grey lighten-3">
             <v-card-text>
               <div class="subtitle-2 primary--text request-from">
-                <a :href="originHref" target="_blank">{{ origin }}</a>
-                <a :href="originHref" target="_blank" class="float-right">
+                <a :href="origin.href" target="_blank">{{ origin.hostname }}</a>
+                <a :href="origin.href" target="_blank" class="float-right">
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
                 </a>
               </div>
@@ -36,7 +36,7 @@
               <v-list-item-content class="pa-1">
                 <div class="caption text_2--text">
                   {{ t('dappProvider.toChangeNetwork') }}
-                  <span class="text-capitalize">{{ type && type === 'rpc' ? `${rpcNetwork.networkName} : ${rpcNetwork.host}` : network.host }}</span>
+                  <span class="text-capitalize">{{ type === 'rpc' ? `${network.networkName} : ${network.host}` : network.host }}</span>
                 </div>
               </v-list-item-content>
             </v-list-item>
@@ -57,77 +57,61 @@
 </template>
 
 <script>
+import log from 'loglevel'
 import { BroadcastChannel } from 'broadcast-channel'
+
+import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import { ChangeProviderScreenLoader } from '../../content-loader'
 import { broadcastChannelOptions } from '../../utils/utils'
-import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
-import log from 'loglevel'
+// import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
 
 export default {
   name: 'confirm',
   components: {
-    ChangeProviderScreenLoader
+    ChangeProviderScreenLoader,
+    NetworkDisplay
     // PermissionConfirm
   },
   data() {
     return {
-      origin: '',
-      originHref: '',
+      origin: { href: '', hostname: '' },
       type: 'none',
-      network: '',
-      rpcNetwork: {},
-      payload: {}
+      network: {},
+      currentNetwork: {},
+      channel: ''
     }
   },
   methods: {
     async triggerSign(event) {
-      var bc = new BroadcastChannel(
-        `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
-        broadcastChannelOptions
-      )
+      var bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({
-        data: { type: 'confirm-provider-change', payload: this.payload, approve: true }
+        data: { type: 'provider-change-result', approve: true }
       })
       bc.close()
     },
     async triggerDeny(event) {
-      var bc = new BroadcastChannel(
-        `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
-        broadcastChannelOptions
-      )
-      await bc.postMessage({ data: { type: 'deny-provider-change', approve: false } })
+      var bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
+      await bc.postMessage({ data: { type: 'provider-change-result', approve: false } })
       bc.close()
     }
   },
   mounted() {
-    var bc = new BroadcastChannel(
-      `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
-      broadcastChannelOptions
-    )
+    this.channel = `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`
+    var bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.onmessage = async ev => {
       const {
         payload: { network, type },
-        origin
+        origin,
+        currentNetwork
       } = ev.data || {}
-      this.payload = { network, type }
-      let url = { hostname: '', href: '' }
-      try {
-        url = new URL(origin)
-      } catch (err) {
-        log.error(err)
-      }
-      this.originHref = url.href
-      this.origin = url.hostname // origin of tx: website url
-      if (type && type === 'rpc') {
-        this.rpcNetwork = network
-        this.type = type
-      } else {
-        this.network = network
-        this.type = 'non-rpc'
-      }
+      this.origin = origin // origin of tx: website url
+      this.network = network
+      this.type = type
+      this.currentNetwork = currentNetwork
+
       bc.close()
     }
-    bc.postMessage({ data: 'popup-loaded' })
+    bc.postMessage({ data: { type: 'popup-loaded' } })
   }
 }
 </script>

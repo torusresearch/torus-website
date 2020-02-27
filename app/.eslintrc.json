@@ -13,9 +13,12 @@
         "code": 150
       }
     ],
+    "no-extra-semi": 0,
+    // "no-unused-vars": [2, {"args": "after-used", "argsIgnorePattern": "_"}],
+    "no-unused-vars": 0,
     "react/jsx-filename-extension": 0,
     "jsx-a11y/label-has-for": 0,
-    "no-console": 0,
+    "no-console": 2,
     "import/prefer-default-export": 0,
     "no-nested-ternary": 0,
     "no-confusing-arrow": 0,

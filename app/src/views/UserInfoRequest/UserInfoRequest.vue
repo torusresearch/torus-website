@@ -16,8 +16,8 @@
           <v-card flat class="grey lighten-3">
             <v-card-text>
               <div class="subtitle-2 primary--text request-from">
-                <a :href="originHref" target="_blank">{{ origin }}</a>
-                <a :href="originHref" target="_blank" class="float-right">
+                <a :href="origin.href" target="_blank">{{ origin.hostname }}</a>
+                <a :href="origin.href" target="_blank" class="float-right">
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
                 </a>
               </div>
@@ -60,10 +60,11 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import { UserInfoScreenLoader } from '../../content-loader'
-import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
-import { broadcastChannelOptions, capitalizeFirstLetter } from '../../utils/utils'
 import log from 'loglevel'
+
+import { UserInfoScreenLoader } from '../../content-loader'
+// import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
+import { broadcastChannelOptions, capitalizeFirstLetter } from '../../utils/utils'
 
 export default {
   name: 'userInfoRequest',
@@ -73,11 +74,11 @@ export default {
   },
   data() {
     return {
-      origin: '',
-      originHref: '',
+      origin: { hostname: '', href: '' },
       type: 'none',
       message: '',
-      verifier: ''
+      verifier: '',
+      channel: ''
     }
   },
   computed: {
@@ -87,45 +88,31 @@ export default {
   },
   methods: {
     async triggerSign(event) {
-      var bc = new BroadcastChannel(
-        `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
-        broadcastChannelOptions
-      )
-      await bc.postMessage({
-        data: { type: 'confirm-user-info-request', approve: true }
-      })
+      const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
+      await bc.postMessage({ data: { type: 'user-info-request-result', approve: true } })
       bc.close()
     },
     async triggerDeny(event) {
-      var bc = new BroadcastChannel(
-        `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
-        broadcastChannelOptions
-      )
-      await bc.postMessage({ data: { type: 'deny-user-info-request', approve: false } })
+      const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
+      await bc.postMessage({ data: { type: 'user-info-request-result', approve: false } })
       bc.close()
     }
   },
   mounted() {
-    var bc = new BroadcastChannel(
-      `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
-      broadcastChannelOptions
-    )
+    this.channel = `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`
+    const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.onmessage = async ev => {
-      const { payload, origin } = ev.data || {}
-      let url = { hostname: '', href: '' }
-      try {
-        url = new URL(origin)
-      } catch (err) {
-        log.error(err)
-      }
-      this.originHref = url.href
-      this.origin = url.hostname // origin of tx: website url
+      const {
+        payload: { verifier = '', message = '' },
+        origin = ''
+      } = ev.data
+      this.origin = origin // origin of tx: website url
       this.type = 'userInfo'
-      this.verifier = payload.verifier
-      this.message = payload && payload.message ? payload.message : ''
+      this.verifier = verifier
+      this.message = message
       bc.close()
     }
-    bc.postMessage({ data: 'popup-loaded' })
+    bc.postMessage({ data: { type: 'popup-loaded' } })
   }
 }
 </script>
