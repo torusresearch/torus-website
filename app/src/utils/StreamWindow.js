@@ -12,11 +12,12 @@ class StreamWindow {
     this.closed = false
     if (!preopenInstanceId) {
       this.preopenInstanceId = randomId()
-      windowStream.on('data', chunk => {
-        if (chunk.name === 'opened_window' && this.preopenInstanceId === chunk.data.preopenInstanceId) {
-          this.open(url)
-        }
-      })
+      windowStream.on &&
+        windowStream.on('data', chunk => {
+          if (chunk.name === 'opened_window' && this.preopenInstanceId === chunk.data.preopenInstanceId) {
+            this.open(url)
+          }
+        })
       windowStream.write({
         name: 'create_window',
         data: {
@@ -68,7 +69,7 @@ class StreamWindow {
           windowStream.removeListener('data', preopenHandler)
         }
       }
-      windowStream.on('data', preopenHandler)
+      windowStream.on && windowStream.on('data', preopenHandler)
     })
   }
 

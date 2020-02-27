@@ -313,7 +313,7 @@
 
 <script>
 import { QrcodeCapture } from 'vue-qrcode-reader'
-import { isAddress, toChecksumAddress, toBN, toWei } from 'web3-utils'
+import { isAddress, toChecksumAddress } from 'web3-utils'
 import torus from '../../torus'
 import { significantDigits, getEtherScanHashLink, validateVerifierId } from '../../utils/utils'
 import config from '../../config'
@@ -322,32 +322,15 @@ import ComponentLoader from '../../components/helpers/ComponentLoader'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import AddContact from '../../components/WalletTransfer/AddContact'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
-import { get, post } from '../../utils/httpHelpers'
+import { post } from '../../utils/httpHelpers'
 import log from 'loglevel'
-import {
-  GOOGLE,
-  REDDIT,
-  DISCORD,
-  ETH,
-  ENS,
-  ETH_LABEL,
-  GOOGLE_LABEL,
-  REDDIT_LABEL,
-  DISCORD_LABEL,
-  CONTRACT_TYPE_ETH,
-  CONTRACT_TYPE_ERC20,
-  CONTRACT_TYPE_ERC721,
-  OLD_ERC721_LIST,
-  ALLOWED_VERIFIERS
-} from '../../utils/enums'
+import { GOOGLE, ETH, ENS, CONTRACT_TYPE_ETH, CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ERC721, OLD_ERC721_LIST, ALLOWED_VERIFIERS } from '../../utils/enums'
 import BigNumber from 'bignumber.js'
 
 const randomId = require('@chaitanyapotti/random-id')
 
 const erc20TransferABI = require('human-standard-token-abi')
 const erc721TransferABI = require('human-standard-collectible-abi')
-
-const MAX_GAS = 6721975
 
 export default {
   name: 'walletTransfer',
@@ -606,7 +589,7 @@ export default {
     calculateGas(toAddress) {
       this.sendEthToContractError = false
       if (isAddress(toAddress)) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, _) => {
           if (this.contractType === CONTRACT_TYPE_ETH) {
             const value =
               '0x' +
@@ -965,7 +948,7 @@ export default {
 
     this.contactSelected = this.toAddress
 
-    const collectiblesUnwatch = this.$watch('collectibles', function(newValue, oldValue) {
+    this.$watch('collectibles', function(newValue, oldValue) {
       if (newValue !== oldValue) {
         this.updateFieldsBasedOnRoute()
       }

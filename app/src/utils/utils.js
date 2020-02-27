@@ -19,7 +19,6 @@ import {
   DISCORD,
   SIMPLEX,
   MOONPAY,
-  COINDIRECT,
   WYRE,
   THEME_DARK_BLACK_NAME,
   ACTIVE,
@@ -377,21 +376,6 @@ export const paymentProviders = {
     validCurrencies: ['USD'],
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
     includeFees: false,
-    api: true
-  },
-  [COINDIRECT]: {
-    line1: 'Credit / Debit Card',
-    line2: '2.99%',
-    line3: 'N/A',
-    line4: 'ETH, DAI, USDT',
-    status: ACTIVE,
-    logoExtension: SVG,
-    supportPage: 'https://help.coindirect.com/hc/en-us',
-    minOrderValue: 20,
-    maxOrderValue: 1000,
-    validCurrencies: ['EUR'],
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDT'],
-    includeFees: true,
     api: true
   }
   // [CRYPTO]: {
