@@ -715,7 +715,7 @@ export default {
   },
   computed: {
     isSmartContract() {
-      return this.$store.state.wallet[this.$store.state.selectedAddress].type === 'SC'
+      return this.$store.state.wallet[this.$store.state.selectedAddress] && this.$store.state.wallet[this.$store.state.selectedAddress].type === 'SC'
     },
     verifierOptions() {
       const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
