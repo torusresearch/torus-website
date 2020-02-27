@@ -14,7 +14,7 @@
       >
         <template v-slot:link>
           <div class="mb-10">
-            <v-btn text large class="account-link" @click="markAsRead(smartContractAccount)">
+            <v-btn text large class="account-link" @click="markAsRead">
               <v-icon left v-text="'$vuetify.icons.person_circle'" />
               <span>Your Account</span>
             </v-btn>
@@ -44,7 +44,7 @@ export default {
     smartContractAccount() {
       let { wallet: storeWallet } = this.$store.state || {}
       const wallet = Object.keys(storeWallet).reduce((accts, x) => {
-        if (storeWallet[x].type === 'SC' && storeWallet[x].network === this.$store.state.networkType.host)
+        if (storeWallet[x].type === 'SC' && storeWallet[x].type !== 'PROCESSING' && storeWallet[x].network === this.$store.state.networkType.host)
           accts.push({ address: x, ...storeWallet[x] })
         return accts
       }, [])
@@ -52,12 +52,12 @@ export default {
     }
   },
   methods: {
-    markAsRead(smartContractAccount) {
-      this.$store.dispatch('updateWalletNotified', smartContractAccount)
+    markAsRead() {
+      this.$store.dispatch('updateWalletNotified', this.smartContractAccount)
+      this.$router.push({ name: 'walletSettings' })
     },
     closeSmartContractModal() {
-      // this.$store.dispatch('updateWalletNotified', this.selectedTheme.name)
-      console.log('closeSmartContractModal', smartContractAccount)
+      this.$store.dispatch('updateWalletNotified', this.smartContractAccount)
     }
   }
 }

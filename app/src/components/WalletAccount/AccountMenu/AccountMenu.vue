@@ -80,17 +80,16 @@
 
     <v-list v-if="hasPendingSmartContract">
       <v-list-item two-line>
-        <v-list-item-action class="mr-2 mt-n3">
-          <v-icon class="text_2--text" v-text="'$vuetify.icons.smart_contract'" />
+        <v-list-item-action class="mr-2 mt-0">
+          <v-icon class="text_2--text" size="20" v-text="'$vuetify.icons.smart_contract'" />
         </v-list-item-action>
         <v-list-item-content class="text_1--text font-weight-bold">
           <v-list-item-title class="mb-2">Smart Contract Wallet</v-list-item-title>
           <v-list-item-subtitle>
             <v-layout>
-              <v-flex xs10 class="pr-1">
-                <v-progress-linear background-color="#EEF2F4" class="mt-2" color="#C4C4C4" height="6" value="15"></v-progress-linear>
+              <v-flex xs12>
+                <v-progress-linear background-color="#EEF2F4" color="#0364FF" class="mt-1" height="8" rounded value="40"></v-progress-linear>
               </v-flex>
-              <v-flex xs2 class="text-right pr-1"><span class="caption">Pending</span></v-flex>
             </v-layout>
           </v-list-item-subtitle>
         </v-list-item-content>
@@ -178,11 +177,9 @@ export default {
   },
   computed: {
     hasPendingSmartContract() {
-      const pending = false
-      const hasSmartContract = Object.values(this.$store.state.wallet).filter(
-        x => x.type === 'SC' && x.network === this.$store.state.networkType.host
+      return Object.values(this.$store.state.wallet).filter(
+        x => x.type === 'SC' && x.network === this.$store.state.networkType.host && x.address === 'PROCESSING'
       ).length
-      return !hasSmartContract && pending
     },
     userEmail() {
       const verifierLabel = this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1) + ': '
@@ -219,7 +216,10 @@ export default {
         const tokenRateMultiplier = new BigNumber(1)
         const currencyRate = new BigNumber(this.getCurrencyMultiplier).times(tokenRateMultiplier)
         let currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
-        if (storeWallet[x].type === 'EOA' || (storeWallet[x].type === 'SC' && storeWallet[x].network === this.$store.state.networkType.host))
+        if (
+          storeWallet[x].type === 'EOA' ||
+          (storeWallet[x].type === 'SC' && storeWallet[x].network === this.$store.state.networkType.host && storeWallet[x].address != 'PROCESSING')
+        )
           accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${selectedCurrency}`, ...storeWallet[x] })
         return accts
       }, [])

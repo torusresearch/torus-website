@@ -1,38 +1,30 @@
 <template>
   <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
-    <template v-if="smartContractStatus === 'pending'">
-      <div class="body-2 text_1--text mb-2 px-1">Your smart contract wallet is still being created</div>
-      <v-layout wrap>
-        <v-flex xs12 md6 px-1 mb-1>
-          <div class="d-flex">
-            <div>
-              <span class="body-2 text_1--text">Status</span>
-            </div>
-            <div class="flex-grow-1 mx-3 mt-2">
-              <v-progress-linear background-color="#EEF2F4" color="#C4C4C4" class="mt-1" height="6" value="15"></v-progress-linear>
-            </div>
-            <div>
-              <span class="status-text text_2--text">Pending</span>
-            </div>
-          </div>
-        </v-flex>
-      </v-layout>
-    </template>
-    <template v-else-if="smartContractAccount">
-      <div class="body-2 text_1--text mb-2">Your Smart Contract Wallet</div>
-      <v-layout wrap>
-        <v-flex xs12 md6 class="body-2 text_2--text">
-          <span class="account-list__address">{{ smartContractAccount.address }}</span>
-          <span class="float-right" style="margin-top: -3px">
-            <show-tool-tip :address="smartContractAccount.address">
-              <v-icon size="14" :class="{ 'text_2--text': !$vuetify.theme.dark }" v-text="'$vuetify.icons.copy'" />
-            </show-tool-tip>
-            <export-qr-code :customAddress="smartContractAccount.address">
-              <v-icon size="14" v-text="'$vuetify.icons.qr'" />
-            </export-qr-code>
-          </span>
-        </v-flex>
-      </v-layout>
+    <template v-if="smartContractAccount">
+      <template v-if="smartContractAccount.address === 'PROCESSING'">
+        <div class="body-2 text_1--text mb-2 px-1">Your smart contract wallet is still being created</div>
+        <v-layout wrap>
+          <v-flex xs12 md6 px-1 mb-1>
+            <v-progress-linear background-color="#EEF2F4" color="#0364FF" class="mt-1" height="12" rounded value="40"></v-progress-linear>
+          </v-flex>
+        </v-layout>
+      </template>
+      <template v-else>
+        <div class="body-2 text_1--text mb-2">Your Smart Contract Wallet</div>
+        <v-layout wrap>
+          <v-flex xs12 md6 class="body-2 text_2--text">
+            <span class="account-list__address" :title="smartContractAccount.address">{{ slicedAddress(smartContractAccount.address) }}</span>
+            <span class="float-right" style="margin-top: -3px">
+              <show-tool-tip :address="smartContractAccount.address">
+                <v-icon size="14" :class="{ 'text_2--text': !$vuetify.theme.dark }" v-text="'$vuetify.icons.copy'" />
+              </show-tool-tip>
+              <export-qr-code :customAddress="smartContractAccount.address">
+                <v-icon size="14" v-text="'$vuetify.icons.qr'" />
+              </export-qr-code>
+            </span>
+          </v-flex>
+        </v-layout>
+      </template>
     </template>
     <template v-else>
       <div class="body-2 text_1--text mb-8 px-1">Create a Smart Contract Wallet to transact without fee</div>
@@ -69,7 +61,6 @@ export default {
   components: { MessageModal, ShowToolTip, ExportQrCode },
   data() {
     return {
-      smartContractStatus: '',
       ensName: '',
       messageModalShow: false,
       messageModalType: '',
@@ -89,6 +80,13 @@ export default {
     }
   },
   methods: {
+    slicedAddress(address) {
+      return this.$vuetify.breakpoint.lgAndUp
+        ? address
+        : this.$vuetify.breakpoint.xsOnly
+        ? `${address.slice(0, 10)}...${address.slice(-5)}`
+        : `${address.slice(0, 20)}...${address.slice(-10)}`
+    },
     async createWallet() {
       const reqObj = {
         ens: randomId(),
