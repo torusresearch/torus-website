@@ -767,23 +767,23 @@ export default {
             console.log('scw', scw)
 
             // Adding SCW to vue state
-            const selectedNetworkContract = scw && scw.filter(x => x.network == state.networkType.host)
+            const selectedNetworkContract = scw.network == state.networkType.host ? scw : undefined
             console.log('selectedNetworkContract', selectedNetworkContract)
-            if (selectedNetworkContract[0]) {
+            if (selectedNetworkContract) {
               // Remove existing scw/s for the old network
               Object.keys(state.wallet).filter(x => {
                 state.wallet[x].type == 'SC' ? delete state.wallet[x] : void 0
               })
 
               dispatch('addWallet', {
-                ethAddress: selectedNetworkContract[0].proxy_contract_address,
-                network: selectedNetworkContract[0].network,
-                notified: selectedNetworkContract[0].notified,
+                ethAddress: selectedNetworkContract.proxy_contract_address,
+                network: selectedNetworkContract.network,
+                notified: selectedNetworkContract.notified,
                 privKey: null,
                 type: 'SC'
               })
-              torus.torusController.addAccount(null, selectedNetworkContract[0].proxy_contract_address).then(() => {
-                dispatch('updateSelectedAddress', { selectedAddress: selectedNetworkContract[0].proxy_contract_address }) // synchronous
+              torus.torusController.addAccount(null, selectedNetworkContract.proxy_contract_address).then(() => {
+                dispatch('updateSelectedAddress', { selectedAddress: selectedNetworkContract.proxy_contract_address }) // synchronous
               })
             }
             resolve()

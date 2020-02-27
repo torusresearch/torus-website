@@ -223,7 +223,8 @@ export default {
         return acc
       }, [])
       const sortedTx = finalTx.sort((a, b) => b.date - a.date) || []
-      // log.info('sorted tx is', sortedTx)
+      log.info('sorted tx is', sortedTx)
+      //debugger
       return sortedTx
     },
     async calculatePastTransactions() {
@@ -388,8 +389,11 @@ export default {
     },
     patchTx(x, status, jwtToken) {
       // patch tx
+      // console.log(x)
+      const transactionsAPI = `${config.api}/transaction${x.relayer ? 'SCW' : ''}`
+
       patch(
-        `${config.api}/transaction`,
+        transactionsAPI,
         {
           id: x.id,
           status: status

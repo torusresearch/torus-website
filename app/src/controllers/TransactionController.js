@@ -173,6 +173,7 @@ class TransactionController extends EventEmitter {
     // listen for tx completion (success, fail)
     return new Promise((resolve, reject) => {
       this.txStateManager.once(`${initialTxMeta.id}:finished`, finishedTxMeta => {
+        // log.info(finishedTxMeta)
         switch (finishedTxMeta.status) {
           case 'submitted':
             return resolve(finishedTxMeta.hash)
@@ -408,10 +409,7 @@ class TransactionController extends EventEmitter {
         return
       }
       const txMeta = this.txStateManager.getTx(txId)
-      if (txMeta.relayer) {
-        await this.scwController.signTransaction(txId, this.txStateManager, this.getChainId())
-        return
-      }
+
       this.inProcessOfSigning.add(txId)
       // approve
       this.txStateManager.setTxStatusApproved(txId)
@@ -428,10 +426,20 @@ class TransactionController extends EventEmitter {
       // add nonce debugging information to txMeta
       txMeta.nonceDetails = nonceLock.nonceDetails
       this.txStateManager.updateTx(txMeta, 'transactions#approveTransaction')
-      // sign transaction
-      const rawTx = await this.signTransaction(txId)
 
-      await this.publishTransaction(txId, rawTx)
+      // sign transaction
+      if (txMeta.relayer) {
+        await this.scwController.signTransaction(txId, this.txStateManager, this.getChainId())
+        // await this.scwController.publishTransaction()
+        // this.txStateManager.setTxStatusSigned(txId)
+        //this.setTxHash(txId, 'PENDING_'.concat(txMeta.id))
+        this.txStateManager.setTxStatusSubmitted(txId)
+        // this.txStateManager.setTxStatusConfirmed(txId)
+      } else {
+        const rawTx = await this.signTransaction(txId)
+        await this.publishTransaction(txId, rawTx)
+      }
+
       // must set transaction to submitted/failed before releasing lock
       nonceLock.releaseLock()
     } catch (err) {

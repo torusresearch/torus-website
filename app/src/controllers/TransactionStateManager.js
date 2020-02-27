@@ -272,6 +272,7 @@ class TransactionStateManager extends EventEmitter {
     Object.keys(opts).forEach(key => {
       filteredTxList = this.getTxsByMetaData(key, opts[key], filteredTxList)
     })
+    // console.log('filteredTxList', filteredTxList)
     return filteredTxList
   }
   /**

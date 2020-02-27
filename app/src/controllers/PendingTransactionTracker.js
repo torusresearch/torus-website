@@ -130,6 +130,8 @@ class PendingTransactionTracker extends EventEmitter {
   async _checkPendingTx(txMeta) {
     const txHash = txMeta.hash
     const txId = txMeta.id
+    const ifRelayer = txMeta.relayer
+    console.log('_checkPendingTx', txMeta)
 
     // Only check submitted txs
     if (txMeta.status !== 'submitted') return

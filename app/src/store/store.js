@@ -236,8 +236,9 @@ VuexStore.subscribe((mutation, state) => {
     for (let id in txs) {
       const txMeta = txs[id]
       if (txMeta.status === 'submitted' && id >= 0) {
+        log.info(txMeta)
         // insert into db here
-        const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txMeta
+        const { methodParams, contractParams, txParams, transactionCategory, time, hash, relayer } = txMeta
         let amountTo, amountValue, assetName, tokenRate, symbol, type, type_name, type_image_link, totalAmount
 
         if (contractParams.erc721) {
@@ -299,6 +300,7 @@ VuexStore.subscribe((mutation, state) => {
           currency_amount: (getCurrencyMultiplier() * parseFloat(totalAmount) * tokenRate).toString(),
           selected_currency: state.selectedCurrency,
           status: 'submitted',
+          relayer: relayer,
           network: state.networkType.host,
           transaction_hash: hash
         }
@@ -309,8 +311,9 @@ VuexStore.subscribe((mutation, state) => {
           } catch (error) {
             log.error(error)
           }
-
-          post(`${config.api}/transaction`, txObj, {
+          const transactionsAPI = `${config.api}/transaction${relayer ? 'SCW' : ''}`
+          log.info('transactionAPI', transactionsAPI)
+          post(transactionsAPI, txObj, {
             headers: {
               Authorization: `Bearer ${state.jwtToken}`,
               'Content-Type': 'application/json; charset=utf-8'

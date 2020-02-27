@@ -11,6 +11,8 @@ import signOffchain from '../utils/signOffchain'
 import { post } from '../utils/httpHelpers'
 import log from 'loglevel'
 import Web3 from 'web3'
+import randomId from '@chaitanyapotti/random-id'
+
 import { ZERO_ADDRESS } from '../utils/enums'
 export default class SmartContractWalletController {
   constructor(opts = {}) {
@@ -75,7 +77,7 @@ export default class SmartContractWalletController {
   */
   async signTransaction(txId, txStateManager, chainId) {
     const txMeta = txStateManager.getTx(txId)
-    log.info('Transaction Controller, signTransaction', txMeta)
+    log.info('Transaction Controller, signTransaction', txMeta, txStateManager)
 
     let txParams = Object.assign({}, txMeta.txParams, { chainId })
     let transferValue, to, ETH_TOKEN
@@ -104,7 +106,7 @@ export default class SmartContractWalletController {
 
     // Get nonce
     const nonce = await getNonceForRelay(this.web3)
-    log.info(`fromSCW ${fromSCW}, to ${to}, ETH_TOKEN ${ETH_TOKEN}, value ${transferValue}, nonce ${nonce}`)
+    //log.info(`fromSCW ${fromSCW}, to ${to}, ETH_TOKEN ${ETH_TOKEN}, value ${transferValue}, nonce ${nonce}`)
 
     // Encode method Data
     const TransferModule = new this.web3.eth.Contract(TransferManager.abi, '0xD45256EEf4bFB182B108Cd8e0bCB4A9369342C1d')
@@ -112,10 +114,10 @@ export default class SmartContractWalletController {
 
     // Get EOA wallet to sign the transactions
     const selectedEOA = this.getSelectedEOA()
-    log.info('selectedEOA is', selectedEOA)
+    // log.info('selectedEOA is', selectedEOA)
     const privateKey = await this.getWallet(selectedEOA)
     const walletAccount = this.web3.eth.accounts.privateKeyToAccount('0x' + privateKey)
-    log.info([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 0)
+    // log.info([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 0)
 
     // Sign the transaction
     const signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 0)
@@ -123,21 +125,21 @@ export default class SmartContractWalletController {
       wallet: fromSCW,
       nonce,
       methodData,
-      signatures
+      signatures,
+      uniqueId: 'PENDING_'.concat(txMeta.id)
     }
-    log.info('TransactionController', reqObj)
 
-    // Update the transaction state
-    // this.txStateManager.setTxStatusSigned(txMeta.id)
-    // this.txStateManager.updateTx(txMeta, 'transactions#publishTransaction')
+    log.info('SmartContractWalletController', txMeta)
 
-    // Call the relayer
     const relayerRequest = await post(relayerURL, reqObj)
-    log.info(relayerRequest)
+    txMeta.hash = relayerRequest.txHash
+    txStateManager.updateTx(txMeta, 'transactions#setTxHash')
 
+    log.info('relayerRequest', relayerRequest)
+    //return txMeta
     // // Set tx state
     // this.setTxHash(txId, relayerRequest.txHash)
     // this.txStateManager.setTxStatusSubmitted(txMeta.id)
-    return 'TransactionRelayed'
+    return txMeta.hash
   }
 }
