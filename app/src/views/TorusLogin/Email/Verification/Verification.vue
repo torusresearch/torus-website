@@ -42,26 +42,23 @@
                         <img class="mr-2" v-if="status === 'error'" :src="require(`../../../../../public/images/invalid-check.svg`)" height="20px" />
                       </template>
                     </v-text-field>
-                    <!-- <div class="v-text-field__details mb-6">
+                    <div class="v-text-field__details mb-6">
                       <div class="v-messages">
                         <div class="v-messages__wrapper">
                           <div class="v-messages__message d-flex text_2--text">
                             <v-flex>
                               Did not receive? Click
-                              <router-link
-                                @click.native="resendCode"
-                                :to="{
-                                  name: 'torusVerify'
-                                }"
-                              >
-                                here
-                              </router-link>
+                              <a>
+                                <v-btn @click="resendCode" text>
+                                  here
+                                </v-btn>
+                              </a>
                               to resend verification code
                             </v-flex>
                           </div>
                         </div>
                       </div>
-                    </div> -->
+                    </div>
                   </v-flex>
                 </v-layout>
               </v-form>
@@ -93,6 +90,7 @@ export default {
       code: '',
       verifier_id: '',
       status: '',
+      hash: '',
       formValid: true,
       rules: {
         required: value => !!value || 'Required',
@@ -117,13 +115,19 @@ export default {
         this.status = 'error'
         log.error(error)
       }
+    },
+    async resendCode() {
+      const data = await post(`${config.torusVerifierHost}/register`, {
+        verifier_id: this.verifier_id,
+        verifier_id_type: 'email',
+        hash: this.hash
+      })
     }
   },
   mounted() {
-    const { email, state, redirect_uri } = this.$route.query
+    const { email, hash } = this.$route.query
     this.verifier_id = email
-    this.state = state
-    this.redirect_uri = redirect_uri
+    this.hash = hash
   }
 }
 </script>

@@ -319,14 +319,12 @@ export default {
           } else if (ev.data && verifier === TORUS) {
             log.info('toruslogin data', ev.data)
             const { hashParams } = ev.data || {}
-            dispatch('updateUserInfo', {
-              userInfo: {
-                name: hashParams.verifier_id,
-                email: loginType === 'torus-email-login' ? hashParams.verifier_id : '',
-                verifierId: hashParams.verifier_id,
-                verifier,
-                verifierParams: { ...hashParams, id_token: hashParams.idtoken }
-              }
+            commit('setUserInfo', {
+              name: hashParams.verifier_id,
+              email: loginType === 'torus-email-login' ? hashParams.verifier_id : '',
+              verifierId: hashParams.verifier_id,
+              verifier,
+              verifierParams: { ...hashParams, id_token: hashParams.idtoken }
             })
             dispatch('handleLogin', { calledFromEmbed, idToken: hashParams.idtoken, torusLogin: true, extendedPassword: hashParams.extendedPassword })
           }
