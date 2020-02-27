@@ -38,6 +38,7 @@ import {
   GOERLI_CODE,
   MATIC_CODE
 } from './enums'
+import config from '../config'
 
 const BN = ethUtil.BN
 
@@ -75,17 +76,6 @@ export function storageAvailable(type) {
       storage.length !== 0
     )
   }
-}
-
-/**
- * Generates an example stack trace
- *
- * @returns {string} A stack trace
- *
- */
-export function getStack() {
-  const stack = new Error('Stack trace generator - not an error').stack
-  return stack
 }
 
 /**
@@ -190,18 +180,6 @@ export function BnMultiplyByFraction(targetBN, numerator, denominator) {
   const numBN = new BN(numerator)
   const denomBN = new BN(denominator)
   return targetBN.mul(numBN).div(denomBN)
-}
-
-export function applyListeners(listeners, emitter) {
-  Object.keys(listeners).forEach(key => {
-    emitter.on(key, listeners[key])
-  })
-}
-
-export function removeListeners(listeners, emitter) {
-  Object.keys(listeners).forEach(key => {
-    emitter.removeListener(key, listeners[key])
-  })
 }
 
 /**
@@ -496,4 +474,15 @@ export const standardNetworkId = {
 export function selectChainId(network, provider) {
   const { chainId } = provider
   return standardNetworkId[network] || `0x${parseInt(chainId, 10).toString(16)}`
+}
+
+export const isMain = location === parent.location && location.origin === config.baseUrl
+
+export const getIFrameOrigin = () => {
+  const originHref = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
+  return originHref
+}
+
+export const fakeStream = {
+  write: () => {}
 }

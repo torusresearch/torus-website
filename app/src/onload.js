@@ -1,14 +1,13 @@
 import NodeDetailManager from '@toruslabs/fetch-node-details'
 import log from 'loglevel'
 import Web3 from 'web3'
+import LocalMessageDuplexStream from 'post-message-stream'
+
 import TorusController from './controllers/TorusController'
 import store from './store'
 import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE } from './utils/enums'
-import { storageAvailable } from './utils/utils'
-
-const LocalMessageDuplexStream = require('post-message-stream')
-const stream = require('stream')
-const setupMultiplex = require('./utils/setupMultiplex').default
+import { storageAvailable, isMain, getIFrameOrigin } from './utils/utils'
+import setupMultiplex from './utils/setupMultiplex'
 
 function onloadTorus(torus) {
   function triggerUi(type) {
@@ -44,6 +43,22 @@ function onloadTorus(torus) {
     }
   })
 
+  torus.torusController = torusController
+
+  torusController.provider.setMaxListeners(100)
+  torus.web3 = new Web3(torusController.provider)
+
+  // update node details
+  torus.nodeDetailManager = new NodeDetailManager({ network: process.env.VUE_APP_PROXY_NETWORK, proxyAddress: process.env.VUE_APP_PROXY_ADDRESS })
+  torus.nodeDetailManager.getNodeDetails().then(nodeDetails => log.info(nodeDetails))
+
+  // You are not inside an iframe
+  if (isMain) {
+    // we use this to start accounttracker balances
+    torusController.setupControllerConnection()
+    return torus
+  }
+
   var metamaskStream = new LocalMessageDuplexStream({
     name: 'iframe_metamask',
     target: 'embed_metamask',
@@ -56,35 +71,13 @@ function onloadTorus(torus) {
     targetWindow: window.parent
   })
 
-  torus.torusController = torusController
   torus.metamaskMux = setupMultiplex(metamaskStream)
   torus.communicationMux = setupMultiplex(communicationStream)
   torus.communicationMux.setMaxListeners(50)
-  torusController.provider.setMaxListeners(100)
-  torus.web3 = new Web3(torusController.provider)
-
-  // update node details
-  torus.nodeDetailManager = new NodeDetailManager({ network: process.env.VUE_APP_PROXY_NETWORK, proxyAddress: process.env.VUE_APP_PROXY_ADDRESS })
-  // torus.nodeDetailManager = new NodeDetailManager({ network: 'ropsten', proxyAddress: '0x4023d2a0D330bF11426B12C6144Cfb96B7fa6183' })
-  torus.nodeDetailManager.getNodeDetails().then(() => {})
-
-  /* Stream setup block */
-  // doesnt do anything.. just for logging
-  // since the stack traces are constrained to a single javascript context
-  // we use a passthrough stream to log method calls
-  // var receivePassThroughStream = new stream.PassThrough({ objectMode: true })
-  // receivePassThroughStream.on('data', function() {
-  //   log.info('receivePassThroughStream', arguments)
-  // })
-
-  // var sendPassThroughStream = new stream.PassThrough({ objectMode: true })
-  // sendPassThroughStream.on('data', function() {
-  //   log.info('sendPassThroughStream', arguments)
-  // })
 
   const providerOutStream = torus.metamaskMux.getStream('provider')
 
-  torusController.setupTrustedCommunication(providerOutStream, 'metamask')
+  torusController.setupUntrustedCommunication(providerOutStream, getIFrameOrigin())
 
   return torus
 }

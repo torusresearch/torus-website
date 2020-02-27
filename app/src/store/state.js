@@ -35,14 +35,16 @@ const initialState = {
 
   selectedCurrency: 'USD',
   pastTransactions: [],
+  paymentTx: [],
   theme: THEME_LIGHT_BLUE_NAME,
   locale: LOCALE_EN,
   billboard: [],
   contacts: [],
-  permissions: {},
+  permissions: [],
   userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate
   errorMsg: '',
-  successMsg: ''
+  successMsg: '',
+  iframeMetadata: { origin: '', name: '', icon: '' }
 }
 
 export default initialState

@@ -7,7 +7,6 @@ const https = require('https')
 const http = require('http')
 const log = require('loglevel')
 
-// const UAParser = require('ua-parser-js')
 const APP_PORT = process.env.PORT || 3000
 var certOptions = {
   key: fs.readFileSync(path.resolve('../ssl/server.key')),

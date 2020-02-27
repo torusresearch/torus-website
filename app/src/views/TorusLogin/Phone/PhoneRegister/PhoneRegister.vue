@@ -138,12 +138,13 @@ export default {
     async registerAccount() {
       if (!this.$refs.form.validate()) return
       try {
+        const hash = ethUtil.stripHexPrefix(sha3(this.extendedPassword))
         const data = await post(`${config.torusVerifierHost}/register`, {
-          verifier_id: this.verifier_id.replace(/\s+/g, ''),
+          verifier_id: this.verifier_id.replace(/ /g, ''),
           verifier_id_type: 'phone',
-          hash: ethUtil.stripHexPrefix(sha3(this.extendedPassword))
+          hash
         })
-        this.$router.push({ name: 'torusPhoneVerify', query: { ...this.$route.query, phone: this.verifier_id } }).catch(err => {})
+        this.$router.push({ name: 'torusPhoneVerify', query: { ...this.$route.query, phone: this.verifier_id, hash } }).catch(err => {})
       } catch (err) {
         if (err && err.status === 403) this.duplicate = true
         log.error(err)

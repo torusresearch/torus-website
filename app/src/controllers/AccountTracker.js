@@ -7,22 +7,21 @@
  * on each new block.
  */
 
-const EthQuery = require('eth-query')
-const ObservableStore = require('obs-store')
-const log = require('loglevel')
-const pify = require('pify')
+import EthQuery from 'eth-query'
+import ObservableStore from 'obs-store'
+import log from 'loglevel'
+import pify from 'pify'
+import Web3 from 'web3'
+import { toHex } from 'web3-utils'
+import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
 
-const Web3 = require('web3')
-const { toHex } = require('web3-utils')
-const SINGLE_CALL_BALANCES_ABI = require('single-call-balance-checker-abi')
-
-const { MAINNET_CODE, RINKEBY_CODE, ROPSTEN_CODE, KOVAN_CODE, ZERO_ADDRESS } = require('../utils/enums')
-const {
+import { MAINNET_CODE, RINKEBY_CODE, ROPSTEN_CODE, KOVAN_CODE, ZERO_ADDRESS } from '../utils/enums'
+import {
   SINGLE_CALL_BALANCES_ADDRESS,
   SINGLE_CALL_BALANCES_ADDRESS_RINKEBY,
   SINGLE_CALL_BALANCES_ADDRESS_ROPSTEN,
   SINGLE_CALL_BALANCES_ADDRESS_KOVAN
-} = require('../utils/contractAddresses')
+} from '../utils/contractAddresses'
 
 export default class AccountTracker {
   /**

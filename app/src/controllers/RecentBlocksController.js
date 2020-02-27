@@ -1,10 +1,9 @@
-const ObservableStore = require('obs-store')
-const extend = require('xtend')
-const EthQuery = require('eth-query')
-const log = require('loglevel')
-const pify = require('pify')
+import ObservableStore from 'obs-store'
+import EthQuery from 'eth-query'
+import log from 'loglevel'
+import pify from 'pify'
 
-const { ROPSTEN, RINKEBY, KOVAN, MAINNET } = require('../utils/enums')
+import { ROPSTEN, RINKEBY, KOVAN, MAINNET } from '../utils/enums'
 const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
 
 class RecentBlocksController {
@@ -31,12 +30,10 @@ class RecentBlocksController {
     this.ethQuery = new EthQuery(provider)
     this.historyLength = opts.historyLength || 15
 
-    const initState = extend(
-      {
-        recentBlocks: []
-      },
-      opts.initState
-    )
+    const initState = {
+      recentBlocks: [],
+      ...opts.initState
+    }
     this.store = new ObservableStore(initState)
 
     const blockListner = async newBlockNumberHex => {
@@ -60,16 +57,6 @@ class RecentBlocksController {
       }
     })
     this.backfill()
-  }
-
-  /**
-   * Sets store.recentBlocks to an empty array
-   *
-   */
-  resetState() {
-    this.store.updateState({
-      recentBlocks: []
-    })
   }
 
   /**
@@ -126,11 +113,12 @@ class RecentBlocksController {
    *
    */
   mapTransactionsToPrices(newBlock) {
-    const block = extend(newBlock, {
+    const block = {
+      ...newBlock,
       gasPrices: newBlock.transactions.map(tx => {
         return tx.gasPrice
       })
-    })
+    }
     delete block.transactions
     return block
   }

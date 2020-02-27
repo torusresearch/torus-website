@@ -1,9 +1,10 @@
 <template>
-  <v-container py-6 px-0>
+  <v-container pa-0>
     <template v-if="type === 'none'">
       <change-provider-screen-loader />
     </template>
     <template v-else>
+      <!-- <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" /> -->
       <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left">{{ t('dappInfo.permission') }}</v-flex>
         <v-flex xs12>
@@ -58,15 +59,15 @@
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
 import { ChangeProviderScreenLoader } from '../../content-loader'
-import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import { broadcastChannelOptions } from '../../utils/utils'
+import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
 import log from 'loglevel'
 
 export default {
   name: 'confirm',
   components: {
-    ChangeProviderScreenLoader,
-    NetworkDisplay
+    ChangeProviderScreenLoader
+    // PermissionConfirm
   },
   data() {
     return {
