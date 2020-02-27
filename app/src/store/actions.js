@@ -338,7 +338,10 @@ export default {
                 calledFromEmbed,
                 idToken: hashParams.idtoken,
                 torusLogin: true,
-                extendedPassword: hashParams.extendedPassword
+                extendedPassword: hashParams.extendedPassword,
+                verifierId: hashParams.verifier_id,
+                verifier,
+                verifierParams: { ...hashParams, id_token: hashParams.idtoken }
               })
             } else {
               commit('setUserInfo', {
@@ -404,7 +407,13 @@ export default {
             })
             const { picture: profileImage, email, name, id } = userInfo || {}
             if (recovery) {
-              dispatch('setupRecovery', { calledFromEmbed, idToken })
+              dispatch('setupRecovery', {
+                calledFromEmbed,
+                idToken,
+                verifierId: email.toString().toLowerCase(),
+                verifier: GOOGLE,
+                verifierParams: { verifier_id: email.toString().toLowerCase() }
+              })
             } else {
               commit('setUserInfo', {
                 profileImage,
@@ -465,7 +474,13 @@ export default {
             })
             const { name, id, picture, email } = userInfo || {}
             if (recovery) {
-              dispatch('setupRecovery', { calledFromEmbed, idToken: accessToken })
+              dispatch('setupRecovery', {
+                calledFromEmbed,
+                idToken: accessToken,
+                verifierId: id.toString(),
+                verifier: FACEBOOK,
+                verifierParams: { verifier_id: id.toString() }
+              })
             } else {
               commit('setUserInfo', {
                 profileImage: picture.data.url,
@@ -535,7 +550,13 @@ export default {
             const { picture: profileImage, preferred_username: name } = userInfo || {}
             const { email } = tokenInfo || {}
             if (recovery) {
-              dispatch('setupRecovery', { calledFromEmbed, idToken: accessToken.toString() })
+              dispatch('setupRecovery', {
+                calledFromEmbed,
+                idToken: accessToken.toString(),
+                verifierId: userInfo.sub.toString(),
+                verifier: TWITCH,
+                verifierParams: { verifier_id: userInfo.sub.toString() }
+              })
             } else {
               commit('setUserInfo', {
                 profileImage,
@@ -594,7 +615,13 @@ export default {
             })
             const { id, icon_img: profileImage, name } = userInfo || {}
             if (recovery) {
-              dispatch('setupRecovery', { calledFromEmbed, idToken: accessToken })
+              dispatch('setupRecovery', {
+                calledFromEmbed,
+                idToken: accessToken,
+                verifierId: name.toString().toLowerCase(),
+                verifier: REDDIT,
+                verifierParams: { verifier_id: name.toString().toLowerCase() }
+              })
             } else {
               commit('setUserInfo', {
                 profileImage: profileImage.split('?').length > 0 ? profileImage.split('?')[0] : profileImage,
@@ -767,12 +794,9 @@ export default {
         log.error(err)
       })
   },
-  async setupRecovery({ state, dispatch }, { calledFromEmbed, idToken, torusLogin, extendedPassword }) {
+  async setupRecovery({ state, dispatch }, { calledFromEmbed, idToken, torusLogin, extendedPassword, verifier, verifierId, verifierParams }) {
     console.log('setupRecovery called with', state)
     dispatch('loginInProgress', true)
-    const {
-      userInfo: { verifierId, verifier, verifierParams }
-    } = state
     let torusNodeEndpoints, torusIndexes
     return torus.nodeDetailManager
       .getNodeDetails()
@@ -803,6 +827,14 @@ export default {
         var regeneratedSecret = state.regeneratedSecrets[state.selectedAddress]
         // create r2
         var recoveryNonce = xor(xor(actualPrivateKey, regeneratedSecret), sha3(data.privKey))
+        var response = await post(`${config.torusRecovererHost}/get`, {
+          verifier_id: verifierId,
+          verifier: verifier
+        })
+        var recoverNonceStore = {}
+        if (response.message != '') {
+          recoverNonceStore = JSON.parse(response.message)
+        }
       })
       .catch(err => {
         log.error(err)
