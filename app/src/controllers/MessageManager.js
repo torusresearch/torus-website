@@ -1,8 +1,8 @@
-const EventEmitter = require('events')
-const ObservableStore = require('obs-store')
-const ethUtil = require('ethereumjs-util')
-const { errors: rpcErrors } = require('eth-json-rpc-errors')
-const createId = require('../utils/random-id').default
+import EventEmitter from 'events'
+import ObservableStore from 'obs-store'
+import { bufferToHex } from 'ethereumjs-util'
+import { ethErrors } from 'eth-json-rpc-errors'
+import createId from '../utils/random-id'
 
 /**
  * Represents, and contains data about, an 'eth_sign' type signature request. These are created when a signature for
@@ -86,9 +86,9 @@ export default class MessageManager extends EventEmitter {
           case 'signed':
             return resolve(data.rawSig)
           case 'rejected':
-            return reject(rpcErrors.eth.userRejectedRequest('MetaMask Message Signature: User denied message signature.'))
+            return reject(ethErrors.provider.userRejectedRequest('Torus Message Signature: User denied message signature.'))
           default:
-            return reject(new Error(`MetaMask Message Signature: Unknown problem: ${JSON.stringify(msgParams)}`))
+            return reject(new Error(`Torus Message Signature: Unknown problem: ${JSON.stringify(msgParams)}`))
         }
       })
     })
@@ -275,6 +275,6 @@ function normalizeMsgData(data) {
     return data
   } else {
     // data is unicode, convert to hex
-    return ethUtil.bufferToHex(Buffer.from(data, 'utf8'))
+    return bufferToHex(Buffer.from(data, 'utf8'))
   }
 }

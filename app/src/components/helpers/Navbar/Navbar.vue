@@ -38,20 +38,53 @@
         <account-menu></account-menu>
       </v-menu>
     </v-app-bar>
-    <v-system-bar v-show="successMsg" color="success">
-      <v-spacer />
-      <span class="font-weight-medium">{{ successMsg }}</span>
-      <v-spacer />
+    <v-system-bar
+      v-show="successMsg"
+      :color="`success ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
+      :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`"
+    >
+      <div class="container d-flex align-center">
+        <v-spacer />
+        <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`">$vuetify.icons.check_circle</v-icon>
+        <span class="caption">
+          {{ successMsg }}
+        </span>
+        <v-spacer />
+        <v-icon @click="clearMsg('SuccessMsg')" :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`">
+          $vuetify.icons.close
+        </v-icon>
+      </div>
     </v-system-bar>
-    <v-system-bar v-show="errorMsg" color="error">
-      <v-spacer />
-      <span class="font-weight-medium">{{ errorMsg }}</span>
-      <v-spacer />
+    <v-system-bar
+      v-show="errorMsg"
+      :color="`error ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
+      :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`"
+    >
+      <div class="container d-flex align-center">
+        <v-spacer />
+        <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`">$vuetify.icons.info</v-icon>
+        <span class="caption">
+          {{ errorMsg }}
+        </span>
+        <v-spacer />
+        <v-icon @click="clearMsg('SuccessMsg')" :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`">
+          $vuetify.icons.close
+        </v-icon>
+      </div>
     </v-system-bar>
-    <v-system-bar v-show="lrcMsg" :color="bannerColor" class="info">
-      <v-spacer />
-      <span class="font-weight-medium">{{ lrcMsg }}</span>
-      <v-spacer />
+    <v-system-bar
+      v-show="lrcMsg"
+      :color="`warning ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
+      :class="`${$vuetify.theme.dark ? 'white--text' : 'warning--text text--darken-1'}`"
+    >
+      <div class="container d-flex align-center">
+        <v-spacer />
+        <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'warning--text text--darken-1'}`">$vuetify.icons.info</v-icon>
+        <span class="caption">
+          {{ lrcMsg }}
+        </span>
+        <v-spacer />
+      </div>
     </v-system-bar>
 
     <v-navigation-drawer v-model="drawer" disable-resize-watcher app right :width="$vuetify.breakpoint.xsOnly ? '80%' : ''">
@@ -75,6 +108,11 @@ export default {
       drawer: false,
       selectedItem: 'home',
       TORUS: TORUS
+    }
+  },
+  methods: {
+    clearMsg(statusMsg) {
+      this.$store.commit(`set${statusMsg}`, '')
     }
   },
   computed: {

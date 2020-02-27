@@ -7,7 +7,7 @@ import setupMultiplex from './utils/setupMultiplex'
 import config from './config'
 import onloadTorus from './onload'
 import { post } from './utils/httpHelpers'
-import { selectChainId } from './utils/utils'
+import { selectChainId, fakeStream } from './utils/utils'
 
 // Make this a class. Use ES6
 class TorusExtended extends Torus {
@@ -23,7 +23,7 @@ class TorusExtended extends Torus {
   }
   updateStaticData(payload) {
     log.info('STATIC DATA:', payload)
-    var publicConfigOutStream = this.metamaskMux.getStream('publicConfig')
+    var publicConfigOutStream = (this.metamaskMux && this.metamaskMux.getStream('publicConfig')) || fakeStream
     // JSON.stringify is used here even though the stream is in object mode
     // because it is parsed in the dapp context, this behavior emulates nonobject mode
     // for compatibility reasons when using pump

@@ -1,6 +1,6 @@
-const EthQuery = require('ethjs-query')
-const assert = require('assert')
-const Mutex = require('await-semaphore').Mutex
+import EthQuery from 'ethjs-query'
+import assert from 'assert'
+import { Mutex } from 'await-semaphore'
 /**
   @param opts {Object}
     @param {Object} opts.provider a ethereum provider
