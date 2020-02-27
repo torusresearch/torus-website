@@ -93,6 +93,27 @@ export const patch = (url = '', data = {}, opts = {}) => {
   })
 }
 
+export const put = (url = '', data = {}, opts = {}) => {
+  const defaultOptions = {
+    mode: 'cors',
+    cache: 'no-cache',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+    },
+    body: JSON.stringify(data)
+  }
+  const options = {
+    ...defaultOptions,
+    ...opts,
+    ...{ method: 'PUT' }
+  }
+  return fetch(url, options).then(response => {
+    if (response.ok) {
+      return response.json()
+    } else throw new Error('Could not connect', response)
+  })
+}
+
 export const generateJsonRPCObject = (method, params) => {
   return {
     jsonrpc: '2.0',
