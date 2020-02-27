@@ -825,7 +825,7 @@ export default {
         const message = response[1]
         var actualPrivateKey = state.wallet[state.selectedAddress]
         var regeneratedSecret = state.regeneratedSecrets[state.selectedAddress]
-        // create r2
+        // create r2 and submit to recoveryStore
         var recoveryNonce = xor(xor(actualPrivateKey, regeneratedSecret), sha3(data.privKey))
         var response = await post(`${config.torusRecovererHost}/get`, {
           verifier_id: verifierId,
@@ -835,6 +835,12 @@ export default {
         if (response.message != '') {
           recoverNonceStore = JSON.parse(response.message)
         }
+        recoverNonceStore[verifier][verifierId] = recoveryNonce
+        await post(`${config.torusRecovererHost}/get`, {
+          verifier_id: verifierId,
+          verifier: verifier,
+          data: JSON.stringify(recoverNonceStore)
+        })
       })
       .catch(err => {
         log.error(err)
