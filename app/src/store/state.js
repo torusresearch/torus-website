@@ -27,7 +27,8 @@ const initialState = {
   unapprovedTypedMessages: {},
   unapprovedPersonalMsgs: {},
   unapprovedMsgs: {},
-  regeneratedSecrets: {},
+  // TODO (SHUBHAM): idealy regeneratedSecrets should be ported into wallet when merged with SCWs
+  regeneratedSecrets: {}, // priv key thats regenerated from nodes, will be different from priv key in case of torusLogin/encrypted key
   // preferences
   selectedAddress: '',
   jwtToken: '',

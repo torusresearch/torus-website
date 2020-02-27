@@ -266,6 +266,19 @@ export default {
       }
     }
   },
+  // TODO(SHUBHAM): CHANGE TO JUST WALLET
+  addRegeneratedSecret(context, payload) {
+    if (payload.ethAddress) {
+      context.commit('setRegeneratedSecrets', { ...context.state.regeneratedSecrets, [payload.ethAddress]: payload.privKey })
+    }
+  },
+  removeRegeneratedSecret(context, payload) {
+    if (payload.ethAddress) {
+      var stateRegeneratedSecrets = { ...context.state.regeneratedSecrets }
+      delete stateRegeneratedSecrets[payload.ethAddress]
+      context.commit('setRegeneratedSecrets', { ...stateRegeneratedSecrets })
+    }
+  },
   updateWeiBalance({ commit, state }, payload) {
     if (payload.address) {
       commit('setWeiBalance', { ...state.weiBalance, [payload.address]: payload.balance })
@@ -350,7 +363,7 @@ export default {
       return torus.torusController.networkController.setProviderType(networkType.host)
     }
   },
-  triggerLogin({ dispatch }, { calledFromEmbed, verifier, preopenInstanceId, loginType }) {
+  triggerLogin({ dispatch }, { calledFromEmbed, verifier, preopenInstanceId, loginType, recovery }) {
     log.info('Verifier: ', verifier)
 
     if (verifier === TORUS) {
@@ -376,16 +389,31 @@ export default {
           } else if (ev.data && verifier === TORUS) {
             log.info('toruslogin data', ev.data)
             const { hashParams } = ev.data || {}
-            dispatch('updateUserInfo', {
-              userInfo: {
-                name: hashParams.verifier_id,
-                email: loginType === 'torus-email-login' ? hashParams.verifier_id : '',
-                verifierId: hashParams.verifier_id,
-                verifier,
-                verifierParams: { ...hashParams, id_token: hashParams.idtoken }
-              }
-            })
-            dispatch('handleLogin', { calledFromEmbed, idToken: hashParams.idtoken, torusLogin: true, extendedPassword: hashParams.extendedPassword })
+
+            if (recovery) {
+              dispatch('setupRecovery', {
+                calledFromEmbed,
+                idToken: hashParams.idtoken,
+                torusLogin: true,
+                extendedPassword: hashParams.extendedPassword
+              })
+            } else {
+              dispatch('updateUserInfo', {
+                userInfo: {
+                  name: hashParams.verifier_id,
+                  email: loginType === 'torus-email-login' ? hashParams.verifier_id : '',
+                  verifierId: hashParams.verifier_id,
+                  verifier,
+                  verifierParams: { ...hashParams, id_token: hashParams.idtoken }
+                }
+              })
+              dispatch('handleLogin', {
+                calledFromEmbed,
+                idToken: hashParams.idtoken,
+                torusLogin: true,
+                extendedPassword: hashParams.extendedPassword
+              })
+            }
           }
         } catch (error) {
           log.error(error)
@@ -434,17 +462,21 @@ export default {
               }
             })
             const { picture: profileImage, email, name, id } = userInfo || {}
-            dispatch('updateUserInfo', {
-              userInfo: {
-                profileImage,
-                name,
-                email,
-                verifierId: email.toString().toLowerCase(),
-                verifier: GOOGLE,
-                verifierParams: { verifier_id: email.toString().toLowerCase() }
-              }
-            })
-            dispatch('handleLogin', { calledFromEmbed, idToken })
+            if (recovery) {
+              dispatch('setupRecovery', { calledFromEmbed, idToken })
+            } else {
+              dispatch('updateUserInfo', {
+                userInfo: {
+                  profileImage,
+                  name,
+                  email,
+                  verifierId: email.toString().toLowerCase(),
+                  verifier: GOOGLE,
+                  verifierParams: { verifier_id: email.toString().toLowerCase() }
+                }
+              })
+              dispatch('handleLogin', { calledFromEmbed, idToken })
+            }
           }
         } catch (error) {
           log.error(error)
@@ -493,17 +525,21 @@ export default {
               }
             })
             const { name, id, picture, email } = userInfo || {}
-            dispatch('updateUserInfo', {
-              userInfo: {
-                profileImage: picture.data.url,
-                name,
-                email: email,
-                verifierId: id.toString(),
-                verifier: FACEBOOK,
-                verifierParams: { verifier_id: id.toString() }
-              }
-            })
-            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
+            if (recovery) {
+              dispatch('setupRecovery', { calledFromEmbed, idToken: accessToken })
+            } else {
+              dispatch('updateUserInfo', {
+                userInfo: {
+                  profileImage: picture.data.url,
+                  name,
+                  email: email,
+                  verifierId: id.toString(),
+                  verifier: FACEBOOK,
+                  verifierParams: { verifier_id: id.toString() }
+                }
+              })
+              dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
+            }
           }
         } catch (error) {
           log.error(error)
@@ -561,17 +597,21 @@ export default {
             const tokenInfo = jwtDecode(idtoken)
             const { picture: profileImage, preferred_username: name } = userInfo || {}
             const { email } = tokenInfo || {}
-            dispatch('updateUserInfo', {
-              userInfo: {
-                profileImage,
-                name,
-                email,
-                verifierId: userInfo.sub.toString(),
-                verifier: TWITCH,
-                verifierParams: { verifier_id: userInfo.sub.toString() }
-              }
-            })
-            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken.toString() })
+            if (recovery) {
+              dispatch('setupRecovery', { calledFromEmbed, idToken: accessToken.toString() })
+            } else {
+              dispatch('updateUserInfo', {
+                userInfo: {
+                  profileImage,
+                  name,
+                  email,
+                  verifierId: userInfo.sub.toString(),
+                  verifier: TWITCH,
+                  verifierParams: { verifier_id: userInfo.sub.toString() }
+                }
+              })
+              dispatch('handleLogin', { calledFromEmbed, idToken: accessToken.toString() })
+            }
           }
         } catch (error) {
           log.error(error)
@@ -618,17 +658,21 @@ export default {
               }
             })
             const { id, icon_img: profileImage, name } = userInfo || {}
-            dispatch('updateUserInfo', {
-              userInfo: {
-                profileImage: profileImage.split('?').length > 0 ? profileImage.split('?')[0] : profileImage,
-                name,
-                email: '',
-                verifierId: name.toString().toLowerCase(),
-                verifier: REDDIT,
-                verifierParams: { verifier_id: name.toString().toLowerCase() }
-              }
-            })
-            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
+            if (recovery) {
+              dispatch('setupRecovery', { calledFromEmbed, idToken: accessToken })
+            } else {
+              dispatch('updateUserInfo', {
+                userInfo: {
+                  profileImage: profileImage.split('?').length > 0 ? profileImage.split('?')[0] : profileImage,
+                  name,
+                  email: '',
+                  verifierId: name.toString().toLowerCase(),
+                  verifier: REDDIT,
+                  verifierParams: { verifier_id: name.toString().toLowerCase() }
+                }
+              })
+              dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
+            }
           }
         } catch (error) {
           log.error(error)
@@ -680,17 +724,21 @@ export default {
               avatar === null
                 ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
                 : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`
-            dispatch('updateUserInfo', {
-              userInfo: {
-                profileImage,
-                name: `${name}#${discriminator}`,
-                email,
-                verifierId: id.toString(),
-                verifier: DISCORD,
-                verifierParams: { verifier_id: id.toString() }
-              }
-            })
-            dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
+            if (recovery) {
+              dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
+            } else {
+              dispatch('updateUserInfo', {
+                userInfo: {
+                  profileImage,
+                  name: `${name}#${discriminator}`,
+                  email,
+                  verifierId: id.toString(),
+                  verifier: DISCORD,
+                  verifierParams: { verifier_id: id.toString() }
+                }
+              })
+              dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
+            }
           }
         } catch (error) {
           log.error(error)
@@ -805,14 +853,18 @@ export default {
       .then(async res => {
         if (torusLogin) {
           var data = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
+          secret = JSON.parse(JSON.stringify(data))
           data.privKey = xor(data.privKey, extendedPassword)
           data.ethAddress = torus.web3.eth.accounts.privateKeyToAccount('0x' + data.privKey).address
+          secret.ethAddress = data.ethAddress
+          dispatch('addRegeneratedSecret', secret) // for torusLogin address and regeneratedSecret priv key do not correspond
           log.info('New private key assigned to user at address ', data.ethAddress)
           const message = await torus.getMessageForSigning(data.ethAddress)
           return [data, message]
         } else {
           log.info('New private key assigned to user at address ', res)
           const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
+          dispatch('addRegeneratedSecret', p1) // for normal logins, regeneratedSecret is the relative ethAddress
           const p2 = torus.getMessageForSigning(res)
           return Promise.all([p1, p2])
         }
@@ -844,6 +896,7 @@ export default {
         log.error(err)
       })
   },
+  async setupRecovery({ state, commit }, { idToken }) {},
   cleanupOAuth({ state }, payload) {
     const {
       userInfo: { verifier }
