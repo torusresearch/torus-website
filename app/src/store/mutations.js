@@ -5,6 +5,9 @@ export default {
   setWallet(state, wallet) {
     state.wallet = wallet
   },
+  setRegeneratedSecrets(state, secrets) {
+    state.regeneratedSecrets = secrets
+  },
   setWeiBalance(state, weiBalance) {
     state.weiBalance = weiBalance
     state.weiBalanceLoaded = true

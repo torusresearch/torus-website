@@ -27,6 +27,7 @@ const initialState = {
   unapprovedTypedMessages: {},
   unapprovedPersonalMsgs: {},
   unapprovedMsgs: {},
+  regeneratedSecrets: {},
   // preferences
   selectedAddress: '',
   jwtToken: '',
