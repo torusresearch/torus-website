@@ -1,5 +1,5 @@
-// request permission on page load
-const log = require('loglevel')
+import log from 'loglevel'
+import { isMain } from './utils'
 
 function initNotifications() {
   document.addEventListener('DOMContentLoaded', function() {
@@ -12,25 +12,34 @@ function notifyUser(url) {
     log.info('Desktop notifications not available')
     return
   }
+  if (!isMain && Notification.permission !== 'granted') return
+  if (Notification.permission === 'granted') {
+    notifyUrl(url)
+    return
+  }
   Notification.requestPermission().then(result => {
     // do sth
     if (result !== 'granted') {
       return
     }
-    navigator.serviceWorker.getRegistration().then(registration => {
-      registration &&
-        registration.showNotification('Sent Transaction', {
-          body: 'Check Tx Status',
-          icon: 'favicon.png',
-          actions: [{ action: 'close', title: 'Close Notification', icon: 'img/icons/close.svg' }],
-          vibrate: [100, 50, 100],
-          tag: 'transaction-status',
-          data: {
-            dateOfArrival: Date.now(),
-            url: url
-          }
-        })
-    })
+    notifyUrl(url)
+  })
+}
+
+function notifyUrl(url) {
+  navigator.serviceWorker.getRegistration().then(registration => {
+    registration &&
+      registration.showNotification('Sent Transaction', {
+        body: 'Check Tx Status',
+        icon: 'favicon.png',
+        actions: [{ action: 'close', title: 'Close Notification', icon: 'img/icons/close.svg' }],
+        vibrate: [100, 50, 100],
+        tag: 'transaction-status',
+        data: {
+          dateOfArrival: Date.now(),
+          url: url
+        }
+      })
   })
 }
 
