@@ -1,7 +1,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import config from '../config'
-import { toChecksumAddress } from 'web3-utils'
+import { toChecksumAddress, sha3 } from 'web3-utils'
 import torus from '../torus'
 import {
   RPC,
@@ -896,7 +896,47 @@ export default {
         log.error(err)
       })
   },
-  async setupRecovery({ state, commit }, { idToken }) {},
+  async setupRecovery({ state, dispatch }, { calledFromEmbed, idToken, torusLogin, extendedPassword }) {
+    console.log('setupRecovery called with', state)
+    dispatch('loginInProgress', true)
+    const {
+      userInfo: { verifierId, verifier, verifierParams }
+    } = state
+    let torusNodeEndpoints, torusIndexes
+    return torus.nodeDetailManager
+      .getNodeDetails()
+      .then(({ torusNodeEndpoints: torusNodeEndpointsVal, torusNodePub, torusIndexes: torusIndexesVal }) => {
+        torusNodeEndpoints = torusNodeEndpointsVal
+        torusIndexes = torusIndexesVal
+        return torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
+      })
+      .then(async res => {
+        if (torusLogin) {
+          var data = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
+          data.privKey = xor(data.privKey, extendedPassword)
+          data.ethAddress = torus.web3.eth.accounts.privateKeyToAccount('0x' + data.privKey).address
+          log.info('New private key assigned to user at address ', data.ethAddress)
+          const message = await torus.getMessageForSigning(data.ethAddress)
+          return [data, message]
+        } else {
+          log.info('New private key assigned to user at address ', res)
+          const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
+          const p2 = torus.getMessageForSigning(res)
+          return Promise.all([p1, p2])
+        }
+      })
+      .then(async response => {
+        const data = response[0]
+        const message = response[1]
+        var actualPrivateKey = state.wallet[state.selectedAddress]
+        var regeneratedSecret = state.regeneratedSecrets[state.selectedAddress]
+        // create r2
+        var recoveryNonce = xor(xor(actualPrivateKey, regeneratedSecret), sha3(data.privKey))
+      })
+      .catch(err => {
+        log.error(err)
+      })
+  },
   cleanupOAuth({ state }, payload) {
     const {
       userInfo: { verifier }
