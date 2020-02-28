@@ -47,7 +47,7 @@
           <v-spacer />
           <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`">$vuetify.icons.check_circle</v-icon>
           <span class="caption">
-            {{ upperCaseFirst(t(successMsg)) }}
+            {{ capitalizeFirstLetter(t(successMsg)) }}
           </span>
           <v-spacer />
           <v-icon @click="clearMsg('SuccessMsg')" :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`">
@@ -64,7 +64,7 @@
           <v-spacer />
           <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`">$vuetify.icons.info</v-icon>
           <span class="caption">
-            {{ upperCaseFirst(t(errorMsg)) }}
+            {{ capitalizeFirstLetter(t(errorMsg)) }}
           </span>
           <v-spacer />
           <v-icon @click="clearMsg('SuccessMsg')" :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`">
@@ -81,7 +81,7 @@
           <v-spacer />
           <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'warning--text text--darken-1'}`">$vuetify.icons.info</v-icon>
           <span class="caption">
-            {{ upperCaseFirst(t(lrcMsg)) }}
+            {{ capitalizeFirstLetter(t(lrcMsg)) }}
           </span>
           <v-spacer />
         </div>
@@ -97,6 +97,7 @@
 <script>
 import AccountMenu from '../../WalletAccount/AccountMenu'
 import LanguageSelector from '../LanguageSelector'
+import { capitalizeFirstLetter } from '../../../utils/utils'
 
 export default {
   components: {
@@ -110,11 +111,9 @@ export default {
     }
   },
   methods: {
+    capitalizeFirstLetter: capitalizeFirstLetter,
     clearMsg(statusMsg) {
       this.$store.commit(`set${statusMsg}`, '')
-    },
-    upperCaseFirst(message) {
-      return message.charAt(0).toUpperCase() + message.substring(1)
     }
   },
   computed: {
