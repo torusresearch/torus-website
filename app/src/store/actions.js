@@ -776,5 +776,11 @@ export default {
     } catch (error) {
       log.error('Failed to rehydrate', error)
     }
+  },
+  setSuccessMessage(context, payload) {
+    prefsController.handleSuccess(payload)
+  },
+  setErrorMessage(context, payload) {
+    prefsController.handleError(payload)
   }
 }

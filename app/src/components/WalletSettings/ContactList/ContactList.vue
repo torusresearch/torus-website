@@ -18,7 +18,7 @@
                 </v-list-item-content>
                 <v-list-item-action>
                   <v-btn class="delete-btn" color="text_2" icon small @click="deleteContact(contact.id)" :aria-label="`Delete ${contact.name}`">
-                    <v-icon size="10">$vuetify.icons.close</v-icon>
+                    <v-icon>$vuetify.icons.close</v-icon>
                   </v-btn>
                 </v-list-item-action>
               </v-list-item>

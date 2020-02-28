@@ -149,10 +149,10 @@ class PreferencesController {
     if (payload === this.store.getState().theme) return
     try {
       const resp = await patch(`${config.api}/user/theme`, { theme: payload }, this.headers)
-      this.handleSuccess('successfully updated theme' || (resp && resp.data) || resp)
+      this.handleSuccess('navBar.snackSuccessTheme' || (resp && resp.data) || resp)
       this.store.updateState({ theme: payload })
     } catch (error) {
-      this.handleError('unable to update theme')
+      this.handleError('navBar.snackFailTheme')
     }
   }
 
@@ -161,7 +161,7 @@ class PreferencesController {
       const response = await post(`${config.api}/permissions`, payload, this.headers)
       log.info('successfully set permissions', response)
     } catch (error) {
-      log.error('unable to patch permissions info', error)
+      log.error('unable to set permissions', error)
     }
   }
 
@@ -170,9 +170,9 @@ class PreferencesController {
     try {
       await patch(`${config.api}/user/locale`, { locale: payload }, this.headers)
       this.store.updateState({ locale: payload })
-      this.handleSuccess('successfully updated locale')
+      this.handleSuccess('navBar.snackSuccessLocale')
     } catch (error) {
-      this.handleError('unable to update locale')
+      this.handleError('navBar.snackFailLocale')
     }
   }
 
@@ -181,18 +181,18 @@ class PreferencesController {
     try {
       await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers)
       this.store.updateState({ selectedCurrency: payload.selectedCurrency })
-      this.handleSuccess('successfully patched currency info')
+      this.handleSuccess('navBar.snackSuccessCurrency')
     } catch (error) {
-      this.handleError('unable to patch currency info')
+      this.handleError('navBar.snackFailCurrency')
     }
   }
 
   async setVerifier(verifier, verifierId) {
     try {
       await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers)
-      log.info('successfully patched', response)
+      log.info('successfully updated verifier info', response)
     } catch (error) {
-      log.error('unable to patch verifier info', error)
+      log.error('unable to update verifier info', error)
     }
   }
 
@@ -219,9 +219,9 @@ class PreferencesController {
     try {
       const response = await post(`${config.api}/contact`, payload, this.headers)
       this.store.updateState({ contacts: [...this.store.getState().contacts, response.data] })
-      this.handleSuccess('successfully added contact')
+      this.handleSuccess('navBar.snackSuccessContactAdd')
     } catch (error) {
-      this.handleError('Unable to add contact')
+      this.handleError('navBar.snackFailContactAdd')
     }
   }
 
@@ -230,9 +230,9 @@ class PreferencesController {
       const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers)
       const finalContacts = this.store.getState().contacts.filter(contact => contact.id !== response.data.id)
       this.store.updateState({ contacts: finalContacts })
-      this.handleSuccess('Successfully deleted contact')
+      this.handleSuccess('navBar.snackSuccessContactDelete')
     } catch (error) {
-      this.handleError('Unable to delete contact')
+      this.handleError('navBar.snackFailContactDelete')
     }
   }
 
