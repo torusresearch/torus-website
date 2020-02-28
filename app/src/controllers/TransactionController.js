@@ -172,17 +172,21 @@ class TransactionController extends EventEmitter {
 
     // listen for tx completion (success, fail)
     return new Promise((resolve, reject) => {
-      this.txStateManager.once(`${initialTxMeta.id}:finished`, finishedTxMeta => {
-        // log.info(finishedTxMeta)
-        switch (finishedTxMeta.status) {
-          case 'submitted':
-            return resolve(finishedTxMeta.hash)
-          case 'rejected':
-            return reject(cleanErrorStack(ethErrors.provider.userRejectedRequest('Torus Tx Signature: User denied transaction signature.')))
-          case 'failed':
-            return reject(cleanErrorStack(ethErrors.rpc.internal(finishedTxMeta.err.message)))
-          default:
-            return reject(cleanErrorStack(ethErrors.rpc.internal(`Torus Tx Signature: Unknown problem: ${JSON.stringify(finishedTxMeta.txParams)}`)))
+      this.txStateManager.on(`${initialTxMeta.id}:finished`, finishedTxMeta => {
+        log.info(finishedTxMeta.hash)
+        if (finishedTxMeta.hash.indexOf('PENDING_') == -1) {
+          switch (finishedTxMeta.status) {
+            case 'submitted':
+              return resolve(finishedTxMeta.hash)
+            case 'rejected':
+              return reject(cleanErrorStack(ethErrors.provider.userRejectedRequest('Torus Tx Signature: User denied transaction signature.')))
+            case 'failed':
+              return reject(cleanErrorStack(ethErrors.rpc.internal(finishedTxMeta.err.message)))
+            default:
+              return reject(
+                cleanErrorStack(ethErrors.rpc.internal(`Torus Tx Signature: Unknown problem: ${JSON.stringify(finishedTxMeta.txParams)}`))
+              )
+          }
         }
       })
     })
@@ -429,7 +433,8 @@ class TransactionController extends EventEmitter {
 
       // sign transaction
       if (txMeta.relayer) {
-        await this.scwController.signTransaction(txId, this.txStateManager, this.getChainId())
+        const newHash = await this.scwController.signTransaction(txId, this.txStateManager, this.getChainId())
+        log.info('awaiting done for transaction controller', newHash)
         // await this.scwController.publishTransaction()
         // this.txStateManager.setTxStatusSigned(txId)
         //this.setTxHash(txId, 'PENDING_'.concat(txMeta.id))
