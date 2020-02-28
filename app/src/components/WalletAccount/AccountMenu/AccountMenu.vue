@@ -3,7 +3,7 @@
     <v-list class="pb-0 mb-2">
       <v-list-item>
         <v-list-item-avatar class="ml-2 mr-3">
-          <img :src="profileImage" class="align-start" :alt="userName" />
+          <img :src="profileImage" class="align-start" :alt="userName" onerror="this.src = '/images/person.jpeg';" />
         </v-list-item-avatar>
         <v-list-item-title>
           <div class="font-weight-bold subtitle-1 d-flex">
