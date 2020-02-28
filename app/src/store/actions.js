@@ -12,11 +12,10 @@ import {
   GOOGLE,
   TWITCH,
   REDDIT,
-  DISCORD,
-  THEME_LIGHT_BLUE_NAME
+  DISCORD
 } from '../utils/enums'
-import { broadcastChannelOptions, storageAvailable } from '../utils/utils'
-import { post, get, patch, remove } from '../utils/httpHelpers.js'
+import { broadcastChannelOptions, fakeStream, getIFrameOriginObj } from '../utils/utils'
+import { post, get, remove } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import initialState from './state'
 import {
@@ -27,83 +26,74 @@ import {
   transactionControllerHandler,
   messageManagerHandler,
   detectTokensControllerHandler,
-  tokenRatesControllerHandler
+  tokenRatesControllerHandler,
+  prefsControllerHandler,
+  successMsgHandler,
+  errorMsgHandler,
+  metadataHandler
 } from './controllerSubscriptions'
-import vuetify from '../plugins/vuetify'
-import themes from '../plugins/themes'
 import PopupHandler from '../utils/PopupHandler'
 
 const accountImporter = require('../utils/accountImporter')
 
 const baseRoute = config.baseRoute
+const { torusController } = torus
+const {
+  accountTracker,
+  txController,
+  assetController,
+  typedMessageManager,
+  personalMessageManager,
+  messageManager,
+  detectTokensController,
+  tokenRatesController,
+  prefsController,
+  networkController,
+  assetDetectionController
+} = torusController
 
 // stream to send logged in status
-const statusStream = torus.communicationMux.getStream('status')
-const oauthStream = torus.communicationMux.getStream('oauth')
-const userInfoStream = torus.communicationMux.getStream('user_info')
-const providerChangeStream = torus.communicationMux.getStream('provider_change')
+const statusStream = (torus.communicationMux && torus.communicationMux.getStream('status')) || fakeStream
+const oauthStream = (torus.communicationMux && torus.communicationMux.getStream('oauth')) || fakeStream
+const userInfoStream = (torus.communicationMux && torus.communicationMux.getStream('user_info')) || fakeStream
+const providerChangeStream = (torus.communicationMux && torus.communicationMux.getStream('provider_change')) || fakeStream
+
+// Have to do this here cause embed calls on init
+prefsController.metadataStore.subscribe(metadataHandler)
 
 export default {
-  logOut({ commit, dispatch }, payload) {
-    commit('logOut', initialState)
-    // dispatch('setTheme', THEME_LIGHT_BLUE_NAME)
-    if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
+  logOut({ commit, state }, _) {
+    commit('logOut', { ...initialState, networkType: state.networkType, networkId: state.networkId })
+    // commit('setTheme', THEME_LIGHT_BLUE_NAME)
+    // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
     statusStream.write({ loggedIn: false })
-    torus.torusController.accountTracker.store.unsubscribe(accountTrackerHandler)
-    torus.torusController.txController.store.unsubscribe(transactionControllerHandler)
-    torus.torusController.assetController.store.unsubscribe(assetControllerHandler)
-    torus.torusController.typedMessageManager.store.unsubscribe(typedMessageManagerHandler)
-    torus.torusController.personalMessageManager.store.unsubscribe(personalMessageManagerHandler)
-    torus.torusController.messageManager.store.unsubscribe(messageManagerHandler)
-    torus.torusController.detectTokensController.detectedTokensStore.unsubscribe(detectTokensControllerHandler)
-    torus.torusController.tokenRatesController.store.unsubscribe(tokenRatesControllerHandler)
+    accountTracker.store.unsubscribe(accountTrackerHandler)
+    txController.store.unsubscribe(transactionControllerHandler)
+    assetController.store.unsubscribe(assetControllerHandler)
+    typedMessageManager.store.unsubscribe(typedMessageManagerHandler)
+    personalMessageManager.store.unsubscribe(personalMessageManagerHandler)
+    messageManager.store.unsubscribe(messageManagerHandler)
+    detectTokensController.detectedTokensStore.unsubscribe(detectTokensControllerHandler)
+    tokenRatesController.store.unsubscribe(tokenRatesControllerHandler)
+    prefsController.store.unsubscribe(prefsControllerHandler)
+    prefsController.successStore.unsubscribe(successMsgHandler)
+    prefsController.errorStore.unsubscribe(errorMsgHandler)
     torus.updateStaticData({ isUnlocked: false })
   },
-  loginInProgress(context, payload) {
-    context.commit('setLoginInProgress', payload)
+  setSelectedCurrency({ commit }, payload) {
+    torusController.setCurrentCurrency(payload, (err, data) => {
+      if (err) log.error('currency fetch failed')
+      else commit('setCurrencyData', data)
+    })
   },
-  setSelectedCurrency({ commit, state }, payload) {
-    commit('setCurrency', payload.selectedCurrency)
-    if (payload.selectedCurrency !== 'ETH') {
-      torus.torusController.setCurrentCurrency(payload.selectedCurrency.toLowerCase(), function(err, data) {
-        if (err) log.error('currency fetch failed')
-        commit('setCurrencyData', data)
-      })
-    }
-    if (state.jwtToken !== '' && payload.origin && payload.origin !== 'store') {
-      patch(
-        `${config.api}/user`,
-        {
-          default_currency: payload.selectedCurrency
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${state.jwtToken}`,
-            'Content-Type': 'application/json; charset=utf-8'
-          }
-        }
-      )
-        .then(response => {
-          log.info('successfully patched', response)
-        })
-        .catch(err => {
-          log.error(err, 'unable to patch currency info')
-        })
-    }
-  },
-  async forceFetchTokens({ state }, payload) {
-    torus.torusController.detectTokensController.refreshTokenBalances()
-    torus.torusController.assetDetectionController.restartAssetDetection()
+  async forceFetchTokens(_, payload) {
+    detectTokensController.refreshTokenBalances()
+    assetDetectionController.restartAssetDetection()
     try {
-      const response = await get(`${config.api}/tokenbalances`, {
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8',
-          Authorization: `Bearer ${state.jwtToken}`
-        }
-      })
+      const response = await torusController.prefsController.getEtherScanTokenBalances()
       const { data } = response
       data.forEach(obj => {
-        torus.torusController.detectTokensController.detectEtherscanTokenBalance(toChecksumAddress(obj.contractAddress), {
+        detectTokensController.detectEtherscanTokenBalance(toChecksumAddress(obj.contractAddress), {
           decimals: obj.tokenDecimal,
           erc20: true,
           logo: 'eth.svg',
@@ -116,7 +106,7 @@ export default {
       log.error('etherscan balance fetch failed')
     }
   },
-  showProviderChangePopup({ dispatch }, payload) {
+  showProviderChangePopup({ dispatch, state }, payload) {
     const { override, preopenInstanceId } = payload
     const handleSuccess = () => {
       setTimeout(() => {
@@ -152,41 +142,40 @@ export default {
       url: finalUrl,
       preopenInstanceId,
       target: '_blank',
-      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=600,width=500'
+      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500'
     })
     bc.onmessage = async ev => {
-      if (ev.data === 'popup-loaded') {
+      const { type = '', approve = false } = ev.data
+      if (type === 'popup-loaded') {
         await bc.postMessage({
           data: {
-            origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-            payload: payload
+            origin: getIFrameOriginObj(),
+            payload: payload,
+            currentNetwork: state.networkType
           }
         })
-      } else if (ev.data && ev.data.type === 'confirm-provider-change' && ev.data.approve) {
-        log.info('Provider change approved', ev.data.payload)
-        dispatch('setProviderType', ev.data.payload)
-          .then(() => {
+      } else if (type === 'provider-change-result') {
+        try {
+          log.info('Provider change', approve)
+          if (approve) {
+            await dispatch('setProviderType', payload)
             handleSuccess()
-            bc.close()
-            providerChangeWindow.close()
-          })
-          .catch(err => {
-            handleDeny(err)
-            bc.close()
-            providerChangeWindow.close()
-          })
-      } else if (ev.data && ev.data.type === 'deny-provider-change') {
-        log.info('Provider change denied')
-        handleDeny(new Error('user denied provider change request'))
-        bc.close()
-        providerChangeWindow.close()
+          } else {
+            handleDeny('user denied provider change request')
+          }
+        } catch (error) {
+          handleDeny('Internal error occured')
+        } finally {
+          bc.close()
+          providerChangeWindow.close()
+        }
       }
     }
 
     providerChangeWindow.open()
     providerChangeWindow.once('close', () => {
       bc.close()
-      handleDeny(new Error('user denied provider change request'))
+      handleDeny('user denied provider change request')
     })
   },
   showUserInfoRequestPopup({ dispatch, state }, payload) {
@@ -198,15 +187,13 @@ export default {
       url: finalUrl,
       preopenInstanceId,
       target: '_blank',
-      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=600,width=500'
+      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500'
     })
 
     const handleDeny = () => {
       log.info('User Info Request denied')
       dispatch('updateUserInfoAccess', { approved: false })
       userInfoStream.write({ name: 'user_info_response', data: { payload: {}, approved: false } })
-      bc.close()
-      userInfoRequestWindow.close()
     }
     const handleSuccess = () => {
       log.info('User Info Request approved')
@@ -214,22 +201,28 @@ export default {
       const returnObj = JSON.parse(JSON.stringify(state.userInfo))
       delete returnObj.verifierParams
       userInfoStream.write({ name: 'user_info_response', data: { payload: returnObj, approved: true } })
-      bc.close()
-      userInfoRequestWindow.close()
     }
 
     bc.onmessage = async ev => {
-      if (ev.data === 'popup-loaded') {
+      const { type = '', approve = false } = ev.data
+      if (type === 'popup-loaded') {
         await bc.postMessage({
           data: {
-            origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-            payload: payload
+            origin: getIFrameOriginObj(),
+            payload: { ...payload, verifier: state.userInfo.verifier }
           }
         })
-      } else if (ev.data && ev.data.type === 'confirm-user-info-request' && ev.data.approve) {
-        handleSuccess()
-      } else if (ev.data && ev.data.type === 'deny-user-info-request') {
-        handleDeny()
+      } else if (type === 'user-info-request-result') {
+        try {
+          if (approve) handleSuccess()
+          else handleDeny()
+        } catch (error) {
+          log.error(error)
+          handleDeny()
+        } finally {
+          bc.close()
+          userInfoRequestWindow.close()
+        }
       }
     }
 
@@ -244,31 +237,6 @@ export default {
     walletWindow.open()
     walletWindow.window.blur()
     setTimeout(walletWindow.window.focus(), 0)
-  },
-  updateUserInfo(context, payload) {
-    context.commit('setUserInfo', payload.userInfo)
-  },
-  addWallet(context, payload) {
-    if (payload.ethAddress) {
-      context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
-    }
-  },
-  removeWallet(context, payload) {
-    if (payload.ethAddress) {
-      var stateWallet = { ...context.state.wallet }
-      delete stateWallet[payload.ethAddress]
-      context.commit('setWallet', { ...stateWallet })
-      if (context.state.weiBalance[payload.ethAddress]) {
-        var stateBalance = { ...context.state.weiBalance }
-        delete stateBalance[payload.ethAddress]
-        context.commit('setBalance', { ...stateBalance })
-      }
-    }
-  },
-  updateWeiBalance({ commit, state }, payload) {
-    if (payload.address) {
-      commit('setWeiBalance', { ...state.weiBalance, [payload.address]: payload.balance })
-    }
   },
   importAccount({ dispatch }, payload) {
     return new Promise((resolve, reject) => {
@@ -288,50 +256,28 @@ export default {
     return new Promise((resolve, reject) => {
       const { privKey } = payload
       const address = torus.generateAddressFromPrivKey(privKey)
-      torus.torusController.setSelectedAccount(address, { jwtToken: state.jwtToken })
+      torusController.setSelectedAccount(address, { jwtToken: state.jwtToken })
       dispatch('addWallet', { ethAddress: address, privKey: privKey })
       dispatch('updateSelectedAddress', { selectedAddress: address })
-      torus.torusController
+      torusController
         .addAccount(privKey, address)
-        .then(response => resolve(privKey))
+        .then(() => resolve(privKey))
         .catch(err => reject(err))
     })
+  },
+  addWallet(context, payload) {
+    if (payload.ethAddress) {
+      context.commit('setWallet', { ...context.state.wallet, [payload.ethAddress]: payload.privKey })
+    }
   },
   updateUserInfoAccess({ commit }, payload) {
     if (payload.approved) commit('setUserInfoAccess', USER_INFO_REQUEST_APPROVED)
     else commit('setUserInfoAccess', USER_INFO_REQUEST_REJECTED)
   },
-  updateTransactions({ commit }, payload) {
-    commit('setTransactions', payload.transactions)
-  },
-  updateTypedMessages({ commit }, payload) {
-    commit('setTypedMessages', payload.unapprovedTypedMessages)
-  },
-  updatePersonalMessages({ commit }, payload) {
-    commit('setPersonalMessages', payload.unapprovedPersonalMsgs)
-  },
-  updateMessages({ commit }, payload) {
-    commit('setMessages', payload.unapprovedMsgs)
-  },
-  updateAssets({ commit }, payload) {
-    const collectibles = payload.collectibleContracts.map(contract => {
-      contract.assets = payload.collectibles.filter(asset => {
-        return asset.address === contract.address
-      })
-      return contract
-    })
-    commit('setAssets', { [payload.selectedAddress]: collectibles })
-  },
-  updateTokenData({ commit, state }, payload) {
-    if (payload.tokenData) commit('setTokenData', { [payload.address]: payload.tokenData })
-  },
-  updateTokenRates({ commit }, payload) {
-    commit('setTokenRates', payload.tokenRates)
-  },
   updateSelectedAddress({ commit, state }, payload) {
     commit('setSelectedAddress', payload.selectedAddress)
     torus.updateStaticData({ selectedAddress: payload.selectedAddress })
-    torus.torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
+    torusController.setSelectedAccount(payload.selectedAddress, { jwtToken: state.jwtToken })
   },
   updateNetworkId(context, payload) {
     context.commit('setNetworkId', payload.networkId)
@@ -344,12 +290,12 @@ export default {
     }
     context.commit('setNetworkType', networkType)
     if (payload.type && payload.type === RPC) {
-      return torus.torusController.setCustomRpc(networkType.host, networkType.chainId, 'ETH', networkType.networkName)
+      return torusController.setCustomRpc(networkType.host, networkType.chainId, 'ETH', networkType.networkName)
     } else {
-      return torus.torusController.networkController.setProviderType(networkType.host)
+      return networkController.setProviderType(networkType.host)
     }
   },
-  triggerLogin({ dispatch }, { calledFromEmbed, verifier, preopenInstanceId }) {
+  triggerLogin({ dispatch, commit }, { calledFromEmbed, verifier, preopenInstanceId }) {
     log.info('Verifier: ', verifier)
 
     if (verifier === GOOGLE) {
@@ -363,9 +309,10 @@ export default {
       )
       const scope = 'profile email openid'
       const response_type = 'token id_token'
+      const prompt = 'consent select_account'
       const finalUrl =
         `https://accounts.google.com/o/oauth2/v2/auth?response_type=${response_type}&client_id=${config.GOOGLE_CLIENT_ID}` +
-        `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}`
+        `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}&prompt=${prompt}`
       const googleWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
@@ -385,16 +332,14 @@ export default {
                 Authorization: `Bearer ${accessToken}`
               }
             })
-            const { picture: profileImage, email, name, id } = userInfo || {}
-            dispatch('updateUserInfo', {
-              userInfo: {
-                profileImage,
-                name,
-                email,
-                verifierId: email.toString().toLowerCase(),
-                verifier: GOOGLE,
-                verifierParams: { verifier_id: email.toString().toLowerCase() }
-              }
+            const { picture: profileImage, email, name } = userInfo || {}
+            commit('setUserInfo', {
+              profileImage,
+              name,
+              email,
+              verifierId: email.toString().toLowerCase(),
+              verifier: GOOGLE,
+              verifierParams: { verifier_id: email.toString().toLowerCase() }
             })
             dispatch('handleLogin', { calledFromEmbed, idToken })
           }
@@ -445,15 +390,13 @@ export default {
               }
             })
             const { name, id, picture, email } = userInfo || {}
-            dispatch('updateUserInfo', {
-              userInfo: {
-                profileImage: picture.data.url,
-                name,
-                email: email,
-                verifierId: id.toString(),
-                verifier: FACEBOOK,
-                verifierParams: { verifier_id: id.toString() }
-              }
+            commit('setUserInfo', {
+              profileImage: picture.data.url,
+              name,
+              email: email,
+              verifierId: id.toString(),
+              verifier: FACEBOOK,
+              verifierParams: { verifier_id: id.toString() }
             })
             dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
           }
@@ -513,15 +456,13 @@ export default {
             const tokenInfo = jwtDecode(idtoken)
             const { picture: profileImage, preferred_username: name } = userInfo || {}
             const { email } = tokenInfo || {}
-            dispatch('updateUserInfo', {
-              userInfo: {
-                profileImage,
-                name,
-                email,
-                verifierId: userInfo.sub.toString(),
-                verifier: TWITCH,
-                verifierParams: { verifier_id: userInfo.sub.toString() }
-              }
+            commit('setUserInfo', {
+              profileImage,
+              name,
+              email,
+              verifierId: userInfo.sub.toString(),
+              verifier: TWITCH,
+              verifierParams: { verifier_id: userInfo.sub.toString() }
             })
             dispatch('handleLogin', { calledFromEmbed, idToken: accessToken.toString() })
           }
@@ -570,15 +511,13 @@ export default {
               }
             })
             const { id, icon_img: profileImage, name } = userInfo || {}
-            dispatch('updateUserInfo', {
-              userInfo: {
-                profileImage: profileImage.split('?').length > 0 ? profileImage.split('?')[0] : profileImage,
-                name,
-                email: '',
-                verifierId: name.toString().toLowerCase(),
-                verifier: REDDIT,
-                verifierParams: { verifier_id: name.toString().toLowerCase() }
-              }
+            commit('setUserInfo', {
+              profileImage: profileImage.split('?').length > 0 ? profileImage.split('?')[0] : profileImage,
+              name,
+              email: '',
+              verifierId: name.toString().toLowerCase(),
+              verifier: REDDIT,
+              verifierParams: { verifier_id: name.toString().toLowerCase() }
             })
             dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
           }
@@ -632,15 +571,13 @@ export default {
               avatar === null
                 ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
                 : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`
-            dispatch('updateUserInfo', {
-              userInfo: {
-                profileImage,
-                name: `${name}#${discriminator}`,
-                email,
-                verifierId: id.toString(),
-                verifier: DISCORD,
-                verifierParams: { verifier_id: id.toString() }
-              }
+            commit('setUserInfo', {
+              profileImage,
+              name: `${name}#${discriminator}`,
+              email,
+              verifierId: id.toString(),
+              verifier: DISCORD,
+              verifierParams: { verifier_id: id.toString() }
             })
             dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
           }
@@ -660,88 +597,29 @@ export default {
     }
   },
   subscribeToControllers(context, payload) {
-    torus.torusController.accountTracker.store.subscribe(accountTrackerHandler)
-    torus.torusController.txController.store.subscribe(transactionControllerHandler)
-    torus.torusController.assetController.store.subscribe(assetControllerHandler)
-    torus.torusController.typedMessageManager.store.subscribe(typedMessageManagerHandler)
-    torus.torusController.personalMessageManager.store.subscribe(personalMessageManagerHandler)
-    torus.torusController.messageManager.store.subscribe(messageManagerHandler)
-    torus.torusController.detectTokensController.detectedTokensStore.subscribe(detectTokensControllerHandler)
-    torus.torusController.tokenRatesController.store.subscribe(tokenRatesControllerHandler)
+    accountTracker.store.subscribe(accountTrackerHandler)
+    txController.store.subscribe(transactionControllerHandler)
+    assetController.store.subscribe(assetControllerHandler)
+    typedMessageManager.store.subscribe(typedMessageManagerHandler)
+    personalMessageManager.store.subscribe(personalMessageManagerHandler)
+    messageManager.store.subscribe(messageManagerHandler)
+    detectTokensController.detectedTokensStore.subscribe(detectTokensControllerHandler)
+    tokenRatesController.store.subscribe(tokenRatesControllerHandler)
+    prefsController.store.subscribe(prefsControllerHandler)
+    prefsController.successStore.subscribe(successMsgHandler)
+    prefsController.errorStore.subscribe(errorMsgHandler)
   },
   initTorusKeyring({ state, dispatch }, payload) {
-    return torus.torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
-  },
-  setBillboard({ commit, state }) {
-    get(`${config.api}/billboard`, {
-      headers: {
-        Authorization: `Bearer ${state.jwtToken}`
-      }
-    }).then(resp => {
-      const events = []
-      resp.data.forEach(event => {
-        if (events[event.callToActionLink] === undefined) events[event.callToActionLink] = {}
-        events[event.callToActionLink][event.locale] = event
-      })
-
-      if (events) commit('setBillboard', events)
-    })
-  },
-  setContacts({ commit, state }) {
-    get(`${config.api}/contact`, {
-      headers: {
-        Authorization: `Bearer ${state.jwtToken}`
-      }
-    }).then(resp => {
-      if (resp.data) commit('setContacts', resp.data)
-    })
+    return torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
   },
   addContact({ commit, state }, payload) {
-    return new Promise((resolve, reject) => {
-      post(`${config.api}/contact`, payload, {
-        headers: {
-          Authorization: `Bearer ${state.jwtToken}`,
-          'Content-Type': 'application/json; charset=utf-8'
-        }
-      })
-        .then(response => {
-          commit('addContacts', [response.data])
-          log.info('successfully added contact', response)
-          resolve(response)
-        })
-        .catch(err => {
-          log.error(err, 'unable to add contact')
-          reject('Unable to add contact')
-        })
-    })
+    prefsController.addContact(payload)
   },
   deleteContact({ commit, state }, payload) {
-    return new Promise((resolve, reject) => {
-      remove(
-        `${config.api}/contact/${payload}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${state.jwtToken}`
-          }
-        }
-      )
-        .then(response => {
-          const contactIndex = state.contacts.findIndex(contact => contact.id === response.data.id)
-          if (contactIndex !== -1) {
-            commit('deleteContact', contactIndex)
-            log.info('successfully deleted contact', response)
-            resolve(response)
-          }
-        })
-        .catch(err => {
-          log.error(err, 'unable to delete contact')
-          reject('Unable to delete contact')
-        })
-    })
+    return prefsController.deleteContact(payload)
   },
-  async handleLogin({ state, dispatch }, { calledFromEmbed, idToken }) {
-    dispatch('loginInProgress', true)
+  async handleLogin({ state, dispatch, commit }, { calledFromEmbed, idToken }) {
+    commit('setLoginInProgress', true)
     const {
       userInfo: { verifierId, verifier, verifierParams }
     } = state
@@ -769,7 +647,7 @@ export default {
           dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
         ])
         dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
-        dispatch('setBillboard')
+        prefsController.getBillboardContents()
         // continue enable function
         var ethAddress = data.ethAddress
         if (calledFromEmbed) {
@@ -778,7 +656,7 @@ export default {
           }, 50)
         }
         statusStream.write({ loggedIn: true, rehydrate: false, verifier: verifier })
-        dispatch('loginInProgress', false)
+        commit('setLoginInProgress', false)
         torus.updateStaticData({ isUnlocked: true })
         dispatch('cleanupOAuth', { idToken })
       })
@@ -796,24 +674,12 @@ export default {
         .then(resp => log.info(resp))
         .catch(err => log.error(err))
     } else if (verifier === DISCORD) {
-      post(
-        `${config.api}/revoke/discord`,
-        { token: idToken },
-        {
-          headers: {
-            Authorization: `Bearer ${state.jwtToken}`,
-            'Content-Type': 'application/json; charset=utf-8'
-          }
-        }
-      )
-        .then(resp => log.info(resp))
-        .catch(err => log.error(err))
+      prefsController.revokeDiscord(idToken)
     }
   },
   processAuthMessage({ commit, dispatch }, payload) {
     return new Promise(async (resolve, reject) => {
       try {
-        // make this a promise and resolve it to dispatch loginInProgress as false
         const { message, selectedAddress, calledFromEmbed } = payload
         const hashedMessage = torus.hashMessage(message)
         const signedMessage = await torus.torusController.keyringController.signMessage(selectedAddress, hashedMessage)
@@ -822,6 +688,7 @@ export default {
           signed_message: signedMessage
         })
         commit('setJwtToken', response.token)
+        prefsController.jwtToken = response.token
         if (response.token) {
           const decoded = jwtDecode(response.token)
           setTimeout(() => {
@@ -837,158 +704,38 @@ export default {
       }
     })
   },
-  storeUserLogin({ state }, payload) {
-    const { verifier, verifierId } = state.userInfo
-    let userOrigin = ''
-    if (payload && payload.calledFromEmbed) {
-      userOrigin = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
-    } else userOrigin = window.location.origin
-    if (!payload.rehydrate)
-      post(
-        `${config.api}/user/recordLogin`,
-        {
-          hostname: userOrigin,
-          verifier,
-          verifierId
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${state.jwtToken}`,
-            'Content-Type': 'application/json; charset=utf-8'
-          }
-        }
-      )
+  setUserTheme(context, payload) {
+    return prefsController.setUserTheme(payload)
   },
-  setTheme({ commit }, payload) {
-    commit('setTheme', payload)
-
-    // Update vuetify theme
-    const theme = themes[payload || THEME_LIGHT_BLUE_NAME]
-    vuetify.framework.theme.dark = theme.isDark
-    vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
-    // set theme to localStorage
-    localStorage.setItem('torus-theme', payload)
-  },
-  setUserTheme({ state, dispatch }, payload) {
-    return new Promise((resolve, reject) => {
-      patch(
-        `${config.api}/user/theme`,
-        {
-          theme: payload
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${state.jwtToken}`,
-            'Content-Type': 'application/json; charset=utf-8'
-          }
-        }
-      )
-        .then(response => {
-          dispatch('setTheme', payload)
-          log.info('successfully patched', response)
-          resolve(response)
-        })
-        .catch(err => {
-          log.error(err, 'unable to patch theme')
-          reject('Unable to update theme')
-        })
-    })
-  },
-  setLocale({ commit }, payload) {
-    commit('setLocale', payload)
-
-    vuetify.framework.lang.current = payload
-  },
-  setUserLocale({ state, dispatch }, payload) {
-    return new Promise((resolve, reject) => {
-      patch(
-        `${config.api}/user/locale`,
-        {
-          locale: payload
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${state.jwtToken}`,
-            'Content-Type': 'application/json; charset=utf-8'
-          }
-        }
-      )
-        .then(response => {
-          dispatch('setLocale', payload)
-          log.info('successfully patched', response)
-          resolve(response)
-        })
-        .catch(err => {
-          log.error(err, 'unable to patch locale')
-          reject('Unable to update locale')
-        })
-    })
-  },
-  setVerifier({ state }, payload) {
-    const { verifier, verifierId } = state.userInfo
-    patch(
-      `${config.api}/user/verifier`,
-      { verifier, verifierId },
-      {
-        headers: {
-          Authorization: `Bearer ${state.jwtToken}`,
-          'Content-Type': 'application/json; charset=utf-8'
-        }
-      }
-    )
-      .then(response => {
-        log.info('successfully patched', response)
-      })
-      .catch(err => {
-        log.error(err, 'unable to patch verifier info')
-      })
+  setUserLocale(context, payload) {
+    prefsController.setUserLocale(payload)
   },
   setUserInfoAction({ commit, dispatch, state }, payload) {
     return new Promise(async (resolve, reject) => {
       // Fixes loading theme for too long
-      dispatch('setTheme', state.theme)
-      const { token, calledFromEmbed, rehydrate } = payload
-      get(`${config.api}/user`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-        .then(user => {
+      commit('setTheme', state.theme)
+      const { calledFromEmbed, rehydrate, token } = payload
+      const { userInfo, selectedCurrency, theme, locale } = state
+      log.info(selectedCurrency)
+      const { verifier, verifierId } = userInfo
+      prefsController.jwtToken = token
+      prefsController.sync(
+        user => {
           if (user.data) {
-            const { transactions, contacts, default_currency, theme, locale, verifier, verifier_id } = user.data || {}
-            commit('setPastTransactions', transactions)
-            commit('setContacts', contacts)
-            dispatch('setTheme', theme)
+            const { default_currency } = user.data || {}
             dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
-            dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
-            if (locale !== '') dispatch('setLocale', locale)
-            if (!verifier || !verifier_id) dispatch('setVerifier')
+            prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })
             resolve()
           }
-        })
-        .catch(async error => {
-          const { userInfo, selectedCurrency, theme } = state
-          const { verifier, verifierId } = userInfo
-          await post(
-            `${config.api}/user`,
-            {
-              default_currency: selectedCurrency,
-              theme,
-              verifier,
-              verifierId
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json; charset=utf-8'
-              }
-            }
-          )
+        },
+        async () => {
+          await prefsController.createUser(selectedCurrency, theme, verifier, verifierId, locale)
           commit('setNewUser', true)
           dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
-          dispatch('storeUserLogin', { calledFromEmbed, rehydrate })
+          prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })
           resolve()
-        })
+        }
+      )
     })
   },
   async rehydrate({ state, dispatch }, payload) {
@@ -1030,5 +777,11 @@ export default {
     } catch (error) {
       log.error('Failed to rehydrate', error)
     }
+  },
+  setSuccessMessage(context, payload) {
+    prefsController.handleSuccess(payload)
+  },
+  setErrorMessage(context, payload) {
+    prefsController.handleError(payload)
   }
 }

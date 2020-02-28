@@ -37,7 +37,9 @@ log.info('VUE_APP_TORUS_BUILD_ENV', process.env.VUE_APP_TORUS_BUILD_ENV)
 Vue.mixin({
   methods: {
     t(data) {
-      return vuetify.framework.lang.t(`$vuetify.${data}`)
+      if (data === '') return data
+      const translated = vuetify.framework.lang.t(`$vuetify.${data}`)
+      return translated.replace('$vuetify.', '')
     }
   }
 })

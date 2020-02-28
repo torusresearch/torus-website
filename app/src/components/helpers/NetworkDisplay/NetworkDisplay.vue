@@ -9,23 +9,19 @@
 import { SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
 
 export default {
-  props: ['network'],
+  props: ['network', 'storeNetworkType'],
   computed: {
     selectedNetwork() {
       let finalNetwork = ''
-
-      if (this.network) {
+      if (this.network && typeof this.network === 'string' && SUPPORTED_NETWORK_TYPES[this.network]) {
         return SUPPORTED_NETWORK_TYPES[this.network].networkName
       }
-
-      finalNetwork =
-        !this.$store.state.networkType.networkName || this.$store.state.networkType.networkName === ''
-          ? this.$store.state.networkType.host
-          : this.$store.state.networkType.networkName
+      if (this.network.networkName) return this.network.networkName
+      if (this.storeNetworkType) finalNetwork = !this.storeNetworkType.networkName ? this.storeNetworkType.host : this.storeNetworkType.networkName
       return finalNetwork
     },
     host() {
-      return this.$store.state.networkType.host
+      return this.storeNetworkType.host
     },
     isUrlNetwork() {
       // Checks if input is a url including localhost, ip address and domain name

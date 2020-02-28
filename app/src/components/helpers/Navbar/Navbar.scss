@@ -1,4 +1,5 @@
 .header-container{
+  margin-bottom: 72px;
   .theme--dark & {
     background: var(--v-background-base);
   }
@@ -26,5 +27,12 @@
   
   .home-link {
     cursor: pointer;
+  }
+  
+  .v-system-bar {
+    margin-top: 64px;
+    @media (max-width: 960px) {
+      margin-top: 56px;
+    }
   }
 }

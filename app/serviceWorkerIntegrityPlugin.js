@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 module.exports = class ServiceWorkerIntegrityPlugin {
   constructor(appPath, stringToReplace, serviceWorkerPath) {
     this.appPath = appPath

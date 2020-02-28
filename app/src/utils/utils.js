@@ -19,7 +19,6 @@ import {
   DISCORD,
   SIMPLEX,
   MOONPAY,
-  COINDIRECT,
   WYRE,
   THEME_DARK_BLACK_NAME,
   ACTIVE,
@@ -38,6 +37,7 @@ import {
   GOERLI_CODE,
   MATIC_CODE
 } from './enums'
+import config from '../config'
 
 const BN = ethUtil.BN
 
@@ -75,17 +75,6 @@ export function storageAvailable(type) {
       storage.length !== 0
     )
   }
-}
-
-/**
- * Generates an example stack trace
- *
- * @returns {string} A stack trace
- *
- */
-export function getStack() {
-  const stack = new Error('Stack trace generator - not an error').stack
-  return stack
 }
 
 /**
@@ -190,18 +179,6 @@ export function BnMultiplyByFraction(targetBN, numerator, denominator) {
   const numBN = new BN(numerator)
   const denomBN = new BN(denominator)
   return targetBN.mul(numBN).div(denomBN)
-}
-
-export function applyListeners(listeners, emitter) {
-  Object.keys(listeners).forEach(key => {
-    emitter.on(key, listeners[key])
-  })
-}
-
-export function removeListeners(listeners, emitter) {
-  Object.keys(listeners).forEach(key => {
-    emitter.removeListener(key, listeners[key])
-  })
 }
 
 /**
@@ -400,21 +377,6 @@ export const paymentProviders = {
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
     includeFees: false,
     api: true
-  },
-  [COINDIRECT]: {
-    line1: 'Credit / Debit Card',
-    line2: '2.99%',
-    line3: 'N/A',
-    line4: 'ETH, DAI, USDT',
-    status: ACTIVE,
-    logoExtension: SVG,
-    supportPage: 'https://help.coindirect.com/hc/en-us',
-    minOrderValue: 20,
-    maxOrderValue: 1000,
-    validCurrencies: ['EUR'],
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDT'],
-    includeFees: true,
-    api: true
   }
   // [CRYPTO]: {
   //   line1: 'Credit Card',
@@ -480,4 +442,25 @@ export const standardNetworkId = {
 export function selectChainId(network, provider) {
   const { chainId } = provider
   return standardNetworkId[network] || `0x${parseInt(chainId, 10).toString(16)}`
+}
+
+export const isMain = location === parent.location && location.origin === config.baseUrl
+
+export const getIFrameOrigin = () => {
+  const originHref = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
+  return originHref
+}
+
+export const getIFrameOriginObj = () => {
+  try {
+    const url = new URL(getIFrameOrigin())
+    return { href: url.href, hostname: url.hostname }
+  } catch (error) {
+    log.error('invalid url')
+    return { href: location.href, hostname: location.hostname }
+  }
+}
+
+export const fakeStream = {
+  write: () => {}
 }
