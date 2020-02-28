@@ -767,7 +767,7 @@ export default {
             console.log('scw', scw)
 
             // Adding SCW to vue state
-            const selectedNetworkContract = scw.network == state.networkType.host ? scw : undefined
+            const selectedNetworkContract = scw && scw.network == state.networkType.host ? scw : undefined
             console.log('selectedNetworkContract', selectedNetworkContract)
             if (selectedNetworkContract) {
               // Remove existing scw/s for the old network
