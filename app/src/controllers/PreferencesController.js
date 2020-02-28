@@ -98,11 +98,12 @@ class PreferencesController {
       getPastOrders({}, this.headers.headers)
     ]).then(([user, paymentTx]) => {
       if (user && user.data) {
-        const { transactions, contacts, theme, locale, verifier, verifier_id, permissions } = user.data || {}
+        const { transactions, default_currency, contacts, theme, locale, verifier, verifier_id, permissions } = user.data || {}
         this.store.updateState({
           contacts,
           pastTransactions: transactions,
           theme,
+          selectedCurrency: default_currency,
           locale: locale || LOCALE_EN,
           paymentTx: paymentTx.data,
           permissions

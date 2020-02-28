@@ -62,7 +62,7 @@ const providerChangeStream = (torus.communicationMux && torus.communicationMux.g
 prefsController.metadataStore.subscribe(metadataHandler)
 
 export default {
-  logOut({ commit, state }, payload) {
+  logOut({ commit, state }, _) {
     commit('logOut', { ...initialState, networkType: state.networkType, networkId: state.networkId })
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
@@ -80,13 +80,13 @@ export default {
     prefsController.errorStore.unsubscribe(errorMsgHandler)
     torus.updateStaticData({ isUnlocked: false })
   },
-  setSelectedCurrency({ commit, state }, payload) {
+  setSelectedCurrency({ commit }, payload) {
     torusController.setCurrentCurrency(payload, (err, data) => {
       if (err) log.error('currency fetch failed')
       else commit('setCurrencyData', data)
     })
   },
-  async forceFetchTokens({ state }, payload) {
+  async forceFetchTokens(_, payload) {
     detectTokensController.refreshTokenBalances()
     assetDetectionController.restartAssetDetection()
     try {
@@ -716,6 +716,7 @@ export default {
       commit('setTheme', state.theme)
       const { calledFromEmbed, rehydrate, token } = payload
       const { userInfo, selectedCurrency, theme, locale } = state
+      log.info(selectedCurrency)
       const { verifier, verifierId } = userInfo
       prefsController.jwtToken = token
       prefsController.sync(
