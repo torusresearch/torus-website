@@ -78,7 +78,7 @@
                       Sign Up
                     </v-btn>
                   </v-flex>
-                  <v-flex xs12 v-if="duplicate">
+                  <v-flex xs12 py-3 v-if="duplicate">
                     <span>
                       You already have an account. Please login
                       <router-link :to="{ name: 'torusEmailLogin' }">here</router-link>
@@ -145,7 +145,12 @@ export default {
         })
         this.$router.push({ name: 'torusPhoneVerify', query: { ...this.$route.query, phone: this.verifier_id } }).catch(err => {})
       } catch (err) {
-        if (err && err.status === 403) this.duplicate = true
+        if (err && err.status === 403) {
+          this.duplicate = true
+          setTimeout(() => {
+            this.duplicate = false
+          }, 3000)
+        }
         log.error(err)
       }
     }

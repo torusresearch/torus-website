@@ -70,7 +70,7 @@
                       Login
                     </v-btn>
                   </v-flex>
-                  <v-flex xs12 v-if="notRegistered">
+                  <v-flex xs12 py-3 v-if="notRegistered">
                     <span>
                       You are not registered yet. Please
                       <router-link :to="{ name: 'torusPhoneRegister' }">Sign up here</router-link>
@@ -147,7 +147,12 @@ export default {
           &verifier_id=${data.verifier_id}&extendedPassword=${this.extendedPassword}&state=${data.state}`
         window.location.href = completeRedirectURI.href
       } catch (err) {
-        if (err && err.status === 404) this.notRegistered = true
+        if (err && err.status === 404) {
+          this.notRegistered = true
+          setTimeout(() => {
+            this.notRegistered = false
+          }, 3000)
+        }
         log.error(err)
       }
     }
