@@ -14,6 +14,7 @@ export default {
   },
   setTokenData(state, tokenData) {
     state.tokenData = { ...state.tokenData, ...tokenData }
+    state.tokenDataLoaded = true
   },
   setTokenRates(state, tokenRates) {
     state.tokenRates = tokenRates
