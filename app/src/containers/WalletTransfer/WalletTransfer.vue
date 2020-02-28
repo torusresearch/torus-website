@@ -1079,14 +1079,6 @@ export default {
       const fastGasPrice = '0x' + this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)
       const selectedAddress = this.selectedAddress
 
-      // Show pending modal for smart contract transfer
-      if (this.isSmartContract) {
-        this.messageModalShow = true
-        this.messageModalType = MESSAGE_MODAL_TYPE_PENDING
-        this.messageModalTitle = 'Your transfer is being submitted'
-        this.messageModalDetails = 'It will take some time. Check your activity page later.'
-      }
-
       if (this.contractType === CONTRACT_TYPE_ETH) {
         const value =
           '0x' +
@@ -1128,6 +1120,14 @@ export default {
             }
           }
         )
+        log.info(this.isSmartContract)
+        // Show pending modal for smart contract transfer
+        if (this.isSmartContract) {
+          this.messageModalShow = true
+          this.messageModalType = MESSAGE_MODAL_TYPE_PENDING
+          this.messageModalTitle = 'Your transfer is being submitted'
+          this.messageModalDetails = 'It will take some time. Check your activity page later.'
+        }
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
         const value =
           '0x' +
@@ -1165,6 +1165,12 @@ export default {
             }
           }
         )
+        if (this.isSmartContract) {
+          this.messageModalShow = true
+          this.messageModalType = MESSAGE_MODAL_TYPE_PENDING
+          this.messageModalTitle = 'Your transfer is being submitted'
+          this.messageModalDetails = 'It will take some time. Check your activity page later.'
+        }
       } else if (this.contractType === CONTRACT_TYPE_ERC721) {
         this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId).send(
           {
@@ -1195,6 +1201,12 @@ export default {
             }
           }
         )
+        if (this.isSmartContract) {
+          this.messageModalShow = true
+          this.messageModalType = MESSAGE_MODAL_TYPE_PENDING
+          this.messageModalTitle = 'Your transfer is being submitted'
+          this.messageModalDetails = 'It will take some time. Check your activity page later.'
+        }
       }
     },
     getEthAmount(gas, gasPrice) {
