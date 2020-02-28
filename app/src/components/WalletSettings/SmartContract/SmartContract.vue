@@ -54,7 +54,6 @@ import ExportQrCode from '../../helpers/ExportQrCode'
 import config from '../../../config'
 import { post } from '../../../utils/httpHelpers'
 import { MESSAGE_MODAL_TYPE_SUCCESS, MESSAGE_MODAL_TYPE_FAIL, MESSAGE_MODAL_TYPE_PENDING } from '../../../utils/enums'
-const randomId = require('@chaitanyapotti/random-id')
 
 export default {
   name: 'smartContractSettings',
@@ -88,17 +87,14 @@ export default {
         : `${address.slice(0, 20)}...${address.slice(-10)}`
     },
     async createWallet() {
-      const reqObj = {
-        ens: randomId(),
-        owner: this.$store.state.selectedEOA
-      }
-
-      post(`${config.relayer}/createWallet`, reqObj)
-      this.messageModalShow = true
-      this.messageModalType = MESSAGE_MODAL_TYPE_PENDING
-      this.messageModalTitle = 'Your request has been submitted'
-      this.messageModalDetails = 'It will take sometime to create your Smart Contract Wallet. You will be notified when it is ready'
-      this.smartContractStatus = 'pending'
+      this.$store.dispatch('createSmartContractWallet').then(() => {
+        this.messageModalShow = true
+        this.messageModalType = MESSAGE_MODAL_TYPE_PENDING
+        this.messageModalTitle = 'Your request has been submitted'
+        this.messageModalDetails = 'It will take sometime to create your Smart Contract Wallet. You will be notified when it is ready'
+        this.smartContractStatus = 'pending'
+      })
+      // post(`${config.relayer}/createWallet`, reqObj)
     }
   }
 }

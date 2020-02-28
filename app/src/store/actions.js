@@ -846,5 +846,8 @@ export default {
   },
   setErrorMessage(context, payload) {
     prefsController.handleError(payload)
+  },
+  createSmartContractWallet() {
+    torusController.scwController.createSmartContractWallet()
   }
 }
