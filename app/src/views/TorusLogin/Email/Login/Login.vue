@@ -157,7 +157,12 @@ export default {
           &verifier_id=${data.verifier_id}&extendedPassword=${this.extendedPassword}&state=${data.state}`
         window.location.href = completeRedirectURI.href
       } catch (error) {
-        if (error && error.status === 404) this.notRegistered = true
+        if (error && error.status === 404) {
+          this.notRegistered = true
+          setTimeout(() => {
+            this.notRegistered = false
+          }, 3000)
+        }
         if (err && err.status === 403) {
           this.incorrectPassword = true
           this.$refs.form.validate()
