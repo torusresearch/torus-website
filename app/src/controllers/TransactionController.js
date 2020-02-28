@@ -1,28 +1,25 @@
 import AbiDecoder from '../utils/abiDecoder'
-const EventEmitter = require('safe-event-emitter')
-const ObservableStore = require('obs-store')
-const ethUtil = require('ethereumjs-util')
-const { sha3 } = require('web3-utils')
-const Transaction = require('ethereumjs-tx')
-const EthQuery = require('ethjs-query')
-const tokenAbi = require('human-standard-token-abi')
-const collectibleAbi = require('human-standard-collectible-abi')
-const { errors: rpcErrors } = require('eth-json-rpc-errors')
+import EventEmitter from 'safe-event-emitter'
+import ObservableStore from 'obs-store'
+import * as ethUtil from 'ethereumjs-util'
+import { sha3 } from 'web3-utils'
+import Transaction from 'ethereumjs-tx'
+import EthQuery from 'ethjs-query'
+import tokenAbi from 'human-standard-token-abi'
+import collectibleAbi from 'human-standard-collectible-abi'
+import { ethErrors } from 'eth-json-rpc-errors'
+import { toChecksumAddress } from 'web3-utils'
+import erc20Contracts from 'eth-contract-metadata'
 
-const tokenABIDecoder = new AbiDecoder(tokenAbi)
-const collectibleABIDecoder = new AbiDecoder(collectibleAbi)
-const { toChecksumAddress } = require('web3-utils')
-const erc20Contracts = require('eth-contract-metadata')
-const erc721Contracts = require('../assets/assets-map.json')
-
-const TransactionStateManager = require('./TransactionStateManager').default
-const TxGasUtil = require('../utils/TxGasUtil').default
-const PendingTransactionTracker = require('./PendingTransactionTracker').default
-const NonceTracker = require('./NonceTracker').default
-const txUtils = require('../utils/txUtils')
-const cleanErrorStack = require('../utils/cleanErrorStack').default
-const log = require('loglevel')
-const {
+import erc721Contracts from '../assets/assets-map.json'
+import TransactionStateManager from './TransactionStateManager'
+import TxGasUtil from '../utils/TxGasUtil'
+import PendingTransactionTracker from './PendingTransactionTracker'
+import NonceTracker from './NonceTracker'
+import * as txUtils from '../utils/txUtils'
+import cleanErrorStack from '../utils/cleanErrorStack'
+import log from 'loglevel'
+import {
   TRANSACTION_TYPE_CANCEL,
   TRANSACTION_TYPE_RETRY,
   TRANSACTION_TYPE_STANDARD,
@@ -35,9 +32,12 @@ const {
   DEPLOY_CONTRACT_ACTION_KEY,
   CONTRACT_INTERACTION_KEY,
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
-} = require('../utils/enums')
+} from '../utils/enums'
 
-const { hexToBn, bnToHex, BnMultiplyByFraction } = require('../utils/utils')
+import { hexToBn, bnToHex, BnMultiplyByFraction } from '../utils/utils'
+
+const tokenABIDecoder = new AbiDecoder(tokenAbi)
+const collectibleABIDecoder = new AbiDecoder(collectibleAbi)
 
 /**
   Transaction Controller is an aggregate of sub-controllers and trackers
@@ -162,9 +162,8 @@ class TransactionController extends EventEmitter {
 
   async newUnapprovedTransaction(txParams, opts = {}) {
     log.debug(`MetaMaskController newUnapprovedTransaction ${JSON.stringify(txParams)}`)
-    const initialTxMeta = await this.addUnapprovedTransaction(txParams)
-    initialTxMeta.origin = opts.origin
-    this.txStateManager.updateTx(initialTxMeta, '#newUnapprovedTransaction - adding the origin')
+    const initialTxMeta = await this.addUnapprovedTransaction(txParams, opts.origin)
+
     // listen for tx completion (success, fail)
     return new Promise((resolve, reject) => {
       this.txStateManager.once(`${initialTxMeta.id}:finished`, finishedTxMeta => {
@@ -172,11 +171,11 @@ class TransactionController extends EventEmitter {
           case 'submitted':
             return resolve(finishedTxMeta.hash)
           case 'rejected':
-            return reject(cleanErrorStack(rpcErrors.eth.userRejectedRequest('MetaMask Tx Signature: User denied transaction signature.')))
+            return reject(cleanErrorStack(ethErrors.provider.userRejectedRequest('Torus Tx Signature: User denied transaction signature.')))
           case 'failed':
-            return reject(cleanErrorStack(rpcErrors.internal(finishedTxMeta.err.message)))
+            return reject(cleanErrorStack(ethErrors.rpc.internal(finishedTxMeta.err.message)))
           default:
-            return reject(cleanErrorStack(rpcErrors.internal(`MetaMask Tx Signature: Unknown problem: ${JSON.stringify(finishedTxMeta.txParams)}`)))
+            return reject(cleanErrorStack(ethErrors.rpc.internal(`Torus Tx Signature: Unknown problem: ${JSON.stringify(finishedTxMeta.txParams)}`)))
         }
       })
     })
@@ -189,16 +188,12 @@ class TransactionController extends EventEmitter {
   @returns {txMeta}
   */
 
-  async addUnapprovedTransaction(txParams) {
+  async addUnapprovedTransaction(txParams, origin) {
     // validate
     log.debug(`MetaMaskController addUnapprovedTransaction ${JSON.stringify(txParams)}`)
     const normalizedTxParams = txUtils.normalizeTxParams(txParams)
-    // Assert the from address is the selected address
-    if (normalizedTxParams.from !== this.getSelectedAddress()) {
-      // eslint-disable-next-line prettier/prettier
-      throw new Error('Transaction from address is not valid for this account')
-    }
     txUtils.validateTxParams(normalizedTxParams)
+
     /**
     `generateTxMeta` adds the default txMeta properties to the passed object.
     These include the tx's `id`. As we use the id for determining order of
@@ -209,6 +204,29 @@ class TransactionController extends EventEmitter {
       txParams: normalizedTxParams,
       type: TRANSACTION_TYPE_STANDARD
     })
+
+    if (origin === 'metamask') {
+      // Assert the from address is the selected address
+      if (normalizedTxParams.from !== this.getSelectedAddress()) {
+        throw ethErrors.rpc.internal({
+          message: 'Internally initiated transaction is using invalid account.',
+          data: {
+            origin,
+            fromAddress: normalizedTxParams.from,
+            selectedAddress: this.getSelectedAddress()
+          }
+        })
+      }
+    } else {
+      // Assert that the origin has permissions to initiate transactions from
+      // the specified address
+      const permittedAddresses = [await this.getSelectedAddress()]
+      if (!permittedAddresses.includes(normalizedTxParams.from)) {
+        throw ethErrors.provider.unauthorized({ data: { origin } })
+      }
+    }
+
+    txMeta['origin'] = origin
 
     const { transactionCategory, getCodeResponse, methodParams, contractParams } = await this._determineTransactionCategory(txParams)
     txMeta.transactionCategory = transactionCategory

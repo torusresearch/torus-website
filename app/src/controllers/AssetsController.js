@@ -4,11 +4,12 @@
  * Controller stores the assets and exposes some convienient methods
  */
 
-const { toChecksumAddress } = require('web3-utils')
-const log = require('loglevel')
-const ObservableStore = require('obs-store')
-const utils = require('../utils/httpHelpers')
-const config = require('../config').default
+import { toChecksumAddress } from 'web3-utils'
+import log from 'loglevel'
+import ObservableStore from 'obs-store'
+
+import { get } from '../utils/httpHelpers'
+import config from '../config'
 
 const initStateObj = { allCollectibleContracts: {}, allCollectibles: {}, allTokens: {}, collectibleContracts: [], collectibles: [], tokens: [] }
 
@@ -28,8 +29,7 @@ export default class AssetController {
 
   setSelectedAddress(address) {
     this.selectedAddress = address
-    if (!Object.keys(this.store.getState().accounts).includes(address))
-      this.store.updateState({ accounts: { ...this.store.getState().accounts, [address]: initStateObj } })
+    this.store.updateState({ accounts: { ...this.store.getState().accounts, [address]: initStateObj } })
   }
 
   setJwtToken(jwtToken) {
@@ -76,7 +76,7 @@ export default class AssetController {
     const tokenURI = this.getCollectibleApi(contractAddress, tokenId)
     let collectibleInformation
     /* istanbul ignore if */
-    collectibleInformation = await utils.get(`${config.api}/opensea?url=${encodeURIComponent(tokenURI)}`, {
+    collectibleInformation = await get(`${config.api}/opensea?url=${encodeURIComponent(tokenURI)}`, {
       headers: {
         Authorization: `Bearer ${this.jwtToken}`
       }
@@ -140,7 +140,7 @@ export default class AssetController {
     let collectibleContractObject
     /* istanbul ignore if */
 
-    collectibleContractObject = await utils.get(`${config.api}/opensea?url=${encodeURIComponent(api)}`, {
+    collectibleContractObject = await get(`${config.api}/opensea?url=${encodeURIComponent(api)}`, {
       headers: {
         Authorization: `Bearer ${this.jwtToken}`
       }

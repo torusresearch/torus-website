@@ -38,7 +38,7 @@
                       name="password"
                       label="Enter Password"
                       @click:append.prevent="showPassword = !showPassword"
-                      :rules="[rules.required, rules.minLength]"
+                      :rules="[rules.required, rules.minLength, correctPassword]"
                       v-model="password"
                       :append-icon="showPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                       :type="showPassword ? 'text' : 'password'"
@@ -54,9 +54,9 @@
                         <div class="v-messages__wrapper">
                           <div class="v-messages__message d-flex text_2--text">
                             <v-flex>
-                              <span class="caption">
+                              <!-- <span class="caption">
                                 <router-link :to="{ path: 'forgot' }">Forgot password?</router-link>
-                              </span>
+                              </span> -->
                             </v-flex>
                             <v-flex grow-shrink-0>
                               <span class="caption">
@@ -125,6 +125,7 @@ export default {
       redirect_uri: '',
       state: '',
       notRegistered: false,
+      incorrectPassword: false,
       rules: {
         required: value => !!value || 'Required',
         minLength: value => value.length > 8 || 'Password length must be greater than 8 characters',
@@ -138,6 +139,9 @@ export default {
     }
   },
   methods: {
+    correctPassword(value) {
+      return !this.incorrectPassword || 'Incorrect password'
+    },
     async login() {
       try {
         if (!this.$refs.form.validate()) return
@@ -153,13 +157,15 @@ export default {
           &verifier_id=${data.verifier_id}&extendedPassword=${this.extendedPassword}&state=${data.state}`
         window.location.href = completeRedirectURI.href
       } catch (error) {
-        if (error && error.status === 404) {
-          this.notRegistered = true
+        if (error && error.status === 404) this.notRegistered = true
+        if (err && err.status === 403) {
+          this.incorrectPassword = true
+          this.$refs.form.validate()
           setTimeout(() => {
-            this.notRegistered = false
+            this.incorrectPassword = false
           }, 3000)
-          log.error(error)
         }
+        log.error(error)
       }
     }
   },
