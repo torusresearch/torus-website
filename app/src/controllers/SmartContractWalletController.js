@@ -11,7 +11,6 @@ import signOffchain from '../utils/signOffchain'
 import { post } from '../utils/httpHelpers'
 import log from 'loglevel'
 import Web3 from 'web3'
-import randomId from '@chaitanyapotti/random-id'
 
 import { ZERO_ADDRESS } from '../utils/enums'
 export default class SmartContractWalletController {
@@ -109,6 +108,7 @@ export default class SmartContractWalletController {
     // log.info(`fromSCW ${fromSCW}, to ${to}, ETH_TOKEN ${ETH_TOKEN}, value ${transferValue}, nonce ${nonce}`)
 
     // Encode method Data
+    // Remove the hardcoded contract value and handle erc20 and 721 gasless calls
     const TransferModule = new this.web3.eth.Contract(TransferManager.abi, '0xD45256EEf4bFB182B108Cd8e0bCB4A9369342C1d')
     const methodData = TransferModule.methods.transferToken(fromSCW, ETH_TOKEN, to, transferValue, ZERO_ADDRESS).encodeABI()
 
