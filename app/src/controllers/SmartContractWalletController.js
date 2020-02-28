@@ -39,17 +39,9 @@ export default class SmartContractWalletController {
       if (typeof this.opts.storeProps === 'function') {
         console.log(this.opts.storeProps())
         const { selectedEOA } = this.opts.storeProps() || {}
-        return (selectedEOA && selectedEOA.toLowerCase()) || ''
+        return selectedEOA || ''
       } else return ''
     }
-  }
-
-  getSelectedEOA() {
-    if (typeof this.opts.storeProps === 'function') {
-      console.log(this.opts.storeProps())
-      const { selectedEOA } = this.opts.storeProps() || {}
-      return (selectedEOA && selectedEOA.toLowerCase()) || ''
-    } else return ''
   }
 
   /**
@@ -63,6 +55,7 @@ export default class SmartContractWalletController {
         ens: randomId(),
         owner: this.getSelectedEOA()
       }
+      console.log(obj)
       const scw = await post(`${config.relayer}/createWallet`, obj)
       log.info(scw)
     } catch (err) {
