@@ -241,7 +241,7 @@ export default {
     if (payload.ethAddress) {
       context.commit('setRegeneratedSecrets', {
         ...context.state.regeneratedSecrets,
-        [payload.ethAddress]: { privKey: payload.privKey, extendedPassword: payload.extendedPassword }
+        [payload.ethAddress]: { secret: payload.privKey, extendedPassword: payload.extendedPassword }
       })
     }
   },
@@ -828,7 +828,8 @@ export default {
         const data = response[0]
         const message = response[1]
         var actualPrivateKey = state.wallet[state.selectedAddress]
-        var regeneratedSecret = state.regeneratedSecrets[state.selectedAddress]
+        var regeneratedSecret = state.regeneratedSecrets[state.selectedAddress].secret
+        var mainKeyExtendedPassword = state.regeneratedSecrets[state.selectedAddress].extendedPassword
         var recoveryNonce = xor(xor(actualPrivateKey, extendedRegeneratedSecret), sha3(data.privKey))
 
         // submit to recoveryStore and addPassword on verifier
@@ -849,8 +850,8 @@ export default {
         })
         await post(`${config.torusVerifierHost}/add-password`, {
           verifier_id: verifierId,
-          verifier: verifier,
-          data: JSON.stringify(recoverNonceStore)
+          existing_hash: sha3(mainKeyExtendedPassword),
+          new_hash: sha3(regeneratedSecret)
         })
       })
       .catch(err => {
