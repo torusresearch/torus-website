@@ -1078,6 +1078,15 @@ export default {
       const toAddress = this.toEthAddress
       const fastGasPrice = '0x' + this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)
       const selectedAddress = this.selectedAddress
+
+      // Show pending modal for smart contract transfer
+      if (this.isSmartContract) {
+        this.messageModalShow = true
+        this.messageModalType = MESSAGE_MODAL_TYPE_PENDING
+        this.messageModalTitle = 'Your transfer is being submitted'
+        this.messageModalDetails = 'It will take some time. Check your activity page later.'
+      }
+
       if (this.contractType === CONTRACT_TYPE_ETH) {
         const value =
           '0x' +
@@ -1097,7 +1106,6 @@ export default {
             relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
           },
           (err, transactionHash) => {
-            console.log('transactionHash', transactionHash)
             if (err) {
               const regEx = new RegExp('User denied transaction signature', 'i')
               if (!err.message.match(regEx)) {
@@ -1112,11 +1120,9 @@ export default {
               this.sendEmail(this.selectedItem.symbol, transactionHash)
 
               this.messageModalShow = true
-              this.messageModalType = this.isSmartContract ? MESSAGE_MODAL_TYPE_PENDING : MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = this.isSmartContract ? 'Your transfer is being submitted' : 'Your transfer is being processed'
-              this.messageModalDetails = this.isSmartContract
-                ? 'It will take some time. Check your activity page later.'
-                : 'Your transaction will be completed in approximately {time} min'
+              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+              this.messageModalTitle = 'Your transfer is being processed'
+              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
             }
           }
         )
@@ -1149,11 +1155,9 @@ export default {
               this.sendEmail(this.selectedItem.symbol, transactionHash)
 
               this.messageModalShow = true
-              this.messageModalType = this.isSmartContract ? MESSAGE_MODAL_TYPE_PENDING : MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = this.isSmartContract ? 'Your transfer is being submitted' : 'Your transfer is being processed'
-              this.messageModalDetails = this.isSmartContract
-                ? 'It will take some time. Check your activity page later.'
-                : 'Your transaction will be completed in approximately {time} min'
+              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+              this.messageModalTitle = 'Your transfer is being processed'
+              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
             }
           }
         )
@@ -1179,11 +1183,9 @@ export default {
               // Send email to the user
               this.sendEmail(this.assetSelected.name, transactionHash)
               this.messageModalShow = true
-              this.messageModalType = this.isSmartContract ? MESSAGE_MODAL_TYPE_PENDING : MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = this.isSmartContract ? 'Your transfer is being submitted' : 'Your transfer is being processed'
-              this.messageModalDetails = this.isSmartContract
-                ? 'It will take some time. Check your activity page later.'
-                : 'Your transaction will be completed in approximately {time} min'
+              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+              this.messageModalTitle = 'Your transfer is being processed'
+              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
             }
           }
         )
