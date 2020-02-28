@@ -11,6 +11,7 @@ import signOffchain from '../utils/signOffchain'
 import { post } from '../utils/httpHelpers'
 import log from 'loglevel'
 import Web3 from 'web3'
+const randomId = require('@chaitanyapotti/random-id')
 
 import { ZERO_ADDRESS } from '../utils/enums'
 export default class SmartContractWalletController {
@@ -59,7 +60,7 @@ export default class SmartContractWalletController {
     // Update the Vue state to processing
     try {
       const obj = {
-        ens: this.getSelectedEOA(),
+        ens: randomId(),
         owner: this.getSelectedEOA()
       }
       const scw = await post(`${config.relayer}/createWallet`, obj)
