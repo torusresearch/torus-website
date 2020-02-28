@@ -236,6 +236,7 @@ export default {
         let status = x.status
         if (
           x.status !== 'confirmed' &&
+          x.transaction_hash.indexOf('PENDING_') == -1 &&
           (publicAddress.toLowerCase() === x.from.toLowerCase() || publicAddress.toLowerCase() === x.to.toLowerCase())
         ) {
           status = await getEthTxStatus(x.transaction_hash, torus.web3)
