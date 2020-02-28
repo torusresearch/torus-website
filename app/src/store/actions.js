@@ -261,7 +261,7 @@ export default {
       dispatch('updateSelectedAddress', { selectedAddress: address })
       torusController
         .addAccount(privKey, address)
-        .then(response => resolve(privKey))
+        .then(() => resolve(privKey))
         .catch(err => reject(err))
     })
   },
@@ -332,7 +332,7 @@ export default {
                 Authorization: `Bearer ${accessToken}`
               }
             })
-            const { picture: profileImage, email, name, id } = userInfo || {}
+            const { picture: profileImage, email, name } = userInfo || {}
             commit('setUserInfo', {
               profileImage,
               name,

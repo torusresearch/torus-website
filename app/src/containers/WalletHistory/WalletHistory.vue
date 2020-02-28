@@ -302,7 +302,10 @@ export default {
             }
 
             // Get asset name of the 721
-            const [contract] = assets[selectedAddress].filter(x => x.name.toLowerCase() === contractParams.name.toLowerCase()) || []
+            const [contract] =
+              assets[selectedAddress].filter(
+                x => x && x.name && x.name.toLowerCase() === contractParams && contractParams.name && contractParams.name.toLowerCase()
+              ) || []
             const [assetObject] = contract['assets'].filter(x => x.tokenId.toString() === amountValue.value.toString()) || []
             assetName = assetObject.name || ''
             totalAmountString = assetName

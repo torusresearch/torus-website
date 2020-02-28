@@ -62,12 +62,12 @@ export default {
         bc = new BroadcastChannel('preopen_channel_' + queryParams.preopenInstanceId, broadcastChannelOptions)
         bc.onmessage = function(ev) {
           const { preopenInstanceId: oldId, payload, message } = ev.data
-          if (oldId === preopenInstanceId && payload && payload.url) {
+          if (oldId === queryParams.preopenInstanceId && payload && payload.url) {
             window.location.href = payload.url
-          } else if (oldId === preopenInstanceId && message === 'setup_complete') {
+          } else if (oldId === queryParams.preopenInstanceId && message === 'setup_complete') {
             bc.postMessage({
               data: {
-                preopenInstanceId: preopenInstanceId,
+                preopenInstanceId: queryParams.preopenInstanceId,
                 message: 'popup_loaded'
               }
             })
@@ -80,7 +80,7 @@ export default {
       }
     } catch (error) {
       log.info(error, 'something went wrong')
-      bc.close()
+      bc && bc.close()
       window.close()
     }
   }
