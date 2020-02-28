@@ -24,25 +24,19 @@
             </v-card-text>
           </v-card>
         </v-flex>
-        <v-flex xs12 mb-4 mx-6>
-          <v-list class="note-list">
-            <v-list-item class="pa-0">
-              <v-list-item-icon class="mr-1">
-                <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
-              </v-list-item-icon>
-              <v-list-item-content class="pa-1">
-                <div class="caption text_2--text">{{ accessText }}</div>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item class="pa-0" v-if="message !== ''">
-              <v-list-item-icon class="mr-1">
-                <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
-              </v-list-item-icon>
-              <v-list-item-content class="pa-1">
-                <div class="caption text_2--text">{{ message }}</div>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
+        <v-flex xs12 my-4 mx-6 class="note-list">
+          <div class="d-flex mb-2">
+            <div class="mr-5 note-list__icon">
+              <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
+            </div>
+            <div class="caption text_2--text">{{ accessText }}</div>
+          </div>
+          <div class="d-flex mb-2" v-if="message !== ''">
+            <div class="mr-5 note-list__icon">
+              <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
+            </div>
+            <div class="caption text_2--text">{{ message }}</div>
+          </div>
         </v-flex>
 
         <v-layout px-6 mx-3>

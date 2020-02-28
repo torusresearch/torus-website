@@ -187,16 +187,16 @@
           </v-card>
         </v-flex>
 
+        <v-flex xs12 mt-0 mb-n1 mx-6 class="note-list">
+          <div class="d-flex">
+            <div class="mr-5 note-list__icon">
+              <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
+            </div>
+            <div class="caption text_2--text">{{ t('dappTransfer.dataSmall') }}</div>
+          </div>
+        </v-flex>
         <v-flex xs12 mb-4 mx-6>
           <v-list class="note-list">
-            <v-list-item class="pa-0">
-              <v-list-item-icon class="ma-1">
-                <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
-              </v-list-item-icon>
-              <v-list-item-content class="pa-1">
-                <div class="caption text_2--text">{{ t('dappTransfer.dataSmall') }}</div>
-              </v-list-item-content>
-            </v-list-item>
             <v-list-item class="pa-0">
               <v-list-item-content flat class="pa-1 background" :class="$vuetify.theme.dark ? 'lighten-4' : 'lighten-3'">
                 <v-card flat class="body-2 text-left pa-2 word-break typedMessageBox">
