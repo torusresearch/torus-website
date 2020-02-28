@@ -309,7 +309,7 @@ export default {
       return networkController.setProviderType(networkType.host)
     }
   },
-  triggerLogin({ dispatch, commit }, { calledFromEmbed, verifier, preopenInstanceId, loginType, recovery }) {
+  triggerLogin({ dispatch, commit }, { calledFromEmbed, verifier, preopenInstanceId, loginType, setupRecovery, recover }) {
     log.info('Verifier: ', verifier)
 
     if (verifier === TORUS) {
@@ -335,7 +335,7 @@ export default {
           } else if (ev.data && verifier === TORUS) {
             log.info('toruslogin data', ev.data)
             const { hashParams } = ev.data || {}
-            if (recovery) {
+            if (setupRecovery) {
               dispatch('setupRecovery', {
                 calledFromEmbed,
                 idToken: hashParams.idtoken,
@@ -408,7 +408,7 @@ export default {
               }
             })
             const { picture: profileImage, email, name, id } = userInfo || {}
-            if (recovery) {
+            if (setupRecovery) {
               dispatch('setupRecovery', {
                 calledFromEmbed,
                 idToken,
@@ -475,7 +475,7 @@ export default {
               }
             })
             const { name, id, picture, email } = userInfo || {}
-            if (recovery) {
+            if (setupRecovery) {
               dispatch('setupRecovery', {
                 calledFromEmbed,
                 idToken: accessToken,
@@ -551,7 +551,7 @@ export default {
             const tokenInfo = jwtDecode(idtoken)
             const { picture: profileImage, preferred_username: name } = userInfo || {}
             const { email } = tokenInfo || {}
-            if (recovery) {
+            if (setupRecovery) {
               dispatch('setupRecovery', {
                 calledFromEmbed,
                 idToken: accessToken.toString(),
@@ -616,7 +616,7 @@ export default {
               }
             })
             const { id, icon_img: profileImage, name } = userInfo || {}
-            if (recovery) {
+            if (setupRecovery) {
               dispatch('setupRecovery', {
                 calledFromEmbed,
                 idToken: accessToken,
@@ -686,7 +686,7 @@ export default {
               avatar === null
                 ? `https://cdn.discordapp.com/embed/avatars/${discriminator % 5}.png`
                 : `https://cdn.discordapp.com/avatars/${id}/${avatar}.png?size=2048`
-            if (recovery) {
+            if (setupRecovery) {
               dispatch('handleLogin', { calledFromEmbed, idToken: accessToken })
             } else {
               commit('setUserInfo', {
@@ -853,6 +853,81 @@ export default {
           existing_hash: sha3(mainKeyExtendedPassword),
           new_hash: sha3(regeneratedSecret)
         })
+      })
+      .catch(err => {
+        log.error(err)
+      })
+  },
+  async recover({ state, dispatch }, { calledFromEmbed, idToken, torusLogin, extendedPassword, verifier, verifierId, verifierParams }) {
+    console.log('recover called with', state)
+    dispatch('loginInProgress', true)
+    let torusNodeEndpoints, torusIndexes
+    return torus.nodeDetailManager
+      .getNodeDetails()
+      .then(({ torusNodeEndpoints: torusNodeEndpointsVal, torusNodePub, torusIndexes: torusIndexesVal }) => {
+        torusNodeEndpoints = torusNodeEndpointsVal
+        torusIndexes = torusIndexesVal
+        return torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
+      })
+      .then(async res => {
+        if (torusLogin) {
+          var data = await torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
+          data.privKey = xor(data.privKey, extendedPassword)
+          data.ethAddress = torus.web3.eth.accounts.privateKeyToAccount('0x' + data.privKey).address
+          log.info('New private key assigned to user at address ', data.ethAddress)
+          const message = await torus.getMessageForSigning(data.ethAddress)
+          return [data, message]
+        } else {
+          log.info('New private key assigned to user at address ', res)
+          const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
+          const p2 = torus.getMessageForSigning(res)
+          return Promise.all([p1, p2])
+        }
+      })
+      .then(async response => {
+        const data = response[0]
+        const message = response[1]
+
+        // go through torus login flow here
+        // await post(`${config.torusVerifierHost}/authorize`, {
+        //   verifier_id: verifierId,
+        //   existing_hash: sha3(mainKeyExtendedPassword),
+        //   new_hash: sha3(regeneratedSecret)
+        // })
+
+        var regeneratedSecret = 'torus login gives us this'
+        var extendedRecoveryKey = sha3(data.privKey)
+
+        // submit to recoveryStore and addPassword on verifier
+        var recResp = await post(`${config.torusRecovererHost}/get`, {
+          verifier_id: verifierId,
+          verifier: verifier
+        })
+        var recoverNonceStore = JSON.parse(recResp.message)
+        var recoveryNonce = recoverNonceStore[verifier][verifierId]
+        var actualPrivKey = xor(xor(recoveryNonce, extendedRecoveryKey), regeneratedSecret)
+
+        // const data = response[0]
+        // const message = response[1]
+        // dispatch('addWallet', data) // synchronous
+        // dispatch('subscribeToControllers')
+        // await Promise.all([
+        //   dispatch('initTorusKeyring', data),
+        //   dispatch('processAuthMessage', { message: message, selectedAddress: data.ethAddress, calledFromEmbed: calledFromEmbed })
+        // ])
+        // dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
+        // prefsController.getBillboardContents()
+        // // continue enable function
+        // var ethAddress = data.ethAddress
+        // if (calledFromEmbed) {
+        //   setTimeout(function() {
+        //     torus.continueEnable(ethAddress)
+        //   }, 50)
+        // }
+        // statusStream.write({ loggedIn: true, rehydrate: false, verifier: verifier })
+        // commit('setLoginInProgress', false)
+        // torus.updateStaticData({ isUnlocked: true })
+        // dispatch('cleanupOAuth', { idToken })
       })
       .catch(err => {
         log.error(err)
