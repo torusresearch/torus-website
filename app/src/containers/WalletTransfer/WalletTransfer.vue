@@ -83,7 +83,7 @@
           </v-flex>
           <v-flex xs12 sm6 mb-5 px-4 v-if="selectedItem">
             <span class="subtitle-2">{{ t('walletTransfer.accountBalance') }}</span>
-            <component-loader class="mt-2" v-if="!weiBalanceLoaded" />
+            <component-loader class="mt-2" v-if="!weiBalanceLoaded || !tokenDataLoaded" />
             <div v-else>
               <span id="account-balance" class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
               <span class="caption text_2--text">{{ currencyBalanceDisplay }}</span>
@@ -409,6 +409,9 @@ export default {
     },
     weiBalanceLoaded() {
       return this.$store.state.weiBalanceLoaded
+    },
+    tokenDataLoaded() {
+      return this.$store.state.tokenDataLoaded
     },
     collectibles() {
       return this.$store.getters.collectibleBalances
