@@ -1,5 +1,5 @@
 <template>
-  <v-container px-0 class="confirm-container" :class="type === TX_TRANSACTION ? 'py-6' : 'py-0'">
+  <v-container px-0 py-6 class="confirm-container">
     <template v-if="type === TX_TRANSACTION">
       <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">
