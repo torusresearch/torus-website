@@ -1106,6 +1106,8 @@ export default {
             relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
           },
           (err, transactionHash) => {
+            if (this.isSmartContract) return
+
             if (err) {
               const regEx = new RegExp('User denied transaction signature', 'i')
               if (!err.message.match(regEx)) {
@@ -1141,6 +1143,8 @@ export default {
             relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
           },
           (err, transactionHash) => {
+            if (this.isSmartContract) return
+
             if (err) {
               const regEx = new RegExp('User denied transaction signature', 'i')
               if (!err.message.match(regEx)) {
@@ -1170,6 +1174,8 @@ export default {
             relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
           },
           (err, transactionHash) => {
+            if (this.isSmartContract) return
+
             if (err) {
               const regEx = new RegExp('User denied transaction signature', 'i')
               if (!err.message.match(regEx)) {
