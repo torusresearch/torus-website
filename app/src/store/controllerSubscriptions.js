@@ -71,6 +71,7 @@ export function detectTokensControllerHandler({ tokens }) {
       [torus.torusController.detectTokensController.selectedAddress]: tokens
     })
   }
+  store.commit('setTokenDataLoaded')
 }
 
 export function tokenRatesControllerHandler({ contractExchangeRates }) {

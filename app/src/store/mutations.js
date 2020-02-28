@@ -12,9 +12,11 @@ export default {
     state.weiBalance = { ...state.weiBalance, ...weiBalance }
     state.weiBalanceLoaded = true
   },
+  setTokenDataLoaded(state) {
+    state.tokenDataLoaded = true
+  },
   setTokenData(state, tokenData) {
     state.tokenData = { ...state.tokenData, ...tokenData }
-    state.tokenDataLoaded = true
   },
   setTokenRates(state, tokenRates) {
     state.tokenRates = tokenRates
