@@ -1,5 +1,5 @@
 <template>
-  <v-container pa-0 class="permission-container">
+  <v-container px-0 py-6 class="permission-container">
     <v-layout wrap>
       <v-flex class="card-shadow text-center" py-6 mb-4 xs12>
         <img :src="require(`../../../../public/images/security.svg`)" />

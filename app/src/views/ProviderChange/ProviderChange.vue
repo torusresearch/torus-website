@@ -1,5 +1,5 @@
 <template>
-  <v-container pa-0>
+  <v-container px-0 py-6>
     <template v-if="type === 'none'">
       <change-provider-screen-loader />
     </template>
