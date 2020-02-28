@@ -332,7 +332,6 @@ export default {
           } else if (ev.data && verifier === TORUS) {
             log.info('toruslogin data', ev.data)
             const { hashParams } = ev.data || {}
-
             if (recovery) {
               dispatch('setupRecovery', {
                 calledFromEmbed,
@@ -824,9 +823,10 @@ export default {
         const data = response[0]
         const message = response[1]
         var actualPrivateKey = state.wallet[state.selectedAddress]
-        var regeneratedSecret = state.regeneratedSecrets[state.selectedAddress]
-        // create r2 and submit to recoveryStore
-        var recoveryNonce = xor(xor(actualPrivateKey, regeneratedSecret), sha3(data.privKey))
+        var extendedRegeneratedSecret = sha3(state.regeneratedSecrets[state.selectedAddress])
+        var recoveryNonce = xor(xor(actualPrivateKey, extendedRegeneratedSecret), sha3(data.privKey))
+
+        // submit to recoveryStore and addPassword on verifier
         var response = await post(`${config.torusRecovererHost}/get`, {
           verifier_id: verifierId,
           verifier: verifier
@@ -836,7 +836,13 @@ export default {
           recoverNonceStore = JSON.parse(response.message)
         }
         recoverNonceStore[verifier][verifierId] = recoveryNonce
-        await post(`${config.torusRecovererHost}/get`, {
+        // TODO: error handling
+        await post(`${config.torusRecovererHost}/set`, {
+          verifier_id: verifierId,
+          verifier: verifier,
+          data: JSON.stringify(recoverNonceStore)
+        })
+        await post(`${config.torusVerifierHost}/add-password`, {
           verifier_id: verifierId,
           verifier: verifier,
           data: JSON.stringify(recoverNonceStore)
