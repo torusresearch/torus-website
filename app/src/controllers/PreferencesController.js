@@ -159,9 +159,9 @@ class PreferencesController {
   async setPermissions(payload) {
     try {
       const response = await post(`${config.api}/permissions`, payload, this.headers)
-      log.info('navBar.snackSuccessPermission', response)
+      log.info('successfully set permissions', response)
     } catch (error) {
-      log.error('navBar.snackFailPermission', error)
+      log.error('unable to set permissions', error)
     }
   }
 
@@ -190,9 +190,9 @@ class PreferencesController {
   async setVerifier(verifier, verifierId) {
     try {
       await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers)
-      log.info('navBar.snackSuccessVerifier', response)
+      log.info('successfully updated verifier info', response)
     } catch (error) {
-      log.error('navBar.snackFailVerifier', error)
+      log.error('unable to update verifier info', error)
     }
   }
 
