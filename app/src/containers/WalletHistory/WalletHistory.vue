@@ -282,10 +282,9 @@ export default {
       for (let tx in transactions) {
         const txOld = transactions[tx]
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
-          const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txOld
+          const { methodParams, contractParams, txParams, transactionCategory } = txOld
           let amountTo,
             amountValue,
-            assetName,
             totalAmountString,
             totalAmount,
             finalTo,
@@ -301,15 +300,17 @@ export default {
               ;[, amountTo, amountValue] = methodParams || []
             }
 
+            const { name = '' } = contractParams
+
             // Get asset name of the 721
-            const [contract] =
-              assets[selectedAddress].filter(
-                x => x && x.name && x.name.toLowerCase() === contractParams && contractParams.name && contractParams.name.toLowerCase()
-              ) || []
-            const [assetObject] = contract['assets'].filter(x => x.tokenId.toString() === amountValue.value.toString()) || []
-            assetName = assetObject.name || ''
-            totalAmountString = assetName
-            finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+            const contract = assets[selectedAddress].find(x => x.name.toLowerCase() === name.toLowerCase()) || {}
+            log.info(contract, amountValue)
+            if (contract) {
+              const assetObject = contract['assets'].find(x => x.tokenId.toString() === amountValue.value.toString()) || {}
+              log.info(assetObject)
+              totalAmountString = (assetObject && assetObject.name) || ''
+              finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+            }
           } else if (contractParams.erc20) {
             // ERC20 transfer
             tokenRate = contractParams.erc20 ? tokenRates[txParams.to] : 1
