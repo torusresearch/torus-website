@@ -239,7 +239,10 @@ export default {
   // TODO(SHUBHAM): CHANGE TO JUST WALLET
   addRegeneratedSecret(context, payload) {
     if (payload.ethAddress) {
-      context.commit('setRegeneratedSecrets', { ...context.state.regeneratedSecrets, [payload.ethAddress]: payload.privKey })
+      context.commit('setRegeneratedSecrets', {
+        ...context.state.regeneratedSecrets,
+        [payload.ethAddress]: { privKey: payload.privKey, extendedPassword: payload.extendedPassword }
+      })
     }
   },
   removeRegeneratedSecret(context, payload) {
@@ -754,6 +757,7 @@ export default {
           data.privKey = xor(data.privKey, extendedPassword)
           data.ethAddress = torus.web3.eth.accounts.privateKeyToAccount('0x' + data.privKey).address
           secret.ethAddress = data.ethAddress
+          secret.extendedPassword = extendedPassword
           dispatch('addRegeneratedSecret', secret) // for torusLogin address and regeneratedSecret priv key do not correspond
           log.info('New private key assigned to user at address ', data.ethAddress)
           const message = await torus.getMessageForSigning(data.ethAddress)
@@ -761,6 +765,7 @@ export default {
         } else {
           log.info('New private key assigned to user at address ', res)
           const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
+          p1.extendedPassword = ''
           dispatch('addRegeneratedSecret', p1) // for normal logins, regeneratedSecret is the relative ethAddress
           const p2 = torus.getMessageForSigning(res)
           return Promise.all([p1, p2])
@@ -823,7 +828,7 @@ export default {
         const data = response[0]
         const message = response[1]
         var actualPrivateKey = state.wallet[state.selectedAddress]
-        var extendedRegeneratedSecret = sha3(state.regeneratedSecrets[state.selectedAddress])
+        var regeneratedSecret = state.regeneratedSecrets[state.selectedAddress]
         var recoveryNonce = xor(xor(actualPrivateKey, extendedRegeneratedSecret), sha3(data.privKey))
 
         // submit to recoveryStore and addPassword on verifier
