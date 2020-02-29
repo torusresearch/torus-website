@@ -1,0 +1,73 @@
+.preferred-method-container {
+  margin-top: 90px;
+}
+
+.v-btn.preferred-method-btn {
+  background-color: #F1F2F6;
+  border: 0;
+  color: var(--v-primary-base);
+  font-weight: bold;
+  font-size: 14px;
+  height: 50px;
+}
+
+.v-btn.add-funds-btn {
+  background-color: #F1F2F6;
+  border: 0;
+  color: var(--v-primary-base);
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.wallet-item {
+  cursor: pointer;
+  font-family: Lato, Arial, Helvetica, sans-serif;
+  line-height: 1em;
+  &__details {
+    font-size: 8px;
+    margin-top: -4px;
+    color: #8F9FB4
+  }
+  &:hover {
+    background: #E8F1FF;
+    border: 1px solid #0061FF;
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.1);
+  }
+}
+
+.return {
+  margin-top: 90px;
+  &__btn {
+    font-weight: 500;
+    font-size: 12px;
+    color: #B3C0CE;
+  }
+}
+
+.theme--dark {
+  .v-card {
+    background: #242529;
+  }
+  .funds-header {
+    border-bottom: 1px solid #343539;
+  }
+  .v-btn.add-funds-btn {
+    background-color: #2F3136 !important;
+    color: #D3D3D4;
+  }
+  .v-btn.preferred-method-btn {
+    background-color: #2F3136 !important;
+    color: #D3D3D4;
+  }
+  .wallet-item {
+    background: #2F3136;
+    &__details {
+      color: #EEF2F4
+    }
+    &:hover {
+      background: #5C6C7F;
+      border: 1px solid #5C6C7F;
+      box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+    }
+  }
+}

@@ -1,10 +1,10 @@
-const extend = require('xtend')
-const EventEmitter = require('safe-event-emitter')
-const ObservableStore = require('obs-store')
-const log = require('loglevel')
-const txStateHistoryHelper = require('../utils/tx-state-history-helper').default
-const createId = require('../utils/random-id').default
-const { getFinalStates, normalizeTxParams } = require('../utils/txUtils')
+import EventEmitter from 'safe-event-emitter'
+import ObservableStore from 'obs-store'
+import log from 'loglevel'
+
+import txStateHistoryHelper from '../utils/tx-state-history-helper'
+import createId from '../utils/random-id'
+import { getFinalStates, normalizeTxParams } from '../utils/txUtils'
 /**
   TransactionStateManager is responsible for the state of a transaction and
   storing the transaction
@@ -31,14 +31,10 @@ class TransactionStateManager extends EventEmitter {
   constructor({ initState, txHistoryLimit, getNetwork }) {
     super()
 
-    this.store = new ObservableStore(
-      extend(
-        {
-          transactions: []
-        },
-        initState
-      )
-    )
+    this.store = new ObservableStore({
+      transactions: [],
+      ...initState
+    })
     this.txHistoryLimit = txHistoryLimit
     this.getNetwork = getNetwork
   }
@@ -50,16 +46,14 @@ class TransactionStateManager extends EventEmitter {
   generateTxMeta(opts) {
     const netId = this.getNetwork()
     if (netId === 'loading') throw new Error('MetaMask is having trouble connecting to the network')
-    return extend(
-      {
-        id: createId(),
-        time: new Date().getTime(),
-        status: 'unapproved',
-        metamaskNetworkId: netId,
-        loadingDefaults: true
-      },
-      opts
-    )
+    return {
+      id: createId(),
+      time: new Date().getTime(),
+      status: 'unapproved',
+      metamaskNetworkId: netId,
+      loadingDefaults: true,
+      ...opts
+    }
   }
 
   /**
@@ -223,7 +217,7 @@ class TransactionStateManager extends EventEmitter {
   */
   updateTxParams(txId, txParams) {
     const txMeta = this.getTx(txId)
-    txMeta.txParams = extend(txMeta.txParams, txParams)
+    txMeta.txParams = { ...txMeta.txParams, ...txParams }
     this.updateTx(txMeta, 'txStateManager#updateTxParams')
   }
 
@@ -278,6 +272,7 @@ class TransactionStateManager extends EventEmitter {
     Object.keys(opts).forEach(key => {
       filteredTxList = this.getTxsByMetaData(key, opts[key], filteredTxList)
     })
+    // console.log('filteredTxList', filteredTxList)
     return filteredTxList
   }
   /**

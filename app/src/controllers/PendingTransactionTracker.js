@@ -1,6 +1,6 @@
-const EventEmitter = require('safe-event-emitter')
-const log = require('loglevel')
-const EthQuery = require('ethjs-query')
+import EventEmitter from 'safe-event-emitter'
+import log from 'loglevel'
+import EthQuery from 'ethjs-query'
 
 /**
 
@@ -130,6 +130,8 @@ class PendingTransactionTracker extends EventEmitter {
   async _checkPendingTx(txMeta) {
     const txHash = txMeta.hash
     const txId = txMeta.id
+    const ifRelayer = txMeta.relayer
+    console.log('_checkPendingTx', txMeta)
 
     // Only check submitted txs
     if (txMeta.status !== 'submitted') return
@@ -141,7 +143,7 @@ class PendingTransactionTracker extends EventEmitter {
       noTxHashErr.name = 'NoTxHashError'
       this.emit('tx:failed', txId, noTxHashErr)
       return
-    }
+    } else if (txHash.indexOf('PENDING_') !== -1) return
 
     // *note to self* hard failure point
     const transactionReceipt = (await this.query.getTransactionReceipt(txHash)) || {}

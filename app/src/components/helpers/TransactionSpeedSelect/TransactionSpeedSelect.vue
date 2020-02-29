@@ -1,10 +1,11 @@
 <template>
-  <v-flex xs12 sm6 mb-3>
-    <v-layout px-4>
-      <v-flex class="subtitle-2">
+  <v-flex xs12 mb-3 class="torus-v8">
+    <v-layout>
+      <v-flex class="body-2">
         <span>
-          {{ t('walletTransfer.selectSpeed') }}
-          <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" />
+          Transfer Fee
+          <!-- {{ t('walletTransfer.selectSpeed') }}
+          <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" /> -->
         </span>
         <TransferAdvanceOption
           v-if="!$vuetify.breakpoint.xsOnly"
@@ -16,9 +17,22 @@
         />
       </v-flex>
     </v-layout>
-    <v-layout px-4 mx-n1 xs12 v-if="!isAdvanceOption">
+    <v-layout mx-n1 xs12 v-if="!isAdvanceOption">
       <v-flex xs6 px-1 mb-1>
-        <v-btn
+        <v-chip
+          class="button-speed text-center"
+          :outlined="$vuetify.theme.dark"
+          :class="[speedSelected === 'average' ? 'selected' : '', isWalletTransfer ? 'button-speed--transfer' : '']"
+          label
+          @click="selectSpeed('average', averageGasPrice)"
+        >
+          <img :src="require(`../../../../public/img/icons/speed-bicycle.svg`)" class="mr-2" />
+          <div>
+            <div class="font-weight-bold button-speed__speed">~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
+            <div :class="{ 'text_2--text': !$vuetify.theme.dark }">{{ getGasDisplayString(averageGasPrice) }}</div>
+          </div>
+        </v-chip>
+        <!-- <v-btn
           id="average-speed-btn"
           block
           large
@@ -29,10 +43,23 @@
         >
           <span>~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</span>
           <span class="font-weight-light body-2">{{ getGasDisplayString(averageGasPrice) }}</span>
-        </v-btn>
+        </v-btn> -->
       </v-flex>
       <v-flex xs6 px-1 mb-1>
-        <v-btn
+        <v-chip
+          class="button-speed text-center"
+          :outlined="$vuetify.theme.dark"
+          :class="[speedSelected === 'fastest' ? 'selected' : '', isWalletTransfer ? 'button-speed--transfer' : '']"
+          label
+          @click="selectSpeed('fastest', fastestGasPrice)"
+        >
+          <img :src="require(`../../../../public/img/icons/speed-car.svg`)" class="mr-2" />
+          <div>
+            <div class="font-weight-bold button-speed__speed">~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
+            <div :class="{ 'text_2--text': !$vuetify.theme.dark }">{{ getGasDisplayString(fastestGasPrice) }}</div>
+          </div>
+        </v-chip>
+        <!-- <v-btn
           id="fastest-speed-btn"
           block
           large
@@ -43,17 +70,17 @@
         >
           <span>~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</span>
           <span class="font-weight-light body-2">{{ getGasDisplayString(fastestGasPrice) }}</span>
-        </v-btn>
+        </v-btn> -->
       </v-flex>
     </v-layout>
     <v-layout v-if="isAdvanceOption" align-center>
-      <v-flex xs8 px-6 mb-1>
+      <v-flex xs8 mb-1>
         <div class="subtitle-2 font-weight-bold">
           {{ getEthAmountDisplay(gas, activeGasPrice) }}
           <span class="caption text_2--text">( ~ {{ getGasDisplayString(activeGasPrice) }} )</span>
         </div>
       </v-flex>
-      <v-flex xs4 px-4 class="text-right">
+      <v-flex xs4 class="text-right">
         <v-btn id="adv-reset-btn" outlined color="primary" @click="resetAdvanceOption">{{ t('walletTransfer.reset') }}</v-btn>
       </v-flex>
     </v-layout>
@@ -81,10 +108,10 @@ import BigNumber from 'bignumber.js'
 
 export default {
   components: {
-    TransferAdvanceOption,
-    HelpTooltip
+    TransferAdvanceOption
+    // HelpTooltip
   },
-  props: ['gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol', 'resetSpeed'],
+  props: ['isWalletTransfer', 'gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol', 'resetSpeed'],
   data() {
     return {
       isAdvanceOption: false,
@@ -134,7 +161,7 @@ export default {
     },
     getGasDisplayString(gasPrice) {
       const currencyFee = this.getGasAmount(gasPrice)
-      return `${this.t('walletTransfer.pay')} ${significantDigits(currencyFee.toString())} ${this.selectedCurrency}`
+      return `${significantDigits(currencyFee.toString())} ${this.selectedCurrency}`
     },
     getGasAmount(gasPrice) {
       const currencyMultiplier = this.getCurrencyMultiplier

@@ -46,7 +46,6 @@ import log from 'loglevel'
 import { toChecksumAddress, toBN, fromWei, isAddress } from 'web3-utils'
 import config from '../../config'
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
-import { getPastOrders } from '../../plugins/simplex'
 import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getEthTxStatus, formatDate } from '../../utils/utils'
 import torus from '../../torus'
 import { patch } from '../../utils/httpHelpers'
@@ -184,7 +183,9 @@ export default {
             activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
           }`
         : activity.type_name || activity.type
-        ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${activity.type_name}`
+        ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+            activity.type == 'eth' ? activity.type_name.toUpperCase() : activity.type_name
+          }`
         : `${this.t(activity.action) + ' ' + activity.from} `
     },
     getIcon(activity) {
@@ -194,7 +195,7 @@ export default {
         if (activity.type === CONTRACT_TYPE_ERC721) {
           return activity.type_image_link // will be an opensea image url
         } else if (activity.type === CONTRACT_TYPE_ERC20) {
-          return `logos/${activity.type_image_link}`
+          return `logos/${activity.type_image_link === 'n/a' ? 'eth.svg' : activity.type_image_link}`
         } else {
           const action = activity.action.split('.')
           return action.length >= 1 ? `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}` : ''
@@ -222,7 +223,8 @@ export default {
         return acc
       }, [])
       const sortedTx = finalTx.sort((a, b) => b.date - a.date) || []
-      // log.info('sorted tx is', sortedTx)
+      log.info('sorted tx is', sortedTx)
+      //debugger
       return sortedTx
     },
     async calculatePastTransactions() {
@@ -234,6 +236,7 @@ export default {
         let status = x.status
         if (
           x.status !== 'confirmed' &&
+          x.transaction_hash.indexOf('PENDING_') == -1 &&
           (publicAddress.toLowerCase() === x.from.toLowerCase() || publicAddress.toLowerCase() === x.to.toLowerCase())
         ) {
           status = await getEthTxStatus(x.transaction_hash, torus.web3)
@@ -353,10 +356,45 @@ export default {
       }
       return finalTransactions
     },
+    calculatePaymentTransactions() {
+      const { paymentTx: response } = this.$store.state || {}
+      this.paymentTx = response.reduce((acc, x) => {
+        let action = ''
+        if (ACTIVITY_ACTION_TOPUP.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_TOPUP
+        else if (ACTIVITY_ACTION_SEND.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_SEND
+        else if (ACTIVITY_ACTION_RECEIVE.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_RECEIVE
+
+        acc.push({
+          id: x.id,
+          date: new Date(x.date),
+          from: x.from,
+          slicedFrom: x.slicedFrom,
+          action,
+          to: x.to,
+          slicedTo: x.slicedTo,
+          totalAmount: x.totalAmount,
+          totalAmountString: x.totalAmountString,
+          currencyAmount: x.currencyAmount,
+          currencyAmountString: x.currencyAmountString,
+          amount: x.amount,
+          ethRate: x.ethRate,
+          status: x.status.toLowerCase(),
+          etherscanLink: x.etherscanLink || '',
+          currencyUsed: x.currencyUsed
+        })
+
+        return acc
+        // }
+      }, [])
+      this.loadingOrders = false
+    },
     patchTx(x, status, jwtToken) {
       // patch tx
+      // console.log(x)
+      const transactionsAPI = `${config.api}/transaction${x.relayer ? 'SCW' : ''}`
+
       patch(
-        `${config.api}/transaction`,
+        transactionsAPI,
         {
           id: x.id,
           status: status
@@ -373,45 +411,7 @@ export default {
     }
   },
   mounted() {
-    const { selectedAddress: publicAddress, jwtToken } = this.$store.state
-    getPastOrders(
-      {},
-      {
-        Authorization: `Bearer ${jwtToken}`
-      }
-    )
-      .then(response => {
-        this.paymentTx = response.data.reduce((acc, x) => {
-          let action = ''
-          if (ACTIVITY_ACTION_TOPUP.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_TOPUP
-          else if (ACTIVITY_ACTION_SEND.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_SEND
-          else if (ACTIVITY_ACTION_RECEIVE.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_RECEIVE
-
-          acc.push({
-            id: x.id,
-            date: new Date(x.date),
-            from: x.from,
-            slicedFrom: x.slicedFrom,
-            action,
-            to: x.to,
-            slicedTo: x.slicedTo,
-            totalAmount: x.totalAmount,
-            totalAmountString: x.totalAmountString,
-            currencyAmount: x.currencyAmount,
-            currencyAmountString: x.currencyAmountString,
-            amount: x.amount,
-            ethRate: x.ethRate,
-            status: x.status.toLowerCase(),
-            etherscanLink: x.etherscanLink || '',
-            currencyUsed: x.currencyUsed
-          })
-
-          return acc
-          // }
-        }, [])
-        this.loadingOrders = false
-      })
-      .catch(err => log.error(err))
+    this.calculatePaymentTransactions()
     this.calculatePastTransactions()
   }
 }

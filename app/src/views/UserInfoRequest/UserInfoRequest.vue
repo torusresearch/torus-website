@@ -1,10 +1,11 @@
 <template>
-  <v-container py-6 px-0>
+  <v-container pa-0>
     <template v-if="type === 'none'">
       <user-info-screen-loader />
     </template>
     <template v-else>
-      <v-layout align-center mx-6 mb-6>
+      <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
+      <!-- <v-layout align-center mx-6 mb-6>
         <div class="text-black font-weight-bold headline float-left">{{ t('dappInfo.permission') }}</div>
         <img :src="require('../../../public/img/icons/lock.svg')" width="16" class="ml-2" />
       </v-layout>
@@ -30,7 +31,7 @@
                 <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
               </v-list-item-icon>
               <v-list-item-content class="pa-1">
-                <div class="caption text_2--text">{{ t('dappInfo.toAccessGoogle') }}</div>
+                <div class="caption text_2--text">{{ accessText }}</div>
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="pa-0" v-if="message !== ''">
@@ -52,7 +53,7 @@
             <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">{{ t('dappInfo.confirm') }}</v-btn>
           </v-flex>
         </v-layout>
-      </v-layout>
+      </v-layout> -->
     </template>
   </v-container>
 </template>
@@ -60,20 +61,28 @@
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
 import { UserInfoScreenLoader } from '../../content-loader'
-import { broadcastChannelOptions } from '../../utils/utils'
+import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
+import { broadcastChannelOptions, capitalizeFirstLetter } from '../../utils/utils'
 import log from 'loglevel'
 
 export default {
   name: 'userInfoRequest',
   components: {
-    UserInfoScreenLoader
+    UserInfoScreenLoader,
+    PermissionConfirm
   },
   data() {
     return {
       origin: '',
       originHref: '',
       type: 'none',
-      message: ''
+      message: '',
+      verifier: ''
+    }
+  },
+  computed: {
+    accessText() {
+      return this.t(`dappInfo.toAccess${capitalizeFirstLetter(this.verifier)}`)
     }
   },
   methods: {
@@ -112,6 +121,7 @@ export default {
       this.originHref = url.href
       this.origin = url.hostname // origin of tx: website url
       this.type = 'userInfo'
+      this.verifier = payload.verifier
       this.message = payload && payload.message ? payload.message : ''
       bc.close()
     }

@@ -160,7 +160,7 @@ export default {
       return this.$store.state.selectedAddress
     },
     selectedKey() {
-      return this.$store.state.wallet[this.selectedAddress]
+      return this.$store.state.wallet[this.selectedAddress].privateKey
     }
   },
   methods: {

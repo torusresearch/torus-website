@@ -1,8 +1,9 @@
-const EventEmitter = require('events').EventEmitter
-const Wallet = require('ethereumjs-wallet')
-const ethUtil = require('ethereumjs-util')
-const sigUtil = require('eth-sig-util')
-const log = require('loglevel')
+import { EventEmitter } from 'events'
+import Wallet from 'ethereumjs-wallet'
+import * as ethUtil from 'ethereumjs-util'
+import sigUtil from 'eth-sig-util'
+import log from 'loglevel'
+
 const type = 'Torus Keyring'
 
 export default class TorusKeyring extends EventEmitter {
@@ -29,7 +30,8 @@ export default class TorusKeyring extends EventEmitter {
   }
 
   generatePrivKey(wallet) {
-    return wallet.getPrivateKey().toString('hex')
+    const test = wallet.getPrivateKey().toString('hex')
+    return test
   }
 
   generateWallet(privateKey) {
@@ -178,6 +180,7 @@ export default class TorusKeyring extends EventEmitter {
 
   _getWalletForAccount(account) {
     const address = sigUtil.normalize(account)
+
     let wallet = this.wallets.find(w => ethUtil.bufferToHex(w.getAddress()) === address)
     if (!wallet) throw new Error('Torus Keyring - Unable to find matching address.')
     return wallet

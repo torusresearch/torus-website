@@ -1,72 +1,90 @@
-const ETH = 'eth'
+export const ETH = 'eth'
 
-const ROPSTEN = 'ropsten'
-const RINKEBY = 'rinkeby'
-const KOVAN = 'kovan'
-const MAINNET = 'mainnet'
-const LOCALHOST = 'localhost'
-const GOERLI = 'goerli'
-const RPC = 'rpc'
-const MATIC = 'matic'
+export const PLATFORM_BRAVE = 'Brave'
+export const PLATFORM_CHROME = 'Chrome'
+export const PLATFORM_EDGE = 'Edge'
+export const PLATFORM_FIREFOX = 'Firefox'
+export const PLATFORM_OPERA = 'Opera'
 
-const MAINNET_CODE = 1
-const ROPSTEN_CODE = 3
-const RINKEBY_CODE = 4
-const KOVAN_CODE = 42
-const GOERLI_CODE = 5
-const MATIC_CODE = 4626
-const LOCALHOST_CODE = 5777
+export const ENVIRONMENT_TYPE_POPUP = 'popup'
+export const ENVIRONMENT_TYPE_NOTIFICATION = 'notification'
+export const ENVIRONMENT_TYPE_FULLSCREEN = 'fullscreen'
+export const ENVIRONMENT_TYPE_BACKGROUND = 'background'
 
-const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
-const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
-const KOVAN_DISPLAY_NAME = 'Kovan Test Network'
-const MAINNET_DISPLAY_NAME = 'Main Ethereum Network'
-const GOERLI_DISPLAY_NAME = 'Goerli Test Network'
-const RPC_DISPLAY_NAME = 'RPC'
-const LOCALHOST_DISPLAY_NAME = 'https://localhost:8545'
-const MATIC_DISPLAY_NAME = 'Matic Alpha-Mainnet'
+export const ROPSTEN = 'ropsten'
+export const RINKEBY = 'rinkeby'
+export const KOVAN = 'kovan'
+export const MAINNET = 'mainnet'
+export const LOCALHOST = 'localhost'
+export const GOERLI = 'goerli'
+export const RPC = 'rpc'
+export const MATIC = 'matic'
 
-const MATIC_URL = 'https://alpha.ethereum.matic.network'
+export const MAINNET_CODE = 1
+export const ROPSTEN_CODE = 3
+export const RINKEBY_CODE = 4
+export const KOVAN_CODE = 42
+export const GOERLI_CODE = 5
+export const MATIC_CODE = 4626
+export const LOCALHOST_CODE = 5777
 
-const TX_MESSAGE = 'message'
-const TX_PERSONAL_MESSAGE = 'personal_message'
-const TX_TYPED_MESSAGE = 'typed_message'
-const TX_TRANSACTION = 'transaction'
+export const MAINNET_CHAIN_ID = '0x1'
+export const ROPSTEN_CHAIN_ID = '0x3'
+export const RINKEBY_CHAIN_ID = '0x4'
+export const KOVAN_CHAIN_ID = '0x2a'
+export const GOERLI_CHAIN_ID = '0x5'
+export const MATIC_CHAIN_ID = '0x1212'
 
-const TRANSACTION_TYPE_CANCEL = 'cancel'
-const TRANSACTION_TYPE_RETRY = 'retry'
-const TRANSACTION_TYPE_STANDARD = 'standard'
+export const ROPSTEN_DISPLAY_NAME = 'Ropsten Test Network'
+export const RINKEBY_DISPLAY_NAME = 'Rinkeby Test Network'
+export const KOVAN_DISPLAY_NAME = 'Kovan Test Network'
+export const MAINNET_DISPLAY_NAME = 'Main Ethereum Network'
+export const GOERLI_DISPLAY_NAME = 'Goerli Test Network'
+export const RPC_DISPLAY_NAME = 'RPC'
+export const LOCALHOST_DISPLAY_NAME = 'https://localhost:8545'
+export const MATIC_DISPLAY_NAME = 'Matic Alpha-Mainnet'
 
-const TRANSACTION_STATUS_APPROVED = 'approved'
-const TRANSACTION_STATUS_CONFIRMED = 'confirmed'
+export const MATIC_URL = 'https://alpha.ethereum.matic.network'
 
-const TOKEN_METHOD_TRANSFER = 'transfer'
-const TOKEN_METHOD_APPROVE = 'approve'
-const TOKEN_METHOD_TRANSFER_FROM = 'transferFrom'
+export const TX_MESSAGE = 'message'
+export const TX_PERSONAL_MESSAGE = 'personal_message'
+export const TX_TYPED_MESSAGE = 'typed_message'
+export const TX_TRANSACTION = 'transaction'
 
-const COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM = 'safeTransferFrom'
+export const TRANSACTION_TYPE_CANCEL = 'cancel'
+export const TRANSACTION_TYPE_RETRY = 'retry'
+export const TRANSACTION_TYPE_STANDARD = 'standard'
 
-const SEND_ETHER_ACTION_KEY = 'sentEther'
-const DEPLOY_CONTRACT_ACTION_KEY = 'contractDeployment'
-const CONTRACT_INTERACTION_KEY = 'contractInteraction'
+export const TRANSACTION_STATUS_APPROVED = 'approved'
+export const TRANSACTION_STATUS_CONFIRMED = 'confirmed'
 
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
-const ERC721METADATA_INTERFACE_ID = '0x5b5e139f'
-const ERC721ENUMERABLE_INTERFACE_ID = '0x780e9d63'
-const SINGLE_CALL_BALANCES_ADDRESS = '0xb1f8e55c7f64d203c1400b9d8555d050f94adf39'
+export const TOKEN_METHOD_TRANSFER = 'transfer'
+export const TOKEN_METHOD_APPROVE = 'approve'
+export const TOKEN_METHOD_TRANSFER_FROM = 'transferFrom'
 
-const ACTIVE = 'active'
-const INACTIVE = 'inactive'
+export const COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM = 'safeTransferFrom'
 
-const USER_INFO_REQUEST_APPROVED = 'user_info_request_approved'
-const USER_INFO_REQUEST_REJECTED = 'user_info_request_rejected'
-const USER_INFO_REQUEST_NEW = 'user_info_request_new'
+export const SEND_ETHER_ACTION_KEY = 'sentEther'
+export const DEPLOY_CONTRACT_ACTION_KEY = 'contractDeployment'
+export const CONTRACT_INTERACTION_KEY = 'contractInteraction'
 
-const CONTRACT_TYPE_ETH = 'eth'
-const CONTRACT_TYPE_ERC20 = 'erc20'
-const CONTRACT_TYPE_ERC721 = 'erc721'
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
+export const ERC721METADATA_INTERFACE_ID = '0x5b5e139f'
+export const ERC721ENUMERABLE_INTERFACE_ID = '0x780e9d63'
+export const SINGLE_CALL_BALANCES_ADDRESS = '0xb1f8e55c7f64d203c1400b9d8555d050f94adf39'
 
-const createNetwork = (host, networkName, chainId) => {
+export const ACTIVE = 'active'
+export const INACTIVE = 'inactive'
+
+export const USER_INFO_REQUEST_APPROVED = 'user_info_request_approved'
+export const USER_INFO_REQUEST_REJECTED = 'user_info_request_rejected'
+export const USER_INFO_REQUEST_NEW = 'user_info_request_new'
+
+export const CONTRACT_TYPE_ETH = 'eth'
+export const CONTRACT_TYPE_ERC20 = 'erc20'
+export const CONTRACT_TYPE_ERC721 = 'erc721'
+
+export const createNetwork = (host, networkName, chainId) => {
   return {
     host,
     networkName,
@@ -74,7 +92,7 @@ const createNetwork = (host, networkName, chainId) => {
   }
 }
 
-const SUPPORTED_NETWORK_TYPES = {
+export const SUPPORTED_NETWORK_TYPES = {
   [MAINNET]: createNetwork(MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE),
   [RINKEBY]: createNetwork(RINKEBY, RINKEBY_DISPLAY_NAME, RINKEBY_CODE),
   [KOVAN]: createNetwork(KOVAN, KOVAN_DISPLAY_NAME, KOVAN_CODE),
@@ -83,44 +101,45 @@ const SUPPORTED_NETWORK_TYPES = {
   [LOCALHOST]: createNetwork(LOCALHOST, LOCALHOST_DISPLAY_NAME, LOCALHOST_CODE),
   [MATIC]: createNetwork(MATIC, MATIC_DISPLAY_NAME, MATIC_CODE)
 }
-const WALLET_HEADERS_HOME = 'My Wallet'
-const WALLET_HEADERS_TRANSFER = 'Transfer Details'
-const WALLET_HEADERS_ACTIVITY = 'Transaction Activities'
-const WALLET_HEADERS_CONFIRM = 'Confirm your Transfer'
 
-const ACTIVITY_ACTION_ALL = 'walletActivity.allTransactions'
-const ACTIVITY_ACTION_SEND = 'walletActivity.send'
-const ACTIVITY_ACTION_RECEIVE = 'walletActivity.receive'
-const ACTIVITY_ACTION_TOPUP = 'walletActivity.topup'
+export const WALLET_HEADERS_HOME = 'My Wallet'
+export const WALLET_HEADERS_TRANSFER = 'Transfer Details'
+export const WALLET_HEADERS_ACTIVITY = 'Transaction Activities'
+export const WALLET_HEADERS_CONFIRM = 'Confirm your Transfer'
 
-const ACTIVITY_PERIOD_ALL = 'walletActivity.all'
-const ACTIVITY_PERIOD_WEEK_ONE = 'walletActivity.lastOneWeek'
-const ACTIVITY_PERIOD_MONTH_ONE = 'walletActivity.lastOneMonth'
-const ACTIVITY_PERIOD_MONTH_SIX = 'walletActivity.lastSixMonts'
+export const ACTIVITY_ACTION_ALL = 'walletActivity.allTransactions'
+export const ACTIVITY_ACTION_SEND = 'walletActivity.send'
+export const ACTIVITY_ACTION_RECEIVE = 'walletActivity.receive'
+export const ACTIVITY_ACTION_TOPUP = 'walletActivity.topup'
 
-const ACTIVITY_STATUS_SUCCESSFUL = 'walletActivity.successful'
-const ACTIVITY_STATUS_UNSUCCESSFUL = 'walletActivity.unsuccessful'
-const ACTIVITY_STATUS_PENDING = 'walletActivity.pending'
+export const ACTIVITY_PERIOD_ALL = 'walletActivity.all'
+export const ACTIVITY_PERIOD_WEEK_ONE = 'walletActivity.lastOneWeek'
+export const ACTIVITY_PERIOD_MONTH_ONE = 'walletActivity.lastOneMonth'
+export const ACTIVITY_PERIOD_MONTH_SIX = 'walletActivity.lastSixMonts'
 
-const GOOGLE = 'google'
-const FACEBOOK = 'facebook'
-const REDDIT = 'reddit'
-const DISCORD = 'discord'
-const TWITCH = 'twitch'
-const ENS = 'ENS'
-const ETH_LABEL = 'walletSettings.ethAddress'
-const GOOGLE_LABEL = 'walletSettings.googleId'
-const FACEBOOK_LABEL = 'walletSettings.facebookId'
-const REDDIT_LABEL = 'walletSettings.redditId'
-const DISCORD_LABEL = 'walletSettings.discordId'
-const TWITCH_LABEL = 'walletSettings.twitchId'
-const ENS_LABEL = 'walletSettings.ensId'
+export const ACTIVITY_STATUS_SUCCESSFUL = 'walletActivity.successful'
+export const ACTIVITY_STATUS_UNSUCCESSFUL = 'walletActivity.unsuccessful'
+export const ACTIVITY_STATUS_PENDING = 'walletActivity.pending'
+
+export const GOOGLE = 'google'
+export const FACEBOOK = 'facebook'
+export const REDDIT = 'reddit'
+export const DISCORD = 'discord'
+export const TWITCH = 'twitch'
+export const ENS = 'ENS'
+export const ETH_LABEL = 'walletSettings.ethAddress'
+export const GOOGLE_LABEL = 'walletSettings.googleId'
+export const FACEBOOK_LABEL = 'walletSettings.facebookId'
+export const REDDIT_LABEL = 'walletSettings.redditId'
+export const DISCORD_LABEL = 'walletSettings.discordId'
+export const TWITCH_LABEL = 'walletSettings.twitchId'
+export const ENS_LABEL = 'walletSettings.ensId'
 
 // Format: [dark/light]-[colorName]
-const THEME_DARK_BLACK_NAME = 'dark-black'
-const THEME_LIGHT_BLUE_NAME = 'light-blue'
+export const THEME_DARK_BLACK_NAME = 'dark-black'
+export const THEME_LIGHT_BLUE_NAME = 'light-blue'
 
-const OLD_ERC721_LIST = {
+export const OLD_ERC721_LIST = {
   '0x06012c8cf97bead5deae237070f9587f8e7a266d': {
     name: 'Cryptokitties',
     logo: 'dapp-cryptokitty.svg',
@@ -130,7 +149,7 @@ const OLD_ERC721_LIST = {
   }
 }
 
-const ALLOWED_VERIFIERS = [
+export const ALLOWED_VERIFIERS = [
   {
     name: ETH_LABEL,
     value: ETH
@@ -153,26 +172,26 @@ const ALLOWED_VERIFIERS = [
   }
 ]
 
-const SIMPLEX = 'simplex'
-const MOONPAY = 'moonpay'
-const WYRE = 'wyre'
-const COINDIRECT = 'coindirect'
-const CRYPTO = 'crypto'
-const PNG = 'png'
-const SVG = 'svg'
+export const SIMPLEX = 'simplex'
+export const MOONPAY = 'moonpay'
+export const WYRE = 'wyre'
+export const COINDIRECT = 'coindirect'
+export const CRYPTO = 'crypto'
+export const PNG = 'png'
+export const SVG = 'svg'
 
-const LOCALE_EN = 'en'
-const LOCALE_DE = 'de'
-const LOCALE_JA = 'ja'
-const LOCALE_KO = 'ko'
-const LOCALE_ZH = 'zh'
-const LOCALE_EN_LABEL = 'English'
-const LOCALE_DE_LABEL = 'German (Deutsch)'
-const LOCALE_JA_LABEL = 'Japanese (日本語)'
-const LOCALE_KO_LABEL = 'Korean (한국어)'
-const LOCALE_ZH_LABEL = 'Mandarin (中文)'
+export const LOCALE_EN = 'en'
+export const LOCALE_DE = 'de'
+export const LOCALE_JA = 'ja'
+export const LOCALE_KO = 'ko'
+export const LOCALE_ZH = 'zh'
+export const LOCALE_EN_LABEL = 'English'
+export const LOCALE_DE_LABEL = 'German (Deutsch)'
+export const LOCALE_JA_LABEL = 'Japanese (日本語)'
+export const LOCALE_KO_LABEL = 'Korean (한국어)'
+export const LOCALE_ZH_LABEL = 'Mandarin (中文)'
 
-const LOCALES = [
+export const LOCALES = [
   {
     name: LOCALE_EN_LABEL,
     value: LOCALE_EN
@@ -195,102 +214,84 @@ const LOCALES = [
   }
 ]
 
-module.exports = {
-  ENS,
-  ETH,
-  ROPSTEN,
-  RINKEBY,
-  KOVAN,
-  MAINNET,
-  LOCALHOST,
-  GOERLI,
-  RPC,
-  MAINNET_CODE,
-  ROPSTEN_CODE,
-  RINKEBY_CODE,
-  GOERLI_CODE,
-  KOVAN_CODE,
-  ROPSTEN_DISPLAY_NAME,
-  RINKEBY_DISPLAY_NAME,
-  KOVAN_DISPLAY_NAME,
-  MAINNET_DISPLAY_NAME,
-  GOERLI_DISPLAY_NAME,
-  RPC_DISPLAY_NAME,
-  LOCALHOST_DISPLAY_NAME,
-  TRANSACTION_TYPE_CANCEL,
-  TRANSACTION_TYPE_RETRY,
-  TRANSACTION_TYPE_STANDARD,
-  TRANSACTION_STATUS_APPROVED,
-  TRANSACTION_STATUS_CONFIRMED,
-  ZERO_ADDRESS,
-  TOKEN_METHOD_APPROVE,
-  TOKEN_METHOD_TRANSFER,
-  TOKEN_METHOD_TRANSFER_FROM,
-  SEND_ETHER_ACTION_KEY,
-  DEPLOY_CONTRACT_ACTION_KEY,
-  CONTRACT_INTERACTION_KEY,
-  MATIC_URL,
-  MATIC_DISPLAY_NAME,
-  MATIC,
-  MATIC_CODE,
-  ACTIVE,
-  INACTIVE,
-  USER_INFO_REQUEST_APPROVED,
-  USER_INFO_REQUEST_REJECTED,
-  USER_INFO_REQUEST_NEW,
-  SUPPORTED_NETWORK_TYPES,
-  WALLET_HEADERS_HOME,
-  WALLET_HEADERS_TRANSFER,
-  WALLET_HEADERS_ACTIVITY,
-  WALLET_HEADERS_CONFIRM,
-  ACTIVITY_ACTION_ALL,
-  ACTIVITY_ACTION_SEND,
-  ACTIVITY_ACTION_RECEIVE,
-  ACTIVITY_ACTION_TOPUP,
-  ACTIVITY_PERIOD_ALL,
-  ACTIVITY_PERIOD_WEEK_ONE,
-  ACTIVITY_PERIOD_MONTH_ONE,
-  ACTIVITY_PERIOD_MONTH_SIX,
-  ACTIVITY_STATUS_SUCCESSFUL,
-  ACTIVITY_STATUS_UNSUCCESSFUL,
-  ACTIVITY_STATUS_PENDING,
-  GOOGLE,
-  FACEBOOK,
-  TWITCH,
-  REDDIT,
-  DISCORD,
-  ETH_LABEL,
-  GOOGLE_LABEL,
-  FACEBOOK_LABEL,
-  REDDIT_LABEL,
-  DISCORD_LABEL,
-  TWITCH_LABEL,
-  ENS_LABEL,
-  THEME_DARK_BLACK_NAME,
-  THEME_LIGHT_BLUE_NAME,
-  ERC721METADATA_INTERFACE_ID,
-  ERC721ENUMERABLE_INTERFACE_ID,
-  SINGLE_CALL_BALANCES_ADDRESS,
-  CONTRACT_TYPE_ETH,
-  CONTRACT_TYPE_ERC20,
-  CONTRACT_TYPE_ERC721,
-  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
-  OLD_ERC721_LIST,
-  ALLOWED_VERIFIERS,
-  SIMPLEX,
-  MOONPAY,
-  COINDIRECT,
-  WYRE,
-  CRYPTO,
-  PNG,
-  SVG,
-  TX_MESSAGE,
-  TX_TYPED_MESSAGE,
-  TX_PERSONAL_MESSAGE,
-  TX_TRANSACTION,
-  LOCALE_EN,
-  LOCALE_DE,
-  LOCALE_EN_LABEL,
-  LOCALE_DE_LABEL,
-  LOCALES
+export const WALLET_METHOD_PREFIX = 'wallet'
+export const TORUS_METHOD_PREFIX = 'torus'
+
+export const ERROR_TIME = 5 * 1000
+export const SUCCESS_TIME = 5 * 1000
+
+export const MESSAGE_MODAL_TYPE_SUCCESS = 'success'
+export const MESSAGE_MODAL_TYPE_FAIL = 'fail'
+export const MESSAGE_MODAL_TYPE_PENDING = 'pending'
+export const WALLET_PREFIX = 'wallet_'
+
+export const HISTORY_STORE_KEY = 'permissionsHistory'
+
+export const LOG_STORE_KEY = 'permissionsLog'
+
+export const METADATA_STORE_KEY = 'domainMetadata'
+
+export const CAVEAT_NAMES = {
+  exposedAccounts: 'exposedAccounts'
 }
+
+export const NOTIFICATION_NAMES = {
+  accountsChanged: 'wallet_accountsChanged'
+}
+
+export const LOG_IGNORE_METHODS = ['wallet_sendDomainMetadata']
+
+export const SAFE_METHODS = [
+  'eth_accounts',
+  'eth_requestAccounts',
+  'web3_sha3',
+  'net_listening',
+  'net_peerCount',
+  'net_version',
+  'eth_blockNumber',
+  'eth_call',
+  'eth_chainId',
+  'eth_coinbase',
+  'eth_estimateGas',
+  'eth_gasPrice',
+  'eth_getBalance',
+  'eth_getBlockByHash',
+  'eth_getBlockByNumber',
+  'eth_getBlockTransactionCountByHash',
+  'eth_getBlockTransactionCountByNumber',
+  'eth_getCode',
+  'eth_getFilterChanges',
+  'eth_getFilterLogs',
+  'eth_getLogs',
+  'eth_getStorageAt',
+  'eth_getTransactionByBlockHashAndIndex',
+  'eth_getTransactionByBlockNumberAndIndex',
+  'eth_getTransactionByHash',
+  'eth_getTransactionCount',
+  'eth_getTransactionReceipt',
+  'eth_getUncleByBlockHashAndIndex',
+  'eth_getUncleByBlockNumberAndIndex',
+  'eth_getUncleCountByBlockHash',
+  'eth_getUncleCountByBlockNumber',
+  'eth_getWork',
+  'eth_hashrate',
+  'eth_mining',
+  'eth_newBlockFilter',
+  'eth_newFilter',
+  'eth_newPendingTransactionFilter',
+  'eth_protocolVersion',
+  // 'eth_sendRawTransaction',
+  // 'eth_sendTransaction',
+  // 'eth_sign',
+  // 'personal_sign',
+  // 'eth_signTypedData',
+  // 'eth_signTypedData_v1',
+  // 'eth_signTypedData_v3',
+  // 'eth_signTypedData_v4',
+  'eth_submitHashrate',
+  'eth_submitWork',
+  'eth_syncing',
+  'eth_uninstallFilter',
+  'metamask_watchAsset',
+  'wallet_watchAsset'
+]

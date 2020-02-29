@@ -1,7 +1,308 @@
 <template>
-  <v-layout wrap class="wallet-transfer" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
-    <div class="text-black font-weight-bold headline px-4 mb-4">{{ t('walletTransfer.transferDetails') }}</div>
-    <v-flex xs12 mb-4>
+  <v-layout wrap class="wallet-transfer torus-v8" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
+    <v-flex xs12>
+      <div class="text_2--text font-weight-bold headline px-4 mb-4">{{ t('walletTransfer.transferDetails') }}</div>
+      <v-layout wrap>
+        <v-flex xs12 sm6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'" :style="{ order: $vuetify.breakpoint.xsOnly ? 1 : 0 }">
+          <v-card
+            :flat="$vuetify.breakpoint.xsOnly"
+            :class="{
+              'pa-6 card-shadow-v8': !$vuetify.breakpoint.xsOnly,
+              'py-6 px-4': $vuetify.breakpoint.xsOnly,
+              'transfer-form-container--flat': $vuetify.breakpoint.xsOnly && $vuetify.theme.dark
+            }"
+          >
+            <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation aria-autocomplete="off" autocomplete="off">
+              <v-layout wrap>
+                <v-flex xs12 mb-4>
+                  <span class="text_1--text body-2">Select item to transfer</span>
+                  <div v-if="selectedItemDisplay">
+                    <v-menu transition="slide-y-transition" bottom>
+                      <template v-slot:activator="{ on }">
+                        <v-chip class="select-coin" label large :outlined="$vuetify.theme.dark" v-on="on">
+                          <span class="select-coin-name">{{ selectedItemDisplay.name }}</span>
+                          <div class="flex-grow-1 text-right pr-2">
+                            <v-icon right>$vuetify.icons.select</v-icon>
+                          </div>
+                        </v-chip>
+                      </template>
+                      <v-list class="select-item-list">
+                        <v-list-item
+                          class="select-coin-eth"
+                          v-for="token in finalBalancesArrayEthOnly"
+                          :key="token.id"
+                          @click="selectedItemChanged(token.tokenAddress)"
+                        >
+                          <v-list-item-icon class="mr-1">
+                            <img
+                              :src="require(`../../../public/images/logos/${token.logo}`)"
+                              height="20px"
+                              onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                              :alt="token.name"
+                            />
+                          </v-list-item-icon>
+                          <v-list-item-content>
+                            <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                        <v-divider v-if="finalBalancesArrayTokens.length > 0" class="mx-3"></v-divider>
+                        <v-subheader class="body-2" v-if="finalBalancesArrayTokens.length > 0">
+                          <v-icon small left class="mr-2">$vuetify.icons.token</v-icon>
+                          {{ t('walletTransfer.tokens') }}
+                        </v-subheader>
+                        <v-list-item v-for="token in finalBalancesArrayTokens" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
+                          <v-list-item-icon class="ml-8 mr-1">
+                            <img
+                              :src="require(`../../../public/images/logos/${token.logo}`)"
+                              height="20px"
+                              onerror="if (this.src !== 'eth.svg') this.src = 'images/logos/eth.svg';"
+                              :alt="token.name"
+                            />
+                          </v-list-item-icon>
+                          <v-list-item-content>
+                            <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                        <v-divider v-if="collectibles.length > 0" class="mx-3"></v-divider>
+                        <v-subheader class="body-2" v-if="collectibles.length > 0">
+                          <v-icon small left class="mr-2">$vuetify.icons.collectibles</v-icon>
+                          {{ t('walletTransfer.collectibles') }}
+                        </v-subheader>
+                        <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
+                          <v-list-item-icon class="ml-8 mr-1">
+                            <img :src="collectible.logo" height="20px" />
+                          </v-list-item-icon>
+                          <v-list-item-content>
+                            <v-list-item-title class="body-2">{{ collectible.name }}</v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </div>
+                </v-flex>
+                <v-flex xs12 mb-0>
+                  <v-layout wrap>
+                    <v-flex xs12>
+                      <span class="text_1--text body-2">Send to</span>
+                    </v-flex>
+                    <v-flex xs12 md8 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
+                      <v-combobox
+                        :name="randomName"
+                        id="recipient-address"
+                        class="recipient-address"
+                        ref="contactSelected"
+                        :value="contactSelected"
+                        @input="contactChanged"
+                        :items="contactList"
+                        :placeholder="verifierPlaceholder"
+                        required
+                        :rules="[contactRule, rules.required]"
+                        outlined
+                        :error="ensError !== ''"
+                        :error-messages="ensError"
+                        item-text="name"
+                        item-value="value"
+                        aria-label="Recipient Address"
+                        :return-object="false"
+                      >
+                        <template v-slot:append>
+                          <v-btn icon small color="primary" @click="$refs.captureQr.$el.click()" aria-label="QR Capture Button">
+                            <v-icon small>$vuetify.icons.scan</v-icon>
+                          </v-btn>
+                        </template>
+                      </v-combobox>
+                      <qrcode-capture @decode="onDecodeQr" ref="captureQr" style="display: none" />
+                      <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
+                        <div class="v-messages">
+                          <div class="v-messages__wrapper">
+                            <div class="v-messages__message d-flex error--text px-3">{{ qrErrorMsg }}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </v-flex>
+                    <v-flex xs12 md4 class="recipient-verifier-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-1'">
+                      <v-select
+                        id="recipient-verifier"
+                        outlined
+                        append-icon="$vuetify.icons.select"
+                        :items="verifierOptions"
+                        item-text="name"
+                        item-value="value"
+                        :rules="[rules.required]"
+                        v-model="selectedVerifier"
+                        @blur="verifierChangedManual"
+                        aria-label="Recipient Selector"
+                      ></v-select>
+                    </v-flex>
+                    <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" xs12 mb-2>
+                      <add-contact :contact="contactSelected" :verifier="selectedVerifier"></add-contact>
+                    </v-flex>
+                  </v-layout>
+                </v-flex>
+                <v-flex xs12 mb-4 class="you-send-container">
+                  <div>
+                    <span class="text_1--text body-2">Amount</span>
+                    <a
+                      id="send-all-btn"
+                      class="float-right primary--text body-2"
+                      v-if="contractType !== CONTRACT_TYPE_ERC721 && !isSendAll"
+                      @click="sendAll"
+                    >
+                      {{ t('walletTransfer.sendAll') }}
+                    </a>
+                    <a id="send-all-reset-btn" class="float-right primary--text body-2" v-if="isSendAll" @click="resetSendAll">
+                      {{ t('walletTransfer.reset') }}
+                    </a>
+                  </div>
+                  <v-select
+                    v-if="contractType === CONTRACT_TYPE_ERC721"
+                    v-model="assetSelected"
+                    :items="collectibleSelected.assets"
+                    outlined
+                    item-text="name"
+                    append-icon="$vuetify.icons.select"
+                    return-object
+                    aria-label="Asset selector"
+                  >
+                    <template v-slot:prepend-inner>
+                      <img :src="assetSelected.image" height="24px" :alt="assetSelected.name" />
+                    </template>
+                    <template v-slot:item="{ item }">
+                      <img class="mr-2" :src="item.image" height="24px" :alt="item.name" />
+                      {{ item.name }}
+                    </template>
+                  </v-select>
+                  <v-text-field
+                    v-if="contractType !== CONTRACT_TYPE_ERC721"
+                    id="you-send"
+                    :hint="convertedAmount ? `~ ${convertedAmount} ${!!toggle_exclusive ? selectedItem.symbol : selectedCurrency}` : ''"
+                    persistent-hint
+                    type="number"
+                    outlined
+                    required
+                    :value="displayAmount"
+                    @change="onChangeDisplayAmount"
+                    :readonly="isSendAll"
+                    :rules="[rules.required, lesserThan, moreThanZero]"
+                    aria-label="Amount you send"
+                  />
+                </v-flex>
+                <v-flex xs12 mb-4 v-if="isSmartContract">
+                  <transaction-fee-select isWalletTransfer="true"></transaction-fee-select>
+                </v-flex>
+                <v-flex xs12 mb-4 v-else>
+                  <transaction-speed-select
+                    isWalletTransfer="true"
+                    :resetSpeed="resetSpeed"
+                    :symbol="contractType !== CONTRACT_TYPE_ERC721 ? selectedItem.symbol : 'ETH'"
+                    :gas="gas"
+                    :displayAmount="displayAmount"
+                    @onSelectSpeed="onSelectSpeed"
+                  />
+                </v-flex>
+                <v-flex xs12 mb-6 v-if="contractType !== CONTRACT_TYPE_ERC721" class="text-right">
+                  <div class="subtitle-2 text_1--text">{{ t('walletTransfer.totalCost') }}</div>
+                  <div class="headline text_2--text">{{ totalCost || 0 }} {{ totalCostSuffix }}</div>
+                  <div class="caption text_2--text">{{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}</div>
+                  <!-- <div>
+                    <span class="subtitle-2">{{ t('walletTransfer.totalCost') }}</span>
+                  </div>
+                  <v-text-field
+                    id="total-cost"
+                    :suffix="totalCostSuffix"
+                    :hint="convertedTotalCost ? convertedTotalCostDisplay : ''"
+                    persistent-hint
+                    outlined
+                    readonly
+                    :value="totalCost"
+                  ></v-text-field> -->
+                </v-flex>
+                <v-flex xs12 mb-4 class="text-right">
+                  <v-btn
+                    large
+                    depressed
+                    color="primary"
+                    :disabled="!formValid || selectedVerifier === ''"
+                    class="px-6 wallet-transfer-submit"
+                    id="wallet-transfer-submit"
+                    @click="onTransferClick"
+                  >
+                    {{ t('walletTransfer.transfer') }}
+                  </v-btn>
+                  <v-dialog v-model="confirmDialog" max-width="550" persistent>
+                    <transfer-confirm
+                      :toAddress="toEthAddress"
+                      :convertedAmount="
+                        convertedAmount
+                          ? `~ ${convertedAmount} ${
+                              !!toggle_exclusive ? (contractType === CONTRACT_TYPE_ERC721 ? '' : selectedItem.symbol) : selectedCurrency
+                            }`
+                          : ''
+                      "
+                      :displayAmount="
+                        `${displayAmount} ${
+                          !toggle_exclusive ? (contractType === CONTRACT_TYPE_ERC721 ? '' : selectedItem.symbol) : selectedCurrency
+                        }`
+                      "
+                      :assetSelected="contractType === CONTRACT_TYPE_ERC721 ? assetSelected : {}"
+                      :isNonFungibleToken="contractType === CONTRACT_TYPE_ERC721"
+                      :speedSelected="timeTaken"
+                      :transactionFee="gasPriceInCurrency"
+                      :selectedCurrency="selectedCurrency"
+                      @onClose="confirmDialog = false"
+                      @onConfirm="sendCoin"
+                      :sendEthToContractError="sendEthToContractError"
+                    ></transfer-confirm>
+                  </v-dialog>
+                </v-flex>
+              </v-layout>
+            </v-form>
+          </v-card>
+        </v-flex>
+        <v-flex px-4 xs12 sm6 mb-2 :style="{ order: $vuetify.breakpoint.xsOnly ? 0 : 1 }">
+          <v-card :flat="$vuetify.theme.dark" class="card-shadow-v8 pa-6" v-if="selectedItem">
+            <v-layout wrap align-center>
+              <v-flex xs6 class="mb-2">
+                <div class="body-2">{{ t('walletTransfer.accountBalance') }}</div>
+              </v-flex>
+              <v-flex xs6 class="text-right mb-2">
+                <network-display></network-display>
+              </v-flex>
+              <v-flex xs8>
+                <div class="text_2--text">
+                  <span class="display-1 font-weight-bold mr-1">
+                    {{ significantDigits(selectedItem.computedBalance, false, 4) }}
+                    <span class="caption">{{ selectedItem.symbol }}</span>
+                  </span>
+                </div>
+              </v-flex>
+              <v-flex xs4 class="align-self-end text-right">
+                <div class="text-right text_2--text caption currency-rate">{{ selectedItem.currencyRateText }}</div>
+              </v-flex>
+            </v-layout>
+            <!-- <span class="subtitle-2">{{ t('walletTransfer.accountBalance') }}</span>
+            <component-loader class="mt-2" v-if="!weiBalanceLoaded" />
+            <div v-else>
+              <span id="account-balance" class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
+              <span class="caption text_2--text">{{ currencyBalanceDisplay }}</span>
+            </div>
+            <div class="caption font-weight-regular text_2--text">{{ selectedItem.currencyRateText }}</div> -->
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </v-flex>
+
+    <v-dialog v-model="messageModalShow" max-width="375" persistent>
+      <message-modal
+        @onClose="messageModalShow = false"
+        :modal-type="messageModalType"
+        :title="messageModalTitle"
+        :detail-text="messageModalDetails.replace(/\{time\}/gi, timeTaken)"
+        goTo="walletHistory"
+      />
+    </v-dialog>
+
+    <!-- <v-flex xs12 mb-4>
       <v-form ref="form" v-model="formValid" @submit.prevent="sendCoin" lazy-validation aria-autocomplete="off" autocomplete="off">
         <v-layout wrap>
           <v-flex xs12 sm6 px-4 mb-5>
@@ -291,13 +592,13 @@
 
         <v-layout mt-4 pr-2 wrap>
           <v-spacer></v-spacer>
-          <v-dialog v-model="showModalMessage" max-width="500" persistent>
+          <v-dialog v-model="messageModalShow" max-width="500" persistent>
             <message-modal
-              @onClose="showModalMessage = false"
-              :modal-type="modalMessageSuccess"
-              :title="modalMessageSuccess ? t('walletTransfer.transferSuccessTitle') : t('walletTransfer.transferFailTitle')"
+              @onClose="messageModalShow = false"
+              :modal-type="messageModalType"
+              :title="messageModalType ? t('walletTransfer.transferSuccessTitle') : t('walletTransfer.transferFailTitle')"
               :detail-text="
-                modalMessageSuccess
+                messageModalType
                   ? t('walletTransfer.transferSuccessMessage').replace(/\{time\}/gi, timeTaken)
                   : t('walletTransfer.transferFailMessage')
               "
@@ -305,7 +606,7 @@
           </v-dialog>
         </v-layout>
       </v-form>
-    </v-flex>
+    </v-flex> -->
   </v-layout>
 </template>
 
@@ -316,11 +617,14 @@ import torus from '../../torus'
 import { significantDigits, getEtherScanHashLink, validateVerifierId } from '../../utils/utils'
 import config from '../../config'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
+import TransactionFeeSelect from '../../components/helpers/TransactionFeeSelect'
 import ComponentLoader from '../../components/helpers/ComponentLoader'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import AddContact from '../../components/WalletTransfer/AddContact'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
+import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import { get, post } from '../../utils/httpHelpers'
+import TransferManagerJSON from '../../assets/TransferManager.json'
 import log from 'loglevel'
 import {
   GOOGLE,
@@ -336,7 +640,10 @@ import {
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   OLD_ERC721_LIST,
-  ALLOWED_VERIFIERS
+  ALLOWED_VERIFIERS,
+  MESSAGE_MODAL_TYPE_SUCCESS,
+  MESSAGE_MODAL_TYPE_FAIL,
+  MESSAGE_MODAL_TYPE_PENDING
 } from '../../utils/enums'
 import BigNumber from 'bignumber.js'
 
@@ -350,12 +657,16 @@ const MAX_GAS = 6721975
 export default {
   name: 'walletTransfer',
   components: {
-    TransactionSpeedSelect,
-    MessageModal,
+    TransferConfirm,
     QrcodeCapture,
+    NetworkDisplay,
     AddContact,
-    ComponentLoader,
-    TransferConfirm
+    MessageModal,
+    TransactionSpeedSelect,
+    TransactionFeeSelect
+    // MessageModal,
+    // ComponentLoader,
+    // TransferConfirm
   },
   data() {
     return {
@@ -390,16 +701,22 @@ export default {
         required: value => !!value || this.t('walletTransfer.required')
       },
       nodeDetails: {},
-      showModalMessage: false,
-      modalMessageSuccess: null,
+      messageModalShow: false,
+      messageModalType: '',
+      messageModalTitle: '',
+      messageModalDetails: '',
       isSendAll: false,
       confirmDialog: false,
       CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
-      CONTRACT_TYPE_ERC721
+      CONTRACT_TYPE_ERC721,
+      MESSAGE_MODAL_TYPE_FAIL
     }
   },
   computed: {
+    isSmartContract() {
+      return this.$store.state.wallet[this.$store.state.selectedAddress] && this.$store.state.wallet[this.$store.state.selectedAddress].type === 'SC'
+    },
     verifierOptions() {
       const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
       return verifiers.map(verifier => {
@@ -492,9 +809,18 @@ export default {
       const targetContact = this.contactSelected
       const addressFound = this.contactList.find(contact => contact.value.toLowerCase() === targetContact.toLowerCase())
       return addressFound === undefined
+    },
+    selectedAddress() {
+      return this.$store.state.selectedAddress
+    }
+  },
+  watch: {
+    selectedAddress(newValue, oldValue) {
+      if (newValue !== oldValue) this.calculateGas(newValue)
     }
   },
   methods: {
+    significantDigits: significantDigits,
     onChangeDisplayAmount(value) {
       if ((BigNumber.isBigNumber(value) && !this.displayAmount.eq(value)) || !BigNumber.isBigNumber(value)) {
         this.displayAmount = BigNumber.isBigNumber(value) ? value : new BigNumber(value || '0')
@@ -615,7 +941,7 @@ export default {
                 resolve(new BigNumber('0'))
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC20) {
-            const selectedAddress = this.$store.state.selectedAddress
+            const selectedAddress = this.selectedAddress
             const value =
               '0x' +
               this.amount
@@ -632,7 +958,7 @@ export default {
                 resolve(new BigNumber('0'))
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC721) {
-            const selectedAddress = this.$store.state.selectedAddress
+            const selectedAddress = this.selectedAddress
             this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId)
               .estimateGas({ from: selectedAddress })
               .then(response => {
@@ -729,14 +1055,17 @@ export default {
       const ethBalance = this.selectedItem.computedBalance
       const currencyBalance = ethBalance.times(this.getCurrencyTokenRate)
       const ethGasPrice = this.getEthAmount(this.gas, this.activeGasPrice)
+      const transferFromSC = this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
       const currencyGasPrice = ethGasPrice.times(this.getCurrencyTokenRate)
 
       this.isSendAll = true
 
       if (this.toggle_exclusive === 0) {
-        this.onChangeDisplayAmount(this.contractType === CONTRACT_TYPE_ETH ? ethBalance.minus(ethGasPrice) : ethBalance)
+        this.onChangeDisplayAmount(this.contractType === CONTRACT_TYPE_ETH && !transferFromSC ? ethBalance.minus(ethGasPrice) : ethBalance)
       } else {
-        this.onChangeDisplayAmount(this.contractType === CONTRACT_TYPE_ETH ? currencyBalance.minus(currencyGasPrice) : currencyBalance)
+        this.onChangeDisplayAmount(
+          this.contractType === CONTRACT_TYPE_ETH && !transferFromSC ? currencyBalance.minus(currencyGasPrice) : currencyBalance
+        )
       }
     },
     resetSendAll() {
@@ -748,7 +1077,8 @@ export default {
     async sendCoin() {
       const toAddress = this.toEthAddress
       const fastGasPrice = '0x' + this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)
-      const selectedAddress = this.$store.state.selectedAddress
+      const selectedAddress = this.selectedAddress
+
       if (this.contractType === CONTRACT_TYPE_ETH) {
         const value =
           '0x' +
@@ -757,31 +1087,47 @@ export default {
             .dp(0, BigNumber.ROUND_DOWN)
             .toString(16)
         log.info(this.gas.toString())
+
         torus.web3.eth.sendTransaction(
           {
             from: selectedAddress,
             to: toAddress,
             value,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : '0x' + this.gas.toString(16),
-            gasPrice: fastGasPrice
+            gasPrice: fastGasPrice,
+            relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
           },
           (err, transactionHash) => {
+            if (this.isSmartContract) return
+
             if (err) {
               const regEx = new RegExp('User denied transaction signature', 'i')
               if (!err.message.match(regEx)) {
-                this.showModalMessage = true
-                this.modalMessageSuccess = false
+                this.messageModalShow = true
+                this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+                this.messageModalTitle = 'Your transfer cannot be processed'
+                this.messageModalDetails = 'Please try again'
               }
               log.error(err)
             } else {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
 
-              this.showModalMessage = true
-              this.modalMessageSuccess = true
+              this.messageModalShow = true
+              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+              this.messageModalTitle = 'Your transfer is being processed'
+              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
             }
           }
         )
+        log.info(this.isSmartContract)
+        // Show pending modal for smart contract transfer
+        if (this.isSmartContract) {
+          this.messageModalShow = true
+          this.messageModalType = MESSAGE_MODAL_TYPE_PENDING
+          this.messageModalTitle = 'Your transfer is being submitted'
+          this.messageModalDetails = 'It will take some time. Check your activity page later.'
+        }
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
         const value =
           '0x' +
@@ -793,48 +1139,74 @@ export default {
           {
             from: selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : '0x' + this.gas.toString(16),
-            gasPrice: fastGasPrice
+            gasPrice: fastGasPrice,
+            relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
           },
           (err, transactionHash) => {
+            if (this.isSmartContract) return
+
             if (err) {
               const regEx = new RegExp('User denied transaction signature', 'i')
               if (!err.message.match(regEx)) {
-                this.showModalMessage = true
-                this.modalMessageSuccess = false
+                this.messageModalShow = true
+                this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+                this.messageModalTitle = 'Your transfer cannot be processed'
+                this.messageModalDetails = 'Please try again'
               }
               log.error(err)
             } else {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
 
-              this.showModalMessage = true
-              this.modalMessageSuccess = true
+              this.messageModalShow = true
+              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+              this.messageModalTitle = 'Your transfer is being processed'
+              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
             }
           }
         )
+        if (this.isSmartContract) {
+          this.messageModalShow = true
+          this.messageModalType = MESSAGE_MODAL_TYPE_PENDING
+          this.messageModalTitle = 'Your transfer is being submitted'
+          this.messageModalDetails = 'It will take some time. Check your activity page later.'
+        }
       } else if (this.contractType === CONTRACT_TYPE_ERC721) {
         this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId).send(
           {
             from: selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : '0x' + this.gas.toString(16),
-            gasPrice: fastGasPrice
+            gasPrice: fastGasPrice,
+            relayer: this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
           },
           (err, transactionHash) => {
+            if (this.isSmartContract) return
+
             if (err) {
               const regEx = new RegExp('User denied transaction signature', 'i')
               if (!err.message.match(regEx)) {
-                this.showModalMessage = true
-                this.modalMessageSuccess = false
+                this.messageModalShow = true
+                this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+                this.messageModalTitle = 'Your transfer cannot be processed'
+                this.messageModalDetails = 'Please try again'
               }
               log.error(err)
             } else {
               // Send email to the user
               this.sendEmail(this.assetSelected.name, transactionHash)
-              this.showModalMessage = true
-              this.modalMessageSuccess = true
+              this.messageModalShow = true
+              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+              this.messageModalTitle = 'Your transfer is being processed'
+              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
             }
           }
         )
+        if (this.isSmartContract) {
+          this.messageModalShow = true
+          this.messageModalType = MESSAGE_MODAL_TYPE_PENDING
+          this.messageModalTitle = 'Your transfer is being submitted'
+          this.messageModalDetails = 'It will take some time. Check your activity page later.'
+        }
       }
     },
     getEthAmount(gas, gasPrice) {
@@ -874,13 +1246,17 @@ export default {
 
       const gasPriceInEth = this.getEthAmount(this.gas, this.activeGasPrice)
       const gasPriceInCurrency = gasPriceInEth.times(this.getCurrencyTokenRate)
-      const toSend = this.amount
-      const toSendConverted = toSend.times(this.getCurrencyTokenRate)
-
       this.gasPriceInCurrency = gasPriceInCurrency
 
+      const transferFromSC = this.$store.state.wallet[this.$store.state.selectedAddress].type == 'SC'
+
+      const toSend = transferFromSC ? this.amount : this.amount.plus(gasPriceInEth)
+      const toSendConverted = transferFromSC
+        ? toSend.times(this.getCurrencyTokenRate)
+        : toSend.times(this.getCurrencyTokenRate).plus(gasPriceInCurrency)
+
       if (this.contractType === CONTRACT_TYPE_ETH) {
-        this.totalCost = this.toggle_exclusive === 0 ? toSend.plus(gasPriceInEth) : toSendConverted.plus(gasPriceInCurrency)
+        this.totalCost = this.toggle_exclusive === 0 ? toSend : toSendConverted
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
         const displayedCurrency = this.toggle_exclusive === 0 ? this.selectedItem.symbol : this.selectedCurrency
         this.totalCost = `${this.displayAmount.toString()} ${displayedCurrency} + ${significantDigits(

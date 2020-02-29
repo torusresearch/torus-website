@@ -23,6 +23,9 @@ import ChevronRightIcon from './ChevronRightIcon'
 import ChevronDoubleRightIcon from './ChevronDoubleRightIcon'
 import ScanIcon from './ScanIcon'
 import NetworkIcon from './NetworkIcon'
+import TimeIcon from './TimeIcon'
+import PersonIcon from './PersonIcon'
+import PersonCircleIcon from './PersonCircleIcon'
 import LockIcon from './LockIcon'
 import KeyIcon from './KeyIcon'
 import ListIcon from './ListIcon'
@@ -40,8 +43,13 @@ import DownloadIcon from './DownloadIcon'
 import CollectibleIcon from './CollectibleIcon'
 import TokenIcon from './TokenIcon'
 import QrIcon from './QrIcon'
+import SmartContractIcon from './SmartContractIcon'
+import CopyIcon from './CopyIcon'
 
 export default {
+  copy: {
+    component: CopyIcon
+  },
   select: {
     component: SelectIcon
   },
@@ -117,6 +125,9 @@ export default {
   network: {
     component: NetworkIcon
   },
+  time: {
+    component: TimeIcon
+  },
   lock: {
     component: LockIcon
   },
@@ -147,6 +158,12 @@ export default {
   topup: {
     component: TopupIcon
   },
+  person: {
+    component: PersonIcon
+  },
+  person_circle: {
+    component: PersonCircleIcon
+  },
   activities: {
     component: ActivitiesIcon
   },
@@ -167,5 +184,8 @@ export default {
   },
   qr: {
     component: QrIcon
+  },
+  smart_contract: {
+    component: SmartContractIcon
   }
 }

@@ -1,0 +1,18 @@
+@import '../../../scss/card-shadow.mixin';
+
+.account-list {
+  &__item {
+    cursor: pointer;
+    &:hover, &.active {
+      @include cardShadow();
+      border-radius: 9px;
+    }
+  }
+  &__details {
+    width: 100%;
+  }
+  &__address {
+    font-size: 8px;
+    color: #8F9FB4;
+  }
+}

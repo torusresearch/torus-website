@@ -15,7 +15,7 @@ import {
   TOKEN_METHOD_TRANSFER_FROM,
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
 } from '../utils/enums'
-import { post } from '../utils/httpHelpers.js'
+import { post, patch, put } from '../utils/httpHelpers.js'
 import { notifyUser } from '../utils/notifications'
 import state from './state'
 import actions from './actions'
@@ -44,6 +44,7 @@ if (storageAvailable('sessionStorage'))
         userInfo: state.userInfo,
         userInfoAccess: state.userInfoAccess,
         wallet: state.wallet,
+        selectedEOA: state.selectedEOA,
         // weiBalance: state.weiBalance,
         selectedAddress: state.selectedAddress,
         networkType: state.networkType,
@@ -235,8 +236,9 @@ VuexStore.subscribe((mutation, state) => {
     for (let id in txs) {
       const txMeta = txs[id]
       if (txMeta.status === 'submitted' && id >= 0) {
+        log.info('setTransactions', txMeta)
         // insert into db here
-        const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txMeta
+        const { methodParams, contractParams, txParams, transactionCategory, time, hash, relayer } = txMeta
         let amountTo, amountValue, assetName, tokenRate, symbol, type, type_name, type_image_link, totalAmount
 
         if (contractParams.erc721) {
@@ -298,6 +300,7 @@ VuexStore.subscribe((mutation, state) => {
           currency_amount: (getCurrencyMultiplier() * parseFloat(totalAmount) * tokenRate).toString(),
           selected_currency: state.selectedCurrency,
           status: 'submitted',
+          relayer: relayer,
           network: state.networkType.host,
           transaction_hash: hash
         }
@@ -308,18 +311,41 @@ VuexStore.subscribe((mutation, state) => {
           } catch (error) {
             log.error(error)
           }
+          const transactionsAPI = `${config.api}/transaction${relayer ? 'SCW' : ''}`
 
-          post(`${config.api}/transaction`, txObj, {
-            headers: {
-              Authorization: `Bearer ${state.jwtToken}`,
-              'Content-Type': 'application/json; charset=utf-8'
-            }
-          })
-            .then(response => {
-              if (response.response.length > 0) VuexStore.commit('patchPastTransactions', { ...txObj, id: response.response[0] })
-              log.info('successfully added', response)
+          // Check if its a second request on the same object when the txhash isupdated
+          const apiMethod = relayer && txObj.transaction_hash.indexOf('PENDING_') == -1 ? 'patch' : 'post'
+          log.info('transactionAPI', transactionsAPI, apiMethod, txObj)
+
+          if (apiMethod === 'patch') {
+            const oldTxHash = 'PENDING_'.concat(txMeta.id)
+            patch(
+              `${config.api}/transactionSCW/txHash`,
+              { newTxHash: txObj.transaction_hash, oldTxHash },
+              {
+                headers: {
+                  Authorization: `Bearer ${state.jwtToken}`,
+                  'Content-Type': 'application/json; charset=utf-8'
+                }
+              }
+            )
+              .then(response => {
+                log.info(response)
+              })
+              .catch(err => log.error(err, 'unable to update transaction'))
+          } else {
+            post(transactionsAPI, txObj, {
+              headers: {
+                Authorization: `Bearer ${state.jwtToken}`,
+                'Content-Type': 'application/json; charset=utf-8'
+              }
             })
-            .catch(err => log.error(err, 'unable to insert transaction'))
+              .then(response => {
+                if (response.response.length > 0) VuexStore.commit('patchPastTransactions', { ...txObj, id: response.response[0] })
+                log.info('successfully added', response)
+              })
+              .catch(err => log.error(err, 'unable to insert transaction'))
+          }
         }
       }
     }
@@ -329,7 +355,7 @@ VuexStore.subscribe((mutation, state) => {
 if (storageAvailable('localStorage')) {
   const torusTheme = localStorage.getItem('torus-theme')
   if (torusTheme) {
-    VuexStore.dispatch('setTheme', torusTheme)
+    VuexStore.commit('setTheme', torusTheme)
   }
 }
 

@@ -1,0 +1,91 @@
+.smart-contract-confirm-container {
+  
+  // .v-text-field--filled > .v-input__control > .v-input__slot, .v-text-field--full-width > .v-input__control > .v-input__slot, .v-text-field--outlined > .v-input__control > .v-input__slot
+  ::v-deep .v-input.v-text-field > .v-input__control {
+    & > .v-input__slot {
+      min-height: 40px;
+      height: 40px;
+    }
+  }
+  
+  .logo-container {
+    width: 48px;
+    height: 48px;
+    background: #FFFFFF;
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+    border-radius: 50%;
+    overflow: hidden;
+  
+    img {
+      height: 100%;
+      &.logo-padded {
+        height: 20px;
+      }
+    }
+  
+    .logo-caption {
+      position: absolute;
+      width: 80px;
+    }
+  }
+  
+  .logo-label {
+    margin-right: -14px;
+    width: 75px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    &--right {
+      margin-left: -14px;
+    }
+  }
+  
+  .network-container {
+    border-top: 2px solid #F1F6FD;
+    font-size: 10px;
+    width: 100%;
+    text-align: center;
+    margin-top: 24px;
+  }
+
+  ::v-deep .v-input, 
+  ::v-deep .v-input {
+    fieldset {
+      border: 0;
+      border-radius: 6px;
+    }
+    .v-text-field__details {
+      padding-right: 0;
+      .v-messages__message {
+        text-align: right;
+        font-size: 10px;
+      }
+    }
+  }
+
+  ::v-deep .total-cost {
+    .v-text-field__slot {
+      font-weight: 500;
+    }
+  }
+  
+  .v-divider {
+    border: 1px solid #F1F2F6;
+  }
+
+  &.theme--dark {
+    .logo-container {
+      background: #2F3136;
+      .v-icon {
+        color: #7F8FA4;
+      }
+    }
+
+    .v-divider {
+      border: 1px solid #2F3136;
+    }
+    
+    .card-shadow {
+      border-bottom: 1px solid #343539;
+    }
+  }
+}

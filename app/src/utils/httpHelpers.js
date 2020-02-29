@@ -1,3 +1,6 @@
+import log from 'loglevel'
+import config from '../config'
+
 export const promiseTimeout = (ms, promise) => {
   const timeout = new Promise((resolve, reject) => {
     const id = setTimeout(() => {
@@ -23,7 +26,7 @@ export const post = (url = '', data = {}, opts = {}) => {
     ...{ method: 'POST' }
   }
   return promiseTimeout(
-    30000,
+    3000000,
     fetch(url, options).then(response => {
       if (response.ok) {
         return response.json()
@@ -90,12 +93,51 @@ export const patch = (url = '', data = {}, opts = {}) => {
   })
 }
 
+export const put = (url = '', data = {}, opts = {}) => {
+  const defaultOptions = {
+    mode: 'cors',
+    cache: 'no-cache',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+    },
+    body: JSON.stringify(data)
+  }
+  const options = {
+    ...defaultOptions,
+    ...opts,
+    ...{ method: 'PUT' }
+  }
+  return fetch(url, options).then(response => {
+    if (response.ok) {
+      return response.json()
+    } else throw new Error('Could not connect', response)
+  })
+}
+
 export const generateJsonRPCObject = (method, params) => {
   return {
     jsonrpc: '2.0',
     method: method,
     id: 10,
     params: params
+  }
+}
+
+export const getPastOrders = (params = {}, headers) => {
+  try {
+    const options = {
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...headers
+      }
+    }
+    const url = new URL(`${config.commonApiHost}/transaction`)
+    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
+    return get(url, options)
+  } catch (e) {
+    log.error(e)
   }
 }
 

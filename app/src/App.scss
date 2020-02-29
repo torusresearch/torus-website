@@ -1,3 +1,6 @@
+
+@import './scss/card-shadow.mixin';
+
 .torus-app.theme--dark,
 .torus-app.theme--light {
   // Input Related Styles
@@ -107,11 +110,17 @@
   }
 
   .card-shadow-v8 {
-    border: 1px solid #F1F2F6;
-    box-shadow: 0px 18px 36px rgba(46, 91, 255, 0.06);
+    @include cardShadow();
+    &.v-card {
+      border-radius: 6px;
+    }
+  }
+
+  .v-menu__content {
+    @include cardShadow();
     border-radius: 9px;
   }
-  
+
   .v-tab.v-tab--active {
     color: var(--v-secondary-darken3);
   }
@@ -148,4 +157,48 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.torus-v8 {
+  .v-input {
+    &.v-input--is-readonly .v-input__slot {
+      background: #F1F2F6;
+    }
+    &.v-text-field--outlined > .v-input__control {
+      padding-top: 0;
+      margin-top: 0;
+      & > .v-input__slot {
+        background: #FFFFFF;
+        box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
+        border-radius: 6px;
+        min-height: 54px;
+      }
+      .v-input__icon--append .v-icon {
+        color: #D3D5E2;
+      }
+    }
+    &.v-text-field--outlined:not(.error--text) {
+      fieldset {
+        border: 0;
+      }
+    }
+    &.v-text-field--outlined.error--text {
+      fieldset {
+        border: 1px solid var(--v-error-base);
+      }
+    }
+  }
+  .v-input.theme--dark {
+    &.v-text-field--outlined > .v-input__control {
+      & > .v-input__slot {
+        background: inherit;
+        box-shadow: inherit;
+      }
+      fieldset {
+        border-style: solid;
+        border-width: 1px;
+      }
+    }
+  }
+  
 }

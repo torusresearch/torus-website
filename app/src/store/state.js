@@ -1,4 +1,4 @@
-import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, USER_INFO_REQUEST_NEW, THEME_LIGHT_BLUE_NAME, LOCALE_EN } from '../utils/enums'
+import { ROPSTEN, ROPSTEN_DISPLAY_NAME, ROPSTEN_CODE, USER_INFO_REQUEST_NEW, THEME_LIGHT_BLUE_NAME, LOCALE_EN } from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -18,7 +18,7 @@ const initialState = {
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
   networkId: 0,
-  networkType: { host: MAINNET, chainId: MAINNET_CODE, networkName: MAINNET_DISPLAY_NAME },
+  networkType: { host: ROPSTEN, chainId: ROPSTEN_CODE, networkName: ROPSTEN_DISPLAY_NAME },
   currencyData: {},
   tokenData: {}, // Account specific object
   assets: {}, // Account specific object
@@ -27,20 +27,24 @@ const initialState = {
   unapprovedTypedMessages: {},
   unapprovedPersonalMsgs: {},
   unapprovedMsgs: {},
+
   // preferences
   selectedAddress: '',
+  selectedEOA: '',
   jwtToken: '',
 
   selectedCurrency: 'USD',
   pastTransactions: [],
+  paymentTx: [],
   theme: THEME_LIGHT_BLUE_NAME,
   locale: LOCALE_EN,
   billboard: [],
   contacts: [],
-  permissions: {},
+  permissions: [],
   userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate
   errorMsg: '',
-  successMsg: ''
+  successMsg: '',
+  iframeMetadata: { origin: '', name: '', icon: '' }
 }
 
 export default initialState

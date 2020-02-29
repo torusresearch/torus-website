@@ -1,3 +1,5 @@
+@import '../../scss/card-shadow.mixin';
+
 .v-btn {
   text-transform: inherit;
 }
@@ -23,6 +25,30 @@
   box-sizing: border-box;
   border: 1px solid #F2F2F2;
   height: 2px;
+}
+
+.account-link.v-btn.v-size--large {
+  @include cardShadow();
+  border: none;
+  .v-icon {
+    width: 36px;
+    height: 36px;
+  }
+  background: #FFFFFF;
+  padding: 14px 16px;
+  height: inherit;
+  font-size: 12px;
+}
+
+.theme--dark .account-link {
+  box-shadow: none;
+  .v-icon {
+    width: 36px;
+    height: 36px;
+  }
+  &.v-btn.v-size--large {
+    background: #434343;
+  }
 }
 
 body,

@@ -1,32 +1,27 @@
-const assert = require('assert')
-const EventEmitter = require('events')
-const ObservableStore = require('obs-store')
-const ComposedStore = require('obs-store/lib/composed')
-const log = require('loglevel')
-const extend = require('extend')
-const mergeMiddleware = require('json-rpc-engine/src/mergeMiddleware')
-const createScaffoldMiddleware = require('json-rpc-engine/src/createScaffoldMiddleware')
-const createBlockReRefMiddleware = require('eth-json-rpc-middleware/block-ref')
-const createRetryOnEmptyMiddleware = require('eth-json-rpc-middleware/retryOnEmpty')
-const createBlockCacheMiddleware = require('eth-json-rpc-middleware/block-cache')
-const createInflightMiddleware = require('eth-json-rpc-middleware/inflight-cache')
-const createBlockTrackerInspectorMiddleware = require('eth-json-rpc-middleware/block-tracker-inspector')
-const providerFromMiddleware = require('eth-json-rpc-middleware/providerFromMiddleware')
-const createFetchMiddleware = require('eth-json-rpc-middleware/fetch')
-const createBlockRefRewriteMiddleware = require('eth-json-rpc-middleware/block-ref-rewrite')
-const createInfuraMiddleware = require('eth-json-rpc-infura')
-const BlockTracker = require('eth-block-tracker')
-const EthQuery = require('eth-query')
-const createMetamaskMiddleware = require('../utils/createMetamaskMiddleware').default
-const JsonRpcEngine = require('json-rpc-engine')
-const providerFromEngine = require('eth-json-rpc-middleware/providerFromEngine')
-const { createSwappableProxy, createEventEmitterProxy } = require('swappable-obj-proxy')
+import assert from 'assert'
+import EventEmitter from 'events'
+import ObservableStore from 'obs-store'
+import ComposedStore from 'obs-store/lib/composed'
+import log from 'loglevel'
+import mergeMiddleware from 'json-rpc-engine/src/mergeMiddleware'
+import createScaffoldMiddleware from 'json-rpc-engine/src/createScaffoldMiddleware'
+import createBlockReRefMiddleware from 'eth-json-rpc-middleware/block-ref'
+import createRetryOnEmptyMiddleware from 'eth-json-rpc-middleware/retryOnEmpty'
+import createBlockCacheMiddleware from 'eth-json-rpc-middleware/block-cache'
+import createInflightMiddleware from 'eth-json-rpc-middleware/inflight-cache'
+import createBlockTrackerInspectorMiddleware from 'eth-json-rpc-middleware/block-tracker-inspector'
+import providerFromMiddleware from 'eth-json-rpc-middleware/providerFromMiddleware'
+import createFetchMiddleware from 'eth-json-rpc-middleware/fetch'
+import createBlockRefRewriteMiddleware from 'eth-json-rpc-middleware/block-ref-rewrite'
+import createInfuraMiddleware from 'eth-json-rpc-infura'
+import BlockTracker from 'eth-block-tracker'
+import EthQuery from 'eth-query'
+import JsonRpcEngine from 'json-rpc-engine'
+import providerFromEngine from 'eth-json-rpc-middleware/providerFromEngine'
+import { createSwappableProxy, createEventEmitterProxy } from 'swappable-obj-proxy'
 
-// defaults and constants
-const defaultProviderConfig = { type: 'mainnet' }
-const defaultNetworkConfig = { ticker: 'ETH' }
-const networks = { networkList: {} }
-const {
+import createMetamaskMiddleware from '../utils/createMetamaskMiddleware'
+import {
   ROPSTEN,
   RINKEBY,
   KOVAN,
@@ -42,7 +37,12 @@ const {
   KOVAN_CODE,
   RINKEBY_CODE,
   SUPPORTED_NETWORK_TYPES
-} = require('../utils/enums')
+} from '../utils/enums'
+
+// defaults and constants
+const defaultProviderConfig = { type: 'mainnet' }
+const defaultNetworkConfig = { ticker: 'ETH' }
+const networks = { networkList: {} }
 const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET, GOERLI]
 
 export default class NetworkController extends EventEmitter {
@@ -285,7 +285,7 @@ export default class NetworkController extends EventEmitter {
     var settings = {
       network: chainId
     }
-    settings = extend(settings, networks.networkList['rpc'])
+    settings = { ...settings, ...networks.networkList['rpc'] }
     this.networkConfig.putState(settings)
     this._setNetworkClient(networkClient)
   }

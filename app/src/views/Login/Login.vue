@@ -23,7 +23,7 @@
                 @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
               >
                 <img
-                  :src="require(`../../../public/img/icons/google${$vuetify.theme.dark ? '-dark' : ''}.svg`)"
+                  :src="require(`../../../public/img/icons/google${$vuetify.theme.dark ? '-login-dark' : ''}.svg`)"
                   :class="$vuetify.theme.dark ? 'mr-4 torus-dark' : 'mr-6'"
                 />
                 {{ t('login.signIn') }} Google
@@ -193,9 +193,9 @@ export default {
       triggerLogin: 'triggerLogin'
     }),
     returnHome() {
-      // this.$router.push({ path: '/' }).catch(err => {})
-      // this.isLogout = false
-      window.location.href = process.env.BASE_URL
+      this.$router.push({ path: '/' }).catch(err => {})
+      this.isLogout = false
+      // window.location.href = process.env.BASE_URL
     }
   },
   computed: mapState({

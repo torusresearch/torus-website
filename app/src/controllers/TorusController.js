@@ -1,41 +1,44 @@
-const debounce = require('debounce')
-const EventEmitter = require('events')
-const ComposableObservableStore = require('../utils/ComposableObservableStore').default
-const log = require('loglevel')
-const NetworkController = require('./NetworkController').default
-const AccountTracker = require('./AccountTracker').default
-const TransactionController = require('./TransactionController').default
-const RecentBlocksController = require('./RecentBlocksController').default
-const CurrencyController = require('./CurrencyController').default
-const DetectTokensController = require('./DetectTokensController').default
-const TokenRatesController = require('./TokenRatesController').default
-const AssetDetectionController = require('./AssetsDetectionController').default
-const AssetController = require('./AssetsController').default
-const AssetContractController = require('./AssetsContractController').default
-const toChecksumAddress = require('../utils/toChecksumAddress').default
-const BN = require('ethereumjs-util').BN
-const GWEI_BN = new BN('1000000000')
-const percentile = require('percentile')
-const sigUtil = require('eth-sig-util')
-// const Dnode = require('dnode')
-const pump = require('pump')
-const setupMultiplex = require('../utils/setupMultiplex').default
-const asStream = require('obs-store/lib/asStream')
-const RpcEngine = require('json-rpc-engine')
-const createFilterMiddleware = require('eth-json-rpc-filters')
-const createSubscriptionManager = require('eth-json-rpc-filters/subscriptionManager')
-const createOriginMiddleware = require('../utils/createOriginMiddleware')
-const createLoggerMiddleware = require('../utils/createLoggerMiddleware')
-const providerAsMiddleware = require('eth-json-rpc-middleware/providerAsMiddleware')
-const createEngineStream = require('json-rpc-middleware-stream/engineStream')
-const MessageManager = require('./MessageManager').default
-const PersonalMessageManager = require('./PersonalMessageManager').default
-const TypedMessageManager = require('./TypedMessageManager').default
-const ObservableStore = require('obs-store')
-const nodeify = require('../utils/nodeify').default
-const KeyringController = require('./TorusKeyring').default
+import debounce from 'lodash.debounce'
+import EventEmitter from 'events'
+import { toChecksumAddress } from 'web3-utils'
+import log from 'loglevel'
+import { BN } from 'ethereumjs-util'
+import percentile from 'percentile'
+import pump from 'pump'
+import sigUtil from 'eth-sig-util'
+import asStream from 'obs-store/lib/asStream'
+import RpcEngine from 'json-rpc-engine'
+import createFilterMiddleware from 'eth-json-rpc-filters'
+import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
+import providerAsMiddleware from 'eth-json-rpc-middleware/providerAsMiddleware'
+import createEngineStream from 'json-rpc-middleware-stream/engineStream'
+import ObservableStore from 'obs-store'
+import nodeify from '../utils/nodeify'
 
+import SmartContractWalletController from './SmartContractWalletController'
+import NetworkController from './NetworkController'
+import AccountTracker from './AccountTracker'
+import TransactionController from './TransactionController'
+import RecentBlocksController from './RecentBlocksController'
+import CurrencyController from './CurrencyController'
+import DetectTokensController from './DetectTokensController'
+import TokenRatesController from './TokenRatesController'
+import AssetDetectionController from './AssetsDetectionController'
+import AssetController from './AssetsController'
+import AssetContractController from './AssetsContractController'
+import PreferencesController from './PreferencesController'
+import PermissionsController from './PermissionsController'
+import MessageManager from './MessageManager'
+import PersonalMessageManager from './PersonalMessageManager'
+import TypedMessageManager from './TypedMessageManager'
+import KeyringController from './TorusKeyring'
+import ComposableObservableStore from '../utils/ComposableObservableStore'
+// import setupMultiplex from '../utils/setupMultiplex'
+import createOriginMiddleware from '../utils/createOriginMiddleware'
+import createLoggerMiddleware from '../utils/createLoggerMiddleware'
+// const Dnode = require('dnode')
 // defaults and constants
+const GWEI_BN = new BN('1000000000')
 const version = '0.0.1'
 
 export default class TorusController extends EventEmitter {
@@ -119,15 +122,33 @@ export default class TorusController extends EventEmitter {
 
     // key mgmt
     this.keyringController = new KeyringController()
+    this.prefsController = new PreferencesController()
+
     this.publicConfigStore = this.initPublicConfigStore()
+
+    // SCW controller
+    this.scwController = new SmartContractWalletController({
+      provider: this.provider,
+      storeProps: this.opts.storeProps,
+      getWallet: this.keyringController.exportAccount.bind(this.keyringController)
+    })
+
+    // Permissions controller
+    this.permissionsController = new PermissionsController({
+      getKeyringAccounts: this.keyringController.getAccounts.bind(this.keyringController),
+      setSiteMetadata: this.prefsController.setSiteMetadata.bind(this.prefsController)
+    })
 
     // tx mgmt
     this.txController = new TransactionController({
       networkStore: this.networkController.networkStore,
+      scwController: this.scwController,
       txHistoryLimit: 40,
+      // TODO: pass in methods to check permissions for transactions. Do the same for other types of txs
       getNetwork: this.networkController.getNetworkState.bind(this),
       // signs ethTx
       signTransaction: this.keyringController.signTransaction.bind(this.keyringController),
+      getWallet: this.keyringController.exportAccount.bind(this.keyringController),
       provider: this.provider,
       blockTracker: this.blockTracker,
       getGasPrice: this.getGasPrice.bind(this),
@@ -166,6 +187,8 @@ export default class TorusController extends EventEmitter {
     this.personalMessageManager = new PersonalMessageManager()
     this.typedMessageManager = new TypedMessageManager({ networkController: this.networkController })
     this.store.updateStructure({
+      AssetController: this.assetController.store,
+      // PermissionsController: this.permissionsController.permissions,
       TransactionController: this.txController.store,
       NetworkController: this.networkController.store,
       MessageManager: this.messageManager.store,
@@ -310,9 +333,12 @@ export default class TorusController extends EventEmitter {
   // =============================================================================
 
   initTorusKeyring(keyArray, addresses) {
+    log.info('initToruskeyring, toruscontroller.js', keyArray, addresses)
     return new Promise((resolve, reject) => {
+      const finalKeyArray = keyArray.flatMap(x => x.privateKey).filter(x => x)
+      log.info('initToruskeyring, toruscontroller.js, finalKeyArray', finalKeyArray)
       this.keyringController
-        .deserialize(keyArray)
+        .deserialize(finalKeyArray)
         .then(resp => {
           log.info('keyring deserialized')
           resolve()
@@ -329,7 +355,7 @@ export default class TorusController extends EventEmitter {
   }
 
   async addAccount(key, address) {
-    await this.keyringController.addAccount(key)
+    key && (await this.keyringController.addAccount(key))
     this.accountTracker.addAccounts([address])
   }
 
@@ -337,9 +363,11 @@ export default class TorusController extends EventEmitter {
     if (opts.jwtToken) {
       this.assetDetectionController.jwtToken = opts.jwtToken
       this.assetController.jwtToken = opts.jwtToken
+      this.prefsController.jwtToken = opts.jwtToken
     }
     this.detectTokensController.startTokenDetection(address)
     this.assetDetectionController.startAssetDetection(address)
+    this.prefsController.setSelectedAddress(address)
   }
 
   /**
@@ -640,10 +668,10 @@ export default class TorusController extends EventEmitter {
    */
   setupUntrustedCommunication(connectionStream, originDomain) {
     // setup multiplexing
-    const mux = setupMultiplex(connectionStream)
+    // const mux = setupMultiplex(connectionStream)
     // connect features && for test cases
-    this.setupProviderConnection(mux.createStream('test'), mux.createStream('provider'), originDomain)
-    this.setupPublicConfig(mux.createStream('publicConfig'))
+    this.setupProviderConnection(connectionStream, originDomain)
+    // this.setupPublicConfig(mux.createStream('publicConfig'))
   }
 
   /**
@@ -695,10 +723,13 @@ export default class TorusController extends EventEmitter {
   /**
    * A method for serving our ethereum provider over a given stream.
    * @param {*} outStream - The stream to provide over.
-   * @param {string} origin - The URI of the requesting resource.
+   * @param {string} sender - The URI of the requesting resource.
    */
-  setupProviderConnection(outStream, origin) {
-    const engine = this.setupProviderEngine(origin)
+  setupProviderConnection(outStream, sender) {
+    // break violently
+    const senderUrl = new URL(sender)
+
+    const engine = this.setupProviderEngine({ origin: senderUrl.hostname, location: sender })
 
     // setup connection
     const providerStream = createEngineStream({ engine })
@@ -720,7 +751,7 @@ export default class TorusController extends EventEmitter {
   /**
    * A method for creating a provider that is safely restricted for the requesting domain.
    **/
-  setupProviderEngine(origin, getSiteMetadata) {
+  setupProviderEngine({ origin }) {
     // setup json rpc engine stack
     const engine = new RpcEngine()
     const provider = this.provider
@@ -738,7 +769,8 @@ export default class TorusController extends EventEmitter {
     // filter and subscription polyfills
     engine.push(filterMiddleware)
     engine.push(subscriptionManager.middleware)
-    // permissions controller
+    // permissions
+    engine.push(this.permissionsController.createMiddleware({ origin }))
     // watch asset
     // engine.push(this.preferencesController.requestWatchAsset.bind(this.preferencesController))
     // forward to metamask primary provider
@@ -808,19 +840,24 @@ export default class TorusController extends EventEmitter {
    * @param {string} currencyCode - The code of the preferred currency.
    * @param {Function} cb - A callback function returning currency info.
    */
-  async setCurrentCurrency(currencyCode, cb) {
+  async setCurrentCurrency(payload, cb) {
     const { ticker } = this.networkController.getNetworkConfig()
     try {
-      this.currencyController.setNativeCurrency(ticker)
-      this.currencyController.setCurrentCurrency(currencyCode)
-      await this.currencyController.updateConversionRate()
+      if (payload.selectedCurrency !== 'ETH') {
+        this.currencyController.setNativeCurrency(ticker)
+        this.currencyController.setCurrentCurrency(payload.selectedCurrency.toLowerCase())
+        await this.currencyController.updateConversionRate()
+      }
       const data = {
         nativeCurrency: ticker || 'ETH',
         conversionRate: this.currencyController.getConversionRate(),
         currentCurrency: this.currencyController.getCurrentCurrency(),
         conversionDate: this.currencyController.getConversionDate()
       }
-      cb(null, data)
+      if (payload.origin && payload.origin !== 'store') {
+        this.prefsController.setSelectedCurrency(payload)
+      }
+      cb && cb(null, data)
     } catch (err) {
       cb(err)
     }

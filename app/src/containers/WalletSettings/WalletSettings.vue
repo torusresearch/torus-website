@@ -19,6 +19,22 @@
             <privacy-security />
           </v-expansion-panel-content>
         </v-expansion-panel>
+        <!-- Smart Contract Wallet Settings -->
+        <v-expansion-panel class="my-2 card-shadow">
+          <v-expansion-panel-header
+            id="smart-contract-header"
+            :class="$vuetify.breakpoint.xsOnly ? 'py-0 px-4' : 'py-4 px-6'"
+            expand-icon="$vuetify.icons.select"
+          >
+            <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.smart_contract'" />
+            <div class="grow text_1--text font-weight-bold" :class="$vuetify.breakpoint.xsOnly ? 'subtitle-1' : 'subtitle-1'">
+              Smart Contract Wallet
+            </div>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <smart-contract />
+          </v-expansion-panel-content>
+        </v-expansion-panel>
 
         <!-- Network Settigs -->
         <v-expansion-panel class="my-2 card-shadow">
@@ -79,6 +95,10 @@ import PrivacySecurity from '../../components/WalletSettings/PrivacySecurity'
 import ContactList from '../../components/WalletSettings/ContactList'
 import Network from '../../components/WalletSettings/Network'
 import Display from '../../components/WalletSettings/Display'
+import SmartContract from '../../components/WalletSettings/SmartContract'
+import { post, get } from '../../utils/httpHelpers.js'
+import config, { nodeDetails } from '../../config'
+
 import log from 'loglevel'
 
 export default {
@@ -87,11 +107,12 @@ export default {
     PrivacySecurity,
     ContactList,
     Network,
-    Display
+    Display,
+    SmartContract
   },
   data() {
     return {
-      panel: [0, 1, 2, 3]
+      panel: [0, 1, 2, 3, 4]
     }
   }
 }
