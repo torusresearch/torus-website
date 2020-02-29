@@ -848,6 +848,10 @@ export default {
     prefsController.handleError(payload)
   },
   createSmartContractWallet() {
-    torusController.scwController.createSmartContractWallet()
+    return torusController.scwController.createSmartContractWallet()
+  },
+  getSmartContractWalletAddress({ state, dispatch }, payload) {
+    const arrSCW = Object.keys(state.wallet).filter(x => state.wallet[x].type === 'SC')
+    return arrSCW && arrSCW.length ? arrSCW[0] : null
   }
 }
