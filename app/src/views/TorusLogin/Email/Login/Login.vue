@@ -38,7 +38,7 @@
                       name="password"
                       label="Enter Password"
                       @click:append.prevent="showPassword = !showPassword"
-                      :rules="[rules.required, rules.minLength, correctPassword]"
+                      :rules="[rules.required, rules.minLength]"
                       v-model="password"
                       :append-icon="showPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                       :type="showPassword ? 'text' : 'password'"
@@ -90,6 +90,11 @@
                       <router-link :to="{ name: 'torusEmailRegister' }">Sign up here</router-link>
                     </span>
                   </v-flex>
+                  <v-flex xs12 py-3 v-if="incorrectPassword">
+                    <span>
+                      Incorrect email address or password. Please try again.
+                    </span>
+                  </v-flex>
                 </v-layout>
               </v-form>
             </v-flex>
@@ -139,9 +144,6 @@ export default {
     }
   },
   methods: {
-    correctPassword(value) {
-      return !this.incorrectPassword || 'Incorrect password'
-    },
     async login() {
       try {
         if (!this.$refs.form.validate()) return
@@ -163,7 +165,7 @@ export default {
             this.notRegistered = false
           }, 3000)
         }
-        if (err && err.status === 403) {
+        if (error && error.status === 403) {
           this.incorrectPassword = true
           this.$refs.form.validate()
           setTimeout(() => {

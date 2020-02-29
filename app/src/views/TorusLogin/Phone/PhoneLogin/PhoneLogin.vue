@@ -25,7 +25,7 @@
                       name="password"
                       label="Enter Password"
                       @click:append.prevent="showPassword = !showPassword"
-                      :rules="[rules.required, rules.minLength, correctPassword]"
+                      :rules="[rules.required, rules.minLength]"
                       v-model="password"
                       :append-icon="showPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                       :type="showPassword ? 'text' : 'password'"
@@ -74,6 +74,11 @@
                     <span>
                       You are not registered yet. Please
                       <router-link :to="{ name: 'torusPhoneRegister' }">Sign up here</router-link>
+                    </span>
+                  </v-flex>
+                  <v-flex xs12 py-3 v-if="incorrectPassword">
+                    <span>
+                      Incorrect phone number or password. Please try again.
                     </span>
                   </v-flex>
                 </v-layout>
@@ -133,9 +138,6 @@ export default {
     }
   },
   methods: {
-    correctPassword(value) {
-      return !this.incorrectPassword || 'Incorrect password'
-    },
     async login() {
       if (!this.$refs.form.validate()) return
       try {
@@ -150,21 +152,21 @@ export default {
         completeRedirectURI.hash = `idtoken=${data.idtoken}&timestamp=${data.timestamp}\
           &verifier_id=${data.verifier_id.replace(/ /g, '')}&extendedPassword=${this.extendedPassword}&state=${data.state}`
         window.location.href = completeRedirectURI.href
-      } catch (err) {
+      } catch (error) {
         if (err && err.status === 404) {
           this.notRegistered = true
           setTimeout(() => {
             this.notRegistered = false
           }, 3000)
         }
-        if (err && err.status === 403) {
+        if (error && error.status === 403) {
           this.incorrectPassword = true
           this.$refs.form.validate()
           setTimeout(() => {
             this.incorrectPassword = false
           }, 3000)
         }
-        log.error(err)
+        log.error(error)
       }
     }
   }
