@@ -64,7 +64,7 @@ class PreferencesController {
 
   handleError(err) {
     if (isErrorObj(err)) {
-      this.errorStore.putState(`Oops, That didn't work. Pls reload and try again. \n${error.message}`)
+      this.errorStore.putState(`Oops, That didn't work. Pls reload and try again. \n${err.message}`)
     } else if (err && typeof err === 'string') {
       this.errorStore.putState(err)
     } else if (err && typeof err === 'object') {
@@ -72,7 +72,7 @@ class PreferencesController {
       const payloadError = prettyError !== '' ? `Error: ${prettyError}` : 'Something went wrong. Pls try again'
       this.errorStore.putState(payloadError)
     } else {
-      this.errorStore.putState(payloadError || '')
+      this.errorStore.putState(err || '')
     }
     setTimeout(() => this.errorStore.putState(''), ERROR_TIME)
   }
@@ -190,7 +190,7 @@ class PreferencesController {
 
   async setVerifier(verifier, verifierId) {
     try {
-      await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers)
+      const response = await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers)
       log.info('successfully updated verifier info', response)
     } catch (error) {
       log.error('unable to update verifier info', error)
