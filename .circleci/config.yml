@@ -305,7 +305,6 @@ workflows:
       - deploy-alpha3:
           requires:
             - build-alpha3
-            - test-coverage
           filters:
             branches:
               only:
