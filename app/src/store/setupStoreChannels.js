@@ -81,6 +81,25 @@ if (!isMain) {
     if (chunk.name === 'user_info_request') VuexStore.dispatch('showUserInfoRequestPopup', chunk.data)
   })
 
+  // Basic smart contract wallet stream
+  const scwStream = torus.communicationMux.getStream('create_scw')
+  scwStream.on('data', async function(chunk) {
+    if (chunk.name === 'create_scw_request') {
+      var response = await VuexStore.dispatch('createSmartContractWallet')
+      log.info(response)
+      scwStream.write({ name: 'create_scw_response', data: { approve: true } })
+    }
+  })
+
+  // Get scw address
+  const getScwStream = torus.communicationMux.getStream('get_scw')
+  getScwStream.on('data', async function(chunk) {
+    if (chunk.name == 'scw_address_request') {
+      var response = await VuexStore.dispatch('getSmartContractWalletAddress')
+      getScwStream.write({ name: 'scw_address_response', data: response })
+    }
+  })
+
   var accountImportChannel = new BroadcastChannel(`account_import_channel_${torus.instanceId}`, broadcastChannelOptions)
   accountImportChannel.onmessage = function(ev) {
     if (ev.data && ev.data.name === 'imported_account' && ev.data.payload) {

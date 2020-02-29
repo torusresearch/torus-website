@@ -60,6 +60,7 @@ export default class SmartContractWalletController {
       log.info(scw)
     } catch (err) {
       log.error(err)
+      return err
     }
   }
 
