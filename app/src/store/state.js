@@ -12,6 +12,7 @@ const initialState = {
   // loaders
   loginInProgress: false,
   weiBalanceLoaded: false, // Use on showing spinners
+  tokenDataLoaded: false, // Use on showing spinners
   loadingUserTransactions: true,
   isNewUser: false,
   // account handled

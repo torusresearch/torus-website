@@ -84,7 +84,7 @@ export default {
     TransferAdvanceOption,
     HelpTooltip
   },
-  props: ['gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol', 'resetSpeed'],
+  props: ['gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol', 'resetSpeed', 'selectedCurrency', 'currencyMultiplier'],
   data() {
     return {
       isAdvanceOption: false,
@@ -94,17 +94,6 @@ export default {
       activeGasPrice: new BigNumber(''),
       averageGasPriceSpeed: '',
       fastestGasPriceSpeed: ''
-    }
-  },
-  computed: {
-    selectedCurrency() {
-      return this.$store.state.selectedCurrency
-    },
-    getCurrencyMultiplier() {
-      const { selectedCurrency, currencyData } = this.$store.state || {}
-      const currencyMultiplierNum = selectedCurrency !== 'ETH' ? currencyData[selectedCurrency.toLowerCase()] || 1 : 1
-      const currencyMultiplier = new BigNumber(currencyMultiplierNum)
-      return currencyMultiplier
     }
   },
   methods: {
@@ -137,9 +126,8 @@ export default {
       return `${this.t('walletTransfer.pay')} ${significantDigits(currencyFee.toString())} ${this.selectedCurrency}`
     },
     getGasAmount(gasPrice) {
-      const currencyMultiplier = this.getCurrencyMultiplier
       const ethFee = this.getEthAmount(this.gas, gasPrice)
-      const currencyFee = ethFee.times(currencyMultiplier)
+      const currencyFee = ethFee.times(this.currencyMultiplier)
 
       return currencyFee
     },

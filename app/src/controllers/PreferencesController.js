@@ -1,12 +1,13 @@
 import ObservableStore from 'obs-store'
 import log from 'loglevel'
-import { addInternalMethodPrefix, addTorusMethodPrefix, prettyPrintData, isErrorObj } from '../utils/permissionUtils'
+import { prettyPrintData, isErrorObj } from '../utils/permissionUtils'
 import config from '../config'
-import { patch, get, post, getPastOrders } from '../utils/httpHelpers'
+import { patch, get, post, remove, getPastOrders } from '../utils/httpHelpers'
 import { LOCALE_EN, THEME_LIGHT_BLUE_NAME, ERROR_TIME, SUCCESS_TIME } from '../utils/enums'
+import { getIFrameOrigin } from '../utils/utils'
 
 // By default, poll every 1 minute
-const DEFAULT_INTERVAL = 60 * 1000
+const DEFAULT_INTERVAL = 180 * 1000
 
 class PreferencesController {
   /**
@@ -63,7 +64,7 @@ class PreferencesController {
 
   handleError(err) {
     if (isErrorObj(err)) {
-      this.errorStore.putState(`Oops, That didn't work. Pls reload and try again. \n${error.message}`)
+      this.errorStore.putState(`Oops, That didn't work. Pls reload and try again. \n${err.message}`)
     } else if (err && typeof err === 'string') {
       this.errorStore.putState(err)
     } else if (err && typeof err === 'object') {
@@ -71,7 +72,7 @@ class PreferencesController {
       const payloadError = prettyError !== '' ? `Error: ${prettyError}` : 'Something went wrong. Pls try again'
       this.errorStore.putState(payloadError)
     } else {
-      this.errorStore.putState(payloadError || '')
+      this.errorStore.putState(err || '')
     }
     setTimeout(() => this.errorStore.putState(''), ERROR_TIME)
   }
@@ -97,11 +98,12 @@ class PreferencesController {
       getPastOrders({}, this.headers.headers)
     ]).then(([user, paymentTx]) => {
       if (user && user.data) {
-        const { transactions, contacts, theme, locale, verifier, verifier_id, permissions } = user.data || {}
+        const { transactions, default_currency, contacts, theme, locale, verifier, verifier_id, permissions } = user.data || {}
         this.store.updateState({
           contacts,
           pastTransactions: transactions,
           theme,
+          selectedCurrency: default_currency,
           locale: locale || LOCALE_EN,
           paymentTx: paymentTx.data,
           permissions
@@ -130,7 +132,7 @@ class PreferencesController {
   storeUserLogin(verifier, verifierId, payload) {
     let userOrigin = ''
     if (payload && payload.calledFromEmbed) {
-      userOrigin = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
+      userOrigin = getIFrameOrigin()
     } else userOrigin = window.location.origin
     if (!payload.rehydrate)
       post(
@@ -148,10 +150,10 @@ class PreferencesController {
     if (payload === this.store.getState().theme) return
     try {
       const resp = await patch(`${config.api}/user/theme`, { theme: payload }, this.headers)
-      this.handleSuccess('successfully updated theme' || (resp && resp.data) || resp)
+      this.handleSuccess('navBar.snackSuccessTheme' || (resp && resp.data) || resp)
       this.store.updateState({ theme: payload })
     } catch (error) {
-      this.handleError('unable to update theme')
+      this.handleError('navBar.snackFailTheme')
     }
   }
 
@@ -160,7 +162,7 @@ class PreferencesController {
       const response = await post(`${config.api}/permissions`, payload, this.headers)
       log.info('successfully set permissions', response)
     } catch (error) {
-      log.error('unable to patch permissions info', error)
+      log.error('unable to set permissions', error)
     }
   }
 
@@ -169,9 +171,9 @@ class PreferencesController {
     try {
       await patch(`${config.api}/user/locale`, { locale: payload }, this.headers)
       this.store.updateState({ locale: payload })
-      this.handleSuccess('successfully updated locale')
+      this.handleSuccess('navBar.snackSuccessLocale')
     } catch (error) {
-      this.handleError('unable to update locale')
+      this.handleError('navBar.snackFailLocale')
     }
   }
 
@@ -180,18 +182,18 @@ class PreferencesController {
     try {
       await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers)
       this.store.updateState({ selectedCurrency: payload.selectedCurrency })
-      this.handleSuccess('successfully patched currency info')
+      this.handleSuccess('navBar.snackSuccessCurrency')
     } catch (error) {
-      this.handleError('unable to patch currency info')
+      this.handleError('navBar.snackFailCurrency')
     }
   }
 
   async setVerifier(verifier, verifierId) {
     try {
-      await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers)
-      log.info('successfully patched', response)
+      const response = await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers)
+      log.info('successfully updated verifier info', response)
     } catch (error) {
-      log.error('unable to patch verifier info', error)
+      log.error('unable to update verifier info', error)
     }
   }
 
@@ -216,11 +218,11 @@ class PreferencesController {
 
   async addContact(payload) {
     try {
-      await post(`${config.api}/contact`, payload, this.headers)
+      const response = await post(`${config.api}/contact`, payload, this.headers)
       this.store.updateState({ contacts: [...this.store.getState().contacts, response.data] })
-      this.handleSuccess('successfully added contact')
+      this.handleSuccess('navBar.snackSuccessContactAdd')
     } catch (error) {
-      this.handleError('Unable to add contact')
+      this.handleError('navBar.snackFailContactAdd')
     }
   }
 
@@ -229,9 +231,9 @@ class PreferencesController {
       const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers)
       const finalContacts = this.store.getState().contacts.filter(contact => contact.id !== response.data.id)
       this.store.updateState({ contacts: finalContacts })
-      this.handleSuccess('Successfully deleted contact')
+      this.handleSuccess('navBar.snackSuccessContactDelete')
     } catch (error) {
-      this.handleError('Unable to delete contact')
+      this.handleError('navBar.snackFailContactDelete')
     }
   }
 

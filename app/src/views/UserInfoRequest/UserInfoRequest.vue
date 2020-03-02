@@ -1,5 +1,5 @@
 <template>
-  <v-container pa-0>
+  <v-container px-0 py-6>
     <template v-if="type === 'none'">
       <user-info-screen-loader />
     </template>
@@ -16,33 +16,27 @@
           <v-card flat class="grey lighten-3">
             <v-card-text>
               <div class="subtitle-2 primary--text request-from">
-                <a :href="originHref" target="_blank">{{ origin }}</a>
-                <a :href="originHref" target="_blank" class="float-right">
+                <a :href="origin.href" target="_blank">{{ origin.hostname }}</a>
+                <a :href="origin.href" target="_blank" class="float-right">
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
                 </a>
               </div>
             </v-card-text>
           </v-card>
         </v-flex>
-        <v-flex xs12 mb-4 mx-6>
-          <v-list class="note-list">
-            <v-list-item class="pa-0">
-              <v-list-item-icon class="mr-1">
-                <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
-              </v-list-item-icon>
-              <v-list-item-content class="pa-1">
-                <div class="caption text_2--text">{{ accessText }}</div>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item class="pa-0" v-if="message !== ''">
-              <v-list-item-icon class="mr-1">
-                <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
-              </v-list-item-icon>
-              <v-list-item-content class="pa-1">
-                <div class="caption text_2--text">{{ message }}</div>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
+        <v-flex xs12 my-4 mx-6 class="note-list">
+          <div class="d-flex mb-2">
+            <div class="mr-5 note-list__icon">
+              <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
+            </div>
+            <div class="caption text_2--text">{{ accessText }}</div>
+          </div>
+          <div class="d-flex mb-2" v-if="message !== ''">
+            <div class="mr-5 note-list__icon">
+              <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
+            </div>
+            <div class="caption text_2--text">{{ message }}</div>
+          </div>
         </v-flex>
 
         <v-layout px-6 mx-3>
@@ -60,10 +54,11 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import { UserInfoScreenLoader } from '../../content-loader'
-import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
-import { broadcastChannelOptions, capitalizeFirstLetter } from '../../utils/utils'
 import log from 'loglevel'
+
+import { UserInfoScreenLoader } from '../../content-loader'
+// import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
+import { broadcastChannelOptions, capitalizeFirstLetter } from '../../utils/utils'
 
 export default {
   name: 'userInfoRequest',
@@ -73,11 +68,11 @@ export default {
   },
   data() {
     return {
-      origin: '',
-      originHref: '',
+      origin: { hostname: '', href: '' },
       type: 'none',
       message: '',
-      verifier: ''
+      verifier: '',
+      channel: ''
     }
   },
   computed: {
@@ -87,45 +82,31 @@ export default {
   },
   methods: {
     async triggerSign(event) {
-      var bc = new BroadcastChannel(
-        `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
-        broadcastChannelOptions
-      )
-      await bc.postMessage({
-        data: { type: 'confirm-user-info-request', approve: true }
-      })
+      const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
+      await bc.postMessage({ data: { type: 'user-info-request-result', approve: true } })
       bc.close()
     },
     async triggerDeny(event) {
-      var bc = new BroadcastChannel(
-        `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
-        broadcastChannelOptions
-      )
-      await bc.postMessage({ data: { type: 'deny-user-info-request', approve: false } })
+      const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
+      await bc.postMessage({ data: { type: 'user-info-request-result', approve: false } })
       bc.close()
     }
   },
   mounted() {
-    var bc = new BroadcastChannel(
-      `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
-      broadcastChannelOptions
-    )
+    this.channel = `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`
+    const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.onmessage = async ev => {
-      const { payload, origin } = ev.data || {}
-      let url = { hostname: '', href: '' }
-      try {
-        url = new URL(origin)
-      } catch (err) {
-        log.error(err)
-      }
-      this.originHref = url.href
-      this.origin = url.hostname // origin of tx: website url
+      const {
+        payload: { verifier = '', message = '' },
+        origin = ''
+      } = ev.data
+      this.origin = origin // origin of tx: website url
       this.type = 'userInfo'
-      this.verifier = payload.verifier
-      this.message = payload && payload.message ? payload.message : ''
+      this.verifier = verifier
+      this.message = message
       bc.close()
     }
-    bc.postMessage({ data: 'popup-loaded' })
+    bc.postMessage({ data: { type: 'popup-loaded' } })
   }
 }
 </script>

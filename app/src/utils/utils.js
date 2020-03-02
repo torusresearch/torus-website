@@ -19,7 +19,6 @@ import {
   DISCORD,
   SIMPLEX,
   MOONPAY,
-  COINDIRECT,
   WYRE,
   THEME_DARK_BLACK_NAME,
   ACTIVE,
@@ -378,21 +377,6 @@ export const paymentProviders = {
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
     includeFees: false,
     api: true
-  },
-  [COINDIRECT]: {
-    line1: 'Credit / Debit Card',
-    line2: '2.99%',
-    line3: 'N/A',
-    line4: 'ETH, DAI, USDT',
-    status: ACTIVE,
-    logoExtension: SVG,
-    supportPage: 'https://help.coindirect.com/hc/en-us',
-    minOrderValue: 20,
-    maxOrderValue: 1000,
-    validCurrencies: ['EUR'],
-    validCryptoCurrencies: ['ETH', 'DAI', 'USDT'],
-    includeFees: true,
-    api: true
   }
   // [CRYPTO]: {
   //   line1: 'Credit Card',
@@ -481,6 +465,16 @@ export const isMain = location === parent.location && location.origin === config
 export const getIFrameOrigin = () => {
   const originHref = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
   return originHref
+}
+
+export const getIFrameOriginObj = () => {
+  try {
+    const url = new URL(getIFrameOrigin())
+    return { href: url.href, hostname: url.hostname }
+  } catch (error) {
+    log.error('invalid url')
+    return { href: location.href, hostname: location.hostname }
+  }
 }
 
 export const fakeStream = {

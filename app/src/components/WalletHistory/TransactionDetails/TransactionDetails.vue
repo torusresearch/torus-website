@@ -76,7 +76,7 @@
           <v-list-item>
             <v-list-item-content class="details-label">{{ t('walletActivity.network') }}:</v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
-              <network-display :network="transaction.networkType"></network-display>
+              <network-display :network="transaction.networkType" :storeNetworkType="storeNetworkType"></network-display>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-if="transaction.etherscanLink">
@@ -91,7 +91,7 @@
 </template>
 
 <script>
-const {
+import {
   ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_STATUS_SUCCESSFUL,
@@ -100,8 +100,7 @@ const {
   ACTIVITY_ACTION_TOPUP,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721
-} = require('../../../utils/enums')
-
+} from '../../../utils/enums'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 
 export default {
@@ -120,6 +119,11 @@ export default {
       ACTIVITY_ACTION_TOPUP,
       CONTRACT_TYPE_ERC20,
       CONTRACT_TYPE_ERC721
+    }
+  },
+  computed: {
+    storeNetworkType() {
+      return this.$store.state.networkType
     }
   },
   methods: {

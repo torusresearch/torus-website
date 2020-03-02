@@ -13,14 +13,7 @@ import { WalletHome, WalletHomeMain, WalletHomeCollectible } from './containers/
 import WalletHistory from './containers/WalletHistory'
 import WalletSettings from './containers/WalletSettings'
 import WalletTransfer from './containers/WalletTransfer'
-import {
-  WalletTopupHome,
-  WalletTopupSimplex,
-  WalletTopupMoonpay,
-  WalletTopupWyre,
-  WalletTopupCrypto,
-  WalletTopupCoinDirect
-} from './containers/WalletTopup'
+import { WalletTopupHome, WalletTopupSimplex, WalletTopupMoonpay, WalletTopupWyre, WalletTopupCrypto } from './containers/WalletTopup'
 
 Vue.use(Router)
 
@@ -119,17 +112,20 @@ const router = new Router({
     {
       path: '/confirm',
       name: 'confirm',
-      component: Confirm
+      component: Confirm,
+      meta: { requiresAuth: false }
     },
     {
       path: '/providerchange',
       name: 'providerchange',
-      component: ProviderChange
+      component: ProviderChange,
+      meta: { requiresAuth: false }
     },
     {
       path: '/userinforequest',
       name: 'userInfoRequest',
-      component: UserInfoRequest
+      component: UserInfoRequest,
+      meta: { requiresAuth: false }
     },
     {
       path: '/wallet',
@@ -198,11 +194,6 @@ const router = new Router({
               path: 'crypto',
               name: 'walletTopupCrypto',
               component: WalletTopupCrypto
-            },
-            {
-              path: 'coindirect',
-              name: 'walletTopupCoindirect',
-              component: WalletTopupCoinDirect
             }
           ]
         }

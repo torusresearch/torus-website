@@ -15,7 +15,7 @@ import {
   REDDIT,
   DISCORD
 } from '../utils/enums'
-import { broadcastChannelOptions, fakeStream, xor } from '../utils/utils'
+import { broadcastChannelOptions, fakeStream, xor, getIFrameOriginObj } from '../utils/utils'
 import { post, get, remove } from '../utils/httpHelpers.js'
 import jwtDecode from 'jwt-decode'
 import initialState from './state'
@@ -63,7 +63,7 @@ const providerChangeStream = (torus.communicationMux && torus.communicationMux.g
 prefsController.metadataStore.subscribe(metadataHandler)
 
 export default {
-  logOut({ commit, state }, payload) {
+  logOut({ commit, state }, _) {
     commit('logOut', { ...initialState, networkType: state.networkType, networkId: state.networkId })
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
@@ -81,13 +81,13 @@ export default {
     prefsController.errorStore.unsubscribe(errorMsgHandler)
     torus.updateStaticData({ isUnlocked: false })
   },
-  setSelectedCurrency({ commit, state }, payload) {
+  setSelectedCurrency({ commit }, payload) {
     torusController.setCurrentCurrency(payload, (err, data) => {
       if (err) log.error('currency fetch failed')
       else commit('setCurrencyData', data)
     })
   },
-  async forceFetchTokens({ state }, payload) {
+  async forceFetchTokens(_, payload) {
     detectTokensController.refreshTokenBalances()
     assetDetectionController.restartAssetDetection()
     try {
@@ -107,7 +107,7 @@ export default {
       log.error('etherscan balance fetch failed')
     }
   },
-  showProviderChangePopup({ dispatch }, payload) {
+  showProviderChangePopup({ dispatch, state }, payload) {
     const { override, preopenInstanceId } = payload
     const handleSuccess = () => {
       setTimeout(() => {
@@ -146,38 +146,37 @@ export default {
       features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500'
     })
     bc.onmessage = async ev => {
-      if (ev.data === 'popup-loaded') {
+      const { type = '', approve = false } = ev.data
+      if (type === 'popup-loaded') {
         await bc.postMessage({
           data: {
-            origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
-            payload: payload
+            origin: getIFrameOriginObj(),
+            payload: payload,
+            currentNetwork: state.networkType
           }
         })
-      } else if (ev.data && ev.data.type === 'confirm-provider-change' && ev.data.approve) {
-        log.info('Provider change approved', ev.data.payload)
-        dispatch('setProviderType', ev.data.payload)
-          .then(() => {
+      } else if (type === 'provider-change-result') {
+        try {
+          log.info('Provider change', approve)
+          if (approve) {
+            await dispatch('setProviderType', payload)
             handleSuccess()
-            bc.close()
-            providerChangeWindow.close()
-          })
-          .catch(err => {
-            handleDeny(err)
-            bc.close()
-            providerChangeWindow.close()
-          })
-      } else if (ev.data && ev.data.type === 'deny-provider-change') {
-        log.info('Provider change denied')
-        handleDeny(new Error('user denied provider change request'))
-        bc.close()
-        providerChangeWindow.close()
+          } else {
+            handleDeny('user denied provider change request')
+          }
+        } catch (error) {
+          handleDeny('Internal error occured')
+        } finally {
+          bc.close()
+          providerChangeWindow.close()
+        }
       }
     }
 
     providerChangeWindow.open()
     providerChangeWindow.once('close', () => {
       bc.close()
-      handleDeny(new Error('user denied provider change request'))
+      handleDeny('user denied provider change request')
     })
   },
   showUserInfoRequestPopup({ dispatch, state }, payload) {
@@ -196,8 +195,6 @@ export default {
       log.info('User Info Request denied')
       dispatch('updateUserInfoAccess', { approved: false })
       userInfoStream.write({ name: 'user_info_response', data: { payload: {}, approved: false } })
-      bc.close()
-      userInfoRequestWindow.close()
     }
     const handleSuccess = () => {
       log.info('User Info Request approved')
@@ -205,22 +202,28 @@ export default {
       const returnObj = JSON.parse(JSON.stringify(state.userInfo))
       delete returnObj.verifierParams
       userInfoStream.write({ name: 'user_info_response', data: { payload: returnObj, approved: true } })
-      bc.close()
-      userInfoRequestWindow.close()
     }
 
     bc.onmessage = async ev => {
-      if (ev.data === 'popup-loaded') {
+      const { type = '', approve = false } = ev.data
+      if (type === 'popup-loaded') {
         await bc.postMessage({
           data: {
-            origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+            origin: getIFrameOriginObj(),
             payload: { ...payload, verifier: state.userInfo.verifier }
           }
         })
-      } else if (ev.data && ev.data.type === 'confirm-user-info-request' && ev.data.approve) {
-        handleSuccess()
-      } else if (ev.data && ev.data.type === 'deny-user-info-request') {
-        handleDeny()
+      } else if (type === 'user-info-request-result') {
+        try {
+          if (approve) handleSuccess()
+          else handleDeny()
+        } catch (error) {
+          log.error(error)
+          handleDeny()
+        } finally {
+          bc.close()
+          userInfoRequestWindow.close()
+        }
       }
     }
 
@@ -259,7 +262,7 @@ export default {
       dispatch('updateSelectedAddress', { selectedAddress: address })
       torusController
         .addAccount(privKey, address)
-        .then(response => resolve(privKey))
+        .then(() => resolve(privKey))
         .catch(err => reject(err))
     })
   },
@@ -352,9 +355,10 @@ export default {
       )
       const scope = 'profile email openid'
       const response_type = 'token id_token'
+      const prompt = 'consent select_account'
       const finalUrl =
         `https://accounts.google.com/o/oauth2/v2/auth?response_type=${response_type}&client_id=${config.GOOGLE_CLIENT_ID}` +
-        `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}`
+        `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}&prompt=${prompt}`
       const googleWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.onmessage = async ev => {
@@ -374,7 +378,7 @@ export default {
                 Authorization: `Bearer ${accessToken}`
               }
             })
-            const { picture: profileImage, email, name, id } = userInfo || {}
+            const { picture: profileImage, email, name } = userInfo || {}
             commit('setUserInfo', {
               profileImage,
               name,
@@ -658,7 +662,7 @@ export default {
     prefsController.addContact(payload)
   },
   deleteContact({ commit, state }, payload) {
-    prefsController.deleteContact(payload)
+    return prefsController.deleteContact(payload)
   },
   async handleLogin({ state, dispatch, commit }, { calledFromEmbed, idToken, torusLogin, extendedPassword }) {
     commit('setLoginInProgress', true)
@@ -755,10 +759,10 @@ export default {
       }
     })
   },
-  setUserTheme({ state, commit }, payload) {
-    prefsController.setUserTheme(payload)
+  setUserTheme(context, payload) {
+    return prefsController.setUserTheme(payload)
   },
-  setUserLocale({ state, commit }, payload) {
+  setUserLocale(context, payload) {
     prefsController.setUserLocale(payload)
   },
   setUserInfoAction({ commit, dispatch, state }, payload) {
@@ -767,6 +771,7 @@ export default {
       commit('setTheme', state.theme)
       const { calledFromEmbed, rehydrate, token } = payload
       const { userInfo, selectedCurrency, theme, locale } = state
+      log.info(selectedCurrency)
       const { verifier, verifierId } = userInfo
       prefsController.jwtToken = token
       prefsController.sync(
@@ -827,5 +832,11 @@ export default {
     } catch (error) {
       log.error('Failed to rehydrate', error)
     }
+  },
+  setSuccessMessage(context, payload) {
+    prefsController.handleSuccess(payload)
+  },
+  setErrorMessage(context, payload) {
+    prefsController.handleError(payload)
   }
 }

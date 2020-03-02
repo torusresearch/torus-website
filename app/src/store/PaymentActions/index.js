@@ -1,9 +1,8 @@
 import simplex from './simplex'
 import moonpay from './moonpay'
 import wyre from './wyre'
-import coindirect from './coindirect'
 import { paymentProviders, fakeStream } from '../../utils/utils'
-import { SIMPLEX, MOONPAY, WYRE, COINDIRECT, ETH } from '../../utils/enums'
+import { SIMPLEX, MOONPAY, WYRE } from '../../utils/enums'
 import torus from '../../torus'
 import vuetify from '../../plugins/vuetify'
 
@@ -13,7 +12,6 @@ export default {
   ...simplex,
   ...moonpay,
   ...wyre,
-  ...coindirect,
   async initiateTopup({ state, dispatch }, { provider, params, preopenInstanceId }) {
     const handleSuccess = success => {
       topupStream.write({
@@ -76,16 +74,6 @@ export default {
         else if (provider === WYRE) {
           const { data: currentOrder } = await dispatch('fetchWyreQuote', selectedParams)
           const { success } = await dispatch('fetchWyreOrder', { currentOrder, preopenInstanceId, selectedAddress: selectedParams.selectedAddress })
-          handleSuccess(success)
-        }
-        // coindirect
-        else if (provider === COINDIRECT) {
-          const currentOrder = await dispatch('fetchCoindirectQuote', selectedParams)
-          const { success } = await dispatch('fetchCoindirectOrder', {
-            currentOrder,
-            preopenInstanceId,
-            selectedAddress: selectedParams.selectedAddress
-          })
           handleSuccess(success)
         }
       } catch (error) {

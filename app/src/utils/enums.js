@@ -176,7 +176,6 @@ export const ALLOWED_VERIFIERS = [
 export const SIMPLEX = 'simplex'
 export const MOONPAY = 'moonpay'
 export const WYRE = 'wyre'
-export const COINDIRECT = 'coindirect'
 export const CRYPTO = 'crypto'
 export const PNG = 'png'
 export const SVG = 'svg'
