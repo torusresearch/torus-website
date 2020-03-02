@@ -47,13 +47,8 @@
                         <div class="v-messages__wrapper">
                           <div class="v-messages__message d-flex text_2--text">
                             <v-flex>
-                              Did not receive? Click
-                              <a>
-                                <v-btn @click="resendCode" text>
-                                  here
-                                </v-btn>
-                              </a>
-                              to resend verification code
+                              Please try again or
+                              <a @click="resendCode">resend the code</a>
                             </v-flex>
                           </div>
                         </div>
