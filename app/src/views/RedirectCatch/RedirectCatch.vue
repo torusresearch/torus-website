@@ -61,16 +61,26 @@ export default {
       } else {
         bc = new BroadcastChannel('preopen_channel_' + queryParams.preopenInstanceId, broadcastChannelOptions)
         bc.onmessage = function(ev) {
+          const { preopenInstanceId: oldId, payload, message } = ev.data
+          if (oldId === queryParams.preopenInstanceId && payload && payload.url) {
+            window.location.href = payload.url
+          } else if (oldId === queryParams.preopenInstanceId && message === 'setup_complete') {
+            bc.postMessage({
+              data: {
+                preopenInstanceId: queryParams.preopenInstanceId,
+                message: 'popup_loaded'
+              }
+            })
+          }
           if (ev.error && ev.error !== '') {
-            console.error(ev.error)
+            log.error(ev.error)
             bc.close()
           }
-          window.location.href = ev.data.payload.url
         }
       }
     } catch (error) {
       log.info(error, 'something went wrong')
-      bc.close()
+      bc && bc.close()
       window.close()
     }
   }

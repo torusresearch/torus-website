@@ -1,6 +1,6 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
-import { broadcastChannelOptions } from './utils'
+import { broadcastChannelOptions, getIFrameOriginObj } from './utils'
 import torus from '../torus'
 import PopupHandler from './PopupHandler'
 import config from '../config'
@@ -28,6 +28,8 @@ class ConfirmHandler {
     this.handleConfirm = handleConfirm
     this.handleDeny = handleDeny
 
+    this.origin = getIFrameOriginObj()
+
     this.confirmWindow.once('close', () => {
       this.bc.close()
       log.error('user closed popup')
@@ -41,10 +43,15 @@ class ConfirmHandler {
     await this.bc.postMessage({
       name: 'send-params',
       data: {
-        origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+        origin: this.origin,
         type: this.txType,
-        txParams: { ...this.txParams, network: this.host },
-        balance: this.balance
+        txParams: this.txParams,
+        balance: this.balance,
+        selectedCurrency: this.selectedCurrency,
+        tokenRates: this.tokenRates,
+        jwtToken: this.jwtToken,
+        currencyData: this.currencyData,
+        network: this.networkType
       }
     })
   }
@@ -53,22 +60,28 @@ class ConfirmHandler {
     await this.bc.postMessage({
       name: 'send-params',
       data: {
-        origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+        origin: this.origin,
         type: this.txType,
-        msgParams: { msgParams: this.msgParams, id: this.id }
+        msgParams: { msgParams: this.msgParams, id: this.id },
+        selectedCurrency: this.selectedCurrency,
+        tokenRates: this.tokenRates,
+        jwtToken: this.jwtToken,
+        currencyData: this.currencyData,
+        network: this.networkType
       }
     })
   }
 
   handle = async ev => {
-    if (ev.name === 'popup-loaded' && ev.data.id.toString() === this.id.toString()) {
+    const { name, data: { id = '', type = '', txType = '' } = {} } = ev
+    if (name === 'popup-loaded' && id.toString() === this.id.toString()) {
       if (this.isTx) this.sendTx()
       else this.sendMessage()
-    } else if (ev.name === 'tx-result' && this.id.toString() === ev.data.id.toString()) {
-      if (ev.data.type === 'confirm-transaction') {
+    } else if (name === 'tx-result' && this.id.toString() === id.toString()) {
+      if (type === 'confirm-transaction') {
         this.handleConfirm(ev)
-      } else if (ev.data.type === 'deny-transaction') {
-        this.handleDeny(ev.data.id, ev.data.txType)
+      } else if (type === 'deny-transaction') {
+        this.handleDeny(id, txType)
       }
       this.bc.close()
       this.id = undefined

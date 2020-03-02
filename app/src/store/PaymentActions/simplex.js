@@ -1,13 +1,13 @@
 import log from 'loglevel'
+import randomId from '@chaitanyapotti/random-id'
+import { BroadcastChannel } from 'broadcast-channel'
+
 import { postQuote, postOrder } from '../../plugins/simplex'
 import config from '../../config'
 import { broadcastChannelOptions } from '../../utils/utils'
 import PopupHandler from '../../utils/PopupHandler'
 import { SIMPLEX } from '../../utils/enums'
-import { BroadcastChannel } from 'broadcast-channel'
 import torus from '../../torus'
-
-const randomId = require('@chaitanyapotti/random-id')
 
 export default {
   fetchSimplexQuote({ state }, payload) {
@@ -152,10 +152,12 @@ export default {
           simplexWindow.close()
         }
       }
-      simplexWindow.open()
-      setTimeout(() => {
-        form.submit()
-      }, 2000)
+      simplexWindow.open().then(() => {
+        log.info('submitting form')
+        setTimeout(() => {
+          form.submit()
+        }, 2000)
+      })
 
       simplexWindow.once('close', () => {
         bc.close()

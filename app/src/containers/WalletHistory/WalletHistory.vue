@@ -46,7 +46,6 @@ import log from 'loglevel'
 import { toChecksumAddress, toBN, fromWei, isAddress } from 'web3-utils'
 import config from '../../config'
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
-import { getPastOrders } from '../../plugins/simplex'
 import { addressSlicer, significantDigits, getEtherScanHashLink, getStatus, getEthTxStatus, formatDate } from '../../utils/utils'
 import torus from '../../torus'
 import { patch } from '../../utils/httpHelpers'
@@ -184,7 +183,9 @@ export default {
             activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
           }`
         : activity.type_name || activity.type
-        ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${activity.type_name}`
+        ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+            activity.type == 'eth' ? activity.type_name.toUpperCase() : activity.type_name
+          }`
         : `${this.t(activity.action) + ' ' + activity.from} `
     },
     getIcon(activity) {
@@ -194,7 +195,7 @@ export default {
         if (activity.type === CONTRACT_TYPE_ERC721) {
           return activity.type_image_link // will be an opensea image url
         } else if (activity.type === CONTRACT_TYPE_ERC20) {
-          return `logos/${activity.type_image_link}`
+          return `logos/${activity.type_image_link === 'n/a' ? 'eth.svg' : activity.type_image_link}`
         } else {
           const action = activity.action.split('.')
           return action.length >= 1 ? `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}` : ''
@@ -281,10 +282,9 @@ export default {
       for (let tx in transactions) {
         const txOld = transactions[tx]
         if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
-          const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txOld
+          const { methodParams, contractParams, txParams, transactionCategory } = txOld
           let amountTo,
             amountValue,
-            assetName,
             totalAmountString,
             totalAmount,
             finalTo,
@@ -300,12 +300,17 @@ export default {
               ;[, amountTo, amountValue] = methodParams || []
             }
 
+            const { name = '' } = contractParams
+
             // Get asset name of the 721
-            const [contract] = assets[selectedAddress].filter(x => x.name.toLowerCase() === contractParams.name.toLowerCase()) || []
-            const [assetObject] = contract['assets'].filter(x => x.tokenId.toString() === amountValue.value.toString()) || []
-            assetName = assetObject.name || ''
-            totalAmountString = assetName
-            finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+            const contract = assets[selectedAddress].find(x => x.name.toLowerCase() === name.toLowerCase()) || {}
+            log.info(contract, amountValue)
+            if (contract) {
+              const assetObject = contract['assets'].find(x => x.tokenId.toString() === amountValue.value.toString()) || {}
+              log.info(assetObject)
+              totalAmountString = (assetObject && assetObject.name) || ''
+              finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+            }
           } else if (contractParams.erc20) {
             // ERC20 transfer
             tokenRate = contractParams.erc20 ? tokenRates[txParams.to] : 1
@@ -353,6 +358,38 @@ export default {
       }
       return finalTransactions
     },
+    calculatePaymentTransactions() {
+      const { paymentTx: response } = this.$store.state || {}
+      this.paymentTx = response.reduce((acc, x) => {
+        let action = ''
+        if (ACTIVITY_ACTION_TOPUP.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_TOPUP
+        else if (ACTIVITY_ACTION_SEND.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_SEND
+        else if (ACTIVITY_ACTION_RECEIVE.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_RECEIVE
+
+        acc.push({
+          id: x.id,
+          date: new Date(x.date),
+          from: x.from,
+          slicedFrom: x.slicedFrom,
+          action,
+          to: x.to,
+          slicedTo: x.slicedTo,
+          totalAmount: x.totalAmount,
+          totalAmountString: x.totalAmountString,
+          currencyAmount: x.currencyAmount,
+          currencyAmountString: x.currencyAmountString,
+          amount: x.amount,
+          ethRate: x.ethRate,
+          status: x.status.toLowerCase(),
+          etherscanLink: x.etherscanLink || '',
+          currencyUsed: x.currencyUsed
+        })
+
+        return acc
+        // }
+      }, [])
+      this.loadingOrders = false
+    },
     patchTx(x, status, jwtToken) {
       // patch tx
       patch(
@@ -373,45 +410,7 @@ export default {
     }
   },
   mounted() {
-    const { selectedAddress: publicAddress, jwtToken } = this.$store.state
-    getPastOrders(
-      {},
-      {
-        Authorization: `Bearer ${jwtToken}`
-      }
-    )
-      .then(response => {
-        this.paymentTx = response.data.reduce((acc, x) => {
-          let action = ''
-          if (ACTIVITY_ACTION_TOPUP.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_TOPUP
-          else if (ACTIVITY_ACTION_SEND.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_SEND
-          else if (ACTIVITY_ACTION_RECEIVE.indexOf(x.action.toLowerCase()) > -1) action = ACTIVITY_ACTION_RECEIVE
-
-          acc.push({
-            id: x.id,
-            date: new Date(x.date),
-            from: x.from,
-            slicedFrom: x.slicedFrom,
-            action,
-            to: x.to,
-            slicedTo: x.slicedTo,
-            totalAmount: x.totalAmount,
-            totalAmountString: x.totalAmountString,
-            currencyAmount: x.currencyAmount,
-            currencyAmountString: x.currencyAmountString,
-            amount: x.amount,
-            ethRate: x.ethRate,
-            status: x.status.toLowerCase(),
-            etherscanLink: x.etherscanLink || '',
-            currencyUsed: x.currencyUsed
-          })
-
-          return acc
-          // }
-        }, [])
-        this.loadingOrders = false
-      })
-      .catch(err => log.error(err))
+    this.calculatePaymentTransactions()
     this.calculatePastTransactions()
   }
 }

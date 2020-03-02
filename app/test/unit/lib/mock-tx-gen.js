@@ -1,4 +1,3 @@
-const extend = require('xtend')
 const BN = require('ethereumjs-util').BN
 const template = {
   status: 'submitted',
@@ -21,17 +20,13 @@ class TxGenerator {
     let nonce = fromNonce || this.txs.length
     const txs = []
     for (let i = 0; i < count; i++) {
-      txs.push(
-        extend(
-          template,
-          {
-            txParams: {
-              nonce: hexify(nonce++)
-            }
-          },
-          tx
-        )
-      )
+      txs.push({
+        ...template,
+        txParams: {
+          nonce: hexify(nonce++)
+        },
+        ...tx
+      })
     }
     this.txs = this.txs.concat(txs)
     return txs

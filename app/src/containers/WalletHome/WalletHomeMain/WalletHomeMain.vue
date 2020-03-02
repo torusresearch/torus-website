@@ -45,7 +45,7 @@
                 </v-layout>
               </v-card-title>
               <v-card-text class="pb-8 px-6">
-                <component-loader class="mt-3" v-if="!weiBalanceLoaded" />
+                <component-loader class="mt-3" v-if="!weiBalanceLoaded || !tokenDataLoaded" />
                 <h2 v-else :class="$vuetify.breakpoint.smAndDown ? 'display-1' : 'display-2'" class="text_2--text font-weight-bold text-clamp-one">
                   {{ totalPortfolioValue }}
                   <span id="selected-currency" class="body-2 font-weight-light">{{ selectedCurrency }}</span>
@@ -222,6 +222,9 @@ export default {
     },
     weiBalanceLoaded() {
       return this.$store.state.weiBalanceLoaded
+    },
+    tokenDataLoaded() {
+      return this.$store.state.tokenDataLoaded
     },
     finalBalancesArray() {
       let balances = this.$store.getters.tokenBalances.finalBalancesArray

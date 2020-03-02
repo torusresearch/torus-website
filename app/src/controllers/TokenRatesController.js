@@ -1,6 +1,6 @@
-const ObservableStore = require('obs-store')
-const log = require('loglevel')
-const normalizeAddress = require('eth-sig-util').normalize
+import ObservableStore from 'obs-store'
+import log from 'loglevel'
+import { normalize as normalizeAddress } from 'eth-sig-util'
 
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000

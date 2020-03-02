@@ -130,9 +130,7 @@
 </template>
 
 <script>
-import config from '../../../config'
 import { paymentProviders, formatCurrencyNumber, significantDigits } from '../../../utils/utils'
-import { COINDIRECT } from '../../../utils/enums'
 import HelpTooltip from '../../helpers/HelpTooltip'
 
 export default {
@@ -168,7 +166,7 @@ export default {
     selectedCurrency() {
       if (this.selectedProviderObj && this.selectedProviderObj.validCurrencies.includes(this.$store.state.selectedCurrency))
         return this.$store.state.selectedCurrency
-      return this.selectedProvider === COINDIRECT ? 'EUR' : 'USD'
+      return 'USD'
     },
     maxOrderValue() {
       return this.selectedProviderObj.maxOrderValue

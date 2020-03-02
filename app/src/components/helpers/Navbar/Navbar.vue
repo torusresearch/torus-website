@@ -1,6 +1,6 @@
 <template>
   <nav class="header-container pa-0">
-    <v-app-bar :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : 'px-2 py-0'">
+    <v-app-bar fixed :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : 'px-2 py-0'">
       <router-link class="hidden-xs-only" :to="{ name: 'walletHome' }">
         <img
           class="home-link"
@@ -10,12 +10,10 @@
           :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
         />
       </router-link>
-      <div class="beta-text caption pr-4 hidden-xs-only">Beta</div>
       <v-toolbar-title class="mt-1 hidden-sm-and-up">
         <router-link id="logo-home-lnk" :to="{ name: 'walletHome' }">
           <img :src="require('../../../../public/img/icons/t-fill.svg')" width="35" height="30" alt="Torus Logo" />
         </router-link>
-        <div class="primary--text subtitle-2 beta-text-mobile">Beta</div>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-tabs centered v-if="!$vuetify.breakpoint.smAndDown">
@@ -39,22 +37,56 @@
 
         <account-menu></account-menu>
       </v-menu>
+      <v-system-bar
+        v-show="successMsg"
+        fixed
+        :color="`success ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
+        :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`"
+      >
+        <div class="container d-flex align-center">
+          <v-spacer />
+          <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`">$vuetify.icons.check_circle</v-icon>
+          <span class="caption">
+            {{ capitalizeFirstLetter(t(successMsg)) }}
+          </span>
+          <v-spacer />
+          <v-icon @click="clearMsg('SuccessMsg')" :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`">
+            $vuetify.icons.close
+          </v-icon>
+        </div>
+      </v-system-bar>
+      <v-system-bar
+        v-show="errorMsg"
+        :color="`error ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
+        :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`"
+      >
+        <div class="container d-flex align-center">
+          <v-spacer />
+          <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`">$vuetify.icons.info</v-icon>
+          <span class="caption">
+            {{ capitalizeFirstLetter(t(errorMsg)) }}
+          </span>
+          <v-spacer />
+          <v-icon @click="clearMsg('SuccessMsg')" :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`">
+            $vuetify.icons.close
+          </v-icon>
+        </div>
+      </v-system-bar>
+      <v-system-bar
+        v-show="lrcMsg"
+        :color="`warning ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
+        :class="`${$vuetify.theme.dark ? 'white--text' : 'warning--text text--darken-1'}`"
+      >
+        <div class="container d-flex align-center">
+          <v-spacer />
+          <v-icon small :class="`${$vuetify.theme.dark ? 'white--text' : 'warning--text text--darken-1'}`">$vuetify.icons.info</v-icon>
+          <span class="caption">
+            {{ capitalizeFirstLetter(t(lrcMsg)) }}
+          </span>
+          <v-spacer />
+        </div>
+      </v-system-bar>
     </v-app-bar>
-    <v-system-bar v-show="successMsg" color="success">
-      <v-spacer />
-      <span class="font-weight-medium">{{ successMsg }}</span>
-      <v-spacer />
-    </v-system-bar>
-    <v-system-bar v-show="errorMsg" color="error">
-      <v-spacer />
-      <span class="font-weight-medium">{{ errorMsg }}</span>
-      <v-spacer />
-    </v-system-bar>
-    <v-system-bar v-show="lrcMsg" :color="bannerColor" class="info">
-      <v-spacer />
-      <span class="font-weight-medium">{{ lrcMsg }}</span>
-      <v-spacer />
-    </v-system-bar>
 
     <v-navigation-drawer v-model="drawer" disable-resize-watcher app right :width="$vuetify.breakpoint.xsOnly ? '80%' : ''">
       <account-menu :headerItems="headerItems"></account-menu>
@@ -65,6 +97,7 @@
 <script>
 import AccountMenu from '../../WalletAccount/AccountMenu'
 import LanguageSelector from '../LanguageSelector'
+import { capitalizeFirstLetter } from '../../../utils/utils'
 
 export default {
   components: {
@@ -75,6 +108,12 @@ export default {
     return {
       drawer: false,
       selectedItem: 'home'
+    }
+  },
+  methods: {
+    capitalizeFirstLetter: capitalizeFirstLetter,
+    clearMsg(statusMsg) {
+      this.$store.commit(`set${statusMsg}`, '')
     }
   },
   computed: {

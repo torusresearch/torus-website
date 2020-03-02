@@ -1,3 +1,6 @@
+import log from 'loglevel'
+import config from '../config'
+
 export const promiseTimeout = (ms, promise) => {
   const timeout = new Promise((resolve, reject) => {
     const id = setTimeout(() => {
@@ -96,6 +99,24 @@ export const generateJsonRPCObject = (method, params) => {
     method: method,
     id: 10,
     params: params
+  }
+}
+
+export const getPastOrders = (params = {}, headers) => {
+  try {
+    const options = {
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...headers
+      }
+    }
+    const url = new URL(`${config.commonApiHost}/transaction`)
+    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
+    return get(url, options)
+  } catch (e) {
+    log.error(e)
   }
 }
 
