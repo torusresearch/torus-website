@@ -89,7 +89,7 @@ export default {
       formValid: true,
       rules: {
         required: value => !!value || 'Required',
-        minLength: value => value.length === 6 || 'Code must of length 6'
+        minLength: value => value.length === 6 || 'Code must be 6 digits'
       }
     }
   },

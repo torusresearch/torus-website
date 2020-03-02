@@ -49,7 +49,7 @@
                     <v-text-field
                       outlined
                       name="confirmPassword"
-                      label="Enter Password"
+                      label="Confirm Password"
                       @click:append.prevent="showConfirmPassword = !showConfirmPassword"
                       v-model="confirmPassword"
                       :append-icon="showConfirmPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
@@ -136,7 +136,7 @@ export default {
       rules: {
         required: value => !!value || 'Required',
         minLength: value => value.length > 8 || 'Password length must be greater than 8 characters',
-        confirmPassword: value => value === this.password || 'Passwords do not match',
+        confirmPassword: value => value === this.password || 'Password do not match',
         validEmail: value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || 'Invalid email address'
       }
     }
