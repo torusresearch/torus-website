@@ -11,7 +11,7 @@
           </v-flex>
           <v-flex xs12 sm12 ml-auto mb-2 pt-4 mr-auto>
             <v-flex xs12>
-              <v-form lazy-validation v-model="formValid" ref="form" @submit.prevent="registerAccount">
+              <v-form lazy-validation v-model="formValid" ref="form" @submit.prevent="registerAccount" autocomplete="off">
                 <v-layout wrap>
                   <v-flex xs12>
                     <v-text-field
@@ -55,7 +55,7 @@
                       :append-icon="showConfirmPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                       :type="showConfirmPassword ? 'text' : 'password'"
                       single-line
-                      :rules="[rules.required, rules.minLength, rules.confirmPassword]"
+                      :rules="[rules.required, rules.confirmPassword]"
                     >
                       <template v-slot:prepend-inner>
                         <img class="mr-2" :src="require(`../../../../../public/images/lock.svg`)" height="20px" />
@@ -151,19 +151,14 @@ export default {
       if (!this.$refs.form.validate()) return
       try {
         const hash = ethUtil.stripHexPrefix(sha3(this.extendedPassword))
-        const data = await post(`${config.torusVerifierHost}/register`, {
+        await post(`${config.torusVerifierHost}/register`, {
           verifier_id: this.verifier_id,
           verifier_id_type: 'email',
           hash
         })
-        this.$router.push({ name: 'torusEmailVerify', query: { ...this.$route.query, email: this.verifier_id, hash } }).catch(err => {})
+        this.$router.push({ name: 'torusEmailVerify', query: { ...this.$route.query, email: this.verifier_id, hash } }).catch(_ => {})
       } catch (error) {
-        if (error && error.status === 403) {
-          this.duplicate = true
-          setTimeout(() => {
-            this.duplicate = false
-          }, 3000)
-        }
+        if (error && error.status === 403) this.duplicate = true
         log.error(error)
       }
     }

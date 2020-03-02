@@ -14,7 +14,7 @@
           </v-flex>
           <v-flex xs12 sm12 ml-auto mb-2 pt-4 mr-auto>
             <v-flex xs12>
-              <v-form @submit.prevent="login" lazy-validation v-model="formValid" ref="form">
+              <v-form @submit.prevent="login" lazy-validation v-model="formValid" ref="form" autocomplete="off">
                 <v-layout wrap>
                   <v-flex xs12>
                     <v-text-field
@@ -40,6 +40,7 @@
                       @click:append.prevent="showPassword = !showPassword"
                       :rules="[rules.required, rules.minLength]"
                       v-model="password"
+                      @keyup="resetError"
                       :append-icon="showPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                       :type="showPassword ? 'text' : 'password'"
                       class="password"
@@ -144,6 +145,9 @@ export default {
     }
   },
   methods: {
+    resetError() {
+      this.incorrectPassword = false
+    },
     async login() {
       try {
         if (!this.$refs.form.validate()) return
@@ -159,19 +163,8 @@ export default {
           &verifier_id=${data.verifier_id}&extendedPassword=${this.extendedPassword}&state=${data.state}`
         window.location.href = completeRedirectURI.href
       } catch (error) {
-        if (error && error.status === 404) {
-          this.notRegistered = true
-          setTimeout(() => {
-            this.notRegistered = false
-          }, 3000)
-        }
-        if (error && error.status === 403) {
-          this.incorrectPassword = true
-          this.$refs.form.validate()
-          setTimeout(() => {
-            this.incorrectPassword = false
-          }, 3000)
-        }
+        if (error && error.status === 404) this.notRegistered = true
+        else if (error && error.status === 403) this.incorrectPassword = true
         log.error(error)
       }
     }

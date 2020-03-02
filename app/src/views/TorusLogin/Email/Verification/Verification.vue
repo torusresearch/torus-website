@@ -16,7 +16,7 @@
           </v-flex>
           <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
             <v-flex xs12>
-              <v-form @submit.prevent lazy-validation v-model="formValid" ref="form">
+              <v-form @submit.prevent lazy-validation v-model="formValid" ref="form" autocomplete="off">
                 <v-layout wrap>
                   <v-flex xs12 mb-4>
                     <v-text-field
@@ -26,7 +26,7 @@
                       v-model="code"
                       class="field"
                       :rules="[rules.required, rules.minLength]"
-                      @change="verifyAccount"
+                      @input="verifyAccount"
                       label="Enter your verification code"
                       single-line
                     >
@@ -105,19 +105,20 @@ export default {
         await post(`${config.torusVerifierHost}/verify`, {
           verifier_id: this.verifier_id,
           verifier_id_type: 'email',
-          code: this.code
+          code: this.code,
+          hash: this.hash
         })
         this.status = 'success'
         let finalRoutePath = { name: 'torusEmailLogin', query: { ...this.$route.query, email: this.verifier_id } }
         if (!Object.prototype.hasOwnProperty.call(this.$route.query, 'state')) finalRoutePath = { path: '/' }
-        this.$router.push(finalRoutePath).catch(err => {})
+        this.$router.push(finalRoutePath).catch(_ => {})
       } catch (error) {
         this.status = 'error'
         log.error(error)
       }
     },
     async resendCode() {
-      const data = await post(`${config.torusVerifierHost}/register`, {
+      await post(`${config.torusVerifierHost}/register`, {
         verifier_id: this.verifier_id,
         verifier_id_type: 'email',
         hash: this.hash
