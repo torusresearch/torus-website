@@ -57,6 +57,7 @@
       </v-system-bar>
       <v-system-bar
         v-show="errorMsg"
+        fixed
         :color="`error ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
         :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`"
       >
@@ -74,6 +75,7 @@
       </v-system-bar>
       <v-system-bar
         v-show="lrcMsg"
+        fixed
         :color="`warning ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
         :class="`${$vuetify.theme.dark ? 'white--text' : 'warning--text text--darken-1'}`"
       >
