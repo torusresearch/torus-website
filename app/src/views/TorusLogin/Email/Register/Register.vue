@@ -136,7 +136,7 @@ export default {
       rules: {
         required: value => !!value || 'Required',
         minLength: value => value.length > 8 || 'Password length must be greater than 8 characters',
-        confirmPassword: value => value === this.password || 'Password do not match',
+        confirmPassword: value => value === this.password || 'Password does not match',
         validEmail: value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || 'Invalid email address'
       }
     }
