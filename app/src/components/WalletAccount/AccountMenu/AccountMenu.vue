@@ -80,7 +80,7 @@
 
     <v-list v-if="hasPendingSmartContract">
       <v-list-item two-line>
-        <v-list-item-action class="mr-2 mt-0">
+        <v-list-item-action class="mr-2 mt-n3">
           <v-icon class="text_2--text" size="20" v-text="'$vuetify.icons.smart_contract'" />
         </v-list-item-action>
         <v-list-item-content class="text_1--text font-weight-bold">
@@ -88,7 +88,7 @@
           <v-list-item-subtitle>
             <v-layout>
               <v-flex xs12>
-                <v-progress-linear background-color="#EEF2F4" color="#0364FF" class="mt-1" height="8" rounded value="40"></v-progress-linear>
+                <component-loader />
               </v-flex>
             </v-layout>
           </v-list-item-subtitle>
@@ -153,6 +153,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import { significantDigits, addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
 import ShowToolTip from '../../helpers/ShowToolTip'
+import ComponentLoader from '../../helpers/ComponentLoader'
 import LanguageSelector from '../../helpers/LanguageSelector'
 import AccountImport from '../AccountImport'
 import ExportQrCode from '../../helpers/ExportQrCode'
@@ -168,7 +169,8 @@ export default {
     AccountImport,
     LanguageSelector,
     ShowToolTip,
-    ExportQrCode
+    ExportQrCode,
+    ComponentLoader
   },
   data() {
     return {
@@ -177,6 +179,7 @@ export default {
   },
   computed: {
     hasPendingSmartContract() {
+      return true
       return Object.values(this.$store.state.wallet).filter(
         x => x.type === 'SC' && x.network === this.$store.state.networkType.host && x.address === 'PROCESSING'
       ).length

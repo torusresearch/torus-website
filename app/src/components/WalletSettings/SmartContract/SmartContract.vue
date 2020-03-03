@@ -1,11 +1,11 @@
 <template>
   <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
     <template v-if="smartContractAccount">
-      <template v-if="smartContractAccount.address === 'PROCESSING'">
+      <template v-if="smartContractAccount.address === 'PROCESSING' || true">
         <div class="body-2 text_1--text mb-2 px-1">Your smart contract wallet is still being created</div>
         <v-layout wrap>
           <v-flex xs12 md6 px-1 mb-1>
-            <v-progress-linear background-color="#EEF2F4" color="#0364FF" class="mt-1" height="12" rounded value="40"></v-progress-linear>
+            <component-loader />
           </v-flex>
         </v-layout>
       </template>
@@ -51,13 +51,14 @@
 import MessageModal from '../../../components/WalletTransfer/MessageModal'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import ExportQrCode from '../../helpers/ExportQrCode'
+import ComponentLoader from '../../helpers/ComponentLoader'
 import config from '../../../config'
 import { post } from '../../../utils/httpHelpers'
 import { MESSAGE_MODAL_TYPE_SUCCESS, MESSAGE_MODAL_TYPE_FAIL, MESSAGE_MODAL_TYPE_PENDING } from '../../../utils/enums'
 
 export default {
   name: 'smartContractSettings',
-  components: { MessageModal, ShowToolTip, ExportQrCode },
+  components: { MessageModal, ShowToolTip, ExportQrCode, ComponentLoader },
   data() {
     return {
       ensName: '',
