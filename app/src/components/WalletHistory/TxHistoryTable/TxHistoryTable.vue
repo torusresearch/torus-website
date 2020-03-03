@@ -8,7 +8,7 @@
       :page.sync="page"
       hide-default-footer
       :loading="loadingTransactions"
-      no-data-text=""
+      :no-data-text="t('walletActivity.noTransaction')"
     >
       <template v-slot:default="props">
         <transaction-details v-for="transaction in props.items" :key="transaction.id" :transaction="transaction" />

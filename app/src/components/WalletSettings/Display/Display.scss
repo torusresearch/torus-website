@@ -1,8 +1,19 @@
 .select-theme-container {
   .select-theme {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
+    border-width: 0;
+    color: var(--v-text_1-base);
+    border-radius: 6px;
+    font-size: 16px;
     display: flex;
     ::v-deep .v-chip__content {
       width: 100%;
+    }
+    &.theme--dark {
+      box-shadow: none;
+      border-color: inherit;
+      border-width: 1px;
     }
   }
 }
