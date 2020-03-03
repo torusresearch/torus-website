@@ -12,9 +12,13 @@
     "airbnb-base",
     "plugin:import/errors",
     "plugin:import/warnings",
-    "plugin:flowtype/recommended"
+    "plugin:flowtype/recommended",
+    "adjunct",
+    "problems",
+    "plugin:vue-scoped-css/recommended",
+    "plugin:promise/recommended"
   ],
-  "plugins": ["prettier", "vue", "babel", "promise", "import", "flowtype", "standard"],
+  "plugins": ["prettier", "vue", "babel", "promise", "import", "flowtype", "standard", "vue-scoped-css"],
   "parser": "vue-eslint-parser",
   "parserOptions": {
     "parser": "babel-eslint",
@@ -22,6 +26,7 @@
     "sourceType": "module"
   },
   "rules": {
+    "unicorn/filename-case": 0,
     "vue/array-bracket-spacing": 2,
     "vue/arrow-spacing": 2,
     "vue/block-spacing": 2,

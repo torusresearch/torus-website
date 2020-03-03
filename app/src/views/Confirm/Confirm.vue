@@ -243,36 +243,36 @@
 </template>
 
 <script>
-import VueJsonPretty from 'vue-json-pretty'
-import { BroadcastChannel } from 'broadcast-channel'
-import { fromWei, toChecksumAddress, hexToNumber } from 'web3-utils'
 import BigNumber from 'bignumber.js'
-import log from 'loglevel'
-import tokenABI from 'human-standard-token-abi'
+import { BroadcastChannel } from 'broadcast-channel'
 import collectibleABI from 'human-standard-collectible-abi'
+import tokenABI from 'human-standard-token-abi'
+import log from 'loglevel'
+import VueJsonPretty from 'vue-json-pretty'
+import { fromWei, hexToNumber, toChecksumAddress } from 'web3-utils'
 
-import ShowToolTip from '../../components/helpers/ShowToolTip'
-import { PopupScreenLoader } from '../../content-loader'
-import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
-// import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
-import { significantDigits, addressSlicer, broadcastChannelOptions } from '../../utils/utils'
-import { get } from '../../utils/httpHelpers'
+import ShowToolTip from '../../components/helpers/ShowToolTip'
+import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import config from '../../config'
+import { PopupScreenLoader } from '../../content-loader'
 import {
+  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   CONTRACT_INTERACTION_KEY,
   DEPLOY_CONTRACT_ACTION_KEY,
+  SEND_ETHER_ACTION_KEY,
   TOKEN_METHOD_APPROVE,
   TOKEN_METHOD_TRANSFER,
   TOKEN_METHOD_TRANSFER_FROM,
-  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
-  SEND_ETHER_ACTION_KEY,
   TX_MESSAGE,
-  TX_TYPED_MESSAGE,
   TX_PERSONAL_MESSAGE,
-  TX_TRANSACTION
+  TX_TRANSACTION,
+  TX_TYPED_MESSAGE
 } from '../../utils/enums'
+import { get } from '../../utils/httpHelpers'
+// import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
+import { addressSlicer, broadcastChannelOptions, significantDigits } from '../../utils/utils'
 
 const weiInGwei = new BigNumber('10').pow(new BigNumber('9'))
 
@@ -345,29 +345,35 @@ export default {
         case DEPLOY_CONTRACT_ACTION_KEY:
           // return 'Contract Deployment'
           return this.t('dappTransfer.deploy')
+
         case CONTRACT_INTERACTION_KEY:
           return this.getHeaderByDapp()
+
         case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
           // return 'ERC721 SafeTransferFrom'
           return this.t('dappTransfer.collectibleSafe')
+
         case TOKEN_METHOD_APPROVE:
           // return 'ERC20 Approve'
           return this.t('dappTransfer.approve')
+
         case TOKEN_METHOD_TRANSFER:
         case SEND_ETHER_ACTION_KEY:
           // return 'ERC2O Transfer'
           // return 'Send Ether'
           return this.t('dappTransfer.transfer')
+
         case TOKEN_METHOD_TRANSFER_FROM:
           // return 'ERC2O Transfer From'
           return this.t('dappTransfer.transferFrom')
+
         default:
           // return 'Transaction Request'
           return this.t('dappTransfer.transaction')
       }
     },
     isLightHeader() {
-      return [DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].indexOf(this.transactionCategory) >= 0
+      return [DEPLOY_CONTRACT_ACTION_KEY, CONTRACT_INTERACTION_KEY].includes(this.transactionCategory)
     },
     displayAmountTo() {
       switch (this.transactionCategory) {
@@ -375,11 +381,14 @@ export default {
         case TOKEN_METHOD_TRANSFER:
         case TOKEN_METHOD_TRANSFER_FROM:
           return `${this.t('dappTransfer.to')}: ${this.slicedAddress(this.amountTo)}`
+
         case SEND_ETHER_ACTION_KEY:
         case CONTRACT_INTERACTION_KEY:
           return `${this.t('dappTransfer.to')}: ${this.slicedAddress(this.receiver)}`
+
         case DEPLOY_CONTRACT_ACTION_KEY:
           return this.t('dappTransfer.newContract')
+
         default:
           return this.t('dappTransfer.transactionRequest')
       }
@@ -390,13 +399,17 @@ export default {
         case TOKEN_METHOD_TRANSFER:
         case TOKEN_METHOD_TRANSFER_FROM:
           return `${this.amountDisplay(this.amountValue)} ${this.selectedToken}`
+
         case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
           return `ID: ${this.amountValue}`
+
         case SEND_ETHER_ACTION_KEY:
         case CONTRACT_INTERACTION_KEY:
           return `${this.amountDisplay(this.value)} ETH`
+
         case DEPLOY_CONTRACT_ACTION_KEY:
           return this.t('dappTransfer.notApplicable')
+
         default:
           return this.t('dappTransfer.transactionRequest')
       }
@@ -407,23 +420,26 @@ export default {
         case TOKEN_METHOD_TRANSFER:
         case TOKEN_METHOD_TRANSFER_FROM:
           return `~ ${significantDigits(this.amountTokenValueConverted)} ${this.selectedCurrency}`
+
         case SEND_ETHER_ACTION_KEY:
         case CONTRACT_INTERACTION_KEY:
           return `~ ${this.dollarValue} ${this.selectedCurrency}`
+
         case DEPLOY_CONTRACT_ACTION_KEY:
           return ''
+
         default:
           return ''
       }
     },
     costOfTransaction() {
-      if ([TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(this.transactionCategory) >= 0) {
+      if ([TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].includes(this.transactionCategory)) {
         return `${this.displayAmountValue}`
       }
       return `${this.totalEthCostDisplay} ETH`
     },
     isOtherToken() {
-      return [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(this.transactionCategory) >= 0
+      return [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].includes(this.transactionCategory)
       // `+ ${significantDigits(this.gasCost)}`
     },
     costOfTransactionConverted() {
@@ -439,9 +455,8 @@ export default {
     },
     getCurrencyMultiplier() {
       log.info(this.selectedCurrency)
-      const currencyMultiplierNum = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
-      const currencyMultiplier = new BigNumber(currencyMultiplierNum)
-      return currencyMultiplier
+      const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
+      return new BigNumber(currencyMultiplierNumber)
     },
     getCurrencyRate() {
       const ethConverted = this.getCurrencyMultiplier
@@ -468,17 +483,17 @@ export default {
     }
   },
   mounted() {
-    const queryParams = new URLSearchParams(window.location.search)
-    const instanceId = queryParams.get('instanceId')
-    const queryParamId = queryParams.get('id')
+    const queryParameters = new URLSearchParams(window.location.search)
+    const instanceId = queryParameters.get('instanceId')
+    const queryParameterId = queryParameters.get('id')
     this.channel = `torus_channel_${instanceId}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
-    bc.onmessage = async ev => {
+    bc.addEventListener('message', async ev => {
       if (ev.name !== 'send-params') return
       const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, currencyData, network } = ev.data || {}
       this.selectedCurrency = selectedCurrency
       this.currencyData = currencyData
-      if (txParams && txParams.id.toString() !== queryParamId) return
+      if (txParams && txParams.id.toString() !== queryParameterId) return
       bc.close()
       this.balance = new BigNumber(balance)
       log.info({ msgParams, txParams })
@@ -487,8 +502,8 @@ export default {
         let { msgParams: { message, typedMessages } = {}, id = '' } = msgParams
         try {
           typedMessages = typedMessages && JSON.parse(typedMessages)
-        } catch (e) {
-          log.error(e)
+        } catch (error) {
+          log.error(error)
         }
         this.id = id
         this.message = message
@@ -502,11 +517,11 @@ export default {
           finalValue = new BigNumber(fromWei(value.toString()))
         }
         // Get ABI for method
-        let txDataParams = ''
+        let txDataParameters = ''
         if (contractParams.erc721) {
-          txDataParams = collectibleABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          txDataParameters = collectibleABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
         } else if (contractParams.erc20) {
-          txDataParams = tokenABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          txDataParameters = tokenABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
         }
         // Get Params from method type ABI
         let amountTo
@@ -518,9 +533,9 @@ export default {
         }
         log.info(methodParams, 'params')
         const checkSummedTo = toChecksumAddress(to)
-        const tokenObj = contractParams
-        const decimals = new BigNumber(tokenObj.decimals || '0')
-        this.selectedToken = tokenObj.symbol || 'ERC20'
+        const tokenObject = contractParams
+        const decimals = new BigNumber(tokenObject.decimals || '0')
+        this.selectedToken = tokenObject.symbol || 'ERC20'
         this.id = id
         this.network = network
         this.transactionCategory = transactionCategory
@@ -573,7 +588,7 @@ export default {
         this.balanceUsd = significantDigits(this.balance.times(this.getCurrencyMultiplier)) // in usd
         this.gasEstimate = new BigNumber(hexToNumber(gas)) // gas number
         this.txData = data // data hex
-        this.txDataParams = txDataParams !== '' ? JSON.stringify(txDataParams, null, 2) : ''
+        this.txDataParams = txDataParameters !== '' ? JSON.stringify(txDataParameters, null, 2) : ''
         this.sender = sender // address of sender
         this.gasCost = gweiGasPrice.times(this.gasEstimate).div(new BigNumber('10').pow(new BigNumber('9')))
         this.txFees = this.gasCost.times(this.getCurrencyMultiplier)
@@ -592,8 +607,8 @@ export default {
         }
       }
       this.type = type // type of tx
-    }
-    bc.postMessage({ name: 'popup-loaded', data: { id: queryParamId } })
+    })
+    bc.postMessage({ name: 'popup-loaded', data: { id: queryParameterId } })
   },
   methods: {
     slicedAddress(user) {
