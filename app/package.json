@@ -68,6 +68,7 @@
     "jwt-decode": "^2.2.0",
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
+    "loglevel": "^1.6.7",
     "obj-multiplex": "^1.0.0",
     "obs-store": "^4.0.3",
     "percentile": "^1.2.2",
@@ -88,7 +89,8 @@
     "vuetify": "2.1.16",
     "vuex": "^3.1.2",
     "vuex-persist": "^2.2.0",
-    "web3": "^1.2.6"
+    "web3": "^1.2.6",
+    "web3-utils": "^1.2.6"
   },
   "devDependencies": {
     "@toruslabs/torus-embed": "^1.1.1",
@@ -110,7 +112,6 @@
     "eslint-loader": "^3.0.3",
     "eslint-plugin-babel": "^5.3.0",
     "eslint-plugin-flowtype": "^4.6.0",
-    "eslint-plugin-html": "^6.0.0",
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-prettier": "^3.1.2",
