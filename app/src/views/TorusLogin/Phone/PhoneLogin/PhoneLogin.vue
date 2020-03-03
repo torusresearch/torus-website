@@ -17,7 +17,15 @@
               <v-form @submit.prevent="login" lazy-validation v-model="formValid" ref="form" autocomplete="off">
                 <v-layout wrap>
                   <v-flex xs12 class="phone-login">
-                    <vue-tel-input v-model="verifier_id" required mode="international" autocomplete="off" :autofocus="true"></vue-tel-input>
+                    <vue-tel-input
+                      v-model="verifier_id"
+                      required
+                      mode="international"
+                      name="verifier_id_phone"
+                      id="verifier_id_phone"
+                      autocomplete="off"
+                      :autofocus="true"
+                    ></vue-tel-input>
                   </v-flex>
                   <v-flex xs12>
                     <v-text-field

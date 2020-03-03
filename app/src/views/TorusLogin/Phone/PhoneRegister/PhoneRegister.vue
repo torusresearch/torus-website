@@ -44,6 +44,7 @@
                       :type="showConfirmPassword ? 'text' : 'password'"
                       single-line
                       :rules="[rules.required, rules.confirmPassword]"
+                      autocomplete="off"
                     >
                       <template v-slot:prepend-inner>
                         <img class="mr-2" :src="require(`../../../../../public/images/lock.svg`)" height="20px" />

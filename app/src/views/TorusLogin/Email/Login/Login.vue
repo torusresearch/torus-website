@@ -21,6 +21,7 @@
                       outlined
                       type="text"
                       name="verifier_id"
+                      id="verifier_id"
                       :label="t('emailLogin.enterEmail')"
                       elevation="4"
                       v-model="verifier_id"
