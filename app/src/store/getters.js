@@ -1,10 +1,11 @@
+import BigNumber from 'bignumber.js'
+
 import { MAINNET } from '../utils/enums'
 import { significantDigits } from '../utils/utils'
-import BigNumber from 'bignumber.js'
 
 const unApprovedTransactions = state => {
   const transactions = []
-  for (let id in state.transactions) {
+  for (const id in state.transactions) {
     if (state.transactions[id].status === 'unapproved') {
       transactions.push(state.transactions[id])
     }
@@ -43,12 +44,12 @@ const tokenBalances = state => {
     if (x.tokenAddress !== '0x') tokenRateMultiplierNum = tokenRates[x.tokenAddress.toLowerCase()] || 0
     const tokenRateMultiplier = new BigNumber(tokenRateMultiplierNum)
     const currencyRate = currencyMultiplier.times(tokenRateMultiplier)
-    let currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
+    const currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
     totalPortfolioValue = totalPortfolioValue.plus(currencyBalance)
     return {
       ...x,
       id: x.symbol,
-      computedBalance: computedBalance,
+      computedBalance,
       formattedBalance: `${x.symbol} ${significantDigits(computedBalance, false, formatter + 1)}`,
       currencyBalance: `${selectedCurrency} ${significantDigits(currencyBalance, false, formatter + 1)}`,
       currencyRateText: `1 ${x.symbol} = ${currencyRate.toFormat(formatter)} ${selectedCurrency}`
@@ -59,7 +60,7 @@ const tokenBalances = state => {
 }
 
 const collectibleBalances = state => {
-  let { networkType, assets, selectedAddress } = state || {}
+  const { networkType, assets, selectedAddress } = state || {}
   if (networkType.host !== MAINNET) {
     assets[selectedAddress] = []
   }

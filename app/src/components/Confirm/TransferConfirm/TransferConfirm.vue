@@ -15,7 +15,7 @@
             <v-flex xs12 px-4 pb-4>
               <div class="subtitle-2">{{ isNonFungibleToken ? t('walletTransfer.assetToSend') : t('walletTransfer.amountToSend') }}:</div>
               <v-divider class="my-1" />
-              <div class="mt-2" v-if="isNonFungibleToken">
+              <div v-if="isNonFungibleToken" class="mt-2">
                 <img class="mr-2 float-left" :src="assetSelected.image" height="24px" />
                 {{ assetSelected.name }}
               </div>
@@ -37,7 +37,7 @@
               </div>
             </v-flex>
             <v-flex>
-              <div class="float-right text-right red--text" v-if="sendEthToContractError">
+              <div v-if="sendEthToContractError" class="float-right text-right red--text">
                 It looks like you're sending ETH to a Contract. Gas Estimation is incorrect and some ETH may be left
               </div>
             </v-flex>
@@ -57,20 +57,19 @@
 
 <script>
 import { significantDigits } from '../../../utils/utils'
-import { WALLET_HEADERS_CONFIRM } from '../../../utils/enums'
 
 export default {
-  props: [
-    'toAddress',
-    'selectedCurrency',
-    'convertedAmount',
-    'displayAmount',
-    'speedSelected',
-    'transactionFee',
-    'assetSelected',
-    'isNonFungibleToken',
-    'sendEthToContractError'
-  ],
+  props: {
+    toAddress: String,
+    selectedCurrency: String,
+    convertedAmount: any,
+    displayAmount: any,
+    speedSelected: any,
+    transactionFee: any,
+    assetSelected: any,
+    isNonFungibleToken: Boolean,
+    sendEthToContractError: any
+  },
   methods: {
     onCancel(step) {
       this.$emit('onClose')
@@ -79,7 +78,7 @@ export default {
       this.$emit('onConfirm')
       this.$emit('onClose')
     },
-    significantDigits: significantDigits
+    significantDigits
   }
 }
 </script>

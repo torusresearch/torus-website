@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const log = require('loglevel')
+
 try {
   const cfConfig = JSON.parse(fs.readFileSync(path.resolve('./cf_config.json'), 'utf8'))
   if (Object.prototype.hasOwnProperty.call(cfConfig, 'DistributionConfig')) {

@@ -677,32 +677,29 @@ export default {
       prefsController.revokeDiscord(idToken)
     }
   },
-  processAuthMessage({ commit, dispatch }, payload) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const { message, selectedAddress, calledFromEmbed } = payload
-        const hashedMessage = torus.hashMessage(message)
-        const signedMessage = await torus.torusController.keyringController.signMessage(selectedAddress, hashedMessage)
-        const response = await post(`${config.api}/auth/verify`, {
-          public_address: selectedAddress,
-          signed_message: signedMessage
-        })
-        commit('setJwtToken', response.token)
-        prefsController.jwtToken = response.token
-        if (response.token) {
-          const decoded = jwtDecode(response.token)
-          setTimeout(() => {
-            dispatch('logOut')
-          }, decoded.exp * 1000 - Date.now())
-        }
-        await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed: calledFromEmbed, rehydrate: false })
-
-        resolve()
-      } catch (error) {
-        log.error('Failed Communication with backend', error)
-        reject(error)
+  async processAuthMessage({ commit, dispatch }, payload) {
+    try {
+      const { message, selectedAddress, calledFromEmbed } = payload
+      const hashedMessage = torus.hashMessage(message)
+      const signedMessage = await torus.torusController.keyringController.signMessage(selectedAddress, hashedMessage)
+      const response = await post(`${config.api}/auth/verify`, {
+        public_address: selectedAddress,
+        signed_message: signedMessage
+      })
+      commit('setJwtToken', response.token)
+      prefsController.jwtToken = response.token
+      if (response.token) {
+        const decoded = jwtDecode(response.token)
+        setTimeout(() => {
+          dispatch('logOut')
+        }, decoded.exp * 1000 - Date.now())
       }
-    })
+      await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed: calledFromEmbed, rehydrate: false })
+      return
+    } catch (error) {
+      log.error('Failed Communication with backend', error)
+      return Promise.reject(error)
+    }
   },
   setUserTheme(context, payload) {
     return prefsController.setUserTheme(payload)
@@ -711,7 +708,7 @@ export default {
     prefsController.setUserLocale(payload)
   },
   setUserInfoAction({ commit, dispatch, state }, payload) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       // Fixes loading theme for too long
       commit('setTheme', state.theme)
       const { calledFromEmbed, rehydrate, token } = payload
@@ -739,7 +736,7 @@ export default {
     })
   },
   async rehydrate({ state, dispatch }, payload) {
-    let {
+    const {
       selectedAddress,
       wallet,
       networkType,

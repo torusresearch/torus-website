@@ -1,7 +1,7 @@
 <template>
   <v-tooltip top>
     <template v-slot:activator="{ on }">
-      <v-icon small v-text="'$vuetify.icons.question'" v-on="on"></v-icon>
+      <v-icon small v-on="on" v-text="'$vuetify.icons.question'"></v-icon>
     </template>
     <span>
       <div class="primary--text subtitle-2">{{ title }}</div>

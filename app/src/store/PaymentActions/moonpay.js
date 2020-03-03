@@ -1,9 +1,9 @@
 import log from 'loglevel'
+import { BroadcastChannel } from 'broadcast-channel'
 import { getQuote, getSignature } from '../../plugins/moonpay'
 import config from '../../config'
 import torus from '../../torus'
 import { MOONPAY } from '../../utils/enums'
-import { BroadcastChannel } from 'broadcast-channel'
 import { broadcastChannelOptions } from '../../utils/utils'
 import PopupHandler from '../../utils/PopupHandler'
 
@@ -23,7 +23,7 @@ export default {
       let preopenInstanceId = preopenInstanceIdPayload
       if (!preopenInstanceId) {
         preopenInstanceId = randomId()
-        const finalUrl = config.baseUrl + `/redirect?preopenInstanceId=${preopenInstanceId}`
+        const finalUrl = `${config.baseUrl}/redirect?preopenInstanceId=${preopenInstanceId}`
         const handledWindow = new PopupHandler({ url: finalUrl })
         handledWindow.open()
 
@@ -44,7 +44,7 @@ export default {
         enabledPaymentMethods: 'credit_debit_card,sepa_bank_transfer,gbp_bank_transfer',
         currencyCode: currentOrder.currency.code,
         walletAddress: selectedAddress || state.selectedAddress,
-        colorCode: colorCode,
+        colorCode,
         baseCurrencyAmount: currentOrder.baseCurrencyAmount,
         baseCurrencyCode: currentOrder.baseCurrency.code,
         email: state.userInfo.email !== '' ? state.userInfo.email : undefined,

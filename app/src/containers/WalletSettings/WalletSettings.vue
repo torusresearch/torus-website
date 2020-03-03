@@ -79,10 +79,9 @@ import PrivacySecurity from '../../components/WalletSettings/PrivacySecurity'
 import ContactList from '../../components/WalletSettings/ContactList'
 import Network from '../../components/WalletSettings/Network'
 import Display from '../../components/WalletSettings/Display'
-import log from 'loglevel'
 
 export default {
-  name: 'walletSettings',
+  name: 'WalletSettings',
   components: {
     PrivacySecurity,
     ContactList,

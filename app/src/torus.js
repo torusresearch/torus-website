@@ -16,11 +16,13 @@ class TorusExtended extends Torus {
     this.instanceId = randomId()
     this.setupMultiplex = setupMultiplex
   }
+
   continueEnable(selectedAddress) {
     log.info('ENABLE WITH: ', selectedAddress)
     var oauthStream = this.communicationMux.getStream('oauth')
     oauthStream.write({ selectedAddress: selectedAddress })
   }
+
   updateStaticData(payload) {
     log.info('STATIC DATA:', payload)
     var publicConfigOutStream = (this.metamaskMux && this.metamaskMux.getStream('publicConfig')) || fakeStream
