@@ -29,6 +29,7 @@
                       @input="verifyAccount"
                       :label="t('emailLogin.enterVerification')"
                       single-line
+                      autocomplete="one-time-code"
                     >
                       <template v-slot:append>
                         <img class="mr-2" v-if="status === ''" :src="require(`../../../../../public/images/shield.svg`)" height="20px" />

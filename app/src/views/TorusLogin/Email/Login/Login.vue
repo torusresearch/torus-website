@@ -27,6 +27,7 @@
                       v-model="verifier_id"
                       :rules="[rules.required, rules.validEmail]"
                       single-line
+                      autocomplete="email"
                     >
                       <template v-slot:prepend-inner>
                         <img class="mr-2 mt-1" :src="require(`../../../../../public/images/email.svg`)" height="16px" />
@@ -46,6 +47,7 @@
                       :type="showPassword ? 'text' : 'password'"
                       class="password"
                       single-line
+                      autocomplete="current-password"
                     >
                       <template v-slot:prepend-inner>
                         <img class="mr-2 mt-1" :src="require(`../../../../../public/images/lock.svg`)" height="20px" />

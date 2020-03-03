@@ -24,7 +24,7 @@
                       name="torus_verifier_id_phone"
                       inputId="verifier_id_phone"
                       :placeholder="t('emailLogin.enterPhone')"
-                      autocomplete="off"
+                      autocomplete="tel"
                       :autofocus="true"
                       :validCharactersOnly="true"
                     ></vue-tel-input>
@@ -33,6 +33,7 @@
                     <v-text-field
                       outlined
                       name="password"
+                      autocomplete="current-password"
                       :placeholder="t('emailLogin.enterPassword')"
                       @click:append.prevent="showPassword = !showPassword"
                       :rules="[rules.required, rules.minLength]"

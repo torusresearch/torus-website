@@ -14,7 +14,7 @@
               <v-form lazy-validation v-model="formValid" ref="form" @submit.prevent="registerAccount" autocomplete="off">
                 <v-layout wrap>
                   <v-flex xs12>
-                    <vue-tel-input v-model="verifier_id" required mode="international" autocomplete="off" :autofocus="true"></vue-tel-input>
+                    <vue-tel-input v-model="verifier_id" required mode="international" autocomplete="tel" :autofocus="true"></vue-tel-input>
                   </v-flex>
                   <v-flex xs12>
                     <v-text-field
@@ -26,6 +26,7 @@
                       :append-icon="showPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                       :type="showPassword ? 'text' : 'password'"
                       single-line
+                      autocomplete="new-password"
                       :rules="[rules.required, rules.minLength]"
                     >
                       <template v-slot:prepend-inner>
@@ -44,7 +45,7 @@
                       :type="showConfirmPassword ? 'text' : 'password'"
                       single-line
                       :rules="[rules.required, rules.confirmPassword]"
-                      autocomplete="off"
+                      autocomplete="new-password"
                     >
                       <template v-slot:prepend-inner>
                         <img class="mr-2" :src="require(`../../../../../public/images/lock.svg`)" height="20px" />
