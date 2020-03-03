@@ -29,7 +29,7 @@ update_lambda_job: &update_lambda_job
     - run:
         name: "Update lambda version"
         command: |
-          mkdir -p ~/.ssh
+          mkdir -p ~/.ssh 
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
           . ./scripts/updateLambda.sh
 update_iframeIntegrity: &update_iframeIntegrity
@@ -76,7 +76,6 @@ jobs:
           path: ~/torus-website
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
-      - setup_remote_docker
       - run:
           name: "Running unit tests with coverage"
           command: npm run test:coverage-codecov
@@ -85,6 +84,7 @@ jobs:
           path: coverage
   build:
     <<: *job_common
+    resource_class: large
     steps:
       - checkout:
           path: ~/torus-website
@@ -101,6 +101,7 @@ jobs:
       - <<: *step_save_cache
   build-staging:
     <<: *job_common
+    resource_class: large
     steps:
       - checkout:
           path: ~/torus-website
@@ -129,6 +130,7 @@ jobs:
     <<: *update_iframeIntegrity
   build-testing:
     <<: *job_common
+    resource_class: large
     steps:
       - checkout:
           path: ~/torus-website
@@ -145,6 +147,7 @@ jobs:
       - <<: *step_save_cache
   build-lrc:
         <<: *job_common
+        resource_class: large
         steps:
           - checkout:
               path: ~/torus-website
