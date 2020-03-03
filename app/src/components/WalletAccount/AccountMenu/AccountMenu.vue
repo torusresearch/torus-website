@@ -179,7 +179,6 @@ export default {
   },
   computed: {
     hasPendingSmartContract() {
-      return true
       return Object.values(this.$store.state.wallet).filter(
         x => x.type === 'SC' && x.network === this.$store.state.networkType.host && x.address === 'PROCESSING'
       ).length
@@ -259,18 +258,7 @@ export default {
       this.$router.push({ path: '/logout' }).catch(err => {})
     },
     async changeAccount(newAddress) {
-      this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
-      const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
-      if (urlInstance && urlInstance !== '') {
-        const selectedAddressChannel = new BroadcastChannel(`selected_address_channel_${urlInstance}`, broadcastChannelOptions)
-        await selectedAddressChannel.postMessage({
-          data: {
-            name: 'selected_address',
-            payload: newAddress
-          }
-        })
-        selectedAddressChannel.close()
-      }
+      await this.$store.dispatch('changeAccount', { selectedAddress: newAddress })
     }
   }
 }

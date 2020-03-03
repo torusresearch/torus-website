@@ -8,15 +8,14 @@
     <v-dialog :value="smartContractAccount && !smartContractAccount.notified" max-width="375" persistent>
       <message-modal
         @onClose="closeSmartContractModal"
+        :no-close="true"
         :modal-type="messageModalType"
         :title="'Your Smart Contract Wallet is ready'"
-        :detail-text="'Click on your Account on the top right to access your Smart Contract Wallet'"
       >
         <template v-slot:link>
-          <div class="mb-10">
-            <v-btn text large class="account-link" @click="markAsRead">
-              <v-icon left v-text="'$vuetify.icons.person_circle'" />
-              <span>Your Account</span>
+          <div class="my-10">
+            <v-btn color="success" large outlined @click="markAsRead">
+              Take me to my wallet
             </v-btn>
           </div>
         </template>
@@ -52,9 +51,10 @@ export default {
     }
   },
   methods: {
-    markAsRead() {
+    async markAsRead() {
       this.$store.dispatch('updateWalletNotified', this.smartContractAccount)
-      this.$router.push({ name: 'walletSettings' })
+      await this.$store.dispatch('changeAccount', { selectedAddress: this.smartContractAccount.address })
+      this.$router.push({ name: 'walletHome' })
     },
     closeSmartContractModal() {
       this.$store.dispatch('updateWalletNotified', this.smartContractAccount)

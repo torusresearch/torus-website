@@ -18,7 +18,7 @@
         </template>
         <div class="text_2--text mb-10 caption" v-else-if="isReload">Reloading in {{ reloadTime }} sec...</div>
         <v-btn
-          v-else
+          v-else-if="!noClose"
           :color="modalType === MESSAGE_MODAL_TYPE_SUCCESS ? 'success' : modalType === MESSAGE_MODAL_TYPE_FAIL ? 'error' : ''"
           :outlined="modalType != MESSAGE_MODAL_TYPE_PENDING"
           :depressed="modalType === MESSAGE_MODAL_TYPE_PENDING"
@@ -76,6 +76,10 @@ export default {
     isReload: Boolean,
     reloadTime: {
       default: 5
+    },
+    noClose: {
+      type: Boolean,
+      default: false
     },
     goTo: String
   },

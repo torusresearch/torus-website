@@ -853,5 +853,19 @@ export default {
   getSmartContractWalletAddress({ state, dispatch }, payload) {
     const arrSCW = Object.keys(state.wallet).filter(x => state.wallet[x].type === 'SC')
     return arrSCW && arrSCW.length ? arrSCW[0] : null
+  },
+  async changeAccount({ dispatch }, payload) {
+    dispatch('updateSelectedAddress', { selectedAddress: payload.selectedAddress })
+    const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
+    if (urlInstance && urlInstance !== '') {
+      const selectedAddressChannel = new BroadcastChannel(`selected_address_channel_${urlInstance}`, broadcastChannelOptions)
+      await selectedAddressChannel.postMessage({
+        data: {
+          name: 'selected_address',
+          payload: newAddress
+        }
+      })
+      selectedAddressChannel.close()
+    }
   }
 }

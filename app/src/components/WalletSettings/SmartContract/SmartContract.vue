@@ -1,7 +1,7 @@
 <template>
   <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
     <template v-if="smartContractAccount">
-      <template v-if="smartContractAccount.address === 'PROCESSING' || true">
+      <template v-if="smartContractAccount.address === 'PROCESSING'">
         <div class="body-2 text_1--text mb-2 px-1">Your smart contract wallet is still being created</div>
         <v-layout wrap>
           <v-flex xs12 md6 px-1 mb-1>
