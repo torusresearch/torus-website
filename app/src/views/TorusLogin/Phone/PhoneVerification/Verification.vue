@@ -7,11 +7,11 @@
             <img width="117" :src="require(`../../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
           </v-flex>
           <v-flex class="mb-3" xs9 sm7 ml-auto mr-auto>
-            <span class="display-1 font-weight-bold">Verification</span>
+            <span class="display-1 font-weight-bold">{{ t('emailLogin.verification') }}</span>
           </v-flex>
           <v-flex class="display" mb-6 xs9 sm7 ml-auto mr-auto>
             <span>
-              Check your phone and key in the verification code to access your account
+              {{ t('emailLogin.checkPhoneAndKey') }}
             </span>
           </v-flex>
           <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
@@ -27,7 +27,7 @@
                       class="field"
                       :rules="[rules.required, rules.minLength]"
                       @input="verifyAccount"
-                      label="Enter your verification code"
+                      :label="t('emailLogin.enterVerification')"
                       single-line
                     >
                       <template v-slot:append>
@@ -36,7 +36,7 @@
                           class="mr-2"
                           :src="require(`../../../../../public/images/valid-check.svg`)"
                           height="20px"
-                          title="You have successfully verified your account"
+                          :title="t('emailLogin.verifySuccess')"
                           v-if="status === 'success'"
                         />
                         <img class="mr-2" v-if="status === 'error'" :src="require(`../../../../../public/images/invalid-check.svg`)" height="20px" />
@@ -47,8 +47,8 @@
                         <div class="v-messages__wrapper">
                           <div class="v-messages__message d-flex text_2--text">
                             <v-flex>
-                              Please try again or
-                              <a @click="resendCode">resend the code</a>
+                              {{ t('emailLogin.pleaseTryAgain') }}
+                              <a @click="resendCode">{{ t('emailLogin.resendCode') }}</a>
                             </v-flex>
                           </div>
                         </div>
@@ -88,8 +88,8 @@ export default {
       hash: '',
       formValid: true,
       rules: {
-        required: value => !!value || 'Required',
-        minLength: value => value.length === 6 || 'Code must be 6 digits'
+        required: value => !!value || this.t('emailLogin.required'),
+        minLength: value => value.length === 6 || this.t('emailLogin.codeMustBe')
       }
     }
   },

@@ -7,7 +7,7 @@
             <img width="117" :src="require(`../../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
           </v-flex>
           <v-flex class="mb-3" xs12 sm12 ml-auto mr-auto>
-            <span class="display-1 font-weight-bold">Log in</span>
+            <span class="display-1 font-weight-bold">{{ t('emailLogin.login') }}</span>
           </v-flex>
           <v-flex :class="$vuetify.theme.dark ? '' : 'text_1--text'" class="body-2" mb-8 xs12 sm12 ml-auto mr-auto>
             <span>{{ t('login.message') }}</span>
@@ -21,7 +21,7 @@
                       outlined
                       type="text"
                       name="verifier_id"
-                      label="Enter Email"
+                      :label="t('emailLogin.enterEmail')"
                       elevation="4"
                       v-model="verifier_id"
                       :rules="[rules.required, rules.validEmail]"
@@ -36,7 +36,7 @@
                     <v-text-field
                       outlined
                       name="password"
-                      label="Enter Password"
+                      :label="t('emailLogin.enterPassword')"
                       @click:append.prevent="showPassword = !showPassword"
                       :rules="[rules.required, rules.minLength]"
                       v-model="password"
@@ -61,8 +61,8 @@
                             </v-flex>
                             <v-flex grow-shrink-0>
                               <span class="caption">
-                                Don't have an account?
-                                <router-link :to="{ name: 'torusEmailRegister' }">Sign up here</router-link>
+                                {{ t('emailLogin.dontHaveAcnt') }}
+                                <router-link :to="{ name: 'torusEmailRegister' }">{{ t('emailLogin.signUpHere') }}</router-link>
                               </span>
                             </v-flex>
                           </div>
@@ -81,19 +81,19 @@
                       block
                       type="submit"
                     >
-                      Login
+                      {{ t('emailLogin.loginNoSpace') }}
                     </v-btn>
                   </v-flex>
 
                   <v-flex xs12 py-3 v-if="notRegistered">
                     <span>
-                      You are not registered yet. Please
-                      <router-link :to="{ name: 'torusEmailRegister' }">Sign up here</router-link>
+                      {{ t('emailLogin.notRegistered') }}
+                      <router-link :to="{ name: 'torusEmailRegister' }">{{ t('emailLogin.signUpHere') }}</router-link>
                     </span>
                   </v-flex>
                   <v-flex xs12 py-3 v-if="incorrectPassword">
                     <span>
-                      Incorrect email address or password. Please try again.
+                      {{ t('emailLogin.pleaseTryAgainEmail') }}
                     </span>
                   </v-flex>
                 </v-layout>
@@ -133,9 +133,9 @@ export default {
       notRegistered: false,
       incorrectPassword: false,
       rules: {
-        required: value => !!value || 'Required',
-        minLength: value => value.length > 8 || 'Password length must be greater than 8 characters',
-        validEmail: value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || 'Invalid email address'
+        required: value => !!value || this.t('emailLogin.required'),
+        minLength: value => value.length > 8 || this.t('emailLogin.passwordLength'),
+        validEmail: value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) || this.t('emailLogin.invalidEmail')
       }
     }
   },
