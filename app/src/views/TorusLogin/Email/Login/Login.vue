@@ -19,10 +19,10 @@
                   <v-flex xs12>
                     <v-text-field
                       outlined
-                      type="text"
+                      type="email"
                       name="verifier_id"
                       id="verifier_id"
-                      :label="t('emailLogin.enterEmail')"
+                      :placeholder="t('emailLogin.enterEmail')"
                       elevation="4"
                       v-model="verifier_id"
                       :rules="[rules.required, rules.validEmail]"
@@ -37,7 +37,7 @@
                     <v-text-field
                       outlined
                       name="password"
-                      :label="t('emailLogin.enterPassword')"
+                      :placeholder="t('emailLogin.enterPassword')"
                       @click:append.prevent="showPassword = !showPassword"
                       :rules="[rules.required, rules.minLength]"
                       v-model="password"

@@ -21,8 +21,9 @@
                       v-model="verifier_id"
                       required
                       mode="international"
-                      name="verifier_id_phone"
-                      id="verifier_id_phone"
+                      name="torus_verifier_id_phone"
+                      inputId="verifier_id_phone"
+                      :placeholder="t('emailLogin.enterPhone')"
                       autocomplete="off"
                       :autofocus="true"
                       :validCharactersOnly="true"
@@ -32,7 +33,7 @@
                     <v-text-field
                       outlined
                       name="password"
-                      :label="t('emailLogin.enterPassword')"
+                      :placeholder="t('emailLogin.enterPassword')"
                       @click:append.prevent="showPassword = !showPassword"
                       :rules="[rules.required, rules.minLength]"
                       v-model="password"
