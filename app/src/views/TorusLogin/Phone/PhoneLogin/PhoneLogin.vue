@@ -25,6 +25,7 @@
                       id="verifier_id_phone"
                       autocomplete="off"
                       :autofocus="true"
+                      :validCharactersOnly="true"
                     ></vue-tel-input>
                   </v-flex>
                   <v-flex xs12>
