@@ -107,7 +107,7 @@
                 @click="triggerLogin({ verifier: TORUS, calledFromEmbed: false, loginType: 'torus-email-login' })"
               >
                 <img height="20" :src="require('../../../public/images/email.svg')" :class="$vuetify.theme.dark ? 'ml-4 mr-4 torus-dark' : 'mr-6'" />
-                Sign up/in with Email
+                {{ t('login.signUpEmail') }}
               </v-btn>
             </v-flex>
             <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
@@ -128,7 +128,7 @@
                   :src="require('../../../public/images/phone-icon.svg')"
                   :class="$vuetify.theme.dark ? 'ml-4 mr-4 torus-dark' : 'mr-6'"
                 />
-                Sign up/in with Phone
+                {{ t('login.signUpPhone') }}
               </v-btn>
             </v-flex>
             <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
