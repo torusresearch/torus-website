@@ -1,4 +1,8 @@
 version: 2
+job_common_base: &job_common_base
+  docker:
+    - image: circleci/buildpack-deps
+  working_directory: ~/torus-website/app
 job_common: &job_common
   docker:
     - image: skyuppercut/node-puppeteer
@@ -18,7 +22,7 @@ step_setup_global_packages: &step_setup_global_packages
       npm install
       find ./node_modules/ -name ".git" -type d -exec rm -rf {} +
 update_lambda_job: &update_lambda_job
-  <<: *job_common
+  <<: *job_common_base
   steps:
     - attach_workspace:
         at: ~/torus-website
@@ -30,7 +34,7 @@ update_lambda_job: &update_lambda_job
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
           . ./scripts/updateLambda.sh
 update_iframeIntegrity: &update_iframeIntegrity
-  <<: *job_common
+  <<: *job_common_base
   steps:
     - attach_workspace:
         at: ~/torus-website
@@ -42,7 +46,7 @@ update_iframeIntegrity: &update_iframeIntegrity
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
           . ./scripts/updateIframeIntegrity.sh
 deploy_function: &deploy_function
-  <<: *job_common
+  <<: *job_common_base
   steps:
     - attach_workspace:
         at: ~/torus-website
@@ -157,7 +161,7 @@ jobs:
                 - .
           - <<: *step_save_cache
   deploy-testing:
-    <<: *job_common
+    <<: *job_common_base
     steps:
       - attach_workspace:
           at: ~/torus-website
@@ -170,7 +174,7 @@ jobs:
             tar czf - dist/ | ssh torus@testing.tor.us "cat > ~/testing-torus-website/dist.tgz"
             ssh torus@testing.tor.us "cd ~/testing-torus-website && tar zxvf dist.tgz"
   deploy-lrc:
-    <<: *job_common
+    <<: *job_common_base
     steps:
       - attach_workspace:
           at: ~/torus-website
