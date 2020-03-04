@@ -1,10 +1,10 @@
 <template>
   <div>
-    <Navbar />
-    <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
-    <v-container>
+    <navbar />
+    <!-- <hr v-if="!$vuetify.theme.dark" class="navbar-line" /> -->
+    <v-content>
       <router-view></router-view>
-    </v-container>
+    </v-content>
   </div>
 </template>
 
