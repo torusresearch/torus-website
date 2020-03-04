@@ -1,8 +1,8 @@
 <template>
   <div>
     <navbar />
-    <!-- <hr v-if="!$vuetify.theme.dark" class="navbar-line" /> -->
     <v-content>
+      <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
       <router-view></router-view>
     </v-content>
   </div>

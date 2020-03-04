@@ -1,6 +1,54 @@
 <template>
   <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu">
-    <v-list>
+    <v-list class="pb-0 mb-2">
+      <v-list-item>
+        <v-list-item-avatar class="ml-2 mr-3">
+          <img :src="profileImage" class="align-start" :alt="userName" onerror="this.src = '/images/person.jpeg';" />
+        </v-list-item-avatar>
+        <v-list-item-title>
+          <div class="font-weight-bold title d-flex">
+            <div class="torus-account--name mr-1" id="account-name">
+              <span>{{ userName }}</span>
+            </div>
+            <div>{{ t('accountMenu.account') }}</div>
+          </div>
+        </v-list-item-title>
+      </v-list-item>
+    </v-list>
+
+    <div class="px-3 mb-3 account-list">
+      <div
+        class="d-flex account-list__item elevation-1 mb-2 pa-1"
+        :class="{ active: acc.address === selectedAddress }"
+        v-for="acc in wallets"
+        :key="acc.address"
+        @click="changeAccount(acc.address)"
+      >
+        <div>
+          <v-icon v-if="acc.type === 'SC'" size="16">$vuetify.icons.smart_contract</v-icon>
+          <img v-else :src="require(`../../../../public/img/icons/google-grey.svg`)" style="width: 16px" class="ma-1" />
+        </div>
+        <div class="d-flex flex-column account-list__details px-1">
+          <div class="caption">
+            <span class="font-weight-bold">{{ acc.type === 'SC' ? 'Smart Contract Wallet' : userInfo.email }}</span>
+            <span class="float-right">{{ acc.balance }}</span>
+          </div>
+          <div class="caption">
+            <span class="account-list__address">{{ acc.address }}</span>
+            <span class="float-right">
+              <show-tool-tip :address="acc.address">
+                <v-icon size="12" :class="{ 'text_2--text': !$vuetify.theme.dark }" v-text="'$vuetify.icons.copy'" />
+              </show-tool-tip>
+              <export-qr-code :customAddress="acc.address">
+                <v-icon x-small v-text="'$vuetify.icons.qr'" />
+              </export-qr-code>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <v-divider></v-divider>
+    <!-- <v-list>
       <v-list-item>
         <v-list-item-title>
           <div class="font-weight-bold title d-flex">
@@ -39,8 +87,8 @@
       </v-list-item>
     </v-list>
 
-    <v-divider></v-divider>
-
+    <v-divider></v-divider> -->
+    <!-- 
     <v-list v-if="wallets.length > 1">
       <v-list-item v-for="acc in filteredWallets" :key="acc.id" @click="changeAccount(acc.address)">
         <v-list-item-content class="font-weight-bold">
@@ -53,7 +101,7 @@
       </v-list-item>
     </v-list>
 
-    <v-divider v-if="wallets.length > 1"></v-divider>
+    <v-divider v-if="wallets.length > 1"></v-divider> -->
 
     <v-list>
       <v-list-item id="import-account-btn" @click="accountImportDialog = true">
@@ -98,11 +146,10 @@
       <LanguageSelector></LanguageSelector>
     </v-list>
 
-    <v-list>
-      <v-list-item @click="logout">
-        <v-list-item-content class="text_1--text font-weight-bold body-1">{{ t('accountMenu.logOut') }}</v-list-item-content>
-      </v-list-item>
-    </v-list>
+    <v-divider></v-divider>
+    <div class="text-right py-4 px-3">
+      <v-btn text class="text_1--text font-weight-bold body-1" @click="logout">{{ t('accountMenu.logOut') }}</v-btn>
+    </div>
   </v-card>
 </template>
 
@@ -111,13 +158,22 @@ import { BroadcastChannel } from 'broadcast-channel'
 
 import { DISCORD } from '../../../utils/enums'
 import { addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
+import { significantDigits, addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
+import ShowToolTip from '../../helpers/ShowToolTip'
+import ExportQrCode from '../../helpers/ExportQrCode'
 import LanguageSelector from '../../helpers/LanguageSelector'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import AccountImport from '../AccountImport'
+import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../../utils/enums'
+import torus from '../../../torus'
+import BigNumber from 'bignumber.js'
+import copyToClipboard from 'copy-to-clipboard'
+const log = require('loglevel')
 
 export default {
   components: {
     ShowToolTip,
+    ExportQrCode,
     AccountImport,
     LanguageSelector
   },
@@ -161,8 +217,26 @@ export default {
       return this.$store.state.selectedCurrency
     },
     wallets() {
-      return Object.keys(this.$store.state.wallet).map((wallet, id) => ({ id, address: wallet }))
+      let { wallet: storeWallet, weiBalance: storeWalletBalance, selectedCurrency } = this.$store.state || {}
+
+      const wallets = Object.keys(storeWallet).reduce((accts, x) => {
+        const computedBalance = new BigNumber(storeWalletBalance[x]).dividedBy(new BigNumber(10).pow(new BigNumber(18))) || new BigNumber(0)
+        const tokenRateMultiplier = new BigNumber(1)
+        const currencyRate = new BigNumber(this.getCurrencyMultiplier).times(tokenRateMultiplier)
+        let currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
+        // if (
+        //   storeWallet[x].type === 'EOA' ||
+        //   (storeWallet[x].type === 'SC' && storeWallet[x].network === this.$store.state.networkType.host && storeWallet[x].address != 'PROCESSING')
+        // )
+        accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${selectedCurrency}`, ...storeWallet[x] })
+        return accts
+      }, [])
+      log.info(wallets)
+      return wallets
     },
+    // wallets() {
+    //   return Object.keys(this.$store.state.wallet).map((wallet, id) => ({ id: id, address: wallet }))
+    // },
     filteredWallets() {
       return this.wallets.filter(accumulator => accumulator.address !== this.selectedAddress)
     },
@@ -212,7 +286,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.margin-top-30 {
-  margin-top: -16px;
+.account-list {
+  &__item {
+    cursor: pointer;
+    &:hover,
+    &.active {
+      border-radius: 9px;
+    }
+  }
+  &__details {
+    width: 100%;
+  }
+  &__address {
+    font-size: 8px;
+    color: #8f9fb4;
+  }
 }
 </style>
