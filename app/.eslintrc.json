@@ -1,5 +1,4 @@
 {
-  // ""
   "extends": [
     "standard",
     "@vue/standard",

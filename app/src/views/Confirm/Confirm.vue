@@ -66,7 +66,7 @@
             <span class="subtitle-1 float-right primary--text font-weight-bold">{{ costOfTransaction }}</span>
           </div>
           <div v-if="isOtherToken" class="clearfix">
-            <span class="subtitle-1 float-right primary--text font-weight-bold">+ {{ significantDigits(this.gasCost) }} ETH</span>
+            <span class="subtitle-1 float-right primary--text font-weight-bold">+ {{ significantDigits(gasCost) }} ETH</span>
           </div>
           <div class="caption float-right clearfix">{{ costOfTransactionConverted }}</div>
         </v-flex>
@@ -205,10 +205,10 @@
                   </v-expansion-panels>
 
                   <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && !Array.isArray(typedMessages)">
-                    <v-expansion-panel v-for="(value, index) in typedMessages" :key="index">
+                    <v-expansion-panel v-for="(typedMessage, index) in typedMessages" :key="index">
                       <v-expansion-panel-header>{{ index }}</v-expansion-panel-header>
                       <v-expansion-panel-content>
-                        <VueJsonPretty :path="'res'" :data="value" :showline="true" :deep="5"></VueJsonPretty>
+                        <VueJsonPretty :path="'res'" :data="typedMessage" :showline="true" :deep="5"></VueJsonPretty>
                       </v-expansion-panel-content>
                     </v-expansion-panel>
                   </v-expansion-panels>
@@ -216,8 +216,8 @@
                   <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && Array.isArray(typedMessages)">
                     <v-expansion-panel>
                       <v-expansion-panel-header>{{ t('dappTransfer.dataSmall') }}</v-expansion-panel-header>
-                      <v-expansion-panel-content v-for="(value, index) in typedMessages" :key="index">
-                        <VueJsonPretty :path="'res'" :data="value" :showline="true" :deep="5"></VueJsonPretty>
+                      <v-expansion-panel-content v-for="(typedMessage, index) in typedMessages" :key="index">
+                        <VueJsonPretty :path="'res'" :data="typedMessage" :showline="true" :deep="5"></VueJsonPretty>
                       </v-expansion-panel-content>
                     </v-expansion-panel>
                   </v-expansion-panels>
