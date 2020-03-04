@@ -14,6 +14,7 @@ import ProviderChange from './views/ProviderChange'
 import RedirectCatch from './views/RedirectCatch'
 import UserInfoRequest from './views/UserInfoRequest'
 import Wallet from './views/Wallet'
+import Test from './views/Test'
 
 // const Popup = () => import('./views/Popup.vue')
 // const Confirm = () => import('./views/Confirm.vue')
@@ -34,6 +35,12 @@ const router = new Router({
       path: '/',
       name: 'login',
       component: Login,
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/test',
+      name: 'test',
+      component: Test,
       meta: { requiresAuth: false }
     },
     {
