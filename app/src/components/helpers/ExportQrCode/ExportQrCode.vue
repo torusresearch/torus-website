@@ -1,14 +1,14 @@
 <template>
   <v-dialog v-model="qrDialoag" width="450">
     <template v-slot:activator="{ on }">
-      <v-btn id="openQr" icon small aria-label="Open QR" v-on="on">
-        <v-icon small class="primary--text" v-text="'$vuetify.icons.qr'" />
+      <v-btn icon small v-on="on" id="openQr" aria-label="Open QR">
+        <slot></slot>
       </v-btn>
     </template>
     <v-card>
       <div class="text-right">
-        <v-btn large icon @click="qrDialoag = false">
-          <v-icon size="48" large>$vuetify.icons.close</v-icon>
+        <v-btn icon small @click="qrDialoag = false">
+          <v-icon size="8">$vuetify.icons.close</v-icon>
         </v-btn>
       </div>
       <v-card-text class="text-center qr-container">
@@ -44,6 +44,7 @@ import VueQr from 'vue-qr'
 import ShowToolTip from '../ShowToolTip'
 
 export default {
+  props: ['customAddress'],
   components: {
     ShowToolTip,
     VueQr
@@ -55,7 +56,7 @@ export default {
   },
   computed: {
     selectedAddress() {
-      return this.$store.state.selectedAddress
+      return this.customAddress || this.$store.state.selectedAddress
     },
     slicedAddress() {
       return `${this.selectedAddress.slice(0, 20)}...${this.selectedAddress.slice(-10)}`
