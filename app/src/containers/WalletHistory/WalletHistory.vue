@@ -42,8 +42,7 @@
 
 <script>
 /* eslint-disable no-restricted-syntax */
-// /* eslint-disable sonarjs/cognitive-complexity */
-/* eslint-disable no-restricted-syntax */
+/* eslint-disable guard-for-in */
 import log from 'loglevel'
 import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
@@ -168,33 +167,32 @@ export default {
         case 'unapproved':
         case 'failed':
           return ACTIVITY_STATUS_UNSUCCESSFUL
-
         case 'confirmed':
         case 'completed':
         case 'complete':
         case 'success':
           return ACTIVITY_STATUS_SUCCESSFUL
-
         case 'pending':
         case 'submitted':
         case 'processing':
           return ACTIVITY_STATUS_PENDING
-
         default:
           return ''
       }
     },
     getActionText(activity) {
       // Handling tx from common-api schema and /tx schema separately.
-      return activity.type_name === 'n/a' || activity.type === 'n/a'
-        ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
-            activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
-          }`
-        : activity.type_name || activity.type
-          ? `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
-            activity.type == 'eth' ? activity.type_name.toUpperCase() : activity.type_name
-          }`
-          : `${`${this.t(activity.action)} ${activity.from}`} `
+      if (activity.type_name === 'n/a' || activity.type === 'n/a') {
+        return `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+          activity.type_name !== 'n/a' ? activity.type_name : activity.type.toUpperCase()
+        }`
+      }
+      if (activity.type_name || activity.type) {
+        return `${activity.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+          activity.type === 'eth' ? activity.type_name.toUpperCase() : activity.type_name
+        }`
+      }
+      return `${`${this.t(activity.action)} ${activity.from}`} `
     },
     getIcon(activity) {
       if (activity.action === ACTIVITY_ACTION_TOPUP) {
@@ -238,21 +236,21 @@ export default {
       const { selectedAddress: publicAddress, pastTransactions, jwtToken, networkType } = this.$store.state
       const pastTx = []
       for (const x of pastTransactions) {
+        // eslint-disable-next-line no-continue
         if (x.network !== networkType.host) continue
         let { status } = x
         if (
           x.status !== 'confirmed' &&
           (publicAddress.toLowerCase() === x.from.toLowerCase() || publicAddress.toLowerCase() === x.to.toLowerCase())
         ) {
+          // eslint-disable-next-line no-await-in-loop
           status = await getEthTxStatus(x.transaction_hash, torus.web3)
           if (publicAddress.toLowerCase() === x.from.toLowerCase()) this.patchTx(x, status, jwtToken)
         }
-        const totalAmountString =
-          x.type === CONTRACT_TYPE_ERC721
-            ? x.symbol
-            : x.type === CONTRACT_TYPE_ERC20
-            ? `${significantDigits(parseFloat(x.total_amount))} ${x.symbol}`
-              : `${significantDigits(parseFloat(x.total_amount))} ETH`
+        let totalAmountString = ''
+        if (x.type === CONTRACT_TYPE_ERC721) totalAmountString = x.symbol
+        else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = `${significantDigits(parseFloat(x.total_amount))} ${x.symbol}`
+        else totalAmountString = `${significantDigits(parseFloat(x.total_amount))} ETH`
         const currencyAmountString =
           x.type === CONTRACT_TYPE_ERC721 ? '' : `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
         const finalObject = {
@@ -357,7 +355,9 @@ export default {
             parseFloat(txObject.currencyAmount) / parseFloat(txObject.totalAmount)
           )}`
           txObject.currencyUsed = this.selectedCurrency
-          txObject.type = contractParams && contractParams.erc20 ? 'erc20' : contractParams.erc721 ? 'erc721' : 'eth'
+          txObject.type = 'eth'
+          if (contractParams && contractParams.erc20) txObject.type = 'erc20'
+          else if (contractParams && contractParams.erc721) txObject.type = 'erc721'
           txObject.type_name = contractParams && contractParams.name ? contractParams.name : 'n/a'
           txObject.type_image_link = contractParams && contractParams.logo ? contractParams.logo : 'n/a'
           finalTransactions.push(txObject)

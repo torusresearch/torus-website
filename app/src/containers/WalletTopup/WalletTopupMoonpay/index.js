@@ -1,1 +1,1 @@
-export { default } from './WalletTopupMoonpay'
+export { default } from './WalletTopupMoonpay.vue'

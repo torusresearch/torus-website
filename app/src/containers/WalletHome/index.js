@@ -1,5 +1,5 @@
 import WalletHome from './WalletHome'
-import WalletHomeMain from './WalletHomeMain'
 import WalletHomeCollectible from './WalletHomeCollectible'
+import WalletHomeMain from './WalletHomeMain'
 
 export { WalletHome, WalletHomeMain, WalletHomeCollectible }

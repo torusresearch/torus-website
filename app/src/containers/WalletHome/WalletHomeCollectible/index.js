@@ -1,1 +1,1 @@
-export { default } from './WalletHomeCollectible'
+export { default } from './WalletHomeCollectible.vue'

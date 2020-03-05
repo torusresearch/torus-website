@@ -584,7 +584,9 @@ export default {
       return ''
     },
     contactRule(contact) {
-      const value = contact === null ? '' : (typeof contact === 'string' ? contact : contact.value)
+      let value = ''
+      if (contact && typeof contact === 'string') value = contact
+      else if (contact && contact.value) value = contact.value
       return validateVerifierId(this.selectedVerifier, value)
     },
     verifierChangedManual() {
@@ -620,6 +622,7 @@ export default {
     calculateGas(toAddress) {
       this.sendEthToContractError = false
       if (isAddress(toAddress)) {
+        // eslint-disable-next-line no-unused-vars
         return new Promise((resolve, reject) => {
           if (this.contractType === CONTRACT_TYPE_ETH) {
             const value = '0x'
@@ -676,7 +679,7 @@ export default {
     },
     getTransferMethod(contractType, selectedAddress, toAddress, value) {
       // For support of older ERC721
-      if (OLD_ERC721_LIST.hasOwnProperty(this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
+      if (OLD_ERC721_LIST.prototype.hasOwnProperty.call(this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
         const contractInstance = new torus.web3.eth.Contract(erc20TransferABI, this.selectedTokenAddress)
         return contractInstance.methods.transfer(toAddress, value)
       }
@@ -684,6 +687,7 @@ export default {
         const contractInstance = new torus.web3.eth.Contract(erc721TransferABI, this.selectedTokenAddress)
         return contractInstance.methods.safeTransferFrom(selectedAddress, toAddress, value)
       }
+      throw new Error('Invalid Contract Type')
     },
     async selectedItemChanged(address, tokenId) {
       const foundInBalances = this.finalBalancesArray.find(token => token.tokenAddress.toLowerCase() === address.toLowerCase())
@@ -865,17 +869,6 @@ export default {
     },
     goBack() {
       this.$router.go(-1)
-    },
-    getGasSpeed() {
-      if (this.speedSelected === 'average') {
-        return this.averageGasPriceSpeed
-      }
-      if (this.speedSelected === 'fast') {
-        return this.fastGasPriceSpeed
-      }
-      if (this.speedSelected === 'fastest') {
-        return this.fastestGasPriceSpeed
-      }
     },
     updateTotalCost() {
       if (this.displayAmount.isZero() || this.activeGasPrice === '') {
