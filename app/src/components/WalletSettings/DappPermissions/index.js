@@ -1,1 +1,1 @@
-export { default } from './DappPermissions'
+export { default } from './DappPermissions.vue'

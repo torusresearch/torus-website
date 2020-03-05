@@ -2,27 +2,27 @@ import log from 'loglevel'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
-import { isArray } from 'util'
-import { fromWei, hexToUtf8, toBN, toChecksumAddress, isAddress } from 'web3-utils'
+import { fromWei, hexToUtf8, isAddress, toBN, toChecksumAddress } from 'web3-utils'
+
 import config from '../config'
 import torus from '../torus'
-import { getEtherScanHashLink, storageAvailable } from '../utils/utils'
+import ConfirmHandler from '../utils/ConfirmHandler'
 import {
+  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
+  TOKEN_METHOD_TRANSFER_FROM,
   TX_MESSAGE,
   TX_PERSONAL_MESSAGE,
   TX_TRANSACTION,
-  TX_TYPED_MESSAGE,
-  TOKEN_METHOD_TRANSFER_FROM,
-  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
+  TX_TYPED_MESSAGE
 } from '../utils/enums'
 import { post } from '../utils/httpHelpers.js'
 import { notifyUser } from '../utils/notifications'
-import state from './state'
+import { getEtherScanHashLink, storageAvailable } from '../utils/utils'
 import actions from './actions'
-import paymentActions from './PaymentActions'
 import getters from './getters'
 import mutations from './mutations'
-import ConfirmHandler from '../utils/ConfirmHandler'
+import paymentActions from './PaymentActions'
+import state from './state'
 
 function getCurrencyMultiplier() {
   const { selectedCurrency, currencyData } = VuexStore.state || {}
@@ -35,32 +35,31 @@ Vue.use(Vuex)
 
 let vuexPersist
 
-if (storageAvailable('sessionStorage'))
+if (storageAvailable('sessionStorage')) {
   vuexPersist = new VuexPersistence({
     key: 'torus-app',
     storage: window.sessionStorage,
-    reducer: state => {
-      return {
-        userInfo: state.userInfo,
-        userInfoAccess: state.userInfoAccess,
-        wallet: state.wallet,
-        // weiBalance: state.weiBalance,
-        selectedAddress: state.selectedAddress,
-        networkType: state.networkType,
-        networkId: state.networkId,
-        currencyData: state.currencyData,
-        // tokenData: state.tokenData,
-        tokenRates: state.tokenRates,
-        selectedCurrency: state.selectedCurrency,
-        jwtToken: state.jwtToken,
-        theme: state.theme,
-        locale: state.locale,
-        billboard: state.billboard,
-        contacts: state.contacts
-        // pastTransactions: state.pastTransactions
-      }
-    }
+    reducer: state => ({
+      userInfo: state.userInfo,
+      userInfoAccess: state.userInfoAccess,
+      wallet: state.wallet,
+      // weiBalance: state.weiBalance,
+      selectedAddress: state.selectedAddress,
+      networkType: state.networkType,
+      networkId: state.networkId,
+      currencyData: state.currencyData,
+      // tokenData: state.tokenData,
+      tokenRates: state.tokenRates,
+      selectedCurrency: state.selectedCurrency,
+      jwtToken: state.jwtToken,
+      theme: state.theme,
+      locale: state.locale,
+      billboard: state.billboard,
+      contacts: state.contacts
+      // pastTransactions: state.pastTransactions
+    })
   })
+}
 
 var VuexStore = new Vuex.Store({
   plugins: vuexPersist ? [vuexPersist.plugin] : [],
@@ -81,12 +80,12 @@ var VuexStore = new Vuex.Store({
       confirmHandler.currencyData = state.currencyData
       confirmHandler.networkType = state.networkType
       if (isTx) {
-        const txParams = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
-        confirmHandler.txParams = txParams
-        confirmHandler.id = txParams.id
+        const txParameters = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
+        confirmHandler.txParams = txParameters
+        confirmHandler.id = txParameters.id
         confirmHandler.txType = TX_TRANSACTION
       } else {
-        const { msgParams, id, type } = getLatestMessageParams()
+        const { msgParams, id, type } = getLatestMessageParameters()
         confirmHandler.msgParams = msgParams
         confirmHandler.id = id
         confirmHandler.txType = type
@@ -101,31 +100,31 @@ var VuexStore = new Vuex.Store({
 })
 
 function handleConfirm(ev) {
-  let { torusController } = torus
-  let state = VuexStore.state
+  const { torusController } = torus
+  const { state } = VuexStore
   if (ev.data.txType === TX_PERSONAL_MESSAGE) {
-    let msgParams = state.unapprovedPersonalMsgs[ev.data.id].msgParams
+    const { msgParams } = state.unapprovedPersonalMsgs[ev.data.id]
     log.info('PERSONAL MSG PARAMS:', msgParams)
     msgParams.metamaskId = parseInt(ev.data.id, 10)
     torusController.signPersonalMessage(msgParams)
   } else if (ev.data.txType === TX_MESSAGE) {
-    let msgParams = state.unapprovedMsgs[ev.data.id].msgParams
+    const { msgParams } = state.unapprovedMsgs[ev.data.id]
     log.info(' MSG PARAMS:', msgParams)
     msgParams.metamaskId = parseInt(ev.data.id, 10)
     torusController.signMessage(msgParams)
   } else if (ev.data.txType === TX_TYPED_MESSAGE) {
-    let msgParams = state.unapprovedTypedMessages[ev.data.id].msgParams
+    const { msgParams } = state.unapprovedTypedMessages[ev.data.id]
     log.info('TYPED MSG PARAMS:', msgParams)
     msgParams.metamaskId = parseInt(ev.data.id, 10)
     torusController.signTypedMessage(msgParams)
   } else if (ev.data.txType === TX_TRANSACTION) {
-    const unApprovedTransactions = VuexStore.getters.unApprovedTransactions
-    var txMeta = unApprovedTransactions.find(x => x.id === ev.data.id)
+    const { unApprovedTransactions } = VuexStore.getters
+    let txMeta = unApprovedTransactions.find(x => x.id === ev.data.id)
     log.info('STANDARD TX PARAMS:', txMeta)
 
     if (ev.data.gasPrice) {
       log.info('Changed gas price to:', ev.data.gasPrice)
-      var newTxMeta = JSON.parse(JSON.stringify(txMeta))
+      const newTxMeta = JSON.parse(JSON.stringify(txMeta))
       newTxMeta.txParams.gasPrice = ev.data.gasPrice
       torusController.txController.updateTransaction(newTxMeta)
       txMeta = newTxMeta
@@ -138,7 +137,7 @@ function handleConfirm(ev) {
 }
 
 function handleDeny(id, txType) {
-  let { torusController } = torus
+  const { torusController } = torus
   if (txType === TX_PERSONAL_MESSAGE) {
     torusController.cancelPersonalMessage(parseInt(id, 10))
   } else if (txType === TX_MESSAGE) {
@@ -150,81 +149,81 @@ function handleDeny(id, txType) {
   }
 }
 
-function getLatestMessageParams() {
+function getLatestMessageParameters() {
   let time = 0
-  let msg = null
+  let message = null
   let type = ''
   let finalId = 0
-  for (let id in VuexStore.state.unapprovedMsgs) {
-    const msgTime = VuexStore.state.unapprovedMsgs[id].time
-    if (msgTime > time) {
-      msg = VuexStore.state.unapprovedMsgs[id]
-      time = msgTime
+  for (const id in VuexStore.state.unapprovedMsgs) {
+    const messageTime = VuexStore.state.unapprovedMsgs[id].time
+    if (messageTime > time) {
+      message = VuexStore.state.unapprovedMsgs[id]
+      time = messageTime
       finalId = id
       type = TX_MESSAGE
     }
   }
 
-  for (let id in VuexStore.state.unapprovedPersonalMsgs) {
-    const msgTime = VuexStore.state.unapprovedPersonalMsgs[id].time
-    if (msgTime > time) {
-      msg = VuexStore.state.unapprovedPersonalMsgs[id]
-      time = msgTime
+  for (const id in VuexStore.state.unapprovedPersonalMsgs) {
+    const messageTime = VuexStore.state.unapprovedPersonalMsgs[id].time
+    if (messageTime > time) {
+      message = VuexStore.state.unapprovedPersonalMsgs[id]
+      time = messageTime
       finalId = id
       type = TX_PERSONAL_MESSAGE
     }
   }
 
   // handle hex-based messages and convert to text
-  if (msg) {
-    let finalMsg
+  if (message) {
+    let finalMessage
     try {
-      finalMsg = hexToUtf8(msg.msgParams.data)
+      finalMessage = hexToUtf8(message.msgParams.data)
     } catch (error) {
-      finalMsg = msg.msgParams.data
+      finalMessage = message.msgParams.data
     }
-    msg.msgParams.message = finalMsg
+    message.msgParams.message = finalMessage
   }
 
   // handle typed messages
-  for (let id in VuexStore.state.unapprovedTypedMessages) {
-    const msgTime = VuexStore.state.unapprovedTypedMessages[id].time
-    if (msgTime > time) {
-      time = msgTime
-      msg = VuexStore.state.unapprovedTypedMessages[id]
-      msg.msgParams.typedMessages = msg.msgParams.data // TODO: use for differentiating msgs later on
+  for (const id in VuexStore.state.unapprovedTypedMessages) {
+    const messageTime = VuexStore.state.unapprovedTypedMessages[id].time
+    if (messageTime > time) {
+      time = messageTime
+      message = VuexStore.state.unapprovedTypedMessages[id]
+      message.msgParams.typedMessages = message.msgParams.data // TODO: use for differentiating msgs later on
       finalId = id
       type = TX_TYPED_MESSAGE
     }
   }
-  return msg ? { msgParams: msg.msgParams, id: finalId, type: type } : {}
+  return message ? { msgParams: message.msgParams, id: finalId, type } : {}
 }
 
 function isTorusTransaction() {
   let isLatestTx = false
   let latestTime = 0
-  for (let id in VuexStore.getters.unApprovedTransactions) {
+  for (const id in VuexStore.getters.unApprovedTransactions) {
     const txTime = VuexStore.getters.unApprovedTransactions[id].time
     if (txTime > latestTime) {
       latestTime = txTime
       isLatestTx = true
     }
   }
-  for (let id in VuexStore.state.unapprovedTypedMessages) {
-    const msgTime = VuexStore.state.unapprovedTypedMessages[id].time
-    if (msgTime > latestTime) {
+  for (const id in VuexStore.state.unapprovedTypedMessages) {
+    const messageTime = VuexStore.state.unapprovedTypedMessages[id].time
+    if (messageTime > latestTime) {
       return false
     }
   }
-  for (let id in VuexStore.state.unapprovedPersonalMsgs) {
-    const msgTime = VuexStore.state.unapprovedPersonalMsgs[id].time
-    if (msgTime > latestTime) {
+  for (const id in VuexStore.state.unapprovedPersonalMsgs) {
+    const messageTime = VuexStore.state.unapprovedPersonalMsgs[id].time
+    if (messageTime > latestTime) {
       return false
     }
   }
-  for (let id in VuexStore.state.unapprovedMsgs) {
-    const msgTime = VuexStore.state.unapprovedMsgs[id].time
-    if (msgTime > latestTime) {
+  for (const id in VuexStore.state.unapprovedMsgs) {
+    const messageTime = VuexStore.state.unapprovedMsgs[id].time
+    if (messageTime > latestTime) {
       return false
     }
   }
@@ -235,12 +234,20 @@ VuexStore.subscribe((mutation, state) => {
   // will rewrite later
   if (mutation.type === 'setTransactions' && state.jwtToken) {
     const txs = mutation.payload
-    for (let id in txs) {
+    for (const id in txs) {
       const txMeta = txs[id]
       if (txMeta.status === 'submitted' && id >= 0) {
         // insert into db here
         const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txMeta
-        let amountTo, amountValue, assetName, tokenRate, symbol, type, type_name, type_image_link, totalAmount
+        let amountTo
+        let amountValue
+        let assetName
+        let tokenRate
+        let symbol
+        let type
+        let type_name
+        let type_image_link
+        let totalAmount
 
         if (contractParams.erc721) {
           // Handling cryptokitties
@@ -254,7 +261,7 @@ VuexStore.subscribe((mutation, state) => {
 
           // Get asset name of the 721
           const [contract] = state.assets[state.selectedAddress].filter(x => x.name.toLowerCase() === contractParams.name.toLowerCase()) || []
-          const [assetObject] = contract['assets'].filter(x => x.tokenId.toString() === amountValue.value.toString()) || []
+          const [assetObject] = contract.assets.filter(x => x.tokenId.toString() === amountValue.value.toString()) || []
           assetName = assetObject.name || ''
 
           symbol = assetName
@@ -265,10 +272,10 @@ VuexStore.subscribe((mutation, state) => {
         } else if (contractParams.erc20) {
           // ERC20 transfer
           tokenRate = contractParams.erc20 ? state.tokenRates[txParams.to] : 1
-          if (methodParams && isArray(methodParams)) {
-            if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM)
-              [, amountTo, amountValue] = methodParams || []
-            else {
+          if (methodParams && Array.isArray(methodParams)) {
+            if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
+              ;[, amountTo, amountValue] = methodParams || []
+            } else {
               ;[amountTo, amountValue] = methodParams || []
             }
           }
@@ -286,25 +293,25 @@ VuexStore.subscribe((mutation, state) => {
           type_image_link = 'n/a'
           totalAmount = fromWei(toBN(txParams.value))
         }
-        const txObj = {
+        const txObject = {
           created_at: new Date(time),
           from: toChecksumAddress(txParams.from),
           to: amountTo && isAddress(amountTo.value) ? toChecksumAddress(amountTo.value) : toChecksumAddress(txParams.to),
           total_amount: totalAmount,
           gas: txParams.gas,
           gasPrice: txParams.gasPrice,
-          symbol: symbol,
+          symbol,
           nonce: txParams.nonce,
-          type: type,
-          type_name: type_name,
-          type_image_link: type_image_link,
+          type,
+          type_name,
+          type_image_link,
           currency_amount: (getCurrencyMultiplier() * parseFloat(totalAmount) * tokenRate).toString(),
           selected_currency: state.selectedCurrency,
           status: 'submitted',
           network: state.networkType.host,
           transaction_hash: hash
         }
-        if (state.pastTransactions.findIndex(x => x.transaction_hash === txObj.transaction_hash && x.network === txObj.network) === -1) {
+        if (state.pastTransactions.findIndex(x => x.transaction_hash === txObject.transaction_hash && x.network === txObject.network) === -1) {
           // User notification
           try {
             notifyUser(getEtherScanHashLink(hash, state.networkType.host))
@@ -312,17 +319,17 @@ VuexStore.subscribe((mutation, state) => {
             log.error(error)
           }
 
-          post(`${config.api}/transaction`, txObj, {
+          post(`${config.api}/transaction`, txObject, {
             headers: {
               Authorization: `Bearer ${state.jwtToken}`,
               'Content-Type': 'application/json; charset=utf-8'
             }
           })
             .then(response => {
-              if (response.response.length > 0) VuexStore.commit('patchPastTransactions', { ...txObj, id: response.response[0] })
+              if (response.response.length > 0) VuexStore.commit('patchPastTransactions', { ...txObject, id: response.response[0] })
               log.info('successfully added', response)
             })
-            .catch(err => log.error(err, 'unable to insert transaction'))
+            .catch(error => log.error(error, 'unable to insert transaction'))
         }
       }
     }

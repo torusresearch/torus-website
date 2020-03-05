@@ -1,1 +1,1 @@
-export { default } from './PrivacySecurity'
+export { default } from './PrivacySecurity.vue'

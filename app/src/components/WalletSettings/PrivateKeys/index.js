@@ -1,1 +1,1 @@
-export { default } from './PrivateKeys'
+export { default } from './PrivateKeys.vue'

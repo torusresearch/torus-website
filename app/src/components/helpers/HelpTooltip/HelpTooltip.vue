@@ -7,9 +7,7 @@
       <div class="primary--text subtitle-2">{{ title }}</div>
       <v-divider class="my-2"></v-divider>
       <slot name="description">
-        <div class="body-2 text-justify">
-          {{ description }}
-        </div>
+        <div class="body-2 text-justify">{{ description }}</div>
       </slot>
     </span>
   </v-tooltip>
@@ -17,7 +15,16 @@
 
 <script>
 export default {
-  props: ['title', 'description']
+  props: {
+    title: {
+      type: String,
+      default: ''
+    },
+    description: {
+      type: String,
+      default: ''
+    }
+  }
 }
 </script>
 

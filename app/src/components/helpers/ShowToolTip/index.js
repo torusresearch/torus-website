@@ -1,1 +1,1 @@
-export { default } from './ShowToolTip'
+export { default } from './ShowToolTip.vue'

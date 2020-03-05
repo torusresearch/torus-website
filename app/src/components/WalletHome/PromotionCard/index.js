@@ -1,1 +1,1 @@
-export { default } from './PromotionCard'
+export { default } from './PromotionCard.vue'

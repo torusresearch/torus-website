@@ -1,1 +1,1 @@
-export { default } from './AccountImport'
+export { default } from './AccountImport.vue'

@@ -56,22 +56,50 @@
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
+
 import { significantDigits } from '../../../utils/utils'
 
 export default {
   props: {
-    toAddress: String,
-    selectedCurrency: String,
-    convertedAmount: any,
-    displayAmount: any,
-    speedSelected: any,
-    transactionFee: any,
-    assetSelected: any,
+    toAddress: {
+      type: String,
+      default: '0x'
+    },
+    selectedCurrency: {
+      type: String,
+      default: 'USD'
+    },
+    convertedAmount: {
+      type: String,
+      default: '~ 0.00 USD'
+    },
+    displayAmount: {
+      type: String,
+      default: '~ 0.00 ETH'
+    },
+    speedSelected: {
+      type: Number,
+      default: 0
+    },
+    transactionFee: {
+      type: BigNumber,
+      default: new BigNumber('0')
+    },
+    assetSelected: {
+      type: Object,
+      default() {
+        return {
+          image: '',
+          name: ''
+        }
+      }
+    },
     isNonFungibleToken: Boolean,
-    sendEthToContractError: any
+    sendEthToContractError: Boolean
   },
   methods: {
-    onCancel(step) {
+    onCancel() {
       this.$emit('onClose')
     },
     onConfirm() {

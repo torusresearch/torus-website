@@ -6,7 +6,7 @@
       </v-btn>
     </template>
     <v-card class="add-contact-container">
-      <v-form ref="addContactForm" v-model="contactFormValid" @submit="addContact" lazy-validation>
+      <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation @submit.prevent="addContact">
         <v-card-text class="text_1--text py-6">
           <v-layout wrap>
             <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
@@ -35,7 +35,9 @@
 </template>
 
 <script>
-import { GOOGLE, REDDIT, DISCORD, ENS, ETH, ETH_LABEL, GOOGLE_LABEL, REDDIT_LABEL, DISCORD_LABEL, ENS_LABEL } from '../../../utils/enums'
+import log from 'loglevel'
+
+import { DISCORD, DISCORD_LABEL, ENS, ENS_LABEL, ETH, ETH_LABEL, GOOGLE, GOOGLE_LABEL, REDDIT, REDDIT_LABEL } from '../../../utils/enums'
 
 const VERIFIER_LABELS = {
   [ETH]: ETH_LABEL,
@@ -45,7 +47,16 @@ const VERIFIER_LABELS = {
   [ENS]: ENS_LABEL
 }
 export default {
-  props: ['verifier', 'contact'],
+  props: {
+    verifier: {
+      type: String,
+      default: ''
+    },
+    contact: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       addContactDialoag: false,
@@ -58,27 +69,27 @@ export default {
   },
   computed: {
     verifierLabels() {
-      return Object.keys(VERIFIER_LABELS).reduce((acc, curr) => {
-        acc[curr] = this.t(VERIFIER_LABELS[curr])
-        return acc
+      return Object.keys(VERIFIER_LABELS).reduce((accumulator, current) => {
+        accumulator[current] = this.t(VERIFIER_LABELS[current])
+        return accumulator
       }, {})
     }
   },
   methods: {
-    addContact(e) {
-      if (this.$refs.addContactForm.validate()) {
-        e.preventDefault()
-        this.$store
-          .dispatch('addContact', {
-            contact: this.contact,
-            verifier: this.verifier,
-            name: this.newContactName
-          })
-          .then(response => {
-            this.newContactName = ''
-            this.addContactDialoag = false
-            // this.$refs.addContactForm.resetValidation()
-          })
+    async addContact() {
+      if (!this.$refs.addContactForm.validate()) return
+      try {
+        await this.$store.dispatch('addContact', {
+          contact: this.contact,
+          verifier: this.verifier,
+          name: this.newContactName
+        })
+      } catch (error) {
+        log.error(error)
+      } finally {
+        this.newContactName = ''
+        this.addContactDialoag = false
+        this.$refs.addContactForm.resetValidation()
       }
     }
   }

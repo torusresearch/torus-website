@@ -6,7 +6,7 @@
           {{ t('dappTransfer.permission') }}
         </v-flex>
         <v-flex xs12>
-          <NetworkDisplay :network="network" :store-network-type="network"></NetworkDisplay>
+          <NetworkDisplay :store-network-type="network"></NetworkDisplay>
         </v-flex>
       </v-layout>
       <v-layout wrap>
@@ -168,7 +168,7 @@
       <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left">{{ t('dappTransfer.permissions') }}</v-flex>
         <v-flex xs12>
-          <NetworkDisplay :network="network" :store-network-type="network"></NetworkDisplay>
+          <NetworkDisplay :store-network-type="network"></NetworkDisplay>
         </v-flex>
       </v-layout>
       <v-layout wrap>
@@ -316,7 +316,11 @@ export default {
       topUpErrorShow: false,
       canShowError: false,
       txFees: new BigNumber('0'),
-      network: '',
+      network: {
+        networkName: '',
+        host: '',
+        chainId: ''
+      },
       transactionCategory: '',
       dollarValue: new BigNumber('0'),
       speed: '',

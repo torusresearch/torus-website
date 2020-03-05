@@ -1,5 +1,5 @@
 <template>
-  <beat-loader :color="color" />
+  <BeatLoader :color="color" />
 </template>
 
 <script>

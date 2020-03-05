@@ -83,7 +83,7 @@
           </v-flex>
           <v-flex v-if="selectedItem" xs12 sm6 mb-5 px-4>
             <span class="subtitle-2">{{ t('walletTransfer.accountBalance') }}</span>
-            <component-loader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
+            <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
             <div v-else>
               <span id="account-balance" class="headline mr-1">{{ selectedItem.formattedBalance }}</span>
               <span class="caption text_2--text">{{ currencyBalanceDisplay }}</span>
@@ -118,12 +118,12 @@
                   @input="contactChanged"
                 >
                   <template v-slot:append>
-                    <v-btn icon small color="primary" aria-label="QR Capture Button" @click="$refs.captureQr.$el.click()">
+                    <v-btn icon small color="primary" aria-label="QR Capture Button" @click="$refs.captureQr.$el.click">
                       <v-icon small>$vuetify.icons.scan</v-icon>
                     </v-btn>
                   </template>
                 </v-combobox>
-                <qrcode-capture ref="captureQr" style="display: none" @decode="onDecodeQr" />
+                <QrcodeCapture ref="captureQr" style="display: none" @decode="onDecodeQr" />
                 <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                   <div class="v-messages">
                     <div class="v-messages__wrapper">
@@ -147,7 +147,7 @@
                 ></v-select>
               </v-flex>
               <v-flex v-if="newContact && $refs.contactSelected && $refs.contactSelected.valid && selectedVerifier !== ''" xs12 mb-2>
-                <add-contact :contact="contactSelected" :verifier="selectedVerifier"></add-contact>
+                <AddContact :contact="contactSelected" :verifier="selectedVerifier"></AddContact>
               </v-flex>
             </v-layout>
           </v-flex>
@@ -266,7 +266,7 @@
               {{ t('walletTransfer.transfer') }}
             </v-btn>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
-              <transfer-confirm
+              <TransferConfirm
                 :to-address="toEthAddress"
                 :converted-amount="
                   convertedAmount
@@ -286,7 +286,7 @@
                 :send-eth-to-contract-error="sendEthToContractError"
                 @onClose="confirmDialog = false"
                 @onConfirm="sendCoin"
-              ></transfer-confirm>
+              ></TransferConfirm>
             </v-dialog>
           </v-flex>
         </v-layout>
@@ -294,7 +294,7 @@
         <v-layout mt-4 pr-2 wrap>
           <v-spacer></v-spacer>
           <v-dialog v-model="showModalMessage" max-width="500" persistent>
-            <message-modal
+            <MessageModal
               :modal-type="modalMessageSuccess"
               :title="modalMessageSuccess ? t('walletTransfer.transferSuccessTitle') : t('walletTransfer.transferFailTitle')"
               :detail-text="
@@ -312,25 +312,24 @@
 </template>
 
 <script>
+import randomId from '@chaitanyapotti/random-id'
+import BigNumber from 'bignumber.js'
+import erc721TransferABI from 'human-standard-collectible-abi'
+import erc20TransferABI from 'human-standard-token-abi'
+import log from 'loglevel'
 import { QrcodeCapture } from 'vue-qrcode-reader'
 import { isAddress, toChecksumAddress } from 'web3-utils'
-import torus from '../../torus'
-import { significantDigits, getEtherScanHashLink, validateVerifierId } from '../../utils/utils'
-import config from '../../config'
-import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
-import ComponentLoader from '../../components/helpers/ComponentLoader'
-import MessageModal from '../../components/WalletTransfer/MessageModal'
-import AddContact from '../../components/WalletTransfer/AddContact'
+
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
+import ComponentLoader from '../../components/helpers/ComponentLoader'
+import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
+import AddContact from '../../components/WalletTransfer/AddContact'
+import MessageModal from '../../components/WalletTransfer/MessageModal'
+import config from '../../config'
+import torus from '../../torus'
+import { ALLOWED_VERIFIERS, CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ETH, ENS, ETH, GOOGLE, OLD_ERC721_LIST } from '../../utils/enums'
 import { post } from '../../utils/httpHelpers'
-import log from 'loglevel'
-import { GOOGLE, ETH, ENS, CONTRACT_TYPE_ETH, CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ERC721, OLD_ERC721_LIST, ALLOWED_VERIFIERS } from '../../utils/enums'
-import BigNumber from 'bignumber.js'
-
-const randomId = require('@chaitanyapotti/random-id')
-
-const erc20TransferABI = require('human-standard-token-abi')
-const erc721TransferABI = require('human-standard-collectible-abi')
+import { getEtherScanHashLink, significantDigits, validateVerifierId } from '../../utils/utils'
 
 export default {
   name: 'WalletTransfer',
@@ -417,14 +416,12 @@ export default {
       return this.$store.getters.collectibleBalances
     },
     selectedItem() {
-      const foundElement = this.finalBalancesArray.find(x => x.tokenAddress === this.selectedTokenAddress)
-      return foundElement
+      return this.finalBalancesArray.find(x => x.tokenAddress === this.selectedTokenAddress)
     },
     selectedItemDisplay() {
       if (this.contractType !== CONTRACT_TYPE_ERC721) return this.selectedItem
 
-      const foundContract = this.collectibles.find(x => x.address === this.collectibleSelected.address)
-      return foundContract
+      return this.collectibles.find(x => x.address === this.collectibleSelected.address)
     },
     selectedTokenAddress() {
       if (this.tokenAddress === '0x' || !isAddress(this.tokenAddress)) return '0x'
@@ -432,16 +429,15 @@ export default {
     },
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
-      const currencyMultiplierNum = selectedCurrency !== 'ETH' ? currencyData[selectedCurrency.toLowerCase()] || 1 : 1
-      const currencyMultiplier = new BigNumber(currencyMultiplierNum)
-      return currencyMultiplier
+      const currencyMultiplierNumber = selectedCurrency !== 'ETH' ? currencyData[selectedCurrency.toLowerCase()] || 1 : 1
+      return new BigNumber(currencyMultiplierNumber)
     },
     getCurrencyTokenRate() {
       const { tokenRates } = this.$store.state
       const currencyMultiplier = this.getCurrencyMultiplier
-      let tokenRateMultiplierNum = 1
-      if (this.contractType === CONTRACT_TYPE_ERC20) tokenRateMultiplierNum = tokenRates[this.selectedTokenAddress.toLowerCase()] || 0
-      const tokenRateMultiplier = new BigNumber(tokenRateMultiplierNum)
+      let tokenRateMultiplierNumber = 1
+      if (this.contractType === CONTRACT_TYPE_ERC20) tokenRateMultiplierNumber = tokenRates[this.selectedTokenAddress.toLowerCase()] || 0
+      const tokenRateMultiplier = new BigNumber(tokenRateMultiplierNumber)
       return currencyMultiplier.times(tokenRateMultiplier)
     },
     convertedTotalCostDisplay() {
@@ -463,15 +459,15 @@ export default {
         : ''
     },
     contactList() {
-      return this.$store.state.contacts.reduce((mappedObj, contact) => {
+      return this.$store.state.contacts.reduce((mappedObject, contact) => {
         if (contact.verifier === this.selectedVerifier || this.selectedVerifier === '') {
-          mappedObj.push({
+          mappedObject.push({
             name: `${contact.name} (${contact.contact})`,
             value: contact.contact,
             verifier: contact.verifier
           })
         }
-        return mappedObj
+        return mappedObject
       }, [])
     },
     newContact() {
@@ -502,13 +498,13 @@ export default {
 
     this.contactSelected = this.toAddress
 
-    this.$watch('collectibles', function(newValue, oldValue) {
+    this.$watch('collectibles', (newValue, oldValue) => {
       if (newValue !== oldValue) {
         this.updateFieldsBasedOnRoute()
       }
     })
 
-    const tokensUnwatch = this.$watch('finalBalancesArray', function(newValue, oldValue) {
+    const tokensUnwatch = this.$watch('finalBalancesArray', (newValue, oldValue) => {
       if (newValue !== oldValue) {
         this.updateFieldsBasedOnRoute()
         tokensUnwatch()
@@ -517,9 +513,12 @@ export default {
 
     this.updateFieldsBasedOnRoute()
 
-    torus.nodeDetailManager.getNodeDetails().then(nodeDetails => {
-      this.nodeDetails = nodeDetails
-    })
+    torus.nodeDetailManager
+      .getNodeDetails()
+      .then(nodeDetails => {
+        this.nodeDetails = nodeDetails
+      })
+      .catch(error => log.error(error))
   },
   methods: {
     onChangeDisplayAmount(value) {
@@ -556,16 +555,16 @@ export default {
           to_email: this.toAddress,
           total_amount: this.amount.toString(),
           token: typeToken.toString(),
-          etherscanLink: etherscanLink
+          etherscanLink
         }
-        post(config.api + '/transaction/sendemail', emailObject, {
+        post(`${config.api}/transaction/sendemail`, emailObject, {
           headers: {
-            Authorization: 'Bearer ' + this.$store.state.jwtToken,
+            Authorization: `Bearer ${this.$store.state.jwtToken}`,
             'Content-Type': 'application/json; charset=utf-8'
           }
         })
           .then(response => log.info('email response', response))
-          .catch(err => log.error(err))
+          .catch(error => log.error(error))
       }
     },
     moreThanZero(value) {
@@ -585,7 +584,7 @@ export default {
       return ''
     },
     contactRule(contact) {
-      const value = contact === null ? '' : typeof contact === 'string' ? contact : contact.value
+      const value = contact === null ? '' : (typeof contact === 'string' ? contact : contact.value)
       return validateVerifierId(this.selectedVerifier, value)
     },
     verifierChangedManual() {
@@ -596,26 +595,24 @@ export default {
     contactChanged(contact) {
       this.contactSelected = contact
       if (contact) this.toAddress = contact
-      log.info(event, contact, 'contactChanged')
+      log.info(contact, 'contactChanged')
 
       // Autoupdate selected verifier
       if (this.autoSelectVerifier) {
         const contactFound = this.contactList.find(item => item.value === contact)
         if (contactFound) {
           this.selectedVerifier = contactFound.verifier
-        } else {
-          if (/^0x/.test(this.toAddress)) {
-            this.selectedVerifier = ETH
-          } else if (/@/.test(this.toAddress)) {
-            this.selectedVerifier = GOOGLE
-          } else if (
-            /.eth$/.test(this.toAddress) ||
-            /.xyz$/.test(this.toAddress) ||
-            /.crypto$/.test(this.toAddress) ||
-            /.kred$/i.test(this.toAddress)
-          ) {
-            this.selectedVerifier = ENS
-          }
+        } else if (this.toAddress.startsWith('0x')) {
+          this.selectedVerifier = ETH
+        } else if (/@/.test(this.toAddress)) {
+          this.selectedVerifier = GOOGLE
+        } else if (
+          /.eth$/.test(this.toAddress) ||
+          /.xyz$/.test(this.toAddress) ||
+          /.crypto$/.test(this.toAddress) ||
+          /.kred$/i.test(this.toAddress)
+        ) {
+          this.selectedVerifier = ENS
         }
       }
       this.ensError = ''
@@ -625,15 +622,14 @@ export default {
       if (isAddress(toAddress)) {
         return new Promise((resolve, reject) => {
           if (this.contractType === CONTRACT_TYPE_ETH) {
-            const value =
-              '0x' +
-              this.amount
-                .times(new BigNumber(10).pow(new BigNumber(18)))
-                .dp(0, BigNumber.ROUND_DOWN)
-                .toString(16)
+            const value = '0x'
+            this.amount
+              .times(new BigNumber(10).pow(new BigNumber(18)))
+              .dp(0, BigNumber.ROUND_DOWN)
+              .toString(16)
             log.info(this.gas.toString())
             torus.web3.eth
-              .estimateGas({ to: toAddress, value: value })
+              .estimateGas({ to: toAddress, value })
               .then(response => {
                 let resolved = new BigNumber(response || '0')
                 if (!resolved.eq(new BigNumber('21000'))) {
@@ -642,50 +638,49 @@ export default {
                 }
                 resolve(resolved)
               })
-              .catch(err => {
-                log.error(err)
+              .catch(error => {
+                log.error(error)
                 resolve(new BigNumber('0'))
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC20) {
-            const selectedAddress = this.selectedAddress
-            const value =
-              '0x' +
-              this.amount
-                .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
-                .dp(0, BigNumber.ROUND_DOWN)
-                .toString(16)
+            const { selectedAddress } = this
+            const value = '0x'
+            this.amount
+              .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
+              .dp(0, BigNumber.ROUND_DOWN)
+              .toString(16)
             this.getTransferMethod(this.contractType, selectedAddress, toAddress, value)
               .estimateGas({ from: selectedAddress })
               .then(response => {
                 resolve(new BigNumber(response || '0'))
               })
-              .catch(err => {
-                log.error(err)
+              .catch(error => {
+                log.error(error)
                 resolve(new BigNumber('0'))
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC721) {
-            const selectedAddress = this.selectedAddress
+            const { selectedAddress } = this
             this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId)
               .estimateGas({ from: selectedAddress })
               .then(response => {
                 resolve(new BigNumber(response || '0'))
               })
-              .catch(err => {
-                log.error(err)
+              .catch(error => {
+                log.error(error)
                 resolve(new BigNumber('0'))
               })
           }
         })
-      } else {
-        return Promise.resolve(new BigNumber('21000'))
       }
+      return Promise.resolve(new BigNumber('21000'))
     },
     getTransferMethod(contractType, selectedAddress, toAddress, value) {
       // For support of older ERC721
       if (OLD_ERC721_LIST.hasOwnProperty(this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
         const contractInstance = new torus.web3.eth.Contract(erc20TransferABI, this.selectedTokenAddress)
         return contractInstance.methods.transfer(toAddress, value)
-      } else if (contractType === CONTRACT_TYPE_ERC721) {
+      }
+      if (contractType === CONTRACT_TYPE_ERC721) {
         const contractInstance = new torus.web3.eth.Contract(erc721TransferABI, this.selectedTokenAddress)
         return contractInstance.methods.safeTransferFrom(selectedAddress, toAddress, value)
       }
@@ -738,8 +733,8 @@ export default {
               verifier: this.selectedVerifier,
               verifierId: this.toAddress
             })
-          } catch (err) {
-            log.error(err)
+          } catch (error) {
+            log.error(error)
           }
         }
         this.toEthAddress = toAddress
@@ -779,32 +774,30 @@ export default {
     },
     async sendCoin() {
       const toAddress = this.toEthAddress
-      const fastGasPrice = '0x' + this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)
-      const selectedAddress = this.selectedAddress
+      const fastGasPrice = `0x${this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
+      const { selectedAddress } = this
       if (this.contractType === CONTRACT_TYPE_ETH) {
-        const value =
-          '0x' +
-          this.amount
-            .times(new BigNumber(10).pow(new BigNumber(18)))
-            .dp(0, BigNumber.ROUND_DOWN)
-            .toString(16)
+        const value = `0x${this.amount
+          .times(new BigNumber(10).pow(new BigNumber(18)))
+          .dp(0, BigNumber.ROUND_DOWN)
+          .toString(16)}`
         log.info(this.gas.toString())
         torus.web3.eth.sendTransaction(
           {
             from: selectedAddress,
             to: toAddress,
             value,
-            gas: this.gas.eq(new BigNumber('0')) ? undefined : '0x' + this.gas.toString(16),
+            gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice
           },
-          (err, transactionHash) => {
-            if (err) {
+          (error, transactionHash) => {
+            if (error) {
               const regEx = new RegExp('User denied transaction signature', 'i')
-              if (!err.message.match(regEx)) {
+              if (!error.message.match(regEx)) {
                 this.showModalMessage = true
                 this.modalMessageSuccess = false
               }
-              log.error(err)
+              log.error(error)
             } else {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
@@ -815,26 +808,24 @@ export default {
           }
         )
       } else if (this.contractType === CONTRACT_TYPE_ERC20) {
-        const value =
-          '0x' +
-          this.amount
-            .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
-            .dp(0, BigNumber.ROUND_DOWN)
-            .toString(16)
+        const value = `0x${this.amount
+          .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
+          .dp(0, BigNumber.ROUND_DOWN)
+          .toString(16)}`
         this.getTransferMethod(this.contractType, selectedAddress, toAddress, value).send(
           {
             from: selectedAddress,
-            gas: this.gas.eq(new BigNumber('0')) ? undefined : '0x' + this.gas.toString(16),
+            gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice
           },
-          (err, transactionHash) => {
-            if (err) {
+          (error, transactionHash) => {
+            if (error) {
               const regEx = new RegExp('User denied transaction signature', 'i')
-              if (!err.message.match(regEx)) {
+              if (!error.message.match(regEx)) {
                 this.showModalMessage = true
                 this.modalMessageSuccess = false
               }
-              log.error(err)
+              log.error(error)
             } else {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
@@ -848,17 +839,17 @@ export default {
         this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId).send(
           {
             from: selectedAddress,
-            gas: this.gas.eq(new BigNumber('0')) ? undefined : '0x' + this.gas.toString(16),
+            gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice
           },
-          (err, transactionHash) => {
-            if (err) {
+          (error, transactionHash) => {
+            if (error) {
               const regEx = new RegExp('User denied transaction signature', 'i')
-              if (!err.message.match(regEx)) {
+              if (!error.message.match(regEx)) {
                 this.showModalMessage = true
                 this.modalMessageSuccess = false
               }
-              log.error(err)
+              log.error(error)
             } else {
               // Send email to the user
               this.sendEmail(this.assetSelected.name, transactionHash)
@@ -878,9 +869,11 @@ export default {
     getGasSpeed() {
       if (this.speedSelected === 'average') {
         return this.averageGasPriceSpeed
-      } else if (this.speedSelected === 'fast') {
+      }
+      if (this.speedSelected === 'fast') {
         return this.fastGasPriceSpeed
-      } else if (this.speedSelected === 'fastest') {
+      }
+      if (this.speedSelected === 'fastest') {
         return this.fastestGasPriceSpeed
       }
     },
@@ -943,10 +936,10 @@ export default {
     onDecodeQr(result) {
       try {
         const qrUrl = new URL(result)
-        const qrParams = new URLSearchParams(qrUrl.search)
-        if (qrParams.has('to')) {
+        const qrParameters = new URLSearchParams(qrUrl.search)
+        if (qrParameters.has('to')) {
           this.selectedVerifier = ETH
-          this.toAddress = qrParams.get('to')
+          this.toAddress = qrParameters.get('to')
         } else {
           this.toAddress = ''
           this.qrErrorMsg = 'Incorrect QR Code'

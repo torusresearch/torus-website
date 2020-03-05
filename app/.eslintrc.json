@@ -12,12 +12,26 @@
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:flowtype/recommended",
-    "adjunct",
+    // "adjunct",
     "problems",
     "plugin:vue-scoped-css/recommended",
-    "plugin:promise/recommended"
+    "plugin:promise/recommended",
+    "plugin:switch-case/recommended",
+    "plugin:unicorn/recommended"
   ],
-  "plugins": ["prettier", "vue", "babel", "promise", "import", "flowtype", "standard", "vue-scoped-css"],
+  "plugins": [
+    "prettier",
+    "vue",
+    "babel",
+    "promise",
+    "import",
+    "flowtype",
+    "standard",
+    "vue-scoped-css",
+    "simple-import-sort",
+    "switch-case",
+    "unicorn"
+  ],
   "parser": "vue-eslint-parser",
   "parserOptions": {
     "parser": "babel-eslint",
@@ -25,7 +39,11 @@
     "sourceType": "module"
   },
   "rules": {
+    "simple-import-sort/sort": "error",
+    "operator-linebreak": 0,
+    "promise/always-return": 0,
     "unicorn/filename-case": 0,
+    "vue/no-v-html": 0,
     "vue/array-bracket-spacing": 2,
     "vue/arrow-spacing": 2,
     "vue/block-spacing": 2,
