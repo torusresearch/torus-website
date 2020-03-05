@@ -1,10 +1,18 @@
 <template>
-  <div class="wallet-home">
+  <v-container class="wallet-home">
     <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
-      <v-flex xs12 sm4 pl-4>
-        <div class="font-weight-bold headline float-left">{{ t('walletHome.walletHome') }}</div>
+      <v-flex xs12 sm6>
+        <div class="font-weight-bold display-1 float-left">Account Balance{{ /** t('walletHome.walletHome') */ }}</div>
       </v-flex>
-      <v-flex xs8 sm8 px-4 class="text-right hidden-xs-only">
+      <v-flex xs12 sm6 class="text-right">
+        <export-qr-code>
+          <v-btn icon>
+            <v-icon x-small v-text="'$vuetify.icons.qr'" />
+          </v-btn>
+        </export-qr-code>
+      </v-flex>
+    </v-layout>
+    <!-- <v-flex xs8 sm8 px-4 class="text-right hidden-xs-only">
         <v-btn
           outlined
           large
@@ -28,8 +36,149 @@
           <v-icon left>$vuetify.icons.add</v-icon>
           {{ t('walletHome.topUp') }}
         </v-btn>
+      </v-flex> -->
+    <v-layout wrap mx-n4 mt-7>
+      <v-flex px-4 xs12 sm6>
+        <v-card class="card-total elevation-1">
+          <v-layout wrap class="pa-6">
+            <v-flex xs6>
+              <span class="title">{{ t('walletHome.totalValue') }}</span>
+            </v-flex>
+            <v-flex xs6 class="text-right">
+              <network-display :network="storeNetworkType" :storeNetworkType="storeNetworkType"></network-display>
+            </v-flex>
+            <v-flex xs6>
+              <component-loader class="mt-3" v-if="!weiBalanceLoaded || !tokenDataLoaded" />
+              <h2 v-else :class="$vuetify.breakpoint.smAndDown ? 'display-1' : 'display-4'" class="text_2--text font-weight-bold text-clamp-one">
+                {{ totalPortfolioValue }}
+                <span id="selected-currency" class="description">{{ selectedCurrency }}</span>
+              </h2>
+            </v-flex>
+            <v-flex xs6 class="text-right align-self-end">
+              <span class="description">1ETH = 300USD</span>
+            </v-flex>
+            <v-flex xs12>
+              <v-layout class="mx-n2 mt-3">
+                <v-flex xs6 px-2>
+                  <v-btn
+                    outlined
+                    large
+                    block
+                    color="primary"
+                    class="transfer-btn"
+                    :class="$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12'"
+                    @click="initiateTransfer"
+                  >
+                    <v-icon left>$vuetify.icons.send</v-icon>
+                    {{ t('walletHome.transfer') }}
+                  </v-btn>
+                </v-flex>
+                <v-flex xs6 px-2>
+                  <v-btn
+                    depressed
+                    large
+                    block
+                    color="primary"
+                    class="topup-btn"
+                    :class="$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12'"
+                    @click="topup"
+                    v-show="canShowLrc"
+                  >
+                    <v-icon left>$vuetify.icons.add</v-icon>
+                    {{ t('walletHome.topUp') }}
+                  </v-btn>
+                </v-flex>
+              </v-layout>
+            </v-flex>
+          </v-layout>
+          <!-- <v-card-title class="font-weight-bold subtitle-2 pt-6 px-6">
+            <v-layout>
+              <v-flex>
+                <span>{{ t('walletHome.totalValue') }}</span>
+              </v-flex>
+              <v-flex text-right>
+                <export-qr-code>
+                  <v-icon small class="primary--text" v-text="'$vuetify.icons.qr'" />
+                </export-qr-code>
+              </v-flex>
+            </v-layout>
+          </v-card-title>
+          <v-card-text class="pb-8 px-6">
+            <component-loader class="mt-3" v-if="!weiBalanceLoaded || !tokenDataLoaded" />
+            <h2 v-else :class="$vuetify.breakpoint.smAndDown ? 'display-1' : 'display-2'" class="text_2--text font-weight-bold text-clamp-one">
+              {{ totalPortfolioValue }}
+              <span id="selected-currency" class="body-2 font-weight-light">{{ selectedCurrency }}</span>
+            </h2>
+            <div class="">
+              <v-btn
+                outlined
+                large
+                color="primary"
+                class="transfer-btn py-1 mr-4"
+                :class="$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12'"
+                @click="initiateTransfer"
+              >
+                <v-icon left>$vuetify.icons.send</v-icon>
+                {{ t('walletHome.transfer') }}
+              </v-btn>
+              <v-btn
+                depressed
+                large
+                color="primary"
+                class="py-1 topup-btn hidden-xs-only"
+                :class="$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12'"
+                @click="topup"
+                v-show="canShowLrc"
+              >
+                <v-icon left>$vuetify.icons.add</v-icon>
+                {{ t('walletHome.topUp') }}
+              </v-btn>
+            </div>
+          </v-card-text> -->
+        </v-card>
       </v-flex>
-
+      <v-flex px-4 xs12 sm6 v-if="isFreshAccount">
+        <v-card class="card-shadow elevation-1">
+          <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
+            <v-layout>
+              <v-flex
+                class="text_1--text pt-4"
+                :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'"
+              >
+                <div class="body-1 font-weight-bold">{{ t('walletHome.welcome') }} Torus.</div>
+                <v-dialog v-model="dialogLearnMore" max-width="700">
+                  <template v-slot:activator="{ on }">
+                    <div class="body-2'">
+                      <a id="learn-more-btn" class="primary--text font-weight-bold" v-on="on">
+                        {{ t('walletHome.learnMore') }}
+                      </a>
+                      {{ t('walletHome.aboutWallet') }}.
+                    </div>
+                  </template>
+                  <LearnMore @onClose="dialogLearnMore = false" />
+                </v-dialog>
+              </v-flex>
+              <v-flex xs4 pt-4 class="text-right hidden-xs-only">
+                <img
+                  :src="require(`../../../../public/images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)"
+                  style="height: 90px"
+                />
+              </v-flex>
+            </v-layout>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+      <v-flex px-4 xs12 sm6 v-for="(event, i) in isFreshAccount ? [] : events" :key="`event-${i}`">
+        <promotion-card
+          :title="event.eventName"
+          :image-path="event.imageUrl"
+          :subtitle="event.description"
+          :details-link="event.callToActionLink"
+          :details-text="event.callToActionText"
+        ></promotion-card>
+      </v-flex>
+    </v-layout>
+    <!-- <v-layout wrap>
       <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'mb-2'">
         <v-layout class="home-cards" wrap>
           <v-flex xs12 sm6 px-4 my-4 :class="$vuetify.breakpoint.xsOnly ? 'mb-4' : ''">
@@ -178,6 +327,20 @@
           </v-tab>
         </v-tabs>
       </v-flex>
+    </v-layout> -->
+    <v-layout class="mt-12">
+      <v-flex xs12>
+        <v-tabs centered v-model="activeTab">
+          <v-tab class="home-tab-token" :key="t('walletHome.tokens')">
+            <v-icon left>$vuetify.icons.token</v-icon>
+            {{ t('walletHome.tokens') }}
+          </v-tab>
+          <v-tab class="home-tab-collectibles" :key="t('walletHome.collectibles')">
+            <v-icon left>$vuetify.icons.collectibles</v-icon>
+            {{ t('walletHome.collectibles') }}
+          </v-tab>
+        </v-tabs>
+      </v-flex>
     </v-layout>
 
     <v-tabs-items v-model="activeTab" class="token-tab-content">
@@ -188,13 +351,14 @@
         <CollectiblesList></CollectiblesList>
       </v-tab-item>
     </v-tabs-items>
-  </div>
+  </v-container>
 </template>
 
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import ExportQrCode from '../../../components/helpers/ExportQrCode'
+import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
 import LearnMore from '../../../components/WalletHome/LearnMore'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
@@ -204,7 +368,7 @@ import { LOCALE_EN, MAINNET } from '../../../utils/enums'
 
 export default {
   name: 'WalletHome',
-  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore, ComponentLoader },
+  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore, ComponentLoader, NetworkDisplay },
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
@@ -262,6 +426,9 @@ export default {
       })
 
       return events
+    },
+    storeNetworkType() {
+      return this.$store.state.networkType
     }
   },
   mounted() {
