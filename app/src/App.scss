@@ -152,46 +152,76 @@
 
 
 .torus-app.v-application {
-  /* Header 1 */
+  /* Header 1 48px*/
   .display-4 {
     font-weight: bold;
     font-size: 3rem !important;
     line-height: 3.5rem;
     letter-spacing: 0;
   }
-  /* Header 2 */
+  /* Header 2 40px*/
   .display-3 {
     font-weight: bold;
     font-size: 2.5rem !important;
     line-height: 3rem;
     letter-spacing: 0;
   }
-  /* Header 3 */
+  /* Header 3 32px*/
   .display-2 {
     font-weight: bold;
     font-size: 2rem !important;
     line-height: 2.375rem;
     letter-spacing: 0;
   }
-  /* Header 4 */
+  /* Header 4 24px*/
   .display-1 {
     font-weight: bold;
     font-size: 1.5rem !important;
     line-height: 1.75rem;
     letter-spacing: 0;
   }
-  /* Header 5 */
+  /* Header 5 18px*/
   .headline {
     font-weight: bold;
     font-size: 1.125rem !important;
     line-height: 1.3rem;
     letter-spacing: 0;
   }
-  /* Header 6 */
+  /* Header 6 16px*/
   .title {
     font-weight: bold;
     font-size: 1rem !important;
     line-height: 1.2rem;
     letter-spacing: 0;
+  }
+
+  /* Header 6 16px*/
+  .description {
+    font-size: 0.75rem;
+    line-height: 0.875rem;
+    letter-spacing: 0;
+    font-weight: normal;
+    color: var(--v-gray_3-base);;
+  }
+
+  .v-menu__content {
+    background: #FFFFFF;
+    border: 1px solid #F5F5F5;
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+    border-radius: 9px;
+  }
+
+  .elevation-1 {
+    background: #FFFFFF;
+    border: 1px solid #F5F5F5;
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06) !important;
+    border-radius: 6px;
+  }
+
+  .elevation-2 {
+    background: #FFFFFF;
+    border: 1px solid #F5F5F5;
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06), 0px 14px 28px rgba(46, 91, 255, 0.12) !important;
+    border-radius: 6px;
   }
 }

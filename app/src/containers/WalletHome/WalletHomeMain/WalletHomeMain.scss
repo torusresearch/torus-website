@@ -1,70 +1,70 @@
-@import '../../../scss/nav-selector.mixin';
-@import '../../../scss/outline-tooltip.mixin';
+// @import '../../../scss/nav-selector.mixin';
+// @import '../../../scss/outline-tooltip.mixin';
 
-.wallet-home {
-  ::v-deep .currency-selector {
-    @include navSelector();
-    max-width: 75px;
-    .v-select__selection {
-      color: var(--v-primary-base);
-      width: 30px;
-      max-width: 30px;
-    }
-    .v-icon {
-      color: var(--v-text_2-base);
-      width: 20px;
-      height: 20px;
-    }
-    input#currency-selector {
-      display: none;
-    }
-    .v-input__append-inner {
-      padding: 0;
-      margin: 0;
-      width: 16px;
-    }
-  }
+// .wallet-home {
+//   ::v-deep .currency-selector {
+//     @include navSelector();
+//     max-width: 75px;
+//     .v-select__selection {
+//       color: var(--v-primary-base);
+//       width: 30px;
+//       max-width: 30px;
+//     }
+//     .v-icon {
+//       color: var(--v-text_2-base);
+//       width: 20px;
+//       height: 20px;
+//     }
+//     input#currency-selector {
+//       display: none;
+//     }
+//     .v-input__append-inner {
+//       padding: 0;
+//       margin: 0;
+//       width: 16px;
+//     }
+//   }
 
-  ::v-deep .search-field {
-    .v-input__slot {
-      min-height: 40px;
-    }
+//   ::v-deep .search-field {
+//     .v-input__slot {
+//       min-height: 40px;
+//     }
 
-    .v-input__append-inner {
-      margin-top: 8px;
-    }
+//     .v-input__append-inner {
+//       margin-top: 8px;
+//     }
 
-    .v-icon.v-icon {
-      width: 12px;
-    }
-  }
+//     .v-icon.v-icon {
+//       width: 12px;
+//     }
+//   }
 
-  .refresh-button {
-    .v-icon {
-      width: 12px;
-    }
-  }
+//   .refresh-button {
+//     .v-icon {
+//       width: 12px;
+//     }
+//   }
 
-  .home-cards .v-card {
-    height: 140px;
-    @media screen and (max-width: 600px) {
-      height: inherit;
-    }
-  }
+//   .home-cards .v-card {
+//     height: 140px;
+//     @media screen and (max-width: 600px) {
+//       height: inherit;
+//     }
+//   }
 
-  .token-tab-content {
-    background: transparent;
-  }
-}
+//   .token-tab-content {
+//     background: transparent;
+//   }
+// }
 
-.v-tooltip__content {
-  @include outlineTooltip();
-  ::v-deep .outline-tooltip {
-    &::after {
-      top: 100%;
-      left: 50%;
-      margin-left: -5px;
-      border-width: 5px;
-    }
-  }
-}
+// .v-tooltip__content {
+//   @include outlineTooltip();
+//   ::v-deep .outline-tooltip {
+//     &::after {
+//       top: 100%;
+//       left: 50%;
+//       margin-left: -5px;
+//       border-width: 5px;
+//     }
+//   }
+// }
