@@ -1,10 +1,10 @@
-import EventEmitter from 'safe-event-emitter'
-import ObservableStore from 'obs-store'
 import log from 'loglevel'
+import ObservableStore from 'obs-store'
+import EventEmitter from 'safe-event-emitter'
 
-import txStateHistoryHelper from '../utils/tx-state-history-helper'
 import createId from '../utils/random-id'
-import { getFinalStates, normalizeTxParams } from '../utils/txUtils'
+import txStateHistoryHelper from '../utils/tx-state-history-helper'
+import { getFinalStates, normalizeTxParams as normalizeTxParameters } from '../utils/txUtils'
 /**
   TransactionStateManager is responsible for the state of a transaction and
   storing the transaction
@@ -43,7 +43,7 @@ class TransactionStateManager extends EventEmitter {
     @param opts {object} - the object to use when overwriting defaults
     @returns {txMeta} the default txMeta object
   */
-  generateTxMeta(opts) {
+  generateTxMeta(options) {
     const netId = this.getNetwork()
     if (netId === 'loading') throw new Error('MetaMask is having trouble connecting to the network')
     return {
@@ -52,7 +52,7 @@ class TransactionStateManager extends EventEmitter {
       status: 'unapproved',
       metamaskNetworkId: netId,
       loadingDefaults: true,
-      ...opts
+      ...options
     }
   }
 
@@ -89,9 +89,9 @@ class TransactionStateManager extends EventEmitter {
     returns all txMetas who's status is approved for the current network
   */
   getApprovedTransactions(address) {
-    const opts = { status: 'approved' }
-    if (address) opts.from = address
-    return this.getFilteredTxList(opts)
+    const options = { status: 'approved' }
+    if (address) options.from = address
+    return this.getFilteredTxList(options)
   }
 
   /**
@@ -100,9 +100,9 @@ class TransactionStateManager extends EventEmitter {
     returns all txMetas who's status is submitted for the current network
   */
   getPendingTransactions(address) {
-    const opts = { status: 'submitted' }
-    if (address) opts.from = address
-    return this.getFilteredTxList(opts)
+    const options = { status: 'submitted' }
+    if (address) options.from = address
+    return this.getFilteredTxList(options)
   }
 
   /**
@@ -111,9 +111,9 @@ class TransactionStateManager extends EventEmitter {
     returns all txMetas who's status is confirmed for the current network
   */
   getConfirmedTransactions(address) {
-    const opts = { status: 'confirmed' }
-    if (address) opts.from = address
-    return this.getFilteredTxList(opts)
+    const options = { status: 'confirmed' }
+    if (address) options.from = address
+    return this.getFilteredTxList(options)
   }
 
   /**
@@ -127,12 +127,12 @@ class TransactionStateManager extends EventEmitter {
   */
   addTx(txMeta) {
     if (txMeta.txParams) {
-      this.normalizeAndValidateTxParams(txMeta.txParams)
+      TransactionStateManager.normalizeAndValidateTxParams(txMeta.txParams)
     }
-    this.once(`${txMeta.id}:signed`, function() {
+    this.once(`${txMeta.id}:signed`, () => {
       this.removeAllListeners(`${txMeta.id}:rejected`)
     })
-    this.once(`${txMeta.id}:rejected`, function() {
+    this.once(`${txMeta.id}:rejected`, () => {
       this.removeAllListeners(`${txMeta.id}:signed`)
     })
     // initialize history
@@ -143,7 +143,7 @@ class TransactionStateManager extends EventEmitter {
 
     const transactions = this.getFullTxList()
     const txCount = transactions.length
-    const txHistoryLimit = this.txHistoryLimit
+    const { txHistoryLimit } = this
 
     // checks if the length of the tx history is
     // longer then desired persistence limit
@@ -151,19 +151,22 @@ class TransactionStateManager extends EventEmitter {
     // or rejected tx's.
     // not tx's that are pending or unapproved
     if (txCount > txHistoryLimit - 1) {
-      const index = transactions.findIndex(metaTx => {
-        return getFinalStates().includes(metaTx.status)
-      })
+      const index = transactions.findIndex(metaTx => getFinalStates().includes(metaTx.status))
       if (index !== -1) {
         transactions.splice(index, 1)
       }
     }
     const newTxIndex = transactions.findIndex(currentTxMeta => currentTxMeta.time > txMeta.time)
 
-    newTxIndex === -1 ? transactions.push(txMeta) : transactions.splice(newTxIndex, 0, txMeta)
+    if (newTxIndex === -1) {
+      transactions.push(txMeta)
+    } else {
+      transactions.splice(newTxIndex, 0, txMeta)
+    }
     this._saveTxList(transactions)
     return txMeta
   }
+
   /**
     @param txId {number}
     @returns {object} the txMeta who matches the given id if none found
@@ -182,7 +185,7 @@ class TransactionStateManager extends EventEmitter {
   updateTx(txMeta, note) {
     // validate txParams
     if (txMeta.txParams) {
-      this.normalizeAndValidateTxParams(txMeta.txParams)
+      TransactionStateManager.normalizeAndValidateTxParams(txMeta.txParams)
     }
 
     // create txMeta snapshot for history
@@ -201,12 +204,12 @@ class TransactionStateManager extends EventEmitter {
     this._saveTxList(txList)
   }
 
-  normalizeAndValidateTxParams(txParams) {
-    if (typeof txParams.data === 'undefined') {
-      delete txParams.data
+  static normalizeAndValidateTxParams(txParameters) {
+    if (typeof txParameters.data === 'undefined') {
+      delete txParameters.data
     }
-    const modifiedTxParams = normalizeTxParams(txParams, false)
-    this.validateTxParams(modifiedTxParams)
+    const modifiedTxParameters = normalizeTxParameters(txParameters, false)
+    TransactionStateManager.validateTxParams(modifiedTxParameters)
   }
 
   /**
@@ -215,9 +218,9 @@ class TransactionStateManager extends EventEmitter {
     @param txId {number} - the id of the txMeta
     @param txParams {object} - the updated txParams
   */
-  updateTxParams(txId, txParams) {
+  updateTxParams(txId, txParameters) {
     const txMeta = this.getTx(txId)
-    txMeta.txParams = { ...txMeta.txParams, ...txParams }
+    txMeta.txParams = { ...txMeta.txParams, ...txParameters }
     this.updateTx(txMeta, 'txStateManager#updateTxParams')
   }
 
@@ -225,14 +228,15 @@ class TransactionStateManager extends EventEmitter {
     validates txParams members by type
     @param txParams {object} - txParams to validate
   */
-  validateTxParams(txParams) {
-    Object.keys(txParams).forEach(key => {
-      const value = txParams[key]
+  static validateTxParams(txParameters) {
+    Object.keys(txParameters).forEach(key => {
+      const value = txParameters[key]
       // validate types
       switch (key) {
         case 'chainId':
-          if (typeof value !== 'number' && typeof value !== 'string')
-            throw new Error(`${key} in txParams is not a Number or hex string. got: (${value})`)
+          if (typeof value !== 'number' && typeof value !== 'string') {
+            throw new TypeError(`${key} in txParams is not a Number or hex string. got: (${value})`)
+          }
           break
         default:
           if (typeof value !== 'string') throw new Error(`${key} in txParams is not a string. got: (${value})`)
@@ -267,13 +271,14 @@ class TransactionStateManager extends EventEmitter {
   or for filltering for all txs from one account
   and that have been 'confirmed'
   */
-  getFilteredTxList(opts, initialList) {
+  getFilteredTxList(options, initialList) {
     let filteredTxList = initialList
-    Object.keys(opts).forEach(key => {
-      filteredTxList = this.getTxsByMetaData(key, opts[key], filteredTxList)
+    Object.keys(options).forEach(key => {
+      filteredTxList = this.getTxsByMetaData(key, options[key], filteredTxList)
     })
     return filteredTxList
   }
+
   /**
 
     @param key {string} - the key to check
@@ -287,9 +292,8 @@ class TransactionStateManager extends EventEmitter {
     return txList.filter(txMeta => {
       if (key in txMeta.txParams) {
         return filter(txMeta.txParams[key])
-      } else {
-        return filter(txMeta[key])
       }
+      return filter(txMeta[key])
     })
   }
 
@@ -320,6 +324,7 @@ class TransactionStateManager extends EventEmitter {
   setTxStatusUnapproved(txId) {
     this._setTxStatus(txId, 'unapproved')
   }
+
   /**
     should update the status of the tx to 'approved'.
     @param txId {number} - the txMeta Id
@@ -370,8 +375,8 @@ class TransactionStateManager extends EventEmitter {
     @param txId {number} - the txMeta Id
     @param err {erroObject} - error object
   */
-  setTxStatusFailed(txId, err) {
-    const error = !err ? new Error('Internal metamask failure') : err
+  setTxStatusFailed(txId, error_) {
+    const error = !error_ ? new Error('Internal metamask failure') : error_
 
     const txMeta = this.getTx(txId)
     txMeta.err = {

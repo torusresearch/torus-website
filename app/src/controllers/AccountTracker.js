@@ -8,20 +8,20 @@
  */
 
 import EthQuery from 'eth-query'
-import ObservableStore from 'obs-store'
 import log from 'loglevel'
+import ObservableStore from 'obs-store'
 import pify from 'pify'
+import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
 import Web3 from 'web3'
 import { toHex } from 'web3-utils'
-import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
 
-import { MAINNET_CODE, RINKEBY_CODE, ROPSTEN_CODE, KOVAN_CODE, ZERO_ADDRESS } from '../utils/enums'
 import {
   SINGLE_CALL_BALANCES_ADDRESS,
+  SINGLE_CALL_BALANCES_ADDRESS_KOVAN,
   SINGLE_CALL_BALANCES_ADDRESS_RINKEBY,
-  SINGLE_CALL_BALANCES_ADDRESS_ROPSTEN,
-  SINGLE_CALL_BALANCES_ADDRESS_KOVAN
+  SINGLE_CALL_BALANCES_ADDRESS_ROPSTEN
 } from '../utils/contractAddresses'
+import { KOVAN_CODE, MAINNET_CODE, RINKEBY_CODE, ROPSTEN_CODE, ZERO_ADDRESS } from '../utils/enums'
 
 export default class AccountTracker {
   /**
@@ -42,16 +42,16 @@ export default class AccountTracker {
    * @property {Object} _currentBlockNumber Reference to a property on the _blockTracker: the number (i.e. an id) of the the current block
    *
    */
-  constructor(opts = {}) {
+  constructor(options = {}) {
     const initState = {
       accounts: {},
       currentBlockGasLimit: ''
     }
     this.store = new ObservableStore(initState)
 
-    this._provider = opts.provider
+    this._provider = options.provider
     this._query = pify(new EthQuery(this._provider))
-    this._blockTracker = opts.blockTracker
+    this._blockTracker = options.blockTracker
     // blockTracker.currentBlock may be null
     this._currentBlockNumber = this._blockTracker.getCurrentBlock()
     this._blockTracker.once('latest', blockNumber => {
@@ -59,7 +59,7 @@ export default class AccountTracker {
     })
     // bind function for easier listener syntax
     this._updateForBlock = this._updateForBlock.bind(this)
-    this.network = opts.network
+    this.network = options.network
 
     this.web3 = new Web3(this._provider)
   }
@@ -90,7 +90,7 @@ export default class AccountTracker {
    *
    */
   syncWithAddresses(addresses) {
-    const accounts = this.store.getState().accounts
+    const { accounts } = this.store.getState()
     const locals = Object.keys(accounts)
 
     const accountsToAdd = []
@@ -119,7 +119,7 @@ export default class AccountTracker {
    *
    */
   addAccounts(addresses) {
-    const accounts = this.store.getState().accounts
+    const { accounts } = this.store.getState()
     // add initial state for addresses
     addresses.forEach(address => {
       accounts[address] = {}
@@ -138,7 +138,7 @@ export default class AccountTracker {
    *
    */
   removeAccount(addresses) {
-    const accounts = this.store.getState().accounts
+    const { accounts } = this.store.getState()
     // remove each state object
     addresses.forEach(address => {
       delete accounts[address]
@@ -166,8 +166,8 @@ export default class AccountTracker {
 
     try {
       await this._updateAccounts()
-    } catch (err) {
-      log.error(err)
+    } catch (error) {
+      log.error(error)
     }
   }
 
@@ -178,27 +178,23 @@ export default class AccountTracker {
    *
    */
   async _updateAccounts() {
-    const accounts = this.store.getState().accounts
+    const { accounts } = this.store.getState()
     const addresses = Object.keys(accounts)
-    const currentNetwork = parseInt(this.network.getNetworkState())
+    const currentNetwork = parseInt(this.network.getNetworkState(), 10)
     if (addresses.length > 0) {
       switch (currentNetwork) {
         case MAINNET_CODE:
           await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS)
           break
-
         case RINKEBY_CODE:
           await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_RINKEBY)
           break
-
         case ROPSTEN_CODE:
           await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_ROPSTEN)
           break
-
         case KOVAN_CODE:
           await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_KOVAN)
           break
-
         default:
           await Promise.all(addresses.map(this._updateAccount.bind(this)))
       }
@@ -231,7 +227,7 @@ export default class AccountTracker {
    * @param {*} deployedContractAddress
    */
   async _updateAccountsViaBalanceChecker(addresses, deployedContractAddress) {
-    const accounts = this.store.getState().accounts
+    const { accounts } = this.store.getState()
     const web3Instance = this.web3
     const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, deployedContractAddress)
     const zeroAddress = [ZERO_ADDRESS]
@@ -246,5 +242,6 @@ export default class AccountTracker {
       log.warn('Torus - Account Tracker single call balance fetch failed', error)
       return Promise.all(addresses.map(this._updateAccount.bind(this)))
     }
+    return Promise.reject(new Error('unable to update balances'))
   }
 }

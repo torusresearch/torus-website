@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 /**
  * Assets Detection
  * Controller that passively polls on a set interval for assets auto detection
@@ -5,19 +6,20 @@
 
 import log from 'loglevel'
 
-import { get } from '../utils/httpHelpers'
 import config from '../config'
 import { MAINNET } from '../utils/enums'
+import { get } from '../utils/httpHelpers'
+
 const DEFAULT_INTERVAL = 60000
 
 export default class AssetsDetectionController {
-  constructor(opts) {
+  constructor(options) {
     this.interval = DEFAULT_INTERVAL
     this.selectedAddress = ''
-    this.network = opts.network
-    this._provider = opts.provider
-    this.assetController = opts.assetController
-    this.assetContractController = opts.assetContractController
+    this.network = options.network
+    this._provider = options.provider
+    this.assetController = options.assetController
+    this.assetContractController = options.assetContractController
     this.jwtToken = ''
   }
 
@@ -46,7 +48,7 @@ export default class AssetsDetectionController {
    * @type {Number}
    */
   set interval(interval) {
-    this._handle && clearInterval(this._handle)
+    if (this._handle) clearInterval(this._handle)
     if (!interval) {
       return
     }
@@ -55,13 +57,13 @@ export default class AssetsDetectionController {
     }, interval)
   }
 
-  getOwnerCollectiblesApi(address) {
+  static getOwnerCollectiblesApi(address) {
     return `https://api.opensea.io/api/v1/assets?owner=${address}&limit=300`
   }
 
   async getOwnerCollectibles() {
-    const selectedAddress = this.selectedAddress
-    const api = this.getOwnerCollectiblesApi(selectedAddress)
+    const { selectedAddress } = this
+    const api = AssetsDetectionController.getOwnerCollectiblesApi(selectedAddress)
     let response
     try {
       response = await get(`${config.api}/opensea?url=${api}`, {
@@ -71,8 +73,8 @@ export default class AssetsDetectionController {
       })
       const collectibles = response.data.assets
       return collectibles
-    } catch (e) {
-      log.error(e)
+    } catch (error) {
+      log.error(error)
       return []
     }
   }
@@ -107,28 +109,28 @@ export default class AssetsDetectionController {
     if (!this.isMainnet()) {
       return
     }
-    const selectedAddress = this.selectedAddress
+    const { selectedAddress } = this
     /* istanbul ignore else */
     if (!selectedAddress) {
       return
     }
     this.assetController.setSelectedAddress(selectedAddress)
     const apiCollectibles = await this.getOwnerCollectibles()
-    for (let index = 0; index < apiCollectibles.length; index++) {
-      const {
-        token_id,
-        image_url,
-        name,
-        description,
-        asset_contract: {
-          address: contractAddress,
-          name: contractName,
-          symbol: contractSymbol,
-          image_url: contractImage,
-          total_supply: contractSupply,
-          description: contractDescription
-        }
-      } = apiCollectibles[index]
+    for (const {
+      token_id,
+      image_url,
+      name,
+      description,
+      asset_contract: {
+        address: contractAddress,
+        name: contractName,
+        symbol: contractSymbol,
+        image_url: contractImage,
+        total_supply: contractSupply,
+        description: contractDescription
+      }
+    } of apiCollectibles) {
+      // eslint-disable-next-line no-await-in-loop
       await this.assetController.addCollectible(
         contractAddress,
         Number(token_id),

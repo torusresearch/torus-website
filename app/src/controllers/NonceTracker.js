@@ -1,6 +1,6 @@
-import EthQuery from 'ethjs-query'
 import assert from 'assert'
 import { Mutex } from 'await-semaphore'
+import EthQuery from 'ethjs-query'
 /**
   @param opts {Object}
     @param {Object} opts.provider a ethereum provider
@@ -73,10 +73,10 @@ class NonceTracker {
 
       // return nonce and release cb
       return { nextNonce, nonceDetails, releaseLock }
-    } catch (err) {
+    } catch (error) {
       // release lock if we encounter an error
       releaseLock()
-      throw err
+      throw error
     }
   }
 
@@ -121,7 +121,7 @@ class NonceTracker {
 
   _getHighestNonce(txList) {
     const nonces = txList.map(txMeta => {
-      const nonce = txMeta.txParams.nonce
+      const { nonce } = txMeta.txParams
       assert(typeof nonce, 'string', 'nonces should be hex strings')
       return parseInt(nonce, 16)
     })
@@ -142,7 +142,7 @@ class NonceTracker {
   */
   _getHighestContinuousFrom(txList, startPoint) {
     const nonces = txList.map(txMeta => {
-      const nonce = txMeta.txParams.nonce
+      const { nonce } = txMeta.txParams
       assert(typeof nonce, 'string', 'nonces should be hex strings')
       return parseInt(nonce, 16)
     })

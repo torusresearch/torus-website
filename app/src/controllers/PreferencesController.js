@@ -1,9 +1,10 @@
-import ObservableStore from 'obs-store'
 import log from 'loglevel'
-import { prettyPrintData, isErrorObj } from '../utils/permissionUtils'
+import ObservableStore from 'obs-store'
+
 import config from '../config'
-import { patch, get, post, remove, getPastOrders } from '../utils/httpHelpers'
-import { LOCALE_EN, THEME_LIGHT_BLUE_NAME, ERROR_TIME, SUCCESS_TIME } from '../utils/enums'
+import { ERROR_TIME, LOCALE_EN, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
+import { isErrorObj as isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import { getIFrameOrigin } from '../utils/utils'
 
 // By default, poll every 1 minute
@@ -25,7 +26,7 @@ class PreferencesController {
    * @property {object} store.permissions the stored permissions of the user for different domains
    * @property {string} store.jwtToken the token used to communicate with torus-backend
    */
-  constructor(opts = {}) {
+  constructor(options = {}) {
     const initState = {
       selectedAddress: '',
       selectedCurrency: 'USD',
@@ -36,7 +37,7 @@ class PreferencesController {
       contacts: [],
       permissions: [],
       paymentTx: [],
-      ...opts.initState
+      ...options.initState
     }
 
     this.interval = DEFAULT_INTERVAL
@@ -50,7 +51,7 @@ class PreferencesController {
 
   set jwtToken(token) {
     this._jwtToken = token
-    token && this.getBillboardContents()
+    if (token) this.getBillboardContents()
   }
 
   get headers() {
@@ -62,41 +63,42 @@ class PreferencesController {
     }
   }
 
-  handleError(err) {
-    if (isErrorObj(err)) {
-      this.errorStore.putState(`Oops, That didn't work. Pls reload and try again. \n${err.message}`)
-    } else if (err && typeof err === 'string') {
-      this.errorStore.putState(err)
-    } else if (err && typeof err === 'object') {
-      const prettyError = prettyPrintData(err)
+  handleError(error) {
+    if (isErrorObject(error)) {
+      this.errorStore.putState(`Oops, That didn't work. Pls reload and try again. \n${error.message}`)
+    } else if (error && typeof error === 'string') {
+      this.errorStore.putState(error)
+    } else if (error && typeof error === 'object') {
+      const prettyError = prettyPrintData(error)
       const payloadError = prettyError !== '' ? `Error: ${prettyError}` : 'Something went wrong. Pls try again'
       this.errorStore.putState(payloadError)
     } else {
-      this.errorStore.putState(err || '')
+      this.errorStore.putState(error || '')
     }
     setTimeout(() => this.errorStore.putState(''), ERROR_TIME)
   }
 
-  handleSuccess(msg) {
-    if (msg && typeof msg === 'string') {
-      this.successStore.putState(msg)
-    } else if (msg && typeof msg === 'object') {
-      const prettyMsg = prettyPrintData(msg)
-      const payloadMsg = prettyMsg !== '' ? `Error: ${prettyMsg}` : 'Something went wrong. Pls try again'
-      this.successStore.putState(payloadMsg)
+  handleSuccess(message) {
+    if (message && typeof message === 'string') {
+      this.successStore.putState(message)
+    } else if (message && typeof message === 'object') {
+      const prettyMessage = prettyPrintData(message)
+      const payloadMessage = prettyMessage !== '' ? `Error: ${prettyMessage}` : 'Something went wrong. Pls try again'
+      this.successStore.putState(payloadMessage)
     } else {
-      this.successStore.putState(msg || '')
+      this.successStore.putState(message || '')
     }
     setTimeout(() => this.successStore.putState(''), SUCCESS_TIME)
   }
 
-  sync(cb, errorCb) {
-    Promise.all([
-      get(`${config.api}/user`, this.headers).catch(_ => {
-        errorCb && errorCb()
-      }),
-      getPastOrders({}, this.headers.headers)
-    ]).then(([user, paymentTx]) => {
+  async sync(callback, errorCallback) {
+    try {
+      const [user, paymentTx] = await Promise.all([
+        get(`${config.api}/user`, this.headers).catch(_ => {
+          if (errorCallback) errorCallback()
+        }),
+        getPastOrders({}, this.headers.headers)
+      ])
       if (user && user.data) {
         const { transactions, default_currency, contacts, theme, locale, verifier, verifier_id, permissions } = user.data || {}
         this.store.updateState({
@@ -109,10 +111,13 @@ class PreferencesController {
           permissions
         })
         if (!verifier || !verifier_id) this.setVerifier(verifier, verifier_id)
-        cb && cb(user)
+        if (callback) return callback(user)
         // this.permissionsController._initializePermissions(permissions)
       }
-    })
+    } catch (error) {
+      log.error(error)
+    }
+    return undefined
   }
 
   createUser(selectedCurrency, theme, verifier, verifierId, locale) {
@@ -134,7 +139,7 @@ class PreferencesController {
     if (payload && payload.calledFromEmbed) {
       userOrigin = getIFrameOrigin()
     } else userOrigin = window.location.origin
-    if (!payload.rehydrate)
+    if (!payload.rehydrate) {
       post(
         `${config.api}/user/recordLogin`,
         {
@@ -144,6 +149,7 @@ class PreferencesController {
         },
         this.headers
       )
+    }
   }
 
   async setUserTheme(payload) {
@@ -204,10 +210,10 @@ class PreferencesController {
   async getBillboardContents() {
     try {
       const resp = await get(`${config.api}/billboard`, this.headers)
-      const events = resp.data.reduce((acc, event) => {
-        if (!acc[event.callToActionLink]) acc[event.callToActionLink] = {}
-        acc[event.callToActionLink][event.locale] = event
-        return acc
+      const events = resp.data.reduce((accumulator, event) => {
+        if (!accumulator[event.callToActionLink]) accumulator[event.callToActionLink] = {}
+        accumulator[event.callToActionLink][event.locale] = event
+        return accumulator
       }, [])
 
       if (events) this.store.updateState({ billboard: events })
@@ -259,7 +265,7 @@ class PreferencesController {
    * @param {number} interval
    */
   set interval(interval) {
-    this._handle && clearInterval(this._handle)
+    if (this._handle) clearInterval(this._handle)
     if (!interval) {
       return
     }

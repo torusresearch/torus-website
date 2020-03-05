@@ -1,10 +1,10 @@
-import Web3 from 'web3'
+import BigNumber from 'bignumber.js'
 import contracts from 'eth-contract-metadata'
 import { warn } from 'loglevel'
 import ObservableStore from 'obs-store'
-import { toHex } from 'web3-utils'
-import BigNumber from 'bignumber.js'
 import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
+import Web3 from 'web3'
+import { toHex } from 'web3-utils'
 
 import { MAINNET } from '../utils/enums'
 // By default, poll every 3 minutes
@@ -40,6 +40,7 @@ class DetectTokensController {
     }
     const tokenAddresses = this.detectedTokensStore.getState().tokens.map(x => x.tokenAddress.toLowerCase())
     const tokensToDetect = []
+    // eslint-disable-next-line no-restricted-syntax
     for (const contractAddress in contracts) {
       if (contracts[contractAddress].erc20 && !tokenAddresses.includes(contractAddress.toLowerCase())) {
         tokensToDetect.push(contractAddress)
@@ -76,12 +77,12 @@ class DetectTokensController {
    */
   async detectEtherscanTokenBalance(contractAddress, data = {}) {
     const nonZeroTokens = this.detectedTokensStore.getState().tokens
-    const index = nonZeroTokens.findIndex(elem => elem.tokenAddress.toLowerCase() === contractAddress.toLowerCase())
+    const index = nonZeroTokens.findIndex(element => element.tokenAddress.toLowerCase() === contractAddress.toLowerCase())
     if (index === -1) {
       nonZeroTokens.push({
         ...data,
         tokenAddress: contractAddress,
-        balance: '0x' + new BigNumber(data.balance).times(new BigNumber(10).pow(new BigNumber(data.decimals))).toString(16)
+        balance: `0x${new BigNumber(data.balance).times(new BigNumber(10).pow(new BigNumber(data.decimals))).toString(16)}`
       })
       this.detectedTokensStore.putState({ tokens: nonZeroTokens })
     }
@@ -131,7 +132,7 @@ class DetectTokensController {
    * @type {Number}
    */
   set interval(interval) {
-    this._handle && clearInterval(this._handle)
+    if (this._handle) clearInterval(this._handle)
     if (!interval) {
       return
     }

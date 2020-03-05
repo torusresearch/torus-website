@@ -1,12 +1,12 @@
-var Duplex = require('readable-stream').Duplex
-var PassThrough = require('readable-stream').PassThrough
+const { Duplex } = require('readable-stream')
+const { PassThrough } = require('readable-stream')
 // var Transform = require('readable-stream').Transform
 const log = require('loglevel')
 
 module.exports = function() {
-  var sources = []
-  var routerMapping = {}
-  var output = new PassThrough({
+  let sources = []
+  const routerMapping = {}
+  const output = new PassThrough({
     objectMode: true
   })
 
@@ -17,12 +17,12 @@ module.exports = function() {
 
   output.on('unpipe', remove)
 
-  var split = new Duplex({
+  const split = new Duplex({
     objectMode: true,
-    read: function() {},
-    write: function(obj, enc, cb) {
-      cb()
-      route(obj)
+    read() {},
+    write(object, enc, callback) {
+      callback()
+      route(object)
     }
   })
 
@@ -30,12 +30,12 @@ module.exports = function() {
 
   return { mergeSteam: output, splitStream: split }
 
-  function route(obj) {
-    log.info('ROUTING..', obj)
-    if (obj.id && routerMapping[obj.id]) {
-      log.info('FOUND STREAM:', obj)
-      routerMapping[obj.id].write(obj)
-      delete routerMapping[obj.id]
+  function route(object) {
+    log.info('ROUTING..', object)
+    if (object.id && routerMapping[object.id]) {
+      log.info('FOUND STREAM:', object)
+      routerMapping[object.id].write(object)
+      delete routerMapping[object.id]
     }
   }
 
@@ -44,11 +44,11 @@ module.exports = function() {
       source.forEach(add)
       return this
     }
-    var mapperPassthrough = new PassThrough({ objectMode: true })
-    mapperPassthrough.on('data', function(obj) {
-      log.info('MAPPER MAPPING OBJ', obj)
-      if (obj.id) {
-        routerMapping[obj.id] = source
+    const mapperPassthrough = new PassThrough({ objectMode: true })
+    mapperPassthrough.on('data', object => {
+      log.info('MAPPER MAPPING OBJ', object)
+      if (object.id) {
+        routerMapping[object.id] = source
       }
     })
     sources.push(source)
@@ -63,10 +63,8 @@ module.exports = function() {
   }
 
   function remove(source) {
-    sources = sources.filter(function(it) {
-      return it !== source
-    })
-    if (!sources.length && output.readable) {
+    sources = sources.filter(it => it !== source)
+    if (sources.length === 0 && output.readable) {
       output.end()
     }
   }

@@ -39,6 +39,7 @@
     "sourceType": "module"
   },
   "rules": {
+    "no-underscore-dangle": 0,
     "simple-import-sort/sort": "error",
     "operator-linebreak": 0,
     "promise/always-return": 0,
