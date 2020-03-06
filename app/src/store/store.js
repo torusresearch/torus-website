@@ -15,21 +15,14 @@ import {
   TX_TRANSACTION,
   TX_TYPED_MESSAGE
 } from '../utils/enums'
-import { post } from '../utils/httpHelpers.js'
+import { post } from '../utils/httpHelpers'
 import { notifyUser } from '../utils/notifications'
 import { getEtherScanHashLink, storageAvailable } from '../utils/utils'
 import actions from './actions'
-import getters from './getters'
+import defaultGetters from './getters'
 import mutations from './mutations'
 import paymentActions from './PaymentActions'
-import state from './state'
-
-function getCurrencyMultiplier() {
-  const { selectedCurrency, currencyData } = VuexStore.state || {}
-  let currencyMultiplier = 1
-  if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
-  return currencyMultiplier
-}
+import defaultState from './state'
 
 Vue.use(Vuex)
 
@@ -61,16 +54,16 @@ if (storageAvailable('sessionStorage')) {
   })
 }
 
-var VuexStore = new Vuex.Store({
+const VuexStore = new Vuex.Store({
   plugins: vuexPersist ? [vuexPersist.plugin] : [],
-  state,
-  getters,
+  state: defaultState,
+  getters: defaultGetters,
   mutations,
   actions: {
     ...actions,
     ...paymentActions,
-    showPopup({ state, getters }, payload) {
-      const confirmHandler = new ConfirmHandler()
+    showPopup({ state, getters }) {
+      const confirmHandler = new ConfirmHandler(torus.instanceId)
       const isTx = isTorusTransaction()
       confirmHandler.isTx = isTx
       confirmHandler.selectedCurrency = state.selectedCurrency
@@ -90,7 +83,7 @@ var VuexStore = new Vuex.Store({
         confirmHandler.id = id
         confirmHandler.txType = type
       }
-      if (location === parent.location && location.origin === config.baseUrl) {
+      if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
         handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
       } else {
         confirmHandler.open(handleConfirm, handleDeny)
@@ -98,6 +91,13 @@ var VuexStore = new Vuex.Store({
     }
   }
 })
+
+function getCurrencyMultiplier() {
+  const { selectedCurrency, currencyData } = VuexStore.state || {}
+  let currencyMultiplier = 1
+  if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+  return currencyMultiplier
+}
 
 function handleConfirm(ev) {
   const { torusController } = torus
@@ -253,9 +253,8 @@ VuexStore.subscribe((mutation, state) => {
           // Handling cryptokitties
           if (contractParams.isSpecial) {
             ;[amountTo, amountValue] = methodParams || []
-          }
-          // Rest of the 721s
-          else {
+          } else {
+            // Rest of the 721s
             ;[, amountTo, amountValue] = methodParams || []
           }
 
@@ -342,5 +341,9 @@ if (storageAvailable('localStorage')) {
     VuexStore.commit('setTheme', torusTheme)
   }
 }
+
+// torus.torusController.networkController.networkStore.subscribe(state => {
+//   VuexStore.dispatch('updateNetworkId', { networkId: state })
+// })
 
 export default VuexStore

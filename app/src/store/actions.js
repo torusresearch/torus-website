@@ -16,7 +16,7 @@ import {
   USER_INFO_REQUEST_APPROVED,
   USER_INFO_REQUEST_REJECTED
 } from '../utils/enums'
-import { get, post, remove } from '../utils/httpHelpers.js'
+import { get, post, remove } from '../utils/httpHelpers'
 import PopupHandler from '../utils/PopupHandler'
 import { broadcastChannelOptions, fakeStream, getIFrameOriginObj as getIFrameOriginObject } from '../utils/utils'
 import {
@@ -38,7 +38,7 @@ import initialState from './state'
 const accountImporter = require('../utils/accountImporter')
 
 const { baseRoute } = config
-const { torusController } = torus
+const { torusController } = torus || {}
 const {
   accountTracker,
   txController,
@@ -51,16 +51,38 @@ const {
   prefsController,
   networkController,
   assetDetectionController
-} = torusController
+} = torusController || {}
 
 // stream to send logged in status
-const statusStream = (torus.communicationMux && torus.communicationMux.getStream('status')) || fakeStream
-const oauthStream = (torus.communicationMux && torus.communicationMux.getStream('oauth')) || fakeStream
-const userInfoStream = (torus.communicationMux && torus.communicationMux.getStream('user_info')) || fakeStream
-const providerChangeStream = (torus.communicationMux && torus.communicationMux.getStream('provider_change')) || fakeStream
+const statusStream = (torus && torus.communicationMux && torus.communicationMux.getStream('status')) || fakeStream
+const oauthStream = (torus && torus.communicationMux && torus.communicationMux.getStream('oauth')) || fakeStream
+const userInfoStream = (torus && torus.communicationMux && torus.communicationMux.getStream('user_info')) || fakeStream
+const providerChangeStream = (torus && torus.communicationMux && torus.communicationMux.getStream('provider_change')) || fakeStream
 
+const handleProviderChangeSuccess = () => {
+  setTimeout(() => {
+    providerChangeStream.write({
+      name: 'provider_change_status',
+      data: {
+        success: true
+      }
+    })
+  }, 100)
+}
+
+const handleProviderChangeDeny = error => {
+  providerChangeStream.write({
+    name: 'provider_change_status',
+    data: {
+      success: false,
+      err: error
+    }
+  })
+}
 // Have to do this here cause embed calls on init
-prefsController.metadataStore.subscribe(metadataHandler)
+if (prefsController) {
+  prefsController.metadataStore.subscribe(metadataHandler)
+}
 
 export default {
   logOut({ commit, state }, _) {
@@ -87,7 +109,7 @@ export default {
       else commit('setCurrencyData', data)
     })
   },
-  async forceFetchTokens(_, payload) {
+  async forceFetchTokens() {
     detectTokensController.refreshTokenBalances()
     assetDetectionController.restartAssetDetection()
     try {
@@ -109,31 +131,12 @@ export default {
   },
   showProviderChangePopup({ dispatch, state }, payload) {
     const { override, preopenInstanceId } = payload
-    const handleSuccess = () => {
-      setTimeout(() => {
-        providerChangeStream.write({
-          name: 'provider_change_status',
-          data: {
-            success: true
-          }
-        })
-      }, 100)
-    }
 
-    const handleDeny = error => {
-      providerChangeStream.write({
-        name: 'provider_change_status',
-        data: {
-          success: false,
-          err: error
-        }
-      })
-    }
     if (override) {
       setTimeout(() => {
         dispatch('setProviderType', payload)
-          .then(handleSuccess)
-          .catch(handleDeny)
+          .then(handleProviderChangeSuccess)
+          .catch(handleProviderChangeDeny)
       }, 500)
       return
     }
@@ -160,12 +163,12 @@ export default {
           log.info('Provider change', approve)
           if (approve) {
             await dispatch('setProviderType', payload)
-            handleSuccess()
+            handleProviderChangeSuccess()
           } else {
-            handleDeny('user denied provider change request')
+            handleProviderChangeDeny('user denied provider change request')
           }
         } catch (error) {
-          handleDeny('Internal error occured')
+          handleProviderChangeDeny('Internal error occured')
         } finally {
           bc.close()
           providerChangeWindow.close()
@@ -176,7 +179,7 @@ export default {
     providerChangeWindow.open()
     providerChangeWindow.once('close', () => {
       bc.close()
-      handleDeny('user denied provider change request')
+      handleProviderChangeDeny('user denied provider change request')
     })
   },
   showUserInfoRequestPopup({ dispatch, state }, payload) {
@@ -305,23 +308,23 @@ export default {
         )
       )
       const scope = 'profile email openid'
-      const response_type = 'token id_token'
+      const responseType = 'token id_token'
       const prompt = 'consent select_account'
       const finalUrl =
-        `https://accounts.google.com/o/oauth2/v2/auth?response_type=${response_type}&client_id=${config.GOOGLE_CLIENT_ID}` +
+        `https://accounts.google.com/o/oauth2/v2/auth?response_type=${responseType}&client_id=${config.GOOGLE_CLIENT_ID}` +
         `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}&nonce=${torus.instanceId}&prompt=${prompt}`
       const googleWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.addEventListener('message', async ev => {
         try {
           const {
-            instanceParams: { verifier },
+            instanceParams: { verifier: returnedVerifier },
             hashParams: verifierParameters
           } = ev.data || {}
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             oauthStream.write({ err: ev.error })
-          } else if (ev.data && verifier === GOOGLE) {
+          } else if (ev.data && returnedVerifier === GOOGLE) {
             log.info(ev.data)
             const { access_token: accessToken, id_token: idToken } = verifierParameters
             const userInfo = await get('https://www.googleapis.com/userinfo/v2/me', {
@@ -363,22 +366,22 @@ export default {
         )
       )
       const scope = 'public_profile email'
-      const response_type = 'token'
+      const responseType = 'token'
       const finalUrl =
-        `https://www.facebook.com/v6.0/dialog/oauth?response_type=${response_type}&client_id=${config.FACEBOOK_APP_ID}` +
+        `https://www.facebook.com/v6.0/dialog/oauth?response_type=${responseType}&client_id=${config.FACEBOOK_APP_ID}` +
         `&state=${state}&scope=${scope}&redirect_uri=${encodeURIComponent(config.redirect_uri)}`
       const facebookWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.addEventListener('message', async ev => {
         try {
           const {
-            instanceParams: { verifier },
+            instanceParams: { verifier: returnedVerifier },
             hashParams: verifierParameters
           } = ev.data || {}
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             oauthStream.write({ err: ev.error })
-          } else if (ev.data && verifier === FACEBOOK) {
+          } else if (ev.data && returnedVerifier === FACEBOOK) {
             log.info(ev.data)
             const { access_token: accessToken } = verifierParameters
             const userInfo = await get('https://graph.facebook.com/me?fields=name,email,picture.type(large)', {
@@ -437,13 +440,13 @@ export default {
         try {
           log.info(ev.data)
           const {
-            instanceParams: { verifier },
+            instanceParams: { verifier: returnedVerifier },
             hashParams: verifierParameters
           } = ev.data || {}
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             oauthStream.write({ err: ev.error })
-          } else if (ev.data && verifier === TWITCH) {
+          } else if (ev.data && returnedVerifier === TWITCH) {
             const { access_token: accessToken, id_token: idtoken } = verifierParameters
             const userInfo = await get('https://id.twitch.tv/oauth2/userinfo', {
               headers: {
@@ -493,21 +496,21 @@ export default {
       bc.addEventListener('message', async ev => {
         try {
           const {
-            instanceParams: { verifier },
+            instanceParams: { verifier: returnedVerifier },
             hashParams: verifierParameters
           } = ev.data || {}
           log.info(ev.data)
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             oauthStream.write({ err: ev.error })
-          } else if (ev.data && verifier === REDDIT) {
+          } else if (ev.data && returnedVerifier === REDDIT) {
             const { access_token: accessToken } = verifierParameters
             const userInfo = await get('https://oauth.reddit.com/api/v1/me', {
               headers: {
                 Authorization: `Bearer ${accessToken}`
               }
             })
-            const { id, icon_img: profileImage, name } = userInfo || {}
+            const { icon_img: profileImage, name } = userInfo || {}
             commit('setUserInfo', {
               profileImage: profileImage.split('?').length > 0 ? profileImage.split('?')[0] : profileImage,
               name,
@@ -549,14 +552,14 @@ export default {
       bc.addEventListener('message', async ev => {
         try {
           const {
-            instanceParams: { verifier },
+            instanceParams: { verifier: returnedVerifier },
             hashParams: verifierParameters
           } = ev.data || {}
           log.info(ev.data)
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             oauthStream.write({ err: ev.error })
-          } else if (ev.data && verifier === DISCORD) {
+          } else if (ev.data && returnedVerifier === DISCORD) {
             const { access_token: accessToken } = verifierParameters
             const userInfo = await get('https://discordapp.com/api/users/@me', {
               headers: {
@@ -593,7 +596,7 @@ export default {
       })
     }
   },
-  subscribeToControllers(context, payload) {
+  subscribeToControllers() {
     accountTracker.store.subscribe(accountTrackerHandler)
     txController.store.subscribe(transactionControllerHandler)
     assetController.store.subscribe(assetControllerHandler)
@@ -606,13 +609,13 @@ export default {
     prefsController.successStore.subscribe(successMessageHandler)
     prefsController.errorStore.subscribe(errorMessageHandler)
   },
-  initTorusKeyring({ state, dispatch }, payload) {
+  initTorusKeyring(_, payload) {
     return torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
   },
-  addContact({ commit, state }, payload) {
+  addContact(_, payload) {
     return prefsController.addContact(payload)
   },
-  deleteContact({ commit, state }, payload) {
+  deleteContact(_, payload) {
     return prefsController.deleteContact(payload)
   },
   async handleLogin({ state, dispatch, commit }, { calledFromEmbed, idToken }) {
@@ -629,10 +632,10 @@ export default {
         torusIndexes = torusIndexesValue
         return torus.getPublicAddress(torusNodeEndpoints, torusNodePub, { verifier, verifierId })
       })
-      .then(res => {
-        log.info('New private key assigned to user at address ', res)
+      .then(response => {
+        log.info('New private key assigned to user at address ', response)
         const p1 = torus.retrieveShares(torusNodeEndpoints, torusIndexes, verifier, verifierParams, idToken)
-        const p2 = torus.getMessageForSigning(res)
+        const p2 = torus.getMessageForSigning(response)
         return Promise.all([p1, p2])
       })
       .then(async response => {
@@ -693,7 +696,7 @@ export default {
         }, decoded.exp * 1000 - Date.now())
       }
       await dispatch('setUserInfoAction', { token: response.token, calledFromEmbed, rehydrate: false })
-      return
+      return Promise.resolve()
     } catch (error) {
       log.error('Failed Communication with backend', error)
       return Promise.reject(error)
@@ -706,6 +709,7 @@ export default {
     prefsController.setUserLocale(payload)
   },
   setUserInfoAction({ commit, dispatch, state }, payload) {
+    // eslint-disable-next-line no-unused-vars
     return new Promise((resolve, reject) => {
       // Fixes loading theme for too long
       commit('setTheme', state.theme)
@@ -717,8 +721,8 @@ export default {
       prefsController.sync(
         user => {
           if (user.data) {
-            const { default_currency } = user.data || {}
-            dispatch('setSelectedCurrency', { selectedCurrency: default_currency, origin: 'store' })
+            const { default_currency: defaultCurrency } = user.data || {}
+            dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
             prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })
             resolve()
           }
@@ -733,7 +737,7 @@ export default {
       )
     })
   },
-  async rehydrate({ state, dispatch }, payload) {
+  async rehydrate({ state, dispatch }) {
     const {
       selectedAddress,
       wallet,

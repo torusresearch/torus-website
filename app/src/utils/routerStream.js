@@ -3,7 +3,7 @@ const { PassThrough } = require('readable-stream')
 // var Transform = require('readable-stream').Transform
 const log = require('loglevel')
 
-module.exports = function() {
+module.exports = () => {
   let sources = []
   const routerMapping = {}
   const output = new PassThrough({

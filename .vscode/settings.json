@@ -5,11 +5,6 @@
   },
   "vetur.validation.template": false,
   "eslint.options": {
-    "env": {
-      "es6": true,
-      "browser": true,
-      "node": true
-    },
     "extends": [
       "standard",
       "@vue/standard",
@@ -50,6 +45,11 @@
       "sourceType": "module"
     },
     "rules": {
+      "class-methods-use-this": 0,
+      "import/no-cycle": 0,
+      "no-restricted-syntax": 0,
+      "guard-for-in": 0,
+      "no-underscore-dangle": 0,
       "simple-import-sort/sort": "error",
       "operator-linebreak": 0,
       "promise/always-return": 0,
@@ -125,6 +125,11 @@
           "semi": false
         }
       ]
+    },
+    "env": {
+      "es6": true,
+      "browser": true,
+      "node": true
     }
   },
   "eslint.lintTask.enable": true,

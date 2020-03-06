@@ -1,11 +1,12 @@
-import log from 'loglevel'
 import { BroadcastChannel } from 'broadcast-channel'
-import { getQuote, getSignature } from '../../plugins/moonpay'
+import log from 'loglevel'
+
 import config from '../../config'
+import { getQuote, getSignature } from '../../plugins/moonpay'
 import torus from '../../torus'
 import { MOONPAY } from '../../utils/enums'
-import { broadcastChannelOptions } from '../../utils/utils'
 import PopupHandler from '../../utils/PopupHandler'
+import { broadcastChannelOptions } from '../../utils/utils'
 
 const randomId = require('@chaitanyapotti/random-id')
 
@@ -39,7 +40,7 @@ export default {
           })
         )
       )
-      const params = {
+      const parameters = {
         apiKey: config.moonpayLiveAPIKEY,
         enabledPaymentMethods: 'credit_debit_card,sepa_bank_transfer,gbp_bank_transfer',
         currencyCode: currentOrder.currency.code,
@@ -52,24 +53,21 @@ export default {
         redirectURL: `${config.redirect_uri}?state=${instanceState}`
       }
 
-      const paramString = new URLSearchParams(params)
-      const url = `${config.moonpayHost}?${paramString}`
+      const parameterString = new URLSearchParams(parameters)
+      const url = `${config.moonpayHost}?${parameterString}`
 
       getSignature({ url: encodeURIComponent(url), token: state.jwtToken })
-        .then(({ signature }) => {
-          dispatch('postMoonpayOrder', { finalUrl: `${url}&signature=${encodeURIComponent(signature)}`, preopenInstanceId })
-            .then(res => resolve(res))
-            .catch(err => reject(err))
-        })
-        .catch(err => reject(new Error('unable to create moonpay tx')))
+        .then(({ signature }) => dispatch('postMoonpayOrder', { finalUrl: `${url}&signature=${encodeURIComponent(signature)}`, preopenInstanceId }))
+        .then(response => resolve(response))
+        .catch(error => reject(error))
     })
   },
-  postMoonpayOrder(context, { finalUrl, method = 'post', preopenInstanceId }) {
+  postMoonpayOrder(context, { finalUrl, preopenInstanceId }) {
     return new Promise((resolve, reject) => {
       const moonpayWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-      bc.onmessage = ev => {
+      bc.addEventListener('message', ev => {
         try {
           const {
             instanceParams: { provider }
@@ -86,7 +84,7 @@ export default {
           bc.close()
           moonpayWindow.close()
         }
-      }
+      })
 
       // Handle communication with moonpay window here
       moonpayWindow.open()

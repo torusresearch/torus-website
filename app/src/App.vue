@@ -8,8 +8,8 @@
 export default {}
 </script>
 
-<style src="../public/css/circles.css"></style>
+<style scoped src="../public/css/circles.css"></style>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import 'App.scss';
 </style>

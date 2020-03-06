@@ -679,7 +679,7 @@ export default {
     },
     getTransferMethod(contractType, selectedAddress, toAddress, value) {
       // For support of older ERC721
-      if (OLD_ERC721_LIST.prototype.hasOwnProperty.call(this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
+      if (Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, this.selectedTokenAddress.toLowerCase()) || contractType === CONTRACT_TYPE_ERC20) {
         const contractInstance = new torus.web3.eth.Contract(erc20TransferABI, this.selectedTokenAddress)
         return contractInstance.methods.transfer(toAddress, value)
       }

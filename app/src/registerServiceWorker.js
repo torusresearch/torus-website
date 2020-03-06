@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
-import { register } from 'register-service-worker'
 import log from 'loglevel'
+import { register } from 'register-service-worker'
 import sriToolbox from 'sri-toolbox'
 
 const swIntegrity = 'SERVICE_WORKER_SHA_INTEGRITY' // string-replaced
@@ -45,34 +45,34 @@ if (
     // if there are errors, remove all service workers first
     navigator.serviceWorker
       .getRegistration()
-      .then(function(reg) {
-        return new Promise((resolve, reject) => {
-          let response = {
-            err: null,
-            sw: null
-          }
-          if (reg === undefined) {
-            response.err = new Error('no service worker installed')
-          } else if (reg.updateViaCache !== 'all') {
-            response.err = new Error('updateViaCache should be "all"')
-          } else if (new URL(reg.active.scriptURL).pathname !== swUrl) {
-            response.err = new Error(`unexpected scriptURL ${new URL(reg.active.scriptURL).pathname}, expected ${swUrl}`)
-          } else {
-            response.sw = reg
-          }
-          resolve(response)
-        })
-      })
-      .then(responseObj => {
+      .then(
+        reg => new Promise((resolve, reject) => {
+            const response = {
+              err: null,
+              sw: null
+            }
+            if (reg === undefined) {
+              response.err = new Error('no service worker installed')
+            } else if (reg.updateViaCache !== 'all') {
+              response.err = new Error('updateViaCache should be "all"')
+            } else if (new URL(reg.active.scriptURL).pathname !== swUrl) {
+              response.err = new Error(`unexpected scriptURL ${new URL(reg.active.scriptURL).pathname}, expected ${swUrl}`)
+            } else {
+              response.sw = reg
+            }
+            resolve(response)
+          })
+      )
+      .then(responseObject => {
         // if there were errors, we need to re-register the service worker
-        if (responseObj.err) {
-          const finalArr = [navigator.serviceWorker.register(swUrl, { updateViaCache: 'all', scope: '/' })]
-          if (process.env.BASE_URL !== '/')
-            finalArr.push(navigator.serviceWorker.register(swUrl, { updateViaCache: 'all', scope: process.env.BASE_URL }))
-          return Promise.all(finalArr)
-        } else {
-          return Promise.all([Promise.resolve(responseObj.sw)])
+        if (responseObject.err) {
+          const finalArray = [navigator.serviceWorker.register(swUrl, { updateViaCache: 'all', scope: '/' })]
+          if (process.env.BASE_URL !== '/') {
+            finalArray.push(navigator.serviceWorker.register(swUrl, { updateViaCache: 'all', scope: process.env.BASE_URL }))
+          }
+          return Promise.all(finalArray)
         }
+        return Promise.all([Promise.resolve(responseObject.sw)])
       })
       .then(swRegs => {
         log.info(swRegs, 'final regs')
@@ -87,11 +87,11 @@ if (
           .then(async resp => {
             // if Cache-Control headers are not as expected, throw
             if (resp.headers.get('Cache-Control') !== expectedCacheControlHeader) {
-              throw new Error('Unexpected Cache-Control headers, got ' + resp.headers.get('Cache-Control'))
+              throw new Error(`Unexpected Cache-Control headers, got ${resp.headers.get('Cache-Control')}`)
             }
             // if response data fails integrity check, throw
-            let text = await resp.text()
-            let integrity = sriToolbox.generate(
+            const text = await resp.text()
+            const integrity = sriToolbox.generate(
               {
                 algorithms: ['sha384']
               },
@@ -103,16 +103,16 @@ if (
             // update the service worker, which should fetch the file from cache
             return swRegs && swRegs.forEach(x => x.update())
           })
-          .catch(err => {
+          .catch(error => {
             // if failed to fetch, throw
-            throw new Error('Could not fetch service worker from server, ' + err.toString())
+            throw new Error(`Could not fetch service worker from server, ${error.toString()}`)
           })
       })
       .then(updatedSwRegs => {
         log.info('Successfully registered secure service worker', updatedSwRegs)
       })
-      .catch(err => {
-        log.warn('Could not complete service worker installation process, error: ', err)
+      .catch(error => {
+        log.warn('Could not complete service worker installation process, error: ', error)
         // throw new Error('Could not install service worker')
       })
   }

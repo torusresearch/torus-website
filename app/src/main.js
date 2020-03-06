@@ -21,18 +21,15 @@ switch (buildEnvironment) {
     logLevel = 'info'
     log.setDefaultLevel(logLevel)
     break
-
   case 'testing' || 'development' || 'lrc':
     logLevel = 'debug'
     log.setDefaultLevel(logLevel)
     break
-
   case 'production':
     logLevel = 'error'
     log.setDefaultLevel(logLevel)
     log.disableAll()
     break
-
   default:
     logLevel = 'error'
     log.setDefaultLevel(logLevel)

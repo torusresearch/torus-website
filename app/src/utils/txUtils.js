@@ -3,7 +3,7 @@ const { addHexPrefix, isValidAddress } = require('ethereumjs-util')
 /**
 @module
 */
-export { normalizeTxParams, validateTxParams, validateFrom, validateRecipient, getFinalStates }
+export { normalizeTxParameters as normalizeTxParams, validateTxParameters as validateTxParams, validateFrom, validateRecipient, getFinalStates }
 
 // functions that handle normalizing of that key in txParams
 const normalizers = {
@@ -21,30 +21,30 @@ const normalizers = {
  * @param txParams {object}
  * @returns {object} normalized txParams
  */
-function normalizeTxParams(txParams, LowerCase) {
+function normalizeTxParameters(txParameters, LowerCase) {
   // apply only keys in the normalizers
-  const normalizedTxParams = {}
+  const normalizedTxParameters = {}
   for (const key in normalizers) {
-    if (txParams[key]) normalizedTxParams[key] = normalizers[key](txParams[key], LowerCase)
+    if (txParameters[key]) normalizedTxParameters[key] = normalizers[key](txParameters[key], LowerCase)
   }
-  return normalizedTxParams
+  return normalizedTxParameters
 }
 
 /**
  * validates txParams
  * @param txParams {object}
  */
-function validateTxParams(txParams) {
-  validateFrom(txParams)
-  validateRecipient(txParams)
-  if ('value' in txParams) {
-    const value = txParams.value.toString()
+function validateTxParameters(txParameters) {
+  validateFrom(txParameters)
+  validateRecipient(txParameters)
+  if ('value' in txParameters) {
+    const value = txParameters.value.toString()
     if (value.includes('-')) {
-      throw new Error(`Invalid transaction value of ${txParams.value} not a positive number.`)
+      throw new Error(`Invalid transaction value of ${txParameters.value} not a positive number.`)
     }
 
     if (value.includes('.')) {
-      throw new Error(`Invalid transaction value of ${txParams.value} number must be in wei`)
+      throw new Error(`Invalid transaction value of ${txParameters.value} number must be in wei`)
     }
   }
 }
@@ -53,26 +53,26 @@ function validateTxParams(txParams) {
  * validates the from field in  txParams
  * @param txParams {object}
  */
-function validateFrom(txParams) {
-  if (!(typeof txParams.from === 'string')) throw new Error(`Invalid from address ${txParams.from} not a string`)
-  if (!isValidAddress(txParams.from)) throw new Error('Invalid from address')
+function validateFrom(txParameters) {
+  if (!(typeof txParameters.from === 'string')) throw new Error(`Invalid from address ${txParameters.from} not a string`)
+  if (!isValidAddress(txParameters.from)) throw new Error('Invalid from address')
 }
 
 /**
  * validates the to field in  txParams
  * @param txParams {object}
  */
-function validateRecipient(txParams) {
-  if (txParams.to === '0x' || txParams.to === null) {
-    if (txParams.data) {
-      delete txParams.to
+function validateRecipient(txParameters) {
+  if (txParameters.to === '0x' || txParameters.to === null) {
+    if (txParameters.data) {
+      delete txParameters.to
     } else {
       throw new Error('Invalid recipient address')
     }
-  } else if (txParams.to !== undefined && !isValidAddress(txParams.to)) {
+  } else if (txParameters.to !== undefined && !isValidAddress(txParameters.to)) {
     throw new Error('Invalid recipient address')
   }
-  return txParams
+  return txParameters
 }
 
 /**

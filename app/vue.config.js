@@ -25,13 +25,13 @@ module.exports = {
     extract: false
   },
   // Adds support for Edge browser, IE 11 and Safari 9
-  transpileDependencies: ['vuetify'],
+  transpileDependencies: ['vuetify', 'obs-store'],
 
   configureWebpack: config => {
     if (process.env.NODE_ENV === 'production') {
       const TerserPlugin = require('terser-webpack-plugin')
       // Get the current options from the Terser Plugin instance that vue-cli-service added:
-      const options = config.optimization.minimizer[0].options
+      const { options } = config.optimization.minimizer[0]
       // Set the options you want to set
       options.terserOptions.keep_fnames = true
       options.terserOptions.mangle.keep_fnames = true
@@ -43,11 +43,12 @@ module.exports = {
   },
   chainWebpack: config => {
     config.resolve.alias.set('bn.js', 'fork-bn.js')
-    if (process.env.NODE_ENV === 'production')
+    if (process.env.NODE_ENV === 'production') {
       config
         .plugin('service-worker-integrity')
         .use(serviceWorkerIntegrityPlugin, ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
         .after('workbox')
+    }
     // config.module
     //   .rule('worker')
     //   .test(/\.worker\.js$/)

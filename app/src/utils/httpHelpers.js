@@ -1,17 +1,18 @@
 import log from 'loglevel'
+
 import config from '../config'
 
 export const promiseTimeout = (ms, promise) => {
   const timeout = new Promise((resolve, reject) => {
     const id = setTimeout(() => {
       clearTimeout(id)
-      reject(new Error('Timed out in ' + ms + 'ms'))
+      reject(new Error(`Timed out in ${ms}ms`))
     }, ms)
   })
   return Promise.race([promise, timeout])
 }
 
-export const post = (url = '', data = {}, opts = {}) => {
+export const post = (url = '', data = {}, options_ = {}) => {
   const defaultOptions = {
     mode: 'cors',
     cache: 'no-cache',
@@ -22,7 +23,7 @@ export const post = (url = '', data = {}, opts = {}) => {
   }
   const options = {
     ...defaultOptions,
-    ...opts,
+    ...options_,
     ...{ method: 'POST' }
   }
   return promiseTimeout(
@@ -30,12 +31,13 @@ export const post = (url = '', data = {}, opts = {}) => {
     fetch(url, options).then(response => {
       if (response.ok) {
         return response.json()
-      } else throw new Error('Could not connect', response)
+      }
+      throw response
     })
   )
 }
 
-export const remove = (url = '', data = {}, opts = {}) => {
+export const remove = (url = '', _data = {}, options_ = {}) => {
   const defaultOptions = {
     mode: 'cors',
     cache: 'no-cache',
@@ -45,34 +47,36 @@ export const remove = (url = '', data = {}, opts = {}) => {
   }
   const options = {
     ...defaultOptions,
-    ...opts,
+    ...options_,
     ...{ method: 'DELETE' }
   }
   return fetch(url, options).then(response => {
     if (response.ok) {
       return response.json()
-    } else throw new Error('Could not connect', response)
+    }
+    throw response
   })
 }
 
-export const get = (url = '', opts = {}) => {
+export const get = (url = '', options_ = {}) => {
   const defaultOptions = {
     mode: 'cors',
     cache: 'no-cache'
   }
   const options = {
     ...defaultOptions,
-    ...opts,
+    ...options_,
     ...{ method: 'GET' }
   }
   return fetch(url, options).then(response => {
     if (response.ok) {
       return response.json()
-    } else throw new Error('Could not connect', response)
+    }
+    throw response
   })
 }
 
-export const patch = (url = '', data = {}, opts = {}) => {
+export const patch = (url = '', data = {}, options_ = {}) => {
   const defaultOptions = {
     mode: 'cors',
     cache: 'no-cache',
@@ -83,26 +87,25 @@ export const patch = (url = '', data = {}, opts = {}) => {
   }
   const options = {
     ...defaultOptions,
-    ...opts,
+    ...options_,
     ...{ method: 'PATCH' }
   }
   return fetch(url, options).then(response => {
     if (response.ok) {
       return response.json()
-    } else throw new Error('Could not connect', response)
+    }
+    throw response
   })
 }
 
-export const generateJsonRPCObject = (method, params) => {
-  return {
-    jsonrpc: '2.0',
-    method: method,
-    id: 10,
-    params: params
-  }
-}
+export const generateJsonRPCObject = (method, parameters) => ({
+  jsonrpc: '2.0',
+  method,
+  id: 10,
+  params: parameters
+})
 
-export const getPastOrders = (params = {}, headers) => {
+export const getPastOrders = (parameters = {}, headers) => {
   try {
     const options = {
       mode: 'cors',
@@ -113,20 +116,19 @@ export const getPastOrders = (params = {}, headers) => {
       }
     }
     const url = new URL(`${config.commonApiHost}/transaction`)
-    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]))
+    Object.keys(parameters).forEach(key => url.searchParams.append(key, parameters[key]))
     return get(url, options)
-  } catch (e) {
-    log.error(e)
+  } catch (error) {
+    log.error(error)
   }
 }
 
-export const promiseRace = (url, options, timeout, counter) => {
-  return Promise.race([
-    get(url, options),
-    new Promise((resolve, reject) => {
-      setTimeout(() => {
-        reject(new Error('timeout'))
-      }, timeout)
-    })
-  ])
-}
+export const promiseRace = (url, options, timeout) =>
+  Promise.race([
+  get(url, options),
+  new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject(new Error('timeout'))
+    }, timeout)
+  })
+])

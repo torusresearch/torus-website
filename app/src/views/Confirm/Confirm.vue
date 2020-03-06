@@ -349,28 +349,22 @@ export default {
         case DEPLOY_CONTRACT_ACTION_KEY:
           // return 'Contract Deployment'
           return this.t('dappTransfer.deploy')
-
         case CONTRACT_INTERACTION_KEY:
           return this.getHeaderByDapp()
-
         case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
           // return 'ERC721 SafeTransferFrom'
           return this.t('dappTransfer.collectibleSafe')
-
         case TOKEN_METHOD_APPROVE:
           // return 'ERC20 Approve'
           return this.t('dappTransfer.approve')
-
         case TOKEN_METHOD_TRANSFER:
         case SEND_ETHER_ACTION_KEY:
           // return 'ERC2O Transfer'
           // return 'Send Ether'
           return this.t('dappTransfer.transfer')
-
         case TOKEN_METHOD_TRANSFER_FROM:
           // return 'ERC2O Transfer From'
           return this.t('dappTransfer.transferFrom')
-
         default:
           // return 'Transaction Request'
           return this.t('dappTransfer.transaction')
@@ -385,14 +379,11 @@ export default {
         case TOKEN_METHOD_TRANSFER:
         case TOKEN_METHOD_TRANSFER_FROM:
           return `${this.t('dappTransfer.to')}: ${this.slicedAddress(this.amountTo)}`
-
         case SEND_ETHER_ACTION_KEY:
         case CONTRACT_INTERACTION_KEY:
           return `${this.t('dappTransfer.to')}: ${this.slicedAddress(this.receiver)}`
-
         case DEPLOY_CONTRACT_ACTION_KEY:
           return this.t('dappTransfer.newContract')
-
         default:
           return this.t('dappTransfer.transactionRequest')
       }
@@ -403,17 +394,13 @@ export default {
         case TOKEN_METHOD_TRANSFER:
         case TOKEN_METHOD_TRANSFER_FROM:
           return `${this.amountDisplay(this.amountValue)} ${this.selectedToken}`
-
         case COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM:
           return `ID: ${this.amountValue}`
-
         case SEND_ETHER_ACTION_KEY:
         case CONTRACT_INTERACTION_KEY:
           return `${this.amountDisplay(this.value)} ETH`
-
         case DEPLOY_CONTRACT_ACTION_KEY:
           return this.t('dappTransfer.notApplicable')
-
         default:
           return this.t('dappTransfer.transactionRequest')
       }
@@ -424,14 +411,11 @@ export default {
         case TOKEN_METHOD_TRANSFER:
         case TOKEN_METHOD_TRANSFER_FROM:
           return `~ ${significantDigits(this.amountTokenValueConverted)} ${this.selectedCurrency}`
-
         case SEND_ETHER_ACTION_KEY:
         case CONTRACT_INTERACTION_KEY:
           return `~ ${this.dollarValue} ${this.selectedCurrency}`
-
         case DEPLOY_CONTRACT_ACTION_KEY:
           return ''
-
         default:
           return ''
       }
@@ -503,15 +487,16 @@ export default {
       log.info({ msgParams, txParams })
       this.origin = origin
       if (type !== TX_TRANSACTION) {
-        let { msgParams: { message, typedMessages } = {}, id = '' } = msgParams
+        const { msgParams: { message, typedMessages } = {}, id = '' } = msgParams
+        let finalTypedMessages = typedMessages
         try {
-          typedMessages = typedMessages && JSON.parse(typedMessages)
+          finalTypedMessages = typedMessages && JSON.parse(typedMessages)
         } catch (error) {
           log.error(error)
         }
         this.id = id
         this.message = message
-        this.typedMessages = typedMessages
+        this.typedMessages = finalTypedMessages
       } else {
         let finalValue = new BigNumber('0')
         const { simulationFails, id, transactionCategory, methodParams, contractParams, txParams: txObject } = txParams || {}

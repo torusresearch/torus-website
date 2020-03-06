@@ -54,7 +54,6 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import log from 'loglevel'
 
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import { ChangeProviderScreenLoader } from '../../content-loader'
@@ -96,14 +95,14 @@ export default {
     bc.postMessage({ data: { type: 'popup-loaded' } })
   },
   methods: {
-    async triggerSign(event) {
+    async triggerSign() {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({
         data: { type: 'provider-change-result', approve: true }
       })
       bc.close()
     },
-    async triggerDeny(event) {
+    async triggerDeny() {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({ data: { type: 'provider-change-result', approve: false } })
       bc.close()

@@ -1,15 +1,17 @@
-import log from 'loglevel'
-import store from './store'
+/* eslint-disable unicorn/prevent-abbreviations */
 import torus from '../torus'
 import { capitalizeFirstLetter } from '../utils/utils'
-/* 
-Edited to change networkId => network state. Has an implication of changing neworkVersion 
+import store from './store'
+/*
+Edited to change networkId => network state. Has an implication of changing neworkVersion
 to "loading" at times in the inpage API
  */
 
-torus.torusController.networkController.networkStore.subscribe(function(state) {
-  store.dispatch('updateNetworkId', { networkId: state })
-})
+if (torus) {
+  torus.torusController.networkController.networkStore.subscribe(state => {
+    store.dispatch('updateNetworkId', { networkId: state })
+  })
+}
 
 export function accountTrackerHandler({ accounts }) {
   if (accounts) {
@@ -26,7 +28,7 @@ export function transactionControllerHandler({ transactions }) {
   if (transactions) {
     // these transactions have negative index
     const updatedTransactions = []
-    for (let id in transactions) {
+    for (const id in transactions) {
       if (transactions[id]) {
         updatedTransactions.push(transactions[id])
       }
@@ -41,9 +43,7 @@ export function assetControllerHandler({ accounts }) {
     if (Object.prototype.hasOwnProperty.call(accounts, key)) {
       const { collectibleContracts, collectibles } = accounts[key]
       const finalCollectibles = collectibleContracts.map(contract => {
-        contract.assets = collectibles.filter(asset => {
-          return asset.address === contract.address
-        })
+        contract.assets = collectibles.filter(asset => asset.address === contract.address)
         return contract
       })
       store.commit('setAssets', {
@@ -87,12 +87,12 @@ export function prefsControllerHandler(state) {
   })
 }
 
-export function successMsgHandler(msg) {
-  store.commit('setSuccessMsg', msg)
+export function successMsgHandler(message) {
+  store.commit('setSuccessMsg', message)
 }
 
-export function errorMsgHandler(err) {
-  store.commit('setErrorMsg', err)
+export function errorMsgHandler(error) {
+  store.commit('setErrorMsg', error)
 }
 
 export function metadataHandler(state) {

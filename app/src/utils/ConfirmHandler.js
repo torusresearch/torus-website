@@ -1,22 +1,23 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
-import { broadcastChannelOptions, getIFrameOriginObj } from './utils'
-import torus from '../torus'
-import PopupHandler from './PopupHandler'
-import config from '../config'
 
-const baseRoute = config.baseRoute
+import config from '../config'
+import PopupHandler from './PopupHandler'
+import { broadcastChannelOptions, getIFrameOriginObj as getIFrameOriginObject } from './utils'
+
+const { baseRoute } = config
 
 class ConfirmHandler {
-  constructor() {
+  constructor(torusInstanceId) {
     this.id = undefined
     this.txType = undefined
     this.confirmWindow = {}
-    this.bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`, broadcastChannelOptions)
+    this.torusInstanceId = torusInstanceId
+    this.bc = new BroadcastChannel(`torus_channel_${torusInstanceId}`, broadcastChannelOptions)
   }
 
   open = (handleConfirm, handleDeny) => {
-    const finalUrl = `${baseRoute}confirm?instanceId=${torus.instanceId}&integrity=true&id=${this.id}`
+    const finalUrl = `${baseRoute}confirm?instanceId=${this.torusInstanceId}&integrity=true&id=${this.id}`
     this.confirmWindow = new PopupHandler({
       url: finalUrl,
       target: '_blank',
@@ -24,11 +25,11 @@ class ConfirmHandler {
     })
     this.confirmWindow.open()
 
-    this.bc.onmessage = this.handle
+    this.bc.addEventListener('message', this.handle)
     this.handleConfirm = handleConfirm
     this.handleDeny = handleDeny
 
-    this.origin = getIFrameOriginObj()
+    this.origin = getIFrameOriginObject()
 
     this.confirmWindow.once('close', () => {
       this.bc.close()

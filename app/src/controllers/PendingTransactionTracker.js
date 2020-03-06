@@ -207,7 +207,7 @@ class PendingTransactionTracker extends EventEmitter {
       txParams: { nonce, from }
     } = txMeta
     const nextNonce = await this.query.getTransactionCount(from)
-    if (!blockNumber && parseInt(nextNonce, 10) > parseInt(nonce, 10)) {
+    if (!blockNumber && parseInt(nextNonce, 16) > parseInt(nonce, 16)) {
       return true
     }
     return false

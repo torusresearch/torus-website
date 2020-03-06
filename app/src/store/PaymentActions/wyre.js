@@ -1,11 +1,12 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
-import { getQuote } from '../../plugins/wyre'
+
 import config from '../../config'
+import { getQuote } from '../../plugins/wyre'
 import torus from '../../torus'
 import { WYRE } from '../../utils/enums'
-import { broadcastChannelOptions } from '../../utils/utils'
 import PopupHandler from '../../utils/PopupHandler'
+import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
   fetchWyreOrder({ state, dispatch }, { currentOrder, preopenInstanceId, selectedAddress }) {
@@ -28,14 +29,14 @@ export default {
       { Authorization: `Bearer ${state.jwtToken}` }
     )
   },
-  postWyreOrder(context, { path, params, method = 'post', preopenInstanceId }) {
+  postWyreOrder(context, { path, params, preopenInstanceId }) {
     return new Promise((resolve, reject) => {
       const parameterString = new URLSearchParams(params)
       const finalUrl = `${path}?${parameterString}`
       const wyreWindow = new PopupHandler({ preopenInstanceId, url: finalUrl })
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-      bc.onmessage = ev => {
+      bc.addEventListener('message', ev => {
         try {
           const {
             instanceParams: { provider }
@@ -52,7 +53,7 @@ export default {
           bc.close()
           wyreWindow.close()
         }
-      }
+      })
 
       wyreWindow.open()
       wyreWindow.once('close', () => {

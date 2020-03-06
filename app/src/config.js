@@ -5,8 +5,8 @@ const baseRoute = baseUrl + process.env.BASE_URL
 const redirect_uri = `${baseUrl}/redirect`
 
 export default {
-  baseUrl: baseUrl,
-  baseRoute: baseRoute,
+  baseUrl,
+  baseRoute,
   supportedCurrencies: ['USD', 'AUD', 'CAD', 'EUR', 'GBP', 'HKD', 'IDR', 'JPY', 'KRW', 'RUB', 'SGD', 'UAH'],
   commonApiHost: 'https://common-api.tor.us',
   simplexApiHost: 'https://simplex-api.tor.us',
@@ -25,7 +25,7 @@ export default {
   TWITCH_CLIENT_ID: 'tfppratfiloo53g1x133ofa4rc29px',
   REDDIT_CLIENT_ID: 'dcQJYPaG481XyQ',
   DISCORD_CLIENT_ID: '630308572013527060',
-  redirect_uri: redirect_uri,
+  redirect_uri,
   // api: 'http://localhost:2020'
   api: 'https://api.tor.us'
 }

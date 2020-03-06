@@ -4,7 +4,7 @@ import ObservableStore from 'obs-store'
 import config from '../config'
 import { ERROR_TIME, LOCALE_EN, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
-import { isErrorObj as isErrorObject, prettyPrintData } from '../utils/permissionUtils'
+import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import { getIFrameOrigin } from '../utils/utils'
 
 // By default, poll every 1 minute

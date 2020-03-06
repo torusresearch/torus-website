@@ -1,5 +1,6 @@
 import themes from '../plugins/themes'
 import vuetify from '../plugins/vuetify'
+import { THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 
 export default {
   setUserInfo(state, userInfo) {

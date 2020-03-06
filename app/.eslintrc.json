@@ -39,6 +39,10 @@
     "sourceType": "module"
   },
   "rules": {
+    "class-methods-use-this": 0,
+    "import/no-cycle": 0,
+    "no-restricted-syntax":0,
+    "guard-for-in": 0,
     "no-underscore-dangle": 0,
     "simple-import-sort/sort": "error",
     "operator-linebreak": 0,
