@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="addContactDialoag" width="400">
+  <v-dialog v-model="addContactDialog" width="400">
     <template v-slot:activator="{ on }">
       <v-btn depressed x-small block class="caption primary lighten-5 primary--text add-contact-alert" v-on="on">
         {{ t('walletTransfer.clickToAddContact') }}
@@ -22,7 +22,7 @@
 
         <v-card-actions class="pb-6">
           <v-flex xs6>
-            <v-btn block text color="text_2" @click="addContactDialoag = false">{{ t('walletTransfer.cancel') }}</v-btn>
+            <v-btn block text color="text_2" @click="addContactDialog = false">{{ t('walletTransfer.cancel') }}</v-btn>
           </v-flex>
           <v-divider vertical></v-divider>
           <v-flex xs6>
@@ -59,7 +59,7 @@ export default {
   },
   data() {
     return {
-      addContactDialoag: false,
+      addContactDialog: false,
       contactFormValid: true,
       newContactName: '',
       rules: {
@@ -77,8 +77,8 @@ export default {
   },
   methods: {
     async addContact() {
-      debugger
       if (!this.$refs.addContactForm.validate()) return
+      this.$refs.addContactForm.resetValidation()
       try {
         await this.$store.dispatch('addContact', {
           contact: this.contact,
@@ -89,8 +89,7 @@ export default {
         log.error(error)
       } finally {
         this.newContactName = ''
-        this.addContactDialoag = false
-        this.$refs.addContactForm.resetValidation()
+        this.addContactDialog = false
       }
     }
   }
