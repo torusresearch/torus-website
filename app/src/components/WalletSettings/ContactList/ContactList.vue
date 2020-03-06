@@ -122,18 +122,19 @@ export default {
     },
     async addContact() {
       if (!this.$refs.addContactForm.validate()) return
+      const contact = this.newContact
+      const name = this.newContactName
+      this.newContact = ''
+      this.newContactName = ''
       this.$refs.addContactForm.resetValidation()
       try {
         await this.$store.dispatch('addContact', {
-          contact: this.newContact,
-          name: this.newContactName,
+          contact,
+          name,
           verifier: this.selectedVerifier
         })
       } catch (error) {
         log.error(error)
-      } finally {
-        this.newContact = ''
-        this.newContactName = ''
       }
     },
     deleteContact(contactId) {
