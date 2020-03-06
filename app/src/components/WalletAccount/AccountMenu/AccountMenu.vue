@@ -123,7 +123,7 @@ export default {
   },
   props: {
     headerItems: {
-      type: Array || undefined,
+      type: [Array, undefined],
       default: undefined
     }
   },

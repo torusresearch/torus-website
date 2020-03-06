@@ -41,7 +41,7 @@
                 item-text="name"
                 item-value="value"
                 aria-label="Select Contact Verifier"
-                @change="$refs.addContactForm.validate"
+                @change="validateContactForm"
               ></v-select>
             </v-flex>
             <v-flex xs12>
@@ -141,6 +141,9 @@ export default {
     },
     toAddressRule(value) {
       return validateVerifierId(this.selectedVerifier, value)
+    },
+    validateContactForm() {
+      if (this.$refs.addContactForm) this.$refs.addContactForm.validate()
     }
   }
 }
