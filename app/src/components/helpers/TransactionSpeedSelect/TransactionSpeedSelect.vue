@@ -1,6 +1,6 @@
 <template>
-  <v-flex xs12 sm6 mb-3>
-    <v-layout px-4>
+  <v-flex xs12 mb-3>
+    <v-layout>
       <v-flex class="subtitle-2">
         <span>
           {{ t('walletTransfer.selectSpeed') }}
@@ -16,8 +16,8 @@
         />
       </v-flex>
     </v-layout>
-    <v-layout v-if="!isAdvanceOption" px-4 mx-n1 xs12>
-      <v-flex xs6 px-1 mb-1>
+    <v-layout v-if="!isAdvanceOption" px-4 mx-n2 xs12>
+      <v-flex xs6 px-2 mb-1>
         <v-btn
           id="average-speed-btn"
           block
@@ -31,7 +31,7 @@
           <span class="font-weight-light body-2">{{ getGasDisplayString(averageGasPrice) }}</span>
         </v-btn>
       </v-flex>
-      <v-flex xs6 px-1 mb-1>
+      <v-flex xs6 px-2 mb-1>
         <v-btn
           id="fastest-speed-btn"
           block
