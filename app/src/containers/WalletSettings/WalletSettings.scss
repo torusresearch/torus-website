@@ -1,5 +1,21 @@
+
+@import '../../scss/elevation-one.mixin';
+
 .wallet-settings {
-  .theme--dark .v-expansion-panel {
-    background-color: var(--v-background-base);
+  // .theme--dark .v-expansion-panel {
+  //   background-color: var(--v-background-base);
+  // }
+
+  .v-expansion-panel {
+    &::before {
+      @include elevationOne()
+    }
+  }
+
+  .v-expansion-panels .v-expansion-panel-header {
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.03) !important;
   }
 }

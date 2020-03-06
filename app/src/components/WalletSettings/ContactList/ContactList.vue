@@ -1,20 +1,22 @@
 <template>
-  <div class="contact-list-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'py-0 px-12'">
+  <div class="contact-list-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'py-5 px-0'">
     <v-layout wrap>
-      <v-flex xs12 md6 px-1 mb-1>
+      <v-flex xs12 px-1 mb-1>
         <div class="body-2">{{ t('walletSettings.listContacts') }}</div>
-        <v-card class="card-shadow mt-2">
-          <v-list dense flat class="pa-0 contact-list">
+        <v-card class="elevation-1 mt-2">
+          <v-list dense class="pa-0 contact-list">
             <template v-for="contact in contacts">
-              <v-list-item :key="`contact-${contact.id}`" two-line>
+              <v-list-item :key="`contact-${contact.id}`">
+                <v-list-item-avatar>
+                  <img :src="require(`../../../../public/img/icons/google-grey.svg`)" style="width: 16px" class="ma-1" />
+                </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title class="font-weight-regular caption">
-                    <span>{{ contact.name }}</span>
+                    <!-- <span class="text-capitalize">{{ contact.verifier === ETH ? '' : `${contact.verifier}: ` }}</span> -->
+                    <span class="torus_black--text">{{ contact.name }}</span>
+                    -
+                    <span class="label">{{ contact.contact }}</span>
                   </v-list-item-title>
-                  <v-list-item-subtitle class="font-weight-regular caption text_2--text">
-                    <span class="text-capitalize">{{ contact.verifier === ETH ? '' : `${contact.verifier}: ` }}</span>
-                    <span>{{ contact.contact }}</span>
-                  </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
                   <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete ${contact.name}`" @click="deleteContact(contact.id)">
@@ -28,9 +30,19 @@
 
         <div class="body-2 mt-4">{{ t('walletSettings.addNewContact') }}</div>
 
-        <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation @submit.prevent="addContact">
-          <v-layout wrap class="mt-2">
-            <v-flex xs12 sm8>
+        <v-form ref="addContactForm" v-model="contactFormValid" @submit.prevent="addContact" lazy-validation>
+          <v-layout wrap class="mt-2 mx-n1">
+            <v-flex xs12 sm7 px-1>
+              <v-text-field
+                id="contact-name"
+                v-model="newContactName"
+                :placeholder="t('walletSettings.enterContact')"
+                :rules="[rules.required]"
+                outlined
+                aria-label="Contact Name"
+              ></v-text-field>
+            </v-flex>
+            <v-flex xs12 sm5 px-1>
               <v-select
                 id="select-verifier"
                 v-model="selectedVerifier"
@@ -44,16 +56,8 @@
                 @change="validateContactForm"
               ></v-select>
             </v-flex>
-            <v-flex xs12>
-              <v-text-field
-                id="contact-name"
-                v-model="newContactName"
-                :placeholder="t('walletSettings.enterContact')"
-                :rules="[rules.required]"
-                outlined
-                aria-label="Contact Name"
-              ></v-text-field>
-            </v-flex>
+          </v-layout>
+          <v-layout wrap>
             <v-flex xs12>
               <v-text-field
                 id="contact-value"
@@ -66,8 +70,9 @@
             </v-flex>
 
             <v-layout wrap>
-              <v-flex xs12 sm12 md6 :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'pl-2'">
-                <v-btn id="contact-submit-btn" block type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">
+              <v-spacer></v-spacer>
+              <v-flex xs4 :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : ''">
+                <v-btn id="contact-submit-btn" large block type="submit" color="primary" depressed class="py-1" :disabled="!contactFormValid">
                   {{ t('walletSettings.addContact') }}
                 </v-btn>
               </v-flex>

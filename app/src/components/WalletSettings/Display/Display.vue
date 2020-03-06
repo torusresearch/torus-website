@@ -1,8 +1,8 @@
 <template>
-  <div class="select-theme-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
+  <div class="select-theme-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'py-5 px-0'">
     <div class="body-2 text_1--text mb-1 px-1">{{ t('walletSettings.selectTheme') }}</div>
     <v-layout wrap>
-      <v-flex xs12 md6 px-1 mb-1>
+      <v-flex xs12 px-1 mb-1>
         <v-menu class="" transition="slide-y-transition" bottom>
           <template v-slot:activator="{ on }">
             <v-chip class="select-theme" :style="themeOptionStyle(selectedTheme)" label outlined large v-on="on">
@@ -25,16 +25,18 @@
           </v-list>
         </v-menu>
       </v-flex>
+      <v-layout class="mt-6" wrap>
+        <v-spacer></v-spacer>
+        <v-flex xs4 class="text-right">
+          <v-btn color="primary" block depressed class="px-12 py-1" @click="saveTheme">{{ t('walletSettings.save') }}</v-btn>
+        </v-flex>
+      </v-layout>
     </v-layout>
-    <v-layout class="mt-4">
-      <v-flex xs12 md6>
-        <v-layout wrap>
-          <v-flex xs12 sm4 :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-2'">
-            <v-btn color="primary" block depressed class="px-12 py-1" @click="saveTheme">{{ t('walletSettings.save') }}</v-btn>
-          </v-flex>
-        </v-layout>
+    <!-- <v-layout class="mt-4">
+      <v-spacer></v-spacer>
+      <v-flex xs12>
       </v-flex>
-    </v-layout>
+    </v-layout> -->
   </div>
 </template>
 
