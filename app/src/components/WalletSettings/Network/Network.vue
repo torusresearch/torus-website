@@ -1,9 +1,9 @@
 <template>
-  <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
+  <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-5 px-4'">
     <v-form ref="networkForm" v-model="formValid" lazy-validation @submit.prevent="">
-      <span class="subtitle-2">{{ t('walletSettings.selectNetwork') }}</span>
+      <span class="body-2">{{ t('walletSettings.selectNetwork') }}</span>
       <v-layout wrap>
-        <v-flex xs12 md6>
+        <v-flex xs12>
           <v-select
             id="select-network"
             v-model="selectedNetwork"
@@ -21,7 +21,7 @@
       </v-layout>
 
       <template v-if="isRPCSelected">
-        <v-flex xs12 md6>
+        <v-flex xs12>
           <v-text-field
             v-model="rpc.networkName"
             :placeholder="t('walletSettings.enterNetworkName')"
@@ -30,15 +30,15 @@
           ></v-text-field>
         </v-flex>
 
-        <v-flex xs12 md6>
+        <v-flex xs12>
           <v-text-field v-model="rpc.host" :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined></v-text-field>
         </v-flex>
 
-        <v-flex xs12 md6>
+        <v-flex xs12>
           <v-text-field v-model="rpc.chainId" :placeholder="t('walletSettings.enterChainId')" outlined></v-text-field>
         </v-flex>
 
-        <v-flex xs12 sm4 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
+        <v-flex xs12 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
           <v-tooltip bottom :disabled="formValid">
             <template v-slot:activator="{ on }">
               <span v-on="on">
