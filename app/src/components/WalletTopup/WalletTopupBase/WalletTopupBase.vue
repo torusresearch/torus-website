@@ -143,12 +143,12 @@ export default {
       default: ''
     },
     cryptoCurrencyValue: {
-      type: String,
-      default: '0'
+      type: [Number, String],
+      default: 0
     },
     currencyRate: {
-      type: String,
-      default: '0'
+      type: [Number, String],
+      default: 0
     }
   },
   data() {

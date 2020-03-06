@@ -122,7 +122,7 @@ export default {
       form.target = 'form-target'
       // eslint-disable-next-line no-restricted-syntax
       for (const key in params) {
-        if (params.prototype.hasOwnProperty.call(key)) {
+        if (Object.prototype.hasOwnProperty.call(params, key)) {
           const hiddenField = document.createElement('input')
           hiddenField.type = 'hidden'
           hiddenField.name = key
