@@ -73,7 +73,7 @@ class RecentBlocksController {
     const newBlock = await this.getBlockByNumber(newBlockNumber)
     if (!newBlock) return
 
-    const block = RecentBlocksController.mapTransactionsToPrices(newBlock)
+    const block = this.mapTransactionsToPrices(newBlock)
 
     const state = this.store.getState()
     state.recentBlocks.push(block)
@@ -95,7 +95,7 @@ class RecentBlocksController {
    *
    */
   backfillBlock(newBlock) {
-    const block = RecentBlocksController.mapTransactionsToPrices(newBlock)
+    const block = this.mapTransactionsToPrices(newBlock)
 
     const state = this.store.getState()
 
@@ -114,7 +114,7 @@ class RecentBlocksController {
    * @returns {object} The modified block.
    *
    */
-  static mapTransactionsToPrices(newBlock) {
+  mapTransactionsToPrices(newBlock) {
     const block = {
       ...newBlock,
       gasPrices: newBlock.transactions.map(tx => tx.gasPrice)

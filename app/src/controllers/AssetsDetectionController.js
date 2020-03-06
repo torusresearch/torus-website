@@ -57,13 +57,13 @@ export default class AssetsDetectionController {
     }, interval)
   }
 
-  static getOwnerCollectiblesApi(address) {
+  getOwnerCollectiblesApi(address) {
     return `https://api.opensea.io/api/v1/assets?owner=${address}&limit=300`
   }
 
   async getOwnerCollectibles() {
     const { selectedAddress } = this
-    const api = AssetsDetectionController.getOwnerCollectiblesApi(selectedAddress)
+    const api = this.getOwnerCollectiblesApi(selectedAddress)
     let response
     try {
       response = await get(`${config.api}/opensea?url=${api}`, {

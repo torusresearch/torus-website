@@ -16,9 +16,9 @@ controllerInjection(VuexStore)
 if (!isMain) {
   // setup handlers for communicationStream
   const passthroughStream = new stream.PassThrough({ objectMode: true })
-  passthroughStream.on('data', () => {
+  passthroughStream.on('data', (...arguments_) => {
     // eslint-disable-next-line no-undef
-    log.info('p data:', arguments)
+    log.info('p data:', arguments_)
   })
 
   // Oauth section

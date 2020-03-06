@@ -159,7 +159,7 @@ export default class MessageManager extends EventEmitter {
    */
   approveMessage(messageParameters) {
     this.setMsgStatusApproved(messageParameters.metamaskId)
-    return MessageManager.prepMsgForSigning(messageParameters)
+    return this.prepMsgForSigning(messageParameters)
   }
 
   /**
@@ -194,7 +194,7 @@ export default class MessageManager extends EventEmitter {
    * @returns {Promise<object>} Promises the msgParams with the metamaskId property removed
    *
    */
-  static prepMsgForSigning(messageParameters) {
+  prepMsgForSigning(messageParameters) {
     delete messageParameters.metamaskId
     return Promise.resolve(messageParameters)
   }

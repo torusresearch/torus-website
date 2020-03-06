@@ -36,11 +36,11 @@ export default class AssetController {
     this.jwtToken = jwtToken
   }
 
-  static getCollectibleApi(contractAddress, tokenId) {
+  getCollectibleApi(contractAddress, tokenId) {
     return `https://api.opensea.io/api/v1/asset/${contractAddress}/${tokenId}`
   }
 
-  static getCollectibleContractInformationApi(contractAddress) {
+  getCollectibleContractInformationApi(contractAddress) {
     return `https://api.opensea.io/api/v1/asset_contract/${contractAddress}`
   }
 
@@ -73,7 +73,7 @@ export default class AssetController {
    * @returns - Promise resolving to the current collectible name and image
    */
   async getCollectibleInformationFromApi(contractAddress, tokenId) {
-    const tokenURI = AssetController.getCollectibleApi(contractAddress, tokenId)
+    const tokenURI = this.getCollectibleApi(contractAddress, tokenId)
     const collectibleInformation = await get(`${config.api}/opensea?url=${encodeURIComponent(tokenURI)}`, {
       headers: {
         Authorization: `Bearer ${this.jwtToken}`
@@ -135,7 +135,7 @@ export default class AssetController {
    * @returns - Promise resolving to the current collectible name and image
    */
   async getCollectibleContractInformationFromApi(contractAddress) {
-    const api = AssetController.getCollectibleContractInformationApi(contractAddress)
+    const api = this.getCollectibleContractInformationApi(contractAddress)
     /* istanbul ignore if */
 
     const collectibleContractObject = await get(`${config.api}/opensea?url=${encodeURIComponent(api)}`, {

@@ -11,9 +11,7 @@ const noop = () => {}
  *
  */
 export default function nodeify(fn, context) {
-  return () => {
-    // eslint-disable-next-line prefer-rest-params
-    const arguments_ = [].slice.call(arguments)
+  return (...arguments_) => {
     const lastArgument = arguments_[arguments_.length - 1]
     const lastArgumentIsCallback = typeof lastArgument === 'function'
     let callback

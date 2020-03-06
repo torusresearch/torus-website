@@ -127,7 +127,7 @@ class TransactionStateManager extends EventEmitter {
   */
   addTx(txMeta) {
     if (txMeta.txParams) {
-      TransactionStateManager.normalizeAndValidateTxParams(txMeta.txParams)
+      this.normalizeAndValidateTxParams(txMeta.txParams)
     }
     this.once(`${txMeta.id}:signed`, () => {
       this.removeAllListeners(`${txMeta.id}:rejected`)
@@ -185,7 +185,7 @@ class TransactionStateManager extends EventEmitter {
   updateTx(txMeta, note) {
     // validate txParams
     if (txMeta.txParams) {
-      TransactionStateManager.normalizeAndValidateTxParams(txMeta.txParams)
+      this.normalizeAndValidateTxParams(txMeta.txParams)
     }
 
     // create txMeta snapshot for history
@@ -204,12 +204,12 @@ class TransactionStateManager extends EventEmitter {
     this._saveTxList(txList)
   }
 
-  static normalizeAndValidateTxParams(txParameters) {
+  normalizeAndValidateTxParams(txParameters) {
     if (typeof txParameters.data === 'undefined') {
       delete txParameters.data
     }
     const modifiedTxParameters = normalizeTxParameters(txParameters, false)
-    TransactionStateManager.validateTxParams(modifiedTxParameters)
+    this.validateTxParams(modifiedTxParameters)
   }
 
   /**
@@ -228,7 +228,7 @@ class TransactionStateManager extends EventEmitter {
     validates txParams members by type
     @param txParams {object} - txParams to validate
   */
-  static validateTxParams(txParameters) {
+  validateTxParams(txParameters) {
     Object.keys(txParameters).forEach(key => {
       const value = txParameters[key]
       // validate types

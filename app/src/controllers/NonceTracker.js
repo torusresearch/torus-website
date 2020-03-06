@@ -58,7 +58,7 @@ class NonceTracker {
       const highestSuggested = Math.max(nextNetworkNonce, highestLocallyConfirmed)
 
       const pendingTxs = this.getPendingTransactions(address)
-      const localNonceResult = NonceTracker._getHighestContinuousFrom(pendingTxs, highestSuggested) || 0
+      const localNonceResult = this._getHighestContinuousFrom(pendingTxs, highestSuggested) || 0
 
       nonceDetails.params = {
         highestLocallyConfirmed,
@@ -115,11 +115,11 @@ class NonceTracker {
 
   _getHighestLocallyConfirmed(address) {
     const confirmedTransactions = this.getConfirmedTransactions(address)
-    const highest = NonceTracker._getHighestNonce(confirmedTransactions)
+    const highest = this._getHighestNonce(confirmedTransactions)
     return Number.isInteger(highest) ? highest + 1 : 0
   }
 
-  static _getHighestNonce(txList) {
+  _getHighestNonce(txList) {
     const nonces = txList.map(txMeta => {
       const { nonce } = txMeta.txParams
       assert(typeof nonce, 'string', 'nonces should be hex strings')
@@ -140,7 +140,7 @@ class NonceTracker {
     @param startPoint {number} - the highest known locally confirmed nonce
     @returns {highestContinuousFrom}
   */
-  static _getHighestContinuousFrom(txList, startPoint) {
+  _getHighestContinuousFrom(txList, startPoint) {
     const nonces = txList.map(txMeta => {
       const { nonce } = txMeta.txParams
       assert(typeof nonce, 'string', 'nonces should be hex strings')

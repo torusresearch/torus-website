@@ -21,7 +21,7 @@ export default class TorusKeyring extends EventEmitter {
   serialize() {
     return new Promise((resolve, reject) => {
       try {
-        const keys = this.wallets.map(TorusKeyring.generatePrivKey)
+        const keys = this.wallets.map(this.generatePrivKey)
         resolve(keys)
       } catch (error) {
         reject(error)
@@ -29,11 +29,11 @@ export default class TorusKeyring extends EventEmitter {
     })
   }
 
-  static generatePrivKey(wallet) {
+  generatePrivKey(wallet) {
     return wallet.getPrivateKey().toString('hex')
   }
 
-  static generateWallet(privateKey) {
+  generateWallet(privateKey) {
     const stripped = ethUtil.stripHexPrefix(privateKey)
     const buffer = Buffer.from(stripped, 'hex')
     const wallet = Wallet.fromPrivateKey(buffer)
@@ -43,7 +43,7 @@ export default class TorusKeyring extends EventEmitter {
   deserialize(privateKeys = []) {
     return new Promise((resolve, reject) => {
       try {
-        this.wallets = privateKeys.map(TorusKeyring.generateWallet)
+        this.wallets = privateKeys.map(this.generateWallet)
         resolve()
       } catch (error) {
         reject(error)
@@ -55,10 +55,10 @@ export default class TorusKeyring extends EventEmitter {
     return new Promise((resolve, reject) => {
       try {
         for (let index = 0; index < this.wallets.length; index += 1) {
-          const element = TorusKeyring.generatePrivKey(this.wallets[index])
+          const element = this.generatePrivKey(this.wallets[index])
           if (element === privKey) reject(new Error('Already added'))
         }
-        this.wallets.push(TorusKeyring.generateWallet(privKey))
+        this.wallets.push(this.generateWallet(privKey))
         resolve()
       } catch (error) {
         reject(error)

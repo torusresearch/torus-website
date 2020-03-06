@@ -1,9 +1,8 @@
-const { Duplex } = require('readable-stream')
-const { PassThrough } = require('readable-stream')
 // var Transform = require('readable-stream').Transform
-const log = require('loglevel')
+import log from 'loglevel'
+import { Duplex, PassThrough } from 'readable-stream'
 
-module.exports = (...arguments_) => {
+export default (...arguments_) => {
   let sources = []
   const routerMapping = {}
   const output = new PassThrough({
@@ -26,7 +25,7 @@ module.exports = (...arguments_) => {
     }
   })
 
-  Array.prototype.slice(...arguments_).forEach(add)
+  arguments_.forEach(add)
 
   return { mergeSteam: output, splitStream: split }
 

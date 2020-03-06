@@ -205,7 +205,7 @@ export default class TypedMessageManager extends EventEmitter {
    */
   approveMessage(messageParameters) {
     this.setMsgStatusApproved(messageParameters.metamaskId)
-    return TypedMessageManager.prepMsgForSigning(messageParameters)
+    return this.prepMsgForSigning(messageParameters)
   }
 
   /**
@@ -240,7 +240,7 @@ export default class TypedMessageManager extends EventEmitter {
    * @returns {Promise<object>} Promises the msgParams with the metamaskId property removed
    *
    */
-  static prepMsgForSigning(messageParameters) {
+  prepMsgForSigning(messageParameters) {
     delete messageParameters.metamaskId
     delete messageParameters.version
     return Promise.resolve(messageParameters)

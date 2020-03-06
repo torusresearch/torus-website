@@ -117,7 +117,7 @@ export default class PersonalMessageManager extends EventEmitter {
     log.debug(`PersonalMessageManager addUnapprovedMessage: ${JSON.stringify(messageParameters)}`)
     // add origin from request
     if (request) messageParameters.origin = request.origin
-    messageParameters.data = PersonalMessageManager.normalizeMsgData(messageParameters.data)
+    messageParameters.data = this.normalizeMsgData(messageParameters.data)
     // create txData obj with parameters and meta data
     const time = new Date().getTime()
     const messageId = createId()
@@ -170,7 +170,7 @@ export default class PersonalMessageManager extends EventEmitter {
    */
   approveMessage(messageParameters) {
     this.setMsgStatusApproved(messageParameters.metamaskId)
-    return PersonalMessageManager.prepMsgForSigning(messageParameters)
+    return this.prepMsgForSigning(messageParameters)
   }
 
   /**
@@ -205,7 +205,7 @@ export default class PersonalMessageManager extends EventEmitter {
    * @returns {Promise<object>} Promises the msgParams with the metamaskId property removed
    *
    */
-  static prepMsgForSigning(messageParameters) {
+  prepMsgForSigning(messageParameters) {
     delete messageParameters.metamaskId
     return Promise.resolve(messageParameters)
   }
@@ -282,7 +282,7 @@ export default class PersonalMessageManager extends EventEmitter {
    * @returns {string} A hex string conversion of the buffer data
    *
    */
-  static normalizeMsgData(data) {
+  normalizeMsgData(data) {
     try {
       const stripped = ethUtil.stripHexPrefix(data)
       if (stripped.match(hexRe)) {
