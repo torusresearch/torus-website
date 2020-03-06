@@ -22,4 +22,4 @@ const getQuote = (parameters = {}, headers) => {
   return undefined
 }
 
-export { getQuote }
+export default getQuote

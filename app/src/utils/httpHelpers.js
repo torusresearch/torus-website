@@ -120,11 +120,13 @@ export const getPastOrders = (parameters = {}, headers) => {
     return get(url, options)
   } catch (error) {
     log.error(error)
+    return undefined
   }
 }
 
-export const promiseRace = (url, options, timeout) =>
-  Promise.race([
+export const promiseRace = (url, options, timeout) => {
+  log.info('promise race', url)
+  return Promise.race([
     get(url, options),
     new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -132,3 +134,4 @@ export const promiseRace = (url, options, timeout) =>
       }, timeout)
     })
   ])
+}

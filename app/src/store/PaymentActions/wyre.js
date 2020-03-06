@@ -2,13 +2,13 @@ import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 
 import config from '../../config'
-import { getQuote } from '../../plugins/wyre'
+import getQuote from '../../plugins/wyre'
 import torus from '../../torus'
 import { WYRE } from '../../utils/enums'
 import PopupHandler from '../../utils/PopupHandler'
 import { broadcastChannelOptions } from '../../utils/utils'
 
-export default {
+const Wyre = {
   fetchWyreOrder({ state, dispatch }, { currentOrder, preopenInstanceId, selectedAddress }) {
     const instanceState = encodeURIComponent(window.btoa(JSON.stringify({ instanceId: torus.instanceId, provider: WYRE })))
     const parameters = {
@@ -63,3 +63,5 @@ export default {
     })
   }
 }
+
+export default Wyre

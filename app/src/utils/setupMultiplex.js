@@ -9,7 +9,7 @@ function setupMultiplex(connectionStream) {
     if (error) log.error(error)
   })
   // bind helper method to get previously created streams
-  mux.getStream = function(name) {
+  mux.getStream = function getStream(name) {
     if (this._substreams[name]) {
       return this._substreams[name]
     }

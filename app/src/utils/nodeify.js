@@ -11,7 +11,7 @@ const noop = () => {}
  *
  */
 export default function nodeify(fn, context) {
-  return function() {
+  return () => {
     // eslint-disable-next-line prefer-rest-params
     const arguments_ = [].slice.call(arguments)
     const lastArgument = arguments_[arguments_.length - 1]

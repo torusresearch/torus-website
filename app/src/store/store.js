@@ -245,8 +245,8 @@ VuexStore.subscribe((mutation, state) => {
         let tokenRate
         let symbol
         let type
-        let type_name
-        let type_image_link
+        let typeName
+        let typeImageLink
         let totalAmount
 
         if (contractParams.erc721) {
@@ -265,8 +265,8 @@ VuexStore.subscribe((mutation, state) => {
 
           symbol = assetName
           type = 'erc721'
-          type_name = contractParams.name
-          type_image_link = contractParams.logo
+          typeName = contractParams.name
+          typeImageLink = contractParams.logo
           totalAmount = fromWei(toBN(txParams.value))
         } else if (contractParams.erc20) {
           // ERC20 transfer
@@ -280,16 +280,16 @@ VuexStore.subscribe((mutation, state) => {
           }
           symbol = contractParams.symbol
           type = 'erc20'
-          type_name = contractParams.name
-          type_image_link = contractParams.logo
+          typeName = contractParams.name
+          typeImageLink = contractParams.logo
           totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
         } else {
           // ETH transfers
           tokenRate = 1
           symbol = 'ETH'
           type = 'eth'
-          type_name = 'eth'
-          type_image_link = 'n/a'
+          typeName = 'eth'
+          typeImageLink = 'n/a'
           totalAmount = fromWei(toBN(txParams.value))
         }
         const txObject = {
@@ -302,8 +302,8 @@ VuexStore.subscribe((mutation, state) => {
           symbol,
           nonce: txParams.nonce,
           type,
-          type_name,
-          type_image_link,
+          type_name: typeName,
+          type_image_link: typeImageLink,
           currency_amount: (getCurrencyMultiplier() * parseFloat(totalAmount) * tokenRate).toString(),
           selected_currency: state.selectedCurrency,
           status: 'submitted',

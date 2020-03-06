@@ -14,6 +14,7 @@ class TorusExtended extends Torus {
   constructor() {
     super()
     this.instanceId = randomId()
+
     this.setupMultiplex = setupMultiplex
   }
 

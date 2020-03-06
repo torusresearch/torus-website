@@ -1,3 +1,6 @@
+/* eslint-disable no-case-declarations */
+/* eslint-disable consistent-return */
+/* eslint-disable unicorn/prevent-abbreviations */
 /* eslint-disable no-unreachable */
 import { ethErrors } from 'eth-json-rpc-errors'
 import createAsyncMiddleware from 'json-rpc-engine/src/createAsyncMiddleware'

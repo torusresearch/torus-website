@@ -3,7 +3,7 @@ const { PassThrough } = require('readable-stream')
 // var Transform = require('readable-stream').Transform
 const log = require('loglevel')
 
-module.exports = () => {
+module.exports = (...arguments_) => {
   let sources = []
   const routerMapping = {}
   const output = new PassThrough({
@@ -21,12 +21,12 @@ module.exports = () => {
     objectMode: true,
     read() {},
     write(object, enc, callback) {
-      callback()
       route(object)
+      callback()
     }
   })
 
-  Array.prototype.slice.call(arguments).forEach(add)
+  Array.prototype.slice(...arguments_).forEach(add)
 
   return { mergeSteam: output, splitStream: split }
 

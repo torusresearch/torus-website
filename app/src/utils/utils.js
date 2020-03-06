@@ -226,7 +226,7 @@ export function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', th
     let amt = amount
     let decimals = decimalCount
     decimals = Math.abs(decimals)
-    decimals = isNaN(decimals) ? 2 : decimals
+    decimals = Number.isNaN(decimals) ? 2 : decimals
 
     const negativeSign = amt < 0 ? '-' : ''
 
@@ -260,7 +260,7 @@ export function getEtherScanHashLink(txHash, network = null) {
   return network === 'mainnet' ? `https://etherscan.io/tx/${txHash}` : `https://${localNetwork}.etherscan.io/tx/${txHash}`
 }
 
-export const statusObj = {
+export const statusObject = {
   SENT_TO_SIMPLEX: 'pending',
   DENIED_SIMPLEX: 'rejected',
   payment_request_submitted: 'processing',
@@ -272,7 +272,7 @@ export const statusObj = {
 }
 
 export function getStatus(status) {
-  return statusObj[status] || 'pending'
+  return statusObject[status] || 'pending'
 }
 
 export async function getEthTxStatus(hash, web3) {
@@ -280,24 +280,7 @@ export async function getEthTxStatus(hash, web3) {
   if (receipt === null) return 'pending'
   if (receipt && receipt.status) return 'confirmed'
   if (receipt && !receipt.status) return 'rejected'
-}
-
-export function extractHostname(url) {
-  let hostname
-  // find & remove protocol (http, ftp, etc.) and get hostname
-  if (!url) return ''
-  if (url.includes('//')) {
-    hostname = url.split('/')[2]
-  } else {
-    hostname = url.split('/')[0]
-  }
-
-  // find & remove port number
-  hostname = hostname.split(':')[0]
-  // find & remove "?"
-  hostname = hostname.split('?')[0]
-
-  return hostname
+  return undefined
 }
 
 export const broadcastChannelOptions = {
@@ -312,7 +295,7 @@ export function validateVerifierId(selectedVerifier, value) {
   if (selectedVerifier === GOOGLE) {
     return (
       // eslint-disable-next-line max-len
-      /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z\-]+\.)+[A-Za-z]{2,}))$/.test(value) ||
+      /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z-]+\.)+[A-Za-z]{2,}))$/.test(value) ||
       'Invalid Email Address'
     )
   }
