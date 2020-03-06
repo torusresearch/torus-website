@@ -3,7 +3,7 @@
     <v-card
       v-for="targetProvider in activeProviders"
       :key="targetProvider.name"
-      class="mb-4 topup-provider card-shadow"
+      class="mb-4 topup-provider elevation-1"
       :class="{ active: innerProvider === targetProvider.name }"
       :data-provider="targetProvider.name"
       @click="innerProvider = targetProvider.name"
