@@ -122,6 +122,7 @@ export default {
     },
     async addContact() {
       if (!this.$refs.addContactForm.validate()) return
+      this.$refs.addContactForm.resetValidation()
       try {
         await this.$store.dispatch('addContact', {
           contact: this.newContact,
@@ -133,7 +134,6 @@ export default {
       } finally {
         this.newContact = ''
         this.newContactName = ''
-        this.$refs.addContactForm.resetValidation()
       }
     },
     deleteContact(contactId) {
