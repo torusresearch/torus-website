@@ -3,7 +3,7 @@ import log from 'loglevel'
 
 import config from '../config'
 import PopupHandler from './PopupHandler'
-import { broadcastChannelOptions, getIFrameOriginObj as getIFrameOriginObject } from './utils'
+import { broadcastChannelOptions, getIFrameOriginObject } from './utils'
 
 const { baseRoute } = config
 

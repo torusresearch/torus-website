@@ -446,20 +446,20 @@ export function selectChainId(network, provider) {
   return standardNetworkId[network] || `0x${parseInt(chainId, 10).toString(16)}`
 }
 
-export const isMain = location === parent.location && location.origin === config.baseUrl
+export const isMain = window.location === window.parent.location && window.location.origin === config.baseUrl
 
 export const getIFrameOrigin = () => {
   const originHref = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
   return originHref
 }
 
-export const getIFrameOriginObj = () => {
+export const getIFrameOriginObject = () => {
   try {
     const url = new URL(getIFrameOrigin())
     return { href: url.href, hostname: url.hostname }
   } catch (error) {
     log.error('invalid url')
-    return { href: location.href, hostname: location.hostname }
+    return { href: window.location.href, hostname: window.location.hostname }
   }
 }
 

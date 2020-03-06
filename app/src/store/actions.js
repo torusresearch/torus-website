@@ -18,7 +18,7 @@ import {
 } from '../utils/enums'
 import { get, post, remove } from '../utils/httpHelpers'
 import PopupHandler from '../utils/PopupHandler'
-import { broadcastChannelOptions, fakeStream, getIFrameOriginObj as getIFrameOriginObject } from '../utils/utils'
+import { broadcastChannelOptions, fakeStream, getIFrameOriginObject } from '../utils/utils'
 import {
   accountTrackerHandler,
   assetControllerHandler,
