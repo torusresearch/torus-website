@@ -150,6 +150,8 @@
 //   overflow: hidden;
 // }
 
+@import './scss/elevation-one.mixin';
+
 
 .torus-app.v-application {
   /* Header 1 48px*/
@@ -195,7 +197,15 @@
     letter-spacing: 0;
   }
 
-  /* Header 6 16px*/
+  .label {
+    font-size: 0.75rem;
+    line-height: 0.875rem;
+    letter-spacing: 0;
+    font-weight: normal;
+    color: var(--v-font_1-base);;
+  }
+
+  /* Header 6 12px*/
   .description {
     font-size: 0.75rem;
     line-height: 0.875rem;
@@ -212,10 +222,7 @@
   }
 
   .elevation-1 {
-    background: #FFFFFF;
-    border: 1px solid #F5F5F5;
-    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06) !important;
-    border-radius: 6px;
+    @include elevationOne()
   }
 
   .elevation-2 {
@@ -223,5 +230,11 @@
     border: 1px solid #F5F5F5;
     box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06), 0px 14px 28px rgba(46, 91, 255, 0.12) !important;
     border-radius: 6px;
+  }
+
+  // FORMS
+  
+  .v-input__slot {
+    margin-bottom: 2px;
   }
 }
