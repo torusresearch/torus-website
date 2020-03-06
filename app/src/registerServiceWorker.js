@@ -46,7 +46,8 @@ if (
     navigator.serviceWorker
       .getRegistration()
       .then(
-        reg => new Promise((resolve, reject) => {
+        reg =>
+          new Promise((resolve, reject) => {
             const response = {
               err: null,
               sw: null
