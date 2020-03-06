@@ -100,17 +100,18 @@ class PreferencesController {
         getPastOrders({}, this.headers.headers)
       ])
       if (user && user.data) {
-        const { transactions, default_currency, contacts, theme, locale, verifier, verifier_id, permissions } = user.data || {}
+        const { transactions, default_currency: defaultCurrency, contacts, theme, locale, verifier, verifier_id: verifierID, permissions } =
+          user.data || {}
         this.store.updateState({
           contacts,
           pastTransactions: transactions,
           theme,
-          selectedCurrency: default_currency,
+          selectedCurrency: defaultCurrency,
           locale: locale || LOCALE_EN,
           paymentTx: paymentTx.data,
           permissions
         })
-        if (!verifier || !verifier_id) this.setVerifier(verifier, verifier_id)
+        if (!verifier || !verifierID) this.setVerifier(verifier, verifierID)
         if (callback) return callback(user)
         // this.permissionsController._initializePermissions(permissions)
       }

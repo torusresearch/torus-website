@@ -117,8 +117,8 @@ export default class AssetsDetectionController {
     this.assetController.setSelectedAddress(selectedAddress)
     const apiCollectibles = await this.getOwnerCollectibles()
     for (const {
-      token_id,
-      image_url,
+      token_id: tokenID,
+      image_url: imageURL,
       name,
       description,
       asset_contract: {
@@ -133,10 +133,10 @@ export default class AssetsDetectionController {
       // eslint-disable-next-line no-await-in-loop
       await this.assetController.addCollectible(
         contractAddress,
-        Number(token_id),
+        Number(tokenID),
         {
           description,
-          image: image_url || contractImage.replace('=s60', '=s240'),
+          image: imageURL || contractImage.replace('=s60', '=s240'),
           name,
           contractAddress,
           contractName,

@@ -80,8 +80,8 @@ export default class AssetController {
       }
     })
 
-    const { name, description, image_original_url } = collectibleInformation.data
-    return { image: image_original_url, name, description }
+    const { name, description, image_original_url: image } = collectibleInformation.data
+    return { image, name, description }
   }
 
   /**
@@ -144,8 +144,8 @@ export default class AssetController {
       }
     })
 
-    const { name, symbol, image_url, description, total_supply } = collectibleContractObject.data
-    return { name, symbol, image_url, description, total_supply }
+    const { name, symbol, image_url: imageURL, description, total_supply: totalSupply } = collectibleContractObject.data
+    return { name, symbol, image_url: imageURL, description, total_supply: totalSupply }
   }
 
   /**
@@ -300,19 +300,19 @@ export default class AssetController {
     } else {
       contractInformation = await this.getCollectibleContractInformation(address)
     }
-    const { name, symbol, image_url, description, total_supply } = contractInformation
+    const { name, symbol, image_url: imageURL, description, total_supply: totalSupply } = contractInformation
     // If being auto-detected opensea information is expected
     // Oherwise at least name and symbol from contract is needed
-    if ((detection && !image_url) || Object.keys(contractInformation).length === 0) {
+    if ((detection && !imageURL) || Object.keys(contractInformation).length === 0) {
       return collectibleContracts
     }
     const newEntry = {
       address,
       description,
-      logo: image_url,
+      logo: imageURL,
       name,
       symbol,
-      totalSupply: total_supply
+      totalSupply
     }
     const newCollectibleContracts = [...collectibleContracts, newEntry]
     const addressCollectibleContracts = allCollectibleContracts[selectedAddress]
