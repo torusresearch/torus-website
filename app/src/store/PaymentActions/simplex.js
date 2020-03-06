@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import randomId from '@chaitanyapotti/random-id'
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'

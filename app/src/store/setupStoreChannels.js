@@ -3,10 +3,15 @@ import log from 'loglevel'
 import pump from 'pump'
 import stream from 'stream'
 
+import { injectStore as onloadInjection } from '../onload'
 import torus from '../torus'
 import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_NEW, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
 import { broadcastChannelOptions, isMain } from '../utils/utils'
+import { injectStore as controllerInjection } from './controllerSubscriptions'
 import VuexStore from './store'
+
+onloadInjection(VuexStore)
+controllerInjection(VuexStore)
 
 if (!isMain) {
   // setup handlers for communicationStream
