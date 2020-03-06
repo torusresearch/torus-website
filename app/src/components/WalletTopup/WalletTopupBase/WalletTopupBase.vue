@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card class="card-shadow pa-6">
+    <v-card class="elevation-1 pa-6">
       <v-layout wrap class="wallet-topup">
         <v-flex xs12>
           <p class="body-2">
