@@ -1,8 +1,9 @@
-var assert = require('assert')
-var sinon = require('sinon')
-var utils = require('../../../src/utils/utils')
+/* eslint-disable */
+const assert = require('assert')
+const sinon = require('sinon')
+const utils = require('../../../src/utils/utils')
 
-describe('util', function() {
+describe('util', () => {
   beforeEach(function() {
     this.sinon = sinon.createSandbox()
   })
@@ -11,7 +12,7 @@ describe('util', function() {
     this.sinon.restore()
   })
 
-  describe('#hexToText', function() {
+  describe('#hexToText', () => {
     const message = 'hello world'
     const hexEquivalent = '0x68656c6c6f20776f726c64'
     it('should decode hex to text properly', () => {
@@ -25,9 +26,9 @@ describe('util', function() {
     })
 
     it('should return the same input if error', () => {
-      const testObj = { a: 'b' }
-      const converted = utils.hexToText(testObj)
-      assert.deepStrictEqual(converted, testObj)
+      const testObject = { a: 'b' }
+      const converted = utils.hexToText(testObject)
+      assert.deepStrictEqual(converted, testObject)
     })
   })
 })

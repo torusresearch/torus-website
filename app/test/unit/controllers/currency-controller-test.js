@@ -1,4 +1,4 @@
-/* eslint-disable max-len */
+/* eslint-disable */
 const assert = require('assert')
 const nock = require('nock')
 const CurrencyController = require('../../../src/controllers/CurrencyController').default

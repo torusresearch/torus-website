@@ -1,11 +1,11 @@
-/* eslint-disable quotes */
+/* eslint-disable */
 const assert = require('assert')
 const { createTestProviderTools } = require('../../../stub/provider')
 const PendingTransactionTracker = require('../../../../src/controllers/PendingTransactionTracker').default
 const MockTxGen = require('../../lib/mock-tx-gen')
 const sinon = require('sinon')
 
-describe('PendingTransactionTracker', function () {
+describe('PendingTransactionTracker', function() {
   let pendingTxTracker
   let txMeta
   let txMetaNoHash
@@ -280,8 +280,7 @@ describe('PendingTransactionTracker', function () {
       pendingTxTracker.approveTransaction = async () => {}
       sinon.spy(pendingTxTracker, 'publishTransaction')
 
-      txMetaToTestExponentialBackoff = { ...txMeta,
-retryCount: 4, firstRetryBlockNumber: mockFirstRetryBlockNumber }
+      txMetaToTestExponentialBackoff = { ...txMeta, retryCount: 4, firstRetryBlockNumber: mockFirstRetryBlockNumber }
     })
 
     afterEach(() => {
@@ -417,7 +416,8 @@ retryCount: 4, firstRetryBlockNumber: mockFirstRetryBlockNumber }
         }
       ]
       pendingTxTracker.getCompletedTransactions = address => {
-        if (!address) throw new Error('unless behavior has changed #_checkIfNonceIsTaken needs a filtered list of transactions to see if the nonce is taken')
+        if (!address)
+          throw new Error('unless behavior has changed #_checkIfNonceIsTaken needs a filtered list of transactions to see if the nonce is taken')
         return confirmedTxList
       }
     })

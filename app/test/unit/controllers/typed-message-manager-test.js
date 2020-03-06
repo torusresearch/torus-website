@@ -1,86 +1,87 @@
+/* eslint-disable */
 const assert = require('assert')
 
 const TypedMessageManager = require('../../../src/controllers/TypedMessageManager').default
 const NetworkController = require('../../../src/controllers/NetworkController').default
 
-describe('Personal Message Manager', function() {
+describe('Personal Message Manager', () => {
   let messageManager
   let networkController
 
-  beforeEach(function() {
+  beforeEach(() => {
     networkController = new NetworkController()
     messageManager = new TypedMessageManager(networkController)
   })
 
-  describe('#getUnapprovedMsgCount', function() {
-    it('should be empty if no unapproved msgs', function() {
-      var result = messageManager.unapprovedTypedMessagesCount
+  describe('#getUnapprovedMsgCount', () => {
+    it('should be empty if no unapproved msgs', () => {
+      const result = messageManager.unapprovedTypedMessagesCount
       assert.strictEqual(result, 0)
     })
 
-    it('should return number of unapproved msgs', function() {
+    it('should return number of unapproved msgs', () => {
       messageManager.addUnapprovedMessage({}, {}, 1)
-      var result = messageManager.unapprovedTypedMessagesCount
+      const result = messageManager.unapprovedTypedMessagesCount
       assert.strictEqual(result, 1)
     })
   })
 
-  describe('#getMsgList', function() {
-    it('when new should return empty array', function() {
-      var result = messageManager.messages
+  describe('#getMsgList', () => {
+    it('when new should return empty array', () => {
+      const result = messageManager.messages
       assert.ok(Array.isArray(result))
       assert.strictEqual(result.length, 0)
     })
-    it('should also return transactions from local storage if any', function() {})
+    it('should also return transactions from local storage if any', () => {})
   })
 
-  describe('#addMsg', function() {
-    it('adds a Msg returned in getMsgList', function() {
-      var Msg = { id: 1, status: 'approved', metamaskNetworkId: 'unit test' }
-      messageManager.addMsg(Msg)
-      var result = messageManager.messages
+  describe('#addMsg', () => {
+    it('adds a Msg returned in getMsgList', () => {
+      const Message = { id: 1, status: 'approved', metamaskNetworkId: 'unit test' }
+      messageManager.addMsg(Message)
+      const result = messageManager.messages
       assert.ok(Array.isArray(result))
       assert.strictEqual(result.length, 1)
       assert.strictEqual(result[0].id, 1)
     })
   })
 
-  describe('#setMsgStatusApproved', function() {
-    it('sets the Msg status to approved', function() {
-      var Msg = { id: 1, status: 'unapproved', metamaskNetworkId: 'unit test' }
-      messageManager.addMsg(Msg)
+  describe('#setMsgStatusApproved', () => {
+    it('sets the Msg status to approved', () => {
+      const Message = { id: 1, status: 'unapproved', metamaskNetworkId: 'unit test' }
+      messageManager.addMsg(Message)
       messageManager.setMsgStatusApproved(1)
-      var result = messageManager.messages
+      const result = messageManager.messages
       assert.ok(Array.isArray(result))
       assert.strictEqual(result.length, 1)
       assert.strictEqual(result[0].status, 'approved')
     })
   })
 
-  describe('#rejectMsg', function() {
-    it('sets the Msg status to rejected', function() {
-      var Msg = { id: 1, status: 'unapproved', metamaskNetworkId: 'unit test' }
-      messageManager.addMsg(Msg)
+  describe('#rejectMsg', () => {
+    it('sets the Msg status to rejected', () => {
+      const Message = { id: 1, status: 'unapproved', metamaskNetworkId: 'unit test' }
+      messageManager.addMsg(Message)
       messageManager.rejectMsg(1)
-      var result = messageManager.messages
+      const result = messageManager.messages
       assert.ok(Array.isArray(result))
       assert.strictEqual(result.length, 1)
       assert.strictEqual(result[0].status, 'rejected')
     })
   })
 
-  describe('#_updateMsg', function() {
-    it('replaces the Msg with the same id', function() {
+  describe('#_updateMsg', () => {
+    it('replaces the Msg with the same id', () => {
       messageManager.addMsg({ id: '1', status: 'unapproved', metamaskNetworkId: 'unit test' })
       messageManager.addMsg({ id: '2', status: 'approved', metamaskNetworkId: 'unit test' })
       messageManager._updateMsg({ id: '1', status: 'blah', hash: 'foo', metamaskNetworkId: 'unit test' })
-      var result = messageManager.getMsg('1')
+      const result = messageManager.getMsg('1')
       assert.strictEqual(result.hash, 'foo')
     })
   })
 
-  describe('#getUnapprovedMsgs', function() {
-    it('returns unapproved Msgs in a hash', function() {
+  describe('#getUnapprovedMsgs', () => {
+    it('returns unapproved Msgs in a hash', () => {
       messageManager.addMsg({ id: '1', status: 'unapproved', metamaskNetworkId: 'unit test' })
       messageManager.addMsg({ id: '2', status: 'approved', metamaskNetworkId: 'unit test' })
       const result = messageManager.getUnapprovedMsgs()
@@ -90,8 +91,8 @@ describe('Personal Message Manager', function() {
     })
   })
 
-  describe('#getMsg', function() {
-    it('returns a Msg with the requested id', function() {
+  describe('#getMsg', () => {
+    it('returns a Msg with the requested id', () => {
       messageManager.addMsg({ id: '1', status: 'unapproved', metamaskNetworkId: 'unit test' })
       messageManager.addMsg({ id: '2', status: 'approved', metamaskNetworkId: 'unit test' })
       assert.strictEqual(messageManager.getMsg('1').status, 'unapproved')

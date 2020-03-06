@@ -1,4 +1,6 @@
-const BN = require('ethereumjs-util').BN
+/* eslint-disable */
+const { BN } = require('ethereumjs-util')
+
 const template = {
   status: 'submitted',
   history: [{}],
@@ -15,8 +17,8 @@ class TxGenerator {
     this.txs = []
   }
 
-  generate(tx = {}, opts = {}) {
-    const { count, fromNonce } = opts
+  generate(tx = {}, options = {}) {
+    const { count, fromNonce } = options
     let nonce = fromNonce || this.txs.length
     const txs = []
     for (let i = 0; i < count; i++) {
@@ -34,7 +36,7 @@ class TxGenerator {
 }
 
 function hexify(number) {
-  return '0x' + new BN(number).toString(16)
+  return `0x${new BN(number).toString(16)}`
 }
 
 module.exports = TxGenerator

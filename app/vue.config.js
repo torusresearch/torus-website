@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const TerserPlugin = require('terser-webpack-plugin')
 const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
 
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
@@ -29,7 +30,6 @@ module.exports = {
 
   configureWebpack: config => {
     if (process.env.NODE_ENV === 'production') {
-      const TerserPlugin = require('terser-webpack-plugin')
       // Get the current options from the Terser Plugin instance that vue-cli-service added:
       const { options } = config.optimization.minimizer[0]
       // Set the options you want to set

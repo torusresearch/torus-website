@@ -1,8 +1,9 @@
+/* eslint-disable */
 const assert = require('assert')
 const txHelper = require('../../../ui/lib/tx-helper')
 
-describe('txHelper', function() {
-  it('always shows the oldest tx first', function() {
+describe('txHelper', () => {
+  it('always shows the oldest tx first', () => {
     const metamaskNetworkId = 1
     const txs = {
       a: { metamaskNetworkId, time: 3 },

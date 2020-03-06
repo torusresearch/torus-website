@@ -1,3 +1,4 @@
+/* eslint-disable */
 const assert = require('assert')
 const ethUtil = require('ethereumjs-util')
 const sigUtil = require('eth-sig-util')
@@ -26,14 +27,14 @@ describe('torus-keyring', () => {
 
   describe('Keyring.type', () => {
     it('is a class property that returns the type string.', () => {
-      const type = TorusKeyring.type
+      const { type } = TorusKeyring
       assert.strictEqual(type, TYPE_STR)
     })
   })
 
   describe('#type', () => {
     it('returns the correct value', () => {
-      const type = keyring.type
+      const { type } = keyring
       assert.strictEqual(type, TYPE_STR)
     })
   })
@@ -83,7 +84,7 @@ describe('torus-keyring', () => {
     it('returns a signed tx object', async () => {
       await keyring.deserialize([privateKey])
 
-      const txParams = {
+      const txParameters = {
         from: address,
         nonce: '0x00',
         gasPrice: '0x09184e72a000',
@@ -91,7 +92,7 @@ describe('torus-keyring', () => {
         to: address,
         value: '0x1000'
       }
-      const tx = new EthereumTx(txParams)
+      const tx = new EthereumTx(txParameters)
 
       const signed = await keyring.signTransaction(tx, address)
       assert.ok(signed.raw, 'has a raw signature')
@@ -113,24 +114,20 @@ describe('torus-keyring', () => {
 
     it('reliably can decode messages it signs', async () => {
       const message = 'hello there!'
-      const msgHashHex = ethUtil.bufferToHex(ethUtil.rlphash(message))
+      const messageHashHex = ethUtil.bufferToHex(ethUtil.rlphash(message))
       await keyring.deserialize([privateKey])
       await keyring.addRandomAccounts(9)
       const addresses = await keyring.getAccounts()
-      const signatures = await Promise.all(
-        addresses.map(async address => {
-          return keyring.signMessage(address, msgHashHex)
-        })
-      )
+      const signatures = await Promise.all(addresses.map(async address => keyring.signMessage(address, messageHashHex)))
       signatures.forEach((sgn, index) => {
         const address = addresses[index]
 
         const r = ethUtil.toBuffer(sgn.slice(0, 66))
-        const s = ethUtil.toBuffer('0x' + sgn.slice(66, 130))
-        const v = ethUtil.bufferToInt(ethUtil.toBuffer('0x' + sgn.slice(130, 132)))
-        const m = ethUtil.toBuffer(msgHashHex)
+        const s = ethUtil.toBuffer(`0x${sgn.slice(66, 130)}`)
+        const v = ethUtil.bufferToInt(ethUtil.toBuffer(`0x${sgn.slice(130, 132)}`))
+        const m = ethUtil.toBuffer(messageHashHex)
         const pub = ethUtil.ecrecover(m, v, r, s)
-        const adr = '0x' + ethUtil.pubToAddress(pub).toString('hex')
+        const adr = `0x${ethUtil.pubToAddress(pub).toString('hex')}`
 
         assert.strictEqual(adr, address, 'recovers address from signature correctly')
       })

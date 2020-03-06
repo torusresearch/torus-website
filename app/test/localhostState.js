@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * @typedef {Object} FirstTimeState
  * @property {Object} config Initial configuration parameters

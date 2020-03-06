@@ -299,9 +299,8 @@ export default {
             // Handling cryptokitties
             if (contractParams.isSpecial) {
               ;[amountTo, amountValue] = methodParams || []
-            }
-            // Rest of the 721s
-            else {
+            } else {
+              // Rest of the 721s
               ;[, amountTo, amountValue] = methodParams || []
             }
 

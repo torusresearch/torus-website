@@ -1,4 +1,4 @@
-/* eslint-disable max-len */
+/* eslint-disable */
 const assert = require('assert')
 const sinon = require('sinon')
 const clone = require('clone')
@@ -31,12 +31,12 @@ const testAccount2 = {
   address: '0x43ce12056aa1e8372ab4abf0c0cc658d2d41077f'
 }
 
-describe('MetaMaskController', function() {
+describe('MetaMaskController', () => {
   let metamaskController
   const sandbox = sinon.createSandbox()
   const noop = () => {}
 
-  beforeEach(function() {
+  beforeEach(() => {
     nock('https://api.infura.io')
       .persist()
       .get('/v2/blacklist')
@@ -65,11 +65,11 @@ describe('MetaMaskController', function() {
       showUnapprovedTx: noop,
       showUnconfirmedMessage: noop,
       encryptor: {
-        encrypt: function(password, object) {
+        encrypt(password, object) {
           this.object = object
           return Promise.resolve('mock-encrypted')
         },
-        decrypt: function() {
+        decrypt() {
           return Promise.resolve(this.object)
         }
       },
@@ -83,7 +83,7 @@ describe('MetaMaskController', function() {
     // sandbox.spy(metamaskController.keyringController, 'createNewVaultAndRestore')
   })
 
-  afterEach(function() {
+  afterEach(() => {
     nock.cleanAll()
     sandbox.restore()
   })
@@ -113,21 +113,19 @@ describe('MetaMaskController', function() {
   //   })
   // })
 
-  describe('#getGasPrice', function() {
-    it('gives the 50th percentile lowest accepted gas price from recentBlocksController', async function() {
+  describe('#getGasPrice', () => {
+    it('gives the 50th percentile lowest accepted gas price from recentBlocksController', async () => {
       const realRecentBlocksController = metamaskController.recentBlocksController
       metamaskController.recentBlocksController = {
         store: {
-          getState: () => {
-            return {
-              recentBlocks: [
-                { gasPrices: ['0x3b9aca00', '0x174876e800'] },
-                { gasPrices: ['0x3b9aca00', '0x174876e800'] },
-                { gasPrices: ['0x174876e800', '0x174876e800'] },
-                { gasPrices: ['0x174876e800', '0x174876e800'] }
-              ]
-            }
-          }
+          getState: () => ({
+            recentBlocks: [
+              { gasPrices: ['0x3b9aca00', '0x174876e800'] },
+              { gasPrices: ['0x3b9aca00', '0x174876e800'] },
+              { gasPrices: ['0x174876e800', '0x174876e800'] },
+              { gasPrices: ['0x174876e800', '0x174876e800'] }
+            ]
+          })
         }
       }
 
@@ -142,9 +140,9 @@ describe('MetaMaskController', function() {
     it('should return the balance known by accountTracker', async () => {
       const accounts = {}
       const balance = '0x14ced5122ce0a000'
-      accounts[TEST_ADDRESS] = { balance: balance }
+      accounts[TEST_ADDRESS] = { balance }
 
-      metamaskController.accountTracker.store.putState({ accounts: accounts })
+      metamaskController.accountTracker.store.putState({ accounts })
 
       const gotten = await metamaskController.getBalance(TEST_ADDRESS)
 
@@ -153,17 +151,18 @@ describe('MetaMaskController', function() {
   })
 
   // Not implemented but referenced - ##fail
-  describe('#getApi', function() {
-    let getApi, state
+  describe('#getApi', () => {
+    let getApi
+    let state
 
-    beforeEach(function() {
+    beforeEach(() => {
       getApi = metamaskController.getApi()
     })
 
-    it('getState', function(done) {
-      getApi.getState((err, res) => {
-        if (err) {
-          done(err)
+    it('getState', done => {
+      getApi.getState((error, res) => {
+        if (error) {
+          done(error)
         } else {
           state = res
         }
@@ -360,18 +359,18 @@ describe('MetaMaskController', function() {
   //   })
   // })
 
-  describe('#setCurrentCurrency', function() {
+  describe('#setCurrentCurrency', () => {
     let defaultMetaMaskCurrency
 
-    beforeEach(function() {
+    beforeEach(() => {
       defaultMetaMaskCurrency = metamaskController.currencyController.getCurrentCurrency()
     })
 
-    it('defaults to usd', function() {
+    it('defaults to usd', () => {
       assert.strictEqual(defaultMetaMaskCurrency, 'usd')
     })
 
-    it('sets currency to JPY', function() {
+    it('sets currency to JPY', () => {
       metamaskController.setCurrentCurrency({ selectedCurrency: 'JPY' }, noop)
       assert.strictEqual(metamaskController.currencyController.getCurrentCurrency(), 'jpy')
     })
@@ -396,14 +395,14 @@ describe('MetaMaskController', function() {
   //   })
   // })
 
-  describe('#addNewAccount', function() {
+  describe('#addNewAccount', () => {
     let addNewAccount
 
-    beforeEach(function() {
+    beforeEach(() => {
       addNewAccount = metamaskController.addAccount(testAccount.key, testAccount.address)
     })
 
-    it('errors when an primary keyring is does not exist', async function() {
+    it('errors when an primary keyring is does not exist', async () => {
       await addNewAccount
       const state = metamaskController.accountTracker.store.getState()
       assert.deepStrictEqual(await metamaskController.keyringController.getAccounts(), [testAccount.address])
@@ -545,55 +544,56 @@ describe('MetaMaskController', function() {
   // })
 
   describe('#newUnsignedMessage', () => {
-    let msgParams, metamaskMsgs, messages, msgId
+    let messageParameters
+    let metamaskMsgs
+    let messages
+    let messageId
 
     const address = '0xc42edfcc21ed14dda456aa0756c153f7985d8813'
     const data = '0x43727970746f6b697474696573'
 
     beforeEach(async () => {
       sandbox.stub(metamaskController, 'getBalance')
-      metamaskController.getBalance.callsFake(() => {
-        return Promise.resolve('0x0')
-      })
+      metamaskController.getBalance.callsFake(() => Promise.resolve('0x0'))
 
       // await metamaskController.createNewVaultAndRestore('foobar1337', TEST_SEED_ALT)
       // await metamaskController.createNewVaultAndKeychain('password')
       // log.info(await metamaskController.keyringController.getAccounts())
 
-      msgParams = {
+      messageParameters = {
         from: address,
-        data: data
+        data
       }
 
-      const promise = metamaskController.newUnsignedMessage(msgParams)
+      const promise = metamaskController.newUnsignedMessage(messageParameters)
       // handle the promise so it doesn't throw an unhandledRejection
       promise.then(noop).catch(noop)
 
       metamaskMsgs = metamaskController.messageManager.getUnapprovedMsgs()
       messages = metamaskController.messageManager.messages
-      msgId = Object.keys(metamaskMsgs)[0]
-      messages[0].msgParams.metamaskId = parseInt(msgId)
+      messageId = Object.keys(metamaskMsgs)[0]
+      messages[0].msgParams.metamaskId = parseInt(messageId)
     })
 
-    it('persists address from msg params', function() {
-      assert.strictEqual(metamaskMsgs[msgId].msgParams.from, address)
+    it('persists address from msg params', () => {
+      assert.strictEqual(metamaskMsgs[messageId].msgParams.from, address)
     })
 
-    it('persists data from msg params', function() {
-      assert.strictEqual(metamaskMsgs[msgId].msgParams.data, data)
+    it('persists data from msg params', () => {
+      assert.strictEqual(metamaskMsgs[messageId].msgParams.data, data)
     })
 
-    it('sets the status to unapproved', function() {
-      assert.strictEqual(metamaskMsgs[msgId].status, 'unapproved')
+    it('sets the status to unapproved', () => {
+      assert.strictEqual(metamaskMsgs[messageId].status, 'unapproved')
     })
 
-    it('sets the type to eth_sign', function() {
-      assert.strictEqual(metamaskMsgs[msgId].type, 'eth_sign')
+    it('sets the type to eth_sign', () => {
+      assert.strictEqual(metamaskMsgs[messageId].type, 'eth_sign')
     })
 
-    it('rejects the message', function() {
-      const msgIdInt = parseInt(msgId)
-      metamaskController.cancelMessage(msgIdInt, noop)
+    it('rejects the message', () => {
+      const messageIdInt = parseInt(messageId)
+      metamaskController.cancelMessage(messageIdInt, noop)
       assert.strictEqual(messages[0].status, 'rejected')
     })
 
@@ -606,66 +606,67 @@ describe('MetaMaskController', function() {
     // })
   })
 
-  describe('#newUnsignedPersonalMessage', function() {
+  describe('#newUnsignedPersonalMessage', () => {
     it('errors with no from in msgParams', async () => {
-      const msgParams = {
-        data: data
+      const messageParameters = {
+        data
       }
       try {
-        await metamaskController.newUnsignedPersonalMessage(msgParams)
+        await metamaskController.newUnsignedPersonalMessage(messageParameters)
         assert.fail('should have thrown')
       } catch (error) {
         assert.strictEqual(error.message, 'MetaMask Message Signature: from field is required.')
       }
     })
 
-    let msgParams, metamaskPersonalMsgs, personalMessages, msgId
+    let messageParameters
+    let metamaskPersonalMsgs
+    let personalMessages
+    let messageId
 
     const address = '0xc42edfcc21ed14dda456aa0756c153f7985d8813'
     const data = '0x43727970746f6b697474696573'
 
-    beforeEach(async function() {
+    beforeEach(async () => {
       sandbox.stub(metamaskController, 'getBalance')
-      metamaskController.getBalance.callsFake(() => {
-        return Promise.resolve('0x0')
-      })
+      metamaskController.getBalance.callsFake(() => Promise.resolve('0x0'))
 
       // await metamaskController.createNewVaultAndRestore('foobar1337', TEST_SEED_ALT)
 
-      msgParams = {
+      messageParameters = {
         from: address,
-        data: data
+        data
       }
 
-      const promise = metamaskController.newUnsignedPersonalMessage(msgParams)
+      const promise = metamaskController.newUnsignedPersonalMessage(messageParameters)
       // handle the promise so it doesn't throw an unhandledRejection
       promise.then(noop).catch(noop)
 
       metamaskPersonalMsgs = metamaskController.personalMessageManager.getUnapprovedMsgs()
       personalMessages = metamaskController.personalMessageManager.messages
-      msgId = Object.keys(metamaskPersonalMsgs)[0]
-      personalMessages[0].msgParams.metamaskId = parseInt(msgId)
+      messageId = Object.keys(metamaskPersonalMsgs)[0]
+      personalMessages[0].msgParams.metamaskId = parseInt(messageId)
     })
 
-    it('persists address from msg params', function() {
-      assert.strictEqual(metamaskPersonalMsgs[msgId].msgParams.from, address)
+    it('persists address from msg params', () => {
+      assert.strictEqual(metamaskPersonalMsgs[messageId].msgParams.from, address)
     })
 
-    it('persists data from msg params', function() {
-      assert.strictEqual(metamaskPersonalMsgs[msgId].msgParams.data, data)
+    it('persists data from msg params', () => {
+      assert.strictEqual(metamaskPersonalMsgs[messageId].msgParams.data, data)
     })
 
-    it('sets the status to unapproved', function() {
-      assert.strictEqual(metamaskPersonalMsgs[msgId].status, 'unapproved')
+    it('sets the status to unapproved', () => {
+      assert.strictEqual(metamaskPersonalMsgs[messageId].status, 'unapproved')
     })
 
-    it('sets the type to personal_sign', function() {
-      assert.strictEqual(metamaskPersonalMsgs[msgId].type, 'personal_sign')
+    it('sets the type to personal_sign', () => {
+      assert.strictEqual(metamaskPersonalMsgs[messageId].type, 'personal_sign')
     })
 
-    it('rejects the message', function() {
-      const msgIdInt = parseInt(msgId)
-      metamaskController.cancelPersonalMessage(msgIdInt, noop)
+    it('rejects the message', () => {
+      const messageIdInt = parseInt(messageId)
+      metamaskController.cancelPersonalMessage(messageIdInt, noop)
       assert.strictEqual(personalMessages[0].status, 'rejected')
     })
 
@@ -756,8 +757,8 @@ describe('MetaMaskController', function() {
   //   })
   // })
 
-  describe('#_onKeyringControllerUpdate', function() {
-    it('should update selected address if keyrings are provided', async function() {
+  describe('#_onKeyringControllerUpdate', () => {
+    it('should update selected address if keyrings are provided', async () => {
       // const addAddresses = sinon.fake()
       // const getSelectedAddress = sinon.fake.returns('0x42')
       // const setSelectedAddress = sinon.fake()

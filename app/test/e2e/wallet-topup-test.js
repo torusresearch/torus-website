@@ -1,3 +1,4 @@
+/* eslint-disable */
 const puppeteer = require('puppeteer')
 const assert = require('assert')
 const { WALLET_HEADERS_HOME } = require('../../src/utils/enums')
@@ -9,7 +10,7 @@ describe('Tests Wallet Topup', () => {
   let browser
   let page
 
-  before(async function() {
+  before(async () => {
     browser = await puppeteer.launch({
       headless: config.isHeadless,
       slowMo: config.slowMo,
@@ -27,7 +28,7 @@ describe('Tests Wallet Topup', () => {
     })
   })
 
-  after(async function() {
+  after(async () => {
     await browser.close()
   })
 
@@ -44,15 +45,13 @@ describe('Tests Wallet Topup', () => {
 
   it('Should show container for each active provider', async () => {
     const providers = await page.evaluate(() =>
-      Array.from(document.querySelectorAll('.topup-provider'), element => ({
+      [...document.querySelectorAll('.topup-provider')].map(element => ({
         provider: element.dataset.provider,
-        isComingSoon: Object.values(element.classList).indexOf('coming-soon') > -1
+        isComingSoon: Object.values(element.classList).includes('coming-soon')
       }))
     )
 
-    for (let i = 0; i < providers.length; i++) {
-      const provider = providers[i]
-
+    for (const provider of providers) {
       if (!provider.isComingSoon) {
         await click(page, `#${provider.provider}-link`)
         if (provider.provider !== 'crypto') {

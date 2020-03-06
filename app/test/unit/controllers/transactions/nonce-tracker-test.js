@@ -1,14 +1,18 @@
+/* eslint-disable */
 const assert = require('assert')
 const NonceTracker = require('../../../../src/controllers/NonceTracker').default
 const MockTxGen = require('../../lib/mock-tx-gen')
+
 const providerResultStub = {}
 
-describe('Nonce Tracker', function() {
-  let nonceTracker, pendingTxs, confirmedTxs
+describe('Nonce Tracker', () => {
+  let nonceTracker
+  let pendingTxs
+  let confirmedTxs
 
-  describe('#getNonceLock', function() {
-    describe('with 3 confirmed and 1 pending', function() {
-      beforeEach(function() {
+  describe('#getNonceLock', () => {
+    describe('with 3 confirmed and 1 pending', () => {
+      beforeEach(() => {
         const txGen = new MockTxGen()
         confirmedTxs = txGen.generate({ status: 'confirmed' }, { count: 3 })
         pendingTxs = txGen.generate({ status: 'submitted' }, { count: 1 })
@@ -30,8 +34,8 @@ describe('Nonce Tracker', function() {
       })
     })
 
-    describe('sentry issue 476304902', function() {
-      beforeEach(function() {
+    describe('sentry issue 476304902', () => {
+      beforeEach(() => {
         const txGen = new MockTxGen()
         pendingTxs = txGen.generate(
           { status: 'submitted' },
@@ -51,8 +55,8 @@ describe('Nonce Tracker', function() {
       })
     })
 
-    describe('issue 3670', function() {
-      beforeEach(function() {
+    describe('issue 3670', () => {
+      beforeEach(() => {
         const txGen = new MockTxGen()
         pendingTxs = txGen.generate(
           { status: 'submitted' },
@@ -72,8 +76,8 @@ describe('Nonce Tracker', function() {
       })
     })
 
-    describe('with no previous txs', function() {
-      beforeEach(function() {
+    describe('with no previous txs', () => {
+      beforeEach(() => {
         nonceTracker = generateNonceTrackerWith([], [])
       })
 
@@ -85,8 +89,8 @@ describe('Nonce Tracker', function() {
       })
     })
 
-    describe('with multiple previous txs with same nonce', function() {
-      beforeEach(function() {
+    describe('with multiple previous txs with same nonce', () => {
+      beforeEach(() => {
         const txGen = new MockTxGen()
         confirmedTxs = txGen.generate({ status: 'confirmed' }, { count: 1 })
         pendingTxs = txGen.generate(
@@ -108,8 +112,8 @@ describe('Nonce Tracker', function() {
       })
     })
 
-    describe('when local confirmed count is higher than network nonce', function() {
-      beforeEach(function() {
+    describe('when local confirmed count is higher than network nonce', () => {
+      beforeEach(() => {
         const txGen = new MockTxGen()
         confirmedTxs = txGen.generate({ status: 'confirmed' }, { count: 3 })
         nonceTracker = generateNonceTrackerWith([], confirmedTxs, '0x1')
@@ -123,8 +127,8 @@ describe('Nonce Tracker', function() {
       })
     })
 
-    describe('when local pending count is higher than other metrics', function() {
-      beforeEach(function() {
+    describe('when local pending count is higher than other metrics', () => {
+      beforeEach(() => {
         const txGen = new MockTxGen()
         pendingTxs = txGen.generate({ status: 'submitted' }, { count: 2 })
         nonceTracker = generateNonceTrackerWith(pendingTxs, [])
@@ -138,8 +142,8 @@ describe('Nonce Tracker', function() {
       })
     })
 
-    describe('when provider nonce is higher than other metrics', function() {
-      beforeEach(function() {
+    describe('when provider nonce is higher than other metrics', () => {
+      beforeEach(() => {
         const txGen = new MockTxGen()
         pendingTxs = txGen.generate({ status: 'submitted' }, { count: 2 })
         nonceTracker = generateNonceTrackerWith(pendingTxs, [], '0x05')
@@ -153,8 +157,8 @@ describe('Nonce Tracker', function() {
       })
     })
 
-    describe('when there are some pending nonces below the remote one and some over.', function() {
-      beforeEach(function() {
+    describe('when there are some pending nonces below the remote one and some over.', () => {
+      beforeEach(() => {
         const txGen = new MockTxGen()
         pendingTxs = txGen.generate({ status: 'submitted' }, { count: 5 })
         nonceTracker = generateNonceTrackerWith(pendingTxs, [], '0x03')
@@ -168,8 +172,8 @@ describe('Nonce Tracker', function() {
       })
     })
 
-    describe('when there are pending nonces non sequentially over the network nonce.', function() {
-      beforeEach(function() {
+    describe('when there are pending nonces non sequentially over the network nonce.', () => {
+      beforeEach(() => {
         const txGen = new MockTxGen()
         txGen.generate({ status: 'submitted' }, { count: 5 })
         // 5 over that number
@@ -185,8 +189,8 @@ describe('Nonce Tracker', function() {
       })
     })
 
-    describe('When all three return different values', function() {
-      beforeEach(function() {
+    describe('When all three return different values', () => {
+      beforeEach(() => {
         const txGen = new MockTxGen()
         confirmedTxs = txGen.generate({ status: 'confirmed' }, { count: 10 })
         pendingTxs = txGen.generate(
@@ -208,8 +212,8 @@ describe('Nonce Tracker', function() {
       })
     })
 
-    describe('Faq issue 67', function() {
-      beforeEach(function() {
+    describe('Faq issue 67', () => {
+      beforeEach(() => {
         const txGen = new MockTxGen()
         confirmedTxs = txGen.generate({ status: 'confirmed' }, { count: 64 })
         pendingTxs = txGen.generate(
@@ -237,8 +241,8 @@ function generateNonceTrackerWith(pending, confirmed, providerStub = '0x0') {
   const getConfirmedTransactions = () => confirmed
   providerResultStub.result = providerStub
   const provider = {
-    sendAsync: (_, cb) => {
-      cb(undefined, providerResultStub)
+    sendAsync: (_, callback) => {
+      callback(undefined, providerResultStub)
     }
   }
   const blockTracker = {

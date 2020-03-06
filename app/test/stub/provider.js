@@ -42,10 +42,10 @@ function providerFromEngine(engine) {
   return provider
 }
 
-function createTestProviderTools(opts = {}) {
+function createTestProviderTools(options = {}) {
   const engine = createEngineForTestData()
   // handle provided hooks
-  engine.push(scaffoldMiddleware(opts.scaffold || {}))
+  engine.push(scaffoldMiddleware(options.scaffold || {}))
   // handle block tracker methods
   engine.push(
     providerAsMiddleware(

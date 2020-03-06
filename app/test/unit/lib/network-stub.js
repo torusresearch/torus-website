@@ -1,4 +1,5 @@
-/* eslint-disable max-len */
+/* eslint-disable */
+
 /*
   this file is for all my big stubs because i don't want to
   to mingle with my tests

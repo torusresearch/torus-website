@@ -1,3 +1,4 @@
+/* eslint-disable */
 const puppeteer = require('puppeteer')
 const assert = require('assert')
 
@@ -8,7 +9,7 @@ describe('Tests Account Menu', () => {
   let browser
   let page
 
-  before(async function() {
+  before(async () => {
     browser = await puppeteer.launch({
       headless: config.isHeadless,
       slowMo: config.slowMo,
@@ -26,7 +27,7 @@ describe('Tests Account Menu', () => {
     })
   })
 
-  after(async function() {
+  after(async () => {
     await browser.close()
   })
 

@@ -1,5 +1,7 @@
-import { BrowserRouter } from 'react-router-dom'
+/* eslint-disable */
 import { shape } from 'prop-types'
+import { BrowserRouter } from 'react-router-dom'
+
 const { shallow, mount } = require('enzyme')
 
 module.exports = {

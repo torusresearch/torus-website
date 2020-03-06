@@ -1,16 +1,17 @@
+/* eslint-disable */
 const assert = require('assert')
 const nock = require('nock')
 const NetworkController = require('../../../src/controllers/NetworkController').default
 // const { getNetworkDisplayName } = require('../../../../app/scripts/controllers/network/util')
 
-describe('# Network Controller', function() {
+describe('# Network Controller', () => {
   let networkController
   const noop = () => {}
   const networkControllerProviderConfig = {
     getAccounts: noop
   }
 
-  beforeEach(function() {
+  beforeEach(() => {
     nock('https://rinkeby.infura.io')
       .persist()
       .post('/metamask')
@@ -21,13 +22,13 @@ describe('# Network Controller', function() {
     networkController.initializeProvider(networkControllerProviderConfig)
   })
 
-  afterEach(function() {
+  afterEach(() => {
     nock.cleanAll()
   })
 
-  describe('network', function() {
-    describe('#provider', function() {
-      it('provider should be updatable without reassignment', function() {
+  describe('network', () => {
+    describe('#provider', () => {
+      it('provider should be updatable without reassignment', () => {
         networkController.initializeProvider(networkControllerProviderConfig)
         const providerProxy = networkController.getProviderAndBlockTracker().provider
         assert.strictEqual(providerProxy.test, undefined)
@@ -35,28 +36,28 @@ describe('# Network Controller', function() {
         assert.strictEqual(providerProxy.test, true)
       })
     })
-    describe('#getNetworkState', function() {
-      it('should return loading when new', function() {
+    describe('#getNetworkState', () => {
+      it('should return loading when new', () => {
         const networkState = networkController.getNetworkState()
         assert.strictEqual(networkState, 'loading', 'network is loading')
       })
     })
 
-    describe('#setNetworkState', function() {
-      it('should update the network', function() {
+    describe('#setNetworkState', () => {
+      it('should update the network', () => {
         networkController.setNetworkState(1, 'rpc')
         const networkState = networkController.getNetworkState()
         assert.strictEqual(networkState, 1, 'network is 1')
       })
     })
 
-    describe('#setProviderType', function() {
-      it('should update provider.type', function() {
+    describe('#setProviderType', () => {
+      it('should update provider.type', () => {
         networkController.setProviderType('mainnet')
-        const type = networkController.getProviderConfig().type
+        const { type } = networkController.getProviderConfig()
         assert.strictEqual(type, 'mainnet', 'provider type is updated')
       })
-      it('should set the network to loading', function() {
+      it('should set the network to loading', () => {
         networkController.setProviderType('mainnet')
         const loading = networkController.isNetworkLoading()
         assert.ok(loading, 'network is loading')

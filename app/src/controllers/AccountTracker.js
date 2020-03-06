@@ -237,11 +237,10 @@ export default class AccountTracker {
         const balance = toHex(result[index])
         accounts[address] = { address, balance }
       })
-      this.store.updateState({ accounts })
+      return this.store.updateState({ accounts })
     } catch (error) {
       log.warn('Torus - Account Tracker single call balance fetch failed', error)
       return Promise.all(addresses.map(this._updateAccount.bind(this)))
     }
-    return Promise.reject(new Error('unable to update balances'))
   }
 }
