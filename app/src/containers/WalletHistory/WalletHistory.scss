@@ -31,11 +31,12 @@
 /* NEW UI */
 ::v-deep .nav-selector {
   @include navSelector();
+  border-radius: 3px;
   &.transaction {
-    max-width: 150px;
+    max-width: 190px;
   }
   &.period {
-    max-width: 130px;
+    max-width: 190px;
   }
   .v-icon {
     color: var(--v-text_2-base);

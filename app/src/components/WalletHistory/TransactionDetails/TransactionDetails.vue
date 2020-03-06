@@ -1,5 +1,5 @@
 <template>
-  <v-card color="card-shadow activity mb-4 pa-5" :ripple="false" @click="showDetails = !showDetails">
+  <v-card color="elevation-1 activity mb-4 pa-5" :ripple="false" @click="showDetails = !showDetails">
     <v-layout wrap>
       <v-flex
         :class="$vuetify.breakpoint.xsOnly ? 'xs6 order-2 pt-2' : 'xs2 order-0'"

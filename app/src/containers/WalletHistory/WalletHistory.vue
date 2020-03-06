@@ -1,5 +1,5 @@
 <template>
-  <div class="wallet-activity">
+  <v-container class="wallet-activity">
     <v-layout mt-3 wrap>
       <v-flex xs12 px-4 mb-4>
         <div class="text-black font-weight-bold headline float-left">{{ t('walletActivity.transactionActivities') }}</div>
@@ -7,7 +7,7 @@
           <v-select
             id="transaction-selector"
             v-model="selectedAction"
-            class="pt-0 mt-0 ml-2 subtitle-2 nav-selector transaction"
+            class="pt-0 pl-2 mt-0 ml-2 subtitle-2 nav-selector transaction elevation-1"
             height="25px"
             hide-details
             :menu-props="{ bottom: true, offsetY: true }"
@@ -18,7 +18,7 @@
           <v-select
             id="period-selector"
             v-model="selectedPeriod"
-            class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period"
+            class="pt-0 pl-2 mt-0 ml-2 subtitle-2 nav-selector period elevation-1"
             height="25px"
             hide-details
             :menu-props="{ bottom: true, offsetY: true }"
@@ -37,7 +37,7 @@
         />
       </v-flex>
     </v-layout>
-  </div>
+  </v-container>
 </template>
 
 <script>
