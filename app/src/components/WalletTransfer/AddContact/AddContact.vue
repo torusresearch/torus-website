@@ -77,6 +77,7 @@ export default {
   },
   methods: {
     async addContact() {
+      debugger
       if (!this.$refs.addContactForm.validate()) return
       try {
         await this.$store.dispatch('addContact', {

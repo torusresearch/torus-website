@@ -118,7 +118,7 @@
                   @input="contactChanged"
                 >
                   <template v-slot:append>
-                    <v-btn icon small color="primary" aria-label="QR Capture Button" @click="$refs.captureQr.$el.click">
+                    <v-btn icon small color="primary" aria-label="QR Capture Button" @click="() => $refs && $refs.captureQr.$el.click()">
                       <v-icon small>$vuetify.icons.scan</v-icon>
                     </v-btn>
                   </template>
