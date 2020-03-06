@@ -1,9 +1,6 @@
 .wallet-transfer {
-  ::v-deep .v-messages {
-    text-align: right;
-    &.error--text {
-      text-align: left;
-    }
+  .currency-rate {
+    margin-bottom: 2px;
   }
   .select-coin {
     border-color: var(--v-text_2-base);
@@ -14,11 +11,17 @@
       width: 100%;
     }
   }
-  .recipient-address {
-    ::v-deep .v-input__icon.v-input__icon--clear {
-      .v-icon.v-icon.v-icon--link {
-        height: 16px;
-      }
+  ::v-deep .v-messages {
+    text-align: right;
+    &.error--text {
+      text-align: left;
     }
   }
+  // .recipient-address {
+  //   ::v-deep .v-input__icon.v-input__icon--clear {
+  //     .v-icon.v-icon.v-icon--link {
+  //       height: 16px;
+  //     }
+  //   }
+  // }
 }
