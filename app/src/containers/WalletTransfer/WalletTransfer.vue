@@ -95,7 +95,81 @@
           <v-flex xs12 sm6 px-4>
             <v-layout wrap>
               <v-flex xs12>
-                <span class="subtitle-2">{{ t('walletTransfer.transferMode') }}</span>
+                <span class="body-2">{{ t('walletTransfer.selectItem') }}</span>
+                <div v-if="selectedItemDisplay">
+                  <v-menu transition="slide-y-transition" bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-chip class="select-coin" label outlined large v-on="on">
+                        <img
+                          class="mr-2"
+                          :src="
+                            contractType === CONTRACT_TYPE_ERC721
+                              ? selectedItemDisplay.logo
+                              : require(`../../../public/images/logos/${selectedItemDisplay.logo}`)
+                          "
+                          height="20px"
+                          onerror="if (this.src !== 'eth.svg') this.src = 'images/logos/eth.svg';"
+                          :alt="selectedItemDisplay.name"
+                        />
+                        <span class="select-coin-name">{{ selectedItemDisplay.name }}</span>
+                        <div class="flex-grow-1 text-right pr-2">
+                          <v-icon right>$vuetify.icons.select</v-icon>
+                        </div>
+                      </v-chip>
+                    </template>
+                    <v-list class="select-item-list">
+                      <v-list-item
+                        class="select-coin-eth"
+                        v-for="token in finalBalancesArrayEthOnly"
+                        :key="token.id"
+                        @click="selectedItemChanged(token.tokenAddress)"
+                      >
+                        <v-list-item-icon class="mr-1">
+                          <img
+                            :src="require(`../../../public/images/logos/${token.logo}`)"
+                            height="20px"
+                            onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                            :alt="token.name"
+                          />
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                          <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                      <v-divider class="mx-3"></v-divider>
+                      <v-subheader class="body-2" v-if="finalBalancesArrayTokens.length > 0">
+                        <v-icon small left class="mr-2">$vuetify.icons.token</v-icon>
+                        {{ t('walletTransfer.tokens') }}
+                      </v-subheader>
+                      <v-list-item v-for="token in finalBalancesArrayTokens" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
+                        <v-list-item-icon class="ml-8 mr-1">
+                          <img
+                            :src="require(`../../../public/images/logos/${token.logo}`)"
+                            height="20px"
+                            onerror="if (this.src !== 'eth.svg') this.src = 'images/logos/eth.svg';"
+                            :alt="token.name"
+                          />
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                          <v-list-item-title class="body-2">{{ token.name }} ({{ token.symbol }})</v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                      <v-divider class="mx-3"></v-divider>
+                      <v-subheader class="body-2" v-if="collectibles.length > 0">
+                        <v-icon small left class="mr-2">$vuetify.icons.collectibles</v-icon>
+                        {{ t('walletTransfer.collectibles') }}
+                      </v-subheader>
+                      <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
+                        <v-list-item-icon class="ml-8 mr-1">
+                          <img :src="collectible.logo" height="20px" />
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                          <v-list-item-title class="body-2">{{ collectible.name }}</v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </div>
               </v-flex>
               <v-flex xs12 sm6 class="recipient-address-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-1'">
                 <v-combobox
@@ -109,8 +183,6 @@
                   required
                   :rules="[contactRule, rules.required]"
                   outlined
-                  :error="ensError !== ''"
-                  :error-messages="ensError"
                   item-text="name"
                   item-value="value"
                   aria-label="Recipient Address"
@@ -219,7 +291,7 @@
                   :color="toggle_exclusive ? 'primary' : 'text_2'"
                   @click="changeSelectedToCurrency(1)"
                 >
-                  {{ selectedCurrency }}
+                  {{ t('walletTransfer.transfer') }}
                 </v-btn>
               </template>
             </v-text-field>
@@ -339,7 +411,8 @@ export default {
     QrcodeCapture,
     AddContact,
     ComponentLoader,
-    TransferConfirm
+    TransferConfirm,
+    NetworkDisplay
   },
   data() {
     return {
@@ -479,6 +552,9 @@ export default {
     },
     selectedAddress() {
       return this.$store.state.selectedAddress
+    },
+    storeNetworkType() {
+      return this.$store.state.networkType
     }
   },
   watch: {
