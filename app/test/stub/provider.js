@@ -1,22 +1,13 @@
-const JsonRpcEngine = require('json-rpc-engine')
-const scaffoldMiddleware = require('eth-json-rpc-middleware/scaffold')
-const providerAsMiddleware = require('eth-json-rpc-middleware/providerAsMiddleware')
-const GanacheCore = require('ganache-core')
+import providerAsMiddleware from 'eth-json-rpc-middleware/providerAsMiddleware'
+import scaffoldMiddleware from 'eth-json-rpc-middleware/scaffold'
+import GanacheCore from 'ganache-core'
+import JsonRpcEngine from 'json-rpc-engine'
 
-module.exports = {
-  createEngineForTestData,
-  providerFromEngine,
-  scaffoldMiddleware,
-  createTestProviderTools,
-  getTestSeed,
-  getTestAccounts
-}
-
-function getTestSeed() {
+export function getTestSeed() {
   return 'people carpet cluster attract ankle motor ozone mass dove original primary mask'
 }
 
-function getTestAccounts() {
+export function getTestAccounts() {
   return [
     {
       address: '0x88bb7F89eB5e5b30D3e15a57C68DBe03C6aCCB21',
@@ -33,16 +24,16 @@ function getTestAccounts() {
   ]
 }
 
-function createEngineForTestData() {
+export function createEngineForTestData() {
   return new JsonRpcEngine()
 }
 
-function providerFromEngine(engine) {
+export function providerFromEngine(engine) {
   const provider = { sendAsync: engine.handle.bind(engine) }
   return provider
 }
 
-function createTestProviderTools(options = {}) {
+export function createTestProviderTools(options = {}) {
   const engine = createEngineForTestData()
   // handle provided hooks
   engine.push(scaffoldMiddleware(options.scaffold || {}))

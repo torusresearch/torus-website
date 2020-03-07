@@ -1,8 +1,8 @@
 /* eslint-disable */
-const assert = require('assert')
+import assert from 'assert'
 
-const TypedMessageManager = require('../../../src/controllers/TypedMessageManager').default
-const NetworkController = require('../../../src/controllers/NetworkController').default
+import TypedMessageManager from '../../../src/controllers/TypedMessageManager'
+import NetworkController from '../../../src/controllers/NetworkController'
 
 describe('Personal Message Manager', () => {
   let messageManager

@@ -1,7 +1,8 @@
 /* eslint-disable */
-const assert = require('assert')
-const nock = require('nock')
-const CurrencyController = require('../../../src/controllers/CurrencyController').default
+import assert from 'assert'
+import nock from 'nock'
+
+import CurrencyController from '../../../src/controllers/CurrencyController'
 
 describe('currency-controller', () => {
   let currencyController
@@ -32,7 +33,7 @@ describe('currency-controller', () => {
     })
 
     describe('#updateConversionRate', () => {
-      it('should retrieve an update for ETH to USD and set it in memory', function(done) {
+      it('should retrieve an update for ETH to USD and set it in memory', function finish(done) {
         this.timeout(15000)
         nock('https://api.infura.io')
           .get('/v1/ticker/ethusd')

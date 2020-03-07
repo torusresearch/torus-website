@@ -202,7 +202,7 @@ class PendingTransactionTracker extends EventEmitter {
     @returns {boolean}
   */
 
-  async _checkIftxWasDropped(txMeta, { blockNumber = '' }) {
+  async _checkIftxWasDropped(txMeta, { blockNumber }) {
     const {
       txParams: { nonce, from }
     } = txMeta

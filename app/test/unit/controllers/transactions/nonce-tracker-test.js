@@ -1,18 +1,16 @@
 /* eslint-disable */
-const assert = require('assert')
-const NonceTracker = require('../../../../src/controllers/NonceTracker').default
-const MockTxGen = require('../../lib/mock-tx-gen')
+import assert from 'assert'
+import NonceTracker from '../../../../src/controllers/NonceTracker'
+import MockTxGen from '../../lib/mock-tx-gen'
 
 const providerResultStub = {}
 
-describe('Nonce Tracker', () => {
-  let nonceTracker
-  let pendingTxs
-  let confirmedTxs
+describe('Nonce Tracker', function() {
+  let nonceTracker, pendingTxs, confirmedTxs
 
-  describe('#getNonceLock', () => {
-    describe('with 3 confirmed and 1 pending', () => {
-      beforeEach(() => {
+  describe('#getNonceLock', function() {
+    describe('with 3 confirmed and 1 pending', function() {
+      beforeEach(function() {
         const txGen = new MockTxGen()
         confirmedTxs = txGen.generate({ status: 'confirmed' }, { count: 3 })
         pendingTxs = txGen.generate({ status: 'submitted' }, { count: 1 })
@@ -22,20 +20,20 @@ describe('Nonce Tracker', () => {
       it('should return 4', async function() {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.strictEqual(nonceLock.nextNonce.toString(), '4', `nonce should be 4 got ${nonceLock.nextNonce}`)
+        assert.equal(nonceLock.nextNonce, '4', `nonce should be 4 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
 
       it('should use localNonce if network returns a nonce lower then a confirmed tx in state', async function() {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.strictEqual(nonceLock.nextNonce.toString(), '4', 'nonce should be 4')
+        assert.equal(nonceLock.nextNonce, '4', 'nonce should be 4')
         await nonceLock.releaseLock()
       })
     })
 
-    describe('sentry issue 476304902', () => {
-      beforeEach(() => {
+    describe('sentry issue 476304902', function() {
+      beforeEach(function() {
         const txGen = new MockTxGen()
         pendingTxs = txGen.generate(
           { status: 'submitted' },
@@ -50,13 +48,13 @@ describe('Nonce Tracker', () => {
       it('should return 9', async function() {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.strictEqual(nonceLock.nextNonce.toString(), '32', `nonce should be 32 got ${nonceLock.nextNonce}`)
+        assert.equal(nonceLock.nextNonce, '32', `nonce should be 32 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
 
-    describe('issue 3670', () => {
-      beforeEach(() => {
+    describe('issue 3670', function() {
+      beforeEach(function() {
         const txGen = new MockTxGen()
         pendingTxs = txGen.generate(
           { status: 'submitted' },
@@ -71,26 +69,26 @@ describe('Nonce Tracker', () => {
       it('should return 9', async function() {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.strictEqual(nonceLock.nextNonce.toString(), '9', `nonce should be 9 got ${nonceLock.nextNonce}`)
+        assert.equal(nonceLock.nextNonce, '9', `nonce should be 9 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
 
-    describe('with no previous txs', () => {
-      beforeEach(() => {
+    describe('with no previous txs', function() {
+      beforeEach(function() {
         nonceTracker = generateNonceTrackerWith([], [])
       })
 
       it('should return 0', async function() {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.strictEqual(nonceLock.nextNonce.toString(), '0', `nonce should be 0 returned ${nonceLock.nextNonce}`)
+        assert.equal(nonceLock.nextNonce, '0', `nonce should be 0 returned ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
 
-    describe('with multiple previous txs with same nonce', () => {
-      beforeEach(() => {
+    describe('with multiple previous txs with same nonce', function() {
+      beforeEach(function() {
         const txGen = new MockTxGen()
         confirmedTxs = txGen.generate({ status: 'confirmed' }, { count: 1 })
         pendingTxs = txGen.generate(
@@ -107,13 +105,13 @@ describe('Nonce Tracker', () => {
       it('should return nonce after those', async function() {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.strictEqual(nonceLock.nextNonce.toString(), '2', `nonce should be 2 got ${nonceLock.nextNonce}`)
+        assert.equal(nonceLock.nextNonce, '2', `nonce should be 2 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
 
-    describe('when local confirmed count is higher than network nonce', () => {
-      beforeEach(() => {
+    describe('when local confirmed count is higher than network nonce', function() {
+      beforeEach(function() {
         const txGen = new MockTxGen()
         confirmedTxs = txGen.generate({ status: 'confirmed' }, { count: 3 })
         nonceTracker = generateNonceTrackerWith([], confirmedTxs, '0x1')
@@ -122,13 +120,13 @@ describe('Nonce Tracker', () => {
       it('should return nonce after those', async function() {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.strictEqual(nonceLock.nextNonce.toString(), '3', `nonce should be 3 got ${nonceLock.nextNonce}`)
+        assert.equal(nonceLock.nextNonce, '3', `nonce should be 3 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
 
-    describe('when local pending count is higher than other metrics', () => {
-      beforeEach(() => {
+    describe('when local pending count is higher than other metrics', function() {
+      beforeEach(function() {
         const txGen = new MockTxGen()
         pendingTxs = txGen.generate({ status: 'submitted' }, { count: 2 })
         nonceTracker = generateNonceTrackerWith(pendingTxs, [])
@@ -137,13 +135,13 @@ describe('Nonce Tracker', () => {
       it('should return nonce after those', async function() {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.strictEqual(nonceLock.nextNonce.toString(), '2', `nonce should be 2 got ${nonceLock.nextNonce}`)
+        assert.equal(nonceLock.nextNonce, '2', `nonce should be 2 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
 
-    describe('when provider nonce is higher than other metrics', () => {
-      beforeEach(() => {
+    describe('when provider nonce is higher than other metrics', function() {
+      beforeEach(function() {
         const txGen = new MockTxGen()
         pendingTxs = txGen.generate({ status: 'submitted' }, { count: 2 })
         nonceTracker = generateNonceTrackerWith(pendingTxs, [], '0x05')
@@ -152,13 +150,13 @@ describe('Nonce Tracker', () => {
       it('should return nonce after those', async function() {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.strictEqual(nonceLock.nextNonce.toString(), '5', `nonce should be 5 got ${nonceLock.nextNonce}`)
+        assert.equal(nonceLock.nextNonce, '5', `nonce should be 5 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
 
-    describe('when there are some pending nonces below the remote one and some over.', () => {
-      beforeEach(() => {
+    describe('when there are some pending nonces below the remote one and some over.', function() {
+      beforeEach(function() {
         const txGen = new MockTxGen()
         pendingTxs = txGen.generate({ status: 'submitted' }, { count: 5 })
         nonceTracker = generateNonceTrackerWith(pendingTxs, [], '0x03')
@@ -167,13 +165,13 @@ describe('Nonce Tracker', () => {
       it('should return nonce after those', async function() {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.strictEqual(nonceLock.nextNonce.toString(), '5', `nonce should be 5 got ${nonceLock.nextNonce}`)
+        assert.equal(nonceLock.nextNonce, '5', `nonce should be 5 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
 
-    describe('when there are pending nonces non sequentially over the network nonce.', () => {
-      beforeEach(() => {
+    describe('when there are pending nonces non sequentially over the network nonce.', function() {
+      beforeEach(function() {
         const txGen = new MockTxGen()
         txGen.generate({ status: 'submitted' }, { count: 5 })
         // 5 over that number
@@ -184,13 +182,13 @@ describe('Nonce Tracker', () => {
       it('should return nonce after network nonce', async function() {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.strictEqual(nonceLock.nextNonce.toString(), '0', `nonce should be 0 got ${nonceLock.nextNonce}`)
+        assert.equal(nonceLock.nextNonce, '0', `nonce should be 0 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
 
-    describe('When all three return different values', () => {
-      beforeEach(() => {
+    describe('When all three return different values', function() {
+      beforeEach(function() {
         const txGen = new MockTxGen()
         confirmedTxs = txGen.generate({ status: 'confirmed' }, { count: 10 })
         pendingTxs = txGen.generate(
@@ -207,13 +205,13 @@ describe('Nonce Tracker', () => {
       it('should return nonce after network nonce', async function() {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.strictEqual(nonceLock.nextNonce.toString(), '50', `nonce should be 50 got ${nonceLock.nextNonce}`)
+        assert.equal(nonceLock.nextNonce, '50', `nonce should be 50 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
 
-    describe('Faq issue 67', () => {
-      beforeEach(() => {
+    describe('Faq issue 67', function() {
+      beforeEach(function() {
         const txGen = new MockTxGen()
         confirmedTxs = txGen.generate({ status: 'confirmed' }, { count: 64 })
         pendingTxs = txGen.generate(
@@ -229,7 +227,7 @@ describe('Nonce Tracker', () => {
       it('should return nonce after network nonce', async function() {
         this.timeout(15000)
         const nonceLock = await nonceTracker.getNonceLock('0x7d3517b0d011698406d6e0aed8453f0be2697926')
-        assert.strictEqual(nonceLock.nextNonce.toString(), '74', `nonce should be 74 got ${nonceLock.nextNonce}`)
+        assert.equal(nonceLock.nextNonce, '74', `nonce should be 74 got ${nonceLock.nextNonce}`)
         await nonceLock.releaseLock()
       })
     })
@@ -241,8 +239,8 @@ function generateNonceTrackerWith(pending, confirmed, providerStub = '0x0') {
   const getConfirmedTransactions = () => confirmed
   providerResultStub.result = providerStub
   const provider = {
-    sendAsync: (_, callback) => {
-      callback(undefined, providerResultStub)
+    sendAsync: (_, cb) => {
+      cb(undefined, providerResultStub)
     }
   }
   const blockTracker = {

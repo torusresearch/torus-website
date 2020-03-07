@@ -1,9 +1,9 @@
 /* eslint-disable */
-const assert = require('assert')
-const nock = require('nock')
-const sinon = require('sinon')
-const DetectTokensController = require('../../../src/controllers/DetectTokensController').default
-const NetworkController = require('../../../src/controllers/NetworkController').default
+import assert from 'assert'
+import nock from 'nock'
+import sinon from 'sinon'
+import DetectTokensController from '../../../src/controllers/DetectTokensController'
+import NetworkController from '../../../src/controllers/NetworkController'
 
 const TEMP_ADDRESS = '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'
 
