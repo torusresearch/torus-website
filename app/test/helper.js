@@ -4,7 +4,7 @@ import log from 'loglevel'
 import nock from 'nock'
 
 nock.disableNetConnect()
-nock.enableNetConnect('localhost')
+nock.enableNetConnect(host => host.includes('localhost') || host.includes('mainnet.infura.io:443'))
 
 // catch rejections that are still unhandled when tests exit
 const unhandledRejections = new Map()

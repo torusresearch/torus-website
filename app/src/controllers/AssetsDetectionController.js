@@ -14,10 +14,9 @@ const DEFAULT_INTERVAL = 60000
 
 export default class AssetsDetectionController {
   constructor(options) {
-    this.interval = DEFAULT_INTERVAL
-    this.selectedAddress = ''
+    this.interval = options.interval || DEFAULT_INTERVAL
+    this.selectedAddress = options.selectedAddress || ''
     this.network = options.network
-    this._provider = options.provider
     this.assetController = options.assetController
     this.assetContractController = options.assetContractController
     this.jwtToken = ''
@@ -85,7 +84,7 @@ export default class AssetsDetectionController {
    * @returns - Whether current network is mainnet
    */
   isMainnet() {
-    return this.network.store.getState().provider.type === MAINNET
+    return this.network.getNetworkNameFromNetworkCode() === MAINNET
   }
 
   /**
