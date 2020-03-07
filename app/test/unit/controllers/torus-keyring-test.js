@@ -331,7 +331,7 @@ describe('torus-keyring', () => {
     assert(testAccount.address === recovered)
   })
 
-  it.only('should fail when sign typed message format is wrong', async () => {
+  it('should fail when sign typed message format is wrong', async () => {
     const keyringController = new TorusKeyring([testAccount.key])
     const msgParams = [{}]
     let error1
@@ -348,5 +348,21 @@ describe('torus-keyring', () => {
     }
     assert(error1.message.includes('Expect argument to be non-empty array'))
     assert(error2.message.includes("Cannot read property 'EIP712Domain' of undefined"))
+  })
+
+  it('should sign transaction', async () => {
+    const keyringController = new TorusKeyring([testAccount.key])
+    const transaction = {
+      chainId: 3,
+      data: '0x1',
+      from: testAccount.address,
+      gasLimit: '0x5108',
+      gasPrice: '0x5108',
+      to: '0x51253087e6f8358b5f10c0a94315d69db3357859',
+      value: '0x5208'
+    }
+    const ethTransaction = new EthereumTx({ ...transaction })
+    const signature = await keyringController.signTransaction(ethTransaction, testAccount.address)
+    assert(signature !== '')
   })
 })
