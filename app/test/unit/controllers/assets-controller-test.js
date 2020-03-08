@@ -137,6 +137,7 @@ describe('AssetsController', () => {
 
   afterEach(() => {
     sandbox.reset()
+    nock.cleanAll()
   })
 
   it('should set default state', () => {
@@ -245,7 +246,7 @@ describe('AssetsController', () => {
   it('should add collectible and get collectible contract information from contract', async () => {
     sandbox.stub(assetsController, 'getCollectibleContractInformationFromApi').returns(undefined)
     sandbox.stub(assetsController, 'getCollectibleInformationFromApi').returns(undefined)
-    nock.enableNetConnect()
+    nock.enableNetConnect(/api.infura.io/)
     await assetsController.addCollectible(KUDOSADDRESS, 1203)
     assert.deepStrictEqual(assetsController.state.collectibles[0], {
       address: '0x2aea4add166ebf38b63d09a75de1a7b94aa24163',

@@ -11,6 +11,10 @@ describe('currency-controller', () => {
     currencyController = new CurrencyController()
   })
 
+  afterEach(() => {
+    nock.cleanAll()
+  })
+
   describe('currency conversions', () => {
     describe('#setCurrentCurrency', () => {
       it('should return USD as default', () => {

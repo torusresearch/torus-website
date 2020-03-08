@@ -8,13 +8,17 @@ import PreferencesController from '../../../src/controllers/PreferencesControlle
 const noop = () => {}
 
 describe('Preferences Controller', () => {
-  // So that autocomplete works
-  let preferencesController = new PreferencesController()
+  let preferencesController
   let sandbox = sinon.createSandbox()
 
   beforeEach(() => {
     preferencesController = new PreferencesController()
     sandbox = sinon.createSandbox()
+  })
+
+  afterEach(() => {
+    nock.cleanAll()
+    sandbox.restore()
   })
 
   it('get headers correctly', () => {
@@ -29,8 +33,6 @@ describe('Preferences Controller', () => {
         'Content-Type': 'application/json; charset=utf-8'
       }
     })
-
-    sandbox.restore()
   })
 
   it('should handle success correctly', () => {
@@ -70,10 +72,6 @@ describe('Preferences Controller', () => {
   })
 
   describe('sync', () => {
-    afterEach(() => {
-      nock.cleanAll()
-      sandbox.restore()
-    })
     it('user sync error', async () => {
       nock('https://api.tor.us')
         .get(/.*/)
