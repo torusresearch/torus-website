@@ -7,7 +7,7 @@ import PreferencesController from '../../../src/controllers/PreferencesControlle
 
 const noop = () => {}
 
-describe.only('Preferences Controller', () => {
+describe('Preferences Controller', () => {
   // So that autocomplete works
   let preferencesController = new PreferencesController()
   let sandbox = sinon.createSandbox()
