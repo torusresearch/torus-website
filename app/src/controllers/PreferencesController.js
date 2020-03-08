@@ -63,6 +63,10 @@ class PreferencesController {
     }
   }
 
+  get state() {
+    return this.store.getState()
+  }
+
   handleError(error) {
     if (isErrorObject(error)) {
       this.errorStore.putState(`Oops, That didn't work. Pls reload and try again. \n${error.message}`)
@@ -154,7 +158,7 @@ class PreferencesController {
   }
 
   async setUserTheme(payload) {
-    if (payload === this.store.getState().theme) return
+    if (payload === this.state.theme) return
     try {
       const resp = await patch(`${config.api}/user/theme`, { theme: payload }, this.headers)
       this.handleSuccess('navBar.snackSuccessTheme' || (resp && resp.data) || resp)
@@ -174,7 +178,7 @@ class PreferencesController {
   }
 
   async setUserLocale(payload) {
-    if (payload === this.store.getState().locale) return
+    if (payload === this.state.locale) return
     try {
       await patch(`${config.api}/user/locale`, { locale: payload }, this.headers)
       this.store.updateState({ locale: payload })
@@ -185,7 +189,7 @@ class PreferencesController {
   }
 
   async setSelectedCurrency(payload) {
-    if (payload.selectedCurrency === this.store.getState().selectedCurrency) return
+    if (payload.selectedCurrency === this.state.selectedCurrency) return
     try {
       await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers)
       this.store.updateState({ selectedCurrency: payload.selectedCurrency })
@@ -226,7 +230,7 @@ class PreferencesController {
   async addContact(payload) {
     try {
       const response = await post(`${config.api}/contact`, payload, this.headers)
-      this.store.updateState({ contacts: [...this.store.getState().contacts, response.data] })
+      this.store.updateState({ contacts: [...this.state.contacts, response.data] })
       this.handleSuccess('navBar.snackSuccessContactAdd')
     } catch (error) {
       this.handleError('navBar.snackFailContactAdd')
@@ -236,7 +240,7 @@ class PreferencesController {
   async deleteContact(payload) {
     try {
       const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers)
-      const finalContacts = this.store.getState().contacts.filter(contact => contact.id !== response.data.id)
+      const finalContacts = this.state.contacts.filter(contact => contact.id !== response.data.id)
       this.store.updateState({ contacts: finalContacts })
       this.handleSuccess('navBar.snackSuccessContactDelete')
     } catch (error) {

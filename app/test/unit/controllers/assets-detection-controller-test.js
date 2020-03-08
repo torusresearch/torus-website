@@ -1,3 +1,4 @@
+/* eslint-disable implicit-arrow-linebreak */
 import assert from 'assert'
 import fetchMock from 'fetch-mock'
 import { createSandbox } from 'sinon'
@@ -26,7 +27,7 @@ describe('AssetsDetectionController', () => {
       getAccounts: noop
     }
     network.initializeProvider(networkControllerProviderConfig)
-    network.setProviderType('mainnet')
+    network.setProviderType(MAINNET)
 
     assetsContract = new AssetsContractController({
       provider: network._providerProxy
@@ -220,12 +221,94 @@ describe('AssetsDetectionController', () => {
     sandbox.reset()
   })
 
+  it('should poll and detect assets on interval while on mainnet', () =>
+    new Promise(resolve => {
+      const clock = sandbox.useFakeTimers()
+      const localNetwork = new NetworkController()
+      const networkControllerProviderConfig = {
+        getAccounts: noop
+      }
+      localNetwork.initializeProvider(networkControllerProviderConfig)
+      localNetwork.setProviderType(MAINNET)
+
+      const assetCtrlr = new AssetsDetectionController({ network: localNetwork, selectedAddress: TEST_ADDRESS })
+      const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
+      clock.tick(60000)
+      sandbox.assert.calledOnce(mockCollectibles)
+      clock.tick(60000)
+      sandbox.assert.calledTwice(mockCollectibles)
+      mockCollectibles.restore()
+      resolve()
+    }))
+
   it('should detect mainnet correctly', () => {
     network.setProviderType(MAINNET)
     assert(assetsDetection.isMainnet() === true)
     network.setProviderType(ROPSTEN)
     assert(assetsDetection.isMainnet() === false)
   })
+
+  it('should not autodetect while not on mainnet', () =>
+    new Promise(resolve => {
+      const clock = sandbox.useFakeTimers()
+      const localNetwork = new NetworkController()
+      const networkControllerProviderConfig = {
+        getAccounts: noop
+      }
+      localNetwork.initializeProvider(networkControllerProviderConfig)
+      localNetwork.setProviderType(ROPSTEN)
+
+      const assetCtrlr = new AssetsDetectionController({ network: localNetwork, selectedAddress: TEST_ADDRESS })
+      assetCtrlr.selectedAddress = TEST_ADDRESS
+      const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
+      clock.tick(60000)
+      sandbox.assert.notCalled(mockCollectibles)
+      mockCollectibles.restore()
+      resolve()
+    }))
+
+  it('should start detection when selected address changes', () =>
+    new Promise(resolve => {
+      const clock = sandbox.useFakeTimers()
+      const localNetwork = new NetworkController()
+      const networkControllerProviderConfig = {
+        getAccounts: noop
+      }
+      localNetwork.initializeProvider(networkControllerProviderConfig)
+      localNetwork.setProviderType(MAINNET)
+
+      const assetCtrlr = new AssetsDetectionController({ network: localNetwork })
+      const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
+      assetCtrlr.startAssetDetection(TEST_ADDRESS)
+      clock.tick(1)
+      sandbox.assert.calledOnce(mockCollectibles)
+      mockCollectibles.restore()
+      resolve()
+    }))
+
+  it('should restart detection', () =>
+    new Promise(resolve => {
+      const clock = sandbox.useFakeTimers()
+      const localNetwork = new NetworkController()
+      const networkControllerProviderConfig = {
+        getAccounts: noop
+      }
+      localNetwork.initializeProvider(networkControllerProviderConfig)
+      localNetwork.setProviderType(MAINNET)
+
+      const assetCtrlr = new AssetsDetectionController({ network: localNetwork })
+      const mockCollectibles = sandbox.stub(assetCtrlr, 'detectCollectibles')
+      clock.tick(1)
+      sandbox.assert.notCalled(mockCollectibles)
+      assetCtrlr.startAssetDetection(TEST_ADDRESS)
+      clock.tick(1)
+      sandbox.assert.calledOnce(mockCollectibles)
+      assetCtrlr.restartAssetDetection()
+      clock.tick(1)
+      sandbox.assert.calledTwice(mockCollectibles)
+      mockCollectibles.restore()
+      resolve()
+    }))
 
   it('should detect and add collectibles correctly', async () => {
     network.setProviderType(MAINNET)
