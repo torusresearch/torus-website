@@ -648,7 +648,6 @@ export default {
           dispatch('processAuthMessage', { message, selectedAddress: data.ethAddress, calledFromEmbed })
         ])
         dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
-        prefsController.getBillboardContents()
         // continue enable function
         const { ethAddress } = data
         if (calledFromEmbed) {
@@ -688,7 +687,7 @@ export default {
         signed_message: signedMessage
       })
       commit('setJwtToken', response.token)
-      prefsController.jwtToken = response.token
+      // prefsController.jwtToken = response.token
       if (response.token) {
         const decoded = jwtDecode(response.token)
         setTimeout(() => {

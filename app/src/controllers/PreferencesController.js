@@ -33,14 +33,14 @@ class PreferencesController {
       pastTransactions: [],
       theme: THEME_LIGHT_BLUE_NAME,
       locale: LOCALE_EN,
-      billboard: [],
+      billboard: {},
       contacts: [],
       permissions: [],
       paymentTx: [],
       ...options.initState
     }
 
-    this.interval = DEFAULT_INTERVAL
+    this.interval = options.interval || DEFAULT_INTERVAL
     this.jwtToken = ''
     this._jwtToken = ''
     this.store = new ObservableStore(initState)
@@ -87,7 +87,7 @@ class PreferencesController {
       this.successStore.putState(message)
     } else if (message && typeof message === 'object') {
       const prettyMessage = prettyPrintData(message)
-      const payloadMessage = prettyMessage !== '' ? `Error: ${prettyMessage}` : 'Something went wrong. Pls try again'
+      const payloadMessage = prettyMessage !== '' ? `Success: ${prettyMessage}` : 'Success'
       this.successStore.putState(payloadMessage)
     } else {
       this.successStore.putState(message || '')
@@ -101,7 +101,9 @@ class PreferencesController {
         get(`${config.api}/user`, this.headers).catch(_ => {
           if (errorCallback) errorCallback()
         }),
-        getPastOrders({}, this.headers.headers)
+        getPastOrders({}, this.headers.headers).catch(error => {
+          log.error('unable to fetch past orders', error)
+        })
       ])
       if (user && user.data) {
         const { transactions, default_currency: defaultCurrency, contacts, theme, locale, verifier, verifier_id: verifierID, permissions } =
@@ -112,19 +114,21 @@ class PreferencesController {
           theme,
           selectedCurrency: defaultCurrency,
           locale: locale || LOCALE_EN,
-          paymentTx: paymentTx.data,
+          paymentTx: (paymentTx && paymentTx.data) || [],
           permissions
         })
         if (!verifier || !verifierID) this.setVerifier(verifier, verifierID)
         if (callback) return callback(user)
         // this.permissionsController._initializePermissions(permissions)
       }
+      return undefined
     } catch (error) {
       log.error(error)
+      return undefined
     }
-    return undefined
   }
 
+  /* istanbul ignore next */
   createUser(selectedCurrency, theme, verifier, verifierId, locale) {
     return post(
       `${config.api}/user`,
@@ -139,6 +143,7 @@ class PreferencesController {
     )
   }
 
+  /* istanbul ignore next */
   storeUserLogin(verifier, verifierId, payload) {
     let userOrigin = ''
     if (payload && payload.calledFromEmbed) {
@@ -160,14 +165,15 @@ class PreferencesController {
   async setUserTheme(payload) {
     if (payload === this.state.theme) return
     try {
-      const resp = await patch(`${config.api}/user/theme`, { theme: payload }, this.headers)
-      this.handleSuccess('navBar.snackSuccessTheme' || (resp && resp.data) || resp)
+      await patch(`${config.api}/user/theme`, { theme: payload }, this.headers)
+      this.handleSuccess('navBar.snackSuccessTheme')
       this.store.updateState({ theme: payload })
     } catch (error) {
       this.handleError('navBar.snackFailTheme')
     }
   }
 
+  /* istanbul ignore next */
   async setPermissions(payload) {
     try {
       const response = await post(`${config.api}/permissions`, payload, this.headers)
@@ -199,6 +205,7 @@ class PreferencesController {
     }
   }
 
+  /* istanbul ignore next */
   async setVerifier(verifier, verifierId) {
     try {
       const response = await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers)
@@ -208,6 +215,7 @@ class PreferencesController {
     }
   }
 
+  /* istanbul ignore next */
   getEtherScanTokenBalances() {
     return get(`${config.api}/tokenbalances`, this.headers)
   }
@@ -219,7 +227,7 @@ class PreferencesController {
         if (!accumulator[event.callToActionLink]) accumulator[event.callToActionLink] = {}
         accumulator[event.callToActionLink][event.locale] = event
         return accumulator
-      }, [])
+      }, {})
 
       if (events) this.store.updateState({ billboard: events })
     } catch (error) {
@@ -248,6 +256,7 @@ class PreferencesController {
     }
   }
 
+  /* istanbul ignore next */
   async revokeDiscord(idToken) {
     try {
       const resp = await post(`${config.api}/revoke/discord`, { token: idToken }, this.headers)
@@ -262,8 +271,9 @@ class PreferencesController {
   }
 
   setSelectedAddress(address) {
+    if (this.state.selectedAddress === address) return
     this.store.updateState({ selectedAddress: address })
-    this.sync()
+    // this.sync()
   }
 
   /**

@@ -348,7 +348,7 @@ export default class TorusController extends EventEmitter {
     if (options.jwtToken) {
       this.assetDetectionController.jwtToken = options.jwtToken
       this.assetController.jwtToken = options.jwtToken
-      this.prefsController.jwtToken = options.jwtToken
+      // this.prefsController.jwtToken = options.jwtToken
     }
     this.detectTokensController.startTokenDetection(address)
     this.assetDetectionController.startAssetDetection(address)
