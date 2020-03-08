@@ -20,8 +20,11 @@ describe('DetectTokensController', () => {
   }
 
   beforeEach(async () => {
-    nock('https://api.infura.io')
+    nock.cleanAll()
+    nock.enableNetConnect()
+    nock('https://min-api.cryptocompare.com')
       .get(/.*/)
+      .query(true)
       .reply(200)
       .log(noop)
 
