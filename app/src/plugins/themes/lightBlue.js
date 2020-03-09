@@ -3,6 +3,7 @@ export default {
   brand_1: '#0364FF',
   brand_2: '#5495F7',
   brand_3: '#CDE0FF',
+  brand_4: '#E9EEFE',
   brand_hover: '#075DE5',
   gray_1: '#D3D5E2',
   gray_2: '#EEF2F4',
