@@ -1,10 +1,24 @@
-.v-chip.network-chip {
+.network-chip {
   height: 20px;
-  background: #ffe9b3;
-  color: #0f1222;
+  background: #FFE9B3;
+  color: #0F1222;
+  border-radius: 10px;
+  padding: 0 12px;
 
   .v-icon {
-    color: #0f1222;
+    color: #0F1222;
+    height: 8px;
+    width: 8px;
+    margin-right: 8px;
+  }
+
+  &__name {
+    margin-top: -2px;
+    font-size: 12px;
+    text-align: left;
+    &--mobile {
+      font-size: 10px;
+    }
   }
 
   &.network-chip--mainnet {

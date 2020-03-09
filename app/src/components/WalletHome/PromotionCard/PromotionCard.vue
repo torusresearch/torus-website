@@ -48,10 +48,10 @@
             <div class="text-clamp-one caption mt-2">{{ subtitle }}</div>
             <div class="more-details-container">
               <v-btn
-                color="primary"
-                depressed
+                block
                 large
-                class="py-1 mt-4 white--text"
+                color="gray_4"
+                class="primary--text"
                 :class="$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12'"
                 :href="detailsLink"
                 target="_blank"
@@ -62,8 +62,8 @@
           </slot>
         </v-flex>
         <slot name="image">
-          <v-flex xs4 pt-4 class="text-right hidden-xs-only">
-            <img :src="imagePath" :style="$vuetify.breakpoint.smAndDown ? 'width: 100%' : 'height: 92px'" :alt="`${title} Image`" />
+          <v-flex xs4 pt-4 class="text-right hidden-xs-only align-self-center">
+            <img :src="imagePath" :alt="`${title} Image`" />
           </v-flex>
         </slot>
       </v-layout> -->

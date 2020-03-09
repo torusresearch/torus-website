@@ -68,3 +68,39 @@
 //     }
 //   }
 // }
+
+.home-tab {
+  ::v-deep .v-tabs-slider-wrapper {
+    display: none;
+  }
+  .v-tab {
+    text-transform: none;
+    width: 280px;
+    border: 1px solid #D5D5D5;
+    border-radius: 3px;
+    &--active {
+      color: var(--v-brand_1-base);
+      background-color: var(--v-brand_4-base);
+    }
+    @media screen and (max-width: 600px) {
+      width: 150px;
+    }
+  }
+  &-token.v-tab {
+    border-radius: 3px 0px 0px 3px;
+  }
+  &-collectibles.v-tab {
+    border-radius: 0px 3px 3px 0px;
+  }
+  &.theme--dark {
+    &.v-tabs {
+      ::v-deep & > .v-tabs-bar {
+        background-color: transparent;
+      }
+    }
+  }
+}
+
+.token-tab-content.theme--dark {
+  background-color: transparent; 
+}

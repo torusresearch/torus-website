@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container>
     <v-breadcrumbs class="px-4 subtitle-1 font-weight-bold" :items="breadcrumb">
       <template v-slot:divider>
         <v-icon small>$vuetify.icons.page_next_double</v-icon>
@@ -100,7 +100,7 @@
         </v-expand-transition>
       </v-flex>
     </v-layout>
-  </div>
+  </v-container>
 </template>
 
 <script>

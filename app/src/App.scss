@@ -202,7 +202,10 @@
     line-height: 0.875rem;
     letter-spacing: 0;
     font-weight: normal;
-    color: var(--v-font_1-base);;
+  }
+
+  .body-link {
+    color: var(--v-brand_1-base);
   }
 
   /* Header 6 12px*/
@@ -211,7 +214,7 @@
     line-height: 0.875rem;
     letter-spacing: 0;
     font-weight: normal;
-    color: var(--v-gray_3-base);;
+    color: var(--v-gray_3-base);
   }
 
   .v-menu__content {
@@ -226,15 +229,53 @@
   }
 
   .elevation-2 {
-    background: #FFFFFF;
     border: 1px solid #F5F5F5;
     box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06), 0px 14px 28px rgba(46, 91, 255, 0.12) !important;
     border-radius: 6px;
   }
 
   // FORMS
-  
   .v-input__slot {
     margin-bottom: 2px;
+  }
+
+  .v-btn:not(.v-btn--text):not(.v-btn--icon) {
+    box-shadow: 0px 0px 2px rgba(51, 65, 80, 0.03), 0px 2px 2px rgba(51, 65, 80, 0.03);
+    border-radius: 6px;
+  }
+
+  
+  &.theme--light {
+    .display-4, .display-3, .display-2, .label {
+      color: var(--v-font_1-base);
+    }
+    .display-1, .headline, .title, .body-2 {
+      color: var(--v-torus_black-base);
+    }
+  }
+
+  &.theme--dark {
+    background: var(--v-torus_black-base);
+    &.v-sheet {
+      background: var(--v-torus_black_2-base);
+    }
+    .v-app-bar.v-toolbar.v-sheet {
+      background: var(--v-torus_black_2-base);
+    }
+    .v-card {
+      background-color: var(--v-torus_black_2-base);
+    }
+    .v-list {
+      background-color: var(--v-torus_black_2-base);
+    }
+    .v-expansion-panel {
+      background-color: var(--v-torus_black_2-base);
+    }
+
+    .elevation-1,
+    .elevation-2 {
+      border: 0;
+      box-shadow: none;
+    }
   }
 }
