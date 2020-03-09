@@ -14,11 +14,11 @@
           </template>
           <v-list class="select-theme-list pa-0">
             <v-list-item
-              @click="selectedTheme = theme"
-              :style="themeOptionStyle(theme)"
-              class="select-theme-item"
               v-for="theme in themes"
               :key="`${theme.name}`"
+              :style="themeOptionStyle(theme)"
+              class="select-theme-item"
+              @click="selectedTheme = theme"
             >
               {{ t(theme.label) }}
             </v-list-item>
@@ -39,25 +39,30 @@
 </template>
 
 <script>
-import Notification from '../../helpers/Notification'
+import log from 'loglevel'
+
 import themes from '../../../plugins/themes'
 
 export default {
-  name: 'displaySettings',
+  name: 'DisplaySettings',
   data() {
     return {
-      themes: themes,
+      themes,
       selectedTheme: ''
     }
   },
   methods: {
-    saveTheme() {
-      this.$store.dispatch('setUserTheme', this.selectedTheme.name).finally(() => {
+    async saveTheme() {
+      try {
+        await this.$store.dispatch('setUserTheme', this.selectedTheme.name)
+      } catch (error) {
+        log.error(error)
+      } finally {
         this.selectedTheme = ''
-      })
+      }
     },
     themeOptionStyle(theme) {
-      if (!theme) return
+      if (!theme) return {}
       return {
         color: `${theme.theme.primary.base} !important`,
         backgroundColor: `${theme.theme.background_body_1} !important`

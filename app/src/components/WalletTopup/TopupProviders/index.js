@@ -1,1 +1,1 @@
-export { default } from './TopupProviders'
+export { default } from './TopupProviders.vue'

@@ -1,57 +1,66 @@
-/* eslint-disable max-len */
-const assert = require('assert')
-const nock = require('nock')
-const CurrencyController = require('../../../src/controllers/CurrencyController').default
+/* eslint-disable */
+import assert from 'assert'
+import nock from 'nock'
 
-describe('currency-controller', function() {
-  var currencyController
+import CurrencyController from '../../../src/controllers/CurrencyController'
 
-  beforeEach(function() {
+describe('currency-controller', () => {
+  let currencyController
+
+  beforeEach(() => {
+    nock.cleanAll()
+    nock.enableNetConnect()
     currencyController = new CurrencyController()
   })
 
-  describe('currency conversions', function() {
-    describe('#setCurrentCurrency', function() {
-      it('should return USD as default', function() {
+  afterEach(() => {
+    nock.cleanAll()
+  })
+
+  describe('currency conversions', () => {
+    describe('#setCurrentCurrency', () => {
+      it('should return USD as default', () => {
         assert.strictEqual(currencyController.getCurrentCurrency(), 'usd')
       })
 
-      it('should be able to set to other currency', function() {
+      it('should be able to set to other currency', () => {
         assert.strictEqual(currencyController.getCurrentCurrency(), 'usd')
         currencyController.setCurrentCurrency('JPY')
-        var result = currencyController.getCurrentCurrency()
+        const result = currencyController.getCurrentCurrency()
         assert.strictEqual(result, 'JPY')
       })
     })
 
-    describe('#getConversionRate', function() {
-      it('should return undefined if non-existent', function() {
-        var result = currencyController.getConversionRate()
+    describe('#getConversionRate', () => {
+      it('should return undefined if non-existent', () => {
+        const result = currencyController.getConversionRate()
         assert.ok(!result)
       })
     })
 
-    describe('#updateConversionRate', function() {
-      it('should retrieve an update for ETH to USD and set it in memory', function(done) {
+    describe('#updateConversionRate', () => {
+      it('should retrieve an update for ETH to USD and set it in memory', function finish(done) {
         this.timeout(15000)
-        nock('https://api.infura.io')
-          .get('/v1/ticker/ethusd')
+        nock('https://min-api.cryptocompare.com')
+          .get('/data/price')
+          .query(url => url.includes('ETH') && url.includes('USD'))
           .reply(
             200,
             '{"base": "ETH", "quote": "USD", "bid": 288.45, "ask": 288.46, "volume": 112888.17569277, "exchange": "bitfinex", "total_volume": 272175.00106721005, "num_exchanges": 8, "timestamp": 1506444677}'
           )
+          .log(console.log)
 
         assert.strictEqual(currencyController.getConversionRate(), 0)
         currencyController.setCurrentCurrency('usd')
         currencyController
           .updateConversionRate()
-          .then(function() {
-            var result = currencyController.getConversionRate()
+          .then(() => {
+            const result = currencyController.getConversionRate()
             assert.strictEqual(typeof result, 'number')
             done()
           })
-          .catch(function(err) {
-            done(err)
+          .catch(error => {
+            done(error)
           })
       })
 
@@ -59,27 +68,29 @@ describe('currency-controller', function() {
         this.timeout(15000)
         assert.strictEqual(currencyController.getConversionRate(), 0)
 
-        nock('https://api.infura.io')
-          .get('/v1/ticker/ethjpy')
+        nock('https://min-api.cryptocompare.com')
+          .get('/data/price')
+          .query(url => url.includes('ETH') && url.includes('JPY'))
           .reply(
             200,
             '{"base": "ETH", "quote": "JPY", "bid": 32300.0, "ask": 32400.0, "volume": 247.4616071, "exchange": "kraken", "total_volume": 247.4616071, "num_exchanges": 1, "timestamp": 1506444676}'
           )
+          .log(console.log)
 
-        var promise = new Promise(function(resolve, reject) {
+        const promise = new Promise((resolve, reject) => {
           currencyController.setCurrentCurrency('jpy')
-          currencyController.updateConversionRate().then(function() {
+          currencyController.updateConversionRate().then(() => {
             resolve()
           })
         })
 
         promise
-          .then(function() {
-            var result = currencyController.getConversionRate()
+          .then(() => {
+            const result = currencyController.getConversionRate()
             assert.strictEqual(typeof result, 'number')
           })
-          .catch(function(done, err) {
-            done(err)
+          .catch((error, error_) => {
+            error(error_)
           })
       })
     })

@@ -10,6 +10,6 @@
 
 <script>
 export default {
-  name: 'popup'
+  name: 'Popup'
 }
 </script>

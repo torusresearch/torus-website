@@ -1,1 +1,1 @@
-export { default } from './PermissionConfirm'
+export { default } from './PermissionConfirm.vue'

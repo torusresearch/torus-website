@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 /**
  * Assets Detection
  * Controller that passively polls on a set interval for assets auto detection
@@ -5,19 +6,19 @@
 
 import log from 'loglevel'
 
-import { get } from '../utils/httpHelpers'
 import config from '../config'
 import { MAINNET } from '../utils/enums'
+import { get } from '../utils/httpHelpers'
+
 const DEFAULT_INTERVAL = 60000
 
 export default class AssetsDetectionController {
-  constructor(opts) {
-    this.interval = DEFAULT_INTERVAL
-    this.selectedAddress = ''
-    this.network = opts.network
-    this._provider = opts.provider
-    this.assetController = opts.assetController
-    this.assetContractController = opts.assetContractController
+  constructor(options) {
+    this.interval = options.interval || DEFAULT_INTERVAL
+    this.selectedAddress = options.selectedAddress || ''
+    this.network = options.network
+    this.assetController = options.assetController
+    this.assetContractController = options.assetContractController
     this.jwtToken = ''
   }
 
@@ -46,7 +47,7 @@ export default class AssetsDetectionController {
    * @type {Number}
    */
   set interval(interval) {
-    this._handle && clearInterval(this._handle)
+    if (this._handle) clearInterval(this._handle)
     if (!interval) {
       return
     }
@@ -60,7 +61,7 @@ export default class AssetsDetectionController {
   }
 
   async getOwnerCollectibles() {
-    const selectedAddress = this.selectedAddress
+    const { selectedAddress } = this
     const api = this.getOwnerCollectiblesApi(selectedAddress)
     let response
     try {
@@ -71,8 +72,8 @@ export default class AssetsDetectionController {
       })
       const collectibles = response.data.assets
       return collectibles
-    } catch (e) {
-      log.error(e)
+    } catch (error) {
+      log.error(error)
       return []
     }
   }
@@ -83,7 +84,7 @@ export default class AssetsDetectionController {
    * @returns - Whether current network is mainnet
    */
   isMainnet() {
-    return this.network.store.getState().provider.type === MAINNET
+    return this.network.getNetworkNameFromNetworkCode() === MAINNET
   }
 
   /**
@@ -107,34 +108,34 @@ export default class AssetsDetectionController {
     if (!this.isMainnet()) {
       return
     }
-    const selectedAddress = this.selectedAddress
+    const { selectedAddress } = this
     /* istanbul ignore else */
     if (!selectedAddress) {
       return
     }
     this.assetController.setSelectedAddress(selectedAddress)
     const apiCollectibles = await this.getOwnerCollectibles()
-    for (let index = 0; index < apiCollectibles.length; index++) {
-      const {
-        token_id,
-        image_url,
-        name,
-        description,
-        asset_contract: {
-          address: contractAddress,
-          name: contractName,
-          symbol: contractSymbol,
-          image_url: contractImage,
-          total_supply: contractSupply,
-          description: contractDescription
-        }
-      } = apiCollectibles[index]
+    for (const {
+      token_id: tokenID,
+      image_url: imageURL,
+      name,
+      description,
+      asset_contract: {
+        address: contractAddress,
+        name: contractName,
+        symbol: contractSymbol,
+        image_url: contractImage,
+        total_supply: contractSupply,
+        description: contractDescription
+      }
+    } of apiCollectibles) {
+      // eslint-disable-next-line no-await-in-loop
       await this.assetController.addCollectible(
         contractAddress,
-        Number(token_id),
+        Number(tokenID),
         {
           description,
-          image: image_url || contractImage.replace('=s60', '=s240'),
+          image: imageURL || contractImage.replace('=s60', '=s240'),
           name,
           contractAddress,
           contractName,

@@ -1,45 +1,37 @@
 .v-chip.network-chip {
   height: 20px;
-  background: #FFE9B3;
-  color: #0F1222;
+  background: #ffe9b3;
+  color: #0f1222;
 
   .v-icon {
-    color: #0F1222;
+    color: #0f1222;
   }
 
   &.network-chip--mainnet {
-    background: #CDE0FF;
+    background: #cde0ff;
   }
 
   &.network-chip--rinkeby {
-    background: #CAF1FE;
+    background: #caf1fe;
   }
 
   &.network-chip--kovan {
-    background: #B7F7E9;
+    background: #b7f7e9;
   }
 
   &.network-chip--ropsten {
-    background: #FFD9F8;
+    background: #ffd9f8;
   }
 
   &.network-chip--goerli {
-    background: #FFE1D4;
+    background: #ffe1d4;
   }
 
   &.network-chip--rpc {
-    background: #C8F8C1;
+    background: #c8f8c1;
   }
 
   &.network-chip--matic {
-    background: #EFE2FF;
+    background: #efe2ff;
   }
 }
-
-
-
-
-
-
-
-

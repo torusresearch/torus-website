@@ -79,6 +79,7 @@ jobs:
       - run:
           name: "Running unit tests with coverage"
           command: npm run test:coverage-codecov
+      - <<: *step_save_cache
       # Save coverage artifacts
       - store_artifacts:
           path: coverage

@@ -1,18 +1,19 @@
-const assert = require('assert')
-const Transaction = require('ethereumjs-tx')
+/* eslint-disable */
+import assert from 'assert'
+import Transaction from 'ethereumjs-tx'
 
-const { hexToBn, bnToHex } = require('../../../../src/utils/utils')
-const TxUtils = require('../../../../src/utils/TxGasUtil').default
+import { hexToBn, bnToHex } from '../../../../src/utils/utils'
+import TxUtils from '../../../../src/utils/TxGasUtil'
 
 describe('txUtils', function() {
   let txUtils
 
-  beforeEach(function() {
+  before(function() {
     txUtils = new TxUtils(
       new Proxy(
         {},
         {
-          get: (obj, name) => {
+          get: () => {
             return () => {}
           }
         }
@@ -33,7 +34,7 @@ describe('txUtils', function() {
         chainId: 42
       }
       const ethTx = new Transaction(txParams)
-      assert.strictEqual(ethTx.getChainId(), 42, 'chainId is set from tx params')
+      assert.equal(ethTx.getChainId(), 42, 'chainId is set from tx params')
     })
   })
 
@@ -73,7 +74,7 @@ describe('txUtils', function() {
       // const inputBn = hexToBn(inputHex)
       // const outputBn = hexToBn(output)
       const expectedHex = bnToHex(ceilGasLimitBn)
-      assert.strictEqual(output, expectedHex, 'returns the gas limit recommended ceiling value')
+      assert.equal(output, expectedHex, 'returns the gas limit recommended ceiling value')
     })
   })
 })

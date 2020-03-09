@@ -1,20 +1,39 @@
 import NodeDetailManager from '@toruslabs/fetch-node-details'
 import log from 'loglevel'
-import Web3 from 'web3'
 import LocalMessageDuplexStream from 'post-message-stream'
+import Web3 from 'web3'
 
 import TorusController from './controllers/TorusController'
-import store from './store'
-import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE } from './utils/enums'
-import { storageAvailable, isMain, getIFrameOrigin } from './utils/utils'
+import { MAINNET, MAINNET_CODE, MAINNET_DISPLAY_NAME } from './utils/enums'
 import setupMultiplex from './utils/setupMultiplex'
+import { getIFrameOrigin, isMain, storageAvailable } from './utils/utils'
+// import store from './store'
+let storeReference
+let deferredDispatch = []
+function getStore() {
+  return (
+    storeReference || {
+      dispatch(...arguments_) {
+        deferredDispatch.push(() => {
+          storeReference.dispatch(...arguments_)
+        })
+      }
+    }
+  )
+}
+
+export function injectStore(s) {
+  storeReference = s
+  deferredDispatch.forEach(fn => fn())
+  deferredDispatch = []
+}
+
+function triggerUi(type) {
+  log.info(`TRIGGERUI:${type}`)
+  getStore().dispatch('showPopup')
+}
 
 function onloadTorus(torus) {
-  function triggerUi(type) {
-    log.info('TRIGGERUI:' + type)
-    store.dispatch('showPopup')
-  }
-
   let sessionData
 
   if (storageAvailable('sessionStorage')) {
@@ -34,12 +53,12 @@ function onloadTorus(torus) {
     showUnapprovedTx: triggerUi.bind(window, 'showUnapprovedTx'),
     openPopup: triggerUi.bind(window, 'bindopenPopup'),
     storeProps: () => {
-      const { state } = store || {}
-      let { selectedAddress, wallet } = state || {}
+      const { state } = getStore()
+      const { selectedAddress, wallet } = state || {}
       return { selectedAddress, wallet }
     },
-    rehydrate: function() {
-      store.dispatch('rehydrate')
+    rehydrate() {
+      getStore().dispatch('rehydrate')
     }
   })
 
@@ -50,7 +69,10 @@ function onloadTorus(torus) {
 
   // update node details
   torus.nodeDetailManager = new NodeDetailManager({ network: process.env.VUE_APP_PROXY_NETWORK, proxyAddress: process.env.VUE_APP_PROXY_ADDRESS })
-  torus.nodeDetailManager.getNodeDetails().then(nodeDetails => log.info(nodeDetails))
+  torus.nodeDetailManager
+    .getNodeDetails()
+    .then(nodeDetails => log.info(nodeDetails))
+    .catch(error => log.error(error))
 
   // You are not inside an iframe
   if (isMain) {
@@ -59,13 +81,13 @@ function onloadTorus(torus) {
     return torus
   }
 
-  var metamaskStream = new LocalMessageDuplexStream({
+  const metamaskStream = new LocalMessageDuplexStream({
     name: 'iframe_metamask',
     target: 'embed_metamask',
     targetWindow: window.parent
   })
 
-  var communicationStream = new LocalMessageDuplexStream({
+  const communicationStream = new LocalMessageDuplexStream({
     name: 'iframe_comm',
     target: 'embed_comm',
     targetWindow: window.parent

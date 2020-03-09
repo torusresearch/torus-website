@@ -1,10 +1,11 @@
-const assert = require('assert')
-const txUtils = require('../../../../src/utils/txUtils')
+/* eslint-disable */
+import assert from 'assert'
+import * as txUtils from '../../../../src/utils/txUtils'
 
 describe('txUtils', function() {
   describe('#validateTxParams', function() {
     it('does not throw for positive values', function() {
-      var sample = {
+      const sample = {
         from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
         value: '0x01'
       }
@@ -12,7 +13,7 @@ describe('txUtils', function() {
     })
 
     it('returns error for negative values', function() {
-      var sample = {
+      const sample = {
         from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
         value: '-0x01'
       }
@@ -24,8 +25,8 @@ describe('txUtils', function() {
     })
   })
 
-  describe('#normalizeTxParams', () => {
-    it('should normalize txParams', () => {
+  describe('#normalizeTxParams', function() {
+    it('should normalize txParams', function() {
       const txParams = {
         chainId: '0x1',
         from: 'a7df1beDBF813f57096dF77FCd515f0B3900e402',
@@ -38,17 +39,17 @@ describe('txUtils', function() {
 
       assert(!normalizedTxParams.chainId, 'their should be no chainId')
       assert(!normalizedTxParams.to, 'their should be no to address if null')
-      assert.strictEqual(normalizedTxParams.from.slice(0, 2), '0x', 'from should be hexPrefixd')
-      assert.strictEqual(normalizedTxParams.data.slice(0, 2), '0x', 'data should be hexPrefixd')
+      assert.equal(normalizedTxParams.from.slice(0, 2), '0x', 'from should be hexPrefixd')
+      assert.equal(normalizedTxParams.data.slice(0, 2), '0x', 'data should be hexPrefixd')
       assert(!('random' in normalizedTxParams), 'their should be no random key in normalizedTxParams')
 
       txParams.to = 'a7df1beDBF813f57096dF77FCd515f0B3900e402'
       normalizedTxParams = txUtils.normalizeTxParams(txParams)
-      assert.strictEqual(normalizedTxParams.to.slice(0, 2), '0x', 'to should be hexPrefixd')
+      assert.equal(normalizedTxParams.to.slice(0, 2), '0x', 'to should be hexPrefixd')
     })
   })
 
-  describe('#validateRecipient', () => {
+  describe('#validateRecipient', function() {
     it('removes recipient for txParams with 0x when contract data is provided', function() {
       const zeroRecipientandDataTxParams = {
         from: '0x1678a085c290ebd122dc42cba69373b5953b831d',
@@ -56,7 +57,7 @@ describe('txUtils', function() {
         data: 'bytecode'
       }
       const sanitizedTxParams = txUtils.validateRecipient(zeroRecipientandDataTxParams)
-      assert.deepStrictEqual(sanitizedTxParams, { from: '0x1678a085c290ebd122dc42cba69373b5953b831d', data: 'bytecode' }, 'no recipient with 0x')
+      assert.deepEqual(sanitizedTxParams, { from: '0x1678a085c290ebd122dc42cba69373b5953b831d', data: 'bytecode' }, 'no recipient with 0x')
     })
 
     it('should error when recipient is 0x', function() {
@@ -74,7 +75,7 @@ describe('txUtils', function() {
     })
   })
 
-  describe('#validateFrom', () => {
+  describe('#validateFrom', function() {
     it('should error when from is not a hex string', function() {
       // where from is undefined
       const txParams = {}
@@ -113,7 +114,7 @@ describe('txUtils', function() {
           txUtils.validateFrom(txParams)
         },
         Error,
-        'Invalid from address'
+        `Invalid from address`
       )
 
       // should run

@@ -1,9 +1,10 @@
-import ObservableStore from 'obs-store'
 import EthQuery from 'eth-query'
 import log from 'loglevel'
+import ObservableStore from 'obs-store'
 import pify from 'pify'
 
-import { ROPSTEN, RINKEBY, KOVAN, MAINNET } from '../utils/enums'
+import { KOVAN, MAINNET, RINKEBY, ROPSTEN } from '../utils/enums'
+
 const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
 
 class RecentBlocksController {
@@ -24,23 +25,24 @@ class RecentBlocksController {
    * @property {array} store.recentBlocks Contains all recent blocks, up to a total that is equal to this.historyLength
    *
    */
-  constructor(opts = {}) {
-    const { blockTracker, provider, networkController } = opts
+  constructor(options = {}) {
+    const { blockTracker, provider, networkController } = options
     this.blockTracker = blockTracker
     this.ethQuery = new EthQuery(provider)
-    this.historyLength = opts.historyLength || 15
+    this.historyLength = options.historyLength || 15
 
     const initState = {
       recentBlocks: [],
-      ...opts.initState
+      ...options.initState
     }
     this.store = new ObservableStore(initState)
 
+    // eslint-disable-next-line unicorn/consistent-function-scoping
     const blockListner = async newBlockNumberHex => {
       try {
         await this.processBlock(newBlockNumberHex)
-      } catch (err) {
-        log.error(err)
+      } catch (error) {
+        log.error(error)
       }
     }
     let isListening = false
@@ -115,9 +117,7 @@ class RecentBlocksController {
   mapTransactionsToPrices(newBlock) {
     const block = {
       ...newBlock,
-      gasPrices: newBlock.transactions.map(tx => {
-        return tx.gasPrice
-      })
+      gasPrices: newBlock.transactions.map(tx => tx.gasPrice)
     }
     delete block.transactions
     return block
@@ -137,10 +137,8 @@ class RecentBlocksController {
     this.blockTracker.once('latest', async blockNumberHex => {
       const currentBlockNumber = Number.parseInt(blockNumberHex, 16)
       const blocksToFetch = Math.min(currentBlockNumber, this.historyLength)
-      const prevBlockNumber = currentBlockNumber - 1
-      const targetBlockNumbers = Array(blocksToFetch)
-        .fill()
-        .map((_, index) => prevBlockNumber - index)
+      const previousBlockNumber = currentBlockNumber - 1
+      const targetBlockNumbers = new Array(blocksToFetch).fill().map((_, index) => previousBlockNumber - index)
       await Promise.all(
         targetBlockNumbers.map(async targetBlockNumber => {
           try {
@@ -148,8 +146,8 @@ class RecentBlocksController {
             if (!newBlock) return
 
             this.backfillBlock(newBlock)
-          } catch (e) {
-            log.error(e)
+          } catch (error) {
+            log.error(error)
           }
         })
       )
@@ -164,7 +162,7 @@ class RecentBlocksController {
    *
    */
   async getBlockByNumber(number) {
-    const blockNumberHex = '0x' + number.toString(16)
+    const blockNumberHex = `0x${number.toString(16)}`
     const result = await pify(this.ethQuery.getBlockByNumber).call(this.ethQuery, blockNumberHex, true)
     return result
   }

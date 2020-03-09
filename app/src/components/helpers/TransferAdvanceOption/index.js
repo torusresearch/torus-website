@@ -1,1 +1,1 @@
-export { default } from './TransferAdvanceOption'
+export { default } from './TransferAdvanceOption.vue'
