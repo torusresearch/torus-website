@@ -1,10 +1,5 @@
-import log from 'loglevel'
-import { getQuote } from '../../plugins/rampnetwork'
 import config from '../../config'
-import torus from '../../torus'
-import { RAMPNETWORK } from '../../utils/enums'
-import { BroadcastChannel } from 'broadcast-channel'
-import { broadcastChannelOptions } from '../../utils/utils'
+import getQuote from '../../plugins/rampnetwork'
 import PopupHandler from '../../utils/PopupHandler'
 
 export default {
@@ -17,16 +12,7 @@ export default {
     })
   },
   fetchRampNetworkOrder({ state, dispatch }, { currentOrder, preopenInstanceId }) {
-    const instanceState = encodeURIComponent(
-      window.btoa(
-        JSON.stringify({
-          instanceId: torus.instanceId,
-          provider: RAMPNETWORK
-        })
-      )
-    )
-
-    const params = {
+    const parameters = {
       userAddress: state.selectedAddress,
       swapAsset: currentOrder.cryptoCurrencySymbol,
       swapAmount: currentOrder.cryptoCurrencyValue,
@@ -34,12 +20,12 @@ export default {
       webhookStatusUrl: 'https://rampnetwork-api.tor.us/transaction',
       hostUrl: '*'
     }
-    return dispatch('openWidget', { path: config.rampInstantWidget, params: params, preopenInstanceId })
+    return dispatch('openWidget', { path: config.rampInstantWidget, params: parameters, preopenInstanceId })
   },
   openWidget(context, { path, params, preopenInstanceId }) {
     return new Promise((resolve, reject) => {
-      const paramString = new URLSearchParams(params)
-      const finalUrl = `${path}?${paramString}`
+      const parameterString = new URLSearchParams(params)
+      const finalUrl = `${path}?${parameterString}`
       const rampInstantWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
 
       rampInstantWindow.open()

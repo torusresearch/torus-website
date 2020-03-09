@@ -1,8 +1,10 @@
-import config from '../config'
-import { get } from '../utils/httpHelpers'
 import log from 'loglevel'
 
-const getQuote = reqObj => {
+import config from '../config'
+import { get } from '../utils/httpHelpers'
+
+const getQuote = () => {
+  let response
   try {
     const options = {
       headers: {
@@ -10,10 +12,11 @@ const getQuote = reqObj => {
         Accept: 'application/json'
       }
     }
-    return get(`${config.rampInstantAssets}`, options)
-  } catch (e) {
-    log.error(e)
+    response = get(`${config.rampInstantAssets}`, options)
+  } catch (error) {
+    log.error(error)
   }
+  return response
 }
 
-export { getQuote }
+export default getQuote

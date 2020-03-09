@@ -179,6 +179,7 @@ export default {
     selectedCurrency() {
       if (this.selectedProviderObj && this.selectedProviderObj.validCurrencies.includes(this.$store.state.selectedCurrency)) {
         return this.$store.state.selectedCurrency
+      }
       return this.selectedProviderObj.validCurrencies[0]
     },
     maxOrderValue() {

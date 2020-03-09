@@ -1,17 +1,18 @@
 <template>
   <WalletTopupBase
-    selectedProvider="rampnetwork"
+    selected-provider="rampnetwork"
+    :crypto-currency-value="cryptoCurrencyValue"
+    :currency-rate="currencyRate"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
-    :cryptoCurrencyValue="cryptoCurrencyValue"
-    :currencyRate="currencyRate"
   />
 </template>
 
 <script>
 import throttle from 'lodash.throttle'
-import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 import log from 'loglevel'
+
+import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 
 export default {
   components: {
@@ -31,7 +32,7 @@ export default {
         self.$store
           .dispatch('fetchRampNetworkQuote', payload)
           .then(result => {
-            const asset = result.assets.find(asset => asset.symbol === payload.selectedCryptoCurrency)
+            const asset = result.assets.find(item => item.symbol === payload.selectedCryptoCurrency)
 
             const fiat = payload.fiatValue
             const feeRate = asset.maxFeePercent[payload.selectedCurrency] / 100
@@ -43,15 +44,17 @@ export default {
             self.cryptoCurrencySymbol = asset.symbol
             self.currencyRate = asset.price[payload.selectedCurrency]
             self.currentOrder = {
-              cryptoCurrencyValue: cryptoValue * Math.pow(10, asset.decimals),
+              cryptoCurrencyValue: cryptoValue * 10 ** asset.decimals,
               cryptoCurrencySymbol: asset.symbol
             }
           })
-          .catch(err => log.error(err))
+          .catch(error => log.error(error))
       }, 0)()
     },
-    sendOrder(cb) {
-      cb(this.$store.dispatch('fetchRampNetworkOrder', { currentOrder: this.currentOrder, colorCode: this.$vuetify.theme.themes.light.primary }))
+    sendOrder(callback) {
+      callback(
+        this.$store.dispatch('fetchRampNetworkOrder', { currentOrder: this.currentOrder, colorCode: this.$vuetify.theme.themes.light.primary })
+      )
     }
   }
 }

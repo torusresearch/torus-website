@@ -1,1 +1,1 @@
-export { default } from './WalletTopupRampNetwork'
+export { default } from './WalletTopupRampNetwork.vue'
