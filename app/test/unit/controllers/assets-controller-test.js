@@ -1,6 +1,5 @@
 /* eslint-disable */
 import assert from 'assert'
-import fetchMock from 'fetch-mock'
 import nock from 'nock'
 import { createSandbox } from 'sinon'
 
@@ -13,7 +12,7 @@ const KUDOSADDRESS = '0x2aea4add166ebf38b63d09a75de1a7b94aa24163'
 const TEST_ADDRESS = '0x0DCD5D886577d5081B0c52e242Ef29E70Be3E7bc'
 const TEST_ADDRESS_2 = '0xec1adf982415d2ef5ec55899b9bfb8bc0f29251b'
 const TEST_ADDRESS_3 = '0xeb9e64b93097bc15f01f13eae97015c57ab64823'
-const OPEN_SEA_API = `https://api.tor.us/opensea?url=https://api.opensea.io/api/v1/`
+const OPEN_SEA_API = `https://api.tor.us`
 
 describe('AssetsController', () => {
   let assetsController
@@ -37,109 +36,79 @@ describe('AssetsController', () => {
       network
     })
     assetsController.setJwtToken('hello')
-    fetchMock.getOnce(
-      `${OPEN_SEA_API}asset_contract/foo`,
-      () => ({
-        body: JSON.stringify({
-          data: {
-            description: 'Description',
-            image_url: 'url',
-            name: 'Name',
-            symbol: 'FOO',
-            total_supply: 0
-          }
-        })
-      }),
-      { overwriteRoutes: true, method: 'GET' }
-    )
+    nock(OPEN_SEA_API)
+      .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/foo')
+      .reply(200, {
+        data: {
+          description: 'Description',
+          image_url: 'url',
+          name: 'Name',
+          symbol: 'FOO',
+          total_supply: 0
+        }
+      })
+      .log(noop)
 
-    fetchMock.getOnce(
-      `${OPEN_SEA_API}asset_contract/fou`,
-      () => ({
-        body: JSON.stringify({
-          data: {
-            description: 'Description',
-            image_url: 'url',
-            name: 'Name',
-            symbol: 'FOU',
-            total_supply: 10
-          }
-        })
-      }),
-      { overwriteRoutes: true, method: 'GET' }
-    )
-    fetchMock.getOnce(
-      `${OPEN_SEA_API}asset/foo/1`,
-      () => ({
-        body: JSON.stringify({
-          data: {
-            description: 'Description',
-            image_original_url: 'url',
-            name: 'Name'
-          }
-        })
-      }),
-      { overwriteRoutes: true, method: 'GET' }
-    )
-    fetchMock.getOnce(
-      `${OPEN_SEA_API}asset/0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163/1203`,
-      () => ({
-        body: JSON.stringify({
-          data: {
-            description: 'Kudos Description',
-            image_original_url: 'Kudos url',
-            name: 'Kudos Name'
-          }
-        })
-      }),
-      { overwriteRoutes: true, method: 'GET' }
-    )
-    fetchMock.getOnce(
-      'https://ipfs.gitcoin.co:443/api/v0/cat/QmPmt6EAaioN78ECnW5oCL8v2YvVSpoBjLCjrXhhsAvoov',
-      () => ({
-        body: JSON.stringify({
-          image: 'Kudos Image',
+    nock(OPEN_SEA_API)
+      .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/fou')
+      .reply(200, {
+        data: {
+          description: 'Description',
+          image_url: 'url',
+          name: 'Name',
+          symbol: 'FOU',
+          total_supply: 10
+        }
+      })
+
+    nock(OPEN_SEA_API)
+      .get('/opensea?url=https://api.opensea.io/api/v1/asset/foo/1')
+      .reply(200, {
+        data: {
+          description: 'Description',
+          image_original_url: 'url',
+          name: 'Name'
+        }
+      })
+    nock(OPEN_SEA_API)
+      .get('/opensea?url=https://api.opensea.io/api/v1/asset/0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163/1203')
+      .reply(200, {
+        data: {
+          description: 'Kudos Description',
+          image_original_url: 'Kudos url',
           name: 'Kudos Name'
-        })
-      }),
-      { overwriteRoutes: true, method: 'GET' }
-    )
-    fetchMock.getOnce(
-      `${OPEN_SEA_API}asset/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab/798958393`,
-      () => ({
-        throws: new TypeError('Failed to fetch')
-      }),
-      { overwriteRoutes: true, method: 'GET' }
-    )
-    fetchMock.getOnce(
-      `${OPEN_SEA_API}asset_contract/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab`,
-      () => ({
-        throws: new TypeError('Failed to fetch')
-      }),
-      { overwriteRoutes: true, method: 'GET' }
-    )
-    fetchMock.getOnce(
-      `${OPEN_SEA_API}asset_contract/0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163`,
-      () => ({
-        body: JSON.stringify({
-          data: {
-            description: 'Kudos Description',
-            image_url: 'Kudos url',
-            name: 'Kudos',
-            symbol: 'KDO',
-            total_supply: 10
-          }
-        })
-      }),
-      { overwriteRoutes: true, method: 'GET' }
-    )
+        }
+      })
+    nock('https://ipfs.gitcoin.co:443')
+      .get('/api/v0/cat/QmPmt6EAaioN78ECnW5oCL8v2YvVSpoBjLCjrXhhsAvoov')
+      .reply(200, {
+        image: 'Kudos Image',
+        name: 'Kudos Name'
+      })
+    nock(OPEN_SEA_API)
+      .get('/opensea?url=https://api.opensea.io/api/v1/asset/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab/798958393')
+      .replyWithError(new TypeError('failed to fetch'))
+
+    nock(OPEN_SEA_API)
+      .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/0x6EbeAf8e8E946F0716E6533A6f2cefc83f60e8Ab')
+      .replyWithError(new TypeError('failed to fetch'))
+
+    nock(OPEN_SEA_API)
+      .get('/opensea?url=https://api.opensea.io/api/v1/asset_contract/0x2aEa4Add166EBf38b63d09a75dE1a7b94Aa24163')
+      .reply(200, {
+        data: {
+          description: 'Kudos Description',
+          image_url: 'Kudos url',
+          name: 'Kudos',
+          symbol: 'KDO',
+          total_supply: 10
+        }
+      })
   })
 
   afterEach(() => {
     sandbox.reset()
     nock.cleanAll()
-    fetchMock.reset()
-    fetchMock.resetBehavior()
   })
 
   it('should set default state', () => {
