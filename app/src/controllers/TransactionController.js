@@ -8,7 +8,7 @@ import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import EventEmitter from 'safe-event-emitter'
-import { sha3, toChecksumAddress } from 'web3-utils'
+import { isAddress, sha3, toChecksumAddress } from 'web3-utils'
 
 import erc721Contracts from '../assets/assets-map.json'
 import AbiDecoder from '../utils/abiDecoder'
@@ -646,7 +646,8 @@ class TransactionController extends EventEmitter {
   */
   async _determineTransactionCategory(txParameters) {
     const { data, to } = txParameters
-    const checkSummedTo = to && toChecksumAddress(to)
+    let checkSummedTo = to
+    if (isAddress(to)) checkSummedTo = toChecksumAddress(to)
     const decodedERC721 = data && collectibleABIDecoder.decodeMethod(data)
     const decodedERC20 = data && tokenABIDecoder.decodeMethod(data)
     log.debug('_determineTransactionCategory', decodedERC20, decodedERC721)
