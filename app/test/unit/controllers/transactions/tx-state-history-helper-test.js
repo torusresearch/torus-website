@@ -1,7 +1,7 @@
 /* eslint-disable */
-const assert = require('assert')
-const txStateHistoryHelper = require('../../../../src/utils/tx-state-history-helper').default
-const testVault = require('../../../data/v17-long-history.json')
+import assert from 'assert'
+import txStateHistoryHelper from '../../../../src/utils/tx-state-history-helper'
+import testVault from '../../../data/v17-long-history.json'
 
 describe('Transaction state history helper', () => {
   describe('#snapshotFromTxMeta', () => {

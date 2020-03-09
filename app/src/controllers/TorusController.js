@@ -205,17 +205,12 @@ export default class TorusController extends EventEmitter {
       },
       version,
       // account mgmt
-      getAccounts: async ({ _ }) => {
+      getAccounts: async () => {
         // Expose no accounts if this origin has not been approved, preventing
         // account-requiring RPC methods from completing successfully
         // only show address if account is unlocked
-        if (typeof this.opts.storeProps === 'function') {
-          const { selectedAddress } = this.opts.storeProps()
-          if (selectedAddress) {
-            return [selectedAddress]
-          }
-        }
-        return []
+        log.info(this.prefsController.state.selectedAddress)
+        return [this.prefsController.state.selectedAddress]
       },
       // tx signing
       processTransaction: this.newUnapprovedTransaction.bind(this),
@@ -345,10 +340,11 @@ export default class TorusController extends EventEmitter {
   }
 
   setSelectedAccount(address, options) {
-    if (options.jwtToken) {
+    const { jwtToken = '' } = options || {}
+    if (jwtToken) {
       this.assetDetectionController.jwtToken = options.jwtToken
       this.assetController.jwtToken = options.jwtToken
-      this.prefsController.jwtToken = options.jwtToken
+      // this.prefsController.jwtToken = options.jwtToken
     }
     this.detectTokensController.startTokenDetection(address)
     this.assetDetectionController.startAssetDetection(address)
@@ -453,12 +449,10 @@ export default class TorusController extends EventEmitter {
 
     // sets the status op the message to 'approved'
     // and removes the metamaskId for signing
+    // signs the message
     return this.messageManager
       .approveMessage(messageParameters)
-      .then(cleanMessageParameters => {
-        // signs the message
-        this.keyringController.signMessage(cleanMessageParameters.from, cleanMessageParameters.data)
-      })
+      .then(cleanMessageParameters => this.keyringController.signMessage(cleanMessageParameters.from, cleanMessageParameters.data))
       .then(rawSig => {
         // tells the listener that the message has been signed
         // and can be returned to the dapp
@@ -513,12 +507,10 @@ export default class TorusController extends EventEmitter {
     const messageId = messageParameters.metamaskId
     // sets the status op the message to 'approved'
     // and removes the metamaskId for signing
+    // signs the message
     return this.personalMessageManager
       .approveMessage(messageParameters)
-      .then(cleanMessageParameters => {
-        // signs the message
-        this.keyringController.signPersonalMessage(cleanMessageParameters.from, cleanMessageParameters.data)
-      })
+      .then(cleanMessageParameters => this.keyringController.signPersonalMessage(cleanMessageParameters.from, cleanMessageParameters.data))
       .then(rawSig => {
         // tells the listener that the message has been signed
         // and can be returned to the dapp

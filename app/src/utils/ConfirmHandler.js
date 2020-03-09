@@ -16,7 +16,7 @@ class ConfirmHandler {
     this.bc = new BroadcastChannel(`torus_channel_${torusInstanceId}`, broadcastChannelOptions)
   }
 
-  open = (handleConfirm, handleDeny) => {
+  open(handleConfirm, handleDeny) {
     const finalUrl = `${baseRoute}confirm?instanceId=${this.torusInstanceId}&integrity=true&id=${this.id}`
     this.confirmWindow = new PopupHandler({
       url: finalUrl,
@@ -40,7 +40,7 @@ class ConfirmHandler {
     })
   }
 
-  sendTx = async () => {
+  async sendTx() {
     await this.bc.postMessage({
       name: 'send-params',
       data: {
@@ -57,7 +57,7 @@ class ConfirmHandler {
     })
   }
 
-  sendMessage = async () => {
+  async sendMessage() {
     await this.bc.postMessage({
       name: 'send-params',
       data: {
@@ -73,7 +73,7 @@ class ConfirmHandler {
     })
   }
 
-  handle = async ev => {
+  async handle(ev) {
     const { name, data: { id = '', type = '', txType = '' } = {} } = ev
     if (name === 'popup-loaded' && id.toString() === this.id.toString()) {
       if (this.isTx) this.sendTx()

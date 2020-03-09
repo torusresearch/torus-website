@@ -6,7 +6,7 @@
 
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
-import { toChecksumAddress } from 'web3-utils'
+import { isAddress, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import { get } from '../utils/httpHelpers'
@@ -15,21 +15,41 @@ const initStateObject = { allCollectibleContracts: {}, allCollectibles: {}, allT
 
 export default class AssetController {
   constructor(options = {}) {
-    const initState = {
-      accounts: {}
-    }
     this.name = 'AssetsController'
-    this.store = new ObservableStore(initState)
+    this.store = new ObservableStore(initStateObject)
     this.network = options.network
     this.assetContractController = options.assetContractController
     this.selectedAddress = options.selectedAddress
-    if (this.selectedAddress) this.store.updateState({ accounts: { [this.selectedAddress]: initStateObject } })
     this.jwtToken = ''
+    this.initializeNetworkSubscription()
+  }
+
+  get state() {
+    return this.store.getState()
+  }
+
+  initializeNetworkSubscription() {
+    this.network.store.subscribe(({ provider }) => {
+      const { allCollectibleContracts, allCollectibles, allTokens } = this.state
+      const { selectedAddress } = this
+      const networkType = provider.type
+      this.store.updateState({
+        collectibleContracts: (allCollectibleContracts[selectedAddress] && allCollectibleContracts[selectedAddress][networkType]) || [],
+        collectibles: (allCollectibles[selectedAddress] && allCollectibles[selectedAddress][networkType]) || [],
+        tokens: (allTokens[selectedAddress] && allTokens[selectedAddress][networkType]) || []
+      })
+    })
   }
 
   setSelectedAddress(address) {
     this.selectedAddress = address
-    this.store.updateState({ accounts: { ...this.store.getState().accounts, [address]: initStateObject } })
+    const { allCollectibleContracts, allCollectibles, allTokens } = this.state
+    const networkType = this.network.getNetworkNameFromNetworkCode()
+    this.store.updateState({
+      collectibleContracts: (allCollectibleContracts[address] && allCollectibleContracts[address][networkType]) || [],
+      collectibles: (allCollectibles[address] && allCollectibles[address][networkType]) || [],
+      tokens: (allTokens[address] && allTokens[address][networkType]) || []
+    })
   }
 
   setJwtToken(jwtToken) {
@@ -74,7 +94,7 @@ export default class AssetController {
    */
   async getCollectibleInformationFromApi(contractAddress, tokenId) {
     const tokenURI = this.getCollectibleApi(contractAddress, tokenId)
-    const collectibleInformation = await get(`${config.api}/opensea?url=${encodeURIComponent(tokenURI)}`, {
+    const collectibleInformation = await get(`${config.api}/opensea?url=${tokenURI}`, {
       headers: {
         Authorization: `Bearer ${this.jwtToken}`
       }
@@ -138,7 +158,7 @@ export default class AssetController {
     const api = this.getCollectibleContractInformationApi(contractAddress)
     /* istanbul ignore if */
 
-    const collectibleContractObject = await get(`${config.api}/opensea?url=${encodeURIComponent(api)}`, {
+    const collectibleContractObject = await get(`${config.api}/opensea?url=${api}`, {
       headers: {
         Authorization: `Bearer ${this.jwtToken}`
       }
@@ -201,9 +221,11 @@ export default class AssetController {
    */
   async addIndividualCollectible(address2, tokenId, options) {
     try {
-      const address = toChecksumAddress(address2)
+      let address
+      if (isAddress(address)) address = toChecksumAddress(address2)
+      else address = address2
       const { selectedAddress } = this
-      const initState = this.store.getState().accounts[selectedAddress]
+      const initState = this.state
       const { allCollectibles, collectibles } = initState
       const networkType = this.network.getNetworkNameFromNetworkCode()
       const existingEntry = collectibles.find(collectible => collectible.address === address && collectible.tokenId === tokenId)
@@ -217,10 +239,8 @@ export default class AssetController {
       const newAddressCollectibles = { ...addressCollectibles, ...{ [networkType]: newCollectibles } }
       const newAllCollectibles = { ...allCollectibles, ...{ [selectedAddress]: newAddressCollectibles } }
       this.store.updateState({
-        accounts: {
-          ...this.store.getState().accounts,
-          [selectedAddress]: { ...initState, allCollectibles: newAllCollectibles, collectibles: newCollectibles }
-        }
+        allCollectibles: newAllCollectibles,
+        collectibles: newCollectibles
       })
 
       return newCollectibles
@@ -233,7 +253,7 @@ export default class AssetController {
   /**
    * Adds a token to the stored token list
    *
-   * @param address - Hex address of the token contract
+   * @param address2 - Hex address of the token contract
    * @param symbol - Symbol of the token
    * @param decimals - Number of decimals the token uses
    * @param image - Image of the token
@@ -241,15 +261,15 @@ export default class AssetController {
    */
   async addToken(address2, symbol, decimals, image) {
     try {
-      const address = toChecksumAddress(address2)
+      let address
+      if (isAddress(address)) address = toChecksumAddress(address2)
+      else address = address2
       const { selectedAddress } = this
-      const initState = this.store.getState().accounts[selectedAddress]
-      const { allTokens, tokens } = initState
-      const { networkType } = this.network.getNetworkNameFromNetworkCode()
+      const { allTokens, tokens } = this.state
+      const networkType = this.network.getNetworkNameFromNetworkCode()
       const newEntry = { address, symbol, decimals, image }
-      const previousEntry = tokens.find(token => token.address === address)
-      if (previousEntry) {
-        const previousIndex = tokens.indexOf(previousEntry)
+      const previousIndex = tokens.findIndex(token => token.address === address)
+      if (previousIndex > -1) {
         tokens[previousIndex] = newEntry
       } else {
         tokens.push(newEntry)
@@ -259,16 +279,14 @@ export default class AssetController {
       const newAllTokens = { ...allTokens, [selectedAddress]: newAddressTokens }
       const newTokens = [...tokens]
       this.store.updateState({
-        accounts: {
-          ...this.store.getState().accounts,
-          [selectedAddress]: { ...initState, allTokens: newAllTokens, tokens: newTokens }
-        }
+        allTokens: newAllTokens,
+        tokens: newTokens
       })
       return newTokens
     } catch (error) {
       log.error(error)
+      return {}
     }
-    return {}
   }
 
   /**
@@ -279,17 +297,18 @@ export default class AssetController {
    * @returns - Promise resolving to the current collectible contracts list
    */
   async addCollectibleContract(address2, detection, options) {
-    const address = toChecksumAddress(address2)
+    let address
+    if (isAddress(address)) address = toChecksumAddress(address2)
+    else address = address2
     const { selectedAddress } = this
-    const initState = this.store.getState().accounts[selectedAddress]
-    const { allCollectibleContracts, collectibleContracts } = initState
+    const { allCollectibleContracts, collectibleContracts } = this.state
     const networkType = this.network.getNetworkNameFromNetworkCode()
     const existingEntry = collectibleContracts.find(collectibleContract => collectibleContract.address === address)
     if (existingEntry) {
       return collectibleContracts
     }
     let contractInformation
-    if (options) {
+    if (options && Object.prototype.hasOwnProperty.call(options, 'contractName')) {
       contractInformation = {
         name: options.contractName,
         symbol: options.contractSymbol,
@@ -325,10 +344,8 @@ export default class AssetController {
       [selectedAddress]: newAddressCollectibleContracts
     }
     this.store.updateState({
-      accounts: {
-        ...this.store.getState().accounts,
-        [selectedAddress]: { ...initState, allCollectibleContracts: newAllCollectibleContracts, collectibleContracts: newCollectibleContracts }
-      }
+      allCollectibleContracts: newAllCollectibleContracts,
+      collectibleContracts: newCollectibleContracts
     })
     return newCollectibleContracts
   }
@@ -344,14 +361,15 @@ export default class AssetController {
    */
   async addCollectible(address2, tokenId, options, detection) {
     try {
-      const address = toChecksumAddress(address2)
+      let address
+      if (isAddress(address)) address = toChecksumAddress(address2)
+      else address = address2
       const newCollectibleContracts = await this.addCollectibleContract(address, detection, options)
       // If collectible contract was not added, do not add individual collectible
       const collectibleContract = newCollectibleContracts.find(contract => contract.address === address)
 
       // If collectible contract information, add individual collectible
       if (collectibleContract) {
-        // log.info('AssetController: addCollectible(): addingIndividualCollectible')
         await this.addIndividualCollectible(address, tokenId, options)
       }
     } catch (error) {

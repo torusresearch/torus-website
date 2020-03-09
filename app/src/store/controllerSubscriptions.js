@@ -58,19 +58,15 @@ export function transactionControllerHandler({ transactions }) {
   }
 }
 
-export function assetControllerHandler({ accounts }) {
-  for (const key in accounts) {
-    if (Object.prototype.hasOwnProperty.call(accounts, key)) {
-      const { collectibleContracts, collectibles } = accounts[key]
-      const finalCollectibles = collectibleContracts.map(contract => {
-        contract.assets = collectibles.filter(asset => asset.address === contract.address)
-        return contract
-      })
-      getStore().commit('setAssets', {
-        [key]: finalCollectibles
-      })
-    }
-  }
+export function assetControllerHandler(store) {
+  const { collectibleContracts, collectibles } = store
+  const finalCollectibles = collectibleContracts.map(contract => {
+    contract.assets = collectibles.filter(asset => asset.address === contract.address)
+    return contract
+  })
+  getStore().commit('setAssets', {
+    [torus.torusController.assetController.selectedAddress]: finalCollectibles
+  })
 }
 
 export function typedMessageManagerHandler({ unapprovedTypedMessages }) {

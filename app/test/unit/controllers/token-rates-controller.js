@@ -1,8 +1,8 @@
 /* eslint-disable */
-const assert = require('assert')
-const sinon = require('sinon')
-const TokenRatesController = require('../../../src/controllers/TokenRatesController').default
-const ObservableStore = require('obs-store')
+import assert from 'assert'
+import sinon from 'sinon'
+import TokenRatesController from '../../../src/controllers/TokenRatesController'
+import ObservableStore from 'obs-store'
 
 describe('TokenRatesController', () => {
   it('should listen for preferences store updates', () => {

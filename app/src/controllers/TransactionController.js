@@ -8,7 +8,7 @@ import tokenAbi from 'human-standard-token-abi'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import EventEmitter from 'safe-event-emitter'
-import { sha3, toChecksumAddress } from 'web3-utils'
+import { isAddress, sha3, toChecksumAddress } from 'web3-utils'
 
 import erc721Contracts from '../assets/assets-map.json'
 import AbiDecoder from '../utils/abiDecoder'
@@ -646,7 +646,8 @@ class TransactionController extends EventEmitter {
   */
   async _determineTransactionCategory(txParameters) {
     const { data, to } = txParameters
-    const checkSummedTo = toChecksumAddress(to)
+    let checkSummedTo = to
+    if (isAddress(to)) checkSummedTo = toChecksumAddress(to)
     const decodedERC721 = data && collectibleABIDecoder.decodeMethod(data)
     const decodedERC20 = data && tokenABIDecoder.decodeMethod(data)
     log.debug('_determineTransactionCategory', decodedERC20, decodedERC721)
@@ -665,7 +666,7 @@ class TransactionController extends EventEmitter {
       )
       methodParameters = params
       contractParameters = tokenObject
-    } else if (Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, checkSummedTo.toLowerCase())) {
+    } else if (checkSummedTo && Object.prototype.hasOwnProperty.call(OLD_ERC721_LIST, checkSummedTo.toLowerCase())) {
       // For Cryptokitties
       tokenMethodName = COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM
       contractParameters = Object.prototype.hasOwnProperty.call(erc721Contracts, checkSummedTo.toLowerCase())
@@ -676,7 +677,7 @@ class TransactionController extends EventEmitter {
       contractParameters.erc721 = true
       contractParameters.isSpecial = true
       methodParameters = ck20.params
-    } else if (decodedERC20) {
+    } else if (checkSummedTo && decodedERC20) {
       // fallback to erc20
       const { name = '', params } = decodedERC20
       tokenMethodName = [TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].find(
@@ -685,7 +686,7 @@ class TransactionController extends EventEmitter {
       methodParameters = params
       contractParameters.erc20 = true
       contractParameters.symbol = 'ERC20'
-    } else if (decodedERC721) {
+    } else if (checkSummedTo && decodedERC721) {
       // Next give preference to erc721
       const { name = '', params } = decodedERC721
       // transferFrom & approve of ERC721 can't be distinguished from ERC20
@@ -783,11 +784,10 @@ class TransactionController extends EventEmitter {
   _updateMemstore() {
     this.pendingTxTracker.updatePendingTxs()
     const unapprovedTxs = this.txStateManager.getUnapprovedTxList()
-    const selectedAddressTxList = this.txStateManager.getFilteredTxList({
-      from: this.getSelectedAddress(),
+    const currentNetworkTxList = this.txStateManager.getFilteredTxList({
       metamaskNetworkId: this.getNetwork()
     })
-    this.memStore.updateState({ unapprovedTxs, selectedAddressTxList })
+    this.memStore.updateState({ unapprovedTxs, currentNetworkTxList })
   }
 }
 

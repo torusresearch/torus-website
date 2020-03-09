@@ -1,4 +1,4 @@
-const { addHexPrefix, isValidAddress } = require('ethereumjs-util')
+import { addHexPrefix, isValidAddress } from 'ethereumjs-util'
 
 /**
 @module
