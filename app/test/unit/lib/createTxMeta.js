@@ -1,15 +1,9 @@
-const txStateHistoryHelper = require('../../../src/utils/tx-state-history-helper')
+import txStateHistoryHelper from '../../../src/utils/tx-state-history-helper'
 
-module.exports = createTxMeta
+export default createTxMeta
 
 function createTxMeta(partialMeta) {
-  const txMeta = Object.assign(
-    {
-      status: 'unapproved',
-      txParams: {}
-    },
-    partialMeta
-  )
+  const txMeta = { status: 'unapproved', txParams: {}, ...partialMeta }
   // initialize history
   txMeta.history = []
   // capture initial snapshot of txMeta for history

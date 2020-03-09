@@ -6,30 +6,41 @@
 </template>
 
 <script>
-import { SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
+import { MAINNET, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
 
 export default {
-  props: ['network'],
+  props: {
+    network: {
+      type: String,
+      default: ''
+    },
+    storeNetworkType: {
+      type: Object,
+      default() {
+        return { host: MAINNET, networkName: '', chainId: '' }
+      }
+    }
+  },
   computed: {
     selectedNetwork() {
-      let finalNetwork = ''
-
-      if (this.network) {
+      if (this.network && SUPPORTED_NETWORK_TYPES[this.network]) {
         return SUPPORTED_NETWORK_TYPES[this.network].networkName
       }
 
-      finalNetwork =
-        !this.$store.state.networkType.networkName || this.$store.state.networkType.networkName === ''
-          ? this.$store.state.networkType.host
-          : this.$store.state.networkType.networkName
-      return finalNetwork
+      if (this.storeNetworkType) {
+        const { host, networkName } = this.storeNetworkType
+        return networkName || host
+      }
+
+      return ''
     },
     host() {
-      return this.$store.state.networkType.host
+      return this.storeNetworkType.host
     },
     isUrlNetwork() {
       // Checks if input is a url including localhost, ip address and domain name
-      return /^((?:http(s)?:\/\/)?([\w.-]+(?:\.[\w\.-]+)+|localhost?)[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+)$/.test(this.selectedNetwork)
+      // eslint-disable-next-line unicorn/regex-shorthand
+      return /^((?:http(s)?:\/\/)?([\w-.]+(?:\.[\w-.]+)+|localhost?)[\w!#$&'()*+,\-./:;=?@[\]~]+)$/.test(this.selectedNetwork)
     }
   }
 }

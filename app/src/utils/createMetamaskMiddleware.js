@@ -31,6 +31,7 @@ export default function createMetamaskMiddleware({
       processTypedMessageV4,
       processPersonalMessage
     }),
+    createRequestAccountsMiddleware({ getAccounts }),
     createPendingNonceMiddleware({ getPendingNonce }),
     createPendingTxMiddleware({ getPendingTransactionByHash })
   ])
@@ -38,26 +39,39 @@ export default function createMetamaskMiddleware({
 }
 
 export function createPendingNonceMiddleware({ getPendingNonce }) {
-  return createAsyncMiddleware(async (req, res, next) => {
-    if (req.method !== 'eth_getTransactionCount') return next()
-    const address = req.params[0]
-    const blockRef = req.params[1]
-    if (blockRef !== 'pending') return next()
-    res.result = await getPendingNonce(address)
+  return createAsyncMiddleware(async (request, response, next) => {
+    if (request.method !== 'eth_getTransactionCount') return next()
+    const address = request.params[0]
+    const blockReference = request.params[1]
+    if (blockReference !== 'pending') return next()
+    response.result = await getPendingNonce(address)
+    return undefined
   })
 }
 
 export function createPendingTxMiddleware({ getPendingTransactionByHash }) {
-  return createAsyncMiddleware(async (req, res, next) => {
-    const { method, params } = req
-    if (method !== 'eth_getTransactionByHash') {
-      return next()
-    }
+  return createAsyncMiddleware(async (request, response, next) => {
+    const { method, params } = request
+    if (method !== 'eth_getTransactionByHash') return next()
+
     const [hash] = params
     const txMeta = getPendingTransactionByHash(hash)
     if (!txMeta) {
       return next()
     }
-    res.result = formatTxMetaForRpcResult(txMeta)
+    response.result = formatTxMetaForRpcResult(txMeta)
+    return undefined
+  })
+}
+
+export function createRequestAccountsMiddleware({ getAccounts }) {
+  return createAsyncMiddleware(async (request, response, next) => {
+    const { method } = request
+    if (method !== 'eth_requestAccounts') return next()
+
+    if (!getAccounts) throw new Error('WalletMiddleware - opts.getAccounts not provided')
+    const accounts = await getAccounts(request)
+    response.result = accounts
+    return undefined
   })
 }

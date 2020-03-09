@@ -1,90 +1,116 @@
-import log from 'loglevel'
-import store from './store'
+/* eslint-disable unicorn/prevent-abbreviations */
 import torus from '../torus'
+import { capitalizeFirstLetter } from '../utils/utils'
+// import store from './store'
+let storeReference
+let deferredDispatch = []
+function getStore() {
+  return (
+    storeReference || {
+      dispatch(...arguments_) {
+        deferredDispatch.push(() => {
+          storeReference.dispatch(...arguments_)
+        })
+      }
+    }
+  )
+}
 
-/* 
-Edited to change networkId => network state. Has an implication of changing neworkVersion 
+export function injectStore(s) {
+  storeReference = s
+  deferredDispatch.forEach(fn => fn())
+  deferredDispatch = []
+}
+
+/*
+Edited to change networkId => network state. Has an implication of changing neworkVersion
 to "loading" at times in the inpage API
  */
 
-torus.torusController.networkController.networkStore.subscribe(function(state) {
-  store.dispatch('updateNetworkId', { networkId: state })
-})
+if (torus) {
+  torus.torusController.networkController.networkStore.subscribe(state => {
+    getStore().dispatch('updateNetworkId', { networkId: state })
+  })
+}
 
-function accountTrackerHandler({ accounts }) {
+export function accountTrackerHandler({ accounts }) {
   if (accounts) {
     for (const key in accounts) {
       if (Object.prototype.hasOwnProperty.call(accounts, key)) {
         const account = accounts[key]
-        store.dispatch('updateWeiBalance', { address: account.address, balance: account.balance })
+        if (account.address) getStore().commit('setWeiBalance', { [account.address]: account.balance })
       }
     }
   }
 }
 
-function transactionControllerHandler({ transactions }) {
+export function transactionControllerHandler({ transactions }) {
   if (transactions) {
     // these transactions have negative index
     const updatedTransactions = []
-    for (let id in transactions) {
+    for (const id in transactions) {
       if (transactions[id]) {
         updatedTransactions.push(transactions[id])
       }
     }
     // log.info(updatedTransactions, 'txs')
-    store.dispatch('updateTransactions', { transactions: updatedTransactions })
+    getStore().commit('setTransactions', updatedTransactions)
   }
 }
 
-function assetControllerHandler({ accounts }) {
-  for (const key in accounts) {
-    if (Object.prototype.hasOwnProperty.call(accounts, key)) {
-      const { allCollectibleContracts, allCollectibles, collectibleContracts, collectibles } = accounts[key]
-      store.dispatch('updateAssets', {
-        allCollectibleContracts: allCollectibleContracts,
-        allCollectibles: allCollectibles,
-        collectibleContracts: collectibleContracts,
-        collectibles: collectibles,
-        selectedAddress: key
-      })
-    }
-  }
+export function assetControllerHandler(store) {
+  const { collectibleContracts, collectibles } = store
+  const finalCollectibles = collectibleContracts.map(contract => {
+    contract.assets = collectibles.filter(asset => asset.address === contract.address)
+    return contract
+  })
+  getStore().commit('setAssets', {
+    [torus.torusController.assetController.selectedAddress]: finalCollectibles
+  })
 }
 
-function typedMessageManagerHandler({ unapprovedTypedMessages }) {
-  store.dispatch('updateTypedMessages', { unapprovedTypedMessages: unapprovedTypedMessages })
+export function typedMessageManagerHandler({ unapprovedTypedMessages }) {
+  getStore().commit('setTypedMessages', unapprovedTypedMessages)
 }
 
-function personalMessageManagerHandler({ unapprovedPersonalMsgs }) {
-  store.dispatch('updatePersonalMessages', { unapprovedPersonalMsgs: unapprovedPersonalMsgs })
+export function personalMessageManagerHandler({ unapprovedPersonalMsgs }) {
+  getStore().commit('setPersonalMessages', unapprovedPersonalMsgs)
 }
 
-function messageManagerHandler({ unapprovedMsgs }) {
-  store.dispatch('updateMessages', { unapprovedMsgs: unapprovedMsgs })
+export function messageManagerHandler({ unapprovedMsgs }) {
+  getStore().commit('setMessages', unapprovedMsgs)
 }
 
-function detectTokensControllerHandler({ tokens }) {
+export function detectTokensControllerHandler({ tokens }) {
   if (tokens.length > 0) {
-    store.dispatch('updateTokenData', {
-      tokenData: tokens,
-      address: torus.torusController.detectTokensController.selectedAddress
+    getStore().commit('setTokenData', {
+      [torus.torusController.detectTokensController.selectedAddress]: tokens
     })
   }
+  getStore().commit('setTokenDataLoaded')
 }
 
-function tokenRatesControllerHandler({ contractExchangeRates }) {
+export function tokenRatesControllerHandler({ contractExchangeRates }) {
   if (contractExchangeRates) {
-    store.dispatch('updateTokenRates', { tokenRates: contractExchangeRates })
+    getStore().commit('setTokenRates', contractExchangeRates)
   }
 }
 
-export {
-  accountTrackerHandler,
-  transactionControllerHandler,
-  assetControllerHandler,
-  typedMessageManagerHandler,
-  personalMessageManagerHandler,
-  messageManagerHandler,
-  detectTokensControllerHandler,
-  tokenRatesControllerHandler
+export function prefsControllerHandler(state) {
+  // console.log(state, 'hek')
+  Object.keys(state).forEach(x => {
+    getStore().commit(`set${capitalizeFirstLetter(x)}`, state[x])
+  })
+}
+
+export function successMsgHandler(message) {
+  getStore().commit('setSuccessMsg', message)
+}
+
+export function errorMsgHandler(error) {
+  getStore().commit('setErrorMsg', error)
+}
+
+export function metadataHandler(state) {
+  getStore().commit('setMetaData', state)
 }

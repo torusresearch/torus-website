@@ -5,9 +5,9 @@ module.exports = createOriginMiddleware
  * @param {{ origin: string }} opts - The middleware options
  * @returns {Function}
  */
-function createOriginMiddleware(opts) {
-  return function originMiddleware(/** @type {any} */ req, /** @type {any} */ _, /** @type {Function} */ next) {
-    req.origin = opts.origin
+function createOriginMiddleware(options) {
+  return function originMiddleware(/** @type {any} */ request, /** @type {any} */ _, /** @type {Function} */ next) {
+    request.origin = options.origin
     next()
   }
 }

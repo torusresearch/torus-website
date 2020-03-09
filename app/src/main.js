@@ -1,9 +1,11 @@
-import log from 'loglevel'
-import Vue from 'vue'
-import App from './App.vue'
-import { vuetify } from './plugins'
 import './registerServiceWorker'
 import './reset.css'
+
+import log from 'loglevel'
+import Vue from 'vue'
+
+import App from './App.vue'
+import { vuetify } from './plugins'
 import router from './router'
 import store from './store'
 // import torus from './torus'
@@ -12,9 +14,9 @@ log.enableAll()
 Vue.config.productionTip = false
 
 // Loglevel init
-const buildEnv = process.env.VUE_APP_TORUS_BUILD_ENV
+const buildEnvironment = process.env.VUE_APP_TORUS_BUILD_ENV
 let logLevel
-switch (buildEnv) {
+switch (buildEnvironment) {
   case 'staging':
     logLevel = 'info'
     log.setDefaultLevel(logLevel)
@@ -37,7 +39,9 @@ log.info('VUE_APP_TORUS_BUILD_ENV', process.env.VUE_APP_TORUS_BUILD_ENV)
 Vue.mixin({
   methods: {
     t(data) {
-      return vuetify.framework.lang.t(`$vuetify.${data}`)
+      if (data === '') return data
+      const translated = vuetify.framework.lang.t(`$vuetify.${data}`)
+      return translated.replace('$vuetify.', '')
     }
   }
 })

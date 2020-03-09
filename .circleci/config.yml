@@ -1,4 +1,8 @@
 version: 2
+job_common_base: &job_common_base
+  docker:
+    - image: circleci/buildpack-deps
+  working_directory: ~/torus-website/app
 job_common: &job_common
   docker:
     - image: skyuppercut/node-puppeteer
@@ -15,10 +19,9 @@ step_setup_global_packages: &step_setup_global_packages
   run:
     name: "Set up global packages"
     command: |
-      npm install
-      find ./node_modules/ -name ".git" -type d -exec rm -rf {} +
+      [ ! -d "node_modules" ] && npm install && find ./node_modules/ -name ".git" -type d -exec rm -rf {} + || echo "node_modules exist"
 update_lambda_job: &update_lambda_job
-  <<: *job_common
+  <<: *job_common_base
   steps:
     - attach_workspace:
         at: ~/torus-website
@@ -26,11 +29,11 @@ update_lambda_job: &update_lambda_job
     - run:
         name: "Update lambda version"
         command: |
-          mkdir -p ~/.ssh
+          mkdir -p ~/.ssh 
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
           . ./scripts/updateLambda.sh
 update_iframeIntegrity: &update_iframeIntegrity
-  <<: *job_common
+  <<: *job_common_base
   steps:
     - attach_workspace:
         at: ~/torus-website
@@ -42,7 +45,7 @@ update_iframeIntegrity: &update_iframeIntegrity
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
           . ./scripts/updateIframeIntegrity.sh
 deploy_function: &deploy_function
-  <<: *job_common
+  <<: *job_common_base
   steps:
     - attach_workspace:
         at: ~/torus-website
@@ -73,15 +76,16 @@ jobs:
           path: ~/torus-website
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
-      - setup_remote_docker
       - run:
           name: "Running unit tests with coverage"
           command: npm run test:coverage-codecov
+      - <<: *step_save_cache
       # Save coverage artifacts
       - store_artifacts:
           path: coverage
   build:
     <<: *job_common
+    resource_class: large
     steps:
       - checkout:
           path: ~/torus-website
@@ -98,6 +102,7 @@ jobs:
       - <<: *step_save_cache
   build-staging:
     <<: *job_common
+    resource_class: large
     steps:
       - checkout:
           path: ~/torus-website
@@ -126,6 +131,7 @@ jobs:
     <<: *update_iframeIntegrity
   build-testing:
     <<: *job_common
+    resource_class: large
     steps:
       - checkout:
           path: ~/torus-website
@@ -142,6 +148,7 @@ jobs:
       - <<: *step_save_cache
   build-lrc:
         <<: *job_common
+        resource_class: large
         steps:
           - checkout:
               path: ~/torus-website
@@ -157,7 +164,7 @@ jobs:
                 - .
           - <<: *step_save_cache
   deploy-testing:
-    <<: *job_common
+    <<: *job_common_base
     steps:
       - attach_workspace:
           at: ~/torus-website
@@ -170,7 +177,7 @@ jobs:
             tar czf - dist/ | ssh torus@testing.tor.us "cat > ~/testing-torus-website/dist.tgz"
             ssh torus@testing.tor.us "cd ~/testing-torus-website && tar zxvf dist.tgz"
   deploy-lrc:
-    <<: *job_common
+    <<: *job_common_base
     steps:
       - attach_workspace:
           at: ~/torus-website

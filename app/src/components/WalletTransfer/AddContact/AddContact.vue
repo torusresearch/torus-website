@@ -1,12 +1,12 @@
 <template>
-  <v-dialog v-model="addContactDialoag" width="400">
+  <v-dialog v-model="addContactDialog" width="400">
     <template v-slot:activator="{ on }">
       <v-btn depressed x-small block class="caption primary lighten-5 primary--text add-contact-alert" v-on="on">
         {{ t('walletTransfer.clickToAddContact') }}
       </v-btn>
     </template>
     <v-card class="add-contact-container">
-      <v-form ref="addContactForm" v-model="contactFormValid" @submit="addContact" lazy-validation>
+      <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation @submit.prevent="addContact">
         <v-card-text class="text_1--text py-6">
           <v-layout wrap>
             <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
@@ -22,7 +22,7 @@
 
         <v-card-actions class="pb-6">
           <v-flex xs6>
-            <v-btn block text color="text_2" @click="addContactDialoag = false">{{ t('walletTransfer.cancel') }}</v-btn>
+            <v-btn block text color="text_2" @click="addContactDialog = false">{{ t('walletTransfer.cancel') }}</v-btn>
           </v-flex>
           <v-divider vertical></v-divider>
           <v-flex xs6>
@@ -35,19 +35,31 @@
 </template>
 
 <script>
-import { GOOGLE, REDDIT, DISCORD, ETH, ETH_LABEL, GOOGLE_LABEL, REDDIT_LABEL, DISCORD_LABEL } from '../../../utils/enums'
+import log from 'loglevel'
+
+import { DISCORD, DISCORD_LABEL, ENS, ENS_LABEL, ETH, ETH_LABEL, GOOGLE, GOOGLE_LABEL, REDDIT, REDDIT_LABEL } from '../../../utils/enums'
 
 const VERIFIER_LABELS = {
   [ETH]: ETH_LABEL,
   [GOOGLE]: GOOGLE_LABEL,
   [REDDIT]: REDDIT_LABEL,
-  [DISCORD]: DISCORD_LABEL
+  [DISCORD]: DISCORD_LABEL,
+  [ENS]: ENS_LABEL
 }
 export default {
-  props: ['verifier', 'contact'],
+  props: {
+    verifier: {
+      type: String,
+      default: ''
+    },
+    contact: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
-      addContactDialoag: false,
+      addContactDialog: false,
       contactFormValid: true,
       newContactName: '',
       rules: {
@@ -57,27 +69,27 @@ export default {
   },
   computed: {
     verifierLabels() {
-      return Object.keys(VERIFIER_LABELS).reduce((acc, curr) => {
-        acc[curr] = this.t(VERIFIER_LABELS[curr])
-        return acc
+      return Object.keys(VERIFIER_LABELS).reduce((accumulator, current) => {
+        accumulator[current] = this.t(VERIFIER_LABELS[current])
+        return accumulator
       }, {})
     }
   },
   methods: {
-    addContact(e) {
-      if (this.$refs.addContactForm.validate()) {
-        e.preventDefault()
-        this.$store
-          .dispatch('addContact', {
-            contact: this.contact,
-            verifier: this.verifier,
-            name: this.newContactName
-          })
-          .then(response => {
-            this.newContactName = ''
-            this.addContactDialoag = false
-            // this.$refs.addContactForm.resetValidation()
-          })
+    async addContact() {
+      if (!this.$refs.addContactForm.validate()) return
+      this.$refs.addContactForm.resetValidation()
+      try {
+        await this.$store.dispatch('addContact', {
+          contact: this.contact,
+          verifier: this.verifier,
+          name: this.newContactName
+        })
+      } catch (error) {
+        log.error(error)
+      } finally {
+        this.newContactName = ''
+        this.addContactDialog = false
       }
     }
   }

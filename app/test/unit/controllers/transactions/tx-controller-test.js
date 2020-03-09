@@ -1,16 +1,24 @@
-const assert = require('assert')
-const EventEmitter = require('events')
-const ethUtil = require('ethereumjs-util')
-const EthTx = require('ethereumjs-tx')
-const ObservableStore = require('obs-store')
-const sinon = require('sinon')
-const TransactionController = require('../../../../src/controllers/TransactionController').default
-const { TRANSACTION_TYPE_RETRY } = require('../../../../src/utils/enums')
-const { createTestProviderTools, getTestAccounts } = require('../../../stub/provider')
+/* eslint-disable */
+import assert from 'assert'
+import EventEmitter from 'events'
+import * as ethUtil from 'ethereumjs-util'
+import EthTx from 'ethereumjs-tx'
+import ObservableStore from 'obs-store'
+import sinon from 'sinon'
+import TransactionController from '../../../../src/controllers/TransactionController'
+import {
+  TOKEN_METHOD_APPROVE,
+  TOKEN_METHOD_TRANSFER,
+  SEND_ETHER_ACTION_KEY,
+  DEPLOY_CONTRACT_ACTION_KEY,
+  CONTRACT_INTERACTION_KEY,
+  TRANSACTION_TYPE_RETRY
+} from '../../../../src/utils/enums'
+
+import { createTestProviderTools, getTestAccounts } from '../../../stub/provider'
 
 const noop = () => true
 const currentNetworkId = 42
-const netStore = new ObservableStore(currentNetworkId)
 
 describe('Transaction Controller', function() {
   let txController, provider, providerResultStub, fromAccount
@@ -32,7 +40,7 @@ describe('Transaction Controller', function() {
       getGasPrice: function() {
         return '0xee6b2800'
       },
-      networkStore: netStore,
+      networkStore: new ObservableStore(currentNetworkId),
       txHistoryLimit: 10,
       blockTracker: blockTrackerStub,
       signTransaction: ethTx =>
@@ -48,9 +56,9 @@ describe('Transaction Controller', function() {
     it('should return a state object with the right keys and datat types', function() {
       const exposedState = txController.getState()
       assert('unapprovedTxs' in exposedState, 'state should have the key unapprovedTxs')
-      assert('selectedAddressTxList' in exposedState, 'state should have the key selectedAddressTxList')
-      assert(typeof exposedState.unapprovedTxs === 'object', 'should be an object')
-      assert(Array.isArray(exposedState.selectedAddressTxList), 'should be an array')
+      assert('currentNetworkTxList' in exposedState, 'state should have the key currentNetworkTxList')
+      assert(exposedState && typeof exposedState.unapprovedTxs === 'object', 'should be an object')
+      assert(Array.isArray(exposedState.currentNetworkTxList), 'should be an array')
     })
   })
 
@@ -62,7 +70,7 @@ describe('Transaction Controller', function() {
         { id: 3, status: 'unapproved', metamaskNetworkId: currentNetworkId, txParams: {}, history: [{}] }
       ])
       const unapprovedTxCount = txController.getUnapprovedTxCount()
-      assert.strictEqual(unapprovedTxCount, 3, 'should be 3')
+      assert.equal(unapprovedTxCount, 3, 'should be 3')
     })
   })
 
@@ -74,14 +82,13 @@ describe('Transaction Controller', function() {
         { id: 3, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams: {}, history: [{}] }
       ])
       const pendingTxCount = txController.getPendingTxCount()
-      assert.strictEqual(pendingTxCount, 3, 'should be 3')
+      assert.equal(pendingTxCount, 3, 'should be 3')
     })
   })
 
   describe('#getConfirmedTransactions', function() {
-    let address
-    beforeEach(function() {
-      address = '0xc684832530fcbddae4b4230a47e991ddcec2831d'
+    it('should return the number of confirmed txs', function() {
+      const address = '0xc684832530fcbddae4b4230a47e991ddcec2831d'
       const txParams = {
         from: address,
         to: '0xc684832530fcbddae4b4230a47e991ddcec2831d'
@@ -97,10 +104,7 @@ describe('Transaction Controller', function() {
         { id: 7, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [{}] },
         { id: 8, status: 'failed', metamaskNetworkId: currentNetworkId, txParams, history: [{}] }
       ])
-    })
-
-    it('should return the number of confirmed txs', function() {
-      assert.strictEqual(txController.nonceTracker.getConfirmedTransactions(address).length, 3)
+      assert.equal(txController.nonceTracker.getConfirmedTransactions(address).length, 3)
     })
   })
 
@@ -123,11 +127,11 @@ describe('Transaction Controller', function() {
         txController.emit('newUnapprovedTx', txMeta)
         return Promise.resolve(txController.txStateManager.addTx(txMeta))
       })
+    })
 
-      afterEach(function() {
-        txController.txStateManager._saveTxList([])
-        stub.restore()
-      })
+    afterEach(function() {
+      txController.txStateManager._saveTxList([])
+      stub.restore()
     })
 
     it('should resolve when finished and status is submitted and resolve with the hash', function(done) {
@@ -155,8 +159,11 @@ describe('Transaction Controller', function() {
       })
 
       txController.newUnapprovedTransaction(txParams).catch(err => {
-        if (err.message === 'MetaMask Tx Signature: User denied transaction signature.') done()
-        else done(err)
+        if (err.message === 'Torus Tx Signature: User denied transaction signature.') {
+          done()
+        } else {
+          done(err)
+        }
       })
     })
   })
@@ -184,11 +191,7 @@ describe('Transaction Controller', function() {
           assert('history' in txMeta, 'should have a history')
 
           const memTxMeta = txController.txStateManager.getTx(txMeta.id)
-          assert.deepStrictEqual(
-            txMeta,
-            memTxMeta,
-            `txMeta should be stored in txController after adding it\n  expected: ${txMeta} \n  got: ${memTxMeta}`
-          )
+          assert.deepEqual(txMeta, memTxMeta, `txMeta should be stored in txController after adding it\n  expected: ${txMeta} \n  got: ${memTxMeta}`)
           done()
         })
         .catch(done)
@@ -202,31 +205,15 @@ describe('Transaction Controller', function() {
       })
       txController.addUnapprovedTransaction({ from: selectedAddress }).catch(done)
     })
-    // failing because of opposite behavior ##fail
-    // it('should fail if recipient is public', function(done) {
-    //   this.timeout(20000)
-    //   txController.networkStore = new ObservableStore(1)
-    //   txController
-    //     .addUnapprovedTransaction({ from: selectedAddress, to: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' })
-    //     .then(function() {
-    //       assert.fail('transaction should not have been added')
-    //       done()
-    //     })
-    //     .catch(err => {
-    //       if (err.message === 'Recipient is a public account') done()
-    //       else done(err)
-    //     })
-    // })
 
-    // eslint-disable-next-line quotes
     it("should fail if the from address isn't the selected address", function(done) {
       txController
         .addUnapprovedTransaction({ from: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' })
-        .then(function() {
+        .then(() => {
           assert.fail('transaction should not have been added')
           done()
         })
-        .catch(function() {
+        .catch(() => {
           assert.ok('pass')
           done()
         })
@@ -243,14 +230,17 @@ describe('Transaction Controller', function() {
     it('should fail if netId is loading', function(done) {
       txController.networkStore = new ObservableStore('loading')
       txController.addUnapprovedTransaction({ from: selectedAddress, to: '0x0d1d4e623D10F9FBA5Db95830F7d3839406C6AF2' }).catch(err => {
-        if (err.message === 'MetaMask is having trouble connecting to the network') done()
-        else done(err)
+        if (err.message === 'MetaMask is having trouble connecting to the network') {
+          done()
+        } else {
+          done(err)
+        }
       })
     })
   })
 
   describe('#addTxGasDefaults', function() {
-    it('should add the tx defaults if their are none', async () => {
+    it('should add the tx defaults if their are none', async function() {
       const txMeta = {
         txParams: {
           from: '0xc684832530fcbddae4b4230a47e991ddcec2831d',
@@ -291,7 +281,7 @@ describe('Transaction Controller', function() {
       })
       Promise.all(listeners)
         .then(returnValues => {
-          assert.deepStrictEqual(returnValues.pop(), txMeta, 'last event 1:unapproved should return txMeta')
+          assert.deepEqual(returnValues.pop(), txMeta, 'last event 1:unapproved should return txMeta')
           done()
         })
         .catch(done)
@@ -299,55 +289,50 @@ describe('Transaction Controller', function() {
     })
   })
 
-  // Commented because this hangs the mocha process -- ##fail
-  // describe('#approveTransaction', function() {
-  //   let txMeta, originalValue
+  describe('#approveTransaction', function() {
+    it('does not overwrite set values', function(done) {
+      const originalValue = '0x01'
+      const txMeta = {
+        id: '1',
+        status: 'unapproved',
+        metamaskNetworkId: currentNetworkId,
+        txParams: {
+          nonce: originalValue,
+          gas: originalValue,
+          gasPrice: originalValue
+        }
+      }
+      this.timeout(15000)
+      const wrongValue = '0x05'
 
-  //   beforeEach(function() {
-  //     originalValue = '0x01'
-  //     txMeta = {
-  //       id: '1',
-  //       status: 'unapproved',
-  //       metamaskNetworkId: currentNetworkId,
-  //       txParams: {
-  //         nonce: originalValue,
-  //         gas: originalValue,
-  //         gasPrice: originalValue
-  //       }
-  //     }
-  //   })
+      txController.addTx(txMeta)
+      providerResultStub.eth_gasPrice = wrongValue
+      providerResultStub.eth_estimateGas = '0x5209'
 
-  //   it('does not overwrite set values', function(done) {
-  //     this.timeout(30000)
-  //     const wrongValue = '0x05'
+      const signStub = sinon.stub(txController, 'signTransaction').callsFake(() => Promise.resolve())
 
-  //     txController.addTx(txMeta)
-  //     providerResultStub.eth_gasPrice = wrongValue
-  //     providerResultStub.eth_estimateGas = '0x5209'
+      const pubStub = sinon.stub(txController, 'publishTransaction').callsFake(() => {
+        txController.setTxHash('1', originalValue)
+        txController.txStateManager.setTxStatusSubmitted('1')
+      })
 
-  //     const signStub = sinon.stub(txController, 'signTransaction').callsFake(() => Promise.resolve())
+      txController
+        .approveTransaction(txMeta.id)
+        .then(() => {
+          const result = txController.txStateManager.getTx(txMeta.id)
+          const params = result.txParams
 
-  //     const pubStub = sinon.stub(txController, 'publishTransaction').callsFake(() => {
-  //       txController.setTxHash('1', originalValue)
-  //       txController.txStateManager.setTxStatusSubmitted('1')
-  //     })
-
-  //     txController
-  //       .approveTransaction(txMeta.id)
-  //       .then(() => {
-  //         const result = txController.txStateManager.getTx(txMeta.id)
-  //         const params = result.txParams
-  //         assert.strictEqual(params.gas, originalValue, 'gas unmodified')
-  //         assert.strictEqual(params.gasPrice, originalValue, 'gas price unmodified')
-  //         assert.strictEqual(result.hash, originalValue, `hash was set \n got: ${result.hash} \n expected: ${originalValue}`)
-  //         assert.strictEqual(result.status, 'submitted', 'Should have reached the submitted status.')
-  //         signStub.restore()
-  //         pubStub.restore()
-  //         done()
-  //       })
-  //       .catch(done)
-  //   })
-  // })
+          assert.equal(params.gas, originalValue, 'gas unmodified')
+          assert.equal(params.gasPrice, originalValue, 'gas price unmodified')
+          assert.equal(result.hash, originalValue, `hash was set \n got: ${result.hash} \n expected: ${originalValue}`)
+          assert.equal(result.status, 'submitted', 'Should have reached the submitted status.')
+          signStub.restore()
+          pubStub.restore()
+          done()
+        })
+        .catch(done)
+    })
+  })
 
   describe('#sign replay-protected tx', function() {
     it('prepares a tx with the chainId set', function(done) {
@@ -356,7 +341,7 @@ describe('Transaction Controller', function() {
         .signTransaction('1')
         .then(rawTx => {
           const ethTx = new EthTx(ethUtil.toBuffer(rawTx))
-          assert.strictEqual(ethTx.getChainId(), currentNetworkId)
+          assert.equal(ethTx.getChainId(), currentNetworkId)
           done()
         })
         .catch(done)
@@ -364,9 +349,8 @@ describe('Transaction Controller', function() {
   })
 
   describe('#updateAndApproveTransaction', function() {
-    let txMeta
-    beforeEach(() => {
-      txMeta = {
+    it('should update and approve transactions', async function() {
+      const txMeta = {
         id: 1,
         status: 'unapproved',
         txParams: {
@@ -378,12 +362,10 @@ describe('Transaction Controller', function() {
         },
         metamaskNetworkId: currentNetworkId
       }
-    })
-    it('should update and approve transactions', async () => {
       txController.txStateManager.addTx(txMeta)
       const approvalPromise = txController.updateAndApproveTransaction(txMeta)
       const tx = txController.txStateManager.getTx(1)
-      assert.strictEqual(tx.status, 'approved')
+      assert.equal(tx.status, 'approved')
       await approvalPromise
     })
   })
@@ -391,12 +373,12 @@ describe('Transaction Controller', function() {
   describe('#getChainId', function() {
     it('returns 0 when the chainId is NaN', function() {
       txController.networkStore = new ObservableStore(NaN)
-      assert.strictEqual(txController.getChainId(), 0)
+      assert.equal(txController.getChainId(), 0)
     })
   })
 
   describe('#cancelTransaction', function() {
-    beforeEach(function() {
+    it('should emit a status change to rejected', function(done) {
       txController.txStateManager._saveTxList([
         { id: 0, status: 'unapproved', txParams: {}, metamaskNetworkId: currentNetworkId, history: [{}] },
         { id: 1, status: 'rejected', txParams: {}, metamaskNetworkId: currentNetworkId, history: [{}] },
@@ -406,13 +388,11 @@ describe('Transaction Controller', function() {
         { id: 5, status: 'confirmed', txParams: {}, metamaskNetworkId: currentNetworkId, history: [{}] },
         { id: 6, status: 'failed', txParams: {}, metamaskNetworkId: currentNetworkId, history: [{}] }
       ])
-    })
 
-    it('should emit a status change to rejected', function(done) {
       txController.once('tx:status-update', (txId, status) => {
         try {
-          assert.strictEqual(status, 'rejected', 'status should e rejected')
-          assert.strictEqual(txId, 0, 'id should e 0')
+          assert.equal(status, 'rejected', 'status should e rejected')
+          assert.equal(txId, 0, 'id should e 0')
           done()
         } catch (e) {
           done(e)
@@ -423,73 +403,73 @@ describe('Transaction Controller', function() {
     })
   })
 
-  // describe('#createSpeedUpTransaction', () => {
-  //   let addTxSpy
-  //   let approveTransactionSpy
-  //   let txParams
-  //   let expectedTxParams
+  describe('#createSpeedUpTransaction', function() {
+    let addTxSpy
+    let approveTransactionSpy
+    let txParams
+    let expectedTxParams
 
-  //   beforeEach(() => {
-  //     addTxSpy = sinon.spy(txController, 'addTx')
-  //     approveTransactionSpy = sinon.spy(txController, 'approveTransaction')
+    beforeEach(function() {
+      addTxSpy = sinon.spy(txController, 'addTx')
+      approveTransactionSpy = sinon.spy(txController, 'approveTransaction')
 
-  //     txParams = {
-  //       nonce: '0x00',
-  //       from: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
-  //       to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
-  //       gas: '0x5209',
-  //       gasPrice: '0xa'
-  //     }
-  //     txController.txStateManager._saveTxList([{ id: 1, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [{}] }])
+      txParams = {
+        nonce: '0x00',
+        from: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+        to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+        gas: '0x5209',
+        gasPrice: '0xa'
+      }
+      txController.txStateManager._saveTxList([{ id: 1, status: 'submitted', metamaskNetworkId: currentNetworkId, txParams, history: [{}] }])
 
-  //     expectedTxParams = Object.assign({}, txParams, { gasPrice: '0xb' })
-  //   })
+      expectedTxParams = Object.assign({}, txParams, { gasPrice: '0xb' })
+    })
 
-  //   afterEach(() => {
-  //     addTxSpy.restore()
-  //     approveTransactionSpy.restore()
-  //   })
+    afterEach(function() {
+      addTxSpy.restore()
+      approveTransactionSpy.restore()
+    })
 
-  //   it('should call this.addTx and this.approveTransaction with the expected args', async () => {
-  //     await txController.createSpeedUpTransaction(1)
-  //     assert.strictEqual(addTxSpy.callCount, 1)
+    it('should call this.addTx and this.approveTransaction with the expected args', async function() {
+      await txController.createSpeedUpTransaction(1)
+      assert.equal(addTxSpy.callCount, 1)
 
-  //     const addTxArgs = addTxSpy.getCall(0).args[0]
-  //     assert.deepStrictEqual(addTxArgs.txParams, expectedTxParams)
+      const addTxArgs = addTxSpy.getCall(0).args[0]
+      assert.deepEqual(addTxArgs.txParams, expectedTxParams)
 
-  //     const { lastGasPrice, type } = addTxArgs
-  //     assert.deepStrictEqual(
-  //       { lastGasPrice, type },
-  //       {
-  //         lastGasPrice: '0xa',
-  //         type: TRANSACTION_TYPE_RETRY
-  //       }
-  //     )
-  //   })
+      const { lastGasPrice, type } = addTxArgs
+      assert.deepEqual(
+        { lastGasPrice, type },
+        {
+          lastGasPrice: '0xa',
+          type: TRANSACTION_TYPE_RETRY
+        }
+      )
+    })
 
-  //   it('should call this.approveTransaction with the id of the returned tx', async () => {
-  //     const result = await txController.createSpeedUpTransaction(1)
-  //     assert.strictEqual(approveTransactionSpy.callCount, 1)
+    it('should call this.approveTransaction with the id of the returned tx', async function() {
+      const result = await txController.createSpeedUpTransaction(1)
+      assert.equal(approveTransactionSpy.callCount, 1)
 
-  //     const approveTransactionArg = approveTransactionSpy.getCall(0).args[0]
-  //     assert.strictEqual(result.id, approveTransactionArg)
-  //   })
+      const approveTransactionArg = approveTransactionSpy.getCall(0).args[0]
+      assert.equal(result.id, approveTransactionArg)
+    })
 
-  //   it('should return the expected txMeta', async () => {
-  //     const result = await txController.createSpeedUpTransaction(1)
+    it('should return the expected txMeta', async function() {
+      const result = await txController.createSpeedUpTransaction(1)
 
-  //     assert.deepStrictEqual(result.txParams, expectedTxParams)
+      assert.deepEqual(result.txParams, expectedTxParams)
 
-  //     const { lastGasPrice, type } = result
-  //     assert.deepStrictEqual(
-  //       { lastGasPrice, type },
-  //       {
-  //         lastGasPrice: '0xa',
-  //         type: TRANSACTION_TYPE_RETRY
-  //       }
-  //     )
-  //   })
-  // })
+      const { lastGasPrice, type } = result
+      assert.deepEqual(
+        { lastGasPrice, type },
+        {
+          lastGasPrice: '0xa',
+          type: TRANSACTION_TYPE_RETRY
+        }
+      )
+    })
+  })
 
   describe('#publishTransaction', function() {
     let hash, txMeta
@@ -509,8 +489,8 @@ describe('Transaction Controller', function() {
       txController.txStateManager.addTx(txMeta)
       await txController.publishTransaction(txMeta.id, rawTx)
       const publishedTx = txController.txStateManager.getTx(1)
-      assert.strictEqual(publishedTx.hash, hash)
-      assert.strictEqual(publishedTx.status, 'submitted')
+      assert.equal(publishedTx.hash, hash)
+      assert.equal(publishedTx.status, 'submitted')
     })
 
     it('should ignore the error "Transaction Failed: known transaction" and be as usual', async function() {
@@ -518,7 +498,6 @@ describe('Transaction Controller', function() {
         end('Transaction Failed: known transaction')
       }
       const rawTx =
-        // eslint-disable-next-line max-len
         '0xf86204831e848082520894f231d46dd78806e1dd93442cf33c7671f853874880802ca05f973e540f2d3c2f06d3725a626b75247593cb36477187ae07ecfe0a4db3cf57a00259b52ee8c58baaa385fb05c3f96116e58de89bcc165cb3bfdfc708672fed8a'
       txController.txStateManager.addTx(txMeta)
       await txController.publishTransaction(txMeta.id, rawTx)
@@ -541,13 +520,13 @@ describe('Transaction Controller', function() {
       txController
         .retryTransaction(1)
         .then(txMeta => {
-          assert.strictEqual(txMeta.txParams.gasPrice, '0x10642ac00', 'gasPrice should have a %10 gasPrice bump')
-          assert.strictEqual(txMeta.txParams.nonce, txParams.nonce, 'nonce should be the same')
-          assert.strictEqual(txMeta.txParams.from, txParams.from, 'from should be the same')
-          assert.strictEqual(txMeta.txParams.to, txParams.to, 'to should be the same')
-          assert.strictEqual(txMeta.txParams.data, txParams.data, 'data should be the same')
+          assert.equal(txMeta.txParams.gasPrice, '0x10642ac00', 'gasPrice should have a %10 gasPrice bump')
+          assert.equal(txMeta.txParams.nonce, txParams.nonce, 'nonce should be the same')
+          assert.equal(txMeta.txParams.from, txParams.from, 'from should be the same')
+          assert.equal(txMeta.txParams.to, txParams.to, 'to should be the same')
+          assert.equal(txMeta.txParams.data, txParams.data, 'data should be the same')
           assert.ok('lastGasPrice' in txMeta, 'should have the key `lastGasPrice`')
-          assert.strictEqual(txController.txStateManager.getTxList().length, 2)
+          assert.equal(txController.txStateManager.getTxList().length, 2)
           done()
         })
         .catch(done)
@@ -568,13 +547,147 @@ describe('Transaction Controller', function() {
       txController._markNonceDuplicatesDropped(1)
       const confirmedTx = txController.txStateManager.getTx(1)
       const droppedTxs = txController.txStateManager.getFilteredTxList({ nonce: '0x01', status: 'dropped' })
-      assert.strictEqual(confirmedTx.status, 'confirmed', 'the confirmedTx should remain confirmed')
-      assert.strictEqual(droppedTxs.length, 6, 'their should be 6 dropped txs')
+      assert.equal(confirmedTx.status, 'confirmed', 'the confirmedTx should remain confirmed')
+      assert.equal(droppedTxs.length, 6, 'their should be 6 dropped txs')
+    })
+  })
+
+  describe('#_determineTransactionCategory', function() {
+    it('should return a simple send transactionCategory when to is truthy but data is falsey', async function() {
+      const result = await txController._determineTransactionCategory({
+        to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+        data: ''
+      })
+      assert.deepEqual(result, { transactionCategory: SEND_ETHER_ACTION_KEY, getCodeResponse: '0x', methodParams: {}, contractParams: {} })
+    })
+
+    it('should return a token transfer transactionCategory when data is for the respective method call', async function() {
+      const result = await txController._determineTransactionCategory({
+        to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+        data:
+          '0xa9059cbb0000000000000000000000002f318C334780961FB129D2a6c30D0763d9a5C970000000000000000000000000000000000000000000000000000000000000000a'
+      })
+      assert.deepEqual(result, {
+        transactionCategory: TOKEN_METHOD_TRANSFER,
+        getCodeResponse: undefined,
+        methodParams: [
+          { name: '_to', value: '0x2f318c334780961fb129d2a6c30d0763d9a5c970', type: 'address' },
+          { name: '_value', value: '10', type: 'uint256' }
+        ],
+        contractParams: { erc20: true, symbol: 'ERC20' }
+      })
+    })
+
+    it('should return a token approve transactionCategory when data is for the respective method call', async function() {
+      const result = await txController._determineTransactionCategory({
+        to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+        data:
+          '0x095ea7b30000000000000000000000002f318C334780961FB129D2a6c30D0763d9a5C9700000000000000000000000000000000000000000000000000000000000000005'
+      })
+      assert.deepEqual(result, {
+        transactionCategory: TOKEN_METHOD_APPROVE,
+        getCodeResponse: undefined,
+        methodParams: [
+          { name: '_spender', value: '0x2f318c334780961fb129d2a6c30d0763d9a5c970', type: 'address' },
+          { name: '_value', value: '5', type: 'uint256' }
+        ],
+        contractParams: { erc20: true, symbol: 'ERC20' }
+      })
+    })
+
+    it('should return a contract deployment transactionCategory when to is falsey and there is data', async function() {
+      const result = await txController._determineTransactionCategory({
+        to: '',
+        data: '0xabd'
+      })
+      assert.deepEqual(result, { transactionCategory: DEPLOY_CONTRACT_ACTION_KEY, getCodeResponse: undefined, contractParams: {}, methodParams: {} })
+    })
+
+    it('should return a simple send transactionCategory with a 0x getCodeResponse when there is data and but the to address is not a contract address', async function() {
+      const result = await txController._determineTransactionCategory({
+        to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
+        data: '0xabd'
+      })
+      assert.deepEqual(result, { transactionCategory: SEND_ETHER_ACTION_KEY, getCodeResponse: '0x', contractParams: {}, methodParams: {} })
+    })
+
+    it('should return a simple send transactionCategory with a null getCodeResponse when to is truthy and there is data and but getCode returns an error', async function() {
+      const result = await txController._determineTransactionCategory({
+        to: '0xB09d8505E1F4EF1CeA089D47094f5DD3464083d4',
+        data: '0xabd'
+      })
+      assert.deepEqual(result, { transactionCategory: SEND_ETHER_ACTION_KEY, getCodeResponse: '0x', contractParams: {}, methodParams: {} })
+    })
+
+    it('should return a contract interaction transactionCategory with the correct getCodeResponse when to is truthy and there is data and it is not a token transaction', async function() {
+      const _providerResultStub = {
+        // 1 gwei
+        eth_gasPrice: '0x0de0b6b3a7640000',
+        // by default, all accounts are external accounts (not contracts)
+        eth_getCode: '0xa'
+      }
+      const _provider = createTestProviderTools({ scaffold: _providerResultStub }).provider
+      const _fromAccount = getTestAccounts()[0]
+      const _blockTrackerStub = new EventEmitter()
+      _blockTrackerStub.getCurrentBlock = noop
+      _blockTrackerStub.getLatestBlock = noop
+      const _txController = new TransactionController({
+        provider: _provider,
+        getGasPrice: function() {
+          return '0xee6b2800'
+        },
+        networkStore: new ObservableStore(currentNetworkId),
+        txHistoryLimit: 10,
+        blockTracker: _blockTrackerStub,
+        signTransaction: ethTx =>
+          new Promise(resolve => {
+            ethTx.sign(_fromAccount.key)
+            resolve()
+          })
+      })
+      const result = await _txController._determineTransactionCategory({
+        to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
+        data: 'abd'
+      })
+      assert.deepEqual(result, { transactionCategory: CONTRACT_INTERACTION_KEY, getCodeResponse: '0x0a', contractParams: {}, methodParams: {} })
+    })
+
+    it('should return a contract interaction transactionCategory with the correct getCodeResponse when to is a contract address and data is falsey', async function() {
+      const _providerResultStub = {
+        // 1 gwei
+        eth_gasPrice: '0x0de0b6b3a7640000',
+        // by default, all accounts are external accounts (not contracts)
+        eth_getCode: '0xa'
+      }
+      const _provider = createTestProviderTools({ scaffold: _providerResultStub }).provider
+      const _fromAccount = getTestAccounts()[0]
+      const _blockTrackerStub = new EventEmitter()
+      _blockTrackerStub.getCurrentBlock = noop
+      _blockTrackerStub.getLatestBlock = noop
+      const _txController = new TransactionController({
+        provider: _provider,
+        getGasPrice: function() {
+          return '0xee6b2800'
+        },
+        networkStore: new ObservableStore(currentNetworkId),
+        txHistoryLimit: 10,
+        blockTracker: _blockTrackerStub,
+        signTransaction: ethTx =>
+          new Promise(resolve => {
+            ethTx.sign(_fromAccount.key)
+            resolve()
+          })
+      })
+      const result = await _txController._determineTransactionCategory({
+        to: '0x9e673399f795D01116e9A8B2dD2F156705131ee9',
+        data: ''
+      })
+      assert.deepEqual(result, { transactionCategory: CONTRACT_INTERACTION_KEY, getCodeResponse: '0x0a', contractParams: {}, methodParams: {} })
     })
   })
 
   describe('#getPendingTransactions', function() {
-    beforeEach(function() {
+    it('should show only submitted and approved transactions as pending transasction', function() {
       txController.txStateManager._saveTxList([
         { id: 1, status: 'unapproved', metamaskNetworkId: currentNetworkId, txParams: {} },
         { id: 2, status: 'rejected', metamaskNetworkId: currentNetworkId, txParams: {}, history: [{}] },
@@ -584,8 +697,7 @@ describe('Transaction Controller', function() {
         { id: 6, status: 'confirmed', metamaskNetworkId: currentNetworkId, txParams: {}, history: [{}] },
         { id: 7, status: 'failed', metamaskNetworkId: currentNetworkId, txParams: {}, history: [{}] }
       ])
-    })
-    it('should show only submitted and approved transactions as pending transasction', function() {
+
       assert(txController.pendingTxTracker.getPendingTransactions().length, 2)
       const states = txController.pendingTxTracker.getPendingTransactions().map(tx => tx.status)
       assert(states.includes('approved'), 'includes approved')

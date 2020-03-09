@@ -1,1 +1,1 @@
-export { default } from './TransactionSpeedSelect'
+export { default } from './TransactionSpeedSelect.vue'

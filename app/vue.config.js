@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const TerserPlugin = require('terser-webpack-plugin')
 const serviceWorkerIntegrityPlugin = require('./serviceWorkerIntegrityPlugin')
 
 const version = `v${JSON.parse(fs.readFileSync(path.resolve('./package.json'))).version}`
@@ -25,13 +26,12 @@ module.exports = {
     extract: false
   },
   // Adds support for Edge browser, IE 11 and Safari 9
-  transpileDependencies: ['vuetify'],
+  transpileDependencies: ['vuetify', 'obs-store'],
 
   configureWebpack: config => {
     if (process.env.NODE_ENV === 'production') {
-      const TerserPlugin = require('terser-webpack-plugin')
       // Get the current options from the Terser Plugin instance that vue-cli-service added:
-      const options = config.optimization.minimizer[0].options
+      const { options } = config.optimization.minimizer[0]
       // Set the options you want to set
       options.terserOptions.keep_fnames = true
       options.terserOptions.mangle.keep_fnames = true
@@ -43,11 +43,12 @@ module.exports = {
   },
   chainWebpack: config => {
     config.resolve.alias.set('bn.js', 'fork-bn.js')
-    if (process.env.NODE_ENV === 'production')
+    if (process.env.NODE_ENV === 'production') {
       config
         .plugin('service-worker-integrity')
         .use(serviceWorkerIntegrityPlugin, ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
         .after('workbox')
+    }
     // config.module
     //   .rule('worker')
     //   .test(/\.worker\.js$/)
@@ -76,7 +77,8 @@ module.exports = {
       importWorkboxFrom: 'disabled',
       swSrc: 'sw.js',
       swDest: 'service-worker.js',
-      precacheManifestFilename: 'precache-manifest.[manifestHash].js'
+      precacheManifestFilename: 'precache-manifest.[manifestHash].js',
+      exclude: [/^.*images\/logos\/.*$/]
     },
     mainfestPath:
       process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'

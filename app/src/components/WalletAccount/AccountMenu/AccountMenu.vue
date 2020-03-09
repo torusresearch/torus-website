@@ -2,18 +2,20 @@
   <v-card :flat="$vuetify.breakpoint.smAndDown" width="400" class="account-menu">
     <v-list>
       <v-list-item>
-        <v-list-item-avatar class="mr-2 mt-4">
+        <v-list-item-title>
+          <div class="font-weight-bold title d-flex">
+            <div id="account-name" class="torus-account--name mr-1">
+              <span>{{ userName }}</span>
+            </div>
+            <div>{{ t('accountMenu.account') }}</div>
+          </div>
+        </v-list-item-title>
+      </v-list-item>
+      <v-list-item class="margin-top-30">
+        <v-list-item-avatar class="mr-2">
           <img :src="profileImage" class="align-start" :alt="userName" />
         </v-list-item-avatar>
         <v-list-item-content>
-          <v-list-item-title>
-            <div class="font-weight-bold title d-flex">
-              <div class="torus-account--name mr-1" id="account-name">
-                <span>{{ userName }}</span>
-              </div>
-              <div>{{ t('accountMenu.account') }}</div>
-            </div>
-          </v-list-item-title>
           <v-list-item-subtitle>
             <div class="caption text_2--text">
               <span>{{ userEmail }}</span>
@@ -22,7 +24,7 @@
               <span>{{ userId }}</span>
             </div>
             <div class="caption public-address-container">
-              <show-tool-tip :address="selectedAddress">{{ selectedAddress }}</show-tool-tip>
+              <ShowToolTip :address="selectedAddress">{{ selectedAddress }}</ShowToolTip>
             </div>
           </v-list-item-subtitle>
         </v-list-item-content>
@@ -61,7 +63,7 @@
         <v-list-item-content class="text_1--text font-weight-bold">{{ t('accountMenu.importAccount') }}</v-list-item-content>
       </v-list-item>
       <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
-        <account-import @onClose="accountImportDialog = false" />
+        <AccountImport @onClose="accountImportDialog = false" />
       </v-dialog>
     </v-list>
 
@@ -69,8 +71,8 @@
 
     <v-list>
       <v-list-item
-        :id="`${headerItem.name}-link-mobile`"
         v-for="headerItem in filteredMenu"
+        :id="`${headerItem.name}-link-mobile`"
         :key="headerItem.name"
         link
         router
@@ -93,7 +95,7 @@
 
     <v-divider v-if="$vuetify.breakpoint.xsOnly"></v-divider>
     <v-list v-if="$vuetify.breakpoint.xsOnly">
-      <language-selector></language-selector>
+      <LanguageSelector></LanguageSelector>
     </v-list>
 
     <v-list>
@@ -106,19 +108,24 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import { significantDigits, addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
-import ShowToolTip from '../../helpers/ShowToolTip'
+
+import { DISCORD } from '../../../utils/enums'
+import { addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
 import LanguageSelector from '../../helpers/LanguageSelector'
+import ShowToolTip from '../../helpers/ShowToolTip'
 import AccountImport from '../AccountImport'
-import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../../utils/enums'
-import torus from '../../../torus'
 
 export default {
-  props: ['headerItems'],
   components: {
     ShowToolTip,
     AccountImport,
     LanguageSelector
+  },
+  props: {
+    headerItems: {
+      type: [Array, undefined],
+      default: undefined
+    }
   },
   data() {
     return {
@@ -127,7 +134,7 @@ export default {
   },
   computed: {
     userEmail() {
-      const verifierLabel = this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1) + ': '
+      const verifierLabel = `${this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1)}: `
       return verifierLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
     },
     userId() {
@@ -154,10 +161,10 @@ export default {
       return this.$store.state.selectedCurrency
     },
     wallets() {
-      return Object.keys(this.$store.state.wallet).map((wallet, id) => ({ id: id, address: wallet }))
+      return Object.keys(this.$store.state.wallet).map((wallet, id) => ({ id, address: wallet }))
     },
     filteredWallets() {
-      return this.wallets.filter(acc => acc.address !== this.selectedAddress)
+      return this.wallets.filter(accumulator => accumulator.address !== this.selectedAddress)
     },
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
@@ -170,24 +177,21 @@ export default {
     },
     filteredMenu() {
       if (this.headerItems) {
-        return this.headerItems.filter(item => {
-          return item.name !== 'home'
-        })
-      } else {
-        return []
+        return this.headerItems.filter(item => item.name !== 'home')
       }
+      return []
     }
   },
   methods: {
     async logout() {
       const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
       if (urlInstance && urlInstance !== '') {
-        var bc = new BroadcastChannel(`torus_logout_channel_${urlInstance}`, broadcastChannelOptions)
+        const bc = new BroadcastChannel(`torus_logout_channel_${urlInstance}`, broadcastChannelOptions)
         await bc.postMessage({ data: { type: 'logout' } })
         bc.close()
       }
       this.$store.dispatch('logOut')
-      this.$router.push({ path: '/logout' }).catch(err => {})
+      this.$router.push({ path: '/logout' }).catch(_ => {})
     },
     async changeAccount(newAddress) {
       this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
@@ -206,3 +210,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.margin-top-30 {
+  margin-top: -16px;
+}
+</style>

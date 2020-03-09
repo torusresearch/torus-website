@@ -1,18 +1,19 @@
 <template>
   <WalletTopupBase
-    selectedProvider="wyre"
+    selected-provider="wyre"
+    :crypto-currency-value="cryptoCurrencyValue"
+    :currency-rate="currencyRate"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
     @clearQuote="clearQuote"
-    :cryptoCurrencyValue="cryptoCurrencyValue"
-    :currencyRate="currencyRate"
   />
 </template>
 
 <script>
 import throttle from 'lodash.throttle'
-import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 import log from 'loglevel'
+
+import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 
 export default {
   components: {
@@ -36,11 +37,11 @@ export default {
             self.cryptoCurrencyValue = result.data.destAmount
             self.currentOrder = result.data
           })
-          .catch(err => log.error(err))
+          .catch(error => log.error(error))
       }, 0)()
     },
-    sendOrder(cb) {
-      cb(this.$store.dispatch('fetchWyreOrder', { currentOrder: this.currentOrder }))
+    sendOrder(callback) {
+      callback(this.$store.dispatch('fetchWyreOrder', { currentOrder: this.currentOrder }))
     },
     clearQuote(payload) {
       this.cryptoCurrencyValue = 0

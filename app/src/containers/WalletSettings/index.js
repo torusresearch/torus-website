@@ -1,1 +1,1 @@
-export { default } from './WalletSettings'
+export { default } from './WalletSettings.vue'

@@ -6,6 +6,6 @@
   "slow": 75,
   "timeout": 0,
   "ui": "bdd",
-  "require": ["jsdom-global/register", "isomorphic-fetch", "esm"],
+  "require": ["test/setup.js", "esm"],
   "exit": true
 }
