@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar app flat class="header-container" color="white">
+  <v-app-bar app flat class="header-container" :color="$vuetify.theme.dark ? '' : 'white'">
     <div class="d-flex align-end">
       <router-link v-if="!$vuetify.breakpoint.xsOnly" :to="{ name: 'walletHome' }">
         <img
@@ -23,9 +23,8 @@
     </v-tabs>
 
     <v-spacer></v-spacer>
-    <v-btn id="menu-dropdown-mobile-btn" v-if="$vuetify.breakpoint.smAndDown" icon @click="drawer = !drawer" aria-label="Open Account Menu">
-      <img :src="require('../../../../public/img/icons/menu-primary.svg')" alt="Burger Icon" />
-    </v-btn>
+
+    <slot name="drawer"></slot>
 
     <language-selector v-if="!$vuetify.breakpoint.smAndDown"></language-selector>
     <v-menu v-if="!$vuetify.breakpoint.smAndDown" offset-y bottom left z-index="20" :close-on-content-click="false">
@@ -89,10 +88,6 @@
         <v-spacer />
       </div>
     </v-system-bar>
-
-    <v-navigation-drawer v-model="drawer" disable-resize-watcher app right :width="$vuetify.breakpoint.xsOnly ? '80%' : ''">
-      <account-menu :headerItems="headerItems"></account-menu>
-    </v-navigation-drawer>
   </v-app-bar>
   <!-- <nav class="header-container pa-0">
     <v-app-bar fixed :class="$vuetify.breakpoint.xsOnly ? 'pa-0' : 'px-2 py-0'">
@@ -197,13 +192,13 @@ import AccountMenu from '../../WalletAccount/AccountMenu'
 import LanguageSelector from '../LanguageSelector'
 
 export default {
+  props: ['headerItems'],
   components: {
     AccountMenu,
     LanguageSelector
   },
   data() {
     return {
-      drawer: false,
       selectedItem: 'home'
     }
   },
@@ -219,18 +214,6 @@ export default {
     },
     errorMsg() {
       return this.$store.state.errorMsg
-    },
-    headerItems() {
-      const items = [
-        { name: 'home', display: this.t('navBar.home'), route: '/wallet/home', icon: 'settings' },
-        { name: 'transfer', display: this.t('navBar.transfer'), route: '/wallet/transfer', icon: 'transaction' },
-        { name: 'activity', display: this.t('navBar.activity'), route: '/wallet/history', icon: 'activities' },
-        { name: 'settings', display: this.t('navBar.settings'), route: '/wallet/settings', icon: 'settings' }
-      ]
-      if (process.env.VUE_APP_TORUS_BUILD_ENV !== 'lrc') {
-        items.splice(2, 0, { name: 'top-up', display: this.t('navBar.topUp'), route: '/wallet/topup', icon: 'topup' })
-      }
-      return items
     },
     lrcMsg() {
       if (process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc') {

@@ -1,5 +1,5 @@
 <template>
-  <v-container class="wallet-settings">
+  <v-container class="wallet-settings" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
       <v-flex xs12 sm6>
         <div class="font-weight-bold display-1 float-left">{{ t('walletSettings.settings') }}</div>
@@ -26,7 +26,7 @@
               <privacy-security />
             </v-expansion-panel-content>
           </v-expansion-panel>
-          <v-expansion-panel class="my-2 card-shadow">
+          <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="contact-list-panel-header" class="elevation-1">
               <v-icon size="12" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.list'" />
               <div class="grow text_1--text font-weight-bold title">

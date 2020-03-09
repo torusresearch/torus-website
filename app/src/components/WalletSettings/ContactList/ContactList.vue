@@ -6,20 +6,20 @@
         <v-card class="elevation-1 mt-2">
           <v-list dense class="pa-0 contact-list">
             <template v-for="contact in contacts">
-              <v-list-item :key="`contact-${contact.id}`">
-                <v-list-item-avatar>
+              <v-list-item :key="`contact-${contact.id}`" class="pl-0 pr-1">
+                <v-list-item-avatar class="ma-0">
                   <img :src="require(`../../../../public/img/icons/google-grey.svg`)" style="width: 16px" class="ma-1" />
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title class="font-weight-regular caption">
                     <!-- <span class="text-capitalize">{{ contact.verifier === ETH ? '' : `${contact.verifier}: ` }}</span> -->
-                    <span class="torus_black--text">{{ contact.name }}</span>
+                    <span>{{ contact.name }}</span>
                     -
                     <span class="label">{{ contact.contact }}</span>
                   </v-list-item-title>
                 </v-list-item-content>
-                <v-list-item-action>
-                  <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete ${contact.name}`" @click="deleteContact(contact.id)">
+                <v-list-item-action class="ma-0">
+                  <v-btn class="delete-btn" color="text_2" icon small @click="deleteContact(contact.id)" :aria-label="`Delete ${contact.name}`">
                     <v-icon>$vuetify.icons.close</v-icon>
                   </v-btn>
                 </v-list-item-action>

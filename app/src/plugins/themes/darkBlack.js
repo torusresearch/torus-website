@@ -13,6 +13,7 @@ export default {
   font_link_1: '#0364FF',
   font_link_2: '#5495F7',
   torus_black: '#252529',
+  torus_black_2: '#2F3136',
 
   // Main background color, supports 2 color gradient
   background_body_1: '#242529',

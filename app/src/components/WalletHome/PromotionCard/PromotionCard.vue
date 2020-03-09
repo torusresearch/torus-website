@@ -1,6 +1,6 @@
 <template>
   <v-card class="elevation-1 promotion-card">
-    <v-card-text class="pt-0 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2' : $vuetify.breakpoint.xsOnly ? 'pb-6' : 'pb-3'">
+    <v-card-text class="pt-0 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-0' : $vuetify.breakpoint.xsOnly ? 'pb-6' : 'pb-3'">
       <v-layout>
         <v-flex class="text_1--text pt-6" :class="$vuetify.breakpoint.xsOnly ? 'text-center xs12' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
           <div class="title font-weight-bold" :class="subtitle ? 'text-clamp-one' : 'text-clamp-two'">{{ title }}</div>
@@ -8,10 +8,10 @@
             <div class="text-clamp-one caption mt-2">{{ subtitle }}</div>
             <div class="more-details-container">
               <v-btn
-                color="primary"
-                depressed
+                block
                 large
-                class="py-1 mt-4 white--text"
+                color="gray_4"
+                class="primary--text"
                 :class="$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12'"
                 :href="detailsLink"
                 target="_blank"
@@ -22,8 +22,8 @@
           </slot>
         </v-flex>
         <slot name="image">
-          <v-flex xs4 pt-4 class="text-right hidden-xs-only">
-            <img :src="imagePath" :style="$vuetify.breakpoint.smAndDown ? 'width: 100%' : 'height: 92px'" :alt="`${title} Image`" />
+          <v-flex xs4 pt-4 class="text-right hidden-xs-only align-self-center">
+            <img :src="imagePath" :alt="`${title} Image`" />
           </v-flex>
         </slot>
       </v-layout>

@@ -1,5 +1,13 @@
 .promotion-card {
-  height: 184px;
+  .layout {
+    height: 184px;
+    @media screen and (max-width: 600px) {
+      height: inherit;
+    }
+  }
+  img {
+    height: 92px;
+  }
 }
 .more-details-container {
   position: absolute;
