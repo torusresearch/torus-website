@@ -14,6 +14,7 @@ export default {
   fetchRampNetworkOrder({ state, dispatch }, { currentOrder, preopenInstanceId }) {
     const parameters = {
       userAddress: state.selectedAddress,
+      userEmailAddress: state.userInfo.email,
       swapAsset: currentOrder.cryptoCurrencySymbol,
       swapAmount: currentOrder.cryptoCurrencyValue,
       variant: 'hosted-auto',
