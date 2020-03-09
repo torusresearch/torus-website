@@ -219,6 +219,8 @@ describe('AssetsDetectionController', () => {
 
   afterEach(() => {
     sandbox.reset()
+    fetchMock.reset()
+    fetchMock.resetBehavior()
   })
 
   it('should poll and detect assets on interval while on mainnet', () =>

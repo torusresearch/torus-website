@@ -138,6 +138,8 @@ describe('AssetsController', () => {
   afterEach(() => {
     sandbox.reset()
     nock.cleanAll()
+    fetchMock.reset()
+    fetchMock.resetBehavior()
   })
 
   it('should set default state', () => {

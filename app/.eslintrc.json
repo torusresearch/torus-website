@@ -3,7 +3,6 @@
     "standard",
     "@vue/standard",
     "plugin:vue/recommended",
-    "prettier",
     "prettier/babel",
     "plugin:prettier/recommended",
     "prettier/vue",
@@ -12,12 +11,12 @@
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:flowtype/recommended",
-    // "adjunct",
     "problems",
     "plugin:vue-scoped-css/recommended",
     "plugin:promise/recommended",
     "plugin:switch-case/recommended",
-    "plugin:unicorn/recommended"
+    "plugin:unicorn/recommended",
+    "prettier"
   ],
   "plugins": [
     "prettier",
