@@ -1,14 +1,13 @@
 <template>
-  <v-container class="wallet-activity">
+  <v-container class="wallet-activity" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <v-layout mt-3 wrap>
-      <v-flex xs12 px-4 mb-4>
-        <div class="text-black font-weight-bold headline float-left">{{ t('walletActivity.transactionActivities') }}</div>
+      <v-flex xs12>
+        <div class="text-black font-weight-bold display-1 float-left">{{ t('walletActivity.transactionActivities') }}</div>
         <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
           <v-select
             id="transaction-selector"
             v-model="selectedAction"
-            class="pt-0 pl-2 mt-0 ml-2 subtitle-2 nav-selector transaction elevation-1"
-            height="25px"
+            class="pt-0 mt-0 ml-2 subtitle-2 nav-selector transaction elevation-1"
             hide-details
             :menu-props="{ bottom: true, offsetY: true }"
             :items="actionTypes"
@@ -18,8 +17,7 @@
           <v-select
             id="period-selector"
             v-model="selectedPeriod"
-            class="pt-0 pl-2 mt-0 ml-2 subtitle-2 nav-selector period elevation-1"
-            height="25px"
+            class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period elevation-1"
             hide-details
             :menu-props="{ bottom: true, offsetY: true }"
             :items="periods"
@@ -28,7 +26,7 @@
           />
         </div>
       </v-flex>
-      <v-flex xs12 px-4 mb-4>
+      <v-flex xs12 mt-7>
         <TxHistoryTable
           :selected-action="selectedAction"
           :selected-period="selectedPeriod"
