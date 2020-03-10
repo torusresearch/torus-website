@@ -7,7 +7,7 @@
         </v-list-item-avatar>
         <v-list-item-title>
           <div class="font-weight-bold title d-flex">
-            <div class="torus-account--name mr-1" id="account-name">
+            <div id="account-name" class="torus-account--name mr-1">
               <span>{{ userName }}</span>
             </div>
             <div>{{ t('accountMenu.account') }}</div>
@@ -18,10 +18,10 @@
 
     <div class="px-3 mb-3 account-list">
       <div
-        class="d-flex account-list__item elevation-1 mb-2 pa-1"
-        :class="{ active: acc.address === selectedAddress }"
         v-for="acc in wallets"
         :key="acc.address"
+        class="d-flex account-list__item elevation-1 mb-2 pa-1"
+        :class="{ active: acc.address === selectedAddress }"
         @click="changeAccount(acc.address)"
       >
         <div>
@@ -36,12 +36,12 @@
           <div class="caption">
             <span class="account-list__address">{{ acc.address }}</span>
             <span class="float-right">
-              <show-tool-tip :address="acc.address">
+              <ShowToolTip :address="acc.address">
                 <v-icon size="12" :class="{ 'text_2--text': !$vuetify.theme.dark }" v-text="'$vuetify.icons.copy'" />
-              </show-tool-tip>
-              <export-qr-code :customAddress="acc.address">
+              </ShowToolTip>
+              <ExportQrCode :custom-address="acc.address">
                 <v-icon x-small v-text="'$vuetify.icons.qr'" />
-              </export-qr-code>
+              </ExportQrCode>
             </span>
           </div>
         </div>
@@ -154,20 +154,16 @@
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
 import { BroadcastChannel } from 'broadcast-channel'
 
 import { DISCORD } from '../../../utils/enums'
-import { addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
-import { significantDigits, addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
-import ShowToolTip from '../../helpers/ShowToolTip'
+import { addressSlicer, broadcastChannelOptions, significantDigits } from '../../../utils/utils'
 import ExportQrCode from '../../helpers/ExportQrCode'
 import LanguageSelector from '../../helpers/LanguageSelector'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import AccountImport from '../AccountImport'
-import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../../utils/enums'
-import torus from '../../../torus'
-import BigNumber from 'bignumber.js'
-import copyToClipboard from 'copy-to-clipboard'
+
 const log = require('loglevel')
 
 export default {
@@ -217,13 +213,13 @@ export default {
       return this.$store.state.selectedCurrency
     },
     wallets() {
-      let { wallet: storeWallet, weiBalance: storeWalletBalance, selectedCurrency } = this.$store.state || {}
+      const { wallet: storeWallet, weiBalance: storeWalletBalance, selectedCurrency } = this.$store.state || {}
 
       const wallets = Object.keys(storeWallet).reduce((accts, x) => {
         const computedBalance = new BigNumber(storeWalletBalance[x]).dividedBy(new BigNumber(10).pow(new BigNumber(18))) || new BigNumber(0)
         const tokenRateMultiplier = new BigNumber(1)
         const currencyRate = new BigNumber(this.getCurrencyMultiplier).times(tokenRateMultiplier)
-        let currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
+        const currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
         // if (
         //   storeWallet[x].type === 'EOA' ||
         //   (storeWallet[x].type === 'SC' && storeWallet[x].network === this.$store.state.networkType.host && storeWallet[x].address != 'PROCESSING')

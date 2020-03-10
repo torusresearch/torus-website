@@ -16,7 +16,7 @@
         />
       </v-flex>
     </v-layout>
-    <v-layout v-if="!isAdvanceOption" px-4 mx-n2 xs12>
+    <v-layout v-if="!isAdvanceOption" mx-n2 xs12>
       <v-flex xs6 px-2 mb-1>
         <v-btn
           id="average-speed-btn"
