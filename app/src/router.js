@@ -12,9 +12,9 @@ import Login from './views/Login'
 import Popup from './views/Popup'
 import ProviderChange from './views/ProviderChange'
 import RedirectCatch from './views/RedirectCatch'
+import Test from './views/Test'
 import UserInfoRequest from './views/UserInfoRequest'
 import Wallet from './views/Wallet'
-import Test from './views/Test'
 
 // const Popup = () => import('./views/Popup.vue')
 // const Confirm = () => import('./views/Confirm.vue')
