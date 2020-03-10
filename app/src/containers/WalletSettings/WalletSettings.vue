@@ -5,16 +5,16 @@
         <div class="font-weight-bold display-1 float-left">{{ t('walletSettings.settings') }}</div>
       </v-flex>
       <v-flex xs12 sm6 class="text-right">
-        <export-qr-code>
+        <ExportQrCode>
           <v-btn icon>
             <v-icon x-small v-text="'$vuetify.icons.qr'" />
           </v-btn>
-        </export-qr-code>
+        </ExportQrCode>
       </v-flex>
     </v-layout>
     <v-layout wrap mx-n4 mt-7>
       <v-flex px-4 xs12 sm6>
-        <v-expansion-panels readonly v-model="leftPanel" multiple>
+        <v-expansion-panels v-model="leftPanel" readonly multiple>
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="privacy-panel-header" class="elevation-1">
               <v-icon size="20" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.lock'" />
@@ -23,7 +23,7 @@
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <privacy-security />
+              <PrivacySecurity />
             </v-expansion-panel-content>
           </v-expansion-panel>
           <v-expansion-panel class="my-2">
@@ -34,7 +34,7 @@
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <contact-list />
+              <ContactList />
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -49,7 +49,7 @@
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <network />
+              <Network />
             </v-expansion-panel-content>
           </v-expansion-panel>
           <v-expansion-panel class="my-2 card-shadow">
@@ -60,7 +60,7 @@
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <display />
+              <Display />
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -139,12 +139,11 @@
   </v-layout> -->
 </template>
 <script>
+import ExportQrCode from '../../components/helpers/ExportQrCode'
 import ContactList from '../../components/WalletSettings/ContactList'
 import Display from '../../components/WalletSettings/Display'
 import Network from '../../components/WalletSettings/Network'
 import PrivacySecurity from '../../components/WalletSettings/PrivacySecurity'
-import ExportQrCode from '../../components/helpers/ExportQrCode'
-import log from 'loglevel'
 
 export default {
   name: 'WalletSettings',

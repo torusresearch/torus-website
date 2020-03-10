@@ -5,11 +5,11 @@
         <div class="font-weight-bold display-1 float-left">Account Balance{{ /** t('walletHome.walletHome') */ }}</div>
       </v-flex>
       <v-flex xs12 sm6 class="text-right">
-        <export-qr-code>
+        <ExportQrCode>
           <v-btn icon>
             <v-icon x-small v-text="'$vuetify.icons.qr'" />
           </v-btn>
-        </export-qr-code>
+        </ExportQrCode>
       </v-flex>
     </v-layout>
     <v-layout wrap mx-n4 mt-7>
@@ -20,10 +20,10 @@
               <span class="title">{{ t('walletHome.totalValue') }}</span>
             </v-flex>
             <v-flex xs6 class="text-right">
-              <network-display :network="storeNetworkType" :storeNetworkType="storeNetworkType"></network-display>
+              <NetworkDisplay :network="storeNetworkType.networkName" :store-network-type="storeNetworkType"></NetworkDisplay>
             </v-flex>
             <v-flex xs6>
-              <component-loader class="mt-3" v-if="!weiBalanceLoaded || !tokenDataLoaded" />
+              <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-3" />
               <h2 v-else class="display-4 text_2--text font-weight-bold text-clamp-one">
                 {{ totalPortfolioValue }}
                 <span id="selected-currency" class="description">{{ selectedCurrency }}</span>
@@ -41,7 +41,7 @@
                   </v-btn>
                 </v-flex>
                 <v-flex xs6 px-2>
-                  <v-btn block large color="brand_4 primary--text" @click="topup" v-show="canShowLrc">
+                  <v-btn v-show="canShowLrc" block large color="brand_4 primary--text" @click="topup">
                     <v-icon left>$vuetify.icons.add</v-icon>
                     {{ t('walletHome.topUp') }}
                   </v-btn>
@@ -95,7 +95,7 @@
           </v-card-text> -->
         </v-card>
       </v-flex>
-      <v-flex px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'" v-if="isFreshAccount">
+      <v-flex v-if="isFreshAccount" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
         <v-card class="card-shadow elevation-1">
           <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
             <v-layout>
@@ -127,20 +127,20 @@
         </v-card>
       </v-flex>
       <v-flex
+        v-for="(event, i) in isFreshAccount ? [] : events"
+        :key="`event-${i}`"
         px-4
         xs12
         md6
         :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'"
-        v-for="(event, i) in isFreshAccount ? [] : events"
-        :key="`event-${i}`"
       >
-        <promotion-card
+        <PromotionCard
           :title="event.eventName"
           :image-path="event.imageUrl"
           :subtitle="event.description"
           :details-link="event.callToActionLink"
           :details-text="event.callToActionText"
-        ></promotion-card>
+        ></PromotionCard>
       </v-flex>
     </v-layout>
     <!-- <v-layout wrap>
@@ -295,12 +295,12 @@
     </v-layout> -->
     <v-layout class="mt-12">
       <v-flex xs12>
-        <v-tabs class="home-tab" centered v-model="activeTab">
-          <v-tab class="home-tab-token body-2 font-weight-bold" :key="t('walletHome.tokens')">
+        <v-tabs v-model="activeTab" class="home-tab" centered>
+          <v-tab :key="t('walletHome.tokens')" class="home-tab-token body-2 font-weight-bold">
             <v-icon small left>$vuetify.icons.token</v-icon>
             {{ t('walletHome.tokens') }}
           </v-tab>
-          <v-tab class="home-tab-collectibles body-2 font-weight-bold" :key="t('walletHome.collectibles')">
+          <v-tab :key="t('walletHome.collectibles')" class="home-tab-collectibles body-2 font-weight-bold">
             <v-icon small left>$vuetify.icons.collectibles</v-icon>
             {{ t('walletHome.collectibles') }}
           </v-tab>

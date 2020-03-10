@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="qrDialoag" width="450">
     <template v-slot:activator="{ on }">
-      <v-btn icon small v-on="on" id="openQr" aria-label="Open QR">
+      <v-btn id="openQr" icon small aria-label="Open QR" v-on="on">
         <slot></slot>
       </v-btn>
     </template>
@@ -44,10 +44,15 @@ import VueQr from 'vue-qr'
 import ShowToolTip from '../ShowToolTip'
 
 export default {
-  props: ['customAddress'],
   components: {
     ShowToolTip,
     VueQr
+  },
+  props: {
+    customAddress: {
+      type: String,
+      default: ''
+    }
   },
   data() {
     return {
