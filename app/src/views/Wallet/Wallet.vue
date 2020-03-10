@@ -1,14 +1,14 @@
 <template>
   <div>
-    <navbar :header-items="headerItems">
+    <Navbar :header-items="headerItems">
       <template v-slot:drawer>
-        <v-btn id="menu-dropdown-mobile-btn" v-if="$vuetify.breakpoint.smAndDown" icon @click="drawer = !drawer" aria-label="Open Account Menu">
+        <v-btn v-if="$vuetify.breakpoint.smAndDown" id="menu-dropdown-mobile-btn" icon aria-label="Open Account Menu" @click="drawer = !drawer">
           <img :src="require('../../../public/img/icons/menu-primary.svg')" alt="Burger Icon" />
         </v-btn>
       </template>
-    </navbar>
+    </Navbar>
     <v-navigation-drawer v-model="drawer" disable-resize-watcher app right :width="$vuetify.breakpoint.xsOnly ? '80%' : ''">
-      <account-menu :headerItems="headerItems"></account-menu>
+      <AccountMenu :header-items="headerItems"></AccountMenu>
     </v-navigation-drawer>
     <v-content>
       <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
