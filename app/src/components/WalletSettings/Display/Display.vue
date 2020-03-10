@@ -14,11 +14,11 @@
           </template>
           <v-list class="select-theme-list pa-0">
             <v-list-item
-              @click="selectedTheme = theme"
-              :style="themeOptionStyle(theme)"
-              class="select-theme-item"
               v-for="theme in themes"
               :key="`${theme.name}`"
+              :style="themeOptionStyle(theme)"
+              class="select-theme-item"
+              @click="selectedTheme = theme"
             >
               {{ t(theme.label) }}
             </v-list-item>
@@ -29,7 +29,9 @@
     <v-layout class="mt-4">
       <v-flex xs12 md6>
         <v-layout wrap>
-          <v-flex xs8 v-if="!$vuetify.breakpoint.xsOnly" class="pr-2"></v-flex>
+          <!-- <<<<<<< HEAD
+          <v-flex v-if="!$vuetify.breakpoint.xsOnly" xs8 class="pr-2"></v-flex>
+          ======= >>>>>>> develop -->
           <v-flex xs12 sm4 :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-2'">
             <v-btn color="primary" block depressed class="px-12 py-1" @click="saveTheme">{{ t('walletSettings.save') }}</v-btn>
           </v-flex>
@@ -40,41 +42,37 @@
 </template>
 
 <script>
+import log from 'loglevel'
+
 import themes from '../../../plugins/themes'
 
 export default {
-  name: 'displaySettings',
+  name: 'DisplaySettings',
   data() {
     return {
-      themes: themes,
-      selectedTheme: '',
-      selectThemeAlert: false,
-      selectThemeAlertText: '',
-      selectThemeAlertType: 'success'
+      themes,
+      selectedTheme: ''
     }
   },
   methods: {
     closeAlert() {
       this.selectThemeAlert = false
     },
-    saveTheme() {
-      this.$store
-        .dispatch('setUserTheme', this.selectedTheme.name)
-        .then(res => {
-          this.selectedTheme = ''
-          this.$store.dispatch('setSuccessMessage', this.t('walletSettings.successSaveTheme'))
-        })
-        .catch(err => {
-          this.selectedTheme = ''
-          this.$store.dispatch('setErrorMessage', err)
-        })
+    async saveTheme() {
+      try {
+        await this.$store.dispatch('setUserTheme', this.selectedTheme.name)
+      } catch (error) {
+        log.error(error)
+      } finally {
+        this.selectedTheme = ''
+      }
     },
     themeOptionStyle(theme) {
-      if (theme)
-        return {
-          color: `${theme.theme.primary.base} !important`,
-          backgroundColor: `${theme.theme.background_body_1} !important`
-        }
+      if (!theme) return {}
+      return {
+        color: `${theme.theme.primary.base} !important`,
+        backgroundColor: `${theme.theme.background_body_1} !important`
+      }
     }
   }
 }

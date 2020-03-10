@@ -1,1 +1,1 @@
-export { default } from './WalletTopupCrypto'
+export { default } from './WalletTopupCrypto.vue'

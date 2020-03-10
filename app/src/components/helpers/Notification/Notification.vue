@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  props: ['alertShow', 'alertText', 'alertType'],
+  props: { alertShow: { type: String, default: '' }, alertText: { type: String, default: '' }, alertType: { type: String, default: '' } },
   methods: {
     hideAlert() {
       this.$emit('closeAlert')

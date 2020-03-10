@@ -1,17 +1,12 @@
 <template>
   <div>
-    <navbar />
+    <Navbar />
     <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
     <v-container>
       <router-view></router-view>
     </v-container>
     <v-dialog :value="smartContractAccount && !smartContractAccount.notified" max-width="375" persistent>
-      <message-modal
-        @onClose="closeSmartContractModal"
-        :no-close="true"
-        :modal-type="messageModalType"
-        :title="'Your Smart Contract Wallet is ready'"
-      >
+      <MessageModal :no-close="true" :modal-type="messageModalType" :title="'Your Smart Contract Wallet is ready'" @onClose="closeSmartContractModal">
         <template v-slot:link>
           <div class="my-10">
             <v-btn color="success" large outlined @click="markAsRead">
@@ -19,7 +14,7 @@
             </v-btn>
           </div>
         </template>
-      </message-modal>
+      </MessageModal>
     </v-dialog>
   </div>
 </template>
@@ -30,18 +25,18 @@ import MessageModal from '../../components/WalletTransfer/MessageModal'
 import { MESSAGE_MODAL_TYPE_SUCCESS } from '../../utils/enums'
 
 export default {
+  components: {
+    Navbar,
+    MessageModal
+  },
   data() {
     return {
       messageModalType: MESSAGE_MODAL_TYPE_SUCCESS
     }
   },
-  components: {
-    Navbar,
-    MessageModal
-  },
   computed: {
     smartContractAccount() {
-      let { wallet: storeWallet } = this.$store.state || {}
+      const { wallet: storeWallet } = this.$store.state || {}
       const wallet = Object.keys(storeWallet).reduce((accts, x) => {
         if (storeWallet[x].type === 'SC' && storeWallet[x].type !== 'PROCESSING' && storeWallet[x].network === this.$store.state.networkType.host)
           accts.push({ address: x, ...storeWallet[x] })
@@ -63,6 +58,6 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import 'Wallet.scss';
 </style>

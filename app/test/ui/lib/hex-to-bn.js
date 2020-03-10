@@ -1,5 +1,6 @@
 const ethUtil = /** @type {object} */ (require('ethereumjs-util'))
-const BN = ethUtil.BN
+
+const { BN } = ethUtil
 
 /**
  * Returns a [BinaryNumber]{@link BN} representation of the given hex value

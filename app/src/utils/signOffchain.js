@@ -1,4 +1,4 @@
-'use strict' // Enforce use of strict verion of JavaScript
+// Enforce use of strict verion of JavaScript
 
 const web3 = require('web3')
 
@@ -23,26 +23,24 @@ const toHex = value => pad(hex(value))
  * @returns {hex} Signatures for the wallet to verify
  */
 async function signOffchain(signers, from, to, value, data, nonce, gasPrice, gasLimit) {
-  const input =
-    '0x' +
-    [
-      '0x19',
-      '0x00',
-      from, // Must be Hex string
-      to, // Must be Hex string
-      toHex(value), // cannot be hex, as this converts it to hex
-      data,
-      nonce, // Shoul nonce be like this or below, since multisig executor uses the one below
-      // toHex(nonce))
-      toHex(gasPrice), // cannot be hex, as this converts it to hex
-      toHex(gasLimit) // cannot be hex, as this converts it to hex
-    ]
-      .map(hex => hex.slice(2)) // Removes all the 0x
-      .join('')
+  const input = `0x${[
+    '0x19',
+    '0x00',
+    from, // Must be Hex string
+    to, // Must be Hex string
+    toHex(value), // cannot be hex, as this converts it to hex
+    data,
+    nonce, // Shoul nonce be like this or below, since multisig executor uses the one below
+    // toHex(nonce))
+    toHex(gasPrice), // cannot be hex, as this converts it to hex
+    toHex(gasLimit) // cannot be hex, as this converts it to hex
+  ]
+    .map(element => element.slice(2)) // Removes all the 0x
+    .join('')}`
 
   const signedData = web3.utils.sha3(input)
   const signatures = signers.map(signer => signer.sign(signedData).signature)
-  const signature = '0x' + signatures.map(signature => signature.substring(2)).join('')
+  const signature = `0x${signatures.map(element => element.slice(2)).join('')}`
 
   return signature
 }

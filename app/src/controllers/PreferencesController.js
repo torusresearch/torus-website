@@ -1,12 +1,14 @@
-import ObservableStore from 'obs-store'
 import log from 'loglevel'
-import { addInternalMethodPrefix, addTorusMethodPrefix, prettyPrintData, isErrorObj } from '../utils/permissionUtils'
+import ObservableStore from 'obs-store'
+
 import config from '../config'
-import { patch, get, post, getPastOrders } from '../utils/httpHelpers'
-import { LOCALE_EN, THEME_LIGHT_BLUE_NAME, ERROR_TIME, SUCCESS_TIME } from '../utils/enums'
+import { ERROR_TIME, LOCALE_EN, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
+import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
+import { getIFrameOrigin } from '../utils/utils'
 
 // By default, poll every 1 minute
-const DEFAULT_INTERVAL = 60 * 1000
+const DEFAULT_INTERVAL = 180 * 1000
 
 class PreferencesController {
   /**
@@ -24,21 +26,21 @@ class PreferencesController {
    * @property {object} store.permissions the stored permissions of the user for different domains
    * @property {string} store.jwtToken the token used to communicate with torus-backend
    */
-  constructor(opts = {}) {
+  constructor(options = {}) {
     const initState = {
       selectedAddress: '',
       selectedCurrency: 'USD',
       pastTransactions: [],
       theme: THEME_LIGHT_BLUE_NAME,
       locale: LOCALE_EN,
-      billboard: [],
+      billboard: {},
       contacts: [],
       permissions: [],
       paymentTx: [],
-      ...opts.initState
+      ...options.initState
     }
 
-    this.interval = DEFAULT_INTERVAL
+    this.interval = options.interval || DEFAULT_INTERVAL
     this.jwtToken = ''
     this._jwtToken = ''
     this.store = new ObservableStore(initState)
@@ -49,7 +51,7 @@ class PreferencesController {
 
   set jwtToken(token) {
     this._jwtToken = token
-    token && this.getBillboardContents()
+    if (token) this.getBillboardContents()
   }
 
   get headers() {
@@ -61,58 +63,72 @@ class PreferencesController {
     }
   }
 
-  handleError(err) {
-    if (isErrorObj(err)) {
+  get state() {
+    return this.store.getState()
+  }
+
+  handleError(error) {
+    if (isErrorObject(error)) {
       this.errorStore.putState(`Oops, That didn't work. Pls reload and try again. \n${error.message}`)
-    } else if (err && typeof err === 'string') {
-      this.errorStore.putState(err)
-    } else if (err && typeof err === 'object') {
-      const prettyError = prettyPrintData(err)
+    } else if (error && typeof error === 'string') {
+      this.errorStore.putState(error)
+    } else if (error && typeof error === 'object') {
+      const prettyError = prettyPrintData(error)
       const payloadError = prettyError !== '' ? `Error: ${prettyError}` : 'Something went wrong. Pls try again'
       this.errorStore.putState(payloadError)
     } else {
-      this.errorStore.putState(payloadError || '')
+      this.errorStore.putState(error || '')
     }
     setTimeout(() => this.errorStore.putState(''), ERROR_TIME)
   }
 
-  handleSuccess(msg) {
-    if (msg && typeof msg === 'string') {
-      this.successStore.putState(msg)
-    } else if (msg && typeof msg === 'object') {
-      const prettyMsg = prettyPrintData(msg)
-      const payloadMsg = prettyMsg !== '' ? `Error: ${prettyMsg}` : 'Something went wrong. Pls try again'
-      this.successStore.putState(payloadMsg)
+  handleSuccess(message) {
+    if (message && typeof message === 'string') {
+      this.successStore.putState(message)
+    } else if (message && typeof message === 'object') {
+      const prettyMessage = prettyPrintData(message)
+      const payloadMessage = prettyMessage !== '' ? `Success: ${prettyMessage}` : 'Success'
+      this.successStore.putState(payloadMessage)
     } else {
-      this.successStore.putState(msg || '')
+      this.successStore.putState(message || '')
     }
     setTimeout(() => this.successStore.putState(''), SUCCESS_TIME)
   }
 
-  sync(cb, errorCb) {
-    Promise.all([
-      get(`${config.api}/user`, this.headers).catch(_ => {
-        errorCb && errorCb()
-      }),
-      getPastOrders({}, this.headers.headers)
-    ]).then(([user, paymentTx]) => {
+  async sync(callback, errorCallback) {
+    try {
+      const [user, paymentTx] = await Promise.all([
+        get(`${config.api}/user`, this.headers).catch(_ => {
+          if (errorCallback) errorCallback()
+        }),
+        getPastOrders({}, this.headers.headers).catch(error => {
+          log.error('unable to fetch past orders', error)
+        })
+      ])
       if (user && user.data) {
-        const { transactions, contacts, theme, locale, verifier, verifier_id, permissions } = user.data || {}
+        const { transactions, default_currency: defaultCurrency, contacts, theme, locale, verifier, verifier_id: verifierID, permissions } =
+          user.data || {}
         this.store.updateState({
           contacts,
           pastTransactions: transactions,
           theme,
+          selectedCurrency: defaultCurrency,
           locale: locale || LOCALE_EN,
-          paymentTx: paymentTx.data,
+          paymentTx: (paymentTx && paymentTx.data) || [],
           permissions
         })
-        if (!verifier || !verifier_id) this.setVerifier(verifier, verifier_id)
-        cb && cb(user)
+        if (!verifier || !verifierID) this.setVerifier(verifier, verifierID)
+        if (callback) return callback(user)
         // this.permissionsController._initializePermissions(permissions)
       }
-    })
+      return undefined
+    } catch (error) {
+      log.error(error)
+      return undefined
+    }
   }
 
+  /* istanbul ignore next */
   createUser(selectedCurrency, theme, verifier, verifierId, locale) {
     return post(
       `${config.api}/user`,
@@ -127,12 +143,13 @@ class PreferencesController {
     )
   }
 
+  /* istanbul ignore next */
   storeUserLogin(verifier, verifierId, payload) {
     let userOrigin = ''
     if (payload && payload.calledFromEmbed) {
-      userOrigin = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
+      userOrigin = getIFrameOrigin()
     } else userOrigin = window.location.origin
-    if (!payload.rehydrate)
+    if (!payload.rehydrate) {
       post(
         `${config.api}/user/recordLogin`,
         {
@@ -142,59 +159,63 @@ class PreferencesController {
         },
         this.headers
       )
-  }
-
-  async setUserTheme(payload) {
-    if (payload === this.store.getState().theme) return
-    try {
-      const resp = await patch(`${config.api}/user/theme`, { theme: payload }, this.headers)
-      this.handleSuccess('successfully updated theme' || (resp && resp.data) || resp)
-      this.store.updateState({ theme: payload })
-    } catch (error) {
-      this.handleError('unable to update theme')
     }
   }
 
+  async setUserTheme(payload) {
+    if (payload === this.state.theme) return
+    try {
+      await patch(`${config.api}/user/theme`, { theme: payload }, this.headers)
+      this.handleSuccess('navBar.snackSuccessTheme')
+      this.store.updateState({ theme: payload })
+    } catch (error) {
+      this.handleError('navBar.snackFailTheme')
+    }
+  }
+
+  /* istanbul ignore next */
   async setPermissions(payload) {
     try {
       const response = await post(`${config.api}/permissions`, payload, this.headers)
       log.info('successfully set permissions', response)
     } catch (error) {
-      log.error('unable to patch permissions info', error)
+      log.error('unable to set permissions', error)
     }
   }
 
   async setUserLocale(payload) {
-    if (payload === this.store.getState().locale) return
+    if (payload === this.state.locale) return
     try {
       await patch(`${config.api}/user/locale`, { locale: payload }, this.headers)
       this.store.updateState({ locale: payload })
-      this.handleSuccess('successfully updated locale')
+      this.handleSuccess('navBar.snackSuccessLocale')
     } catch (error) {
-      this.handleError('unable to update locale')
+      this.handleError('navBar.snackFailLocale')
     }
   }
 
   async setSelectedCurrency(payload) {
-    if (payload.selectedCurrency === this.store.getState().selectedCurrency) return
+    if (payload.selectedCurrency === this.state.selectedCurrency) return
     try {
       await patch(`${config.api}/user`, { default_currency: payload.selectedCurrency }, this.headers)
       this.store.updateState({ selectedCurrency: payload.selectedCurrency })
-      this.handleSuccess('successfully patched currency info')
+      this.handleSuccess('navBar.snackSuccessCurrency')
     } catch (error) {
-      this.handleError('unable to patch currency info')
+      this.handleError('navBar.snackFailCurrency')
     }
   }
 
+  /* istanbul ignore next */
   async setVerifier(verifier, verifierId) {
     try {
-      await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers)
-      log.info('successfully patched', response)
+      const response = await patch(`${config.api}/user/verifier`, { verifier, verifierId }, this.headers)
+      log.info('successfully updated verifier info', response)
     } catch (error) {
-      log.error('unable to patch verifier info', error)
+      log.error('unable to update verifier info', error)
     }
   }
 
+  /* istanbul ignore next */
   getEtherScanTokenBalances() {
     return get(`${config.api}/tokenbalances`, this.headers)
   }
@@ -202,11 +223,11 @@ class PreferencesController {
   async getBillboardContents() {
     try {
       const resp = await get(`${config.api}/billboard`, this.headers)
-      const events = resp.data.reduce((acc, event) => {
-        if (!acc[event.callToActionLink]) acc[event.callToActionLink] = {}
-        acc[event.callToActionLink][event.locale] = event
-        return acc
-      }, [])
+      const events = resp.data.reduce((accumulator, event) => {
+        if (!accumulator[event.callToActionLink]) accumulator[event.callToActionLink] = {}
+        accumulator[event.callToActionLink][event.locale] = event
+        return accumulator
+      }, {})
 
       if (events) this.store.updateState({ billboard: events })
     } catch (error) {
@@ -216,25 +237,26 @@ class PreferencesController {
 
   async addContact(payload) {
     try {
-      await post(`${config.api}/contact`, payload, this.headers)
-      this.store.updateState({ contacts: [...this.store.getState().contacts, response.data] })
-      this.handleSuccess('successfully added contact')
+      const response = await post(`${config.api}/contact`, payload, this.headers)
+      this.store.updateState({ contacts: [...this.state.contacts, response.data] })
+      this.handleSuccess('navBar.snackSuccessContactAdd')
     } catch (error) {
-      this.handleError('Unable to add contact')
+      this.handleError('navBar.snackFailContactAdd')
     }
   }
 
   async deleteContact(payload) {
     try {
       const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers)
-      const finalContacts = this.store.getState().contacts.filter(contact => contact.id !== response.data.id)
+      const finalContacts = this.state.contacts.filter(contact => contact.id !== response.data.id)
       this.store.updateState({ contacts: finalContacts })
-      this.handleSuccess('Successfully deleted contact')
+      this.handleSuccess('navBar.snackSuccessContactDelete')
     } catch (error) {
-      this.handleError('Unable to delete contact')
+      this.handleError('navBar.snackFailContactDelete')
     }
   }
 
+  /* istanbul ignore next */
   async revokeDiscord(idToken) {
     try {
       const resp = await post(`${config.api}/revoke/discord`, { token: idToken }, this.headers)
@@ -249,17 +271,14 @@ class PreferencesController {
   }
 
   setSelectedAddress(address) {
+    if (this.state.selectedAddress === address) return
     this.store.updateState({ selectedAddress: address })
-    this.sync()
+    // this.sync()
   }
 
   async updateWalletNotified(payload) {
     try {
-      const resp = await patch(
-        `${config.api}/user/wallet-notified`,
-        { proxy_contract_address: payload.address, network: payload.network },
-        this.headers
-      )
+      await patch(`${config.api}/user/wallet-notified`, { proxy_contract_address: payload.address, network: payload.network }, this.headers)
       this.handleSuccess('Successfully updated wallet status')
     } catch (error) {
       log.error(error)
@@ -271,7 +290,7 @@ class PreferencesController {
    * @param {number} interval
    */
   set interval(interval) {
-    this._handle && clearInterval(this._handle)
+    if (this._handle) clearInterval(this._handle)
     if (!interval) {
       return
     }

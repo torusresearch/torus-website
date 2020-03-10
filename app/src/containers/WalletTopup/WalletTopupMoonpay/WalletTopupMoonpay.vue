@@ -1,18 +1,19 @@
 <template>
   <WalletTopupBase
-    selectedProvider="moonpay"
+    selected-provider="moonpay"
+    :crypto-currency-value="cryptoCurrencyValue"
+    :currency-rate="currencyRate"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
     @clearQuote="clearQuote"
-    :cryptoCurrencyValue="cryptoCurrencyValue"
-    :currencyRate="currencyRate"
   />
 </template>
 
 <script>
 import throttle from 'lodash.throttle'
-import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 import log from 'loglevel'
+
+import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 
 export default {
   components: {
@@ -36,11 +37,13 @@ export default {
             self.currencyRate = result.quoteCurrencyAmount / result.totalAmount
             self.currentOrder = result
           })
-          .catch(err => log.error(err))
+          .catch(error => log.error(error))
       }, 0)()
     },
-    sendOrder(cb) {
-      cb(this.$store.dispatch('fetchMoonpayOrder', { currentOrder: this.currentOrder, colorCode: this.$vuetify.theme.themes.light.primary.base }))
+    sendOrder(callback) {
+      callback(
+        this.$store.dispatch('fetchMoonpayOrder', { currentOrder: this.currentOrder, colorCode: this.$vuetify.theme.themes.light.primary.base })
+      )
     },
     clearQuote(payload) {
       this.cryptoCurrencyValue = 0

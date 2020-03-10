@@ -1,5 +1,6 @@
 import themes from '../plugins/themes'
 import vuetify from '../plugins/vuetify'
+import { THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 
 export default {
   setUserInfo(state, userInfo) {
@@ -11,6 +12,9 @@ export default {
   setWeiBalance(state, weiBalance) {
     state.weiBalance = { ...state.weiBalance, ...weiBalance }
     state.weiBalanceLoaded = true
+  },
+  setTokenDataLoaded(state) {
+    state.tokenDataLoaded = true
   },
   setTokenData(state, tokenData) {
     state.tokenData = { ...state.tokenData, ...tokenData }

@@ -17,13 +17,13 @@
           {{ t('walletHome.transfer') }}
         </v-btn>
         <v-btn
+          v-show="canShowLrc"
           depressed
           large
           color="primary"
           class="py-1 topup-btn hidden-xs-only"
           :class="$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12'"
           @click="topup"
-          v-show="canShowLrc"
         >
           <v-icon left>$vuetify.icons.add</v-icon>
           {{ t('walletHome.topUp') }}
@@ -40,14 +40,12 @@
                     <span>{{ t('walletHome.totalValue') }}</span>
                   </v-flex>
                   <v-flex text-right>
-                    <export-qr-code>
-                      <v-icon small class="primary--text" v-text="'$vuetify.icons.qr'" />
-                    </export-qr-code>
+                    <ExportQrCode></ExportQrCode>
                   </v-flex>
                 </v-layout>
               </v-card-title>
               <v-card-text class="pb-8 px-6">
-                <component-loader class="mt-3" v-if="!weiBalanceLoaded" />
+                <ComponentLoader v-if="!weiBalanceLoaded() || !tokenDataLoaded" class="mt-3" />
                 <h2 v-else :class="$vuetify.breakpoint.smAndDown ? 'display-1' : 'display-2'" class="text_2--text font-weight-bold text-clamp-one">
                   {{ totalPortfolioValue }}
                   <span id="selected-currency" class="body-2 font-weight-light">{{ selectedCurrency }}</span>
@@ -55,7 +53,7 @@
               </v-card-text>
             </v-card>
           </v-flex>
-          <v-flex xs12 sm6 px-4 my-4 v-if="isFreshAccount">
+          <v-flex v-if="isFreshAccount" xs12 sm6 px-4 my-4>
             <v-card class="card-shadow">
               <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
                 <v-layout>
@@ -86,14 +84,14 @@
               </v-card-text>
             </v-card>
           </v-flex>
-          <v-flex xs12 sm6 px-4 my-4 v-for="(event, i) in isFreshAccount ? [] : events" :key="`event-${i}`">
-            <promotion-card
+          <v-flex v-for="(event, i) in isFreshAccount ? [] : events" :key="`event-${i}`" xs12 sm6 px-4 my-4>
+            <PromotionCard
               :title="event.eventName"
               :image-path="event.imageUrl"
               :subtitle="event.description"
               :details-link="event.callToActionLink"
               :details-text="event.callToActionText"
-            ></promotion-card>
+            ></PromotionCard>
           </v-flex>
         </v-layout>
       </v-flex>
@@ -125,7 +123,7 @@
 
       <v-flex xs12>
         <v-layout wrap justify-space-between align-center>
-          <v-flex xs12 sm6 px-4 v-if="showSearch">
+          <v-flex v-if="showSearch" xs12 sm6 px-4>
             <v-layout wrap>
               <v-flex xs12>
                 <v-text-field
@@ -142,7 +140,7 @@
           <v-flex xs12 sm6 px-4 class="balance-filter" :class="showSearch ? 'pt-2' : ''">
             <v-layout>
               <v-flex xs7 class="refresh">
-                <v-btn @click="refreshBalances()" small icon>
+                <v-btn small icon @click="refreshBalances">
                   <v-icon color="primary" small>$vuetify.icons.refresh</v-icon>
                 </v-btn>
                 <span class="caption text_2--text">{{ t('walletHome.lastUpdate') }} {{ lastUpdated }}</span>
@@ -156,8 +154,8 @@
                   hide-details
                   :items="supportedCurrencies"
                   :value="selectedCurrency"
-                  @change="onCurrencyChange"
                   append-icon="$vuetify.icons.select"
+                  @change="onCurrencyChange"
                 ></v-select>
               </v-flex>
             </v-layout>
@@ -167,11 +165,11 @@
 
       <v-flex xs12 px-4 mt-5>
         <v-tabs v-model="activeTab">
-          <v-tab class="home-tab-token" :key="t('walletHome.tokens')">
+          <v-tab :key="t('walletHome.tokens')" class="home-tab-token">
             <v-icon left>$vuetify.icons.token</v-icon>
             {{ t('walletHome.tokens') }}
           </v-tab>
-          <v-tab class="home-tab-collectibles" :key="t('walletHome.collectibles')">
+          <v-tab :key="t('walletHome.collectibles')" class="home-tab-collectibles">
             <v-icon left>$vuetify.icons.collectibles</v-icon>
             {{ t('walletHome.collectibles') }}
           </v-tab>
@@ -181,10 +179,10 @@
 
     <v-tabs-items v-model="activeTab" class="token-tab-content">
       <v-tab-item>
-        <token-balances-table :tokenBalances="filteredBalancesArray" @update:select="select" :selected="selected" />
+        <TokenBalancesTable :token-balances="filteredBalancesArray" :selected="selected" @update:select="select" />
       </v-tab-item>
       <v-tab-item>
-        <collectibles-list></collectibles-list>
+        <CollectiblesList></CollectiblesList>
       </v-tab-item>
     </v-tabs-items>
   </div>
@@ -192,18 +190,17 @@
 
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
-import config from '../../../config'
-import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
-import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
-import ExportQrCode from '../../../components/helpers/ExportQrCode'
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
-import PromotionCard from '../../../components/WalletHome/PromotionCard'
+import ExportQrCode from '../../../components/helpers/ExportQrCode'
+import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
 import LearnMore from '../../../components/WalletHome/LearnMore'
-import { MAINNET, LOCALE_EN } from '../../../utils/enums'
-import { get } from '../../../utils/httpHelpers'
+import PromotionCard from '../../../components/WalletHome/PromotionCard'
+import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
+import config from '../../../config'
+import { LOCALE_EN, MAINNET } from '../../../utils/enums'
 
 export default {
-  name: 'walletHome',
+  name: 'WalletHome',
   components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore, ComponentLoader },
   data() {
     return {
@@ -225,13 +222,16 @@ export default {
     weiBalanceLoaded() {
       return this.$store.state.weiBalanceLoaded
     },
+    tokenDataLoaded() {
+      return this.$store.state.tokenDataLoaded
+    },
     finalBalancesArray() {
-      let balances = this.$store.getters.tokenBalances.finalBalancesArray
+      const balances = this.$store.getters.tokenBalances.finalBalancesArray
       return balances || []
     },
     filteredBalancesArray() {
       const search = this.search || ''
-      var regEx = new RegExp(search, 'i')
+      const regEx = new RegExp(search, 'i')
 
       return this.finalBalancesArray.filter(balance => balance.name.match(regEx))
     },
@@ -250,7 +250,7 @@ export default {
     events() {
       const events = []
       const lang = this.$vuetify.lang.current
-      const billboard = this.$store.state.billboard
+      const { billboard } = this.$store.state
 
       Object.keys(billboard).forEach(key => {
         const event = billboard[key]
@@ -260,6 +260,11 @@ export default {
 
       return events
     }
+  },
+  mounted() {
+    this.setDateUpdated()
+
+    this.activeTab = this.$route.hash === '#collectibles' ? 1 : 0
   },
   methods: {
     select(selectedItem) {
@@ -280,10 +285,10 @@ export default {
     },
     initiateTransfer() {
       // this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
-      this.$router.push({ name: 'walletTransfer' }).catch(err => {})
+      this.$router.push({ name: 'walletTransfer' }).catch(_ => {})
     },
     topup() {
-      this.$router.push({ path: '/wallet/topup' }).catch(err => {})
+      this.$router.push({ path: '/wallet/topup' }).catch(_ => {})
     },
     setDateUpdated() {
       const currentDateTime = new Date()
@@ -295,7 +300,7 @@ export default {
       const date = `${day}/${month}/${currentDateTime
         .getFullYear()
         .toString()
-        .substring(2, 4)}`
+        .slice(2, 4)}`
 
       const hours = currentDateTime
         .getHours()
@@ -308,11 +313,6 @@ export default {
       const time = `${hours}:${mins}`
       this.lastUpdated = `${date}, ${time}`
     }
-  },
-  mounted() {
-    this.setDateUpdated()
-
-    this.activeTab = this.$route.hash === '#collectibles' ? 1 : 0
   }
 }
 </script>

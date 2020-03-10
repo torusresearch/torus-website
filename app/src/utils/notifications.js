@@ -1,8 +1,9 @@
-// request permission on page load
-const log = require('loglevel')
+import log from 'loglevel'
+
+import { isMain } from './utils'
 
 function initNotifications() {
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', () => {
     if (Notification.permission !== 'granted') Notification.requestPermission()
   })
 }
@@ -12,13 +13,41 @@ function notifyUser(url) {
     log.info('Desktop notifications not available')
     return
   }
-  Notification.requestPermission().then(result => {
-    // do sth
-    if (result !== 'granted') {
-      return
+  if (!isMain && Notification.permission !== 'granted') return
+  if (Notification.permission === 'granted') {
+    notifyUrl(url)
+    return
+  }
+  // for safari
+  try {
+    Notification.requestPermission()
+      .then(result => {
+        // do sth
+        if (result !== 'granted') {
+          return
+        }
+        notifyUrl(url)
+      })
+      .catch(error => log.error(error))
+  } catch (error) {
+    log.error(error)
+    if (error instanceof TypeError) {
+      Notification.requestPermission(result => {
+        // do sth
+        if (result !== 'granted') {
+          return
+        }
+        notifyUrl(url)
+      })
     }
-    navigator.serviceWorker.getRegistration().then(registration => {
-      registration &&
+  }
+}
+
+function notifyUrl(url) {
+  navigator.serviceWorker
+    .getRegistration()
+    .then(registration => {
+      if (registration) {
         registration.showNotification('Sent Transaction', {
           body: 'Check Tx Status',
           icon: 'favicon.png',
@@ -27,11 +56,12 @@ function notifyUser(url) {
           tag: 'transaction-status',
           data: {
             dateOfArrival: Date.now(),
-            url: url
+            url
           }
         })
+      }
     })
-  })
+    .catch(error => log.error(error))
 }
 
 export { initNotifications, notifyUser }

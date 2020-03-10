@@ -1,1 +1,1 @@
-export { default } from './AddFunds'
+export { default } from './AddFunds.vue'

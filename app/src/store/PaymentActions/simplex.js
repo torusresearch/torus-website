@@ -1,13 +1,14 @@
-import log from 'loglevel'
-import { postQuote, postOrder } from '../../plugins/simplex'
-import config from '../../config'
-import { broadcastChannelOptions } from '../../utils/utils'
-import PopupHandler from '../../utils/PopupHandler'
-import { SIMPLEX } from '../../utils/enums'
+/* eslint-disable camelcase */
+import randomId from '@chaitanyapotti/random-id'
 import { BroadcastChannel } from 'broadcast-channel'
-import torus from '../../torus'
+import log from 'loglevel'
 
-const randomId = require('@chaitanyapotti/random-id')
+import config from '../../config'
+import { postOrder, postQuote } from '../../plugins/simplex'
+import torus from '../../torus'
+import { SIMPLEX } from '../../utils/enums'
+import PopupHandler from '../../utils/PopupHandler'
+import { broadcastChannelOptions } from '../../utils/utils'
 
 export default {
   fetchSimplexQuote({ state }, payload) {
@@ -26,10 +27,10 @@ export default {
   },
   fetchSimplexOrder({ state, dispatch }, payload) {
     return new Promise((resolve, reject) => {
-      let preopenInstanceId = payload.preopenInstanceId
+      let { preopenInstanceId } = payload
       if (!preopenInstanceId) {
         preopenInstanceId = randomId()
-        const finalUrl = config.baseUrl + `/redirect?preopenInstanceId=${preopenInstanceId}`
+        const finalUrl = `${config.baseUrl}/redirect?preopenInstanceId=${preopenInstanceId}`
         const handledWindow = new PopupHandler({ url: finalUrl, target: 'form-target' })
         handledWindow.open()
 
@@ -72,44 +73,45 @@ export default {
         {
           Authorization: `Bearer ${state.jwtToken}`
         }
-      ).then(result => {
-        const {
-          version,
-          partner,
-          return_url,
-          quote_id,
-          payment_id,
-          user_id,
-          destination_wallet_address,
-          destination_wallet_currency,
-          fiat_total_amount_amount,
-          fiat_total_amount_currency,
-          digital_total_amount_amount,
-          digital_total_amount_currency,
-          payment_post_url
-        } = result.result
-        dispatch('postSimplexOrder', {
-          preopenInstanceId,
-          path: payment_post_url,
-          params: {
-            payment_flow_type: 'wallet',
+      )
+        .then(result => {
+          const {
             version,
             partner,
             return_url,
             quote_id,
             payment_id,
             user_id,
-            'destination_wallet[address]': destination_wallet_address,
-            'destination_wallet[currency]': destination_wallet_currency,
-            'fiat_total_amount[amount]': fiat_total_amount_amount,
-            'fiat_total_amount[currency]': fiat_total_amount_currency,
-            'digital_total_amount[amount]': digital_total_amount_amount,
-            'digital_total_amount[currency]': digital_total_amount_currency
-          }
+            destination_wallet_address,
+            destination_wallet_currency,
+            fiat_total_amount_amount,
+            fiat_total_amount_currency,
+            digital_total_amount_amount,
+            digital_total_amount_currency,
+            payment_post_url
+          } = result.result
+          return dispatch('postSimplexOrder', {
+            preopenInstanceId,
+            path: payment_post_url,
+            params: {
+              payment_flow_type: 'wallet',
+              version,
+              partner,
+              return_url,
+              quote_id,
+              payment_id,
+              user_id,
+              'destination_wallet[address]': destination_wallet_address,
+              'destination_wallet[currency]': destination_wallet_currency,
+              'fiat_total_amount[amount]': fiat_total_amount_amount,
+              'fiat_total_amount[currency]': fiat_total_amount_currency,
+              'digital_total_amount[amount]': digital_total_amount_amount,
+              'digital_total_amount[currency]': digital_total_amount_currency
+            }
+          })
         })
-          .then(res => resolve(res))
-          .catch(err => reject(err))
-      })
+        .then(response => resolve(response))
+        .catch(error => reject(error))
     })
   },
   postSimplexOrder(context, { path, params, method = 'post', preopenInstanceId }) {
@@ -118,23 +120,24 @@ export default {
       form.method = method
       form.action = path
       form.target = 'form-target'
+      // eslint-disable-next-line no-restricted-syntax
       for (const key in params) {
-        if (params.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(params, key)) {
           const hiddenField = document.createElement('input')
           hiddenField.type = 'hidden'
           hiddenField.name = key
           hiddenField.value = params[key]
-          form.appendChild(hiddenField)
+          form.append(hiddenField)
         }
       }
-      document.body.appendChild(form)
+      document.body.append(form)
       // Handle communication with simplex window here
 
       const simplexWindow = new PopupHandler({ url: 'about:blank', target: 'form-target', features: 'width=1200, height=700', preopenInstanceId })
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
 
-      bc.onmessage = ev => {
+      bc.addEventListener('message', ev => {
         try {
           const {
             instanceParams: { provider }
@@ -151,8 +154,16 @@ export default {
           bc.close()
           simplexWindow.close()
         }
-      }
-      simplexWindow.open().then(() => form.submit())
+      })
+      simplexWindow
+        .open()
+        .then(() => {
+          log.info('submitting form')
+          setTimeout(() => {
+            form.submit()
+          }, 2000)
+        })
+        .catch(error => log.error(error))
 
       simplexWindow.once('close', () => {
         bc.close()

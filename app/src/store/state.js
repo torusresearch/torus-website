@@ -1,4 +1,4 @@
-import { ROPSTEN, ROPSTEN_DISPLAY_NAME, ROPSTEN_CODE, USER_INFO_REQUEST_NEW, THEME_LIGHT_BLUE_NAME, LOCALE_EN } from '../utils/enums'
+import { LOCALE_EN, ROPSTEN, ROPSTEN_CODE, ROPSTEN_DISPLAY_NAME, THEME_LIGHT_BLUE_NAME, USER_INFO_REQUEST_NEW } from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -12,6 +12,7 @@ const initialState = {
   // loaders
   loginInProgress: false,
   weiBalanceLoaded: false, // Use on showing spinners
+  tokenDataLoaded: false, // Use on showing spinners
   loadingUserTransactions: true,
   isNewUser: false,
   // account handled

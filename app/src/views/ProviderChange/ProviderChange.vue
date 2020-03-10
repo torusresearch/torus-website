@@ -1,14 +1,14 @@
 <template>
-  <v-container pa-0>
+  <v-container px-0 py-6>
     <template v-if="type === 'none'">
-      <change-provider-screen-loader />
+      <ChangeProviderScreenLoader />
     </template>
     <template v-else>
-      <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" />
-      <!-- <v-layout wrap align-center mx-6 mb-6>
+      <!-- <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" /> -->
+      <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left">{{ t('dappInfo.permission') }}</v-flex>
         <v-flex xs12>
-          <network-display></network-display>
+          <NetworkDisplay :store-network-type="currentNetwork"></NetworkDisplay>
         </v-flex>
       </v-layout>
       <v-layout wrap>
@@ -18,8 +18,8 @@
           <v-card flat class="grey lighten-3">
             <v-card-text>
               <div class="subtitle-2 primary--text request-from">
-                <a :href="originHref" target="_blank">{{ origin }}</a>
-                <a :href="originHref" target="_blank" class="float-right">
+                <a :href="origin.href" target="_blank">{{ origin.hostname }}</a>
+                <a :href="origin.href" target="_blank" class="float-right">
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
                 </a>
               </div>
@@ -27,20 +27,16 @@
           </v-card>
         </v-flex>
 
-        <v-flex xs12 mb-4 mx-6>
-          <v-list class="note-list">
-            <v-list-item class="pa-0">
-              <v-list-item-icon class="mr-1">
-                <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
-              </v-list-item-icon>
-              <v-list-item-content class="pa-1">
-                <div class="caption text_2--text">
-                  {{ t('dappProvider.toChangeNetwork') }}
-                  <span class="text-capitalize">{{ type && type === 'rpc' ? `${rpcNetwork.networkName} : ${rpcNetwork.host}` : network.host }}</span>
-                </div>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
+        <v-flex xs12 my-4 mx-6 class="note-list">
+          <div class="d-flex mb-2">
+            <div class="mr-5 note-list__icon">
+              <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
+            </div>
+            <div class="caption text_2--text">
+              {{ t('dappProvider.toChangeNetwork') }}
+              <span class="text-capitalize">{{ type === 'rpc' ? `${network.networkName} : ${network.host}` : network.host }}</span>
+            </div>
+          </div>
         </v-flex>
 
         <v-layout px-6 mx-3>
@@ -51,83 +47,66 @@
             <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">{{ t('dappProvider.confirm') }}</v-btn>
           </v-flex>
         </v-layout>
-      </v-layout> -->
+      </v-layout>
     </template>
   </v-container>
 </template>
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
+
+import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import { ChangeProviderScreenLoader } from '../../content-loader'
 import { broadcastChannelOptions } from '../../utils/utils'
-import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
-import log from 'loglevel'
+// import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
 
 export default {
-  name: 'confirm',
+  name: 'Confirm',
   components: {
     ChangeProviderScreenLoader,
-    PermissionConfirm
+    NetworkDisplay
+    // PermissionConfirm
   },
   data() {
     return {
-      origin: '',
-      originHref: '',
+      origin: { href: '', hostname: '' },
       type: 'none',
-      network: '',
-      rpcNetwork: {},
-      payload: {}
-    }
-  },
-  methods: {
-    async triggerSign(event) {
-      var bc = new BroadcastChannel(
-        `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
-        broadcastChannelOptions
-      )
-      await bc.postMessage({
-        data: { type: 'confirm-provider-change', payload: this.payload, approve: true }
-      })
-      bc.close()
-    },
-    async triggerDeny(event) {
-      var bc = new BroadcastChannel(
-        `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
-        broadcastChannelOptions
-      )
-      await bc.postMessage({ data: { type: 'deny-provider-change', approve: false } })
-      bc.close()
+      network: {},
+      currentNetwork: {},
+      channel: ''
     }
   },
   mounted() {
-    var bc = new BroadcastChannel(
-      `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`,
-      broadcastChannelOptions
-    )
-    bc.onmessage = async ev => {
+    this.channel = `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`
+    const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
+    bc.addEventListener('message', async ev => {
       const {
         payload: { network, type },
-        origin
+        origin,
+        currentNetwork
       } = ev.data || {}
-      this.payload = { network, type }
-      let url = { hostname: '', href: '' }
-      try {
-        url = new URL(origin)
-      } catch (err) {
-        log.error(err)
-      }
-      this.originHref = url.href
-      this.origin = url.hostname // origin of tx: website url
-      if (type && type === 'rpc') {
-        this.rpcNetwork = network
-        this.type = type
-      } else {
-        this.network = network
-        this.type = 'non-rpc'
-      }
+      this.origin = origin // origin of tx: website url
+      this.network = network
+      this.type = type
+      this.currentNetwork = currentNetwork
+
+      bc.close()
+    })
+    bc.postMessage({ data: { type: 'popup-loaded' } })
+  },
+  methods: {
+    async triggerSign() {
+      const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
+      await bc.postMessage({
+        data: { type: 'provider-change-result', approve: true }
+      })
+      bc.close()
+    },
+    async triggerDeny() {
+      const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
+      await bc.postMessage({ data: { type: 'provider-change-result', approve: false } })
       bc.close()
     }
-    bc.postMessage({ data: 'popup-loaded' })
   }
 }
 </script>

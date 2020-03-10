@@ -1,1 +1,1 @@
-export { default } from './TransactionFeeSelect'
+export { default } from './TransactionFeeSelect.vue'

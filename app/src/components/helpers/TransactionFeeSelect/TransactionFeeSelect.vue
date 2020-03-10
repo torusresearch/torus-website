@@ -57,7 +57,12 @@
 
 <script>
 export default {
-  props: ['isWalletTransfer'],
+  props: {
+    isWalletTransfer: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       freeTransaction: true

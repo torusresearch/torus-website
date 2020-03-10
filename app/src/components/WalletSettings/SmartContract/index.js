@@ -1,1 +1,1 @@
-export { default } from './SmartContract'
+export { default } from './SmartContract.vue'

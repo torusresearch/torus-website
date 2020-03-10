@@ -10,14 +10,14 @@
         <TransferAdvanceOption
           v-if="!$vuetify.breakpoint.xsOnly"
           :symbol="symbol"
-          :displayAmount="displayAmount"
+          :display-amount="displayAmount"
           :gas="gas"
-          :activeGasPrice="activeGasPrice"
+          :active-gas-price="activeGasPrice"
           @onSave="onSaveAdvanceOptions"
         />
       </v-flex>
     </v-layout>
-    <v-layout mx-n1 xs12 v-if="!isAdvanceOption">
+    <v-layout v-if="!isAdvanceOption" px-4 mx-n1 xs12>
       <v-flex xs6 px-1 mb-1>
         <v-chip
           class="button-speed text-center"
@@ -89,9 +89,9 @@
         <TransferAdvanceOption
           v-if="$vuetify.breakpoint.xsOnly"
           :symbol="symbol"
-          :displayAmount="displayAmount"
+          :display-amount="displayAmount"
           :gas="gas"
-          :activeGasPrice="activeGasPrice"
+          :active-gas-price="activeGasPrice"
           @onSave="onSaveAdvanceOptions"
         />
       </v-flex>
@@ -100,39 +100,103 @@
 </template>
 
 <script>
-import { significantDigits } from '../../../utils/utils'
-import TransferAdvanceOption from '../TransferAdvanceOption'
-import HelpTooltip from '../HelpTooltip'
-import log from 'loglevel'
 import BigNumber from 'bignumber.js'
+import log from 'loglevel'
+
+import { significantDigits } from '../../../utils/utils'
+// import HelpTooltip from '../HelpTooltip'
+import TransferAdvanceOption from '../TransferAdvanceOption'
 
 export default {
   components: {
     TransferAdvanceOption
     // HelpTooltip
   },
-  props: ['isWalletTransfer', 'gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol', 'resetSpeed'],
+  props: {
+    gas: { type: BigNumber, default: new BigNumber('0') },
+    displayAmount: { type: BigNumber, default: new BigNumber('0') },
+    activeGasPriceConfirm: {
+      type: BigNumber,
+      default: undefined
+    },
+    symbol: {
+      type: String,
+      default: ''
+    },
+    resetSpeed: {
+      type: Boolean
+    },
+    selectedCurrency: {
+      type: String,
+      default: 'USD'
+    },
+    currencyMultiplier: {
+      type: BigNumber,
+      default: new BigNumber('0')
+    },
+    isWalletTransfer: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       isAdvanceOption: false,
       speedSelected: '',
       averageGasPrice: new BigNumber('5'),
       fastestGasPrice: new BigNumber('20'),
-      activeGasPrice: new BigNumber(''),
+      activeGasPrice: new BigNumber('0'),
       averageGasPriceSpeed: '',
       fastestGasPriceSpeed: ''
     }
   },
-  computed: {
-    selectedCurrency() {
-      return this.$store.state.selectedCurrency
-    },
-    getCurrencyMultiplier() {
-      const { selectedCurrency, currencyData } = this.$store.state || {}
-      const currencyMultiplierNum = selectedCurrency !== 'ETH' ? currencyData[selectedCurrency.toLowerCase()] || 1 : 1
-      const currencyMultiplier = new BigNumber(currencyMultiplierNum)
-      return currencyMultiplier
+  watch: {
+    resetSpeed(value) {
+      if (value) {
+        this.speedSelected = 'average'
+        this.resetAdvanceOption()
+      }
     }
+  },
+  created() {
+    fetch('https://ethgasstation.info/json/ethgasAPI.json', {
+      headers: {},
+      referrer: 'http://ethgasstation.info/json/',
+      referrerPolicy: 'no-referrer-when-downgrade',
+      body: null,
+      method: 'GET',
+      mode: 'cors'
+    })
+      .then(resp => resp.json())
+      .then(
+        ({
+          average: averageTimes10,
+          avgWait,
+          // block_time: blockTime,
+          // blockNum,
+          fastest: fastestTimes10,
+          fastestWait
+          // safeLow: safeLowTimes10,
+          // safeLowWait,
+          // speed
+        }) => {
+          this.averageGasPrice = new BigNumber(averageTimes10).div(new BigNumber('10'))
+          this.fastestGasPrice = new BigNumber(fastestTimes10).div(new BigNumber('10'))
+
+          this.averageGasPriceSpeed = avgWait
+          this.fastestGasPriceSpeed = fastestWait
+
+          // Set selected gas price from confirm
+          if (this.activeGasPriceConfirm) {
+            this.setSelectedSpeed()
+          } else {
+            this.selectSpeed('average', this.averageGasPrice)
+          }
+        }
+      )
+      .catch(error => {
+        log.error(error)
+      })
   },
   methods: {
     onSaveAdvanceOptions(details) {
@@ -164,11 +228,8 @@ export default {
       return `${significantDigits(currencyFee.toString())} ${this.selectedCurrency}`
     },
     getGasAmount(gasPrice) {
-      const currencyMultiplier = this.getCurrencyMultiplier
       const ethFee = this.getEthAmount(this.gas, gasPrice)
-      const currencyFee = ethFee.times(currencyMultiplier)
-
-      return currencyFee
+      return ethFee.times(this.currencyMultiplier)
     },
     getEthAmount(gas, gasPrice) {
       return gas.times(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
@@ -182,9 +243,9 @@ export default {
       this.$emit('onSelectSpeed', {
         speedSelected: this.speedSelected,
         activeGasPrice: this.activeGasPrice,
-        speed: speed,
+        speed,
         isReset: !!isReset,
-        gas: updatedGas ? updatedGas : this.gas
+        gas: updatedGas || this.gas
       })
     },
     setSelectedSpeed() {
@@ -209,54 +270,6 @@ export default {
         this.updateCosts()
       }
     }
-  },
-  watch: {
-    resetSpeed(value) {
-      if (value) {
-        this.speedSelected = 'average'
-        this.resetAdvanceOption()
-      }
-    }
-  },
-  created() {
-    fetch('https://ethgasstation.info/json/ethgasAPI.json', {
-      headers: {},
-      referrer: 'http://ethgasstation.info/json/',
-      referrerPolicy: 'no-referrer-when-downgrade',
-      body: null,
-      method: 'GET',
-      mode: 'cors'
-    })
-      .then(resp => resp.json())
-      .then(
-        ({
-          average: averageTimes10,
-          avgWait,
-          block_time: blockTime,
-          blockNum,
-          fastest: fastestTimes10,
-          fastestWait,
-          safeLow: safeLowTimes10,
-          safeLowWait,
-          speed
-        }) => {
-          this.averageGasPrice = new BigNumber(averageTimes10).div(new BigNumber('10'))
-          this.fastestGasPrice = new BigNumber(fastestTimes10).div(new BigNumber('10'))
-
-          this.averageGasPriceSpeed = avgWait
-          this.fastestGasPriceSpeed = fastestWait
-
-          // Set selected gas price from confirm
-          if (this.activeGasPriceConfirm) {
-            this.setSelectedSpeed()
-          } else {
-            this.selectSpeed('average', this.averageGasPrice)
-          }
-        }
-      )
-      .catch(err => {
-        log.error(err)
-      })
   }
 }
 </script>

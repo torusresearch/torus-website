@@ -118,6 +118,8 @@
 
   .v-menu__content {
     @include cardShadow();
+    border: 1px solid #f1f2f6;
+    box-shadow: 0px 18px 36px rgba(46, 91, 255, 0.06);
     border-radius: 9px;
   }
 

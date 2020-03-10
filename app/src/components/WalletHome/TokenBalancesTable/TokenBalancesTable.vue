@@ -1,6 +1,6 @@
 <template>
   <v-layout class="home-cards token-balance-tab-container" wrap align-center>
-    <v-flex class="xs12 sm6 px-4 my-4" v-for="(balance, index) in tokenBalances" :key="index" :style="`order: ${index > 0 ? index + 1 : index}`">
+    <v-flex v-for="(balance, index) in tokenBalances" :key="index" class="xs12 sm6 px-4 my-4" :style="`order: ${index > 0 ? index + 1 : index}`">
       <v-card color="card-shadow pb-6 pt-1" router-link :to="{ name: 'walletTransfer', query: { contract: balance.tokenAddress } }">
         <v-card-text class="text_1--text py-6 px-6">
           <v-layout>
@@ -34,7 +34,14 @@
 
 <script>
 export default {
-  props: ['tokenBalances', 'selected'],
+  props: {
+    tokenBalances: {
+      type: Array,
+      default() {
+        return []
+      }
+    }
+  },
   data() {
     return {
       pagination: {

@@ -22,7 +22,7 @@
           </v-flex>
           <v-flex xs6>
             <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="pt-2 network-container">
-              <v-icon size="10" v-text="'$vuetify.icons.network'" style="margin-top: -2px"></v-icon>
+              <v-icon size="10" style="margin-top: -2px" v-text="'$vuetify.icons.network'"></v-icon>
               <span class="">{{ selectedNetwork }}</span>
             </div>
           </v-flex>
@@ -68,7 +68,7 @@
             <v-text-field class="text_1--text caption total-cost" value="522.54 ETH" :hint="`~23.54 USD`" persistent-hint outlined readonly />
           </v-flex>
           <v-flex mb-2 xs12>
-            <add-funds></add-funds>
+            <AddFunds></AddFunds>
           </v-flex>
         </v-layout>
       </v-flex>
@@ -89,10 +89,10 @@
 </template>
 
 <script>
-import { SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
-import TransactionFeeSelect from '../../components/helpers/TransactionFeeSelect'
-import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import AddFunds from '../../components/helpers/AddFunds'
+// import TransactionFeeSelect from '../../components/helpers/TransactionFeeSelect'
+// import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
+import { SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 
 export default {
   components: { AddFunds },

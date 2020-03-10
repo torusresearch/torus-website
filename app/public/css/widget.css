@@ -1,7 +1,7 @@
 #torusAlert {
   color: black;
   height: auto;
-  z-index: 999999;
+  z-index: 99999999;
   position: fixed;
   overflow: hidden;
   top: 34px;
@@ -17,12 +17,13 @@
 #torusAlert #torusAlert__title {
   margin: 0;
   font-size: 22px;
-  font-weight: 200;
+  font-weight: 500;
 }
 
 #torusAlert #torusAlert__desc {
   margin: 16px 0 0;
   font-size: 14px;
+  font-weight: normal;
 }
 
 #torusAlert #torusAlert__close {

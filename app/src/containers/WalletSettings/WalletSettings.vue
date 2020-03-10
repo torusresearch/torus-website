@@ -16,7 +16,7 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <privacy-security />
+            <PrivacySecurity />
           </v-expansion-panel-content>
         </v-expansion-panel>
         <!-- Smart Contract Wallet Settings -->
@@ -32,7 +32,7 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <smart-contract />
+            <SmartContract />
           </v-expansion-panel-content>
         </v-expansion-panel>
 
@@ -49,7 +49,7 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <network />
+            <Network />
           </v-expansion-panel-content>
         </v-expansion-panel>
 
@@ -66,7 +66,7 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <contact-list />
+            <ContactList />
           </v-expansion-panel-content>
         </v-expansion-panel>
 
@@ -83,7 +83,7 @@
             </div>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <display />
+            <Display />
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -91,18 +91,17 @@
   </v-layout>
 </template>
 <script>
-import PrivacySecurity from '../../components/WalletSettings/PrivacySecurity'
-import ContactList from '../../components/WalletSettings/ContactList'
-import Network from '../../components/WalletSettings/Network'
-import Display from '../../components/WalletSettings/Display'
-import SmartContract from '../../components/WalletSettings/SmartContract'
-import { post, get } from '../../utils/httpHelpers.js'
-import config, { nodeDetails } from '../../config'
+// import log from 'loglevel'
 
-import log from 'loglevel'
+import ContactList from '../../components/WalletSettings/ContactList'
+import Display from '../../components/WalletSettings/Display'
+import Network from '../../components/WalletSettings/Network'
+import PrivacySecurity from '../../components/WalletSettings/PrivacySecurity'
+import SmartContract from '../../components/WalletSettings/SmartContract'
+// import { get, post } from '../../utils/httpHelpers.js'
 
 export default {
-  name: 'walletSettings',
+  name: 'WalletSettings',
   components: {
     PrivacySecurity,
     ContactList,

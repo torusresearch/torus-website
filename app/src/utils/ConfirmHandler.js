@@ -1,22 +1,23 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
-import { broadcastChannelOptions } from './utils'
-import torus from '../torus'
-import PopupHandler from './PopupHandler'
-import config from '../config'
 
-const baseRoute = config.baseRoute
+import config from '../config'
+import PopupHandler from './PopupHandler'
+import { broadcastChannelOptions, getIFrameOriginObject } from './utils'
+
+const { baseRoute } = config
 
 class ConfirmHandler {
-  constructor() {
+  constructor(torusInstanceId) {
     this.id = undefined
     this.txType = undefined
     this.confirmWindow = {}
-    this.bc = new BroadcastChannel(`torus_channel_${torus.instanceId}`, broadcastChannelOptions)
+    this.torusInstanceId = torusInstanceId
+    this.bc = new BroadcastChannel(`torus_channel_${torusInstanceId}`, broadcastChannelOptions)
   }
 
-  open = (handleConfirm, handleDeny) => {
-    const finalUrl = `${baseRoute}confirm?instanceId=${torus.instanceId}&integrity=true&id=${this.id}`
+  open(handleConfirm, handleDeny) {
+    const finalUrl = `${baseRoute}confirm?instanceId=${this.torusInstanceId}&integrity=true&id=${this.id}`
     this.confirmWindow = new PopupHandler({
       url: finalUrl,
       target: '_blank',
@@ -24,9 +25,11 @@ class ConfirmHandler {
     })
     this.confirmWindow.open()
 
-    this.bc.onmessage = this.handle
+    this.bc.addEventListener('message', this.handle)
     this.handleConfirm = handleConfirm
     this.handleDeny = handleDeny
+
+    this.origin = getIFrameOriginObject()
 
     this.confirmWindow.once('close', () => {
       this.bc.close()
@@ -37,38 +40,49 @@ class ConfirmHandler {
     })
   }
 
-  sendTx = async () => {
+  async sendTx() {
     await this.bc.postMessage({
       name: 'send-params',
       data: {
-        origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+        origin: this.origin,
         type: this.txType,
-        txParams: { ...this.txParams, network: this.host },
-        balance: this.balance
+        txParams: this.txParams,
+        balance: this.balance,
+        selectedCurrency: this.selectedCurrency,
+        tokenRates: this.tokenRates,
+        jwtToken: this.jwtToken,
+        currencyData: this.currencyData,
+        network: this.networkType
       }
     })
   }
 
-  sendMessage = async () => {
+  async sendMessage() {
     await this.bc.postMessage({
       name: 'send-params',
       data: {
-        origin: window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer,
+        origin: this.origin,
         type: this.txType,
-        msgParams: { msgParams: this.msgParams, id: this.id }
+        msgParams: { msgParams: this.msgParams, id: this.id },
+        selectedCurrency: this.selectedCurrency,
+        tokenRates: this.tokenRates,
+        jwtToken: this.jwtToken,
+        currencyData: this.currencyData,
+        network: this.networkType
       }
     })
   }
 
-  handle = async ev => {
-    if (ev.name === 'popup-loaded' && ev.data.id.toString() === this.id.toString()) {
+  async handle(ev) {
+    const { name, data: { id = '', type = '', txType = '' } = {} } = ev
+    if (name === 'popup-loaded' && id.toString() === this.id.toString()) {
       if (this.isTx) this.sendTx()
       else this.sendMessage()
-    } else if (ev.name === 'tx-result' && this.id.toString() === ev.data.id.toString()) {
-      if (ev.data.type === 'confirm-transaction') {
+    } else if (name === 'tx-result' && this.id.toString() === id.toString()) {
+      if (type === 'confirm-transaction') {
         this.handleConfirm(ev)
-      } else if (ev.data.type === 'deny-transaction') {
-        this.handleDeny(ev.data.id, ev.data.txType)
+      } else if (type === 'deny-transaction') {
+        this.handleDeny(id, txType)
       }
       this.bc.close()
       this.id = undefined

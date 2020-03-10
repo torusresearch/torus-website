@@ -7,7 +7,7 @@
         </v-list-item-avatar>
         <v-list-item-title>
           <div class="font-weight-bold subtitle-1 d-flex">
-            <div class="torus-account--name mr-1" id="account-name">
+            <div id="account-name" class="torus-account--name mr-1">
               <span>{{ userName }}</span>
             </div>
             <div>{{ t('accountMenu.account') }}</div>
@@ -29,7 +29,7 @@
               <span>{{ userId }}</span>
             </div>
             <div class="caption public-address-container">
-              <show-tool-tip :address="selectedAddress">{{ selectedAddress }}</show-tool-tip>
+              <ShowToolTip :address="selectedAddress">{{ selectedAddress }}</ShowToolTip>
             </div>
           </v-list-item-subtitle>
         </v-list-item-content>
@@ -46,10 +46,10 @@
 
     <div class="px-3 account-list">
       <div
-        class="d-flex account-list__item mb-2 pa-1"
-        :class="{ active: acc.address === selectedAddress }"
         v-for="acc in wallets"
         :key="acc.address"
+        class="d-flex account-list__item mb-2 pa-1"
+        :class="{ active: acc.address === selectedAddress }"
         @click="changeAccount(acc.address)"
       >
         <div>
@@ -64,12 +64,12 @@
           <div class="caption">
             <span class="account-list__address">{{ acc.address }}</span>
             <span class="float-right">
-              <show-tool-tip :address="acc.address">
+              <ShowToolTip :address="acc.address">
                 <v-icon size="12" :class="{ 'text_2--text': !$vuetify.theme.dark }" v-text="'$vuetify.icons.copy'" />
-              </show-tool-tip>
-              <export-qr-code :customAddress="acc.address">
+              </ShowToolTip>
+              <ExportQrCode :custom-address="acc.address">
                 <v-icon x-small v-text="'$vuetify.icons.qr'" />
-              </export-qr-code>
+              </ExportQrCode>
             </span>
           </div>
         </div>
@@ -88,7 +88,7 @@
           <v-list-item-subtitle>
             <v-layout>
               <v-flex xs12>
-                <component-loader />
+                <ComponentLoader />
               </v-flex>
             </v-layout>
           </v-list-item-subtitle>
@@ -106,7 +106,7 @@
         <v-list-item-content class="text_1--text font-weight-bold">{{ t('accountMenu.importAccount') }}</v-list-item-content>
       </v-list-item>
       <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
-        <account-import @onClose="accountImportDialog = false" />
+        <AccountImport @onClose="accountImportDialog = false" />
       </v-dialog>
     </v-list>
 
@@ -114,8 +114,8 @@
 
     <v-list>
       <v-list-item
-        :id="`${headerItem.name}-link-mobile`"
         v-for="headerItem in filteredMenu"
+        :id="`${headerItem.name}-link-mobile`"
         :key="headerItem.name"
         link
         router
@@ -138,7 +138,7 @@
 
     <v-divider v-if="$vuetify.breakpoint.xsOnly"></v-divider>
     <v-list v-if="$vuetify.breakpoint.xsOnly">
-      <language-selector></language-selector>
+      <LanguageSelector></LanguageSelector>
     </v-list>
 
     <v-list>
@@ -150,27 +150,32 @@
 </template>
 
 <script>
-import { BroadcastChannel } from 'broadcast-channel'
-import { significantDigits, addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
-import ShowToolTip from '../../helpers/ShowToolTip'
-import ComponentLoader from '../../helpers/ComponentLoader'
-import LanguageSelector from '../../helpers/LanguageSelector'
-import AccountImport from '../AccountImport'
-import ExportQrCode from '../../helpers/ExportQrCode'
-
-import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../../utils/enums'
-import torus from '../../../torus'
 import BigNumber from 'bignumber.js'
-import copyToClipboard from 'copy-to-clipboard'
+import { BroadcastChannel } from 'broadcast-channel'
+
+// import copyToClipboard from 'copy-to-clipboard'
+// import torus from '../../../torus'
+import { DISCORD } from '../../../utils/enums'
+import { addressSlicer, broadcastChannelOptions, significantDigits } from '../../../utils/utils'
+import ComponentLoader from '../../helpers/ComponentLoader'
+import ExportQrCode from '../../helpers/ExportQrCode'
+import LanguageSelector from '../../helpers/LanguageSelector'
+import ShowToolTip from '../../helpers/ShowToolTip'
+import AccountImport from '../AccountImport'
 
 export default {
-  props: ['headerItems'],
   components: {
     AccountImport,
     LanguageSelector,
     ShowToolTip,
     ExportQrCode,
     ComponentLoader
+  },
+  props: {
+    headerItems: {
+      type: [Array, undefined],
+      default: undefined
+    }
   },
   data() {
     return {
@@ -184,7 +189,7 @@ export default {
       ).length
     },
     userEmail() {
-      const verifierLabel = this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1) + ': '
+      const verifierLabel = `${this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1)}: `
       return verifierLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
     },
     userId() {
@@ -211,21 +216,25 @@ export default {
       return this.$store.state.selectedCurrency
     },
     wallets() {
-      let { wallet: storeWallet, weiBalance: storeWalletBalance, selectedCurrency } = this.$store.state || {}
+      const { wallet: storeWallet, weiBalance: storeWalletBalance, selectedCurrency } = this.$store.state || {}
 
       const wallets = Object.keys(storeWallet).reduce((accts, x) => {
         const computedBalance = new BigNumber(storeWalletBalance[x]).dividedBy(new BigNumber(10).pow(new BigNumber(18))) || new BigNumber(0)
         const tokenRateMultiplier = new BigNumber(1)
         const currencyRate = new BigNumber(this.getCurrencyMultiplier).times(tokenRateMultiplier)
-        let currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
+        const currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
         if (
           storeWallet[x].type === 'EOA' ||
-          (storeWallet[x].type === 'SC' && storeWallet[x].network === this.$store.state.networkType.host && storeWallet[x].address != 'PROCESSING')
+          (storeWallet[x].type === 'SC' && storeWallet[x].network === this.$store.state.networkType.host && storeWallet[x].address !== 'PROCESSING')
         )
           accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${selectedCurrency}`, ...storeWallet[x] })
         return accts
       }, [])
       return wallets
+      // return Object.keys(this.$store.state.wallet).map((wallet, id) => ({ id, address: wallet }))
+    },
+    filteredWallets() {
+      return this.wallets.filter(accumulator => accumulator.address !== this.selectedAddress)
     },
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
@@ -238,24 +247,21 @@ export default {
     },
     filteredMenu() {
       if (this.headerItems) {
-        return this.headerItems.filter(item => {
-          return item.name !== 'home'
-        })
-      } else {
-        return []
+        return this.headerItems.filter(item => item.name !== 'home')
       }
+      return []
     }
   },
   methods: {
     async logout() {
       const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
       if (urlInstance && urlInstance !== '') {
-        var bc = new BroadcastChannel(`torus_logout_channel_${urlInstance}`, broadcastChannelOptions)
+        const bc = new BroadcastChannel(`torus_logout_channel_${urlInstance}`, broadcastChannelOptions)
         await bc.postMessage({ data: { type: 'logout' } })
         bc.close()
       }
       this.$store.dispatch('logOut')
-      this.$router.push({ path: '/logout' }).catch(err => {})
+      this.$router.push({ path: '/logout' }).catch(_ => {})
     },
     async changeAccount(newAddress) {
       await this.$store.dispatch('changeAccount', { selectedAddress: newAddress })

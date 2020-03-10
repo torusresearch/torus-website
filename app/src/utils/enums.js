@@ -84,13 +84,11 @@ export const CONTRACT_TYPE_ETH = 'eth'
 export const CONTRACT_TYPE_ERC20 = 'erc20'
 export const CONTRACT_TYPE_ERC721 = 'erc721'
 
-export const createNetwork = (host, networkName, chainId) => {
-  return {
-    host,
-    networkName,
-    chainId
-  }
-}
+export const createNetwork = (host, networkName, chainId) => ({
+  host,
+  networkName,
+  chainId
+})
 
 export const SUPPORTED_NETWORK_TYPES = {
   [MAINNET]: createNetwork(MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE),
@@ -175,7 +173,6 @@ export const ALLOWED_VERIFIERS = [
 export const SIMPLEX = 'simplex'
 export const MOONPAY = 'moonpay'
 export const WYRE = 'wyre'
-export const COINDIRECT = 'coindirect'
 export const CRYPTO = 'crypto'
 export const PNG = 'png'
 export const SVG = 'svg'

@@ -1,3 +1,4 @@
+/* eslint-disable */
 const puppeteer = require('puppeteer')
 const assert = require('assert')
 const { RINKEBY_DISPLAY_NAME, ACTIVITY_ACTION_ALL, ACTIVITY_ACTION_SEND, ACTIVITY_PERIOD_WEEK_ONE } = require('../../src/utils/enums')
@@ -9,7 +10,7 @@ describe('Tests Wallet Activity Page', () => {
   let browser
   let page
 
-  before(async function() {
+  before(async () => {
     browser = await puppeteer.launch({
       headless: config.isHeadless,
       slowMo: config.slowMo,
@@ -27,7 +28,7 @@ describe('Tests Wallet Activity Page', () => {
     })
   })
 
-  after(async function() {
+  after(async () => {
     await browser.close()
   })
 
@@ -43,7 +44,7 @@ describe('Tests Wallet Activity Page', () => {
     const textToSelect = RINKEBY_DISPLAY_NAME
     await selectItem(page, '#select-network', '.select-network-container', textToSelect)
     await page.waitFor(100)
-    const networkSelected = await page.$eval('.select-network-container .v-select__selection', el => el.textContent)
+    const networkSelected = await page.$eval('.select-network-container .v-select__selection', element => element.textContent)
 
     // check if textToSelect was selected
     assert.equal(textToSelect, networkSelected)
@@ -55,14 +56,14 @@ describe('Tests Wallet Activity Page', () => {
 
   it('Should show correct pagination', async () => {
     if (!config.isMobile) {
-      let transactionData = await page.$eval('.activity-table', el => ({
-        count: parseInt(el.dataset.count),
-        perPage: parseInt(el.dataset.perPage)
+      const transactionData = await page.$eval('.activity-table', element => ({
+        count: parseInt(element.dataset.count),
+        perPage: parseInt(element.dataset.perPage)
       }))
 
       if (transactionData.count > transactionData.perPage) {
         const expectedPages = Math.ceil(transactionData.count / transactionData.perPage)
-        const actualPages = await page.$$eval('.activity-pagination .v-pagination__item', el => el.length)
+        const actualPages = await page.$$eval('.activity-pagination .v-pagination__item', element => element.length)
         assert.equal(expectedPages, actualPages)
       }
     }
@@ -72,7 +73,7 @@ describe('Tests Wallet Activity Page', () => {
     const textToSelect = ACTIVITY_ACTION_SEND
     await selectItem(page, '#transaction-selector', '.nav-selector.transaction', textToSelect)
     await page.waitFor(100)
-    const transactionFilter = await page.$eval('.nav-selector.transaction .v-select__selection', el => el.textContent)
+    const transactionFilter = await page.$eval('.nav-selector.transaction .v-select__selection', element => element.textContent)
 
     // check if textToSelect was selected
     assert.equal(textToSelect, transactionFilter)
@@ -81,7 +82,7 @@ describe('Tests Wallet Activity Page', () => {
     const negativeRowsCount = await page.evaluate(
       (textToSelect, config) =>
         [...document.querySelectorAll(`.activity-table${config.isMobile ? '-mobile' : ''} .transaction-action`)].filter(
-          el => el.textContent !== textToSelect
+          element => element.textContent !== textToSelect
         ).length,
       textToSelect,
       config
@@ -97,7 +98,7 @@ describe('Tests Wallet Activity Page', () => {
     const textToSelect = ACTIVITY_PERIOD_WEEK_ONE
     await selectItem(page, '#period-selector', '.nav-selector.period', textToSelect)
     await page.waitFor(100)
-    const dateFilter = await page.$eval('.nav-selector.period .v-select__selection', el => el.textContent)
+    const dateFilter = await page.$eval('.nav-selector.period .v-select__selection', element => element.textContent)
 
     // check if textToSelect was selected
     assert.equal(textToSelect, dateFilter)
@@ -107,9 +108,9 @@ describe('Tests Wallet Activity Page', () => {
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
     const negativeRowsCount = await page.evaluate(
       (oneWeekAgo, config) =>
-        [...document.querySelectorAll(`.activity-table${config.isMobile ? '-mobile' : ''} .transaction-date`)].filter(el => {
-          return new Date(el.textContent) < new Date(oneWeekAgo)
-        }).length,
+        [...document.querySelectorAll(`.activity-table${config.isMobile ? '-mobile' : ''} .transaction-date`)].filter(
+          element => new Date(element.textContent) < new Date(oneWeekAgo)
+        ).length,
       oneWeekAgo,
       config
     )

@@ -1,10 +1,11 @@
-var browserify = require('browserify')
-var fs = require('fs')
-var envify = require('envify/custom')
-var log = require('loglevel')
+/* eslint-disable import/no-extraneous-dependencies */
+const browserify = require('browserify')
+const fs = require('fs')
+const envify = require('envify/custom')
+const log = require('loglevel')
 
 try {
-  var bundler = browserify(require.resolve('@toruslabs/torus-embed/public/index.js'), {
+  const bundler = browserify(require.resolve('@toruslabs/torus-embed/public/index.js'), {
     fullPaths: true
   })
 
@@ -17,7 +18,7 @@ try {
     })
   )
 
-  bundler.bundle().pipe(fs.createWriteStream(__dirname + '/../public/embed.min.js'))
-} catch (e) {
-  log.error(e)
+  bundler.bundle().pipe(fs.createWriteStream(`${__dirname}/../public/embed.min.js`))
+} catch (error) {
+  log.error(error)
 }

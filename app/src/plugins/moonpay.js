@@ -1,8 +1,9 @@
-import config from '../config'
-import { get } from '../utils/httpHelpers'
 import log from 'loglevel'
 
-const getQuote = reqObj => {
+import config from '../config'
+import { get } from '../utils/httpHelpers'
+
+const getQuote = requestObject => {
   try {
     const options = {
       mode: 'cors',
@@ -12,29 +13,31 @@ const getQuote = reqObj => {
       }
     }
     return get(
-      `${config.moonpayApiQuoteHost}/v3/currencies/${reqObj.digital_currency}/quote?apiKey=${config.moonpayLiveAPIKEY}` +
-        `&baseCurrencyAmount=${reqObj.requested_amount}&baseCurrencyCode=${reqObj.fiat_currency}&areFeesIncluded=true`,
+      `${config.moonpayApiQuoteHost}/v3/currencies/${requestObject.digital_currency}/quote?apiKey=${config.moonpayLiveAPIKEY}` +
+        `&baseCurrencyAmount=${requestObject.requested_amount}&baseCurrencyCode=${requestObject.fiat_currency}&areFeesIncluded=true`,
       options
     )
-  } catch (e) {
-    log.error(e)
+  } catch (error) {
+    log.error(error)
   }
+  return undefined
 }
 
-const getSignature = reqObj => {
+const getSignature = requestObject => {
   try {
     const options = {
       mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        Authorization: `Bearer ${reqObj.token}`
+        Authorization: `Bearer ${requestObject.token}`
       }
     }
-    return get(`${config.moonpayApiHost}/sign?url=${reqObj.url}`, options)
-  } catch (e) {
-    log.error(e)
+    return get(`${config.moonpayApiHost}/sign?url=${requestObject.url}`, options)
+  } catch (error) {
+    log.error(error)
   }
+  return undefined
 }
 
 export { getQuote, getSignature }

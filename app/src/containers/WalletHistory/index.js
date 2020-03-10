@@ -1,1 +1,1 @@
-export { default } from './WalletHistory'
+export { default } from './WalletHistory.vue'
