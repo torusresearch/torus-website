@@ -16,8 +16,8 @@
       <span class="caption">Beta</span>
     </div>
     <v-spacer></v-spacer>
-    <v-tabs centered v-if="!$vuetify.breakpoint.smAndDown">
-      <v-tab v-for="headerItem in headerItems" :key="headerItem.display" :id="`${headerItem.name}-link`" :to="headerItem.route">
+    <v-tabs v-if="!$vuetify.breakpoint.smAndDown" centered>
+      <v-tab v-for="headerItem in headerItems" :id="`${headerItem.name}-link`" :key="headerItem.display" :to="headerItem.route">
         {{ headerItem.display }}
       </v-tab>
     </v-tabs>
@@ -26,7 +26,7 @@
 
     <slot name="drawer"></slot>
 
-    <language-selector v-if="!$vuetify.breakpoint.smAndDown"></language-selector>
+    <LanguageSelector v-if="!$vuetify.breakpoint.smAndDown"></LanguageSelector>
     <v-menu v-if="!$vuetify.breakpoint.smAndDown" offset-y bottom left z-index="20" :close-on-content-click="false">
       <template v-slot:activator="{ on }">
         <v-btn id="menu-dropdown-btn" small text v-on="on">
@@ -35,7 +35,7 @@
         </v-btn>
       </template>
 
-      <account-menu></account-menu>
+      <AccountMenu></AccountMenu>
     </v-menu>
     <v-system-bar
       v-show="successMsg"
@@ -50,7 +50,7 @@
           {{ capitalizeFirstLetter(t(successMsg)) }}
         </span>
         <v-spacer />
-        <v-icon @click="clearMsg('SuccessMsg')" :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`">
+        <v-icon :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`" @click="clearMsg('SuccessMsg')">
           $vuetify.icons.close
         </v-icon>
       </div>
@@ -68,7 +68,7 @@
           {{ capitalizeFirstLetter(t(errorMsg)) }}
         </span>
         <v-spacer />
-        <v-icon @click="clearMsg('SuccessMsg')" :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`">
+        <v-icon :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`" @click="clearMsg('SuccessMsg')">
           $vuetify.icons.close
         </v-icon>
       </div>
@@ -192,10 +192,15 @@ import AccountMenu from '../../WalletAccount/AccountMenu'
 import LanguageSelector from '../LanguageSelector'
 
 export default {
-  props: ['headerItems'],
   components: {
     AccountMenu,
     LanguageSelector
+  },
+  props: {
+    headerItems: {
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {

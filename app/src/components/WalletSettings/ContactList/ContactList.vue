@@ -19,7 +19,7 @@
                   </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action class="ma-0">
-                  <v-btn class="delete-btn" color="text_2" icon small @click="deleteContact(contact.id)" :aria-label="`Delete ${contact.name}`">
+                  <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete ${contact.name}`" @click="deleteContact(contact.id)">
                     <v-icon>$vuetify.icons.close</v-icon>
                   </v-btn>
                 </v-list-item-action>
@@ -30,7 +30,7 @@
 
         <div class="body-2 mt-4">{{ t('walletSettings.addNewContact') }}</div>
 
-        <v-form ref="addContactForm" v-model="contactFormValid" @submit.prevent="addContact" lazy-validation>
+        <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation @submit.prevent="addContact">
           <v-layout wrap class="mt-2 mx-n1">
             <v-flex xs12 sm7 px-1>
               <v-text-field
