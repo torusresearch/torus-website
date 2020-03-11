@@ -1,1 +1,1 @@
-export { default } from './HelpTooltip'
+export { default } from './HelpTooltip.vue'

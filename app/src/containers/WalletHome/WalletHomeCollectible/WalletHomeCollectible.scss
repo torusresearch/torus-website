@@ -38,14 +38,14 @@
   .v-divider--vertical.v-divider--inset {
     margin-top: 0;
   }
-  
+
   &.asset--new {
     position: relative;
-    ::v-deep .v-image__image, 
+    ::v-deep .v-image__image,
     .v-card__actions {
       opacity: 0.3;
     }
-    
+
     .add-container {
       border: 1px solid var(--v-primary-base);
       border-radius: 50%;

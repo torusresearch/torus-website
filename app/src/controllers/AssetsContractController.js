@@ -4,11 +4,12 @@
  * Controller that interacts with contracts on mainnet through web3
  * @author Shubham, Chaitanya
  */
-const Web3 = require('web3')
-const abiERC20 = require('human-standard-token-abi')
-const abiERC721 = require('human-standard-collectible-abi')
-const abiSingleCallBalancesContract = require('single-call-balance-checker-abi')
-const { ERC721METADATA_INTERFACE_ID, ERC721ENUMERABLE_INTERFACE_ID, SINGLE_CALL_BALANCES_ADDRESS } = require('../utils/enums')
+import abiERC721 from 'human-standard-collectible-abi'
+import abiERC20 from 'human-standard-token-abi'
+import abiSingleCallBalancesContract from 'single-call-balance-checker-abi'
+import Web3 from 'web3'
+
+import { ERC721ENUMERABLE_INTERFACE_ID, ERC721METADATA_INTERFACE_ID, SINGLE_CALL_BALANCES_ADDRESS } from '../utils/enums'
 
 export default class AssetContractController {
   /**
@@ -17,8 +18,8 @@ export default class AssetContractController {
    * @typedef {Object} AssetContract
    * @param {Object} opts Initialize various properties of the class.
    */
-  constructor(opts) {
-    this._provider = opts.provider
+  constructor(options) {
+    this._provider = options.provider
     this.web3 = new Web3(this._provider)
     this.name = 'AssetsContractController'
   }
@@ -96,6 +97,7 @@ export default class AssetContractController {
     const contract = new web3Instance.eth.Contract(abiERC721, address)
     return contract.methods.tokenURI(tokenId).call()
   }
+
   /**
    * Query for name for a given ERC20 asset
    *
@@ -107,6 +109,7 @@ export default class AssetContractController {
     const contract = new web3Instance.eth.Contract(abiERC20, address)
     return contract.methods.decimals().call()
   }
+
   /**
    * Query for name for a given asset
    *
@@ -118,6 +121,7 @@ export default class AssetContractController {
     const contract = new web3Instance.eth.Contract(abiERC721, address)
     return contract.methods.name().call()
   }
+
   /**
    * Query for symbol for a given asset
    *
@@ -129,6 +133,7 @@ export default class AssetContractController {
     const contract = new web3Instance.eth.Contract(abiERC721, address)
     return contract.methods.symbol().call()
   }
+
   /**
    * Query for owner for a given ERC721 asset
    *
@@ -141,6 +146,7 @@ export default class AssetContractController {
     const contract = new web3Instance.eth.Contract(abiERC721, address)
     return contract.methods.ownerOf(tokenId).call()
   }
+
   /**
    * Query for balances of all tokens
    *
@@ -158,7 +164,7 @@ export default class AssetContractController {
           /* istanbul ignore else */
           if (result.length > 0) {
             tokensToDetect.forEach((tokenAddress, index) => {
-              const balance = toHex(result[index])
+              const balance = this.web3.utils.toHex(result[index])
               /* istanbul ignore else */
               if (balance && balance !== '0x0') {
                 nonZeroBalances[tokenAddress] = balance

@@ -9,36 +9,36 @@
           <v-flex xs12 mt-4>
             <span class="subtitle-2">{{ t('accountMenu.selectImportType') }}:</span>
             <v-select
+              v-model="selectedType"
               outlined
               append-icon="$vuetify.icons.select"
               :items="options"
               item-text="name"
               item-value="value"
               @change="canShowError = false"
-              v-model="selectedType"
             ></v-select>
           </v-flex>
         </v-flex>
         <template v-if="selectedType === 'private'">
           <v-flex xs12>
-            <v-form ref="privateKeyForm" @submit.prevent="" v-model="privateKeyFormValid" lazy-validation>
+            <v-form ref="privateKeyForm" v-model="privateKeyFormValid" lazy-validation @submit.prevent="">
               <v-layout wrap>
                 <v-flex xs12 px-4>
                   <span class="subtitle-2">{{ t('accountMenu.inputPrivateKey') }}:</span>
                   <v-text-field
+                    v-model="privateKey"
                     outlined
                     :type="showPrivateKey ? 'text' : 'password'"
                     :rules="[rules.required]"
                     :append-icon="showPrivateKey ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                     name="private-key"
                     :label="t('accountMenu.privateKey')"
+                    single-line
                     @input="canShowError = false"
                     @click:append="togglePrivShow"
-                    v-model="privateKey"
-                    single-line
                   ></v-text-field>
                 </v-flex>
-                <v-flex xs12 px-4 v-show="canShowError">
+                <v-flex v-show="canShowError" xs12 px-4>
                   <span class="red--text">{{ error }}</span>
                 </v-flex>
                 <v-flex xs12 px-4 class="text-right">
@@ -49,9 +49,9 @@
                   <v-btn
                     color="primary"
                     depressed
-                    @click.prevent="importViaPrivateKey"
                     :loading="isLoadingPrivate"
                     :disabled="!privateKeyFormValid || isLoadingPrivate"
+                    @click.prevent="importViaPrivateKey"
                   >
                     {{ t('accountMenu.import') }}
                   </v-btn>
@@ -62,7 +62,7 @@
         </template>
         <template v-if="selectedType === 'keystore'">
           <v-flex xs12>
-            <v-form ref="jsonFileForm" v-model="jsonFileFormValid" @submit.prevent="" lazy-validation>
+            <v-form ref="jsonFileForm" v-model="jsonFileFormValid" lazy-validation @submit.prevent="">
               <v-layout wrap>
                 <v-flex xs12 px-4>
                   <v-layout align-center justify-space-between>
@@ -71,29 +71,29 @@
                       <HelpTooltip :title="t('accountMenu.uploadJsonTitle')" :description="t('accountMenu.uploadJsonDesc')"></HelpTooltip>
                     </v-flex>
                     <v-flex shrink>
-                      <v-btn outlined @click.prevent="$refs.keystoreUpload.click()" class="upload-button" color="primary">
+                      <v-btn outlined class="upload-button" color="primary" @click.prevent="$refs.keystoreUpload.click">
                         <v-icon left>$vuetify.icons.question</v-icon>
                         {{ t('accountMenu.upload') }}
                       </v-btn>
                       <input v-show="false" ref="keystoreUpload" multiple="false" type="file" @change="processFile" />
                     </v-flex>
                   </v-layout>
-                  <div class="text-right" v-show="selectedFileName !== ''">{{ t('accountMenu.selectedFile') }}: {{ selectedFileName }}</div>
+                  <div v-show="selectedFileName !== ''" class="text-right">{{ t('accountMenu.selectedFile') }}: {{ selectedFileName }}</div>
                 </v-flex>
                 <v-flex xs12 px-4>
                   <span class="subtitle-2">{{ t('accountMenu.enterPassword') }}:</span>
                   <v-text-field
+                    v-model="jsonPassword"
                     outlined
                     name="password"
                     :rules="[rules.required]"
                     :append-icon="showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                     :type="showJsonPassword ? 'text' : 'password'"
                     :placeholder="t('accountMenu.password')"
-                    v-model="jsonPassword"
                     @click:append="toggleJsonPasswordShow"
                   ></v-text-field>
                 </v-flex>
-                <v-flex xs12 px-4 v-show="canShowError">
+                <v-flex v-show="canShowError" xs12 px-4>
                   <span class="red--text">{{ error }}</span>
                 </v-flex>
                 <v-flex xs12 px-4 class="text-right">
@@ -104,9 +104,9 @@
                   <v-btn
                     color="primary"
                     depressed
-                    @click.prevent="importViaKeyStoreFile"
                     :loading="isLoadingKeystore"
                     :disabled="!jsonFileFormValid || isLoadingKeystore"
+                    @click.prevent="importViaKeyStoreFile"
                   >
                     {{ t('accountMenu.import') }}
                   </v-btn>
@@ -122,11 +122,14 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-const WalletWorker = require('worker-loader!../../../utils/wallet.worker.js')
-const ethUtil = require('ethereumjs-util')
-const log = require('loglevel')
-import HelpTooltip from '../../helpers/HelpTooltip'
+import * as ethUtil from 'ethereumjs-util'
+import log from 'loglevel'
+
 import { broadcastChannelOptions } from '../../../utils/utils'
+import HelpTooltip from '../../helpers/HelpTooltip'
+
+// eslint-disable-next-line import/no-webpack-loader-syntax
+const WalletWorker = require('worker-loader!../../../utils/wallet.worker.js')
 
 export default {
   components: {
@@ -175,8 +178,8 @@ export default {
             this.informClients(privKey)
             this.$refs.privateKeyForm.resetValidation()
           })
-          .catch(err => {
-            this.setErrorState(err)
+          .catch(error => {
+            this.setErrorState(error)
           })
       }
     },
@@ -212,37 +215,38 @@ export default {
               this.informClients(privKey)
               this.$refs.jsonFileForm.resetValidation()
             })
-            .catch(err => {
-              this.setErrorState(err)
+            .catch(error => {
+              this.setErrorState(error)
             })
         } else {
           const worker = new WalletWorker()
           worker.postMessage({ type: 'unlockWallet', data: [keyData, this.jsonPassword] })
-          worker.onmessage = e => {
-            const privKey = ethUtil.stripHexPrefix(ethUtil.bufferToHex(Buffer.from(e.data._privKey)))
+          worker.addEventListener('message', event => {
+            const { _privKey: stringPrivateKey } = event.data
+            const privKey = ethUtil.stripHexPrefix(ethUtil.bufferToHex(Buffer.from(stringPrivateKey)))
             this.$store
               .dispatch('finishImportAccount', { privKey })
-              .then(privKey => {
+              .then(privateKey => {
                 this.onClose()
                 this.isLoadingKeystore = false
-                this.informClients(privKey)
+                this.informClients(privateKey)
                 this.$refs.jsonFileForm.resetValidation()
               })
-              .catch(err => {
-                this.setErrorState(err)
+              .catch(error => {
+                this.setErrorState(error)
               })
-          }
-          worker.onerror = err => {
-            this.setErrorState(err)
-          }
+          })
+          worker.addEventListener('error', error => {
+            this.setErrorState(error)
+          })
         }
       }
     },
-    setErrorState(err) {
-      log.info(err)
-      this.error = err && err.message && err.message.includes('wrong passphrase') ? this.t('accountMenu.incorrectPassword') : err
+    setErrorState(error) {
+      log.info(error)
+      this.error = error && error.message && error.message.includes('wrong passphrase') ? this.t('accountMenu.incorrectPassword') : error
       this.canShowError = true
-      log.error(err)
+      log.error(error)
       this.isLoadingKeystore = false
       this.isLoadingPrivate = false
     },
@@ -251,11 +255,14 @@ export default {
         const file = event.target.files[0]
         this.selectedFileName = file.name
         const fileReader = new FileReader()
-        fileReader.onload = function(jsonContent) {
-          return function(e) {
-            this.keyStoreFileContents = e.target.result
-          }.bind(this)
-        }.bind(this)(this.$refs.keyStoreUpload)
+        fileReader.addEventListener(
+          'load',
+          function readFile(_) {
+            return function readFileContent(ev) {
+              this.keyStoreFileContents = ev.target.result
+            }.bind(this)
+          }.bind(this)(this.$refs.keyStoreUpload)
+        )
         fileReader.readAsText(file, 'utf-8')
       } catch (error) {
         log.error(error)

@@ -1,1 +1,1 @@
-export { default } from './MessageModal'
+export { default } from './MessageModal.vue'

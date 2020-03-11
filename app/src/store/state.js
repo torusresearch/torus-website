@@ -1,4 +1,4 @@
-import { MAINNET, MAINNET_DISPLAY_NAME, MAINNET_CODE, USER_INFO_REQUEST_NEW, THEME_LIGHT_BLUE_NAME, LOCALE_EN } from '../utils/enums'
+import { LOCALE_EN, MAINNET, MAINNET_CODE, MAINNET_DISPLAY_NAME, THEME_LIGHT_BLUE_NAME, USER_INFO_REQUEST_NEW } from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -12,6 +12,7 @@ const initialState = {
   // loaders
   loginInProgress: false,
   weiBalanceLoaded: false, // Use on showing spinners
+  tokenDataLoaded: false, // Use on showing spinners
   loadingUserTransactions: true,
   isNewUser: false,
   // account handled
@@ -33,14 +34,16 @@ const initialState = {
 
   selectedCurrency: 'USD',
   pastTransactions: [],
+  paymentTx: [],
   theme: THEME_LIGHT_BLUE_NAME,
   locale: LOCALE_EN,
   billboard: [],
   contacts: [],
-  permissions: {},
+  permissions: [],
   userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate
   errorMsg: '',
-  successMsg: ''
+  successMsg: '',
+  iframeMetadata: { origin: '', name: '', icon: '' }
 }
 
 export default initialState

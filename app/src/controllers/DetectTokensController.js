@@ -1,14 +1,15 @@
-const Web3 = require('web3')
-const contracts = require('eth-contract-metadata')
-const { warn } = require('loglevel')
-const ObservableStore = require('obs-store')
-const { MAINNET } = require('../utils/enums')
-const { toHex } = require('web3-utils')
-const BigNumber = require('bignumber.js')
+import BigNumber from 'bignumber.js'
+import contracts from 'eth-contract-metadata'
+import { warn } from 'loglevel'
+import ObservableStore from 'obs-store'
+import SINGLE_CALL_BALANCES_ABI from 'single-call-balance-checker-abi'
+import Web3 from 'web3'
+import { toHex } from 'web3-utils'
+
+import { MAINNET } from '../utils/enums'
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
 
-const SINGLE_CALL_BALANCES_ABI = require('single-call-balance-checker-abi')
 const SINGLE_CALL_BALANCES_ADDRESS = '0xb1f8e55c7f64d203c1400b9d8555d050f94adf39'
 /**
  * A controller that polls for token exchange
@@ -39,6 +40,7 @@ class DetectTokensController {
     }
     const tokenAddresses = this.detectedTokensStore.getState().tokens.map(x => x.tokenAddress.toLowerCase())
     const tokensToDetect = []
+    // eslint-disable-next-line no-restricted-syntax
     for (const contractAddress in contracts) {
       if (contracts[contractAddress].erc20 && !tokenAddresses.includes(contractAddress.toLowerCase())) {
         tokensToDetect.push(contractAddress)
@@ -75,12 +77,12 @@ class DetectTokensController {
    */
   async detectEtherscanTokenBalance(contractAddress, data = {}) {
     const nonZeroTokens = this.detectedTokensStore.getState().tokens
-    const index = nonZeroTokens.findIndex(elem => elem.tokenAddress.toLowerCase() === contractAddress.toLowerCase())
+    const index = nonZeroTokens.findIndex(element => element.tokenAddress.toLowerCase() === contractAddress.toLowerCase())
     if (index === -1) {
       nonZeroTokens.push({
         ...data,
         tokenAddress: contractAddress,
-        balance: '0x' + new BigNumber(data.balance).times(new BigNumber(10).pow(new BigNumber(data.decimals))).toString(16)
+        balance: `0x${new BigNumber(data.balance).times(new BigNumber(10).pow(new BigNumber(data.decimals))).toString(16)}`
       })
       this.detectedTokensStore.putState({ tokens: nonZeroTokens })
     }
@@ -130,7 +132,7 @@ class DetectTokensController {
    * @type {Number}
    */
   set interval(interval) {
-    this._handle && clearInterval(this._handle)
+    if (this._handle) clearInterval(this._handle)
     if (!interval) {
       return
     }

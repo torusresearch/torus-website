@@ -2,35 +2,36 @@
   <head>
     <style>
       * {
-        box-sizing:border-box;
+        box-sizing: border-box;
       }
 
-      html, body{
-        background: #FCFCFC;
-        height:100%;
-        padding:0;
-        margin:0;
+      html,
+      body {
+        background: #fcfcfc;
+        height: 100%;
+        padding: 0;
+        margin: 0;
       }
 
       .container {
-        width:100%;
-        height:100%;
-        
-        display:flex;
-        justify-content:center;
-        align-items:center;
+        width: 100%;
+        height: 100%;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
         flex-direction: column;
       }
-      
+
       h1.title {
         font-size: 14px;
-        color: #0F1222;
+        color: #0f1222;
         font-family: 'Roboto', sans-serif !important;
         margin: 0;
         text-align: center;
       }
       .spinner .beat {
-        background-color: #0364FF;
+        background-color: #0364ff;
         height: 12px;
         width: 12px;
         margin: 24px 2px 10px;
@@ -101,7 +102,6 @@
       <h1 class="title content">Loading</h1>
     </div>
     <script>
-
       function storageAvailable(type) {
         var storage
         try {
@@ -2125,11 +2125,21 @@
         try {
           bc = new broadcastChannelLib.BroadcastChannel('preopen_channel_' + preopenInstanceId, broadcastChannelOptions)
           bc.onmessage = function(ev) {
+            const { preopenInstanceId: oldId, payload, message } = ev.data
+            if (oldId === preopenInstanceId && payload && payload.url) {
+              window.location.href = payload.url
+            } else if (oldId === preopenInstanceId && message === 'setup_complete') {
+              bc.postMessage({
+                data: {
+                  preopenInstanceId: preopenInstanceId,
+                  message: 'popup_loaded'
+                }
+              })
+            }
             if (ev.error && ev.error !== '') {
               console.error(ev.error)
               bc.close()
             }
-            window.location.href = ev.data.payload.url
           }
         } catch (err) {
           console.error(err, 'service worker error in preopen')

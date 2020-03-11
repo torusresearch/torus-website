@@ -1,10 +1,11 @@
-const assert = require('assert')
-const txStateHistoryHelper = require('../../../../src/utils/tx-state-history-helper').default
-const testVault = require('../../../data/v17-long-history.json')
+/* eslint-disable */
+import assert from 'assert'
+import txStateHistoryHelper from '../../../../src/utils/tx-state-history-helper'
+import testVault from '../../../data/v17-long-history.json'
 
-describe('Transaction state history helper', function() {
-  describe('#snapshotFromTxMeta', function() {
-    it('should clone deep', function() {
+describe('Transaction state history helper', () => {
+  describe('#snapshotFromTxMeta', () => {
+    it('should clone deep', () => {
       const input = {
         foo: {
           bar: {
@@ -19,15 +20,15 @@ describe('Transaction state history helper', function() {
       assert.strictEqual(output.foo.bar.bam, 'baz', 'has a baz value')
     })
 
-    it('should remove the history key', function() {
+    it('should remove the history key', () => {
       const input = { foo: 'bar', history: 'remembered' }
       const output = txStateHistoryHelper.snapshotFromTxMeta(input)
       assert(typeof output.history, 'undefined', 'should remove history')
     })
   })
 
-  describe('#migrateFromSnapshotsToDiffs', function() {
-    it('migrates history to diffs and can recover original values', function() {
+  describe('#migrateFromSnapshotsToDiffs', () => {
+    it('migrates history to diffs and can recover original values', () => {
       testVault.data.TransactionController.transactions.forEach((tx, index) => {
         const newHistory = txStateHistoryHelper.migrateFromSnapshotsToDiffs(tx.history)
         newHistory.forEach((newEntry, index) => {
@@ -45,8 +46,8 @@ describe('Transaction state history helper', function() {
     })
   })
 
-  describe('#replayHistory', function() {
-    it('replaying history does not mutate the original obj', function() {
+  describe('#replayHistory', () => {
+    it('replaying history does not mutate the original obj', () => {
       const initialState = { test: true, message: 'hello', value: 1 }
       const diff1 = [
         {
@@ -73,9 +74,9 @@ describe('Transaction state history helper', function() {
     })
   })
 
-  describe('#generateHistoryEntry', function() {
+  describe('#generateHistoryEntry', () => {
     function generateHistoryEntryTest(note) {
-      const prevState = {
+      const previousState = {
         someValue: 'value 1',
         foo: {
           bar: {
@@ -96,7 +97,7 @@ describe('Transaction state history helper', function() {
       }
 
       const before = new Date().getTime()
-      const result = txStateHistoryHelper.generateHistoryEntry(prevState, nextState, note)
+      const result = txStateHistoryHelper.generateHistoryEntry(previousState, nextState, note)
       const after = new Date().getTime()
 
       assert.ok(Array.isArray(result))
@@ -120,11 +121,11 @@ describe('Transaction state history helper', function() {
       assert.deepStrictEqual(result[2], expectedEntry3)
     }
 
-    it('should generate history entries', function() {
+    it('should generate history entries', () => {
       generateHistoryEntryTest()
     })
 
-    it('should add note to first entry', function() {
+    it('should add note to first entry', () => {
       generateHistoryEntryTest('custom note')
     })
   })

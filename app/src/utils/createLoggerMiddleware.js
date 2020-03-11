@@ -7,15 +7,15 @@ module.exports = createLoggerMiddleware
  * @param {{ origin: string }} opts - The middleware options
  * @returns {Function}
  */
-function createLoggerMiddleware(opts) {
-  return function loggerMiddleware(/** @type {any} */ req, /** @type {any} */ res, /** @type {Function} */ next) {
-    next((/** @type {Function} */ cb) => {
-      if (res.error) {
-        log.error('Error in RPC response:\n', res)
+function createLoggerMiddleware(options) {
+  return function loggerMiddleware(/** @type {any} */ request, /** @type {any} */ response, /** @type {Function} */ next) {
+    next(callback => {
+      if (response.error) {
+        log.error('Error in RPC response:\n', response)
       }
-      if (req.isMetamaskInternal) return
-      log.info(`RPC (${opts.origin}):`, req, '->', res)
-      cb()
+      if (request.isMetamaskInternal) return
+      log.info(`RPC (${options.origin}):`, request, '->', response)
+      callback()
     })
   }
 }

@@ -1,13 +1,13 @@
 <template>
   <v-dialog v-model="dialog" persistent>
     <template v-slot:activator="{ on }">
-      <a id="advance-option-link" class="float-right primary--text subtitle-2" v-show="displayAmount" v-on="on">
+      <a v-show="displayAmount" id="advance-option-link" class="float-right primary--text subtitle-2" v-on="on">
         {{ t('walletTransfer.advancedOptions') }}
       </a>
     </template>
     <v-card class="advance-option py-4">
       <v-container>
-        <v-form ref="advanceOptionForm" :value="advanceOptionFormValid" @submit.prevent="saveOptions" lazy-validation>
+        <v-form ref="advanceOptionForm" :value="advanceOptionFormValid" lazy-validation @submit.prevent="saveOptions">
           <v-layout wrap>
             <v-flex xs12 px-4>
               <div class="font-weight-bold headline">{{ t('walletTransfer.transferDetails') }}</div>
@@ -40,9 +40,9 @@
                     :placeholder="t('walletTransfer.enterValue')"
                     outlined
                     :value="advancedActiveGasPrice"
-                    @change="onChangeActiveGasPrice"
                     required
                     type="number"
+                    @change="onChangeActiveGasPrice"
                   ></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm6 px-4>
@@ -78,8 +78,8 @@
                     <v-divider class="mt-1 mb-2"></v-divider>
                   </template>
                   <v-text-field
-                    id="transaction-fee"
                     v-else
+                    id="transaction-fee"
                     :suffix="symbol"
                     outlined
                     readonly
@@ -121,15 +121,21 @@
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
+
 import { significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'
-import BigNumber from 'bignumber.js'
 
 export default {
   components: {
     HelpTooltip
   },
-  props: ['activeGasPrice', 'gas', 'displayAmount', 'symbol'],
+  props: {
+    activeGasPrice: { type: BigNumber, default: new BigNumber('0') },
+    gas: { type: BigNumber, default: new BigNumber('0') },
+    displayAmount: { type: BigNumber, default: new BigNumber('0') },
+    symbol: { type: String, default: '' }
+  },
   data() {
     return {
       dialog: false,
@@ -141,9 +147,8 @@ export default {
   computed: {
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
-      const currencyMultiplierNum = selectedCurrency !== 'ETH' ? currencyData[selectedCurrency.toLowerCase()] || 1 : 1
-      const currencyMultiplier = new BigNumber(currencyMultiplierNum)
-      return currencyMultiplier
+      const currencyMultiplierNumber = selectedCurrency !== 'ETH' ? currencyData[selectedCurrency.toLowerCase()] || 1 : 1
+      return new BigNumber(currencyMultiplierNumber)
     },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
@@ -168,11 +173,21 @@ export default {
       return this.convertedDisplay(this.totalCost)
     }
   },
+  watch: {
+    dialog(value) {
+      if (value) {
+        this.updateDetails()
+      }
+    }
+  },
+  mounted() {
+    this.updateDetails()
+  },
   methods: {
     onChangeActiveGasPrice(value) {
       this.advancedActiveGasPrice = new BigNumber(value)
     },
-    onCancel(step) {
+    onCancel() {
       this.dialog = false
     },
     saveOptions() {
@@ -181,7 +196,6 @@ export default {
           advancedGas: this.advancedGas,
           advancedActiveGasPrice: this.advancedActiveGasPrice
         }
-        console.log('TCL: saveOptions -> payload', payload)
 
         this.$emit('onSave', payload)
         this.dialog = false
@@ -194,21 +208,11 @@ export default {
     },
     convertedDisplay(amount) {
       const currencyMultiplier = this.getCurrencyMultiplier
-      const bigNum = !BigNumber.isBigNumber(amount) ? new BigNumber(amount).times(currencyMultiplier) : amount.times(currencyMultiplier)
-      const converted = significantDigits(bigNum)
+      const bigNumber = !BigNumber.isBigNumber(amount) ? new BigNumber(amount).times(currencyMultiplier) : amount.times(currencyMultiplier)
+      const converted = significantDigits(bigNumber)
 
       return `~ ${converted} ${this.selectedCurrency}`
     }
-  },
-  watch: {
-    dialog(val) {
-      if (val) {
-        this.updateDetails()
-      }
-    }
-  },
-  created() {
-    this.updateDetails()
   }
 }
 </script>

@@ -1,1 +1,1 @@
-export { default } from './UserInfoRequest'
+export { default } from './UserInfoRequest.vue'

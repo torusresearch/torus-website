@@ -1,1 +1,1 @@
-export { default } from './TxHistoryTable'
+export { default } from './TxHistoryTable.vue'

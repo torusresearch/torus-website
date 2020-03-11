@@ -31,9 +31,12 @@
   .v-list-item {
     min-height: inherit;
   }
+  &__icon {
+    margin-top: -1px;
+  }
 }
 
-.theme--light.v-sheet, 
+.theme--light.v-sheet,
 .theme--dark.v-sheet {
-  background: transparent
+  background: transparent;
 }

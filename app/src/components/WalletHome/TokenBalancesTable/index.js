@@ -1,1 +1,1 @@
-export { default } from './TokenBalancesTable'
+export { default } from './TokenBalancesTable.vue'

@@ -1,10 +1,12 @@
+/* eslint-disable no-restricted-syntax */
+import BigNumber from 'bignumber.js'
+
 import { MAINNET } from '../utils/enums'
 import { significantDigits } from '../utils/utils'
-import BigNumber from 'bignumber.js'
 
 const unApprovedTransactions = state => {
   const transactions = []
-  for (let id in state.transactions) {
+  for (const id in state.transactions) {
     if (state.transactions[id].status === 'unapproved') {
       transactions.push(state.transactions[id])
     }
@@ -12,15 +14,18 @@ const unApprovedTransactions = state => {
   return transactions
 }
 const tokenBalances = state => {
-  let { weiBalance, tokenData, tokenRates, currencyData, selectedCurrency, networkType, selectedAddress } = state || {}
+  const { weiBalance, tokenData: tokenDataState, tokenRates: tokenRatesState, currencyData, selectedCurrency, networkType, selectedAddress } =
+    state || {}
+  let tokenData = tokenDataState
+  let tokenRates = tokenRatesState
   if (networkType.host !== MAINNET) {
     tokenData = {}
     tokenRates = {}
   }
-  let currencyMultiplierNum = 1
+  let currencyMultiplierNumber = 1
   const formatter = selectedCurrency !== 'ETH' ? 2 : 3
-  if (selectedCurrency !== 'ETH') currencyMultiplierNum = currencyData[selectedCurrency.toLowerCase()] || 1
-  const currencyMultiplier = new BigNumber(currencyMultiplierNum)
+  if (selectedCurrency !== 'ETH') currencyMultiplierNumber = currencyData[selectedCurrency.toLowerCase()] || 1
+  const currencyMultiplier = new BigNumber(currencyMultiplierNumber)
   let full = [
     {
       balance: weiBalance[selectedAddress] || '0',
@@ -39,16 +44,16 @@ const tokenBalances = state => {
   let totalPortfolioValue = new BigNumber(0)
   const finalBalancesArray = full.map(x => {
     const computedBalance = new BigNumber(x.balance).dividedBy(new BigNumber(10).pow(new BigNumber(x.decimals))) || new BigNumber(0)
-    let tokenRateMultiplierNum = 1
-    if (x.tokenAddress !== '0x') tokenRateMultiplierNum = tokenRates[x.tokenAddress.toLowerCase()] || 0
-    const tokenRateMultiplier = new BigNumber(tokenRateMultiplierNum)
+    let tokenRateMultiplierNumber = 1
+    if (x.tokenAddress !== '0x') tokenRateMultiplierNumber = tokenRates[x.tokenAddress.toLowerCase()] || 0
+    const tokenRateMultiplier = new BigNumber(tokenRateMultiplierNumber)
     const currencyRate = currencyMultiplier.times(tokenRateMultiplier)
-    let currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
+    const currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
     totalPortfolioValue = totalPortfolioValue.plus(currencyBalance)
     return {
       ...x,
       id: x.symbol,
-      computedBalance: computedBalance,
+      computedBalance,
       formattedBalance: `${x.symbol} ${significantDigits(computedBalance, false, formatter + 1)}`,
       currencyBalance: `${selectedCurrency} ${significantDigits(currencyBalance, false, formatter + 1)}`,
       currencyRateText: `1 ${x.symbol} = ${currencyRate.toFormat(formatter)} ${selectedCurrency}`
@@ -59,7 +64,7 @@ const tokenBalances = state => {
 }
 
 const collectibleBalances = state => {
-  let { networkType, assets, selectedAddress } = state || {}
+  const { networkType, assets, selectedAddress } = state || {}
   if (networkType.host !== MAINNET) {
     assets[selectedAddress] = []
   }

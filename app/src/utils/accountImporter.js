@@ -4,13 +4,14 @@ const ethUtil = require('ethereumjs-util')
 const log = require('loglevel')
 
 const accountImporter = {
-  importAccount(strategy, args) {
+  importAccount(strategy, arguments_) {
     try {
       const importer = this.strategies[strategy]
-      const privateKeyHex = importer.apply(null, args)
+      // eslint-disable-next-line prefer-spread
+      const privateKeyHex = importer.apply(null, arguments_)
       return Promise.resolve(privateKeyHex)
-    } catch (e) {
-      return Promise.reject(e)
+    } catch (error) {
+      return Promise.reject(error)
     }
   },
 
@@ -34,7 +35,7 @@ const accountImporter = {
       let wallet
       try {
         wallet = importers.fromEtherWallet(input, password)
-      } catch (e) {
+      } catch (error) {
         log.info('Attempt to import as EtherWallet format failed, trying V3...')
       }
 

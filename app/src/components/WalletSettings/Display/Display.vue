@@ -14,11 +14,11 @@
           </template>
           <v-list class="select-theme-list pa-0">
             <v-list-item
-              @click="selectedTheme = theme"
-              :style="themeOptionStyle(theme)"
-              class="select-theme-item"
               v-for="theme in themes"
               :key="`${theme.name}`"
+              :style="themeOptionStyle(theme)"
+              class="select-theme-item"
+              @click="selectedTheme = theme"
             >
               {{ t(theme.label) }}
             </v-list-item>
@@ -29,24 +29,8 @@
     <v-layout class="mt-4">
       <v-flex xs12 md6>
         <v-layout wrap>
-          <v-flex xs8 v-if="!$vuetify.breakpoint.xsOnly" class="pr-2">
-            <notification
-              :alert-show="selectThemeAlert"
-              :alert-text="selectThemeAlertText"
-              :alert-type="selectThemeAlertType"
-              @closeAlert="closeAlert"
-            />
-          </v-flex>
           <v-flex xs12 sm4 :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-2'">
             <v-btn color="primary" block depressed class="px-12 py-1" @click="saveTheme">{{ t('walletSettings.save') }}</v-btn>
-          </v-flex>
-          <v-flex xs12 v-if="$vuetify.breakpoint.xsOnly" class="mt-2">
-            <notification
-              :alert-show="selectThemeAlert"
-              :alert-text="selectThemeAlertText"
-              :alert-type="selectThemeAlertType"
-              @closeAlert="closeAlert"
-            />
           </v-flex>
         </v-layout>
       </v-flex>
@@ -55,47 +39,34 @@
 </template>
 
 <script>
-import Notification from '../../helpers/Notification'
+import log from 'loglevel'
+
 import themes from '../../../plugins/themes'
 
 export default {
-  name: 'displaySettings',
-  components: { Notification },
+  name: 'DisplaySettings',
   data() {
     return {
-      themes: themes,
-      selectedTheme: '',
-      selectThemeAlert: false,
-      selectThemeAlertText: '',
-      selectThemeAlertType: 'success'
+      themes,
+      selectedTheme: ''
     }
   },
   methods: {
-    closeAlert() {
-      this.selectThemeAlert = false
-    },
-    saveTheme() {
-      this.$store
-        .dispatch('setUserTheme', this.selectedTheme.name)
-        .then(res => {
-          this.selectedTheme = ''
-          this.selectThemeAlert = true
-          this.selectThemeAlertType = 'success'
-          this.selectThemeAlertText = this.t('walletSettings.successSaveTheme')
-        })
-        .catch(err => {
-          this.selectedTheme = ''
-          this.selectThemeAlert = true
-          this.selectThemeAlertType = 'error'
-          this.selectThemeAlertText = err
-        })
+    async saveTheme() {
+      try {
+        await this.$store.dispatch('setUserTheme', this.selectedTheme.name)
+      } catch (error) {
+        log.error(error)
+      } finally {
+        this.selectedTheme = ''
+      }
     },
     themeOptionStyle(theme) {
-      if (theme)
-        return {
-          color: `${theme.theme.primary.base} !important`,
-          backgroundColor: `${theme.theme.background_body_1} !important`
-        }
+      if (!theme) return {}
+      return {
+        color: `${theme.theme.primary.base} !important`,
+        backgroundColor: `${theme.theme.background_body_1} !important`
+      }
     }
   }
 }

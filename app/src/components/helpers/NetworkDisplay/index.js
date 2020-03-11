@@ -1,1 +1,1 @@
-export { default } from './NetworkDisplay'
+export { default } from './NetworkDisplay.vue'

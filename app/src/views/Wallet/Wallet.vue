@@ -1,6 +1,6 @@
 <template>
   <div>
-    <navbar />
+    <Navbar />
     <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
     <v-container>
       <router-view></router-view>
@@ -18,6 +18,6 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import 'Wallet.scss';
 </style>

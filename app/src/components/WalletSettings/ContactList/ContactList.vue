@@ -6,7 +6,7 @@
         <v-card class="card-shadow mt-2">
           <v-list dense flat class="pa-0 contact-list">
             <template v-for="contact in contacts">
-              <v-list-item two-line :key="`contact-${contact.id}`">
+              <v-list-item :key="`contact-${contact.id}`" two-line>
                 <v-list-item-content>
                   <v-list-item-title class="font-weight-regular caption">
                     <span>{{ contact.name }}</span>
@@ -17,8 +17,8 @@
                   </v-list-item-subtitle>
                 </v-list-item-content>
                 <v-list-item-action>
-                  <v-btn class="delete-btn" color="text_2" icon small @click="deleteContact(contact.id)" :aria-label="`Delete ${contact.name}`">
-                    <v-icon size="10">$vuetify.icons.close</v-icon>
+                  <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete ${contact.name}`" @click="deleteContact(contact.id)">
+                    <v-icon>$vuetify.icons.close</v-icon>
                   </v-btn>
                 </v-list-item-action>
               </v-list-item>
@@ -28,20 +28,20 @@
 
         <div class="body-2 mt-4">{{ t('walletSettings.addNewContact') }}</div>
 
-        <v-form ref="addContactForm" v-model="contactFormValid" @submit="addContact" lazy-validation>
+        <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation @submit.prevent="addContact">
           <v-layout wrap class="mt-2">
             <v-flex xs12 sm8>
               <v-select
                 id="select-verifier"
+                v-model="selectedVerifier"
                 class="select-verifier-container"
                 outlined
                 append-icon="$vuetify.icons.select"
                 :items="verifierOptions"
                 item-text="name"
                 item-value="value"
-                v-model="selectedVerifier"
-                @change="$refs.addContactForm.validate()"
                 aria-label="Select Contact Verifier"
+                @change="validateContactForm"
               ></v-select>
             </v-flex>
             <v-flex xs12>
@@ -66,14 +66,6 @@
             </v-flex>
 
             <v-layout wrap>
-              <v-flex xs12 sm12 md6 :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-2'">
-                <notification
-                  :alert-show="saveContactAlert"
-                  :alert-text="saveContactAlertText"
-                  :alert-type="saveContactAlertType"
-                  @closeAlert="closeAlert"
-                />
-              </v-flex>
               <v-flex xs12 sm12 md6 :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'pl-2'">
                 <v-btn id="contact-submit-btn" block type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">
                   {{ t('walletSettings.addContact') }}
@@ -88,13 +80,13 @@
 </template>
 
 <script>
-import Notification from '../../helpers/Notification'
-const { ALLOWED_VERIFIERS, ETH } = require('../../../utils/enums')
-const { validateVerifierId } = require('../../../utils/utils')
+import log from 'loglevel'
+
+import { ALLOWED_VERIFIERS, ETH } from '../../../utils/enums'
+import { validateVerifierId } from '../../../utils/utils'
 
 export default {
-  name: 'networkSettings',
-  components: { Notification },
+  name: 'NetworkSettings',
   data() {
     return {
       contactFormValid: true,
@@ -104,10 +96,7 @@ export default {
       rules: {
         required: value => !!value || this.t('walletSettings.required')
       },
-      ETH,
-      saveContactAlert: false,
-      saveContactAlertText: '',
-      saveContactAlertType: 'success'
+      ETH
     }
   },
   computed: {
@@ -127,61 +116,40 @@ export default {
     }
   },
   methods: {
-    closeAlert() {
-      this.saveContactAlert = false
-    },
     checkDuplicates(value) {
-      if (this.contacts) {
-        return this.contacts.findIndex(x => x.contact.toLowerCase() === value.toLowerCase()) < 0 || this.t('walletSettings.duplicateContact')
-      }
-      return ''
+      if (!this.contacts) return ''
+      return this.contacts.findIndex(x => x.contact.toLowerCase() === value.toLowerCase()) < 0 || this.t('walletSettings.duplicateContact')
     },
-    addContact(e) {
-      e.preventDefault()
-      if (this.$refs.addContactForm.validate()) {
-        this.$store
-          .dispatch('addContact', {
-            contact: this.newContact,
-            name: this.newContactName,
-            verifier: this.selectedVerifier
-          })
-          .then(response => {
-            this.newContact = ''
-            this.newContactName = ''
-            this.$refs.addContactForm.resetValidation()
-
-            this.saveContactAlert = true
-            this.saveContactAlertType = 'success'
-            this.saveContactAlertText = response.message
-          })
-          .catch(err => {
-            this.saveContactAlert = true
-            this.saveContactAlertType = 'error'
-            this.saveContactAlertText = err
-          })
+    async addContact() {
+      if (!this.$refs.addContactForm.validate()) return
+      const contact = this.newContact
+      const name = this.newContactName
+      this.newContact = ''
+      this.newContactName = ''
+      this.$refs.addContactForm.resetValidation()
+      try {
+        await this.$store.dispatch('addContact', {
+          contact,
+          name,
+          verifier: this.selectedVerifier
+        })
+      } catch (error) {
+        log.error(error)
       }
     },
     deleteContact(contactId) {
-      this.$store
-        .dispatch('deleteContact', contactId)
-        .then(response => {
-          this.saveContactAlert = true
-          this.saveContactAlertType = 'success'
-          this.saveContactAlertText = response.message
-        })
-        .catch(err => {
-          this.saveContactAlert = true
-          this.saveContactAlertType = 'error'
-          this.saveContactAlertText = err
-        })
+      this.$store.dispatch('deleteContact', contactId)
     },
     toAddressRule(value) {
       return validateVerifierId(this.selectedVerifier, value)
+    },
+    validateContactForm() {
+      if (this.$refs.addContactForm) this.$refs.addContactForm.validate()
     }
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import 'ContactList.scss';
 </style>

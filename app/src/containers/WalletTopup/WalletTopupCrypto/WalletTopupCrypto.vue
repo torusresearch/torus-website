@@ -13,9 +13,10 @@
 </template>
 
 <script>
-import { post } from '../../../utils/httpHelpers'
-import config from '../../../config'
 import log from 'loglevel'
+
+import config from '../../../config'
+import { post } from '../../../utils/httpHelpers'
 
 export default {
   methods: {
@@ -30,7 +31,7 @@ export default {
         }
       )
         .then(response => log.info(response))
-        .catch(err => log.error(err))
+        .catch(error => log.error(error))
     }
   }
 }
