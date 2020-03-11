@@ -19,6 +19,6 @@ try {
   )
 
   bundler.bundle().pipe(fs.createWriteStream(`${__dirname}/../public/embed.min.js`))
-} catch (e) {
-  log.error(e)
+} catch (error) {
+  log.error(error)
 }

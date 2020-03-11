@@ -448,7 +448,7 @@ export default {
     },
     getCurrencyRate() {
       const ethConverted = this.getCurrencyMultiplier
-      const tokenPriceConverted = this.isOtherToken ? this.tokenPrice : ethConverted
+      const tokenPriceConverted = this.isOtherToken ? this.tokenPrice.times(ethConverted) : ethConverted
       const selectedToken = this.isOtherToken ? this.selectedToken : 'ETH'
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
     }
