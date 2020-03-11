@@ -214,7 +214,7 @@ export default {
   },
   computed: {
     canShowLrc() {
-      return process.env.VUE_APP_TORUS_BUILD_ENV !== 'lrc' && process.env.VUE_APP_TORUS_BUILD_ENV !== 'alpha5'
+      return process.env.VUE_APP_TORUS_BUILD_ENV !== 'lrc'
     },
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
