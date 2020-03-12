@@ -54,11 +54,13 @@ export default {
         await bc.postMessage({
           data: {
             instanceParams: instanceParameters,
-            hashParams: hashParameters
+            hashParams: hashParameters,
+            queryParams: queryParameters
           },
           error
         })
         bc.close()
+        log.info('posted', { queryParameters, hashParameters, instanceParameters })
       } else {
         bc = new BroadcastChannel(`preopen_channel_${queryParameters.preopenInstanceId}`, broadcastChannelOptions)
         bc.addEventListener('message', ev => {

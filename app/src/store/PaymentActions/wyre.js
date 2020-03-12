@@ -44,7 +44,7 @@ const Wyre = {
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             reject(new Error(ev.error))
-          } else if (ev.data && provider === WYRE) {
+          } else if (provider === WYRE) {
             resolve({ success: true })
           }
         } catch (error) {

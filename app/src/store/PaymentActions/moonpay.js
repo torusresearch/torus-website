@@ -70,13 +70,16 @@ export default {
       bc.addEventListener('message', ev => {
         try {
           const {
-            instanceParams: { provider }
+            instanceParams: { provider },
+            queryParams: { transactionStatus = '' } = {}
           } = ev.data || {}
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             reject(new Error(ev.error))
-          } else if (ev.data && provider === MOONPAY) {
+          } else if (provider === MOONPAY && transactionStatus !== 'failed') {
             resolve({ success: true })
+          } else if (provider === MOONPAY && transactionStatus === 'failed') {
+            reject(new Error('Payment Failed'))
           }
         } catch (error) {
           reject(error)

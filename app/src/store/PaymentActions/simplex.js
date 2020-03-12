@@ -145,7 +145,7 @@ export default {
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             reject(new Error(ev.error))
-          } else if (ev.data && provider === SIMPLEX) {
+          } else if (provider === SIMPLEX) {
             resolve({ success: true })
           }
         } catch (error) {
