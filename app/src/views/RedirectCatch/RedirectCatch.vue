@@ -61,6 +61,9 @@ export default {
         })
         bc.close()
         log.info('posted', { queryParameters, hashParameters, instanceParameters })
+        setTimeout(() => {
+          window.close()
+        }, 5000)
       } else {
         bc = new BroadcastChannel(`preopen_channel_${queryParameters.preopenInstanceId}`, broadcastChannelOptions)
         bc.addEventListener('message', ev => {
