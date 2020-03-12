@@ -1,8 +1,9 @@
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import { MOONPAY, SIMPLEX, WYRE } from '../../utils/enums'
+import { MOONPAY, SIMPLEX, RAMPNETWORK,WYRE } from '../../utils/enums'
 import { fakeStream, paymentProviders } from '../../utils/utils'
 import moonpay from './moonpay'
+import rampnetwork from './rampnetwork'
 import simplex from './simplex'
 import wyre from './wyre'
 
@@ -29,6 +30,7 @@ const handleFailure = error => {
 
 export default {
   ...simplex,
+  ...rampnetwork,
   ...moonpay,
   ...wyre,
   async initiateTopup({ state, dispatch }, { provider, params, preopenInstanceId }) {
@@ -58,6 +60,11 @@ export default {
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress
           })
+          handleSuccess(success)
+        } else if (provider === RAMPNETWORK) {
+          // rampnetwork
+          const currentOrder = await dispatch('fetchRampNetworkQuote', selectedParameters) 
+          const { success } = await dispatch('fetchRampNetworkOrder', { currentOrder, preopenInstanceId })
           handleSuccess(success)
         } else if (provider === MOONPAY) {
           // moonpay

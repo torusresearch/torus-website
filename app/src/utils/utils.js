@@ -34,6 +34,7 @@ import {
   PLATFORM_FIREFOX,
   PLATFORM_OPERA,
   PNG,
+  RAMPNETWORK,
   REDDIT,
   RINKEBY,
   RINKEBY_CHAIN_ID,
@@ -342,6 +343,22 @@ export function formatDate(date) {
 }
 
 export const paymentProviders = {
+  [RAMPNETWORK]: {
+    line1: 'Bank transfer',
+    line2: '0% - 2.5%',
+    line3: '10,000€/purchase, 10,000€/mo',
+    line4: 'ETH, DAI, USDC',
+    status: ACTIVE,
+    logoExtension: SVG,
+    supportPage: 'https://instant.ramp.network/',
+    minOrderValue: 1,
+    maxOrderValue: 10000,
+    validCurrencies: ['GBP', 'EUR'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
+    includeFees: true,
+    api: true,
+    receiveHint: 'You don’t need an ID to complete this transaction!'
+  },
   [SIMPLEX]: {
     line1: 'Credit / Debit Card',
     line2: '5% or 10 USD',
