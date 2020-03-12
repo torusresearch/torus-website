@@ -40,9 +40,9 @@ export default {
         const selectedParameters = params || {}
 
         // set default values
-        if (!selectedParameters.selectedCurrency) selectedParameters.selectedCurrency = 'USD'
+        if (!selectedParameters.selectedCurrency) [selectedParameters.selectedCurrency] = selectedProvider.validCurrencies
         if (!selectedParameters.fiatValue) selectedParameters.fiatValue = selectedProvider.minOrderValue
-        if (!selectedParameters.selectedCryptoCurrency) selectedParameters.selectedCryptoCurrency = 'ETH'
+        if (!selectedParameters.selectedCryptoCurrency) [selectedParameters.selectedCryptoCurrency] = selectedProvider.validCryptoCurrencies
         if (!selectedParameters.selectedAddress) selectedParameters.selectedAddress = state.selectedAddress
 
         // validations
@@ -63,7 +63,19 @@ export default {
           handleSuccess(success)
         } else if (provider === RAMPNETWORK) {
           // rampnetwork
-          const currentOrder = await dispatch('fetchRampNetworkQuote', selectedParameters)
+          const result = await dispatch('fetchRampNetworkQuote', selectedParameters)
+          const asset = result.assets.find(item => item.symbol === selectedParameters.selectedCryptoCurrency)
+
+          const fiat = selectedParameters.fiatValue
+          const feeRate = asset.maxFeePercent[selectedParameters.selectedCurrency] / 100
+          const rate = asset.price[selectedParameters.selectedCurrency]
+          const fiatWithoutFee = fiat / (1 + feeRate) // Final amount of fiat that will be converted to crypto
+          const cryptoValue = fiatWithoutFee / rate // Final Crypto amount
+
+          const currentOrder = {
+            cryptoCurrencyValue: cryptoValue * 10 ** asset.decimals,
+            cryptoCurrencySymbol: asset.symbol
+          }
           const { success } = await dispatch('fetchRampNetworkOrder', {
             currentOrder,
             preopenInstanceId,
