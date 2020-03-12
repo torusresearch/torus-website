@@ -5,7 +5,7 @@ import config from '../config'
 import { ERROR_TIME, LOCALE_EN, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
-import { getIFrameOrigin } from '../utils/utils'
+import { getIFrameOrigin, storageAvailable } from '../utils/utils'
 
 // By default, poll every 1 minute
 const DEFAULT_INTERVAL = 180 * 1000
@@ -27,11 +27,18 @@ class PreferencesController {
    * @property {string} store.jwtToken the token used to communicate with torus-backend
    */
   constructor(options = {}) {
+    let theme = THEME_LIGHT_BLUE_NAME
+    if (storageAvailable('localStorage')) {
+      const torusTheme = localStorage.getItem('torus-theme')
+      if (torusTheme) {
+        theme = torusTheme
+      }
+    }
     const initState = {
       selectedAddress: '',
       selectedCurrency: 'USD',
       pastTransactions: [],
-      theme: THEME_LIGHT_BLUE_NAME,
+      theme,
       locale: LOCALE_EN,
       billboard: {},
       contacts: [],

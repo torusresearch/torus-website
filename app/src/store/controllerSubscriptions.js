@@ -97,7 +97,6 @@ export function tokenRatesControllerHandler({ contractExchangeRates }) {
 }
 
 export function prefsControllerHandler(state) {
-  // console.log(state, 'hek')
   Object.keys(state).forEach(x => {
     getStore().commit(`set${capitalizeFirstLetter(x)}`, state[x])
   })
