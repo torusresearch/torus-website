@@ -18,7 +18,7 @@ export default {
       swapAsset: currentOrder.cryptoCurrencySymbol,
       swapAmount: currentOrder.cryptoCurrencyValue,
       variant: 'hosted-auto',
-      webhookStatusUrl: 'https://rampnetwork-api.tor.us/transaction',
+      webhookStatusUrl: `${config.rampApiHost}/transaction`,
       hostUrl: '*'
     }
     return dispatch('openWidget', { path: config.rampInstantWidget, params: parameters, preopenInstanceId })
