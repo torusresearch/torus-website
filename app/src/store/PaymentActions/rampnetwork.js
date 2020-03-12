@@ -11,9 +11,9 @@ export default {
       requested_amount: +parseFloat(payload.fiatValue)
     })
   },
-  fetchRampNetworkOrder({ state, dispatch }, { currentOrder, preopenInstanceId }) {
+  fetchRampNetworkOrder({ state, dispatch }, { currentOrder, preopenInstanceId, selectedAddress }) {
     const parameters = {
-      userAddress: state.selectedAddress,
+      userAddress: selectedAddress || state.selectedAddress,
       userEmailAddress: state.userInfo.email,
       swapAsset: currentOrder.cryptoCurrencySymbol,
       swapAmount: currentOrder.cryptoCurrencyValue,
@@ -29,8 +29,6 @@ export default {
       const finalUrl = `${path}?${parameterString}`
       const rampInstantWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
 
-      rampInstantWindow.open()
-
       // Handle communication with Ramp Instant Widget window
       window.addEventListener(
         'message',
@@ -38,14 +36,14 @@ export default {
           if (event.data.type === 'WIDGET_CLOSE') {
             rampInstantWindow.close()
             reject(new Error('User closed Ramp Instant Widget'))
-          }
-          if (event.data.type === 'PURCHASE_SUCCESSFUL') {
+          } else if (event.data.type === 'PURCHASE_SUCCESSFUL') {
             resolve({ success: true })
           }
         },
         rampInstantWindow.window
       )
 
+      rampInstantWindow.open()
       rampInstantWindow.once('close', () => {
         reject(new Error('User closed Ramp Instant Widget'))
       })

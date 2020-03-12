@@ -5,6 +5,7 @@
     :currency-rate="currencyRate"
     @fetchQuote="fetchQuote"
     @sendOrder="sendOrder"
+    @clearQuote="clearQuote"
   />
 </template>
 
@@ -42,7 +43,7 @@ export default {
 
             self.cryptoCurrencyValue = cryptoValue
             self.cryptoCurrencySymbol = asset.symbol
-            self.currencyRate = asset.price[payload.selectedCurrency]
+            self.currencyRate = 1 / asset.price[payload.selectedCurrency]
             self.currentOrder = {
               cryptoCurrencyValue: cryptoValue * 10 ** asset.decimals,
               cryptoCurrencySymbol: asset.symbol
@@ -53,8 +54,14 @@ export default {
     },
     sendOrder(callback) {
       callback(
-        this.$store.dispatch('fetchRampNetworkOrder', { currentOrder: this.currentOrder, colorCode: this.$vuetify.theme.themes.light.primary })
+        this.$store.dispatch('fetchRampNetworkOrder', { currentOrder: this.currentOrder, colorCode: this.$vuetify.theme.themes.light.primary.base })
       )
+    },
+    clearQuote(payload) {
+      this.cryptoCurrencyValue = 0
+      this.currencyRate = 0
+      this.currentOrder = {}
+      this.fetchQuote(payload)
     }
   }
 }

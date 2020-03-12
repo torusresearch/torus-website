@@ -1,6 +1,6 @@
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import { MOONPAY, SIMPLEX, RAMPNETWORK,WYRE } from '../../utils/enums'
+import { MOONPAY, RAMPNETWORK, SIMPLEX, WYRE } from '../../utils/enums'
 import { fakeStream, paymentProviders } from '../../utils/utils'
 import moonpay from './moonpay'
 import rampnetwork from './rampnetwork'
@@ -63,8 +63,12 @@ export default {
           handleSuccess(success)
         } else if (provider === RAMPNETWORK) {
           // rampnetwork
-          const currentOrder = await dispatch('fetchRampNetworkQuote', selectedParameters) 
-          const { success } = await dispatch('fetchRampNetworkOrder', { currentOrder, preopenInstanceId })
+          const currentOrder = await dispatch('fetchRampNetworkQuote', selectedParameters)
+          const { success } = await dispatch('fetchRampNetworkOrder', {
+            currentOrder,
+            preopenInstanceId,
+            selectedAddress: selectedParameters.selectedAddress
+          })
           handleSuccess(success)
         } else if (provider === MOONPAY) {
           // moonpay
