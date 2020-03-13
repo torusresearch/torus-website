@@ -28,7 +28,7 @@ export default {
       const parameterString = new URLSearchParams(params)
       const finalUrl = `${path}?${parameterString}`
       const rampInstantWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
-      let purchaseCrated = false
+      let purchaseCreated = false
       let purchaseSuccess = false
 
       // Handle communication with Ramp Instant Widget window
@@ -36,14 +36,14 @@ export default {
         'message',
         event => {
           if (event.data.type === 'PURCHASE_CREATED') {
-            purchaseCrated = true
+            purchaseCreated = true
           } else if (event.data.type === 'PURCHASE_SUCCESSFUL') {
             purchaseSuccess = true
             resolve({ success: true })
           } else if (event.data.type === 'WIDGET_CLOSE') {
             if (purchaseSuccess) {
               // Do nothing, promise already resolved
-            } else if (purchaseCrated) {
+            } else if (purchaseCreated) {
               resolve({ success: true })
             } else {
               reject(new Error('Purchase Canceled'))
