@@ -7,7 +7,7 @@
         </v-flex>
         <v-flex xs12 px-4>
           <v-flex xs12 mt-4>
-            <span class="subtitle-2">{{ t('accountMenu.selectImportType') }}:</span>
+            <span class="subtitle-2">{{ t('accountMenu.selectImportType') }}</span>
             <v-select
               v-model="selectedType"
               outlined
@@ -138,16 +138,6 @@ export default {
   data() {
     return {
       selectedType: 'private',
-      options: [
-        {
-          name: this.t('accountMenu.privateKey'),
-          value: 'private'
-        },
-        {
-          name: this.t('accountMenu.keystore'),
-          value: 'keystore'
-        }
-      ],
       privateKey: '',
       jsonPassword: '',
       privateKeyFormValid: true,
@@ -163,6 +153,20 @@ export default {
       rules: {
         required: value => !!value || this.t('accountMenu.required')
       }
+    }
+  },
+  computed: {
+    options() {
+      return [
+        {
+          name: this.t('accountMenu.privateKey'),
+          value: 'private'
+        },
+        {
+          name: this.t('accountMenu.keystore'),
+          value: 'keystore'
+        }
+      ]
     }
   },
   methods: {

@@ -195,9 +195,10 @@ class PreferencesController {
     try {
       await patch(`${config.api}/user/locale`, { locale: payload }, this.headers)
       this.store.updateState({ locale: payload })
-      this.handleSuccess('navBar.snackSuccessLocale')
+      // this.handleSuccess('navBar.snackSuccessLocale')
     } catch (error) {
-      this.handleError('navBar.snackFailLocale')
+      // this.handleError('navBar.snackFailLocale')
+      log.error('unable to set locale', error)
     }
   }
 
