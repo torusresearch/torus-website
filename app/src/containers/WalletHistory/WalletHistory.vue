@@ -217,6 +217,7 @@ export default {
       return time.toTimeString().slice(0, 8)
     },
     calculateFinalTransactions() {
+      if (this.loadingPastTransactions || this.loadingOrders || this.loadingUserTransactions) return []
       let finalTx = this.paymentTx
       const { pastTx } = this
       const transactions = this.calculateTransactions()
