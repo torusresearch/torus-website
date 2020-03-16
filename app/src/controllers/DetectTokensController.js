@@ -62,7 +62,7 @@ class DetectTokensController {
             // this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
           }
         })
-        if (nonZeroTokens.length > 0) this.detectedTokensStore.putState({ tokens: nonZeroTokens })
+        this.detectedTokensStore.putState({ tokens: nonZeroTokens })
       })
     }
   }
@@ -108,7 +108,7 @@ class DetectTokensController {
             nonZeroTokens.push({ ...oldTokens[index], balance })
           }
         })
-        if (nonZeroTokens.length > 0) this.detectedTokensStore.putState({ tokens: nonZeroTokens })
+        this.detectedTokensStore.putState({ tokens: nonZeroTokens })
       })
     }
   }
