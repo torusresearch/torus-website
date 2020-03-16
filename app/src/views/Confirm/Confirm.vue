@@ -189,7 +189,7 @@
 
         <v-flex xs12 mt-0 mb-n1 mx-6 class="note-list">
           <div class="d-flex">
-            <div class="mr-5 note-list__icon">
+            <div class="mr-2 note-list__icon">
               <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
             </div>
             <div class="caption text_2--text">{{ t('dappTransfer.dataSmall') }}</div>
