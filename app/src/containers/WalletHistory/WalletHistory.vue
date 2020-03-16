@@ -145,11 +145,17 @@ export default {
     },
     pastTransactions() {
       return this.$store.state.pastTransactions
+    },
+    paymentTxStore() {
+      return this.$store.state.paymentTx
     }
   },
   watch: {
     pastTransactions() {
       this.calculatePastTransactions()
+    },
+    paymentTxStore() {
+      this.calculatePaymentTransactions()
     }
   },
   mounted() {
