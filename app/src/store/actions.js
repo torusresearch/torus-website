@@ -712,6 +712,7 @@ export default {
     return new Promise((resolve, reject) => {
       // Fixes loading theme for too long
       commit('setTheme', state.theme)
+
       const { calledFromEmbed, rehydrate, token } = payload
       const { userInfo, selectedCurrency, theme, locale } = state
       log.info(selectedCurrency)

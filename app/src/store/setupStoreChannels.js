@@ -119,6 +119,16 @@ if (!isMain) {
       }
     }
   })
+
+  // White Label section
+  const whiteLabelStream = torus.communicationMux.getStream('white_label')
+  whiteLabelStream.on('data', chunk => {
+    // torus-white-label
+    // {"whiteLabelIsDark":false,"whiteLabelTheme":{"torusBackgroundBody":"","torusBrand1":"","torusBrand2":"",
+    // "torusBrand3":"","torusBrand4":"","torusBrandhover":"","torusGray1":"","torusGray2":"","torusGray3":"",
+    // "torusGray4":"","torusFont1":"","torusFont2":"","torusFontLink1":"","torusFontLink2":"","torusBlack":""}}
+    localStorage.setItem('torus-white-label', JSON.stringify(chunk.data))
+  })
 }
 
 export default VuexStore
