@@ -1,9 +1,10 @@
-const assert = require('assert')
-const ethUtil = require('ethereumjs-util')
-const sigUtil = require('eth-sig-util')
-const EthereumTx = require('ethereumjs-tx')
-const TorusKeyring = require('../../../src/controllers/TorusKeyring').default
-const log = require('loglevel')
+/* eslint-disable */
+import assert from 'assert'
+import * as ethUtil from 'ethereumjs-util'
+import sigUtil from 'eth-sig-util'
+import EthereumTx from 'ethereumjs-tx'
+import TorusKeyring from '../../../src/controllers/TorusKeyring'
+import log from 'loglevel'
 
 const TYPE_STR = 'Torus Keyring'
 
@@ -26,14 +27,14 @@ describe('torus-keyring', () => {
 
   describe('Keyring.type', () => {
     it('is a class property that returns the type string.', () => {
-      const type = TorusKeyring.type
+      const { type } = TorusKeyring
       assert.strictEqual(type, TYPE_STR)
     })
   })
 
   describe('#type', () => {
     it('returns the correct value', () => {
-      const type = keyring.type
+      const { type } = keyring
       assert.strictEqual(type, TYPE_STR)
     })
   })
@@ -83,7 +84,7 @@ describe('torus-keyring', () => {
     it('returns a signed tx object', async () => {
       await keyring.deserialize([privateKey])
 
-      const txParams = {
+      const txParameters = {
         from: address,
         nonce: '0x00',
         gasPrice: '0x09184e72a000',
@@ -91,7 +92,7 @@ describe('torus-keyring', () => {
         to: address,
         value: '0x1000'
       }
-      const tx = new EthereumTx(txParams)
+      const tx = new EthereumTx(txParameters)
 
       const signed = await keyring.signTransaction(tx, address)
       assert.ok(signed.raw, 'has a raw signature')
@@ -113,24 +114,20 @@ describe('torus-keyring', () => {
 
     it('reliably can decode messages it signs', async () => {
       const message = 'hello there!'
-      const msgHashHex = ethUtil.bufferToHex(ethUtil.rlphash(message))
+      const messageHashHex = ethUtil.bufferToHex(ethUtil.rlphash(message))
       await keyring.deserialize([privateKey])
       await keyring.addRandomAccounts(9)
       const addresses = await keyring.getAccounts()
-      const signatures = await Promise.all(
-        addresses.map(async address => {
-          return keyring.signMessage(address, msgHashHex)
-        })
-      )
+      const signatures = await Promise.all(addresses.map(async address => keyring.signMessage(address, messageHashHex)))
       signatures.forEach((sgn, index) => {
         const address = addresses[index]
 
         const r = ethUtil.toBuffer(sgn.slice(0, 66))
-        const s = ethUtil.toBuffer('0x' + sgn.slice(66, 130))
-        const v = ethUtil.bufferToInt(ethUtil.toBuffer('0x' + sgn.slice(130, 132)))
-        const m = ethUtil.toBuffer(msgHashHex)
+        const s = ethUtil.toBuffer(`0x${sgn.slice(66, 130)}`)
+        const v = ethUtil.bufferToInt(ethUtil.toBuffer(`0x${sgn.slice(130, 132)}`))
+        const m = ethUtil.toBuffer(messageHashHex)
         const pub = ethUtil.ecrecover(m, v, r, s)
-        const adr = '0x' + ethUtil.pubToAddress(pub).toString('hex')
+        const adr = `0x${ethUtil.pubToAddress(pub).toString('hex')}`
 
         assert.strictEqual(adr, address, 'recovers address from signature correctly')
       })
@@ -195,53 +192,177 @@ describe('torus-keyring', () => {
     })
   })
 
-  describe('#signPersonalMessage', () => {
-    it('returns the expected value', async () => {
-      const address = '0xbe93f9bacbcffc8ee6663f2647917ed7a20a57bb'
-      const privateKey = Buffer.from('6969696969696969696969696969696969696969696969696969696969696969', 'hex')
-      const privKeyHex = ethUtil.bufferToHex(privateKey)
-      const message = '0x68656c6c6f20776f726c64'
-      const signature =
-        '0xce909e8ea6851bc36c007a0072d0524b07a3ff8d4e623aca4c71ca8e57250c4d0a3fc38fa8fbaaa81ead4b9f6bd03356b6f8bf18bccad167d78891636e1d69561b'
-
-      await keyring.deserialize([privKeyHex])
-      const sig = await keyring.signPersonalMessage(address, message)
-      assert.strictEqual(sig, signature, 'signature matches')
-
-      const restored = sigUtil.recoverPersonalSignature({
-        data: message,
-        sig
-      })
-
-      assert.strictEqual(restored, address, 'recovered address')
-    })
+  it('should export account', async () => {
+    const keyring = new TorusKeyring([testAccount.key])
+    const newPrivateKey = await keyring.exportAccount(testAccount.address)
+    assert(newPrivateKey !== '')
   })
 
-  // describe('#signTypedData', () => {
-  //   const address = '0x29c76e6ad8f28bb1004902578fb108c507be341b'
-  //   const privKeyHex = '0x4af1bceebf7f3634ec3cff8a2c38e51178d5d4ce585c52d6043e5e2cc3418bb0'
+  it('should remove account', async () => {
+    const keyring = new TorusKeyring([testAccount.key])
+    const finalState = await keyring.removeAccount(testAccount.address)
+    assert(keyring.wallets.length === 0)
+  })
 
-  //   it('returns the expected value', async () => {
-  //     const expectedSignature =
-  //       '0xf2951a651df0a79b29a38215f9669b06499fa45d3b41c7acedd49c1050e8439f3283156a0797113c9c06c1df844495071aaa5721ea39198b46bf462f7417dfba1b'
+  it('should sign message', async () => {
+    const keyring = new TorusKeyring([testAccount.key])
+    const data = '0x879a053d4800c6354e76c7985a865d2922c82fb5b3f4577b2fe08b998954f2e0'
+    const signature = await keyring.signMessage(testAccount.address, data)
+    assert(signature !== '')
+  })
 
-  //     const typedData = {
-  //       types: {
-  //         EIP712Domain: []
-  //       },
-  //       domain: {},
-  //       primaryType: 'EIP712Domain',
-  //       message: {},
-  //     }
+  it('should sign personal message', async () => {
+    const keyringController = new TorusKeyring([testAccount.key])
+    const data = ethUtil.bufferToHex(Buffer.from('Hello from test', 'utf8'))
+    const signature = await keyringController.signPersonalMessage(testAccount.address, data)
+    const recovered = sigUtil.recoverPersonalSignature({ data, sig: signature })
+    assert(testAccount.address === recovered)
+  })
 
-  //     await keyring.deserialize([privKeyHex])
-  //     log.info('working')
-  //     const sig = await keyring.signTypedData(address, typedData)
-  //     log.info('original sig ' + sig)
-  //     log.info('expected sig ' + expectedSignature)
-  //     assert.strictEqual(sig, expectedSignature, 'signature matches')
-  //     const restored = sigUtil.recoverTypedSignature({ data: typedData, sig: sig })
-  //     assert.strictEqual(restored, address, 'recovered address')
-  //   })
-  // })
+  it('should sign typed message V1', async () => {
+    const keyringController = new TorusKeyring([testAccount.key])
+    const typedMsgParams = [
+      {
+        name: 'Message',
+        type: 'string',
+        value: 'Hi, Alice!'
+      },
+      {
+        name: 'A number',
+        type: 'uint32',
+        value: '1337'
+      }
+    ]
+    const signature = await keyringController.signTypedData(testAccount.address, typedMsgParams, 'V1')
+    const recovered = sigUtil.recoverTypedSignatureLegacy({ data: typedMsgParams, sig: signature })
+    assert(testAccount.address === recovered)
+  })
+
+  it('should sign typed message V3', async () => {
+    const keyringController = new TorusKeyring([testAccount.key])
+    const msgParams = {
+      domain: {
+        chainId: 1,
+        name: 'Ether Mail',
+        verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+        version: '1'
+      },
+      message: {
+        contents: 'Hello, Bob!',
+        from: { name: 'Cow', wallet: '0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826' },
+        to: { name: 'Bob', wallet: '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB' }
+      },
+      primaryType: 'Mail',
+      types: {
+        EIP712Domain: [
+          { name: 'name', type: 'string' },
+          { name: 'version', type: 'string' },
+          { name: 'chainId', type: 'uint256' },
+          { name: 'verifyingContract', type: 'address' }
+        ],
+        Mail: [
+          { name: 'from', type: 'Person' },
+          { name: 'to', type: 'Person' },
+          { name: 'contents', type: 'string' }
+        ],
+        Person: [
+          { name: 'name', type: 'string' },
+          { name: 'wallet', type: 'address' }
+        ]
+      }
+    }
+    const signature = await keyringController.signTypedData(testAccount.address, JSON.stringify(msgParams), 'V3')
+    const recovered = sigUtil.recoverTypedSignature({ data: msgParams, sig: signature })
+    assert(testAccount.address === recovered)
+  })
+
+  it('should sign typed message V4', async () => {
+    const keyringController = new TorusKeyring([testAccount.key])
+    const msgParams = {
+      domain: {
+        chainId: 1,
+        name: 'Ether Mail',
+        verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+        version: '1'
+      },
+      message: {
+        contents: 'Hello, Bob!',
+        from: {
+          name: 'Cow',
+          wallets: ['0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826', '0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF']
+        },
+        to: [
+          {
+            name: 'Bob',
+            wallets: [
+              '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
+              '0xB0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57',
+              '0xB0B0b0b0b0b0B000000000000000000000000000'
+            ]
+          }
+        ]
+      },
+      primaryType: 'Mail',
+      types: {
+        EIP712Domain: [
+          { name: 'name', type: 'string' },
+          { name: 'version', type: 'string' },
+          { name: 'chainId', type: 'uint256' },
+          { name: 'verifyingContract', type: 'address' }
+        ],
+        Group: [
+          { name: 'name', type: 'string' },
+          { name: 'members', type: 'Person[]' }
+        ],
+        Mail: [
+          { name: 'from', type: 'Person' },
+          { name: 'to', type: 'Person[]' },
+          { name: 'contents', type: 'string' }
+        ],
+        Person: [
+          { name: 'name', type: 'string' },
+          { name: 'wallets', type: 'address[]' }
+        ]
+      }
+    }
+
+    const signature = await keyringController.signTypedData(testAccount.address, JSON.stringify(msgParams), 'V4')
+    const recovered = sigUtil.recoverTypedSignature_v4({ data: msgParams, sig: signature })
+    assert(testAccount.address === recovered)
+  })
+
+  it('should fail when sign typed message format is wrong', async () => {
+    const keyringController = new TorusKeyring([testAccount.key])
+    const msgParams = [{}]
+    let error1
+    try {
+      await keyringController.signTypedData(testAccount.address, msgParams, 'V1')
+    } catch (e) {
+      error1 = e
+    }
+    let error2
+    try {
+      await keyringController.signTypedData(testAccount.address, msgParams, 'V3')
+    } catch (e) {
+      error2 = e
+    }
+    assert(error1.message.includes('Expect argument to be non-empty array'))
+    assert(error2.message.includes("Cannot read property 'EIP712Domain' of undefined"))
+  })
+
+  it('should sign transaction', async () => {
+    const keyringController = new TorusKeyring([testAccount.key])
+    const transaction = {
+      chainId: 3,
+      data: '0x1',
+      from: testAccount.address,
+      gasLimit: '0x5108',
+      gasPrice: '0x5108',
+      to: '0x51253087e6f8358b5f10c0a94315d69db3357859',
+      value: '0x5208'
+    }
+    const ethTransaction = new EthereumTx({ ...transaction })
+    const signature = await keyringController.signTransaction(ethTransaction, testAccount.address)
+    assert(signature !== '')
+  })
 })

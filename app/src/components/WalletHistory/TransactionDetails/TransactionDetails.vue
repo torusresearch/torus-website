@@ -36,15 +36,15 @@
         </div>
         <div class="info font-weight-light">{{ transaction.currencyAmountString }}</div>
       </v-flex>
-      <v-flex class="order-3" xs2 v-if="!$vuetify.breakpoint.xsOnly"></v-flex>
+      <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="order-3" xs2></v-flex>
       <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs6 text-right mt-3 order-3' : 'xs2 text-center order-4'">
         <v-chip class="status-chip black--text" :color="getChipColor(transaction.statusText)" small>
           {{ t(transaction.statusText) }}
         </v-chip>
       </v-flex>
     </v-layout>
-    <v-divider v-if="this.showDetails" class="mt-2"></v-divider>
-    <v-layout wrap v-if="this.showDetails">
+    <v-divider v-if="showDetails" class="mt-2"></v-divider>
+    <v-layout v-if="showDetails" wrap>
       <v-flex xs12 class="activity-details">
         <v-list class="mx-n4 caption">
           <v-list-item>
@@ -76,7 +76,7 @@
           <v-list-item>
             <v-list-item-content class="details-label">{{ t('walletActivity.network') }}:</v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
-              <network-display :network="transaction.networkType" :storeNetworkType="storeNetworkType"></network-display>
+              <NetworkDisplay :network="transaction.networkType" :store-network-type="storeNetworkType"></NetworkDisplay>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-if="transaction.etherscanLink">
@@ -92,21 +92,28 @@
 
 <script>
 import {
-  ACTIVITY_ACTION_SEND,
   ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_ACTION_TOPUP,
+  ACTIVITY_STATUS_PENDING,
   ACTIVITY_STATUS_SUCCESSFUL,
   ACTIVITY_STATUS_UNSUCCESSFUL,
-  ACTIVITY_STATUS_PENDING,
-  ACTIVITY_ACTION_TOPUP,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721
 } from '../../../utils/enums'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 
 export default {
-  props: ['transaction'],
   components: {
     NetworkDisplay
+  },
+  props: {
+    transaction: {
+      type: Object,
+      default() {
+        return {}
+      }
+    }
   },
   data() {
     return {
@@ -128,7 +135,9 @@ export default {
   },
   methods: {
     getChipColor(status) {
-      return status === ACTIVITY_STATUS_SUCCESSFUL ? '#9BE8C7' : status === ACTIVITY_STATUS_UNSUCCESSFUL ? '#FEA29F' : '#E0E0E0'
+      if (status === ACTIVITY_STATUS_SUCCESSFUL) return '#9BE8C7'
+      if (status === ACTIVITY_STATUS_UNSUCCESSFUL) return '#FEA29F'
+      return '#E0E0E0'
     }
   }
 }

@@ -1,1 +1,1 @@
-export { default } from './ComponentLoader'
+export { default } from './ComponentLoader.vue'

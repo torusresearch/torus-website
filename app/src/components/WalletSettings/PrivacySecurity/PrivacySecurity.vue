@@ -20,20 +20,20 @@
     </v-list>
 
     <v-dialog v-model="privateKeyDialog" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly">
-      <private-keys @onClose="privateKeyDialog = false" />
+      <PrivateKeys @onClose="privateKeyDialog = false" />
     </v-dialog>
     <v-dialog v-model="dappPermissionDialog" max-width="1000" :fullscreen="$vuetify.breakpoint.xsOnly">
-      <dapp-permissions @onClose="dappPermissionDialog = false" />
+      <DappPermissions @onClose="dappPermissionDialog = false" />
     </v-dialog>
   </div>
 </template>
 
 <script>
-import PrivateKeys from '../PrivateKeys'
 import DappPermissions from '../DappPermissions'
+import PrivateKeys from '../PrivateKeys'
 
 export default {
-  name: 'privacySecuritySettings',
+  name: 'PrivacySecuritySettings',
   components: {
     PrivateKeys,
     DappPermissions

@@ -1,8 +1,9 @@
-import config from '../config'
-import { post, get } from '../utils/httpHelpers'
 import log from 'loglevel'
 
-const postQuote = (reqObj, headers) => {
+import config from '../config'
+import { get, post } from '../utils/httpHelpers'
+
+const postQuote = (requestObject, headers) => {
   try {
     const options = {
       mode: 'cors',
@@ -12,12 +13,13 @@ const postQuote = (reqObj, headers) => {
         ...headers
       }
     }
-    return post(`${config.simplexApiHost}/quote`, reqObj, options)
-  } catch (e) {
-    log.error(e)
+    return post(`${config.simplexApiHost}/quote`, requestObject, options)
+  } catch (error) {
+    log.error(error)
   }
+  return undefined
 }
-const postOrder = (reqObj, headers) => {
+const postOrder = (requestObject, headers) => {
   try {
     const options = {
       mode: 'cors',
@@ -27,19 +29,21 @@ const postOrder = (reqObj, headers) => {
         ...headers
       }
     }
-    return post(`${config.simplexApiHost}/order`, reqObj, options)
-  } catch (e) {
-    log.error(e)
+    return post(`${config.simplexApiHost}/order`, requestObject, options)
+  } catch (error) {
+    log.error(error)
   }
+  return undefined
 }
 
 const getStatus = (userId, headers) => {
   try {
     return get(`${config.simplexApiHost}/status/${userId}`, {
-      headers: headers
+      headers
     })
-  } catch (e) {
-    log.error(e)
+  } catch (error) {
+    log.error(error)
   }
+  return undefined
 }
 export { postQuote, postOrder, getStatus }

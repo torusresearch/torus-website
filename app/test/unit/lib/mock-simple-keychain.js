@@ -1,4 +1,5 @@
-var fakeWallet = {
+/* eslint-disable */
+const fakeWallet = {
   privKey: '0x123456788890abcdef',
   address: '0xfedcba0987654321'
 }
@@ -9,9 +10,9 @@ module.exports = class MockSimpleKeychain {
     return type
   }
 
-  constructor(opts) {
+  constructor(options) {
     this.type = type
-    this.opts = opts || {}
+    this.opts = options || {}
     this.wallets = []
   }
 
@@ -21,13 +22,13 @@ module.exports = class MockSimpleKeychain {
 
   deserialize(data) {
     if (!Array.isArray(data)) {
-      throw new Error('Simple keychain deserialize requires a privKey array.')
+      throw new TypeError('Simple keychain deserialize requires a privKey array.')
     }
     this.wallets = [fakeWallet]
   }
 
   addAccounts(n = 1) {
-    for (var i = 0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
       this.wallets.push(fakeWallet)
     }
   }

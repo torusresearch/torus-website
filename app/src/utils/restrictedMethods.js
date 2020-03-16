@@ -1,4 +1,4 @@
-export default function getRestrictedMethods(permissionsController) {
+export default function getRestrictedMethods(_) {
   return {
     // eth_accounts: {
     //   description: 'View the address of the selected account',

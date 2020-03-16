@@ -1,14 +1,17 @@
-const assert = require('assert')
-const nock = require('nock')
-const sinon = require('sinon')
-const DetectTokensController = require('../../../src/controllers/DetectTokensController').default
-const NetworkController = require('../../../src/controllers/NetworkController').default
+/* eslint-disable */
+import assert from 'assert'
+import nock from 'nock'
+import sinon from 'sinon'
+import DetectTokensController from '../../../src/controllers/DetectTokensController'
+import NetworkController from '../../../src/controllers/NetworkController'
 
 const TEMP_ADDRESS = '0x0dcd5d886577d5081b0c52e242ef29e70be3e7bc'
 
 describe('DetectTokensController', () => {
   const sandbox = sinon.createSandbox()
-  let clock, network, controller
+  let clock
+  let network
+  let controller
 
   const noop = () => {}
 
@@ -17,14 +20,17 @@ describe('DetectTokensController', () => {
   }
 
   beforeEach(async () => {
-    nock('https://api.infura.io')
+    nock.cleanAll()
+    nock.enableNetConnect()
+    nock('https://min-api.cryptocompare.com')
       .get(/.*/)
+      .query(true)
       .reply(200)
       .log(noop)
 
     network = new NetworkController()
     network.initializeProvider(networkControllerProviderConfig)
-    controller = new DetectTokensController({ network: network })
+    controller = new DetectTokensController({ network })
   })
 
   afterEach(() => {
@@ -44,9 +50,9 @@ describe('DetectTokensController', () => {
     const network = new NetworkController()
     network.initializeProvider(networkControllerProviderConfig)
     network.setProviderType('mainnet')
-    const controller = new DetectTokensController({ network: network })
+    const controller = new DetectTokensController({ network })
 
-    var stub = sandbox.stub(controller, 'detectNewTokens')
+    const stub = sandbox.stub(controller, 'detectNewTokens')
 
     clock.tick(1)
     sandbox.assert.notCalled(stub)
@@ -59,7 +65,7 @@ describe('DetectTokensController', () => {
   })
 
   it('should not check tokens while in test network', async () => {
-    var stub = sandbox
+    const stub = sandbox
       .stub(controller, 'detectEtherscanTokenBalance')
       .withArgs('0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4')
       .returns(true)
@@ -104,9 +110,7 @@ describe('DetectTokensController', () => {
         })
       )
     assert.deepStrictEqual(
-      controller.detectedTokensStore.getState().tokens.map(x => {
-        return { address: x.tokenAddress, decimals: x.decimals, symbol: x.symbol }
-      }),
+      controller.detectedTokensStore.getState().tokens.map(x => ({ address: x.tokenAddress, decimals: x.decimals, symbol: x.symbol })),
       [
         { address: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4', decimals: 8, symbol: 'J8T' },
         { address: '0xBC86727E770de68B1060C91f6BB6945c73e10388', decimals: 18, symbol: 'XNK' }
@@ -115,7 +119,7 @@ describe('DetectTokensController', () => {
   })
 
   it('should not detect same token while in main network', async () => {
-    const controller = new DetectTokensController({ network: network })
+    const controller = new DetectTokensController({ network })
     await controller.startTokenDetection(TEMP_ADDRESS)
     controller.detectedTokensStore.putState({
       tokens: [
@@ -160,9 +164,7 @@ describe('DetectTokensController', () => {
       )
 
     assert.deepStrictEqual(
-      controller.detectedTokensStore.getState().tokens.map(x => {
-        return { address: x.tokenAddress, decimals: x.decimals, symbol: x.symbol }
-      }),
+      controller.detectedTokensStore.getState().tokens.map(x => ({ address: x.tokenAddress, decimals: x.decimals, symbol: x.symbol })),
       [
         { address: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4', decimals: 8, symbol: 'J8T' },
         { address: '0xBC86727E770de68B1060C91f6BB6945c73e10388', decimals: 18, symbol: 'XNK' }

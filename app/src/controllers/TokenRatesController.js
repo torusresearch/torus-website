@@ -1,6 +1,6 @@
-import ObservableStore from 'obs-store'
-import log from 'loglevel'
 import { normalize as normalizeAddress } from 'eth-sig-util'
+import log from 'loglevel'
+import ObservableStore from 'obs-store'
 
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
@@ -49,7 +49,7 @@ class TokenRatesController {
    * @type {Number}
    */
   set interval(interval) {
-    this._handle && clearInterval(this._handle)
+    if (this._handle) clearInterval(this._handle)
     if (!interval) {
       return
     }
@@ -57,20 +57,22 @@ class TokenRatesController {
       this.updateExchangeRates()
     }, interval)
   }
+
   /**
    * @type {Array}
    */
   set tokensStore(tokensStore) {
-    this._tokensStore && this._tokensStore.unsubscribe()
+    if (this._tokensStore) this._tokensStore.unsubscribe()
     if (!tokensStore) {
       return
     }
     this._tokensStore = tokensStore
     this.tokens = tokensStore.getState().tokens
     tokensStore.subscribe(({ tokens = [] }) => {
-      const tokenAddresses = tokens.map(x => x.tokenAddress)
-      const presentAddresses = (this._tokens && this._tokens.map(x => x.tokenAddress)) || []
-      if (tokenAddresses.sort().toString() !== presentAddresses.sort().toString()) this.tokens = tokens
+      this.tokens = tokens
+      // const tokenAddresses = tokens.map(x => x.tokenAddress)
+      // const presentAddresses = (this._tokens && this._tokens.map(x => x.tokenAddress)) || []
+      // if (tokenAddresses.sort().toString() !== presentAddresses.sort().toString()) this.tokens = tokens
     })
   }
 

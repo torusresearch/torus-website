@@ -11,7 +11,7 @@
         </div>
       </v-flex>
       <TopupProviders
-        :selectedProvider="selectedProvider"
+        :selected-provider="selectedProvider"
         :providers="providers"
         @onSelectProvider="
           selected => {
@@ -20,7 +20,7 @@
         "
       />
 
-      <v-flex xs12 mb-2 v-if="selectedProvider && $vuetify.breakpoint.xsOnly">
+      <v-flex v-if="selectedProvider && $vuetify.breakpoint.xsOnly" xs12 mb-2>
         <div class="text-black font-weight-bold headline px-4 mb-4">
           <span>
             {{ t('walletTopUp.purchaseVia') }}
@@ -38,7 +38,6 @@
 
 <script>
 import TopupProviders from '../../../components/WalletTopup/TopupProviders'
-import { ACTIVE, INACTIVE, THEME_DARK_BLACK_NAME } from '../../../utils/enums'
 import { getPaymentProviders } from '../../../utils/utils'
 
 export default {
@@ -59,6 +58,9 @@ export default {
     const routerPath = this.$router.currentRoute.path
     const foundPath = this.providers.find(x => x.link === routerPath)
     this.selectedProvider = foundPath ? foundPath.name : ''
+  },
+  mounted() {
+    this.$vuetify.goTo(0)
   }
 }
 </script>

@@ -1,1 +1,1 @@
-export { default } from './ExportQrCode'
+export { default } from './ExportQrCode.vue'

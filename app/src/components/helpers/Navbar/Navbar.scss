@@ -1,34 +1,37 @@
-.header-container{
-  margin-bottom: 72px;
+.header-container {
+  margin-bottom: 64px;
+  @media screen and (max-width: 960px) {
+    margin-bottom: 56px;
+  }
   .theme--dark & {
     background: var(--v-background-base);
   }
-  
+
   .v-toolbar {
     box-shadow: none;
     padding: 0;
   }
-  
+
   .v-tabs-bar.v-tabs-bar--is-mobile:not(.v-tabs-bar--show-arrows) > .v-slide-group__wrapper > .v-tabs-bar__content > .v-tab {
     text-transform: inherit;
     font-size: 14px;
     min-width: 50px;
     &:first-of-type {
-      margin-left: auto
+      margin-left: auto;
     }
   }
-  
+
   .v-tab {
     text-transform: inherit;
     &.v-tab--active {
       color: var(--v-primary);
     }
   }
-  
+
   .home-link {
     cursor: pointer;
   }
-  
+
   .v-system-bar {
     margin-top: 64px;
     @media (max-width: 960px) {

@@ -32,7 +32,13 @@
 
 <script>
 export default {
-  props: ['title', 'subtitle', 'imagePath', 'detailsLink', 'detailsText']
+  props: {
+    title: { type: String, default: '' },
+    subtitle: { type: String, default: '' },
+    imagePath: { type: String, default: '' },
+    detailsLink: { type: String, default: '' },
+    detailsText: { type: String, default: '' }
+  }
 }
 </script>
 

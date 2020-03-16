@@ -1,4 +1,7 @@
-const BN = require('ethereumjs-util').BN
+/* eslint-disable */
+
+import { BN } from 'ethereumjs-util'
+
 const template = {
   status: 'submitted',
   history: [{}],
@@ -37,4 +40,4 @@ function hexify(number) {
   return '0x' + new BN(number).toString(16)
 }
 
-module.exports = TxGenerator
+export default TxGenerator

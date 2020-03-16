@@ -1,17 +1,21 @@
-import createAsyncMiddleware from 'json-rpc-engine/src/createAsyncMiddleware'
+/* eslint-disable no-case-declarations */
+/* eslint-disable consistent-return */
+/* eslint-disable unicorn/prevent-abbreviations */
+/* eslint-disable no-unreachable */
 import { ethErrors } from 'eth-json-rpc-errors'
+import createAsyncMiddleware from 'json-rpc-engine/src/createAsyncMiddleware'
 
 /**
  * Create middleware for handling certain methods and preprocessing permissions requests.
  */
 export default function createMethodMiddleware({ getAccounts, requestAccountsPermission, setSiteMetadata }) {
-  return createAsyncMiddleware(async (req, res, next) => {
-    if (typeof req.method !== 'string') {
-      res.error = ethErrors.rpc.invalidRequest({ data: req })
+  return createAsyncMiddleware(async (request, res, next) => {
+    if (typeof request.method !== 'string') {
+      res.error = ethErrors.rpc.invalidRequest({ data: request })
       return
     }
 
-    switch (req.method) {
+    switch (request.method) {
       // intercepting eth_accounts requests for backwards compatibility,
       // i.e. return an empty array instead of an error
       // For now, let's not break the flow for login.
@@ -20,7 +24,6 @@ export default function createMethodMiddleware({ getAccounts, requestAccountsPer
         return next()
         res.result = await getAccounts()
         return
-
       case 'eth_requestAccounts':
         return next()
         // first, just try to get accounts
@@ -33,8 +36,8 @@ export default function createMethodMiddleware({ getAccounts, requestAccountsPer
         // if no accounts, request the accounts permission
         try {
           await requestAccountsPermission()
-        } catch (err) {
-          res.error = err
+        } catch (error) {
+          res.error = error
           return
         }
 
@@ -48,16 +51,14 @@ export default function createMethodMiddleware({ getAccounts, requestAccountsPer
         }
 
         return
-
       // custom method for getting metadata from the requesting domain
       case 'wallet_sendDomainMetadata':
-        if (req.domainMetadata && typeof req.domainMetadata.name === 'string') {
-          setSiteMetadata(req.origin, req.domainMetadata)
+        if (request.domainMetadata && typeof request.domainMetadata.name === 'string') {
+          setSiteMetadata(request.origin, request.domainMetadata)
         }
 
         res.result = true
         return
-
       default:
         break
     }

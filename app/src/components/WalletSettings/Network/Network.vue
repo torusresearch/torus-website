@@ -6,16 +6,16 @@
         <v-flex xs12 md6>
           <v-select
             id="select-network"
+            v-model="selectedNetwork"
             class="select-network-container"
             outlined
             :items="networks"
             item-text="networkName"
             item-value="host"
-            v-model="selectedNetwork"
-            @change="changeNetwork"
             return-object
             append-icon="$vuetify.icons.select"
             aria-label="Select Network"
+            @change="changeNetwork"
           ></v-select>
         </v-flex>
       </v-layout>
@@ -23,19 +23,19 @@
       <template v-if="isRPCSelected">
         <v-flex xs12 md6>
           <v-text-field
+            v-model="rpc.networkName"
             :placeholder="t('walletSettings.enterNetworkName')"
             :rules="[rules.required]"
             outlined
-            v-model="rpc.networkName"
           ></v-text-field>
         </v-flex>
 
         <v-flex xs12 md6>
-          <v-text-field :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined v-model="rpc.host"></v-text-field>
+          <v-text-field v-model="rpc.host" :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined></v-text-field>
         </v-flex>
 
         <v-flex xs12 md6>
-          <v-text-field :placeholder="t('walletSettings.enterChainId')" outlined v-model="rpc.chainId"></v-text-field>
+          <v-text-field v-model="rpc.chainId" :placeholder="t('walletSettings.enterChainId')" outlined></v-text-field>
         </v-flex>
 
         <v-flex xs12 sm4 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
@@ -58,12 +58,13 @@
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
+
 import { broadcastChannelOptions } from '../../../utils/utils'
 
 const { RPC, RPC_DISPLAY_NAME, SUPPORTED_NETWORK_TYPES } = require('../../../utils/enums')
 
 export default {
-  name: 'networkSettings',
+  name: 'NetworkSettings',
   data() {
     return {
       selectedNetwork: {},
@@ -87,11 +88,15 @@ export default {
       return this.selectedNetwork.host === RPC
     }
   },
+  mounted() {
+    this.selectedNetwork = this.$store.state.networkType
+    this.rpc = { ...this.$store.state.networkType }
+  },
   methods: {
     showNotification(success) {
       this.$store.dispatch(
         success ? 'setSuccessMessage' : 'setErrorMessage',
-        success ? this.t('walletSettings.updatedProvider') : this.t('walletSettings.somethingWrong')
+        success ? 'walletSettings.updatedProvider' : 'walletSettings.somethingWrong'
       )
     },
     changeNetwork(value) {
@@ -103,9 +108,9 @@ export default {
             this.sendToIframe(payload)
             this.showNotification(true)
           })
-          .catch(err => {
+          .catch(error => {
             this.showNotification(false)
-            log.error(err)
+            log.error(error)
           })
       }
     },
@@ -119,9 +124,9 @@ export default {
             this.showNotification(true)
             this.sendToIframe(payload)
           })
-          .catch(err => {
+          .catch(error => {
             this.showNotification(false)
-            log.error(err)
+            log.error(error)
           })
       }
     },
@@ -132,16 +137,12 @@ export default {
         await providerChangeChannel.postMessage({
           data: {
             name: 'provider_change',
-            payload: payload
+            payload
           }
         })
         providerChangeChannel.close()
       }
     }
-  },
-  mounted() {
-    this.selectedNetwork = this.$store.state.networkType
-    this.rpc = { ...this.$store.state.networkType }
   }
 }
 </script>

@@ -3,49 +3,132 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
+  "vetur.validation.template": false,
   "eslint.options": {
-    "env": {
-      "browser": true,
-      "es6": true,
-      "node": true
-    },
-    "extends": ["@vue/standard", "plugin:vue/essential", "prettier", "eslint:recommended"],
+    "extends": [
+      "standard",
+      "@vue/standard",
+      "plugin:vue/recommended",
+      "prettier/babel",
+      "plugin:prettier/recommended",
+      "prettier/vue",
+      "eslint:recommended",
+      "airbnb-base",
+      "plugin:import/errors",
+      "plugin:import/warnings",
+      "plugin:flowtype/recommended",
+      "problems",
+      "plugin:vue-scoped-css/recommended",
+      "plugin:promise/recommended",
+      "plugin:switch-case/recommended",
+      "plugin:unicorn/recommended",
+      "prettier"
+    ],
+    "plugins": [
+      "prettier",
+      "vue",
+      "babel",
+      "promise",
+      "import",
+      "flowtype",
+      "standard",
+      "vue-scoped-css",
+      "simple-import-sort",
+      "switch-case",
+      "unicorn"
+    ],
+    "parser": "vue-eslint-parser",
     "parserOptions": {
-      "ecmaVersion": 6,
-      "parser": "babel-eslint"
+      "parser": "babel-eslint",
+      "ecmaVersion": 9,
+      "sourceType": "module"
     },
-    "plugins": ["prettier", "vue"],
     "rules": {
-      "jsx-a11y/label-has-for": 0,
-      "linebreak-style": 0,
-      "no-extra-semi": 0,
-      "no-unused-vars": [2, {"args": "after-used", "argsIgnorePattern": "_"}],
+      "unicorn/no-abusive-eslint-disable": 0,
+      "class-methods-use-this": 0,
+      "no-restricted-syntax": 0,
+      "guard-for-in": 0,
+      "no-underscore-dangle": 0,
+      "simple-import-sort/sort": "error",
+      "operator-linebreak": 0,
+      "promise/always-return": 0,
+      "unicorn/filename-case": 0,
+      "vue/no-v-html": 0,
+      "vue/array-bracket-spacing": 2,
+      "vue/arrow-spacing": 2,
+      "vue/block-spacing": 2,
+      "vue/brace-style": 2,
+      "vue/comma-dangle": 2,
+      "vue/component-definition-name-casing": 2,
+      "vue/component-name-in-template-casing": 2,
+      "vue/component-tags-order": [
+        2,
+        {
+          "order": ["template", "script", "style"]
+        }
+      ],
+      "vue/dot-location": 2,
+      "vue/eqeqeq": 2,
+      "vue/key-spacing": 2,
+      "vue/keyword-spacing": 2,
+      "vue/no-reserved-component-names": 2,
+      "vue/no-restricted-syntax": 2,
+      "vue/space-infix-ops": 2,
+      "vue/space-unary-ops": 2,
+      "vue/v-on-function-call": 2,
+      "vue/valid-v-bind-sync": 2,
+      "vue/valid-v-slot": 2,
+      "arrow-parens": [2, "as-needed"],
+      "object-curly-newline": 0,
+      "semi": [2, "never"],
+      "comma-dangle": [
+        2,
+        {
+          "arrays": "ignore",
+          "objects": "ignore"
+        }
+      ],
+      "vue/max-attributes-per-line": [
+        2,
+        {
+          "singleline": 20,
+          "multiline": {
+            "max": 1,
+            "allowFirstLine": false
+          }
+        }
+      ],
+      "quotes": [2, "single"],
       "max-len": [
         2,
         {
           "code": 150
         }
       ],
-      "no-confusing-arrow": 0,
+      "no-extra-semi": 0,
+      "no-unused-vars": [2, { "args": "after-used", "argsIgnorePattern": "_" }],
       "no-console": 2,
       "no-nested-ternary": 0,
+      "linebreak-style": 0,
       "no-param-reassign": [
-        "error",
+        2,
         {
           "props": false
         }
       ],
       "prettier/prettier": [
-        "error",
+        2,
         {
-          "printWidth": 150,
-          "semi": false,
           "singleQuote": true,
-          "htmlWhitespaceSensitivity": "ignore"
+          "printWidth": 150,
+          "semi": false
         }
-      ],
-      "quotes": [2, "single"],
-      "react/jsx-filename-extension": 0
+      ]
+    },
+    "env": {
+      "es6": true,
+      "browser": true,
+      "node": true
     }
   },
   "eslint.lintTask.enable": true,

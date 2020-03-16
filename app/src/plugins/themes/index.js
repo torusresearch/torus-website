@@ -1,6 +1,6 @@
-import lightBlue from './lightBlue'
-import darkBlack from './darkBlack'
 import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../../utils/enums'
+import darkBlack from './darkBlack'
+import lightBlue from './lightBlue'
 
 export default {
   [THEME_LIGHT_BLUE_NAME]: {

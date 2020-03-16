@@ -1,1 +1,1 @@
-export { default } from './LearnMore'
+export { default } from './LearnMore.vue'
