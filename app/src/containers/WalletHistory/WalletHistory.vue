@@ -161,6 +161,7 @@ export default {
   mounted() {
     this.calculatePaymentTransactions()
     this.calculatePastTransactions()
+    this.$vuetify.goTo(0)
   },
   methods: {
     onCurrencyChange(value) {

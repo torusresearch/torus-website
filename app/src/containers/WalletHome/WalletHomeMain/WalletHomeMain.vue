@@ -265,6 +265,8 @@ export default {
     this.setDateUpdated()
 
     this.activeTab = this.$route.hash === '#collectibles' ? 1 : 0
+
+    this.$vuetify.goTo(0)
   },
   methods: {
     select(selectedItem) {

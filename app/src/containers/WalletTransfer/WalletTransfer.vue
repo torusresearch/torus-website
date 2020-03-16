@@ -519,6 +519,8 @@ export default {
         this.nodeDetails = nodeDetails
       })
       .catch(error => log.error(error))
+
+    this.$vuetify.goTo(0)
   },
   methods: {
     onChangeDisplayAmount(value) {
