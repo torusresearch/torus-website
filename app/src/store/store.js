@@ -338,7 +338,8 @@ VuexStore.subscribe((mutation, state) => {
 
 if (storageAvailable('localStorage')) {
   const torusTheme = localStorage.getItem('torus-theme')
-  if (torusTheme) {
+  const torusWhiteLabel = localStorage.getItem('torus-white-label')
+  if (torusTheme || torusWhiteLabel) {
     VuexStore.commit('setTheme', torusTheme)
   }
 }
