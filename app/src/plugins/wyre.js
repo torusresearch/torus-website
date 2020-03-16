@@ -15,7 +15,7 @@ const getQuote = (parameters = {}, headers) => {
     }
     const url = new URL(`${config.wyreApiHost}/quote`)
     Object.keys(parameters).forEach(key => url.searchParams.append(key, parameters[key]))
-    return get(url, options)
+    return get(url.href, options)
   } catch (error) {
     log.error(error)
   }

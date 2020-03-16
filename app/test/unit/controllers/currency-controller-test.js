@@ -4,6 +4,8 @@ import nock from 'nock'
 
 import CurrencyController from '../../../src/controllers/CurrencyController'
 
+const noop = () => {}
+
 describe('currency-controller', () => {
   let currencyController
 
@@ -43,12 +45,12 @@ describe('currency-controller', () => {
         this.timeout(15000)
         nock('https://min-api.cryptocompare.com')
           .get('/data/price')
-          .query(url => url.includes('ETH') && url.includes('USD'))
+          .query(url => url['fsym'] === 'ETH' && url['tsyms'] === 'USD')
           .reply(
             200,
             '{"base": "ETH", "quote": "USD", "bid": 288.45, "ask": 288.46, "volume": 112888.17569277, "exchange": "bitfinex", "total_volume": 272175.00106721005, "num_exchanges": 8, "timestamp": 1506444677}'
           )
-          .log(console.log)
+          .log(noop)
 
         assert.strictEqual(currencyController.getConversionRate(), 0)
         currencyController.setCurrentCurrency('usd')
@@ -70,12 +72,12 @@ describe('currency-controller', () => {
 
         nock('https://min-api.cryptocompare.com')
           .get('/data/price')
-          .query(url => url.includes('ETH') && url.includes('JPY'))
+          .query(url => url['fsym'] === 'ETH' && url['tsyms'] === 'JPY')
           .reply(
             200,
             '{"base": "ETH", "quote": "JPY", "bid": 32300.0, "ask": 32400.0, "volume": 247.4616071, "exchange": "kraken", "total_volume": 247.4616071, "num_exchanges": 1, "timestamp": 1506444676}'
           )
-          .log(console.log)
+          .log(noop)
 
         const promise = new Promise((resolve, reject) => {
           currencyController.setCurrentCurrency('jpy')

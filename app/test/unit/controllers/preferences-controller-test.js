@@ -75,11 +75,13 @@ describe('Preferences Controller', () => {
     it('user sync error', async () => {
       nock('https://api.tor.us')
         .get(/.*/)
-        .reply(400)
+        .replyWithError(new TypeError('Invalid request'))
         .log(noop)
       nock('https://common-api.tor.us')
-        .get(/.*/)
-        .reply(200)
+        .get('/transaction')
+        .reply(200, {
+          data: {}
+        })
         .log(noop)
       const successCallback = sinon.fake()
       const errorCallback = sinon.fake()
@@ -107,31 +109,7 @@ describe('Preferences Controller', () => {
       assert(successCallback.calledOnce)
     })
 
-    it('sync success without verifier', async () => {
-      const verifierSetStub = sandbox.stub(preferencesController, 'setVerifier')
-      nock('https://api.tor.us')
-        .get(/.*/)
-        .reply(200, {
-          data: {
-            transactions: [],
-            default_currency: 'USD',
-            contacts: [],
-            theme: 'light',
-            locale: 'en',
-            permissions: {}
-          }
-        })
-        .log(noop)
-      nock('https://common-api.tor.us')
-        .get(/.*/)
-        .reply(200)
-        .log(noop)
-      await preferencesController.sync()
-      assert(verifierSetStub.calledOnce)
-    })
-
-    it('sync success with verifier', async () => {
-      const verifierSetStub = sandbox.stub(preferencesController, 'setVerifier')
+    it('sync success', async () => {
       const userData = {
         transactions: [],
         default_currency: 'USD',
@@ -149,13 +127,12 @@ describe('Preferences Controller', () => {
         })
         .log(noop)
       nock('https://common-api.tor.us')
-        .get(/.*/)
+        .get('/transaction')
         .reply(200, {
           data: ['hello']
         })
         .log(noop)
       await preferencesController.sync()
-      assert(verifierSetStub.notCalled)
       assert.deepStrictEqual(preferencesController.state.pastTransactions, userData.transactions)
       assert.deepStrictEqual(preferencesController.state.selectedCurrency, userData.default_currency)
       assert.deepStrictEqual(preferencesController.state.contacts, userData.contacts)
