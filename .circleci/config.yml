@@ -21,7 +21,7 @@ step_setup_global_packages: &step_setup_global_packages
     command: |
       [ ! -d "node_modules" ] && npm install && find ./node_modules/ -name ".git" -type d -exec rm -rf {} + || echo "node_modules exist"
 update_lambda_job: &update_lambda_job
-  <<: *job_common_base
+  <<: *job_common
   steps:
     - attach_workspace:
         at: ~/torus-website
@@ -45,7 +45,7 @@ update_iframeIntegrity: &update_iframeIntegrity
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
           . ./scripts/updateIframeIntegrity.sh
 deploy_function: &deploy_function
-  <<: *job_common_base
+  <<: *job_common
   steps:
     - attach_workspace:
         at: ~/torus-website
