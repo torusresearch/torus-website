@@ -1,6 +1,6 @@
 import themes from '../plugins/themes'
 import vuetify from '../plugins/vuetify'
-import { THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 
 export default {
   setUserInfo(state, userInfo) {
@@ -71,7 +71,26 @@ export default {
   setTheme(state, payload) {
     state.theme = payload
     // Update vuetify theme
-    const theme = themes[payload || THEME_LIGHT_BLUE_NAME]
+    let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
+
+    // Check whitelabel
+    const torusWhiteLabel = localStorage.getItem('torus-white-label')
+
+    if (torusWhiteLabel !== null) {
+      const whiteLabelData = JSON.parse(torusWhiteLabel)
+      Object.keys(whiteLabelData.whiteLabelTheme).forEach(key => {
+        if (whiteLabelData.whiteLabelTheme[key]) {
+          whiteLabelData.whiteLabelTheme[camelToSnake(key)] = whiteLabelData.whiteLabelTheme[key]
+        }
+        delete whiteLabelData.whiteLabelTheme[key]
+      })
+      theme = themes[whiteLabelData.whiteLabelIsDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]
+      theme.theme = { ...theme.theme, ...whiteLabelData.whiteLabelTheme }
+    }
+
+    // eslint-disable-next-line no-console
+    console.log('theme', theme)
+
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
     localStorage.setItem('torus-theme', payload)
@@ -115,4 +134,12 @@ export default {
       ...value
     }
   }
+}
+
+function camelToSnake(string) {
+  return string
+    .replace(/\w([A-Z])/g, m => {
+      return `${m[0]}_${m[1]}`
+    })
+    .toLowerCase()
 }
