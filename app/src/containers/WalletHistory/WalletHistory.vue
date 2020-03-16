@@ -64,6 +64,7 @@ import {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
+  MAINNET,
   TOKEN_METHOD_TRANSFER_FROM
 } from '../../utils/enums'
 import { patch } from '../../utils/httpHelpers'
@@ -372,35 +373,40 @@ export default {
       return finalTransactions
     },
     calculatePaymentTransactions() {
-      const { paymentTx: response } = this.$store.state || {}
-      this.paymentTx = response.reduce((accumulator, x) => {
-        let action = ''
-        if (ACTIVITY_ACTION_TOPUP.includes(x.action.toLowerCase())) action = ACTIVITY_ACTION_TOPUP
-        else if (ACTIVITY_ACTION_SEND.includes(x.action.toLowerCase())) action = ACTIVITY_ACTION_SEND
-        else if (ACTIVITY_ACTION_RECEIVE.includes(x.action.toLowerCase())) action = ACTIVITY_ACTION_RECEIVE
+      const { paymentTx: response, networkType } = this.$store.state || {}
+      let paymentTx
+      if (networkType.host !== MAINNET) paymentTx = []
+      else {
+        paymentTx = response.reduce((accumulator, x) => {
+          let action = ''
+          if (ACTIVITY_ACTION_TOPUP.includes(x.action.toLowerCase())) action = ACTIVITY_ACTION_TOPUP
+          else if (ACTIVITY_ACTION_SEND.includes(x.action.toLowerCase())) action = ACTIVITY_ACTION_SEND
+          else if (ACTIVITY_ACTION_RECEIVE.includes(x.action.toLowerCase())) action = ACTIVITY_ACTION_RECEIVE
 
-        accumulator.push({
-          id: x.id,
-          date: new Date(x.date),
-          from: x.from,
-          slicedFrom: x.slicedFrom,
-          action,
-          to: x.to,
-          slicedTo: x.slicedTo,
-          totalAmount: x.totalAmount,
-          totalAmountString: x.totalAmountString,
-          currencyAmount: x.currencyAmount,
-          currencyAmountString: x.currencyAmountString,
-          amount: x.amount,
-          ethRate: x.ethRate,
-          status: x.status.toLowerCase(),
-          etherscanLink: x.etherscanLink || '',
-          currencyUsed: x.currencyUsed
-        })
+          accumulator.push({
+            id: x.id,
+            date: new Date(x.date),
+            from: x.from,
+            slicedFrom: x.slicedFrom,
+            action,
+            to: x.to,
+            slicedTo: x.slicedTo,
+            totalAmount: x.totalAmount,
+            totalAmountString: x.totalAmountString,
+            currencyAmount: x.currencyAmount,
+            currencyAmountString: x.currencyAmountString,
+            amount: x.amount,
+            ethRate: x.ethRate,
+            status: x.status.toLowerCase(),
+            etherscanLink: x.etherscanLink || '',
+            currencyUsed: x.currencyUsed
+          })
 
-        return accumulator
-        // }
-      }, [])
+          return accumulator
+          // }
+        }, [])
+      }
+      this.paymentTx = paymentTx
       this.loadingOrders = false
     },
     patchTx(x, status, jwtToken) {
