@@ -720,9 +720,10 @@ export default {
       prefsController.sync(
         user => {
           if (user.data) {
-            const { default_currency: defaultCurrency } = user.data || {}
+            const { default_currency: defaultCurrency, verifier: storedVerifier, verifier_id: storedVerifierId } = user.data || {}
             dispatch('setSelectedCurrency', { selectedCurrency: defaultCurrency, origin: 'store' })
             prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })
+            if (!storedVerifier || !storedVerifierId) prefsController.setVerifier(verifier, verifierId)
             resolve()
           }
         },

@@ -113,8 +113,7 @@ class PreferencesController {
         })
       ])
       if (user && user.data) {
-        const { transactions, default_currency: defaultCurrency, contacts, theme, locale, verifier, verifier_id: verifierID, permissions } =
-          user.data || {}
+        const { transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
         this.store.updateState({
           contacts,
           pastTransactions: transactions,
@@ -124,7 +123,6 @@ class PreferencesController {
           paymentTx: (paymentTx && paymentTx.data) || [],
           permissions
         })
-        if (!verifier || !verifierID) this.setVerifier(verifier, verifierID)
         if (callback) return callback(user)
         // this.permissionsController._initializePermissions(permissions)
       }
