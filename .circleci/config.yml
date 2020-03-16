@@ -33,7 +33,7 @@ update_lambda_job: &update_lambda_job
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
           . ./scripts/updateLambda.sh
 update_iframeIntegrity: &update_iframeIntegrity
-  <<: *job_common_base
+  <<: *job_common
   steps:
     - attach_workspace:
         at: ~/torus-website
