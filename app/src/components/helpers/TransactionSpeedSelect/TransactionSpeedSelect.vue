@@ -1,10 +1,11 @@
 <template>
-  <v-flex xs12 mb-3>
+  <v-flex xs12 mb-3 class="torus-v8">
     <v-layout>
-      <v-flex class="subtitle-2">
+      <v-flex class="body-2">
         <span>
-          {{ t('walletTransfer.selectSpeed') }}
-          <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" />
+          Transfer Fee
+          <!-- {{ t('walletTransfer.selectSpeed') }}
+          <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" /> -->
         </span>
         <TransferAdvanceOption
           v-if="!$vuetify.breakpoint.xsOnly"
@@ -18,42 +19,44 @@
     </v-layout>
     <v-layout v-if="!isAdvanceOption" mx-n2 xs12>
       <v-flex xs6 px-2 mb-1>
-        <v-btn
-          id="average-speed-btn"
-          block
-          large
-          outlined
-          class="button-speed"
-          :class="speedSelected === 'average' ? 'selected' : ''"
+        <v-chip
+          class="button-speed text-center elevation-3"
+          :outlined="$vuetify.theme.dark"
+          :class="[speedSelected === 'average' ? 'selected' : '', isWalletTransfer ? 'button-speed--transfer' : '']"
+          label
           @click="selectSpeed('average', averageGasPrice)"
         >
-          <span>~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</span>
-          <span class="font-weight-light body-2">{{ getGasDisplayString(averageGasPrice) }}</span>
-        </v-btn>
+          <img :src="require(`../../../../public/img/icons/speed-bicycle.svg`)" class="mr-2" />
+          <div>
+            <div class="font-weight-bold button-speed__speed">~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
+            <div :class="{ 'text_2--text': !$vuetify.theme.dark }">{{ getGasDisplayString(averageGasPrice) }}</div>
+          </div>
+        </v-chip>
       </v-flex>
       <v-flex xs6 px-2 mb-1>
-        <v-btn
-          id="fastest-speed-btn"
-          block
-          large
-          outlined
-          class="button-speed"
-          :class="speedSelected === 'fastest' ? 'selected' : ''"
+        <v-chip
+          class="button-speed text-center elevation-3"
+          :outlined="$vuetify.theme.dark"
+          :class="[speedSelected === 'fastest' ? 'selected' : '', isWalletTransfer ? 'button-speed--transfer' : '']"
+          label
           @click="selectSpeed('fastest', fastestGasPrice)"
         >
-          <span>~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</span>
-          <span class="font-weight-light body-2">{{ getGasDisplayString(fastestGasPrice) }}</span>
-        </v-btn>
+          <img :src="require(`../../../../public/img/icons/speed-car.svg`)" class="mr-2" />
+          <div>
+            <div class="font-weight-bold button-speed__speed">~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
+            <div :class="{ 'text_2--text': !$vuetify.theme.dark }">{{ getGasDisplayString(fastestGasPrice) }}</div>
+          </div>
+        </v-chip>
       </v-flex>
     </v-layout>
     <v-layout v-if="isAdvanceOption" align-center>
-      <v-flex xs8 px-6 mb-1>
+      <v-flex xs8 mb-1>
         <div class="subtitle-2 font-weight-bold">
           {{ getEthAmountDisplay(gas, activeGasPrice) }}
           <span class="caption text_2--text">( ~ {{ getGasDisplayString(activeGasPrice) }} )</span>
         </div>
       </v-flex>
-      <v-flex xs4 px-4 class="text-right">
+      <v-flex xs4 class="text-right">
         <v-btn id="adv-reset-btn" outlined color="primary" @click="resetAdvanceOption">{{ t('walletTransfer.reset') }}</v-btn>
       </v-flex>
     </v-layout>
@@ -77,13 +80,11 @@ import BigNumber from 'bignumber.js'
 import log from 'loglevel'
 
 import { significantDigits } from '../../../utils/utils'
-import HelpTooltip from '../HelpTooltip'
 import TransferAdvanceOption from '../TransferAdvanceOption'
 
 export default {
   components: {
-    TransferAdvanceOption,
-    HelpTooltip
+    TransferAdvanceOption
   },
   props: {
     gas: { type: BigNumber, default: new BigNumber('0') },

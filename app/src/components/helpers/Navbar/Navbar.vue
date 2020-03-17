@@ -13,7 +13,6 @@
       <router-link v-if="$vuetify.breakpoint.xsOnly" id="logo-home-lnk" :to="{ name: 'walletHome' }">
         <img :src="require('../../../../public/img/icons/t-fill.svg')" width="35" height="30" alt="Torus Logo" />
       </router-link>
-      <span class="caption">Beta</span>
     </div>
     <v-spacer></v-spacer>
     <v-tabs v-if="!$vuetify.breakpoint.smAndDown" centered>
