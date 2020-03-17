@@ -1,10 +1,10 @@
 <template>
-  <v-container class="wallet-transfer" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
+  <v-container class="wallet-transfer pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <v-layout wrap align-start>
-      <v-flex xs12 sm6>
+      <v-flex xs8>
         <div class="font-weight-bold display-1 float-left">{{ t('walletTransfer.transferDetails') }}</div>
       </v-flex>
-      <v-flex xs12 sm6 class="text-right">
+      <v-flex xs4 class="text-right">
         <ExportQrCode>
           <v-btn icon>
             <v-icon x-small v-text="'$vuetify.icons.qr'" />
@@ -13,27 +13,36 @@
       </v-flex>
     </v-layout>
     <v-layout wrap mx-n4 mt-7>
-      <v-flex px-4 xs12 sm6>
+      <v-flex v-if="$vuetify.breakpoint.xsOnly" px-4 xs12>
+        <v-card class="elevation-1 pa-6">
+          <div class="d-flex">
+            <span class="body-2">{{ t('walletTransfer.accountBalance') }}</span>
+            <div class="ml-auto">
+              <NetworkDisplay :network="storeNetworkType" :store-network-type="storeNetworkType"></NetworkDisplay>
+            </div>
+          </div>
+          <div class="d-flex mt-3">
+            <div>
+              <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
+              <div v-else>
+                <span id="account-balance" class="display-2 mr-1">{{ selectedItem.computedBalanceRounded }}</span>
+                <span class="caption text_2--text">{{ selectedCurrency }}</span>
+              </div>
+            </div>
+            <div class="caption text-right currency-rate align-self-end text_2--text ml-auto">{{ selectedItem.currencyRateText }}</div>
+          </div>
+        </v-card>
+      </v-flex>
+      <v-flex xs12 sm6>
         <v-form ref="form" v-model="formValid" lazy-validation aria-autocomplete="off" autocomplete="off" @submit.prevent="sendCoin">
-          <v-card class="elevation-1 pa-6">
+          <v-card :flat="$vuetify.breakpoint.xsOnly" class="pa-6 form-container" :class="$vuetify.breakpoint.xsOnly ? 'mobile' : 'elevation-1'">
             <v-layout wrap>
               <v-flex xs12>
                 <span class="body-2">{{ t('walletTransfer.selectItem') }}</span>
                 <div v-if="selectedItemDisplay">
                   <v-menu transition="slide-y-transition" bottom>
                     <template v-slot:activator="{ on }">
-                      <v-chip class="select-coin" label outlined large v-on="on">
-                        <img
-                          class="mr-2"
-                          :src="
-                            contractType === CONTRACT_TYPE_ERC721
-                              ? selectedItemDisplay.logo
-                              : require(`../../../public/images/logos/${selectedItemDisplay.logo}`)
-                          "
-                          height="20px"
-                          onerror="if (this.src !== 'eth.svg') this.src = 'images/logos/eth.svg';"
-                          :alt="selectedItemDisplay.name"
-                        />
+                      <v-chip class="select-coin" label large :outlined="$vuetify.theme.dark" v-on="on">
                         <span class="select-coin-name">{{ selectedItemDisplay.name }}</span>
                         <div class="flex-grow-1 text-right pr-2">
                           <v-icon right>$vuetify.icons.select</v-icon>
@@ -229,7 +238,12 @@
                 :currency-multiplier="getCurrencyMultiplier"
                 @onSelectSpeed="onSelectSpeed"
               />
-              <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721" xs12>
+              <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721" xs12 mb-6 class="text-right">
+                <div class="subtitle-2 text_1--text">{{ t('walletTransfer.totalCost') }}</div>
+                <div class="headline text_2--text">{{ totalCost || 0 }} {{ totalCostSuffix }}</div>
+                <div class="caption text_2--text">{{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}</div>
+              </v-flex>
+              <!-- <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721" xs12>
                 <div>
                   <span class="subtitle-2">{{ t('walletTransfer.totalCost') }}</span>
                 </div>
@@ -242,7 +256,7 @@
                   readonly
                   :value="totalCost"
                 ></v-text-field>
-              </v-flex>
+              </v-flex> -->
               <v-flex xs12 mt-3 class="text-right">
                 <v-btn
                   id="wallet-transfer-submit"
@@ -283,7 +297,7 @@
           </v-card>
         </v-form>
       </v-flex>
-      <v-flex px-4 xs12 sm6>
+      <v-flex v-if="!$vuetify.breakpoint.xsOnly" px-4 xs6>
         <v-card class="elevation-1 pa-6">
           <div class="d-flex">
             <span class="body-2">{{ t('walletTransfer.accountBalance') }}</span>
