@@ -61,7 +61,7 @@
 
         <!-- Asset Mobile View -->
         <v-expand-transition>
-          <v-card v-if="$vuetify.breakpoint.xsOnly" class="asset card-shadow asset--mobile" @click="toggleDetails($event)">
+          <v-card v-if="$vuetify.breakpoint.xsOnly" class="asset elevation-1 asset--mobile" @click="toggleDetails($event)">
             <!-- <v-list-item :style="{ backgroundColor: asset.color }"> -->
             <v-list-item>
               <v-list-item-content class="asset-text">

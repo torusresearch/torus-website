@@ -1,6 +1,6 @@
 <template>
   <v-card class="elevation-1 promotion-card">
-    <v-card-text class="pt-0 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-0' : $vuetify.breakpoint.xsOnly ? 'pb-6' : 'pb-3'">
+    <v-card-text class="pt-0 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-0' : $vuetify.breakpoint.xsOnly ? 'pb-6' : 'pb-0'">
       <v-layout>
         <v-flex class="text_1--text pt-6" :class="$vuetify.breakpoint.xsOnly ? 'text-center xs12' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
           <div class="title font-weight-bold" :class="subtitle ? 'text-clamp-one' : 'text-clamp-two'">{{ title }}</div>
@@ -10,9 +10,8 @@
               <v-btn
                 block
                 large
-                color="gray_4"
-                class="primary--text"
-                :class="$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12'"
+                class="elevation-3 primary--text"
+                :class="[$vuetify.theme.isDark ? 'torus_black_2' : 'white', $vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12']"
                 :href="detailsLink"
                 target="_blank"
               >
