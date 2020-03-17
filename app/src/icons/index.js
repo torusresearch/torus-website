@@ -5,6 +5,7 @@ import ArrowLeftCircleIcon from './ArrowLeftCircleIcon.vue'
 import ArrowRightCircleIcon from './ArrowRightCircleIcon.vue'
 import ArrowUpCircleIcon from './ArrowUpCircleIcon.vue'
 import BalanceIcon from './BalanceIcon.vue'
+import CalendarIcon from './CalendarIcon.vue'
 import CheckCircleIcon from './CheckCircleIcon.vue'
 import ChevronDoubleRightIcon from './ChevronDoubleRightIcon.vue'
 import ChevronLeftIcon from './ChevronLeftIcon.vue'
@@ -179,5 +180,8 @@ export default {
   },
   copy: {
     component: CopyIcon
+  },
+  calendar: {
+    component: CalendarIcon
   }
 }

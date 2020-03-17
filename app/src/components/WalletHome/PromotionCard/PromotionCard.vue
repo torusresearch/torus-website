@@ -46,9 +46,8 @@
               <v-btn
                 block
                 large
-                color="gray_4"
-                class="primary--text"
-                :class="$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12'"
+                class="elevation-3 primary--text"
+                :class="[$vuetify.theme.isDark ? 'torus_black_2' : 'white', $vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12']"
                 :href="detailsLink"
                 target="_blank"
               >

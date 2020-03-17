@@ -1,7 +1,7 @@
 <template>
   <v-container class="wallet-topup-view" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
-      <v-flex xs12 sm6>
+      <v-flex xs8>
         <div class="font-weight-bold display-1 text-left">
           <span v-if="selectedProvider && !$vuetify.breakpoint.xsOnly">
             {{ t('walletTopUp.purchaseVia') }}
@@ -10,7 +10,7 @@
           <span v-else>{{ t('walletTopUp.selectProvider') }}</span>
         </div>
       </v-flex>
-      <v-flex xs12 sm6 class="text-right">
+      <v-flex xs4 class="text-right">
         <export-qr-code>
           <v-btn icon>
             <v-icon x-small v-text="'$vuetify.icons.qr'" />
