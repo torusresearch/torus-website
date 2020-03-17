@@ -191,6 +191,10 @@
       border: 1px solid rgba(206, 208, 214, 0.3);
     }
   }
+  
+  .v-btn {
+    text-transform: inherit;
+  }
 
   &.theme--dark {
     background: var(--v-torus_black-base);
