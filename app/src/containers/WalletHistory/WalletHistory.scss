@@ -1,29 +1,34 @@
 @import '../../scss/nav-selector.mixin';
 
 /* NEW UI */
-::v-deep .nav-selector {
-  @include navSelector();
-  border-radius: 3px;
-  .v-select__selection {
-    margin-left: 8px;
-  }
-  &.transaction {
-    max-width: 190px;
-  }
-  &.period {
-    max-width: 190px;
-  }
-  .v-icon {
-    color: var(--v-text_2-base);
-  }
-  @media screen and (max-width: 600px) {
-    &.transaction {
-      max-width: 100%;
-      width: 100%;
-    }
-    &.period {
-      max-width: 100%;
-      width: 100%;
-    }
+.nav-selector {
+  & > .v-input__control > .v-input__slot {
+    box-shadow: none;
   }
 }
+// ::v-deep .nav-selector {
+//   @include navSelector();
+//   border-radius: 3px;
+//   .v-select__selection {
+//     margin-left: 8px;
+//   }
+//   &.transaction {
+//     max-width: 190px;
+//   }
+//   &.period {
+//     max-width: 190px;
+//   }
+//   .v-icon {
+//     color: var(--v-text_2-base);
+//   }
+//   @media screen and (max-width: 600px) {
+//     &.transaction {
+//       max-width: 100%;
+//       width: 100%;
+//     }
+//     &.period {
+//       max-width: 100%;
+//       width: 100%;
+//     }
+//   }
+// }
