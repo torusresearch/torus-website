@@ -174,7 +174,7 @@ hr {
 }
 
 ::v-deep .v-expansion-panel .vjs-tree .vjs-value__string {
-  color: var(--v-primary-base) !important;
+  color: var(--v-torus_brand1-base) !important;
 }
 
 ::v-deep .v-expansion-panel .vjs-tree .vjs-tree__brackets {
@@ -193,7 +193,7 @@ hr {
 
 .v-expansion-panel::before {
   box-shadow: none;
-  border-left: 2px solid var(--v-primary-base);
+  border-left: 2px solid var(--v-torus_brand1-base);
   border-radius: 0;
 }
 
@@ -202,7 +202,7 @@ hr {
 }
 
 .v-expansion-panel-header {
-  color: var(--v-primary-base) !important;
+  color: var(--v-torus_brand1-base) !important;
 }
 
 .background_3 {

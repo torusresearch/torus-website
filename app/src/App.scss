@@ -2,6 +2,16 @@
 
 
 .torus-app.v-application {
+  // Override
+  .primary {
+    background-color: var(--v-torus_brand1-base) !important;
+    border-color: var(--v-torus_brand1-base) !important;
+  }
+  .primary--text {
+    color: var(--v-torus_brand1-base) !important;
+    caret-color: var(--v-torus_brand1-base) !important;
+  }
+
   /* Header 1 48px*/
   .display-4 {
     font-weight: bold;
