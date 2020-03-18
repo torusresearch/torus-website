@@ -39,7 +39,7 @@
       <v-card-actions class="mt-2">
         <v-spacer></v-spacer>
         <v-btn color="error" class="mr-2" text @click="onDelete">{{ t('walletSettings.delete') }}</v-btn>
-        <v-btn color="primary" outlined @click="onEdit">{{ t('walletSettings.edit') }}</v-btn>
+        <v-btn color="torus_brand1" outlined @click="onEdit">{{ t('walletSettings.edit') }}</v-btn>
       </v-card-actions>
     </v-list>
   </v-card>

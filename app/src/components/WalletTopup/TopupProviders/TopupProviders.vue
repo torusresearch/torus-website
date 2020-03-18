@@ -11,7 +11,7 @@
       <router-link :to="targetProvider.link">
         <v-list-item :id="`${targetProvider.name}-link`" three-line @click="scrollToPosition">
           <v-list-item-icon class="mr-2 align-self-center">
-            <v-icon v-if="innerProvider === targetProvider.name" class="primary--text">$vuetify.icons.radioOn</v-icon>
+            <v-icon v-if="innerProvider === targetProvider.name" class="torus_brand1--text">$vuetify.icons.radioOn</v-icon>
             <v-icon v-else class="text_2--text">$vuetify.icons.radioOff</v-icon>
           </v-list-item-icon>
           <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
