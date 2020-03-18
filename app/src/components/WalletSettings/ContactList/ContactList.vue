@@ -1,5 +1,5 @@
 <template>
-  <div class="contact-list-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'py-5 px-0'">
+  <div class="contact-list-container" :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-0'">
     <v-layout wrap>
       <v-flex xs12 px-1 mb-1>
         <div class="body-2">{{ t('walletSettings.listContacts') }}</div>

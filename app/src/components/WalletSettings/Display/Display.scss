@@ -5,6 +5,18 @@
       width: 100%;
     }
   }
+  .theme-btn.v-btn {
+    &.v-btn--disabled {
+      &.theme--light{
+        background: #FFFFFF !important;
+        box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
+        border: 0
+      }
+      &.theme--dark{
+        background-color: var(--v-background_body_1) !important;
+      }
+    }
+  }
 }
 .v-menu__content {
   border-radius: 0;
