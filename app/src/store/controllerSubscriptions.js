@@ -82,6 +82,8 @@ export function messageManagerHandler({ unapprovedMsgs }) {
 }
 
 export function detectTokensControllerHandler({ tokens }) {
+  // eslint-disable-next-line no-console
+  console.log('detectTokensControllerHandler', tokens)
   if (tokens.length > 0) {
     getStore().commit('setTokenData', {
       [torus.torusController.detectTokensController.selectedAddress]: tokens
