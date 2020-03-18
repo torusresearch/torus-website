@@ -63,7 +63,7 @@
   }
 
   .body-link {
-    color: var(--v-brand_1-base);
+    color: var(--v-torus_brand1-base);
   }
 
   /* Header 6 12px*/
@@ -72,7 +72,7 @@
     line-height: 0.875rem;
     letter-spacing: 0;
     font-weight: normal;
-    color: var(--v-gray_3-base);
+    color: var(--v-torus_gray3-base);
   }
 
   .v-menu__content {
@@ -144,7 +144,7 @@
   
   &.theme--light {
     .display-4, .display-3, .display-2, .label {
-      color: var(--v-font_1-base);
+      color: var(--v-torus_font1-base);
     }
     .display-1, .headline, .title, .body-2 {
       color: var(--v-torus_font1-base);
