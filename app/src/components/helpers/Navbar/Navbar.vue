@@ -112,7 +112,7 @@
       </v-tabs>
 
       <v-btn v-if="$vuetify.breakpoint.smAndDown" id="menu-dropdown-mobile-btn" icon aria-label="Open Account Menu" @click="drawer = !drawer">
-        <img :src="require('../../../../public/img/icons/menu-primary.svg')" alt="Burger Icon" />
+        <img :src="require('../../../../public/img/icons/menu-torus_brand1.svg')" alt="Burger Icon" />
       </v-btn>
 
       <LanguageSelector v-if="!$vuetify.breakpoint.smAndDown"></LanguageSelector>
