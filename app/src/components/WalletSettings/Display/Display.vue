@@ -7,7 +7,7 @@
           block
           :disabled="theme.name === activeTheme"
           large
-          class="primary--text theme-btn"
+          class="torus_brand1--text theme-btn"
           :class="[$vuetify.theme.isDark ? 'torus_black_2' : 'white', theme.name === activeTheme ? '' : 'elevation-3']"
         >
           {{ t(theme.label) }}
@@ -47,7 +47,7 @@ export default {
     themeOptionStyle(theme) {
       if (!theme) return {}
       return {
-        color: `${theme.theme.primary.base} !important`,
+        color: `${theme.theme.torus_brand1.base} !important`,
         backgroundColor: `${theme.theme.torus_light} !important`
       }
     }

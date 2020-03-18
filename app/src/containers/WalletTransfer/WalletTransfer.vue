@@ -125,7 +125,7 @@
                       @input="contactChanged"
                     >
                       <template v-slot:append>
-                        <v-btn icon small color="primary" aria-label="QR Capture Button" @click="() => $refs && $refs.captureQr.$el.click()">
+                        <v-btn icon small color="torus_brand1" aria-label="QR Capture Button" @click="() => $refs && $refs.captureQr.$el.click()">
                           <v-icon small>$vuetify.icons.scan</v-icon>
                         </v-btn>
                       </template>
@@ -164,12 +164,12 @@
                   <a
                     v-if="contractType !== CONTRACT_TYPE_ERC721 && !isSendAll"
                     id="send-all-btn"
-                    class="float-right primary--text subtitle-2"
+                    class="float-right torus_brand1--text subtitle-2"
                     @click="sendAll"
                   >
                     {{ t('walletTransfer.sendAll') }}
                   </a>
-                  <a v-if="isSendAll" id="send-all-reset-btn" class="float-right primary--text subtitle-2" @click="resetSendAll">
+                  <a v-if="isSendAll" id="send-all-reset-btn" class="float-right torus_brand1--text subtitle-2" @click="resetSendAll">
                     {{ t('walletTransfer.reset') }}
                   </a>
                 </div>
@@ -211,7 +211,7 @@
                       small
                       :outlined="!toggle_exclusive"
                       :text="!!toggle_exclusive"
-                      :color="!toggle_exclusive ? 'primary' : 'text_2'"
+                      :color="!toggle_exclusive ? 'torus_brand1' : 'text_2'"
                       @click="changeSelectedToCurrency(0)"
                     >
                       {{ selectedItem && selectedItem.symbol }}
@@ -221,7 +221,7 @@
                       small
                       :outlined="!!toggle_exclusive"
                       :text="!toggle_exclusive"
-                      :color="toggle_exclusive ? 'primary' : 'text_2'"
+                      :color="toggle_exclusive ? 'torus_brand1' : 'text_2'"
                       @click="changeSelectedToCurrency(1)"
                     >
                       {{ t('walletTransfer.transfer') }}
@@ -262,7 +262,7 @@
                   id="wallet-transfer-submit"
                   large
                   depressed
-                  color="primary"
+                  color="torus_brand1"
                   :disabled="!formValid || speedSelected === '' || selectedVerifier === ''"
                   class="px-6"
                   @click="onTransferClick"

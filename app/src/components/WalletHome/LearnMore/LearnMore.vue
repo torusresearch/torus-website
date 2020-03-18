@@ -5,12 +5,12 @@
         <v-img :src="require(`../../../../public/images/learn-more-intro.svg`)">
           <v-layout>
             <v-flex xs12 class="mt-12 ml-12">
-              <div class="display-1 primary--text text--darken-4 font-weight-bold mb-2">{{ t('walletHome.welcome') }}</div>
+              <div class="display-1 torus_brand1--text text--darken-4 font-weight-bold mb-2">{{ t('walletHome.welcome') }}</div>
               <img width="150" :src="require(`../../../../public/images/torus-logo-blue.svg`)" />
             </v-flex>
           </v-layout>
         </v-img>
-        <v-btn id="get-started-btn" depressed large color="white" class="primary--text px-12 next-btn" @click="e1 = 2">Next</v-btn>
+        <v-btn id="get-started-btn" depressed large color="white" class="torus_brand1--text px-12 next-btn" @click="e1 = 2">Next</v-btn>
       </v-stepper-content>
       <v-stepper-content v-for="content in contents" :key="content.title" :step="content.step">
         <v-layout align-center>
@@ -33,7 +33,7 @@
             </v-list-item-content>
           </v-list-item>
         </v-list>
-        <v-btn id="next-step-btn" depressed large class="primary px-12 next-btn" @click="nextStep(content.step)">
+        <v-btn id="next-step-btn" depressed large class="torus_brand1 px-12 next-btn" @click="nextStep(content.step)">
           {{ content.step > 2 ? 'Done' : 'Next' }}
         </v-btn>
       </v-stepper-content>

@@ -70,17 +70,17 @@
           <v-divider></v-divider>
           <div>
             <span class="subtitle-2">{{ t('dappTransfer.constOfTrans') }}</span>
-            <span class="subtitle-1 float-right primary--text font-weight-bold">{{ costOfTransaction }}</span>
+            <span class="subtitle-1 float-right torus_brand1--text font-weight-bold">{{ costOfTransaction }}</span>
           </div>
           <div v-if="isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE" class="clearfix">
-            <span class="subtitle-1 float-right primary--text font-weight-bold">+ {{ significantDigits(gasCost) }} ETH</span>
+            <span class="subtitle-1 float-right torus_brand1--text font-weight-bold">+ {{ significantDigits(gasCost) }} ETH</span>
           </div>
           <div class="caption float-right clearfix">{{ costOfTransactionConverted }}</div>
         </v-flex>
         <v-flex xs12 mb-3 mt-3>
           <v-dialog v-model="detailsDialog" width="600px">
             <template v-slot:activator="{ on }">
-              <div id="more-details-link" class="subtitle-2 float-right dialog-launcher primary--text mx-6" v-on="on">
+              <div id="more-details-link" class="subtitle-2 float-right dialog-launcher torus_brand1--text mx-6" v-on="on">
                 {{ t('dappTransfer.moreDetails') }}
               </div>
             </template>
@@ -125,7 +125,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn id="less-details-link" color="primary" text @click="detailsDialog = false">{{ t('dappTransfer.lessDetails') }}</v-btn>
+                <v-btn id="less-details-link" color="torus_brand1" text @click="detailsDialog = false">{{ t('dappTransfer.lessDetails') }}</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -134,7 +134,7 @@
           <div class="caption error--text">{{ errorMsg }}</div>
           <div v-if="topUpErrorShow" class="caption mt-1">
             {{ t('dappTransfer.pleaseTopup1') }}
-            <v-btn color="primary" class="mx-1 px-2 caption" small outlined @click="topUp">{{ t('dappTransfer.pleaseTopup2') }}</v-btn>
+            <v-btn color="torus_brand1" class="mx-1 px-2 caption" small outlined @click="topUp">{{ t('dappTransfer.pleaseTopup2') }}</v-btn>
             {{ t('dappTransfer.pleaseTopup3') }}
           </div>
         </v-flex>
@@ -148,7 +148,7 @@
           <v-flex xs6>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
               <template v-slot:activator="{ on }">
-                <v-btn id="confirm-btn" :disabled="topUpErrorShow || canShowError" block depressed large color="primary" class="ml-2" v-on="on">
+                <v-btn id="confirm-btn" :disabled="topUpErrorShow || canShowError" block depressed large color="torus_brand1" class="ml-2" v-on="on">
                   {{ t('dappTransfer.confirm') }}
                 </v-btn>
               </template>
@@ -184,7 +184,7 @@
 
           <v-card flat class="grey lighten-3">
             <v-card-text>
-              <div class="subtitle-2 primary--text request-from">
+              <div class="subtitle-2 torus_brand1--text request-from">
                 <a :href="origin.href" target="_blank">{{ origin.hostname }}</a>
                 <a :href="origin.href" target="_blank" class="float-right">
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
@@ -238,7 +238,7 @@
             <v-btn block text large class="text_2--text" @click.prevent="triggerDeny">{{ t('dappTransfer.cancel') }}</v-btn>
           </v-flex>
           <v-flex xs6>
-            <v-btn block depressed large color="primary" class="ml-2" @click.prevent="triggerSign">{{ t('dappTransfer.confirm') }}</v-btn>
+            <v-btn block depressed large color="torus_brand1" class="ml-2" @click.prevent="triggerSign">{{ t('dappTransfer.confirm') }}</v-btn>
           </v-flex>
         </v-layout>
       </v-layout>

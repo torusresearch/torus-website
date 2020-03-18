@@ -37,9 +37,9 @@
                 @input="setFiatValue"
               >
                 <template v-slot:append>
-                  <v-btn outlined small color="primary" @click="setFiatValue(100)">100</v-btn>
-                  <v-btn outlined small color="primary" class="ml-2" @click="setFiatValue(200)">200</v-btn>
-                  <div class="primary--text font-weight-medium subtitle-2 pt-1 ml-2">{{ selectedCurrency }}*</div>
+                  <v-btn outlined small color="torus_brand1" @click="setFiatValue(100)">100</v-btn>
+                  <v-btn outlined small color="torus_brand1" class="ml-2" @click="setFiatValue(200)">200</v-btn>
+                  <div class="torus_brand1--text font-weight-medium subtitle-2 pt-1 ml-2">{{ selectedCurrency }}*</div>
                 </template>
               </v-text-field>
 
@@ -99,7 +99,7 @@
                     :disabled="!formValid || !isQuoteFetched"
                     x-large
                     depressed
-                    color="primary"
+                    color="torus_brand1"
                     type="submit"
                     @click.prevent="sendOrder"
                   >

@@ -87,7 +87,7 @@
             </v-btn>
           </v-flex>
           <v-flex xs6>
-            <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">{{ t('dappPermission.allow') }}</v-btn>
+            <v-btn block depressed large color="torus_brand1" class="ml-2" @click="triggerSign">{{ t('dappPermission.allow') }}</v-btn>
           </v-flex>
         </v-layout>
       </v-flex>
