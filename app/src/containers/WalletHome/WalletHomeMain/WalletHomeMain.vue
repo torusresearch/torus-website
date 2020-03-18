@@ -17,7 +17,7 @@
         <v-card class="card-total elevation-1">
           <v-layout wrap class="pa-6">
             <v-flex xs6>
-              <span class="title">{{ t('walletHome.totalValue') }}</span>
+              <span class="title torus_black--text">{{ t('walletHome.totalValue') }}</span>
             </v-flex>
             <v-flex xs6 class="text-right">
               <NetworkDisplay :network="storeNetworkType.networkName" :store-network-type="storeNetworkType"></NetworkDisplay>
