@@ -647,6 +647,8 @@ export default {
           dispatch('initTorusKeyring', data),
           dispatch('processAuthMessage', { message, selectedAddress: data.ethAddress, calledFromEmbed })
         ])
+
+        if (!calledFromEmbed) localStorage.removeItem('torus-white-label')
         dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
         // continue enable function
         const { ethAddress } = data
@@ -717,6 +719,7 @@ export default {
       const { userInfo, selectedCurrency, theme, locale } = state
       log.info(selectedCurrency)
       const { verifier, verifierId } = userInfo
+
       prefsController.jwtToken = token
       prefsController.sync(
         user => {
