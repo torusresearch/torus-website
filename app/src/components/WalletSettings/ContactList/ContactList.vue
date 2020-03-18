@@ -72,7 +72,7 @@
             <v-layout wrap>
               <v-spacer></v-spacer>
               <v-flex xs4 :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : ''">
-                <v-btn id="contact-submit-btn" large block type="submit" color="primary" depressed class="py-1" :disabled="!contactFormValid">
+                <v-btn id="contact-submit-btn" large block type="submit" color="torus_brand1" depressed class="py-1" :disabled="!contactFormValid">
                   {{ t('walletSettings.addContact') }}
                 </v-btn>
               </v-flex>

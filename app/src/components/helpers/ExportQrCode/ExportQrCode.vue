@@ -29,7 +29,7 @@
           :correct-level="3"
         ></VueQr>
         <div class="mt-8">
-          <v-btn depressed color="primary" class="px-12" @click="downloadQr">
+          <v-btn depressed color="torus_brand1" class="px-12" @click="downloadQr">
             <v-icon small>$vuetify.icons.download</v-icon>
           </v-btn>
         </div>

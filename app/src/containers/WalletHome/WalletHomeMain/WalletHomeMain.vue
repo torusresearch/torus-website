@@ -39,7 +39,7 @@
                     v-show="canShowLrc"
                     block
                     large
-                    class="elevation-3 primary--text"
+                    class="elevation-3 torus_brand1--text"
                     :class="$vuetify.theme.isDark ? 'torus_black_2' : 'white'"
                     @click="topup"
                   >
@@ -51,7 +51,7 @@
                   <v-btn
                     block
                     large
-                    class="elevation-3 primary--text"
+                    class="elevation-3 torus_brand1--text"
                     :class="$vuetify.theme.isDark ? 'torus_black_2' : 'white'"
                     @click="initiateTransfer"
                   >
@@ -76,7 +76,7 @@
                 <v-dialog v-model="dialogLearnMore" max-width="700">
                   <template v-slot:activator="{ on }">
                     <div class="body-2'">
-                      <a id="learn-more-btn" class="primary--text font-weight-bold" v-on="on">
+                      <a id="learn-more-btn" class="torus_brand1--text font-weight-bold" v-on="on">
                         {{ t('walletHome.learnMore') }}
                       </a>
                       {{ t('walletHome.aboutWallet') }}.

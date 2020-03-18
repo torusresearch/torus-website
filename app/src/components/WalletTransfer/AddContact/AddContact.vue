@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="addContactDialog" width="400">
     <template v-slot:activator="{ on }">
-      <v-btn depressed x-small block class="caption primary lighten-5 primary--text add-contact-alert" v-on="on">
+      <v-btn depressed x-small block class="caption torus_brand1 lighten-5 torus_brand1--text add-contact-alert" v-on="on">
         {{ t('walletTransfer.clickToAddContact') }}
       </v-btn>
     </template>
@@ -26,7 +26,9 @@
           </v-flex>
           <v-divider vertical></v-divider>
           <v-flex xs6>
-            <v-btn type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">{{ t('walletTransfer.confirm') }}</v-btn>
+            <v-btn type="submit" color="torus_brand1" depressed class="px-12 py-1" :disabled="!contactFormValid">
+              {{ t('walletTransfer.confirm') }}
+            </v-btn>
           </v-flex>
         </v-card-actions>
       </v-form>
