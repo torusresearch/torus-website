@@ -10,7 +10,7 @@ export default {
   components: { BeatLoader },
   data() {
     return {
-      color: this.$vuetify.theme.dark ? this.$vuetify.theme.themes.dark.primary.base : this.$vuetify.theme.themes.light.primary.base
+      color: this.$vuetify.theme.dark ? this.$vuetify.theme.themes.dark.torus_brand1.base : this.$vuetify.theme.themes.light.torus_brand1.base
     }
   }
 }

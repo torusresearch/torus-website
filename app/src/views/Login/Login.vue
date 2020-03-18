@@ -97,7 +97,7 @@
               <span class="text_2--text body-1">
                 {{ t('login.acceptTerms') }}
                 <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
-                  <span class="primary--text">{{ t('login.termsAndConditions') }}</span>
+                  <span class="torus_brand1--text">{{ t('login.termsAndConditions') }}</span>
                 </a>
               </span>
             </v-flex>
@@ -118,7 +118,7 @@
                   :color="$vuetify.theme.dark ? '' : 'white'"
                   :class="$vuetify.theme.dark ? 'torus-dark' : 'card-shadow-v8'"
                   :depressed="$vuetify.theme.dark"
-                  class="px-12 pa-3 font-weight-bold body-1 text-uppercase primary--text logout-btn"
+                  class="px-12 pa-3 font-weight-bold body-1 text-uppercase torus_brand1--text logout-btn"
                   type="button"
                   @click="returnHome"
                 >

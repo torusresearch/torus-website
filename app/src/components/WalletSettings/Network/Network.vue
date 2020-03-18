@@ -42,7 +42,7 @@
           <v-tooltip bottom :disabled="formValid">
             <template v-slot:activator="{ on }">
               <span v-on="on">
-                <v-btn block :disabled="!formValid" depressed color="primary" @click="setRPC">
+                <v-btn block :disabled="!formValid" depressed color="torus_brand1" @click="setRPC">
                   {{ t('walletSettings.save') }}
                 </v-btn>
               </span>
