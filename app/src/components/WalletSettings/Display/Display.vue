@@ -48,7 +48,7 @@ export default {
       if (!theme) return {}
       return {
         color: `${theme.theme.primary.base} !important`,
-        backgroundColor: `${theme.theme.background_body_1} !important`
+        backgroundColor: `${theme.theme.torus_light} !important`
       }
     }
   }

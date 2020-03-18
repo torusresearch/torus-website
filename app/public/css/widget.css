@@ -49,7 +49,6 @@
 }
 
 #torusWidget {
-  --torus-background-body: #fcfcfc;
   --torus-brand-1: #0364ff;
   --torus-brand-2: #5495f7;
   --torus-brand-3: #cde0ff;
@@ -64,13 +63,14 @@
   --torus-font-link-1: #0364ff;
   --torus-font-link-2: #5495f7;
   --torus-black: #252529;
+  --torus-light: #fcfcfc;
   z-index: 999999;
   position: fixed;
 }
 
 /* DARK */
 #torusWidget.torus-dark {
-  --torus-background-body: #242529;
+  --torus-light: #242529;
   --torus-gray-2: #dfdfdf;
   --torus-gray-4: #f9f9fb;
   --torus-font-1: #d3d3d4;
@@ -310,7 +310,7 @@
 #torus-login-modal__modal-container {
   /* background: #ffffff;
   border: 1px solid #f5f5f5; */
-  background: var(--torus-background-body);
+  background: var(--torus-light);
   border: 1px solid var(--torus-gray-4);
   width: 375px;
   margin: 5% auto;
@@ -386,7 +386,7 @@
   width: 100%;
   border: 1px solid var(--torus-gray-2);
   border-radius: 6px;
-  background-color: var(--torus-background-body);
+  background-color: var(--torus-light);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -425,7 +425,7 @@
   width: 100%;
   border: 1px solid var(--torus-gray-2);
   border-radius: 6px;
-  background-color: var(--torus-background-body);
+  background-color: var(--torus-light);
   cursor: pointer;
   margin: 0;
   box-shadow: 0 14px 28px 0 rgba(46, 91, 255, 0.06);
