@@ -8,9 +8,9 @@
               <img width="180" :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
             </v-flex>
             <v-flex class="mb-2" xs9 sm7 ml-auto mr-auto>
-              <span :class="$vuetify.theme.dark ? '' : 'text_2--text'" class="display-1 font-weight-bold">{{ t('login.welcome') }} Torus</span>
+              <span class="display-1 font-weight-bold">{{ t('login.welcome') }} Torus</span>
             </v-flex>
-            <v-flex :class="$vuetify.theme.dark ? '' : 'text_1--text'" class="body-2" mb-8 xs9 sm7 ml-auto mr-auto>
+            <v-flex class="body-2" mb-8 xs9 sm7 ml-auto mr-auto>
               <span>{{ t('login.message') }}</span>
             </v-flex>
             <v-flex xs9 sm7 ml-auto mb-2 mr-auto>

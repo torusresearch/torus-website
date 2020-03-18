@@ -2,10 +2,10 @@
   <v-card class="elevation-1 promotion-card">
     <v-card-text class="pt-0 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-0' : $vuetify.breakpoint.xsOnly ? 'pb-6' : 'pb-0'">
       <v-layout>
-        <v-flex class="text_1--text pt-6" :class="$vuetify.breakpoint.xsOnly ? 'text-center xs12' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
-          <div class="title font-weight-bold" :class="subtitle ? 'text-clamp-one' : 'text-clamp-two'">{{ title }}</div>
+        <v-flex class="pt-6" :class="$vuetify.breakpoint.xsOnly ? 'text-center xs12' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
+          <div class="title torus_black--text" :class="subtitle ? 'text-clamp-one' : 'text-clamp-two'">{{ title }}</div>
           <slot name="subtitle">
-            <div class="text-clamp-one caption mt-2">{{ subtitle }}</div>
+            <div class="text-clamp-one torus_black--text caption mt-2">{{ subtitle }}</div>
             <div class="more-details-container">
               <v-btn
                 block

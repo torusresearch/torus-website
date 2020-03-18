@@ -1,6 +1,6 @@
 <template>
   <v-card class="advance-option message-modal">
-    <v-card-text class="text_1--text pa-0">
+    <v-card-text class="pa-0">
       <v-layout wrap class="image-container text-center" :class="modalType ? 'image-container-success' : 'image-container-danger'">
         <v-flex xs12 px-4>
           <img height="16px" width="16px" class="close-icon" :src="require('../../../../public/img/icons/close.svg')" @click="onCancel" />
