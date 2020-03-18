@@ -272,7 +272,10 @@
       fieldset {
         border: 1px solid var(--v-error-base);
       }
-    }  
+    }
+    &.v-input.v-input--dense > .v-input__control > .v-input__slot {
+      min-height: inherit;
+    }
   }
   
   .v-btn:not(.v-btn--text):not(.v-btn--icon) {

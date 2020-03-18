@@ -1,15 +1,26 @@
 <template>
   <v-card color="elevation-1 activity mb-4 pa-5" :ripple="false" @click="showDetails = !showDetails">
-    <v-layout wrap>
+    <v-layout wrap mx-n4>
       <v-flex
-        :class="$vuetify.breakpoint.xsOnly ? 'xs6 order-2 pt-2' : 'xs2 order-0'"
-        :style="{ paddingLeft: $vuetify.breakpoint.xsOnly ? '50px' : '0' }"
+        px-4
+        :class="$vuetify.breakpoint.xsOnly ? 'order-2 pt-2' : 'order-0'"
+        :style="{ marginLeft: $vuetify.breakpoint.xsOnly ? '33px' : '0', maxWidth: '100px' }"
       >
         <div class="caption font-weight-medium">{{ transaction.dateFormatted }}</div>
         <div class="info font-weight-light">{{ transaction.timeFormatted }}</div>
       </v-flex>
-      <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs8 order-0' : 'xs4 order-1'">
-        <div class="icon-holder float-left">
+      <v-divider v-if="!$vuetify.breakpoint.xsOnly" vertical class="mx-4"></v-divider>
+      <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs8 order-0' : 'xs4 order-1'" pr-4 pl-0>
+        <div
+          class="icon-holder float-left"
+          :class="{
+            circle: !(
+              transaction.type === CONTRACT_TYPE_ERC20 ||
+              transaction.action === ACTIVITY_ACTION_TOPUP ||
+              transaction.type === CONTRACT_TYPE_ERC721
+            )
+          }"
+        >
           <img
             v-if="transaction.type === CONTRACT_TYPE_ERC20 || transaction.action === ACTIVITY_ACTION_TOPUP"
             :src="require(`../../../../public/images/${transaction.actionIcon}`)"
@@ -18,7 +29,7 @@
             height="36"
           />
           <img v-else-if="transaction.type === CONTRACT_TYPE_ERC721" :src="transaction.actionIcon" class="mr-2" height="36" large color="primary" />
-          <v-icon v-else class="float-left mx-3" large color="primary">{{ transaction.actionIcon }}</v-icon>
+          <v-icon v-else class="float-left" large color="primary">{{ transaction.actionIcon }}</v-icon>
         </div>
         <div class="caption font-weight-medium">{{ transaction.actionText }}</div>
         <div class="info font-weight-light">
@@ -29,15 +40,15 @@
           }}
         </div>
       </v-flex>
-      <v-flex class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'xs4 order-1' : 'xs2 order-2'">
+      <v-flex class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'xs4 order-1' : 'xs2 order-2'" px-4>
         <div class="caption font-weight-medium">
           <span v-if="transaction.type !== CONTRACT_TYPE_ERC721 && transaction.action === ACTIVITY_ACTION_SEND" class="error--text">-</span>
           {{ transaction.totalAmountString }}
         </div>
         <div class="info font-weight-light">{{ transaction.currencyAmountString }}</div>
       </v-flex>
-      <v-flex v-if="!$vuetify.breakpoint.xsOnly" class="order-3" xs2></v-flex>
-      <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs6 text-right mt-3 order-3' : 'xs2 text-center order-4'">
+      <v-flex v-if="!$vuetify.breakpoint.smAndDown" class="order-3" xs2></v-flex>
+      <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs6 ml-auto text-right mt-3 order-3' : 'xs2 ml-auto text-right order-4'" px-4>
         <v-chip class="status-chip black--text" :color="getChipColor(transaction.statusText)" small>
           {{ t(transaction.statusText) }}
         </v-chip>

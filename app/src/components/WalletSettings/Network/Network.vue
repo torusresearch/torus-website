@@ -1,5 +1,5 @@
 <template>
-  <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-5 px-4'">
+  <div :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
     <v-form ref="networkForm" v-model="formValid" lazy-validation @submit.prevent="">
       <span class="body-2">{{ t('walletSettings.selectNetwork') }}</span>
       <v-layout wrap>
