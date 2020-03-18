@@ -1,40 +1,50 @@
 <template>
   <v-container class="wallet-activity" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <v-layout mt-3 wrap>
-      <v-flex xs12>
+      <v-flex xs12 md7>
         <div class="text-black font-weight-bold display-1 float-left">{{ t('walletActivity.transactionActivities') }}</div>
-        <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
-          <v-select
-            id="transaction-selector"
-            v-model="selectedAction"
-            class="subtitle-2 nav-selector transaction elevation-3 pl-3"
-            hide-details
-            outlined
-            :menu-props="{ bottom: true, offsetY: true }"
-            :items="actionTypes"
-            append-icon="$vuetify.icons.select"
-            aria-label="Filter Transacation Type"
-          >
-            <template v-slot:prepend>
-              <v-icon>$vuetify.icons.activities</v-icon>
-            </template>
-          </v-select>
-          <v-select
-            id="period-selector"
-            v-model="selectedPeriod"
-            class="subtitle-2 nav-selector period elevation-3 pl-3"
-            hide-details
-            outlined
-            :menu-props="{ bottom: true, offsetY: true }"
-            :items="periods"
-            append-icon="$vuetify.icons.select"
-            aria-label="Filter Transacation Period"
-          >
-            <template v-slot:prepend>
-              <v-icon>$vuetify.icons.calendar</v-icon>
-            </template>
-          </v-select>
-        </div>
+      </v-flex>
+      <v-flex xs12 md5>
+        <v-layout mx-n2>
+          <v-flex xs6 px-2>
+            <v-select
+              id="transaction-selector"
+              v-model="selectedAction"
+              class="subtitle-2 nav-selector transaction pl-3"
+              :class="{ 'elevation-3': !$vuetify.theme.isDark }"
+              hide-details
+              outlined
+              dense
+              :menu-props="{ bottom: true, offsetY: true }"
+              :items="actionTypes"
+              append-icon="$vuetify.icons.select"
+              aria-label="Filter Transacation Type"
+            >
+              <template v-slot:prepend>
+                <v-icon>$vuetify.icons.activities</v-icon>
+              </template>
+            </v-select>
+          </v-flex>
+          <v-flex xs6 px-2>
+            <v-select
+              id="period-selector"
+              v-model="selectedPeriod"
+              class="subtitle-2 nav-selector period pl-3"
+              :class="{ 'elevation-3': !$vuetify.theme.isDark }"
+              hide-details
+              outlined
+              dense
+              :menu-props="{ bottom: true, offsetY: true }"
+              :items="periods"
+              append-icon="$vuetify.icons.select"
+              aria-label="Filter Transacation Period"
+            >
+              <template v-slot:prepend>
+                <v-icon>$vuetify.icons.calendar</v-icon>
+              </template>
+            </v-select>
+          </v-flex>
+        </v-layout>
       </v-flex>
       <v-flex xs12 mt-7>
         <TxHistoryTable

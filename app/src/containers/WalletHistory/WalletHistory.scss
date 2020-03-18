@@ -1,9 +1,19 @@
 @import '../../scss/nav-selector.mixin';
 
 /* NEW UI */
-.nav-selector {
-  & > .v-input__control > .v-input__slot {
+.nav-selector.v-input.v-text-field--outlined {
+  ::v-deep & > .v-input__control > .v-input__slot {
     box-shadow: none;
+    border-radius: 0;
+    background: none;
+  }
+  &.theme--dark {
+    border: 1px solid #343539;
+    ::v-deep & > .v-input__control > .v-input__slot {
+      fieldset {
+        border: 0
+      }
+    }
   }
 }
 // ::v-deep .nav-selector {
