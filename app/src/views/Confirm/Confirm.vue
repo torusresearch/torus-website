@@ -2,7 +2,7 @@
   <v-container px-0 py-6 class="confirm-container">
     <template v-if="type === TX_TRANSACTION">
       <v-layout wrap align-center mx-6 mb-6>
-        <v-flex xs12 class="text_1--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">
+        <v-flex xs12 class="font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">
           {{ t('dappTransfer.confirmation') }}
         </v-flex>
         <v-flex xs12>
@@ -85,7 +85,7 @@
               </div>
             </template>
             <v-card class="pa-4 more-details-container">
-              <v-card-text class="text_1--text">
+              <v-card-text>
                 <v-layout wrap>
                   <v-flex xs4 sm2>
                     {{ t('dappTransfer.rate') }}
@@ -208,7 +208,7 @@
               <v-list-item-content flat class="pa-1 background" :class="$vuetify.theme.dark ? 'lighten-4' : 'lighten-3'">
                 <v-card flat class="body-2 text-left pa-2 word-break typedMessageBox">
                   <v-expansion-panels v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE">
-                    <p :class="$vuetify.theme.dark ? 'text_1--text' : 'text_2--text'" style="text-align:left">{{ message }}</p>
+                    <p :class="$vuetify.theme.dark ? '' : 'text_2--text'" style="text-align:left">{{ message }}</p>
                   </v-expansion-panels>
 
                   <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && !Array.isArray(typedMessages)">

@@ -15,7 +15,7 @@
       <v-list-item>
         <v-list-item-content class="caption py-0">{{ t('walletSettings.type') }}:</v-list-item-content>
         <v-spacer></v-spacer>
-        <v-list-item-action class="text_1--text caption my-0">
+        <v-list-item-action class="caption my-0">
           ERC 20 Transfer
         </v-list-item-action>
       </v-list-item>
@@ -23,7 +23,7 @@
       <v-list-item>
         <v-list-item-content class="caption py-0">{{ t('walletSettings.amount') }}:</v-list-item-content>
         <v-spacer></v-spacer>
-        <v-list-item-action class="text_1--text font-weight-bold caption my-0">
+        <v-list-item-action class="font-weight-bold caption my-0">
           10.00 USD
         </v-list-item-action>
       </v-list-item>
@@ -31,7 +31,7 @@
       <v-list-item>
         <v-list-item-content class="caption py-0">{{ t('walletSettings.periodValidity') }}:</v-list-item-content>
         <v-spacer></v-spacer>
-        <v-list-item-action class="text_1--text caption my-0">
+        <v-list-item-action class="caption my-0">
           1 Month (15 April ~ May 2019)
         </v-list-item-action>
       </v-list-item>

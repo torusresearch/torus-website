@@ -37,7 +37,7 @@
             <span class="account-list__address">{{ acc.address }}</span>
             <span class="float-right">
               <ShowToolTip :address="acc.address">
-                <v-icon size="12" :class="{ 'text_2--text': !$vuetify.theme.dark }" v-text="'$vuetify.icons.copy'" />
+                <v-icon size="12" :class="{ 'torus_black--text': !$vuetify.theme.dark }" v-text="'$vuetify.icons.copy'" />
               </ShowToolTip>
               <ExportQrCode :custom-address="acc.address">
                 <v-icon x-small v-text="'$vuetify.icons.qr'" />
@@ -48,67 +48,12 @@
       </div>
     </div>
     <v-divider></v-divider>
-    <!-- <v-list>
-      <v-list-item>
-        <v-list-item-title>
-          <div class="font-weight-bold title d-flex">
-            <div id="account-name" class="torus-account--name mr-1">
-              <span>{{ userName }}</span>
-            </div>
-            <div>{{ t('accountMenu.account') }}</div>
-          </div>
-        </v-list-item-title>
-      </v-list-item>
-      <v-list-item class="margin-top-30">
-        <v-list-item-avatar class="mr-2">
-          <img :src="profileImage" class="align-start" :alt="userName" />
-        </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-subtitle>
-            <div class="caption text_2--text">
-              <span>{{ userEmail }}</span>
-            </div>
-            <div class="caption text_2--text">
-              <span>{{ userId }}</span>
-            </div>
-            <div class="caption public-address-container">
-              <ShowToolTip :address="selectedAddress">{{ selectedAddress }}</ShowToolTip>
-            </div>
-          </v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item>
-        <v-list-item-content>
-          <div class="subtitle-2 mb-0">
-            <v-icon class="mr-2 text_2--text" v-text="'$vuetify.icons.balance'" />
-            <span class="text_1--text">{{ `${totalPortfolioValue} ${selectedCurrency}` }}</span>
-          </div>
-        </v-list-item-content>
-      </v-list-item>
-    </v-list>
-
-    <v-divider></v-divider> -->
-    <!-- 
-    <v-list v-if="wallets.length > 1">
-      <v-list-item v-for="acc in filteredWallets" :key="acc.id" @click="changeAccount(acc.address)">
-        <v-list-item-content class="font-weight-bold">
-          <v-list-item-title>
-            <div class="font-weight-bold title text-capitalize text--lighten-4">{{ t('accountMenu.account') }} #{{ acc.id + 1 }}</div>
-          </v-list-item-title>
-
-          <v-list-item-subtitle>{{ acc.address }}</v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
-    </v-list>
-
-    <v-divider v-if="wallets.length > 1"></v-divider> -->
-
     <v-list>
       <v-list-item id="import-account-btn" @click="accountImportDialog = true">
         <v-list-item-action class="mr-2">
-          <v-icon class="text_2--text" v-text="'$vuetify.icons.import'" />
+          <v-icon class="torus_black--text" v-text="'$vuetify.icons.import'" />
         </v-list-item-action>
-        <v-list-item-content class="text_1--text font-weight-bold">{{ t('accountMenu.importAccount') }}</v-list-item-content>
+        <v-list-item-content class="subtitle-2">{{ t('accountMenu.importAccount') }}</v-list-item-content>
       </v-list-item>
       <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
         <AccountImport @onClose="accountImportDialog = false" />
@@ -127,17 +72,17 @@
         :to="headerItem.route"
       >
         <v-list-item-action class="mr-2">
-          <v-icon :size="headerItem.icon === 'activities' ? 12 : 16" class="text_2--text" v-text="`$vuetify.icons.${headerItem.icon}`" />
+          <v-icon :size="headerItem.icon === 'activities' ? 12 : 16" class="torus_black--text" v-text="`$vuetify.icons.${headerItem.icon}`" />
         </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-title class="font-weight-bold text_1--text">{{ headerItem.display }}</v-list-item-title>
+          <v-list-item-title class="subtitle-2">{{ headerItem.display }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
       <v-list-item href="https://docs.tor.us/#users" target="_blank">
         <v-list-item-action class="mr-2">
-          <v-icon :small="$vuetify.breakpoint.xsOnly" class="text_2--text" v-text="'$vuetify.icons.info'" />
+          <v-icon :small="$vuetify.breakpoint.xsOnly" class="torus_black--text" v-text="'$vuetify.icons.info'" />
         </v-list-item-action>
-        <v-list-item-content class="text_1--text font-weight-bold">{{ t('accountMenu.infoSupport') }}</v-list-item-content>
+        <v-list-item-content class="subtitle-2">{{ t('accountMenu.infoSupport') }}</v-list-item-content>
       </v-list-item>
     </v-list>
 
@@ -148,7 +93,7 @@
 
     <v-divider></v-divider>
     <div class="text-right py-4 px-3">
-      <v-btn text class="text_1--text font-weight-bold body-1" @click="logout">{{ t('accountMenu.logOut') }}</v-btn>
+      <v-btn text class="body-2 font-weight-bold" @click="logout">{{ t('accountMenu.logOut') }}</v-btn>
     </div>
   </v-card>
 </template>

@@ -6,18 +6,6 @@
         <span class="subtitle-2 ml-1">{{ selectedLabel }}</span>
         <v-icon class="ml-2" small>$vuetify.icons.select</v-icon>
       </v-btn>
-
-      <v-list-item v-else v-on="on">
-        <v-list-item-action class="ml-1 mr-1">
-          <img :src="require('../../../../public/img/icons/globe.svg')" width="15" height="30" alt="Torus language globe" />
-        </v-list-item-action>
-        <v-list-item-content class="text_1--text">
-          <span class="subtitle-2">
-            {{ selectedLabel }}
-            <v-icon class="mb-1" small>$vuetify.icons.select</v-icon>
-          </span>
-        </v-list-item-content>
-      </v-list-item>
     </template>
 
     <v-card class="pa-3">
