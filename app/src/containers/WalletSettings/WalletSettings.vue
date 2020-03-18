@@ -18,7 +18,7 @@
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="privacy-panel-header">
               <v-icon size="20" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.lock'" />
-              <div class="grow text_1--text font-weight-bold title">
+              <div class="grow font-weight-bold title">
                 {{ t('walletSettings.privacySecurity') }}
               </div>
             </v-expansion-panel-header>
@@ -29,7 +29,7 @@
           <v-expansion-panel class="my-2">
             <v-expansion-panel-header id="contact-list-panel-header">
               <v-icon size="12" class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.list'" />
-              <div class="grow text_1--text font-weight-bold title">
+              <div class="grow font-weight-bold title">
                 {{ t('walletSettings.addressBook') }}
               </div>
             </v-expansion-panel-header>
@@ -44,7 +44,7 @@
           <v-expansion-panel readonly class="my-2">
             <v-expansion-panel-header id="network-panel-header">
               <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.globe'" />
-              <div class="grow text_1--text font-weight-bold title">
+              <div class="grow font-weight-bold title">
                 {{ t('walletSettings.network') }}
               </div>
             </v-expansion-panel-header>
@@ -55,7 +55,7 @@
           <v-expansion-panel readonly class="my-2">
             <v-expansion-panel-header id="display-panel-header">
               <v-icon small class="d-inline-flex mr-4 text_2--text shrink" v-text="'$vuetify.icons.server'" />
-              <div class="grow text_1--text font-weight-bold title">
+              <div class="grow font-weight-bold title">
                 {{ t('walletSettings.display') }}
               </div>
             </v-expansion-panel-header>

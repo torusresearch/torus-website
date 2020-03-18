@@ -7,7 +7,7 @@
     </template>
     <v-card class="add-contact-container">
       <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation @submit.prevent="addContact">
-        <v-card-text class="text_1--text py-6">
+        <v-card-text class="py-6">
           <v-layout wrap>
             <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
               <div class="font-weight-bold headline">{{ t('walletTransfer.addContact') }}</div>
