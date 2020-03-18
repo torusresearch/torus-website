@@ -22,7 +22,7 @@
         <v-chip
           class="button-speed text-center elevation-3"
           :outlined="$vuetify.theme.dark"
-          :class="[speedSelected === 'average' ? 'selected' : '', isWalletTransfer ? 'button-speed--transfer' : '']"
+          :class="[speedSelected === 'average' ? 'selected' : '']"
           label
           @click="selectSpeed('average', averageGasPrice)"
         >
@@ -37,7 +37,7 @@
         <v-chip
           class="button-speed text-center elevation-3"
           :outlined="$vuetify.theme.dark"
-          :class="[speedSelected === 'fastest' ? 'selected' : '', isWalletTransfer ? 'button-speed--transfer' : '']"
+          :class="[speedSelected === 'fastest' ? 'selected' : '']"
           label
           @click="selectSpeed('fastest', fastestGasPrice)"
         >
