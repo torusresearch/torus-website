@@ -1,6 +1,6 @@
 <template>
   <v-card class="advance-option">
-    <v-card-text class="text_1--text py-12">
+    <v-card-text class="py-12">
       <v-layout wrap>
         <v-flex xs12 px-4>
           <div class="font-weight-bold headline">{{ t('walletTransfer.transferConfirm') }}</div>

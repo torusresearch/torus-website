@@ -39,16 +39,29 @@
         </v-flex>
 
         <v-flex xs12 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
-          <v-tooltip bottom :disabled="formValid">
-            <template v-slot:activator="{ on }">
-              <span v-on="on">
-                <v-btn block :disabled="!formValid" depressed color="torus_brand1" @click="setRPC">
-                  {{ t('walletSettings.save') }}
-                </v-btn>
-              </span>
-            </template>
-            <span>{{ t('walletSettings.resolveErrors') }}</span>
-          </v-tooltip>
+          <v-layout>
+            <v-spacer></v-spacer>
+            <v-flex xs4>
+              <v-tooltip bottom :disabled="formValid">
+                <template v-slot:activator="{ on }">
+                  <span v-on="on">
+                    <v-btn
+                      large
+                      class="elevation-3 torus_brand1--text py-1"
+                      :class="$vuetify.theme.isDark ? 'torus_black_2' : 'white'"
+                      block
+                      :disabled="!formValid"
+                      depressed
+                      @click="setRPC"
+                    >
+                      {{ t('walletSettings.save') }}
+                    </v-btn>
+                  </span>
+                </template>
+                <span>{{ t('walletSettings.resolveErrors') }}</span>
+              </v-tooltip>
+            </v-flex>
+          </v-layout>
         </v-flex>
       </template>
     </v-form>
