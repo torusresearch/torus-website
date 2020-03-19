@@ -12,7 +12,7 @@
     "build-embed:staging": "cross-env TORUS_BUILD_ENV=staging node ./scripts/createEmbed.js",
     "build-embed:testing": "cross-env TORUS_BUILD_ENV=testing node ./scripts/createEmbed.js",
     "build-embed:lrc": "cross-env TORUS_BUILD_ENV=lrc node ./scripts/createEmbed.js",
-    "build-embed:alpha4": "cross-env TORUS_BUILD_ENV=alpha4 node ./scripts/createEmbed.js",
+    "build-embed:alpha4": "cross-env VUE_APP_TORUS_BUILD_ENV=alpha4 node ./scripts/createEmbed.js",
     "build:dev": "npm run build-embed:dev && npm run pre-build && vue-cli-service build --mode development",
     "build:report": "vue-cli-service build --report",
     "build:staging": "npm run build-embed:staging && npm run pre-build && vue-cli-service build --mode staging && npm run post-build",
