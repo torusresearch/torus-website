@@ -120,9 +120,32 @@ export default class SmartContractWalletController {
       txMeta.hash = tempTxHash
       txStateManager.updateTx(txMeta, 'transactions#setTxHash')
 
+      // Get the gasPrice
+      const gasprice = await fetch(config.relayer.concat('/gasPrice')).then(res => res.json())
+      console.log('scwController: gasPrice', gasprice)
+
       // Sign the transaction
-      const signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 0)
+      const signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, gasprice, 700000)
+
+      // const { gasEstimate } = await post(config.relayer.concat('/transfer/eth/estimate'), {
+      //   gasPrice: gasprice,
+      //   wallet: fromSCW,
+      //   nonce,
+      //   methodData,
+      //   signatures,
+
+      //   fromSCW,
+      //   ETH_TOKEN,
+      //   to,
+      //   transferValue,
+      //   ZERO_ADDRESS
+      // })
+      // console.log('scwController: gasEstimate', gasEstimate)
+
       const reqObj = {
+        // gasLimit: gasEstimate,
+        gasLimit: 700000,
+        gasPrice: gasprice,
         wallet: fromSCW,
         nonce,
         methodData,
