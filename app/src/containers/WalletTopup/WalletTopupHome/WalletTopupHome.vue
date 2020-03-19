@@ -11,11 +11,11 @@
         </div>
       </v-flex>
       <v-flex xs4 class="text-right">
-        <export-qr-code>
+        <ExportQrCode>
           <v-btn icon>
             <v-icon x-small v-text="'$vuetify.icons.qr'" />
           </v-btn>
-        </export-qr-code>
+        </ExportQrCode>
       </v-flex>
     </v-layout>
     <v-layout mt-7 mx-n4 wrap>
@@ -46,12 +46,14 @@
 </template>
 
 <script>
+import ExportQrCode from '../../../components/helpers/ExportQrCode'
 import TopupProviders from '../../../components/WalletTopup/TopupProviders'
 import { getPaymentProviders } from '../../../utils/utils'
 
 export default {
   components: {
-    TopupProviders
+    TopupProviders,
+    ExportQrCode
   },
   data() {
     return {
