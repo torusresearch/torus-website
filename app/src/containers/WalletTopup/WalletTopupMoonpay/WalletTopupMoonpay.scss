@@ -1,22 +1,22 @@
 .wallet-topup-moonpay {
-    .help-icon {
-      height: 13px;
-      vertical-align: middle;
+  .help-icon {
+    height: 13px;
+    vertical-align: middle;
+  }
+
+  .unique-hint {
+    ::v-deep .v-text-field__details {
+      display: none;
     }
-    
-    .unique-hint {
-      ::v-deep .v-text-field__details {
-        display: none;
+
+    ::v-deep .error--text {
+      .v-text-field__details {
+        display: inherit;
       }
-  
-      ::v-deep .error--text {
-        .v-text-field__details {
-          display: inherit;
-        }
-      }
-  
-      .v-btn {
-        border-style: dashed;
-      }
+    }
+
+    .v-btn {
+      border-style: dashed;
     }
   }
+}

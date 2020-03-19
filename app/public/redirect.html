@@ -2093,8 +2093,8 @@
             return result
           }, {})
           var queryParams = {}
-          for (var entry of url.searchParams.entries()) {
-            queryParams[entry[0]] = entry[1]
+          for (var key of url.searchParams.keys()) {
+            queryParams[key] = url.searchParams.get(key)
           }
           var instanceParams = {}
           var error = ''
@@ -2109,11 +2109,16 @@
           bc.postMessage({
             data: {
               instanceParams: instanceParams,
-              hashParams: hashParams
+              hashParams: hashParams,
+              queryParams: queryParams
             },
             error: error
           }).then(function() {
             bc.close()
+            console.log('posted', { queryParams, instanceParams, hashParams })
+            setTimeout(function() {
+              window.close()
+            }, 5000)
           })
         } catch (err) {
           console.error(err, 'service worker error in redirect')

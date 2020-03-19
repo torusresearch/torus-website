@@ -1,3 +1,4 @@
+/* eslint-disable */
 module.exports = {
   timeout,
   queryAsync,
@@ -11,31 +12,31 @@ function timeout(time) {
   })
 }
 
-async function findAsync(container, selector, opts) {
+async function findAsync(container, selector, options) {
   try {
     return await pollUntilTruthy(() => {
       const result = container.find(selector)
       if (result.length > 0) return result
-    }, opts)
-  } catch (err) {
+    }, options)
+  } catch (error) {
     throw new Error(`Failed to find element within interval: "${selector}"`)
   }
 }
 
-async function queryAsync(jQuery, selector, opts) {
+async function queryAsync(jQuery, selector, options) {
   try {
     return await pollUntilTruthy(() => {
       const result = jQuery(selector)
       if (result.length > 0) return result
-    }, opts)
-  } catch (err) {
+    }, options)
+  } catch (error) {
     throw new Error(`Failed to find element within interval: "${selector}"`)
   }
 }
 
-async function pollUntilTruthy(fn, opts = {}) {
-  const pollingInterval = opts.pollingInterval || 100
-  const timeoutInterval = opts.timeoutInterval || 5000
+async function pollUntilTruthy(fn, options = {}) {
+  const pollingInterval = options.pollingInterval || 100
+  const timeoutInterval = options.timeoutInterval || 5000
   const start = Date.now()
   let result
   while (!result) {

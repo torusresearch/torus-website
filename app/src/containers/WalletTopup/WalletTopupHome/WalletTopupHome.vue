@@ -1,8 +1,8 @@
 <template>
-  <div class="wallet-topup-view">
-    <v-layout mt-3 wrap>
-      <v-flex xs12 mb-2>
-        <div class="text-black font-weight-bold headline px-4 mb-4">
+  <v-container class="wallet-topup-view" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
+    <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
+      <v-flex xs8>
+        <div class="font-weight-bold display-1 text-left">
           <span v-if="selectedProvider && !$vuetify.breakpoint.xsOnly">
             {{ t('walletTopUp.purchaseVia') }}
             <span class="text-capitalize">{{ selectedProvider }}</span>
@@ -10,8 +10,17 @@
           <span v-else>{{ t('walletTopUp.selectProvider') }}</span>
         </div>
       </v-flex>
+      <v-flex xs4 class="text-right">
+        <export-qr-code>
+          <v-btn icon>
+            <v-icon x-small v-text="'$vuetify.icons.qr'" />
+          </v-btn>
+        </export-qr-code>
+      </v-flex>
+    </v-layout>
+    <v-layout mt-7 mx-n4 wrap>
       <TopupProviders
-        :selectedProvider="selectedProvider"
+        :selected-provider="selectedProvider"
         :providers="providers"
         @onSelectProvider="
           selected => {
@@ -20,7 +29,7 @@
         "
       />
 
-      <v-flex xs12 mb-2 v-if="selectedProvider && $vuetify.breakpoint.xsOnly">
+      <v-flex v-if="selectedProvider && $vuetify.breakpoint.xsOnly" xs12 mb-2>
         <div class="text-black font-weight-bold headline px-4 mb-4">
           <span>
             {{ t('walletTopUp.purchaseVia') }}
@@ -33,12 +42,11 @@
         <router-view></router-view>
       </v-flex>
     </v-layout>
-  </div>
+  </v-container>
 </template>
 
 <script>
 import TopupProviders from '../../../components/WalletTopup/TopupProviders'
-import { ACTIVE, INACTIVE, THEME_DARK_BLACK_NAME } from '../../../utils/enums'
 import { getPaymentProviders } from '../../../utils/utils'
 
 export default {
@@ -59,6 +67,9 @@ export default {
     const routerPath = this.$router.currentRoute.path
     const foundPath = this.providers.find(x => x.link === routerPath)
     this.selectedProvider = foundPath ? foundPath.name : ''
+  },
+  mounted() {
+    this.$vuetify.goTo(0)
   }
 }
 </script>

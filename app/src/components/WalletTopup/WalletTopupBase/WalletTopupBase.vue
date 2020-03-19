@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card class="card-shadow pa-6">
+    <v-card class="elevation-1 pa-6">
       <v-layout wrap class="wallet-topup">
         <v-flex xs12>
           <p class="body-2">
@@ -15,13 +15,13 @@
               <div class="subtitle-2">{{ t('walletTopUp.wannaBuy') }}</div>
               <v-select
                 id="cryptocurrency"
+                v-model="selectedCryptoCurrency"
                 class="cryptocurrency-selector"
                 outlined
                 append-icon="$vuetify.icons.select"
                 :items="selectedProviderObj.validCryptoCurrencies"
-                v-model="selectedCryptoCurrency"
-                @change="fetchQuote"
                 aria-label="Cryptocurrency Selector"
+                @change="fetchQuote"
               ></v-select>
             </v-flex>
             <v-flex xs12>
@@ -32,21 +32,21 @@
                 :placeholder="sendPlaceholder"
                 outlined
                 :value="fiatValue"
-                @input="setFiatValue"
                 :rules="[rules.required, rules.validNumber, rules.maxValidation, rules.minValidation]"
                 aria-label="Amount to Buy"
+                @input="setFiatValue"
               >
                 <template v-slot:append>
-                  <v-btn outlined small color="primary" @click="setFiatValue(100)">100</v-btn>
-                  <v-btn outlined small color="primary" @click="setFiatValue(200)" class="ml-2">200</v-btn>
-                  <div class="primary--text font-weight-medium subtitle-2 pt-1 ml-2">{{ selectedCurrency }}*</div>
+                  <v-btn outlined small color="torus_brand1" @click="setFiatValue(100)">100</v-btn>
+                  <v-btn outlined small color="torus_brand1" class="ml-2" @click="setFiatValue(200)">200</v-btn>
+                  <div class="torus_brand1--text font-weight-medium subtitle-2 pt-1 ml-2">{{ selectedCurrency }}*</div>
                 </template>
               </v-text-field>
 
-              <div class="v-text-field__details torus-hint mb-6">
+              <div class="v-text-field__details mb-6">
                 <div class="v-messages">
                   <div class="v-messages__wrapper">
-                    <div class="v-messages__message d-flex text_2--text">
+                    <div class="v-messages__message d-flex">
                       <v-flex class="font-weight-medium">
                         <span v-if="selectedProviderObj.includeFees">{{ t('walletTopUp.includes') }} &nbsp;&nbsp;</span>
                         <span v-else>{{ t('walletTopUp.doesntInclude') }} &nbsp;&nbsp;</span>
@@ -80,7 +80,7 @@
                 placeholder="0.00"
                 :suffix="selectedCryptoCurrency"
                 :value="cryptoCurrencyValue"
-                :hint="t('walletTopUp.receiveHint')"
+                :hint="selectedProviderObj.receiveHint || t('walletTopUp.receiveHint')"
                 persistent-hint
                 outlined
                 aria-label="Amount to Receive"
@@ -99,7 +99,7 @@
                     :disabled="!formValid || !isQuoteFetched"
                     x-large
                     depressed
-                    color="primary"
+                    color="torus_brand1"
                     type="submit"
                     @click.prevent="sendOrder"
                   >
@@ -130,24 +130,37 @@
 </template>
 
 <script>
-import { paymentProviders, formatCurrencyNumber, significantDigits } from '../../../utils/utils'
+import { formatCurrencyNumber, paymentProviders, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../../helpers/HelpTooltip'
 
 export default {
   components: {
     HelpTooltip
   },
-  props: ['selectedProvider', 'cryptoCurrencyValue', 'currencyRate'],
+  props: {
+    selectedProvider: {
+      type: String,
+      default: ''
+    },
+    cryptoCurrencyValue: {
+      type: [Number, String],
+      default: 0
+    },
+    currencyRate: {
+      type: [Number, String],
+      default: 0
+    }
+  },
   data() {
     return {
       isQuoteFetched: false,
       formValid: true,
       fiatValue: '',
       selectedCryptoCurrency: '',
-      paymentProviders: paymentProviders,
+      paymentProviders,
       rules: {
         required: value => !!value || 'Required',
-        validNumber: value => !isNaN(parseFloat(value)) || 'Enter a valid number',
+        validNumber: value => !Number.isNaN(parseFloat(value)) || 'Enter a valid number',
         maxValidation: value => parseFloat(value) <= this.maxOrderValue || `Max topup amount is ${formatCurrencyNumber(this.maxOrderValue, 0)}`,
         minValidation: value => parseFloat(value) >= this.minOrderValue || `Min topup amount is ${this.minOrderValue}`
       },
@@ -164,9 +177,10 @@ export default {
       return this.paymentProviders[this.selectedProvider]
     },
     selectedCurrency() {
-      if (this.selectedProviderObj && this.selectedProviderObj.validCurrencies.includes(this.$store.state.selectedCurrency))
+      if (this.selectedProviderObj && this.selectedProviderObj.validCurrencies.includes(this.$store.state.selectedCurrency)) {
         return this.$store.state.selectedCurrency
-      return 'USD'
+      }
+      return this.selectedProviderObj.validCurrencies[0]
     },
     maxOrderValue() {
       return this.selectedProviderObj.maxOrderValue
@@ -176,7 +190,7 @@ export default {
     },
     displayRateString() {
       if (parseFloat(this.currencyRate) !== 0) return significantDigits(1 / this.currencyRate)
-      else return 0
+      return 0
     }
   },
   watch: {
@@ -186,8 +200,12 @@ export default {
       }
     }
   },
+  mounted() {
+    this.selectedCryptoCurrency = 'ETH'
+    this.setFiatValue(this.minOrderValue)
+  },
   methods: {
-    significantDigits: significantDigits,
+    significantDigits,
     setFiatValue(newValue) {
       this.fiatValue = newValue
       if (newValue <= this.maxOrderValue && newValue >= this.minOrderValue) {
@@ -203,7 +221,7 @@ export default {
     },
     sendOrder() {
       if (this.$refs.paymentForm.validate()) {
-        const cb = p => {
+        const callback = p => {
           p.then(({ success }) => {
             if (success) this.$router.push({ name: 'walletHistory' })
             else {
@@ -211,10 +229,10 @@ export default {
               this.snackbarColor = 'error'
               this.snackbarText = 'Something went wrong'
             }
-          }).catch(err => {
+          }).catch(error => {
             this.snackbar = true
             this.snackbarColor = 'error'
-            this.snackbarText = err
+            this.snackbarText = error
             this.isQuoteFetched = false
             this.$emit('clearQuote', {
               selectedCurrency: this.selectedCurrency,
@@ -223,13 +241,9 @@ export default {
             })
           })
         }
-        this.$emit('sendOrder', cb)
+        this.$emit('sendOrder', callback)
       }
     }
-  },
-  mounted() {
-    this.selectedCryptoCurrency = 'ETH'
-    this.setFiatValue(this.minOrderValue)
   }
 }
 </script>

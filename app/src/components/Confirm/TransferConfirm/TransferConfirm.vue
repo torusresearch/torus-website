@@ -1,6 +1,6 @@
 <template>
   <v-card class="advance-option">
-    <v-card-text class="text_1--text py-12">
+    <v-card-text class="py-12">
       <v-layout wrap>
         <v-flex xs12 px-4>
           <div class="font-weight-bold headline">{{ t('walletTransfer.transferConfirm') }}</div>
@@ -15,7 +15,7 @@
             <v-flex xs12 px-4 pb-4>
               <div class="subtitle-2">{{ isNonFungibleToken ? t('walletTransfer.assetToSend') : t('walletTransfer.amountToSend') }}:</div>
               <v-divider class="my-1" />
-              <div class="mt-2" v-if="isNonFungibleToken">
+              <div v-if="isNonFungibleToken" class="mt-2">
                 <img class="mr-2 float-left" :src="assetSelected.image" height="24px" />
                 {{ assetSelected.name }}
               </div>
@@ -37,7 +37,7 @@
               </div>
             </v-flex>
             <v-flex>
-              <div class="float-right text-right red--text" v-if="sendEthToContractError">
+              <div v-if="sendEthToContractError" class="float-right text-right red--text">
                 It looks like you're sending ETH to a Contract. Gas Estimation is incorrect and some ETH may be left
               </div>
             </v-flex>
@@ -47,7 +47,7 @@
       <v-layout mt-4 pr-4>
         <v-spacer></v-spacer>
         <v-btn large text @click="onCancel">{{ t('walletTransfer.cancel') }}</v-btn>
-        <v-btn id="confirm-transfer-btn" large color="primary" class="ml-4" type="button" @click="onConfirm">
+        <v-btn id="confirm-transfer-btn" large color="torus_brand1" class="ml-4 white--text" type="button" @click="onConfirm">
           {{ t('walletTransfer.confirm') }}
         </v-btn>
       </v-layout>
@@ -56,30 +56,57 @@
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
+
 import { significantDigits } from '../../../utils/utils'
-import { WALLET_HEADERS_CONFIRM } from '../../../utils/enums'
 
 export default {
-  props: [
-    'toAddress',
-    'selectedCurrency',
-    'convertedAmount',
-    'displayAmount',
-    'speedSelected',
-    'transactionFee',
-    'assetSelected',
-    'isNonFungibleToken',
-    'sendEthToContractError'
-  ],
+  props: {
+    toAddress: {
+      type: String,
+      default: '0x'
+    },
+    selectedCurrency: {
+      type: String,
+      default: 'USD'
+    },
+    convertedAmount: {
+      type: String,
+      default: '~ 0.00 USD'
+    },
+    displayAmount: {
+      type: String,
+      default: '~ 0.00 ETH'
+    },
+    speedSelected: {
+      type: Number,
+      default: 0
+    },
+    transactionFee: {
+      type: BigNumber,
+      default: new BigNumber('0')
+    },
+    assetSelected: {
+      type: Object,
+      default() {
+        return {
+          image: '',
+          name: ''
+        }
+      }
+    },
+    isNonFungibleToken: Boolean,
+    sendEthToContractError: Boolean
+  },
   methods: {
-    onCancel(step) {
+    onCancel() {
       this.$emit('onClose')
     },
     onConfirm() {
       this.$emit('onConfirm')
       this.$emit('onClose')
     },
-    significantDigits: significantDigits
+    significantDigits
   }
 }
 </script>

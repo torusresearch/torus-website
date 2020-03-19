@@ -1,17 +1,17 @@
 <template>
-  <v-card class="card-shadow">
-    <v-card-text class="pt-0 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2' : $vuetify.breakpoint.xsOnly ? 'pb-6' : 'pb-3'">
+  <v-card class="elevation-1 promotion-card">
+    <v-card-text class="pt-0 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-0' : $vuetify.breakpoint.xsOnly ? 'pb-6' : 'pb-0'">
       <v-layout>
-        <v-flex class="text_1--text pt-6" :class="$vuetify.breakpoint.xsOnly ? 'text-center xs12' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
-          <div class="body-1 font-weight-bold" :class="subtitle ? 'text-clamp-one' : 'text-clamp-two'">{{ title }}</div>
+        <v-flex class="pt-6" :class="$vuetify.breakpoint.xsOnly ? 'text-center xs12' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
+          <div class="title torus_font1--text" :class="subtitle ? 'text-clamp-one' : 'text-clamp-two'">{{ title }}</div>
           <slot name="subtitle">
-            <div class="text-clamp-one" :class="$vuetify.breakpoint.lgAndUp ? 'body-2' : 'caption'">{{ subtitle }}</div>
+            <div class="text-clamp-one torus_font1--text caption mt-2">{{ subtitle }}</div>
             <div class="more-details-container">
               <v-btn
-                color="primary"
-                depressed
-                class="py-1 mt-4 white--text"
-                :class="$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12'"
+                block
+                large
+                class="torus-btn1 torus_brand1--text"
+                :class="[$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12']"
                 :href="detailsLink"
                 target="_blank"
               >
@@ -21,8 +21,8 @@
           </slot>
         </v-flex>
         <slot name="image">
-          <v-flex xs4 pt-4 class="text-right hidden-xs-only">
-            <img :src="imagePath" :style="$vuetify.breakpoint.smAndDown ? 'width: 100%' : 'width: 100px'" :alt="`${title} Image`" />
+          <v-flex xs4 pt-4 class="text-right hidden-xs-only align-self-center">
+            <img :src="imagePath" :alt="`${title} Image`" />
           </v-flex>
         </slot>
       </v-layout>
@@ -32,7 +32,13 @@
 
 <script>
 export default {
-  props: ['title', 'subtitle', 'imagePath', 'detailsLink', 'detailsText']
+  props: {
+    title: { type: String, default: '' },
+    subtitle: { type: String, default: '' },
+    imagePath: { type: String, default: '' },
+    detailsLink: { type: String, default: '' },
+    detailsText: { type: String, default: '' }
+  }
 }
 </script>
 

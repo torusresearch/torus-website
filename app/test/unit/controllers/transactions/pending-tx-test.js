@@ -1,9 +1,9 @@
-/* eslint-disable quotes */
-const assert = require('assert')
-const { createTestProviderTools } = require('../../../stub/provider')
-const PendingTransactionTracker = require('../../../../src/controllers/PendingTransactionTracker').default
-const MockTxGen = require('../../lib/mock-tx-gen')
-const sinon = require('sinon')
+/* eslint-disable */
+import assert from 'assert'
+import { createTestProviderTools } from '../../../stub/provider'
+import PendingTransactionTracker from '../../../../src/controllers/PendingTransactionTracker'
+import MockTxGen from '../../lib/mock-tx-gen'
+import sinon from 'sinon'
 
 describe('PendingTransactionTracker', function() {
   let pendingTxTracker, txMeta, txMetaNoHash, providerResultStub, provider, txMeta3, txList, knownErrors
@@ -21,7 +21,6 @@ describe('PendingTransactionTracker', function() {
       },
       history: [{}],
       rawTx:
-        // eslint-disable-next-line max-len
         '0xf86c808504a817c800827b0d940c62bb85faa3311a998d3aba8098c1235c564966880de0b6b3a7640000802aa08ff665feb887a25d4099e40e11f0fef93ee9608f404bd3f853dd9e84ed3317a6a02ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d'
     }
     txMetaNoHash = {
@@ -57,16 +56,7 @@ describe('PendingTransactionTracker', function() {
   })
 
   describe('_checkPendingTx state management', function() {
-    let stub
-
-    afterEach(function() {
-      if (stub) {
-        stub.restore()
-      }
-    })
-
     it('should emit dropped if another tx with the same nonce succeeds', async function() {
-      // SETUP
       const txGen = new MockTxGen()
 
       txGen.generate(
@@ -89,20 +79,18 @@ describe('PendingTransactionTracker', function() {
         { count: 1, fromNonce: '0x01' }
       )[0]
 
-      stub = sinon.stub(pendingTxTracker, 'getCompletedTransactions').returns(txGen.txs)
+      const stub = sinon.stub(pendingTxTracker, 'getCompletedTransactions').returns(txGen.txs)
 
-      // THE EXPECTATION
       const spy = sinon.spy()
       pendingTxTracker.on('tx:dropped', txId => {
-        assert.strictEqual(txId, pending.id, 'should fail the pending tx')
+        assert.equal(txId, pending.id, 'should fail the pending tx')
         spy(txId)
       })
 
-      // THE METHOD
       await pendingTxTracker._checkPendingTx(pending)
 
-      // THE ASSERTION
       assert.ok(spy.calledWith(pending.id), 'tx dropped should be emitted')
+      stub.restore()
     })
   })
 
@@ -127,9 +115,9 @@ describe('PendingTransactionTracker', function() {
         },
         history: [{}],
         rawTx:
-          // eslint-disable-next-line max-len
           '0xf86c808504a817c800827b0d940c62bb85faa3311a998d3aba8098c1235c564966880de0b6b3a7640000802aa08ff665feb887a25d4099e40e11f0fef93ee9608f404bd3f853dd9e84ed3317a6a02ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d'
       }
+
       let counter = 0
       providerResultStub['eth_getTransactionCount'] = '0x02'
       providerResultStub['eth_getTransactionReceipt'] = {}
@@ -169,7 +157,7 @@ describe('PendingTransactionTracker', function() {
   })
 
   describe('#_checkPendingTxs', function() {
-    beforeEach(function() {
+    it("should warp all txMeta's in #updatePendingTxs", function(done) {
       const txMeta2 = (txMeta3 = txMeta)
       txMeta2.id = 2
       txMeta3.id = 3
@@ -179,9 +167,6 @@ describe('PendingTransactionTracker', function() {
         })
         return tx
       })
-    })
-
-    it("should warp all txMeta's in #updatePendingTxs", function(done) {
       pendingTxTracker.getPendingTransactions = () => txList
       pendingTxTracker._checkPendingTx = tx => {
         tx.resolve(tx)
@@ -271,13 +256,13 @@ describe('PendingTransactionTracker', function() {
     const mockFirstRetryBlockNumber = '0x1'
     let txMetaToTestExponentialBackoff, enoughBalance
 
-    beforeEach(() => {
+    beforeEach(function() {
       pendingTxTracker.getBalance = address => {
-        assert.strictEqual(address, txMeta.txParams.from, 'Should pass the address')
+        assert.equal(address, txMeta.txParams.from, 'Should pass the address')
         return enoughBalance
       }
       pendingTxTracker.publishTransaction = async rawTx => {
-        assert.strictEqual(rawTx, txMeta.rawTx, 'Should pass the rawTx')
+        assert.equal(rawTx, txMeta.rawTx, 'Should pass the rawTx')
       }
       pendingTxTracker.approveTransaction = async () => {}
       sinon.spy(pendingTxTracker, 'publishTransaction')
@@ -288,7 +273,7 @@ describe('PendingTransactionTracker', function() {
       })
     })
 
-    afterEach(() => {
+    afterEach(function() {
       pendingTxTracker.publishTransaction.restore()
     })
 
@@ -305,7 +290,7 @@ describe('PendingTransactionTracker', function() {
           done(err)
         })
 
-      assert.strictEqual(pendingTxTracker.publishTransaction.callCount, 1, 'Should call publish transaction')
+      assert.equal(pendingTxTracker.publishTransaction.callCount, 1, 'Should call publish transaction')
     })
 
     it('should not publish the transaction if the limit of retries has been exceeded', function(done) {
@@ -320,7 +305,7 @@ describe('PendingTransactionTracker', function() {
           done(err)
         })
 
-      assert.strictEqual(pendingTxTracker.publishTransaction.callCount, 0, 'Should NOT call publish transaction')
+      assert.equal(pendingTxTracker.publishTransaction.callCount, 0, 'Should NOT call publish transaction')
     })
 
     it('should publish the transaction if the number of blocks since last retry exceeds the last set limit', function(done) {
@@ -335,10 +320,10 @@ describe('PendingTransactionTracker', function() {
           done(err)
         })
 
-      assert.strictEqual(pendingTxTracker.publishTransaction.callCount, 1, 'Should call publish transaction')
+      assert.equal(pendingTxTracker.publishTransaction.callCount, 1, 'Should call publish transaction')
     })
 
-    it('should call opts.approveTransaction with the id if the tx is not signed', async () => {
+    it('should call opts.approveTransaction with the id if the tx is not signed', async function() {
       const stubTx = {
         id: 40
       }
@@ -351,7 +336,7 @@ describe('PendingTransactionTracker', function() {
     })
   })
 
-  describe('#_checkIftxWasDropped', () => {
+  describe('#_checkIftxWasDropped', function() {
     const txMeta = {
       id: 1,
       hash: '0x0593ee121b92e10d63150ad08b4b8f9c7857d1bd160195ee648fb9a0f8d00eeb',
@@ -362,10 +347,9 @@ describe('PendingTransactionTracker', function() {
         value: '0xfffff'
       },
       rawTx:
-        // eslint-disable-next-line max-len
         '0xf86c808504a817c800827b0d940c62bb85faa3311a998d3aba8098c1235c564966880de0b6b3a7640000802aa08ff665feb887a25d4099e40e11f0fef93ee9608f404bd3f853dd9e84ed3317a6a02ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d'
     }
-    it('should return false when the nonce is the suggested network nonce', done => {
+    it('should return false when the nonce is the suggested network nonce', function(done) {
       providerResultStub['eth_getTransactionCount'] = '0x01'
       providerResultStub['eth_getTransactionReceipt'] = {}
       pendingTxTracker
@@ -403,7 +387,6 @@ describe('PendingTransactionTracker', function() {
             value: '0xfffff'
           },
           rawTx:
-            // eslint-disable-next-line max-len
             '0xf86c808504a817c800827b0d940c62bb85faa3311a998d3aba8098c1235c564966880de0b6b3a7640000802aa08ff665feb887a25d4099e40e11f0fef93ee9608f404bd3f853dd9e84ed3317a6a02ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d'
         },
         {
@@ -416,13 +399,13 @@ describe('PendingTransactionTracker', function() {
             value: '0xfffff'
           },
           rawTx:
-            // eslint-disable-next-line max-len
             '0xf86c808504a817c800827b0d940c62bb85faa3311a998d3aba8098c1235c564966880de0b6b3a7640000802aa08ff665feb887a25d4099e40e11f0fef93ee9608f404bd3f853dd9e84ed3317a6a02ec9d3d1d6e176d4d2593dd760e74ccac753e6a0ea0d00cc9789d0d7ff1f471d'
         }
       ]
       pendingTxTracker.getCompletedTransactions = address => {
-        if (!address)
+        if (!address) {
           throw new Error('unless behavior has changed #_checkIfNonceIsTaken needs a filtered list of transactions to see if the nonce is taken')
+        }
         return confirmedTxList
       }
     })

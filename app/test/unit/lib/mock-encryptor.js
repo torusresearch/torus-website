@@ -1,19 +1,20 @@
-var mockHex = '0xabcdef0123456789'
-var mockKey = Buffer.alloc(32)
-let cacheVal
+/* eslint-disable */
+const mockHex = '0xabcdef0123456789'
+const mockKey = Buffer.alloc(32)
+let cacheValue
 
 module.exports = {
-  encrypt(password, dataObj) {
-    cacheVal = dataObj
+  encrypt(password, dataObject) {
+    cacheValue = dataObject
     return Promise.resolve(mockHex)
   },
 
   decrypt(password, text) {
-    return Promise.resolve(cacheVal || {})
+    return Promise.resolve(cacheValue || {})
   },
 
-  encryptWithKey(key, dataObj) {
-    return this.encrypt(key, dataObj)
+  encryptWithKey(key, dataObject) {
+    return this.encrypt(key, dataObject)
   },
 
   decryptWithKey(key, text) {

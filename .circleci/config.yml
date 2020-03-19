@@ -1,4 +1,8 @@
 version: 2
+job_common_base: &job_common_base
+  docker:
+    - image: circleci/buildpack-deps
+  working_directory: ~/torus-website/app
 job_common: &job_common
   docker:
     - image: skyuppercut/node-puppeteer
@@ -15,8 +19,7 @@ step_setup_global_packages: &step_setup_global_packages
   run:
     name: "Set up global packages"
     command: |
-      npm install
-      find ./node_modules/ -name ".git" -type d -exec rm -rf {} +
+      [ ! -d "node_modules" ] && npm install && find ./node_modules/ -name ".git" -type d -exec rm -rf {} + || echo "node_modules exist"
 update_lambda_job: &update_lambda_job
   <<: *job_common
   steps:
@@ -26,7 +29,7 @@ update_lambda_job: &update_lambda_job
     - run:
         name: "Update lambda version"
         command: |
-          mkdir -p ~/.ssh
+          mkdir -p ~/.ssh 
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
           . ./scripts/updateLambda.sh
 update_iframeIntegrity: &update_iframeIntegrity
@@ -73,15 +76,16 @@ jobs:
           path: ~/torus-website
       - <<: *step_restore_cache
       - <<: *step_setup_global_packages
-      - setup_remote_docker
       - run:
           name: "Running unit tests with coverage"
           command: npm run test:coverage-codecov
+      - <<: *step_save_cache
       # Save coverage artifacts
       - store_artifacts:
           path: coverage
   build:
     <<: *job_common
+    resource_class: large
     steps:
       - checkout:
           path: ~/torus-website
@@ -90,7 +94,7 @@ jobs:
       - run:
           name: "Build code for torus website"
           command: |
-            npm version patch -m 'Updating version to %s [skip ci]' && npm run build && . ./scripts/gitPush.sh
+            npm version minor -m 'Updating version to %s [skip ci]' && npm run build && . ./scripts/gitPush.sh
       - persist_to_workspace:
           root: ~/torus-website/
           paths:
@@ -98,6 +102,7 @@ jobs:
       - <<: *step_save_cache
   build-staging:
     <<: *job_common
+    resource_class: large
     steps:
       - checkout:
           path: ~/torus-website
@@ -106,7 +111,7 @@ jobs:
       - run:
           name: "Build code for torus staging website"
           command: |
-            npm version patch -m 'Updating version to %s [skip ci]' && npm run build:staging && . ./scripts/gitPush.sh
+            npm version minor -m 'Updating version to %s [skip ci]' && npm run build:staging && . ./scripts/gitPush.sh
       - persist_to_workspace:
           root: ~/torus-website/
           paths:
@@ -126,6 +131,7 @@ jobs:
     <<: *update_iframeIntegrity
   build-testing:
     <<: *job_common
+    resource_class: large
     steps:
       - checkout:
           path: ~/torus-website
@@ -142,6 +148,7 @@ jobs:
       - <<: *step_save_cache
   build-lrc:
         <<: *job_common
+        resource_class: large
         steps:
           - checkout:
               path: ~/torus-website
@@ -173,7 +180,7 @@ jobs:
                 - .
           - <<: *step_save_cache
   deploy-testing:
-    <<: *job_common
+    <<: *job_common_base
     steps:
       - attach_workspace:
           at: ~/torus-website
@@ -186,7 +193,7 @@ jobs:
             tar czf - dist/ | ssh torus@testing.tor.us "cat > ~/testing-torus-website/dist.tgz"
             ssh torus@testing.tor.us "cd ~/testing-torus-website && tar zxvf dist.tgz"
   deploy-lrc:
-    <<: *job_common
+    <<: *job_common_base
     steps:
       - attach_workspace:
           at: ~/torus-website

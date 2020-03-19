@@ -8,9 +8,9 @@
               <img width="180" :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
             </v-flex>
             <v-flex class="mb-2" xs9 sm7 ml-auto mr-auto>
-              <span :class="$vuetify.theme.dark ? '' : 'text_2--text'" class="display-1 font-weight-bold">{{ t('login.welcome') }} Torus</span>
+              <span class="display-1 font-weight-bold">{{ t('login.welcome') }} Torus</span>
             </v-flex>
-            <v-flex :class="$vuetify.theme.dark ? '' : 'text_1--text'" class="body-2" mb-8 xs9 sm7 ml-auto mr-auto>
+            <v-flex class="body-2" mb-8 xs9 sm7 ml-auto mr-auto>
               <span>{{ t('login.message') }}</span>
             </v-flex>
             <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
@@ -97,7 +97,7 @@
               <span class="text_2--text body-1">
                 {{ t('login.acceptTerms') }}
                 <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
-                  <span class="primary--text">{{ t('login.termsAndConditions') }}</span>
+                  <span class="torus_brand1--text">{{ t('login.termsAndConditions') }}</span>
                 </a>
               </span>
             </v-flex>
@@ -118,7 +118,7 @@
                   :color="$vuetify.theme.dark ? '' : 'white'"
                   :class="$vuetify.theme.dark ? 'torus-dark' : 'card-shadow-v8'"
                   :depressed="$vuetify.theme.dark"
-                  class="px-12 pa-3 font-weight-bold body-1 text-uppercase primary--text logout-btn"
+                  class="px-12 pa-3 font-weight-bold body-1 text-uppercase torus_brand1--text logout-btn"
                   type="button"
                   @click="returnHome"
                 >
@@ -149,93 +149,94 @@
       </v-layout>
     </template>
     <template v-else>
-      <component v-bind:is="activeLoader"></component>
+      <component :is="activeLoader"></component>
     </template>
   </div>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex'
+
 import {
-  WalletLoginLoader,
-  WalletLoginLoaderMobile,
-  WalletHomeLoader,
-  WalletHomeLoaderMobile,
-  WalletCollectiblesLoader,
-  WalletCollectiblesLoaderMobile,
-  WalletTransferLoader,
-  WalletTransferLoaderMobile,
-  WalletTopupLoader,
-  WalletTopupLoaderMobile,
   WalletActivityLoader,
   WalletActivityLoaderMobile,
+  WalletCollectiblesLoader,
+  WalletCollectiblesLoaderMobile,
+  WalletHomeLoader,
+  WalletHomeLoaderMobile,
+  WalletLoginLoader,
+  WalletLoginLoaderMobile,
   WalletSettingsLoader,
-  WalletSettingsLoaderMobile
+  WalletSettingsLoaderMobile,
+  WalletTopupLoader,
+  WalletTopupLoaderMobile,
+  WalletTransferLoader,
+  WalletTransferLoaderMobile
 } from '../../content-loader'
-import { GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD } from '../../utils/enums'
-import config from '../../config'
+import { DISCORD, FACEBOOK, GOOGLE, REDDIT, TWITCH } from '../../utils/enums'
 
 export default {
-  name: 'login',
+  name: 'Login',
   components: { WalletLoginLoader, WalletLoginLoaderMobile },
   data() {
     return {
       isLogout: false,
-      FACEBOOK: FACEBOOK,
-      GOOGLE: GOOGLE,
-      TWITCH: TWITCH,
-      REDDIT: REDDIT,
-      DISCORD: DISCORD
-    }
-  },
-  methods: {
-    ...mapActions({
-      triggerLogin: 'triggerLogin'
-    }),
-    returnHome() {
-      this.$router.push({ path: '/' }).catch(err => {})
-      this.isLogout = false
-      // window.location.href = process.env.BASE_URL
+      FACEBOOK,
+      GOOGLE,
+      TWITCH,
+      REDDIT,
+      DISCORD
     }
   },
   computed: mapState({
     selectedAddress: 'selectedAddress',
-    loggedIn: state => {
-      return state.selectedAddress !== '' && !state.loginInProgress
-    },
+    loggedIn: state => state.selectedAddress !== '' && !state.loginInProgress,
     loginInProgress: 'loginInProgress',
     activeLoader() {
       const redirectPath = this.$route.query.redirect
 
       if (redirectPath === '/wallet/transfer') {
         return this.$vuetify.breakpoint.xsOnly ? WalletTransferLoaderMobile : WalletTransferLoader
-      } else if (redirectPath === '/wallet/topup') {
-        return this.$vuetify.breakpoint.xsOnly ? WalletTopupLoaderMobile : WalletTopupLoader
-      } else if (redirectPath === '/wallet/history') {
-        return this.$vuetify.breakpoint.xsOnly ? WalletActivityLoaderMobile : WalletActivityLoader
-      } else if (redirectPath === '/wallet/settings') {
-        return this.$vuetify.breakpoint.xsOnly ? WalletSettingsLoaderMobile : WalletSettingsLoader
-      } else if (/^\/wallet\/home\/collectibles/.test(redirectPath)) {
-        return this.$vuetify.breakpoint.xsOnly ? WalletCollectiblesLoaderMobile : WalletCollectiblesLoader
-      } else {
-        return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
       }
+      if (redirectPath === '/wallet/topup') {
+        return this.$vuetify.breakpoint.xsOnly ? WalletTopupLoaderMobile : WalletTopupLoader
+      }
+      if (redirectPath === '/wallet/history') {
+        return this.$vuetify.breakpoint.xsOnly ? WalletActivityLoaderMobile : WalletActivityLoader
+      }
+      if (redirectPath === '/wallet/settings') {
+        return this.$vuetify.breakpoint.xsOnly ? WalletSettingsLoaderMobile : WalletSettingsLoader
+      }
+      if (/^\/wallet\/home\/collectibles/.test(redirectPath)) {
+        return this.$vuetify.breakpoint.xsOnly ? WalletCollectiblesLoaderMobile : WalletCollectiblesLoader
+      }
+      return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
     }
   }),
   watch: {
-    selectedAddress: function(newAddress, oldAddress) {
+    selectedAddress(newAddress, oldAddress) {
       if (newAddress !== oldAddress && newAddress !== '') {
         let redirectPath = this.$route.query.redirect
         if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet'
-        this.$router.push(redirectPath).catch(err => {})
+        this.$router.push(redirectPath).catch(_ => {})
       }
     }
   },
   mounted() {
-    if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch(err => {})
+    if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch(_ => {})
   },
   created() {
     this.isLogout = this.$route.name !== 'login'
+  },
+  methods: {
+    ...mapActions({
+      triggerLogin: 'triggerLogin'
+    }),
+    returnHome() {
+      this.$router.push({ path: '/' }).catch(_ => {})
+      this.isLogout = false
+      // window.location.href = process.env.BASE_URL
+    }
   }
 }
 </script>

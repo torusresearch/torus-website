@@ -87,7 +87,7 @@
             </v-btn>
           </v-flex>
           <v-flex xs6>
-            <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">{{ t('dappPermission.allow') }}</v-btn>
+            <v-btn block depressed large color="torus_brand1" class="ml-2 white--text" @click="triggerSign">{{ t('dappPermission.allow') }}</v-btn>
           </v-flex>
         </v-layout>
       </v-flex>
@@ -99,7 +99,7 @@
 import { SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
 
 export default {
-  name: 'permissionConfirm',
+  name: 'PermissionConfirm',
   computed: {
     selectedNetwork() {
       let finalNetwork = ''
@@ -108,10 +108,7 @@ export default {
         return SUPPORTED_NETWORK_TYPES[this.network].networkName
       }
 
-      finalNetwork =
-        !this.$store.state.networkType.networkName || this.$store.state.networkType.networkName === ''
-          ? this.$store.state.networkType.host
-          : this.$store.state.networkType.networkName
+      finalNetwork = !this.$store.state.networkType.networkName ? this.$store.state.networkType.host : this.$store.state.networkType.networkName
       return finalNetwork
     }
   },

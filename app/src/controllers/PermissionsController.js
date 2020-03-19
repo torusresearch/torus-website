@@ -1,19 +1,18 @@
+import { ethErrors } from 'eth-json-rpc-errors'
 import JsonRpcEngine from 'json-rpc-engine'
 import asMiddleware from 'json-rpc-engine/src/asMiddleware'
-import ObservableStore from 'obs-store'
 import log from 'loglevel'
+// import ObservableStore from 'obs-store'
 import { CapabilitiesController as RpcCap } from 'rpc-cap'
-import { ethErrors } from 'eth-json-rpc-errors'
-
-import getRestrictedMethods from '../utils/restrictedMethods'
-import createMethodMiddleware from '../utils/methodMiddleware'
 
 // Methods that do not require any permissions to use:
 import {
+  CAVEAT_NAMES,
   SAFE_METHODS, // methods that do not require any permissions to use
-  WALLET_PREFIX,
-  CAVEAT_NAMES
+  WALLET_PREFIX
 } from '../utils/enums'
+import createMethodMiddleware from '../utils/methodMiddleware'
+import getRestrictedMethods from '../utils/restrictedMethods'
 
 export default class PermissionsController {
   constructor({ getKeyringAccounts, setSiteMetadata } = {}) {
@@ -46,16 +45,17 @@ export default class PermissionsController {
    * @param {string} origin - The origin string.
    */
   getAccounts(origin) {
-    return new Promise((resolve, _) => {
-      const req = { method: 'eth_accounts' }
-      const res = {}
-      this.permissions.providerMiddlewareFunction({ origin }, req, res, () => {}, _end)
+    // eslint-disable-next-line no-unused-vars
+    return new Promise((resolve, reject) => {
+      const request = { method: 'eth_accounts' }
+      const response = {}
+      this.permissions.providerMiddlewareFunction({ origin }, request, response, () => {}, _end)
 
       function _end() {
-        if (res.error || !Array.isArray(res.result)) {
+        if (response.error || !Array.isArray(response.result)) {
           resolve([])
         } else {
-          resolve(res.result)
+          resolve(response.result)
         }
       }
     })
@@ -69,15 +69,15 @@ export default class PermissionsController {
    */
   _requestPermissions(origin, permissions) {
     return new Promise((resolve, reject) => {
-      const req = { method: 'wallet_requestPermissions', params: [permissions] }
-      const res = {}
-      this.permissions.providerMiddlewareFunction({ origin }, req, res, () => {}, _end)
+      const request = { method: 'wallet_requestPermissions', params: [permissions] }
+      const response = {}
+      this.permissions.providerMiddlewareFunction({ origin }, request, response, () => {}, _end)
 
-      function _end(err) {
-        if (err || res.error) {
-          reject(err || res.error)
+      function _end(error) {
+        if (error || response.error) {
+          reject(error || response.error)
         } else {
-          resolve(res.result)
+          resolve(response.result)
         }
       }
     })
@@ -102,12 +102,12 @@ export default class PermissionsController {
       // attempt to finalize the request and resolve it
       await this.finalizePermissionsRequest(approved.permissions, accounts)
       approval.resolve(approved.permissions)
-    } catch (err) {
+    } catch (error) {
       // if finalization fails, reject the request
       approval.reject(
         ethErrors.rpc.invalidRequest({
-          message: err.message,
-          data: err
+          message: error.message,
+          data: error
         })
       )
     }
@@ -173,9 +173,9 @@ export default class PermissionsController {
 
     // assert accounts exist
     const allAccounts = await this.getKeyringAccounts()
-    accounts.forEach(acc => {
-      if (!allAccounts.includes(acc)) {
-        throw new Error(`Unknown account: ${acc}`)
+    accounts.forEach(accumulator => {
+      if (!allAccounts.includes(accumulator)) {
+        throw new Error(`Unknown account: ${accumulator}`)
       }
     })
   }
@@ -188,9 +188,7 @@ export default class PermissionsController {
     Object.entries(domains).forEach(([origin, perms]) => {
       this.permissions.removePermissionsFor(
         origin,
-        perms.map(methodName => {
-          return { parentCapability: methodName }
-        })
+        perms.map(methodName => ({ parentCapability: methodName }))
       )
     })
   }
@@ -233,10 +231,10 @@ export default class PermissionsController {
          *
          * @param {string} req - The internal rpc-cap user request object.
          */
-        requestUserApproval: async req => {
+        requestUserApproval: async request => {
           const {
             metadata: { id }
-          } = req
+          } = request
 
           this._platform.openExtensionInBrowser(`connect/${id}`)
 

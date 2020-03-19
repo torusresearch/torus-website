@@ -1,18 +1,20 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+
+import WalletHistory from './containers/WalletHistory'
+import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
+import WalletSettings from './containers/WalletSettings'
+import { WalletTopupHome, WalletTopupMoonpay, WalletTopupRampNetwork, WalletTopupSimplex, WalletTopupWyre } from './containers/WalletTopup'
+import WalletTransfer from './containers/WalletTransfer'
 import store from './store'
+import Confirm from './views/Confirm'
+import Login from './views/Login'
 import Popup from './views/Popup'
 import ProviderChange from './views/ProviderChange'
-import UserInfoRequest from './views/UserInfoRequest'
 import RedirectCatch from './views/RedirectCatch'
-import Login from './views/Login'
-import Confirm from './views/Confirm'
+import Test from './views/Test'
+import UserInfoRequest from './views/UserInfoRequest'
 import Wallet from './views/Wallet'
-import { WalletHome, WalletHomeMain, WalletHomeCollectible } from './containers/WalletHome'
-import WalletHistory from './containers/WalletHistory'
-import WalletSettings from './containers/WalletSettings'
-import WalletTransfer from './containers/WalletTransfer'
-import { WalletTopupHome, WalletTopupSimplex, WalletTopupMoonpay, WalletTopupWyre, WalletTopupCrypto } from './containers/WalletTopup'
 
 // const Popup = () => import('./views/Popup.vue')
 // const Confirm = () => import('./views/Confirm.vue')
@@ -33,6 +35,12 @@ const router = new Router({
       path: '/',
       name: 'login',
       component: Login,
+      meta: { requiresAuth: false }
+    },
+    {
+      path: '/test',
+      name: 'test',
+      component: Test,
       meta: { requiresAuth: false }
     },
     {
@@ -120,6 +128,11 @@ const router = new Router({
           component: WalletTopupHome,
           children: [
             {
+              path: 'rampnetwork',
+              name: 'walletTopupRampNetwork',
+              component: WalletTopupRampNetwork
+            },
+            {
               path: 'simplex',
               name: 'walletTopupSimplex',
               component: WalletTopupSimplex
@@ -133,11 +146,6 @@ const router = new Router({
               path: 'wyre',
               name: 'walletTopupWyre',
               component: WalletTopupWyre
-            },
-            {
-              path: 'crypto',
-              name: 'walletTopupCrypto',
-              component: WalletTopupCrypto
             }
           ]
         }
@@ -147,32 +155,35 @@ const router = new Router({
   ]
 })
 
-function hasQueryParams(route) {
+function hasQueryParameters(route) {
   return Object.prototype.hasOwnProperty.call(route.query, 'instanceId')
 }
 
 router.beforeResolve((to, from, next) => {
-  if (to.hasOwnProperty('meta') && to.meta.hasOwnProperty('requiresAuth') && to.meta.requiresAuth === false) {
+  if (
+    Object.prototype.hasOwnProperty.call(to, 'meta') &&
+    Object.prototype.hasOwnProperty.call(to.meta, 'requiresAuth') &&
+    to.meta.requiresAuth === false
+  ) {
     if (to.name === 'logout') {
-      next()
-    } else if (!hasQueryParams(to) && hasQueryParams(from)) {
-      next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
-    } else {
-      next()
+      return next()
     }
-  } else {
-    if (store.state.selectedAddress === '') {
-      next({ name: 'login', query: { redirect: to.fullPath } })
-    } else if (!hasQueryParams(to) && hasQueryParams(from)) {
-      if (to.name !== 'walletTransfer') {
-        Object.keys(from.query).forEach(key => key === 'instanceId' || delete from.query[key])
-      }
-      next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
-      // next()
-    } else {
-      next()
+    if (!hasQueryParameters(to) && hasQueryParameters(from)) {
+      return next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
     }
+    return next()
   }
+  if (store.state.selectedAddress === '') {
+    return next({ name: 'login', query: { redirect: to.fullPath } })
+  }
+  if (!hasQueryParameters(to) && hasQueryParameters(from)) {
+    if (to.name !== 'walletTransfer') {
+      Object.keys(from.query).forEach(key => key === 'instanceId' || delete from.query[key])
+    }
+    return next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
+    // next()
+  }
+  return next()
 })
 
 export default router

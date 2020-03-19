@@ -1,7 +1,7 @@
 <template>
   <v-container px-0 py-6>
     <template v-if="type === 'none'">
-      <user-info-screen-loader />
+      <UserInfoScreenLoader />
     </template>
     <template v-else>
       <!-- <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" /> -->
@@ -15,7 +15,7 @@
 
           <v-card flat class="grey lighten-3">
             <v-card-text>
-              <div class="subtitle-2 primary--text request-from">
+              <div class="subtitle-2 torus_brand1--text request-from">
                 <a :href="origin.href" target="_blank">{{ origin.hostname }}</a>
                 <a :href="origin.href" target="_blank" class="float-right">
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
@@ -31,7 +31,7 @@
             </div>
             <div class="caption text_2--text">{{ accessText }}</div>
           </div>
-          <div class="d-flex mb-2" v-if="message !== ''">
+          <div v-if="message !== ''" class="d-flex mb-2">
             <div class="mr-5 note-list__icon">
               <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
             </div>
@@ -44,7 +44,7 @@
             <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappInfo.cancel') }}</v-btn>
           </v-flex>
           <v-flex xs6>
-            <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">{{ t('dappInfo.confirm') }}</v-btn>
+            <v-btn block depressed large color="torus_brand1" class="ml-2" @click="triggerSign">{{ t('dappInfo.confirm') }}</v-btn>
           </v-flex>
         </v-layout>
       </v-layout>
@@ -54,14 +54,13 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import log from 'loglevel'
 
 import { UserInfoScreenLoader } from '../../content-loader'
 // import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
 import { broadcastChannelOptions, capitalizeFirstLetter } from '../../utils/utils'
 
 export default {
-  name: 'userInfoRequest',
+  name: 'UserInfoRequest',
   components: {
     UserInfoScreenLoader
     // PermissionConfirm
@@ -80,22 +79,10 @@ export default {
       return this.t(`dappInfo.toAccess${capitalizeFirstLetter(this.verifier)}`)
     }
   },
-  methods: {
-    async triggerSign(event) {
-      const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
-      await bc.postMessage({ data: { type: 'user-info-request-result', approve: true } })
-      bc.close()
-    },
-    async triggerDeny(event) {
-      const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
-      await bc.postMessage({ data: { type: 'user-info-request-result', approve: false } })
-      bc.close()
-    }
-  },
   mounted() {
     this.channel = `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
-    bc.onmessage = async ev => {
+    bc.addEventListener('message', async ev => {
       const {
         payload: { verifier = '', message = '' },
         origin = ''
@@ -105,8 +92,20 @@ export default {
       this.verifier = verifier
       this.message = message
       bc.close()
-    }
+    })
     bc.postMessage({ data: { type: 'popup-loaded' } })
+  },
+  methods: {
+    async triggerSign() {
+      const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
+      await bc.postMessage({ data: { type: 'user-info-request-result', approve: true } })
+      bc.close()
+    },
+    async triggerDeny() {
+      const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
+      await bc.postMessage({ data: { type: 'user-info-request-result', approve: false } })
+      bc.close()
+    }
   }
 }
 </script>

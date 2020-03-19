@@ -1,70 +1,106 @@
-@import '../../../scss/nav-selector.mixin';
-@import '../../../scss/outline-tooltip.mixin';
+// @import '../../../scss/nav-selector.mixin';
+// @import '../../../scss/outline-tooltip.mixin';
 
-.wallet-home {
-  ::v-deep .currency-selector {
-    @include navSelector();
-    max-width: 75px;
-    .v-select__selection {
-      color: var(--v-primary-base);
-      width: 30px;
-      max-width: 30px;
-    }
-    .v-icon {
-      color: var(--v-text_2-base);
-      width: 20px;
-      height: 20px;
-    }
-    input#currency-selector {
-      display: none;
-    }
-    .v-input__append-inner {
-      padding: 0;
-      margin: 0;
-      width: 16px;
-    }
+// .wallet-home {
+//   ::v-deep .currency-selector {
+//     @include navSelector();
+//     max-width: 75px;
+//     .v-select__selection {
+//       color: var(--v-torus_brand1-base);
+//       width: 30px;
+//       max-width: 30px;
+//     }
+//     .v-icon {
+//       color: var(--v-text_2-base);
+//       width: 20px;
+//       height: 20px;
+//     }
+//     input#currency-selector {
+//       display: none;
+//     }
+//     .v-input__append-inner {
+//       padding: 0;
+//       margin: 0;
+//       width: 16px;
+//     }
+//   }
+
+//   ::v-deep .search-field {
+//     .v-input__slot {
+//       min-height: 40px;
+//     }
+
+//     .v-input__append-inner {
+//       margin-top: 8px;
+//     }
+
+//     .v-icon.v-icon {
+//       width: 12px;
+//     }
+//   }
+
+//   .refresh-button {
+//     .v-icon {
+//       width: 12px;
+//     }
+//   }
+
+//   .home-cards .v-card {
+//     height: 140px;
+//     @media screen and (max-width: 600px) {
+//       height: inherit;
+//     }
+//   }
+
+//   .token-tab-content {
+//     background: transparent;
+//   }
+// }
+
+// .v-tooltip__content {
+//   @include outlineTooltip();
+//   ::v-deep .outline-tooltip {
+//     &::after {
+//       top: 100%;
+//       left: 50%;
+//       margin-left: -5px;
+//       border-width: 5px;
+//     }
+//   }
+// }
+
+.home-tab {
+  ::v-deep .v-tabs-slider-wrapper {
+    display: none;
   }
-
-  ::v-deep .search-field {
-    .v-input__slot {
-      min-height: 40px;
+  .v-tab {
+    text-transform: none;
+    width: 280px;
+    border: 1px solid #D5D5D5;
+    border-radius: 3px;
+    &--active {
+      color: var(--v-torus_brand1-base);
+      background-color: var(--v-brand_4-base);
     }
-
-    .v-input__append-inner {
-      margin-top: 8px;
-    }
-
-    .v-icon.v-icon {
-      width: 12px;
-    }
-  }
-
-  .refresh-button {
-    .v-icon {
-      width: 12px;
-    }
-  }
-
-  .home-cards .v-card {
-    height: 140px;
     @media screen and (max-width: 600px) {
-      height: inherit;
+      width: 150px;
     }
   }
-
-  .token-tab-content {
-    background: transparent;
+  &-token.v-tab {
+    border-radius: 3px 0px 0px 3px;
+  }
+  &-collectibles.v-tab {
+    border-radius: 0px 3px 3px 0px;
+  }
+  &.theme--dark {
+    &.v-tabs {
+      ::v-deep & > .v-tabs-bar {
+        background-color: transparent;
+      }
+    }
   }
 }
 
-.v-tooltip__content {
-  @include outlineTooltip();
-  ::v-deep .outline-tooltip {
-    &::after {
-      top: 100%;
-      left: 50%;
-      margin-left: -5px;
-      border-width: 5px;
-    }
-  }
+.token-tab-content.theme--dark {
+  background-color: transparent; 
 }

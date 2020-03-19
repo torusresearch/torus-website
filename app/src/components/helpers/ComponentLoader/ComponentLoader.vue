@@ -1,17 +1,19 @@
 <template>
-  <beat-loader :color="color" />
+  <div>
+    <BeatLoader :color="color" />
+  </div>
 </template>
 
 <script>
 import BeatLoader from 'vue-spinner/src/BeatLoader'
 
 export default {
-  name: 'componentLoader',
-  data() {
-    return {
-      color: this.$vuetify.theme.dark ? this.$vuetify.theme.themes.dark.primary.base : this.$vuetify.theme.themes.light.primary.base
+  name: 'ComponentLoader',
+  components: { BeatLoader },
+  computed: {
+    color() {
+      return this.$vuetify.theme.dark ? this.$vuetify.theme.themes.dark.torus_brand1 : this.$vuetify.theme.themes.light.torus_brand1
     }
-  },
-  components: { BeatLoader }
+  }
 }
 </script>

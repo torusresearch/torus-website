@@ -6,27 +6,15 @@
         <span class="subtitle-2 ml-1">{{ selectedLabel }}</span>
         <v-icon class="ml-2" small>$vuetify.icons.select</v-icon>
       </v-btn>
-
-      <v-list-item v-on="on" v-else>
-        <v-list-item-action class="ml-1 mr-1">
-          <img :src="require('../../../../public/img/icons/globe.svg')" width="15" height="30" alt="Torus language globe" />
-        </v-list-item-action>
-        <v-list-item-content class="text_1--text">
-          <span class="subtitle-2">
-            {{ selectedLabel }}
-            <v-icon class="mb-1" small>$vuetify.icons.select</v-icon>
-          </span>
-        </v-list-item-content>
-      </v-list-item>
     </template>
 
     <v-card class="pa-3">
       <v-list min-width="190" dense>
-        <v-list-item-group color="primary">
+        <v-list-item-group color="torus_brand1">
           <v-list-item
-            :class="localeSelected === locale.value ? 'active' : ''"
             v-for="locale in LOCALES"
             :key="locale.value"
+            :class="localeSelected === locale.value ? 'active' : ''"
             @click="changeLocale(locale.value)"
           >
             <v-list-item-content>
@@ -40,7 +28,7 @@
 </template>
 
 <script>
-import { LOCALES, LOCALE_EN } from '../../../utils/enums'
+import { LOCALES } from '../../../utils/enums'
 
 export default {
   data() {

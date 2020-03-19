@@ -1,1 +1,1 @@
-export { default } from './CollectiblesList'
+export { default } from './CollectiblesList.vue'

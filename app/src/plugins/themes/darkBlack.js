@@ -1,7 +1,23 @@
 export default {
+  // V8
+  torus_brand1: '#0364FF',
+  torus_brand2: '#5495F7',
+  torus_brand3: '#CDE0FF',
+  torus_brand4: '#E9EEFE',
+  torus_brand_hover: '#075DE5',
+  torus_gray1: '#D3D5E2',
+  torus_gray2: '#EEF2F4',
+  torus_gray3: '#A2A5B5',
+  torus_gray4: '#F9F9FB',
+  torus_font1: '#FFFFFF',
+  torus_font2: '#7F8FA4',
+  torus_font_link_1: '#0364FF',
+  torus_font_link_2: '#5495F7',
+  torus_black: '#252529',
+  torus_black2: '#2F3136',
+  torus_light: '#FCFCFC',
+
   // Main background color, supports 2 color gradient
-  background_body_1: '#242529',
-  background_body_2: '#242529',
   background: '#2F3136',
   text_1: '#D3D3D4',
   text_2: '#7F8186',

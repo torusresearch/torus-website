@@ -1,18 +1,20 @@
 <template>
   <v-flex xs12 sm6 md5 mb-4 px-4 class="topup-providers">
     <v-card
-      class="mb-4 topup-provider card-shadow"
-      :class="{ active: innerProvider === targetProvider.name }"
       v-for="targetProvider in activeProviders"
-      @click="innerProvider = targetProvider.name"
       :key="targetProvider.name"
+      class="mb-4 topup-provider elevation-1"
+      :class="{ active: innerProvider === targetProvider.name }"
       :data-provider="targetProvider.name"
+      @click="innerProvider = targetProvider.name"
     >
       <router-link :to="targetProvider.link">
-        <v-list-item three-line :id="`${targetProvider.name}-link`" @click="scrollToPosition">
+        <v-list-item :id="`${targetProvider.name}-link`" three-line @click="scrollToPosition">
           <v-list-item-icon class="mr-2 align-self-center">
-            <v-icon class="primary--text" v-if="innerProvider === targetProvider.name">$vuetify.icons.radioOn</v-icon>
-            <v-icon class="text_2--text" v-else>$vuetify.icons.radioOff</v-icon>
+            <v-icon v-if="innerProvider === targetProvider.name" :class="$vuetify.theme.isDark ? 'torus_light--text' : 'torus_brand1--text'">
+              $vuetify.icons.radioOn
+            </v-icon>
+            <v-icon v-else :class="$vuetify.theme.isDark ? 'torus_light--text' : 'torus_black--text'">$vuetify.icons.radioOff</v-icon>
           </v-list-item-icon>
           <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
             <img :src="require(`../../../../public/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
@@ -31,7 +33,7 @@
     </v-card>
 
     <template>
-      <v-tooltip right v-for="targetProvider in inactiveProviders" :key="targetProvider.name">
+      <v-tooltip v-for="targetProvider in inactiveProviders" :key="targetProvider.name" right>
         <template v-slot:activator="{ on }">
           <v-card class="topup-provider mb-4 coming-soon" :data-provider="targetProvider.name" v-on="on">
             <v-list-item three-line>
@@ -68,7 +70,18 @@
 import { ACTIVE, INACTIVE } from '../../../utils/enums'
 
 export default {
-  props: ['selectedProvider', 'providers'],
+  props: {
+    selectedProvider: {
+      type: String,
+      default: ''
+    },
+    providers: {
+      type: Array,
+      default() {
+        return []
+      }
+    }
+  },
   data() {
     return {
       innerProvider: ''
@@ -82,32 +95,31 @@ export default {
       return this.providers.filter(provider => provider.status === INACTIVE)
     },
     providersFiltered() {
-      return this.providers.filter(provider => {
-        return this.innerProvider === '' || (this.innerProvider && this.innerProvider === provider.name)
-      })
+      return this.providers.filter(provider => this.innerProvider === '' || (this.innerProvider && this.innerProvider === provider.name))
     }
   },
   watch: {
-    innerProvider(newVal, oldVal) {
-      if (oldVal !== newVal) this.$emit('onSelectProvider', this.innerProvider)
+    innerProvider(newValue, oldValue) {
+      if (oldValue !== newValue) this.$emit('onSelectProvider', this.innerProvider)
     },
-    selectedProvider(newVal, oldVal) {
-      if (oldVal !== newVal) this.innerProvider = newVal
-    }
-  },
-  methods: {
-    scrollToPosition() {
-      const elem = document.querySelector('#providerForm')
-      setTimeout(() => {
-        elem &&
-          elem.scrollIntoView({
-            behavior: 'smooth'
-          })
-      }, 0)
+    selectedProvider(newValue, oldValue) {
+      if (oldValue !== newValue) this.innerProvider = newValue
     }
   },
   mounted() {
     this.innerProvider = this.selectedProvider
+  },
+  methods: {
+    scrollToPosition() {
+      const element = document.querySelector('#providerForm')
+      setTimeout(() => {
+        if (element) {
+          element.scrollIntoView({
+            behavior: 'smooth'
+          })
+        }
+      }, 0)
+    }
   }
 }
 </script>

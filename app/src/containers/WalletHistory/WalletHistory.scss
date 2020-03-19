@@ -1,43 +1,44 @@
 @import '../../scss/nav-selector.mixin';
-@mixin svg-size($args...) {
-  @each $name, $size in keywords($args) {
-    .svg-setting-#{$name} {
-      width: $size;
-      height: $size;
+
+/* NEW UI */
+.nav-selector.v-input.v-text-field--outlined {
+  ::v-deep & > .v-input__control > .v-input__slot {
+    box-shadow: none;
+    border-radius: 0;
+    background: none;
+  }
+  &.theme--dark {
+    border: 1px solid #343539;
+    ::v-deep & > .v-input__control > .v-input__slot {
+      fieldset {
+        border: 0
+      }
     }
   }
 }
-
-@include svg-size($tiny: 18px, $small: 24px, $medium: 38px, $large: 80px);
-
-%justify-align {
-  justify-content: start;
-  align-items: center;
-}
-
-.spanWrapSvgStyle {
-  display: inline-flex;
-  @extend %justify-align;
-}
-
-.text-bluish {
-  color: var(--v-torus_blue-base);
-}
-
-.select-width {
-  width: 80px;
-}
-
-/* NEW UI */
-::v-deep .nav-selector {
-  @include navSelector();
-  &.transaction {
-    max-width: 150px;
-  }
-  &.period {
-    max-width: 130px;
-  }
-  .v-icon {
-    color: var(--v-text_2-base);
-  }
-}
+// ::v-deep .nav-selector {
+//   @include navSelector();
+//   border-radius: 3px;
+//   .v-select__selection {
+//     margin-left: 8px;
+//   }
+//   &.transaction {
+//     max-width: 190px;
+//   }
+//   &.period {
+//     max-width: 190px;
+//   }
+//   .v-icon {
+//     color: var(--v-text_2-base);
+//   }
+//   @media screen and (max-width: 600px) {
+//     &.transaction {
+//       max-width: 100%;
+//       width: 100%;
+//     }
+//     &.period {
+//       max-width: 100%;
+//       width: 100%;
+//     }
+//   }
+// }

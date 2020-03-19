@@ -1,60 +1,63 @@
 <template>
-  <v-flex xs12 sm6 mb-3>
-    <v-layout px-4>
-      <v-flex class="subtitle-2">
+  <v-flex xs12 mb-3 class="torus-v8">
+    <v-layout>
+      <v-flex class="body-2 mb-1">
         <span>
-          {{ t('walletTransfer.selectSpeed') }}
-          <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" />
+          Transfer Fee
+          <!-- {{ t('walletTransfer.selectSpeed') }}
+          <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" /> -->
         </span>
         <TransferAdvanceOption
           v-if="!$vuetify.breakpoint.xsOnly"
           :symbol="symbol"
-          :displayAmount="displayAmount"
+          :display-amount="displayAmount"
           :gas="gas"
-          :activeGasPrice="activeGasPrice"
+          :active-gas-price="activeGasPrice"
           @onSave="onSaveAdvanceOptions"
         />
       </v-flex>
     </v-layout>
-    <v-layout px-4 mx-n1 xs12 v-if="!isAdvanceOption">
-      <v-flex xs6 px-1 mb-1>
-        <v-btn
-          id="average-speed-btn"
-          block
-          large
-          outlined
-          class="button-speed"
-          :class="speedSelected === 'average' ? 'selected' : ''"
+    <v-layout v-if="!isAdvanceOption" mx-n2 xs12>
+      <v-flex xs6 px-2 mb-1>
+        <v-chip
+          class="button-speed text-center elevation-3"
+          :outlined="$vuetify.theme.dark"
+          :class="[speedSelected === 'average' ? 'selected' : '']"
+          label
           @click="selectSpeed('average', averageGasPrice)"
         >
-          <span>~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</span>
-          <span class="font-weight-light body-2">{{ getGasDisplayString(averageGasPrice) }}</span>
-        </v-btn>
+          <img :src="require(`../../../../public/img/icons/speed-bicycle.svg`)" class="mr-2" />
+          <div>
+            <div class="font-weight-bold button-speed__speed">~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
+            <div :class="{ 'text_2--text': !$vuetify.theme.dark }">{{ getGasDisplayString(averageGasPrice) }}</div>
+          </div>
+        </v-chip>
       </v-flex>
-      <v-flex xs6 px-1 mb-1>
-        <v-btn
-          id="fastest-speed-btn"
-          block
-          large
-          outlined
-          class="button-speed"
-          :class="speedSelected === 'fastest' ? 'selected' : ''"
+      <v-flex xs6 px-2 mb-1>
+        <v-chip
+          class="button-speed text-center elevation-3"
+          :outlined="$vuetify.theme.dark"
+          :class="[speedSelected === 'fastest' ? 'selected' : '']"
+          label
           @click="selectSpeed('fastest', fastestGasPrice)"
         >
-          <span>~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</span>
-          <span class="font-weight-light body-2">{{ getGasDisplayString(fastestGasPrice) }}</span>
-        </v-btn>
+          <img :src="require(`../../../../public/img/icons/speed-car.svg`)" class="mr-2" />
+          <div>
+            <div class="font-weight-bold button-speed__speed">~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
+            <div :class="{ 'text_2--text': !$vuetify.theme.dark }">{{ getGasDisplayString(fastestGasPrice) }}</div>
+          </div>
+        </v-chip>
       </v-flex>
     </v-layout>
     <v-layout v-if="isAdvanceOption" align-center>
-      <v-flex xs8 px-6 mb-1>
+      <v-flex xs8 mb-1>
         <div class="subtitle-2 font-weight-bold">
           {{ getEthAmountDisplay(gas, activeGasPrice) }}
           <span class="caption text_2--text">( ~ {{ getGasDisplayString(activeGasPrice) }} )</span>
         </div>
       </v-flex>
-      <v-flex xs4 px-4 class="text-right">
-        <v-btn id="adv-reset-btn" outlined color="primary" @click="resetAdvanceOption">{{ t('walletTransfer.reset') }}</v-btn>
+      <v-flex xs4 class="text-right">
+        <v-btn id="adv-reset-btn" outlined color="torus_brand1" @click="resetAdvanceOption">{{ t('walletTransfer.reset') }}</v-btn>
       </v-flex>
     </v-layout>
     <v-layout>
@@ -62,9 +65,9 @@
         <TransferAdvanceOption
           v-if="$vuetify.breakpoint.xsOnly"
           :symbol="symbol"
-          :displayAmount="displayAmount"
+          :display-amount="displayAmount"
           :gas="gas"
-          :activeGasPrice="activeGasPrice"
+          :active-gas-price="activeGasPrice"
           @onSave="onSaveAdvanceOptions"
         />
       </v-flex>
@@ -73,28 +76,97 @@
 </template>
 
 <script>
+import BigNumber from 'bignumber.js'
+import log from 'loglevel'
+
 import { significantDigits } from '../../../utils/utils'
 import TransferAdvanceOption from '../TransferAdvanceOption'
-import HelpTooltip from '../HelpTooltip'
-import log from 'loglevel'
-import BigNumber from 'bignumber.js'
 
 export default {
   components: {
-    TransferAdvanceOption,
-    HelpTooltip
+    TransferAdvanceOption
   },
-  props: ['gas', 'displayAmount', 'activeGasPriceConfirm', 'symbol', 'resetSpeed', 'selectedCurrency', 'currencyMultiplier'],
+  props: {
+    gas: { type: BigNumber, default: new BigNumber('0') },
+    displayAmount: { type: BigNumber, default: new BigNumber('0') },
+    activeGasPriceConfirm: {
+      type: BigNumber,
+      default: undefined
+    },
+    symbol: {
+      type: String,
+      default: ''
+    },
+    resetSpeed: {
+      type: Boolean
+    },
+    selectedCurrency: {
+      type: String,
+      default: 'USD'
+    },
+    currencyMultiplier: {
+      type: BigNumber,
+      default: new BigNumber('0')
+    }
+  },
   data() {
     return {
       isAdvanceOption: false,
       speedSelected: '',
       averageGasPrice: new BigNumber('5'),
       fastestGasPrice: new BigNumber('20'),
-      activeGasPrice: new BigNumber(''),
+      activeGasPrice: new BigNumber('0'),
       averageGasPriceSpeed: '',
       fastestGasPriceSpeed: ''
     }
+  },
+  watch: {
+    resetSpeed(value) {
+      if (value) {
+        this.speedSelected = 'average'
+        this.resetAdvanceOption()
+      }
+    }
+  },
+  created() {
+    fetch('https://ethgasstation.info/json/ethgasAPI.json', {
+      headers: {},
+      referrer: 'http://ethgasstation.info/json/',
+      referrerPolicy: 'no-referrer-when-downgrade',
+      body: null,
+      method: 'GET',
+      mode: 'cors'
+    })
+      .then(resp => resp.json())
+      .then(
+        ({
+          average: averageTimes10,
+          avgWait,
+          // block_time: blockTime,
+          // blockNum,
+          fastest: fastestTimes10,
+          fastestWait
+          // safeLow: safeLowTimes10,
+          // safeLowWait,
+          // speed
+        }) => {
+          this.averageGasPrice = new BigNumber(averageTimes10).div(new BigNumber('10'))
+          this.fastestGasPrice = new BigNumber(fastestTimes10).div(new BigNumber('10'))
+
+          this.averageGasPriceSpeed = avgWait
+          this.fastestGasPriceSpeed = fastestWait
+
+          // Set selected gas price from confirm
+          if (this.activeGasPriceConfirm) {
+            this.setSelectedSpeed()
+          } else {
+            this.selectSpeed('average', this.averageGasPrice)
+          }
+        }
+      )
+      .catch(error => {
+        log.error(error)
+      })
   },
   methods: {
     onSaveAdvanceOptions(details) {
@@ -127,9 +199,7 @@ export default {
     },
     getGasAmount(gasPrice) {
       const ethFee = this.getEthAmount(this.gas, gasPrice)
-      const currencyFee = ethFee.times(this.currencyMultiplier)
-
-      return currencyFee
+      return ethFee.times(this.currencyMultiplier)
     },
     getEthAmount(gas, gasPrice) {
       return gas.times(gasPrice).div(new BigNumber(10).pow(new BigNumber(9)))
@@ -143,9 +213,9 @@ export default {
       this.$emit('onSelectSpeed', {
         speedSelected: this.speedSelected,
         activeGasPrice: this.activeGasPrice,
-        speed: speed,
+        speed,
         isReset: !!isReset,
-        gas: updatedGas ? updatedGas : this.gas
+        gas: updatedGas || this.gas
       })
     },
     setSelectedSpeed() {
@@ -170,54 +240,6 @@ export default {
         this.updateCosts()
       }
     }
-  },
-  watch: {
-    resetSpeed(value) {
-      if (value) {
-        this.speedSelected = 'average'
-        this.resetAdvanceOption()
-      }
-    }
-  },
-  created() {
-    fetch('https://ethgasstation.info/json/ethgasAPI.json', {
-      headers: {},
-      referrer: 'http://ethgasstation.info/json/',
-      referrerPolicy: 'no-referrer-when-downgrade',
-      body: null,
-      method: 'GET',
-      mode: 'cors'
-    })
-      .then(resp => resp.json())
-      .then(
-        ({
-          average: averageTimes10,
-          avgWait,
-          block_time: blockTime,
-          blockNum,
-          fastest: fastestTimes10,
-          fastestWait,
-          safeLow: safeLowTimes10,
-          safeLowWait,
-          speed
-        }) => {
-          this.averageGasPrice = new BigNumber(averageTimes10).div(new BigNumber('10'))
-          this.fastestGasPrice = new BigNumber(fastestTimes10).div(new BigNumber('10'))
-
-          this.averageGasPriceSpeed = avgWait
-          this.fastestGasPriceSpeed = fastestWait
-
-          // Set selected gas price from confirm
-          if (this.activeGasPriceConfirm) {
-            this.setSelectedSpeed()
-          } else {
-            this.selectSpeed('average', this.averageGasPrice)
-          }
-        }
-      )
-      .catch(err => {
-        log.error(err)
-      })
   }
 }
 </script>

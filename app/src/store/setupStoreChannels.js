@@ -2,67 +2,74 @@ import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import pump from 'pump'
 import stream from 'stream'
+
+import { injectStore as onloadInjection } from '../onload'
 import torus from '../torus'
-import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_REJECTED, USER_INFO_REQUEST_NEW } from '../utils/enums'
-import VuexStore from './store'
+import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_NEW, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
 import { broadcastChannelOptions, isMain } from '../utils/utils'
+import { injectStore as controllerInjection } from './controllerSubscriptions'
+import VuexStore from './store'
+
+onloadInjection(VuexStore)
+controllerInjection(VuexStore)
 
 if (!isMain) {
   // setup handlers for communicationStream
-  var passthroughStream = new stream.PassThrough({ objectMode: true })
-  passthroughStream.on('data', function() {
-    log.info('p data:', arguments)
+  const passthroughStream = new stream.PassThrough({ objectMode: true })
+  passthroughStream.on('data', (...arguments_) => {
+    // eslint-disable-next-line no-undef
+    log.info('p data:', arguments_)
   })
 
   // Oauth section
-  torus.communicationMux.getStream('oauth').on('data', function(chunk) {
+  torus.communicationMux.getStream('oauth').on('data', chunk => {
     VuexStore.dispatch('triggerLogin', chunk.data)
   })
-  pump(torus.communicationMux.getStream('oauth'), passthroughStream, err => {
-    if (err) log.error(err)
+  pump(torus.communicationMux.getStream('oauth'), passthroughStream, error => {
+    if (error) log.error(error)
   })
 
   //  Show Wallet section
   const walletStream = torus.communicationMux.getStream('show_wallet')
-  walletStream.on('data', function(chunk) {
+  walletStream.on('data', chunk => {
     if (chunk.name === 'show_wallet') walletStream.write({ name: 'show_wallet_instance', data: { instanceId: torus.instanceId } })
   })
 
   // topup section
-  torus.communicationMux.getStream('topup').on('data', function(chunk) {
+  torus.communicationMux.getStream('topup').on('data', chunk => {
     VuexStore.dispatch('initiateTopup', chunk.data)
   })
 
   // Provider change section
   const providerChangeStream = torus.communicationMux.getStream('provider_change')
-  providerChangeStream.on('data', function(chunk) {
+  providerChangeStream.on('data', chunk => {
     if (chunk.name === 'show_provider_change') {
       VuexStore.dispatch('showProviderChangePopup', chunk.data)
     }
   })
 
   // Logout section
-  torus.communicationMux.getStream('logout').on('data', function(chunk) {
+  torus.communicationMux.getStream('logout').on('data', chunk => {
     if (chunk.name === 'logOut') VuexStore.dispatch('logOut')
   })
 
-  var logoutChannel = new BroadcastChannel(`torus_logout_channel_${torus.instanceId}`, broadcastChannelOptions)
-  logoutChannel.onmessage = function(ev) {
+  const logoutChannel = new BroadcastChannel(`torus_logout_channel_${torus.instanceId}`, broadcastChannelOptions)
+  logoutChannel.addEventListener('message', ev => {
     log.info('received logging message', ev)
     if (ev.data && ev.data.type === 'logout') {
       log.info('Logging Out', ev.data)
       VuexStore.dispatch('logOut')
     }
-  }
+  })
 
   // Userinfo section
   const userInfoAccessStream = torus.communicationMux.getStream('user_info_access')
-  userInfoAccessStream.on('data', function(chunk) {
+  userInfoAccessStream.on('data', chunk => {
+    const payload = { ...VuexStore.state.userInfo }
+    delete payload.verifierParams
     if (chunk.name === 'user_info_access_request') {
       switch (VuexStore.state.userInfoAccess) {
         case USER_INFO_REQUEST_APPROVED:
-          const payload = { ...VuexStore.state.userInfo }
-          delete payload.verifierParams
           userInfoAccessStream.write({ name: 'user_info_access_response', data: { approved: true, payload } })
           break
         case USER_INFO_REQUEST_REJECTED:
@@ -77,41 +84,51 @@ if (!isMain) {
   })
 
   const userInfoStream = torus.communicationMux.getStream('user_info')
-  userInfoStream.on('data', function(chunk) {
+  userInfoStream.on('data', chunk => {
     if (chunk.name === 'user_info_request') VuexStore.dispatch('showUserInfoRequestPopup', chunk.data)
   })
 
-  var accountImportChannel = new BroadcastChannel(`account_import_channel_${torus.instanceId}`, broadcastChannelOptions)
-  accountImportChannel.onmessage = function(ev) {
+  const accountImportChannel = new BroadcastChannel(`account_import_channel_${torus.instanceId}`, broadcastChannelOptions)
+  accountImportChannel.addEventListener('message', ev => {
     if (ev.data && ev.data.name === 'imported_account' && ev.data.payload) {
       log.info('importing user account')
       if (!Object.values(VuexStore.state.wallet).includes(ev.data.payload.privKey)) {
         VuexStore.dispatch('finishImportAccount', ev.data.payload)
       }
     }
-  }
+  })
 
-  var selectedAddressChannel = new BroadcastChannel(`selected_address_channel_${torus.instanceId}`, broadcastChannelOptions)
-  selectedAddressChannel.onmessage = function(ev) {
-    if (ev.data && ev.data.name == 'selected_address' && ev.data.payload) {
+  const selectedAddressChannel = new BroadcastChannel(`selected_address_channel_${torus.instanceId}`, broadcastChannelOptions)
+  selectedAddressChannel.addEventListener('message', ev => {
+    if (ev.data && ev.data.name === 'selected_address' && ev.data.payload) {
       log.info('setting selected address')
       if (VuexStore.state.selectedAddress !== ev.data.payload) {
         VuexStore.dispatch('updateSelectedAddress', { selectedAddress: ev.data.payload })
       }
     }
-  }
+  })
 
   // used for communication between popup and iframe
-  var providerChangeChannel = new BroadcastChannel(`provider_change_${torus.instanceId}`, broadcastChannelOptions)
-  providerChangeChannel.onmessage = function(ev) {
-    if (ev.data && ev.data.name == 'provider_change' && ev.data.payload) {
+  const providerChangeChannel = new BroadcastChannel(`provider_change_${torus.instanceId}`, broadcastChannelOptions)
+  providerChangeChannel.addEventListener('message', ev => {
+    if (ev.data && ev.data.name === 'provider_change' && ev.data.payload) {
       log.info('setting provider')
       const { network } = ev.data.payload
       if (VuexStore.state.networkType.host !== network.host) {
         VuexStore.dispatch('setProviderType', ev.data.payload)
       }
     }
-  }
+  })
+
+  // White Label section
+  const whiteLabelStream = torus.communicationMux.getStream('white_label')
+  whiteLabelStream.on('data', chunk => {
+    // torus-white-label
+    // {"whiteLabelIsDark":false,"whiteLabelTheme":{"torusBackgroundBody":"","torusBrand1":"","torusBrand2":"",
+    // "torusBrand3":"","torusBrand4":"","torusBrandhover":"","torusGray1":"","torusGray2":"","torusGray3":"",
+    // "torusGray4":"","torusFont1":"","torusFont2":"","torusFontLink1":"","torusFontLink2":"","torusBlack":""}}
+    localStorage.setItem('torus-white-label', JSON.stringify(chunk.data))
+  })
 }
 
 export default VuexStore

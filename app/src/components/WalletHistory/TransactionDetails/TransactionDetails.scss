@@ -4,7 +4,7 @@
   }
 
   .v-chip.status-chip {
-    color: #0F1222;
+    color: #0f1222;
     width: 100px;
     ::v-deep .v-chip__content {
       text-align: center;
@@ -15,8 +15,19 @@
   }
 
   .icon-holder {
-    min-width: 50px;
-    text-align: center;
+    &.circle {
+      min-height: 40px;
+      min-width: 40px;
+      width: 40px;
+      background: #F6F5F7;
+      border-radius: 50%;
+      margin-right: 8px;
+      margin-left: 4px;
+    }
+    .v-icon {
+      margin-left: 8px;
+      margin-top: 2px;
+    }
   }
 }
 

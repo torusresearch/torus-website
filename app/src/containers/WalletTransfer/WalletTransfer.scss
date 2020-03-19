@@ -1,24 +1,44 @@
 .wallet-transfer {
+  .currency-rate {
+    margin-bottom: 2px;
+  }
+  .select-coin {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
+    border-color: var(--v-text_2-base);
+    color: var(--v-torus_font1-base);
+    border-radius: 6px;
+    font-size: 16px;
+    display: flex;
+    ::v-deep .v-chip__content {
+      width: 100%;
+    }
+    .v-icon--right {
+      color: #D3D5E2;
+    }
+    &.theme--dark {
+      box-shadow: none;
+      border-color: inherit;
+    }
+  }
   ::v-deep .v-messages {
     text-align: right;
     &.error--text {
       text-align: left;
     }
   }
-  .select-coin {
-    border-color: var(--v-text_2-base);
-    color: var(--v-text_1-base);
-    font-size: 16px;
-    display: flex;
-    ::v-deep .v-chip__content {
-      width: 100%;
-    }
+  .form-container.mobile {
+    background: none;
   }
-  .recipient-address {
-    ::v-deep .v-input__icon.v-input__icon--clear {
-      .v-icon.v-icon.v-icon--link {
-        height: 16px;
-      }
+  .send-mode.v-btn {
+    &.theme--dark.active {
+      background-color: transparent;
+      color: #979797;
+    }
+    &.theme--light.active {
+      background-color: transparent;
+      color: #979797;
+      box-shadow: none;
     }
   }
 }

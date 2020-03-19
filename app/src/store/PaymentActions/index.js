@@ -1,79 +1,105 @@
-import simplex from './simplex'
-import moonpay from './moonpay'
-import wyre from './wyre'
-import { paymentProviders, fakeStream } from '../../utils/utils'
-import { SIMPLEX, MOONPAY, WYRE } from '../../utils/enums'
-import torus from '../../torus'
 import vuetify from '../../plugins/vuetify'
+import torus from '../../torus'
+import { MOONPAY, RAMPNETWORK, SIMPLEX, WYRE } from '../../utils/enums'
+import { fakeStream, paymentProviders } from '../../utils/utils'
+import moonpay from './moonpay'
+import rampnetwork from './rampnetwork'
+import simplex from './simplex'
+import wyre from './wyre'
 
-const topupStream = (torus.communicationMux && torus.communicationMux.getStream('topup')) || fakeStream
+const topupStream = (torus && torus.communicationMux && torus.communicationMux.getStream('topup')) || fakeStream
+
+const handleSuccess = success => {
+  topupStream.write({
+    name: 'topup_response',
+    data: {
+      success
+    }
+  })
+}
+
+const handleFailure = error => {
+  topupStream.write({
+    name: 'topup_response',
+    data: {
+      success: false,
+      error: error.message || 'Internal error'
+    }
+  })
+}
 
 export default {
   ...simplex,
+  ...rampnetwork,
   ...moonpay,
   ...wyre,
   async initiateTopup({ state, dispatch }, { provider, params, preopenInstanceId }) {
-    const handleSuccess = success => {
-      topupStream.write({
-        name: 'topup_response',
-        data: {
-          success: success
-        }
-      })
-    }
-
-    const handleFailure = error => {
-      topupStream.write({
-        name: 'topup_response',
-        data: {
-          success: false,
-          error: error.message || 'Internal error'
-        }
-      })
-    }
     if (paymentProviders[provider] && paymentProviders[provider].api) {
       try {
         const selectedProvider = paymentProviders[provider]
-        const selectedParams = params || {}
+        const selectedParameters = params || {}
 
         // set default values
-        if (!selectedParams.selectedCurrency) selectedParams.selectedCurrency = 'USD'
-        if (!selectedParams.fiatValue) selectedParams.fiatValue = selectedProvider.minOrderValue
-        if (!selectedParams.selectedCryptoCurrency) selectedParams.selectedCryptoCurrency = 'ETH'
-        if (!selectedParams.selectedAddress) selectedParams.selectedAddress = state.selectedAddress
+        if (!selectedParameters.selectedCurrency) [selectedParameters.selectedCurrency] = selectedProvider.validCurrencies
+        if (!selectedParameters.fiatValue) selectedParameters.fiatValue = selectedProvider.minOrderValue
+        if (!selectedParameters.selectedCryptoCurrency) [selectedParameters.selectedCryptoCurrency] = selectedProvider.validCryptoCurrencies
+        if (!selectedParameters.selectedAddress) selectedParameters.selectedAddress = state.selectedAddress
 
         // validations
-        const requestedOrderAmount = +parseFloat(selectedParams.fiatValue)
+        const requestedOrderAmount = +parseFloat(selectedParameters.fiatValue)
         if (requestedOrderAmount < selectedProvider.minOrderValue) throw new Error('Requested amount is lower than supported')
         if (requestedOrderAmount > selectedProvider.maxOrderValue) throw new Error('Requested amount is higher than supported')
-        if (!selectedProvider.validCurrencies.includes(selectedParams.selectedCurrency)) throw new Error('Unsupported currency')
-        if (!selectedProvider.validCryptoCurrencies.includes(selectedParams.selectedCryptoCurrency)) throw new Error('Unsupported cryptoCurrency')
+        if (!selectedProvider.validCurrencies.includes(selectedParameters.selectedCurrency)) throw new Error('Unsupported currency')
+        if (!selectedProvider.validCryptoCurrencies.includes(selectedParameters.selectedCryptoCurrency)) throw new Error('Unsupported cryptoCurrency')
 
         // simplex
         if (provider === SIMPLEX) {
-          const { result: currentOrder } = await dispatch('fetchSimplexQuote', selectedParams)
+          const { result: currentOrder } = await dispatch('fetchSimplexQuote', selectedParameters)
           const { success } = await dispatch('fetchSimplexOrder', {
             currentOrder,
             preopenInstanceId,
-            selectedAddress: selectedParams.selectedAddress
+            selectedAddress: selectedParameters.selectedAddress
           })
           handleSuccess(success)
-        }
-        // moonpay
-        else if (provider === MOONPAY) {
-          const currentOrder = await dispatch('fetchMoonpayQuote', selectedParams)
+        } else if (provider === RAMPNETWORK) {
+          // rampnetwork
+          const result = await dispatch('fetchRampNetworkQuote', selectedParameters)
+          const asset = result.assets.find(item => item.symbol === selectedParameters.selectedCryptoCurrency)
+
+          const fiat = selectedParameters.fiatValue
+          const feeRate = asset.maxFeePercent[selectedParameters.selectedCurrency] / 100
+          const rate = asset.price[selectedParameters.selectedCurrency]
+          const fiatWithoutFee = fiat / (1 + feeRate) // Final amount of fiat that will be converted to crypto
+          const cryptoValue = fiatWithoutFee / rate // Final Crypto amount
+
+          const currentOrder = {
+            cryptoCurrencyValue: cryptoValue * 10 ** asset.decimals,
+            cryptoCurrencySymbol: asset.symbol
+          }
+          const { success } = await dispatch('fetchRampNetworkOrder', {
+            currentOrder,
+            preopenInstanceId,
+            selectedAddress: selectedParameters.selectedAddress
+          })
+          handleSuccess(success)
+        } else if (provider === MOONPAY) {
+          // moonpay
+          const currentOrder = await dispatch('fetchMoonpayQuote', selectedParameters)
           const { success } = await dispatch('fetchMoonpayOrder', {
             currentOrder,
             colorCode: vuetify.framework.theme.themes.light.primary.base,
             preopenInstanceId,
-            selectedAddress: selectedParams.selectedAddress
+            selectedAddress: selectedParameters.selectedAddress
           })
           handleSuccess(success)
-        }
-        // wyre
-        else if (provider === WYRE) {
-          const { data: currentOrder } = await dispatch('fetchWyreQuote', selectedParams)
-          const { success } = await dispatch('fetchWyreOrder', { currentOrder, preopenInstanceId, selectedAddress: selectedParams.selectedAddress })
+        } else if (provider === WYRE) {
+          // wyre
+          const { data: currentOrder } = await dispatch('fetchWyreQuote', selectedParameters)
+          const { success } = await dispatch('fetchWyreOrder', {
+            currentOrder,
+            preopenInstanceId,
+            selectedAddress: selectedParameters.selectedAddress
+          })
           handleSuccess(success)
         }
       } catch (error) {

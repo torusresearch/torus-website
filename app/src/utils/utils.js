@@ -1,45 +1,70 @@
-import * as ethUtil from 'ethereumjs-util'
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
+import * as ethUtil from 'ethereumjs-util'
 import log from 'loglevel'
 import { isAddress } from 'web3-utils'
 
+import config from '../config'
 import {
-  ENVIRONMENT_TYPE_POPUP,
-  ENVIRONMENT_TYPE_NOTIFICATION,
+  ACTIVE,
+  DISCORD,
   ENVIRONMENT_TYPE_FULLSCREEN,
-  PLATFORM_FIREFOX,
-  PLATFORM_OPERA,
+  ENVIRONMENT_TYPE_NOTIFICATION,
+  ENVIRONMENT_TYPE_POPUP,
+  ETH,
+  GOERLI,
+  GOERLI_CHAIN_ID,
+  GOERLI_CODE,
+  GOERLI_DISPLAY_NAME,
+  GOOGLE,
+  KOVAN,
+  KOVAN_CHAIN_ID,
+  KOVAN_CODE,
+  KOVAN_DISPLAY_NAME,
+  MAINNET,
+  MAINNET_CHAIN_ID,
+  MAINNET_CODE,
+  MAINNET_DISPLAY_NAME,
+  MATIC_CHAIN_ID,
+  MATIC_CODE,
+  MOONPAY,
+  PLATFORM_BRAVE,
   PLATFORM_CHROME,
   PLATFORM_EDGE,
-  PLATFORM_BRAVE,
-  ETH,
-  GOOGLE,
-  REDDIT,
-  DISCORD,
-  SIMPLEX,
-  MOONPAY,
-  WYRE,
-  THEME_DARK_BLACK_NAME,
-  ACTIVE,
+  PLATFORM_FIREFOX,
+  PLATFORM_OPERA,
   PNG,
-  SVG,
-  MAINNET_CHAIN_ID,
-  ROPSTEN_CHAIN_ID,
+  RAMPNETWORK,
+  REDDIT,
+  RINKEBY,
   RINKEBY_CHAIN_ID,
-  KOVAN_CHAIN_ID,
-  GOERLI_CHAIN_ID,
-  MATIC_CHAIN_ID,
-  MAINNET_CODE,
   RINKEBY_CODE,
+  RINKEBY_DISPLAY_NAME,
+  ROPSTEN,
+  ROPSTEN_CHAIN_ID,
   ROPSTEN_CODE,
-  KOVAN_CODE,
-  GOERLI_CODE,
-  MATIC_CODE
+  ROPSTEN_DISPLAY_NAME,
+  SIMPLEX,
+  SVG,
+  THEME_DARK_BLACK_NAME,
+  WYRE
 } from './enums'
-import config from '../config'
 
-const BN = ethUtil.BN
+const { BN } = ethUtil
+
+const networkToNameMap = {
+  [ROPSTEN]: ROPSTEN_DISPLAY_NAME,
+  [RINKEBY]: RINKEBY_DISPLAY_NAME,
+  [KOVAN]: KOVAN_DISPLAY_NAME,
+  [MAINNET]: MAINNET_DISPLAY_NAME,
+  [GOERLI]: GOERLI_DISPLAY_NAME,
+  [ROPSTEN_CODE]: ROPSTEN_DISPLAY_NAME,
+  [RINKEBY_CODE]: RINKEBY_DISPLAY_NAME,
+  [KOVAN_CODE]: KOVAN_DISPLAY_NAME,
+  [GOERLI_CODE]: GOERLI_DISPLAY_NAME
+}
+
+export const getNetworkDisplayName = key => networkToNameMap[key]
 
 /**
  * Checks whether a storage type is available or not
@@ -51,25 +76,25 @@ const BN = ethUtil.BN
  * @returns {Boolean} a boolean indicating whether the specified storage is available or not
  */
 export function storageAvailable(type) {
-  var storage
+  let storage
   try {
     storage = window[type]
-    var x = '__storage_test__'
+    const x = '__storage_test__'
     storage.setItem(x, x)
     storage.removeItem(x)
     return true
-  } catch (e) {
+  } catch (error) {
     return (
-      e &&
+      error &&
       // everything except Firefox
-      (e.code === 22 ||
+      (error.code === 22 ||
         // Firefox
-        e.code === 1014 ||
+        error.code === 1014 ||
         // test name field too, because code might not be present
         // everything except Firefox
-        e.name === 'QuotaExceededError' ||
+        error.name === 'QuotaExceededError' ||
         // Firefox
-        e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+        error.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
       // acknowledge QuotaExceededError only if there's something already stored
       storage &&
       storage.length !== 0
@@ -89,11 +114,11 @@ export function storageAvailable(type) {
 export const getEnvironmentType = (url = window.location.href) => {
   if (url.match(/popup.html(?:#.*)*$/)) {
     return ENVIRONMENT_TYPE_POPUP
-  } else if (url.match(/home.html(?:\?.+)*$/) || url.match(/home.html(?:#.*)*$/)) {
-    return ENVIRONMENT_TYPE_FULLSCREEN
-  } else {
-    return ENVIRONMENT_TYPE_NOTIFICATION
   }
+  if (url.match(/home.html(?:\?.+)*$/) || url.match(/home.html(?:#.*)*$/)) {
+    return ENVIRONMENT_TYPE_FULLSCREEN
+  }
+  return ENVIRONMENT_TYPE_NOTIFICATION
 }
 
 /**
@@ -106,17 +131,17 @@ export const getPlatform = _ => {
   const ua = navigator.userAgent
   if (ua.search('Firefox') !== -1) {
     return PLATFORM_FIREFOX
-  } else {
-    if (window && window.chrome && window.chrome.ipcRenderer) {
-      return PLATFORM_BRAVE
-    } else if (ua.search('Edge') !== -1) {
-      return PLATFORM_EDGE
-    } else if (ua.search('OPR') !== -1) {
-      return PLATFORM_OPERA
-    } else {
-      return PLATFORM_CHROME
-    }
   }
+  if (window && window.chrome && window.chrome.ipcRenderer) {
+    return PLATFORM_BRAVE
+  }
+  if (ua.search('Edge') !== -1) {
+    return PLATFORM_EDGE
+  }
+  if (ua.search('OPR') !== -1) {
+    return PLATFORM_OPERA
+  }
+  return PLATFORM_CHROME
 }
 
 /**
@@ -130,15 +155,15 @@ export const getPlatform = _ => {
  * @returns {boolean} Whether the balance is greater than or equal to the value plus the value of gas times gasPrice
  *
  */
-export function sufficientBalance(txParams, hexBalance) {
+export function sufficientBalance(txParameters, hexBalance) {
   // validate hexBalance is a hex string
   assert.strictEqual(typeof hexBalance, 'string', 'sufficientBalance - hexBalance is not a hex string')
   assert.strictEqual(hexBalance.slice(0, 2), '0x', 'sufficientBalance - hexBalance is not a hex string')
 
   const balance = hexToBn(hexBalance)
-  const value = hexToBn(txParams.value)
-  const gasLimit = hexToBn(txParams.gas)
-  const gasPrice = hexToBn(txParams.gasPrice)
+  const value = hexToBn(txParameters.value)
+  const gasLimit = hexToBn(txParameters.gas)
+  const gasPrice = hexToBn(txParameters.gasPrice)
 
   const maxCost = value.add(gasLimit.mul(gasPrice))
   return balance.gte(maxCost)
@@ -176,9 +201,9 @@ export function hexToBn(inputHex) {
  *
  */
 export function BnMultiplyByFraction(targetBN, numerator, denominator) {
-  const numBN = new BN(numerator)
+  const numberBN = new BN(numerator)
   const denomBN = new BN(denominator)
-  return targetBN.mul(numBN).div(denomBN)
+  return targetBN.mul(numberBN).div(denomBN)
 }
 
 /**
@@ -192,7 +217,7 @@ export function hexToText(hex) {
     const stripped = ethUtil.stripHexPrefix(hex)
     const buff = Buffer.from(stripped, 'hex')
     return buff.toString('utf8')
-  } catch (e) {
+  } catch (error) {
     return hex
   }
 }
@@ -204,7 +229,7 @@ export function addressSlicer(address = '') {
   return `${address.slice(0, 5)}...${address.slice(-5)}`
 }
 
-export function significantDigits(number, perc = false, len = 2) {
+export function significantDigits(number, perc = false, length_ = 2) {
   let input = !BigNumber.isBigNumber(number) ? new BigNumber(number) : number
   if (input.isZero()) return input
   if (perc) {
@@ -214,11 +239,11 @@ export function significantDigits(number, perc = false, len = 2) {
   if (input.gte(new BigNumber(1))) {
     depth = 2
   } else {
-    depth = len - 1 + Math.ceil(Math.log10(new BigNumber('1').div(input).toNumber()))
+    depth = length_ - 1 + Math.ceil(Math.log10(new BigNumber('1').div(input).toNumber()))
   }
   const shift = new BigNumber(10).pow(new BigNumber(depth))
-  const roundedNum = Math.round(shift.times(input).toNumber()) / shift
-  return roundedNum
+  const roundedNumber = Math.round(shift.times(input).toNumber()) / shift
+  return roundedNumber
 }
 
 export function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', thousands = ',') {
@@ -226,7 +251,7 @@ export function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', th
     let amt = amount
     let decimals = decimalCount
     decimals = Math.abs(decimals)
-    decimals = isNaN(decimals) ? 2 : decimals
+    decimals = Number.isNaN(decimals) ? 2 : decimals
 
     const negativeSign = amt < 0 ? '-' : ''
 
@@ -234,16 +259,16 @@ export function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', th
     const j = i.length > 3 ? i.length % 3 : 0
 
     return `${negativeSign +
-      (j ? i.substr(0, j) + thousands : '') +
-      i.substr(j).replace(/(\d{3})(?=\d)/g, `$1${thousands}`) +
+      (j ? i.slice(0, j) + thousands : '') +
+      i.slice(j).replace(/(\d{3})(?=\d)/g, `$1${thousands}`) +
       (decimals
         ? decimal +
           Math.abs(amount - i)
             .toFixed(decimals)
             .slice(2)
         : '')}`
-  } catch (e) {
-    log.error(e)
+  } catch (error) {
+    log.error(error)
   }
   return null
 }
@@ -260,7 +285,7 @@ export function getEtherScanHashLink(txHash, network = null) {
   return network === 'mainnet' ? `https://etherscan.io/tx/${txHash}` : `https://${localNetwork}.etherscan.io/tx/${txHash}`
 }
 
-export const statusObj = {
+export const statusObject = {
   SENT_TO_SIMPLEX: 'pending',
   DENIED_SIMPLEX: 'rejected',
   payment_request_submitted: 'processing',
@@ -272,32 +297,15 @@ export const statusObj = {
 }
 
 export function getStatus(status) {
-  return statusObj[status] || 'pending'
+  return statusObject[status] || 'pending'
 }
 
 export async function getEthTxStatus(hash, web3) {
   const receipt = await web3.eth.getTransactionReceipt(hash)
   if (receipt === null) return 'pending'
-  else if (receipt && receipt.status) return 'confirmed'
-  else if (receipt && !receipt.status) return 'rejected'
-}
-
-export function extractHostname(url) {
-  var hostname
-  // find & remove protocol (http, ftp, etc.) and get hostname
-  if (!url) return ''
-  if (url.indexOf('//') > -1) {
-    hostname = url.split('/')[2]
-  } else {
-    hostname = url.split('/')[0]
-  }
-
-  // find & remove port number
-  hostname = hostname.split(':')[0]
-  // find & remove "?"
-  hostname = hostname.split('?')[0]
-
-  return hostname
+  if (receipt && receipt.status) return 'confirmed'
+  if (receipt && !receipt.status) return 'rejected'
+  return undefined
 }
 
 export const broadcastChannelOptions = {
@@ -308,17 +316,19 @@ export const broadcastChannelOptions = {
 export function validateVerifierId(selectedVerifier, value) {
   if (selectedVerifier === ETH) {
     return isAddress(value) || 'Invalid ETH Address'
-  } else if (selectedVerifier === GOOGLE) {
+  }
+  if (selectedVerifier === GOOGLE) {
     return (
       // eslint-disable-next-line max-len
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-        value
-      ) || 'Invalid Email Address'
+      /^(([^\s"(),.:;<>@[\\\]]+(\.[^\s"(),.:;<>@[\\\]]+)*)|(".+"))@((\[(?:\d{1,3}\.){3}\d{1,3}])|(([\dA-Za-z-]+\.)+[A-Za-z]{2,}))$/.test(value) ||
+      'Invalid Email Address'
     )
-  } else if (selectedVerifier === REDDIT) {
+  }
+  if (selectedVerifier === REDDIT) {
     return (/^[\w-]+$/.test(value) && !/\s/.test(value) && value.length >= 3 && value.length <= 20) || 'Invalid reddit username'
-  } else if (selectedVerifier === DISCORD) {
-    return (/^[0-9]*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
+  }
+  if (selectedVerifier === DISCORD) {
+    return (/^\d*$/.test(value) && value.length === 18) || 'Invalid Discord ID'
   }
 
   return true
@@ -377,22 +387,23 @@ export const paymentProviders = {
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
     includeFees: false,
     api: true
+  },
+  [RAMPNETWORK]: {
+    line1: 'Bank transfer',
+    line2: '0% - 2.5%',
+    line3: '10,000€/purchase, 10,000€/mo',
+    line4: 'ETH, DAI, USDC',
+    status: ACTIVE,
+    logoExtension: SVG,
+    supportPage: 'https://instant.ramp.network/',
+    minOrderValue: 1,
+    maxOrderValue: 10000,
+    validCurrencies: ['EUR', 'GBP'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
+    includeFees: true,
+    api: true,
+    receiveHint: 'You don’t need an ID to complete this transaction!'
   }
-  // [CRYPTO]: {
-  //   line1: 'Credit Card',
-  //   line2: 'Varies',
-  //   line3: 'N/A',
-  //   line4: 'ETH, tokens',
-  //   status: ACTIVE,
-  //   logoExtension: PNG,
-  //   supportPage: 'https://help.crypto.com/en/',
-  //   minOrderValue: 10,
-  //   maxOrderValue: 1000,
-  //   validCurrencies: ['USD'],
-  //   validCryptoCurrencies: ['ETH'],
-  //   includeFees: true,
-  //   api: false
-  // }
 }
 
 export function getPaymentProviders(theme) {
@@ -444,20 +455,20 @@ export function selectChainId(network, provider) {
   return standardNetworkId[network] || `0x${parseInt(chainId, 10).toString(16)}`
 }
 
-export const isMain = location === parent.location && location.origin === config.baseUrl
+export const isMain = window.location === window.parent.location && window.location.origin === config.baseUrl
 
 export const getIFrameOrigin = () => {
   const originHref = window.location.ancestorOrigins ? window.location.ancestorOrigins[0] : document.referrer
   return originHref
 }
 
-export const getIFrameOriginObj = () => {
+export const getIFrameOriginObject = () => {
   try {
     const url = new URL(getIFrameOrigin())
     return { href: url.href, hostname: url.hostname }
   } catch (error) {
     log.error('invalid url')
-    return { href: location.href, hostname: location.hostname }
+    return { href: window.location.href, hostname: window.location.hostname }
   }
 }
 
