@@ -14,8 +14,8 @@ export default {
   fetchMoonpayQuote(context, payload) {
     // returns a promise
     return getQuote({
-      digital_currency: payload.selectedCryptoCurrency.toLowerCase(),
-      fiat_currency: payload.selectedCurrency.toLowerCase(),
+      digital_currency: payload.selectedCryptoCurrency && payload.selectedCryptoCurrency.toLowerCase(),
+      fiat_currency: payload.selectedCurrency && payload.selectedCurrency.toLowerCase(),
       requested_amount: +parseFloat(payload.fiatValue)
     })
   },
@@ -43,17 +43,17 @@ export default {
       const parameters = {
         apiKey: config.moonpayLiveAPIKEY,
         enabledPaymentMethods: 'credit_debit_card,sepa_bank_transfer,gbp_bank_transfer',
-        currencyCode: currentOrder.currency.code,
+        currencyCode: currentOrder.currency.code || undefined,
         walletAddress: selectedAddress || state.selectedAddress,
         colorCode,
-        baseCurrencyAmount: currentOrder.baseCurrencyAmount,
-        baseCurrencyCode: currentOrder.baseCurrency.code,
+        baseCurrencyAmount: currentOrder.baseCurrencyAmount || undefined,
+        baseCurrencyCode: currentOrder.baseCurrency.code || undefined,
         email: state.userInfo.email !== '' ? state.userInfo.email : undefined,
-        externalCustomerId: state.selectedAddress,
+        externalCustomerId: selectedAddress || state.selectedAddress,
         redirectURL: `${config.redirect_uri}?state=${instanceState}`
       }
 
-      const parameterString = new URLSearchParams(parameters)
+      const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(parameters)))
       const url = `${config.moonpayHost}?${parameterString}`
 
       getSignature({ url: encodeURIComponent(url), token: state.jwtToken })
