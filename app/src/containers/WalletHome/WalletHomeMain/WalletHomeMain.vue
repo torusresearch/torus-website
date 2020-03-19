@@ -35,26 +35,13 @@
             <v-flex xs12>
               <v-layout class="mx-n2 mt-3">
                 <v-flex xs6 px-2>
-                  <v-btn
-                    v-show="canShowLrc"
-                    block
-                    large
-                    class="elevation-3 torus_brand1--text"
-                    :class="$vuetify.theme.isDark ? 'torus_black_2' : 'white'"
-                    @click="topup"
-                  >
+                  <v-btn v-show="canShowLrc" block large class="torus-btn1 torus_brand1--text" @click="topup">
                     <v-icon left>$vuetify.icons.add</v-icon>
                     {{ t('walletHome.topUp') }}
                   </v-btn>
                 </v-flex>
                 <v-flex xs6 px-2>
-                  <v-btn
-                    block
-                    large
-                    class="elevation-3 torus_brand1--text"
-                    :class="$vuetify.theme.isDark ? 'torus_black_2' : 'white'"
-                    @click="initiateTransfer"
-                  >
+                  <v-btn block large class="torus-btn1 torus_brand1--text" @click="initiateTransfer">
                     <v-icon left>$vuetify.icons.send</v-icon>
                     {{ t('walletHome.transfer') }}
                   </v-btn>
