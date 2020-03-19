@@ -1,5 +1,5 @@
 <template>
-  <div class="d-inline-flex network-chip align-center" :class="!isUrlNetwork ? `network-chip--${host} text-capitalize` : ''">
+  <div class="d-inline-flex network-chip align-center" :class="chipClass">
     <v-icon v-text="'$vuetify.icons.network'"></v-icon>
     <span class="network-chip__name text-clamp-one" :class="{ 'network-chip__name--mobile': $vuetify.breakpoint.xsOnly }">{{ selectedNetwork }}</span>
   </div>
@@ -44,6 +44,16 @@ export default {
     isUrlNetwork() {
       // Checks if input is a url including localhost, ip address and domain name
       return /^((?:http(s)?:\/\/)?([\w-.]+(?:\.[\w-.]+)+|localhost?)[\w!#$&'()*+,./:;=?@[\]~-]+)$/.test(this.selectedNetwork)
+    },
+    chipClass() {
+      const classArray = []
+      if (!this.isUrlNetwork) {
+        classArray.push(`network-chip--${this.host}`)
+        classArray.push('text-capitalize')
+      }
+      if (this.$vuetify.theme.isDark) classArray.push('theme--dark')
+
+      return classArray
     }
   }
 }
