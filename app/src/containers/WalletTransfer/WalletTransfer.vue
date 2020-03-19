@@ -209,9 +209,9 @@
                     <v-btn
                       id="coin-mode-btn"
                       small
+                      class="send-mode"
+                      :class="!toggle_exclusive ? 'torus-btn1 torus_brand1--text' : 'active'"
                       :outlined="!toggle_exclusive"
-                      :text="!!toggle_exclusive"
-                      :color="!toggle_exclusive ? 'torus_brand1' : 'text_2'"
                       @click="changeSelectedToCurrency(0)"
                     >
                       {{ selectedItem && selectedItem.symbol }}
@@ -219,9 +219,9 @@
                     <v-btn
                       id="currency-mode-btn"
                       small
+                      class="send-mode"
+                      :class="!!toggle_exclusive ? 'torus-btn1 torus_brand1--text' : 'active'"
                       :outlined="!!toggle_exclusive"
-                      :text="!toggle_exclusive"
-                      :color="toggle_exclusive ? 'torus_brand1' : 'text_2'"
                       @click="changeSelectedToCurrency(1)"
                     >
                       {{ t('walletTransfer.transfer') }}

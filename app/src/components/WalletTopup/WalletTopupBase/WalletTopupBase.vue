@@ -43,10 +43,10 @@
                 </template>
               </v-text-field>
 
-              <div class="v-text-field__details torus-hint mb-6">
+              <div class="v-text-field__details mb-6">
                 <div class="v-messages">
                   <div class="v-messages__wrapper">
-                    <div class="v-messages__message d-flex text_2--text">
+                    <div class="v-messages__message d-flex">
                       <v-flex class="font-weight-medium">
                         <span v-if="selectedProviderObj.includeFees">{{ t('walletTopUp.includes') }} &nbsp;&nbsp;</span>
                         <span v-else>{{ t('walletTopUp.doesntInclude') }} &nbsp;&nbsp;</span>
