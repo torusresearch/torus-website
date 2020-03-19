@@ -7,12 +7,14 @@ export default {
     label: 'walletSettings.light',
     name: THEME_LIGHT_BLUE_NAME,
     theme: lightBlue,
-    isDark: false
+    isDark: false,
+    icon: 'light.svg'
   },
   [THEME_DARK_BLACK_NAME]: {
     label: 'walletSettings.dark',
     name: THEME_DARK_BLACK_NAME,
     theme: darkBlack,
-    isDark: true
+    isDark: true,
+    icon: 'dark.svg'
   }
 }

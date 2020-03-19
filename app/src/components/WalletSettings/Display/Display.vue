@@ -10,7 +10,8 @@
           class="torus_brand1--text theme-btn"
           :class="[$vuetify.theme.isDark ? 'torus_black2' : 'white', theme.name === activeTheme ? '' : 'elevation-3']"
         >
-          {{ t(theme.label) }}
+          <span>{{ t(theme.label) }}</span>
+          <img :src="require(`../../../../public/images/${theme.icon}`)" />
         </v-btn>
       </v-flex>
     </v-layout>
