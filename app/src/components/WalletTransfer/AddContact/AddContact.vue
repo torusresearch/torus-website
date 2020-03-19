@@ -26,7 +26,7 @@
           </v-flex>
           <v-divider vertical></v-divider>
           <v-flex xs6>
-            <v-btn type="submit" color="torus_brand1" depressed class="px-12 py-1" :disabled="!contactFormValid">
+            <v-btn type="submit" color="torus_brand1" depressed class="px-12 py-1 white--text" :disabled="!contactFormValid">
               {{ t('walletTransfer.confirm') }}
             </v-btn>
           </v-flex>

@@ -101,11 +101,11 @@
     <v-layout class="mt-12">
       <v-flex xs12>
         <v-tabs v-model="activeTab" class="home-tab" centered>
-          <v-tab :key="t('walletHome.tokens')" class="home-tab-token body-2 font-weight-bold">
+          <v-tab :key="t('walletHome.tokens')" class="home-tab-token font-weight-bold">
             <v-icon class="mr-1" small left>$vuetify.icons.token</v-icon>
             {{ t('walletHome.tokens') }}
           </v-tab>
-          <v-tab :key="t('walletHome.collectibles')" class="home-tab-collectibles body-2 font-weight-bold">
+          <v-tab :key="t('walletHome.collectibles')" class="home-tab-collectibles font-weight-bold">
             <v-icon class="mr-1" small left>$vuetify.icons.collectibles</v-icon>
             {{ t('walletHome.collectibles') }}
           </v-tab>
@@ -113,7 +113,7 @@
       </v-flex>
     </v-layout>
 
-    <v-tabs-items v-model="activeTab" class="token-tab-content">
+    <v-tabs-items v-model="activeTab" class="token-tab-content mt-8">
       <v-tab-item>
         <TokenBalancesTable :token-balances="filteredBalancesArray" :selected="selected" @update:select="select" />
       </v-tab-item>
