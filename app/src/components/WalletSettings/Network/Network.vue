@@ -45,15 +45,7 @@
               <v-tooltip bottom :disabled="formValid">
                 <template v-slot:activator="{ on }">
                   <span v-on="on">
-                    <v-btn
-                      large
-                      class="elevation-3 torus_brand1--text py-1"
-                      :class="$vuetify.theme.isDark ? 'torus_black_2' : 'white'"
-                      block
-                      :disabled="!formValid"
-                      depressed
-                      @click="setRPC"
-                    >
+                    <v-btn large class="torus-btn1 torus_brand1--text py-1" block :disabled="!formValid" depressed @click="setRPC">
                       {{ t('walletSettings.save') }}
                     </v-btn>
                   </span>
