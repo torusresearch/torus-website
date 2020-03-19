@@ -8,7 +8,6 @@
           <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" /> -->
         </span>
         <TransferAdvanceOption
-          v-if="!$vuetify.breakpoint.xsOnly"
           :symbol="symbol"
           :display-amount="displayAmount"
           :gas="gas"
@@ -19,34 +18,34 @@
     </v-layout>
     <v-layout v-if="!isAdvanceOption" mx-n2 xs12>
       <v-flex xs6 px-2 mb-1>
-        <v-chip
-          class="button-speed text-center elevation-3"
-          :outlined="$vuetify.theme.dark"
-          :class="[speedSelected === 'average' ? 'selected' : '']"
-          label
+        <div
+          class="btn-speed text-center elevation-3"
+          :class="[speedSelected === 'average' ? 'selected' : '', $vuetify.theme.dark ? 'theme--dark' : '']"
           @click="selectSpeed('average', averageGasPrice)"
         >
-          <img :src="require(`../../../../public/img/icons/speed-bicycle.svg`)" class="mr-2" />
-          <div>
-            <div class="font-weight-bold button-speed__speed">~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
-            <div :class="{ 'text_2--text': !$vuetify.theme.dark }">{{ getGasDisplayString(averageGasPrice) }}</div>
+          <div class="d-flex">
+            <img :src="require(`../../../../public/img/icons/speed-bicycle.svg`)" class="mr-2 ml-auto" />
+            <div class="mr-auto">
+              <div class="btn-speed__speed">~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
+              <div class="btn-speed__price">{{ getGasDisplayString(averageGasPrice) }}</div>
+            </div>
           </div>
-        </v-chip>
+        </div>
       </v-flex>
       <v-flex xs6 px-2 mb-1>
-        <v-chip
-          class="button-speed text-center elevation-3"
-          :outlined="$vuetify.theme.dark"
-          :class="[speedSelected === 'fastest' ? 'selected' : '']"
-          label
+        <div
+          class="btn-speed text-center elevation-3"
+          :class="[speedSelected === 'fastest' ? 'selected' : '', $vuetify.theme.dark ? 'theme--dark' : '']"
           @click="selectSpeed('fastest', fastestGasPrice)"
         >
-          <img :src="require(`../../../../public/img/icons/speed-car.svg`)" class="mr-2" />
-          <div>
-            <div class="font-weight-bold button-speed__speed">~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
-            <div :class="{ 'text_2--text': !$vuetify.theme.dark }">{{ getGasDisplayString(fastestGasPrice) }}</div>
+          <div class="d-flex">
+            <img :src="require(`../../../../public/img/icons/speed-car.svg`)" class="mr-2 ml-auto" />
+            <div class="mr-auto">
+              <div class="btn-speed__speed">~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
+              <div class="btn-speed__price">{{ getGasDisplayString(fastestGasPrice) }}</div>
+            </div>
           </div>
-        </v-chip>
+        </div>
       </v-flex>
     </v-layout>
     <v-layout v-if="isAdvanceOption" align-center>
@@ -58,18 +57,6 @@
       </v-flex>
       <v-flex xs4 class="text-right">
         <v-btn id="adv-reset-btn" outlined color="torus_brand1" @click="resetAdvanceOption">{{ t('walletTransfer.reset') }}</v-btn>
-      </v-flex>
-    </v-layout>
-    <v-layout>
-      <v-flex xs12 px-4 class="text-right">
-        <TransferAdvanceOption
-          v-if="$vuetify.breakpoint.xsOnly"
-          :symbol="symbol"
-          :display-amount="displayAmount"
-          :gas="gas"
-          :active-gas-price="activeGasPrice"
-          @onSave="onSaveAdvanceOptions"
-        />
       </v-flex>
     </v-layout>
   </v-flex>

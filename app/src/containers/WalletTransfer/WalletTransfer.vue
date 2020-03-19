@@ -18,7 +18,7 @@
           <div class="d-flex">
             <span class="body-2">{{ t('walletTransfer.accountBalance') }}</span>
             <div class="ml-auto">
-              <NetworkDisplay :network="storeNetworkType" :store-network-type="storeNetworkType"></NetworkDisplay>
+              <NetworkDisplay :store-network-type="storeNetworkType"></NetworkDisplay>
             </div>
           </div>
           <div class="d-flex mt-3">
@@ -160,16 +160,16 @@
               </v-flex>
               <v-flex xs12 class="you-send-container">
                 <div>
-                  <span class="subtitle-2">{{ t('walletTransfer.youSend') }}</span>
+                  <span class="body-2">{{ t('walletTransfer.youSend') }}</span>
                   <a
                     v-if="contractType !== CONTRACT_TYPE_ERC721 && !isSendAll"
                     id="send-all-btn"
-                    class="float-right torus_brand1--text subtitle-2"
+                    class="float-right torus_brand1--text body-2"
                     @click="sendAll"
                   >
                     {{ t('walletTransfer.sendAll') }}
                   </a>
-                  <a v-if="isSendAll" id="send-all-reset-btn" class="float-right torus_brand1--text subtitle-2" @click="resetSendAll">
+                  <a v-if="isSendAll" id="send-all-reset-btn" class="float-right torus_brand1--text body-2" @click="resetSendAll">
                     {{ t('walletTransfer.reset') }}
                   </a>
                 </div>
@@ -224,7 +224,7 @@
                       :outlined="!!toggle_exclusive"
                       @click="changeSelectedToCurrency(1)"
                     >
-                      {{ t('walletTransfer.transfer') }}
+                      {{ selectedCurrency }}
                     </v-btn>
                   </template>
                 </v-text-field>
@@ -288,7 +288,7 @@
           <div class="d-flex">
             <span class="body-2">{{ t('walletTransfer.accountBalance') }}</span>
             <div class="ml-auto">
-              <NetworkDisplay :network="storeNetworkType" :store-network-type="storeNetworkType"></NetworkDisplay>
+              <NetworkDisplay :store-network-type="storeNetworkType"></NetworkDisplay>
             </div>
           </div>
           <div class="d-flex mt-3">
@@ -491,6 +491,8 @@ export default {
       return this.$store.state.selectedAddress
     },
     storeNetworkType() {
+      // eslint-disable-next-line no-console
+      console.log('this.$store.state.networkType', this.$store.state.networkType)
       return this.$store.state.networkType
     }
   },
