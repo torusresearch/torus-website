@@ -4,7 +4,7 @@
       <v-flex
         px-4
         :class="$vuetify.breakpoint.xsOnly ? 'order-2 pt-2' : 'order-0'"
-        :style="{ marginLeft: $vuetify.breakpoint.xsOnly ? '33px' : '0', maxWidth: '100px' }"
+        :style="{ marginLeft: $vuetify.breakpoint.xsOnly ? '33px' : '0', maxWidth: '105px' }"
       >
         <div class="caption font-weight-medium">{{ transaction.dateFormatted }}</div>
         <div class="info font-weight-light">{{ transaction.timeFormatted }}</div>
@@ -25,17 +25,10 @@
             v-if="transaction.type === CONTRACT_TYPE_ERC20 || transaction.action === ACTIVITY_ACTION_TOPUP"
             :src="require(`../../../../public/images/${transaction.actionIcon}`)"
             :alt="transaction.from"
-            class="mr-2"
+            class="mr-2 ml-1"
             height="36"
           />
-          <img
-            v-else-if="transaction.type === CONTRACT_TYPE_ERC721"
-            :src="transaction.actionIcon"
-            class="mr-2"
-            height="36"
-            large
-            color="torus_brand1"
-          />
+          <img v-else-if="transaction.type === CONTRACT_TYPE_ERC721" :src="transaction.actionIcon" class="mr-2 ml-1" height="36" large />
           <v-icon v-else class="float-left" large color="torus_brand1">{{ transaction.actionIcon }}</v-icon>
         </div>
         <div class="caption font-weight-medium">{{ transaction.actionText }}</div>
