@@ -8,7 +8,7 @@ export default {
   gray_2: '#EEF2F4',
   gray_3: '#A2A5B5',
   gray_4: '#F9F9FB',
-  font_1: '#5C6C7F',
+  font_1: '#FFFFFF',
   font_2: '#7F8FA4',
   font_link_1: '#0364FF',
   font_link_2: '#5495F7',

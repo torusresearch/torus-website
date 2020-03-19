@@ -1,12 +1,12 @@
 .network-chip {
   height: 20px;
   background: #FFE9B3;
-  color: var(--v-torus_black-base);
+  color: #000000;
   border-radius: 10px;
   padding: 0 12px;
 
   .v-icon {
-    color: var(--v-torus_black-base);
+    color: #000000;
     height: 8px;
     width: 8px;
     margin-right: 8px;
@@ -20,6 +20,10 @@
     &--mobile {
       font-size: 10px;
     }
+  }
+
+  &.theme--dark, .v-icon {
+    color: #5C6C7F;
   }
 
   &.network-chip--mainnet {
