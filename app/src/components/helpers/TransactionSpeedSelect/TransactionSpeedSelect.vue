@@ -1,7 +1,7 @@
 <template>
   <v-flex xs12 mb-3 class="torus-v8">
     <v-layout>
-      <v-flex class="body-2">
+      <v-flex class="body-2 mb-1">
         <span>
           Transfer Fee
           <!-- {{ t('walletTransfer.selectSpeed') }}

@@ -6,6 +6,7 @@
     }
   }
   .theme-btn.v-btn {
+    justify-content: space-between;
     &.v-btn--disabled {
       &.theme--light{
         background: #FFFFFF !important;
@@ -13,7 +14,7 @@
         border: 0
       }
       &.theme--dark{
-        background-color: var(--v-torus_light) !important;
+        background-color: #242529 !important;
       }
     }
   }
