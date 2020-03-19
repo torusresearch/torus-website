@@ -142,6 +142,10 @@
   }
 
   
+  .v-btn {
+    text-transform: inherit;
+  }
+  
   &.theme--light {
     .display-4, .display-3, .display-2, .label {
       color: var(--v-torus_font1-base);
@@ -152,28 +156,29 @@
     .body-2 {
       color: var(--v-torus_font1-base);
     }
-  }
-  
-  .v-btn {
-    text-transform: inherit;
+    .theme--light.v-btn.torus-btn1 {
+      @extend .elevation-3;
+      background: #FFFFFF;
+      border: 1px solid rgba(206, 208, 214, 0.3);
+    }
   }
 
   &.theme--dark {
     background: var(--v-torus_black-base);
     &.v-sheet {
-      background: var(--v-torus_black_2-base);
+      background: var(--v-torus_black2-base);
     }
     .v-app-bar.v-toolbar.v-sheet {
-      background: var(--v-torus_black_2-base);
+      background: var(--v-torus_black2-base);
     }
     .v-card {
-      background-color: var(--v-torus_black_2-base);
+      background-color: var(--v-torus_black2-base);
     }
     .v-list {
-      background-color: var(--v-torus_black_2-base);
+      background-color: var(--v-torus_black2-base);
     }
     .v-expansion-panel {
-      background-color: var(--v-torus_black_2-base);
+      background-color: var(--v-torus_black2-base);
     }
 
     .elevation-1,
@@ -186,8 +191,8 @@
       box-shadow: 0px 14px 28px rgba(36, 37, 41, 0.5) !important;
     }
     
-    .elevation-3 {
-      box-shadow: 5px 5px 10px var(--v-torus_light-base), -5px -5px 10px #37383C !important;
+    .elevation-3 {      
+      box-shadow: 5px 5px 10px #242529, -5px -5px 10px #37383C !important;
     }
 
     .v-input {
@@ -201,6 +206,11 @@
           border-width: 1px;
         }
       }
+    }
+
+    .theme--dark.v-btn.torus-btn1 {
+      @extend .elevation-3;
+      background-color: var(--v-torus_black2-base);
     }
   }
 }
