@@ -47,7 +47,7 @@
       <v-layout mt-4 pr-4>
         <v-spacer></v-spacer>
         <v-btn large text @click="onCancel">{{ t('walletTransfer.cancel') }}</v-btn>
-        <v-btn id="confirm-transfer-btn" large color="torus_brand1" class="ml-4" type="button" @click="onConfirm">
+        <v-btn id="confirm-transfer-btn" large color="torus_brand1" class="ml-4 white--text" type="button" @click="onConfirm">
           {{ t('walletTransfer.confirm') }}
         </v-btn>
       </v-layout>

@@ -21,7 +21,7 @@
               aria-label="Filter Transacation Type"
             >
               <template v-slot:prepend>
-                <v-icon>$vuetify.icons.activities</v-icon>
+                <v-icon size="12" :style="{ marginTop: '6px' }">$vuetify.icons.activities</v-icon>
               </template>
             </v-select>
           </v-flex>
@@ -40,7 +40,7 @@
               aria-label="Filter Transacation Period"
             >
               <template v-slot:prepend>
-                <v-icon>$vuetify.icons.calendar</v-icon>
+                <v-icon size="18" :style="{ marginTop: '4px' }">$vuetify.icons.calendar</v-icon>
               </template>
             </v-select>
           </v-flex>

@@ -250,7 +250,7 @@
                   depressed
                   color="torus_brand1"
                   :disabled="!formValid || speedSelected === '' || selectedVerifier === ''"
-                  class="px-8"
+                  class="px-8 white--text"
                   @click="onTransferClick"
                 >
                   {{ t('walletTransfer.transfer') }}
