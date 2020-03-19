@@ -30,6 +30,7 @@
                             <v-btn
                               v-if="!walletJson"
                               id="json-file-confirm-btn"
+                              class="white--text"
                               color="torus_brand1"
                               depressed
                               width="155px"
@@ -45,7 +46,15 @@
                                 </span>
                               </template>
                             </v-btn>
-                            <v-btn v-if="walletJson" id="json-file-download-btn" depressed color="torus_brand1" :href="walletJson" :download="name">
+                            <v-btn
+                              v-if="walletJson"
+                              id="json-file-download-btn"
+                              class="white--text"
+                              depressed
+                              color="torus_brand1"
+                              :href="walletJson"
+                              :download="name"
+                            >
                               {{ t('walletSettings.downloadWallet') }}
                             </v-btn>
                           </template>
@@ -56,6 +65,7 @@
                       <v-btn
                         v-if="!walletJson"
                         id="mobile-json-file-confirm-btn"
+                        class="white--text"
                         color="torus_brand1"
                         :disabled="!downloadFormValid || isLoadingDownloadWallet"
                         width="155px"
@@ -70,7 +80,14 @@
                           </span>
                         </template>
                       </v-btn>
-                      <v-btn v-if="walletJson" id="mobile-json-file-download-btn" color="torus_brand1" :href="walletJson" :download="name">
+                      <v-btn
+                        v-if="walletJson"
+                        id="mobile-json-file-download-btn"
+                        class="white--text"
+                        color="torus_brand1"
+                        :href="walletJson"
+                        :download="name"
+                      >
                         {{ t('walletSettings.downloadWallet') }}
                       </v-btn>
                     </v-flex>

@@ -30,7 +30,7 @@
       <v-flex v-for="asset in selectedContract.assets" :key="asset.tokenId" xs12 sm3 md2 px-4 pb-4>
         <!-- Asset Desktop View -->
         <v-expand-transition>
-          <v-card v-if="!$vuetify.breakpoint.xsOnly" class="mx-auto asset card-shadow" max-width="344" :ripple="false" @click="toggleDetails($event)">
+          <v-card v-if="!$vuetify.breakpoint.xsOnly" class="mx-auto asset elevation-1" max-width="344" :ripple="false" @click="toggleDetails($event)">
             <!-- <v-img :src="asset.image" height="140px" :style="{ backgroundColor: asset.color }"></v-img> -->
             <div class="text-center">
               <img :src="asset.image" style="width: auto; height: 140px" :alt="asset.name || `${selectedContract.name} #${asset.tokenId}`" />
