@@ -243,20 +243,6 @@
                 <div class="headline text_2--text">{{ totalCost || 0 }} {{ totalCostSuffix }}</div>
                 <div class="caption text_2--text">{{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}</div>
               </v-flex>
-              <!-- <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721" xs12>
-                <div>
-                  <span class="subtitle-2">{{ t('walletTransfer.totalCost') }}</span>
-                </div>
-                <v-text-field
-                  id="total-cost"
-                  :suffix="totalCostSuffix"
-                  :hint="convertedTotalCost ? convertedTotalCostDisplay : ''"
-                  persistent-hint
-                  outlined
-                  readonly
-                  :value="totalCost"
-                ></v-text-field>
-              </v-flex> -->
               <v-flex xs12 mt-3 class="text-right">
                 <v-btn
                   id="wallet-transfer-submit"
@@ -264,7 +250,7 @@
                   depressed
                   color="torus_brand1"
                   :disabled="!formValid || speedSelected === '' || selectedVerifier === ''"
-                  class="px-6"
+                  class="px-8"
                   @click="onTransferClick"
                 >
                   {{ t('walletTransfer.transfer') }}

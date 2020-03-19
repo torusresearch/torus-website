@@ -41,7 +41,7 @@
   cursor: pointer;
   &.v-chip {
     background: rgba(255, 255, 255, 0.8);
-    box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
+    box-shadow: 5px 5px 10px rgba(222, 229, 255, 0.5), -5px -5px 10px #FAFBFF !important;
     border-radius: 6px;
   }
   &.selected {
@@ -79,6 +79,7 @@
   &.theme--dark {
     &.v-chip {
       background: #2F3136;
+      box-shadow: 5px 5px 10px #242529, -5px -5px 10px #37383C !important;
       .v-chip__content {
         color: var(--v-torus_font1-base);
       }

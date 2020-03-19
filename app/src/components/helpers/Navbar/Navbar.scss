@@ -19,9 +19,9 @@
   
   .v-tab {
     text-transform: inherit;
-    // &.v-tab--active {
-    //   color: var(--v-torus_brand1);
-    // }
+    &.v-tab--active {
+      color: var(--v-torus_brand1-base);
+    }
   }
 
   .home-link {
