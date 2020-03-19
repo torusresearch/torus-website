@@ -10,8 +10,8 @@
               <v-btn
                 block
                 large
-                class="elevation-3 torus_brand1--text"
-                :class="[$vuetify.theme.isDark ? 'torus_black_2' : 'white', $vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12']"
+                class="torus-btn1 torus_brand1--text"
+                :class="[$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12']"
                 :href="detailsLink"
                 target="_blank"
               >

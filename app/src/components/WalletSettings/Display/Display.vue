@@ -8,7 +8,7 @@
           :disabled="theme.name === activeTheme"
           large
           class="torus_brand1--text theme-btn"
-          :class="[$vuetify.theme.isDark ? 'torus_black_2' : 'white', theme.name === activeTheme ? '' : 'elevation-3']"
+          :class="[$vuetify.theme.isDark ? 'torus_black2' : 'white', theme.name === activeTheme ? '' : 'elevation-3']"
         >
           {{ t(theme.label) }}
         </v-btn>
