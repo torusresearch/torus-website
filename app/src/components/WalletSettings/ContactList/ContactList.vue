@@ -2,13 +2,55 @@
   <div class="contact-list-container" :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-0'">
     <v-layout wrap>
       <v-flex xs12 px-1 mb-1>
-        <div class="body-2">{{ t('walletSettings.listContacts') }}</div>
-        <v-card class="elevation-1 mt-2">
+        <div class="d-flex align-center">
+          <div class="body-2">{{ t('walletSettings.listContacts') }}</div>
+          <div class="d-flex ml-auto">
+            <v-text-field
+              v-if="!$vuetify.breakpoint.xsOnly"
+              id="search-name"
+              v-model="searchName"
+              class="search-name caption"
+              dense
+              hide-details
+              placeholder="Search by name"
+              outlined
+              aria-label="Search Name"
+            ></v-text-field>
+            <v-select
+              id="search-verifier"
+              v-model="searchVerifier"
+              class="search-verifier caption"
+              hide-details
+              dense
+              outlined
+              append-icon="$vuetify.icons.select"
+              :items="verifierOptionsFilter"
+              item-text="name"
+              item-value="value"
+              aria-label="Filter Type"
+              placeholder="Filter by type"
+            ></v-select>
+          </div>
+        </div>
+        <div v-if="$vuetify.breakpoint.xsOnly" class="mt-4">
+          <v-text-field
+            id="search-name"
+            v-model="searchName"
+            class="search-name caption"
+            :class="{ mobile: $vuetify.breakpoint.xsOnly }"
+            dense
+            hide-details
+            placeholder="Search by name"
+            outlined
+            aria-label="Search Name"
+          ></v-text-field>
+        </div>
+        <v-card class="elevation-1 mt-4">
           <v-list dense class="pa-0 contact-list">
             <template v-for="contact in contacts">
               <v-list-item :key="`contact-${contact.id}`" class="pl-0 pr-1">
                 <v-list-item-avatar class="ma-0">
-                  <img :src="require(`../../../../public/img/icons/google-grey.svg`)" style="width: 16px" class="ma-1" />
+                  <img :src="require(`../../../../public/img/icons/${contact.verifier}-grey.svg`)" style="width: 16px" class="ma-1" />
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title class="font-weight-regular caption">
@@ -70,8 +112,7 @@
             </v-flex>
 
             <v-layout wrap>
-              <v-spacer></v-spacer>
-              <v-flex xs4 :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : ''">
+              <v-flex class="ml-auto xs6 sm4" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : ''">
                 <v-btn id="contact-submit-btn" large class="torus-btn1 torus_brand1--text py-1" block type="submit" :disabled="!contactFormValid">
                   {{ t('walletSettings.addContact') }}
                 </v-btn>
@@ -101,7 +142,9 @@ export default {
       rules: {
         required: value => !!value || this.t('walletSettings.required')
       },
-      ETH
+      ETH,
+      searchName: '',
+      searchVerifier: null
     }
   },
   computed: {
@@ -117,7 +160,23 @@ export default {
       return `${this.t('walletSettings.enter')} ${this.t(verifierLocale)}`
     },
     contacts() {
-      return this.$store.state.contacts
+      return this.$store.state.contacts.filter(contact => {
+        if (this.searchVerifier && this.searchVerifier !== contact.verifier) return false
+
+        if (this.searchName) {
+          const nameFilter = new RegExp(this.searchName, 'i')
+          if (!contact.name.match(nameFilter)) return false
+        }
+        return contact
+      })
+    },
+    verifierOptionsFilter() {
+      const verifiers = this.verifierOptions
+      verifiers.unshift({
+        name: 'All',
+        value: ''
+      })
+      return verifiers
     }
   },
   methods: {
