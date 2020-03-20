@@ -15,10 +15,10 @@
         </slot>
       </div>
       <v-layout wrap class="mx-n3 mt-2">
-        <v-flex xs12 sm6 px-3 :class="$vuetify.breakpoint.xsOnly ? 'mb-2' : ''">
-          <ShowToolTip :address="detailsLink">
+        <v-flex v-if="!!detailsLinkTwo" xs12 sm6 px-3 :class="$vuetify.breakpoint.xsOnly ? 'mb-2' : ''">
+          <ShowToolTip :address="detailsLinkTwo">
             <div :class="{ 'theme--dark': $vuetify.theme.isDark }" class="d-flex align-center copy-link px-4 py-1">
-              <span class="text_2--text flex-grow-1 text-clamp-one">{{ detailsLink }}</span>
+              <span class="text_2--text flex-grow-1 text-clamp-one">{{ detailsLinkTwo }}</span>
               <v-icon class="text_2--text ml-auto" x-small right :style="{ width: '20px' }">$vuetify.icons.copy</v-icon>
             </div>
           </ShowToolTip>
@@ -76,6 +76,7 @@ export default {
     subtitle: { type: String, default: '' },
     imagePath: { type: String, default: '' },
     detailsLink: { type: String, default: '' },
+    detailsLinkTwo: { type: String, default: '' },
     detailsText: { type: String, default: '' }
   }
 }
