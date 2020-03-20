@@ -34,5 +34,11 @@ export default {
   redirect_uri: redirect_uri,
   api: 'https://backend.relayer.dev.tor.us',
   // api: 'https://api.tor.us',
-  relayer: 'https://relayer.relayer.dev.tor.us'
+  relayer: 'https://relayer.relayer.dev.tor.us',
+  biconomy: 'https://localhost:4000',
+  biconomyKey: {
+    kovan: 'torus.b0981c34-19b2-4d05-ab15-1ccb49b78c68',
+    ropsten: 'torus.c0981c34-19b2-4d05-ab15-1ccb49b78c54',
+    matic: 'torus.a0981c34-19b2-4d05-ab15-1ccb49b78cf9'
+  }
 }
