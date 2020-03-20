@@ -13,11 +13,11 @@ const Wyre = {
     const instanceState = encodeURIComponent(window.btoa(JSON.stringify({ instanceId: torus.instanceId, provider: WYRE })))
     const parameters = {
       accountId: config.wyreAccountId,
-      dest: `ethereum:${selectedAddress || state.selectedAddress}`,
-      destCurrency: currentOrder.destCurrency,
+      dest: selectedAddress ? `ethereum:${selectedAddress}` : undefined,
+      destCurrency: currentOrder.destCurrency || undefined,
       redirectUrl: `${config.redirect_uri}?state=${instanceState}`,
-      referenceId: state.selectedAddress,
-      sourceAmount: currentOrder.sourceAmount
+      referenceId: selectedAddress || state.selectedAddress,
+      sourceAmount: currentOrder.sourceAmount || undefined
     }
 
     return dispatch('postWyreOrder', { params: parameters, path: config.wyreHost, preopenInstanceId })
