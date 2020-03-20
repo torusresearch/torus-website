@@ -155,12 +155,15 @@ class PreferencesController {
       userOrigin = getIFrameOrigin()
     } else userOrigin = window.location.origin
     if (!payload.rehydrate) {
+      const urlParameters = new URLSearchParams(window.location.search)
+      const referrer = urlParameters.get('referrer') || ''
       post(
         `${config.api}/user/recordLogin`,
         {
           hostname: userOrigin,
           verifier,
-          verifierId
+          verifierId,
+          metadata: `referrer:${referrer}`
         },
         this.headers
       )
