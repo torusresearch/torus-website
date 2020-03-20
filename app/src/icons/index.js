@@ -15,6 +15,7 @@ import CoinsReceiveIcon from './CoinsReceiveIcon.vue'
 import CoinsSendIcon from './CoinsSendIcon.vue'
 import CoinsTopupIcon from './CoinsTopupIcon.vue'
 import CollectibleIcon from './CollectibleIcon.vue'
+import CopyIcon from './CopyIcon.vue'
 import DownloadIcon from './DownloadIcon.vue'
 import EthIcon from './EthIcon.vue'
 import GlobeIcon from './GlobeIcon.vue'
@@ -175,5 +176,8 @@ export default {
   },
   qr: {
     component: QrIcon
+  },
+  copy: {
+    component: CopyIcon
   }
 }
