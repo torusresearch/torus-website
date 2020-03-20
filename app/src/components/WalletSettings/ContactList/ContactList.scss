@@ -5,4 +5,25 @@
       border-bottom: 0;
     }
   }
+  .search-name {
+    width: 160px;
+    &.mobile {
+      width: inherit;
+    }
+  }
+  .search-verifier {
+    margin-left: 8px;
+    width: 130px;
+    ::v-deep .v-select__selections {
+      .v-select__selection--comma {
+        margin: 0
+      }
+      input {
+        padding: 0
+      }
+    }
+    .v-input__append-inner {
+      margin-top: 0;
+    }
+  }
 }

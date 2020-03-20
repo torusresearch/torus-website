@@ -1,8 +1,8 @@
 <template>
   <v-layout class="collectibles-tab-container mx-n4" wrap align-center>
     <v-flex v-for="(collectible, i) in collectibles" :key="i" class="xs12 sm6 md4 lg3 px-4 mb-4">
-      <v-card class="elevation-1" :class="$vuetify.breakpoint.xsOnly ? 'pt-1 pb-2 px-5' : 'py-4 px-5'">
-        <v-list-item router-link :to="{ name: 'walletHomeCollectible', params: { address: collectible.address } }">
+      <v-card class="elevation-1" :class="$vuetify.breakpoint.xsOnly ? 'pt-1 pb-2 px-5' : 'py-3 px-5'">
+        <v-list-item class="px-0" router-link :to="{ name: 'walletHomeCollectible', params: { address: collectible.address } }">
           <v-list-item-avatar :size="$vuetify.breakpoint.xsOnly ? 36 : 50">
             <v-img :src="collectible.logo" :alt="collectible.name"></v-img>
           </v-list-item-avatar>
