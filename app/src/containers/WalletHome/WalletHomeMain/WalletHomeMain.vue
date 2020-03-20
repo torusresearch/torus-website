@@ -90,6 +90,7 @@
               :image-path="event.imageUrl"
               :subtitle="event.description"
               :details-link="event.callToActionLink"
+              :details-link-two="event.callToActionLinkTwo"
               :details-text="event.callToActionText"
             ></PromotionCard>
           </v-flex>

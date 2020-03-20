@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "private": true,
   "scripts": {
     "serve": "npm run locale && vue-cli-service serve",
@@ -103,7 +103,7 @@
   },
   "devDependencies": {
     "@babel/register": "^7.8.6",
-    "@toruslabs/torus-embed": "^1.1.1",
+    "@toruslabs/torus-embed": "^1.2.0",
     "@vue/cli-plugin-babel": "^4.2.3",
     "@vue/cli-plugin-eslint": "^4.2.3",
     "@vue/cli-plugin-pwa": "^4.2.3",
@@ -148,7 +148,7 @@
     "mocha-eslint": "^6.0.0",
     "mocha-jsdom": "^2.0.0",
     "mocha-sinon": "^2.1.0",
-    "nock": "12.0.0",
+    "nock": "12.0.3",
     "nyc": "^15.0.0",
     "puppeteer": "^2.1.1",
     "sass": "^1.26.3",

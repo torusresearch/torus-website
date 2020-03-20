@@ -1,22 +1,24 @@
 import config from '../../config'
 import getQuote from '../../plugins/rampnetwork'
+import { ETH } from '../../utils/enums'
 import PopupHandler from '../../utils/PopupHandler'
+import { paymentProviders } from '../../utils/utils'
 
 export default {
   fetchRampNetworkQuote(context, payload) {
     // returns a promise
     return getQuote({
-      digital_currency: payload.selectedCryptoCurrency.toLowerCase(),
-      fiat_currency: payload.selectedCurrency.toLowerCase(),
-      requested_amount: +parseFloat(payload.fiatValue)
+      digital_currency: (payload.selectedCryptoCurrency || ETH).toLowerCase(),
+      fiat_currency: (payload.selectedCurrency || paymentProviders.rampnetwork.validCurrencies[0]).toLowerCase(),
+      requested_amount: +parseFloat(payload.fiatValue || paymentProviders.rampnetwork.minOrderValue)
     })
   },
   fetchRampNetworkOrder({ state, dispatch }, { currentOrder, preopenInstanceId, selectedAddress }) {
     const parameters = {
-      userAddress: selectedAddress || state.selectedAddress,
-      userEmailAddress: state.userInfo.email,
-      swapAsset: currentOrder.cryptoCurrencySymbol,
-      swapAmount: currentOrder.cryptoCurrencyValue,
+      userAddress: selectedAddress || undefined,
+      userEmailAddress: state.userInfo.email || undefined,
+      swapAsset: currentOrder.cryptoCurrencySymbol || undefined,
+      swapAmount: currentOrder.cryptoCurrencyValue || undefined,
       variant: 'hosted-auto',
       webhookStatusUrl: `${config.rampApiHost}/transaction`,
       hostUrl: '*'
@@ -25,7 +27,7 @@ export default {
   },
   openWidget(context, { path, params, preopenInstanceId }) {
     return new Promise((resolve, reject) => {
-      const parameterString = new URLSearchParams(params)
+      const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(params)))
       const finalUrl = `${path}?${parameterString}`
       const rampInstantWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       let purchaseCreated = false

@@ -40,17 +40,21 @@ export default {
         const selectedParameters = params || {}
 
         // set default values
-        if (!selectedParameters.selectedCurrency) [selectedParameters.selectedCurrency] = selectedProvider.validCurrencies
-        if (!selectedParameters.fiatValue) selectedParameters.fiatValue = selectedProvider.minOrderValue
-        if (!selectedParameters.selectedCryptoCurrency) [selectedParameters.selectedCryptoCurrency] = selectedProvider.validCryptoCurrencies
-        if (!selectedParameters.selectedAddress) selectedParameters.selectedAddress = state.selectedAddress
+        // if (!selectedParameters.selectedCurrency) [selectedParameters.selectedCurrency] = selectedProvider.validCurrencies
+        // if (!selectedParameters.fiatValue) selectedParameters.fiatValue = selectedProvider.minOrderValue
+        // if (!selectedParameters.selectedCryptoCurrency) [selectedParameters.selectedCryptoCurrency] = selectedProvider.validCryptoCurrencies
+        // if (!selectedParameters.selectedAddress) selectedParameters.selectedAddress = state.selectedAddress
 
         // validations
-        const requestedOrderAmount = +parseFloat(selectedParameters.fiatValue)
-        if (requestedOrderAmount < selectedProvider.minOrderValue) throw new Error('Requested amount is lower than supported')
-        if (requestedOrderAmount > selectedProvider.maxOrderValue) throw new Error('Requested amount is higher than supported')
-        if (!selectedProvider.validCurrencies.includes(selectedParameters.selectedCurrency)) throw new Error('Unsupported currency')
-        if (!selectedProvider.validCryptoCurrencies.includes(selectedParameters.selectedCryptoCurrency)) throw new Error('Unsupported cryptoCurrency')
+        if (selectedParameters.fiatValue) {
+          const requestedOrderAmount = +parseFloat(selectedParameters.fiatValue) || 0
+          if (requestedOrderAmount < selectedProvider.minOrderValue) throw new Error('Requested amount is lower than supported')
+          if (requestedOrderAmount > selectedProvider.maxOrderValue) throw new Error('Requested amount is higher than supported')
+        }
+        if (selectedParameters.selectedCurrency && !selectedProvider.validCurrencies.includes(selectedParameters.selectedCurrency))
+          throw new Error('Unsupported currency')
+        if (selectedParameters.selectedCryptoCurrency && !selectedProvider.validCryptoCurrencies.includes(selectedParameters.selectedCryptoCurrency))
+          throw new Error('Unsupported cryptoCurrency')
 
         // simplex
         if (provider === SIMPLEX) {
@@ -64,18 +68,19 @@ export default {
         } else if (provider === RAMPNETWORK) {
           // rampnetwork
           const result = await dispatch('fetchRampNetworkQuote', selectedParameters)
-          const asset = result.assets.find(item => item.symbol === selectedParameters.selectedCryptoCurrency)
-
-          const fiat = selectedParameters.fiatValue
-          const feeRate = asset.maxFeePercent[selectedParameters.selectedCurrency] / 100
-          const rate = asset.price[selectedParameters.selectedCurrency]
-          const fiatWithoutFee = fiat / (1 + feeRate) // Final amount of fiat that will be converted to crypto
-          const cryptoValue = fiatWithoutFee / rate // Final Crypto amount
-
-          const currentOrder = {
-            cryptoCurrencyValue: cryptoValue * 10 ** asset.decimals,
-            cryptoCurrencySymbol: asset.symbol
+          let cryptoValue = 0
+          const currentOrder = { cryptoCurrencyValue: undefined, cryptoCurrencySymbol: undefined }
+          if (selectedParameters.fiatValue && selectedParameters.selectedCurrency && selectedParameters.selectedCryptoCurrency) {
+            const asset = result.assets.find(item => item.symbol === selectedParameters.selectedCryptoCurrency)
+            const fiat = selectedParameters.fiatValue
+            const feeRate = asset.maxFeePercent[selectedParameters.selectedCurrency] / 100
+            const rate = asset.price[selectedParameters.selectedCurrency]
+            const fiatWithoutFee = fiat / (1 + feeRate) // Final amount of fiat that will be converted to crypto
+            cryptoValue = fiatWithoutFee / rate // Final Crypto amount
+            currentOrder.cryptoCurrencyValue = cryptoValue * 10 ** asset.decimals || undefined
+            currentOrder.cryptoCurrencySymbol = asset.symbol
           }
+
           const { success } = await dispatch('fetchRampNetworkOrder', {
             currentOrder,
             preopenInstanceId,
@@ -84,7 +89,15 @@ export default {
           handleSuccess(success)
         } else if (provider === MOONPAY) {
           // moonpay
-          const currentOrder = await dispatch('fetchMoonpayQuote', selectedParameters)
+          let currentOrder = { currency: { code: '' }, baseCurrencyAmount: '', baseCurrency: { code: '' } }
+          if (selectedParameters.fiatValue && selectedParameters.selectedCurrency && selectedParameters.selectedCryptoCurrency) {
+            currentOrder = await dispatch('fetchMoonpayQuote', {
+              selectedCurrency: selectedParameters.selectedCurrency,
+              selectedCryptoCurrency: selectedParameters.selectedCryptoCurrency,
+              selectedAddress: selectedParameters.selectedAddress || state.selectedAddress,
+              fiatValue: selectedParameters.fiatValue || selectedProvider.minOrderValue
+            })
+          }
           const { success } = await dispatch('fetchMoonpayOrder', {
             currentOrder,
             colorCode: vuetify.framework.theme.themes.light.primary.base,
@@ -94,9 +107,9 @@ export default {
           handleSuccess(success)
         } else if (provider === WYRE) {
           // wyre
-          const { data: currentOrder } = await dispatch('fetchWyreQuote', selectedParameters)
+          // const { data: currentOrder } = await dispatch('fetchWyreQuote', selectedParameters)
           const { success } = await dispatch('fetchWyreOrder', {
-            currentOrder,
+            currentOrder: { destCurrency: selectedParameters.selectedCryptoCurrency, sourceAmount: selectedParameters.fiatValue },
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress
           })

@@ -54,7 +54,11 @@ export default {
     },
     sendOrder(callback) {
       callback(
-        this.$store.dispatch('fetchRampNetworkOrder', { currentOrder: this.currentOrder, colorCode: this.$vuetify.theme.themes.light.primary.base })
+        this.$store.dispatch('fetchRampNetworkOrder', {
+          currentOrder: this.currentOrder,
+          colorCode: this.$vuetify.theme.themes.light.primary.base,
+          selectedAddress: this.$store.state.selectedAddress
+        })
       )
     },
     clearQuote(payload) {

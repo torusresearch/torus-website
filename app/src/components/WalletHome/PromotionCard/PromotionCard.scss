@@ -1,7 +1,18 @@
 .more-details-container {
-  position: absolute;
-  bottom: 24px;
+  // position: absolute;
+  // bottom: 24px;
   @media screen and (max-width: 600px) {
     position: inherit;
+  }
+}
+
+.copy-link {
+  border: 1px solid var(--v-text_3-base);
+  border-radius: 4px;
+  height: 37px;
+  cursor: pointer;
+  font-weight: 500;
+  &.theme--dark {
+    border: 1px solid var(--v-text_3-base);
   }
 }
