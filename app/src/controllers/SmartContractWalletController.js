@@ -121,31 +121,31 @@ export default class SmartContractWalletController {
       txStateManager.updateTx(txMeta, 'transactions#setTxHash')
 
       // Get the gasPrice
-      const gasprice = await fetch(config.relayer.concat('/gasPrice')).then(res => res.json())
-      console.log('scwController: gasPrice', gasprice)
+      const gasPrice = await fetch(config.relayer.concat('/gasPrice')).then(res => res.json())
+      console.log('scwController: gasPrice', gasPrice)
 
       // Sign the transaction
-      const signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, gasprice, 700000)
+      // Also the gas cost of tx may increase based on the number of signer accounts
+      // ^ maybe can ignore if our use case is 100% single EOA to 1 wallet
+      let signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, gasPrice, 0)
 
-      // const { gasEstimate } = await post(config.relayer.concat('/transfer/eth/estimate'), {
-      //   gasPrice: gasprice,
-      //   wallet: fromSCW,
-      //   nonce,
-      //   methodData,
-      //   signatures,
+      let { gasEstimate } = await post(config.relayer.concat('/transfer/eth/estimate'), {
+        gasPrice: gasPrice,
+        gasLimit: 0,
+        wallet: fromSCW,
+        nonce,
+        methodData,
+        signatures
+      })
+      // 29292 is the base gas used, for added margin, using + 100,000
+      gasEstimate += 100000
+      console.log('scwController: gasEstimate', gasEstimate)
 
-      //   fromSCW,
-      //   ETH_TOKEN,
-      //   to,
-      //   transferValue,
-      //   ZERO_ADDRESS
-      // })
-      // console.log('scwController: gasEstimate', gasEstimate)
+      signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, gasPrice, gasEstimate)
 
       const reqObj = {
-        // gasLimit: gasEstimate,
-        gasLimit: 700000,
-        gasPrice: gasprice,
+        gasLimit: gasEstimate,
+        gasPrice: gasPrice,
         wallet: fromSCW,
         nonce,
         methodData,
