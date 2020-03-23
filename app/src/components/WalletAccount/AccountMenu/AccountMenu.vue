@@ -109,8 +109,6 @@ import LanguageSelector from '../../helpers/LanguageSelector'
 import ShowToolTip from '../../helpers/ShowToolTip'
 import AccountImport from '../AccountImport'
 
-const log = require('loglevel')
-
 export default {
   components: {
     ShowToolTip,
@@ -172,7 +170,7 @@ export default {
         accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${selectedCurrency}`, ...storeWallet[x] })
         return accts
       }, [])
-      log.info(wallets)
+
       return wallets
     },
     // wallets() {
