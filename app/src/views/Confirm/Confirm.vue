@@ -27,6 +27,13 @@
             </div>
           </v-flex>
         </template>
+        <template v-else-if="transactionCategory === TOKEN_METHOD_APPROVE">
+          <v-flex xs12 mb-4 mx-6>
+            <div class="subtitle-1 float-left">
+              {{ `${t('dappPermission.allow')} ${origin.hostname} ${t('dappTransfer.toSpend')} ${selectedToken} ${t('dappTransfer.onYourBehalf')}?` }}
+            </div>
+          </v-flex>
+        </template>
         <v-flex v-else xs12 mb-4 mx-6>
           <div class="subtitle-2">{{ t('dappTransfer.amount') }}</div>
           <v-divider></v-divider>
@@ -65,7 +72,7 @@
             <span class="subtitle-2">{{ t('dappTransfer.constOfTrans') }}</span>
             <span class="subtitle-1 float-right primary--text font-weight-bold">{{ costOfTransaction }}</span>
           </div>
-          <div v-if="isOtherToken" class="clearfix">
+          <div v-if="isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE" class="clearfix">
             <span class="subtitle-1 float-right primary--text font-weight-bold">+ {{ significantDigits(gasCost) }} ETH</span>
           </div>
           <div class="caption float-right clearfix">{{ costOfTransactionConverted }}</div>
@@ -421,7 +428,7 @@ export default {
       }
     },
     costOfTransaction() {
-      if ([TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].includes(this.transactionCategory)) {
+      if ([TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].includes(this.transactionCategory)) {
         return `${this.displayAmountValue}`
       }
       return `${this.totalEthCostDisplay} ETH`
@@ -431,9 +438,10 @@ export default {
       // `+ ${significantDigits(this.gasCost)}`
     },
     costOfTransactionConverted() {
-      const totalCost = this.isOtherToken
-        ? significantDigits(this.totalUsdCost + this.amountTokenValueConverted.toNumber(), false, 5)
-        : this.totalUsdCost
+      let cost = this.totalUsdCost
+      if (this.transactionCategory !== TOKEN_METHOD_APPROVE) cost += this.amountTokenValueConverted.toNumber()
+
+      const totalCost = this.isOtherToken ? significantDigits(cost, false, 5) : this.totalUsdCost
       return `~ ${totalCost} ${this.selectedCurrency}`
     },
     imageType() {
