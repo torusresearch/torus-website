@@ -1,31 +1,38 @@
 <template>
   <div>
     <v-card class="elevation-1 pa-6">
-      <v-layout wrap class="wallet-topup">
-        <v-flex xs12>
-          <p class="body-2">
-            <span class="text-capitalize selected-provider">{{ selectedProvider }}</span>
-            {{ t('walletTopUp.description') }}
-          </p>
-        </v-flex>
+      <v-form ref="paymentForm" v-model="formValid" lazy-validation @submit.prevent>
+        <v-layout wrap class="wallet-topup">
+          <v-flex xs12>
+            <p class="body-2">
+              <span class="text-capitalize selected-provider">{{ selectedProvider }}</span>
+              {{ t('walletTopUp.description') }}
+            </p>
+          </v-flex>
 
-        <v-flex xs12>
-          <v-form ref="paymentForm" v-model="formValid" lazy-validation @submit.prevent>
-            <v-flex xs12>
-              <div class="subtitle-2">{{ t('walletTopUp.wannaBuy') }}</div>
-              <v-select
-                id="cryptocurrency"
-                v-model="selectedCryptoCurrency"
-                class="cryptocurrency-selector"
-                outlined
-                append-icon="$vuetify.icons.select"
-                :items="selectedProviderObj.validCryptoCurrencies"
-                aria-label="Cryptocurrency Selector"
-                @change="fetchQuote"
-              ></v-select>
-            </v-flex>
-            <v-flex xs12>
-              <div class="subtitle-2">{{ t('walletTopUp.youSend') }}</div>
+          <v-flex xs4>
+            <div class="body-2">{{ t('walletTopUp.wannaBuy') }}</div>
+            <v-select
+              id="cryptocurrency"
+              v-model="selectedCryptoCurrency"
+              class="cryptocurrency-selector"
+              outlined
+              append-icon="$vuetify.icons.select"
+              :items="selectedProviderObj.validCryptoCurrencies"
+              aria-label="Cryptocurrency Selector"
+              @change="fetchQuote"
+            ></v-select>
+          </v-flex>
+          <v-flex xs8></v-flex>
+
+          <v-layout wrap mx-n2>
+            <v-flex xs8 px-2>
+              <div>
+                <span class="body-2">{{ t('walletTopUp.youSend') }}</span>
+                <span class="caption float-right">
+                  {{ t('walletTopUp.min') }} {{ minOrderValue }}, {{ t('walletTopUp.max') }} {{ maxOrderValue }} {{ selectedCurrency }}*
+                </span>
+              </div>
               <v-text-field
                 id="you-send"
                 class="unique-hint"
@@ -39,7 +46,7 @@
                 <template v-slot:append>
                   <v-btn outlined small color="torus_brand1" @click="setFiatValue(100)">100</v-btn>
                   <v-btn outlined small color="torus_brand1" class="ml-2" @click="setFiatValue(200)">200</v-btn>
-                  <div class="torus_brand1--text font-weight-medium subtitle-2 pt-1 ml-2">{{ selectedCurrency }}*</div>
+                  <!-- <div class="torus_brand1--text font-weight-medium body-2 pt-1 ml-2">{{ selectedCurrency }}*</div> -->
                 </template>
               </v-text-field>
 
@@ -47,7 +54,7 @@
                 <div class="v-messages">
                   <div class="v-messages__wrapper">
                     <div class="v-messages__message d-flex">
-                      <v-flex class="font-weight-medium">
+                      <v-flex class="description">
                         <span v-if="selectedProviderObj.includeFees">{{ t('walletTopUp.includes') }} &nbsp;&nbsp;</span>
                         <span v-else>{{ t('walletTopUp.doesntInclude') }} &nbsp;&nbsp;</span>
                         <span v-html="selectedProviderObj.line2 || ''"></span>
@@ -56,50 +63,68 @@
                           :description="`${t('walletTopUp.serviceFeeDesc1')} ${selectedProvider} ${t('walletTopUp.serviceFeeDesc2')}`"
                         ></HelpTooltip>
                       </v-flex>
-                      <v-flex grow-shrink-0>
-                        <span>
-                          {{ t('walletTopUp.min') }} {{ minOrderValue }}, {{ t('walletTopUp.max') }} {{ maxOrderValue }} {{ selectedCurrency }}*
-                        </span>
-                      </v-flex>
                     </div>
                   </div>
                 </div>
               </div>
             </v-flex>
-
-            <v-flex xs12>
-              <div class="subtitle-2">
-                {{ t('walletTopUp.receive') }}
-                <span class="caption float-right text_2--text">
-                  {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency }} = {{ displayRateString }} {{ selectedCurrency }}
-                </span>
-              </div>
-              <v-text-field
-                id="receive"
-                readonly
-                placeholder="0.00"
-                :suffix="selectedCryptoCurrency"
-                :value="cryptoCurrencyValue"
-                :hint="selectedProviderObj.receiveHint || t('walletTopUp.receiveHint')"
-                persistent-hint
+            <v-flex xs4 px-2>
+              <v-select
+                id="currency-selector"
+                class="curency-selector"
                 outlined
-                aria-label="Amount to Receive"
-              ></v-text-field>
+                :items="supportedCurrencies"
+                :value="selectedCurrency"
+                append-icon="$vuetify.icons.select"
+                @change="onCurrencyChange"
+              ></v-select>
             </v-flex>
-          </v-form>
-        </v-flex>
+          </v-layout>
 
+          <v-flex xs12 class="text-right">
+            <div class="body-2">{{ t('walletTopUp.receive') }}</div>
+            <div class="display-1">{{ cryptoCurrencyValue || 0 }} {{ selectedCryptoCurrency }}</div>
+            <div class="description">
+              {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency }} = {{ displayRateString }} {{ selectedCurrency }}
+            </div>
+
+            <div class="description mt-6">
+              The process would take approximately 10 - 15 mins.
+            </div>
+            <div class="description mt-1">
+              {{ selectedProviderObj.receiveHint || t('walletTopUp.receiveHint') }}
+            </div>
+            <!-- <div class="body-2">
+              {{ t('walletTopUp.receive') }}
+              <span class="caption float-right text_2--text">
+                {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency }} = {{ displayRateString }} {{ selectedCurrency }}
+              </span>
+            </div>
+            <v-text-field
+              id="receive"
+              readonly
+              placeholder="0.00"
+              :suffix="selectedCryptoCurrency"
+              :value="cryptoCurrencyValue"
+              :hint="selectedProviderObj.receiveHint || t('walletTopUp.receiveHint')"
+              persistent-hint
+              outlined
+              aria-label="Amount to Receive"
+            ></v-text-field> -->
+          </v-flex>
+        </v-layout>
+      </v-form>
+      <v-layout wrap>
         <v-flex xs12 class="mt-10">
           <div class="text-right">
             <v-tooltip bottom :disabled="formValid">
               <template v-slot:activator="{ on }">
                 <span v-on="on">
                   <v-btn
-                    class="px-10"
+                    class="torus-btn1 torus_brand1--text"
                     :disabled="!formValid || !isQuoteFetched"
-                    x-large
+                    large
                     depressed
-                    color="torus_brand1"
                     type="submit"
                     @click.prevent="sendOrder"
                   >
@@ -109,17 +134,16 @@
               </template>
               <span>{{ t('walletTopUp.resolveErrors') }}</span>
             </v-tooltip>
-            <div class="caption text_2--text">{{ t('walletTopUp.redirectMessage') }}</div>
+            <div class="description mt-1">{{ t('walletTopUp.redirectMessage') }}</div>
           </div>
         </v-flex>
-
-        <v-flex class="mt-10 text-center text_2--text caption">
+        <!-- <v-flex class="mt-10 text-center text_2--text caption">
           {{ t('walletTopUp.contact1') }}
           <a href="mailto:hello@tor.us?Subject=Topup%20Support%20or%20Inquiry" target="_blank">
             {{ t('walletTopUp.contact2') }}
           </a>
           {{ t('walletTopUp.contact3') }}
-        </v-flex>
+        </v-flex> -->
       </v-layout>
     </v-card>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
@@ -130,6 +154,7 @@
 </template>
 
 <script>
+import config from '../../../config'
 import { formatCurrencyNumber, paymentProviders, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../../helpers/HelpTooltip'
 
@@ -166,7 +191,8 @@ export default {
       },
       snackbar: false,
       snackbarText: '',
-      snackbarColor: 'success'
+      snackbarColor: 'success',
+      supportedCurrencies: ['ETH', ...config.supportedCurrencies]
     }
   },
   computed: {
@@ -243,6 +269,9 @@ export default {
         }
         this.$emit('sendOrder', callback)
       }
+    },
+    onCurrencyChange(value) {
+      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'home' })
     }
   }
 }
