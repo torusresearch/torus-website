@@ -1,17 +1,17 @@
 .promotion-card {
-  .layout {
-    height: 155px;
+  .v-card__text {
+    height: 157px;
     @media screen and (max-width: 600px) {
       height: inherit;
     }
   }
   img {
-    height: 92px;
+    height: auto;
+    width: 50px;
   }
 }
 .more-details-container {
-  position: absolute;
-  bottom: 16px;
+  margin-top: 16px;
   @media screen and (max-width: 600px) {
     margin-top: 16px;
     position: inherit;
@@ -21,7 +21,7 @@
 .copy-link {
   border: 1px solid var(--v-text_3-base);
   border-radius: 4px;
-  height: 37px;
+  height: 44px;
   cursor: pointer;
   font-weight: 500;
   &.theme--dark {

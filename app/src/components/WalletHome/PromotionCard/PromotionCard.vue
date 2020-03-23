@@ -1,5 +1,5 @@
 <template>
-  <v-card class="elevation-1">
+  <v-card class="elevation-1 promotion-card">
     <v-card-text class="pt-3 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2' : $vuetify.breakpoint.xsOnly ? 'pb-6' : 'pb-3'">
       <div class="d-flex align-center">
         <div class="promotion-text">
@@ -14,25 +14,17 @@
           </div>
         </slot>
       </div>
-      <v-layout wrap class="mx-n3 mt-2">
+      <v-layout wrap class="mx-n3 more-details-container">
         <v-flex v-if="!!detailsLinkTwo" xs12 sm6 px-3 :class="$vuetify.breakpoint.xsOnly ? 'mb-2' : ''">
           <ShowToolTip :address="detailsLinkTwo">
-            <div :class="{ 'theme--dark': $vuetify.theme.isDark }" class="d-flex align-center copy-link px-4 py-1">
+            <div :class="{ 'theme--dark': $vuetify.theme.isDark }" class="d-flex align-center copy-link elevation-3 px-4 py-1">
               <span class="text_2--text flex-grow-1 text-clamp-one">{{ detailsLinkTwo }}</span>
               <v-icon class="text_2--text ml-auto" x-small right :style="{ width: '20px' }">$vuetify.icons.copy</v-icon>
             </div>
           </ShowToolTip>
         </v-flex>
         <v-flex xs12 sm6 px-3>
-          <v-btn
-            color="primary"
-            depressed
-            block
-            class="py-1 white--text"
-            :class="$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12'"
-            :href="detailsLink"
-            target="_blank"
-          >
+          <v-btn depressed large block class="torus-btn1 torus_brand1--text" :href="detailsLink" target="_blank">
             {{ detailsText }}
           </v-btn>
         </v-flex>

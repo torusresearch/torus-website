@@ -1,5 +1,5 @@
 <template>
-  <v-layout class="home-cards token-balance-tab-container mx-n4 mt-8" wrap align-center>
+  <v-layout class="home-cards token-balance-tab-container mx-n4" wrap align-center>
     <v-flex v-for="(balance, index) in tokenBalances" :key="index" class="xs12 sm6 md3 mb-4 px-4">
       <v-card color="elevation-1" router-link :to="{ name: 'walletTransfer', query: { contract: balance.tokenAddress } }">
         <v-card-text class="pa-0">
