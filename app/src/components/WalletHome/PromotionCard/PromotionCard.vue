@@ -1,5 +1,5 @@
 <template>
-  <v-card class="card-shadow">
+  <v-card class="elevation-1">
     <v-card-text class="pt-3 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2' : $vuetify.breakpoint.xsOnly ? 'pb-6' : 'pb-3'">
       <div class="d-flex" :class="{ 'align-center': !$vuetify.breakpoint.xsOnly }">
         <div class="promotion-text pr-3">

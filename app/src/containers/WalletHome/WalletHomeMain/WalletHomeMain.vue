@@ -1,21 +1,15 @@
 <template>
   <v-container class="wallet-home pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
-    <v-layout wrap align-start>
-      <v-flex xs6>
-        <div class="font-weight-bold display-1 float-left">Account Balance{{ /** t('walletHome.walletHome') */ }}</div>
-      </v-flex>
-      <v-flex xs6 class="text-right">
-        <ExportQrCode>
-          <v-btn icon>
-            <v-icon x-small v-text="'$vuetify.icons.qr'" />
-          </v-btn>
-        </ExportQrCode>
-      </v-flex>
-    </v-layout>
+    <div class="d-flex align-center">
+      <div class="font-weight-bold display-1 float-left">Account Balance</div>
+      <div class="ml-auto">
+        <QuickAddress />
+      </div>
+    </div>
     <v-layout wrap mx-n4 mt-7>
       <v-flex px-4 xs12 md6>
         <v-card class="card-total elevation-1">
-          <v-layout wrap class="pa-6">
+          <v-layout wrap class="px-6 py-4">
             <v-flex xs6>
               <span class="title torus_font1--text">{{ t('walletHome.totalValue') }}</span>
             </v-flex>
@@ -33,7 +27,7 @@
               <span class="description">1ETH = 300USD</span>
             </v-flex>
             <v-flex xs12>
-              <v-layout class="mx-n2 mt-3">
+              <v-layout class="mx-n2 mt-2">
                 <v-flex xs6 px-2>
                   <v-btn v-show="canShowLrc" block large class="torus-btn1 torus_brand1--text" @click="topup">
                     <v-icon left>$vuetify.icons.add</v-icon>
@@ -127,8 +121,8 @@
 <script>
 // The color of dropdown icon requires half day work in modifying v-select
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
-import ExportQrCode from '../../../components/helpers/ExportQrCode'
 import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
+import QuickAddress from '../../../components/helpers/QuickAddress'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
 import LearnMore from '../../../components/WalletHome/LearnMore'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
@@ -138,7 +132,7 @@ import { LOCALE_EN, MAINNET } from '../../../utils/enums'
 
 export default {
   name: 'WalletHome',
-  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore, ComponentLoader, NetworkDisplay },
+  components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, LearnMore, ComponentLoader, NetworkDisplay },
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],

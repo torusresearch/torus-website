@@ -1,21 +1,31 @@
-@import '../../scss/nav-selector.mixin';
-
-/* NEW UI */
-.nav-selector.v-input.v-text-field--outlined {
-  ::v-deep & > .v-input__control > .v-input__slot {
-    box-shadow: none;
-    border-radius: 0;
-    background: none;
-  }
+.filter-selector {
+  background: #FFFFFF;
+  border: 1px solid #F5F5F5;
+  box-sizing: border-box;
+  box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+  border-radius: 3px;
   &.theme--dark {
+    background: #2F3136;
     border: 1px solid #343539;
-    ::v-deep & > .v-input__control > .v-input__slot {
-      fieldset {
-        border: 0
-      }
-    }
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
   }
 }
+/* NEW UI */
+// .nav-selector.v-input.v-text-field--outlined {
+//   ::v-deep & > .v-input__control > .v-input__slot {
+//     box-shadow: none;
+//     border-radius: 0;
+//     background: none;
+//   }
+//   &.theme--dark {
+//     border: 1px solid #343539;
+//     ::v-deep & > .v-input__control > .v-input__slot {
+//       fieldset {
+//         border: 0
+//       }
+//     }
+//   }
+// }
 // ::v-deep .nav-selector {
 //   @include navSelector();
 //   border-radius: 3px;

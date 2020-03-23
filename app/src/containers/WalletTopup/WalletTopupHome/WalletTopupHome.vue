@@ -1,23 +1,17 @@
 <template>
-  <v-container class="wallet-topup-view" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
-    <v-layout wrap align-start :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'mt-3'">
-      <v-flex xs8>
-        <div class="font-weight-bold display-1 text-left">
-          <span v-if="selectedProvider && !$vuetify.breakpoint.xsOnly">
-            {{ t('walletTopUp.purchaseVia') }}
-            <span class="text-capitalize">{{ selectedProvider }}</span>
-          </span>
-          <span v-else>{{ t('walletTopUp.selectProvider') }}</span>
-        </div>
-      </v-flex>
-      <v-flex xs4 class="text-right">
-        <ExportQrCode>
-          <v-btn icon>
-            <v-icon x-small v-text="'$vuetify.icons.qr'" />
-          </v-btn>
-        </ExportQrCode>
-      </v-flex>
-    </v-layout>
+  <v-container class="wallet-topup-view pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
+    <div class="d-flex align-center">
+      <div class="font-weight-bold display-1 text-left">
+        <span v-if="selectedProvider && !$vuetify.breakpoint.xsOnly">
+          {{ t('walletTopUp.purchaseVia') }}
+          <span class="text-capitalize">{{ selectedProvider }}</span>
+        </span>
+        <span v-else>{{ t('walletTopUp.selectProvider') }}</span>
+      </div>
+      <div class="ml-auto">
+        <QuickAddress />
+      </div>
+    </div>
     <v-layout mt-7 mx-n4 wrap>
       <TopupProviders
         :selected-provider="selectedProvider"
@@ -46,14 +40,14 @@
 </template>
 
 <script>
-import ExportQrCode from '../../../components/helpers/ExportQrCode'
+import QuickAddress from '../../../components/helpers/QuickAddress'
 import TopupProviders from '../../../components/WalletTopup/TopupProviders'
 import { getPaymentProviders } from '../../../utils/utils'
 
 export default {
   components: {
     TopupProviders,
-    ExportQrCode
+    QuickAddress
   },
   data() {
     return {

@@ -1,28 +1,30 @@
 <template>
   <v-layout class="home-cards token-balance-tab-container mx-n4 mt-8" wrap align-center>
-    <v-flex v-for="(balance, index) in tokenBalances" :key="index" class="xs12 sm6 mb-4 px-4">
+    <v-flex v-for="(balance, index) in tokenBalances" :key="index" class="xs12 sm6 md3 mb-4 px-4">
       <v-card color="elevation-1" router-link :to="{ name: 'walletTransfer', query: { contract: balance.tokenAddress } }">
         <v-card-text class="pa-0">
-          <v-layout align-center class="px-3 elevation-1 card-header py-2">
-            <v-flex xs8>
+          <div class="d-flex align-center py-3 px-4">
+            <div class="flex-grow-1 text-clamp-one">
               <img
                 :src="require(`../../../../public/images/logos/${balance.logo}`)"
                 class="inline-small d-inline-flex"
                 onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
                 :alt="balance.logo"
               />
-              <span class="subtitle-2 ml-1">{{ balance.name }}</span>
-            </v-flex>
-            <v-flex xs4 class="subtitle-2 text-right">{{ balance.computedBalanceRounded }} {{ balance.symbol }}</v-flex>
-          </v-layout>
-          <v-layout px-4 py-3>
-            <v-flex xs6 class="body-2">
+              <span class="caption ml-1">{{ balance.name }}</span>
+            </div>
+            <div class="ml-auto text-right caption">
+              {{ formatSmallNumbers(balance.computedBalanceRounded, balance.symbol) }}
+            </div>
+          </div>
+          <div class="d-flex align-center py-3 px-4">
+            <div class="more-info">
               {{ balance.currencyRateText }}
-            </v-flex>
-            <v-flex xs6 class="text-right body-2">
+            </div>
+            <div class="ml-auto more-info">
               {{ balance.currencyBalance }}
-            </v-flex>
-          </v-layout>
+            </div>
+          </div>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -30,6 +32,8 @@
 </template>
 
 <script>
+import { formatSmallNumbers } from '../../../utils/utils'
+
 export default {
   props: {
     tokenBalances: {
@@ -63,7 +67,8 @@ export default {
     },
     selectEmit(item) {
       this.$emit('update:select', item)
-    }
+    },
+    formatSmallNumbers
     // smallNumbersEth(balance) {
     //   const convertedBalance = parseFloat(balance)
     //   let truncatedValue = convertedBalance
