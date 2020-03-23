@@ -1,6 +1,6 @@
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import { MOONPAY, RAMPNETWORK, SIMPLEX, WYRE } from '../../utils/enums'
+import { MOONPAY, RAMPNETWORK, WYRE } from '../../utils/enums'
 import { fakeStream, paymentProviders } from '../../utils/utils'
 import moonpay from './moonpay'
 import rampnetwork from './rampnetwork'
@@ -43,7 +43,7 @@ export default {
         // if (!selectedParameters.selectedCurrency) [selectedParameters.selectedCurrency] = selectedProvider.validCurrencies
         // if (!selectedParameters.fiatValue) selectedParameters.fiatValue = selectedProvider.minOrderValue
         // if (!selectedParameters.selectedCryptoCurrency) [selectedParameters.selectedCryptoCurrency] = selectedProvider.validCryptoCurrencies
-        // if (!selectedParameters.selectedAddress) selectedParameters.selectedAddress = state.selectedAddress
+        if (!selectedParameters.selectedAddress) selectedParameters.selectedAddress = state.selectedAddress
 
         // validations
         if (selectedParameters.fiatValue) {
@@ -56,29 +56,20 @@ export default {
         if (selectedParameters.selectedCryptoCurrency && !selectedProvider.validCryptoCurrencies.includes(selectedParameters.selectedCryptoCurrency))
           throw new Error('Unsupported cryptoCurrency')
 
-        // simplex
-        if (provider === SIMPLEX) {
-          const { result: currentOrder } = await dispatch('fetchSimplexQuote', selectedParameters)
-          const { success } = await dispatch('fetchSimplexOrder', {
-            currentOrder,
-            preopenInstanceId,
-            selectedAddress: selectedParameters.selectedAddress
-          })
-          handleSuccess(success)
-        } else if (provider === RAMPNETWORK) {
+        if (provider === RAMPNETWORK) {
           // rampnetwork
-          const result = await dispatch('fetchRampNetworkQuote', selectedParameters)
-          let cryptoValue = 0
-          const currentOrder = { cryptoCurrencyValue: undefined, cryptoCurrencySymbol: undefined }
+          const currentOrder = { cryptoCurrencyValue: '', cryptoCurrencySymbol: selectedParameters.selectedCryptoCurrency || '' }
           if (selectedParameters.fiatValue && selectedParameters.selectedCurrency && selectedParameters.selectedCryptoCurrency) {
+            const result = await dispatch('fetchRampNetworkQuote', selectedParameters)
+            let cryptoValue = 0
             const asset = result.assets.find(item => item.symbol === selectedParameters.selectedCryptoCurrency)
             const fiat = selectedParameters.fiatValue
             const feeRate = asset.maxFeePercent[selectedParameters.selectedCurrency] / 100
             const rate = asset.price[selectedParameters.selectedCurrency]
             const fiatWithoutFee = fiat / (1 + feeRate) // Final amount of fiat that will be converted to crypto
             cryptoValue = fiatWithoutFee / rate // Final Crypto amount
-            currentOrder.cryptoCurrencyValue = cryptoValue * 10 ** asset.decimals || undefined
-            currentOrder.cryptoCurrencySymbol = asset.symbol
+            currentOrder.cryptoCurrencyValue = cryptoValue * 10 ** asset.decimals || ''
+            currentOrder.cryptoCurrencySymbol = asset.symbol || ''
           }
 
           const { success } = await dispatch('fetchRampNetworkOrder', {
@@ -89,14 +80,10 @@ export default {
           handleSuccess(success)
         } else if (provider === MOONPAY) {
           // moonpay
-          let currentOrder = { currency: { code: '' }, baseCurrencyAmount: '', baseCurrency: { code: '' } }
-          if (selectedParameters.fiatValue && selectedParameters.selectedCurrency && selectedParameters.selectedCryptoCurrency) {
-            currentOrder = await dispatch('fetchMoonpayQuote', {
-              selectedCurrency: selectedParameters.selectedCurrency,
-              selectedCryptoCurrency: selectedParameters.selectedCryptoCurrency,
-              selectedAddress: selectedParameters.selectedAddress || state.selectedAddress,
-              fiatValue: selectedParameters.fiatValue || selectedProvider.minOrderValue
-            })
+          const currentOrder = {
+            currency: { code: selectedParameters.selectedCryptoCurrency || '' },
+            baseCurrencyAmount: selectedParameters.fiatValue || '',
+            baseCurrency: { code: selectedParameters.selectedCurrency || '' }
           }
           const { success } = await dispatch('fetchMoonpayOrder', {
             currentOrder,
@@ -107,9 +94,8 @@ export default {
           handleSuccess(success)
         } else if (provider === WYRE) {
           // wyre
-          // const { data: currentOrder } = await dispatch('fetchWyreQuote', selectedParameters)
           const { success } = await dispatch('fetchWyreOrder', {
-            currentOrder: { destCurrency: selectedParameters.selectedCryptoCurrency, sourceAmount: selectedParameters.fiatValue },
+            currentOrder: { destCurrency: selectedParameters.selectedCryptoCurrency || '', sourceAmount: selectedParameters.fiatValue || '' },
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress
           })
