@@ -50,7 +50,8 @@ export default {
         baseCurrencyCode: currentOrder.baseCurrency.code || undefined,
         email: state.userInfo.email || undefined,
         externalCustomerId: selectedAddress || state.selectedAddress,
-        redirectURL: `${config.redirect_uri}?state=${instanceState}`
+        redirectURL: `${config.redirect_uri}?state=${instanceState}`,
+        showWalletAddressForm: true
       }
 
       const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(parameters)))
