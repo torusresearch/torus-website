@@ -10,7 +10,7 @@
             </p>
           </v-flex>
 
-          <v-flex xs4>
+          <v-flex xs12 sm4>
             <div class="body-2">{{ t('walletTopUp.wannaBuy') }}</div>
             <v-select
               id="cryptocurrency"
@@ -23,10 +23,10 @@
               @change="fetchQuote"
             ></v-select>
           </v-flex>
-          <v-flex xs8></v-flex>
+          <v-flex v-if="!$vuetify.breakpoint.xsOnly" xs8></v-flex>
 
           <v-layout wrap mx-n2>
-            <v-flex xs8 px-2>
+            <v-flex xs12 sm8 px-2>
               <div>
                 <span class="body-2">{{ t('walletTopUp.youSend') }}</span>
                 <span class="caption float-right">
@@ -68,7 +68,7 @@
                 </div>
               </div>
             </v-flex>
-            <v-flex xs4 px-2>
+            <v-flex xs12 sm4 px-2>
               <v-select
                 id="currency-selector"
                 class="curency-selector"
