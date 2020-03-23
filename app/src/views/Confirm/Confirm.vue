@@ -3,7 +3,7 @@
     <template v-if="type === TX_TRANSACTION">
       <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">
-          {{ t('dappTransfer.permission') }}
+          {{ t('dappTransfer.confirmation') }}
         </v-flex>
         <v-flex xs12>
           <NetworkDisplay :store-network-type="network"></NetworkDisplay>
@@ -166,7 +166,7 @@
     <template v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE || type === TX_TYPED_MESSAGE">
       <!-- <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" /> -->
       <v-layout wrap align-center mx-6 mb-6>
-        <v-flex xs12 class="font-weight-bold headline float-left">{{ t('dappTransfer.permissions') }}</v-flex>
+        <v-flex xs12 class="text_1--text font-weight-bold headline float-left">{{ t('dappTransfer.permission') }}</v-flex>
         <v-flex xs12>
           <NetworkDisplay :store-network-type="network"></NetworkDisplay>
         </v-flex>

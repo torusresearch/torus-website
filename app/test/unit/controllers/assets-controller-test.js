@@ -214,29 +214,29 @@ describe('AssetsController', () => {
     })
   })
 
-  it('should add collectible and get collectible contract information from contract', async () => {
-    sandbox.stub(assetsController, 'getCollectibleContractInformationFromApi').returns(undefined)
-    sandbox.stub(assetsController, 'getCollectibleInformationFromApi').returns(undefined)
-    nock.enableNetConnect()
-    await assetsController.addCollectible(KUDOSADDRESS, 1203)
-    assert.deepStrictEqual(assetsController.state.collectibles[0], {
-      address: '0x2aea4add166ebf38b63d09a75de1a7b94aa24163',
-      description: undefined,
-      image: 'Kudos Image',
-      name: 'Kudos Name',
-      tokenId: 1203
-    })
-    assert.deepStrictEqual(assetsController.state.collectibleContracts[0], {
-      address: '0x2aea4add166ebf38b63d09a75de1a7b94aa24163',
-      description: undefined,
-      logo: undefined,
-      name: 'KudosToken',
-      symbol: 'KDO',
-      totalSupply: undefined
-    })
-    nock.disableNetConnect()
-    nock.enableNetConnect(host => host.includes('localhost') || host.includes('mainnet.infura.io:443'))
-  })
+  // it('should add collectible and get collectible contract information from contract', async () => {
+  //   sandbox.stub(assetsController, 'getCollectibleContractInformationFromApi').returns(undefined)
+  //   sandbox.stub(assetsController, 'getCollectibleInformationFromApi').returns(undefined)
+  //   nock.enableNetConnect()
+  //   await assetsController.addCollectible(KUDOSADDRESS, 1203)
+  //   assert.deepStrictEqual(assetsController.state.collectibles[0], {
+  //     address: '0x2aea4add166ebf38b63d09a75de1a7b94aa24163',
+  //     description: undefined,
+  //     image: 'Kudos Image',
+  //     name: 'Kudos Name',
+  //     tokenId: 1203
+  //   })
+  //   assert.deepStrictEqual(assetsController.state.collectibleContracts[0], {
+  //     address: '0x2aea4add166ebf38b63d09a75de1a7b94aa24163',
+  //     description: undefined,
+  //     logo: undefined,
+  //     name: 'KudosToken',
+  //     symbol: 'KDO',
+  //     totalSupply: undefined
+  //   })
+  //   nock.disableNetConnect()
+  //   nock.enableNetConnect(host => host.includes('localhost') || host.includes('mainnet.infura.io:443'))
+  // })
 
   it('should add collectible by selected address', async () => {
     const firstAddress = TEST_ADDRESS_2

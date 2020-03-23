@@ -230,9 +230,8 @@ export default class AccountTracker {
     const { accounts } = this.store.getState()
     const web3Instance = this.web3
     const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, deployedContractAddress)
-    const zeroAddress = [ZERO_ADDRESS]
     try {
-      const result = await ethContract.methods.balances(addresses, zeroAddress).call()
+      const result = await ethContract.methods.balances(addresses, [ZERO_ADDRESS]).call()
       addresses.forEach((address, index) => {
         const balance = toHex(result[index])
         accounts[address] = { address, balance }

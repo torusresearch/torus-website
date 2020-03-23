@@ -475,3 +475,7 @@ export const getIFrameOriginObject = () => {
 export const fakeStream = {
   write: () => {}
 }
+
+export function formatSmallNumbers(number, currency = 'usd') {
+  return `${currency.toLowerCase() === 'usd' ? significantDigits(number, 5) : significantDigits(number, 2)} ${currency}`
+}

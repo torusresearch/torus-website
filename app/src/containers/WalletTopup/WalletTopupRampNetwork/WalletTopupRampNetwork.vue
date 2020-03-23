@@ -56,7 +56,8 @@ export default {
       callback(
         this.$store.dispatch('fetchRampNetworkOrder', {
           currentOrder: this.currentOrder,
-          colorCode: this.$vuetify.theme.themes.light.torus_brand1.base
+          colorCode: this.$vuetify.theme.themes.light.primary.base,
+          selectedAddress: this.$store.state.selectedAddress
         })
       )
     },
