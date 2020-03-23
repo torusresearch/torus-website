@@ -481,3 +481,7 @@ export const fakeStream = {
 export function formatSmallNumbers(number, currency = 'usd') {
   return `${currency.toLowerCase() === 'usd' ? significantDigits(number, 5).toFixed(2) : significantDigits(number, 2).toFixed(5)} ${currency}`
 }
+
+export function formatSmallNumbers(number, currency = 'usd') {
+  return `${currency.toLowerCase() === 'usd' ? significantDigits(number, 5) : significantDigits(number, 2)} ${currency}`
+}
