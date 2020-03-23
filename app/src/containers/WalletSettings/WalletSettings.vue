@@ -4,12 +4,8 @@
       <v-flex xs6>
         <div class="font-weight-bold display-1 float-left">{{ t('walletSettings.settings') }}</div>
       </v-flex>
-      <v-flex xs6 class="text-right">
-        <ExportQrCode>
-          <v-btn icon>
-            <v-icon x-small v-text="'$vuetify.icons.qr'" />
-          </v-btn>
-        </ExportQrCode>
+      <v-flex xs6>
+        <QuickAddress />
       </v-flex>
     </v-layout>
     <v-layout wrap mx-n4 mt-7>
@@ -69,7 +65,7 @@
   </v-container>
 </template>
 <script>
-import ExportQrCode from '../../components/helpers/ExportQrCode'
+import QuickAddress from '../../components/helpers/QuickAddress'
 import ContactList from '../../components/WalletSettings/ContactList'
 import Display from '../../components/WalletSettings/Display'
 import Network from '../../components/WalletSettings/Network'
@@ -81,7 +77,7 @@ export default {
     PrivacySecurity,
     Network,
     ContactList,
-    ExportQrCode,
+    QuickAddress,
     Display
   },
   data() {

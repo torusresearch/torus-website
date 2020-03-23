@@ -1,17 +1,11 @@
 <template>
   <v-container class="wallet-transfer pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
-    <v-layout wrap align-start>
-      <v-flex xs8>
-        <div class="font-weight-bold display-1 float-left">{{ t('walletTransfer.transferDetails') }}</div>
-      </v-flex>
-      <v-flex xs4 class="text-right">
-        <ExportQrCode>
-          <v-btn icon>
-            <v-icon x-small v-text="'$vuetify.icons.qr'" />
-          </v-btn>
-        </ExportQrCode>
-      </v-flex>
-    </v-layout>
+    <div class="d-flex align-center">
+      <div class="font-weight-bold display-1 float-left">{{ t('walletTransfer.transferDetails') }}</div>
+      <div class="ml-auto">
+        <QuickAddress />
+      </div>
+    </div>
     <v-layout wrap mx-n4 mt-7>
       <v-flex v-if="$vuetify.breakpoint.xsOnly" px-4 xs12>
         <v-card class="elevation-1 pa-6">
@@ -328,8 +322,8 @@ import { isAddress, toChecksumAddress } from 'web3-utils'
 
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
 import ComponentLoader from '../../components/helpers/ComponentLoader'
-import ExportQrCode from '../../components/helpers/ExportQrCode'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
+import QuickAddress from '../../components/helpers/QuickAddress'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
 import AddContact from '../../components/WalletTransfer/AddContact'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
@@ -348,7 +342,7 @@ export default {
     AddContact,
     ComponentLoader,
     TransferConfirm,
-    ExportQrCode,
+    QuickAddress,
     NetworkDisplay
   },
   data() {
