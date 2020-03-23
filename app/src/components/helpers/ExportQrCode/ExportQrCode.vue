@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="qrDialoag" width="450">
     <template v-slot:activator="{ on }">
-      <v-btn id="openQr" icon small aria-label="Open QR" v-on="on">
+      <v-btn id="openQr" class="qr-btn" icon small aria-label="Open QR" v-on="on">
         <slot></slot>
       </v-btn>
     </template>

@@ -7,42 +7,58 @@
       <v-flex xs12 md5>
         <v-layout mx-n2>
           <v-flex xs6 px-2>
-            <v-select
-              id="transaction-selector"
-              v-model="selectedAction"
-              class="subtitle-2 nav-selector transaction pl-3"
-              :class="{ 'elevation-3': !$vuetify.theme.isDark }"
-              hide-details
-              outlined
-              dense
-              :menu-props="{ bottom: true, offsetY: true }"
-              :items="actionTypes"
-              append-icon="$vuetify.icons.select"
-              aria-label="Filter Transacation Type"
-            >
-              <template v-slot:prepend>
-                <v-icon size="12" :style="{ marginTop: '6px' }">$vuetify.icons.activities</v-icon>
+            <v-menu offset-y>
+              <template v-slot:activator="{ on }">
+                <div class="d-flex align-center filter-selector pa-2" :class="{ 'theme--dark': $vuetify.theme.isDark }" v-on="on">
+                  <v-icon x-small>$vuetify.icons.activities</v-icon>
+                  <span class="ml-1" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedAction) }}</span>
+                  <v-icon class="ml-auto">$vuetify.icons.select</v-icon>
+                </div>
               </template>
-            </v-select>
+              <v-card class="pa-3">
+                <v-list min-width="190" dense>
+                  <v-list-item-group color="torus_brand1">
+                    <v-list-item
+                      v-for="actionType in actionTypes"
+                      :key="actionType.value"
+                      :class="selectedAction === actionType.value ? 'active' : ''"
+                      @click="selectedAction = actionType.value"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>{{ actionType.text }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-list>
+              </v-card>
+            </v-menu>
           </v-flex>
           <v-flex xs6 px-2>
-            <v-select
-              id="period-selector"
-              v-model="selectedPeriod"
-              class="subtitle-2 nav-selector period pl-3"
-              :class="{ 'elevation-3': !$vuetify.theme.isDark }"
-              hide-details
-              outlined
-              dense
-              :menu-props="{ bottom: true, offsetY: true }"
-              :items="periods"
-              append-icon="$vuetify.icons.select"
-              aria-label="Filter Transacation Period"
-            >
-              <template v-slot:prepend>
-                <v-icon size="18" :style="{ marginTop: '4px' }">$vuetify.icons.calendar</v-icon>
+            <v-menu offset-y>
+              <template v-slot:activator="{ on }">
+                <div class="d-flex align-center filter-selector pa-2" :class="{ 'theme--dark': $vuetify.theme.isDark }" v-on="on">
+                  <v-icon small>$vuetify.icons.calendar</v-icon>
+                  <span class="ml-1" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedPeriod) }}</span>
+                  <v-icon class="ml-auto">$vuetify.icons.select</v-icon>
+                </div>
               </template>
-            </v-select>
+              <v-card class="pa-3">
+                <v-list min-width="190" dense>
+                  <v-list-item-group color="torus_brand1">
+                    <v-list-item
+                      v-for="period in periods"
+                      :key="period.value"
+                      :class="selectedPeriod === period.value ? 'active' : ''"
+                      @click="selectedPeriod = period.value"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>{{ period.text }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-list>
+              </v-card>
+            </v-menu>
           </v-flex>
         </v-layout>
       </v-flex>

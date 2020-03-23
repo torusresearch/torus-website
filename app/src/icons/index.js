@@ -1,5 +1,6 @@
 import ActivitiesIcon from './ActivitiesIcon.vue'
 import AddIcon from './AddIcon.vue'
+import AddressIcon from './AddressIcon.vue'
 import ArrowDownCircleIcon from './ArrowDownCircleIcon.vue'
 import ArrowLeftCircleIcon from './ArrowLeftCircleIcon.vue'
 import ArrowRightCircleIcon from './ArrowRightCircleIcon.vue'
@@ -183,5 +184,8 @@ export default {
   },
   calendar: {
     component: CalendarIcon
+  },
+  address: {
+    component: AddressIcon
   }
 }

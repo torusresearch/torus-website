@@ -5,6 +5,11 @@
   vertical-align: middle;
 }
 
-.home-cards .card-header {
-  border: 0;
+.home-cards {
+  .card-header {
+    border: 0;
+  }
+  .more-info {
+    font-size: 10px;
+  }
 }
