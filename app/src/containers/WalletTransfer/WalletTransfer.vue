@@ -6,8 +6,8 @@
         <QuickAddress />
       </div>
     </div>
-    <v-layout wrap mx-n4 mt-7>
-      <v-flex v-if="$vuetify.breakpoint.xsOnly" px-4 xs12>
+    <v-layout wrap mx-n4 :class="contractType === CONTRACT_TYPE_ERC721 && $vuetify.breakpoint.xsOnly ? 'mt-0' : 'mt-7'">
+      <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721 && $vuetify.breakpoint.xsOnly" px-4 xs12>
         <v-card class="elevation-1 pa-6">
           <div class="d-flex">
             <span class="body-2">{{ t('walletTransfer.accountBalance') }}</span>
@@ -282,7 +282,7 @@
           </v-card>
         </v-form>
       </v-flex>
-      <v-flex v-if="!$vuetify.breakpoint.xsOnly" px-4 xs6>
+      <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721 && !$vuetify.breakpoint.xsOnly" px-4 xs6>
         <v-card class="elevation-1 pa-6">
           <div class="d-flex">
             <span class="body-2">{{ t('walletTransfer.accountBalance') }}</span>
@@ -294,12 +294,12 @@
             <div>
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
               <div v-else>
-                <span id="account-balance" class="display-2 mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
+                <span id="account-balance" class="display-2 mr-1">{{ selectedItem.computedBalanceRounded }}</span>
                 <span class="caption text_2--text">{{ selectedCurrency }}</span>
               </div>
             </div>
             <div class="caption text-right currency-rate align-self-end text_2--text ml-auto">
-              {{ selectedItem && selectedItem.currencyRateText }}
+              {{ selectedItem.currencyRateText }}
             </div>
           </div>
         </v-card>

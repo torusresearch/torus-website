@@ -18,10 +18,33 @@
             </v-flex>
             <v-flex xs8>
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-3" />
-              <h2 v-else class="display-4 text_2--text font-weight-bold text-clamp-one">
-                {{ totalPortfolioValue }}
-                <span id="selected-currency" class="description">{{ selectedCurrency }}</span>
-              </h2>
+              <div v-else class="d-flex align-end">
+                <span class="display-4 text_2--text text-clamp-one">
+                  {{ totalPortfolioValue }}
+                </span>
+                <v-menu offset-y max-height="300" z-index="20">
+                  <template v-slot:activator="{ on }">
+                    <v-btn x-small text class="currency-selector" v-on="on">
+                      <span id="selected-currency" class="description">{{ selectedCurrency }}</span>
+                      <v-icon class="torus_gray3--text" small>$vuetify.icons.select</v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list dense>
+                    <v-list-item-group color="torus_brand1">
+                      <v-list-item
+                        v-for="supportedCurrency in supportedCurrencies"
+                        :key="supportedCurrency"
+                        :class="selectedCurrency === supportedCurrency ? 'active' : ''"
+                        @click="onCurrencyChange(supportedCurrency)"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title>{{ supportedCurrency }}</v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </v-list-item-group>
+                  </v-list>
+                </v-menu>
+              </div>
             </v-flex>
             <v-flex xs4 class="text-right align-self-end">
               <span class="description">1ETH = 300USD</span>
