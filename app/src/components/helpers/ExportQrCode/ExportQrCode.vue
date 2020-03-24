@@ -76,7 +76,8 @@ export default {
       downloadLink.download = 'qrcode.png'
       document.body.append(downloadLink)
       downloadLink.click()
-      document.body.removeChild(downloadLink)
+      downloadLink.remove()
+      // document.body.removeChild(downloadLink)
     }
   }
 }

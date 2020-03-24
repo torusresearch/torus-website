@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" persistent>
-    <template>
-      <a v-show="displayAmount" id="advance-opt" class="float-right primary--text body-2">
+    <template v-slot:activator="{ on }">
+      <a v-show="displayAmount" id="advance-option-link" class="float-right primary--text subtitle-2" v-on="on">
         {{ t('walletTransfer.advancedOptions') }}
       </a>
     </template>

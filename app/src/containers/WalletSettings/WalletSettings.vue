@@ -113,6 +113,9 @@ export default {
     return {
       panel: [0, 1, 2, 3, 4]
     }
+  },
+  mounted() {
+    this.$vuetify.goTo(0)
   }
 }
 </script>

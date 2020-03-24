@@ -45,8 +45,7 @@ export default {
     },
     isUrlNetwork() {
       // Checks if input is a url including localhost, ip address and domain name
-      // eslint-disable-next-line unicorn/regex-shorthand
-      return /^((?:http(s)?:\/\/)?([\w-.]+(?:\.[\w-.]+)+|localhost?)[\w!#$&'()*+,\-./:;=?@[\]~]+)$/.test(this.selectedNetwork)
+      return /^((?:http(s)?:\/\/)?([\w-.]+(?:\.[\w-.]+)+|localhost?)[\w!#$&'()*+,./:;=?@[\]~-]+)$/.test(this.selectedNetwork)
     }
   }
 }

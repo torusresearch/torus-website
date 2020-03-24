@@ -25,7 +25,7 @@ class ConfirmHandler {
     })
     this.confirmWindow.open()
 
-    this.bc.addEventListener('message', this.handle)
+    this.bc.addEventListener('message', this.handle.bind(this))
     this.handleConfirm = handleConfirm
     this.handleDeny = handleDeny
 

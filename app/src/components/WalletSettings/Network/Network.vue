@@ -96,7 +96,7 @@ export default {
     showNotification(success) {
       this.$store.dispatch(
         success ? 'setSuccessMessage' : 'setErrorMessage',
-        success ? this.t('walletSettings.updatedProvider') : this.t('walletSettings.somethingWrong')
+        success ? 'walletSettings.updatedProvider' : 'walletSettings.somethingWrong'
       )
     },
     changeNetwork(value) {

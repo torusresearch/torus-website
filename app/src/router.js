@@ -4,7 +4,7 @@ import Router from 'vue-router'
 import WalletHistory from './containers/WalletHistory'
 import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
 import WalletSettings from './containers/WalletSettings'
-import { WalletTopupCrypto, WalletTopupHome, WalletTopupMoonpay, WalletTopupSimplex, WalletTopupWyre } from './containers/WalletTopup'
+import { WalletTopupHome, WalletTopupMoonpay, WalletTopupRampNetwork, WalletTopupSimplex, WalletTopupWyre } from './containers/WalletTopup'
 import WalletTransfer from './containers/WalletTransfer'
 import store from './store'
 import Confirm from './views/Confirm'
@@ -127,6 +127,11 @@ const router = new Router({
           component: WalletTopupHome,
           children: [
             {
+              path: 'rampnetwork',
+              name: 'walletTopupRampNetwork',
+              component: WalletTopupRampNetwork
+            },
+            {
               path: 'simplex',
               name: 'walletTopupSimplex',
               component: WalletTopupSimplex
@@ -140,11 +145,6 @@ const router = new Router({
               path: 'wyre',
               name: 'walletTopupWyre',
               component: WalletTopupWyre
-            },
-            {
-              path: 'crypto',
-              name: 'walletTopupCrypto',
-              component: WalletTopupCrypto
             }
           ]
         }

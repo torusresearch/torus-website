@@ -3,7 +3,7 @@
     <template v-if="type === TX_TRANSACTION">
       <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">
-          {{ t('dappTransfer.permission') }}
+          {{ t('dappTransfer.confirmation') }}
         </v-flex>
         <v-flex xs12>
           <NetworkDisplay :store-network-type="network"></NetworkDisplay>
@@ -24,6 +24,13 @@
             <div>
               <img class="mr-2 float-left" :src="assetDetails.logo" height="35px" />
               <span class="subtitle-2 float-left text_2--text asset-name">{{ assetDetails.name }}</span>
+            </div>
+          </v-flex>
+        </template>
+        <template v-else-if="transactionCategory === TOKEN_METHOD_APPROVE">
+          <v-flex xs12 mb-4 mx-6>
+            <div class="subtitle-1 float-left">
+              {{ `${t('dappPermission.allow')} ${origin.hostname} ${t('dappTransfer.toSpend')} ${selectedToken} ${t('dappTransfer.onYourBehalf')}?` }}
             </div>
           </v-flex>
         </template>
@@ -65,7 +72,7 @@
             <span class="subtitle-2">{{ t('dappTransfer.constOfTrans') }}</span>
             <span class="subtitle-1 float-right primary--text font-weight-bold">{{ costOfTransaction }}</span>
           </div>
-          <div v-if="isOtherToken" class="clearfix">
+          <div v-if="isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE" class="clearfix">
             <span class="subtitle-1 float-right primary--text font-weight-bold">+ {{ significantDigits(gasCost) }} ETH</span>
           </div>
           <div class="caption float-right clearfix">{{ costOfTransactionConverted }}</div>
@@ -166,7 +173,7 @@
     <template v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE || type === TX_TYPED_MESSAGE">
       <!-- <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" /> -->
       <v-layout wrap align-center mx-6 mb-6>
-        <v-flex xs12 class="text_1--text font-weight-bold headline float-left">{{ t('dappTransfer.permissions') }}</v-flex>
+        <v-flex xs12 class="text_1--text font-weight-bold headline float-left">{{ t('dappTransfer.permission') }}</v-flex>
         <v-flex xs12>
           <NetworkDisplay :store-network-type="network"></NetworkDisplay>
         </v-flex>
@@ -189,7 +196,7 @@
 
         <v-flex xs12 mt-0 mb-n1 mx-6 class="note-list">
           <div class="d-flex">
-            <div class="mr-5 note-list__icon">
+            <div class="mr-2 note-list__icon">
               <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
             </div>
             <div class="caption text_2--text">{{ t('dappTransfer.dataSmall') }}</div>
@@ -431,9 +438,10 @@ export default {
       // `+ ${significantDigits(this.gasCost)}`
     },
     costOfTransactionConverted() {
-      const totalCost = this.isOtherToken
-        ? significantDigits(this.totalUsdCost + this.amountTokenValueConverted.toNumber(), false, 5)
-        : this.totalUsdCost
+      let cost = this.totalUsdCost
+      if (this.transactionCategory !== TOKEN_METHOD_APPROVE) cost += this.amountTokenValueConverted.toNumber()
+
+      const totalCost = this.isOtherToken ? significantDigits(cost, false, 5) : this.totalUsdCost
       return `~ ${totalCost} ${this.selectedCurrency}`
     },
     imageType() {
@@ -448,7 +456,7 @@ export default {
     },
     getCurrencyRate() {
       const ethConverted = this.getCurrencyMultiplier
-      const tokenPriceConverted = this.isOtherToken ? this.tokenPrice : ethConverted
+      const tokenPriceConverted = this.isOtherToken ? this.tokenPrice.times(ethConverted) : ethConverted
       const selectedToken = this.isOtherToken ? this.selectedToken : 'ETH'
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
     }

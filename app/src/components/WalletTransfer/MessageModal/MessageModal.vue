@@ -67,11 +67,9 @@
 import { MESSAGE_MODAL_TYPE_FAIL, MESSAGE_MODAL_TYPE_PENDING, MESSAGE_MODAL_TYPE_SUCCESS } from '../../../utils/enums'
 
 export default {
-  name: 'MessageModal',
   props: {
     modalType: {
-      type: String,
-      default: ''
+      type: Boolean
     },
     title: {
       type: String,

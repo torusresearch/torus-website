@@ -45,7 +45,7 @@
                 </v-layout>
               </v-card-title>
               <v-card-text class="pb-8 px-6">
-                <ComponentLoader v-if="!weiBalanceLoaded() || !tokenDataLoaded" class="mt-3" />
+                <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-3" />
                 <h2 v-else :class="$vuetify.breakpoint.smAndDown ? 'display-1' : 'display-2'" class="text_2--text font-weight-bold text-clamp-one">
                   {{ totalPortfolioValue }}
                   <span id="selected-currency" class="body-2 font-weight-light">{{ selectedCurrency }}</span>
@@ -90,6 +90,7 @@
               :image-path="event.imageUrl"
               :subtitle="event.description"
               :details-link="event.callToActionLink"
+              :details-link-two="event.callToActionLinkTwo"
               :details-text="event.callToActionText"
             ></PromotionCard>
           </v-flex>
@@ -265,6 +266,8 @@ export default {
     this.setDateUpdated()
 
     this.activeTab = this.$route.hash === '#collectibles' ? 1 : 0
+
+    this.$vuetify.goTo(0)
   },
   methods: {
     select(selectedItem) {

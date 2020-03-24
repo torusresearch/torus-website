@@ -1,6 +1,6 @@
 <template>
   <WalletTopupBase
-    selected-provider="moonpay"
+    selected-provider="rampnetwork"
     :crypto-currency-value="cryptoCurrencyValue"
     :currency-rate="currencyRate"
     @fetchQuote="fetchQuote"
@@ -31,18 +31,30 @@ export default {
       const self = this
       throttle(() => {
         self.$store
-          .dispatch('fetchMoonpayQuote', payload)
+          .dispatch('fetchRampNetworkQuote', payload)
           .then(result => {
-            self.cryptoCurrencyValue = result.quoteCurrencyAmount
-            self.currencyRate = result.quoteCurrencyAmount / result.totalAmount
-            self.currentOrder = result
+            const asset = result.assets.find(item => item.symbol === payload.selectedCryptoCurrency)
+
+            const fiat = payload.fiatValue
+            const feeRate = asset.maxFeePercent[payload.selectedCurrency] / 100
+            const rate = asset.price[payload.selectedCurrency]
+            const fiatWithoutFee = fiat / (1 + feeRate) // Final amount of fiat that will be converted to crypto
+            const cryptoValue = fiatWithoutFee / rate // Final Crypto amount
+
+            self.cryptoCurrencyValue = cryptoValue
+            self.cryptoCurrencySymbol = asset.symbol
+            self.currencyRate = 1 / asset.price[payload.selectedCurrency]
+            self.currentOrder = {
+              cryptoCurrencyValue: cryptoValue * 10 ** asset.decimals,
+              cryptoCurrencySymbol: asset.symbol
+            }
           })
           .catch(error => log.error(error))
       }, 0)()
     },
     sendOrder(callback) {
       callback(
-        this.$store.dispatch('fetchMoonpayOrder', {
+        this.$store.dispatch('fetchRampNetworkOrder', {
           currentOrder: this.currentOrder,
           colorCode: this.$vuetify.theme.themes.light.primary.base,
           selectedAddress: this.$store.state.selectedAddress
@@ -60,5 +72,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import 'WalletTopupMoonpay.scss';
+@import 'WalletTopupRampNetwork.scss';
 </style>

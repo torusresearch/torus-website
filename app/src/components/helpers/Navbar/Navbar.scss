@@ -1,5 +1,8 @@
 .header-container {
   margin-bottom: 64px;
+  @media screen and (max-width: 960px) {
+    margin-bottom: 56px;
+  }
   .theme--dark & {
     background: var(--v-background-base);
   }

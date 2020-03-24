@@ -2,7 +2,7 @@ const mergeMiddleware = require('json-rpc-engine/src/mergeMiddleware')
 const createScaffoldMiddleware = require('json-rpc-engine/src/createScaffoldMiddleware')
 const createWalletSubprovider = require('eth-json-rpc-middleware/wallet')
 const createAsyncMiddleware = require('json-rpc-engine/src/createAsyncMiddleware')
-const { formatTxMetaForRpcResult } = require('../utils/utils')
+const { formatTxMetaForRpcResult } = require('./utils')
 
 export default function createMetamaskMiddleware({
   version,

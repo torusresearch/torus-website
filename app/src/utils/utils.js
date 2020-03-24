@@ -34,6 +34,7 @@ import {
   PLATFORM_FIREFOX,
   PLATFORM_OPERA,
   PNG,
+  RAMPNETWORK,
   REDDIT,
   RINKEBY,
   RINKEBY_CHAIN_ID,
@@ -386,22 +387,23 @@ export const paymentProviders = {
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
     includeFees: false,
     api: true
+  },
+  [RAMPNETWORK]: {
+    line1: 'Bank transfer',
+    line2: '0% - 2.5%',
+    line3: '10,000€/purchase, 10,000€/mo',
+    line4: 'ETH, DAI, USDC',
+    status: ACTIVE,
+    logoExtension: SVG,
+    supportPage: 'https://instant.ramp.network/',
+    minOrderValue: 1,
+    maxOrderValue: 10000,
+    validCurrencies: ['EUR', 'GBP'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
+    includeFees: true,
+    api: true,
+    receiveHint: 'You don’t need an ID to complete this transaction!'
   }
-  // [CRYPTO]: {
-  //   line1: 'Credit Card',
-  //   line2: 'Varies',
-  //   line3: 'N/A',
-  //   line4: 'ETH, tokens',
-  //   status: ACTIVE,
-  //   logoExtension: PNG,
-  //   supportPage: 'https://help.crypto.com/en/',
-  //   minOrderValue: 10,
-  //   maxOrderValue: 1000,
-  //   validCurrencies: ['USD'],
-  //   validCryptoCurrencies: ['ETH'],
-  //   includeFees: true,
-  //   api: false
-  // }
 }
 
 export function getPaymentProviders(theme) {

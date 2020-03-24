@@ -5,7 +5,7 @@ import config from '../config'
 import { ERROR_TIME, LOCALE_EN, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
-import { getIFrameOrigin } from '../utils/utils'
+import { getIFrameOrigin, storageAvailable } from '../utils/utils'
 
 // By default, poll every 1 minute
 const DEFAULT_INTERVAL = 180 * 1000
@@ -27,11 +27,18 @@ class PreferencesController {
    * @property {string} store.jwtToken the token used to communicate with torus-backend
    */
   constructor(options = {}) {
+    let theme = THEME_LIGHT_BLUE_NAME
+    if (storageAvailable('localStorage')) {
+      const torusTheme = localStorage.getItem('torus-theme')
+      if (torusTheme) {
+        theme = torusTheme
+      }
+    }
     const initState = {
       selectedAddress: '',
       selectedCurrency: 'USD',
       pastTransactions: [],
-      theme: THEME_LIGHT_BLUE_NAME,
+      theme,
       locale: LOCALE_EN,
       billboard: {},
       contacts: [],
@@ -106,8 +113,7 @@ class PreferencesController {
         })
       ])
       if (user && user.data) {
-        const { transactions, default_currency: defaultCurrency, contacts, theme, locale, verifier, verifier_id: verifierID, permissions } =
-          user.data || {}
+        const { transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
         this.store.updateState({
           contacts,
           pastTransactions: transactions,
@@ -117,7 +123,6 @@ class PreferencesController {
           paymentTx: (paymentTx && paymentTx.data) || [],
           permissions
         })
-        if (!verifier || !verifierID) this.setVerifier(verifier, verifierID)
         if (callback) return callback(user)
         // this.permissionsController._initializePermissions(permissions)
       }
@@ -150,15 +155,22 @@ class PreferencesController {
       userOrigin = getIFrameOrigin()
     } else userOrigin = window.location.origin
     if (!payload.rehydrate) {
-      post(
-        `${config.api}/user/recordLogin`,
-        {
-          hostname: userOrigin,
-          verifier,
-          verifierId
-        },
-        this.headers
-      )
+      const interval = setInterval(() => {
+        const urlParameters = new URLSearchParams(window.location.search)
+        const referrer = urlParameters.get('referrer') || ''
+        if (window.location.href.includes('referrer') && !referrer) return
+        post(
+          `${config.api}/user/recordLogin`,
+          {
+            hostname: userOrigin,
+            verifier,
+            verifierId,
+            metadata: `referrer:${referrer}`
+          },
+          this.headers
+        )
+        clearInterval(interval)
+      }, 1000)
     }
   }
 
@@ -188,9 +200,10 @@ class PreferencesController {
     try {
       await patch(`${config.api}/user/locale`, { locale: payload }, this.headers)
       this.store.updateState({ locale: payload })
-      this.handleSuccess('navBar.snackSuccessLocale')
+      // this.handleSuccess('navBar.snackSuccessLocale')
     } catch (error) {
-      this.handleError('navBar.snackFailLocale')
+      // this.handleError('navBar.snackFailLocale')
+      log.error('unable to set locale', error)
     }
   }
 

@@ -622,6 +622,7 @@ import { QrcodeCapture } from 'vue-qrcode-reader'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
+// import ComponentLoader from '../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import TransactionFeeSelect from '../../components/helpers/TransactionFeeSelect'
 import TransactionSpeedSelect from '../../components/helpers/TransactionSpeedSelect'
@@ -843,6 +844,8 @@ export default {
         this.nodeDetails = nodeDetails
       })
       .catch(error => log.error(error))
+
+    this.$vuetify.goTo(0)
   },
   methods: {
     significantDigits,

@@ -9,12 +9,12 @@ try {
     fullPaths: true
   })
 
-  if (process.env.VUE_APP_TORUS_BUILD_ENV !== 'development') {
+  if (process.env.TORUS_BUILD_ENV !== 'development') {
     bundler.transform('uglifyify', { global: true, keep_fnames: true })
   }
   bundler.transform(
     envify({
-      VUE_APP_TORUS_BUILD_ENV: process.env.VUE_APP_TORUS_BUILD_ENV
+      TORUS_BUILD_ENV: process.env.TORUS_BUILD_ENV
     })
   )
 

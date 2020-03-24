@@ -35,14 +35,13 @@ class DetectTokensController {
    *
    */
   async detectNewTokens() {
-    if (this.network.store.getState().provider.type !== MAINNET || this.selectedAddress === '') {
+    if (this.network.getNetworkNameFromNetworkCode() !== MAINNET || this.selectedAddress === '') {
       return
     }
-    const tokenAddresses = this.detectedTokensStore.getState().tokens.map(x => x.tokenAddress.toLowerCase())
     const tokensToDetect = []
     // eslint-disable-next-line no-restricted-syntax
     for (const contractAddress in contracts) {
-      if (contracts[contractAddress].erc20 && !tokenAddresses.includes(contractAddress.toLowerCase())) {
+      if (contracts[contractAddress].erc20) {
         tokensToDetect.push(contractAddress)
       }
     }
@@ -63,7 +62,7 @@ class DetectTokensController {
             // this._preferences.addToken(tokenAddress, contracts[tokenAddress].symbol, contracts[tokenAddress].decimals)
           }
         })
-        if (nonZeroTokens.length > 0) this.detectedTokensStore.putState({ tokens: nonZeroTokens })
+        this.detectedTokensStore.putState({ tokens: nonZeroTokens })
       })
     }
   }
@@ -109,7 +108,7 @@ class DetectTokensController {
             nonZeroTokens.push({ ...oldTokens[index], balance })
           }
         })
-        if (nonZeroTokens.length > 0) this.detectedTokensStore.putState({ tokens: nonZeroTokens })
+        this.detectedTokensStore.putState({ tokens: nonZeroTokens })
       })
     }
   }
@@ -123,7 +122,7 @@ class DetectTokensController {
     if (!this.selectedAddress) {
       return
     }
-    this.detectedTokensStore.putState({ tokens: [] })
+    // this.detectedTokensStore.putState({ tokens: [] })
     this.detectNewTokens()
     this.interval = DEFAULT_INTERVAL
   }

@@ -76,7 +76,19 @@
       </div>
     </div>
 
-    <v-divider v-if="wallets.length > 0"></v-divider>
+    <v-list v-if="wallets.length > 1">
+      <v-list-item v-for="acc in filteredWallets" :key="acc.id" @click="changeAccount(acc.address)">
+        <v-list-item-content class="font-weight-bold">
+          <v-list-item-title>
+            <div class="font-weight-bold title text-capitalize text--lighten-4">{{ t('accountMenu.account') }} #{{ acc.id + 1 }}</div>
+          </v-list-item-title>
+
+          <v-list-item-subtitle>{{ acc.address }}</v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
+    </v-list>
+
+    <v-divider v-if="wallets.length > 1"></v-divider>
 
     <v-list v-if="hasPendingSmartContract">
       <v-list-item two-line>

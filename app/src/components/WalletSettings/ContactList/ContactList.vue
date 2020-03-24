@@ -66,7 +66,6 @@
             </v-flex>
 
             <v-layout wrap>
-              <v-flex xs12 sm12 md6 :class="$vuetify.breakpoint.xsOnly ? '' : 'pr-2'"></v-flex>
               <v-flex xs12 sm12 md6 :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'pl-2'">
                 <v-btn id="contact-submit-btn" block type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">
                   {{ t('walletSettings.addContact') }}
