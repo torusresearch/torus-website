@@ -17,7 +17,7 @@
         <div class="d-flex transfer-to-from align-center">
           <div class="d-flex icon-container align-center">
             <div class="icon-box elevation-3">
-              <img :src="require(`../../../../public/img/icons/${userInfo.verifier}-grey.svg`)" />
+              <img width="20" height="20" :src="require(`../../../../public/img/icons/${userInfo.verifier}-grey.svg`)" />
             </div>
           </div>
 
@@ -27,7 +27,7 @@
 
           <div class="d-flex icon-container icon-container--right align-center">
             <div class="icon-box elevation-3">
-              <img :src="require(`../../../../public/img/icons/${toVerifier}-grey.svg`)" />
+              <img width="20" height="20" :src="require(`../../../../public/img/icons/${toVerifier}-grey.svg`)" />
             </div>
           </div>
         </div>
