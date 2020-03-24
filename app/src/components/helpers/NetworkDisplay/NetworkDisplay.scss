@@ -53,4 +53,19 @@
   &.network-chip--matic {
     background: #efe2ff;
   }
+
+  &.is-plain {
+    background: none;
+    .network-chip__name {
+      font-size: 12px;
+      font-weight: normal;
+      text-align: left;
+    }
+    &.theme--dark {
+      color: #D3D5E2;
+      .v-icon {
+        color: #D3D5E2;
+      }
+    }
+  }
 }
