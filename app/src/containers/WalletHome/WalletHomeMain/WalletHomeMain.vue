@@ -88,6 +88,7 @@
             <PromotionCard
               :title="event.eventName"
               :image-path="event.imageUrl"
+              :image-dark-path="event.imageDarkUrl"
               :subtitle="event.description"
               :details-link="event.callToActionLink"
               :details-link-two="event.callToActionLinkTwo"
