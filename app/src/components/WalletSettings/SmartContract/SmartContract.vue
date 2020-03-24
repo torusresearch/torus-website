@@ -40,7 +40,7 @@
       <MessageModal
         :title="messageModalTitle"
         :detail-text="messageModalDetails"
-        @:modal-type="messageModalType"
+        :modal-type="messageModalType"
         @onClose="messageModalShow = false"
       ></MessageModal>
     </v-dialog>
@@ -96,7 +96,6 @@ export default {
           this.messageModalType = MESSAGE_MODAL_TYPE_PENDING
           this.messageModalTitle = 'Your request has been submitted'
           this.messageModalDetails = 'It will take sometime to create your Smart Contract Wallet. You will be notified when it is ready'
-          this.smartContractStatus = 'pending'
         })
         .catch(error => {
           log.error(error)

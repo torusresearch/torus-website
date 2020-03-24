@@ -37,14 +37,15 @@ export default class SmartContractWalletController {
       }
       return ''
     }
+    /**  */
+    this.getSelectedEOA = () => {
+      if (typeof this.opts.storeProps === 'function') {
+        const { selectedEOA } = this.opts.storeProps() || {}
+        return selectedEOA || ''
+      }
+      return ''
+    }
   }
-  // this.getSelectedEOA =() => {
-  //   if (typeof this.opts.storeProps === 'function') {
-  //     console.log(this.opts.storeProps())
-  //     const { selectedEOA } = this.opts.storeProps() || {}
-  //     return selectedEOA || ''
-  //   } return ''
-  // }}
 
   /**
    * Request relayer to create a smart contract wallet
