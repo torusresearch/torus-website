@@ -106,7 +106,7 @@
                         @input="contactChanged"
                       >
                         <template v-slot:append>
-                          <v-btn icon small color="primary" aria-label="QR Capture Button" @click="$refs.captureQr.$el.click">
+                          <v-btn icon small color="primary" aria-label="QR Capture Button" @click.stop="$refs.captureQr.$el.click">
                             <v-icon small>$vuetify.icons.scan</v-icon>
                           </v-btn>
                         </template>
@@ -187,19 +187,16 @@
                     @change="onChangeDisplayAmount"
                   />
                 </v-flex>
-                <v-flex v-if="isSmartContract" xs12 mb-4>
-                  <TransactionFeeSelect is-wallet-transfer="true"></TransactionFeeSelect>
-                </v-flex>
-                <v-flex v-else xs12 mb-4>
-                  <TransactionSpeedSelect
-                    is-wallet-transfer="true"
-                    :reset-speed="resetSpeed"
-                    :symbol="contractType !== CONTRACT_TYPE_ERC721 ? selectedItem.symbol : 'ETH'"
-                    :gas="gas"
-                    :display-amount="displayAmount"
-                    @onSelectSpeed="onSelectSpeed"
-                  />
-                </v-flex>
+                <TransactionFeeSelect v-if="isSmartContract" :is-wallet-transfer="true"></TransactionFeeSelect>
+                <TransactionSpeedSelect
+                  v-else
+                  :is-wallet-transfer="true"
+                  :reset-speed="resetSpeed"
+                  :symbol="contractType !== CONTRACT_TYPE_ERC721 ? selectedItem.symbol : 'ETH'"
+                  :gas="gas"
+                  :display-amount="displayAmount"
+                  @onSelectSpeed="onSelectSpeed"
+                />
                 <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721" xs12 mb-6 class="text-right">
                   <div class="subtitle-2 text_1--text">{{ t('walletTransfer.totalCost') }}</div>
                   <div class="headline text_2--text">{{ totalCost || 0 }} {{ totalCostSuffix }}</div>

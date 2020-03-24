@@ -69,7 +69,8 @@ import { MESSAGE_MODAL_TYPE_FAIL, MESSAGE_MODAL_TYPE_PENDING, MESSAGE_MODAL_TYPE
 export default {
   props: {
     modalType: {
-      type: Boolean
+      type: String,
+      default: ''
     },
     title: {
       type: String,

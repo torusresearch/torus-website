@@ -17,7 +17,7 @@
         />
       </v-flex>
     </v-layout>
-    <v-layout v-if="!isAdvanceOption" px-4 mx-n1 xs12>
+    <v-layout v-if="!isAdvanceOption" mx-n1 xs12>
       <v-flex xs6 px-1 mb-1>
         <v-chip
           class="button-speed text-center"
@@ -85,7 +85,7 @@
       </v-flex>
     </v-layout>
     <v-layout>
-      <v-flex xs12 px-4 class="text-right">
+      <v-flex xs12 class="text-right">
         <TransferAdvanceOption
           v-if="$vuetify.breakpoint.xsOnly"
           :symbol="symbol"
@@ -132,7 +132,9 @@ export default {
     },
     currencyMultiplier: {
       type: BigNumber,
-      default: new BigNumber('0')
+      default() {
+        return new BigNumber('0')
+      }
     },
     isWalletTransfer: {
       type: Boolean,
