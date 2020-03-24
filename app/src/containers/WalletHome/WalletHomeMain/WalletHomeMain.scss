@@ -13,25 +13,32 @@
     text-transform: none;
     width: 280px;
     border: 1px solid #D5D5D5;
-    border-radius: 3px;
+    border-radius: 6px;
+    background-color: var(--v-torus_grey4-base);
     &--active {
       color: var(--v-torus_brand1-base);
-      background-color: var(--v-brand_4-base);
+      background-color: var(--v-torus_brand4-base);
     }
     @media screen and (max-width: 600px) {
-      width: 150px;
+      width: 100%;
     }
   }
   &-token.v-tab {
-    border-radius: 3px 0px 0px 3px;
+    border-radius: 6px 0px 0px 6px;
   }
   &-collectibles.v-tab {
-    border-radius: 0px 3px 3px 0px;
+    border-radius: 0px 6px 6px 0px;
   }
   &.theme--dark {
     &.v-tabs {
       ::v-deep & > .v-tabs-bar {
         background-color: transparent;
+      }
+    }
+    .v-tab {
+      border: 1px solid #343539;
+      &--active {
+        background-color: var(--v-torus_black2-base);
       }
     }
   }

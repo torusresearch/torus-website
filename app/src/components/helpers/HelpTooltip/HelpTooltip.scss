@@ -7,6 +7,12 @@
   opacity: 1 !important;
   color: var(--v-torus_font1-base);
 }
+.theme--dark {
+  .v-tooltip__content {
+    background: var(--v-torus_black-base);
+  }
+}
 .v-icon {
   color: var(--v-text_1-base);
+  cursor: pointer;
 }
