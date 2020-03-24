@@ -19,11 +19,13 @@
             <div>
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
               <div v-else>
-                <span id="account-balance" class="display-2 mr-1">{{ selectedItem.computedBalanceRounded }}</span>
+                <span id="account-balance" class="display-2 mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
                 <span class="caption text_2--text">{{ selectedCurrency }}</span>
               </div>
             </div>
-            <div class="caption text-right currency-rate align-self-end text_2--text ml-auto">{{ selectedItem.currencyRateText }}</div>
+            <div class="caption text-right currency-rate align-self-end text_2--text ml-auto">
+              {{ selectedItem && selectedItem.currencyRateText }}
+            </div>
           </div>
         </v-card>
       </v-flex>
@@ -292,11 +294,13 @@
             <div>
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
               <div v-else>
-                <span id="account-balance" class="display-2 mr-1">{{ selectedItem.computedBalanceRounded }}</span>
+                <span id="account-balance" class="display-2 mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
                 <span class="caption text_2--text">{{ selectedCurrency }}</span>
               </div>
             </div>
-            <div class="caption text-right currency-rate align-self-end text_2--text ml-auto">{{ selectedItem.currencyRateText }}</div>
+            <div class="caption text-right currency-rate align-self-end text_2--text ml-auto">
+              {{ selectedItem && selectedItem.currencyRateText }}
+            </div>
           </div>
         </v-card>
       </v-flex>
