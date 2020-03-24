@@ -28,7 +28,7 @@ export default {
   openWidget(context, { path, params, preopenInstanceId }) {
     return new Promise((resolve, reject) => {
       const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(params)))
-      const finalUrl = `${path}?${parameterString}`
+      const finalUrl = `${path}?${parameterString.toString()}`
       const rampInstantWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       let purchaseCreated = false
       let purchaseSuccess = false
@@ -48,7 +48,7 @@ export default {
             } else if (purchaseCreated) {
               resolve({ success: true })
             } else {
-              reject(new Error('Purchase Canceled'))
+              reject(new Error('Purchase Cancelled'))
             }
             rampInstantWindow.close()
           }

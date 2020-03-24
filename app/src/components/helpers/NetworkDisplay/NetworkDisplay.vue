@@ -23,6 +23,10 @@ export default {
       default() {
         return { host: MAINNET, networkName: '', chainId: '' }
       }
+    },
+    isPlain: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
@@ -53,6 +57,9 @@ export default {
       }
       if (this.$vuetify.theme.isDark) classArray.push('theme--dark')
 
+      if (this.isPlain) {
+        classArray.push('is-plain')
+      }
       return classArray
     }
   }

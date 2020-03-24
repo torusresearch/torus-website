@@ -43,20 +43,21 @@ export default {
       const parameters = {
         apiKey: config.moonpayLiveAPIKEY,
         enabledPaymentMethods: 'credit_debit_card,sepa_bank_transfer,gbp_bank_transfer',
-        currencyCode: currentOrder.currency.code || undefined,
-        walletAddress: selectedAddress || undefined,
+        defaultCurrencyCode: currentOrder.currency.code || undefined,
+        walletAddresses: selectedAddress ? JSON.stringify({ eth: selectedAddress }) : undefined,
         colorCode,
         baseCurrencyAmount: currentOrder.baseCurrencyAmount || undefined,
         baseCurrencyCode: currentOrder.baseCurrency.code || undefined,
-        email: state.userInfo.email !== '' ? state.userInfo.email : undefined,
+        email: state.userInfo.email || undefined,
         externalCustomerId: selectedAddress || state.selectedAddress,
-        redirectURL: `${config.redirect_uri}?state=${instanceState}`
+        redirectURL: `${config.redirect_uri}?state=${instanceState}`,
+        showWalletAddressForm: true
       }
 
       const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(parameters)))
-      const url = `${config.moonpayHost}?${parameterString}`
+      const url = `${config.moonpayHost}?${parameterString.toString()}`
 
-      getSignature({ url: encodeURIComponent(url), token: state.jwtToken })
+      getSignature({ url: encodeURIComponent(url) })
         .then(({ signature }) => dispatch('postMoonpayOrder', { finalUrl: `${url}&signature=${encodeURIComponent(signature)}`, preopenInstanceId }))
         .then(response => resolve(response))
         .catch(error => reject(error))

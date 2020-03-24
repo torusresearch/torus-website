@@ -2,7 +2,10 @@
 
 
 .torus-app.v-application {
-  
+  .container {
+    max-width: 1400px;
+  }
+
   .text-clamp-one {
     display: -webkit-box;
     -webkit-line-clamp: 1;
@@ -85,6 +88,15 @@
   .description {
     font-size: 0.75rem;
     line-height: 0.875rem;
+    letter-spacing: 0;
+    font-weight: normal;
+    color: var(--v-torus_gray3-base);
+  }
+
+  /* Header 6 10px*/
+  .caption-2 {
+    font-size: 0.7rem;
+    line-height: 0.75rem;
     letter-spacing: 0;
     font-weight: normal;
     color: var(--v-torus_gray3-base);

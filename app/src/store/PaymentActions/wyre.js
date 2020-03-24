@@ -32,7 +32,7 @@ const Wyre = {
   postWyreOrder(context, { path, params, preopenInstanceId }) {
     return new Promise((resolve, reject) => {
       const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(params)))
-      const finalUrl = `${path}?${parameterString}`
+      const finalUrl = `${path}?${parameterString.toString()}`
       const wyreWindow = new PopupHandler({ preopenInstanceId, url: finalUrl })
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)

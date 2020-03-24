@@ -249,9 +249,10 @@
                 >
                   {{ t('walletTransfer.transfer') }}
                 </v-btn>
-                <v-dialog v-model="confirmDialog" max-width="550" persistent>
+                <v-dialog v-model="confirmDialog" max-width="375" persistent>
                   <TransferConfirm
-                    :to-address="toEthAddress"
+                    :to-address="toAddress"
+                    :to-verifier="selectedVerifier"
                     :converted-amount="
                       convertedAmount
                         ? `~ ${convertedAmount} ${
@@ -268,6 +269,8 @@
                     :transaction-fee="gasPriceInCurrency"
                     :selected-currency="selectedCurrency"
                     :send-eth-to-contract-error="sendEthToContractError"
+                    :total-cost="`${totalCost || 0} ${totalCostSuffix}`"
+                    :total-cost-converted="convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}`"
                     @onClose="confirmDialog = false"
                     @onConfirm="sendCoin"
                   ></TransferConfirm>
@@ -485,8 +488,6 @@ export default {
       return this.$store.state.selectedAddress
     },
     storeNetworkType() {
-      // eslint-disable-next-line no-console
-      console.log('this.$store.state.networkType', this.$store.state.networkType)
       return this.$store.state.networkType
     }
   },
