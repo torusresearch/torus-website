@@ -17,8 +17,9 @@
       color: #D3D5E2;
     }
     &.theme--dark {
+      background-color: var(--v-torus_black-base) !important;
       box-shadow: none;
-      border-color: inherit;
+      border: 0;
     }
   }
   ::v-deep .v-messages {

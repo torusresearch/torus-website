@@ -225,12 +225,12 @@
     .v-input {
       &.v-text-field--outlined > .v-input__control {
         & > .v-input__slot {
-          background: inherit;
+          background: var(--v-torus_black-base);;
           box-shadow: inherit;
         }
         fieldset {
           border-style: solid;
-          border-width: 1px;
+          border-width: 0;
         }
       }
     }

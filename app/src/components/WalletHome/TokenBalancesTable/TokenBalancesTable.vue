@@ -3,7 +3,7 @@
     <v-flex v-for="(balance, index) in tokenBalances" :key="index" class="xs12 sm6 md3 mb-4 px-4">
       <v-card color="elevation-1" router-link :to="{ name: 'walletTransfer', query: { contract: balance.tokenAddress } }">
         <v-card-text class="pa-0">
-          <div class="d-flex align-center py-3 px-4">
+          <div class="d-flex align-center py-3 px-4 card-header elevation-1">
             <div class="flex-grow-1 text-clamp-one">
               <img
                 :src="require(`../../../../public/images/logos/${balance.logo}`)"
