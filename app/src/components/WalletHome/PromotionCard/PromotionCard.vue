@@ -10,7 +10,11 @@
         </div>
         <slot name="image">
           <div class="ml-auto mt-1">
-            <img :src="imagePath" :style="$vuetify.breakpoint.smAndDown ? 'width: 57px' : 'width: 57px'" :alt="`${title} Image`" />
+            <img
+              :src="$vuetify.theme.isDark && imageDarkPath ? imageDarkPath : imagePath"
+              :style="$vuetify.breakpoint.smAndDown ? 'width: 57px' : 'width: 57px'"
+              :alt="`${title} Image`"
+            />
           </div>
         </slot>
       </div>
@@ -75,6 +79,7 @@ export default {
     title: { type: String, default: '' },
     subtitle: { type: String, default: '' },
     imagePath: { type: String, default: '' },
+    imageDarkPath: { type: String, default: '' },
     detailsLink: { type: String, default: '' },
     detailsLinkTwo: { type: String, default: '' },
     detailsText: { type: String, default: '' }
