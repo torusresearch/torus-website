@@ -8,9 +8,9 @@ const localeUrl = 'https://api.tor.us/locales'
 
 function getLocale() {
   return new Promise((resolve, reject) => {
-    const request = https.get(`${localeUrl}`, response => {
+    const request = https.get(`${localeUrl}`, (response) => {
       let body = ''
-      response.on('data', data => {
+      response.on('data', (data) => {
         body += data
       })
       response.on('end', () => {
@@ -18,7 +18,7 @@ function getLocale() {
       })
     })
 
-    request.on('error', error => {
+    request.on('error', (error) => {
       reject(error)
     })
 
@@ -27,7 +27,7 @@ function getLocale() {
 }
 
 getLocale()
-  .then(result => {
+  .then((result) => {
     const locales = result.data
     const folder = './src/plugins/i18n/'
     const folderPath = path.resolve(folder)
@@ -39,12 +39,12 @@ getLocale()
     for (const localeKey of keys) {
       if (Object.prototype.hasOwnProperty.call(locales, localeKey)) {
         const filePath = path.resolve(`${folder}${localeKey}.json`)
-        fs.writeFile(filePath, JSON.stringify(locales[localeKey], null, 2), { flag: 'w' }, error => {
+        fs.writeFile(filePath, JSON.stringify(locales[localeKey], null, 2), { flag: 'w' }, (error) => {
           if (error) throw error
         })
       }
     }
   })
-  .catch(error => {
+  .catch((error) => {
     log.error(error)
   })

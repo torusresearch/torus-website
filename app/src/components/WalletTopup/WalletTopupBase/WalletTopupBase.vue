@@ -135,21 +135,21 @@ import HelpTooltip from '../../helpers/HelpTooltip'
 
 export default {
   components: {
-    HelpTooltip
+    HelpTooltip,
   },
   props: {
     selectedProvider: {
       type: String,
-      default: ''
+      default: '',
     },
     cryptoCurrencyValue: {
       type: [Number, String],
-      default: 0
+      default: 0,
     },
     currencyRate: {
       type: [Number, String],
-      default: 0
-    }
+      default: 0,
+    },
   },
   data() {
     return {
@@ -159,14 +159,14 @@ export default {
       selectedCryptoCurrency: '',
       paymentProviders,
       rules: {
-        required: value => !!value || 'Required',
-        validNumber: value => !Number.isNaN(parseFloat(value)) || 'Enter a valid number',
-        maxValidation: value => parseFloat(value) <= this.maxOrderValue || `Max topup amount is ${formatCurrencyNumber(this.maxOrderValue, 0)}`,
-        minValidation: value => parseFloat(value) >= this.minOrderValue || `Min topup amount is ${this.minOrderValue}`
+        required: (value) => !!value || 'Required',
+        validNumber: (value) => !Number.isNaN(parseFloat(value)) || 'Enter a valid number',
+        maxValidation: (value) => parseFloat(value) <= this.maxOrderValue || `Max topup amount is ${formatCurrencyNumber(this.maxOrderValue, 0)}`,
+        minValidation: (value) => parseFloat(value) >= this.minOrderValue || `Min topup amount is ${this.minOrderValue}`,
       },
       snackbar: false,
       snackbarText: '',
-      snackbarColor: 'success'
+      snackbarColor: 'success',
     }
   },
   computed: {
@@ -191,14 +191,14 @@ export default {
     displayRateString() {
       if (parseFloat(this.currencyRate) !== 0) return significantDigits(1 / this.currencyRate)
       return 0
-    }
+    },
   },
   watch: {
     cryptoCurrencyValue(newValue, oldValue) {
       if (newValue !== oldValue) {
         if (parseFloat(newValue) > 0) this.isQuoteFetched = true
       }
-    }
+    },
   },
   mounted() {
     this.selectedCryptoCurrency = 'ETH'
@@ -216,12 +216,12 @@ export default {
       this.$emit('fetchQuote', {
         selectedCurrency: this.selectedCurrency,
         fiatValue: this.fiatValue,
-        selectedCryptoCurrency: this.selectedCryptoCurrency
+        selectedCryptoCurrency: this.selectedCryptoCurrency,
       })
     },
     sendOrder() {
       if (this.$refs.paymentForm.validate()) {
-        const callback = p => {
+        const callback = (p) => {
           p.then(({ success }) => {
             if (success) this.$router.push({ name: 'walletHistory' })
             else {
@@ -229,7 +229,7 @@ export default {
               this.snackbarColor = 'error'
               this.snackbarText = 'Something went wrong'
             }
-          }).catch(error => {
+          }).catch((error) => {
             this.snackbar = true
             this.snackbarColor = 'error'
             this.snackbarText = error
@@ -237,14 +237,14 @@ export default {
             this.$emit('clearQuote', {
               selectedCurrency: this.selectedCurrency,
               fiatValue: this.fiatValue,
-              selectedCryptoCurrency: this.selectedCryptoCurrency
+              selectedCryptoCurrency: this.selectedCryptoCurrency,
             })
           })
         }
         this.$emit('sendOrder', callback)
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

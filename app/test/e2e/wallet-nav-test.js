@@ -16,14 +16,14 @@ describe('Tests Account Menu', () => {
       devtools: config.isDevTools,
       timeout: config.launchTimeout,
       ignoreHTTPSErrors: config.ignoreHTTPSErrors,
-      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox'],
     })
 
     page = (await browser.pages())[0]
     await page.setDefaultTimeout(config.waitingTimeout)
     await page.setViewport({
       width: config.viewportWidth,
-      height: config.viewportHeight
+      height: config.viewportHeight,
     })
   })
 

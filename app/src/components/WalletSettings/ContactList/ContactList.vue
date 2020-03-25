@@ -94,31 +94,31 @@ export default {
       newContact: '',
       newContactName: '',
       rules: {
-        required: value => !!value || this.t('walletSettings.required')
+        required: (value) => !!value || this.t('walletSettings.required'),
       },
-      ETH
+      ETH,
     }
   },
   computed: {
     verifierOptions() {
       const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
-      return verifiers.map(verifier => {
+      return verifiers.map((verifier) => {
         verifier.name = this.t(verifier.name)
         return verifier
       })
     },
     verifierPlaceholder() {
-      const verifierLocale = ALLOWED_VERIFIERS.find(verifier => verifier.value === this.selectedVerifier).name
+      const verifierLocale = ALLOWED_VERIFIERS.find((verifier) => verifier.value === this.selectedVerifier).name
       return `${this.t('walletSettings.enter')} ${this.t(verifierLocale)}`
     },
     contacts() {
       return this.$store.state.contacts
-    }
+    },
   },
   methods: {
     checkDuplicates(value) {
       if (!this.contacts) return ''
-      return this.contacts.findIndex(x => x.contact.toLowerCase() === value.toLowerCase()) < 0 || this.t('walletSettings.duplicateContact')
+      return this.contacts.findIndex((x) => x.contact.toLowerCase() === value.toLowerCase()) < 0 || this.t('walletSettings.duplicateContact')
     },
     async addContact() {
       if (!this.$refs.addContactForm.validate()) return
@@ -131,7 +131,7 @@ export default {
         await this.$store.dispatch('addContact', {
           contact,
           name,
-          verifier: this.selectedVerifier
+          verifier: this.selectedVerifier,
         })
       } catch (error) {
         log.error(error)
@@ -145,8 +145,8 @@ export default {
     },
     validateContactForm() {
       if (this.$refs.addContactForm) this.$refs.addContactForm.validate()
-    }
-  }
+    },
+  },
 }
 </script>
 

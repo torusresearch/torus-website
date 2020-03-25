@@ -9,9 +9,9 @@ describe('Transaction state history helper', () => {
       const input = {
         foo: {
           bar: {
-            bam: 'baz'
-          }
-        }
+            bam: 'baz',
+          },
+        },
       }
       const output = txStateHistoryHelper.snapshotFromTxMeta(input)
       assert('foo' in output, 'has a foo key')
@@ -53,15 +53,15 @@ describe('Transaction state history helper', () => {
         {
           op: 'replace',
           path: '/message',
-          value: 'haay'
-        }
+          value: 'haay',
+        },
       ]
       const diff2 = [
         {
           op: 'replace',
           path: '/value',
-          value: 2
-        }
+          value: 2,
+        },
       ]
       const history = [initialState, diff1, diff2]
 
@@ -80,9 +80,9 @@ describe('Transaction state history helper', () => {
         someValue: 'value 1',
         foo: {
           bar: {
-            bam: 'baz'
-          }
-        }
+            bam: 'baz',
+          },
+        },
       }
 
       const nextState = {
@@ -91,9 +91,9 @@ describe('Transaction state history helper', () => {
         foo: {
           newPropFirstLevel: 'new property - first level',
           bar: {
-            bam: 'baz'
-          }
-        }
+            bam: 'baz',
+          },
+        },
       }
 
       const before = new Date().getTime()

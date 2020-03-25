@@ -119,17 +119,17 @@ export default {
   components: {
     ShowToolTip,
     AccountImport,
-    LanguageSelector
+    LanguageSelector,
   },
   props: {
     headerItems: {
       type: [Array, undefined],
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   data() {
     return {
-      accountImportDialog: false
+      accountImportDialog: false,
     }
   },
   computed: {
@@ -164,7 +164,7 @@ export default {
       return Object.keys(this.$store.state.wallet).map((wallet, id) => ({ id, address: wallet }))
     },
     filteredWallets() {
-      return this.wallets.filter(accumulator => accumulator.address !== this.selectedAddress)
+      return this.wallets.filter((accumulator) => accumulator.address !== this.selectedAddress)
     },
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
@@ -177,10 +177,10 @@ export default {
     },
     filteredMenu() {
       if (this.headerItems) {
-        return this.headerItems.filter(item => item.name !== 'home')
+        return this.headerItems.filter((item) => item.name !== 'home')
       }
       return []
-    }
+    },
   },
   methods: {
     async logout() {
@@ -191,7 +191,7 @@ export default {
         bc.close()
       }
       this.$store.dispatch('logOut')
-      this.$router.push({ path: '/logout' }).catch(_ => {})
+      this.$router.push({ path: '/logout' }).catch((_) => {})
     },
     async changeAccount(newAddress) {
       this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
@@ -201,13 +201,13 @@ export default {
         await selectedAddressChannel.postMessage({
           data: {
             name: 'selected_address',
-            payload: newAddress
-          }
+            payload: newAddress,
+          },
         })
         selectedAddressChannel.close()
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

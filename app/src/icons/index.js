@@ -46,138 +46,138 @@ import VisibilityOnIcon from './VisibilityOnIcon.vue'
 
 export default {
   select: {
-    component: SelectIcon
+    component: SelectIcon,
   },
   send: {
-    component: SendIcon
+    component: SendIcon,
   },
   add: {
-    component: AddIcon
+    component: AddIcon,
   },
   search: {
-    component: SearchIcon
+    component: SearchIcon,
   },
   refresh: {
-    component: RefreshIcon
+    component: RefreshIcon,
   },
   eth: {
-    component: EthIcon
+    component: EthIcon,
   },
   question: {
-    component: QuestionIcon
+    component: QuestionIcon,
   },
   radioOn: {
-    component: RadioCheckedIcon
+    component: RadioCheckedIcon,
   },
   radioOff: {
-    component: RadioUncheckedIcon
+    component: RadioUncheckedIcon,
   },
   visibility_on: {
-    component: VisibilityOnIcon
+    component: VisibilityOnIcon,
   },
   visibility_off: {
-    component: VisibilityOffIcon
+    component: VisibilityOffIcon,
   },
   arrow_up_circle: {
-    component: ArrowUpCircleIcon
+    component: ArrowUpCircleIcon,
   },
   arrow_down_circle: {
-    component: ArrowDownCircleIcon
+    component: ArrowDownCircleIcon,
   },
   arrow_left_circle: {
-    component: ArrowLeftCircleIcon
+    component: ArrowLeftCircleIcon,
   },
   arrow_right_circle: {
-    component: ArrowRightCircleIcon
+    component: ArrowRightCircleIcon,
   },
   check_circle: {
-    component: CheckCircleIcon
+    component: CheckCircleIcon,
   },
   close_circle: {
-    component: CloseCircleIcon
+    component: CloseCircleIcon,
   },
   coins_send: {
-    component: CoinsSendIcon
+    component: CoinsSendIcon,
   },
   coins_receive: {
-    component: CoinsReceiveIcon
+    component: CoinsReceiveIcon,
   },
   coins_topup: {
-    component: CoinsTopupIcon
+    component: CoinsTopupIcon,
   },
   page_prev: {
-    component: ChevronLeftIcon
+    component: ChevronLeftIcon,
   },
   page_next: {
-    component: ChevronRightIcon
+    component: ChevronRightIcon,
   },
   page_next_double: {
-    component: ChevronDoubleRightIcon
+    component: ChevronDoubleRightIcon,
   },
   scan: {
-    component: ScanIcon
+    component: ScanIcon,
   },
   network: {
-    component: NetworkIcon
+    component: NetworkIcon,
   },
   time: {
-    component: TimeIcon
+    component: TimeIcon,
   },
   lock: {
-    component: LockIcon
+    component: LockIcon,
   },
   key: {
-    component: KeyIcon
+    component: KeyIcon,
   },
   list: {
-    component: ListIcon
+    component: ListIcon,
   },
   globe: {
-    component: GlobeIcon
+    component: GlobeIcon,
   },
   server: {
-    component: ServerIcon
+    component: ServerIcon,
   },
   balance: {
-    component: BalanceIcon
+    component: BalanceIcon,
   },
   import: {
-    component: ImportIcon
+    component: ImportIcon,
   },
   info: {
-    component: InfoIcon
+    component: InfoIcon,
   },
   transaction: {
-    component: TransactionIcon
+    component: TransactionIcon,
   },
   topup: {
-    component: TopupIcon
+    component: TopupIcon,
   },
   person: {
-    component: PersonIcon
+    component: PersonIcon,
   },
   activities: {
-    component: ActivitiesIcon
+    component: ActivitiesIcon,
   },
   settings: {
-    component: SettingsIcon
+    component: SettingsIcon,
   },
   close: {
-    component: CloseIcon
+    component: CloseIcon,
   },
   download: {
-    component: DownloadIcon
+    component: DownloadIcon,
   },
   collectibles: {
-    component: CollectibleIcon
+    component: CollectibleIcon,
   },
   token: {
-    component: TokenIcon
+    component: TokenIcon,
   },
   qr: {
-    component: QrIcon
+    component: QrIcon,
   },
   copy: {
-    component: CopyIcon
-  }
+    component: CopyIcon,
+  },
 }

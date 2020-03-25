@@ -12,14 +12,14 @@ export default {
   props: {
     network: {
       type: String,
-      default: ''
+      default: '',
     },
     storeNetworkType: {
       type: Object,
       default() {
         return { host: MAINNET, networkName: '', chainId: '' }
-      }
-    }
+      },
+    },
   },
   computed: {
     selectedNetwork() {
@@ -40,8 +40,8 @@ export default {
     isUrlNetwork() {
       // Checks if input is a url including localhost, ip address and domain name
       return /^((?:http(s)?:\/\/)?([\w-.]+(?:\.[\w-.]+)+|localhost?)[\w!#$&'()*+,./:;=?@[\]~-]+)$/.test(this.selectedNetwork)
-    }
-  }
+    },
+  },
 }
 </script>
 

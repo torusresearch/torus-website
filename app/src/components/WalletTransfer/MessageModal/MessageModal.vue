@@ -35,23 +35,23 @@
 export default {
   props: {
     modalType: {
-      type: Boolean
+      type: Boolean,
     },
     title: {
       type: String,
-      default: ''
+      default: '',
     },
 
     detailText: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
   methods: {
     onCancel() {
       this.$emit('onClose')
-    }
-  }
+    },
+  },
 }
 </script>
 

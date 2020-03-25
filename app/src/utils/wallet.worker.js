@@ -3,7 +3,7 @@ import ThirdPartyWallets from 'ethereumjs-wallet/thirdparty'
 
 const ethUtil = require('ethereumjs-util')
 
-const fromMyEtherWalletV2 = json => {
+const fromMyEtherWalletV2 = (json) => {
   if (json.privKey.length !== 64) {
     throw new Error('Invalid private key length')
   }
@@ -18,7 +18,7 @@ const getWalletFromPrivKeyFile = (jsonfile, password) => {
   throw new Error('Invalid Wallet file')
 }
 
-const generateWallet = privateKey => {
+const generateWallet = (privateKey) => {
   const stripped = ethUtil.stripHexPrefix(privateKey)
   const buffer = Buffer.from(stripped, 'hex')
   const wallet = Wallet.fromPrivateKey(buffer)
@@ -36,7 +36,7 @@ const create = (password, privateKey) => {
 const unlock = (file, password) => {
   const newFile = {}
   // Small hack because non strict wasn't working..
-  Object.keys(file).forEach(key => {
+  Object.keys(file).forEach((key) => {
     newFile[key.toLowerCase()] = file[key]
   })
 
@@ -45,7 +45,7 @@ const unlock = (file, password) => {
 
 // onmessage breaks tests as it is undefined
 if (!navigator.userAgent.includes('Node.js') && !navigator.userAgent.includes('jsdom')) {
-  onmessage = event => {
+  onmessage = (event) => {
     if (event.data.type === 'createWallet') {
       const workerResult = create(event.data.data[0], event.data.data[1])
       postMessage(workerResult)

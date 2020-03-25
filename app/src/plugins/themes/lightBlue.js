@@ -8,7 +8,7 @@ export default {
   text_3: '#EEF2F4',
   primary: {
     base: '#0364FF',
-    lighten5: '#E9EEFE'
+    lighten5: '#E9EEFE',
   },
   infoBanner: '#FFF4D8',
   infoBannerText: '#FC902D',
@@ -16,17 +16,17 @@ export default {
   success: {
     base: '#00D065',
     lighten5: '#C6E7D6',
-    darken1: '#4CAD74'
+    darken1: '#4CAD74',
   },
   error: {
     base: '#EF4C56',
     lighten5: '#F3DBE4',
-    darken1: '#ED838C'
+    darken1: '#ED838C',
   },
   warning: {
     base: '#F6A608',
     lighten5: '#FFF4D8',
-    darken1: '#FC902D'
+    darken1: '#FC902D',
   },
-  disabled: '#eef2f4'
+  disabled: '#eef2f4',
 }

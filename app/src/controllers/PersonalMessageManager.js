@@ -43,7 +43,7 @@ export default class PersonalMessageManager extends EventEmitter {
     super()
     this.store = new ObservableStore({
       unapprovedPersonalMsgs: {},
-      unapprovedPersonalMsgCount: 0
+      unapprovedPersonalMsgCount: 0,
     })
     this.messages = []
   }
@@ -67,7 +67,7 @@ export default class PersonalMessageManager extends EventEmitter {
    */
   getUnapprovedMsgs() {
     return this.messages
-      .filter(message => message.status === 'unapproved')
+      .filter((message) => message.status === 'unapproved')
       .reduce((result, message) => {
         result[message.id] = message
         return result
@@ -90,7 +90,7 @@ export default class PersonalMessageManager extends EventEmitter {
         reject(new Error('MetaMask Message Signature: from field is required.'))
       }
       const messageId = this.addUnapprovedMessage(messageParameters, request)
-      this.once(`${messageId}:finished`, data => {
+      this.once(`${messageId}:finished`, (data) => {
         switch (data.status) {
           case 'signed':
             return resolve(data.rawSig)
@@ -126,7 +126,7 @@ export default class PersonalMessageManager extends EventEmitter {
       msgParams: messageParameters,
       time,
       status: 'unapproved',
-      type: 'personal_sign'
+      type: 'personal_sign',
     }
     this.addMsg(messageData)
 
@@ -156,7 +156,7 @@ export default class PersonalMessageManager extends EventEmitter {
    *
    */
   getMsg(messageId) {
-    return this.messages.find(message => message.id === messageId)
+    return this.messages.find((message) => message.id === messageId)
   }
 
   /**
@@ -254,7 +254,7 @@ export default class PersonalMessageManager extends EventEmitter {
    *
    */
   _updateMsg(message_) {
-    const index = this.messages.findIndex(message => message.id === message_.id)
+    const index = this.messages.findIndex((message) => message.id === message_.id)
     if (index !== -1) {
       this.messages[index] = message_
     }

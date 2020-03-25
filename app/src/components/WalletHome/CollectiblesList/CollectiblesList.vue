@@ -18,8 +18,8 @@ export default {
   computed: {
     collectibles() {
       return this.$store.getters.collectibleBalances
-    }
-  }
+    },
+  },
 }
 </script>
 

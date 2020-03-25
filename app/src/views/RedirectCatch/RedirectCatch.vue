@@ -55,9 +55,9 @@ export default {
           data: {
             instanceParams: instanceParameters,
             hashParams: hashParameters,
-            queryParams: queryParameters
+            queryParams: queryParameters,
           },
-          error
+          error,
         })
         bc.close()
         log.info('posted', { queryParameters, hashParameters, instanceParameters })
@@ -66,7 +66,7 @@ export default {
         }, 5000)
       } else {
         bc = new BroadcastChannel(`preopen_channel_${queryParameters.preopenInstanceId}`, broadcastChannelOptions)
-        bc.addEventListener('message', ev => {
+        bc.addEventListener('message', (ev) => {
           const { preopenInstanceId: oldId, payload, message } = ev.data
           if (oldId === queryParameters.preopenInstanceId && payload && payload.url) {
             window.location.href = payload.url
@@ -74,8 +74,8 @@ export default {
             bc.postMessage({
               data: {
                 preopenInstanceId: queryParameters.preopenInstanceId,
-                message: 'popup_loaded'
-              }
+                message: 'popup_loaded',
+              },
             })
           }
           if (ev.error && ev.error !== '') {
@@ -89,7 +89,7 @@ export default {
       if (bc) bc.close()
       window.close()
     }
-  }
+  },
 }
 </script>
 

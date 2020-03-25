@@ -1,7 +1,7 @@
 /* eslint-disable */
 const fakeWallet = {
   privKey: '0x123456788890abcdef',
-  address: '0xfedcba0987654321'
+  address: '0xfedcba0987654321',
 }
 const type = 'Simple Key Pair'
 
@@ -34,6 +34,6 @@ module.exports = class MockSimpleKeychain {
   }
 
   getAccounts() {
-    return this.wallets.map(w => w.address)
+    return this.wallets.map((w) => w.address)
   }
 }
