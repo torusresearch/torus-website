@@ -12,7 +12,7 @@ const finalJson = finalArr.reduce((acc, x) => {
   acc[x.address] = {
     name: x.name,
     logo: x.image_url,
-    symbol: x.symbol
+    symbol: x.symbol,
   }
   return acc
 }, {})

@@ -12,7 +12,7 @@ module.exports = {
   isDevTools: false,
   launchTimeout: 10000,
   waitingTimeout: 10000,
-  isMobile: isMobile,
+  isMobile,
   viewportWidth: isMobile ? 425 : 1200,
-  viewportHeight: isMobile ? 650 : 900
+  viewportHeight: isMobile ? 650 : 900,
 }

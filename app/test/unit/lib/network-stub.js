@@ -26,32 +26,32 @@ export const txMetaStub = {
         gas: '0x5208',
         gasPrice: '0x1e8480',
         to: '0xf231d46dd78806e1dd93442cf33c7671f8538748',
-        value: '0x0'
+        value: '0x0',
       },
-      type: 'standard'
+      type: 'standard',
     },
     [
       {
         op: 'replace',
         path: '/loadingDefaults',
         timestamp: 1572395156645,
-        value: false
+        value: false,
       },
       {
         op: 'add',
         path: '/gasPriceSpecified',
-        value: true
+        value: true,
       },
       {
         op: 'add',
         path: '/gasLimitSpecified',
-        value: true
+        value: true,
       },
       {
         op: 'add',
         path: '/estimatedGas',
-        value: '0x5208'
-      }
+        value: '0x5208',
+      },
     ],
     [
       {
@@ -59,8 +59,8 @@ export const txMetaStub = {
         op: 'add',
         path: '/origin',
         timestamp: 1572395156645,
-        value: 'MetaMask'
-      }
+        value: 'MetaMask',
+      },
     ],
     [],
     [
@@ -69,8 +69,8 @@ export const txMetaStub = {
         op: 'replace',
         path: '/status',
         timestamp: 1572395158240,
-        value: 'approved'
-      }
+        value: 'approved',
+      },
     ],
     [
       {
@@ -78,7 +78,7 @@ export const txMetaStub = {
         op: 'add',
         path: '/txParams/nonce',
         timestamp: 1572395158261,
-        value: '0x4'
+        value: '0x4',
       },
       {
         op: 'add',
@@ -87,26 +87,26 @@ export const txMetaStub = {
           local: {
             details: {
               highest: 4,
-              startPoint: 4
+              startPoint: 4,
             },
             name: 'local',
-            nonce: 4
+            nonce: 4,
           },
           network: {
             details: {
               baseCount: 4,
-              blockNumber: '0x51a401'
+              blockNumber: '0x51a401',
             },
             name: 'network',
-            nonce: 4
+            nonce: 4,
           },
           params: {
             highestLocallyConfirmed: 0,
             highestSuggested: 4,
-            nextNetworkNonce: 4
-          }
-        }
-      }
+            nextNetworkNonce: 4,
+          },
+        },
+      },
     ],
     [
       {
@@ -114,18 +114,18 @@ export const txMetaStub = {
         op: 'add',
         path: '/r',
         timestamp: 1572395158280,
-        value: '0x5f973e540f2d3c2f06d3725a626b75247593cb36477187ae07ecfe0a4db3cf57'
+        value: '0x5f973e540f2d3c2f06d3725a626b75247593cb36477187ae07ecfe0a4db3cf57',
       },
       {
         op: 'add',
         path: '/s',
-        value: '0x0259b52ee8c58baaa385fb05c3f96116e58de89bcc165cb3bfdfc708672fed8a'
+        value: '0x0259b52ee8c58baaa385fb05c3f96116e58de89bcc165cb3bfdfc708672fed8a',
       },
       {
         op: 'add',
         path: '/v',
-        value: '0x2c'
-      }
+        value: '0x2c',
+      },
     ],
     [
       {
@@ -133,14 +133,14 @@ export const txMetaStub = {
         op: 'replace',
         path: '/status',
         timestamp: 1572395158281,
-        value: 'signed'
+        value: 'signed',
       },
       {
         op: 'add',
         path: '/rawTx',
         value:
-          '0xf86204831e848082520894f231d46dd78806e1dd93442cf33c7671f853874880802ca05f973e540f2d3c2f06d3725a626b75247593cb36477187ae07ecfe0a4db3cf57a00259b52ee8c58baaa385fb05c3f96116e58de89bcc165cb3bfdfc708672fed8a'
-      }
+          '0xf86204831e848082520894f231d46dd78806e1dd93442cf33c7671f853874880802ca05f973e540f2d3c2f06d3725a626b75247593cb36477187ae07ecfe0a4db3cf57a00259b52ee8c58baaa385fb05c3f96116e58de89bcc165cb3bfdfc708672fed8a',
+      },
     ],
     [],
     [
@@ -149,8 +149,8 @@ export const txMetaStub = {
         op: 'add',
         path: '/hash',
         timestamp: 1572395158570,
-        value: '0x2cc5a25744486f7383edebbf32003e5a66e18135799593d6b5cdd2bb43674f09'
-      }
+        value: '0x2cc5a25744486f7383edebbf32003e5a66e18135799593d6b5cdd2bb43674f09',
+      },
     ],
     [
       {
@@ -158,8 +158,8 @@ export const txMetaStub = {
         op: 'add',
         path: '/submittedTime',
         timestamp: 1572395158571,
-        value: 1572395158570
-      }
+        value: 1572395158570,
+      },
     ],
     [
       {
@@ -167,8 +167,8 @@ export const txMetaStub = {
         op: 'replace',
         path: '/status',
         timestamp: 1572395158576,
-        value: 'submitted'
-      }
+        value: 'submitted',
+      },
     ],
     [
       {
@@ -176,9 +176,9 @@ export const txMetaStub = {
         op: 'add',
         path: '/firstRetryBlockNumber',
         timestamp: 1572395168972,
-        value: '0x51a402'
-      }
-    ]
+        value: '0x51a402',
+      },
+    ],
   ],
   id: 405984854664302,
   loadingDefaults: false,
@@ -187,24 +187,24 @@ export const txMetaStub = {
     local: {
       details: {
         highest: 4,
-        startPoint: 4
+        startPoint: 4,
       },
       name: 'local',
-      nonce: 4
+      nonce: 4,
     },
     network: {
       details: {
         baseCount: 4,
-        blockNumber: '0x51a401'
+        blockNumber: '0x51a401',
       },
       name: 'network',
-      nonce: 4
+      nonce: 4,
     },
     params: {
       highestLocallyConfirmed: 0,
       highestSuggested: 4,
-      nextNetworkNonce: 4
-    }
+      nextNetworkNonce: 4,
+    },
   },
   origin: 'MetaMask',
   r: '0x5f973e540f2d3c2f06d3725a626b75247593cb36477187ae07ecfe0a4db3cf57',
@@ -221,8 +221,8 @@ export const txMetaStub = {
     gasPrice: '0x1e8480',
     nonce: '0x4',
     to: '0xf231d46dd78806e1dd93442cf33c7671f8538748',
-    value: '0x0'
+    value: '0x0',
   },
   type: 'standard',
-  v: '0x2c'
+  v: '0x2c',
 }

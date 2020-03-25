@@ -17,14 +17,14 @@ describe('Tests Wallet Topup', () => {
       devtools: config.isDevTools,
       timeout: config.launchTimeout,
       ignoreHTTPSErrors: config.ignoreHTTPSErrors,
-      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox'],
     })
 
     page = (await browser.pages())[0]
     await page.setDefaultTimeout(config.waitingTimeout)
     await page.setViewport({
       width: config.viewportWidth,
-      height: config.viewportHeight
+      height: config.viewportHeight,
     })
   })
 
@@ -45,9 +45,9 @@ describe('Tests Wallet Topup', () => {
 
   it('Should show container for each active provider', async () => {
     const providers = await page.evaluate(() =>
-      [...document.querySelectorAll('.topup-provider')].map(element => ({
+      [...document.querySelectorAll('.topup-provider')].map((element) => ({
         provider: element.dataset.provider,
-        isComingSoon: Object.values(element.classList).includes('coming-soon')
+        isComingSoon: Object.values(element.classList).includes('coming-soon'),
       }))
     )
 

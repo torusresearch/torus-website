@@ -11,16 +11,16 @@ export function getTestAccounts() {
   return [
     {
       address: '0x88bb7F89eB5e5b30D3e15a57C68DBe03C6aCCB21',
-      key: Buffer.from('254A8D551474F35CCC816388B4ED4D20B945C96B7EB857A68064CB9E9FB2C092', 'hex')
+      key: Buffer.from('254A8D551474F35CCC816388B4ED4D20B945C96B7EB857A68064CB9E9FB2C092', 'hex'),
     },
     {
       address: '0x1fe9aAB565Be19629fF4e8541ca2102fb42D7724',
-      key: Buffer.from('6BAB5A4F2A6911AF8EE2BD32C6C05F6643AC48EF6C939CDEAAAE6B1620805A9B', 'hex')
+      key: Buffer.from('6BAB5A4F2A6911AF8EE2BD32C6C05F6643AC48EF6C939CDEAAAE6B1620805A9B', 'hex'),
     },
     {
       address: '0xbda5c89aa6bA1b352194291AD6822C92AbC87c7B',
-      key: Buffer.from('9B11D7F833648F26CE94D544855558D7053ECD396E4F4563968C232C012879B0', 'hex')
-    }
+      key: Buffer.from('9B11D7F833648F26CE94D544855558D7053ECD396E4F4563968C232C012879B0', 'hex'),
+    },
   ]
 }
 
@@ -41,7 +41,7 @@ export function createTestProviderTools(options = {}) {
   engine.push(
     providerAsMiddleware(
       GanacheCore.provider({
-        mnemonic: getTestSeed()
+        mnemonic: getTestSeed(),
       })
     )
   )

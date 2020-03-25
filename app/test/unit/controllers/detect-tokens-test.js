@@ -16,17 +16,13 @@ describe('DetectTokensController', () => {
   const noop = () => {}
 
   const networkControllerProviderConfig = {
-    getAccounts: noop
+    getAccounts: noop,
   }
 
   beforeEach(async () => {
     nock.cleanAll()
     nock.enableNetConnect()
-    nock('https://min-api.cryptocompare.com')
-      .get(/.*/)
-      .query(true)
-      .reply(200)
-      .log(noop)
+    nock('https://min-api.cryptocompare.com').get(/.*/).query(true).reply(200).log(noop)
 
     network = new NetworkController()
     network.initializeProvider(networkControllerProviderConfig)
@@ -87,9 +83,9 @@ describe('DetectTokensController', () => {
             {
               tokenAddress: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4',
               symbol: 'J8T',
-              decimals: 8
-            }
-          ]
+              decimals: 8,
+            },
+          ],
         })
       )
       .withArgs('0xBC86727E770de68B1060C91f6BB6945c73e10388', { decimals: 18, symbol: 'XNK' })
@@ -99,21 +95,21 @@ describe('DetectTokensController', () => {
             {
               tokenAddress: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4',
               symbol: 'J8T',
-              decimals: 8
+              decimals: 8,
             },
             {
               tokenAddress: '0xBC86727E770de68B1060C91f6BB6945c73e10388',
               symbol: 'XNK',
-              decimals: 18
-            }
-          ]
+              decimals: 18,
+            },
+          ],
         })
       )
     assert.deepStrictEqual(
-      controller.detectedTokensStore.getState().tokens.map(x => ({ address: x.tokenAddress, decimals: x.decimals, symbol: x.symbol })),
+      controller.detectedTokensStore.getState().tokens.map((x) => ({ address: x.tokenAddress, decimals: x.decimals, symbol: x.symbol })),
       [
         { address: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4', decimals: 8, symbol: 'J8T' },
-        { address: '0xBC86727E770de68B1060C91f6BB6945c73e10388', decimals: 18, symbol: 'XNK' }
+        { address: '0xBC86727E770de68B1060C91f6BB6945c73e10388', decimals: 18, symbol: 'XNK' },
       ]
     )
   })
@@ -126,9 +122,9 @@ describe('DetectTokensController', () => {
         {
           tokenAddress: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4',
           symbol: 'J8T',
-          decimals: 8
-        }
-      ]
+          decimals: 8,
+        },
+      ],
     })
 
     sandbox
@@ -140,9 +136,9 @@ describe('DetectTokensController', () => {
             {
               tokenAddress: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4',
               symbol: 'J8T',
-              decimals: 8
-            }
-          ]
+              decimals: 8,
+            },
+          ],
         })
       )
       .withArgs('0xBC86727E770de68B1060C91f6BB6945c73e10388', { decimals: 18, symbol: 'XNK' })
@@ -152,22 +148,22 @@ describe('DetectTokensController', () => {
             {
               tokenAddress: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4',
               symbol: 'J8T',
-              decimals: 8
+              decimals: 8,
             },
             {
               tokenAddress: '0xBC86727E770de68B1060C91f6BB6945c73e10388',
               symbol: 'XNK',
-              decimals: 18
-            }
-          ]
+              decimals: 18,
+            },
+          ],
         })
       )
 
     assert.deepStrictEqual(
-      controller.detectedTokensStore.getState().tokens.map(x => ({ address: x.tokenAddress, decimals: x.decimals, symbol: x.symbol })),
+      controller.detectedTokensStore.getState().tokens.map((x) => ({ address: x.tokenAddress, decimals: x.decimals, symbol: x.symbol })),
       [
         { address: '0x0D262e5dC4A06a0F1c90cE79C7a60C09DfC884E4', decimals: 8, symbol: 'J8T' },
-        { address: '0xBC86727E770de68B1060C91f6BB6945c73e10388', decimals: 18, symbol: 'XNK' }
+        { address: '0xBC86727E770de68B1060C91f6BB6945c73e10388', decimals: 18, symbol: 'XNK' },
       ]
     )
   })

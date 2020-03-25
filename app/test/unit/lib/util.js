@@ -3,7 +3,7 @@ module.exports = {
   timeout,
   queryAsync,
   findAsync,
-  pollUntilTruthy
+  pollUntilTruthy,
 }
 
 function timeout(time) {
