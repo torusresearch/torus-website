@@ -9,8 +9,8 @@ const getQuote = () => {
     const options = {
       headers: {
         'Content-Type': 'application/json',
-        Accept: 'application/json'
-      }
+        Accept: 'application/json',
+      },
     }
     response = get(`${config.rampInstantAssets}`, options)
   } catch (error) {

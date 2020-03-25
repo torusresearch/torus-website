@@ -49,7 +49,7 @@ export default class NetworkController extends EventEmitter {
     this.store = new ComposedStore({
       provider: this.providerStore,
       network: this.networkStore,
-      settings: this.networkConfig
+      settings: this.networkConfig,
     })
     this.on('networkDidChange', this.lookupNetwork)
     // provider and block tracker
@@ -176,7 +176,7 @@ export default class NetworkController extends EventEmitter {
       chainId,
       ticker,
       nickname,
-      rpcPrefs
+      rpcPrefs,
     }
     this.providerConfig = providerConfig
   }
@@ -244,7 +244,7 @@ export default class NetworkController extends EventEmitter {
     this._setNetworkClient(networkClient)
     // setup networkConfig
     const settings = {
-      ticker: 'ETH'
+      ticker: 'ETH',
     }
     this.networkConfig.putState(settings)
   }
@@ -263,11 +263,11 @@ export default class NetworkController extends EventEmitter {
       chainId,
       rpcUrl,
       ticker: ticker || 'ETH',
-      nickname
+      nickname,
     }
     // setup networkConfig
     let settings = {
-      network: chainId
+      network: chainId,
     }
     settings = { ...settings, ...networks.networkList.rpc }
     this.networkConfig.putState(settings)
@@ -314,7 +314,7 @@ function createInfuraClient({ network }) {
     createBlockReRefMiddleware({ blockTracker, provider: infuraProvider }),
     createRetryOnEmptyMiddleware({ blockTracker, provider: infuraProvider }),
     createBlockTrackerInspectorMiddleware({ blockTracker }),
-    infuraMiddleware
+    infuraMiddleware,
   ])
   return { networkMiddleware, blockTracker }
 }
@@ -349,7 +349,7 @@ function createNetworkAndChainIdMiddleware({ network }) {
 
   return createScaffoldMiddleware({
     eth_chainId: chainId,
-    net_version: netId
+    net_version: netId,
   })
 }
 
@@ -361,7 +361,7 @@ function createLocalhostClient() {
   const networkMiddleware = mergeMiddleware([
     createBlockRefRewriteMiddleware({ blockTracker }),
     createBlockTrackerInspectorMiddleware({ blockTracker }),
-    fetchMiddleware
+    fetchMiddleware,
   ])
   return { networkMiddleware, blockTracker }
 }
@@ -376,7 +376,7 @@ function createJsonRpcClient({ rpcUrl }) {
     createBlockCacheMiddleware({ blockTracker }),
     createInflightMiddleware(),
     createBlockTrackerInspectorMiddleware({ blockTracker }),
-    fetchMiddleware
+    fetchMiddleware,
   ])
   return { networkMiddleware, blockTracker }
 }

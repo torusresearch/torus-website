@@ -16,7 +16,7 @@ const accountImporter = {
   },
 
   strategies: {
-    'Private Key': privateKey => {
+    'Private Key': (privateKey) => {
       if (!privateKey) {
         throw new Error('Cannot import an empty key.')
       }
@@ -44,8 +44,8 @@ const accountImporter = {
       }
 
       return walletToPrivateKey(wallet)
-    }
-  }
+    },
+  },
 }
 
 function walletToPrivateKey(wallet) {

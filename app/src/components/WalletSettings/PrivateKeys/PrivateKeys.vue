@@ -94,7 +94,7 @@
                 <div class="subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.showPrivateKey') }}</div>
                 <v-layout v-if="isShowPrivateKey" wrap align-center justify-space-between class="mt-2">
                   <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12' : ''">
-                    <div class="text_2--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''" style="word-break: break-all">
+                    <div class="text_2--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : ''" style="word-break: break-all;">
                       {{ selectedKey }}
                     </div>
                   </v-flex>
@@ -153,8 +153,8 @@ export default {
       isLoadingDownloadWallet: false,
       downloadFormValid: true,
       rules: {
-        required: value => !!value || 'Required.'
-      }
+        required: (value) => !!value || 'Required.',
+      },
     }
   },
   computed: {
@@ -163,7 +163,7 @@ export default {
     },
     selectedKey() {
       return this.$store.state.wallet[this.selectedAddress]
-    }
+    },
   },
   methods: {
     onClose() {
@@ -187,7 +187,7 @@ export default {
         } else {
           const worker = new WalletWorker()
           worker.postMessage({ type: 'createWallet', data: [this.keyStorePassword, this.selectedKey] })
-          worker.addEventListener('message', ev => {
+          worker.addEventListener('message', (ev) => {
             const finishedWallet = ev.data
             this.exportKeyStoreFile(finishedWallet)
             this.isLoadingDownloadWallet = false
@@ -216,10 +216,10 @@ export default {
       const string = typeof string_ === 'object' ? JSON.stringify(string_) : string_
       if (string === null) return ''
       const blob = new Blob([string], {
-        type: mime
+        type: mime,
       })
       return window.URL.createObjectURL(blob)
-    }
-  }
+    },
+  },
 }
 </script>

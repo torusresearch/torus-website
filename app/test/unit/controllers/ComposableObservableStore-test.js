@@ -29,7 +29,7 @@ describe('ComposableObservableStore', () => {
     const barStore = new ObservableStore({ bar: 'bar' })
     const store = new ComposableObservableStore(null, {
       FooStore: fooStore,
-      BarStore: barStore
+      BarStore: barStore,
     })
     assert.deepEqual(store.getFlatState(), { foo: 'foo', bar: 'bar' })
   })

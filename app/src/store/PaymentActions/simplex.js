@@ -18,10 +18,10 @@ export default {
         digital_currency: payload.selectedCryptoCurrency,
         fiat_currency: payload.selectedCurrency,
         requested_currency: payload.selectedCurrency,
-        requested_amount: +parseFloat(payload.fiatValue)
+        requested_amount: +parseFloat(payload.fiatValue),
       },
       {
-        Authorization: `Bearer ${state.jwtToken}`
+        Authorization: `Bearer ${state.jwtToken}`,
       }
     )
   },
@@ -42,7 +42,7 @@ export default {
         window.btoa(
           JSON.stringify({
             instanceId: torus.instanceId,
-            provider: SIMPLEX
+            provider: SIMPLEX,
           })
         )
       )
@@ -50,31 +50,31 @@ export default {
         {
           'g-recaptcha-response': '',
           account_details: {
-            app_end_user_id: payload.currentOrder.user_id
+            app_end_user_id: payload.currentOrder.user_id,
           },
           return_url: `${config.redirect_uri}?state=${instanceState}`,
           transaction_details: {
             payment_details: {
               fiat_total_amount: {
                 currency: payload.currentOrder.fiat_money.currency,
-                amount: payload.currentOrder.fiat_money.total_amount
+                amount: payload.currentOrder.fiat_money.total_amount,
               },
               requested_digital_amount: {
                 currency: payload.currentOrder.digital_money.currency,
-                amount: payload.currentOrder.digital_money.amount
+                amount: payload.currentOrder.digital_money.amount,
               },
               destination_wallet: {
                 currency: payload.currentOrder.digital_money.currency,
-                address: payload.selectedAddress || state.selectedAddress
-              }
-            }
-          }
+                address: payload.selectedAddress || state.selectedAddress,
+              },
+            },
+          },
         },
         {
-          Authorization: `Bearer ${state.jwtToken}`
+          Authorization: `Bearer ${state.jwtToken}`,
         }
       )
-        .then(result => {
+        .then((result) => {
           const {
             version,
             partner,
@@ -88,7 +88,7 @@ export default {
             fiat_total_amount_currency,
             digital_total_amount_amount,
             digital_total_amount_currency,
-            payment_post_url
+            payment_post_url,
           } = result.result
           return dispatch('postSimplexOrder', {
             preopenInstanceId,
@@ -106,12 +106,12 @@ export default {
               'fiat_total_amount[amount]': fiat_total_amount_amount,
               'fiat_total_amount[currency]': fiat_total_amount_currency,
               'digital_total_amount[amount]': digital_total_amount_amount,
-              'digital_total_amount[currency]': digital_total_amount_currency
-            }
+              'digital_total_amount[currency]': digital_total_amount_currency,
+            },
           })
         })
-        .then(response => resolve(response))
-        .catch(error => reject(error))
+        .then((response) => resolve(response))
+        .catch((error) => reject(error))
     })
   },
   postSimplexOrder(context, { path, params, method = 'post', preopenInstanceId }) {
@@ -137,10 +137,10 @@ export default {
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
 
-      bc.addEventListener('message', ev => {
+      bc.addEventListener('message', (ev) => {
         try {
           const {
-            instanceParams: { provider }
+            instanceParams: { provider },
           } = ev.data || {}
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
@@ -163,12 +163,12 @@ export default {
             form.submit()
           }, 2000)
         })
-        .catch(error => log.error(error))
+        .catch((error) => log.error(error))
 
       simplexWindow.once('close', () => {
         bc.close()
         reject(new Error('user closed simplex popup'))
       })
     })
-  }
+  },
 }

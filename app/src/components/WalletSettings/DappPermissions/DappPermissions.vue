@@ -45,12 +45,12 @@ import DappPermissionView from '../DappPermissionView'
 export default {
   components: {
     DappPermissionView,
-    DappPermissionEdit
+    DappPermissionEdit,
   },
   data() {
     return {
       editMode: false,
-      permissions: []
+      permissions: [],
     }
   },
   methods: {
@@ -59,14 +59,14 @@ export default {
     },
     addPermission() {
       this.permissions.push({
-        isEdit: false
+        isEdit: false,
       })
     },
     onDeletePermission(target) {
       const targetIndex = this.permissions.indexOf(target)
       this.permissions.splice(targetIndex, 1)
-    }
-  }
+    },
+  },
 }
 </script>
 

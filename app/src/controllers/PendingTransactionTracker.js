@@ -39,7 +39,7 @@ class PendingTransactionTracker extends EventEmitter {
     const nonceGlobalLock = await this.nonceTracker.getGlobalLock()
     try {
       const pendingTxs = this.getPendingTransactions()
-      await Promise.all(pendingTxs.map(txMeta => this._checkPendingTx(txMeta)))
+      await Promise.all(pendingTxs.map((txMeta) => this._checkPendingTx(txMeta)))
     } catch (error) {
       log.error('PendingTransactionTracker - Error updating pending transactions')
       log.error(error)
@@ -56,8 +56,8 @@ class PendingTransactionTracker extends EventEmitter {
     const pending = this.getPendingTransactions()
     // only try resubmitting if their are transactions to resubmit
     if (pending.length === 0) return
-    pending.forEach(txMeta => {
-      this._resubmitTx(txMeta, blockNumber).catch(error => {
+    pending.forEach((txMeta) => {
+      this._resubmitTx(txMeta, blockNumber).catch((error) => {
         /*
       Dont marked as failed if the error is a "known" transaction warning
       "there is already a transaction with the same sender-nonce
@@ -82,7 +82,7 @@ class PendingTransactionTracker extends EventEmitter {
         // encountered real error - transition to error state
         txMeta.warning = {
           error: errorMessage,
-          message: 'There was an error when resubmitting this transaction.'
+          message: 'There was an error when resubmitting this transaction.',
         }
         this.emit('tx:warning', txMeta, error)
       })
@@ -189,7 +189,7 @@ class PendingTransactionTracker extends EventEmitter {
     } catch (error) {
       txMeta.warning = {
         error: error.message,
-        message: 'There was a problem loading this transaction.'
+        message: 'There was a problem loading this transaction.',
       }
       this.emit('tx:warning', txMeta, error)
     }
@@ -204,7 +204,7 @@ class PendingTransactionTracker extends EventEmitter {
 
   async _checkIftxWasDropped(txMeta, { blockNumber }) {
     const {
-      txParams: { nonce, from }
+      txParams: { nonce, from },
     } = txMeta
     const nextNonce = await this.query.getTransactionCount(from)
     if (!blockNumber && parseInt(nextNonce.toString(16), 16) > parseInt(nonce, 16)) {
@@ -222,7 +222,7 @@ class PendingTransactionTracker extends EventEmitter {
   async _checkIfNonceIsTaken(txMeta) {
     const address = txMeta.txParams.from
     const completed = this.getCompletedTransactions(address)
-    const sameNonce = completed.filter(otherMeta => {
+    const sameNonce = completed.filter((otherMeta) => {
       if (otherMeta.id === txMeta.id) {
         return false
       }

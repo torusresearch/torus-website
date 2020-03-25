@@ -58,7 +58,6 @@
       "vue/arrow-spacing": 2,
       "vue/block-spacing": 2,
       "vue/brace-style": 2,
-      "vue/comma-dangle": 2,
       "vue/component-definition-name-casing": 2,
       "vue/component-name-in-template-casing": 2,
       "vue/component-tags-order": [
@@ -78,16 +77,8 @@
       "vue/v-on-function-call": 2,
       "vue/valid-v-bind-sync": 2,
       "vue/valid-v-slot": 2,
-      "arrow-parens": [2, "as-needed"],
       "object-curly-newline": 0,
       "semi": [2, "never"],
-      "comma-dangle": [
-        2,
-        {
-          "arrays": "ignore",
-          "objects": "ignore"
-        }
-      ],
       "vue/max-attributes-per-line": [
         2,
         {

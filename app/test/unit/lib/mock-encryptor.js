@@ -31,5 +31,5 @@ module.exports = {
 
   getRandomValues() {
     return 'SOO RANDO!!!1'
-  }
+  },
 }

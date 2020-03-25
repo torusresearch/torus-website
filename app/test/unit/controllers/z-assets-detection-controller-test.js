@@ -23,25 +23,25 @@ describe('AssetsDetectionController', () => {
   beforeEach(() => {
     network = new NetworkController()
     const networkControllerProviderConfig = {
-      getAccounts: noop
+      getAccounts: noop,
     }
     network.initializeProvider(networkControllerProviderConfig)
     network.setProviderType(MAINNET)
 
     assetsContract = new AssetsContractController({
-      provider: network._providerProxy
+      provider: network._providerProxy,
     })
     assets = new AssetsController({
       selectedAddress: TEST_ADDRESS,
       assetContractController: assetsContract,
-      network
+      network,
     })
     assets.setJwtToken('hello')
 
     assetsDetection = new AssetsDetectionController({
       network,
       assetContractController: assetsContract,
-      assetController: assets
+      assetController: assets,
     })
 
     nock(OPEN_SEA_API)
@@ -52,8 +52,8 @@ describe('AssetsDetectionController', () => {
           image_url: 'url',
           name: 'Name',
           symbol: 'FOO',
-          total_supply: 0
-        }
+          total_supply: 0,
+        },
       })
 
     nock(OPEN_SEA_API)
@@ -69,15 +69,15 @@ describe('AssetsDetectionController', () => {
                 symbol: 'FF',
                 image_url: 'url FF',
                 total_supply: 10,
-                description: 'Description FF'
+                description: 'Description FF',
               },
               description: 'Description 2577',
               image_original_url: 'image/2577.png',
               name: 'ID 2577',
-              token_id: '2577'
-            }
-          ]
-        }
+              token_id: '2577',
+            },
+          ],
+        },
       })
 
     nock(OPEN_SEA_API)
@@ -92,12 +92,12 @@ describe('AssetsDetectionController', () => {
                 symbol: 'FF',
                 image_url: 'url FF',
                 total_supply: 10,
-                description: 'Description FF'
+                description: 'Description FF',
               },
               description: 'Description 2577',
               image_original_url: 'image/2577.png',
               name: 'ID 2577',
-              token_id: '2577'
+              token_id: '2577',
             },
             {
               asset_contract: {
@@ -106,15 +106,15 @@ describe('AssetsDetectionController', () => {
                 symbol: 'FF',
                 image_url: 'url FF',
                 total_supply: 10,
-                description: 'Description FF'
+                description: 'Description FF',
               },
               description: 'Description 2574',
               image_original_url: 'image/2574.png',
               name: 'ID 2574',
-              token_id: '2574'
-            }
-          ]
-        }
+              token_id: '2574',
+            },
+          ],
+        },
       })
 
     nock(OPEN_SEA_API)
@@ -125,8 +125,8 @@ describe('AssetsDetectionController', () => {
           image_url: 'url HH',
           name: 'Name HH',
           symbol: 'HH',
-          total_supply: 10
-        }
+          total_supply: 10,
+        },
       })
 
     nock(OPEN_SEA_API)
@@ -149,12 +149,12 @@ describe('AssetsDetectionController', () => {
                 symbol: 'GG',
                 image_url: 'url GG',
                 total_supply: 10,
-                description: 'Description GG'
+                description: 'Description GG',
               },
               description: 'Description 2577',
               image_original_url: 'image/2577.png',
               name: 'ID 2577',
-              token_id: '2577'
+              token_id: '2577',
             },
             {
               asset_contract: {
@@ -163,12 +163,12 @@ describe('AssetsDetectionController', () => {
                 symbol: 'II',
                 image_url: 'url II',
                 total_supply: 10,
-                description: 'Description II'
+                description: 'Description II',
               },
               description: 'Description 2578',
               image_original_url: 'image/2578.png',
               name: 'ID 2578',
-              token_id: '2578'
+              token_id: '2578',
             },
             {
               asset_contract: {
@@ -177,15 +177,15 @@ describe('AssetsDetectionController', () => {
                 symbol: 'HH',
                 image_url: 'url HH',
                 total_supply: 10,
-                description: 'Description HH'
+                description: 'Description HH',
               },
               description: 'Description 2574',
               image_original_url: 'image/2574.png',
               name: 'ID 2574',
-              token_id: '2574'
-            }
-          ]
-        }
+              token_id: '2574',
+            },
+          ],
+        },
       })
   })
 
@@ -195,11 +195,11 @@ describe('AssetsDetectionController', () => {
   })
 
   it('should poll and detect assets on interval while on mainnet', () =>
-    new Promise(resolve => {
+    new Promise((resolve) => {
       const clock = sandbox.useFakeTimers()
       const localNetwork = new NetworkController()
       const networkControllerProviderConfig = {
-        getAccounts: noop
+        getAccounts: noop,
       }
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(MAINNET)
@@ -222,11 +222,11 @@ describe('AssetsDetectionController', () => {
   })
 
   it('should not autodetect while not on mainnet', () =>
-    new Promise(resolve => {
+    new Promise((resolve) => {
       const clock = sandbox.useFakeTimers()
       const localNetwork = new NetworkController()
       const networkControllerProviderConfig = {
-        getAccounts: noop
+        getAccounts: noop,
       }
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(ROPSTEN)
@@ -241,11 +241,11 @@ describe('AssetsDetectionController', () => {
     }))
 
   it('should start detection when selected address changes', () =>
-    new Promise(resolve => {
+    new Promise((resolve) => {
       const clock = sandbox.useFakeTimers()
       const localNetwork = new NetworkController()
       const networkControllerProviderConfig = {
-        getAccounts: noop
+        getAccounts: noop,
       }
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(MAINNET)
@@ -260,11 +260,11 @@ describe('AssetsDetectionController', () => {
     }))
 
   it('should restart detection', () =>
-    new Promise(resolve => {
+    new Promise((resolve) => {
       const clock = sandbox.useFakeTimers()
       const localNetwork = new NetworkController()
       const networkControllerProviderConfig = {
-        getAccounts: noop
+        getAccounts: noop,
       }
       localNetwork.initializeProvider(networkControllerProviderConfig)
       localNetwork.setProviderType(MAINNET)
@@ -294,22 +294,22 @@ describe('AssetsDetectionController', () => {
         tokenId: 2577,
         name: 'ID 2577',
         image: 'url GG',
-        description: 'Description 2577'
+        description: 'Description 2577',
       },
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04ii',
         tokenId: 2578,
         name: 'ID 2578',
         image: 'url II',
-        description: 'Description 2578'
+        description: 'Description 2578',
       },
       {
         address: '0x1d963688FE2209A98db35c67A041524822CF04hh',
         tokenId: 2574,
         name: 'ID 2574',
         image: 'url HH',
-        description: 'Description 2574'
-      }
+        description: 'Description 2574',
+      },
     ])
   })
 

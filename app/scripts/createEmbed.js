@@ -6,7 +6,7 @@ const log = require('loglevel')
 
 try {
   const bundler = browserify(require.resolve('@toruslabs/torus-embed/public/index.js'), {
-    fullPaths: true
+    fullPaths: true,
   })
 
   if (process.env.TORUS_BUILD_ENV !== 'development') {
@@ -14,7 +14,7 @@ try {
   }
   bundler.transform(
     envify({
-      TORUS_BUILD_ENV: process.env.TORUS_BUILD_ENV
+      TORUS_BUILD_ENV: process.env.TORUS_BUILD_ENV,
     })
   )
 

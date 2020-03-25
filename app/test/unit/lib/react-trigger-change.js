@@ -33,7 +33,7 @@ module.exports = function reactTriggerChange(node) {
     text: true,
     time: true,
     url: true,
-    week: true
+    week: true,
   }
   const nodeName = node.nodeName.toLowerCase()
   const { type } = node

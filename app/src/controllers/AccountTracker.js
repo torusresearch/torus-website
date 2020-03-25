@@ -19,7 +19,7 @@ import {
   SINGLE_CALL_BALANCES_ADDRESS,
   SINGLE_CALL_BALANCES_ADDRESS_KOVAN,
   SINGLE_CALL_BALANCES_ADDRESS_RINKEBY,
-  SINGLE_CALL_BALANCES_ADDRESS_ROPSTEN
+  SINGLE_CALL_BALANCES_ADDRESS_ROPSTEN,
 } from '../utils/contractAddresses'
 import { KOVAN_CODE, MAINNET_CODE, RINKEBY_CODE, ROPSTEN_CODE, ZERO_ADDRESS } from '../utils/enums'
 
@@ -45,7 +45,7 @@ export default class AccountTracker {
   constructor(options = {}) {
     const initState = {
       accounts: {},
-      currentBlockGasLimit: ''
+      currentBlockGasLimit: '',
     }
     this.store = new ObservableStore(initState)
 
@@ -54,7 +54,7 @@ export default class AccountTracker {
     this._blockTracker = options.blockTracker
     // blockTracker.currentBlock may be null
     this._currentBlockNumber = this._blockTracker.getCurrentBlock()
-    this._blockTracker.once('latest', blockNumber => {
+    this._blockTracker.once('latest', (blockNumber) => {
       this._currentBlockNumber = blockNumber
     })
     // bind function for easier listener syntax
@@ -94,14 +94,14 @@ export default class AccountTracker {
     const locals = Object.keys(accounts)
 
     const accountsToAdd = []
-    addresses.forEach(upstream => {
+    addresses.forEach((upstream) => {
       if (!locals.includes(upstream)) {
         accountsToAdd.push(upstream)
       }
     })
 
     const accountsToRemove = []
-    locals.forEach(local => {
+    locals.forEach((local) => {
       if (!addresses.includes(local)) {
         accountsToRemove.push(local)
       }
@@ -121,7 +121,7 @@ export default class AccountTracker {
   addAccounts(addresses) {
     const { accounts } = this.store.getState()
     // add initial state for addresses
-    addresses.forEach(address => {
+    addresses.forEach((address) => {
       accounts[address] = {}
     })
     // save accounts state
@@ -140,7 +140,7 @@ export default class AccountTracker {
   removeAccount(addresses) {
     const { accounts } = this.store.getState()
     // remove each state object
-    addresses.forEach(address => {
+    addresses.forEach((address) => {
       delete accounts[address]
     })
     // save accounts state

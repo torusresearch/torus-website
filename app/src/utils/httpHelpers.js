@@ -17,18 +17,18 @@ export const post = (url = '', data = {}, options_ = {}) => {
     mode: 'cors',
     cache: 'no-cache',
     headers: {
-      'Content-Type': 'application/json; charset=utf-8'
+      'Content-Type': 'application/json; charset=utf-8',
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   }
   const options = {
     ...defaultOptions,
     ...options_,
-    ...{ method: 'POST' }
+    ...{ method: 'POST' },
   }
   return promiseTimeout(
     30000,
-    fetch(url, options).then(response => {
+    fetch(url, options).then((response) => {
       if (response.ok) {
         return response.json()
       }
@@ -42,15 +42,15 @@ export const remove = (url = '', _data = {}, options_ = {}) => {
     mode: 'cors',
     cache: 'no-cache',
     headers: {
-      'Content-Type': 'application/json; charset=utf-8'
-    }
+      'Content-Type': 'application/json; charset=utf-8',
+    },
   }
   const options = {
     ...defaultOptions,
     ...options_,
-    ...{ method: 'DELETE' }
+    ...{ method: 'DELETE' },
   }
-  return fetch(url, options).then(response => {
+  return fetch(url, options).then((response) => {
     if (response.ok) {
       return response.json()
     }
@@ -61,14 +61,14 @@ export const remove = (url = '', _data = {}, options_ = {}) => {
 export const get = (url = '', options_ = {}) => {
   const defaultOptions = {
     mode: 'cors',
-    cache: 'no-cache'
+    cache: 'no-cache',
   }
   const options = {
     ...defaultOptions,
     ...options_,
-    ...{ method: 'GET' }
+    ...{ method: 'GET' },
   }
-  return fetch(url, options).then(response => {
+  return fetch(url, options).then((response) => {
     if (response.ok) {
       return response.json()
     }
@@ -81,16 +81,16 @@ export const patch = (url = '', data = {}, options_ = {}) => {
     mode: 'cors',
     cache: 'no-cache',
     headers: {
-      'Content-Type': 'application/json; charset=utf-8'
+      'Content-Type': 'application/json; charset=utf-8',
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   }
   const options = {
     ...defaultOptions,
     ...options_,
-    ...{ method: 'PATCH' }
+    ...{ method: 'PATCH' },
   }
-  return fetch(url, options).then(response => {
+  return fetch(url, options).then((response) => {
     if (response.ok) {
       return response.json()
     }
@@ -102,7 +102,7 @@ export const generateJsonRPCObject = (method, parameters) => ({
   jsonrpc: '2.0',
   method,
   id: 10,
-  params: parameters
+  params: parameters,
 })
 
 export const getPastOrders = (parameters = {}, headers) => {
@@ -112,11 +112,11 @@ export const getPastOrders = (parameters = {}, headers) => {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        ...headers
-      }
+        ...headers,
+      },
     }
     const url = new URL(`${config.commonApiHost}/transaction`)
-    Object.keys(parameters).forEach(key => url.searchParams.append(key, parameters[key]))
+    Object.keys(parameters).forEach((key) => url.searchParams.append(key, parameters[key]))
     return get(url.href, options)
   } catch (error) {
     log.error(error)
@@ -132,6 +132,6 @@ export const promiseRace = (url, options, timeout) => {
       setTimeout(() => {
         reject(new Error('timeout'))
       }, timeout)
-    })
+    }),
   ])
 }

@@ -10,11 +10,11 @@ const getQuote = (parameters = {}, headers) => {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        ...headers
-      }
+        ...headers,
+      },
     }
     const url = new URL(`${config.wyreApiHost}/quote`)
-    Object.keys(parameters).forEach(key => url.searchParams.append(key, parameters[key]))
+    Object.keys(parameters).forEach((key) => url.searchParams.append(key, parameters[key]))
     return get(url.href, options)
   } catch (error) {
     log.error(error)

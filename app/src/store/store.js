@@ -13,7 +13,7 @@ import {
   TX_MESSAGE,
   TX_PERSONAL_MESSAGE,
   TX_TRANSACTION,
-  TX_TYPED_MESSAGE
+  TX_TYPED_MESSAGE,
 } from '../utils/enums'
 import { post } from '../utils/httpHelpers'
 import { notifyUser } from '../utils/notifications'
@@ -32,7 +32,7 @@ if (storageAvailable('sessionStorage')) {
   vuexPersist = new VuexPersistence({
     key: 'torus-app',
     storage: window.sessionStorage,
-    reducer: state => ({
+    reducer: (state) => ({
       userInfo: state.userInfo,
       userInfoAccess: state.userInfoAccess,
       wallet: state.wallet,
@@ -48,9 +48,9 @@ if (storageAvailable('sessionStorage')) {
       theme: state.theme,
       locale: state.locale,
       billboard: state.billboard,
-      contacts: state.contacts
+      contacts: state.contacts,
       // pastTransactions: state.pastTransactions
-    })
+    }),
   })
 }
 
@@ -89,8 +89,8 @@ const VuexStore = new Vuex.Store({
       } else {
         confirmHandler.open(handleConfirm, handleDeny)
       }
-    }
-  }
+    },
+  },
 })
 
 function getCurrencyMultiplier() {
@@ -120,7 +120,7 @@ function handleConfirm(ev) {
     torusController.signTypedMessage(msgParams)
   } else if (ev.data.txType === TX_TRANSACTION) {
     const { unApprovedTransactions } = VuexStore.getters
-    let txMeta = unApprovedTransactions.find(x => x.id === ev.data.id)
+    let txMeta = unApprovedTransactions.find((x) => x.id === ev.data.id)
     log.info('STANDARD TX PARAMS:', txMeta)
 
     if (ev.data.gasPrice) {
@@ -260,8 +260,8 @@ VuexStore.subscribe((mutation, state) => {
           }
 
           // Get asset name of the 721
-          const [contract] = state.assets[state.selectedAddress].filter(x => x.name.toLowerCase() === contractParams.name.toLowerCase()) || []
-          const [assetObject] = contract.assets.filter(x => x.tokenId.toString() === amountValue.value.toString()) || []
+          const [contract] = state.assets[state.selectedAddress].filter((x) => x.name.toLowerCase() === contractParams.name.toLowerCase()) || []
+          const [assetObject] = contract.assets.filter((x) => x.tokenId.toString() === amountValue.value.toString()) || []
           assetName = assetObject.name || ''
 
           symbol = assetName
@@ -309,9 +309,9 @@ VuexStore.subscribe((mutation, state) => {
           selected_currency: state.selectedCurrency,
           status: 'submitted',
           network: state.networkType.host,
-          transaction_hash: hash
+          transaction_hash: hash,
         }
-        if (state.pastTransactions.findIndex(x => x.transaction_hash === txObject.transaction_hash && x.network === txObject.network) === -1) {
+        if (state.pastTransactions.findIndex((x) => x.transaction_hash === txObject.transaction_hash && x.network === txObject.network) === -1) {
           // User notification
           try {
             notifyUser(getEtherScanHashLink(hash, state.networkType.host))
@@ -322,14 +322,14 @@ VuexStore.subscribe((mutation, state) => {
           post(`${config.api}/transaction`, txObject, {
             headers: {
               Authorization: `Bearer ${state.jwtToken}`,
-              'Content-Type': 'application/json; charset=utf-8'
-            }
+              'Content-Type': 'application/json; charset=utf-8',
+            },
           })
-            .then(response => {
+            .then((response) => {
               if (response.response.length > 0) VuexStore.commit('patchPastTransactions', { ...txObject, id: response.response[0] })
               log.info('successfully added', response)
             })
-            .catch(error => log.error(error, 'unable to insert transaction'))
+            .catch((error) => log.error(error, 'unable to insert transaction'))
         }
       }
     }

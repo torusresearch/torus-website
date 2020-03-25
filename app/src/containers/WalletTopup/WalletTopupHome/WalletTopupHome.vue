@@ -14,7 +14,7 @@
         :selected-provider="selectedProvider"
         :providers="providers"
         @onSelectProvider="
-          selected => {
+          (selected) => {
             selectedProvider = selected
           }
         "
@@ -42,25 +42,25 @@ import { getPaymentProviders } from '../../../utils/utils'
 
 export default {
   components: {
-    TopupProviders
+    TopupProviders,
   },
   data() {
     return {
-      selectedProvider: ''
+      selectedProvider: '',
     }
   },
   computed: {
     providers() {
       return getPaymentProviders(this.$store.state.theme)
-    }
+    },
   },
   created() {
     const routerPath = this.$router.currentRoute.path
-    const foundPath = this.providers.find(x => x.link === routerPath)
+    const foundPath = this.providers.find((x) => x.link === routerPath)
     this.selectedProvider = foundPath ? foundPath.name : ''
   },
   mounted() {
     this.$vuetify.goTo(0)
-  }
+  },
 }
 </script>

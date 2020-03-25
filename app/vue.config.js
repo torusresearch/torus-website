@@ -13,22 +13,22 @@ module.exports = {
     hotOnly: false,
     headers: {
       'Access-Control-Allow-Origin': '*',
-      'Cache-Control': 'max-age=3600'
+      'Cache-Control': 'max-age=3600',
     },
     historyApiFallback: {
       rewrites: [
         { from: /redirect/, to: '/redirect.html' },
-        { from: /./, to: '/index.html' }
-      ]
-    }
+        { from: /./, to: '/index.html' },
+      ],
+    },
   },
   css: {
-    extract: false
+    extract: false,
   },
   // Adds support for Edge browser, IE 11 and Safari 9
   transpileDependencies: ['vuetify', 'obs-store'],
 
-  configureWebpack: config => {
+  configureWebpack: (config) => {
     if (process.env.NODE_ENV === 'production') {
       // Get the current options from the Terser Plugin instance that vue-cli-service added:
       const { options } = config.optimization.minimizer[0]
@@ -41,7 +41,7 @@ module.exports = {
       config.optimization.minimizer[0] = new TerserPlugin(options)
     }
   },
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     config.resolve.alias.set('bn.js', 'fork-bn.js')
     if (process.env.NODE_ENV === 'production') {
       config
@@ -78,7 +78,7 @@ module.exports = {
       swSrc: 'sw.js',
       swDest: 'service-worker.js',
       precacheManifestFilename: 'precache-manifest.[manifestHash].js',
-      exclude: [/^.*images\/logos\/.*$/]
+      exclude: [/^.*images\/logos\/.*$/],
     },
     mainfestPath:
       process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging'
@@ -100,7 +100,7 @@ module.exports = {
               ? `/${version}/img/icons/android-chrome-192x192.png`
               : './img/icons/android-chrome-192x192.png',
           sizes: '192x192',
-          type: 'image/png'
+          type: 'image/png',
         },
         {
           src:
@@ -108,9 +108,10 @@ module.exports = {
               ? `/${version}/img/icons/android-chrome-512x512.png`
               : './img/icons/android-chrome-192x192.png',
           sizes: '512x512',
-          type: 'image/png'
-        }
-      ]
-    }
-  }
+          type: 'image/png',
+        },
+      ],
+    },
+  },
+  parallel: !process.env.CIRCLECI,
 }

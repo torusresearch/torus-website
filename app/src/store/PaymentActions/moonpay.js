@@ -16,7 +16,7 @@ export default {
     return getQuote({
       digital_currency: payload.selectedCryptoCurrency && payload.selectedCryptoCurrency.toLowerCase(),
       fiat_currency: payload.selectedCurrency && payload.selectedCurrency.toLowerCase(),
-      requested_amount: +parseFloat(payload.fiatValue)
+      requested_amount: +parseFloat(payload.fiatValue),
     })
   },
   fetchMoonpayOrder({ state, dispatch }, { currentOrder, colorCode, preopenInstanceId: preopenInstanceIdPayload, selectedAddress }) {
@@ -36,7 +36,7 @@ export default {
         window.btoa(
           JSON.stringify({
             instanceId: torus.instanceId,
-            provider: MOONPAY
+            provider: MOONPAY,
           })
         )
       )
@@ -51,7 +51,7 @@ export default {
         email: state.userInfo.email || undefined,
         externalCustomerId: selectedAddress || state.selectedAddress,
         redirectURL: `${config.redirect_uri}?state=${instanceState}`,
-        showWalletAddressForm: true
+        showWalletAddressForm: true,
       }
 
       const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(parameters)))
@@ -59,8 +59,8 @@ export default {
 
       getSignature({ url: encodeURIComponent(url) })
         .then(({ signature }) => dispatch('postMoonpayOrder', { finalUrl: `${url}&signature=${encodeURIComponent(signature)}`, preopenInstanceId }))
-        .then(response => resolve(response))
-        .catch(error => reject(error))
+        .then((response) => resolve(response))
+        .catch((error) => reject(error))
     })
   },
   postMoonpayOrder(context, { finalUrl, preopenInstanceId }) {
@@ -68,11 +68,11 @@ export default {
       const moonpayWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-      bc.addEventListener('message', ev => {
+      bc.addEventListener('message', (ev) => {
         try {
           const {
             instanceParams: { provider },
-            queryParams: { transactionStatus = '' } = {}
+            queryParams: { transactionStatus = '' } = {},
           } = ev.data || {}
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
@@ -97,5 +97,5 @@ export default {
         reject(new Error('user closed moonpay popup'))
       })
     })
-  }
+  },
 }

@@ -6,7 +6,7 @@
     x="0px"
     y="0px"
     viewBox="0 0 40 40"
-    style="enable-background:new 0 0 40 40;"
+    style="enable-background: new 0 0 40 40;"
     xml:space="preserve"
   >
     <g transform="translate(0.000000, 14.000000)">

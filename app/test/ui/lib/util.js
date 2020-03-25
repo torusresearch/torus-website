@@ -26,7 +26,7 @@ const valueTable = {
   kether: '0.001',
   mether: '0.000001',
   gether: '0.000000001',
-  tether: '0.000000000001'
+  tether: '0.000000000001',
 }
 const bnTable = {}
 for (const currency in valueTable) {
@@ -35,7 +35,7 @@ for (const currency in valueTable) {
 
 function valuesFor(object) {
   if (!object) return []
-  return Object.keys(object).map(key => object[key])
+  return Object.keys(object).map((key) => object[key])
 }
 
 function addressSummary(address, firstSegLength = 10, lastSegLength = 4, includeHex = true) {
@@ -318,5 +318,5 @@ module.exports = {
   allNull,
   getTokenAddressFromTokenObject,
   checksumAddress,
-  addressSlicer
+  addressSlicer,
 }

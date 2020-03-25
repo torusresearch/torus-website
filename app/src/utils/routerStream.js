@@ -6,7 +6,7 @@ export default (...arguments_) => {
   let sources = []
   const routerMapping = {}
   const output = new PassThrough({
-    objectMode: true
+    objectMode: true,
   })
 
   output.setMaxListeners(0)
@@ -22,7 +22,7 @@ export default (...arguments_) => {
     write(object, enc, callback) {
       route(object)
       callback()
-    }
+    },
   })
 
   arguments_.forEach(add)
@@ -44,7 +44,7 @@ export default (...arguments_) => {
       return this
     }
     const mapperPassthrough = new PassThrough({ objectMode: true })
-    mapperPassthrough.on('data', object => {
+    mapperPassthrough.on('data', (object) => {
       log.info('MAPPER MAPPING OBJ', object)
       if (object.id) {
         routerMapping[object.id] = source
@@ -62,7 +62,7 @@ export default (...arguments_) => {
   }
 
   function remove(source) {
-    sources = sources.filter(it => it !== source)
+    sources = sources.filter((it) => it !== source)
     if (sources.length === 0 && output.readable) {
       output.end()
     }

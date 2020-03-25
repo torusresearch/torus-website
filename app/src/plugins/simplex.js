@@ -10,8 +10,8 @@ const postQuote = (requestObject, headers) => {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        ...headers
-      }
+        ...headers,
+      },
     }
     return post(`${config.simplexApiHost}/quote`, requestObject, options)
   } catch (error) {
@@ -26,8 +26,8 @@ const postOrder = (requestObject, headers) => {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        ...headers
-      }
+        ...headers,
+      },
     }
     return post(`${config.simplexApiHost}/order`, requestObject, options)
   } catch (error) {
@@ -39,7 +39,7 @@ const postOrder = (requestObject, headers) => {
 const getStatus = (userId, headers) => {
   try {
     return get(`${config.simplexApiHost}/status/${userId}`, {
-      headers
+      headers,
     })
   } catch (error) {
     log.error(error)

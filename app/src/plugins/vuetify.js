@@ -17,17 +17,17 @@ export default new Vuetify({
     dark: false,
     themes: {
       light: { ...themes[THEME_LIGHT_BLUE_NAME].theme },
-      dark: { ...themes[THEME_DARK_BLACK_NAME].theme }
+      dark: { ...themes[THEME_DARK_BLACK_NAME].theme },
     },
     options: {
-      customProperties: true
-    }
+      customProperties: true,
+    },
   },
   icons: {
-    values: iconsValues
+    values: iconsValues,
   },
   lang: {
     locales: languages,
-    current: userLanguage
-  }
+    current: userLanguage,
+  },
 })

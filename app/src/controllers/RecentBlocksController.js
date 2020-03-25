@@ -33,12 +33,12 @@ class RecentBlocksController {
 
     const initState = {
       recentBlocks: [],
-      ...options.initState
+      ...options.initState,
     }
     this.store = new ObservableStore(initState)
 
     // eslint-disable-next-line unicorn/consistent-function-scoping
-    const blockListner = async newBlockNumberHex => {
+    const blockListner = async (newBlockNumberHex) => {
       try {
         await this.processBlock(newBlockNumberHex)
       } catch (error) {
@@ -51,7 +51,7 @@ class RecentBlocksController {
       this.blockTracker.on('latest', blockListner)
       isListening = true
     }
-    networkController.on('networkDidChange', newType => {
+    networkController.on('networkDidChange', (newType) => {
       if (INFURA_PROVIDER_TYPES.includes(newType) && isListening) {
         this.blockTracker.removeListener('latest', blockListner)
       } else if (!INFURA_PROVIDER_TYPES.includes(type) && type !== 'loading' && !isListening) {
@@ -117,7 +117,7 @@ class RecentBlocksController {
   mapTransactionsToPrices(newBlock) {
     const block = {
       ...newBlock,
-      gasPrices: newBlock.transactions.map(tx => tx.gasPrice)
+      gasPrices: newBlock.transactions.map((tx) => tx.gasPrice),
     }
     delete block.transactions
     return block
@@ -134,13 +134,13 @@ class RecentBlocksController {
    * @returns {Promise<void>} Promises undefined
    */
   async backfill() {
-    this.blockTracker.once('latest', async blockNumberHex => {
+    this.blockTracker.once('latest', async (blockNumberHex) => {
       const currentBlockNumber = Number.parseInt(blockNumberHex, 16)
       const blocksToFetch = Math.min(currentBlockNumber, this.historyLength)
       const previousBlockNumber = currentBlockNumber - 1
       const targetBlockNumbers = new Array(blocksToFetch).fill().map((_, index) => previousBlockNumber - index)
       await Promise.all(
-        targetBlockNumbers.map(async targetBlockNumber => {
+        targetBlockNumbers.map(async (targetBlockNumber) => {
           try {
             const newBlock = await this.getBlockByNumber(targetBlockNumber)
             if (!newBlock) return

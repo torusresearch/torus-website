@@ -17,14 +17,14 @@ describe('Tests Wallet Activity Page', () => {
       devtools: config.isDevTools,
       timeout: config.launchTimeout,
       ignoreHTTPSErrors: config.ignoreHTTPSErrors,
-      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox'],
     })
 
     page = (await browser.pages())[0]
     await page.setDefaultTimeout(config.waitingTimeout)
     await page.setViewport({
       width: config.viewportWidth,
-      height: config.viewportHeight
+      height: config.viewportHeight,
     })
   })
 
@@ -44,7 +44,7 @@ describe('Tests Wallet Activity Page', () => {
     const textToSelect = RINKEBY_DISPLAY_NAME
     await selectItem(page, '#select-network', '.select-network-container', textToSelect)
     await page.waitFor(100)
-    const networkSelected = await page.$eval('.select-network-container .v-select__selection', element => element.textContent)
+    const networkSelected = await page.$eval('.select-network-container .v-select__selection', (element) => element.textContent)
 
     // check if textToSelect was selected
     assert.equal(textToSelect, networkSelected)
@@ -56,14 +56,14 @@ describe('Tests Wallet Activity Page', () => {
 
   it('Should show correct pagination', async () => {
     if (!config.isMobile) {
-      const transactionData = await page.$eval('.activity-table', element => ({
+      const transactionData = await page.$eval('.activity-table', (element) => ({
         count: parseInt(element.dataset.count),
-        perPage: parseInt(element.dataset.perPage)
+        perPage: parseInt(element.dataset.perPage),
       }))
 
       if (transactionData.count > transactionData.perPage) {
         const expectedPages = Math.ceil(transactionData.count / transactionData.perPage)
-        const actualPages = await page.$$eval('.activity-pagination .v-pagination__item', element => element.length)
+        const actualPages = await page.$$eval('.activity-pagination .v-pagination__item', (element) => element.length)
         assert.equal(expectedPages, actualPages)
       }
     }
@@ -73,7 +73,7 @@ describe('Tests Wallet Activity Page', () => {
     const textToSelect = ACTIVITY_ACTION_SEND
     await selectItem(page, '#transaction-selector', '.nav-selector.transaction', textToSelect)
     await page.waitFor(100)
-    const transactionFilter = await page.$eval('.nav-selector.transaction .v-select__selection', element => element.textContent)
+    const transactionFilter = await page.$eval('.nav-selector.transaction .v-select__selection', (element) => element.textContent)
 
     // check if textToSelect was selected
     assert.equal(textToSelect, transactionFilter)
@@ -82,7 +82,7 @@ describe('Tests Wallet Activity Page', () => {
     const negativeRowsCount = await page.evaluate(
       (textToSelect, config) =>
         [...document.querySelectorAll(`.activity-table${config.isMobile ? '-mobile' : ''} .transaction-action`)].filter(
-          element => element.textContent !== textToSelect
+          (element) => element.textContent !== textToSelect
         ).length,
       textToSelect,
       config
@@ -98,7 +98,7 @@ describe('Tests Wallet Activity Page', () => {
     const textToSelect = ACTIVITY_PERIOD_WEEK_ONE
     await selectItem(page, '#period-selector', '.nav-selector.period', textToSelect)
     await page.waitFor(100)
-    const dateFilter = await page.$eval('.nav-selector.period .v-select__selection', element => element.textContent)
+    const dateFilter = await page.$eval('.nav-selector.period .v-select__selection', (element) => element.textContent)
 
     // check if textToSelect was selected
     assert.equal(textToSelect, dateFilter)
@@ -109,7 +109,7 @@ describe('Tests Wallet Activity Page', () => {
     const negativeRowsCount = await page.evaluate(
       (oneWeekAgo, config) =>
         [...document.querySelectorAll(`.activity-table${config.isMobile ? '-mobile' : ''} .transaction-date`)].filter(
-          element => new Date(element.textContent) < new Date(oneWeekAgo)
+          (element) => new Date(element.textContent) < new Date(oneWeekAgo)
         ).length,
       oneWeekAgo,
       config

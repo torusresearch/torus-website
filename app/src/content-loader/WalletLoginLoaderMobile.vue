@@ -19,7 +19,7 @@ import { ContentLoader } from 'vue-content-loader'
 
 export default {
   components: {
-    ContentLoader
-  }
+    ContentLoader,
+  },
 }
 </script>

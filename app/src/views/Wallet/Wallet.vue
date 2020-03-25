@@ -13,8 +13,8 @@ import Navbar from '../../components/helpers/Navbar'
 
 export default {
   components: {
-    Navbar
-  }
+    Navbar,
+  },
 }
 </script>
 
