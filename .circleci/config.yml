@@ -1,7 +1,7 @@
 version: 2
 job_common_base: &job_common_base
   docker:
-    - image: circleci/buildpack-deps
+    - image: skyuppercut/buildpack-deps
   working_directory: ~/torus-website/app
 job_common: &job_common
   docker:
@@ -45,7 +45,7 @@ update_iframeIntegrity: &update_iframeIntegrity
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
           . ./scripts/updateIframeIntegrity.sh
 deploy_function: &deploy_function
-  <<: *job_common
+  <<: *job_common_base
   steps:
     - attach_workspace:
         at: ~/torus-website
