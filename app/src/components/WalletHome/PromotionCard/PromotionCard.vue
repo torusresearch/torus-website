@@ -1,10 +1,10 @@
 <template>
   <v-card class="card-shadow">
     <v-card-text class="pt-3 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2' : $vuetify.breakpoint.xsOnly ? 'pb-6' : 'pb-3'">
-      <div class="d-flex align-center">
+      <div class="d-flex" :class="{ 'align-center': !$vuetify.breakpoint.xsOnly }">
         <div class="promotion-text pr-3">
           <div class="body-1 font-weight-bold" :class="subtitle ? 'text-clamp-one' : 'text-clamp-two'">{{ title }}</div>
-          <div class="text-clamp-two" :class="[$vuetify.breakpoint.lgAndUp ? 'body-2' : 'caption']" :title="subtitle">
+          <div :class="[$vuetify.breakpoint.lgAndUp ? 'body-2' : 'caption']" :title="subtitle">
             {{ subtitle }}
           </div>
         </div>
