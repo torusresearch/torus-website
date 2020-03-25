@@ -12,7 +12,7 @@
           <div class="ml-auto mt-1">
             <img
               :src="$vuetify.theme.isDark && imageDarkPath ? imageDarkPath : imagePath"
-              :style="$vuetify.breakpoint.smAndDown ? 'width: 57px' : 'width: 57px'"
+              :style="$vuetify.breakpoint.smAndDown ? 'height: 42px' : 'height: 50px'"
               :alt="`${title} Image`"
             />
           </div>
