@@ -1,7 +1,7 @@
 import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
 import providerAsMiddleware from 'eth-json-rpc-middleware/providerAsMiddleware'
-import sigUtil from 'eth-sig-util'
+import * as sigUtil from 'eth-sig-util'
 import { BN } from 'ethereumjs-util'
 import EventEmitter from 'events'
 import RpcEngine from 'json-rpc-engine'

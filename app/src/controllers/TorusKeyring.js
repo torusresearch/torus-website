@@ -1,4 +1,4 @@
-import sigUtil from 'eth-sig-util'
+import * as sigUtil from 'eth-sig-util'
 import * as ethUtil from 'ethereumjs-util'
 import Wallet from 'ethereumjs-wallet'
 import { EventEmitter } from 'events'

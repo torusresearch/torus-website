@@ -1,7 +1,7 @@
 /* eslint-disable no-case-declarations */
 import assert from 'assert'
 import { ethErrors } from 'eth-json-rpc-errors'
-import sigUtil from 'eth-sig-util'
+import * as sigUtil from 'eth-sig-util'
 import EventEmitter from 'events'
 import jsonschema from 'jsonschema'
 import log from 'loglevel'

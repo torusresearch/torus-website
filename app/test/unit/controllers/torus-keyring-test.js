@@ -1,7 +1,7 @@
 /* eslint-disable */
 import assert from 'assert'
 import * as ethUtil from 'ethereumjs-util'
-import sigUtil from 'eth-sig-util'
+import * as sigUtil from 'eth-sig-util'
 import EthereumTx from 'ethereumjs-tx'
 import TorusKeyring from '../../../src/controllers/TorusKeyring'
 import log from 'loglevel'
