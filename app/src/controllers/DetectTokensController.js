@@ -36,6 +36,7 @@ class DetectTokensController {
    */
   async detectNewTokens() {
     if (this.network.getNetworkNameFromNetworkCode() !== MAINNET || this.selectedAddress === '') {
+      this.detectedTokensStore.putState({ tokens: [] })
       return
     }
     const tokensToDetect = []
