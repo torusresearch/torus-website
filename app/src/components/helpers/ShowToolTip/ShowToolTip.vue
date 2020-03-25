@@ -20,12 +20,12 @@ export default {
   props: {
     address: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
   data() {
     return {
-      copied: false
+      copied: false,
     }
   },
   methods: {
@@ -35,8 +35,8 @@ export default {
       setTimeout(() => {
         this.copied = false
       }, 3000)
-    }
-  }
+    },
+  },
 }
 </script>
 

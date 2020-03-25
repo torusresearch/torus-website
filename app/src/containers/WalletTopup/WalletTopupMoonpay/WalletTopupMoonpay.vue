@@ -17,13 +17,13 @@ import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 
 export default {
   components: {
-    WalletTopupBase
+    WalletTopupBase,
   },
   data() {
     return {
       cryptoCurrencyValue: 0,
       currencyRate: 0,
-      currentOrder: {}
+      currentOrder: {},
     }
   },
   methods: {
@@ -32,12 +32,12 @@ export default {
       throttle(() => {
         self.$store
           .dispatch('fetchMoonpayQuote', payload)
-          .then(result => {
+          .then((result) => {
             self.cryptoCurrencyValue = result.quoteCurrencyAmount
             self.currencyRate = result.quoteCurrencyAmount / result.totalAmount
             self.currentOrder = result
           })
-          .catch(error => log.error(error))
+          .catch((error) => log.error(error))
       }, 0)()
     },
     sendOrder(callback) {
@@ -45,7 +45,7 @@ export default {
         this.$store.dispatch('fetchMoonpayOrder', {
           currentOrder: this.currentOrder,
           colorCode: this.$vuetify.theme.themes.light.primary.base,
-          selectedAddress: this.$store.state.selectedAddress
+          selectedAddress: this.$store.state.selectedAddress,
         })
       )
     },
@@ -54,8 +54,8 @@ export default {
       this.currencyRate = 0
       this.currentOrder = {}
       this.fetchQuote(payload)
-    }
-  }
+    },
+  },
 }
 </script>
 

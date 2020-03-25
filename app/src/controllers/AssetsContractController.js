@@ -159,7 +159,7 @@ export default class AssetContractController {
       contract.methods
         .balances([selectedAddress], tokensToDetect)
         .call()
-        .then(result => {
+        .then((result) => {
           const nonZeroBalances = {}
           /* istanbul ignore else */
           if (result.length > 0) {
@@ -173,7 +173,7 @@ export default class AssetContractController {
           }
           resolve(nonZeroBalances)
         })
-        .catch(error => reject(error))
+        .catch((error) => reject(error))
     })
   }
 }

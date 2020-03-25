@@ -36,7 +36,7 @@ export default class AssetController {
       this.store.updateState({
         collectibleContracts: (allCollectibleContracts[selectedAddress] && allCollectibleContracts[selectedAddress][networkType]) || [],
         collectibles: (allCollectibles[selectedAddress] && allCollectibles[selectedAddress][networkType]) || [],
-        tokens: (allTokens[selectedAddress] && allTokens[selectedAddress][networkType]) || []
+        tokens: (allTokens[selectedAddress] && allTokens[selectedAddress][networkType]) || [],
       })
     })
   }
@@ -48,7 +48,7 @@ export default class AssetController {
     this.store.updateState({
       collectibleContracts: (allCollectibleContracts[address] && allCollectibleContracts[address][networkType]) || [],
       collectibles: (allCollectibles[address] && allCollectibles[address][networkType]) || [],
-      tokens: (allTokens[address] && allTokens[address][networkType]) || []
+      tokens: (allTokens[address] && allTokens[address][networkType]) || [],
     })
   }
 
@@ -96,8 +96,8 @@ export default class AssetController {
     const tokenURI = this.getCollectibleApi(contractAddress, tokenId)
     const collectibleInformation = await get(`${config.api}/opensea?url=${tokenURI}`, {
       headers: {
-        Authorization: `Bearer ${this.jwtToken}`
-      }
+        Authorization: `Bearer ${this.jwtToken}`,
+      },
     })
 
     const { name, description, image_original_url: image } = collectibleInformation.data
@@ -160,8 +160,8 @@ export default class AssetController {
 
     const collectibleContractObject = await get(`${config.api}/opensea?url=${api}`, {
       headers: {
-        Authorization: `Bearer ${this.jwtToken}`
-      }
+        Authorization: `Bearer ${this.jwtToken}`,
+      },
     })
 
     const { name, symbol, image_url: imageURL, description, total_supply: totalSupply } = collectibleContractObject.data
@@ -228,7 +228,7 @@ export default class AssetController {
       const initState = this.state
       const { allCollectibles, collectibles } = initState
       const networkType = this.network.getNetworkNameFromNetworkCode()
-      const existingEntry = collectibles.find(collectible => collectible.address === address && collectible.tokenId === tokenId)
+      const existingEntry = collectibles.find((collectible) => collectible.address === address && collectible.tokenId === tokenId)
       if (existingEntry) {
         return collectibles
       }
@@ -240,7 +240,7 @@ export default class AssetController {
       const newAllCollectibles = { ...allCollectibles, ...{ [selectedAddress]: newAddressCollectibles } }
       this.store.updateState({
         allCollectibles: newAllCollectibles,
-        collectibles: newCollectibles
+        collectibles: newCollectibles,
       })
 
       return newCollectibles
@@ -268,7 +268,7 @@ export default class AssetController {
       const { allTokens, tokens } = this.state
       const networkType = this.network.getNetworkNameFromNetworkCode()
       const newEntry = { address, symbol, decimals, image }
-      const previousIndex = tokens.findIndex(token => token.address === address)
+      const previousIndex = tokens.findIndex((token) => token.address === address)
       if (previousIndex > -1) {
         tokens[previousIndex] = newEntry
       } else {
@@ -280,7 +280,7 @@ export default class AssetController {
       const newTokens = [...tokens]
       this.store.updateState({
         allTokens: newAllTokens,
-        tokens: newTokens
+        tokens: newTokens,
       })
       return newTokens
     } catch (error) {
@@ -303,7 +303,7 @@ export default class AssetController {
     const { selectedAddress } = this
     const { allCollectibleContracts, collectibleContracts } = this.state
     const networkType = this.network.getNetworkNameFromNetworkCode()
-    const existingEntry = collectibleContracts.find(collectibleContract => collectibleContract.address === address)
+    const existingEntry = collectibleContracts.find((collectibleContract) => collectibleContract.address === address)
     if (existingEntry) {
       return collectibleContracts
     }
@@ -314,7 +314,7 @@ export default class AssetController {
         symbol: options.contractSymbol,
         image_url: options.contractImage,
         total_supply: options.contractSupply,
-        description: options.contractDescription
+        description: options.contractDescription,
       }
     } else {
       contractInformation = await this.getCollectibleContractInformation(address)
@@ -331,21 +331,21 @@ export default class AssetController {
       logo: imageURL,
       name,
       symbol,
-      totalSupply
+      totalSupply,
     }
     const newCollectibleContracts = [...collectibleContracts, newEntry]
     const addressCollectibleContracts = allCollectibleContracts[selectedAddress]
     const newAddressCollectibleContracts = {
       ...addressCollectibleContracts,
-      [networkType]: newCollectibleContracts
+      [networkType]: newCollectibleContracts,
     }
     const newAllCollectibleContracts = {
       ...allCollectibleContracts,
-      [selectedAddress]: newAddressCollectibleContracts
+      [selectedAddress]: newAddressCollectibleContracts,
     }
     this.store.updateState({
       allCollectibleContracts: newAllCollectibleContracts,
-      collectibleContracts: newCollectibleContracts
+      collectibleContracts: newCollectibleContracts,
     })
     return newCollectibleContracts
   }
@@ -366,7 +366,7 @@ export default class AssetController {
       else address = address2
       const newCollectibleContracts = await this.addCollectibleContract(address, detection, options)
       // If collectible contract was not added, do not add individual collectible
-      const collectibleContract = newCollectibleContracts.find(contract => contract.address === address)
+      const collectibleContract = newCollectibleContracts.find((contract) => contract.address === address)
 
       // If collectible contract information, add individual collectible
       if (collectibleContract) {

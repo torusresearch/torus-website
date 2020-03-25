@@ -57,8 +57,8 @@ export default class TorusController extends EventEmitter {
         rpcTarget: host,
         chainId,
         ticker: networkName,
-        nickname: networkName
-      }
+        nickname: networkName,
+      },
     }
 
     this.store = new ComposableObservableStore()
@@ -69,7 +69,7 @@ export default class TorusController extends EventEmitter {
     this.activeControllerConnections = 0
 
     this.currencyController = new CurrencyController({
-      initState: {}
+      initState: {},
     })
     this.currencyController.updateConversionRate()
     this.currencyController.scheduleConversionInterval()
@@ -81,28 +81,28 @@ export default class TorusController extends EventEmitter {
     this.recentBlocksController = new RecentBlocksController({
       blockTracker: this.blockTracker,
       provider: this.provider,
-      networkController: this.networkController
+      networkController: this.networkController,
     })
 
     this.accountTracker = new AccountTracker({
       provider: this.provider,
       blockTracker: this.blockTracker,
-      network: this.networkController
+      network: this.networkController,
     })
 
     // detect tokens controller
     this.detectTokensController = new DetectTokensController({
       network: this.networkController,
-      provider: this.provider
+      provider: this.provider,
     })
 
     this.tokenRatesController = new TokenRatesController({
       currency: this.currencyController.store,
-      tokensStore: this.detectTokensController.detectedTokensStore
+      tokensStore: this.detectTokensController.detectedTokensStore,
     })
 
     // start and stop polling for balances based on activeControllerConnections
-    this.on('controllerConnectionChanged', activeControllerConnections => {
+    this.on('controllerConnectionChanged', (activeControllerConnections) => {
       if (activeControllerConnections > 0) {
         this.accountTracker.start()
       } else {
@@ -126,7 +126,7 @@ export default class TorusController extends EventEmitter {
 
     this.permissionsController = new PermissionsController({
       getKeyringAccounts: this.keyringController.getAccounts.bind(this.keyringController),
-      setSiteMetadata: this.prefsController.setSiteMetadata.bind(this.prefsController)
+      setSiteMetadata: this.prefsController.setSiteMetadata.bind(this.prefsController),
     })
 
     // tx mgmt
@@ -140,7 +140,7 @@ export default class TorusController extends EventEmitter {
       provider: this.provider,
       blockTracker: this.blockTracker,
       getGasPrice: this.getGasPrice.bind(this),
-      storeProps: this.opts.storeProps
+      storeProps: this.opts.storeProps,
     })
     this.txController.on('newUnapprovedTx', () => options.showUnapprovedTx())
 
@@ -156,18 +156,18 @@ export default class TorusController extends EventEmitter {
     // Asset controllers
     this.assetController = new AssetController({
       network: this.networkController,
-      provider: this.provider
+      provider: this.provider,
     })
 
     this.assetContractController = new AssetContractController({
-      provider: this.provider
+      provider: this.provider,
     })
 
     this.assetDetectionController = new AssetDetectionController({
       network: this.networkController,
       provider: this.provider,
       assetController: this.assetController,
-      assetContractController: this.assetContractController
+      assetContractController: this.assetContractController,
     })
 
     this.networkController.lookupNetwork()
@@ -182,7 +182,7 @@ export default class TorusController extends EventEmitter {
       MessageManager: this.messageManager.store,
       CurrencyController: this.currencyController.store,
       PersonalMessageManager: this.personalMessageManager.store,
-      TypedMessageManager: this.typedMessageManager.store
+      TypedMessageManager: this.typedMessageManager.store,
     })
     this.updateAndApproveTransaction = nodeify(this.txController.updateAndApproveTransaction, this.txController)
     this.cancelTransaction = nodeify(this.txController.cancelTransaction, this.txController)
@@ -201,7 +201,7 @@ export default class TorusController extends EventEmitter {
     const providerOptions = {
       static: {
         eth_syncing: false,
-        web3_clientVersion: `Torus/v${version}`
+        web3_clientVersion: `Torus/v${version}`,
       },
       version,
       // account mgmt
@@ -221,7 +221,7 @@ export default class TorusController extends EventEmitter {
       processTypedMessageV4: this.newUnsignedTypedMessage.bind(this),
       processPersonalMessage: this.newUnsignedPersonalMessage.bind(this),
       getPendingNonce: this.getPendingNonce.bind(this),
-      getPendingTransactionByHash: hash => this.txController.getFilteredTxList({ hash, status: 'submitted' })[0]
+      getPendingTransactionByHash: (hash) => this.txController.getFilteredTxList({ hash, status: 'submitted' })[0],
     }
     const providerProxy = this.networkController.initializeProvider(providerOptions)
     return providerProxy
@@ -236,7 +236,7 @@ export default class TorusController extends EventEmitter {
     const publicConfigStore = new ObservableStore()
 
     // memStore -> transform -> publicConfigStore
-    this.on('update', memState => {
+    this.on('update', (memState) => {
       this.isClientOpenAndUnlocked = memState.isUnlocked
       const publicState = selectPublicState(memState)
       publicConfigStore.putState(publicState)
@@ -246,7 +246,7 @@ export default class TorusController extends EventEmitter {
     function selectPublicState(memState) {
       const result = {
         selectedAddress: memState.isUnlocked ? memState.selectedAddress : undefined,
-        networkVersion: memState.network
+        networkVersion: memState.network,
       }
       return result
     }
@@ -277,9 +277,9 @@ export default class TorusController extends EventEmitter {
 
     return {
       // etc
-      getState: callback => callback(null, this.getState()),
+      getState: (callback) => callback(null, this.getState()),
       setCurrentCurrency: this.setCurrentCurrency.bind(this),
-      getGasPrice: callback => callback(null, this.getGasPrice()),
+      getGasPrice: (callback) => callback(null, this.getGasPrice()),
 
       // network management
       setProviderType: nodeify(networkController.setProviderType, networkController),
@@ -307,7 +307,7 @@ export default class TorusController extends EventEmitter {
 
       // personalMessageManager
       signTypedMessage: nodeify(this.signTypedMessage, this),
-      cancelTypedMessage: this.cancelTypedMessage.bind(this)
+      cancelTypedMessage: this.cancelTypedMessage.bind(this),
     }
   }
 
@@ -323,7 +323,7 @@ export default class TorusController extends EventEmitter {
           log.info('keyring deserialized')
           resolve()
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error)
           log.error('unable to deserialize keyring', error)
         })
@@ -391,16 +391,16 @@ export default class TorusController extends EventEmitter {
     }
 
     const lowestPrices = recentBlocks
-      .map(block => {
+      .map((block) => {
         if (!block.gasPrices || block.gasPrices.length === 0) {
           return GWEI_BN
         }
         return block.gasPrices
-          .map(hexPrefix => hexPrefix.slice(2))
-          .map(hex => new BN(hex, 16))
+          .map((hexPrefix) => hexPrefix.slice(2))
+          .map((hex) => new BN(hex, 16))
           .sort((a, b) => (a.gt(b) ? 1 : -1))[0]
       })
-      .map(number => number.div(GWEI_BN).toNumber())
+      .map((number) => number.div(GWEI_BN).toNumber())
 
     const percentileNumber = percentile(65, lowestPrices)
     const percentileNumberBn = new BN(percentileNumber)
@@ -452,8 +452,8 @@ export default class TorusController extends EventEmitter {
     // signs the message
     return this.messageManager
       .approveMessage(messageParameters)
-      .then(cleanMessageParameters => this.keyringController.signMessage(cleanMessageParameters.from, cleanMessageParameters.data))
-      .then(rawSig => {
+      .then((cleanMessageParameters) => this.keyringController.signMessage(cleanMessageParameters.from, cleanMessageParameters.data))
+      .then((rawSig) => {
         // tells the listener that the message has been signed
         // and can be returned to the dapp
         this.messageManager.setMsgStatusSigned(messageId, rawSig)
@@ -510,8 +510,8 @@ export default class TorusController extends EventEmitter {
     // signs the message
     return this.personalMessageManager
       .approveMessage(messageParameters)
-      .then(cleanMessageParameters => this.keyringController.signPersonalMessage(cleanMessageParameters.from, cleanMessageParameters.data))
-      .then(rawSig => {
+      .then((cleanMessageParameters) => this.keyringController.signPersonalMessage(cleanMessageParameters.from, cleanMessageParameters.data))
+      .then((rawSig) => {
         // tells the listener that the message has been signed
         // and can be returned to the dapp
         this.personalMessageManager.setMsgStatusSigned(messageId, rawSig)
@@ -711,9 +711,9 @@ export default class TorusController extends EventEmitter {
     outStream
       .pipe(providerStream)
       .pipe(outStream)
-      .on('error', error => {
+      .on('error', (error) => {
         // cleanup filter polyfill middleware
-        engine._middleware.forEach(mid => {
+        engine._middleware.forEach((mid) => {
           if (mid.destroy && typeof mid.destroy === 'function') {
             mid.destroy()
           }
@@ -735,7 +735,7 @@ export default class TorusController extends EventEmitter {
     const filterMiddleware = createFilterMiddleware({ provider, blockTracker })
     // create subscription polyfill middleware
     const subscriptionManager = createSubscriptionManager({ provider, blockTracker })
-    subscriptionManager.events.on('notification', message => engine.emit('notification', message))
+    subscriptionManager.events.on('notification', (message) => engine.emit('notification', message))
 
     // metadata
     engine.push(createOriginMiddleware({ origin }))
@@ -764,7 +764,7 @@ export default class TorusController extends EventEmitter {
    */
   setupPublicConfig(outStream) {
     const configStream = asStream(this.publicConfigStore)
-    pump(configStream, outStream, error => {
+    pump(configStream, outStream, (error) => {
       configStream.destroy()
       if (error) log.error(error)
     })
@@ -827,7 +827,7 @@ export default class TorusController extends EventEmitter {
         nativeCurrency: ticker || 'ETH',
         conversionRate: this.currencyController.getConversionRate(),
         currentCurrency: this.currencyController.getCurrentCurrency(),
-        conversionDate: this.currencyController.getConversionDate()
+        conversionDate: this.currencyController.getConversionDate(),
       }
       if (payload.origin && payload.origin !== 'store') {
         this.prefsController.setSelectedCurrency(payload)

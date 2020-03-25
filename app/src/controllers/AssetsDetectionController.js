@@ -67,8 +67,8 @@ export default class AssetsDetectionController {
     try {
       response = await get(`${config.api}/opensea?url=${api}`, {
         headers: {
-          Authorization: `Bearer ${this.jwtToken}`
-        }
+          Authorization: `Bearer ${this.jwtToken}`,
+        },
       })
       const collectibles = response.data.assets
       return collectibles
@@ -126,8 +126,8 @@ export default class AssetsDetectionController {
         symbol: contractSymbol,
         image_url: contractImage,
         total_supply: contractSupply,
-        description: contractDescription
-      }
+        description: contractDescription,
+      },
     } of apiCollectibles) {
       // eslint-disable-next-line no-await-in-loop
       await this.assetController.addCollectible(
@@ -142,7 +142,7 @@ export default class AssetsDetectionController {
           contractSymbol,
           contractImage: contractImage.replace('=s60', '=s240'),
           contractSupply,
-          contractDescription
+          contractDescription,
         },
         true
       )

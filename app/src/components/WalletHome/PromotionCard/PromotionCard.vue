@@ -82,8 +82,8 @@ export default {
     imageDarkPath: { type: String, default: '' },
     detailsLink: { type: String, default: '' },
     detailsLinkTwo: { type: String, default: '' },
-    detailsText: { type: String, default: '' }
-  }
+    detailsText: { type: String, default: '' },
+  },
 }
 </script>
 

@@ -9,7 +9,7 @@ const languages = {
   de,
   ja,
   ko,
-  zh
+  zh,
 }
 
 export default languages

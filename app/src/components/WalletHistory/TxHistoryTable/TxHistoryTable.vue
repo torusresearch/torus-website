@@ -38,26 +38,26 @@ import TransactionDetails from '../TransactionDetails'
 export default {
   components: {
     TransactionDetails,
-    ComponentLoader
+    ComponentLoader,
   },
   props: {
     transactions: {
       type: Array,
       default() {
         return []
-      }
+      },
     },
     selectedAction: {
       type: String,
-      default: ''
+      default: '',
     },
     selectedPeriod: {
       type: String,
-      default: ''
+      default: '',
     },
     loadingTransactions: {
-      type: Boolean
-    }
+      type: Boolean,
+    },
   },
   data() {
     return {
@@ -65,7 +65,7 @@ export default {
       itemsPerPage: 8,
       expanded: [],
       pagination: {},
-      defaultSort: 'date'
+      defaultSort: 'date',
     }
   },
   computed: {
@@ -91,7 +91,7 @@ export default {
       const selectedAction = this.selectedAction === ACTIVITY_ACTION_ALL ? '' : this.selectedAction
       const regExAction = new RegExp(selectedAction, 'i')
 
-      return this.transactions.filter(item => {
+      return this.transactions.filter((item) => {
         // GET Date Scope
         let isScoped = false
         if (this.selectedPeriod === ACTIVITY_PERIOD_ALL) {
@@ -114,7 +114,7 @@ export default {
         }
         return isScoped
       })
-    }
+    },
   },
   methods: {
     changeSort(column) {
@@ -131,8 +131,8 @@ export default {
       } else {
         this.expanded = [item]
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

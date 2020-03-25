@@ -7,7 +7,7 @@ const initialState = {
     email: '',
     verifier: '', // enum like GOOGLE
     verifierId: '', // usually email or facebook id
-    verifierParams: {} // general params
+    verifierParams: {}, // general params
   },
   // loaders
   loginInProgress: false,
@@ -43,7 +43,7 @@ const initialState = {
   userInfoAccess: USER_INFO_REQUEST_NEW, // deprecate
   errorMsg: '',
   successMsg: '',
-  iframeMetadata: { origin: '', name: '', icon: '' }
+  iframeMetadata: { origin: '', name: '', icon: '' },
 }
 
 export default initialState

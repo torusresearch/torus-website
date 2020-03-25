@@ -53,8 +53,8 @@ export default {
     },
     onDelete() {
       this.$emit('onDelete')
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -28,7 +28,7 @@ class CurrencyController {
       conversionRate: 0,
       conversionDate: 'N/A',
       nativeCurrency: 'ETH',
-      ...options.initState
+      ...options.initState,
     }
     this.store = new ObservableStore(initState)
   }
@@ -60,7 +60,7 @@ class CurrencyController {
   setNativeCurrency(nativeCurrency) {
     this.store.updateState({
       nativeCurrency,
-      ticker: nativeCurrency
+      ticker: nativeCurrency,
     })
   }
 
