@@ -69,10 +69,10 @@ export default class SmartContractWalletController {
   }
 
   /**
-  Sign the transaction and submit to the relayer
-  @param txId {number} - the tx's Id
-  @returns - rawTx {string}
-  */
+   * Sign the transaction and submit to the relayer
+   * @param txId {number} - the tx's Id
+   * @returns - rawTx {string}
+   */
   async signTransaction(txId, txStateManager, chainId) {
     try {
       const txMeta = txStateManager.getTx(txId)
@@ -121,19 +121,59 @@ export default class SmartContractWalletController {
       const walletAccount = this.web3.eth.accounts.privateKeyToAccount(`0x${privateKey}`)
       // log.info([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 0)
 
-      // Set temp tx ash, so the user doesn't have to wait for txhash to recieve
+      // Set temp tx hash, so the user doesn't have to wait for txhash to recieve
       const temporaryTxHash = 'PENDING_'.concat(txMeta.id)
       txMeta.hash = temporaryTxHash
       txStateManager.updateTx(txMeta, 'transactions#setTxHash')
 
-      // Sign the transaction
-      const signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, 0, 0)
-      const requestObject = {
-        wallet: fromSCW,
-        nonce,
-        methodData,
-        signatures,
-        uniqueId: temporaryTxHash
+      // Get the gasPrice
+      const gasPrice = await fetch(config.relayer.concat('/gasPrice')).then(response => response.json())
+      log.info('scwController: gasPrice', gasPrice)
+
+      let requestObject
+
+      // @todo remove this and set this value some other way.
+      txMeta.refundRelayer = false
+
+      if (txMeta.refundRelayer) {
+        let signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, gasPrice, 0)
+
+        let { gasEstimate } = await post(config.relayer.concat('/transfer/eth/estimate'), {
+          gasPrice,
+          gasLimit: 0,
+          wallet: fromSCW,
+          nonce,
+          methodData,
+          signatures
+        })
+        // 29292 is the base gas used, for added margin, using + 100,000
+        gasEstimate += 100000
+        log.info('scwController: gasEstimate', gasEstimate)
+
+        signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, gasPrice, gasEstimate)
+
+        requestObject = {
+          gasLimit: gasEstimate,
+          gasPrice,
+          wallet: fromSCW,
+          nonce,
+          methodData,
+          signatures,
+          uniqueId: temporaryTxHash
+        }
+      } else {
+        // Sign the transaction
+        // Use 0 for the gasLimit to ensure no refunds
+        const signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, gasPrice, 0)
+        requestObject = {
+          gasLimit: 0,
+          gasPrice,
+          wallet: fromSCW,
+          nonce,
+          methodData,
+          signatures,
+          uniqueId: temporaryTxHash
+        }
       }
 
       log.info('SmartContractWalletController', txMeta)
