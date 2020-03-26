@@ -304,17 +304,17 @@ export default class SmartContractWalletController {
 
       // log.info('SmartContractWalletController', txMeta)
 
-      // // post(relayerURL, reqObj)
-      // //   .then(res => {
-      // //     // Incase it resolves
-      // //     console.log('scwController', res.txHash)
-      // //     txMeta.hash = res.txHash
-      // //     txStateManager.updateTx(txMeta, 'transactions#setTxHash')
-      // //   })
-      // //   .catch(err => {
-      // //     log.error(err)
-      // //     // Incase doesn't resolve,  Poll and update the txhash
-      // //   })
+      // post(relayerURL, reqObj)
+      //   .then(res => {
+      //     // Incase it resolves
+      //     console.log('scwController', res.txHash)
+      //     txMeta.hash = res.txHash
+      //     txStateManager.updateTx(txMeta, 'transactions#setTxHash')
+      //   })
+      //   .catch(err => {
+      //     log.error(err)
+      //     // Incase doesn't resolve,  Poll and update the txhash
+      //   })
 
       // txStateManager.setTxStatusSubmitted(txId)
 
