@@ -12,11 +12,10 @@ import { post, get } from '../utils/httpHelpers'
 import log from 'loglevel'
 import Web3 from 'web3'
 const randomId = require('@chaitanyapotti/random-id')
+const sigUtil = require('eth-sig-util')
 
-import { ZERO_ADDRESS, KOVAN } from '../utils/enums'
+import { ZERO_ADDRESS, KOVAN, KOVAN_CODE } from '../utils/enums'
 
-const loginMessage = 'Sign message to login to Biconomy with counter '
-const signTxMessage = 'Sign message to send transaction to Biconomy with counter '
 export default class SmartContractWalletController {
   constructor(opts = {}) {
     this.opts = opts
@@ -45,19 +44,47 @@ export default class SmartContractWalletController {
         return selectedEOA || ''
       } else return ''
     }
+  }
 
-    this.signature = async (message, nonce) => {
-      let messageToSign
-
-      if (!nonce) {
-        messageToSign = message + 0
-      } else {
-        messageToSign = message + nonce
+  async _getUserNonce(address) {
+    try {
+      let getNonceAPI = `${config.biconomy}/api/v1/wallet-user/getNonce?signer=${address}`
+      let response = await get(getNonceAPI, {
+        headers: {
+          'x-wallet-key': config.biconomyKey[KOVAN]
+        }
+      })
+      if (response && response.flag == 200) {
+        return response.nonce
       }
-      let privateKey = await this.getWallet(this.getSelectedEOA())
-      let result = await this.web3.eth.accounts.sign(messageToSign, '0x' + privateKey)
-      return result.signature
+      return
+    } catch (error) {
+      if (error.response.status == 404) {
+        return 0
+      }
+      return
     }
+  }
+
+  async messageToLogin(signer, nonce) {
+    let systemInfo = await get(`${config.biconomy}/api/v2/meta-tx/systemInfo?networkId=${KOVAN_CODE}`)
+
+    let message = {
+      userAddress: signer.toLowerCase(),
+      providerId: 100,
+      nonce: nonce
+    }
+
+    const dataToSign = {
+      types: {
+        EIP712Domain: systemInfo.loginDomainType,
+        LoginMessage: systemInfo.loginMessageType
+      },
+      domain: systemInfo.loginDomainData,
+      primaryType: 'LoginMessage',
+      message: message
+    }
+    return dataToSign
   }
 
   /**
@@ -72,11 +99,18 @@ export default class SmartContractWalletController {
         owner: this.getSelectedEOA()
       }
 
+      let nonce = await this._getUserNonce(this.getSelectedEOA())
+      if (!nonce) {
+        nonce = 0
+      }
+      let _message = await this.messageToLogin(obj.owner, nonce)
+
+      let _privateKey = await this.getWallet(this.getSelectedEOA())
+      let _signature = sigUtil.signTypedMessage(new Buffer(_privateKey, 'hex'), { data: _message }, 'V3')
       let data = {
-        signature: await this.signature(loginMessage, null),
-        signer: obj.owner,
-        message: loginMessage,
-        provider: 100
+        signature: _signature,
+        from: obj.owner,
+        providerId: 100
       }
 
       let reqHeader = {
@@ -85,7 +119,6 @@ export default class SmartContractWalletController {
           'Content-Type': 'application/json; charset=utf-8'
         }
       }
-
       return await post(`${config.biconomy}/api/v1/wallet/wallet-login`, data, reqHeader)
     } catch (err) {
       log.error(err)
@@ -99,7 +132,7 @@ export default class SmartContractWalletController {
     @returns - rawTx {string}
   */
 
-  async getNonce() {
+  async getContractNonce() {
     let nonceURL = config.biconomy.concat('/api/v1/wallet/getContractNonce')
     let signer = this.getSelectedEOA()
 
@@ -137,6 +170,53 @@ export default class SmartContractWalletController {
     }
   }
 
+  async messageToSendTx(to, value, userContractWallet, nonce) {
+    let systemInfo = await get(`${config.biconomy}/api/v2/meta-tx/systemInfo?networkId=${KOVAN_CODE}`)
+
+    let metaInfo = {
+      contractWallet: userContractWallet
+    }
+
+    let relayerPayment = {
+      token: config.DEFAULT_RELAYER_PAYMENT_TOKEN_ADDRESS,
+      amount: config.DEFAULT_RELAYER_PAYMENT_AMOUNT
+    }
+
+    let message = {
+      from: this.getSelectedEOA().toLowerCase(),
+      to: to.toLowerCase(),
+      data: '0x0',
+      batchId: 0,
+      nonce: parseInt(nonce),
+      value: this.web3.utils.toHex(value),
+      txGas: '21000',
+      expiry: 0,
+      baseGas: 0,
+      metaInfo: metaInfo,
+      relayerPayment: relayerPayment
+    }
+
+    let domainData = {
+      name: config.eip712DomainName,
+      version: config.eip712SigVersion,
+      verifyingContract: config.eip712VerifyingContract,
+      chainId: 42
+    }
+
+    const dataToSign = {
+      types: {
+        EIP712Domain: systemInfo.domainType,
+        MetaInfo: systemInfo.metaInfoType,
+        RelayerPayment: systemInfo.relayerPaymentType,
+        MetaTransaction: systemInfo.metaTransactionType
+      },
+      domain: domainData,
+      primaryType: 'MetaTransaction',
+      message: message
+    }
+    return dataToSign
+  }
+
   async signTransaction(txId, txStateManager, chainId) {
     try {
       const txMeta = txStateManager.getTx(txId)
@@ -169,21 +249,26 @@ export default class SmartContractWalletController {
 
       // Get nonce
       // const nonce = await getNonceForRelay(this.web3)
-      const nonce = await this.getNonce()
-      const signature = await this.signature(signTxMessage, nonce)
-      const messageToSign = signTxMessage.concat(nonce)
-
-      console.log('messageToSign :' + messageToSign)
-      console.log('length :' + messageToSign.length)
+      let nonce = await this.getContractNonce()
+      let _message = await this.messageToSendTx(to, transferValue, fromSCW, nonce)
+      let _privateKey = await this.getWallet(this.getSelectedEOA())
+      let _signature = sigUtil.signTypedMessage(new Buffer(_privateKey, 'hex'), { data: _message }, 'V3')
 
       const biconomyReqObj = {
-        signature: signature,
-        signer: this.getSelectedEOA(),
-        message: signTxMessage,
-        provider: 100,
+        signature: _signature,
+        from: this.getSelectedEOA(),
         to: to,
-        messageLength: messageToSign.length,
-        value: transferValue
+        userContract: fromSCW,
+        data: '0x0',
+        value: transferValue,
+        gasLimit: '21000',
+        nonceBatchId: 0,
+        expiry: 0,
+        baseGas: 0,
+        relayerPayment: {
+          token: '0x0000000000000000000000000000000000000000',
+          amount: 0
+        }
       }
 
       const res = await this.sendTransaction(biconomyReqObj)

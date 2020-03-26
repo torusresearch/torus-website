@@ -40,5 +40,10 @@ export default {
     kovan: 'torus.b0981c34-19b2-4d05-ab15-1ccb49b78c68',
     ropsten: 'torus.c0981c34-19b2-4d05-ab15-1ccb49b78c54',
     matic: 'torus.a0981c34-19b2-4d05-ab15-1ccb49b78cf9'
-  }
+  },
+  eip712SigVersion: '1',
+  eip712DomainName: 'Biconomy Meta Transaction',
+  eip712VerifyingContract: '0x4f53CA96f0E40FeDc353517177103eCFe03F1317',
+  DEFAULT_RELAYER_PAYMENT_TOKEN_ADDRESS: '0x0000000000000000000000000000000000000000',
+  DEFAULT_RELAYER_PAYMENT_AMOUNT: 0
 }
