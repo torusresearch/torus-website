@@ -53,7 +53,8 @@
               </v-card-text>
             </v-card>
           </v-flex>
-          <v-flex v-if="isFreshAccount" xs12 sm6 px-4 my-4>
+          <!-- COMMENTED OUT FOR KYBER EVENT -->
+          <!-- <v-flex v-if="isFreshAccount" xs12 sm6 px-4 my-4>
             <v-card class="card-shadow">
               <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
                 <v-layout>
@@ -85,6 +86,8 @@
             </v-card>
           </v-flex>
           <v-flex v-for="(event, i) in isFreshAccount ? [] : events" :key="`event-${i}`" xs12 sm6 px-4 my-4>
+          -->
+          <v-flex v-for="(event, i) in events" :key="`event-${i}`" xs12 sm6 px-4 my-4>
             <PromotionCard
               :title="event.eventName"
               :image-path="event.imageUrl"
@@ -195,7 +198,8 @@
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import ExportQrCode from '../../../components/helpers/ExportQrCode'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
-import LearnMore from '../../../components/WalletHome/LearnMore'
+// COMMENTED OUT FOR KYBER EVENT
+// import LearnMore from '../../../components/WalletHome/LearnMore'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
 import config from '../../../config'
@@ -203,7 +207,9 @@ import { LOCALE_EN, MAINNET } from '../../../utils/enums'
 
 export default {
   name: 'WalletHome',
-  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore, ComponentLoader },
+  // COMMENTED OUT FOR KYBER EVENT
+  // components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, LearnMore, ComponentLoader },
+  components: { TokenBalancesTable, CollectiblesList, ExportQrCode, PromotionCard, ComponentLoader },
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
