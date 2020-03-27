@@ -48,7 +48,7 @@ export default class SmartContractWalletController {
 
   async _getUserNonce(address) {
     try {
-      let getNonceAPI = `${config.biconomy}/api/v1/wallet-user/getNonce?signer=${address}`
+      let getNonceAPI = `${config.biconomyBaseURL}/api/v1/wallet-user/getNonce?signer=${address}`
       let response = await get(getNonceAPI, {
         headers: {
           'x-wallet-key': config.biconomyKey[KOVAN]
@@ -62,16 +62,16 @@ export default class SmartContractWalletController {
       if (error.response.status == 404) {
         return 0
       }
-      return
+      return 0
     }
   }
 
   async messageToLogin(signer, nonce) {
-    let systemInfo = await get(`${config.biconomy}/api/v2/meta-tx/systemInfo?networkId=${KOVAN_CODE}`)
+    let systemInfo = await get(`${config.biconomyBaseURL}/api/v2/meta-tx/systemInfo?networkId=${KOVAN_CODE}`)
 
     let message = {
       userAddress: signer.toLowerCase(),
-      providerId: 100,
+      providerId: config.providerId,
       nonce: nonce
     }
 
@@ -94,7 +94,7 @@ export default class SmartContractWalletController {
     // Make an API call to relayer to create a smart contract wallet
     // Update the Vue state to processing
     try {
-      let obj = {
+      const obj = {
         ens: randomId(),
         owner: this.getSelectedEOA()
       }
@@ -110,7 +110,7 @@ export default class SmartContractWalletController {
       let data = {
         signature: _signature,
         from: obj.owner,
-        providerId: 100
+        providerId: config.providerId
       }
 
       let reqHeader = {
@@ -119,7 +119,7 @@ export default class SmartContractWalletController {
           'Content-Type': 'application/json; charset=utf-8'
         }
       }
-      return await post(`${config.biconomy}/api/v1/wallet/wallet-login`, data, reqHeader)
+      return await post(`${config.biconomyBaseURL}/api/v1/wallet/wallet-login`, data, reqHeader)
     } catch (err) {
       log.error(err)
       return err
@@ -133,7 +133,7 @@ export default class SmartContractWalletController {
   */
 
   async getContractNonce() {
-    let nonceURL = config.biconomy.concat('/api/v1/wallet/getContractNonce')
+    let nonceURL = config.biconomyBaseURL.concat('/api/v1/wallet/getContractNonce')
     let signer = this.getSelectedEOA()
 
     let response
@@ -145,14 +145,14 @@ export default class SmartContractWalletController {
       })
       console.log(response)
       return response.nonce
-    } catch (e) {
-      log.error(e)
-      return []
+    } catch (err) {
+      log.error(err)
+      return err
     }
   }
 
   async sendTransaction(biconomyReqObj) {
-    let relayUrl = config.biconomy.concat('/api/v1/wallet/relay')
+    let relayUrl = config.biconomyBaseURL.concat('/api/v1/wallet/relay')
 
     let response
     try {
@@ -162,16 +162,15 @@ export default class SmartContractWalletController {
           'Content-Type': 'application/json; charset=utf-8'
         }
       })
-      console.log(response)
       return response
-    } catch (e) {
-      log.error(e)
-      return []
+    } catch (err) {
+      log.error(err)
+      return err
     }
   }
 
   async messageToSendTx(to, value, userContractWallet, nonce) {
-    let systemInfo = await get(`${config.biconomy}/api/v2/meta-tx/systemInfo?networkId=${KOVAN_CODE}`)
+    let systemInfo = await get(`${config.biconomyBaseURL}/api/v2/meta-tx/systemInfo?networkId=${KOVAN_CODE}`)
 
     let metaInfo = {
       contractWallet: userContractWallet
@@ -199,8 +198,9 @@ export default class SmartContractWalletController {
     let domainData = {
       name: config.eip712DomainName,
       version: config.eip712SigVersion,
-      verifyingContract: config.eip712VerifyingContract,
+      verifyingContract: systemInfo.relayHubAddress,
       chainId: 42
+      // TO-DO : get it dynamically based on current network selected.
     }
 
     const dataToSign = {
