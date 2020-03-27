@@ -45,7 +45,7 @@ export default {
             self.cryptoCurrencySymbol = asset.symbol
             self.currencyRate = 1 / asset.price[payload.selectedCurrency]
             self.currentOrder = {
-              cryptoCurrencyValue: cryptoValue * 10 ** asset.decimals,
+              cryptoCurrencyValue: Math.trunc(cryptoValue * 10 ** asset.decimals),
               cryptoCurrencySymbol: asset.symbol,
             }
           })
