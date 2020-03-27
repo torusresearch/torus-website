@@ -68,7 +68,7 @@ export default {
             const rate = asset.price[selectedParameters.selectedCurrency]
             const fiatWithoutFee = fiat / (1 + feeRate) // Final amount of fiat that will be converted to crypto
             cryptoValue = fiatWithoutFee / rate // Final Crypto amount
-            currentOrder.cryptoCurrencyValue = cryptoValue * 10 ** asset.decimals || ''
+            currentOrder.cryptoCurrencyValue = Math.trunc(cryptoValue * 10 ** asset.decimals) || ''
             currentOrder.cryptoCurrencySymbol = asset.symbol || ''
           }
 
