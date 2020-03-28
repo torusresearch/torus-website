@@ -25,7 +25,11 @@ const Wyre = {
   fetchWyreQuote({ state }, payload) {
     // returns a promise
     return getQuote(
-      { dest_currency: payload.selectedCryptoCurrency, source_amount: +parseFloat(payload.fiatValue), source_currency: payload.selectedCurrency },
+      {
+        dest_currency: payload.selectedCryptoCurrency,
+        source_amount: +Number.parseFloat(payload.fiatValue),
+        source_currency: payload.selectedCurrency,
+      },
       { Authorization: `Bearer ${state.jwtToken}` }
     )
   },

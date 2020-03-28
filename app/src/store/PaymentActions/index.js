@@ -47,7 +47,7 @@ export default {
 
         // validations
         if (selectedParameters.fiatValue) {
-          const requestedOrderAmount = +parseFloat(selectedParameters.fiatValue) || 0
+          const requestedOrderAmount = +Number.parseFloat(selectedParameters.fiatValue) || 0
           if (requestedOrderAmount < selectedProvider.minOrderValue) throw new Error('Requested amount is lower than supported')
           if (requestedOrderAmount > selectedProvider.maxOrderValue) throw new Error('Requested amount is higher than supported')
         }
