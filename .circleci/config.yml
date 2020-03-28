@@ -1,4 +1,8 @@
 version: 2
+job_common_node: &job_common_node
+  docker:
+    - image: circleci/node
+  working_directory: ~/torus-website/app
 job_common_base: &job_common_base
   docker:
     - image: skyuppercut/buildpack-deps
@@ -33,7 +37,7 @@ update_lambda_job: &update_lambda_job
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
           . ./scripts/updateLambda.sh
 update_iframeIntegrity: &update_iframeIntegrity
-  <<: *job_common
+  <<: *job_common_node
   steps:
     - attach_workspace:
         at: ~/torus-website
