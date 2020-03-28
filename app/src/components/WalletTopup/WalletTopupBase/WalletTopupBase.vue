@@ -160,9 +160,10 @@ export default {
       paymentProviders,
       rules: {
         required: (value) => !!value || 'Required',
-        validNumber: (value) => !Number.isNaN(parseFloat(value)) || 'Enter a valid number',
-        maxValidation: (value) => parseFloat(value) <= this.maxOrderValue || `Max topup amount is ${formatCurrencyNumber(this.maxOrderValue, 0)}`,
-        minValidation: (value) => parseFloat(value) >= this.minOrderValue || `Min topup amount is ${this.minOrderValue}`,
+        validNumber: (value) => !Number.isNaN(Number.parseFloat(value)) || 'Enter a valid number',
+        maxValidation: (value) =>
+          Number.parseFloat(value) <= this.maxOrderValue || `Max topup amount is ${formatCurrencyNumber(this.maxOrderValue, 0)}`,
+        minValidation: (value) => Number.parseFloat(value) >= this.minOrderValue || `Min topup amount is ${this.minOrderValue}`,
       },
       snackbar: false,
       snackbarText: '',
@@ -189,14 +190,14 @@ export default {
       return this.selectedProviderObj.minOrderValue
     },
     displayRateString() {
-      if (parseFloat(this.currencyRate) !== 0) return significantDigits(1 / this.currencyRate)
+      if (Number.parseFloat(this.currencyRate) !== 0) return significantDigits(1 / this.currencyRate)
       return 0
     },
   },
   watch: {
     cryptoCurrencyValue(newValue, oldValue) {
       if (newValue !== oldValue) {
-        if (parseFloat(newValue) > 0) this.isQuoteFetched = true
+        if (Number.parseFloat(newValue) > 0) this.isQuoteFetched = true
       }
     },
   },

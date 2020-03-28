@@ -180,11 +180,11 @@
   "lint-staged": {
     "*.js": [
       "npm run lint:js --",
-      "prettier --write **/*.js"
+      "prettier --write src/**/*.js"
     ],
     "*.vue": [
       "npm run lint:vue --",
-      "prettier --write **/*.vue"
+      "prettier --write src/**/*.vue"
     ],
     "*.{json,css,yaml,yml}": [
       "prettier --write **/*.json",

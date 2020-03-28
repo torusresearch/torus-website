@@ -162,7 +162,7 @@ export default class TypedMessageManager extends EventEmitter {
         assert.ok(data.primaryType in data.types, `Primary type of "${data.primaryType}" has no type definition.`)
         assert.strictEqual(validation.errors.length, 0, 'Data must conform to EIP-712 schema. See https://git.io/fNtcx.')
         const { chainId } = data.domain
-        const activeChainId = parseInt(this.networkController.getNetworkState(), 10)
+        const activeChainId = Number.parseInt(this.networkController.getNetworkState(), 10)
         if (chainId) assert.strictEqual(chainId, activeChainId, `Provided chainId (${chainId}) must match the active chainId (${activeChainId})`)
         break
       default:

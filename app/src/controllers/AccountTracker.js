@@ -180,7 +180,7 @@ export default class AccountTracker {
   async _updateAccounts() {
     const { accounts } = this.store.getState()
     const addresses = Object.keys(accounts)
-    const currentNetwork = parseInt(this.network.getNetworkState(), 10)
+    const currentNetwork = Number.parseInt(this.network.getNetworkState(), 10)
     if (addresses.length > 0) {
       switch (currentNetwork) {
         case MAINNET_CODE:

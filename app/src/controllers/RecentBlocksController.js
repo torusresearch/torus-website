@@ -5,7 +5,7 @@ import pify from 'pify'
 
 import { KOVAN, MAINNET, RINKEBY, ROPSTEN } from '../utils/enums'
 
-const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET]
+const INFURA_PROVIDER_TYPES = new Set([ROPSTEN, RINKEBY, KOVAN, MAINNET])
 
 class RecentBlocksController {
   /**
@@ -47,14 +47,14 @@ class RecentBlocksController {
     }
     let isListening = false
     const { type } = networkController.getProviderConfig()
-    if (!INFURA_PROVIDER_TYPES.includes(type) && type !== 'loading') {
+    if (!INFURA_PROVIDER_TYPES.has(type) && type !== 'loading') {
       this.blockTracker.on('latest', blockListner)
       isListening = true
     }
     networkController.on('networkDidChange', (newType) => {
-      if (INFURA_PROVIDER_TYPES.includes(newType) && isListening) {
+      if (INFURA_PROVIDER_TYPES.has(newType) && isListening) {
         this.blockTracker.removeListener('latest', blockListner)
-      } else if (!INFURA_PROVIDER_TYPES.includes(type) && type !== 'loading' && !isListening) {
+      } else if (!INFURA_PROVIDER_TYPES.has(type) && type !== 'loading' && !isListening) {
         this.blockTracker.on('latest', blockListner)
       }
     })

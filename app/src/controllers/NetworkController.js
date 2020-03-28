@@ -27,7 +27,7 @@ import { GOERLI, KOVAN, LOCALHOST, MAINNET, MATIC, MATIC_CODE, MATIC_URL, RINKEB
 const defaultProviderConfig = { type: 'mainnet' }
 const defaultNetworkConfig = { ticker: 'ETH' }
 const networks = { networkList: {} }
-const INFURA_PROVIDER_TYPES = [ROPSTEN, RINKEBY, KOVAN, MAINNET, GOERLI]
+const INFURA_PROVIDER_TYPES = new Set([ROPSTEN, RINKEBY, KOVAN, MAINNET, GOERLI])
 
 export default class NetworkController extends EventEmitter {
   /**
@@ -187,7 +187,7 @@ export default class NetworkController extends EventEmitter {
    */
   async setProviderType(type, rpcTarget = '', ticker = 'ETH', nickname = '') {
     assert.notStrictEqual(type, 'rpc', 'NetworkController - cannot call "setProviderType" with type \'rpc\'. use "setRpcTarget"')
-    assert(INFURA_PROVIDER_TYPES.includes(type) || type === LOCALHOST || type === MATIC, `NetworkController - Unknown rpc type "${type}"`)
+    assert(INFURA_PROVIDER_TYPES.has(type) || type === LOCALHOST || type === MATIC, `NetworkController - Unknown rpc type "${type}"`)
     const providerConfig = { type, rpcTarget, ticker, nickname }
     this.providerConfig = providerConfig
   }
@@ -223,7 +223,7 @@ export default class NetworkController extends EventEmitter {
   _configureProvider(options) {
     const { type, rpcTarget, chainId, ticker, nickname } = options
     // infura type-based endpoints
-    const isInfura = INFURA_PROVIDER_TYPES.includes(type)
+    const isInfura = INFURA_PROVIDER_TYPES.has(type)
     if (isInfura) {
       this._configureInfuraProvider(options)
     } else if (type === LOCALHOST) {

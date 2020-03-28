@@ -255,7 +255,7 @@ export function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', th
 
     const negativeSign = amt < 0 ? '-' : ''
 
-    const i = parseInt((amt = Math.abs(Number(amount) || 0).toFixed(decimals)), 10).toString()
+    const i = Number.parseInt((amt = Math.abs(Number(amount) || 0).toFixed(decimals)), 10).toString()
     const j = i.length > 3 ? i.length % 3 : 0
 
     return `${
@@ -454,7 +454,7 @@ export const standardNetworkId = {
 
 export function selectChainId(network, provider) {
   const { chainId } = provider
-  return standardNetworkId[network] || `0x${parseInt(chainId, 10).toString(16)}`
+  return standardNetworkId[network] || `0x${Number.parseInt(chainId, 10).toString(16)}`
 }
 
 export const isMain = window.location === window.parent.location && window.location.origin === config.baseUrl
