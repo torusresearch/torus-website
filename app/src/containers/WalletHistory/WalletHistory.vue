@@ -258,10 +258,10 @@ export default {
         }
         let totalAmountString = ''
         if (x.type === CONTRACT_TYPE_ERC721) totalAmountString = x.symbol
-        else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = `${significantDigits(parseFloat(x.total_amount))} ${x.symbol}`
-        else totalAmountString = `${significantDigits(parseFloat(x.total_amount))} ETH`
+        else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = `${significantDigits(Number.parseFloat(x.total_amount))} ${x.symbol}`
+        else totalAmountString = `${significantDigits(Number.parseFloat(x.total_amount))} ETH`
         const currencyAmountString =
-          x.type === CONTRACT_TYPE_ERC721 ? '' : `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
+          x.type === CONTRACT_TYPE_ERC721 ? '' : `${significantDigits(Number.parseFloat(x.currency_amount))} ${x.selected_currency}`
         const finalObject = {
           id: x.created_at.toString(),
           date: new Date(x.created_at),
@@ -278,7 +278,7 @@ export default {
           status,
           etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network),
           networkType: x.network,
-          ethRate: `1 ${x.symbol} = ${significantDigits(parseFloat(x.currency_amount) / parseFloat(x.total_amount))}`,
+          ethRate: `1 ${x.symbol} = ${significantDigits(Number.parseFloat(x.currency_amount) / Number.parseFloat(x.total_amount))}`,
           currencyUsed: x.selected_currency,
           type: x.type,
           type_name: x.type_name,
@@ -335,12 +335,12 @@ export default {
               }
             }
             totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
-            totalAmountString = `${significantDigits(parseFloat(totalAmount))} ${contractParams.symbol}`
+            totalAmountString = `${significantDigits(Number.parseFloat(totalAmount))} ${contractParams.symbol}`
             finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
           } else {
             tokenRate = 1
             totalAmount = fromWei(toBN(txParams.value))
-            totalAmountString = `${significantDigits(parseFloat(totalAmount))} ETH`
+            totalAmountString = `${significantDigits(Number.parseFloat(totalAmount))} ETH`
             finalTo = toChecksumAddress(txOld.txParams.to)
           }
           const txObject = {}
@@ -360,7 +360,7 @@ export default {
           txObject.etherscanLink = getEtherScanHashLink(txOld.hash, networkType.host)
           txObject.networkType = networkType.host
           txObject.ethRate = `1 ${(contractParams && contractParams.symbol) || 'ETH'} = ${significantDigits(
-            parseFloat(txObject.currencyAmount) / parseFloat(txObject.totalAmount)
+            Number.parseFloat(txObject.currencyAmount) / Number.parseFloat(txObject.totalAmount)
           )}`
           txObject.currencyUsed = this.selectedCurrency
           txObject.type = 'eth'

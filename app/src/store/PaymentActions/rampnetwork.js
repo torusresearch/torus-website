@@ -10,7 +10,7 @@ export default {
     return getQuote({
       digital_currency: (payload.selectedCryptoCurrency || ETH).toLowerCase(),
       fiat_currency: (payload.selectedCurrency || paymentProviders.rampnetwork.validCurrencies[0]).toLowerCase(),
-      requested_amount: +parseFloat(payload.fiatValue || paymentProviders.rampnetwork.minOrderValue),
+      requested_amount: +Number.parseFloat(payload.fiatValue || paymentProviders.rampnetwork.minOrderValue),
     })
   },
   fetchRampNetworkOrder({ state, dispatch }, { currentOrder, preopenInstanceId, selectedAddress }) {

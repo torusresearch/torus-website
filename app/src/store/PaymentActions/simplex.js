@@ -18,7 +18,7 @@ export default {
         digital_currency: payload.selectedCryptoCurrency,
         fiat_currency: payload.selectedCurrency,
         requested_currency: payload.selectedCurrency,
-        requested_amount: +parseFloat(payload.fiatValue),
+        requested_amount: +Number.parseFloat(payload.fiatValue),
       },
       {
         Authorization: `Bearer ${state.jwtToken}`,

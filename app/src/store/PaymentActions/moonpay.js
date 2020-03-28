@@ -16,7 +16,7 @@ export default {
     return getQuote({
       digital_currency: payload.selectedCryptoCurrency && payload.selectedCryptoCurrency.toLowerCase(),
       fiat_currency: payload.selectedCurrency && payload.selectedCurrency.toLowerCase(),
-      requested_amount: +parseFloat(payload.fiatValue),
+      requested_amount: +Number.parseFloat(payload.fiatValue),
     })
   },
   fetchMoonpayOrder({ state, dispatch }, { currentOrder, colorCode, preopenInstanceId: preopenInstanceIdPayload, selectedAddress }) {
