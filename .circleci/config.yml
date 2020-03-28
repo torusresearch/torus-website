@@ -86,7 +86,7 @@ jobs:
       - <<: *step_save_cache
       # Save coverage artifacts
       - store_artifacts:
-          path: coverage
+          path: ~/torus-website/app/coverage
   build:
     <<: *job_common
     resource_class: large
@@ -146,9 +146,9 @@ jobs:
           command: |
             npm run build:testing
       - persist_to_workspace:
-          root: ~/torus-website/
+          root: ~/
           paths:
-            - .
+            - torus-website/app/dist
       - <<: *step_save_cache
   build-lrc:
         <<: *job_common
@@ -163,15 +163,15 @@ jobs:
               command: |
                 npm run build:lrc
           - persist_to_workspace:
-              root: ~/torus-website/
+              root: ~/
               paths:
-                - .
+                - torus-website/app/dist
           - <<: *step_save_cache
   deploy-testing:
     <<: *job_common_base
     steps:
       - attach_workspace:
-          at: ~/torus-website
+          at: ~/
       - add_ssh_keys
       - run:
           name: "Deploy Over SSH"
@@ -182,7 +182,7 @@ jobs:
     <<: *job_common_base
     steps:
       - attach_workspace:
-          at: ~/torus-website
+          at: ~/
       - add_ssh_keys
       - run:
           name: "Deploy Over SSH"
