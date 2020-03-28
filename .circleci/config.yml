@@ -28,7 +28,7 @@ update_lambda_job: &update_lambda_job
   <<: *job_common
   steps:
     - attach_workspace:
-        at: ~/torus-website
+        at: ~/
     - add_ssh_keys
     - run:
         name: "Update lambda version"
@@ -40,7 +40,7 @@ update_iframeIntegrity: &update_iframeIntegrity
   <<: *job_common_node
   steps:
     - attach_workspace:
-        at: ~/torus-website
+        at: ~/
     - add_ssh_keys
     - run:
         name: "Update iframe integrity"
@@ -52,7 +52,7 @@ deploy_function: &deploy_function
   <<: *job_common_base
   steps:
     - attach_workspace:
-        at: ~/torus-website
+        at: ~/
     - add_ssh_keys
     - run:
         name: "Deploy Over SSH to AWS"
@@ -100,9 +100,9 @@ jobs:
           command: |
             npm version patch -m 'Updating version to %s [skip ci]' && npm run build && . ./scripts/gitPush.sh
       - persist_to_workspace:
-          root: ~/torus-website/
+          root: ~/
           paths:
-            - .
+            - torus-website
       - <<: *step_save_cache
   build-staging:
     <<: *job_common
@@ -117,9 +117,9 @@ jobs:
           command: |
             npm version patch -m 'Updating version to %s [skip ci]' && npm run build:staging && . ./scripts/gitPush.sh
       - persist_to_workspace:
-          root: ~/torus-website/
+          root: ~/
           paths:
-            - .
+            - torus-website
       - <<: *step_save_cache
   deploy:
     <<: *deploy_function
