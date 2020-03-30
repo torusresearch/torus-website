@@ -32,14 +32,31 @@
     background: none;
   }
   .send-mode.v-btn {
+    &.theme--dark, &.theme--light {
+      border: 0 !important;
+    }
     &.theme--dark.active {
       background-color: transparent;
       color: #979797;
+      cursor: default;
     }
     &.theme--light.active {
       background-color: transparent;
       color: #979797;
       box-shadow: none;
+      cursor: default;
     }
+  }
+  &.mobile-view {
+    .select-coin {
+      background: var(--v-torus_black2-base) !important;
+    }
+    .form-container {
+      &.theme--dark {
+        ::v-deep .v-input.v-text-field--outlined > .v-input__control > .v-input__slot {
+          background: var(--v-torus_black2-base);
+        }
+      }
+    }    
   }
 }

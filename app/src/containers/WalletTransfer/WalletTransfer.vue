@@ -1,5 +1,5 @@
 <template>
-  <v-container class="wallet-transfer pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
+  <v-container class="wallet-transfer pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4 mobile-view' : ''">
     <div class="d-flex align-center">
       <div class="font-weight-bold display-1 float-left">{{ t('walletTransfer.transferDetails') }}</div>
       <div class="ml-auto">
@@ -206,8 +206,8 @@
                       id="coin-mode-btn"
                       small
                       class="send-mode"
-                      :class="!toggle_exclusive ? 'torus-btn1 torus_brand1--text' : 'active'"
-                      :outlined="!toggle_exclusive"
+                      :class="!!toggle_exclusive ? 'torus-btn1 torus_brand1--text' : 'active'"
+                      :outlined="!!toggle_exclusive"
                       @click="changeSelectedToCurrency(0)"
                     >
                       {{ selectedItem && selectedItem.symbol }}
@@ -216,8 +216,8 @@
                       id="currency-mode-btn"
                       small
                       class="send-mode"
-                      :class="!!toggle_exclusive ? 'torus-btn1 torus_brand1--text' : 'active'"
-                      :outlined="!!toggle_exclusive"
+                      :class="!toggle_exclusive ? 'torus-btn1 torus_brand1--text' : 'active'"
+                      :outlined="!toggle_exclusive"
                       @click="changeSelectedToCurrency(1)"
                     >
                       {{ selectedCurrency }}
