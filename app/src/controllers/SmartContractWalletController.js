@@ -69,11 +69,137 @@ export default class SmartContractWalletController {
   }
 
   /**
+   * @notice Temporarily used to test the generalised API call.
+   *
    * Sign the transaction and submit to the relayer
    * @param txId {number} - the tx's Id
    * @returns - rawTx {string}
    */
   async signTransaction(txId, txStateManager, chainId) {
+    try {
+      const txMeta = txStateManager.getTx(txId)
+      log.info('Transaction Controller, signTransaction', txMeta, txStateManager)
+
+      const txParameters = { ...txMeta.txParams, chainId }
+      const relayerURL = config.relayer.concat('/generalCall')
+      log.info(relayerURL)
+      const fromSCW = txParameters.from
+
+      // Get nonce
+      const nonce = await getNonceForRelay(this.web3)
+
+      const TransferModule = new this.web3.eth.Contract(TransferManager.abi, '0xD45256EEf4bFB182B108Cd8e0bCB4A9369342C1d')
+
+      // Get EOA wallet to sign the transactions
+      const selectedEOA = this.getSelectedEOA()
+      const privateKey = await this.getWallet(selectedEOA)
+      const walletAccount = this.web3.eth.accounts.privateKeyToAccount(`0x${privateKey}`)
+
+      // Set temp tx hash, so the user doesn't have to wait for txhash to recieve
+      const temporaryTxHash = 'PENDING_'.concat(txMeta.id)
+      txMeta.hash = temporaryTxHash
+      txStateManager.updateTx(txMeta, 'transactions#setTxHash')
+
+      // Get the gasPrice
+      const gasPrice = await fetch(config.relayer.concat('/gasPrice')).then(response => response.json())
+      log.info('scwController: gasPrice', gasPrice)
+
+      let requestObject
+
+      // @todo remove this and set this value some other way.
+      txMeta.refundRelayer = true
+
+      // ============================================= Code that Dapp's generate =================================================================
+      // eslint-disable-next-line global-require
+      const TestDapp = new this.web3.eth.Contract(require('../../test/Dapp.json').abi, '0x2C40f5E48d9E054b17C2900A9e803A06616b1672')
+
+      const startingState = await TestDapp.methods.n().call()
+      const value = parseInt(startingState, 10) + 10
+      log.info(`N value of test dapp will be changed from ${startingState} to ${value}`)
+
+      // Get the encoded data of the dapp call
+      const dataToForward = TestDapp.methods.setN(value).encodeABI()
+
+      txParameters.data = dataToForward
+
+      // Encode data of callContract method to forward the transaction using params: Wallet address, Contract address, ETH value, txParameters.data
+      const methodData = TransferModule.methods.callContract(fromSCW, TestDapp.options.address, 0, txParameters.data).encodeABI()
+      // ==================================================================================================================
+
+      if (txMeta.refundRelayer) {
+        let signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, gasPrice, 0)
+        let { gasEstimate } = await post(config.relayer.concat('/generalCall/estimate'), {
+          gasLimit: 0,
+          gasPrice,
+          wallet: fromSCW,
+          nonce,
+          methodData,
+          signatures
+        })
+        // 29292 is the base gas used, for added margin, using + 100,000
+        gasEstimate += 100000
+        log.info('scwController: gasEstimate', gasEstimate)
+
+        // Create the signature needed for the "execute" method of inheritor of RelayerModule
+        signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, gasPrice, gasEstimate)
+
+        requestObject = {
+          gasLimit: gasEstimate,
+          gasPrice,
+          wallet: fromSCW,
+          nonce,
+          methodData,
+          signatures
+          // uniqueId: temporaryTxHash // Need to handle this in routes like transfer route.
+        }
+      } else {
+        // Create the signature needed for the "execute" method of inheritor of RelayerModule
+        const signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, gasPrice, 0)
+
+        requestObject = {
+          gasLimit: 0,
+          gasPrice,
+          wallet: fromSCW,
+          nonce,
+          methodData,
+          signatures
+        }
+      }
+
+      log.info('SmartContractWalletController', txMeta)
+
+      // post(relayerURL, reqObj)
+      //   .then(res => {
+      //     // Incase it resolves
+      //     console.log('scwController', res.txHash)
+      //     txMeta.hash = res.txHash
+      //     txStateManager.updateTx(txMeta, 'transactions#setTxHash')
+      //   })
+      //   .catch(err => {
+      //     log.error(err)
+      //     // Incase doesn't resolve,  Poll and update the txhash
+      //   })
+
+      txStateManager.setTxStatusSubmitted(txId)
+
+      const response = await post(relayerURL, requestObject)
+      log.info('scwController', response.txHash)
+      txMeta.hash = response.txHash
+      txStateManager.updateTx(txMeta, 'transactions#setTxHash')
+      return txMeta.hash
+    } catch (error) {
+      log.error(error)
+      return error
+      // Handle socket hangup and other issues
+    }
+  }
+
+  /**
+   * Sign the transaction and submit to the relayer
+   * @param txId {number} - the tx's Id
+   * @returns - rawTx {string}
+   */
+  async signTransactionForTransfer(txId, txStateManager, chainId) {
     try {
       const txMeta = txStateManager.getTx(txId)
       log.info('Transaction Controller, signTransaction', txMeta, txStateManager)
