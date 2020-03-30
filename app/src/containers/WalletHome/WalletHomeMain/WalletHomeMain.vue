@@ -24,7 +24,7 @@
                 </span>
                 <v-menu offset-y max-height="300" z-index="20">
                   <template v-slot:activator="{ on }">
-                    <v-btn x-small text class="currency-selector" v-on="on">
+                    <v-btn x-small text :class="{ 'currency-selector': $vuetify.breakpoint.mAndUp }" v-on="on">
                       <span id="selected-currency" class="description">{{ selectedCurrency }}</span>
                       <v-icon class="torus_gray3--text" small>$vuetify.icons.select</v-icon>
                     </v-btn>
