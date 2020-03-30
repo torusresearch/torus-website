@@ -30,8 +30,8 @@ export default {
       return this.$vuetify.breakpoint.xsOnly
         ? `${this.selectedAddress.slice(0, 4)}...${this.selectedAddress.slice(-3)}`
         : `${this.selectedAddress.slice(0, 6)}...${this.selectedAddress.slice(-5)}`
-    }
-  }
+    },
+  },
 }
 </script>
 

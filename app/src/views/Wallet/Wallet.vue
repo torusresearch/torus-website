@@ -24,11 +24,11 @@ import AccountMenu from '../../components/WalletAccount/AccountMenu'
 export default {
   components: {
     Navbar,
-    AccountMenu
+    AccountMenu,
   },
   data() {
     return {
-      drawer: false
+      drawer: false,
     }
   },
   computed: {
@@ -37,14 +37,14 @@ export default {
         { name: 'home', display: this.t('navBar.home'), route: '/wallet/home', icon: 'settings' },
         { name: 'transfer', display: this.t('navBar.transfer'), route: '/wallet/transfer', icon: 'transaction' },
         { name: 'activity', display: this.t('navBar.activity'), route: '/wallet/history', icon: 'activities' },
-        { name: 'settings', display: this.t('navBar.settings'), route: '/wallet/settings', icon: 'settings' }
+        { name: 'settings', display: this.t('navBar.settings'), route: '/wallet/settings', icon: 'settings' },
       ]
       if (process.env.VUE_APP_TORUS_BUILD_ENV !== 'lrc') {
         items.splice(2, 0, { name: 'top-up', display: this.t('navBar.topUp'), route: '/wallet/topup', icon: 'topup' })
       }
       return items
-    }
-  }
+    },
+  },
 }
 </script>
 

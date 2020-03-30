@@ -8,13 +8,13 @@ export default {
     name: THEME_LIGHT_BLUE_NAME,
     theme: lightBlue,
     isDark: false,
-    icon: 'light.svg'
+    icon: 'light.svg',
   },
   [THEME_DARK_BLACK_NAME]: {
     label: 'walletSettings.dark',
     name: THEME_DARK_BLACK_NAME,
     theme: darkBlack,
     isDark: true,
-    icon: 'dark.svg'
-  }
+    icon: 'dark.svg',
+  },
 }
