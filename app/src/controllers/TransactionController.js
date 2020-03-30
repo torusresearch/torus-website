@@ -125,7 +125,7 @@ class TransactionController extends EventEmitter {
   /** @returns {number} the chainId */
   getChainId() {
     const networkState = this.networkStore.getState()
-    const getChainId = parseInt(networkState, 10)
+    const getChainId = Number.parseInt(networkState, 10)
     if (Number.isNaN(getChainId)) {
       return 0
     }
@@ -217,8 +217,8 @@ class TransactionController extends EventEmitter {
     } else {
       // Assert that the origin has permissions to initiate transactions from
       // the specified address
-      const permittedAddresses = [await this.getSelectedAddress()]
-      if (!permittedAddresses.includes(normalizedTxParameters.from)) {
+      const permittedAddresses = new Set([await this.getSelectedAddress()])
+      if (!permittedAddresses.has(normalizedTxParameters.from)) {
         throw ethErrors.provider.unauthorized({ data: { origin } })
       }
     }

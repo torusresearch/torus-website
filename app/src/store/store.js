@@ -106,17 +106,17 @@ function handleConfirm(ev) {
   if (ev.data.txType === TX_PERSONAL_MESSAGE) {
     const { msgParams } = state.unapprovedPersonalMsgs[ev.data.id]
     log.info('PERSONAL MSG PARAMS:', msgParams)
-    msgParams.metamaskId = parseInt(ev.data.id, 10)
+    msgParams.metamaskId = Number.parseInt(ev.data.id, 10)
     torusController.signPersonalMessage(msgParams)
   } else if (ev.data.txType === TX_MESSAGE) {
     const { msgParams } = state.unapprovedMsgs[ev.data.id]
     log.info(' MSG PARAMS:', msgParams)
-    msgParams.metamaskId = parseInt(ev.data.id, 10)
+    msgParams.metamaskId = Number.parseInt(ev.data.id, 10)
     torusController.signMessage(msgParams)
   } else if (ev.data.txType === TX_TYPED_MESSAGE) {
     const { msgParams } = state.unapprovedTypedMessages[ev.data.id]
     log.info('TYPED MSG PARAMS:', msgParams)
-    msgParams.metamaskId = parseInt(ev.data.id, 10)
+    msgParams.metamaskId = Number.parseInt(ev.data.id, 10)
     torusController.signTypedMessage(msgParams)
   } else if (ev.data.txType === TX_TRANSACTION) {
     const { unApprovedTransactions } = VuexStore.getters
@@ -140,13 +140,13 @@ function handleConfirm(ev) {
 function handleDeny(id, txType) {
   const { torusController } = torus
   if (txType === TX_PERSONAL_MESSAGE) {
-    torusController.cancelPersonalMessage(parseInt(id, 10))
+    torusController.cancelPersonalMessage(Number.parseInt(id, 10))
   } else if (txType === TX_MESSAGE) {
-    torusController.cancelMessage(parseInt(id, 10))
+    torusController.cancelMessage(Number.parseInt(id, 10))
   } else if (txType === TX_TYPED_MESSAGE) {
-    torusController.cancelTypedMessage(parseInt(id, 10))
+    torusController.cancelTypedMessage(Number.parseInt(id, 10))
   } else if (txType === TX_TRANSACTION) {
-    torusController.cancelTransaction(parseInt(id, 10))
+    torusController.cancelTransaction(Number.parseInt(id, 10))
   }
 }
 
@@ -305,7 +305,7 @@ VuexStore.subscribe((mutation, state) => {
           type,
           type_name: typeName,
           type_image_link: typeImageLink,
-          currency_amount: (getCurrencyMultiplier() * parseFloat(totalAmount) * tokenRate).toString(),
+          currency_amount: (getCurrencyMultiplier() * Number.parseFloat(totalAmount) * tokenRate).toString(),
           selected_currency: state.selectedCurrency,
           status: 'submitted',
           network: state.networkType.host,

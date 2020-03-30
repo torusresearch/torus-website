@@ -420,18 +420,9 @@ export default {
           })
         )
       )
-      const claims = JSON.stringify({
-        id_token: {
-          email: null,
-        },
-        userinfo: {
-          picture: null,
-          preferred_username: null,
-        },
-      })
       const finalUrl =
         `https://id.twitch.tv/oauth2/authorize?client_id=${config.TWITCH_CLIENT_ID}&redirect_uri=` +
-        `${config.redirect_uri}&response_type=token%20id_token&scope=user:read:email+openid&claims=${claims}&state=${state}`
+        `${config.redirect_uri}&response_type=token&scope=user:read:email&state=${state}&force_verify=true`
       const twitchWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
       bc.addEventListener('message', async (ev) => {
@@ -445,22 +436,20 @@ export default {
             log.error(ev.error)
             oauthStream.write({ err: ev.error })
           } else if (ev.data && returnedVerifier === TWITCH) {
-            const { access_token: accessToken, id_token: idtoken } = verifierParameters
-            const userInfo = await get('https://id.twitch.tv/oauth2/userinfo', {
+            const { access_token: accessToken } = verifierParameters
+            const userInfo = await get('https://api.twitch.tv/helix/users', {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
               },
             })
-            const tokenInfo = jwtDecode(idtoken)
-            const { picture: profileImage, preferred_username: name } = userInfo || {}
-            const { email } = tokenInfo || {}
+            const [{ profile_image_url: profileImage, display_name: name, email, id: verifierId }] = userInfo.data || {}
             commit('setUserInfo', {
               profileImage,
               name,
               email,
-              verifierId: userInfo.sub.toString(),
+              verifierId,
               verifier: TWITCH,
-              verifierParams: { verifier_id: userInfo.sub.toString() },
+              verifierParams: { verifier_id: verifierId },
             })
             dispatch('handleLogin', { calledFromEmbed, idToken: accessToken.toString() })
           }

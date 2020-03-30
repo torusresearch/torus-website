@@ -122,7 +122,7 @@ class NonceTracker {
     const nonces = txList.map((txMeta) => {
       const { nonce } = txMeta.txParams
       assert(typeof nonce, 'string', 'nonces should be hex strings')
-      return parseInt(nonce, 16)
+      return Number.parseInt(nonce, 16)
     })
     const highestNonce = Math.max.apply(null, nonces)
     return highestNonce
@@ -143,7 +143,7 @@ class NonceTracker {
     const nonces = txList.map((txMeta) => {
       const { nonce } = txMeta.txParams
       assert(typeof nonce, 'string', 'nonces should be hex strings')
-      return parseInt(nonce, 16)
+      return Number.parseInt(nonce, 16)
     })
 
     let highest = startPoint

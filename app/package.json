@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "private": true,
   "scripts": {
     "serve": "npm run locale && vue-cli-service serve",
@@ -19,8 +19,8 @@
     "build:lrc": "npm run build-embed:lrc && npm run pre-build && vue-cli-service build --mode lrc",
     "dev": "cross-env NODE_ENV=development VUE_APP_TORUS_BUILD_ENV=development node server.js",
     "locale": "node ./scripts/importLocales.js",
-    "lint:js": "eslint --fix src/**/*.js",
-    "lint:vue": "eslint --fix src/**/*.vue",
+    "lint:js": "eslint --fix 'src/**/*.js'",
+    "lint:vue": "eslint --fix 'src/**/*.vue'",
     "post-build": ". ./scripts/buildErrorPage.sh",
     "pre-build": ". ./scripts/calculateIntegrity.sh && node ./scripts/replaceRedirectHTML.js && npm run locale",
     "production": "cross-env PORT=443 NODE_ENV=production node server.js",
@@ -81,7 +81,7 @@
     "promise-to-callback": "^1.0.0",
     "pump": "^3.0.0",
     "readable-stream": "^3.6.0",
-    "register-service-worker": "^1.6.2",
+    "register-service-worker": "^1.7.1",
     "rpc-cap": "^2.0.0",
     "safe-event-emitter": "^1.0.1",
     "single-call-balance-checker-abi": "^1.0.0",
@@ -103,7 +103,7 @@
   },
   "devDependencies": {
     "@babel/register": "^7.9.0",
-    "@toruslabs/torus-embed": "^1.2.3",
+    "@toruslabs/torus-embed": "^1.2.4",
     "@vue/cli-plugin-babel": "^4.2.3",
     "@vue/cli-plugin-eslint": "^4.2.3",
     "@vue/cli-plugin-pwa": "^4.2.3",
@@ -131,7 +131,7 @@
     "eslint-plugin-simple-import-sort": "^5.0.2",
     "eslint-plugin-standard": "^4.0.1",
     "eslint-plugin-switch-case": "^1.1.2",
-    "eslint-plugin-unicorn": "^17.2.0",
+    "eslint-plugin-unicorn": "^18.0.1",
     "eslint-plugin-vue": "^6.2.2",
     "eslint-plugin-vue-scoped-css": "^0.3.4",
     "esm": "^3.2.25",
@@ -143,7 +143,7 @@
     "jsdom": "^16.2.1",
     "jsdom-global": "^3.0.2",
     "lint-staged": "^10.0.9",
-    "luxon": "^1.22.0",
+    "luxon": "^1.22.2",
     "mocha": "^7.1.1",
     "mocha-eslint": "^6.0.0",
     "mocha-jsdom": "^2.0.0",
@@ -180,11 +180,11 @@
   "lint-staged": {
     "*.js": [
       "npm run lint:js --",
-      "prettier --write **/*.js"
+      "prettier --write src/**/*.js"
     ],
     "*.vue": [
       "npm run lint:vue --",
-      "prettier --write **/*.vue"
+      "prettier --write src/**/*.vue"
     ],
     "*.{json,css,yaml,yml}": [
       "prettier --write **/*.json",

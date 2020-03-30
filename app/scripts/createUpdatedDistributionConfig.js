@@ -7,10 +7,11 @@ try {
   if (Object.prototype.hasOwnProperty.call(cfConfig, 'DistributionConfig')) {
     const newConfig = cfConfig.DistributionConfig
     if (newConfig.DefaultCacheBehavior.LambdaFunctionAssociations.Items.length > 0) {
-      let arn = newConfig.DefaultCacheBehavior.LambdaFunctionAssociations.Items[0].LambdaFunctionARN
+      const requiredAssociation = newConfig.DefaultCacheBehavior.LambdaFunctionAssociations.Items.find((x) => x.EventType === 'origin-request')
+      let arn = requiredAssociation.LambdaFunctionARN
       const newVersion = parseInt(arn.slice(-1), 10) + 1
       arn = arn.slice(0, -1) + newVersion
-      newConfig.DefaultCacheBehavior.LambdaFunctionAssociations.Items[0].LambdaFunctionARN = arn
+      requiredAssociation.LambdaFunctionARN = arn
     }
     fs.writeFileSync(path.resolve('./updated_cf_config.json'), JSON.stringify(newConfig, null, 2), 'utf8')
   }

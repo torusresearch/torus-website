@@ -53,6 +53,17 @@
               </v-card-text>
             </v-card>
           </v-flex>
+          <v-flex v-for="(event, i) in events" :key="`event-${i}`" xs12 sm6 px-4 my-4>
+            <PromotionCard
+              :title="event.eventName"
+              :image-path="event.imageUrl"
+              :image-dark-path="event.imageDarkUrl"
+              :subtitle="event.description"
+              :details-link="event.callToActionLink"
+              :details-link-two="event.callToActionLinkTwo"
+              :details-text="event.callToActionText"
+            ></PromotionCard>
+          </v-flex>
           <v-flex v-if="isFreshAccount" xs12 sm6 px-4 my-4>
             <v-card class="card-shadow">
               <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
@@ -84,32 +95,13 @@
               </v-card-text>
             </v-card>
           </v-flex>
-          <v-flex v-for="(event, i) in isFreshAccount ? [] : events" :key="`event-${i}`" xs12 sm6 px-4 my-4>
-            <PromotionCard
-              :title="event.eventName"
-              :image-path="event.imageUrl"
-              :image-dark-path="event.imageDarkUrl"
-              :subtitle="event.description"
-              :details-link="event.callToActionLink"
-              :details-link-two="event.callToActionLinkTwo"
-              :details-text="event.callToActionText"
-            ></PromotionCard>
-          </v-flex>
         </v-layout>
       </v-flex>
 
       <v-flex xs12 px-4 class="hidden-sm-and-up mb-3">
         <v-layout>
           <v-flex xs6 class="pr-1">
-            <v-btn
-              outlined
-              large
-              block
-              color="primary"
-              :disabled="isFreshAccount"
-              class="transfer-btn-mobile py-1 mr-4 mt-4"
-              @click="initiateTransfer"
-            >
+            <v-btn outlined large block color="primary" class="transfer-btn-mobile py-1 mr-4 mt-4" @click="initiateTransfer">
               <v-icon left>$vuetify.icons.send</v-icon>
               {{ t('walletHome.transfer') }}
             </v-btn>
@@ -191,7 +183,6 @@
 </template>
 
 <script>
-// The color of dropdown icon requires half day work in modifying v-select
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import ExportQrCode from '../../../components/helpers/ExportQrCode'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'

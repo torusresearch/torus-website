@@ -33,7 +33,7 @@ export default {
         self.$store
           .dispatch('fetchWyreQuote', payload)
           .then((result) => {
-            self.currencyRate = parseFloat(result.data.exchangeRate)
+            self.currencyRate = Number.parseFloat(result.data.exchangeRate)
             self.cryptoCurrencyValue = result.data.destAmount
             self.currentOrder = result.data
           })

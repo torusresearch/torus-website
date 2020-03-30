@@ -47,7 +47,7 @@ export default {
 
         // validations
         if (selectedParameters.fiatValue) {
-          const requestedOrderAmount = +parseFloat(selectedParameters.fiatValue) || 0
+          const requestedOrderAmount = +Number.parseFloat(selectedParameters.fiatValue) || 0
           if (requestedOrderAmount < selectedProvider.minOrderValue) throw new Error('Requested amount is lower than supported')
           if (requestedOrderAmount > selectedProvider.maxOrderValue) throw new Error('Requested amount is higher than supported')
         }
@@ -68,7 +68,7 @@ export default {
             const rate = asset.price[selectedParameters.selectedCurrency]
             const fiatWithoutFee = fiat / (1 + feeRate) // Final amount of fiat that will be converted to crypto
             cryptoValue = fiatWithoutFee / rate // Final Crypto amount
-            currentOrder.cryptoCurrencyValue = cryptoValue * 10 ** asset.decimals || ''
+            currentOrder.cryptoCurrencyValue = Math.trunc(cryptoValue * 10 ** asset.decimals) || ''
             currentOrder.cryptoCurrencySymbol = asset.symbol || ''
           }
 
