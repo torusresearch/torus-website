@@ -28,13 +28,13 @@ export default {
   data() {
     return {
       themes,
-      selectedTheme: ''
+      selectedTheme: '',
     }
   },
   computed: {
     activeTheme() {
       return this.$store.state.theme
-    }
+    },
   },
   methods: {
     async saveTheme(theme) {
@@ -49,10 +49,10 @@ export default {
       if (!theme) return {}
       return {
         color: `${theme.theme.torus_brand1.base} !important`,
-        backgroundColor: `${theme.theme.torus_light} !important`
+        backgroundColor: `${theme.theme.torus_light} !important`,
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -77,12 +77,12 @@ class DetectTokensController {
    */
   async detectEtherscanTokenBalance(contractAddress, data = {}) {
     const nonZeroTokens = this.detectedTokensStore.getState().tokens
-    const index = nonZeroTokens.findIndex(element => element.tokenAddress.toLowerCase() === contractAddress.toLowerCase())
+    const index = nonZeroTokens.findIndex((element) => element.tokenAddress.toLowerCase() === contractAddress.toLowerCase())
     if (index === -1) {
       nonZeroTokens.push({
         ...data,
         tokenAddress: contractAddress,
-        balance: `0x${new BigNumber(data.balance).times(new BigNumber(10).pow(new BigNumber(data.decimals))).toString(16)}`
+        balance: `0x${new BigNumber(data.balance).times(new BigNumber(10).pow(new BigNumber(data.decimals))).toString(16)}`,
       })
       this.detectedTokensStore.putState({ tokens: nonZeroTokens })
     }
@@ -93,7 +93,7 @@ class DetectTokensController {
       return
     }
     const oldTokens = this.detectedTokensStore.getState().tokens
-    const tokenAddresses = oldTokens.map(x => x.tokenAddress)
+    const tokenAddresses = oldTokens.map((x) => x.tokenAddress)
     if (tokenAddresses.length > 0) {
       const web3Instance = this.web3
       const ethContract = new web3Instance.eth.Contract(SINGLE_CALL_BALANCES_ABI, SINGLE_CALL_BALANCES_ADDRESS)

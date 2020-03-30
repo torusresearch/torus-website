@@ -33,7 +33,7 @@
           <v-card v-if="!$vuetify.breakpoint.xsOnly" class="mx-auto asset elevation-1" max-width="344" :ripple="false" @click="toggleDetails($event)">
             <!-- <v-img :src="asset.image" height="140px" :style="{ backgroundColor: asset.color }"></v-img> -->
             <div class="text-center">
-              <img :src="asset.image" style="width: auto; height: 140px" :alt="asset.name || `${selectedContract.name} #${asset.tokenId}`" />
+              <img :src="asset.image" style="width: auto; height: 140px;" :alt="asset.name || `${selectedContract.name} #${asset.tokenId}`" />
             </div>
             <v-card-text class="asset-text py-1 px-3">
               <div class="body-2" :class="assetActive ? '' : 'text-clamp-two'" :title="asset.name || `${selectedContract.name} #${asset.tokenId}`">
@@ -112,21 +112,21 @@ export default {
           text: this.t('walletHome.home'),
           disabled: false,
           exact: true,
-          to: '/wallet/home'
+          to: '/wallet/home',
         },
         {
           text: this.t('walletHome.collectibles'),
           disabled: false,
           exact: true,
-          to: '/wallet/home#collectibles'
+          to: '/wallet/home#collectibles',
         },
         {
           text: '',
-          disabled: true
-        }
+          disabled: true,
+        },
       ],
       selectedContract: '',
-      assetActive: false
+      assetActive: false,
     }
   },
   computed: {
@@ -135,14 +135,14 @@ export default {
     },
     collectibles() {
       return this.$store.getters.collectibleBalances
-    }
+    },
   },
   watch: {
     collectibles(newValue, oldValue) {
       if (newValue !== oldValue) {
         this.updateFieldsBasedOnRoute()
       }
-    }
+    },
   },
   mounted() {
     this.updateFieldsBasedOnRoute()
@@ -164,16 +164,16 @@ export default {
       }
     },
     transferAsset(asset) {
-      this.$router.push({ name: 'walletTransfer', query: { ...this.$route.query, contract: asset.address, asset: asset.tokenId } }).catch(_ => {})
+      this.$router.push({ name: 'walletTransfer', query: { ...this.$route.query, contract: asset.address, asset: asset.tokenId } }).catch((_) => {})
     },
     updateFieldsBasedOnRoute() {
       const contractAddress = this.$route.params.address
       this.selectedContract =
-        this.collectibles.find(contract => contract.address.toLowerCase() === contractAddress.toLowerCase()) || this.collectibles[0]
+        this.collectibles.find((contract) => contract.address.toLowerCase() === contractAddress.toLowerCase()) || this.collectibles[0]
 
       this.changeContract()
-    }
-  }
+    },
+  },
 }
 </script>
 

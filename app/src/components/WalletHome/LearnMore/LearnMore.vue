@@ -55,19 +55,19 @@ export default {
             {
               icon: 't.svg',
               name: `${this.t('walletHome.whatIs')} Torus?`,
-              content: this.t('walletHome.whatIsDesc')
+              content: this.t('walletHome.whatIsDesc'),
             },
             {
               icon: 'wallet.svg',
               name: this.t('walletHome.knowYourWallet'),
-              content: this.t('walletHome.knowYourWalletDesc')
+              content: this.t('walletHome.knowYourWalletDesc'),
             },
             {
               icon: 'money.svg',
               name: this.t('walletHome.getDigital'),
-              content: this.t('walletHome.getDigitalDesc')
-            }
-          ]
+              content: this.t('walletHome.getDigitalDesc'),
+            },
+          ],
         },
         {
           title: this.t('walletHome.privacySecurity'),
@@ -77,16 +77,16 @@ export default {
             {
               icon: 'key-large.svg',
               name: this.t('walletHome.privateKey'),
-              content: this.t('walletHome.privateKeyDesc')
+              content: this.t('walletHome.privateKeyDesc'),
             },
             {
               icon: 'password.svg',
               name: this.t('walletHome.accountRecovery'),
-              content: this.t('walletHome.accountRecoveryDesc')
-            }
-          ]
-        }
-      ]
+              content: this.t('walletHome.accountRecoveryDesc'),
+            },
+          ],
+        },
+      ],
     }
   },
   methods: {
@@ -97,8 +97,8 @@ export default {
         this.$emit('onClose')
         this.e1 = 1
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

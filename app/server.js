@@ -11,7 +11,7 @@ const log = require('loglevel')
 const APP_PORT = process.env.PORT || 3000
 const certOptions = {
   key: fs.readFileSync(path.resolve('../ssl/server.key')),
-  cert: fs.readFileSync(path.resolve('../ssl/server.crt'))
+  cert: fs.readFileSync(path.resolve('../ssl/server.crt')),
 }
 // app.all(/^(?!(\/notsupported)).*$/, ensureCompatibleBrowser)
 app.use(compression())

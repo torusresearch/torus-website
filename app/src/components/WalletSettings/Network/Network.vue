@@ -78,20 +78,20 @@ export default {
         {
           networkName: RPC_DISPLAY_NAME,
           host: RPC,
-          chainId: ''
-        }
+          chainId: '',
+        },
       ],
       rpc: { chainId: '', networkName: '', host: '' },
       formValid: true,
       rules: {
-        required: value => !!value || 'Required'
-      }
+        required: (value) => !!value || 'Required',
+      },
     }
   },
   computed: {
     isRPCSelected() {
       return this.selectedNetwork.host === RPC
-    }
+    },
   },
   mounted() {
     this.selectedNetwork = this.$store.state.networkType
@@ -113,7 +113,7 @@ export default {
             this.sendToIframe(payload)
             this.showNotification(true)
           })
-          .catch(error => {
+          .catch((error) => {
             this.showNotification(false)
             log.error(error)
           })
@@ -129,7 +129,7 @@ export default {
             this.showNotification(true)
             this.sendToIframe(payload)
           })
-          .catch(error => {
+          .catch((error) => {
             this.showNotification(false)
             log.error(error)
           })
@@ -142,12 +142,12 @@ export default {
         await providerChangeChannel.postMessage({
           data: {
             name: 'provider_change',
-            payload
-          }
+            payload,
+          },
         })
         providerChangeChannel.close()
       }
-    }
-  }
+    },
+  },
 }
 </script>

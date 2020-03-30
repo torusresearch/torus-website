@@ -128,20 +128,20 @@ import HelpTooltip from '../HelpTooltip'
 
 export default {
   components: {
-    HelpTooltip
+    HelpTooltip,
   },
   props: {
     activeGasPrice: { type: BigNumber, default: new BigNumber('0') },
     gas: { type: BigNumber, default: new BigNumber('0') },
     displayAmount: { type: BigNumber, default: new BigNumber('0') },
-    symbol: { type: String, default: '' }
+    symbol: { type: String, default: '' },
   },
   data() {
     return {
       dialog: false,
       advanceOptionFormValid: true,
       advancedActiveGasPrice: new BigNumber('0'),
-      advancedGas: new BigNumber('0')
+      advancedGas: new BigNumber('0'),
     }
   },
   computed: {
@@ -171,14 +171,14 @@ export default {
     },
     totalCostConverted() {
       return this.convertedDisplay(this.totalCost)
-    }
+    },
   },
   watch: {
     dialog(value) {
       if (value) {
         this.updateDetails()
       }
-    }
+    },
   },
   mounted() {
     this.updateDetails()
@@ -194,7 +194,7 @@ export default {
       if (this.$refs.advanceOptionForm.validate()) {
         const payload = {
           advancedGas: this.advancedGas,
-          advancedActiveGasPrice: this.advancedActiveGasPrice
+          advancedActiveGasPrice: this.advancedActiveGasPrice,
         }
 
         this.$emit('onSave', payload)
@@ -212,8 +212,8 @@ export default {
       const converted = significantDigits(bigNumber)
 
       return `~ ${converted} ${this.selectedCurrency}`
-    }
-  }
+    },
+  },
 }
 </script>
 

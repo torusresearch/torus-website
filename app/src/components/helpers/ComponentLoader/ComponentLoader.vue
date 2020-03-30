@@ -13,7 +13,7 @@ export default {
   computed: {
     color() {
       return this.$vuetify.theme.dark ? this.$vuetify.theme.themes.dark.torus_brand1 : this.$vuetify.theme.themes.light.torus_brand1
-    }
-  }
+    },
+  },
 }
 </script>

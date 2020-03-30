@@ -14,13 +14,13 @@ export default function createMetamaskMiddleware({
   processTypedMessageV4,
   processPersonalMessage,
   getPendingNonce,
-  getPendingTransactionByHash
+  getPendingTransactionByHash,
 }) {
   const metamaskMiddleware = mergeMiddleware([
     createScaffoldMiddleware({
       // staticSubprovider
       eth_syncing: false,
-      web3_clientVersion: `MetaMask/v${version}`
+      web3_clientVersion: `MetaMask/v${version}`,
     }),
     createWalletSubprovider({
       getAccounts,
@@ -29,11 +29,11 @@ export default function createMetamaskMiddleware({
       processTypedMessage,
       processTypedMessageV3,
       processTypedMessageV4,
-      processPersonalMessage
+      processPersonalMessage,
     }),
     createRequestAccountsMiddleware({ getAccounts }),
     createPendingNonceMiddleware({ getPendingNonce }),
-    createPendingTxMiddleware({ getPendingTransactionByHash })
+    createPendingTxMiddleware({ getPendingTransactionByHash }),
   ])
   return metamaskMiddleware
 }

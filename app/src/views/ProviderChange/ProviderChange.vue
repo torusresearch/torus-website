@@ -64,7 +64,7 @@ export default {
   name: 'Confirm',
   components: {
     ChangeProviderScreenLoader,
-    NetworkDisplay
+    NetworkDisplay,
     // PermissionConfirm
   },
   data() {
@@ -73,17 +73,17 @@ export default {
       type: 'none',
       network: {},
       currentNetwork: {},
-      channel: ''
+      channel: '',
     }
   },
   mounted() {
     this.channel = `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
-    bc.addEventListener('message', async ev => {
+    bc.addEventListener('message', async (ev) => {
       const {
         payload: { network, type },
         origin,
-        currentNetwork
+        currentNetwork,
       } = ev.data || {}
       this.origin = origin // origin of tx: website url
       this.network = network
@@ -98,7 +98,7 @@ export default {
     async triggerSign() {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({
-        data: { type: 'provider-change-result', approve: true }
+        data: { type: 'provider-change-result', approve: true },
       })
       bc.close()
     },
@@ -106,8 +106,8 @@ export default {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({ data: { type: 'provider-change-result', approve: false } })
       bc.close()
-    }
-  }
+    },
+  },
 }
 </script>
 

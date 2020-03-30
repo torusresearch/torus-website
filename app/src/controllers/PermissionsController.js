@@ -9,7 +9,7 @@ import { CapabilitiesController as RpcCap } from 'rpc-cap'
 import {
   CAVEAT_NAMES,
   SAFE_METHODS, // methods that do not require any permissions to use
-  WALLET_PREFIX
+  WALLET_PREFIX,
 } from '../utils/enums'
 import createMethodMiddleware from '../utils/methodMiddleware'
 import getRestrictedMethods from '../utils/restrictedMethods'
@@ -29,7 +29,7 @@ export default class PermissionsController {
       createMethodMiddleware({
         getAccounts: this.getAccounts.bind(this, origin),
         requestAccountsPermission: this._requestPermissions.bind(this, origin, { eth_accounts: {} }),
-        setSiteMetadata: this.setSiteMetadata.bind(this)
+        setSiteMetadata: this.setSiteMetadata.bind(this),
       })
     )
 
@@ -107,7 +107,7 @@ export default class PermissionsController {
       approval.reject(
         ethErrors.rpc.invalidRequest({
           message: error.message,
-          data: error
+          data: error,
         })
       )
     }
@@ -150,12 +150,12 @@ export default class PermissionsController {
       }
 
       // caveat names are unique, and we will only construct this caveat here
-      ethAccounts.caveats = ethAccounts.caveats.filter(c => c.name !== CAVEAT_NAMES.exposedAccounts)
+      ethAccounts.caveats = ethAccounts.caveats.filter((c) => c.name !== CAVEAT_NAMES.exposedAccounts)
 
       ethAccounts.caveats.push({
         type: 'filterResponse',
         value: accounts,
-        name: CAVEAT_NAMES.exposedAccounts
+        name: CAVEAT_NAMES.exposedAccounts,
       })
     }
   }
@@ -173,7 +173,7 @@ export default class PermissionsController {
 
     // assert accounts exist
     const allAccounts = await this.getKeyringAccounts()
-    accounts.forEach(accumulator => {
+    accounts.forEach((accumulator) => {
       if (!allAccounts.includes(accumulator)) {
         throw new Error(`Unknown account: ${accumulator}`)
       }
@@ -188,7 +188,7 @@ export default class PermissionsController {
     Object.entries(domains).forEach(([origin, perms]) => {
       this.permissions.removePermissionsFor(
         origin,
-        perms.map(methodName => ({ parentCapability: methodName }))
+        perms.map((methodName) => ({ parentCapability: methodName }))
       )
     })
   }
@@ -231,9 +231,9 @@ export default class PermissionsController {
          *
          * @param {string} req - The internal rpc-cap user request object.
          */
-        requestUserApproval: async request => {
+        requestUserApproval: async (request) => {
           const {
-            metadata: { id }
+            metadata: { id },
           } = request
 
           this._platform.openExtensionInBrowser(`connect/${id}`)
@@ -241,7 +241,7 @@ export default class PermissionsController {
           return new Promise((resolve, reject) => {
             this.pendingApprovals[id] = { resolve, reject }
           })
-        }
+        },
       },
       initState
     )

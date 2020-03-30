@@ -9,11 +9,11 @@ export { normalizeTxParameters as normalizeTxParams, validateTxParameters as val
 const normalizers = {
   from: (from, LowerCase = true) => (LowerCase ? addHexPrefix(from).toLowerCase() : addHexPrefix(from)),
   to: (to, LowerCase = true) => (LowerCase ? addHexPrefix(to).toLowerCase() : addHexPrefix(to)),
-  nonce: nonce => addHexPrefix(nonce),
-  value: value => addHexPrefix(value),
-  data: data => addHexPrefix(data),
-  gas: gas => addHexPrefix(gas),
-  gasPrice: gasPrice => addHexPrefix(gasPrice)
+  nonce: (nonce) => addHexPrefix(nonce),
+  value: (value) => addHexPrefix(value),
+  data: (data) => addHexPrefix(data),
+  gas: (gas) => addHexPrefix(gas),
+  gasPrice: (gasPrice) => addHexPrefix(gasPrice),
 }
 
 /**
@@ -83,6 +83,6 @@ function getFinalStates() {
     'rejected', // the user has responded no!
     'confirmed', // the tx has been included in a block.
     'failed', // the tx failed for some reason, included on tx data.
-    'dropped' // the tx nonce was already used
+    'dropped', // the tx nonce was already used
   ]
 }

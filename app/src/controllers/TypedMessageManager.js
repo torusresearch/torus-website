@@ -1,7 +1,7 @@
 /* eslint-disable no-case-declarations */
 import assert from 'assert'
 import { ethErrors } from 'eth-json-rpc-errors'
-import sigUtil from 'eth-sig-util'
+import * as sigUtil from 'eth-sig-util'
 import EventEmitter from 'events'
 import jsonschema from 'jsonschema'
 import log from 'loglevel'
@@ -36,7 +36,7 @@ export default class TypedMessageManager extends EventEmitter {
     this.networkController = networkController
     this.store = new ObservableStore({
       unapprovedTypedMessages: {},
-      unapprovedTypedMessagesCount: 0
+      unapprovedTypedMessagesCount: 0,
     })
     this.messages = []
   }
@@ -60,7 +60,7 @@ export default class TypedMessageManager extends EventEmitter {
    */
   getUnapprovedMsgs() {
     return this.messages
-      .filter(message => message.status === 'unapproved')
+      .filter((message) => message.status === 'unapproved')
       .reduce((result, message) => {
         result[message.id] = message
         return result
@@ -80,7 +80,7 @@ export default class TypedMessageManager extends EventEmitter {
   addUnapprovedMessageAsync(messageParameters, request, version) {
     return new Promise((resolve, reject) => {
       const messageId = this.addUnapprovedMessage(messageParameters, request, version)
-      this.once(`${messageId}:finished`, data => {
+      this.once(`${messageId}:finished`, (data) => {
         switch (data.status) {
           case 'signed':
             return resolve(data.rawSig)
@@ -120,7 +120,7 @@ export default class TypedMessageManager extends EventEmitter {
       msgParams: messageParameters,
       time,
       status: 'unapproved',
-      type: 'eth_signTypedData'
+      type: 'eth_signTypedData',
     }
     this.addMsg(messageData)
 
@@ -162,7 +162,7 @@ export default class TypedMessageManager extends EventEmitter {
         assert.ok(data.primaryType in data.types, `Primary type of "${data.primaryType}" has no type definition.`)
         assert.strictEqual(validation.errors.length, 0, 'Data must conform to EIP-712 schema. See https://git.io/fNtcx.')
         const { chainId } = data.domain
-        const activeChainId = parseInt(this.networkController.getNetworkState(), 10)
+        const activeChainId = Number.parseInt(this.networkController.getNetworkState(), 10)
         if (chainId) assert.strictEqual(chainId, activeChainId, `Provided chainId (${chainId}) must match the active chainId (${activeChainId})`)
         break
       default:
@@ -191,7 +191,7 @@ export default class TypedMessageManager extends EventEmitter {
    *
    */
   getMsg(messageId) {
-    return this.messages.find(message => message.id === messageId)
+    return this.messages.find((message) => message.id === messageId)
   }
 
   /**
@@ -307,7 +307,7 @@ export default class TypedMessageManager extends EventEmitter {
    *
    */
   _updateMsg(message_) {
-    const index = this.messages.findIndex(message => message.id === message_.id)
+    const index = this.messages.findIndex((message) => message.id === message_.id)
     if (index !== -1) {
       this.messages[index] = message_
     }

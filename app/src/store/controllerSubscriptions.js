@@ -11,14 +11,14 @@ function getStore() {
         deferredDispatch.push(() => {
           storeReference.dispatch(...arguments_)
         })
-      }
+      },
     }
   )
 }
 
 export function injectStore(s) {
   storeReference = s
-  deferredDispatch.forEach(fn => fn())
+  deferredDispatch.forEach((fn) => fn())
   deferredDispatch = []
 }
 
@@ -28,7 +28,7 @@ to "loading" at times in the inpage API
  */
 
 if (torus) {
-  torus.torusController.networkController.networkStore.subscribe(state => {
+  torus.torusController.networkController.networkStore.subscribe((state) => {
     getStore().dispatch('updateNetworkId', { networkId: state })
   })
 }
@@ -60,12 +60,12 @@ export function transactionControllerHandler({ transactions }) {
 
 export function assetControllerHandler(store) {
   const { collectibleContracts, collectibles } = store
-  const finalCollectibles = collectibleContracts.map(contract => {
-    contract.assets = collectibles.filter(asset => asset.address === contract.address)
+  const finalCollectibles = collectibleContracts.map((contract) => {
+    contract.assets = collectibles.filter((asset) => asset.address === contract.address)
     return contract
   })
   getStore().commit('setAssets', {
-    [torus.torusController.assetController.selectedAddress]: finalCollectibles
+    [torus.torusController.assetController.selectedAddress]: finalCollectibles,
   })
 }
 
@@ -86,7 +86,7 @@ export function detectTokensControllerHandler({ tokens }) {
   console.log('detectTokensControllerHandler', tokens)
   if (tokens.length > 0) {
     getStore().commit('setTokenData', {
-      [torus.torusController.detectTokensController.selectedAddress]: tokens
+      [torus.torusController.detectTokensController.selectedAddress]: tokens,
     })
   }
   getStore().commit('setTokenDataLoaded')
@@ -99,7 +99,7 @@ export function tokenRatesControllerHandler({ contractExchangeRates }) {
 }
 
 export function prefsControllerHandler(state) {
-  Object.keys(state).forEach(x => {
+  Object.keys(state).forEach((x) => {
     getStore().commit(`set${capitalizeFirstLetter(x)}`, state[x])
   })
 }

@@ -78,7 +78,7 @@ export default {
 
     if (torusWhiteLabel !== null) {
       const whiteLabelData = JSON.parse(torusWhiteLabel)
-      Object.keys(whiteLabelData.whiteLabelTheme).forEach(key => {
+      Object.keys(whiteLabelData.whiteLabelTheme).forEach((key) => {
         if (whiteLabelData.whiteLabelTheme[key]) {
           whiteLabelData.whiteLabelTheme[camelToSnake(key)] = whiteLabelData.whiteLabelTheme[key]
         }
@@ -109,7 +109,7 @@ export default {
     state.contacts = payload
   },
   logOut(state, payload) {
-    Object.keys(state).forEach(key => {
+    Object.keys(state).forEach((key) => {
       state[key] = payload[key] // or = initialState[key]
     })
   },
@@ -131,14 +131,14 @@ export default {
     const value = payload[key] || { name: '', icon: '' }
     state.iframeMetadata = {
       origin: key,
-      ...value
+      ...value,
     }
-  }
+  },
 }
 
 function camelToSnake(string) {
   return string
-    .replace(/\w([A-Z])/g, m => {
+    .replace(/\w([A-Z])/g, (m) => {
       return `${m[0]}_${m[1]}`
     })
     .toLowerCase()

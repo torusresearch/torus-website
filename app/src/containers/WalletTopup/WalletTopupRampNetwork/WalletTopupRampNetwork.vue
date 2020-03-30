@@ -17,13 +17,13 @@ import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 
 export default {
   components: {
-    WalletTopupBase
+    WalletTopupBase,
   },
   data() {
     return {
       cryptoCurrencyValue: 0,
       currencyRate: 0,
-      currentOrder: {}
+      currentOrder: {},
     }
   },
   methods: {
@@ -32,8 +32,8 @@ export default {
       throttle(() => {
         self.$store
           .dispatch('fetchRampNetworkQuote', payload)
-          .then(result => {
-            const asset = result.assets.find(item => item.symbol === payload.selectedCryptoCurrency)
+          .then((result) => {
+            const asset = result.assets.find((item) => item.symbol === payload.selectedCryptoCurrency)
 
             const fiat = payload.fiatValue
             const feeRate = asset.maxFeePercent[payload.selectedCurrency] / 100
@@ -45,11 +45,11 @@ export default {
             self.cryptoCurrencySymbol = asset.symbol
             self.currencyRate = 1 / asset.price[payload.selectedCurrency]
             self.currentOrder = {
-              cryptoCurrencyValue: cryptoValue * 10 ** asset.decimals,
-              cryptoCurrencySymbol: asset.symbol
+              cryptoCurrencyValue: Math.trunc(cryptoValue * 10 ** asset.decimals),
+              cryptoCurrencySymbol: asset.symbol,
             }
           })
-          .catch(error => log.error(error))
+          .catch((error) => log.error(error))
       }, 0)()
     },
     sendOrder(callback) {
@@ -57,7 +57,7 @@ export default {
         this.$store.dispatch('fetchRampNetworkOrder', {
           currentOrder: this.currentOrder,
           colorCode: this.$vuetify.theme.themes.light.primary.base,
-          selectedAddress: this.$store.state.selectedAddress
+          selectedAddress: this.$store.state.selectedAddress,
         })
       )
     },
@@ -66,8 +66,8 @@ export default {
       this.currencyRate = 0
       this.currentOrder = {}
       this.fetchQuote(payload)
-    }
-  }
+    },
+  },
 }
 </script>
 

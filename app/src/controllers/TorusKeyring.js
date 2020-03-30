@@ -1,4 +1,4 @@
-import sigUtil from 'eth-sig-util'
+import * as sigUtil from 'eth-sig-util'
 import * as ethUtil from 'ethereumjs-util'
 import Wallet from 'ethereumjs-wallet'
 import { EventEmitter } from 'events'
@@ -15,7 +15,7 @@ export default class TorusKeyring extends EventEmitter {
       .then(() => {
         log.info('wallet initialised')
       })
-      .catch(error => log.error('unable to deserialize', error))
+      .catch((error) => log.error('unable to deserialize', error))
   }
 
   serialize() {
@@ -73,13 +73,13 @@ export default class TorusKeyring extends EventEmitter {
       newWallets.push(Wallet.generate())
     }
     this.wallets = this.wallets.concat(newWallets)
-    const hexWallets = newWallets.map(w => ethUtil.bufferToHex(w.getAddress()))
+    const hexWallets = newWallets.map((w) => ethUtil.bufferToHex(w.getAddress()))
     return Promise.resolve(hexWallets)
   }
 
   // Not using
   getAccounts() {
-    return Promise.resolve(this.wallets.map(w => ethUtil.bufferToHex(w.getAddress())))
+    return Promise.resolve(this.wallets.map((w) => ethUtil.bufferToHex(w.getAddress())))
   }
 
   // tx is an instance of the ethereumjs-transaction class.
@@ -170,17 +170,17 @@ export default class TorusKeyring extends EventEmitter {
 
   // not using
   removeAccount(address) {
-    if (!this.wallets.map(w => ethUtil.bufferToHex(w.getAddress()).toLowerCase()).includes(address.toLowerCase())) {
+    if (!this.wallets.map((w) => ethUtil.bufferToHex(w.getAddress()).toLowerCase()).includes(address.toLowerCase())) {
       throw new Error(`Address ${address} not found in this keyring`)
     }
-    this.wallets = this.wallets.filter(w => ethUtil.bufferToHex(w.getAddress()).toLowerCase() !== address.toLowerCase())
+    this.wallets = this.wallets.filter((w) => ethUtil.bufferToHex(w.getAddress()).toLowerCase() !== address.toLowerCase())
   }
 
   /* PRIVATE METHODS */
 
   _getWalletForAccount(account) {
     const address = sigUtil.normalize(account)
-    const wallet = this.wallets.find(w => ethUtil.bufferToHex(w.getAddress()) === address)
+    const wallet = this.wallets.find((w) => ethUtil.bufferToHex(w.getAddress()) === address)
     if (!wallet) throw new Error('Torus Keyring - Unable to find matching address.')
     return wallet
   }

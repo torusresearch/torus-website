@@ -14,7 +14,7 @@ class StreamWindow {
     if (!preopenInstanceId) {
       this.preopenInstanceId = randomId()
       if (windowStream.on) {
-        windowStream.on('data', chunk => {
+        windowStream.on('data', (chunk) => {
           if (chunk.name === 'opened_window' && this.preopenInstanceId === chunk.data.preopenInstanceId) {
             this.open(url)
           }
@@ -23,8 +23,8 @@ class StreamWindow {
       windowStream.write({
         name: 'create_window',
         data: {
-          preopenInstanceId: this.preopenInstanceId
-        }
+          preopenInstanceId: this.preopenInstanceId,
+        },
       })
     }
   }
@@ -34,7 +34,7 @@ class StreamWindow {
       const bc = new BroadcastChannel(`preopen_channel_${this.preopenInstanceId}`, broadcastChannelOptions)
       log.info('setting up bc', this.preopenInstanceId)
       this.url = url
-      bc.addEventListener('message', ev => {
+      bc.addEventListener('message', (ev) => {
         const { preopenInstanceId: openedId, message } = ev.data
         if (this.preopenInstanceId === openedId && message === 'popup_loaded') {
           if (this.writeInterval) clearInterval(this.writeInterval)
@@ -43,14 +43,14 @@ class StreamWindow {
             data: {
               origin: getIFrameOrigin(),
               payload: { url: this.url },
-              preopenInstanceId: this.preopenInstanceId
-            }
+              preopenInstanceId: this.preopenInstanceId,
+            },
           })
             .then(() => {
               bc.close()
               resolve()
             })
-            .catch(error => {
+            .catch((error) => {
               log.error('Failed to communicate via preopen_channel', error)
               bc.close()
               reject(error)
@@ -61,11 +61,11 @@ class StreamWindow {
         bc.postMessage({
           data: {
             preopenInstanceId: this.preopenInstanceId,
-            message: 'setup_complete'
-          }
+            message: 'setup_complete',
+          },
         })
       }, 200)
-      const preopenHandler = chunk => {
+      const preopenHandler = (chunk) => {
         const { preopenInstanceId, closed } = chunk.data
         if (preopenInstanceId === this.preopenInstanceId && closed) {
           this.closed = true
@@ -79,7 +79,7 @@ class StreamWindow {
   close() {
     windowStream.write({
       preopenInstanceId: this.preopenInstanceId,
-      close: true
+      close: true,
     })
   }
 }

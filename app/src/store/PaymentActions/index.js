@@ -9,22 +9,22 @@ import wyre from './wyre'
 
 const topupStream = (torus && torus.communicationMux && torus.communicationMux.getStream('topup')) || fakeStream
 
-const handleSuccess = success => {
+const handleSuccess = (success) => {
   topupStream.write({
     name: 'topup_response',
     data: {
-      success
-    }
+      success,
+    },
   })
 }
 
-const handleFailure = error => {
+const handleFailure = (error) => {
   topupStream.write({
     name: 'topup_response',
     data: {
       success: false,
-      error: error.message || 'Internal error'
-    }
+      error: error.message || 'Internal error',
+    },
   })
 }
 
@@ -47,7 +47,7 @@ export default {
 
         // validations
         if (selectedParameters.fiatValue) {
-          const requestedOrderAmount = +parseFloat(selectedParameters.fiatValue) || 0
+          const requestedOrderAmount = +Number.parseFloat(selectedParameters.fiatValue) || 0
           if (requestedOrderAmount < selectedProvider.minOrderValue) throw new Error('Requested amount is lower than supported')
           if (requestedOrderAmount > selectedProvider.maxOrderValue) throw new Error('Requested amount is higher than supported')
         }
@@ -62,20 +62,20 @@ export default {
           if (selectedParameters.fiatValue && selectedParameters.selectedCurrency && selectedParameters.selectedCryptoCurrency) {
             const result = await dispatch('fetchRampNetworkQuote', selectedParameters)
             let cryptoValue = 0
-            const asset = result.assets.find(item => item.symbol === selectedParameters.selectedCryptoCurrency)
+            const asset = result.assets.find((item) => item.symbol === selectedParameters.selectedCryptoCurrency)
             const fiat = selectedParameters.fiatValue
             const feeRate = asset.maxFeePercent[selectedParameters.selectedCurrency] / 100
             const rate = asset.price[selectedParameters.selectedCurrency]
             const fiatWithoutFee = fiat / (1 + feeRate) // Final amount of fiat that will be converted to crypto
             cryptoValue = fiatWithoutFee / rate // Final Crypto amount
-            currentOrder.cryptoCurrencyValue = cryptoValue * 10 ** asset.decimals || ''
+            currentOrder.cryptoCurrencyValue = Math.trunc(cryptoValue * 10 ** asset.decimals) || ''
             currentOrder.cryptoCurrencySymbol = asset.symbol || ''
           }
 
           const { success } = await dispatch('fetchRampNetworkOrder', {
             currentOrder,
             preopenInstanceId,
-            selectedAddress: selectedParameters.selectedAddress
+            selectedAddress: selectedParameters.selectedAddress,
           })
           handleSuccess(success)
         } else if (provider === MOONPAY) {
@@ -83,13 +83,13 @@ export default {
           const currentOrder = {
             currency: { code: selectedParameters.selectedCryptoCurrency || '' },
             baseCurrencyAmount: selectedParameters.fiatValue || '',
-            baseCurrency: { code: selectedParameters.selectedCurrency || '' }
+            baseCurrency: { code: selectedParameters.selectedCurrency || '' },
           }
           const { success } = await dispatch('fetchMoonpayOrder', {
             currentOrder,
             colorCode: vuetify.framework.theme.themes.light.primary.base,
             preopenInstanceId,
-            selectedAddress: selectedParameters.selectedAddress
+            selectedAddress: selectedParameters.selectedAddress,
           })
           handleSuccess(success)
         } else if (provider === WYRE) {
@@ -97,7 +97,7 @@ export default {
           const { success } = await dispatch('fetchWyreOrder', {
             currentOrder: { destCurrency: selectedParameters.selectedCryptoCurrency || '', sourceAmount: selectedParameters.fiatValue || '' },
             preopenInstanceId,
-            selectedAddress: selectedParameters.selectedAddress
+            selectedAddress: selectedParameters.selectedAddress,
           })
           handleSuccess(success)
         }
@@ -107,5 +107,5 @@ export default {
     } else {
       handleFailure(new Error('Unsupported/Invalid provider selected'))
     }
-  }
+  },
 }

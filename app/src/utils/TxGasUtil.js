@@ -29,7 +29,7 @@ class TxGasUtil {
       txMeta.simulationFails = {
         reason: error.message,
         errorKey: error.errorKey,
-        debug: { blockNumber: block.number, blockGasLimit: block.gasLimit }
+        debug: { blockNumber: block.number, blockGasLimit: block.gasLimit },
       }
 
       if (error.errorKey === 'transactionErrorNoContract') {

@@ -71,30 +71,30 @@ import TransferAdvanceOption from '../TransferAdvanceOption'
 
 export default {
   components: {
-    TransferAdvanceOption
+    TransferAdvanceOption,
   },
   props: {
     gas: { type: BigNumber, default: new BigNumber('0') },
     displayAmount: { type: BigNumber, default: new BigNumber('0') },
     activeGasPriceConfirm: {
       type: BigNumber,
-      default: undefined
+      default: undefined,
     },
     symbol: {
       type: String,
-      default: ''
+      default: '',
     },
     resetSpeed: {
-      type: Boolean
+      type: Boolean,
     },
     selectedCurrency: {
       type: String,
-      default: 'USD'
+      default: 'USD',
     },
     currencyMultiplier: {
       type: BigNumber,
-      default: new BigNumber('0')
-    }
+      default: new BigNumber('0'),
+    },
   },
   data() {
     return {
@@ -104,7 +104,7 @@ export default {
       fastestGasPrice: new BigNumber('20'),
       activeGasPrice: new BigNumber('0'),
       averageGasPriceSpeed: '',
-      fastestGasPriceSpeed: ''
+      fastestGasPriceSpeed: '',
     }
   },
   watch: {
@@ -113,7 +113,7 @@ export default {
         this.speedSelected = 'average'
         this.resetAdvanceOption()
       }
-    }
+    },
   },
   created() {
     fetch('https://ethgasstation.info/json/ethgasAPI.json', {
@@ -122,9 +122,9 @@ export default {
       referrerPolicy: 'no-referrer-when-downgrade',
       body: null,
       method: 'GET',
-      mode: 'cors'
+      mode: 'cors',
     })
-      .then(resp => resp.json())
+      .then((resp) => resp.json())
       .then(
         ({
           average: averageTimes10,
@@ -132,7 +132,7 @@ export default {
           // block_time: blockTime,
           // blockNum,
           fastest: fastestTimes10,
-          fastestWait
+          fastestWait,
           // safeLow: safeLowTimes10,
           // safeLowWait,
           // speed
@@ -151,7 +151,7 @@ export default {
           }
         }
       )
-      .catch(error => {
+      .catch((error) => {
         log.error(error)
       })
   },
@@ -202,7 +202,7 @@ export default {
         activeGasPrice: this.activeGasPrice,
         speed,
         isReset: !!isReset,
-        gas: updatedGas || this.gas
+        gas: updatedGas || this.gas,
       })
     },
     setSelectedSpeed() {
@@ -226,8 +226,8 @@ export default {
       if (this.activeGasPriceConfirm) {
         this.updateCosts()
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

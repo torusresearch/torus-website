@@ -45,7 +45,7 @@ describe('currency-controller', () => {
         this.timeout(15000)
         nock('https://min-api.cryptocompare.com')
           .get('/data/price')
-          .query(url => url['fsym'] === 'ETH' && url['tsyms'] === 'USD')
+          .query((url) => url['fsym'] === 'ETH' && url['tsyms'] === 'USD')
           .reply(
             200,
             '{"base": "ETH", "quote": "USD", "bid": 288.45, "ask": 288.46, "volume": 112888.17569277, "exchange": "bitfinex", "total_volume": 272175.00106721005, "num_exchanges": 8, "timestamp": 1506444677}'
@@ -61,18 +61,18 @@ describe('currency-controller', () => {
             assert.strictEqual(typeof result, 'number')
             done()
           })
-          .catch(error => {
+          .catch((error) => {
             done(error)
           })
       })
 
-      it('should work for JPY as well.', function() {
+      it('should work for JPY as well.', function () {
         this.timeout(15000)
         assert.strictEqual(currencyController.getConversionRate(), 0)
 
         nock('https://min-api.cryptocompare.com')
           .get('/data/price')
-          .query(url => url['fsym'] === 'ETH' && url['tsyms'] === 'JPY')
+          .query((url) => url['fsym'] === 'ETH' && url['tsyms'] === 'JPY')
           .reply(
             200,
             '{"base": "ETH", "quote": "JPY", "bid": 32300.0, "ask": 32400.0, "volume": 247.4616071, "exchange": "kraken", "total_volume": 247.4616071, "num_exchanges": 1, "timestamp": 1506444676}'

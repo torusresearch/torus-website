@@ -117,7 +117,7 @@
                   </v-flex>
                   <v-flex v-if="txData" xs12 mt-4>
                     <div class="mb-1">Hex {{ t('dappTransfer.data') }}:</div>
-                    <v-card flat color="background_3" style="word-break: break-all">
+                    <v-card flat color="background_3" style="word-break: break-all;">
                       <v-card-text>{{ txData }}</v-card-text>
                     </v-card>
                   </v-flex>
@@ -208,7 +208,7 @@
               <v-list-item-content flat class="pa-1 background" :class="$vuetify.theme.dark ? 'lighten-4' : 'lighten-3'">
                 <v-card flat class="body-2 text-left pa-2 word-break typedMessageBox">
                   <v-expansion-panels v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE">
-                    <p :class="$vuetify.theme.dark ? '' : 'text_2--text'" style="text-align:left">{{ message }}</p>
+                    <p :class="$vuetify.theme.dark ? '' : 'text_2--text'" style="text-align: left;">{{ message }}</p>
                   </v-expansion-panels>
 
                   <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && !Array.isArray(typedMessages)">
@@ -275,7 +275,7 @@ import {
   TX_MESSAGE,
   TX_PERSONAL_MESSAGE,
   TX_TRANSACTION,
-  TX_TYPED_MESSAGE
+  TX_TYPED_MESSAGE,
 } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
 // import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
@@ -292,7 +292,7 @@ export default {
     TransferConfirm,
     // PermissionConfirm,
     NetworkDisplay,
-    ShowToolTip
+    ShowToolTip,
   },
   data() {
     return {
@@ -326,7 +326,7 @@ export default {
       network: {
         networkName: '',
         host: '',
-        chainId: ''
+        chainId: '',
       },
       transactionCategory: '',
       dollarValue: new BigNumber('0'),
@@ -347,7 +347,7 @@ export default {
       TX_TRANSACTION,
       TX_TYPED_MESSAGE,
       TX_PERSONAL_MESSAGE,
-      TX_MESSAGE
+      TX_MESSAGE,
     }
   },
   computed: {
@@ -459,7 +459,7 @@ export default {
       const tokenPriceConverted = this.isOtherToken ? this.tokenPrice.times(ethConverted) : ethConverted
       const selectedToken = this.isOtherToken ? this.selectedToken : 'ETH'
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
-    }
+    },
   },
   watch: {
     gasPrice(newGasPrice, oldGasPrice) {
@@ -476,7 +476,7 @@ export default {
           this.topUpErrorShow = true
         }
       }
-    }
+    },
   },
   mounted() {
     const queryParameters = new URLSearchParams(window.location.search)
@@ -484,7 +484,7 @@ export default {
     const queryParameterId = queryParameters.get('id')
     this.channel = `torus_channel_${instanceId}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
-    bc.addEventListener('message', async ev => {
+    bc.addEventListener('message', async (ev) => {
       if (ev.name !== 'send-params') return
       const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, currencyData, network } = ev.data || {}
       this.selectedCurrency = selectedCurrency
@@ -516,9 +516,9 @@ export default {
         // Get ABI for method
         let txDataParameters = ''
         if (contractParams.erc721) {
-          txDataParameters = collectibleABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
         } else if (contractParams.erc20) {
-          txDataParameters = tokenABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          txDataParameters = tokenABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
         }
         // Get Params from method type ABI
         let amountTo
@@ -566,12 +566,12 @@ export default {
             const url = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
             assetDetails = await get(`${config.api}/opensea?url=${url}`, {
               headers: {
-                Authorization: `Bearer ${jwtToken}`
-              }
+                Authorization: `Bearer ${jwtToken}`,
+              },
             })
             this.assetDetails = {
               name: assetDetails.data.name || '',
-              logo: assetDetails.data.image_thumbnail_url || ''
+              logo: assetDetails.data.image_thumbnail_url || '',
             }
           } catch (error) {
             log.info(error)
@@ -616,7 +616,7 @@ export default {
       const gasHex = `0x${this.gasPrice.times(weiInGwei).toString(16)}`
       await bc.postMessage({
         name: 'tx-result',
-        data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id, txType: this.type }
+        data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id, txType: this.type },
       })
       bc.close()
     },
@@ -626,7 +626,7 @@ export default {
       bc.close()
     },
     topUp() {
-      this.$router.push({ path: '/wallet/topup' }).catch(_ => {})
+      this.$router.push({ path: '/wallet/topup' }).catch((_) => {})
     },
     onSelectSpeed(data) {
       this.speedSelected = data.speedSelected
@@ -655,8 +655,8 @@ export default {
     significantDigits,
     getHeaderByDapp() {
       return this.t('dappTransfer.contractInteraction')
-    }
-  }
+    },
+  },
 }
 </script>
 

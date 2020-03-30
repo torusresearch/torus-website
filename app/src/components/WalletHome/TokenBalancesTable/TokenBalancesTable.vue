@@ -40,21 +40,21 @@ export default {
       type: Array,
       default() {
         return []
-      }
-    }
+      },
+    },
   },
   data() {
     return {
       pagination: {
-        sortBy: 'name'
+        sortBy: 'name',
       },
-      dialog: false
+      dialog: false,
     }
   },
   computed: {
     showFooter() {
       return this.tokenBalances.length > 5
-    }
+    },
   },
   methods: {
     changeSort(column) {
@@ -68,7 +68,7 @@ export default {
     selectEmit(item) {
       this.$emit('update:select', item)
     },
-    formatSmallNumbers
+    formatSmallNumbers,
     // smallNumbersEth(balance) {
     //   const convertedBalance = parseFloat(balance)
     //   let truncatedValue = convertedBalance
@@ -102,7 +102,7 @@ export default {
 
     //   log.info('convertedBalance', convertedBalance)
     // }
-  }
+  },
 }
 </script>
 

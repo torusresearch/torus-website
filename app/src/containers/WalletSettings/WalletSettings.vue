@@ -78,17 +78,17 @@ export default {
     Network,
     ContactList,
     QuickAddress,
-    Display
+    Display,
   },
   data() {
     return {
       leftPanel: [0, 1],
-      rightPanel: [0, 1]
+      rightPanel: [0, 1],
     }
   },
   mounted() {
     this.$vuetify.goTo(0)
-  }
+  },
 }
 </script>
 

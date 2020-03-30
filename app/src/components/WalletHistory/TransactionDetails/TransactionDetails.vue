@@ -18,7 +18,7 @@
               transaction.type === CONTRACT_TYPE_ERC20 ||
               transaction.action === ACTIVITY_ACTION_TOPUP ||
               transaction.type === CONTRACT_TYPE_ERC721
-            )
+            ),
           }"
         >
           <img
@@ -112,21 +112,21 @@ import {
   ACTIVITY_STATUS_SUCCESSFUL,
   ACTIVITY_STATUS_UNSUCCESSFUL,
   CONTRACT_TYPE_ERC20,
-  CONTRACT_TYPE_ERC721
+  CONTRACT_TYPE_ERC721,
 } from '../../../utils/enums'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 
 export default {
   components: {
-    NetworkDisplay
+    NetworkDisplay,
   },
   props: {
     transaction: {
       type: Object,
       default() {
         return {}
-      }
-    }
+      },
+    },
   },
   data() {
     return {
@@ -138,21 +138,21 @@ export default {
       ACTIVITY_STATUS_PENDING,
       ACTIVITY_ACTION_TOPUP,
       CONTRACT_TYPE_ERC20,
-      CONTRACT_TYPE_ERC721
+      CONTRACT_TYPE_ERC721,
     }
   },
   computed: {
     storeNetworkType() {
       return this.$store.state.networkType
-    }
+    },
   },
   methods: {
     getChipColor(status) {
       if (status === ACTIVITY_STATUS_SUCCESSFUL) return '#9BE8C7'
       if (status === ACTIVITY_STATUS_UNSUCCESSFUL) return '#FEA29F'
       return '#E0E0E0'
-    }
-  }
+    },
+  },
 }
 </script>
 

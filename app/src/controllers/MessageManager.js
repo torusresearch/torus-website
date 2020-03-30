@@ -39,7 +39,7 @@ export default class MessageManager extends EventEmitter {
     super()
     this.store = new ObservableStore({
       unapprovedMsgs: {},
-      unapprovedMsgCount: 0
+      unapprovedMsgCount: 0,
     })
     this.messages = []
   }
@@ -62,7 +62,7 @@ export default class MessageManager extends EventEmitter {
    */
   getUnapprovedMsgs() {
     return this.messages
-      .filter(message => message.status === 'unapproved')
+      .filter((message) => message.status === 'unapproved')
       .reduce((result, message) => {
         result[message.id] = message
         return result
@@ -82,7 +82,7 @@ export default class MessageManager extends EventEmitter {
     return new Promise((resolve, reject) => {
       const messageId = this.addUnapprovedMessage(messageParameters, request)
       // await finished
-      this.once(`${messageId}:finished`, data => {
+      this.once(`${messageId}:finished`, (data) => {
         switch (data.status) {
           case 'signed':
             return resolve(data.rawSig)
@@ -116,7 +116,7 @@ export default class MessageManager extends EventEmitter {
       msgParams: messageParameters,
       time,
       status: 'unapproved',
-      type: 'eth_sign'
+      type: 'eth_sign',
     }
     this.addMsg(messageData)
 
@@ -145,7 +145,7 @@ export default class MessageManager extends EventEmitter {
    *
    */
   getMsg(messageId) {
-    return this.messages.find(message => message.id === messageId)
+    return this.messages.find((message) => message.id === messageId)
   }
 
   /**
@@ -241,7 +241,7 @@ export default class MessageManager extends EventEmitter {
    *
    */
   _updateMsg(message_) {
-    const index = this.messages.findIndex(message => message.id === message_.id)
+    const index = this.messages.findIndex((message) => message.id === message_.id)
     if (index !== -1) {
       this.messages[index] = message_
     }

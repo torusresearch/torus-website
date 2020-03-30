@@ -10,7 +10,7 @@ export default {
     return getQuote({
       digital_currency: (payload.selectedCryptoCurrency || ETH).toLowerCase(),
       fiat_currency: (payload.selectedCurrency || paymentProviders.rampnetwork.validCurrencies[0]).toLowerCase(),
-      requested_amount: +parseFloat(payload.fiatValue || paymentProviders.rampnetwork.minOrderValue)
+      requested_amount: +Number.parseFloat(payload.fiatValue || paymentProviders.rampnetwork.minOrderValue),
     })
   },
   fetchRampNetworkOrder({ state, dispatch }, { currentOrder, preopenInstanceId, selectedAddress }) {
@@ -21,7 +21,7 @@ export default {
       swapAmount: currentOrder.cryptoCurrencyValue || undefined,
       variant: 'hosted-auto',
       webhookStatusUrl: `${config.rampApiHost}/transaction`,
-      hostUrl: '*'
+      hostUrl: '*',
     }
     return dispatch('openWidget', { path: config.rampInstantWidget, params: parameters, preopenInstanceId })
   },
@@ -36,7 +36,7 @@ export default {
       // Handle communication with Ramp Instant Widget window
       window.addEventListener(
         'message',
-        event => {
+        (event) => {
           if (event.data.type === 'PURCHASE_CREATED') {
             purchaseCreated = true
           } else if (event.data.type === 'PURCHASE_SUCCESSFUL') {
@@ -61,5 +61,5 @@ export default {
         reject(new Error('User closed Ramp Instant Widget'))
       })
     })
-  }
+  },
 }

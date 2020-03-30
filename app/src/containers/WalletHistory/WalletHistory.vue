@@ -99,7 +99,7 @@ import {
   CONTRACT_TYPE_ERC20,
   CONTRACT_TYPE_ERC721,
   MAINNET,
-  TOKEN_METHOD_TRANSFER_FROM
+  TOKEN_METHOD_TRANSFER_FROM,
 } from '../../utils/enums'
 import { patch } from '../../utils/httpHelpers'
 import { addressSlicer, formatDate, getEtherScanHashLink, getEthTxStatus, significantDigits } from '../../utils/utils'
@@ -116,7 +116,7 @@ export default {
       paymentTx: [],
       pastTx: [],
       loadingPastTransactions: true,
-      loadingOrders: true
+      loadingOrders: true,
     }
   },
   computed: {
@@ -127,40 +127,40 @@ export default {
       return [
         {
           text: this.t(ACTIVITY_ACTION_ALL),
-          value: ACTIVITY_ACTION_ALL
+          value: ACTIVITY_ACTION_ALL,
         },
         {
           text: this.t(ACTIVITY_ACTION_SEND),
-          value: ACTIVITY_ACTION_SEND
+          value: ACTIVITY_ACTION_SEND,
         },
         {
           text: this.t(ACTIVITY_ACTION_RECEIVE),
-          value: ACTIVITY_ACTION_RECEIVE
+          value: ACTIVITY_ACTION_RECEIVE,
         },
         {
           text: this.t(ACTIVITY_ACTION_TOPUP),
-          value: ACTIVITY_ACTION_TOPUP
-        }
+          value: ACTIVITY_ACTION_TOPUP,
+        },
       ]
     },
     periods() {
       return [
         {
           text: this.t(ACTIVITY_PERIOD_ALL),
-          value: ACTIVITY_PERIOD_ALL
+          value: ACTIVITY_PERIOD_ALL,
         },
         {
           text: this.t(ACTIVITY_PERIOD_WEEK_ONE),
-          value: ACTIVITY_PERIOD_WEEK_ONE
+          value: ACTIVITY_PERIOD_WEEK_ONE,
         },
         {
           text: this.t(ACTIVITY_PERIOD_MONTH_ONE),
-          value: ACTIVITY_PERIOD_MONTH_ONE
+          value: ACTIVITY_PERIOD_MONTH_ONE,
         },
         {
           text: this.t(ACTIVITY_PERIOD_MONTH_SIX),
-          value: ACTIVITY_PERIOD_MONTH_SIX
-        }
+          value: ACTIVITY_PERIOD_MONTH_SIX,
+        },
       ]
     },
     totalPortfolioValue() {
@@ -176,14 +176,14 @@ export default {
       return currencyMultiplier
     },
     wallets() {
-      return Object.keys(this.$store.state.wallet).filter(accumulator => accumulator !== this.selectedAddress)
+      return Object.keys(this.$store.state.wallet).filter((accumulator) => accumulator !== this.selectedAddress)
     },
     pastTransactions() {
       return this.$store.state.pastTransactions
     },
     paymentTxStore() {
       return this.$store.state.paymentTx
-    }
+    },
   },
   watch: {
     pastTransactions() {
@@ -191,7 +191,7 @@ export default {
     },
     paymentTxStore() {
       this.calculatePaymentTransactions()
-    }
+    },
   },
   mounted() {
     this.calculatePaymentTransactions()
@@ -270,7 +270,7 @@ export default {
         x.statusText = this.getStatusText(x.status)
         x.dateFormatted = this.formatDate(x.date)
         x.timeFormatted = this.formatTime(x.date)
-        if (x.etherscanLink === '' || accumulator.findIndex(y => y.etherscanLink === x.etherscanLink) === -1) accumulator.push(x)
+        if (x.etherscanLink === '' || accumulator.findIndex((y) => y.etherscanLink === x.etherscanLink) === -1) accumulator.push(x)
         return accumulator
       }, [])
       return finalTx.sort((a, b) => b.date - a.date) || []
@@ -292,10 +292,10 @@ export default {
         }
         let totalAmountString = ''
         if (x.type === CONTRACT_TYPE_ERC721) totalAmountString = x.symbol
-        else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = `${significantDigits(parseFloat(x.total_amount))} ${x.symbol}`
-        else totalAmountString = `${significantDigits(parseFloat(x.total_amount))} ETH`
+        else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = `${significantDigits(Number.parseFloat(x.total_amount))} ${x.symbol}`
+        else totalAmountString = `${significantDigits(Number.parseFloat(x.total_amount))} ETH`
         const currencyAmountString =
-          x.type === CONTRACT_TYPE_ERC721 ? '' : `${significantDigits(parseFloat(x.currency_amount))} ${x.selected_currency}`
+          x.type === CONTRACT_TYPE_ERC721 ? '' : `${significantDigits(Number.parseFloat(x.currency_amount))} ${x.selected_currency}`
         const finalObject = {
           id: x.created_at.toString(),
           date: new Date(x.created_at),
@@ -312,11 +312,11 @@ export default {
           status,
           etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network),
           networkType: x.network,
-          ethRate: `1 ${x.symbol} = ${significantDigits(parseFloat(x.currency_amount) / parseFloat(x.total_amount))}`,
+          ethRate: `1 ${x.symbol} = ${significantDigits(Number.parseFloat(x.currency_amount) / Number.parseFloat(x.total_amount))}`,
           currencyUsed: x.selected_currency,
           type: x.type,
           type_name: x.type_name,
-          type_image_link: x.type_image_link
+          type_image_link: x.type_image_link,
         }
         pastTx.push(finalObject)
       }
@@ -350,10 +350,10 @@ export default {
             const { name = '' } = contractParams
 
             // Get asset name of the 721
-            const contract = assets[selectedAddress].find(x => x.name.toLowerCase() === name.toLowerCase()) || {}
+            const contract = assets[selectedAddress].find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
             log.info(contract, amountValue)
             if (contract) {
-              const assetObject = contract.assets.find(x => x.tokenId.toString() === amountValue.value.toString()) || {}
+              const assetObject = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
               log.info(assetObject)
               totalAmountString = (assetObject && assetObject.name) || ''
               finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
@@ -369,12 +369,12 @@ export default {
               }
             }
             totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
-            totalAmountString = `${significantDigits(parseFloat(totalAmount))} ${contractParams.symbol}`
+            totalAmountString = `${significantDigits(Number.parseFloat(totalAmount))} ${contractParams.symbol}`
             finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
           } else {
             tokenRate = 1
             totalAmount = fromWei(toBN(txParams.value))
-            totalAmountString = `${significantDigits(parseFloat(totalAmount))} ETH`
+            totalAmountString = `${significantDigits(Number.parseFloat(totalAmount))} ETH`
             finalTo = toChecksumAddress(txOld.txParams.to)
           }
           const txObject = {}
@@ -394,7 +394,7 @@ export default {
           txObject.etherscanLink = getEtherScanHashLink(txOld.hash, networkType.host)
           txObject.networkType = networkType.host
           txObject.ethRate = `1 ${(contractParams && contractParams.symbol) || 'ETH'} = ${significantDigits(
-            parseFloat(txObject.currencyAmount) / parseFloat(txObject.totalAmount)
+            Number.parseFloat(txObject.currencyAmount) / Number.parseFloat(txObject.totalAmount)
           )}`
           txObject.currencyUsed = this.selectedCurrency
           txObject.type = 'eth'
@@ -434,7 +434,7 @@ export default {
             ethRate: x.ethRate,
             status: x.status.toLowerCase(),
             etherscanLink: x.etherscanLink || '',
-            currencyUsed: x.currencyUsed
+            currencyUsed: x.currencyUsed,
           })
 
           return accumulator
@@ -450,19 +450,19 @@ export default {
         `${config.api}/transaction`,
         {
           id: x.id,
-          status
+          status,
         },
         {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
-            'Content-Type': 'application/json; charset=utf-8'
-          }
+            'Content-Type': 'application/json; charset=utf-8',
+          },
         }
       )
-        .then(response => log.info('successfully patched', response))
-        .catch(error => log.error('unable to patch tx', error))
-    }
-  }
+        .then((response) => log.info('successfully patched', response))
+        .catch((error) => log.error('unable to patch tx', error))
+    },
+  },
 }
 </script>
 

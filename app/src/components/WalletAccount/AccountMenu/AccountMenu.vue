@@ -26,7 +26,7 @@
       >
         <div>
           <v-icon v-if="acc.type === 'SC'" size="16">$vuetify.icons.smart_contract</v-icon>
-          <img v-else :src="require(`../../../../public/img/icons/google-grey.svg`)" style="width: 16px" class="ma-1" />
+          <img v-else :src="require(`../../../../public/img/icons/google-grey.svg`)" style="width: 16px;" class="ma-1" />
         </div>
         <div class="d-flex flex-column account-list__details px-1">
           <div class="caption">
@@ -114,17 +114,17 @@ export default {
     ShowToolTip,
     ExportQrCode,
     AccountImport,
-    LanguageSelector
+    LanguageSelector,
   },
   props: {
     headerItems: {
       type: [Array, undefined],
-      default: undefined
-    }
+      default: undefined,
+    },
   },
   data() {
     return {
-      accountImportDialog: false
+      accountImportDialog: false,
     }
   },
   computed: {
@@ -177,7 +177,7 @@ export default {
     //   return Object.keys(this.$store.state.wallet).map((wallet, id) => ({ id: id, address: wallet }))
     // },
     filteredWallets() {
-      return this.wallets.filter(accumulator => accumulator.address !== this.selectedAddress)
+      return this.wallets.filter((accumulator) => accumulator.address !== this.selectedAddress)
     },
     getCurrencyMultiplier() {
       const { selectedCurrency, currencyData } = this.$store.state || {}
@@ -190,10 +190,10 @@ export default {
     },
     filteredMenu() {
       if (this.headerItems) {
-        return this.headerItems.filter(item => item.name !== 'home')
+        return this.headerItems.filter((item) => item.name !== 'home')
       }
       return []
-    }
+    },
   },
   methods: {
     async logout() {
@@ -204,7 +204,7 @@ export default {
         bc.close()
       }
       this.$store.dispatch('logOut')
-      this.$router.push({ path: '/logout' }).catch(_ => {})
+      this.$router.push({ path: '/logout' }).catch((_) => {})
     },
     async changeAccount(newAddress) {
       this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
@@ -214,13 +214,13 @@ export default {
         await selectedAddressChannel.postMessage({
           data: {
             name: 'selected_address',
-            payload: newAddress
-          }
+            payload: newAddress,
+          },
         })
         selectedAddressChannel.close()
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
