@@ -76,28 +76,12 @@
   --torus-font-1: #d3d3d4;
 }
 
-/* FAB Speed dial */
-#torusWidget #torusWidget__speed-dial-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-#torusWidget #torusWidget__speed-dial-list li {
-  margin-bottom: 16px;
-  opacity: 0;
-}
-
-#torusWidget #torusWidget__speed-dial-list.active li {
-  opacity: 1;
-}
-
 #torusWidget .torus-btn {
-  border-radius: 30px;
+  border-radius: 25px;
   background-color: var(--torus-brand-1);
   padding: 14px;
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border: 0;
   cursor: pointer;
   color: white;
@@ -144,11 +128,8 @@
 
 #torusWidget .torus-btn--main.active {
   padding: 12px;
-  background-color: #eef2f4;
-  transform: scale(0.7);
+  transform: scale(0.8);
   transition: transform 0.3s;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
-  background-image: url('/img/icons/torus-icon-dark.svg');
 }
 
 #torusWidget .torus-btn--text {
@@ -158,14 +139,6 @@
   font-weight: bold;
   letter-spacing: 0.7px;
   line-height: 19px;
-}
-
-#torusWidget .torus-btn--home {
-  background-image: url('/img/icons/home.svg');
-}
-
-#torusWidget .torus-btn--transfer {
-  background-image: url('/img/icons/indent-increase.svg');
 }
 
 #torusWidget .torus-btn:focus {
