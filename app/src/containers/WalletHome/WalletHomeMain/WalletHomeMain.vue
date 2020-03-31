@@ -142,7 +142,6 @@
 </template>
 
 <script>
-// The color of dropdown icon requires half day work in modifying v-select
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
 import QuickAddress from '../../../components/helpers/QuickAddress'
