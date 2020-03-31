@@ -14,8 +14,6 @@ import Web3 from 'web3'
 const randomId = require('@chaitanyapotti/random-id')
 const sigUtil = require('eth-sig-util')
 
-import { ZERO_ADDRESS, KOVAN, KOVAN_CODE } from '../utils/enums'
-
 export default class SmartContractWalletController {
   constructor(opts = {}) {
     this.opts = opts
@@ -47,27 +45,23 @@ export default class SmartContractWalletController {
   }
 
   async _getUserNonce(address) {
-    try {
-      let getNonceAPI = `${config.biconomyBaseURL}/api/v1/wallet-user/getNonce?signer=${address}`
-      let response = await get(getNonceAPI, {
-        headers: {
-          'x-wallet-key': config.biconomyKey[KOVAN]
-        }
-      })
-      if (response && response.flag == 200) {
-        return response.nonce
+    let getNonceAPI = `${config.biconomyBaseURL}/api/v1/wallet-user/getNonce?signer=${address}`
+    let response = await get(getNonceAPI, {
+      headers: {
+        'x-wallet-key': config.biconomyKey[this.opts.chainId]
       }
-      return
-    } catch (error) {
-      if (error.response.status == 404) {
-        return 0
+    })
+    if (response && response.flag == 200) {
+      if (response.nonce) {
+        return response.nonce
       }
       return 0
     }
+    return
   }
 
   async messageToLogin(signer, nonce) {
-    let systemInfo = await get(`${config.biconomyBaseURL}/api/v2/meta-tx/systemInfo?networkId=${KOVAN_CODE}`)
+    let systemInfo = await get(`${config.biconomyBaseURL}/api/v2/meta-tx/systemInfo?networkId=${this.opts.chainId}`)
 
     let message = {
       userAddress: signer.toLowerCase(),
@@ -115,11 +109,13 @@ export default class SmartContractWalletController {
 
       let reqHeader = {
         headers: {
-          'x-wallet-key': config.biconomyKey[KOVAN],
+          'x-wallet-key': config.biconomyKey[this.opts.chainId],
           'Content-Type': 'application/json; charset=utf-8'
         }
       }
-      return await post(`${config.biconomyBaseURL}/api/v1/wallet/wallet-login`, data, reqHeader)
+      let response = await post(`${config.biconomyBaseURL}/api/v1/wallet/wallet-login`, data, reqHeader)
+      response.networkType = this.opts.host
+      return response
     } catch (err) {
       log.error(err)
       return err
@@ -133,17 +129,16 @@ export default class SmartContractWalletController {
   */
 
   async getContractNonce() {
-    let nonceURL = config.biconomyBaseURL.concat('/api/v1/wallet/getContractNonce')
+    let nonceURL = config.biconomyBaseURL.concat('/api/v1/wallet-user/getContractNonce')
     let signer = this.getSelectedEOA()
 
     let response
     try {
       response = await get(`${nonceURL}?signer=${signer}`, {
         headers: {
-          'x-wallet-key': config.biconomyKey[KOVAN]
+          'x-wallet-key': config.biconomyKey[this.opts.chainId]
         }
       })
-      console.log(response)
       return response.nonce
     } catch (err) {
       log.error(err)
@@ -158,7 +153,7 @@ export default class SmartContractWalletController {
     try {
       response = await post(relayUrl, biconomyReqObj, {
         headers: {
-          'x-wallet-key': config.biconomyKey[KOVAN],
+          'x-wallet-key': config.biconomyKey[this.opts.chainId],
           'Content-Type': 'application/json; charset=utf-8'
         }
       })
@@ -170,7 +165,7 @@ export default class SmartContractWalletController {
   }
 
   async messageToSendTx(to, value, userContractWallet, nonce) {
-    let systemInfo = await get(`${config.biconomyBaseURL}/api/v2/meta-tx/systemInfo?networkId=${KOVAN_CODE}`)
+    let systemInfo = await get(`${config.biconomyBaseURL}/api/v2/meta-tx/systemInfo?networkId=${this.opts.chainId}`)
 
     let metaInfo = {
       contractWallet: userContractWallet
@@ -227,7 +222,7 @@ export default class SmartContractWalletController {
       const relayerURL = config.relayer.concat('/transfer/eth')
       log.info(relayerURL)
       const fromSCW = txParams.from
-
+      let data
       // Handling Tokens
       if (txMeta.contractParams.erc20 || txMeta.contractParams.erc721) {
         ETH_TOKEN = txMeta.txParams.to
@@ -242,6 +237,7 @@ export default class SmartContractWalletController {
           .shift()
           .toString()
       } else {
+        data = '0x0'
         ETH_TOKEN = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
         transferValue = txParams.value.toString()
         to = txParams.to
@@ -259,7 +255,7 @@ export default class SmartContractWalletController {
         from: this.getSelectedEOA(),
         to: to,
         userContract: fromSCW,
-        data: '0x0',
+        data: data,
         value: transferValue,
         gasLimit: '21000',
         nonceBatchId: 0,

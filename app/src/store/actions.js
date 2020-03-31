@@ -855,7 +855,7 @@ export default {
         log.info('contract wallet created : ' + response.userContract)
         dispatch('addWallet', {
           ethAddress: response.userContract,
-          network: 'kovan',
+          network: response.networkType,
           notified: 'true',
           privKey: null,
           type: 'SC'
