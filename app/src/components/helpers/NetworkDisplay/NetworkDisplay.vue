@@ -16,18 +16,18 @@ export default {
   props: {
     network: {
       type: String,
-      default: ''
+      default: '',
     },
     storeNetworkType: {
       type: Object,
       default() {
         return { host: MAINNET, networkName: '', chainId: '' }
-      }
+      },
     },
     isPlain: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   computed: {
     selectedNetwork() {
@@ -61,8 +61,8 @@ export default {
         classArray.push('is-plain')
       }
       return classArray
-    }
-  }
+    },
+  },
 }
 </script>
 

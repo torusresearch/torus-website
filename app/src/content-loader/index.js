@@ -33,5 +33,5 @@ export {
   WalletSettingsLoaderMobile,
   PopupScreenLoader,
   UserInfoScreenLoader,
-  ChangeProviderScreenLoader
+  ChangeProviderScreenLoader,
 }

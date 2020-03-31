@@ -46,18 +46,18 @@ const VERIFIER_LABELS = {
   [GOOGLE]: GOOGLE_LABEL,
   [REDDIT]: REDDIT_LABEL,
   [DISCORD]: DISCORD_LABEL,
-  [ENS]: ENS_LABEL
+  [ENS]: ENS_LABEL,
 }
 export default {
   props: {
     verifier: {
       type: String,
-      default: ''
+      default: '',
     },
     contact: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
   data() {
     return {
@@ -65,8 +65,8 @@ export default {
       contactFormValid: true,
       newContactName: '',
       rules: {
-        required: value => !!value || this.t('walletSettings.required')
-      }
+        required: (value) => !!value || this.t('walletSettings.required'),
+      },
     }
   },
   computed: {
@@ -75,7 +75,7 @@ export default {
         accumulator[current] = this.t(VERIFIER_LABELS[current])
         return accumulator
       }, {})
-    }
+    },
   },
   methods: {
     async addContact() {
@@ -85,7 +85,7 @@ export default {
         await this.$store.dispatch('addContact', {
           contact: this.contact,
           verifier: this.verifier,
-          name: this.newContactName
+          name: this.newContactName,
         })
       } catch (error) {
         log.error(error)
@@ -93,7 +93,7 @@ export default {
         this.newContactName = ''
         this.addContactDialog = false
       }
-    }
-  }
+    },
+  },
 }
 </script>

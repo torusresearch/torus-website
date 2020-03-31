@@ -45,7 +45,7 @@ import { LOCALES } from '../../../utils/enums'
 export default {
   data() {
     return {
-      LOCALES
+      LOCALES,
     }
   },
   computed: {
@@ -53,14 +53,14 @@ export default {
       return this.$vuetify.lang.current
     },
     selectedLabel() {
-      return LOCALES.find(locale => locale.value === this.localeSelected).name
-    }
+      return LOCALES.find((locale) => locale.value === this.localeSelected).name
+    },
   },
   methods: {
     changeLocale(locale) {
       this.$store.dispatch('setUserLocale', locale)
-    }
-  }
+    },
+  },
 }
 </script>
 

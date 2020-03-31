@@ -193,17 +193,17 @@ import LanguageSelector from '../LanguageSelector'
 export default {
   components: {
     AccountMenu,
-    LanguageSelector
+    LanguageSelector,
   },
   props: {
     headerItems: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   data() {
     return {
-      selectedItem: 'home'
+      selectedItem: 'home',
     }
   },
   computed: {
@@ -224,14 +224,14 @@ export default {
         return 'You are using the test cluster on torus network'
       }
       return ''
-    }
+    },
   },
   methods: {
     capitalizeFirstLetter,
     clearMsg(statusMessage) {
       this.$store.commit(`set${statusMessage}`, '')
-    }
-  }
+    },
+  },
 }
 </script>
 

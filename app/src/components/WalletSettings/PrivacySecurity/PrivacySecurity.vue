@@ -36,14 +36,14 @@ export default {
   name: 'PrivacySecuritySettings',
   components: {
     PrivateKeys,
-    DappPermissions
+    DappPermissions,
   },
   data() {
     return {
       privateKeyDialog: false,
-      dappPermissionDialog: false
+      dappPermissionDialog: false,
     }
-  }
+  },
 }
 </script>
 

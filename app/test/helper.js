@@ -4,7 +4,7 @@ import log from 'loglevel'
 import nock from 'nock'
 
 nock.disableNetConnect()
-nock.enableNetConnect(host => host.includes('localhost') || host.includes('mainnet.infura.io:443'))
+nock.enableNetConnect((host) => host.includes('localhost') || host.includes('mainnet.infura.io:443'))
 
 // catch rejections that are still unhandled when tests exit
 const unhandledRejections = new Map()
@@ -12,7 +12,7 @@ process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled rejection:', reason)
   unhandledRejections.set(promise, reason)
 })
-process.on('rejectionHandled', promise => {
+process.on('rejectionHandled', (promise) => {
   console.log(`handled: ${unhandledRejections.get(promise)}`)
   unhandledRejections.delete(promise)
 })

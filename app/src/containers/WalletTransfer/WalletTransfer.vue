@@ -1,5 +1,5 @@
 <template>
-  <v-container class="wallet-transfer pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
+  <v-container class="wallet-transfer pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4 mobile-view' : ''">
     <div class="d-flex align-center">
       <div class="font-weight-bold display-1 float-left">{{ t('walletTransfer.transferDetails') }}</div>
       <div class="ml-auto">
@@ -126,7 +126,7 @@
                         </v-btn>
                       </template>
                     </v-combobox>
-                    <QrcodeCapture ref="captureQr" style="display: none" @decode="onDecodeQr" />
+                    <QrcodeCapture ref="captureQr" style="display: none;" @decode="onDecodeQr" />
                     <div v-if="qrErrorMsg !== ''" class="v-text-field__details torus-hint">
                       <div class="v-messages">
                         <div class="v-messages__wrapper">
@@ -206,8 +206,8 @@
                       id="coin-mode-btn"
                       small
                       class="send-mode"
-                      :class="!toggle_exclusive ? 'torus-btn1 torus_brand1--text' : 'active'"
-                      :outlined="!toggle_exclusive"
+                      :class="!!toggle_exclusive ? 'torus-btn1 torus_brand1--text' : 'active'"
+                      :outlined="!!toggle_exclusive"
                       @click="changeSelectedToCurrency(0)"
                     >
                       {{ selectedItem && selectedItem.symbol }}
@@ -216,8 +216,8 @@
                       id="currency-mode-btn"
                       small
                       class="send-mode"
-                      :class="!!toggle_exclusive ? 'torus-btn1 torus_brand1--text' : 'active'"
-                      :outlined="!!toggle_exclusive"
+                      :class="!toggle_exclusive ? 'torus-btn1 torus_brand1--text' : 'active'"
+                      :outlined="!toggle_exclusive"
                       @click="changeSelectedToCurrency(1)"
                     >
                       {{ selectedCurrency }}
@@ -262,9 +262,9 @@
                           }`
                         : ''
                     "
-                    :display-amount="
-                      `${displayAmount} ${!toggle_exclusive ? (contractType === CONTRACT_TYPE_ERC721 ? '' : selectedItem.symbol) : selectedCurrency}`
-                    "
+                    :display-amount="`${displayAmount} ${
+                      !toggle_exclusive ? (contractType === CONTRACT_TYPE_ERC721 ? '' : selectedItem.symbol) : selectedCurrency
+                    }`"
                     :asset-selected="contractType === CONTRACT_TYPE_ERC721 ? assetSelected : {}"
                     :is-non-fungible-token="contractType === CONTRACT_TYPE_ERC721"
                     :speed-selected="timeTaken"
@@ -305,14 +305,13 @@
         </v-card>
       </v-flex>
     </v-layout>
-    <v-dialog v-model="showModalMessage" max-width="500" persistent>
+    <v-dialog v-model="messageModalShow" max-width="375" persistent>
       <MessageModal
-        :modal-type="modalMessageSuccess"
-        :title="modalMessageSuccess ? t('walletTransfer.transferSuccessTitle') : t('walletTransfer.transferFailTitle')"
-        :detail-text="
-          modalMessageSuccess ? t('walletTransfer.transferSuccessMessage').replace(/\{time\}/gi, timeTaken) : t('walletTransfer.transferFailMessage')
-        "
-        @onClose="showModalMessage = false"
+        :detail-text="messageModalDetails.replace(/\{time\}/gi, timeTaken)"
+        go-to="walletHistory"
+        :modal-type="messageModalType"
+        :title="messageModalTitle"
+        @onClose="messageModalShow = false"
       />
     </v-dialog>
   </v-container>
@@ -336,7 +335,18 @@ import AddContact from '../../components/WalletTransfer/AddContact'
 import MessageModal from '../../components/WalletTransfer/MessageModal'
 import config from '../../config'
 import torus from '../../torus'
-import { ALLOWED_VERIFIERS, CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ERC721, CONTRACT_TYPE_ETH, ENS, ETH, GOOGLE, OLD_ERC721_LIST } from '../../utils/enums'
+import {
+  ALLOWED_VERIFIERS,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ETH,
+  ENS,
+  ETH,
+  GOOGLE,
+  MESSAGE_MODAL_TYPE_FAIL,
+  MESSAGE_MODAL_TYPE_SUCCESS,
+  OLD_ERC721_LIST,
+} from '../../utils/enums'
 import { post } from '../../utils/httpHelpers'
 import { getEtherScanHashLink, significantDigits, validateVerifierId } from '../../utils/utils'
 
@@ -350,7 +360,7 @@ export default {
     ComponentLoader,
     TransferConfirm,
     QuickAddress,
-    NetworkDisplay
+    NetworkDisplay,
   },
   data() {
     return {
@@ -382,22 +392,24 @@ export default {
       autoSelectVerifier: true,
       selectedVerifier: '',
       rules: {
-        required: value => !!value || this.t('walletTransfer.required')
+        required: (value) => !!value || this.t('walletTransfer.required'),
       },
       nodeDetails: {},
-      showModalMessage: false,
-      modalMessageSuccess: null,
+      messageModalShow: false,
+      messageModalType: '',
+      messageModalTitle: '',
+      messageModalDetails: '',
       isSendAll: false,
       confirmDialog: false,
       CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
-      CONTRACT_TYPE_ERC721
+      CONTRACT_TYPE_ERC721,
     }
   },
   computed: {
     verifierOptions() {
       const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
-      return verifiers.map(verifier => {
+      return verifiers.map((verifier) => {
         verifier.name = this.t(verifier.name)
         return verifier
       })
@@ -412,10 +424,10 @@ export default {
       return this.$store.getters.tokenBalances.finalBalancesArray || []
     },
     finalBalancesArrayTokens() {
-      return this.$store.getters.tokenBalances.finalBalancesArray.filter(token => token.tokenAddress !== '0x') || []
+      return this.$store.getters.tokenBalances.finalBalancesArray.filter((token) => token.tokenAddress !== '0x') || []
     },
     finalBalancesArrayEthOnly() {
-      return this.$store.getters.tokenBalances.finalBalancesArray.filter(token => token.tokenAddress === '0x') || []
+      return this.$store.getters.tokenBalances.finalBalancesArray.filter((token) => token.tokenAddress === '0x') || []
     },
     weiBalanceLoaded() {
       return this.$store.state.weiBalanceLoaded
@@ -427,12 +439,12 @@ export default {
       return this.$store.getters.collectibleBalances
     },
     selectedItem() {
-      return this.finalBalancesArray.find(x => x.tokenAddress === this.selectedTokenAddress)
+      return this.finalBalancesArray.find((x) => x.tokenAddress === this.selectedTokenAddress)
     },
     selectedItemDisplay() {
       if (this.contractType !== CONTRACT_TYPE_ERC721) return this.selectedItem
 
-      return this.collectibles.find(x => x.address === this.collectibleSelected.address)
+      return this.collectibles.find((x) => x.address === this.collectibleSelected.address)
     },
     selectedTokenAddress() {
       if (this.tokenAddress === '0x' || !isAddress(this.tokenAddress)) return '0x'
@@ -466,7 +478,7 @@ export default {
     },
     verifierPlaceholder() {
       return this.selectedVerifier
-        ? `${this.t('walletSettings.enter')} ${this.verifierOptions.find(verifier => verifier.value === this.selectedVerifier).name}`
+        ? `${this.t('walletSettings.enter')} ${this.verifierOptions.find((verifier) => verifier.value === this.selectedVerifier).name}`
         : ''
     },
     contactList() {
@@ -475,7 +487,7 @@ export default {
           mappedObject.push({
             name: `${contact.name} (${contact.contact})`,
             value: contact.contact,
-            verifier: contact.verifier
+            verifier: contact.verifier,
           })
         }
         return mappedObject
@@ -485,7 +497,7 @@ export default {
       if (!this.contactSelected) return false
 
       const targetContact = this.contactSelected
-      const addressFound = this.contactList.find(contact => contact.value.toLowerCase() === targetContact.toLowerCase())
+      const addressFound = this.contactList.find((contact) => contact.value.toLowerCase() === targetContact.toLowerCase())
       return addressFound === undefined
     },
     selectedAddress() {
@@ -493,12 +505,12 @@ export default {
     },
     storeNetworkType() {
       return this.$store.state.networkType
-    }
+    },
   },
   watch: {
     selectedAddress(newValue, oldValue) {
       if (newValue !== oldValue) this.calculateGas(newValue)
-    }
+    },
   },
   mounted() {
     if (Object.prototype.hasOwnProperty.call(this.$route.query, 'to')) {
@@ -529,10 +541,10 @@ export default {
 
     torus.nodeDetailManager
       .getNodeDetails()
-      .then(nodeDetails => {
+      .then((nodeDetails) => {
         this.nodeDetails = nodeDetails
       })
-      .catch(error => log.error(error))
+      .catch((error) => log.error(error))
 
     this.$vuetify.goTo(0)
   },
@@ -571,16 +583,16 @@ export default {
           to_email: this.toAddress,
           total_amount: this.amount.toString(),
           token: typeToken.toString(),
-          etherscanLink
+          etherscanLink,
         }
         post(`${config.api}/transaction/sendemail`, emailObject, {
           headers: {
             Authorization: `Bearer ${this.$store.state.jwtToken}`,
-            'Content-Type': 'application/json; charset=utf-8'
-          }
+            'Content-Type': 'application/json; charset=utf-8',
+          },
         })
-          .then(response => log.info('email response', response))
-          .catch(error => log.error(error))
+          .then((response) => log.info('email response', response))
+          .catch((error) => log.error(error))
       }
     },
     moreThanZero(value) {
@@ -617,7 +629,7 @@ export default {
 
       // Autoupdate selected verifier
       if (this.autoSelectVerifier) {
-        const contactFound = this.contactList.find(item => item.value === contact)
+        const contactFound = this.contactList.find((item) => item.value === contact)
         if (contactFound) {
           this.selectedVerifier = contactFound.verifier
         } else if (this.toAddress.startsWith('0x')) {
@@ -649,7 +661,7 @@ export default {
             log.info(this.gas.toString())
             torus.web3.eth
               .estimateGas({ to: toAddress, value })
-              .then(response => {
+              .then((response) => {
                 let resolved = new BigNumber(response || '0')
                 if (!resolved.eq(new BigNumber('21000'))) {
                   resolved = new BigNumber(resolved.times(new BigNumber('1.1')).toFixed(0))
@@ -657,7 +669,7 @@ export default {
                 }
                 resolve(resolved)
               })
-              .catch(error => {
+              .catch((error) => {
                 log.error(error)
                 resolve(new BigNumber('0'))
               })
@@ -670,10 +682,10 @@ export default {
               .toString(16)
             this.getTransferMethod(this.contractType, selectedAddress, toAddress, value)
               .estimateGas({ from: selectedAddress })
-              .then(response => {
+              .then((response) => {
                 resolve(new BigNumber(response || '0'))
               })
-              .catch(error => {
+              .catch((error) => {
                 log.error(error)
                 resolve(new BigNumber('0'))
               })
@@ -681,10 +693,10 @@ export default {
             const { selectedAddress } = this
             this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId)
               .estimateGas({ from: selectedAddress })
-              .then(response => {
+              .then((response) => {
                 resolve(new BigNumber(response || '0'))
               })
-              .catch(error => {
+              .catch((error) => {
                 log.error(error)
                 resolve(new BigNumber('0'))
               })
@@ -706,8 +718,8 @@ export default {
       throw new Error('Invalid Contract Type')
     },
     async selectedItemChanged(address, tokenId) {
-      const foundInBalances = this.finalBalancesArray.find(token => token.tokenAddress.toLowerCase() === address.toLowerCase())
-      const foundInCollectibles = this.collectibles.find(token => token.address.toLowerCase() === address.toLowerCase())
+      const foundInBalances = this.finalBalancesArray.find((token) => token.tokenAddress.toLowerCase() === address.toLowerCase())
+      const foundInCollectibles = this.collectibles.find((token) => token.address.toLowerCase() === address.toLowerCase())
       if (foundInBalances) {
         this.tokenAddress = foundInBalances.tokenAddress
         this.contractType = foundInBalances.erc20 ? CONTRACT_TYPE_ERC20 : CONTRACT_TYPE_ETH
@@ -719,7 +731,7 @@ export default {
         this.collectibleSelected = foundInCollectibles
         if (foundInCollectibles.assets && foundInCollectibles.assets.length > 0) {
           this.assetSelected = tokenId
-            ? foundInCollectibles.assets.find(asset => asset.tokenId.toString() === tokenId.toString()) || foundInCollectibles.assets[0]
+            ? foundInCollectibles.assets.find((asset) => asset.tokenId.toString() === tokenId.toString()) || foundInCollectibles.assets[0]
             : foundInCollectibles.assets[0]
         }
         // Reset you send
@@ -751,7 +763,7 @@ export default {
           try {
             toAddress = await torus.getPublicAddress(this.nodeDetails.torusNodeEndpoints, this.nodeDetails.torusNodePub, {
               verifier: this.selectedVerifier,
-              verifierId: this.toAddress
+              verifierId: this.toAddress,
             })
           } catch (error) {
             log.error(error)
@@ -808,22 +820,26 @@ export default {
             to: toAddress,
             value,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
-            gasPrice: fastGasPrice
+            gasPrice: fastGasPrice,
           },
           (error, transactionHash) => {
             if (error) {
               const regEx = new RegExp('User denied transaction signature', 'i')
               if (!error.message.match(regEx)) {
-                this.showModalMessage = true
-                this.modalMessageSuccess = false
+                this.messageModalShow = true
+                this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+                this.messageModalTitle = 'Your transfer cannot be processed'
+                this.messageModalDetails = 'Please try again'
               }
               log.error(error)
             } else {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
 
-              this.showModalMessage = true
-              this.modalMessageSuccess = true
+              this.messageModalShow = true
+              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+              this.messageModalTitle = 'Your transfer is being processed'
+              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
             }
           }
         )
@@ -836,22 +852,26 @@ export default {
           {
             from: selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
-            gasPrice: fastGasPrice
+            gasPrice: fastGasPrice,
           },
           (error, transactionHash) => {
             if (error) {
               const regEx = new RegExp('User denied transaction signature', 'i')
               if (!error.message.match(regEx)) {
-                this.showModalMessage = true
-                this.modalMessageSuccess = false
+                this.messageModalShow = true
+                this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+                this.messageModalTitle = 'Your transfer cannot be processed'
+                this.messageModalDetails = 'Please try again'
               }
               log.error(error)
             } else {
               // Send email to the user
               this.sendEmail(this.selectedItem.symbol, transactionHash)
 
-              this.showModalMessage = true
-              this.modalMessageSuccess = true
+              this.messageModalShow = true
+              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+              this.messageModalTitle = 'Your transfer is being processed'
+              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
             }
           }
         )
@@ -860,21 +880,25 @@ export default {
           {
             from: selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
-            gasPrice: fastGasPrice
+            gasPrice: fastGasPrice,
           },
           (error, transactionHash) => {
             if (error) {
               const regEx = new RegExp('User denied transaction signature', 'i')
               if (!error.message.match(regEx)) {
-                this.showModalMessage = true
-                this.modalMessageSuccess = false
+                this.messageModalShow = true
+                this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
+                this.messageModalTitle = 'Your transfer cannot be processed'
+                this.messageModalDetails = 'Please try again'
               }
               log.error(error)
             } else {
               // Send email to the user
               this.sendEmail(this.assetSelected.name, transactionHash)
-              this.showModalMessage = true
-              this.modalMessageSuccess = true
+              this.messageModalShow = true
+              this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
+              this.messageModalTitle = 'Your transfer is being processed'
+              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
             }
           }
         )
@@ -970,8 +994,8 @@ export default {
       if (this.$refs.contactSelected && this.$refs.contactSelected.$refs && this.$refs.contactSelected.$refs.input) {
         this.$refs.contactSelected.$refs.input.name = randomId()
       }
-    }
-  }
+    },
+  },
 }
 </script>
 

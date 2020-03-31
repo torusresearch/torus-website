@@ -2,8 +2,10 @@
 
 
 .torus-app.v-application {
-  .container {
-    max-width: 1400px;
+  @media (min-width: 1904px) {
+    .container {
+      max-width: 1400px;
+    }
   }
 
   .text-clamp-one {

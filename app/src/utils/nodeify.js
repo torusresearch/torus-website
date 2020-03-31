@@ -1,6 +1,6 @@
 import promiseToCallback from 'promise-to-callback'
 
-const callbackNoop = error => {
+const callbackNoop = (error) => {
   if (error) {
     throw error
   }

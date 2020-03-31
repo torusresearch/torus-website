@@ -1,16 +1,20 @@
 <template>
   <v-card class="elevation-1 promotion-card">
     <v-card-text class="pt-3 px-6" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2' : $vuetify.breakpoint.xsOnly ? 'pb-6' : 'pb-3'">
-      <div class="d-flex align-center">
-        <div class="promotion-text">
+      <div class="d-flex" :class="{ 'align-center': !$vuetify.breakpoint.xsOnly }">
+        <div class="promotion-text pr-3">
           <div class="body-1 font-weight-bold" :class="subtitle ? 'text-clamp-one' : 'text-clamp-two'">{{ title }}</div>
-          <div :class="[$vuetify.breakpoint.lgAndUp ? 'body-2' : 'caption', $vuetify.breakpoint.xsOnly ? '' : 'text-clamp-one']">
+          <div :class="[$vuetify.breakpoint.lgAndUp ? 'body-2' : 'caption']" :title="subtitle">
             {{ subtitle }}
           </div>
         </div>
         <slot name="image">
           <div class="ml-auto mt-1">
-            <img :src="imagePath" :style="$vuetify.breakpoint.smAndDown ? 'width: 57px' : 'width: 57px'" :alt="`${title} Image`" />
+            <img
+              :src="$vuetify.theme.isDark && imageDarkPath ? imageDarkPath : imagePath"
+              :style="$vuetify.breakpoint.smAndDown ? 'height: 42px' : 'height: 50px'"
+              :alt="`${title} Image`"
+            />
           </div>
         </slot>
       </div>
@@ -67,10 +71,11 @@ export default {
     title: { type: String, default: '' },
     subtitle: { type: String, default: '' },
     imagePath: { type: String, default: '' },
+    imageDarkPath: { type: String, default: '' },
     detailsLink: { type: String, default: '' },
     detailsLinkTwo: { type: String, default: '' },
-    detailsText: { type: String, default: '' }
-  }
+    detailsText: { type: String, default: '' },
+  },
 }
 </script>
 

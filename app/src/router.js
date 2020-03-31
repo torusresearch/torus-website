@@ -12,7 +12,6 @@ import Login from './views/Login'
 import Popup from './views/Popup'
 import ProviderChange from './views/ProviderChange'
 import RedirectCatch from './views/RedirectCatch'
-import Test from './views/Test'
 import UserInfoRequest from './views/UserInfoRequest'
 import Wallet from './views/Wallet'
 
@@ -35,49 +34,43 @@ const router = new Router({
       path: '/',
       name: 'login',
       component: Login,
-      meta: { requiresAuth: false }
-    },
-    {
-      path: '/test',
-      name: 'test',
-      component: Test,
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false },
     },
     {
       path: '/logout',
       name: 'logout',
       component: Login,
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false },
     },
     {
       path: '/popup',
       name: 'popup',
       component: Popup,
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false },
     },
     {
       path: '/redirect',
       name: 'redirect',
       component: RedirectCatch,
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false },
     },
     {
       path: '/confirm',
       name: 'confirm',
       component: Confirm,
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false },
     },
     {
       path: '/providerchange',
       name: 'providerchange',
       component: ProviderChange,
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false },
     },
     {
       path: '/userinforequest',
       name: 'userInfoRequest',
       component: UserInfoRequest,
-      meta: { requiresAuth: false }
+      meta: { requiresAuth: false },
     },
     {
       path: '/wallet',
@@ -87,7 +80,7 @@ const router = new Router({
           path: '/',
           name: 'walletDefault',
           component: WalletHome,
-          redirect: { name: 'walletHomeMain' }
+          redirect: { name: 'walletHomeMain' },
         },
         {
           path: 'home',
@@ -98,29 +91,29 @@ const router = new Router({
             {
               path: '',
               name: 'walletHomeMain',
-              component: WalletHomeMain
+              component: WalletHomeMain,
             },
             {
               path: 'collectibles/:address',
               name: 'walletHomeCollectible',
-              component: WalletHomeCollectible
-            }
-          ]
+              component: WalletHomeCollectible,
+            },
+          ],
         },
         {
           path: 'history',
           name: 'walletHistory',
-          component: WalletHistory
+          component: WalletHistory,
         },
         {
           path: 'settings',
           name: 'walletSettings',
-          component: WalletSettings
+          component: WalletSettings,
         },
         {
           path: 'transfer',
           name: 'walletTransfer',
-          component: WalletTransfer
+          component: WalletTransfer,
         },
         {
           path: 'topup',
@@ -130,29 +123,29 @@ const router = new Router({
             {
               path: 'rampnetwork',
               name: 'walletTopupRampNetwork',
-              component: WalletTopupRampNetwork
+              component: WalletTopupRampNetwork,
             },
             {
               path: 'simplex',
               name: 'walletTopupSimplex',
-              component: WalletTopupSimplex
+              component: WalletTopupSimplex,
             },
             {
               path: 'moonpay',
               name: 'walletTopupMoonpay',
-              component: WalletTopupMoonpay
+              component: WalletTopupMoonpay,
             },
             {
               path: 'wyre',
               name: 'walletTopupWyre',
-              component: WalletTopupWyre
-            }
-          ]
-        }
-      ]
+              component: WalletTopupWyre,
+            },
+          ],
+        },
+      ],
     },
-    { path: '*', component: Login }
-  ]
+    { path: '*', component: Login },
+  ],
 })
 
 function hasQueryParameters(route) {
@@ -178,7 +171,7 @@ router.beforeResolve((to, from, next) => {
   }
   if (!hasQueryParameters(to) && hasQueryParameters(from)) {
     if (to.name !== 'walletTransfer') {
-      Object.keys(from.query).forEach(key => key === 'instanceId' || delete from.query[key])
+      Object.keys(from.query).forEach((key) => key === 'instanceId' || delete from.query[key])
     }
     return next({ name: to.name, query: from.query, hash: to.hash, params: to.params })
     // next()

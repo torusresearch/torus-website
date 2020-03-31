@@ -21,18 +21,18 @@ function notifyUser(url) {
   // for safari
   try {
     Notification.requestPermission()
-      .then(result => {
+      .then((result) => {
         // do sth
         if (result !== 'granted') {
           return
         }
         notifyUrl(url)
       })
-      .catch(error => log.error(error))
+      .catch((error) => log.error(error))
   } catch (error) {
     log.error(error)
     if (error instanceof TypeError) {
-      Notification.requestPermission(result => {
+      Notification.requestPermission((result) => {
         // do sth
         if (result !== 'granted') {
           return
@@ -46,7 +46,7 @@ function notifyUser(url) {
 function notifyUrl(url) {
   navigator.serviceWorker
     .getRegistration()
-    .then(registration => {
+    .then((registration) => {
       if (registration) {
         registration.showNotification('Sent Transaction', {
           body: 'Check Tx Status',
@@ -56,12 +56,12 @@ function notifyUrl(url) {
           tag: 'transaction-status',
           data: {
             dateOfArrival: Date.now(),
-            url
-          }
+            url,
+          },
         })
       }
     })
-    .catch(error => log.error(error))
+    .catch((error) => log.error(error))
 }
 
 export { initNotifications, notifyUser }

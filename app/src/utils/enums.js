@@ -87,7 +87,7 @@ export const CONTRACT_TYPE_ERC721 = 'erc721'
 export const createNetwork = (host, networkName, chainId) => ({
   host,
   networkName,
-  chainId
+  chainId,
 })
 
 export const SUPPORTED_NETWORK_TYPES = {
@@ -97,7 +97,7 @@ export const SUPPORTED_NETWORK_TYPES = {
   [ROPSTEN]: createNetwork(ROPSTEN, ROPSTEN_DISPLAY_NAME, ROPSTEN_CODE),
   [GOERLI]: createNetwork(GOERLI, GOERLI_DISPLAY_NAME, GOERLI_CODE),
   [LOCALHOST]: createNetwork(LOCALHOST, LOCALHOST_DISPLAY_NAME, LOCALHOST_CODE),
-  [MATIC]: createNetwork(MATIC, MATIC_DISPLAY_NAME, MATIC_CODE)
+  [MATIC]: createNetwork(MATIC, MATIC_DISPLAY_NAME, MATIC_CODE),
 }
 
 export const WALLET_HEADERS_HOME = 'My Wallet'
@@ -143,31 +143,31 @@ export const OLD_ERC721_LIST = {
     logo: 'dapp-cryptokitty.svg',
     erc20: true,
     symbol: 'CK',
-    decimals: 0
-  }
+    decimals: 0,
+  },
 }
 
 export const ALLOWED_VERIFIERS = [
   {
     name: ETH_LABEL,
-    value: ETH
+    value: ETH,
   },
   {
     name: GOOGLE_LABEL,
-    value: GOOGLE
+    value: GOOGLE,
   },
   {
     name: REDDIT_LABEL,
-    value: REDDIT
+    value: REDDIT,
   },
   {
     name: DISCORD_LABEL,
-    value: DISCORD
+    value: DISCORD,
   },
   {
     name: ENS_LABEL,
-    value: ENS
-  }
+    value: ENS,
+  },
 ]
 
 export const RAMPNETWORK = 'rampnetwork'
@@ -192,24 +192,24 @@ export const LOCALE_ZH_LABEL = 'Mandarin (中文)'
 export const LOCALES = [
   {
     name: LOCALE_EN_LABEL,
-    value: LOCALE_EN
+    value: LOCALE_EN,
   },
   {
     name: LOCALE_DE_LABEL,
-    value: LOCALE_DE
+    value: LOCALE_DE,
   },
   {
     name: LOCALE_JA_LABEL,
-    value: LOCALE_JA
+    value: LOCALE_JA,
   },
   {
     name: LOCALE_KO_LABEL,
-    value: LOCALE_KO
+    value: LOCALE_KO,
   },
   {
     name: LOCALE_ZH_LABEL,
-    value: LOCALE_ZH
-  }
+    value: LOCALE_ZH,
+  },
 ]
 
 export const WALLET_METHOD_PREFIX = 'wallet'
@@ -218,6 +218,9 @@ export const TORUS_METHOD_PREFIX = 'torus'
 export const ERROR_TIME = 5 * 1000
 export const SUCCESS_TIME = 5 * 1000
 
+export const MESSAGE_MODAL_TYPE_SUCCESS = 'success'
+export const MESSAGE_MODAL_TYPE_FAIL = 'fail'
+export const MESSAGE_MODAL_TYPE_PENDING = 'pending'
 export const WALLET_PREFIX = 'wallet_'
 
 export const HISTORY_STORE_KEY = 'permissionsHistory'
@@ -227,11 +230,11 @@ export const LOG_STORE_KEY = 'permissionsLog'
 export const METADATA_STORE_KEY = 'domainMetadata'
 
 export const CAVEAT_NAMES = {
-  exposedAccounts: 'exposedAccounts'
+  exposedAccounts: 'exposedAccounts',
 }
 
 export const NOTIFICATION_NAMES = {
-  accountsChanged: 'wallet_accountsChanged'
+  accountsChanged: 'wallet_accountsChanged',
 }
 
 export const LOG_IGNORE_METHODS = ['wallet_sendDomainMetadata']
@@ -288,5 +291,5 @@ export const SAFE_METHODS = [
   'eth_syncing',
   'eth_uninstallFilter',
   'metamask_watchAsset',
-  'wallet_watchAsset'
+  'wallet_watchAsset',
 ]

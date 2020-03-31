@@ -50,7 +50,7 @@
             <template v-for="contact in contacts">
               <v-list-item :key="`contact-${contact.id}`" class="pl-0 pr-1">
                 <v-list-item-avatar class="ma-0">
-                  <img :src="require(`../../../../public/img/icons/${contact.verifier}-grey.svg`)" style="width: 16px" class="ma-1" />
+                  <img :src="require(`../../../../public/img/icons/${contact.verifier}-grey.svg`)" style="width: 16px;" class="ma-1" />
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title class="font-weight-regular caption">
@@ -140,27 +140,27 @@ export default {
       newContact: '',
       newContactName: '',
       rules: {
-        required: value => !!value || this.t('walletSettings.required')
+        required: (value) => !!value || this.t('walletSettings.required'),
       },
       ETH,
       searchName: '',
-      searchVerifier: null
+      searchVerifier: null,
     }
   },
   computed: {
     verifierOptions() {
       const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
-      return verifiers.map(verifier => {
+      return verifiers.map((verifier) => {
         verifier.name = this.t(verifier.name)
         return verifier
       })
     },
     verifierPlaceholder() {
-      const verifierLocale = ALLOWED_VERIFIERS.find(verifier => verifier.value === this.selectedVerifier).name
+      const verifierLocale = ALLOWED_VERIFIERS.find((verifier) => verifier.value === this.selectedVerifier).name
       return `${this.t('walletSettings.enter')} ${this.t(verifierLocale)}`
     },
     contacts() {
-      return this.$store.state.contacts.filter(contact => {
+      return this.$store.state.contacts.filter((contact) => {
         if (this.searchVerifier && this.searchVerifier !== contact.verifier) return false
 
         if (this.searchName) {
@@ -174,15 +174,15 @@ export default {
       const verifiers = this.verifierOptions
       verifiers.unshift({
         name: 'All',
-        value: ''
+        value: '',
       })
       return verifiers
-    }
+    },
   },
   methods: {
     checkDuplicates(value) {
       if (!this.contacts) return ''
-      return this.contacts.findIndex(x => x.contact.toLowerCase() === value.toLowerCase()) < 0 || this.t('walletSettings.duplicateContact')
+      return this.contacts.findIndex((x) => x.contact.toLowerCase() === value.toLowerCase()) < 0 || this.t('walletSettings.duplicateContact')
     },
     async addContact() {
       if (!this.$refs.addContactForm.validate()) return
@@ -195,7 +195,7 @@ export default {
         await this.$store.dispatch('addContact', {
           contact,
           name,
-          verifier: this.selectedVerifier
+          verifier: this.selectedVerifier,
         })
       } catch (error) {
         log.error(error)
@@ -209,8 +209,8 @@ export default {
     },
     validateContactForm() {
       if (this.$refs.addContactForm) this.$refs.addContactForm.validate()
-    }
-  }
+    },
+  },
 }
 </script>
 

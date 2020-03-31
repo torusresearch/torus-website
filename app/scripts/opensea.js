@@ -12,7 +12,7 @@ const finalJson = finalArray.reduce((accumulator, x) => {
   accumulator[x.address] = {
     name: x.name,
     logo: x.image_url,
-    symbol: x.symbol
+    symbol: x.symbol,
   }
   return accumulator
 }, {})

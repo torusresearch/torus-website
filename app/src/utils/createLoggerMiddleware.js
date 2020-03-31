@@ -9,7 +9,7 @@ module.exports = createLoggerMiddleware
  */
 function createLoggerMiddleware(options) {
   return function loggerMiddleware(/** @type {any} */ request, /** @type {any} */ response, /** @type {Function} */ next) {
-    next(callback => {
+    next((callback) => {
       if (response.error) {
         log.error('Error in RPC response:\n', response)
       }

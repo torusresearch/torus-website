@@ -33,7 +33,7 @@ class TransactionStateManager extends EventEmitter {
 
     this.store = new ObservableStore({
       transactions: [],
-      ...initState
+      ...initState,
     })
     this.txHistoryLimit = txHistoryLimit
     this.getNetwork = getNetwork
@@ -52,7 +52,7 @@ class TransactionStateManager extends EventEmitter {
       status: 'unapproved',
       metamaskNetworkId: netId,
       loadingDefaults: true,
-      ...options
+      ...options,
     }
   }
 
@@ -62,7 +62,7 @@ class TransactionStateManager extends EventEmitter {
   getTxList() {
     const network = this.getNetwork()
     const fullTxList = this.getFullTxList()
-    return fullTxList.filter(txMeta => txMeta.metamaskNetworkId === network)
+    return fullTxList.filter((txMeta) => txMeta.metamaskNetworkId === network)
   }
 
   /**
@@ -151,12 +151,12 @@ class TransactionStateManager extends EventEmitter {
     // or rejected tx's.
     // not tx's that are pending or unapproved
     if (txCount > txHistoryLimit - 1) {
-      const index = transactions.findIndex(metaTx => getFinalStates().includes(metaTx.status))
+      const index = transactions.findIndex((metaTx) => getFinalStates().includes(metaTx.status))
       if (index !== -1) {
         transactions.splice(index, 1)
       }
     }
-    const newTxIndex = transactions.findIndex(currentTxMeta => currentTxMeta.time > txMeta.time)
+    const newTxIndex = transactions.findIndex((currentTxMeta) => currentTxMeta.time > txMeta.time)
 
     if (newTxIndex === -1) {
       transactions.push(txMeta)
@@ -199,7 +199,7 @@ class TransactionStateManager extends EventEmitter {
     // commit txMeta to state
     const txId = txMeta.id
     const txList = this.getFullTxList()
-    const index = txList.findIndex(txData => txData.id === txId)
+    const index = txList.findIndex((txData) => txData.id === txId)
     txList[index] = txMeta
     this._saveTxList(txList)
   }
@@ -229,7 +229,7 @@ class TransactionStateManager extends EventEmitter {
     @param txParams {object} - txParams to validate
   */
   validateTxParams(txParameters) {
-    Object.keys(txParameters).forEach(key => {
+    Object.keys(txParameters).forEach((key) => {
       const value = txParameters[key]
       // validate types
       switch (key) {
@@ -273,7 +273,7 @@ class TransactionStateManager extends EventEmitter {
   */
   getFilteredTxList(options, initialList) {
     let filteredTxList = initialList
-    Object.keys(options).forEach(key => {
+    Object.keys(options).forEach((key) => {
       filteredTxList = this.getTxsByMetaData(key, options[key], filteredTxList)
     })
     return filteredTxList
@@ -288,8 +288,8 @@ class TransactionStateManager extends EventEmitter {
     @returns {array} a list of txMetas who matches the search params
   */
   getTxsByMetaData(key, value, txList = this.getTxList()) {
-    const filter = typeof value === 'function' ? value : v => v === value
-    return txList.filter(txMeta => {
+    const filter = typeof value === 'function' ? value : (v) => v === value
+    return txList.filter((txMeta) => {
       if (key in txMeta.txParams) {
         return filter(txMeta.txParams[key])
       }
@@ -382,7 +382,7 @@ class TransactionStateManager extends EventEmitter {
     txMeta.err = {
       message: error.toString(),
       rpc: error.value,
-      stack: error.stack
+      stack: error.stack,
     }
     this.updateTx(txMeta, 'transactions:tx-state-manager#fail - add error')
     this._setTxStatus(txId, 'failed')
@@ -399,7 +399,7 @@ class TransactionStateManager extends EventEmitter {
     const network = this.getNetwork()
 
     // Filter out the ones from the current account and network
-    const otherAccountTxs = txs.filter(txMeta => !(txMeta.txParams.from === address && txMeta.metamaskNetworkId === network))
+    const otherAccountTxs = txs.filter((txMeta) => !(txMeta.txParams.from === address && txMeta.metamaskNetworkId === network))
 
     // Update state
     this._saveTxList(otherAccountTxs)
@@ -460,7 +460,7 @@ class TransactionStateManager extends EventEmitter {
 
   _removeTx(txId) {
     const transactionList = this.getFullTxList()
-    this._saveTxList(transactionList.filter(txMeta => txMeta.id !== txId))
+    this._saveTxList(transactionList.filter((txMeta) => txMeta.id !== txId))
   }
 }
 

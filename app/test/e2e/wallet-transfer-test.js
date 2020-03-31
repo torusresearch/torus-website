@@ -16,7 +16,7 @@ const {
   selectItem,
   shouldValueNotBeEmpty,
   shouldTextNotBeEmpty,
-  navigateTo
+  navigateTo,
 } = require('./lib/helpers')
 
 describe('Tests Wallet Transfer Transaction', () => {
@@ -31,14 +31,14 @@ describe('Tests Wallet Transfer Transaction', () => {
       devtools: config.isDevTools,
       timeout: config.launchTimeout,
       ignoreHTTPSErrors: config.ignoreHTTPSErrors,
-      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox'],
     })
 
     page = (await browser.pages())[0]
     await page.setDefaultTimeout(config.waitingTimeout)
     await page.setViewport({
       width: config.viewportWidth,
-      height: config.viewportHeight
+      height: config.viewportHeight,
     })
   })
 
@@ -62,7 +62,7 @@ describe('Tests Wallet Transfer Transaction', () => {
     const textToSelect = RINKEBY_DISPLAY_NAME
     await selectItem(page, '#select-network', '.select-network-container', textToSelect)
     await page.waitFor(100)
-    const networkSelected = await page.$eval('.select-network-container .v-select__selection', element => element.textContent)
+    const networkSelected = await page.$eval('.select-network-container .v-select__selection', (element) => element.textContent)
 
     // check if textToSelect was selected
     assert.equal(textToSelect, networkSelected)
@@ -84,7 +84,7 @@ describe('Tests Wallet Transfer Transaction', () => {
     await click(page, '.select-coin')
     await click(page, '.select-coin-eth')
     await page.waitFor(100)
-    const coinSelected = await page.$eval('.select-coin .select-coin-name', element => element.textContent)
+    const coinSelected = await page.$eval('.select-coin .select-coin-name', (element) => element.textContent)
 
     // check if textToSelect was selected
     assert.equal(textToSelect, coinSelected)
@@ -99,7 +99,7 @@ describe('Tests Wallet Transfer Transaction', () => {
   })
 
   it('Should error on invalid you send input', async () => {
-    const computedBalance = await page.$eval('.wallet-transfer', element => element.__vue__.selectedItem.computedBalance)
+    const computedBalance = await page.$eval('.wallet-transfer', (element) => element.__vue__.selectedItem.computedBalance)
 
     await typeText(page, (computedBalance + 10).toString(), '#you-send')
     await waitForText(page, '.you-send-container .v-messages__message', 'Insufficient balance for transaction')
@@ -110,16 +110,16 @@ describe('Tests Wallet Transfer Transaction', () => {
     await click(page, '#send-all-btn')
     await shouldExist(page, '#send-all-reset-btn')
 
-    const isReadOnly = await page.$eval('#you-send', element => element.readOnly)
+    const isReadOnly = await page.$eval('#you-send', (element) => element.readOnly)
     assert.equal(isReadOnly, true)
 
     let displayAmount = ''
-    const { gas, activeGasPrice, computedBalance, currencyTokenRate, toggleExclusive } = await page.$eval('.wallet-transfer', element => ({
+    const { gas, activeGasPrice, computedBalance, currencyTokenRate, toggleExclusive } = await page.$eval('.wallet-transfer', (element) => ({
       gas: element.__vue__.gas,
       activeGasPrice: element.__vue__.activeGasPrice,
       computedBalance: element.__vue__.selectedItem.computedBalance,
       currencyTokenRate: element.__vue__.getCurrencyTokenRate,
-      toggleExclusive: element.__vue__.toggle_exclusive
+      toggleExclusive: element.__vue__.toggle_exclusive,
     }))
 
     const currencyBalance = computedBalance * currencyTokenRate
@@ -133,7 +133,7 @@ describe('Tests Wallet Transfer Transaction', () => {
     }
 
     // Get you send amount
-    const youSend = await page.$eval('#you-send', element => parseFloat(element.value))
+    const youSend = await page.$eval('#you-send', (element) => parseFloat(element.value))
     assert.equal(displayAmount, youSend)
   })
 
@@ -141,7 +141,7 @@ describe('Tests Wallet Transfer Transaction', () => {
     await click(page, '#send-all-reset-btn')
     await shouldExist(page, '#send-all-btn')
 
-    const isReadOnly = await page.$eval('#you-send', element => element.readOnly)
+    const isReadOnly = await page.$eval('#you-send', (element) => element.readOnly)
     assert.equal(isReadOnly, false)
   })
 
@@ -160,7 +160,7 @@ describe('Tests Wallet Transfer Transaction', () => {
   })
 
   it('Should update transaction fee', async () => {
-    let gasPrice = await page.$eval('#gas-price', element => element.value)
+    let gasPrice = await page.$eval('#gas-price', (element) => element.value)
     gasPrice = parseFloat(gasPrice) + 4
     await page.waitFor(100)
 
@@ -170,10 +170,10 @@ describe('Tests Wallet Transfer Transaction', () => {
     await typeText(page, gasPrice.toString(), '#gas-price')
 
     const newTransactionFee = config.isMobile
-      ? await page.$eval('#transaction-fee-mobile', element => element.textContent)
-      : await page.$eval('#transaction-fee', element => element.value)
+      ? await page.$eval('#transaction-fee-mobile', (element) => element.textContent)
+      : await page.$eval('#transaction-fee', (element) => element.value)
 
-    const advancedActiveGasPrice = await page.$eval('#advanced-gas', element => element.value)
+    const advancedActiveGasPrice = await page.$eval('#advanced-gas', (element) => element.value)
     const computedTransFee = significantDigits(gasPrice * advancedActiveGasPrice * 10 ** -9)
 
     assert.equal(computedTransFee, newTransactionFee)
@@ -192,7 +192,7 @@ describe('Tests Wallet Transfer Transaction', () => {
 
   it('Should show total cost', async () => {
     const totalEthCost = await getTotalCost(page)
-    const totalCost = await page.$eval('#total-cost', element => element.value)
+    const totalCost = await page.$eval('#total-cost', (element) => element.value)
 
     assert.equal(totalEthCost, totalCost)
   })
@@ -201,7 +201,7 @@ describe('Tests Wallet Transfer Transaction', () => {
     await click(page, '#currency-mode-btn')
 
     const totalEthCost = await getTotalCost(page)
-    const totalCost = await page.$eval('#total-cost', element => element.value)
+    const totalCost = await page.$eval('#total-cost', (element) => element.value)
 
     assert.equal(totalEthCost, totalCost)
   })
@@ -210,7 +210,7 @@ describe('Tests Wallet Transfer Transaction', () => {
     await click(page, '#fastest-speed-btn')
 
     const totalEthCost = await getTotalCost(page)
-    const totalCost = await page.$eval('#total-cost', element => element.value)
+    const totalCost = await page.$eval('#total-cost', (element) => element.value)
     await page.waitFor(100)
 
     assert.equal(totalEthCost, totalCost)
@@ -221,7 +221,7 @@ describe('Tests Wallet Transfer Transaction', () => {
 
     // Get the confirm page
     await click(page, '#wallet-transfer-submit')
-    const confirmPageTarget = await browser.waitForTarget(target => target.opener() === pageTarget)
+    const confirmPageTarget = await browser.waitForTarget((target) => target.opener() === pageTarget)
     confirmPage = await confirmPageTarget.page()
 
     await shouldExist(confirmPage, '.confirm-container')
@@ -254,13 +254,13 @@ describe('Tests Wallet Transfer Transaction', () => {
   })
 })
 
-const getTotalCost = async function(page) {
-  const { gas, activeGasPrice, currencyTokenRate, toggleExclusive, amount } = await page.$eval('.wallet-transfer', element => ({
+const getTotalCost = async function (page) {
+  const { gas, activeGasPrice, currencyTokenRate, toggleExclusive, amount } = await page.$eval('.wallet-transfer', (element) => ({
     gas: element.__vue__.gas,
     activeGasPrice: element.__vue__.activeGasPrice,
     currencyTokenRate: element.__vue__.getCurrencyTokenRate,
     toggleExclusive: element.__vue__.toggle_exclusive,
-    amount: element.__vue__.amount
+    amount: element.__vue__.amount,
   }))
 
   const gasPriceInEth = gas * activeGasPrice * 10 ** -9

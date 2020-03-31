@@ -24,7 +24,7 @@
                 </span>
                 <v-menu offset-y max-height="300" z-index="20">
                   <template v-slot:activator="{ on }">
-                    <v-btn x-small text class="currency-selector" v-on="on">
+                    <v-btn x-small text :class="{ 'currency-selector': $vuetify.breakpoint.mAndUp }" v-on="on">
                       <span id="selected-currency" class="description">{{ selectedCurrency }}</span>
                       <v-icon class="torus_gray3--text" small>$vuetify.icons.select</v-icon>
                     </v-btn>
@@ -89,7 +89,7 @@
               <v-flex xs4 pt-4 class="text-right hidden-xs-only">
                 <img
                   :src="require(`../../../../public/images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)"
-                  style="height: 90px"
+                  style="height: 90px;"
                 />
               </v-flex>
             </v-layout>
@@ -107,6 +107,7 @@
         <PromotionCard
           :title="event.eventName"
           :image-path="event.imageUrl"
+          :image-dark-path="event.imageDarkUrl"
           :subtitle="event.description"
           :details-link="event.callToActionLink"
           :details-link-two="event.callToActionLinkTwo"
@@ -162,7 +163,7 @@ export default {
       search: '',
       lastUpdated: '',
       dialogLearnMore: false,
-      activeTab: 0
+      activeTab: 0,
     }
   },
   computed: {
@@ -186,7 +187,7 @@ export default {
       const search = this.search || ''
       const regEx = new RegExp(search, 'i')
 
-      return this.finalBalancesArray.filter(balance => balance.name.match(regEx))
+      return this.finalBalancesArray.filter((balance) => balance.name.match(regEx))
     },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
@@ -205,7 +206,7 @@ export default {
       const lang = this.$vuetify.lang.current
       const { billboard } = this.$store.state
 
-      Object.keys(billboard).forEach(key => {
+      Object.keys(billboard).forEach((key) => {
         const event = billboard[key]
         const finalEvent = event[lang] || event[LOCALE_EN]
         events.push(finalEvent)
@@ -215,7 +216,7 @@ export default {
     },
     storeNetworkType() {
       return this.$store.state.networkType
-    }
+    },
   },
   mounted() {
     this.setDateUpdated()
@@ -228,7 +229,7 @@ export default {
     select(selectedItem) {
       // this is so that we don't break their api
       this.selected = []
-      this.finalBalancesArray.forEach(item => {
+      this.finalBalancesArray.forEach((item) => {
         if (item.id === selectedItem.id) {
           this.selected.push(item)
         }
@@ -243,35 +244,23 @@ export default {
     },
     initiateTransfer() {
       // this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
-      this.$router.push({ name: 'walletTransfer' }).catch(_ => {})
+      this.$router.push({ name: 'walletTransfer' }).catch((_) => {})
     },
     topup() {
-      this.$router.push({ path: '/wallet/topup' }).catch(_ => {})
+      this.$router.push({ path: '/wallet/topup' }).catch((_) => {})
     },
     setDateUpdated() {
       const currentDateTime = new Date()
-      const day = currentDateTime
-        .getDate()
-        .toString()
-        .padStart(2, '0')
+      const day = currentDateTime.getDate().toString().padStart(2, '0')
       const month = (currentDateTime.getMonth() + 1).toString().padStart(2, '0')
-      const date = `${day}/${month}/${currentDateTime
-        .getFullYear()
-        .toString()
-        .slice(2, 4)}`
+      const date = `${day}/${month}/${currentDateTime.getFullYear().toString().slice(2, 4)}`
 
-      const hours = currentDateTime
-        .getHours()
-        .toString()
-        .padStart(2, '0')
-      const mins = currentDateTime
-        .getMinutes()
-        .toString()
-        .padStart(2, '0')
+      const hours = currentDateTime.getHours().toString().padStart(2, '0')
+      const mins = currentDateTime.getMinutes().toString().padStart(2, '0')
       const time = `${hours}:${mins}`
       this.lastUpdated = `${date}, ${time}`
-    }
-  }
+    },
+  },
 }
 </script>
 

@@ -17,14 +17,14 @@ function getStore() {
         deferredDispatch.push(() => {
           storeReference.dispatch(...arguments_)
         })
-      }
+      },
     }
   )
 }
 
 export function injectStore(s) {
   storeReference = s
-  deferredDispatch.forEach(fn => fn())
+  deferredDispatch.forEach((fn) => fn())
   deferredDispatch = []
 }
 
@@ -43,7 +43,7 @@ function onloadTorus(torus) {
   const sessionCachedNetwork = (sessionData && JSON.parse(sessionData).networkType) || {
     host: MAINNET,
     chainId: MAINNET_CODE,
-    networkName: MAINNET_DISPLAY_NAME
+    networkName: MAINNET_DISPLAY_NAME,
   }
 
   const torusController = new TorusController({
@@ -59,7 +59,7 @@ function onloadTorus(torus) {
     },
     rehydrate() {
       getStore().dispatch('rehydrate')
-    }
+    },
   })
 
   torus.torusController = torusController
@@ -71,8 +71,8 @@ function onloadTorus(torus) {
   torus.nodeDetailManager = new NodeDetailManager({ network: process.env.VUE_APP_PROXY_NETWORK, proxyAddress: process.env.VUE_APP_PROXY_ADDRESS })
   torus.nodeDetailManager
     .getNodeDetails()
-    .then(nodeDetails => log.info(nodeDetails))
-    .catch(error => log.error(error))
+    .then((nodeDetails) => log.info(nodeDetails))
+    .catch((error) => log.error(error))
 
   // You are not inside an iframe
   if (isMain) {
@@ -84,13 +84,13 @@ function onloadTorus(torus) {
   const metamaskStream = new LocalMessageDuplexStream({
     name: 'iframe_metamask',
     target: 'embed_metamask',
-    targetWindow: window.parent
+    targetWindow: window.parent,
   })
 
   const communicationStream = new LocalMessageDuplexStream({
     name: 'iframe_comm',
     target: 'embed_comm',
-    targetWindow: window.parent
+    targetWindow: window.parent,
   })
 
   torus.metamaskMux = setupMultiplex(metamaskStream)

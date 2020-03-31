@@ -133,7 +133,7 @@ const WalletWorker = require('worker-loader!../../../utils/wallet.worker.js')
 
 export default {
   components: {
-    HelpTooltip
+    HelpTooltip,
   },
   data() {
     return {
@@ -151,8 +151,8 @@ export default {
       isLoadingPrivate: false,
       isLoadingKeystore: false,
       rules: {
-        required: value => !!value || this.t('accountMenu.required')
-      }
+        required: (value) => !!value || this.t('accountMenu.required'),
+      },
     }
   },
   computed: {
@@ -160,14 +160,14 @@ export default {
       return [
         {
           name: this.t('accountMenu.privateKey'),
-          value: 'private'
+          value: 'private',
         },
         {
           name: this.t('accountMenu.keystore'),
-          value: 'keystore'
-        }
+          value: 'keystore',
+        },
       ]
-    }
+    },
   },
   methods: {
     importViaPrivateKey() {
@@ -176,13 +176,13 @@ export default {
 
         this.$store
           .dispatch('importAccount', { keyData: [this.privateKey], strategy: 'Private Key' })
-          .then(privKey => {
+          .then((privKey) => {
             this.onClose()
             this.isLoadingPrivate = false
             this.informClients(privKey)
             this.$refs.privateKeyForm.resetValidation()
           })
-          .catch(error => {
+          .catch((error) => {
             this.setErrorState(error)
           })
       }
@@ -194,8 +194,8 @@ export default {
         accountImportChannel.postMessage({
           data: {
             name: 'imported_account',
-            payload: { privKey }
-          }
+            payload: { privKey },
+          },
         })
       }
     },
@@ -213,34 +213,34 @@ export default {
         if (!window.Worker) {
           this.$store
             .dispatch('importAccount', { keyData: [keyData, this.jsonPassword], strategy: 'JSON File' })
-            .then(privKey => {
+            .then((privKey) => {
               this.onClose()
               this.isLoadingKeystore = false
               this.informClients(privKey)
               this.$refs.jsonFileForm.resetValidation()
             })
-            .catch(error => {
+            .catch((error) => {
               this.setErrorState(error)
             })
         } else {
           const worker = new WalletWorker()
           worker.postMessage({ type: 'unlockWallet', data: [keyData, this.jsonPassword] })
-          worker.addEventListener('message', event => {
+          worker.addEventListener('message', (event) => {
             const { _privKey: stringPrivateKey } = event.data
             const privKey = ethUtil.stripHexPrefix(ethUtil.bufferToHex(Buffer.from(stringPrivateKey)))
             this.$store
               .dispatch('finishImportAccount', { privKey })
-              .then(privateKey => {
+              .then((privateKey) => {
                 this.onClose()
                 this.isLoadingKeystore = false
                 this.informClients(privateKey)
                 this.$refs.jsonFileForm.resetValidation()
               })
-              .catch(error => {
+              .catch((error) => {
                 this.setErrorState(error)
               })
           })
-          worker.addEventListener('error', error => {
+          worker.addEventListener('error', (error) => {
             this.setErrorState(error)
           })
         }
@@ -283,8 +283,8 @@ export default {
     },
     onClose() {
       this.$emit('onClose')
-    }
-  }
+    },
+  },
 }
 </script>
 

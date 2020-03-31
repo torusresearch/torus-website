@@ -4,11 +4,11 @@ const sinon = require('sinon')
 const utils = require('../../../src/utils/utils')
 
 describe('util', () => {
-  beforeEach(function() {
+  beforeEach(function () {
     this.sinon = sinon.createSandbox()
   })
 
-  afterEach(function() {
+  afterEach(function () {
     this.sinon.restore()
   })
 

@@ -1,14 +1,14 @@
 const config = require('./config')
 
-const login = async function(page) {
-  await page.evaluate(async config => {
-    let data = {
-      privKey: config.testPrivateKey,
-      ethAddress: config.testEthAddress
+const login = async (page) => {
+  await page.evaluate(async (configInner) => {
+    const data = {
+      privKey: configInner.testPrivateKey,
+      ethAddress: configInner.testEthAddress,
     }
 
     // grabs the vuestore from the first element that has vue attached
-    let x = document.querySelector('#app').__vue__.$store
+    const x = document.querySelector('#app').__vue__.$store
     x.dispatch('addWallet', data)
     x.dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress })
     x.dispatch('subscribeToControllers')
@@ -16,7 +16,7 @@ const login = async function(page) {
   }, config)
 }
 
-const click = async function(page, selector) {
+const click = async (page, selector) => {
   try {
     await page.waitForSelector(selector, { visible: true, timeout: 120000 })
     await page.click(selector)
@@ -25,14 +25,14 @@ const click = async function(page, selector) {
   }
 }
 
-const waitForText = async function(page, selector, text, isCaseSensitive = true) {
+const waitForText = async (page, selector, text, isCaseSensitive = true) => {
   try {
     await page.waitForSelector(selector, { timeout: 120000 })
     await page.waitForFunction(
-      (selector, text, isCaseSensitive) => {
-        let htmlText = document.querySelector(selector).innerText
-        let targetText = text
-        if (!isCaseSensitive) {
+      (selectorInner, textInner, isCaseSensitiveInner) => {
+        let htmlText = document.querySelector(selectorInner).textContent
+        let targetText = textInner
+        if (!isCaseSensitiveInner) {
           htmlText = htmlText.toLowerCase()
           targetText = targetText.toLowerCase()
         }
@@ -48,11 +48,11 @@ const waitForText = async function(page, selector, text, isCaseSensitive = true)
   }
 }
 
-const waitForClass = async function(page, selector, className) {
+const waitForClass = async (page, selector, className) => {
   try {
     await page.waitForSelector(selector, { timeout: 120000 })
     await page.waitForFunction(
-      (selector, className) => document.querySelector(selector).classList.contains(className),
+      (selectorInner, classNameInner) => document.querySelector(selectorInner).classList.contains(classNameInner),
       { timeout: 120000 },
       selector,
       className
@@ -62,7 +62,7 @@ const waitForClass = async function(page, selector, className) {
   }
 }
 
-const shouldExist = async function(page, selector) {
+const shouldExist = async (page, selector) => {
   try {
     await page.waitForSelector(selector, { visible: true, timeout: 120000 })
   } catch (error) {
@@ -70,7 +70,7 @@ const shouldExist = async function(page, selector) {
   }
 }
 
-const navigateTo = async function(page, selector, pageContainer) {
+const navigateTo = async (page, selector, pageContainer) => {
   if (config.isMobile) {
     await click(page, '#menu-dropdown-mobile-btn')
     await page.waitFor(100)
@@ -84,11 +84,11 @@ const navigateTo = async function(page, selector, pageContainer) {
   }
 }
 
-const loadUrl = async function(page, url) {
+const loadUrl = async (page, url) => {
   await page.goto(url, { waitUntil: 'networkidle0' })
 }
 
-const typeText = async function(page, text, selector) {
+const typeText = async (page, text, selector) => {
   try {
     await page.waitForSelector(selector, { visible: true, timeout: 120000 })
     await page.type(selector, text)
@@ -97,31 +97,31 @@ const typeText = async function(page, text, selector) {
   }
 }
 
-const shouldTextNotBeEmpty = async function(page, selector) {
+const shouldTextNotBeEmpty = async (page, selector) => {
   try {
     await page.waitForSelector(selector, { timeout: 120000 })
-    await page.waitForFunction(selector => document.querySelector(selector).innerText !== '', { timeout: 120000 }, selector)
+    await page.waitForFunction((selectorInner) => document.querySelector(selectorInner).textContent !== '', { timeout: 120000 }, selector)
   } catch (error) {
     throw new Error(`Inner text empty for selector: ${selector}`)
   }
 }
 
-const shouldValueNotBeEmpty = async function(page, selector) {
+const shouldValueNotBeEmpty = async (page, selector) => {
   try {
     await page.waitForSelector(selector, { timeout: 120000 })
-    await page.waitForFunction(selector => document.querySelector(selector).value !== '', { timeout: 120000 }, selector)
+    await page.waitForFunction((selectorInner) => document.querySelector(selectorInner).value !== '', { timeout: 120000 }, selector)
   } catch (error) {
     throw new Error(`Value text empty for for selector: ${selector}`)
   }
 }
 
-const selectItem = async function(page, selector, selectorContainer, text) {
+const selectItem = async (page, selector, selectorContainer, text) => {
   try {
     await click(page, selector)
-    await page.evaluate(text => {
-      let options = [...document.querySelectorAll('.v-list-item__title')]
-      options.forEach(function(option) {
-        if (option.innerText == text) option.click()
+    await page.evaluate((textInner) => {
+      const options = [...document.querySelectorAll('.v-list-item__title')]
+      options.forEach((option) => {
+        if (option.textContent === textInner) option.click()
       })
     }, text)
 
@@ -142,5 +142,5 @@ module.exports = {
   typeText,
   shouldTextNotBeEmpty,
   shouldValueNotBeEmpty,
-  selectItem
+  selectItem,
 }

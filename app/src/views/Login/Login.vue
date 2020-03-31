@@ -171,7 +171,7 @@ import {
   WalletTopupLoader,
   WalletTopupLoaderMobile,
   WalletTransferLoader,
-  WalletTransferLoaderMobile
+  WalletTransferLoaderMobile,
 } from '../../content-loader'
 import { DISCORD, FACEBOOK, GOOGLE, REDDIT, TWITCH } from '../../utils/enums'
 
@@ -185,12 +185,12 @@ export default {
       GOOGLE,
       TWITCH,
       REDDIT,
-      DISCORD
+      DISCORD,
     }
   },
   computed: mapState({
     selectedAddress: 'selectedAddress',
-    loggedIn: state => state.selectedAddress !== '' && !state.loginInProgress,
+    loggedIn: (state) => state.selectedAddress !== '' && !state.loginInProgress,
     loginInProgress: 'loginInProgress',
     activeLoader() {
       const redirectPath = this.$route.query.redirect
@@ -211,33 +211,33 @@ export default {
         return this.$vuetify.breakpoint.xsOnly ? WalletCollectiblesLoaderMobile : WalletCollectiblesLoader
       }
       return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
-    }
+    },
   }),
   watch: {
     selectedAddress(newAddress, oldAddress) {
       if (newAddress !== oldAddress && newAddress !== '') {
         let redirectPath = this.$route.query.redirect
         if (redirectPath === undefined || (redirectPath && redirectPath.includes('index.html'))) redirectPath = '/wallet'
-        this.$router.push(redirectPath).catch(_ => {})
+        this.$router.push(redirectPath).catch((_) => {})
       }
-    }
+    },
   },
   mounted() {
-    if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch(_ => {})
+    if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
   },
   created() {
     this.isLogout = this.$route.name !== 'login'
   },
   methods: {
     ...mapActions({
-      triggerLogin: 'triggerLogin'
+      triggerLogin: 'triggerLogin',
     }),
     returnHome() {
-      this.$router.push({ path: '/' }).catch(_ => {})
+      this.$router.push({ path: '/' }).catch((_) => {})
       this.isLogout = false
       // window.location.href = process.env.BASE_URL
-    }
-  }
+    },
+  },
 }
 </script>
 

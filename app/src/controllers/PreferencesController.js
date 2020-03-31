@@ -44,7 +44,7 @@ class PreferencesController {
       contacts: [],
       permissions: [],
       paymentTx: [],
-      ...options.initState
+      ...options.initState,
     }
 
     this.interval = options.interval || DEFAULT_INTERVAL
@@ -65,8 +65,8 @@ class PreferencesController {
     return {
       headers: {
         Authorization: `Bearer ${this._jwtToken}`,
-        'Content-Type': 'application/json; charset=utf-8'
-      }
+        'Content-Type': 'application/json; charset=utf-8',
+      },
     }
   }
 
@@ -105,12 +105,12 @@ class PreferencesController {
   async sync(callback, errorCallback) {
     try {
       const [user, paymentTx] = await Promise.all([
-        get(`${config.api}/user`, this.headers).catch(_ => {
+        get(`${config.api}/user`, this.headers).catch((_) => {
           if (errorCallback) errorCallback()
         }),
-        getPastOrders({}, this.headers.headers).catch(error => {
+        getPastOrders({}, this.headers.headers).catch((error) => {
           log.error('unable to fetch past orders', error)
-        })
+        }),
       ])
       if (user && user.data) {
         const { transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
@@ -121,7 +121,7 @@ class PreferencesController {
           selectedCurrency: defaultCurrency,
           locale: locale || LOCALE_EN,
           paymentTx: (paymentTx && paymentTx.data) || [],
-          permissions
+          permissions,
         })
         if (callback) return callback(user)
         // this.permissionsController._initializePermissions(permissions)
@@ -142,7 +142,7 @@ class PreferencesController {
         theme,
         verifier,
         verifierId,
-        locale
+        locale,
       },
       this.headers
     )
@@ -165,7 +165,7 @@ class PreferencesController {
             hostname: userOrigin,
             verifier,
             verifierId,
-            metadata: `referrer:${referrer}`
+            metadata: `referrer:${referrer}`,
           },
           this.headers
         )
@@ -261,7 +261,7 @@ class PreferencesController {
   async deleteContact(payload) {
     try {
       const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers)
-      const finalContacts = this.state.contacts.filter(contact => contact.id !== response.data.id)
+      const finalContacts = this.state.contacts.filter((contact) => contact.id !== response.data.id)
       this.store.updateState({ contacts: finalContacts })
       this.handleSuccess('navBar.snackSuccessContactDelete')
     } catch (error) {

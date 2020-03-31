@@ -17,7 +17,7 @@ const Wyre = {
       destCurrency: currentOrder.destCurrency || undefined,
       redirectUrl: `${config.redirect_uri}?state=${instanceState}`,
       referenceId: selectedAddress || state.selectedAddress,
-      sourceAmount: currentOrder.sourceAmount || undefined
+      sourceAmount: currentOrder.sourceAmount || undefined,
     }
 
     return dispatch('postWyreOrder', { params: parameters, path: config.wyreHost, preopenInstanceId })
@@ -25,7 +25,11 @@ const Wyre = {
   fetchWyreQuote({ state }, payload) {
     // returns a promise
     return getQuote(
-      { dest_currency: payload.selectedCryptoCurrency, source_amount: +parseFloat(payload.fiatValue), source_currency: payload.selectedCurrency },
+      {
+        dest_currency: payload.selectedCryptoCurrency,
+        source_amount: +Number.parseFloat(payload.fiatValue),
+        source_currency: payload.selectedCurrency,
+      },
       { Authorization: `Bearer ${state.jwtToken}` }
     )
   },
@@ -36,10 +40,10 @@ const Wyre = {
       const wyreWindow = new PopupHandler({ preopenInstanceId, url: finalUrl })
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-      bc.addEventListener('message', ev => {
+      bc.addEventListener('message', (ev) => {
         try {
           const {
-            instanceParams: { provider }
+            instanceParams: { provider },
           } = ev.data || {}
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
@@ -61,7 +65,7 @@ const Wyre = {
         reject(new Error('user closed wyre popup'))
       })
     })
-  }
+  },
 }
 
 export default Wyre

@@ -27,7 +27,7 @@ const runUntilEvaluateEquals = (fn, value, options = {}) => {
   })
 }
 
-const sleep = milliseconds =>
+const sleep = (milliseconds) =>
   new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve()
@@ -51,7 +51,7 @@ const timeout = 180000(async () => {
     log.info('Ethereum enable button clicked')
     let pageCount = 0
     await runUntilEvaluateEquals(() => {
-      ;(async function() {
+      ;(async function () {
         pageCount = (await browser.pages()).length
       })()
       return pageCount
@@ -118,7 +118,7 @@ const timeout = 180000(async () => {
     await torusPopup.evaluate('document.getElementsByTagName("button")[1].click()')
     let alertAppeared = false
     let alertMessage = ''
-    page.on('dialog', dialog => {
+    page.on('dialog', (dialog) => {
       alertMessage = dialog.message()
       alertAppeared = true
     })

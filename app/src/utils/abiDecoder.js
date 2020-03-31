@@ -9,7 +9,7 @@ class AbiDecoder {
   constructor(abi) {
     this.state = {
       savedABIs: [],
-      methodIDs: {}
+      methodIDs: {},
     }
     this.addABI(abi)
   }
@@ -21,9 +21,9 @@ class AbiDecoder {
   addABI(abiArray) {
     if (Array.isArray(abiArray)) {
       // Iterate new abi to generate method id's
-      abiArray.map(abi => {
+      abiArray.map((abi) => {
         if (abi.name) {
-          const signature = sha3(`${abi.name}(${abi.inputs.map(input => input.type).join(',')})`)
+          const signature = sha3(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`)
           if (abi.type === 'event') {
             this.state.methodIDs[signature.slice(2)] = abi
           } else {
@@ -42,9 +42,9 @@ class AbiDecoder {
   removeABI(abiArray) {
     if (Array.isArray(abiArray)) {
       // Iterate new abi to generate method id's
-      abiArray.map(abi => {
+      abiArray.map((abi) => {
         if (abi.name) {
-          const signature = sha3(`${abi.name}(${abi.inputs.map(input => input.type).join(',')})`)
+          const signature = sha3(`${abi.name}(${abi.inputs.map((input) => input.type).join(',')})`)
           if (abi.type === 'event') {
             if (this.state.methodIDs[signature.slice(2)]) {
               delete this.state.methodIDs[signature.slice(2)]
@@ -68,12 +68,12 @@ class AbiDecoder {
     const methodID = data.slice(2, 10)
     const abiItem = this.state.methodIDs[methodID]
     if (abiItem) {
-      const parameters = abiItem.inputs.map(item => item.type)
+      const parameters = abiItem.inputs.map((item) => item.type)
       const decoded = web3.eth.abi.decodeParameters(parameters, data.slice(10))
 
       const returnValueData = {
         name: abiItem.name,
-        params: []
+        params: [],
       }
 
       for (let i = 0; i < decoded.__length__; i += 1) {
@@ -87,7 +87,7 @@ class AbiDecoder {
           const isArray = Array.isArray(parameter)
 
           if (isArray) {
-            parsedParameter = parameter.map(value => new BN(value).toString())
+            parsedParameter = parameter.map((value) => new BN(value).toString())
           } else {
             parsedParameter = new BN(parameter).toString()
           }
@@ -98,7 +98,7 @@ class AbiDecoder {
           const isArray = Array.isArray(parameter)
 
           if (isArray) {
-            parsedParameter = parameter.map(_ => _.toLowerCase())
+            parsedParameter = parameter.map((_) => _.toLowerCase())
           } else {
             parsedParameter = parameter.toLowerCase()
           }
@@ -107,7 +107,7 @@ class AbiDecoder {
         returnValueData.params.push({
           name: abiItem.inputs[i].name,
           value: parsedParameter,
-          type: abiItem.inputs[i].type
+          type: abiItem.inputs[i].type,
         })
       }
 
@@ -118,8 +118,8 @@ class AbiDecoder {
 
   decodeLogs(logs) {
     return logs
-      .filter(log => log.topics.length > 0)
-      .map(logItem => {
+      .filter((log) => log.topics.length > 0)
+      .map((logItem) => {
         const methodID = logItem.topics[0].slice(2)
         const method = this.state.methodIDs[methodID]
         if (method) {
@@ -129,7 +129,7 @@ class AbiDecoder {
           let topicsIndex = 1
 
           const dataTypes = []
-          method.inputs.map(input => {
+          method.inputs.map((input) => {
             if (!input.indexed) {
               dataTypes.push(input.type)
             }
@@ -139,10 +139,10 @@ class AbiDecoder {
           const decodedData = web3.eth.abi.decodeParameters(dataTypes, logData.slice(2))
 
           // Loop topic and data to get the params
-          method.inputs.map(parameter => {
+          method.inputs.map((parameter) => {
             const decodedP = {
               name: parameter.name,
-              type: parameter.type
+              type: parameter.type,
             }
 
             if (parameter.indexed) {
@@ -180,7 +180,7 @@ class AbiDecoder {
           return {
             name: method.name,
             events: decodedParameters,
-            address: logItem.address
+            address: logItem.address,
           }
         }
         return undefined

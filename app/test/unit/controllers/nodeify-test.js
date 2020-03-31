@@ -3,16 +3,16 @@ import assert from 'assert'
 
 import nodeify from '../../../src/utils/nodeify'
 
-describe('nodeify', function() {
+describe('nodeify', function () {
   const obj = {
     foo: 'bar',
-    promiseFunc: function(a) {
+    promiseFunc: function (a) {
       const solution = this.foo + a
       return Promise.resolve(solution)
-    }
+    },
   }
 
-  it('should retain original context', function(done) {
+  it('should retain original context', function (done) {
     const nodified = nodeify(obj.promiseFunc, obj)
     nodified('baz', (err, res) => {
       if (!err) {
@@ -24,7 +24,7 @@ describe('nodeify', function() {
     })
   })
 
-  it('no callback - should allow the last argument to not be a function', function(done) {
+  it('no callback - should allow the last argument to not be a function', function (done) {
     const nodified = nodeify(obj.promiseFunc, obj)
     try {
       nodified('baz')
@@ -34,7 +34,7 @@ describe('nodeify', function() {
     }
   })
 
-  it('sync functions - returns value', function(done) {
+  it('sync functions - returns value', function (done) {
     const nodified = nodeify(() => 42)
     try {
       nodified((err, result) => {
@@ -49,7 +49,7 @@ describe('nodeify', function() {
     }
   })
 
-  it('sync functions - handles errors', function(done) {
+  it('sync functions - handles errors', function (done) {
     const nodified = nodeify(() => {
       throw new Error('boom!')
     })
