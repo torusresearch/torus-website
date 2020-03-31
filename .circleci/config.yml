@@ -205,6 +205,19 @@ jobs:
           command: |
             ssh-keyscan -H lrc.tor.us >> ~/.ssh/known_hosts
             tar czf - dist/ | ssh torus@lrc.tor.us "rm -rf ~/lrc-torus-website/* && tar -zxf - -C ~/lrc-torus-website/"
+  deploy-alpha4:
+    <<: *job_common
+    steps:
+      - attach_workspace:
+          at: ~/torus-website
+      - add_ssh_keys
+      - run:
+          name: "Deploy Over SSH"
+          command: |
+            ssh-keyscan -H alpha4.tor.us >> ~/.ssh/known_hosts
+            ssh torus@alpha4.tor.us "rm -rf ~/alpha4-torus-website/*"
+            tar czf - dist/ | ssh torus@alpha4.tor.us "cat > ~/alpha4-torus-website/dist.tgz"
+            ssh torus@alpha4.tor.us "cd ~/alpha4-torus-website && tar zxvf dist.tgz"
 
 workflows:
   version: 2
