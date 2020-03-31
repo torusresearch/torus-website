@@ -1,6 +1,6 @@
 {
   "name": "app",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "private": true,
   "scripts": {
     "serve": "npm run locale && vue-cli-service serve",
@@ -21,8 +21,8 @@
     "build:alpha4": "npm run build-embed:alpha4 && npm run pre-build && vue-cli-service build --mode alpha4",
     "dev": "cross-env NODE_ENV=development VUE_APP_TORUS_BUILD_ENV=development node server.js",
     "locale": "node ./scripts/importLocales.js",
-    "lint:js": "eslint --fix src/**/*.js",
-    "lint:vue": "eslint --fix src/**/*.vue",
+    "lint:js": "eslint --fix 'src/**/*.js'",
+    "lint:vue": "eslint --fix 'src/**/*.vue'",
     "post-build": ". ./scripts/buildErrorPage.sh",
     "pre-build": ". ./scripts/calculateIntegrity.sh && node ./scripts/replaceRedirectHTML.js && npm run locale",
     "production": "cross-env PORT=443 NODE_ENV=production node server.js",
@@ -106,7 +106,7 @@
   },
   "devDependencies": {
     "@babel/register": "^7.9.0",
-    "@toruslabs/torus-embed": "^1.2.4",
+    "@toruslabs/torus-embed": "^1.2.5",
     "@vue/cli-plugin-babel": "^4.2.3",
     "@vue/cli-plugin-eslint": "^4.2.3",
     "@vue/cli-plugin-pwa": "^4.2.3",
