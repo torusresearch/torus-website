@@ -80,6 +80,7 @@
   border-radius: 25px;
   background-color: var(--torus-brand-1);
   padding: 14px;
+  margin: 0;
   width: 50px;
   height: 50px;
   border: 0;
@@ -89,6 +90,8 @@
   background-size: 60%;
   background-repeat: no-repeat;
   background-position: center;
+  position: absolute;
+  bottom: 0;
 }
 
 #torusWidget .torus-btn--loading {
