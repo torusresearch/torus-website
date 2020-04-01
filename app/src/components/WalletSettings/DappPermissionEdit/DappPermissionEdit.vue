@@ -195,7 +195,7 @@
 
       <v-flex class="save-container">
         <v-btn color="white" class="px-12 py-1 mt-4 mr-4 btn-cancel text-gray" @click="onCancel">{{ t('walletSettings.cancel') }}</v-btn>
-        <v-btn color="torus_brand1" class="px-12 py-1 mt-4">{{ t('walletSettings.save') }}</v-btn>
+        <v-btn color="torusBrand1" class="px-12 py-1 mt-4">{{ t('walletSettings.save') }}</v-btn>
       </v-flex>
     </v-container>
   </v-card>

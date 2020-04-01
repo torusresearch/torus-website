@@ -20,8 +20,8 @@
     border-radius: 6px;
     background-color: var(--v-torus_grey4-base);
     &--active {
-      color: var(--v-torus_brand1-base);
-      background-color: var(--v-torus_brand4-base);
+      color: var(--v-torusBrand1-base);
+      background-color: var(--v-torusBrand4-base);
     }
     @media screen and (max-width: 600px) {
       width: 100%;
@@ -42,7 +42,7 @@
     .v-tab {
       border: 1px solid #343539;
       &--active {
-        background-color: var(--v-torus_black2-base);
+        background-color: var(--v-torusBlack2-base);
       }
     }
   }

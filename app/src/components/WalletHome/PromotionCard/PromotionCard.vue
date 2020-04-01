@@ -28,7 +28,7 @@
           </ShowToolTip>
         </v-flex>
         <v-flex xs12 sm6 px-3>
-          <v-btn depressed large block class="torus-btn1 torus_brand1--text" :href="detailsLink" target="_blank">
+          <v-btn depressed large block class="torus-btn1 torusBrand1--text" :href="detailsLink" target="_blank">
             {{ detailsText }}
           </v-btn>
         </v-flex>
@@ -37,12 +37,12 @@
         <v-flex class="text_1--text pt-6" :class="$vuetify.breakpoint.xsOnly ? 'text-center xs12' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
           <div class="title font-weight-bold" :class="subtitle ? 'text-clamp-one' : 'text-clamp-two'">{{ title }}</div>
           <slot name="subtitle">
-            <div class="text-clamp-one torus_font1--text caption mt-2">{{ subtitle }}</div>
+            <div class="text-clamp-one torusFont1--text caption mt-2">{{ subtitle }}</div>
             <div class="more-details-container">
               <v-btn
                 block
                 large
-                class="torus-btn1 torus_brand1--text"
+                class="torus-btn1 torusBrand1--text"
                 :class="[$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12']"
                 :href="detailsLink"
                 target="_blank"

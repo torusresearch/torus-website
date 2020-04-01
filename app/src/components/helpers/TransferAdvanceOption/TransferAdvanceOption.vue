@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" persistent>
     <template v-slot:activator="{ on }">
-      <a v-show="displayAmount" id="advance-option-link" class="float-right torus_brand1--text body-2" v-on="on">
+      <a v-show="displayAmount" id="advance-option-link" class="float-right torusBrand1--text body-2" v-on="on">
         {{ t('walletTransfer.advancedOptions') }}
       </a>
     </template>
@@ -91,7 +91,7 @@
                 <v-flex xs12 sm6 px-4 :class="$vuetify.breakpoint.xsOnly ? 'mt-5' : ''">
                   <span class="subtitle-2">{{ t('walletTransfer.newTotal') }}</span>
                   <template v-if="$vuetify.breakpoint.xsOnly">
-                    <span class="float-right subtitle-1 font-weight-bold torus_brand1--text">{{ totalCost }} {{ symbol }}</span>
+                    <span class="float-right subtitle-1 font-weight-bold torusBrand1--text">{{ totalCost }} {{ symbol }}</span>
                     <v-divider class="mt-1 mb-2"></v-divider>
                   </template>
                   <v-text-field
@@ -110,7 +110,7 @@
           <v-layout mt-4 pr-4>
             <v-spacer></v-spacer>
             <v-btn large text @click="onCancel">{{ t('walletTransfer.cancel') }}</v-btn>
-            <v-btn id="adv-opt-submit-btn" large depressed color="torus_brand1" class="ml-4" type="submit" :disabled="!advanceOptionFormValid">
+            <v-btn id="adv-opt-submit-btn" large depressed color="torusBrand1" class="ml-4" type="submit" :disabled="!advanceOptionFormValid">
               {{ t('walletTransfer.save') }}
             </v-btn>
           </v-layout>

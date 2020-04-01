@@ -37,7 +37,7 @@
             <span class="account-list__address">{{ acc.address }}</span>
             <span class="float-right">
               <ShowToolTip :address="acc.address">
-                <v-icon size="12" :class="{ 'torus_font1--text': !$vuetify.theme.dark }" v-text="'$vuetify.icons.copy'" />
+                <v-icon size="12" :class="{ 'torusFont1--text': !$vuetify.theme.dark }" v-text="'$vuetify.icons.copy'" />
               </ShowToolTip>
               <ExportQrCode :custom-address="acc.address">
                 <v-icon x-small v-text="'$vuetify.icons.qr'" />
@@ -51,7 +51,7 @@
     <v-list>
       <v-list-item id="import-account-btn" @click="accountImportDialog = true">
         <v-list-item-action class="mr-2">
-          <v-icon class="torus_font1--text" v-text="'$vuetify.icons.import'" />
+          <v-icon class="torusFont1--text" v-text="'$vuetify.icons.import'" />
         </v-list-item-action>
         <v-list-item-content class="subtitle-2">{{ t('accountMenu.importAccount') }}</v-list-item-content>
       </v-list-item>
@@ -72,7 +72,7 @@
         :to="headerItem.route"
       >
         <v-list-item-action class="mr-2">
-          <v-icon :size="headerItem.icon === 'activities' ? 12 : 16" class="torus_font1--text" v-text="`$vuetify.icons.${headerItem.icon}`" />
+          <v-icon :size="headerItem.icon === 'activities' ? 12 : 16" class="torusFont1--text" v-text="`$vuetify.icons.${headerItem.icon}`" />
         </v-list-item-action>
         <v-list-item-content>
           <v-list-item-title class="subtitle-2">{{ headerItem.display }}</v-list-item-title>
@@ -80,7 +80,7 @@
       </v-list-item>
       <v-list-item href="https://docs.tor.us/#users" target="_blank">
         <v-list-item-action class="mr-2">
-          <v-icon :small="$vuetify.breakpoint.xsOnly" class="torus_font1--text" v-text="'$vuetify.icons.info'" />
+          <v-icon :small="$vuetify.breakpoint.xsOnly" class="torusFont1--text" v-text="'$vuetify.icons.info'" />
         </v-list-item-action>
         <v-list-item-content class="subtitle-2">{{ t('accountMenu.infoSupport') }}</v-list-item-content>
       </v-list-item>

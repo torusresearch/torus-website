@@ -17,7 +17,7 @@
 
           <v-card flat class="grey lighten-3">
             <v-card-text>
-              <div class="subtitle-2 torus_brand1--text request-from">
+              <div class="subtitle-2 torusBrand1--text request-from">
                 <a :href="origin.href" target="_blank">{{ origin.hostname }}</a>
                 <a :href="origin.href" target="_blank" class="float-right">
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
@@ -44,7 +44,7 @@
             <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappProvider.cancel') }}</v-btn>
           </v-flex>
           <v-flex xs6>
-            <v-btn block depressed large color="torus_brand1" class="ml-2" @click="triggerSign">{{ t('dappProvider.confirm') }}</v-btn>
+            <v-btn block depressed large color="torusBrand1" class="ml-2" @click="triggerSign">{{ t('dappProvider.confirm') }}</v-btn>
           </v-flex>
         </v-layout>
       </v-layout>

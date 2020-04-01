@@ -11,10 +11,10 @@
       <router-link :to="targetProvider.link">
         <v-list-item :id="`${targetProvider.name}-link`" three-line @click="scrollToPosition">
           <v-list-item-icon class="mr-2 align-self-center">
-            <v-icon v-if="innerProvider === targetProvider.name" :class="$vuetify.theme.isDark ? 'torus_light--text' : 'torus_brand1--text'">
+            <v-icon v-if="innerProvider === targetProvider.name" :class="$vuetify.theme.isDark ? 'torusLight--text' : 'torusBrand1--text'">
               $vuetify.icons.radioOn
             </v-icon>
-            <v-icon v-else :class="$vuetify.theme.isDark ? 'torus_light--text' : 'torus_black--text'">$vuetify.icons.radioOff</v-icon>
+            <v-icon v-else :class="$vuetify.theme.isDark ? 'torusLight--text' : 'torusBlack--text'">$vuetify.icons.radioOff</v-icon>
           </v-list-item-icon>
           <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
             <img :src="require(`../../../../public/images/${targetProvider.logo}`)" :alt="targetProvider.name" />

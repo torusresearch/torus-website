@@ -44,6 +44,7 @@ const initialState = {
   errorMsg: '',
   successMsg: '',
   iframeMetadata: { origin: '', name: '', icon: '' },
+  isWhiteLabelActive: true,
 }
 
 export default initialState

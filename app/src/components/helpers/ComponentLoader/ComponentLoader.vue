@@ -12,7 +12,7 @@ export default {
   components: { BeatLoader },
   computed: {
     color() {
-      return this.$vuetify.theme.dark ? this.$vuetify.theme.themes.dark.torus_brand1 : this.$vuetify.theme.themes.light.torus_brand1
+      return this.$vuetify.theme.dark ? this.$vuetify.theme.themes.dark.torusBrand1 : this.$vuetify.theme.themes.light.torusBrand1
     },
   },
 }

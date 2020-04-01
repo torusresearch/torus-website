@@ -167,10 +167,10 @@ hr {
 }
 
 .theme--light.v-card {
-  background: var(--v-torus_light-base);
+  background: var(--v-torusLight-base);
 }
 .theme--dark.v-card {
-  background: var(--v-torus_light-base);
+  background: var(--v-torusLight-base);
 }
 
 .word-break {
@@ -178,7 +178,7 @@ hr {
 }
 
 ::v-deep .v-expansion-panel .vjs-tree .vjs-value__string {
-  color: var(--v-torus_brand1-base) !important;
+  color: var(--v-torusBrand1-base) !important;
 }
 
 ::v-deep .v-expansion-panel .vjs-tree .vjs-tree__brackets {
@@ -197,7 +197,7 @@ hr {
 
 .v-expansion-panel::before {
   box-shadow: none;
-  border-left: 2px solid var(--v-torus_brand1-base);
+  border-left: 2px solid var(--v-torusBrand1-base);
   border-radius: 0;
 }
 
@@ -206,7 +206,7 @@ hr {
 }
 
 .v-expansion-panel-header {
-  color: var(--v-torus_brand1-base) !important;
+  color: var(--v-torusBrand1-base) !important;
 }
 
 .background_3 {

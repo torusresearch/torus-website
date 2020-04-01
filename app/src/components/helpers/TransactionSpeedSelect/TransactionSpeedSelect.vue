@@ -56,7 +56,7 @@
         </div>
       </v-flex>
       <v-flex xs4 class="text-right">
-        <v-btn id="adv-reset-btn" outlined color="torus_brand1" @click="resetAdvanceOption">{{ t('walletTransfer.reset') }}</v-btn>
+        <v-btn id="adv-reset-btn" outlined color="torusBrand1" @click="resetAdvanceOption">{{ t('walletTransfer.reset') }}</v-btn>
       </v-flex>
     </v-layout>
   </v-flex>

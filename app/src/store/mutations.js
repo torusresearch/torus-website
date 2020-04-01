@@ -1,6 +1,6 @@
 import themes from '../plugins/themes'
 import vuetify from '../plugins/vuetify'
-import { THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 
 export default {
   setUserInfo(state, userInfo) {
@@ -71,7 +71,7 @@ export default {
   setTheme(state, payload) {
     state.theme = payload
     // Update vuetify theme
-    const theme = themes[payload || THEME_LIGHT_BLUE_NAME]
+    let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
 
     // Check whitelabel
     // const torusWhiteLabel = localStorage.getItem('torus-white-label')
@@ -87,6 +87,20 @@ export default {
     //   theme = themes[whiteLabelData.whiteLabelIsDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]
     //   theme.theme = { ...theme.theme, ...whiteLabelData.whiteLabelTheme }
     // }
+    const whiteLabel = {
+      theme: {
+        isDark: false,
+        dark: {
+          torusBrand1: '#EF8102',
+        },
+        light: {
+          torusBrand1: '#EF8102',
+        },
+      },
+    }
+    theme = themes[whiteLabel.theme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]
+    const mergeTheme = whiteLabel.theme.isDark ? whiteLabel.theme.dark : whiteLabel.theme.light
+    theme.theme = { ...theme.theme, ...mergeTheme }
 
     // eslint-disable-next-line no-console
     console.log('theme', theme)

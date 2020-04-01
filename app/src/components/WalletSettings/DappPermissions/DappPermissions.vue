@@ -13,7 +13,7 @@
               </p>
             </div>
 
-            <v-btn depressed class="white--text" color="torus_brand1" @click="addPermission">
+            <v-btn depressed class="white--text" color="torusBrand1" @click="addPermission">
               <v-icon left>$vuetify.icons.add</v-icon>
               {{ t('walletSettings.addNewList') }}
             </v-btn>
