@@ -23,12 +23,22 @@
           <ShowToolTip :address="detailsLinkTwo">
             <div :class="{ 'theme--dark': $vuetify.theme.isDark }" class="d-flex align-center copy-link elevation-3 px-4 py-1">
               <span class="text_2--text flex-grow-1 text-clamp-one">{{ detailsLinkTwo }}</span>
-              <v-icon class="text_2--text ml-auto" x-small right :style="{ width: '20px' }">$vuetify.icons.copy</v-icon>
+              <v-icon class="ml-auto text_2--text" x-small right :style="{ width: '20px' }">
+                $vuetify.icons.copy
+              </v-icon>
             </div>
           </ShowToolTip>
         </v-flex>
         <v-flex xs12 sm6 px-3>
-          <v-btn depressed large block class="torus-btn1 torusBrand1--text" :href="detailsLink" target="_blank">
+          <v-btn
+            depressed
+            large
+            block
+            class="torus-btn1 torusBrand1--text"
+            :class="isWhiteLabelActive ? 'torus-btn1--whitelabel' : ''"
+            :href="detailsLink"
+            target="_blank"
+          >
             {{ detailsText }}
           </v-btn>
         </v-flex>
@@ -75,6 +85,11 @@ export default {
     detailsLink: { type: String, default: '' },
     detailsLinkTwo: { type: String, default: '' },
     detailsText: { type: String, default: '' },
+  },
+  computed: {
+    isWhiteLabelActive() {
+      return this.$store.state.isWhiteLabelActive
+    },
   },
 }
 </script>

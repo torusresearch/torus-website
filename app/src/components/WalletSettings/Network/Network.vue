@@ -45,7 +45,16 @@
               <v-tooltip bottom :disabled="formValid">
                 <template v-slot:activator="{ on }">
                   <span v-on="on">
-                    <v-btn large class="torus-btn1 torusBrand1--text py-1" block :disabled="!formValid" depressed @click="setRPC">
+                    <v-btn
+                      large
+                      class="torus-btn1 py-1"
+                      :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
+                      :color="isWhiteLabelActive ? 'torusBrand1' : ''"
+                      block
+                      :disabled="!formValid"
+                      depressed
+                      @click="setRPC"
+                    >
                       {{ t('walletSettings.save') }}
                     </v-btn>
                   </span>
@@ -91,6 +100,9 @@ export default {
   computed: {
     isRPCSelected() {
       return this.selectedNetwork.host === RPC
+    },
+    isWhiteLabelActive() {
+      return this.$store.state.isWhiteLabelActive
     },
   },
   mounted() {

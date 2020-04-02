@@ -7,7 +7,7 @@
           block
           :disabled="theme.name === activeTheme"
           large
-          class="torusBrand1--text theme-btn"
+          class="theme-btn"
           :class="[$vuetify.theme.isDark ? 'torusBlack2' : 'white', theme.name === activeTheme ? '' : 'elevation-3']"
         >
           <span>{{ t(theme.label) }}</span>

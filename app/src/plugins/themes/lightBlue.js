@@ -3,7 +3,6 @@ export default {
   torusBrand1: '#0364FF',
   torusBrand2: '#5495F7',
   torusBrand3: '#CDE0FF',
-  torusBrand4: '#E9EEFE',
   torusBrandHover: '#075DE5',
   torusGray1: '#D3D5E2',
   torusGray2: '#EEF2F4',

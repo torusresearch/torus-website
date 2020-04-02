@@ -113,7 +113,16 @@
 
             <v-layout wrap>
               <v-flex class="ml-auto xs6 sm4" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : ''">
-                <v-btn id="contact-submit-btn" large class="torus-btn1 torusBrand1--text py-1" block type="submit" :disabled="!contactFormValid">
+                <v-btn
+                  id="contact-submit-btn"
+                  large
+                  class="torus-btn1 py-1"
+                  :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
+                  :color="isWhiteLabelActive ? 'torusBrand1' : ''"
+                  block
+                  type="submit"
+                  :disabled="!contactFormValid"
+                >
                   {{ t('walletSettings.addContact') }}
                 </v-btn>
               </v-flex>
@@ -177,6 +186,9 @@ export default {
         value: '',
       })
       return verifiers
+    },
+    isWhiteLabelActive() {
+      return this.$store.state.isWhiteLabelActive
     },
   },
   methods: {

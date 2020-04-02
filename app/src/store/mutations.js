@@ -92,18 +92,17 @@ export default {
         isDark: false,
         dark: {
           torusBrand1: '#EF8102',
+          torusGray2: '#EEF2F4',
         },
         light: {
           torusBrand1: '#EF8102',
+          torusGray2: '#FBF7F3',
         },
       },
     }
-    theme = themes[whiteLabel.theme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]
+    theme = themes[whiteLabel.theme && whiteLabel.theme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]
     const mergeTheme = whiteLabel.theme.isDark ? whiteLabel.theme.dark : whiteLabel.theme.light
     theme.theme = { ...theme.theme, ...mergeTheme }
-
-    // eslint-disable-next-line no-console
-    console.log('theme', theme)
 
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
