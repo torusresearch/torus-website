@@ -5,9 +5,9 @@
         <img
           class="home-link mr-1"
           alt="Torus Logo"
-          width="135"
-          height="30"
-          :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+          :width="isWhiteLabelActive ? '' : '135'"
+          :height="isWhiteLabelActive ? '50' : '30'"
+          :src="isWhiteLabelActive ? whiteLabelLogo : require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
         />
       </router-link>
       <router-link v-if="$vuetify.breakpoint.xsOnly" id="logo-home-lnk" :to="{ name: 'walletHome' }">
@@ -224,6 +224,12 @@ export default {
         return 'You are using the test cluster on torus network'
       }
       return ''
+    },
+    isWhiteLabelActive() {
+      return this.$store.state.isWhiteLabelActive
+    },
+    whiteLabelLogo() {
+      return this.$store.state.whiteLabelLogo
     },
   },
   methods: {

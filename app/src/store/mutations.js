@@ -100,10 +100,12 @@ export default {
         },
       },
     }
-    theme = themes[whiteLabel.theme && whiteLabel.theme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]
-    const mergeTheme = whiteLabel.theme.isDark ? whiteLabel.theme.dark : whiteLabel.theme.light
-    theme.theme = { ...theme.theme, ...mergeTheme }
 
+    if (state.isWhiteLabelActive) {
+      theme = themes[whiteLabel.theme && whiteLabel.theme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]
+      const mergeTheme = whiteLabel.theme.isDark ? whiteLabel.theme.dark : whiteLabel.theme.light
+      theme.theme = { ...theme.theme, ...mergeTheme }
+    }
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
     localStorage.setItem('torus-theme', payload)
