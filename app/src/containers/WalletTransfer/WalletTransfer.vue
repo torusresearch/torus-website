@@ -653,12 +653,10 @@ export default {
         // eslint-disable-next-line no-unused-vars
         return new Promise((resolve, reject) => {
           if (this.contractType === CONTRACT_TYPE_ETH) {
-            const value = '0x'
-            this.amount
+            const value = `0x${this.amount
               .times(new BigNumber(10).pow(new BigNumber(18)))
               .dp(0, BigNumber.ROUND_DOWN)
-              .toString(16)
-            log.info(this.gas.toString())
+              .toString(16)}`
             torus.web3.eth
               .estimateGas({ to: toAddress, value })
               .then((response) => {
@@ -667,6 +665,7 @@ export default {
                   resolved = new BigNumber(resolved.times(new BigNumber('1.1')).toFixed(0))
                   this.sendEthToContractError = this.isSendAll
                 }
+                log.info(resolved, 'gas')
                 resolve(resolved)
               })
               .catch((error) => {
@@ -675,14 +674,14 @@ export default {
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC20) {
             const { selectedAddress } = this
-            const value = '0x'
-            this.amount
+            const value = `0x${this.amount
               .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
               .dp(0, BigNumber.ROUND_DOWN)
-              .toString(16)
+              .toString(16)}`
             this.getTransferMethod(this.contractType, selectedAddress, toAddress, value)
               .estimateGas({ from: selectedAddress })
               .then((response) => {
+                log.info(response, 'gas')
                 resolve(new BigNumber(response || '0'))
               })
               .catch((error) => {
