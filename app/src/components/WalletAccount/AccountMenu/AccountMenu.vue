@@ -26,7 +26,7 @@
       >
         <div>
           <v-icon v-if="acc.type === 'SC'" size="16">$vuetify.icons.smart_contract</v-icon>
-          <img v-else :src="require(`../../../../public/img/icons/google-grey.svg`)" style="width: 16px;" class="ma-1" />
+          <img v-else :src="require(`../../../../public/img/icons/google-grey-dark.svg`)" style="width: 16px;" class="ma-1" />
         </div>
         <div class="d-flex flex-column account-list__details px-1">
           <div class="caption">
