@@ -1,5 +1,8 @@
 .btn-speed {
   padding: 14px;
+  &.is-confirm {
+    padding: 8px 14px;
+  }
   cursor: pointer;
   > div {
     font-weight: 500;

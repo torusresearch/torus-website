@@ -1,8 +1,8 @@
 <template>
   <v-dialog v-model="dialog" persistent>
     <template v-slot:activator="{ on }">
-      <a v-show="displayAmount" id="advance-option-link" class="float-right torusBrand1--text body-2" v-on="on">
-        {{ t('walletTransfer.advancedOptions') }}
+      <a v-show="displayAmount" id="advance-option-link" class="float-right torusBrand1--text" :class="isConfirm ? 'caption' : 'body-2'" v-on="on">
+        {{ isConfirm ? 'Edit' : t('walletTransfer.advancedOptions') }}
       </a>
     </template>
     <v-card class="advance-option py-4">
@@ -135,6 +135,10 @@ export default {
     gas: { type: BigNumber, default: new BigNumber('0') },
     displayAmount: { type: BigNumber, default: new BigNumber('0') },
     symbol: { type: String, default: '' },
+    isConfirm: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
