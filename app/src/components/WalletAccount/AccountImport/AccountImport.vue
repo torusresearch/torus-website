@@ -47,7 +47,7 @@
                     {{ t('accountMenu.back') }}
                   </v-btn>
                   <v-btn
-                    color="torus_brand1"
+                    color="torusBrand1"
                     depressed
                     :loading="isLoadingPrivate"
                     :disabled="!privateKeyFormValid || isLoadingPrivate"
@@ -71,7 +71,7 @@
                       <HelpTooltip :title="t('accountMenu.uploadJsonTitle')" :description="t('accountMenu.uploadJsonDesc')"></HelpTooltip>
                     </v-flex>
                     <v-flex shrink>
-                      <v-btn outlined class="upload-button" color="torus_brand1" @click.prevent="$refs.keystoreUpload.click">
+                      <v-btn outlined class="upload-button" color="torusBrand1" @click.prevent="$refs.keystoreUpload.click">
                         <v-icon left>$vuetify.icons.question</v-icon>
                         {{ t('accountMenu.upload') }}
                       </v-btn>
@@ -102,7 +102,7 @@
                     {{ t('accountMenu.back') }}
                   </v-btn>
                   <v-btn
-                    color="torus_brand1"
+                    color="torusBrand1"
                     depressed
                     :loading="isLoadingKeystore"
                     :disabled="!jsonFileFormValid || isLoadingKeystore"

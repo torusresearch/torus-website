@@ -6,7 +6,7 @@
     background: rgba(255, 255, 255, 0.3);
     box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
     border-color: var(--v-text_2-base);
-    color: var(--v-torus_font1-base);
+    color: var(--v-torusFont1-base);
     border-radius: 6px;
     font-size: 16px;
     display: flex;
@@ -17,7 +17,7 @@
       color: #D3D5E2;
     }
     &.theme--dark {
-      background-color: var(--v-torus_black-base) !important;
+      background-color: var(--v-torusBlack-base) !important;
       box-shadow: none;
       border: 0;
     }
@@ -49,12 +49,12 @@
   }
   &.mobile-view {
     .select-coin {
-      background: var(--v-torus_black2-base) !important;
+      background: var(--v-torusBlack2-base) !important;
     }
     .form-container {
       &.theme--dark {
         ::v-deep .v-input.v-text-field--outlined > .v-input__control > .v-input__slot {
-          background: var(--v-torus_black2-base);
+          background: var(--v-torusBlack2-base);
         }
       }
     }    

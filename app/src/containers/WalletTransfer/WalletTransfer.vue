@@ -121,7 +121,7 @@
                       @input="contactChanged"
                     >
                       <template v-slot:append>
-                        <v-btn icon small color="torus_brand1" aria-label="QR Capture Button" @click="() => $refs && $refs.captureQr.$el.click()">
+                        <v-btn icon small color="torusBrand1" aria-label="QR Capture Button" @click="() => $refs && $refs.captureQr.$el.click()">
                           <v-icon small>$vuetify.icons.scan</v-icon>
                         </v-btn>
                       </template>
@@ -160,12 +160,12 @@
                   <a
                     v-if="contractType !== CONTRACT_TYPE_ERC721 && !isSendAll"
                     id="send-all-btn"
-                    class="float-right torus_brand1--text body-2"
+                    class="float-right torusBrand1--text body-2"
                     @click="sendAll"
                   >
                     {{ t('walletTransfer.sendAll') }}
                   </a>
-                  <a v-if="isSendAll" id="send-all-reset-btn" class="float-right torus_brand1--text body-2" @click="resetSendAll">
+                  <a v-if="isSendAll" id="send-all-reset-btn" class="float-right torusBrand1--text body-2" @click="resetSendAll">
                     {{ t('walletTransfer.reset') }}
                   </a>
                 </div>
@@ -206,7 +206,7 @@
                       id="coin-mode-btn"
                       small
                       class="send-mode"
-                      :class="!!toggle_exclusive ? 'torus-btn1 torus_brand1--text' : 'active'"
+                      :class="!!toggle_exclusive ? 'torus-btn1 torusBrand1--text' : 'active'"
                       :outlined="!!toggle_exclusive"
                       @click="changeSelectedToCurrency(0)"
                     >
@@ -216,7 +216,7 @@
                       id="currency-mode-btn"
                       small
                       class="send-mode"
-                      :class="!toggle_exclusive ? 'torus-btn1 torus_brand1--text' : 'active'"
+                      :class="!toggle_exclusive ? 'torus-btn1 torusBrand1--text' : 'active'"
                       :outlined="!toggle_exclusive"
                       @click="changeSelectedToCurrency(1)"
                     >
@@ -244,7 +244,7 @@
                   id="wallet-transfer-submit"
                   large
                   depressed
-                  color="torus_brand1"
+                  color="torusBrand1"
                   :disabled="!formValid || speedSelected === '' || selectedVerifier === ''"
                   class="px-8 white--text"
                   @click="onTransferClick"
@@ -653,12 +653,10 @@ export default {
         // eslint-disable-next-line no-unused-vars
         return new Promise((resolve, reject) => {
           if (this.contractType === CONTRACT_TYPE_ETH) {
-            const value = '0x'
-            this.amount
+            const value = `0x${this.amount
               .times(new BigNumber(10).pow(new BigNumber(18)))
               .dp(0, BigNumber.ROUND_DOWN)
-              .toString(16)
-            log.info(this.gas.toString())
+              .toString(16)}`
             torus.web3.eth
               .estimateGas({ to: toAddress, value })
               .then((response) => {
@@ -667,6 +665,7 @@ export default {
                   resolved = new BigNumber(resolved.times(new BigNumber('1.1')).toFixed(0))
                   this.sendEthToContractError = this.isSendAll
                 }
+                log.info(resolved, 'gas')
                 resolve(resolved)
               })
               .catch((error) => {
@@ -675,14 +674,14 @@ export default {
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC20) {
             const { selectedAddress } = this
-            const value = '0x'
-            this.amount
+            const value = `0x${this.amount
               .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
               .dp(0, BigNumber.ROUND_DOWN)
-              .toString(16)
+              .toString(16)}`
             this.getTransferMethod(this.contractType, selectedAddress, toAddress, value)
               .estimateGas({ from: selectedAddress })
               .then((response) => {
+                log.info(response, 'gas')
                 resolve(new BigNumber(response || '0'))
               })
               .catch((error) => {

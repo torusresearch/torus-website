@@ -31,7 +31,7 @@
                               v-if="!walletJson"
                               id="json-file-confirm-btn"
                               class="white--text"
-                              color="torus_brand1"
+                              color="torusBrand1"
                               depressed
                               width="155px"
                               :disabled="!downloadFormValid || isLoadingDownloadWallet"
@@ -51,7 +51,7 @@
                               id="json-file-download-btn"
                               class="white--text"
                               depressed
-                              color="torus_brand1"
+                              color="torusBrand1"
                               :href="walletJson"
                               :download="name"
                             >
@@ -66,7 +66,7 @@
                         v-if="!walletJson"
                         id="mobile-json-file-confirm-btn"
                         class="white--text"
-                        color="torus_brand1"
+                        color="torusBrand1"
                         :disabled="!downloadFormValid || isLoadingDownloadWallet"
                         width="155px"
                         :loading="isLoadingDownloadWallet"
@@ -84,7 +84,7 @@
                         v-if="walletJson"
                         id="mobile-json-file-download-btn"
                         class="white--text"
-                        color="torus_brand1"
+                        color="torusBrand1"
                         :href="walletJson"
                         :download="name"
                       >
@@ -117,7 +117,7 @@
                   </v-flex>
                   <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : ''">
                     <ShowToolTip :address="selectedKey">
-                      <v-btn id="click-to-copy-btn" text small class="torus_brand1--text" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'caption'">
+                      <v-btn id="click-to-copy-btn" text small class="torusBrand1--text" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'caption'">
                         <img
                           :src="require('../../../../public/img/icons/copy-primary.svg')"
                           class="mr-1"

@@ -21,8 +21,6 @@
 export default {
   computed: {
     collectibles() {
-      // eslint-disable-next-line no-console
-      console.log('this.$store.getters.collectibleBalances', this.$store.getters.collectibleBalances)
       return this.$store.getters.collectibleBalances
     },
   },

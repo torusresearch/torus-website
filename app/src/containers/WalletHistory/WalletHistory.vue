@@ -17,7 +17,7 @@
               </template>
               <v-card class="pa-3">
                 <v-list min-width="190" dense>
-                  <v-list-item-group color="torus_brand1">
+                  <v-list-item-group color="torusBrand1">
                     <v-list-item
                       v-for="actionType in actionTypes"
                       :key="actionType.value"
@@ -44,7 +44,7 @@
               </template>
               <v-card class="pa-3">
                 <v-list min-width="190" dense>
-                  <v-list-item-group color="torus_brand1">
+                  <v-list-item-group color="torusBrand1">
                     <v-list-item
                       v-for="period in periods"
                       :key="period.value"

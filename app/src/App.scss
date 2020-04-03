@@ -24,12 +24,12 @@
 
   // Override
   .primary {
-    background-color: var(--v-torus_brand1-base) !important;
-    border-color: var(--v-torus_brand1-base) !important;
+    background-color: var(--v-torusBrand1-base) !important;
+    border-color: var(--v-torusBrand1-base) !important;
   }
   .primary--text {
-    color: var(--v-torus_brand1-base) !important;
-    caret-color: var(--v-torus_brand1-base) !important;
+    color: var(--v-torusBrand1-base) !important;
+    caret-color: var(--v-torusBrand1-base) !important;
   }
 
   /* Header 1 48px*/
@@ -83,7 +83,7 @@
   }
 
   .body-link {
-    color: var(--v-torus_brand1-base);
+    color: var(--v-torusBrand1-base);
   }
 
   /* Header 6 12px*/
@@ -92,7 +92,16 @@
     line-height: 0.875rem;
     letter-spacing: 0;
     font-weight: normal;
-    color: var(--v-torus_gray3-base);
+    color: var(--v-torusGray3-base);
+  }
+
+  /* Header 6 10px*/
+  .caption {
+    font-size: 0.75rem;
+    line-height: 0.875rem;
+    letter-spacing: 0;
+    font-weight: normal;
+    color: #303030;
   }
 
   /* Header 6 10px*/
@@ -101,7 +110,7 @@
     line-height: 0.75rem;
     letter-spacing: 0;
     font-weight: normal;
-    color: var(--v-torus_gray3-base);
+    color: var(--v-torusGray3-base);
   }
 
   .v-menu__content {
@@ -177,13 +186,13 @@
   
   &.theme--light {
     .display-4, .display-3, .display-2, .label {
-      color: var(--v-torus_font1-base);
+      color: var(--v-torusFont1-base);
     }
     .display-1, .headline, .title {
-      color: var(--v-torus_font1-base);
+      color: var(--v-torusFont1-base);
     }
     .body-2 {
-      color: var(--v-torus_font1-base);
+      color: var(--v-torusFont1-base);
     }
     .theme--light.v-btn.torus-btn1 {
       @extend .elevation-3;
@@ -191,23 +200,27 @@
       border: 1px solid rgba(206, 208, 214, 0.3);
     }
   }
+  
+  .v-btn {
+    text-transform: inherit;
+  }
 
   &.theme--dark {
-    background: var(--v-torus_black-base);
+    background: var(--v-torusBlack-base);
     &.v-sheet {
-      background: var(--v-torus_black2-base);
+      background: var(--v-torusBlack2-base);
     }
     .v-app-bar.v-toolbar.v-sheet {
-      background: var(--v-torus_black2-base);
+      background: var(--v-torusBlack2-base);
     }
     .v-card {
-      background-color: var(--v-torus_black2-base);
+      background-color: var(--v-torusBlack2-base);
     }
     .v-list {
-      background-color: var(--v-torus_black2-base);
+      background-color: var(--v-torusBlack2-base);
     }
     .v-expansion-panel {
-      background-color: var(--v-torus_black2-base);
+      background-color: var(--v-torusBlack2-base);
     }
 
     .elevation-1,
@@ -227,7 +240,7 @@
     .v-input {
       &.v-text-field--outlined > .v-input__control {
         & > .v-input__slot {
-          background: var(--v-torus_black-base);;
+          background: var(--v-torusBlack-base);;
           box-shadow: inherit;
         }
         fieldset {
@@ -239,7 +252,7 @@
 
     .theme--dark.v-btn.torus-btn1 {
       @extend .elevation-3;
-      background-color: var(--v-torus_black2-base);
+      background-color: var(--v-torusBlack2-base);
     }
   }
 }

@@ -15,6 +15,11 @@
         <h6 class="title">Header 6</h6>
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <v-btn class="torus-btn">dasdsa</v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

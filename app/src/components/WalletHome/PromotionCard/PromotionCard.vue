@@ -23,12 +23,22 @@
           <ShowToolTip :address="detailsLinkTwo">
             <div :class="{ 'theme--dark': $vuetify.theme.isDark }" class="d-flex align-center copy-link elevation-3 px-4 py-1">
               <span class="text_2--text flex-grow-1 text-clamp-one">{{ detailsLinkTwo }}</span>
-              <v-icon class="text_2--text ml-auto" x-small right :style="{ width: '20px' }">$vuetify.icons.copy</v-icon>
+              <v-icon class="ml-auto text_2--text" x-small right :style="{ width: '20px' }">
+                $vuetify.icons.copy
+              </v-icon>
             </div>
           </ShowToolTip>
         </v-flex>
         <v-flex xs12 sm6 px-3>
-          <v-btn depressed large block class="torus-btn1 torus_brand1--text" :href="detailsLink" target="_blank">
+          <v-btn
+            depressed
+            large
+            block
+            class="torus-btn1 torusBrand1--text"
+            :class="isWhiteLabelActive ? 'torus-btn1--whitelabel' : ''"
+            :href="detailsLink"
+            target="_blank"
+          >
             {{ detailsText }}
           </v-btn>
         </v-flex>
@@ -37,12 +47,12 @@
         <v-flex class="text_1--text pt-6" :class="$vuetify.breakpoint.xsOnly ? 'text-center xs12' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
           <div class="title font-weight-bold" :class="subtitle ? 'text-clamp-one' : 'text-clamp-two'">{{ title }}</div>
           <slot name="subtitle">
-            <div class="text-clamp-one torus_font1--text caption mt-2">{{ subtitle }}</div>
+            <div class="text-clamp-one torusFont1--text caption mt-2">{{ subtitle }}</div>
             <div class="more-details-container">
               <v-btn
                 block
                 large
-                class="torus-btn1 torus_brand1--text"
+                class="torus-btn1 torusBrand1--text"
                 :class="[$vuetify.breakpoint.smAndDown ? 'px-8' : 'px-12']"
                 :href="detailsLink"
                 target="_blank"
@@ -75,6 +85,11 @@ export default {
     detailsLink: { type: String, default: '' },
     detailsLinkTwo: { type: String, default: '' },
     detailsText: { type: String, default: '' },
+  },
+  computed: {
+    isWhiteLabelActive() {
+      return this.$store.state.isWhiteLabelActive
+    },
   },
 }
 </script>

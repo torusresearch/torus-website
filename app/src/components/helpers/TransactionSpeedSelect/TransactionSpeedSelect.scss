@@ -1,5 +1,8 @@
 .btn-speed {
   padding: 14px;
+  &.is-confirm {
+    padding: 8px 14px;
+  }
   cursor: pointer;
   > div {
     font-weight: 500;
@@ -13,10 +16,10 @@
     color: #5C6C7F;
   }
   &.selected {
-    background-color: var(--v-torus_brand3-base);
+    background-color: var(--v-torusBrand3-base);
   }
   &.theme--dark {
-    background-color: var(--v-torus_black2-base);
+    background-color: var(--v-torusBlack2-base);
     .btn-speed__speed {
       color: #D3D3D4;
     }
@@ -24,7 +27,7 @@
       color: #979797;
     }
     &.selected {
-      background-color: var(--v-torus_black-base);
+      background-color: var(--v-torusBlack-base);
     }
   }
 }

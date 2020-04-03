@@ -11,7 +11,7 @@
         <v-card class="card-total elevation-1">
           <v-layout wrap class="px-6 py-4">
             <v-flex xs6>
-              <span class="title torus_font1--text">{{ t('walletHome.totalValue') }}</span>
+              <span class="title torusFont1--text">{{ t('walletHome.totalValue') }}</span>
             </v-flex>
             <v-flex xs6 class="text-right">
               <NetworkDisplay :network="storeNetworkType.networkName" :store-network-type="storeNetworkType"></NetworkDisplay>
@@ -26,11 +26,11 @@
                   <template v-slot:activator="{ on }">
                     <v-btn x-small text :class="{ 'currency-selector': $vuetify.breakpoint.mAndUp }" v-on="on">
                       <span id="selected-currency" class="description">{{ selectedCurrency }}</span>
-                      <v-icon class="torus_gray3--text" small>$vuetify.icons.select</v-icon>
+                      <v-icon class="torusGray3--text" small>$vuetify.icons.select</v-icon>
                     </v-btn>
                   </template>
                   <v-list dense>
-                    <v-list-item-group color="torus_brand1">
+                    <v-list-item-group color="torusBrand1">
                       <v-list-item
                         v-for="supportedCurrency in supportedCurrencies"
                         :key="supportedCurrency"
@@ -52,13 +52,28 @@
             <v-flex xs12>
               <v-layout class="mx-n2 mt-2">
                 <v-flex xs6 px-2>
-                  <v-btn v-show="canShowLrc" block large class="torus-btn1 torus_brand1--text" @click="topup">
+                  <v-btn
+                    v-show="canShowLrc"
+                    block
+                    large
+                    class="torus-btn1"
+                    :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
+                    :color="isWhiteLabelActive ? 'torusBrand1' : ''"
+                    @click="topup"
+                  >
                     <v-icon left>$vuetify.icons.add</v-icon>
                     {{ t('walletHome.topUp') }}
                   </v-btn>
                 </v-flex>
                 <v-flex xs6 px-2>
-                  <v-btn block large class="torus-btn1 torus_brand1--text" @click="initiateTransfer">
+                  <v-btn
+                    block
+                    large
+                    class="torus-btn1"
+                    :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
+                    :color="isWhiteLabelActive ? 'torusBrand1' : ''"
+                    @click="initiateTransfer"
+                  >
                     <v-icon left>$vuetify.icons.send</v-icon>
                     {{ t('walletHome.transfer') }}
                   </v-btn>
@@ -77,7 +92,7 @@
                 <v-dialog v-model="dialogLearnMore" max-width="700">
                   <template v-slot:activator="{ on }">
                     <div class="body-2'">
-                      <a id="learn-more-btn" class="torus_brand1--text font-weight-bold" v-on="on">
+                      <a id="learn-more-btn" class="torusBrand1--text font-weight-bold" v-on="on">
                         {{ t('walletHome.learnMore') }}
                       </a>
                       {{ t('walletHome.aboutWallet') }}.
@@ -215,6 +230,9 @@ export default {
     },
     storeNetworkType() {
       return this.$store.state.networkType
+    },
+    isWhiteLabelActive() {
+      return this.$store.state.isWhiteLabelActive
     },
   },
   mounted() {

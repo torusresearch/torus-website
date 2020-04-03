@@ -22,7 +22,7 @@
 
     <v-card class="pa-3">
       <v-list min-width="190" dense>
-        <v-list-item-group color="torus_brand1">
+        <v-list-item-group color="torusBrand1">
           <v-list-item
             v-for="locale in LOCALES"
             :key="locale.value"

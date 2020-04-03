@@ -1,23 +1,126 @@
 <template>
-  <v-container px-0 py-6 class="confirm-container">
+  <v-container px-0 py-0 class="confirm-container">
     <template v-if="type === TX_TRANSACTION">
-      <v-layout wrap align-center mx-6 mb-6>
-        <v-flex xs12 class="font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">
-          {{ t('dappTransfer.confirmation') }}
-        </v-flex>
+      <v-layout pa-6 class="elevation-1">
         <v-flex xs12>
-          <NetworkDisplay :store-network-type="network"></NetworkDisplay>
+          <img
+            class="home-link mr-1"
+            alt="Torus Logo"
+            width="70"
+            height="16"
+            :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+          />
+          <div class="display-1 text_2--text">{{ t('dappTransfer.confirmation') }}</div>
         </v-flex>
       </v-layout>
-      <v-layout wrap>
+      <v-layout wrap align-center mx-6 my-3>
+        <v-flex xs12>
+          <NetworkDisplay class="mb-4" :network="network" :store-network-type="network"></NetworkDisplay>
+        </v-flex>
+        <v-flex v-if="transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM" xs12>
+          <ShowToolTip :address="amountTo">
+            <div class="caption">To: {{ amountTo }}</div>
+          </ShowToolTip>
+        </v-flex>
+        <v-flex v-else-if="transactionCategory === TOKEN_METHOD_APPROVE" xs12 class="text-center">
+          <span class="headline text_2--text">
+            {{ `${t('dappPermission.allow')} ${origin.hostname} ${t('dappTransfer.toSpend')} ${selectedToken} ${t('dappTransfer.onYourBehalf')}?` }}
+          </span>
+        </v-flex>
+        <v-flex v-else xs12>
+          <ShowToolTip
+            v-if="[TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(transactionCategory) >= 0"
+            :address="amountTo"
+          >
+            <div class="caption">To: {{ amountTo }}</div>
+          </ShowToolTip>
+          <ShowToolTip v-else-if="[SEND_ETHER_ACTION_KEY, CONTRACT_INTERACTION_KEY].indexOf(transactionCategory) >= 0" :address="receiver">
+            <div class="caption">To: {{ receiver }}</div>
+          </ShowToolTip>
+          <div v-else class="caption">To: {{ displayAmountTo }}</div>
+        </v-flex>
+      </v-layout>
+      <v-divider class="mx-6 my-4"></v-divider>
+      <v-layout mx-6 my-4 wrap>
+        <v-flex xs4 class="pt-3">
+          <div class="caption">
+            Total Cost
+            <!-- {{ t('dappTransfer.total') }} -->
+          </div>
+        </v-flex>
+        <v-flex xs8>
+          <v-text-field v-model="displayAmountValue" :hint="displayAmountConverted" outlined persistent-hint readonly></v-text-field>
+        </v-flex>
+      </v-layout>
+      <v-layout mx-6 my-4 wrap>
+        <TransactionSpeedSelect
+          :gas="gasEstimate"
+          :display-amount="value"
+          :active-gas-price-confirm="gasPrice"
+          :selected-currency="selectedCurrency"
+          :currency-multiplier="getCurrencyMultiplier"
+          :symbol="'ETH'"
+          :is-confirm="true"
+          @onSelectSpeed="onSelectSpeed"
+        />
+      </v-layout>
+      <v-divider class="mt-10 my-4"></v-divider>
+      <v-layout mx-6 my-4 wrap>
+        <v-flex xs4 class="pt-3">
+          <div class="caption">{{ t('dappTransfer.youSend') }}</div>
+        </v-flex>
+        <v-flex xs8>
+          <v-text-field
+            :value="`${costOfTransaction} ${
+              isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE ? '+ ' + significantDigits(gasCost) + 'ETH' : ''
+            }`"
+            :hint="costOfTransactionConverted"
+            outlined
+            persistent-hint
+            readonly
+          ></v-text-field>
+        </v-flex>
+        <v-flex xs12 mt-10>
+          <v-layout mx-n2>
+            <v-flex xs6 px-2>
+              <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappTransfer.cancel') }}</v-btn>
+            </v-flex>
+            <v-flex xs6 px-2>
+              <v-dialog v-model="confirmDialog" max-width="550" persistent>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    id="confirm-btn"
+                    :disabled="topUpErrorShow || canShowError"
+                    block
+                    depressed
+                    large
+                    color="torusBrand1"
+                    class="white--text"
+                    v-on="on"
+                  >
+                    {{ t('dappTransfer.confirm') }}
+                  </v-btn>
+                </template>
+                <TransferConfirm
+                  :to-address="receiver"
+                  :converted-amount="displayAmountConverted"
+                  :display-amount="displayAmountValue"
+                  :speed-selected="speed"
+                  :asset-selected="assetDetails"
+                  :is-non-fungible-token="isNonFungibleToken"
+                  :transaction-fee="txFees"
+                  :selected-currency="selectedCurrency"
+                  @onClose="confirmDialog = false"
+                  @onConfirm="triggerSign"
+                ></TransferConfirm>
+              </v-dialog>
+            </v-flex>
+          </v-layout>
+        </v-flex>
+      </v-layout>
+      <!-- OLLD -->
+      <!-- <v-layout wrap>
         <template v-if="transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM">
-          <v-flex xs12 mb-4 mx-6>
-            <div class="subtitle-2">{{ t('dappTransfer.sendTo') }}</div>
-            <v-divider></v-divider>
-            <div>
-              <span class="subtitle-2 float-left text_2--text">{{ amountTo }}</span>
-            </div>
-          </v-flex>
           <v-flex xs12 mb-4 mx-6>
             <div class="subtitle-2">{{ t('dappTransfer.youSend') }}</div>
             <v-divider class="mb-1"></v-divider>
@@ -27,60 +130,23 @@
             </div>
           </v-flex>
         </template>
-        <template v-else-if="transactionCategory === TOKEN_METHOD_APPROVE">
-          <v-flex xs12 mb-4 mx-6>
-            <div class="subtitle-1 float-left">
-              {{ `${t('dappPermission.allow')} ${origin.hostname} ${t('dappTransfer.toSpend')} ${selectedToken} ${t('dappTransfer.onYourBehalf')}?` }}
-            </div>
-          </v-flex>
-        </template>
-        <v-flex v-else xs12 mb-4 mx-6>
-          <div class="subtitle-2">{{ t('dappTransfer.amount') }}</div>
-          <v-divider></v-divider>
-          <div>
-            <span class="subtitle-2 float-left text_2--text">
-              <ShowToolTip
-                v-if="[TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(transactionCategory) >= 0"
-                :address="amountTo"
-              >
-                {{ displayAmountTo }}
-              </ShowToolTip>
-              <ShowToolTip v-else-if="[SEND_ETHER_ACTION_KEY, CONTRACT_INTERACTION_KEY].indexOf(transactionCategory) >= 0" :address="receiver">
-                {{ displayAmountTo }}
-              </ShowToolTip>
-              <span v-else class="subtitle-2 float-left text_2--text">{{ displayAmountTo }}</span>
-            </span>
-            <span class="subtitle-2 float-right">{{ displayAmountValue }}</span>
-          </div>
-          <div class="caption float-right clearfix">{{ displayAmountConverted }}</div>
-        </v-flex>
-        <v-flex px-2>
-          <TransactionSpeedSelect
-            :gas="gasEstimate"
-            :display-amount="value"
-            :active-gas-price-confirm="gasPrice"
-            :selected-currency="selectedCurrency"
-            :currency-multiplier="getCurrencyMultiplier"
-            :symbol="'ETH'"
-            @onSelectSpeed="onSelectSpeed"
-          />
-        </v-flex>
+        <template v-else-if="transactionCategory === TOKEN_METHOD_APPROVE"></template>
         <v-flex xs12 px-6 mt-4 mb-1>
           <div class="subtitle-1 font-weight-bold">{{ t('dappTransfer.total') }}</div>
           <v-divider></v-divider>
           <div>
             <span class="subtitle-2">{{ t('dappTransfer.constOfTrans') }}</span>
-            <span class="subtitle-1 float-right torus_brand1--text font-weight-bold">{{ costOfTransaction }}</span>
+            <span class="subtitle-1 float-right torusBrand1--text font-weight-bold">{{ costOfTransaction }}</span>
           </div>
           <div v-if="isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE" class="clearfix">
-            <span class="subtitle-1 float-right torus_brand1--text font-weight-bold">+ {{ significantDigits(gasCost) }} ETH</span>
+            <span class="subtitle-1 float-right torusBrand1--text font-weight-bold">+ {{ significantDigits(gasCost) }} ETH</span>
           </div>
           <div class="caption float-right clearfix">{{ costOfTransactionConverted }}</div>
         </v-flex>
         <v-flex xs12 mb-3 mt-3>
           <v-dialog v-model="detailsDialog" width="600px">
             <template v-slot:activator="{ on }">
-              <div id="more-details-link" class="subtitle-2 float-right dialog-launcher torus_brand1--text mx-6" v-on="on">
+              <div id="more-details-link" class="subtitle-2 float-right dialog-launcher torusBrand1--text mx-6" v-on="on">
                 {{ t('dappTransfer.moreDetails') }}
               </div>
             </template>
@@ -125,7 +191,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn id="less-details-link" color="torus_brand1" text @click="detailsDialog = false">{{ t('dappTransfer.lessDetails') }}</v-btn>
+                <v-btn id="less-details-link" color="torusBrand1" text @click="detailsDialog = false">{{ t('dappTransfer.lessDetails') }}</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -134,7 +200,7 @@
           <div class="caption error--text">{{ errorMsg }}</div>
           <div v-if="topUpErrorShow" class="caption mt-1">
             {{ t('dappTransfer.pleaseTopup1') }}
-            <v-btn color="torus_brand1" class="mx-1 px-2 caption" small outlined @click="topUp">{{ t('dappTransfer.pleaseTopup2') }}</v-btn>
+            <v-btn color="torusBrand1" class="mx-1 px-2 caption" small outlined @click="topUp">{{ t('dappTransfer.pleaseTopup2') }}</v-btn>
             {{ t('dappTransfer.pleaseTopup3') }}
           </div>
         </v-flex>
@@ -148,7 +214,7 @@
           <v-flex xs6>
             <v-dialog v-model="confirmDialog" max-width="550" persistent>
               <template v-slot:activator="{ on }">
-                <v-btn id="confirm-btn" :disabled="topUpErrorShow || canShowError" block depressed large color="torus_brand1" class="ml-2" v-on="on">
+                <v-btn id="confirm-btn" :disabled="topUpErrorShow || canShowError" block depressed large color="torusBrand1" class="ml-2" v-on="on">
                   {{ t('dappTransfer.confirm') }}
                 </v-btn>
               </template>
@@ -167,46 +233,52 @@
             </v-dialog>
           </v-flex>
         </v-layout>
-      </v-layout>
+      </v-layout> -->
     </template>
 
     <template v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE || type === TX_TYPED_MESSAGE">
-      <!-- <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" /> -->
-      <v-layout wrap align-center mx-6 mb-6>
-        <v-flex xs12 class="text_1--text font-weight-bold headline float-left">{{ t('dappTransfer.permission') }}</v-flex>
-        <v-flex xs12>
-          <NetworkDisplay :store-network-type="network"></NetworkDisplay>
+      <v-layout py-6 class="elevation-1">
+        <v-flex xs12 text-center>
+          <img
+            class="home-link mr-1"
+            alt="Torus Logo"
+            width="70"
+            height="16"
+            :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+          />
+          <div class="display-1 text_2--text">{{ t('dappTransfer.permission') }}</div>
         </v-flex>
       </v-layout>
-      <v-layout wrap>
-        <v-flex xs12 mb-6 mx-6>
-          <div class="subtitle-2 text_2--text">{{ t('dappTransfer.requestFrom') }}:</div>
+      <v-layout wrap align-center mx-6 my-6>
+        <v-flex xs12 mb-2>
+          <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
 
           <v-card flat class="grey lighten-3">
             <v-card-text>
-              <div class="subtitle-2 torus_brand1--text request-from">
-                <a :href="origin.href" target="_blank">{{ origin.hostname }}</a>
-                <a :href="origin.href" target="_blank" class="float-right">
+              <div class="d-flex request-from">
+                <a :href="origin.href" target="_blank" class="caption torusBrand1--text">{{ origin.hostname }}</a>
+                <v-btn x-small color="white" class="link-icon ml-auto" :href="origin.href" target="_blank">
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
-                </a>
+                </v-btn>
               </div>
             </v-card-text>
           </v-card>
         </v-flex>
-
-        <v-flex xs12 mt-0 mb-n1 mx-6 class="note-list">
-          <div class="d-flex">
+      </v-layout>
+      <v-layout wrap>
+        <v-flex xs12 mt-0 mb-2 mx-6>
+          <div class="d-flex align-center">
             <div class="mr-2 note-list__icon">
               <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
             </div>
-            <div class="caption text_2--text">{{ t('dappTransfer.dataSmall') }}</div>
+            <div class="caption text_2--text text-capitalize">{{ t('dappTransfer.dataSmall') }}</div>
           </div>
         </v-flex>
         <v-flex xs12 mb-4 mx-6>
-          <v-list class="note-list">
+          <v-list class="note-list grey lighten-3">
             <v-list-item class="pa-0">
               <v-list-item-content flat class="pa-1 background" :class="$vuetify.theme.dark ? 'lighten-4' : 'lighten-3'">
-                <v-card flat class="body-2 text-left pa-2 word-break typedMessageBox">
+                <v-card flat class="caption text-left pa-2 word-break typedMessageBox">
                   <v-expansion-panels v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE">
                     <p :class="$vuetify.theme.dark ? '' : 'text_2--text'" style="text-align: left;">{{ message }}</p>
                   </v-expansion-panels>
@@ -233,14 +305,18 @@
             </v-list-item>
           </v-list>
         </v-flex>
-        <v-layout px-6 mx-3>
-          <v-flex xs6>
-            <v-btn block text large class="text_2--text" @click.prevent="triggerDeny">{{ t('dappTransfer.cancel') }}</v-btn>
-          </v-flex>
-          <v-flex xs6>
-            <v-btn block depressed large color="torus_brand1" class="ml-2" @click.prevent="triggerSign">{{ t('dappTransfer.confirm') }}</v-btn>
-          </v-flex>
-        </v-layout>
+        <v-flex xs12 mt-8 mx-6>
+          <v-layout mx-n2>
+            <v-flex xs6 px-2>
+              <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappProvider.cancel') }}</v-btn>
+            </v-flex>
+            <v-flex xs6 px-2>
+              <v-btn block depressed large class="torus-btn1 white--text" color="torusBrand1" @click="triggerSign">
+                {{ t('dappProvider.confirm') }}
+              </v-btn>
+            </v-flex>
+          </v-layout>
+        </v-flex>
       </v-layout>
     </template>
     <template v-if="type === 'none'">

@@ -50,7 +50,7 @@
               <div class="font-weight-medium mt-2">ID</div>
               <div class="ml-2 text_2--text">#{{ asset.tokenId }}</div>
               <div class="mt-4">
-                <v-btn block depressed :outlined="$vuetify.theme.dark" class="torus_brand1--text transfer-btn mb-2" @click="transferAsset(asset)">
+                <v-btn block depressed :outlined="$vuetify.theme.dark" class="torusBrand1--text transfer-btn mb-2" @click="transferAsset(asset)">
                   {{ t('walletHome.transfer') }}
                 </v-btn>
                 <v-btn block depressed @click.stop="toggleDetails($event)">{{ t('walletHome.close') }}</v-btn>
@@ -91,7 +91,7 @@
                 <v-btn block depressed class="more-info-hide mx-0" @click.stop="toggleDetails($event)">{{ t('walletHome.lessInfo') }}</v-btn>
               </v-flex>
               <v-flex xs6 class="px-2">
-                <v-btn block depressed :outlined="$vuetify.theme.dark" class="torus_brand1--text transfer-btn" @click="transferAsset(asset)">
+                <v-btn block depressed :outlined="$vuetify.theme.dark" class="torusBrand1--text transfer-btn" @click="transferAsset(asset)">
                   {{ t('walletHome.transfer') }}
                 </v-btn>
               </v-flex>

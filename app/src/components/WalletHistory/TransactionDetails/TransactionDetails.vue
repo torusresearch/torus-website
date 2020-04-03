@@ -29,7 +29,7 @@
             width="36"
           />
           <img v-else-if="transaction.type === CONTRACT_TYPE_ERC721" :src="transaction.actionIcon" class="mr-2 ml-1" height="36" large />
-          <v-icon v-else class="float-left" large color="torus_brand1">{{ transaction.actionIcon }}</v-icon>
+          <v-icon v-else class="float-left" large color="torusBrand1">{{ transaction.actionIcon }}</v-icon>
         </div>
         <div class="caption font-weight-medium">{{ transaction.actionText }}</div>
         <div class="info font-weight-light">
@@ -92,7 +92,7 @@
           </v-list-item>
           <v-list-item v-if="transaction.etherscanLink">
             <v-list-item-content class="details-value text_2--text text-right mt-1">
-              <a class="etherscan-lnk" color="torus_brand1" :href="transaction.etherscanLink" target="_blank">
+              <a class="etherscan-lnk" color="torusBrand1" :href="transaction.etherscanLink" target="_blank">
                 {{ t('walletActivity.viewOnEtherscan') }}
               </a>
             </v-list-item-content>

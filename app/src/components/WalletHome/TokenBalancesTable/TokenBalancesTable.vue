@@ -1,5 +1,5 @@
 <template>
-  <v-layout class="home-cards token-balance-tab-container mx-n4" wrap align-center>
+  <v-layout class="home-cards token-balance-tab-container mx-n4" wrap align-center :justify-center="tokenBalances.length < 4">
     <v-flex v-for="(balance, index) in tokenBalances" :key="index" class="xs12 sm6 md3 mb-4 px-4">
       <v-card color="elevation-1" router-link :to="{ name: 'walletTransfer', query: { contract: balance.tokenAddress } }">
         <v-card-text class="pa-0">
@@ -13,7 +13,7 @@
               />
               <span class="caption ml-1">{{ balance.name }}</span>
             </div>
-            <div class="ml-auto text-right caption">
+            <div class="ml-auto text-right mt-n1 caption">
               {{ formatSmallNumbers(balance.computedBalanceRounded, balance.symbol) }}
             </div>
           </div>
@@ -24,6 +24,20 @@
             <div class="ml-auto more-info">
               {{ balance.currencyBalance }}
             </div>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-flex>
+    <v-flex class="xs12 sm6 md3 mb-4 px-4">
+      <v-card color="elevation-1">
+        <v-card-text class="pa-0">
+          <div class="d-flex align-center py-3 px-4 card-header elevation-1">
+            <div class="flex-grow-1 text-clamp-one">
+              <span class="caption font-weight-bold">Curious about how to get tokens?</span>
+            </div>
+          </div>
+          <div class="d-flex align-center py-3 px-4">
+            <v-btn text x-small class="caption mb-1 mx-auto torusBrand1--text font-weight-medium" @click="topup">Buy them here</v-btn>
           </div>
         </v-card-text>
       </v-card>
@@ -69,39 +83,9 @@ export default {
       this.$emit('update:select', item)
     },
     formatSmallNumbers,
-    // smallNumbersEth(balance) {
-    //   const convertedBalance = parseFloat(balance)
-    //   let truncatedValue = convertedBalance
-
-    //   // Check decimals
-    //   const convertedBalanceArray = balance.split('.')
-    //   const beforeDecimal = convertedBalanceArray[0] && Number(convertedBalanceArray[0])
-    //   const afterDecimal = convertedBalanceArray[1] && Number(convertedBalanceArray[1])
-
-    //   log.info('Number', beforeDecimal, afterDecimal)
-    //   log.info('Number', typeof beforeDecimal, typeof afterDecimal)
-    //   // const totalLength = beforeDecimal.length +
-
-    //   if (beforeDecimal > 1000000) {
-    //     truncatedValue = (beforeDecimal / 1000000).toFixed(1)
-    //     return `${truncatedValue}m`
-    //   }
-
-    //   if (beforeDecimal > 1000) {
-    //     truncatedValue = (beforeDecimal / 1000).toFixed(2)
-    //     return `${truncatedValue}k`
-    //   }
-
-    //   if (convertedBalanceArray.length > 0) {
-    //     if (convertedBalanceArray[1] && convertedBalanceArray[1].length > 5) {
-    //       return convertedBalance.toFixed(5)
-    //     }
-    //   } else {
-    //     return balance
-    //   }
-
-    //   log.info('convertedBalance', convertedBalance)
-    // }
+    topup() {
+      this.$router.push({ path: '/wallet/topup' }).catch((_) => {})
+    },
   },
 }
 </script>
