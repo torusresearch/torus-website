@@ -75,12 +75,13 @@ export default class SmartContractWalletController {
    * @param txId {number} - the tx's Id
    * @returns - rawTx {string}
    */
-  async signTransaction(txId, txStateManager, chainId) {
+  async signTransactionGeneralCall(txId, txStateManager, chainId) {
     try {
       const txMeta = txStateManager.getTx(txId)
       log.info('Transaction Controller, signTransaction', txMeta, txStateManager)
 
       const txParameters = { ...txMeta.txParams, chainId }
+      txParameters.value = txParameters.value.toString()
       const relayerURL = config.relayer.concat('/generalCall')
       log.info(relayerURL)
       const fromSCW = txParameters.from
@@ -109,22 +110,18 @@ export default class SmartContractWalletController {
       // @todo remove this and set this value some other way.
       txMeta.refundRelayer = true
 
-      // ============================================= Code that Dapp's generate =================================================================
-      // eslint-disable-next-line global-require
-      const TestDapp = new this.web3.eth.Contract(require('../../test/Dapp.json').abi, '0x2C40f5E48d9E054b17C2900A9e803A06616b1672')
-
-      const startingState = await TestDapp.methods.n().call()
-      const value = parseInt(startingState, 10) + 10
-      log.info(`N value of test dapp will be changed from ${startingState} to ${value}`)
-
-      // Get the encoded data of the dapp call
-      const dataToForward = TestDapp.methods.setN(value).encodeABI()
-
-      txParameters.data = dataToForward
+      /**
+       * @notice 64 Zeros, means 64, 0 hex characters
+       * @notice Import this and use when you need to submit a transaction with no data
+       */
+      // const ZERO_BYTES32 = '0x0000000000000000000000000000000000000000000000000000000000000000'
+      // // Encode data of callContract method to forward the transaction using params: Wallet address, Contract address, ETH value, txParameters.data
+      // const methodData = TransferModule.methods
+      //   .callContract(fromSCW, '0xAF74af9E6cb1e91193c2d72a0ebAf89D3630d05B', '1000000000000000', ZERO_BYTES32)
+      //   .encodeABI()
 
       // Encode data of callContract method to forward the transaction using params: Wallet address, Contract address, ETH value, txParameters.data
-      const methodData = TransferModule.methods.callContract(fromSCW, TestDapp.options.address, 0, txParameters.data).encodeABI()
-      // ==================================================================================================================
+      const methodData = TransferModule.methods.callContract(fromSCW, txParameters.to, txParameters.value, txParameters.data).encodeABI()
 
       if (txMeta.refundRelayer) {
         let signatures = await signOffchain([walletAccount], TransferModule.options.address, fromSCW, 0, methodData, nonce, gasPrice, 0)
@@ -199,7 +196,7 @@ export default class SmartContractWalletController {
    * @param txId {number} - the tx's Id
    * @returns - rawTx {string}
    */
-  async signTransactionForTransfer(txId, txStateManager, chainId) {
+  async signTransaction(txId, txStateManager, chainId) {
     try {
       const txMeta = txStateManager.getTx(txId)
       log.info('Transaction Controller, signTransaction', txMeta, txStateManager)
