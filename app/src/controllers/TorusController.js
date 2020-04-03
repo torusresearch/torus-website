@@ -221,7 +221,10 @@ export default class TorusController extends EventEmitter {
         // account-requiring RPC methods from completing successfully
         // only show address if account is unlocked
         log.info(this.prefsController.state.selectedAddress, 'accounts')
-        return this.prefsController.state.selectedAddress ? [this.prefsController.state.selectedAddress] : []
+        const otherAddresses = this.txController
+          .getAllAddresses()
+          .filter(x => x.toLowerCase() !== this.prefsController.state.selectedAddress.toLowerCase())
+        return this.prefsController.state.selectedAddress ? [this.prefsController.state.selectedAddress, ...otherAddresses] : []
       },
       // tx signing
       processTransaction: this.newUnapprovedTransaction.bind(this),

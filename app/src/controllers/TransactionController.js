@@ -228,7 +228,7 @@ class TransactionController extends EventEmitter {
     } else {
       // Assert that the origin has permissions to initiate transactions from
       // the specified address
-      const permittedAddresses = [await this.getSelectedAddress()]
+      const permittedAddresses = this.getAllAddresses()
       if (!permittedAddresses.includes(normalizedTxParameters.from)) {
         throw ethErrors.provider.unauthorized({ data: { origin } })
       }
@@ -585,6 +585,13 @@ class TransactionController extends EventEmitter {
         return (selectedAddress && selectedAddress.toLowerCase()) || ''
       }
       return ''
+    }
+    this.getAllAddresses = () => {
+      if (typeof this.opts.storeProps === 'function') {
+        const { wallet } = this.opts.storeProps() || {}
+        return Object.keys(wallet || {}).map(x => x.toLowerCase())
+      }
+      return []
     }
     /**  */
     this.getSelectedEOA = () => {
