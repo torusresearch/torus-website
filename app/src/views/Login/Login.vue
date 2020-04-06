@@ -4,91 +4,200 @@
       <v-layout wrap fill-height align-center justify-center class="login-panel-left" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
         <v-flex xs12 sm8 md6>
           <v-layout v-if="!isLogout" wrap>
-            <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
-              <img width="180" :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
-            </v-flex>
-            <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
-              <div
-                class="verifier-title font-weight-bold"
-                :class="[$vuetify.theme.dark ? '' : 'text_2--text', $vuetify.breakpoint.xsOnly ? 'display-1' : 'display-2']"
+            <v-flex v-if="$vuetify.breakpoint.xsOnly" xs12>
+              <v-carousel
+                class="mobile-carousel"
+                vertical
+                height="650"
+                interval="4000"
+                hide-delimiters
+                next-icon="$vuetify.icons.login_more"
+                prev-icon="$vuetify.icons.login_more"
               >
-                <span>
-                  Your
-                  <span v-if="activeButton === GOOGLE">
-                    <span class="verifier-title__google-blue">G</span>
-                    <span class="verifier-title__google-red">o</span>
-                    <span class="verifier-title__google-yellow">o</span>
-                    <span class="verifier-title__google-blue">g</span>
-                    <span class="verifier-title__google-green">l</span>
-                    <span class="verifier-title__google-red">e</span>
-                  </span>
-                  <span v-else-if="activeButton === FACEBOOK" class="verifier-title__facebook">Facebook</span>
-                  <span v-else-if="activeButton === REDDIT" class="verifier-title__reddit">Reddit</span>
-                  <span v-else-if="activeButton === TWITCH" class="verifier-title__twitch">Twitch</span>
-                  <span v-else-if="activeButton === DISCORD" class="verifier-title__discord">Discord</span>
-                </span>
-              </div>
-              <div
-                class="font-weight-bold"
-                :class="[$vuetify.theme.dark ? '' : 'text_2--text', $vuetify.breakpoint.xsOnly ? 'headline' : 'display-2']"
-              >
-                digital wallet in one-click
-              </div>
+                <v-carousel-item>
+                  <v-layout wrap>
+                    <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
+                      <img width="180" :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
+                    </v-flex>
+                    <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
+                      <div class="verifier-title font-weight-bold display-1" :class="[$vuetify.theme.dark ? '' : 'text_2--text']">
+                        <span>
+                          Your
+                          <span v-if="activeButton === GOOGLE">
+                            <span class="verifier-title__google-blue">G</span>
+                            <span class="verifier-title__google-red">o</span>
+                            <span class="verifier-title__google-yellow">o</span>
+                            <span class="verifier-title__google-blue">g</span>
+                            <span class="verifier-title__google-green">l</span>
+                            <span class="verifier-title__google-red">e</span>
+                          </span>
+                          <span v-else-if="activeButton === FACEBOOK" class="verifier-title__facebook">Facebook</span>
+                          <span v-else-if="activeButton === REDDIT" class="verifier-title__reddit">Reddit</span>
+                          <span v-else-if="activeButton === TWITCH" class="verifier-title__twitch">Twitch</span>
+                          <span v-else-if="activeButton === DISCORD" class="verifier-title__discord">Discord</span>
+                        </span>
+                      </div>
+                      <div class="font-weight-bold headline" :class="[$vuetify.theme.dark ? '' : 'text_2--text']">
+                        digital wallet in one-click
+                      </div>
+                    </v-flex>
+                    <v-flex xs10 sm8 ml-auto mr-auto mt-8>
+                      <div class="headline font-weight-light" :class="$vuetify.theme.dark ? '' : 'text_2--text'">Sign up/in with</div>
+                    </v-flex>
+                    <v-flex xs10 sm8 ml-auto mt-2 mr-auto>
+                      <v-btn
+                        id="loginBtn"
+                        :color="$vuetify.theme.dark ? '' : 'white'"
+                        block
+                        :class="$vuetify.theme.dark ? 'torus-dark' : ''"
+                        class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-google"
+                        @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
+                      >
+                        <img
+                          class="mr-5"
+                          :src="require(`../../../public/img/icons/login-google.svg`)"
+                          :class="$vuetify.theme.dark ? 'torus-dark' : ''"
+                        />
+                        {{ t('login.signIn') }} Google
+                      </v-btn>
+                    </v-flex>
+                    <v-flex xs10 sm8 ml-auto mr-auto>
+                      <v-layout wrap mx-n1>
+                        <v-flex v-for="verifier in loginButtonsMobile" :key="verifier" xs4 px-1 mt-2>
+                          <v-btn
+                            class="login-btn login-btn--mobile"
+                            :class="{ active: verifier === activeButton, isDark: $vuetify.theme.dark }"
+                            type="button"
+                            :title="`${t('login.loginWith')} ${verifier}`"
+                            @click="triggerLogin({ verifier: verifier, calledFromEmbed: false })"
+                            @mouseover="activeButton = verifier"
+                          >
+                            <img :src="require(`../../../public/img/icons/login-${verifier}.svg`)" />
+                          </v-btn>
+                        </v-flex>
+                      </v-layout>
+                    </v-flex>
+                    <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-12>
+                      <span class="body-1" :class="$vuetify.theme.dark ? '' : 'text_2--text'">
+                        {{ t('login.acceptTerms') }}
+                        <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
+                          <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
+                        </a>
+                      </span>
+                    </v-flex>
+                  </v-layout>
+                </v-carousel-item>
+                <v-carousel-item>
+                  <v-carousel cycle height="650" interval="4000" :show-arrows="false" hide-delimiters>
+                    <v-layout class="login-panel-right login-panel-right--mobile">
+                      <v-flex xs10 text-center mx-auto>
+                        <v-carousel-item v-for="slide in slides" :key="slide.id">
+                          <img
+                            class="mb-6 login-panel-right__image"
+                            :src="require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide.id}.png`)"
+                          />
+                          <div class="headline mb-3" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ slide.title }}</div>
+                          <div class="caption" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ slide.sub_title1 }}</div>
+                          <div class="caption" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ slide.sub_title2 }}</div>
+                          <v-btn class="learn-more-btn mt-6" :class="{ isDark: $vuetify.theme.dark }" :href="slide.link" target="_blank">
+                            Learn More
+                          </v-btn>
+                        </v-carousel-item>
+                      </v-flex>
+                    </v-layout>
+                  </v-carousel>
+                </v-carousel-item>
+              </v-carousel>
             </v-flex>
-            <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-11']">
-              <div class="headline font-weight-light" :class="$vuetify.theme.dark ? '' : 'text_2--text'">Sign up/in with</div>
-            </v-flex>
-            <v-flex v-if="$vuetify.breakpoint.xsOnly" xs10 sm8 ml-auto mt-2 mr-auto>
-              <v-btn
-                id="loginBtn"
-                :color="$vuetify.theme.dark ? '' : 'white'"
-                block
-                :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-                class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-google"
-                @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
-              >
-                <img class="mr-5" :src="require(`../../../public/img/icons/login-google.svg`)" :class="$vuetify.theme.dark ? 'torus-dark' : ''" />
-                {{ t('login.signIn') }} Google
-              </v-btn>
-            </v-flex>
-            <v-flex v-if="$vuetify.breakpoint.xsOnly" xs10 sm8 ml-auto mr-auto>
-              <v-layout wrap mx-n1>
-                <v-flex v-for="verifier in loginButtonsMobile" :key="verifier" xs4 px-1 mt-2>
+            <v-flex v-else xs12>
+              <v-layout wrap>
+                <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
+                  <img width="180" :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
+                </v-flex>
+                <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
+                  <div
+                    class="verifier-title font-weight-bold"
+                    :class="[$vuetify.theme.dark ? '' : 'text_2--text', $vuetify.breakpoint.xsOnly ? 'display-1' : 'display-2']"
+                  >
+                    <span>
+                      Your
+                      <span v-if="activeButton === GOOGLE">
+                        <span class="verifier-title__google-blue">G</span>
+                        <span class="verifier-title__google-red">o</span>
+                        <span class="verifier-title__google-yellow">o</span>
+                        <span class="verifier-title__google-blue">g</span>
+                        <span class="verifier-title__google-green">l</span>
+                        <span class="verifier-title__google-red">e</span>
+                      </span>
+                      <span v-else-if="activeButton === FACEBOOK" class="verifier-title__facebook">Facebook</span>
+                      <span v-else-if="activeButton === REDDIT" class="verifier-title__reddit">Reddit</span>
+                      <span v-else-if="activeButton === TWITCH" class="verifier-title__twitch">Twitch</span>
+                      <span v-else-if="activeButton === DISCORD" class="verifier-title__discord">Discord</span>
+                    </span>
+                  </div>
+                  <div
+                    class="font-weight-bold"
+                    :class="[$vuetify.theme.dark ? '' : 'text_2--text', $vuetify.breakpoint.xsOnly ? 'headline' : 'display-2']"
+                  >
+                    digital wallet in one-click
+                  </div>
+                </v-flex>
+                <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-11']">
+                  <div class="headline font-weight-light" :class="$vuetify.theme.dark ? '' : 'text_2--text'">Sign up/in with</div>
+                </v-flex>
+                <v-flex v-if="$vuetify.breakpoint.xsOnly" xs10 sm8 ml-auto mt-2 mr-auto>
                   <v-btn
-                    class="login-btn login-btn--mobile"
-                    :class="{ active: verifier === activeButton }"
+                    id="loginBtn"
+                    :color="$vuetify.theme.dark ? '' : 'white'"
+                    block
+                    :class="$vuetify.theme.dark ? 'torus-dark' : ''"
+                    class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-google"
+                    @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
+                  >
+                    <img class="mr-5" :src="require(`../../../public/img/icons/login-google.svg`)" :class="$vuetify.theme.dark ? 'torus-dark' : ''" />
+                    {{ t('login.signIn') }} Google
+                  </v-btn>
+                </v-flex>
+                <v-flex v-if="$vuetify.breakpoint.xsOnly" xs10 sm8 ml-auto mr-auto>
+                  <v-layout wrap mx-n1>
+                    <v-flex v-for="verifier in loginButtonsMobile" :key="verifier" xs4 px-1 mt-2>
+                      <v-btn
+                        class="login-btn login-btn--mobile"
+                        :class="{ active: verifier === activeButton }"
+                        type="button"
+                        :title="`${t('login.loginWith')} ${verifier}`"
+                        @click="triggerLogin({ verifier: verifier, calledFromEmbed: false })"
+                        @mouseover="activeButton = verifier"
+                      >
+                        <img :src="require(`../../../public/img/icons/login-${verifier}.svg`)" />
+                      </v-btn>
+                    </v-flex>
+                  </v-layout>
+                </v-flex>
+                <v-flex v-if="!$vuetify.breakpoint.xsOnly" xs10 sm8 ml-auto mr-auto mt-4>
+                  <v-btn
+                    v-for="verifier in loginButtons"
+                    :key="verifier"
+                    class="login-btn"
+                    :class="{ active: verifier === activeButton, isDark: $vuetify.theme.dark }"
                     type="button"
                     :title="`${t('login.loginWith')} ${verifier}`"
                     @click="triggerLogin({ verifier: verifier, calledFromEmbed: false })"
                     @mouseover="activeButton = verifier"
                   >
-                    <img :src="require(`../../../public/img/icons/login-${verifier}.svg`)" />
+                    <img v-if="verifier === activeButton" :src="require(`../../../public/img/icons/login-${verifier}.svg`)" />
+                    <img v-else :src="require(`../../../public/img/icons/login-${verifier}-${$vuetify.theme.dark ? 'white' : 'grey'}.svg`)" />
                   </v-btn>
                 </v-flex>
+                <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-12>
+                  <span class="body-1" :class="$vuetify.theme.dark ? '' : 'text_2--text'">
+                    {{ t('login.acceptTerms') }}
+                    <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
+                      <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
+                    </a>
+                  </span>
+                </v-flex>
               </v-layout>
-            </v-flex>
-            <v-flex v-if="!$vuetify.breakpoint.xsOnly" xs10 sm8 ml-auto mr-auto mt-4>
-              <v-btn
-                v-for="verifier in loginButtons"
-                :key="verifier"
-                class="login-btn"
-                :class="{ active: verifier === activeButton }"
-                type="button"
-                :title="`${t('login.loginWith')} ${verifier}`"
-                @click="triggerLogin({ verifier: verifier, calledFromEmbed: false })"
-                @mouseover="activeButton = verifier"
-              >
-                <img v-if="verifier === activeButton" :src="require(`../../../public/img/icons/login-${verifier}.svg`)" />
-                <img v-else :src="require(`../../../public/img/icons/login-${verifier}-${$vuetify.theme.dark ? 'white' : 'grey'}.svg`)" />
-              </v-btn>
-            </v-flex>
-            <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-12>
-              <span class="body-1" :class="$vuetify.theme.dark ? '' : 'text_2--text'">
-                {{ t('login.acceptTerms') }}
-                <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
-                  <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
-                </a>
-              </span>
             </v-flex>
           </v-layout>
           <v-layout v-else wrap align-center justify-center align-content-center>

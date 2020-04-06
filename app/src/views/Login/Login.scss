@@ -14,6 +14,10 @@
     background: linear-gradient(222.08deg, #26272C 1.73%, rgba(40, 41, 46, 0.988961) 42.88%, rgba(40, 41, 46, 0.989349) 61.68%, rgba(46, 47, 52, 0.960249) 86.96%);
   }
 
+  &.login-panel-right--mobile {
+    background: none;
+  }
+
   &__image {
     width: 90%;
     height: auto;
@@ -48,6 +52,7 @@
     box-sizing: border-box;
     box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06);
     border-radius: 9px;
+    border: thin solid #F1F2F6;
     &.isDark {
       color: #D3D3D4;
       border: thin solid #D3D3D4;
@@ -76,7 +81,7 @@
 
   &.torus-dark {
     background: #2F3136 !important;
-    border: 1px solid #404145;
+    border: 1px solid #404145 !important;
     box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
     color: #ffffff !important;
   }
@@ -97,9 +102,9 @@
     width: 26px;
     height: 26px;
   }
-  &.theme--dark {
-    background: #2F3136;
-    border: 1px solid #404145;
+  &.isDark {
+    background: #2F3136 !important;
+    border: 1px solid #404145 !important;
     box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
   }
   &.login-btn--mobile {
@@ -178,4 +183,17 @@ body,
 html {
   height: 100%;
   overflow-y: hidden;
+}
+
+
+::v-deep .v-carousel.mobile-carousel {
+  .v-window__next {
+    bottom: 0;
+    right: calc(50% - 20px);
+    top: inherit;
+    background: none;
+  }
+  .v-window__prev {
+    display: none;
+  }
 }
