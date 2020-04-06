@@ -26,6 +26,7 @@ import InfoIcon from './InfoIcon.vue'
 import KeyIcon from './KeyIcon.vue'
 import ListIcon from './ListIcon.vue'
 import LockIcon from './LockIcon.vue'
+import LoginMoreIcon from './LoginMoreIcon.vue'
 import NetworkIcon from './NetworkIcon.vue'
 import PersonIcon from './PersonIcon.vue'
 import QrIcon from './QrIcon.vue'
@@ -187,5 +188,8 @@ export default {
   },
   address: {
     component: AddressIcon,
+  },
+  login_more: {
+    component: LoginMoreIcon,
   },
 }

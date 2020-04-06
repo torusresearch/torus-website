@@ -41,6 +41,7 @@
     }
     .v-tab {
       border: 1px solid #343539;
+      background-color: inherit;
       &--active {
         background-color: var(--v-torusBlack2-base);
       }
