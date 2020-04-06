@@ -1,13 +1,9 @@
-.login-panel-right {
-  background-image: url('/images/login-bg.jpg');
-  background-repeat: no-repeat;
-  background-size: auto 100%;
-  background-color: #0364ff;
-  background-position: 70% bottom;
+.login-panel-left.torus-dark {
+  background: linear-gradient(43.08deg, #26272C 0.89%, rgba(43, 44, 49, 0.975926) 19.43%, rgba(42, 43, 48, 0.980053) 37.98%, rgba(42, 43, 48, 0.97911) 60.77%, rgba(42, 43, 48, 0.979198) 70.3%);
+}
 
-  @media only screen and (min-width: 960px) {
-    background-position: 80% bottom;
-  }
+.login-panel-right {
+  background: linear-gradient(36.97deg, #F1F4FB 39.12%, rgba(241, 244, 251, 0) 83.1%);
 
   .caption {
     width: 80%;
@@ -15,8 +11,13 @@
   }
 
   &.torus-dark {
-    background-image: url('/images/login-bg-dark.jpg');
-    background-color: #242529;
+    background: linear-gradient(222.08deg, #26272C 1.73%, rgba(40, 41, 46, 0.988961) 42.88%, rgba(40, 41, 46, 0.989349) 61.68%, rgba(46, 47, 52, 0.960249) 86.96%);
+  }
+
+  &__image {
+    width: 90%;
+    height: auto;
+    max-width: 600px;
   }
 
   .right-panel-header {
@@ -34,14 +35,37 @@
       width: 60%;
     }
   }
+
+  .learn-more-btn {
+    height: inherit;
+    padding: 16px 40px;
+    margin-top: 32px;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 16px;
+    color: #5C6C7F;
+    background: #FFFFFF !important;
+    box-sizing: border-box;
+    box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06);
+    border-radius: 9px;
+    &.isDark {
+      color: #D3D3D4;
+      border: thin solid #D3D3D4;
+      background: none !important;
+      box-sizing: border-box;
+      box-shadow: 0px 9.40298px 18.806px rgba(46, 91, 255, 0.06);
+    }
+  }
 }
 
-.login-btn {
+.login-btn-google {
   &.v-btn {
-    width: 70%;
+    background: #FFFFFF !important;
+    border: 1px solid #F1F2F6 !important;
+    box-sizing: border-box;
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
     border-radius: 9px;
     height: 60px;
-    border: 1px solid #f1f2f6;
     img {
       height: 26px;
     }
@@ -51,14 +75,64 @@
   }
 
   &.torus-dark {
-    border: 1px solid #36373b;
-    padding-left: 2px;
-    background-color: #4285f4 !important; //temporary until v8 is global
+    background: #2F3136 !important;
+    border: 1px solid #404145;
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
     color: #ffffff !important;
+  }
+}
 
-    img {
-      height: 56px;
-    }
+.login-btn.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+  background: #FFFFFF;
+  border: 1px solid #F1F2F6;
+  box-sizing: border-box;
+  box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06);
+  min-width: inherit;
+  padding: 0;
+  margin-right: 7px;
+  margin-bottom: 7px;
+  width: 56px;
+  height: 56px;
+  img {
+    width: 26px;
+    height: 26px;
+  }
+  &.theme--dark {
+    background: #2F3136;
+    border: 1px solid #404145;
+    box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+  }
+  &.login-btn--mobile {
+    width: 100%;
+    margin: 0;
+    border-radius: 6px;
+  }
+}
+
+.verifier-title {
+  &__google-blue {
+    color: #4285F4;
+  }
+  &__google-red {
+    color: #EA4335;
+  }
+  &__google-yellow {
+    color: #FBBC05;
+  }
+  &__google-green {
+    color: #34A853;
+  }
+  &__facebook {
+    color: #3478EA;
+  }
+  &__reddit {
+    color: #FF4500;
+  }
+  &__twitch {
+    color: #695790;
+  }
+  &__discord {
+    color: #7289DA;
   }
 }
 
@@ -77,18 +151,6 @@ a {
   text-decoration: none;
 }
 
-.other-login-container {
-  margin: 0 -4px;
-  .other-login-btn {
-    border-radius: 9px;
-    height: 60px;
-    margin-bottom: 8px;
-    &.theme--dark.torus-dark {
-      border: 1px solid #343539;
-      background-color: #424242;
-    }
-  }
-}
 
 .background-login {
   position: relative;
