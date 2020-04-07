@@ -17,7 +17,7 @@
     "post-build": ". ./scripts/buildErrorPage.sh",
     "pre-build": "node ./scripts/replaceRedirectHTML.js && npm run locale",
     "production": "cross-env PORT=443 NODE_ENV=production node server.js",
-    "test:unit": "mocha ./test/unit/controllers/transactions/*.js ./test/unit/controllers/*.js",
+    "test:unit": "npm run locale && mocha ./test/unit/controllers/transactions/*.js ./test/unit/controllers/*.js",
     "test:e2e": "mocha --timeout=60000 ./test/e2e",
     "test:codecov-upload": "if [ $CODECOV_TOKEN ]; then nyc report --reporter=text-lcov > coverage.lcov && codecov; fi",
     "test:coverage-codecov": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:codecov-upload",

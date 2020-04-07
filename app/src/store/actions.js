@@ -642,7 +642,7 @@ export default {
             torus.continueEnable(ethAddress)
           }, 50)
         }
-        statusStream.write({ loggedIn: true, rehydrate: false, verifier })
+        statusStream.write({ loggedIn: true, verifier })
         commit('setLoginInProgress', false)
         torus.updateStaticData({ isUnlocked: true })
         dispatch('cleanupOAuth', { idToken })
@@ -755,7 +755,7 @@ export default {
         ])
         dispatch('updateSelectedAddress', { selectedAddress })
         dispatch('updateNetworkId', { networkId })
-        statusStream.write({ loggedIn: true, rehydrate: true, verifier })
+        statusStream.write({ loggedIn: true, verifier })
         log.info('rehydrated wallet')
         torus.updateStaticData({ isUnlocked: true })
       }
