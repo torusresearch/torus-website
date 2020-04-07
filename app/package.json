@@ -7,7 +7,6 @@
     "build": "npm run pre-build && vue-cli-service build && npm run post-build",
     "lint": "vue-cli-service lint",
     "build:dev": "npm run pre-build && vue-cli-service build --mode development",
-    "build:report": "vue-cli-service build --report",
     "build:staging": "npm run pre-build && vue-cli-service build --mode staging && npm run post-build",
     "build:testing": "npm run pre-build && vue-cli-service build --mode testing",
     "build:lrc": "npm run pre-build && vue-cli-service build --mode lrc",
@@ -22,9 +21,6 @@
     "test:e2e": "mocha --timeout=60000 ./test/e2e",
     "test:codecov-upload": "if [ $CODECOV_TOKEN ]; then nyc report --reporter=text-lcov > coverage.lcov && codecov; fi",
     "test:coverage-codecov": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:codecov-upload",
-    "test:coverage-coveralls": "nyc --reporter=text --reporter=html npm run test:unit && npm run test:coveralls-upload",
-    "test:coveralls-upload": "if [ $COVERALLS_REPO_TOKEN ]; then nyc report --reporter=text-lcov | coveralls; fi",
-    "test:e2e-loggedin": "node ./test/e2e/simple_puppeteer.js",
     "test:e2e:headful": "node ./test/e2e/puppeteer.js false",
     "test:e2e:mobile": "env MOBILE_ENV=true mocha --timeout=60000 ./test/e2e"
   },
