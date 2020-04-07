@@ -22,7 +22,7 @@ export default {
   moonpayTestAPIKEY: 'pk_test_j6AnwGJD0XTJDg3bTO37OczjFsddYpS',
   wyreHost: 'https://pay.sendwyre.com/purchase',
   wyreAccountId: 'AC_RUQMPNP7QQY',
-  GOOGLE_CLIENT_ID: '931547096725-t722mfmqfdv7mt4cvlpsgjrhr42us4rs.apps.googleusercontent.com',
+  GOOGLE_CLIENT_ID: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com',
   FACEBOOK_APP_ID: '2554219104599979',
   TWITCH_CLIENT_ID: 'tfppratfiloo53g1x133ofa4rc29px',
   REDDIT_CLIENT_ID: 'dcQJYPaG481XyQ',
