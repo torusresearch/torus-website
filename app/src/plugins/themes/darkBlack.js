@@ -20,8 +20,8 @@ export default {
   // Main background color, supports 2 color gradient
   background: '#2F3136',
   text_1: '#D3D3D4',
-  text_2: '#7F8186',
-  text_3: '#EEF2F4',
+  text_2: '#D3D3D4',
+  text_3: '#B3C0CE',
   primary: {
     base: '#0364FF',
     lighten5: '#3F4147',

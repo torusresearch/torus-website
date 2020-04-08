@@ -21,7 +21,7 @@
                     </v-flex>
                     <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
                       <div class="verifier-title font-weight-bold display-1">
-                        <span class="text_1--text">
+                        <span class="text_2--text">
                           Your
                           <span v-if="activeButton === GOOGLE">
                             <span class="verifier-title__google-blue">G</span>
@@ -37,12 +37,12 @@
                           <span v-else-if="activeButton === DISCORD" class="verifier-title__discord">Discord</span>
                         </span>
                       </div>
-                      <div class="font-weight-bold headline text_1--text">
+                      <div class="font-weight-bold headline text_2--text">
                         digital wallet in one-click
                       </div>
                     </v-flex>
                     <v-flex xs10 sm8 ml-auto mr-auto mt-8>
-                      <div class="headline font-weight-light text_1--text">Sign up/in with</div>
+                      <div class="headline font-weight-light text_2--text">Sign up/in with</div>
                     </v-flex>
                     <v-flex xs10 sm8 ml-auto mt-2 mr-auto>
                       <v-btn
@@ -50,7 +50,7 @@
                         :color="$vuetify.theme.dark ? '' : 'white'"
                         block
                         :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-                        class="body-1 font-weight-bold card-shadow-v8 text_1--text login-btn-google"
+                        class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-google"
                         @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
                       >
                         <img
@@ -78,7 +78,7 @@
                       </v-layout>
                     </v-flex>
                     <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-12>
-                      <span class="body-1 text_1--text">
+                      <span class="body-1 text_2--text">
                         {{ t('login.acceptTerms') }}
                         <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
                           <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
@@ -96,9 +96,9 @@
                             class="mb-6 login-panel-right__image"
                             :src="require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide.id}.png`)"
                           />
-                          <div class="headline mb-3 text_1--text">{{ slide.title }}</div>
-                          <div class="caption text_1--text">{{ slide.sub_title1 }}</div>
-                          <div class="caption text_1--text">{{ slide.sub_title2 }}</div>
+                          <div class="headline mb-3 text_2--text">{{ slide.title }}</div>
+                          <div class="caption text_2--text">{{ slide.sub_title1 }}</div>
+                          <div class="caption text_2--text">{{ slide.sub_title2 }}</div>
                           <v-btn
                             class="learn-more-btn mt-6"
                             :class="{ isDark: $vuetify.theme.dark, isMobile: $vuetify.breakpoint.xsOnly }"
@@ -121,7 +121,7 @@
                 </v-flex>
                 <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
                   <div class="verifier-title font-weight-bold" :class="[$vuetify.breakpoint.xsOnly ? 'display-1' : 'display-2']">
-                    <span class="text_1--text">
+                    <span class="text_2--text">
                       Your
                       <span v-if="activeButton === GOOGLE">
                         <span class="verifier-title__google-blue">G</span>
@@ -137,12 +137,12 @@
                       <span v-else-if="activeButton === DISCORD" class="verifier-title__discord">Discord</span>
                     </span>
                   </div>
-                  <div class="font-weight-bold text_1--text" :class="[$vuetify.breakpoint.xsOnly ? 'headline' : 'display-2']">
+                  <div class="font-weight-bold text_2--text" :class="[$vuetify.breakpoint.xsOnly ? 'headline' : 'display-2']">
                     digital wallet in one-click
                   </div>
                 </v-flex>
                 <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-11']">
-                  <div class="headline font-weight-light" :class="$vuetify.theme.dark ? '' : 'text_1--text'">Sign up/in with</div>
+                  <div class="headline font-weight-light" :class="$vuetify.theme.dark ? '' : 'text_2--text'">Sign up/in with</div>
                 </v-flex>
                 <v-flex v-if="$vuetify.breakpoint.xsOnly" xs10 sm8 ml-auto mt-2 mr-auto>
                   <v-btn
@@ -150,7 +150,7 @@
                     :color="$vuetify.theme.dark ? '' : 'white'"
                     block
                     :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-                    class="body-1 font-weight-bold card-shadow-v8 text_1--text login-btn-google"
+                    class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-google"
                     @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
                   >
                     <img class="mr-5" :src="require(`../../../public/img/icons/login-google.svg`)" :class="$vuetify.theme.dark ? 'torus-dark' : ''" />
@@ -189,7 +189,7 @@
                   </v-btn>
                 </v-flex>
                 <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-12>
-                  <span class="body-1 text_1--text">
+                  <span class="body-1 text_2--text">
                     {{ t('login.acceptTerms') }}
                     <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
                       <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
@@ -238,10 +238,10 @@
                       }`)
                     "
                   />
-                  <div class="display-1 mb-3 font-weight-medium text_1--text">{{ slide.title }}</div>
-                  <div class="body-1 text_1--text">{{ slide.sub_title1 }}</div>
-                  <div class="body-1 text_1--text">{{ slide.sub_title2 }}</div>
-                  <v-btn class="learn-more-btn text_1--text" :class="{ isDark: $vuetify.theme.dark }" :href="slide.link" target="_blank">
+                  <div class="display-1 mb-3 font-weight-medium text_2--text">{{ slide.title }}</div>
+                  <div class="body-1 text_2--text">{{ slide.sub_title1 }}</div>
+                  <div class="body-1 text_2--text">{{ slide.sub_title2 }}</div>
+                  <v-btn class="learn-more-btn text_2--text" :class="{ isDark: $vuetify.theme.dark }" :href="slide.link" target="_blank">
                     Learn More
                   </v-btn>
                 </v-carousel-item>

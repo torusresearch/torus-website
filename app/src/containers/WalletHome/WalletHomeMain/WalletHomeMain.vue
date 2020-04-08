@@ -1,7 +1,7 @@
 <template>
   <v-container class="wallet-home pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <div class="d-flex align-center">
-      <div class="font-weight-bold display-1 float-left">Account Balance</div>
+      <div class="font-weight-bold display-1 text_2--text float-left">Account Balance</div>
       <div class="ml-auto">
         <QuickAddress />
       </div>
@@ -11,7 +11,7 @@
         <v-card class="card-total elevation-1">
           <v-layout wrap class="px-6 py-4">
             <v-flex xs6>
-              <span class="title torusFont1--text">{{ t('walletHome.totalValue') }}</span>
+              <span class="title text_1--text">{{ t('walletHome.totalValue') }}</span>
             </v-flex>
             <v-flex xs6 class="text-right">
               <NetworkDisplay :network="storeNetworkType.networkName" :store-network-type="storeNetworkType"></NetworkDisplay>
@@ -24,9 +24,9 @@
                 </span>
                 <v-menu offset-y max-height="300" z-index="20">
                   <template v-slot:activator="{ on }">
-                    <v-btn x-small text :class="{ 'currency-selector': $vuetify.breakpoint.mAndUp }" v-on="on">
+                    <v-btn x-small text class="text_3--text" :class="{ 'currency-selector': $vuetify.breakpoint.mAndUp }" v-on="on">
                       <span id="selected-currency" class="description">{{ selectedCurrency }}</span>
-                      <v-icon class="torusGray3--text" small>$vuetify.icons.select</v-icon>
+                      <v-icon class="text_3--text" small>$vuetify.icons.select</v-icon>
                     </v-btn>
                   </template>
                   <v-list dense>
@@ -47,7 +47,7 @@
               </div>
             </v-flex>
             <v-flex xs4 class="text-right align-self-end">
-              <span class="description">1ETH = 300USD</span>
+              <span class="description text_3--text">{{ finalBalancesArray[0].currencyRateText }}</span>
             </v-flex>
             <v-flex xs12>
               <v-layout class="mx-n2 mt-2">

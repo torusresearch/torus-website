@@ -16,9 +16,9 @@ export default {
   torusLight: '#FCFCFC',
 
   // Fixed Colors
-  text_1: '#5C6C7F',
+  text_1: '#0F1222',
   text_2: '#5C6C7F',
-  text_3: '#EEF2F4',
+  text_3: '#B3C0CE',
   primary: {
     base: '#0364FF',
     lighten5: '#E9EEFE',
