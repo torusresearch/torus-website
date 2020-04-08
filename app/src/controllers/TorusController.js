@@ -727,7 +727,7 @@ export default class TorusController extends EventEmitter {
    */
   setupProviderConnection(outStream, sender) {
     // break violently
-    const senderUrl = new URL('https://localhost:3000')
+    const senderUrl = new URL(sender)
 
     const engine = this.setupProviderEngine({ origin: senderUrl.hostname, location: sender })
 
