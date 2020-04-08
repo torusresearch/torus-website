@@ -339,7 +339,9 @@ VuexStore.subscribe((mutation, state) => {
 if (storageAvailable('localStorage')) {
   const torusTheme = localStorage.getItem('torus-theme')
   const torusWhiteLabel = localStorage.getItem('torus-white-label')
-  if (torusTheme || torusWhiteLabel) {
+  if (torusWhiteLabel) {
+    VuexStore.dispatch('setWhiteLabel', JSON.parse(torusWhiteLabel))
+  } else if (torusTheme) {
     VuexStore.commit('setTheme', torusTheme)
   }
 }

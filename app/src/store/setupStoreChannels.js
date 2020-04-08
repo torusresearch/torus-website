@@ -122,36 +122,8 @@ if (!isMain) {
 
   // White Label section
   const whiteLabelStream = torus.communicationMux.getStream('white_label')
-  whiteLabelStream.on('data', () => {
-    // torus-white-label
-    // {"whiteLabelIsDark":false,"whiteLabelTheme":{"torusBackgroundBody":"","torusBrand1":"","torusBrand2":"",
-    // "torusBrand3":"","torusBrand4":"","torusBrandhover":"","torusGray1":"","torusGray2":"","torusGray3":"",
-    // "torusGray4":"","torusFont1":"","torusFont2":"","torusFontLink1":"","torusFontLink2":"","torusBlack":""}}
-    const whiteLabel = {
-      theme: {
-        isDark: true,
-        dark: {
-          torusBrand1: '#FFD700',
-          torusBrand2: '#FFD700',
-          torusBrand3: '#FFD700',
-          torusBrand4: '#FFD700',
-          torusBrandhover: '#FF4500',
-          torusGray1: '',
-          torusGray2: '',
-          torusGray3: '',
-          torusGray4: '',
-          torusFont1: '#ff0000',
-          torusFont2: '#ff0000',
-          torusFontLink1: '#00ff00',
-          torusFontLink2: '#00ff00',
-          torusBlack: '#FF6347',
-          torusLight: '#FF6347',
-        },
-        light: {},
-      },
-    }
-
-    localStorage.setItem('torus-white-label', JSON.stringify(whiteLabel))
+  whiteLabelStream.on('data', (chunk) => {
+    localStorage.setItem('torus-white-label', JSON.stringify(chunk.data))
   })
 }
 

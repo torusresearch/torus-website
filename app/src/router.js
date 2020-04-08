@@ -148,6 +148,12 @@ const router = new Router({
               component: WalletTopupWyre,
             },
           ],
+          beforeEnter(to, from, next) {
+            if (store.state.whiteLabelTopupHide) {
+              return next({ name: 'walletHome' })
+            }
+            return next()
+          },
         },
       ],
     },

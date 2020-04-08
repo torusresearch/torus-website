@@ -45,7 +45,10 @@ const initialState = {
   successMsg: '',
   iframeMetadata: { origin: '', name: '', icon: '' },
   isWhiteLabelActive: false,
-  whiteLabelLogo: 'https://kyberswap.com/app/images/Kyber_Swap_Black.svg',
+  whiteLabelLogo: '',
+  whiteLabelTopupHide: false,
+  whiteLabelBillboardHide: false,
+  whiteLabelTheme: {},
 }
 
 export default initialState
