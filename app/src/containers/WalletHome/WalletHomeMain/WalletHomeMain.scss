@@ -19,6 +19,9 @@
     border: 1px solid #D5D5D5;
     border-radius: 6px;
     background-color: var(--v-torusLight-base);
+    &.home-tab-token {
+      border-right: 0;
+    }
     &--active {
       color: var(--v-torusBrand1-base);
       background-color: var(--v-torusGray2-base);
