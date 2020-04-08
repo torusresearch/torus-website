@@ -229,15 +229,11 @@
         <v-flex v-if="$vuetify.breakpoint.smAndUp" sm4 md6 fill-height class="login-panel-right" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
           <v-layout wrap fill-height align-center>
             <v-flex xs12 text-center>
-              <v-carousel cycle height="650" interval="4000" :show-arrows="false" hide-delimiters>
+              <v-carousel cycle height="650" interval="4000" :show-arrows="false">
                 <v-carousel-item v-for="slide in slides" :key="slide.id">
                   <img
                     class="mb-7 login-panel-right__image"
-                    :src="
-                      require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide.id}.${
-                        $vuetify.theme.dark ? 'png' : 'svg'
-                      }`)
-                    "
+                    :src="require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide.id}.png`)"
                   />
                   <div class="display-1 mb-3" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ slide.title }}</div>
                   <div class="body-1" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ slide.sub_title1 }}</div>
@@ -361,8 +357,6 @@ export default {
       let verifierCnt = 0
 
       this.verifierCntInterval = setInterval(() => {
-        // eslint-disable-next-line no-console
-        console.log(verifierCnt, this.loginButtons[verifierCnt])
         this.activeButton = this.loginButtons[verifierCnt]
         verifierCnt += 1
         if (verifierCnt >= this.loginButtons.length) verifierCnt = 0
