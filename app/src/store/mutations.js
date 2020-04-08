@@ -73,39 +73,12 @@ export default {
     // Update vuetify theme
     let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
 
-    // Check whitelabel
-    // const torusWhiteLabel = localStorage.getItem('torus-white-label')
-
-    // if (torusWhiteLabel !== null) {
-    //   const whiteLabelData = JSON.parse(torusWhiteLabel)
-    //   Object.keys(whiteLabelData.whiteLabelTheme).forEach((key) => {
-    //     if (whiteLabelData.whiteLabelTheme[key]) {
-    //       whiteLabelData.whiteLabelTheme[camelToSnake(key)] = whiteLabelData.whiteLabelTheme[key]
-    //     }
-    //     delete whiteLabelData.whiteLabelTheme[key]
-    //   })
-    //   theme = themes[whiteLabelData.whiteLabelIsDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]
-    //   theme.theme = { ...theme.theme, ...whiteLabelData.whiteLabelTheme }
-    // }
-    const whiteLabel = {
-      theme: {
-        isDark: false,
-        dark: {
-          torusBrand1: '#EF8102',
-          torusGray2: '#EEF2F4',
-        },
-        light: {
-          torusBrand1: '#EF8102',
-          torusGray2: '#FBF7F3',
-        },
-      },
-    }
-
     if (state.isWhiteLabelActive) {
-      theme = themes[whiteLabel.theme && whiteLabel.theme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]
-      const mergeTheme = whiteLabel.theme.isDark ? whiteLabel.theme.dark : whiteLabel.theme.light
-      theme.theme = { ...theme.theme, ...mergeTheme }
+      const { whiteLabelTheme } = state
+      theme = themes[whiteLabelTheme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]
+      theme.theme = { ...theme.theme, ...whiteLabelTheme.colors }
     }
+
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
     localStorage.setItem('torus-theme', payload)
@@ -149,12 +122,11 @@ export default {
       ...value,
     }
   },
+  setWhiteLabel(state, payload) {
+    state.isWhiteLabelActive = true
+    state.whiteLabelTheme = payload.theme
+    state.whiteLabelLogo = payload.logo
+    state.whiteLabelTopupHide = payload.topupHide
+    state.whiteLabelBillboardHide = payload.featuredBillboardHide
+  },
 }
-
-// function camelToSnake(string) {
-//   return string
-//     .replace(/\w([A-Z])/g, (m) => {
-//       return `${m[0]}_${m[1]}`
-//     })
-//     .toLowerCase()
-// }

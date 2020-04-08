@@ -2,10 +2,15 @@ import log from 'loglevel'
 import ObservableStore from 'obs-store'
 
 import config from '../config'
-import { ERROR_TIME, LOCALE_EN, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import languages from '../plugins/locales'
+import { ERROR_TIME, LOCALES, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import { getIFrameOrigin, storageAvailable } from '../utils/utils'
+
+let userLanguage = window.navigator.userLanguage || window.navigator.language || 'en-US'
+userLanguage = userLanguage.split('-')
+userLanguage = Object.prototype.hasOwnProperty.call(languages, userLanguage[0]) ? userLanguage[0] : 'en'
 
 // By default, poll every 1 minute
 const DEFAULT_INTERVAL = 180 * 1000
@@ -39,7 +44,7 @@ class PreferencesController {
       selectedCurrency: 'USD',
       pastTransactions: [],
       theme,
-      locale: LOCALE_EN,
+      locale: userLanguage,
       billboard: {},
       contacts: [],
       permissions: [],
@@ -114,12 +119,26 @@ class PreferencesController {
       ])
       if (user && user.data) {
         const { transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
+        let whiteLabelLocale
+
+        // White Label override
+        let torusWhiteLabel = localStorage.getItem('torus-white-label')
+        if (torusWhiteLabel) {
+          torusWhiteLabel = JSON.parse(torusWhiteLabel)
+          whiteLabelLocale = torusWhiteLabel.defaultLanguage
+
+          const selectedLocale = LOCALES.find((localeInner) => {
+            return localeInner.value === torusWhiteLabel.defaultLanguage
+          })
+          if (selectedLocale) whiteLabelLocale = selectedLocale.value
+        }
+
         this.store.updateState({
           contacts,
           pastTransactions: transactions,
           theme,
           selectedCurrency: defaultCurrency,
-          locale: locale || LOCALE_EN,
+          locale: whiteLabelLocale || locale || userLanguage,
           paymentTx: (paymentTx && paymentTx.data) || [],
           permissions,
         })
@@ -199,6 +218,7 @@ class PreferencesController {
     if (payload === this.state.locale) return
     try {
       await patch(`${config.api}/user/locale`, { locale: payload }, this.headers)
+      // eslint-disable-next-line no-console
       this.store.updateState({ locale: payload })
       // this.handleSuccess('navBar.snackSuccessLocale')
     } catch (error) {

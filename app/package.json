@@ -27,7 +27,7 @@
     "pre-build": ". ./scripts/calculateIntegrity.sh && node ./scripts/replaceRedirectHTML.js && npm run locale",
     "production": "cross-env PORT=443 NODE_ENV=production node server.js",
     "temp": "npm run build-embed:dev && npm run build:dev",
-    "test:unit": "mocha ./test/unit/controllers/transactions/*.js ./test/unit/controllers/*.js",
+    "test:unit": "npm run locale && mocha ./test/unit/controllers/transactions/*.js ./test/unit/controllers/*.js",
     "test:e2e": "mocha --timeout=60000 ./test/e2e",
     "test:build-embed": "mocha ./test/compile/Web3Test.js",
     "test:codecov-upload": "if [ $CODECOV_TOKEN ]; then nyc report --reporter=text-lcov > coverage.lcov && codecov; fi",

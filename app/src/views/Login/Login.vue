@@ -70,7 +70,7 @@
                             type="button"
                             :title="`${t('login.loginWith')} ${verifier}`"
                             @click="triggerLogin({ verifier: verifier, calledFromEmbed: false })"
-                            @mouseover="activeButton = verifier"
+                            @mouseover="loginBtnHover(verifier)"
                           >
                             <img :src="require(`../../../public/img/icons/login-${verifier}.svg`)" />
                           </v-btn>
@@ -233,7 +233,11 @@
                 <v-carousel-item v-for="slide in slides" :key="slide.id">
                   <img
                     class="mb-7 login-panel-right__image"
-                    :src="require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide.id}.png`)"
+                    :src="
+                      require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide.id}.${
+                        $vuetify.theme.dark ? 'png' : 'svg'
+                      }`)
+                    "
                   />
                   <div class="display-1 mb-3" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ slide.title }}</div>
                   <div class="body-1" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ slide.sub_title1 }}</div>
@@ -310,6 +314,7 @@ export default {
           link: 'https://www.google.com',
         },
       ],
+      verifierCntInterval: null,
     }
   },
   computed: mapState({
@@ -351,6 +356,22 @@ export default {
   },
   created() {
     this.isLogout = this.$route.name !== 'login'
+
+    if (this.$vuetify.breakpoint.xsOnly) {
+      let verifierCnt = 0
+
+      this.verifierCntInterval = setInterval(() => {
+        // eslint-disable-next-line no-console
+        console.log(verifierCnt, this.loginButtons[verifierCnt])
+        this.activeButton = this.loginButtons[verifierCnt]
+        verifierCnt += 1
+        if (verifierCnt >= this.loginButtons.length) verifierCnt = 0
+      }, 2000)
+      // [GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD]
+    }
+  },
+  beforeDestroy() {
+    if (this.verifierCntInterval) clearInterval(this.verifierCntInterval)
   },
   methods: {
     ...mapActions({
@@ -360,6 +381,9 @@ export default {
       this.$router.push({ path: '/' }).catch((_) => {})
       this.isLogout = false
       // window.location.href = process.env.BASE_URL
+    },
+    loginBtnHover(verifier) {
+      if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
     },
   },
 }

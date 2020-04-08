@@ -29,7 +29,7 @@
             width="36"
           />
           <img v-else-if="transaction.type === CONTRACT_TYPE_ERC721" :src="transaction.actionIcon" class="mr-2 ml-1" height="36" large />
-          <v-icon v-else class="float-left" large color="torusBrand1">{{ transaction.actionIcon }}</v-icon>
+          <v-icon v-else class="float-left" size="24" color="torusBrand1">{{ transaction.actionIcon }}</v-icon>
         </div>
         <div class="caption font-weight-medium">{{ transaction.actionText }}</div>
         <div class="info font-weight-light">

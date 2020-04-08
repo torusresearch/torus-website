@@ -53,7 +53,7 @@
               <v-layout class="mx-n2 mt-2">
                 <v-flex xs6 px-2>
                   <v-btn
-                    v-show="canShowLrc"
+                    v-show="canShowLrc && !whiteLabelTopupHide"
                     block
                     large
                     class="torus-btn1"
@@ -112,7 +112,7 @@
         </v-card>
       </v-flex>
       <v-flex
-        v-for="(event, i) in isFreshAccount ? [] : events"
+        v-for="(event, i) in isFreshAccount || whiteLabelBillboardHide ? [] : events"
         :key="`event-${i}`"
         px-4
         xs12
@@ -233,6 +233,12 @@ export default {
     },
     isWhiteLabelActive() {
       return this.$store.state.isWhiteLabelActive
+    },
+    whiteLabelTopupHide() {
+      return this.$store.state.whiteLabelTopupHide
+    },
+    whiteLabelBillboardHide() {
+      return this.$store.state.whiteLabelBillboardHide
     },
   },
   mounted() {
