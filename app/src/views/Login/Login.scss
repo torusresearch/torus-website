@@ -19,9 +19,9 @@
   }
 
   &__image {
-    width: 90%;
+    width: 85%;
     height: auto;
-    max-width: 600px;
+    max-width: 550px;
   }
 
   .right-panel-header {
@@ -195,5 +195,18 @@ html {
   }
   .v-window__prev {
     display: none;
+  }
+}
+
+::v-deep .v-carousel__controls {
+  background: none;
+  bottom: -15px;
+  .v-btn.v-btn--icon {
+    width: 14px;
+    height: 14px;
+    background-color: var(--v-torusGray1-base);
+    &.v-btn--active {
+      background-color: var(--v-torusGray3-base);
+    }
   }
 }
