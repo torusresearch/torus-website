@@ -847,32 +847,8 @@ export default {
   setErrorMessage(context, payload) {
     prefsController.handleError(payload)
   },
-  async createSmartContractWallet({ dispatch }) {
-    let response = await torusController.scwController.createSmartContractWallet()
-    console.log(response)
-    if (response) {
-      if (response.userContract) {
-        log.info('contract wallet created : ' + response.userContract)
-        dispatch('addWallet', {
-          ethAddress: response.userContract,
-          network: response.networkType,
-          notified: 'true',
-          privKey: null,
-          type: 'SC'
-        })
-      } else if (response.transactionHash) {
-        log.info('contract wallet creation request sent with Hash : ' + response.transactionHash)
-        // let interval = setInterval(checkTransactionReceipt, 1000);
-        // let checkTransactionReceipt = async ()=>{
-        //   let receipt = await torusController.scwController.getTransactionReceipt(response.transactionHash);
-        //   if(receipt) {
-        //     console.log(receipt);
-        //     clearInterval(interval);
-        //   }
-        // }
-      }
-    }
-    return response
+  createSmartContractWallet() {
+    return torusController.scwController.createSmartContractWallet()
   },
   getSmartContractWalletAddress({ state, dispatch }, payload) {
     const arrSCW = Object.keys(state.wallet).filter(x => state.wallet[x].type === 'SC')

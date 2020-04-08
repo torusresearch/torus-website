@@ -35,14 +35,5 @@ export default {
   api: 'https://backend.relayer.dev.tor.us',
   // api: 'https://api.tor.us',
   relayer: 'https://relayer.relayer.dev.tor.us',
-  biconomyBaseURL: 'https://test-api.biconomy.io',
-  biconomyKey: {
-    42: 'torus.b0981c34-19b2-4d05-ab15-1ccb49b78c68',
-    3: 'torus.c0981c34-19b2-4d05-ab15-1ccb49b78c54'
-  },
-  eip712SigVersion: '1',
-  eip712DomainName: 'Biconomy Meta Transaction',
-  DEFAULT_RELAYER_PAYMENT_TOKEN_ADDRESS: '0x0000000000000000000000000000000000000000',
-  DEFAULT_RELAYER_PAYMENT_AMOUNT: 0,
-  providerId: 100
+  biconomyBaseURL: 'https://api.biconomy.io/api'
 }

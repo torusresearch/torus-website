@@ -128,9 +128,6 @@ export default class TorusController extends EventEmitter {
 
     // SCW controller
     this.scwController = new SmartContractWalletController({
-      chainId: chainId,
-      host: host,
-      networkName: networkName,
       provider: this.provider,
       storeProps: this.opts.storeProps,
       getWallet: this.keyringController.exportAccount.bind(this.keyringController)
@@ -730,7 +727,7 @@ export default class TorusController extends EventEmitter {
    */
   setupProviderConnection(outStream, sender) {
     // break violently
-    const senderUrl = new URL(sender)
+    const senderUrl = new URL('https://localhost:3000')
 
     const engine = this.setupProviderEngine({ origin: senderUrl.hostname, location: sender })
 

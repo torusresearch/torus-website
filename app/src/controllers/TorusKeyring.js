@@ -1,9 +1,8 @@
 import { EventEmitter } from 'events'
 import Wallet from 'ethereumjs-wallet'
 import * as ethUtil from 'ethereumjs-util'
-// import sigUtil from 'eth-sig-util'
-const sigUtil = require('eth-sig-util')
 import log from 'loglevel'
+const sigUtil = require('eth-sig-util')
 
 const type = 'Torus Keyring'
 
