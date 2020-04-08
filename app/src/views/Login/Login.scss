@@ -44,7 +44,7 @@
     height: inherit;
     padding: 16px 40px;
     margin-top: 32px;
-    font-weight: bold;
+    font-weight: normal;
     font-size: 14px;
     line-height: 16px;
     color: #5C6C7F;
@@ -59,6 +59,9 @@
       background: none !important;
       box-sizing: border-box;
       box-shadow: 0px 9.40298px 18.806px rgba(46, 91, 255, 0.06);
+    }
+    &.isMobile {
+      padding: 12px 25px;
     }
   }
 }

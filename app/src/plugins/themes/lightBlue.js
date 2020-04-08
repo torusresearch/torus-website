@@ -15,8 +15,8 @@ export default {
   torusBlack: '#252529',
   torusLight: '#FCFCFC',
 
-  // Main background color, supports 2 color gradient
-  text_1: '#FF0000',
+  // Fixed Colors
+  text_1: '#5C6C7F',
   text_2: '#5C6C7F',
   text_3: '#EEF2F4',
   primary: {
