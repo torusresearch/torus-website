@@ -237,7 +237,7 @@ export function significantDigits(number, perc = false, length_ = 2) {
   }
   let depth
   if (input.gte(new BigNumber(1))) {
-    depth = 2
+    depth = length_
   } else {
     depth = length_ - 1 + Math.ceil(Math.log10(new BigNumber('1').div(input).toNumber()))
   }

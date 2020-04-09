@@ -555,11 +555,11 @@ export default {
         const emailObject = {
           from_name: this.$store.state.userInfo.name,
           to_email: this.toAddress,
-          total_amount: this.amount.toString(),
+          total_amount: significantDigits(this.amount.toFormat(5), false, 5),
           token: typeToken.toString(),
           etherscanLink,
           currency: this.selectedCurrency,
-          currencyAmount: this.amount.times(this.getCurrencyTokenRate).toFormat(2) || '',
+          currencyAmount: significantDigits(this.amount.times(this.getCurrencyTokenRate).toFormat(2)) || '',
           tokenImageUrl:
             this.contractType !== CONTRACT_TYPE_ERC721
               ? `https://app.tor.us/images/logos/${this.selectedItemDisplay.logo}`
