@@ -58,7 +58,7 @@
                       type="button"
                       :title="`${t('login.loginWith')} ${verifier}`"
                       @mouseover="loginBtnHover(verifier)"
-                      @click="triggerLogin({ verifier: verifier, calledFromEmbed: false })"
+                      @click="triggerLogin({ verifier: verifier, calledFromEmbed: true })"
                     >
                       <img
                         v-if="verifier === activeButton || $vuetify.breakpoint.xsOnly"
@@ -86,6 +86,8 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'vuex'
+
 import { DISCORD, FACEBOOK, GOOGLE, REDDIT, TWITCH } from '../../utils/enums'
 
 export default {
@@ -99,9 +101,16 @@ export default {
       TWITCH,
       DISCORD,
       activeButton: GOOGLE,
-      loginButtons: [GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD],
       verifierCntInterval: null,
     }
+  },
+  computed: {
+    ...mapState({
+      enabledVerifiers: (state) => state.embedState.enabledVerifiers,
+    }),
+    loginButtons() {
+      return Object.keys(this.enabledVerifiers).filter((x) => this.enabledVerifiers[x])
+    },
   },
   beforeDestroy() {
     if (this.verifierCntInterval) clearInterval(this.verifierCntInterval)
@@ -121,10 +130,9 @@ export default {
     loginBtnHover(verifier) {
       if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
     },
-    triggerLogin(details) {
-      // eslint-disable-next-line no-console
-      console.log(details)
-    },
+    ...mapActions({
+      triggerLogin: 'triggerLogin',
+    }),
   },
 }
 </script>

@@ -115,4 +115,7 @@ export default {
       ...value,
     }
   },
+  setEnabledVerifiers(state, payload) {
+    state.embedState.enabledVerifiers = { ...state.embedState.enabledVerifiers, ...payload }
+  },
 }

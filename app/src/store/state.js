@@ -1,4 +1,16 @@
-import { LOCALE_EN, MAINNET, MAINNET_CODE, MAINNET_DISPLAY_NAME, THEME_LIGHT_BLUE_NAME, USER_INFO_REQUEST_NEW } from '../utils/enums'
+import {
+  DISCORD,
+  FACEBOOK,
+  GOOGLE,
+  LOCALE_EN,
+  MAINNET,
+  MAINNET_CODE,
+  MAINNET_DISPLAY_NAME,
+  REDDIT,
+  THEME_LIGHT_BLUE_NAME,
+  TWITCH,
+  USER_INFO_REQUEST_NEW,
+} from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -44,6 +56,9 @@ const initialState = {
   errorMsg: '',
   successMsg: '',
   iframeMetadata: { origin: '', name: '', icon: '' },
+  embedState: {
+    enabledVerifiers: { [GOOGLE]: true, [FACEBOOK]: true, [REDDIT]: true, [TWITCH]: true, [DISCORD]: true },
+  },
 }
 
 export default initialState
