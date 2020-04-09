@@ -2,10 +2,10 @@ import log from 'loglevel'
 import ObservableStore from 'obs-store'
 
 import config from '../config'
-import { ERROR_TIME, LOCALE_EN, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { ERROR_TIME, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
-import { getIFrameOrigin, storageAvailable } from '../utils/utils'
+import { getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
 
 // By default, poll every 1 minute
 const DEFAULT_INTERVAL = 180 * 1000
@@ -39,7 +39,7 @@ class PreferencesController {
       selectedCurrency: 'USD',
       pastTransactions: [],
       theme,
-      locale: LOCALE_EN,
+      locale: getUserLanguage(),
       billboard: {},
       contacts: [],
       permissions: [],
@@ -119,7 +119,7 @@ class PreferencesController {
           pastTransactions: transactions,
           theme,
           selectedCurrency: defaultCurrency,
-          locale: locale || LOCALE_EN,
+          locale: locale || getUserLanguage(),
           paymentTx: (paymentTx && paymentTx.data) || [],
           permissions,
         })

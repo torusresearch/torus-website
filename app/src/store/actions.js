@@ -642,6 +642,7 @@ export default {
             torus.continueEnable(ethAddress)
           }, 50)
         }
+        // TODO: deprercate rehydrate false for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: false, verifier })
         commit('setLoginInProgress', false)
         torus.updateStaticData({ isUnlocked: true })
@@ -755,6 +756,7 @@ export default {
         ])
         dispatch('updateSelectedAddress', { selectedAddress })
         dispatch('updateNetworkId', { networkId })
+        // TODO: deprercate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })
         log.info('rehydrated wallet')
         torus.updateStaticData({ isUnlocked: true })

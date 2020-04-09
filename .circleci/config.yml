@@ -59,20 +59,6 @@ deploy_function: &deploy_function
         command: |
           . ./scripts/uploadToAws.sh
 jobs:
-  unit-test:
-    <<: *job_common
-    steps:
-      - checkout:
-          path: ~/torus-website
-      - <<: *step_restore_cache
-      - <<: *step_setup_global_packages
-      - run:
-          name: "Run Tests for torus website"
-          command: (npm run build:dev & sleep 60) && (npm start & sleep 10 && npm run test:e2e)
-      - <<: *step_save_cache
-      # Save test results
-      - store_test_results:
-          path: ~/test-results
   test-coverage:
     <<: *job_common
     steps:
@@ -98,7 +84,7 @@ jobs:
       - run:
           name: "Build code for torus website"
           command: |
-            npm version patch -m 'Updating version to %s [skip ci]' && npm run build && . ./scripts/gitPush.sh
+            npm version minor -m 'Updating version to %s [skip ci]' && npm run build && . ./scripts/gitPush.sh
       - persist_to_workspace:
           root: ~/
           paths:
@@ -115,7 +101,7 @@ jobs:
       - run:
           name: "Build code for torus staging website"
           command: |
-            npm version patch -m 'Updating version to %s [skip ci]' && npm run build:staging && . ./scripts/gitPush.sh
+            npm version minor -m 'Updating version to %s [skip ci]' && npm run build:staging && . ./scripts/gitPush.sh
       - persist_to_workspace:
           root: ~/
           paths:
