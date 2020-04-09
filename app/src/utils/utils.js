@@ -5,6 +5,7 @@ import log from 'loglevel'
 import { isAddress } from 'web3-utils'
 
 import config from '../config'
+import languages from '../plugins/locales'
 import {
   ACTIVE,
   DISCORD,
@@ -476,4 +477,11 @@ export const getIFrameOriginObject = () => {
 
 export const fakeStream = {
   write: () => {},
+}
+
+export const getUserLanguage = () => {
+  let userLanguage = window.navigator.userLanguage || window.navigator.language || 'en-US'
+  userLanguage = userLanguage.split('-')
+  userLanguage = Object.prototype.hasOwnProperty.call(languages, userLanguage[0]) ? userLanguage[0] : 'en'
+  return userLanguage
 }
