@@ -183,14 +183,8 @@
   }
   
   &.theme--light {
-    .display-4, .display-3, .display-2, .label {
-      color: var(--v-torusFont1-base);
-    }
-    .display-1, .headline, .title {
-      color: var(--v-torusFont1-base);
-    }
     .body-2 {
-      color: var(--v-torusFont1-base);
+      color: var(--v-torus_1-base);
     }
     .theme--light.v-btn.torus-btn1 {
       @extend .elevation-3;

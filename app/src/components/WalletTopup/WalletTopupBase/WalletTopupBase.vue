@@ -4,7 +4,7 @@
       <v-form ref="paymentForm" v-model="formValid" lazy-validation @submit.prevent>
         <v-layout wrap class="wallet-topup">
           <v-flex xs12>
-            <p class="body-2">
+            <p class="body-2 text_1--text">
               <span class="text-capitalize selected-provider">{{ selectedProvider }}</span>
               {{ t('walletTopUp.description') }}
             </p>
@@ -54,7 +54,7 @@
                 <div class="v-messages">
                   <div class="v-messages__wrapper">
                     <div class="v-messages__message d-flex">
-                      <v-flex class="description">
+                      <v-flex class="description text_2--text">
                         <span v-if="selectedProviderObj.includeFees">{{ t('walletTopUp.includes') }} &nbsp;&nbsp;</span>
                         <span v-else>{{ t('walletTopUp.doesntInclude') }} &nbsp;&nbsp;</span>
                         <span v-html="selectedProviderObj.line2 || ''"></span>
