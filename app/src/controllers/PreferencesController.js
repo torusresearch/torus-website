@@ -2,10 +2,10 @@ import log from 'loglevel'
 import ObservableStore from 'obs-store'
 
 import config from '../config'
-import { ERROR_TIME, LOCALE_EN, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { ERROR_TIME, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
-import { getIFrameOrigin } from '../utils/utils'
+import { getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
 
 // By default, poll every 1 minute
 const DEFAULT_INTERVAL = 180 * 1000
@@ -27,17 +27,24 @@ class PreferencesController {
    * @property {string} store.jwtToken the token used to communicate with torus-backend
    */
   constructor(options = {}) {
+    let theme = THEME_LIGHT_BLUE_NAME
+    if (storageAvailable('localStorage')) {
+      const torusTheme = localStorage.getItem('torus-theme')
+      if (torusTheme) {
+        theme = torusTheme
+      }
+    }
     const initState = {
       selectedAddress: '',
       selectedCurrency: 'USD',
       pastTransactions: [],
-      theme: THEME_LIGHT_BLUE_NAME,
-      locale: LOCALE_EN,
+      theme,
+      locale: getUserLanguage(),
       billboard: {},
       contacts: [],
       permissions: [],
       paymentTx: [],
-      ...options.initState
+      ...options.initState,
     }
 
     this.interval = options.interval || DEFAULT_INTERVAL
@@ -58,8 +65,8 @@ class PreferencesController {
     return {
       headers: {
         Authorization: `Bearer ${this._jwtToken}`,
-        'Content-Type': 'application/json; charset=utf-8'
-      }
+        'Content-Type': 'application/json; charset=utf-8',
+      },
     }
   }
 
@@ -98,26 +105,24 @@ class PreferencesController {
   async sync(callback, errorCallback) {
     try {
       const [user, paymentTx] = await Promise.all([
-        get(`${config.api}/user`, this.headers).catch(_ => {
+        get(`${config.api}/user`, this.headers).catch((_) => {
           if (errorCallback) errorCallback()
         }),
-        getPastOrders({}, this.headers.headers).catch(error => {
+        getPastOrders({}, this.headers.headers).catch((error) => {
           log.error('unable to fetch past orders', error)
-        })
+        }),
       ])
       if (user && user.data) {
-        const { transactions, default_currency: defaultCurrency, contacts, theme, locale, verifier, verifier_id: verifierID, permissions } =
-          user.data || {}
+        const { transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
         this.store.updateState({
           contacts,
           pastTransactions: transactions,
           theme,
           selectedCurrency: defaultCurrency,
-          locale: locale || LOCALE_EN,
+          locale: locale || getUserLanguage(),
           paymentTx: (paymentTx && paymentTx.data) || [],
-          permissions
+          permissions,
         })
-        if (!verifier || !verifierID) this.setVerifier(verifier, verifierID)
         if (callback) return callback(user)
         // this.permissionsController._initializePermissions(permissions)
       }
@@ -137,7 +142,7 @@ class PreferencesController {
         theme,
         verifier,
         verifierId,
-        locale
+        locale,
       },
       this.headers
     )
@@ -150,15 +155,22 @@ class PreferencesController {
       userOrigin = getIFrameOrigin()
     } else userOrigin = window.location.origin
     if (!payload.rehydrate) {
-      post(
-        `${config.api}/user/recordLogin`,
-        {
-          hostname: userOrigin,
-          verifier,
-          verifierId
-        },
-        this.headers
-      )
+      const interval = setInterval(() => {
+        const urlParameters = new URLSearchParams(window.location.search)
+        const referrer = urlParameters.get('referrer') || ''
+        if (window.location.href.includes('referrer') && !referrer) return
+        post(
+          `${config.api}/user/recordLogin`,
+          {
+            hostname: userOrigin,
+            verifier,
+            verifierId,
+            metadata: `referrer:${referrer}`,
+          },
+          this.headers
+        )
+        clearInterval(interval)
+      }, 1000)
     }
   }
 
@@ -188,9 +200,10 @@ class PreferencesController {
     try {
       await patch(`${config.api}/user/locale`, { locale: payload }, this.headers)
       this.store.updateState({ locale: payload })
-      this.handleSuccess('navBar.snackSuccessLocale')
+      // this.handleSuccess('navBar.snackSuccessLocale')
     } catch (error) {
-      this.handleError('navBar.snackFailLocale')
+      // this.handleError('navBar.snackFailLocale')
+      log.error('unable to set locale', error)
     }
   }
 
@@ -248,7 +261,7 @@ class PreferencesController {
   async deleteContact(payload) {
     try {
       const response = await remove(`${config.api}/contact/${payload}`, {}, this.headers)
-      const finalContacts = this.state.contacts.filter(contact => contact.id !== response.data.id)
+      const finalContacts = this.state.contacts.filter((contact) => contact.id !== response.data.id)
       this.store.updateState({ contacts: finalContacts })
       this.handleSuccess('navBar.snackSuccessContactDelete')
     } catch (error) {

@@ -5,6 +5,7 @@ import log from 'loglevel'
 import { isAddress } from 'web3-utils'
 
 import config from '../config'
+import languages from '../plugins/locales'
 import {
   ACTIVE,
   DISCORD,
@@ -34,6 +35,7 @@ import {
   PLATFORM_FIREFOX,
   PLATFORM_OPERA,
   PNG,
+  RAMPNETWORK,
   REDDIT,
   RINKEBY,
   RINKEBY_CHAIN_ID,
@@ -46,7 +48,7 @@ import {
   SIMPLEX,
   SVG,
   THEME_DARK_BLACK_NAME,
-  WYRE
+  WYRE,
 } from './enums'
 
 const { BN } = ethUtil
@@ -60,10 +62,10 @@ const networkToNameMap = {
   [ROPSTEN_CODE]: ROPSTEN_DISPLAY_NAME,
   [RINKEBY_CODE]: RINKEBY_DISPLAY_NAME,
   [KOVAN_CODE]: KOVAN_DISPLAY_NAME,
-  [GOERLI_CODE]: GOERLI_DISPLAY_NAME
+  [GOERLI_CODE]: GOERLI_DISPLAY_NAME,
 }
 
-export const getNetworkDisplayName = key => networkToNameMap[key]
+export const getNetworkDisplayName = (key) => networkToNameMap[key]
 
 /**
  * Checks whether a storage type is available or not
@@ -126,7 +128,7 @@ export const getEnvironmentType = (url = window.location.href) => {
  * @returns {string} the platform ENUM
  *
  */
-export const getPlatform = _ => {
+export const getPlatform = (_) => {
   const ua = navigator.userAgent
   if (ua.search('Firefox') !== -1) {
     return PLATFORM_FIREFOX
@@ -236,7 +238,7 @@ export function significantDigits(number, perc = false, length_ = 2) {
   }
   let depth
   if (input.gte(new BigNumber(1))) {
-    depth = 2
+    depth = length_
   } else {
     depth = length_ - 1 + Math.ceil(Math.log10(new BigNumber('1').div(input).toNumber()))
   }
@@ -254,10 +256,11 @@ export function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', th
 
     const negativeSign = amt < 0 ? '-' : ''
 
-    const i = parseInt((amt = Math.abs(Number(amount) || 0).toFixed(decimals)), 10).toString()
+    const i = Number.parseInt((amt = Math.abs(Number(amount) || 0).toFixed(decimals)), 10).toString()
     const j = i.length > 3 ? i.length % 3 : 0
 
-    return `${negativeSign +
+    return `${
+      negativeSign +
       (j ? i.slice(0, j) + thousands : '') +
       i.slice(j).replace(/(\d{3})(?=\d)/g, `$1${thousands}`) +
       (decimals
@@ -265,7 +268,8 @@ export function formatCurrencyNumber(amount, decimalCount = 2, decimal = '.', th
           Math.abs(amount - i)
             .toFixed(decimals)
             .slice(2)
-        : '')}`
+        : '')
+    }`
   } catch (error) {
     log.error(error)
   }
@@ -292,7 +296,7 @@ export const statusObject = {
   PROCESSING_SIMPPLEX: 'processing',
   SUCCESS_SIMPLEX: 'success',
   payment_simplexcc_approved: 'success',
-  pending_simplexcc_payment_to_partner: 'success'
+  pending_simplexcc_payment_to_partner: 'success',
 }
 
 export function getStatus(status) {
@@ -309,7 +313,7 @@ export async function getEthTxStatus(hash, web3) {
 
 export const broadcastChannelOptions = {
   // type: 'localstorage', // (optional) enforce a type, oneOf['native', 'idb', 'localstorage', 'node']
-  webWorkerSupport: false // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
+  webWorkerSupport: false, // (optional) set this to false if you know that your channel will never be used in a WebWorker (increases performance)
 }
 
 export function validateVerifierId(selectedVerifier, value) {
@@ -355,7 +359,7 @@ export const paymentProviders = {
     validCurrencies: ['USD', 'EUR'],
     validCryptoCurrencies: ['ETH'],
     includeFees: true,
-    api: true
+    api: true,
   },
   [MOONPAY]: {
     line1: 'Credit / Debit Card / Apple Pay',
@@ -370,7 +374,7 @@ export const paymentProviders = {
     validCurrencies: ['USD', 'EUR', 'GBP'],
     validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT'],
     includeFees: true,
-    api: true
+    api: true,
   },
   [WYRE]: {
     line1: 'Apple Pay/Debit Card',
@@ -385,33 +389,34 @@ export const paymentProviders = {
     validCurrencies: ['USD'],
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
     includeFees: false,
-    api: true
-  }
-  // [CRYPTO]: {
-  //   line1: 'Credit Card',
-  //   line2: 'Varies',
-  //   line3: 'N/A',
-  //   line4: 'ETH, tokens',
-  //   status: ACTIVE,
-  //   logoExtension: PNG,
-  //   supportPage: 'https://help.crypto.com/en/',
-  //   minOrderValue: 10,
-  //   maxOrderValue: 1000,
-  //   validCurrencies: ['USD'],
-  //   validCryptoCurrencies: ['ETH'],
-  //   includeFees: true,
-  //   api: false
-  // }
+    api: true,
+  },
+  [RAMPNETWORK]: {
+    line1: 'Bank transfer',
+    line2: '0% - 2.5%',
+    line3: '10,000€/purchase, 10,000€/mo',
+    line4: 'ETH, DAI, USDC',
+    status: ACTIVE,
+    logoExtension: SVG,
+    supportPage: 'https://instant.ramp.network/',
+    minOrderValue: 1,
+    maxOrderValue: 10000,
+    validCurrencies: ['EUR', 'GBP'],
+    validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
+    includeFees: true,
+    api: true,
+    receiveHint: 'You don’t need an ID to complete this transaction!',
+  },
 }
 
 export function getPaymentProviders(theme) {
-  return Object.keys(paymentProviders).map(x => {
+  return Object.keys(paymentProviders).map((x) => {
     const item = paymentProviders[x]
     return {
       ...item,
       name: x,
       logo: theme === THEME_DARK_BLACK_NAME ? `${x}-logo-white.${item.logoExtension}` : `${x}-logo.${item.logoExtension}`,
-      link: `/wallet/topup/${x}`
+      link: `/wallet/topup/${x}`,
     }
   })
 }
@@ -431,7 +436,7 @@ export function formatTxMetaForRpcResult(txMeta) {
     value: txMeta.txParams.value || '0x0',
     v: txMeta.v,
     r: txMeta.r,
-    s: txMeta.s
+    s: txMeta.s,
   }
 }
 
@@ -445,12 +450,12 @@ export const standardNetworkId = {
   [RINKEBY_CODE.toString()]: RINKEBY_CHAIN_ID,
   [KOVAN_CODE.toString()]: KOVAN_CHAIN_ID,
   [GOERLI_CODE.toString()]: GOERLI_CHAIN_ID,
-  [MATIC_CODE.toString()]: MATIC_CHAIN_ID
+  [MATIC_CODE.toString()]: MATIC_CHAIN_ID,
 }
 
 export function selectChainId(network, provider) {
   const { chainId } = provider
-  return standardNetworkId[network] || `0x${parseInt(chainId, 10).toString(16)}`
+  return standardNetworkId[network] || `0x${Number.parseInt(chainId, 10).toString(16)}`
 }
 
 export const isMain = window.location === window.parent.location && window.location.origin === config.baseUrl
@@ -471,5 +476,12 @@ export const getIFrameOriginObject = () => {
 }
 
 export const fakeStream = {
-  write: () => {}
+  write: () => {},
+}
+
+export const getUserLanguage = () => {
+  let userLanguage = window.navigator.userLanguage || window.navigator.language || 'en-US'
+  userLanguage = userLanguage.split('-')
+  userLanguage = Object.prototype.hasOwnProperty.call(languages, userLanguage[0]) ? userLanguage[0] : 'en'
+  return userLanguage
 }

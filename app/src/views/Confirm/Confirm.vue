@@ -3,7 +3,7 @@
     <template v-if="type === TX_TRANSACTION">
       <v-layout wrap align-center mx-6 mb-6>
         <v-flex xs12 class="text_1--text font-weight-bold headline float-left" :class="isLightHeader ? 'text--lighten-3' : ''">
-          {{ t('dappTransfer.permission') }}
+          {{ t('dappTransfer.confirmation') }}
         </v-flex>
         <v-flex xs12>
           <NetworkDisplay :store-network-type="network"></NetworkDisplay>
@@ -24,6 +24,13 @@
             <div>
               <img class="mr-2 float-left" :src="assetDetails.logo" height="35px" />
               <span class="subtitle-2 float-left text_2--text asset-name">{{ assetDetails.name }}</span>
+            </div>
+          </v-flex>
+        </template>
+        <template v-else-if="transactionCategory === TOKEN_METHOD_APPROVE">
+          <v-flex xs12 mb-4 mx-6>
+            <div class="subtitle-1 float-left">
+              {{ `${t('dappPermission.allow')} ${origin.hostname} ${t('dappTransfer.toSpend')} ${selectedToken} ${t('dappTransfer.onYourBehalf')}?` }}
             </div>
           </v-flex>
         </template>
@@ -65,7 +72,7 @@
             <span class="subtitle-2">{{ t('dappTransfer.constOfTrans') }}</span>
             <span class="subtitle-1 float-right primary--text font-weight-bold">{{ costOfTransaction }}</span>
           </div>
-          <div v-if="isOtherToken" class="clearfix">
+          <div v-if="isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE" class="clearfix">
             <span class="subtitle-1 float-right primary--text font-weight-bold">+ {{ significantDigits(gasCost) }} ETH</span>
           </div>
           <div class="caption float-right clearfix">{{ costOfTransactionConverted }}</div>
@@ -110,7 +117,7 @@
                   </v-flex>
                   <v-flex v-if="txData" xs12 mt-4>
                     <div class="mb-1">Hex {{ t('dappTransfer.data') }}:</div>
-                    <v-card flat color="background_3" style="word-break: break-all">
+                    <v-card flat color="background_3" style="word-break: break-all;">
                       <v-card-text>{{ txData }}</v-card-text>
                     </v-card>
                   </v-flex>
@@ -166,7 +173,7 @@
     <template v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE || type === TX_TYPED_MESSAGE">
       <!-- <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" /> -->
       <v-layout wrap align-center mx-6 mb-6>
-        <v-flex xs12 class="text_1--text font-weight-bold headline float-left">{{ t('dappTransfer.permissions') }}</v-flex>
+        <v-flex xs12 class="text_1--text font-weight-bold headline float-left">{{ t('dappTransfer.permission') }}</v-flex>
         <v-flex xs12>
           <NetworkDisplay :store-network-type="network"></NetworkDisplay>
         </v-flex>
@@ -189,7 +196,7 @@
 
         <v-flex xs12 mt-0 mb-n1 mx-6 class="note-list">
           <div class="d-flex">
-            <div class="mr-5 note-list__icon">
+            <div class="mr-2 note-list__icon">
               <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
             </div>
             <div class="caption text_2--text">{{ t('dappTransfer.dataSmall') }}</div>
@@ -201,7 +208,7 @@
               <v-list-item-content flat class="pa-1 background" :class="$vuetify.theme.dark ? 'lighten-4' : 'lighten-3'">
                 <v-card flat class="body-2 text-left pa-2 word-break typedMessageBox">
                   <v-expansion-panels v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE">
-                    <p :class="$vuetify.theme.dark ? 'text_1--text' : 'text_2--text'" style="text-align:left">{{ message }}</p>
+                    <p :class="$vuetify.theme.dark ? 'text_1--text' : 'text_2--text'" style="text-align: left;">{{ message }}</p>
                   </v-expansion-panels>
 
                   <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && !Array.isArray(typedMessages)">
@@ -268,7 +275,7 @@ import {
   TX_MESSAGE,
   TX_PERSONAL_MESSAGE,
   TX_TRANSACTION,
-  TX_TYPED_MESSAGE
+  TX_TYPED_MESSAGE,
 } from '../../utils/enums'
 import { get } from '../../utils/httpHelpers'
 // import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
@@ -285,7 +292,7 @@ export default {
     TransferConfirm,
     // PermissionConfirm,
     NetworkDisplay,
-    ShowToolTip
+    ShowToolTip,
   },
   data() {
     return {
@@ -319,7 +326,7 @@ export default {
       network: {
         networkName: '',
         host: '',
-        chainId: ''
+        chainId: '',
       },
       transactionCategory: '',
       dollarValue: new BigNumber('0'),
@@ -340,7 +347,7 @@ export default {
       TX_TRANSACTION,
       TX_TYPED_MESSAGE,
       TX_PERSONAL_MESSAGE,
-      TX_MESSAGE
+      TX_MESSAGE,
     }
   },
   computed: {
@@ -421,7 +428,7 @@ export default {
       }
     },
     costOfTransaction() {
-      if ([TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].includes(this.transactionCategory)) {
+      if ([TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].includes(this.transactionCategory)) {
         return `${this.displayAmountValue}`
       }
       return `${this.totalEthCostDisplay} ETH`
@@ -431,9 +438,10 @@ export default {
       // `+ ${significantDigits(this.gasCost)}`
     },
     costOfTransactionConverted() {
-      const totalCost = this.isOtherToken
-        ? significantDigits(this.totalUsdCost + this.amountTokenValueConverted.toNumber(), false, 5)
-        : this.totalUsdCost
+      let cost = this.totalUsdCost
+      if (this.transactionCategory !== TOKEN_METHOD_APPROVE) cost += this.amountTokenValueConverted.toNumber()
+
+      const totalCost = this.isOtherToken ? significantDigits(cost, false, 5) : this.totalUsdCost
       return `~ ${totalCost} ${this.selectedCurrency}`
     },
     imageType() {
@@ -448,10 +456,10 @@ export default {
     },
     getCurrencyRate() {
       const ethConverted = this.getCurrencyMultiplier
-      const tokenPriceConverted = this.isOtherToken ? this.tokenPrice : ethConverted
+      const tokenPriceConverted = this.isOtherToken ? this.tokenPrice.times(ethConverted) : ethConverted
       const selectedToken = this.isOtherToken ? this.selectedToken : 'ETH'
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
-    }
+    },
   },
   watch: {
     gasPrice(newGasPrice, oldGasPrice) {
@@ -468,7 +476,7 @@ export default {
           this.topUpErrorShow = true
         }
       }
-    }
+    },
   },
   mounted() {
     const queryParameters = new URLSearchParams(window.location.search)
@@ -476,7 +484,7 @@ export default {
     const queryParameterId = queryParameters.get('id')
     this.channel = `torus_channel_${instanceId}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
-    bc.addEventListener('message', async ev => {
+    bc.addEventListener('message', async (ev) => {
       if (ev.name !== 'send-params') return
       const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, currencyData, network } = ev.data || {}
       this.selectedCurrency = selectedCurrency
@@ -508,9 +516,9 @@ export default {
         // Get ABI for method
         let txDataParameters = ''
         if (contractParams.erc721) {
-          txDataParameters = collectibleABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          txDataParameters = collectibleABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
         } else if (contractParams.erc20) {
-          txDataParameters = tokenABI.find(item => item.name && item.name.toLowerCase() === transactionCategory) || ''
+          txDataParameters = tokenABI.find((item) => item.name && item.name.toLowerCase() === transactionCategory) || ''
         }
         // Get Params from method type ABI
         let amountTo
@@ -558,12 +566,12 @@ export default {
             const url = `https://api.opensea.io/api/v1/asset/${checkSummedTo}/${this.amountValue}`
             assetDetails = await get(`${config.api}/opensea?url=${url}`, {
               headers: {
-                Authorization: `Bearer ${jwtToken}`
-              }
+                Authorization: `Bearer ${jwtToken}`,
+              },
             })
             this.assetDetails = {
               name: assetDetails.data.name || '',
-              logo: assetDetails.data.image_thumbnail_url || ''
+              logo: assetDetails.data.image_thumbnail_url || '',
             }
           } catch (error) {
             log.info(error)
@@ -608,7 +616,7 @@ export default {
       const gasHex = `0x${this.gasPrice.times(weiInGwei).toString(16)}`
       await bc.postMessage({
         name: 'tx-result',
-        data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id, txType: this.type }
+        data: { type: 'confirm-transaction', gasPrice: gasHex, id: this.id, txType: this.type },
       })
       bc.close()
     },
@@ -618,7 +626,7 @@ export default {
       bc.close()
     },
     topUp() {
-      this.$router.push({ path: '/wallet/topup' }).catch(_ => {})
+      this.$router.push({ path: '/wallet/topup' }).catch((_) => {})
     },
     onSelectSpeed(data) {
       this.speedSelected = data.speedSelected
@@ -647,8 +655,8 @@ export default {
     significantDigits,
     getHeaderByDapp() {
       return this.t('dappTransfer.contractInteraction')
-    }
-  }
+    },
+  },
 }
 </script>
 

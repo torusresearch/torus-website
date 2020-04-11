@@ -2,7 +2,7 @@ const mergeMiddleware = require('json-rpc-engine/src/mergeMiddleware')
 const createScaffoldMiddleware = require('json-rpc-engine/src/createScaffoldMiddleware')
 const createWalletSubprovider = require('eth-json-rpc-middleware/wallet')
 const createAsyncMiddleware = require('json-rpc-engine/src/createAsyncMiddleware')
-const { formatTxMetaForRpcResult } = require('../utils/utils')
+const { formatTxMetaForRpcResult } = require('./utils')
 
 export default function createMetamaskMiddleware({
   version,
@@ -14,13 +14,13 @@ export default function createMetamaskMiddleware({
   processTypedMessageV4,
   processPersonalMessage,
   getPendingNonce,
-  getPendingTransactionByHash
+  getPendingTransactionByHash,
 }) {
   const metamaskMiddleware = mergeMiddleware([
     createScaffoldMiddleware({
       // staticSubprovider
       eth_syncing: false,
-      web3_clientVersion: `MetaMask/v${version}`
+      web3_clientVersion: `MetaMask/v${version}`,
     }),
     createWalletSubprovider({
       getAccounts,
@@ -29,11 +29,11 @@ export default function createMetamaskMiddleware({
       processTypedMessage,
       processTypedMessageV3,
       processTypedMessageV4,
-      processPersonalMessage
+      processPersonalMessage,
     }),
     createRequestAccountsMiddleware({ getAccounts }),
     createPendingNonceMiddleware({ getPendingNonce }),
-    createPendingTxMiddleware({ getPendingTransactionByHash })
+    createPendingTxMiddleware({ getPendingTransactionByHash }),
   ])
   return metamaskMiddleware
 }

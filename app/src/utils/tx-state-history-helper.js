@@ -6,7 +6,7 @@ export default {
   generateHistoryEntry,
   replayHistory,
   snapshotFromTxMeta,
-  migrateFromSnapshotsToDiffs
+  migrateFromSnapshotsToDiffs,
 }
 
 /**

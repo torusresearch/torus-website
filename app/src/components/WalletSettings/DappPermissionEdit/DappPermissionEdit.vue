@@ -213,26 +213,26 @@ export default {
         interaction: false,
         ercTransactions: false,
         changeNetwork: false,
-        sendEth: false
+        sendEth: false,
       },
       amount: {
         maxTenUsd: false,
         maxHundredThousandUsd: false,
         other: false,
-        customMaxValue: ''
+        customMaxValue: '',
       },
       validity: {
         oneHour: false,
         oneWeek: false,
         oneMonth: false,
-        oneYear: false
-      }
+        oneYear: false,
+      },
     }
   },
   methods: {
     onCancel() {
       this.$emit('onCancel')
-    }
-  }
+    },
+  },
 }
 </script>

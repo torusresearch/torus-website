@@ -2,12 +2,12 @@
   <v-card class="account-import">
     <v-container>
       <v-layout wrap my-4>
-        <v-flex xs12 px-4>
+        <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
           <div class="font-weight-bold headline">{{ t('accountMenu.importAccount') }}</div>
         </v-flex>
-        <v-flex xs12 px-4>
+        <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
           <v-flex xs12 mt-4>
-            <span class="subtitle-2">{{ t('accountMenu.selectImportType') }}:</span>
+            <span class="subtitle-2">{{ t('accountMenu.selectImportType') }}</span>
             <v-select
               v-model="selectedType"
               outlined
@@ -23,7 +23,7 @@
           <v-flex xs12>
             <v-form ref="privateKeyForm" v-model="privateKeyFormValid" lazy-validation @submit.prevent="">
               <v-layout wrap>
-                <v-flex xs12 px-4>
+                <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <span class="subtitle-2">{{ t('accountMenu.inputPrivateKey') }}:</span>
                   <v-text-field
                     v-model="privateKey"
@@ -38,10 +38,10 @@
                     @click:append="togglePrivShow"
                   ></v-text-field>
                 </v-flex>
-                <v-flex v-show="canShowError" xs12 px-4>
+                <v-flex v-show="canShowError" xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <span class="red--text">{{ error }}</span>
                 </v-flex>
-                <v-flex xs12 px-4 class="text-right">
+                <v-flex xs12 class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <v-spacer></v-spacer>
                   <v-btn text @click="onClose">
                     {{ t('accountMenu.back') }}
@@ -64,10 +64,10 @@
           <v-flex xs12>
             <v-form ref="jsonFileForm" v-model="jsonFileFormValid" lazy-validation @submit.prevent="">
               <v-layout wrap>
-                <v-flex xs12 px-4>
-                  <v-layout align-center justify-space-between>
+                <v-flex xs12 mb-2 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
+                  <v-layout wrap align-center justify-space-between>
                     <v-flex grow>
-                      {{ t('accountMenu.uploadJsonLabel') }}
+                      <span>{{ t('accountMenu.uploadJsonLabel') }}</span>
                       <HelpTooltip :title="t('accountMenu.uploadJsonTitle')" :description="t('accountMenu.uploadJsonDesc')"></HelpTooltip>
                     </v-flex>
                     <v-flex shrink>
@@ -80,7 +80,7 @@
                   </v-layout>
                   <div v-show="selectedFileName !== ''" class="text-right">{{ t('accountMenu.selectedFile') }}: {{ selectedFileName }}</div>
                 </v-flex>
-                <v-flex xs12 px-4>
+                <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <span class="subtitle-2">{{ t('accountMenu.enterPassword') }}:</span>
                   <v-text-field
                     v-model="jsonPassword"
@@ -93,10 +93,10 @@
                     @click:append="toggleJsonPasswordShow"
                   ></v-text-field>
                 </v-flex>
-                <v-flex v-show="canShowError" xs12 px-4>
+                <v-flex v-show="canShowError" xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <span class="red--text">{{ error }}</span>
                 </v-flex>
-                <v-flex xs12 px-4 class="text-right">
+                <v-flex xs12 class="text-right" :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <v-spacer></v-spacer>
                   <v-btn text @click="onClose">
                     {{ t('accountMenu.back') }}
@@ -133,21 +133,11 @@ const WalletWorker = require('worker-loader!../../../utils/wallet.worker.js')
 
 export default {
   components: {
-    HelpTooltip
+    HelpTooltip,
   },
   data() {
     return {
       selectedType: 'private',
-      options: [
-        {
-          name: this.t('accountMenu.privateKey'),
-          value: 'private'
-        },
-        {
-          name: this.t('accountMenu.keystore'),
-          value: 'keystore'
-        }
-      ],
       privateKey: '',
       jsonPassword: '',
       privateKeyFormValid: true,
@@ -161,9 +151,23 @@ export default {
       isLoadingPrivate: false,
       isLoadingKeystore: false,
       rules: {
-        required: value => !!value || this.t('accountMenu.required')
-      }
+        required: (value) => !!value || this.t('accountMenu.required'),
+      },
     }
+  },
+  computed: {
+    options() {
+      return [
+        {
+          name: this.t('accountMenu.privateKey'),
+          value: 'private',
+        },
+        {
+          name: this.t('accountMenu.keystore'),
+          value: 'keystore',
+        },
+      ]
+    },
   },
   methods: {
     importViaPrivateKey() {
@@ -172,13 +176,13 @@ export default {
 
         this.$store
           .dispatch('importAccount', { keyData: [this.privateKey], strategy: 'Private Key' })
-          .then(privKey => {
+          .then((privKey) => {
             this.onClose()
             this.isLoadingPrivate = false
             this.informClients(privKey)
             this.$refs.privateKeyForm.resetValidation()
           })
-          .catch(error => {
+          .catch((error) => {
             this.setErrorState(error)
           })
       }
@@ -190,8 +194,8 @@ export default {
         accountImportChannel.postMessage({
           data: {
             name: 'imported_account',
-            payload: { privKey }
-          }
+            payload: { privKey },
+          },
         })
       }
     },
@@ -209,34 +213,34 @@ export default {
         if (!window.Worker) {
           this.$store
             .dispatch('importAccount', { keyData: [keyData, this.jsonPassword], strategy: 'JSON File' })
-            .then(privKey => {
+            .then((privKey) => {
               this.onClose()
               this.isLoadingKeystore = false
               this.informClients(privKey)
               this.$refs.jsonFileForm.resetValidation()
             })
-            .catch(error => {
+            .catch((error) => {
               this.setErrorState(error)
             })
         } else {
           const worker = new WalletWorker()
           worker.postMessage({ type: 'unlockWallet', data: [keyData, this.jsonPassword] })
-          worker.addEventListener('message', event => {
+          worker.addEventListener('message', (event) => {
             const { _privKey: stringPrivateKey } = event.data
             const privKey = ethUtil.stripHexPrefix(ethUtil.bufferToHex(Buffer.from(stringPrivateKey)))
             this.$store
               .dispatch('finishImportAccount', { privKey })
-              .then(privateKey => {
+              .then((privateKey) => {
                 this.onClose()
                 this.isLoadingKeystore = false
                 this.informClients(privateKey)
                 this.$refs.jsonFileForm.resetValidation()
               })
-              .catch(error => {
+              .catch((error) => {
                 this.setErrorState(error)
               })
           })
-          worker.addEventListener('error', error => {
+          worker.addEventListener('error', (error) => {
             this.setErrorState(error)
           })
         }
@@ -279,8 +283,8 @@ export default {
     },
     onClose() {
       this.$emit('onClose')
-    }
-  }
+    },
+  },
 }
 </script>
 

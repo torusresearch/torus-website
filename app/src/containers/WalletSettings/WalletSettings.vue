@@ -86,13 +86,16 @@ export default {
     PrivacySecurity,
     ContactList,
     Network,
-    Display
+    Display,
   },
   data() {
     return {
-      panel: [0, 1, 2, 3]
+      panel: [0, 1, 2, 3],
     }
-  }
+  },
+  mounted() {
+    this.$vuetify.goTo(0)
+  },
 }
 </script>
 

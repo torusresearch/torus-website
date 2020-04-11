@@ -62,7 +62,7 @@ import { broadcastChannelOptions, capitalizeFirstLetter } from '../../utils/util
 export default {
   name: 'UserInfoRequest',
   components: {
-    UserInfoScreenLoader
+    UserInfoScreenLoader,
     // PermissionConfirm
   },
   data() {
@@ -71,21 +71,21 @@ export default {
       type: 'none',
       message: '',
       verifier: '',
-      channel: ''
+      channel: '',
     }
   },
   computed: {
     accessText() {
       return this.t(`dappInfo.toAccess${capitalizeFirstLetter(this.verifier)}`)
-    }
+    },
   },
   mounted() {
     this.channel = `user_info_request_channel_${new URLSearchParams(window.location.search).get('instanceId')}`
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
-    bc.addEventListener('message', async ev => {
+    bc.addEventListener('message', async (ev) => {
       const {
         payload: { verifier = '', message = '' },
-        origin = ''
+        origin = '',
       } = ev.data
       this.origin = origin // origin of tx: website url
       this.type = 'userInfo'
@@ -105,8 +105,8 @@ export default {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({ data: { type: 'user-info-request-result', approve: false } })
       bc.close()
-    }
-  }
+    },
+  },
 }
 </script>
 

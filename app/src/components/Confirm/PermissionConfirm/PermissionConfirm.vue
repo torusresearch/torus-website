@@ -9,7 +9,7 @@
       </v-flex>
       <v-flex mx-6 mb-4 xs12>
         <v-layout align="top" no-gutters>
-          <v-flex xs3 style="position: relative">
+          <v-flex xs3 style="position: relative;">
             <div class="logo-container d-flex align-center justify-center float-right">
               <!-- Update with proper logo -->
               <img class="logo-from" :src="require(`../../../../public/images/logos/augur_logo.png`)" />
@@ -110,7 +110,7 @@ export default {
 
       finalNetwork = !this.$store.state.networkType.networkName ? this.$store.state.networkType.host : this.$store.state.networkType.networkName
       return finalNetwork
-    }
+    },
   },
   methods: {
     triggerSign() {
@@ -118,8 +118,8 @@ export default {
     },
     triggerDeny() {
       this.$emit('triggerDeny')
-    }
-  }
+    },
+  },
 }
 </script>
 

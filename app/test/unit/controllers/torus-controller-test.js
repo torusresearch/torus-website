@@ -17,7 +17,7 @@ const CUSTOM_RPC_URL = 'http://localhost:8545'
 
 const testAccount = {
   key: '08506248462eadf53f05b6c3577627071757644b3a0547315788357ec93e7b77',
-  address: '0xa12164fed66719297d2cf407bb314d07feb12c02'
+  address: '0xa12164fed66719297d2cf407bb314d07feb12c02',
 }
 
 describe('MetaMaskController', () => {
@@ -31,7 +31,7 @@ describe('MetaMaskController', () => {
 
     nock('https://min-api.cryptocompare.com')
       .get('/data/price')
-      .query(url => url.includes('ETH') && url.includes('USD'))
+      .query((url) => url['fsym'] === 'ETH' && url['tsyms'] === 'USD')
       .reply(
         200,
         '{"base": "ETH", "quote": "USD", "bid": 288.45, "ask": 288.46, "volume": 112888.17569277, "exchange": "bitfinex", "total_volume": 272175.00106721005, "num_exchanges": 8, "timestamp": 1506444677}'
@@ -39,41 +39,35 @@ describe('MetaMaskController', () => {
 
     nock('https://min-api.cryptocompare.com')
       .get('/data/price')
-      .query(url => url.includes('ETH') && url.includes('JPY'))
+      .query((url) => url['fsym'] === 'ETH' && url['tsyms'] === 'JPY')
       .reply(
         200,
         '{"base": "ETH", "quote": "JPY", "bid": 32300.0, "ask": 32400.0, "volume": 247.4616071, "exchange": "kraken", "total_volume": 247.4616071, "num_exchanges": 1, "timestamp": 1506444676}'
       )
 
-    nock('https://api.infura.io')
-      .persist()
-      .get(/.*/)
-      .reply(200)
+    nock('https://api.infura.io').persist().get(/.*/).reply(200)
 
-    nock('https://min-api.cryptocompare.com')
-      .persist()
-      .get(/.*/)
-      .reply(200, '{"JPY":12415.9}')
+    nock('https://min-api.cryptocompare.com').persist().get(/.*/).reply(200, '{"JPY":12415.9}')
 
     metamaskController = new MetaMaskController({
       sessionCachedNetwork: {
         host: 'mainnet',
         networkName: 'Main Ethereum Network',
-        chainId: 1
+        chainId: 1,
       },
       showUnapprovedTx: noop,
       showUnconfirmedMessage: noop,
       encryptor: {
-        encrypt: function(_, object) {
+        encrypt: function (_, object) {
           this.object = object
           return Promise.resolve('mock-encrypted')
         },
-        decrypt: function() {
+        decrypt: function () {
           return Promise.resolve(this.object)
-        }
+        },
       },
       initState: clone(firstTimeState),
-      platform: { showTransactionNotification: () => {} }
+      platform: { showTransactionNotification: () => {} },
     })
     // disable diagnostics
     metamaskController.diagnostics = null
@@ -88,8 +82,8 @@ describe('MetaMaskController', () => {
     sandbox.restore()
   })
 
-  describe('#getAccounts', function() {
-    it('returns first address when dapp calls web3.eth.getAccounts', async function() {
+  describe('#getAccounts', function () {
+    it('returns first address when dapp calls web3.eth.getAccounts', async function () {
       await metamaskController.addAccount(testAccount.key, testAccount.address)
       await metamaskController.setSelectedAccount(testAccount.address)
       const res = await metamaskController.networkController._baseProviderParams.getAccounts()
@@ -108,10 +102,10 @@ describe('MetaMaskController', () => {
               { gasPrices: ['0x3b9aca00', '0x174876e800'] },
               { gasPrices: ['0x3b9aca00', '0x174876e800'] },
               { gasPrices: ['0x174876e800', '0x174876e800'] },
-              { gasPrices: ['0x174876e800', '0x174876e800'] }
-            ]
-          })
-        }
+              { gasPrices: ['0x174876e800', '0x174876e800'] },
+            ],
+          }),
+        },
       }
 
       const gasPrice = metamaskController.getGasPrice()
@@ -134,7 +128,7 @@ describe('MetaMaskController', () => {
       assert.strictEqual(balance, gotten)
     })
 
-    it('should ask the network for a balance when not known by accountTracker', async function() {
+    it('should ask the network for a balance when not known by accountTracker', async function () {
       const accounts = {}
       const balance = '0x14ced5122ce0a000'
       const ethQuery = new EthQuery()
@@ -159,7 +153,7 @@ describe('MetaMaskController', () => {
       getApi = metamaskController.getApi()
     })
 
-    it('getState', done => {
+    it('getState', (done) => {
       getApi.getState((error, res) => {
         if (error) {
           done(error)
@@ -172,18 +166,18 @@ describe('MetaMaskController', () => {
     })
   })
 
-  describe('#setCustomRpc', function() {
+  describe('#setCustomRpc', function () {
     let rpcTarget
 
-    beforeEach(function() {
+    beforeEach(function () {
       rpcTarget = metamaskController.setCustomRpc(CUSTOM_RPC_URL)
     })
 
-    it('returns custom RPC that when called', async function() {
+    it('returns custom RPC that when called', async function () {
       assert.strictEqual(await rpcTarget, CUSTOM_RPC_URL)
     })
 
-    it('changes the network controller rpc', function() {
+    it('changes the network controller rpc', function () {
       const networkControllerState = metamaskController.networkController.store.getState()
       assert.strictEqual(networkControllerState.provider.rpcTarget, CUSTOM_RPC_URL)
     })
@@ -242,7 +236,7 @@ describe('MetaMaskController', () => {
 
       messageParameters = {
         from: address,
-        data
+        data,
       }
 
       const promise = metamaskController.newUnsignedMessage(messageParameters)
@@ -277,7 +271,7 @@ describe('MetaMaskController', () => {
       assert.strictEqual(messages[0].status, 'rejected')
     })
 
-    it('errors when signing a message', async function() {
+    it('errors when signing a message', async function () {
       try {
         await metamaskController.signMessage(messages[0].msgParams)
       } catch (error) {
@@ -289,7 +283,7 @@ describe('MetaMaskController', () => {
   describe('#newUnsignedPersonalMessage', () => {
     it('errors with no from in msgParams', async () => {
       const messageParameters = {
-        data
+        data,
       }
       try {
         await metamaskController.newUnsignedPersonalMessage(messageParameters)
@@ -316,7 +310,7 @@ describe('MetaMaskController', () => {
 
       messageParameters = {
         from: address,
-        data
+        data,
       }
 
       const promise = metamaskController.newUnsignedPersonalMessage(messageParameters)
@@ -351,7 +345,7 @@ describe('MetaMaskController', () => {
       assert.strictEqual(personalMessages[0].status, 'rejected')
     })
 
-    it('errors when signing a message', async function() {
+    it('errors when signing a message', async function () {
       await metamaskController.signPersonalMessage(personalMessages[0].msgParams)
       assert.strictEqual(metamaskPersonalMsgs[messageId].status, 'signed') // Not signed cause no keyringcontroller
       log.info(metamaskPersonalMsgs[messageId].rawSig)
@@ -362,10 +356,10 @@ describe('MetaMaskController', () => {
     })
   })
 
-  describe('#setupUntrustedCommunication', function() {
-    it('adds a origin to requests with untrusted communication', function(done) {
+  describe('#setupUntrustedCommunication', function () {
+    it('adds a origin to requests with untrusted communication', function (done) {
       const messageSender = {
-        url: 'https://mycrypto.com'
+        url: 'https://mycrypto.com',
       }
       const streamTest = createThoughStream((chunk, _, cb) => {
         if (chunk.data && chunk.data.method) {
@@ -381,12 +375,12 @@ describe('MetaMaskController', () => {
         id: 1999133338649204,
         jsonrpc: '2.0',
         params: ['mock tx params'],
-        method: 'eth_sendTransaction'
+        method: 'eth_sendTransaction',
       }
       streamTest.write(
         {
           name: 'provider',
-          data: message
+          data: message,
         },
         null,
         () => {
@@ -395,8 +389,8 @@ describe('MetaMaskController', () => {
               'mock tx params',
               {
                 ...message,
-                origin: 'mycrypto.com'
-              }
+                origin: 'mycrypto.com',
+              },
             ])
             done()
           })
@@ -434,11 +428,11 @@ describe('MetaMaskController', () => {
       const addAccount = sinon.fake()
       sandbox.replace(metamaskController, 'keyringController', {
         deserialize,
-        addAccount
+        addAccount,
       })
       sandbox.replace(metamaskController, 'accountTracker', {
         syncWithAddresses,
-        addAccounts
+        addAccounts,
       })
 
       const oldState = metamaskController.getState()

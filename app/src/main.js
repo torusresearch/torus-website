@@ -42,15 +42,15 @@ Vue.mixin({
       if (data === '') return data
       const translated = vuetify.framework.lang.t(`$vuetify.${data}`)
       return translated.replace('$vuetify.', '')
-    }
-  }
+    },
+  },
 })
 
 new Vue({
   router,
   store,
-  render: h => h(App),
-  vuetify
+  render: (h) => h(App),
+  vuetify,
 }).$mount('#app')
 
 // window.Vue = vue

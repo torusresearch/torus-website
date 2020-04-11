@@ -21,11 +21,11 @@ class ConfirmHandler {
     this.confirmWindow = new PopupHandler({
       url: finalUrl,
       target: '_blank',
-      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500'
+      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500',
     })
     this.confirmWindow.open()
 
-    this.bc.addEventListener('message', this.handle)
+    this.bc.addEventListener('message', this.handle.bind(this))
     this.handleConfirm = handleConfirm
     this.handleDeny = handleDeny
 
@@ -52,8 +52,8 @@ class ConfirmHandler {
         tokenRates: this.tokenRates,
         jwtToken: this.jwtToken,
         currencyData: this.currencyData,
-        network: this.networkType
-      }
+        network: this.networkType,
+      },
     })
   }
 
@@ -68,8 +68,8 @@ class ConfirmHandler {
         tokenRates: this.tokenRates,
         jwtToken: this.jwtToken,
         currencyData: this.currencyData,
-        network: this.networkType
-      }
+        network: this.networkType,
+      },
     })
   }
 

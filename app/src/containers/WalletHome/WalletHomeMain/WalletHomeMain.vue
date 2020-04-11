@@ -53,6 +53,17 @@
               </v-card-text>
             </v-card>
           </v-flex>
+          <v-flex v-for="(event, i) in events" :key="`event-${i}`" xs12 sm6 px-4 my-4>
+            <PromotionCard
+              :title="event.eventName"
+              :image-path="event.imageUrl"
+              :image-dark-path="event.imageDarkUrl"
+              :subtitle="event.description"
+              :details-link="event.callToActionLink"
+              :details-link-two="event.callToActionLinkTwo"
+              :details-text="event.callToActionText"
+            ></PromotionCard>
+          </v-flex>
           <v-flex v-if="isFreshAccount" xs12 sm6 px-4 my-4>
             <v-card class="card-shadow">
               <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
@@ -77,21 +88,12 @@
                   <v-flex xs4 pt-4 class="text-right hidden-xs-only">
                     <img
                       :src="require(`../../../../public/images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)"
-                      style="height: 90px"
+                      style="height: 90px;"
                     />
                   </v-flex>
                 </v-layout>
               </v-card-text>
             </v-card>
-          </v-flex>
-          <v-flex v-for="(event, i) in isFreshAccount ? [] : events" :key="`event-${i}`" xs12 sm6 px-4 my-4>
-            <PromotionCard
-              :title="event.eventName"
-              :image-path="event.imageUrl"
-              :subtitle="event.description"
-              :details-link="event.callToActionLink"
-              :details-text="event.callToActionText"
-            ></PromotionCard>
           </v-flex>
         </v-layout>
       </v-flex>
@@ -99,15 +101,7 @@
       <v-flex xs12 px-4 class="hidden-sm-and-up mb-3">
         <v-layout>
           <v-flex xs6 class="pr-1">
-            <v-btn
-              outlined
-              large
-              block
-              color="primary"
-              :disabled="isFreshAccount"
-              class="transfer-btn-mobile py-1 mr-4 mt-4"
-              @click="initiateTransfer"
-            >
+            <v-btn outlined large block color="primary" class="transfer-btn-mobile py-1 mr-4 mt-4" @click="initiateTransfer">
               <v-icon left>$vuetify.icons.send</v-icon>
               {{ t('walletHome.transfer') }}
             </v-btn>
@@ -189,7 +183,6 @@
 </template>
 
 <script>
-// The color of dropdown icon requires half day work in modifying v-select
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import ExportQrCode from '../../../components/helpers/ExportQrCode'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
@@ -209,7 +202,7 @@ export default {
       search: '',
       lastUpdated: '',
       dialogLearnMore: false,
-      activeTab: 0
+      activeTab: 0,
     }
   },
   computed: {
@@ -233,7 +226,7 @@ export default {
       const search = this.search || ''
       const regEx = new RegExp(search, 'i')
 
-      return this.finalBalancesArray.filter(balance => balance.name.match(regEx))
+      return this.finalBalancesArray.filter((balance) => balance.name.match(regEx))
     },
     selectedCurrency() {
       return this.$store.state.selectedCurrency
@@ -252,25 +245,27 @@ export default {
       const lang = this.$vuetify.lang.current
       const { billboard } = this.$store.state
 
-      Object.keys(billboard).forEach(key => {
+      Object.keys(billboard).forEach((key) => {
         const event = billboard[key]
         const finalEvent = event[lang] || event[LOCALE_EN]
         events.push(finalEvent)
       })
 
       return events
-    }
+    },
   },
   mounted() {
     this.setDateUpdated()
 
     this.activeTab = this.$route.hash === '#collectibles' ? 1 : 0
+
+    this.$vuetify.goTo(0)
   },
   methods: {
     select(selectedItem) {
       // this is so that we don't break their api
       this.selected = []
-      this.finalBalancesArray.forEach(item => {
+      this.finalBalancesArray.forEach((item) => {
         if (item.id === selectedItem.id) {
           this.selected.push(item)
         }
@@ -285,35 +280,23 @@ export default {
     },
     initiateTransfer() {
       // this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
-      this.$router.push({ name: 'walletTransfer' }).catch(_ => {})
+      this.$router.push({ name: 'walletTransfer' }).catch((_) => {})
     },
     topup() {
-      this.$router.push({ path: '/wallet/topup' }).catch(_ => {})
+      this.$router.push({ path: '/wallet/topup' }).catch((_) => {})
     },
     setDateUpdated() {
       const currentDateTime = new Date()
-      const day = currentDateTime
-        .getDate()
-        .toString()
-        .padStart(2, '0')
+      const day = currentDateTime.getDate().toString().padStart(2, '0')
       const month = (currentDateTime.getMonth() + 1).toString().padStart(2, '0')
-      const date = `${day}/${month}/${currentDateTime
-        .getFullYear()
-        .toString()
-        .slice(2, 4)}`
+      const date = `${day}/${month}/${currentDateTime.getFullYear().toString().slice(2, 4)}`
 
-      const hours = currentDateTime
-        .getHours()
-        .toString()
-        .padStart(2, '0')
-      const mins = currentDateTime
-        .getMinutes()
-        .toString()
-        .padStart(2, '0')
+      const hours = currentDateTime.getHours().toString().padStart(2, '0')
+      const mins = currentDateTime.getMinutes().toString().padStart(2, '0')
       const time = `${hours}:${mins}`
       this.lastUpdated = `${date}, ${time}`
-    }
-  }
+    },
+  },
 }
 </script>
 

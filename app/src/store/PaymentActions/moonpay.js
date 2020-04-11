@@ -14,9 +14,9 @@ export default {
   fetchMoonpayQuote(context, payload) {
     // returns a promise
     return getQuote({
-      digital_currency: payload.selectedCryptoCurrency.toLowerCase(),
-      fiat_currency: payload.selectedCurrency.toLowerCase(),
-      requested_amount: +parseFloat(payload.fiatValue)
+      digital_currency: payload.selectedCryptoCurrency && payload.selectedCryptoCurrency.toLowerCase(),
+      fiat_currency: payload.selectedCurrency && payload.selectedCurrency.toLowerCase(),
+      requested_amount: +Number.parseFloat(payload.fiatValue),
     })
   },
   fetchMoonpayOrder({ state, dispatch }, { currentOrder, colorCode, preopenInstanceId: preopenInstanceIdPayload, selectedAddress }) {
@@ -36,25 +36,26 @@ export default {
         window.btoa(
           JSON.stringify({
             instanceId: torus.instanceId,
-            provider: MOONPAY
+            provider: MOONPAY,
           })
         )
       )
       const parameters = {
         apiKey: config.moonpayLiveAPIKEY,
         enabledPaymentMethods: 'credit_debit_card,sepa_bank_transfer,gbp_bank_transfer',
-        currencyCode: currentOrder.currency.code,
-        walletAddress: selectedAddress || state.selectedAddress,
+        defaultCurrencyCode: currentOrder.currency.code || undefined,
+        walletAddresses: selectedAddress ? JSON.stringify({ eth: selectedAddress }) : undefined,
         colorCode,
-        baseCurrencyAmount: currentOrder.baseCurrencyAmount,
-        baseCurrencyCode: currentOrder.baseCurrency.code,
-        email: state.userInfo.email !== '' ? state.userInfo.email : undefined,
-        externalCustomerId: state.selectedAddress,
-        redirectURL: `${config.redirect_uri}?state=${instanceState}`
+        baseCurrencyAmount: currentOrder.baseCurrencyAmount || undefined,
+        baseCurrencyCode: currentOrder.baseCurrency.code || undefined,
+        email: state.userInfo.email || undefined,
+        externalCustomerId: selectedAddress || state.selectedAddress,
+        redirectURL: `${config.redirect_uri}?state=${instanceState}`,
+        showWalletAddressForm: true,
       }
 
-      const parameterString = new URLSearchParams(parameters)
-      const url = `${config.moonpayHost}?${parameterString}`
+      const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(parameters)))
+      const url = `${config.moonpayHost}?${parameterString.toString()}`
 
       getSignature({ url: encodeURIComponent(url), token: state.jwtToken })
         .then(_ => dispatch('postMoonpayOrder', { finalUrl: `${url}`, preopenInstanceId }))
@@ -67,16 +68,19 @@ export default {
       const moonpayWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-      bc.addEventListener('message', ev => {
+      bc.addEventListener('message', (ev) => {
         try {
           const {
-            instanceParams: { provider }
+            instanceParams: { provider },
+            queryParams: { transactionStatus = '' } = {},
           } = ev.data || {}
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             reject(new Error(ev.error))
-          } else if (ev.data && provider === MOONPAY) {
+          } else if (provider === MOONPAY && transactionStatus !== 'failed') {
             resolve({ success: true })
+          } else if (provider === MOONPAY && transactionStatus === 'failed') {
+            reject(new Error('Payment Failed'))
           }
         } catch (error) {
           reject(error)
@@ -93,5 +97,5 @@ export default {
         reject(new Error('user closed moonpay popup'))
       })
     })
-  }
+  },
 }

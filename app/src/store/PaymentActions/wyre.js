@@ -13,11 +13,11 @@ const Wyre = {
     const instanceState = encodeURIComponent(window.btoa(JSON.stringify({ instanceId: torus.instanceId, provider: WYRE })))
     const parameters = {
       accountId: config.wyreAccountId,
-      dest: `ethereum:${selectedAddress || state.selectedAddress}`,
-      destCurrency: currentOrder.destCurrency,
+      dest: selectedAddress ? `ethereum:${selectedAddress}` : undefined,
+      destCurrency: currentOrder.destCurrency || undefined,
       redirectUrl: `${config.redirect_uri}?state=${instanceState}`,
-      referenceId: state.selectedAddress,
-      sourceAmount: currentOrder.sourceAmount
+      referenceId: selectedAddress || state.selectedAddress,
+      sourceAmount: currentOrder.sourceAmount || undefined,
     }
 
     return dispatch('postWyreOrder', { params: parameters, path: config.wyreHost, preopenInstanceId })
@@ -25,26 +25,30 @@ const Wyre = {
   fetchWyreQuote({ state }, payload) {
     // returns a promise
     return getQuote(
-      { dest_currency: payload.selectedCryptoCurrency, source_amount: +parseFloat(payload.fiatValue), source_currency: payload.selectedCurrency },
+      {
+        dest_currency: payload.selectedCryptoCurrency,
+        source_amount: +Number.parseFloat(payload.fiatValue),
+        source_currency: payload.selectedCurrency,
+      },
       { Authorization: `Bearer ${state.jwtToken}` }
     )
   },
   postWyreOrder(context, { path, params, preopenInstanceId }) {
     return new Promise((resolve, reject) => {
-      const parameterString = new URLSearchParams(params)
-      const finalUrl = `${path}?${parameterString}`
+      const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(params)))
+      const finalUrl = `${path}?${parameterString.toString()}`
       const wyreWindow = new PopupHandler({ preopenInstanceId, url: finalUrl })
 
       const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-      bc.addEventListener('message', ev => {
+      bc.addEventListener('message', (ev) => {
         try {
           const {
-            instanceParams: { provider }
+            instanceParams: { provider },
           } = ev.data || {}
           if (ev.error && ev.error !== '') {
             log.error(ev.error)
             reject(new Error(ev.error))
-          } else if (ev.data && provider === WYRE) {
+          } else if (provider === WYRE) {
             resolve({ success: true })
           }
         } catch (error) {
@@ -61,7 +65,7 @@ const Wyre = {
         reject(new Error('user closed wyre popup'))
       })
     })
-  }
+  },
 }
 
 export default Wyre

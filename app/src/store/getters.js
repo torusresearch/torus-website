@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js'
 import { MAINNET } from '../utils/enums'
 import { significantDigits } from '../utils/utils'
 
-const unApprovedTransactions = state => {
+const unApprovedTransactions = (state) => {
   const transactions = []
   for (const id in state.transactions) {
     if (state.transactions[id].status === 'unapproved') {
@@ -13,7 +13,7 @@ const unApprovedTransactions = state => {
   }
   return transactions
 }
-const tokenBalances = state => {
+const tokenBalances = (state) => {
   const { weiBalance, tokenData: tokenDataState, tokenRates: tokenRatesState, currencyData, selectedCurrency, networkType, selectedAddress } =
     state || {}
   let tokenData = tokenDataState
@@ -34,15 +34,15 @@ const tokenBalances = state => {
       logo: 'eth.svg',
       name: 'Ethereum',
       symbol: 'ETH',
-      tokenAddress: '0x'
-    }
+      tokenAddress: '0x',
+    },
   ]
   // because vue/babel is stupid
   if (tokenData && tokenData[selectedAddress] && Object.keys(tokenData[selectedAddress]).length > 0) {
     full = [...full, ...tokenData[selectedAddress]]
   }
   let totalPortfolioValue = new BigNumber(0)
-  const finalBalancesArray = full.map(x => {
+  const finalBalancesArray = full.map((x) => {
     const computedBalance = new BigNumber(x.balance).dividedBy(new BigNumber(10).pow(new BigNumber(x.decimals))) || new BigNumber(0)
     let tokenRateMultiplierNumber = 1
     if (x.tokenAddress !== '0x') tokenRateMultiplierNumber = tokenRates[x.tokenAddress.toLowerCase()] || 0
@@ -56,14 +56,14 @@ const tokenBalances = state => {
       computedBalance,
       formattedBalance: `${x.symbol} ${significantDigits(computedBalance, false, formatter + 1)}`,
       currencyBalance: `${selectedCurrency} ${significantDigits(currencyBalance, false, formatter + 1)}`,
-      currencyRateText: `1 ${x.symbol} = ${currencyRate.toFormat(formatter)} ${selectedCurrency}`
+      currencyRateText: `1 ${x.symbol} = ${currencyRate.toFormat(formatter)} ${selectedCurrency}`,
     }
   })
   const totalPortfolioValueReturn = significantDigits(totalPortfolioValue, false, formatter + 1)
   return { finalBalancesArray, totalPortfolioValue: totalPortfolioValueReturn }
 }
 
-const collectibleBalances = state => {
+const collectibleBalances = (state) => {
   const { networkType, assets, selectedAddress } = state || {}
   if (networkType.host !== MAINNET) {
     assets[selectedAddress] = []
@@ -74,5 +74,5 @@ const collectibleBalances = state => {
 export default {
   unApprovedTransactions,
   tokenBalances,
-  collectibleBalances
+  collectibleBalances,
 }

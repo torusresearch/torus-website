@@ -46,11 +46,11 @@ import ShowToolTip from '../ShowToolTip'
 export default {
   components: {
     ShowToolTip,
-    VueQr
+    VueQr,
   },
   data() {
     return {
-      qrDialoag: false
+      qrDialoag: false,
     }
   },
   computed: {
@@ -59,7 +59,7 @@ export default {
     },
     slicedAddress() {
       return `${this.selectedAddress.slice(0, 20)}...${this.selectedAddress.slice(-10)}`
-    }
+    },
   },
   methods: {
     downloadQr() {
@@ -70,9 +70,10 @@ export default {
       downloadLink.download = 'qrcode.png'
       document.body.append(downloadLink)
       downloadLink.click()
-      document.body.removeChild(downloadLink)
-    }
-  }
+      downloadLink.remove()
+      // document.body.removeChild(downloadLink)
+    },
+  },
 }
 </script>
 

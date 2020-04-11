@@ -64,39 +64,39 @@ export default {
   props: {
     toAddress: {
       type: String,
-      default: '0x'
+      default: '0x',
     },
     selectedCurrency: {
       type: String,
-      default: 'USD'
+      default: 'USD',
     },
     convertedAmount: {
       type: String,
-      default: '~ 0.00 USD'
+      default: '~ 0.00 USD',
     },
     displayAmount: {
       type: String,
-      default: '~ 0.00 ETH'
+      default: '~ 0.00 ETH',
     },
     speedSelected: {
       type: Number,
-      default: 0
+      default: 0,
     },
     transactionFee: {
       type: BigNumber,
-      default: new BigNumber('0')
+      default: new BigNumber('0'),
     },
     assetSelected: {
       type: Object,
       default() {
         return {
           image: '',
-          name: ''
+          name: '',
         }
-      }
+      },
     },
     isNonFungibleToken: Boolean,
-    sendEthToContractError: Boolean
+    sendEthToContractError: Boolean,
   },
   methods: {
     onCancel() {
@@ -106,7 +106,7 @@ export default {
       this.$emit('onConfirm')
       this.$emit('onClose')
     },
-    significantDigits
-  }
+    significantDigits,
+  },
 }
 </script>

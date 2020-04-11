@@ -17,14 +17,14 @@ describe('Tests Wallet Settings Page', () => {
       devtools: config.isDevTools,
       timeout: config.launchTimeout,
       ignoreHTTPSErrors: config.ignoreHTTPSErrors,
-      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--ignore-certificate-errors', '--start-fullscreen', '--no-sandbox', '--disable-setuid-sandbox'],
     })
 
     page = (await browser.pages())[0]
     await page.setDefaultTimeout(config.waitingTimeout)
     await page.setViewport({
       width: config.viewportWidth,
-      height: config.viewportHeight
+      height: config.viewportHeight,
     })
   })
 
@@ -49,7 +49,7 @@ describe('Tests Wallet Settings Page', () => {
     const textToSelect = RINKEBY_DISPLAY_NAME
     await selectItem(page, '#select-network', '.select-network-container', textToSelect)
     await page.waitFor(100)
-    const networkSelected = await page.$eval('.select-network-container .v-select__selection', element => element.textContent)
+    const networkSelected = await page.$eval('.select-network-container .v-select__selection', (element) => element.textContent)
 
     // check if textToSelect was selected
     assert.equal(textToSelect, networkSelected)
@@ -73,7 +73,7 @@ describe('Tests Wallet Settings Page', () => {
 
     // wait for download wallet to appear
     await page.waitForResponse(
-      response => response.url().includes('https://api.infura.io/v1/jsonrpc/rinkeby') && (response.status() >= 200 || response.status() < 300),
+      (response) => response.url().includes('https://api.infura.io/v1/jsonrpc/rinkeby') && (response.status() >= 200 || response.status() < 300),
       { timeout: 60000 }
     )
 
@@ -99,7 +99,7 @@ describe('Tests Wallet Settings Page', () => {
     const textToSelect = GOOGLE_LABEL
     await selectItem(page, '#select-verifier', '.select-verifier-container', textToSelect)
     await page.waitFor(100)
-    const verifierSelected = await page.$eval('.select-verifier-container .v-select__selection', element => element.textContent)
+    const verifierSelected = await page.$eval('.select-verifier-container .v-select__selection', (element) => element.textContent)
 
     // check if textToSelect was selected
     assert.equal(textToSelect, verifierSelected)

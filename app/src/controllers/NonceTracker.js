@@ -62,7 +62,7 @@ class NonceTracker {
       nonceDetails.params = {
         highestLocallyConfirmed,
         highestSuggested,
-        nextNetworkNonce
+        nextNetworkNonce,
       }
       nonceDetails.local = localNonceResult
       nonceDetails.network = networkNonceResult
@@ -119,10 +119,10 @@ class NonceTracker {
   }
 
   _getHighestNonce(txList) {
-    const nonces = txList.map(txMeta => {
+    const nonces = txList.map((txMeta) => {
       const { nonce } = txMeta.txParams
       assert(typeof nonce, 'string', 'nonces should be hex strings')
-      return parseInt(nonce, 16)
+      return Number.parseInt(nonce, 16)
     })
     const highestNonce = Math.max.apply(null, nonces)
     return highestNonce
@@ -140,10 +140,10 @@ class NonceTracker {
     @returns {highestContinuousFrom}
   */
   _getHighestContinuousFrom(txList, startPoint) {
-    const nonces = txList.map(txMeta => {
+    const nonces = txList.map((txMeta) => {
       const { nonce } = txMeta.txParams
       assert(typeof nonce, 'string', 'nonces should be hex strings')
-      return parseInt(nonce, 16)
+      return Number.parseInt(nonce, 16)
     })
 
     let highest = startPoint

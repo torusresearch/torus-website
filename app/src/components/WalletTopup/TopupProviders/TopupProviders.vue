@@ -71,30 +71,30 @@ export default {
   props: {
     selectedProvider: {
       type: String,
-      default: ''
+      default: '',
     },
     providers: {
       type: Array,
       default() {
         return []
-      }
-    }
+      },
+    },
   },
   data() {
     return {
-      innerProvider: ''
+      innerProvider: '',
     }
   },
   computed: {
     activeProviders() {
-      return this.providers.filter(provider => provider.status === ACTIVE)
+      return this.providers.filter((provider) => provider.status === ACTIVE)
     },
     inactiveProviders() {
-      return this.providers.filter(provider => provider.status === INACTIVE)
+      return this.providers.filter((provider) => provider.status === INACTIVE)
     },
     providersFiltered() {
-      return this.providers.filter(provider => this.innerProvider === '' || (this.innerProvider && this.innerProvider === provider.name))
-    }
+      return this.providers.filter((provider) => this.innerProvider === '' || (this.innerProvider && this.innerProvider === provider.name))
+    },
   },
   watch: {
     innerProvider(newValue, oldValue) {
@@ -102,7 +102,7 @@ export default {
     },
     selectedProvider(newValue, oldValue) {
       if (oldValue !== newValue) this.innerProvider = newValue
-    }
+    },
   },
   mounted() {
     this.innerProvider = this.selectedProvider
@@ -113,12 +113,12 @@ export default {
       setTimeout(() => {
         if (element) {
           element.scrollIntoView({
-            behavior: 'smooth'
+            behavior: 'smooth',
           })
         }
       }, 0)
-    }
-  }
+    },
+  },
 }
 </script>
 
