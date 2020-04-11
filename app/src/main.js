@@ -21,7 +21,7 @@ switch (buildEnvironment) {
     logLevel = 'info'
     log.setDefaultLevel(logLevel)
     break
-  case 'testing' || 'development' || 'lrc':
+  case 'testing' || 'development' || 'lrc' || 'alpha5':
     logLevel = 'debug'
     log.setDefaultLevel(logLevel)
     break

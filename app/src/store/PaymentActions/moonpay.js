@@ -57,10 +57,10 @@ export default {
       const parameterString = new URLSearchParams(JSON.parse(JSON.stringify(parameters)))
       const url = `${config.moonpayHost}?${parameterString.toString()}`
 
-      getSignature({ url: encodeURIComponent(url) })
-        .then(({ signature }) => dispatch('postMoonpayOrder', { finalUrl: `${url}&signature=${encodeURIComponent(signature)}`, preopenInstanceId }))
-        .then((response) => resolve(response))
-        .catch((error) => reject(error))
+      getSignature({ url: encodeURIComponent(url), token: state.jwtToken })
+        .then(_ => dispatch('postMoonpayOrder', { finalUrl: `${url}`, preopenInstanceId }))
+        .then(response => resolve(response))
+        .catch(error => reject(error))
     })
   },
   postMoonpayOrder(context, { finalUrl, preopenInstanceId }) {

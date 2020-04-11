@@ -153,6 +153,22 @@ jobs:
               paths:
                 - torus-website/app/dist
           - <<: *step_save_cache
+  build-alpha5:
+        <<: *job_common
+        steps:
+          - checkout:
+              path: ~/torus-website
+          - <<: *step_restore_cache
+          - <<: *step_setup_global_packages
+          - run:
+              name: "Build code for torus alpha5 website"
+              command: |
+                npm run build:alpha5
+          - persist_to_workspace:
+              root: ~/torus-website/
+              paths:
+                - .
+          - <<: *step_save_cache
   deploy-testing:
     <<: *job_common_base
     steps:
@@ -175,6 +191,22 @@ jobs:
           command: |
             ssh-keyscan -H lrc.tor.us >> ~/.ssh/known_hosts
             tar czf - dist/ | ssh torus@lrc.tor.us "rm -rf ~/lrc-torus-website/* && tar -zxf - -C ~/lrc-torus-website/"
+            ssh torus@lrc.tor.us "rm -rf ~/lrc-torus-website/*"
+            tar czf - dist/ | ssh torus@lrc.tor.us "cat > ~/lrc-torus-website/dist.tgz"
+            ssh torus@lrc.tor.us "cd ~/lrc-torus-website && tar zxvf dist.tgz"
+  deploy-alpha5:
+    <<: *job_common
+    steps:
+      - attach_workspace:
+          at: ~/torus-website
+      - add_ssh_keys
+      - run:
+          name: "Deploy Over SSH"
+          command: |
+            ssh-keyscan -H alpha5.tor.us >> ~/.ssh/known_hosts
+            ssh torus@alpha5.tor.us "rm -rf ~/alpha5-torus-website/*"
+            tar czf - dist/ | ssh torus@alpha5.tor.us "cat > ~/alpha5-torus-website/dist.tgz"
+            ssh torus@alpha5.tor.us "cd ~/alpha5-torus-website && tar zxvf dist.tgz"
 
 workflows:
   version: 2
@@ -261,3 +293,16 @@ workflows:
             branches:
               only:
                 - develop
+      - build-alpha5:
+          filters:
+            branches:
+              only:
+                - alpha5
+      - deploy-alpha5:
+          requires:
+            - build-alpha5
+            - test-coverage
+          filters:
+            branches:
+              only:
+                - alpha5
