@@ -12,6 +12,7 @@ import {
   REDDIT,
   RPC,
   SUPPORTED_NETWORK_TYPES,
+  TELEGRAM,
   TWITCH,
   USER_INFO_REQUEST_APPROVED,
   USER_INFO_REQUEST_REJECTED,
@@ -581,6 +582,8 @@ export default {
         bc.close()
         oauthStream.write({ err: 'user closed popup' })
       })
+    } else if (verifier === TELEGRAM) {
+      log.info('Telegram')
     }
   },
   subscribeToControllers() {

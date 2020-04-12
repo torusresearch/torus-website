@@ -40,6 +40,21 @@
                     block
                     class="other-login-btn"
                     type="button"
+                    :title="`${t('login.loginWith')} Telegram`"
+                    @click="triggerLogin({ verifier: TELEGRAM, calledFromEmbed: false })"
+                  >
+                    <img height="32" :src="require(`../../../public/img/icons/telegram${$vuetify.theme.dark ? '-dark' : ''}.svg`)" />
+                  </v-btn>
+                </v-flex>
+                <v-flex xs6 px-1>
+                  <v-btn
+                    :large="!$vuetify.breakpoint.xsOnly"
+                    :color="$vuetify.theme.dark ? '' : 'white'"
+                    :class="$vuetify.theme.dark ? 'torus-dark' : 'card-shadow-v8'"
+                    :depressed="$vuetify.theme.dark"
+                    block
+                    class="other-login-btn"
+                    type="button"
                     :title="`${t('login.loginWith')} Facebook`"
                     @click="triggerLogin({ verifier: FACEBOOK, calledFromEmbed: false })"
                   >
@@ -173,7 +188,7 @@ import {
   WalletTransferLoader,
   WalletTransferLoaderMobile,
 } from '../../content-loader'
-import { DISCORD, FACEBOOK, GOOGLE, REDDIT, TWITCH } from '../../utils/enums'
+import { DISCORD, FACEBOOK, GOOGLE, REDDIT, TELEGRAM, TWITCH } from '../../utils/enums'
 
 export default {
   name: 'Login',
@@ -184,6 +199,7 @@ export default {
       FACEBOOK,
       GOOGLE,
       TWITCH,
+      TELEGRAM,
       REDDIT,
       DISCORD,
     }
