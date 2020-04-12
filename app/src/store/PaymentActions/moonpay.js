@@ -58,9 +58,9 @@ export default {
       const url = `${config.moonpayHost}?${parameterString.toString()}`
 
       getSignature({ url: encodeURIComponent(url), token: state.jwtToken })
-        .then(_ => dispatch('postMoonpayOrder', { finalUrl: `${url}`, preopenInstanceId }))
-        .then(response => resolve(response))
-        .catch(error => reject(error))
+        .then((_) => dispatch('postMoonpayOrder', { finalUrl: `${url}`, preopenInstanceId }))
+        .then((response) => resolve(response))
+        .catch((error) => reject(error))
     })
   },
   postMoonpayOrder(context, { finalUrl, preopenInstanceId }) {
