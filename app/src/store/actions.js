@@ -583,7 +583,36 @@ export default {
         oauthStream.write({ err: 'user closed popup' })
       })
     } else if (verifier === TELEGRAM) {
-      log.info('Telegram')
+      const finalUrl = 'https://localhost:3000/redirect#test=test'
+      const telegramWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
+      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
+      bc.addEventListener('message', async (ev) => {
+        log.info('it works')
+        try {
+          const {
+            instanceParams: { verifier: returnedVerifier },
+            hashParams: verifierParameters,
+          } = ev.data || {}
+          if (ev.error && ev.error !== '') {
+            log.error(ev.error)
+            oauthStream.write({ err: ev.error })
+          } else if (ev.data && returnedVerifier === TELEGRAM) {
+            log.info(ev.data)
+            log.info(verifierParameters)
+          }
+        } catch (error) {
+          log.error(error)
+          oauthStream.write({ err: 'User cancelled login or something went wrong.' })
+        } finally {
+          bc.close()
+          telegramWindow.close()
+        }
+      })
+      telegramWindow.open()
+      telegramWindow.once('close', () => {
+        bc.close()
+        oauthStream.write({ err: 'user closed popup' })
+      })
     }
   },
   subscribeToControllers() {
