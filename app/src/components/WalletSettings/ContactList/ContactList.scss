@@ -1,8 +1,22 @@
 .contact-list-container {
+  .contact-list {
+    .contact-list__id {
+      color: var(--v-text_2-base);
+    }
+    &.theme--dark {
+      border: 1px solid #202125;
+      .contact-list__id {
+        color: #8D98A5;
+      }
+    }
+  }
   .v-list-item {
     border-bottom: 1px solid #f5f5f5;
     &:last-child {
       border-bottom: 0;
+    }
+    &.theme--dark {
+      border-bottom: 1px solid #202125;
     }
   }
   .search-name {

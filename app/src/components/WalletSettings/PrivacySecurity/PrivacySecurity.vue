@@ -3,10 +3,10 @@
     <v-list>
       <v-list-item id="private-key-btn" @click="privateKeyDialog = true">
         <v-list-item-action class="mr-4">
-          <v-icon :small="$vuetify.breakpoint.xsOnly" size="20" class="mr-4 text_2--text" v-text="'$vuetify.icons.key'" />
+          <v-icon :small="$vuetify.breakpoint.xsOnly" size="20" class="ext_2--text" :style="{ marginRight: '10px' }" v-text="'$vuetify.icons.key'" />
         </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-title class="body-2">{{ t('walletSettings.privateKey') }}</v-list-item-title>
+          <v-list-item-title class="body-2 text_1--text">{{ t('walletSettings.privateKey') }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
       <v-list-item id="dapp-permisson-btn" @click="dappPermissionDialog = true">
