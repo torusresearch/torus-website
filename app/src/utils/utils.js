@@ -5,6 +5,7 @@ import log from 'loglevel'
 import { isAddress } from 'web3-utils'
 
 import config from '../config'
+import languages from '../plugins/locales'
 import {
   ACTIVE,
   DISCORD,
@@ -237,7 +238,7 @@ export function significantDigits(number, perc = false, length_ = 2) {
   }
   let depth
   if (input.gte(new BigNumber(1))) {
-    depth = 2
+    depth = length_
   } else {
     depth = length_ - 1 + Math.ceil(Math.log10(new BigNumber('1').div(input).toNumber()))
   }
@@ -482,4 +483,11 @@ export function formatSmallNumbers(number, currency = 'usd') {
   const finalNumber = `${currency.toLowerCase() === 'usd' ? significantDigits(number, 5).toFixed(2) : significantDigits(number, 2).toFixed(5)}`
 
   return `${Number(finalNumber)} ${currency.toUpperCase()}`
+}
+
+export const getUserLanguage = () => {
+  let userLanguage = window.navigator.userLanguage || window.navigator.language || 'en-US'
+  userLanguage = userLanguage.split('-')
+  userLanguage = Object.prototype.hasOwnProperty.call(languages, userLanguage[0]) ? userLanguage[0] : 'en'
+  return userLanguage
 }
