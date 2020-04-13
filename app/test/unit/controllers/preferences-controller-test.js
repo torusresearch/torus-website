@@ -197,19 +197,19 @@ describe('Preferences Controller', () => {
       nock.cleanAll()
     })
 
-    // it('set user theme fail', async () => {
-    //   preferencesController.store.updateState({ theme: 'light' })
-    //   await preferencesController.setUserTheme('light')
-    //   assert(handleSuccessStub.notCalled)
-    //   assert.equal(preferencesController.state.theme, 'light')
-    // })
+    it('set user theme fail', async () => {
+      preferencesController.store.updateState({ theme: 'light' })
+      await preferencesController.setUserTheme('light')
+      assert(handleSuccessStub.notCalled)
+      assert.equal(preferencesController.state.theme, 'light')
+    })
 
-    // it('set user theme success', async () => {
-    //   preferencesController.store.updateState({ theme: 'light' })
-    //   await preferencesController.setUserTheme('dark')
-    //   assert(handleSuccessStub.calledOnce)
-    //   assert.equal(preferencesController.state.theme, 'dark')
-    // })
+    it('set user theme success', async () => {
+      preferencesController.store.updateState({ theme: 'light' })
+      await preferencesController.setUserTheme('dark')
+      assert(handleSuccessStub.calledOnce)
+      assert.equal(preferencesController.state.theme, 'dark')
+    })
 
     it('set user locale fail', async () => {
       preferencesController.store.updateState({ locale: 'en' })
