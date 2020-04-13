@@ -1,7 +1,7 @@
 <template>
   <v-container class="wallet-topup-view pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <div class="d-flex align-center">
-      <div class="font-weight-bold display-1 text-left">
+      <div class="font-weight-bold display-1 text-left text_2--text">
         <span v-if="selectedProvider && !$vuetify.breakpoint.xsOnly">
           {{ t('walletTopUp.purchaseVia') }}
           <span class="text-capitalize">{{ selectedProvider }}</span>
@@ -24,7 +24,7 @@
       />
 
       <v-flex v-if="selectedProvider && $vuetify.breakpoint.xsOnly" xs12 mb-2>
-        <div class="text-black font-weight-bold headline px-4 mb-4">
+        <div class="font-weight-bold headline px-4 mb-4 text_2--text">
           <span>
             {{ t('walletTopUp.purchaseVia') }}
             <span class="text-capitalize">{{ selectedProvider }}</span>

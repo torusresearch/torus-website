@@ -2,7 +2,7 @@
   <v-container class="wallet-activity" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <v-layout mt-3 wrap>
       <v-flex xs12 md7>
-        <div class="text-black font-weight-bold display-1 float-left">{{ t('walletActivity.transactionActivities') }}</div>
+        <div class="text_1--text font-weight-bold display-1 float-left">{{ t('walletActivity.transactionActivities') }}</div>
       </v-flex>
       <v-flex xs12 md5>
         <v-layout mx-n2>
@@ -10,9 +10,9 @@
             <v-menu offset-y>
               <template v-slot:activator="{ on }">
                 <div class="d-flex align-center filter-selector pa-2" :class="{ 'theme--dark': $vuetify.theme.isDark }" v-on="on">
-                  <v-icon x-small>$vuetify.icons.activities</v-icon>
-                  <span class="ml-1" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedAction) }}</span>
-                  <v-icon class="ml-auto">$vuetify.icons.select</v-icon>
+                  <v-icon x-small class="text_2--text">$vuetify.icons.activities</v-icon>
+                  <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedAction) }}</span>
+                  <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
                 </div>
               </template>
               <v-card class="pa-3">
@@ -37,9 +37,9 @@
             <v-menu offset-y>
               <template v-slot:activator="{ on }">
                 <div class="d-flex align-center filter-selector pa-2" :class="{ 'theme--dark': $vuetify.theme.isDark }" v-on="on">
-                  <v-icon small>$vuetify.icons.calendar</v-icon>
-                  <span class="ml-1" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedPeriod) }}</span>
-                  <v-icon class="ml-auto">$vuetify.icons.select</v-icon>
+                  <v-icon class="text_2--text" small>$vuetify.icons.calendar</v-icon>
+                  <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedPeriod) }}</span>
+                  <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
                 </div>
               </template>
               <v-card class="pa-3">

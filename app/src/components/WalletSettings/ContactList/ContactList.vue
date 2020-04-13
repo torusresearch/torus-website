@@ -55,9 +55,9 @@
                 <v-list-item-content>
                   <v-list-item-title class="font-weight-regular caption">
                     <!-- <span class="text-capitalize">{{ contact.verifier === ETH ? '' : `${contact.verifier}: ` }}</span> -->
-                    <span>{{ contact.name }}</span>
+                    <span class="text_1--text">{{ contact.name }}</span>
                     -
-                    <span class="label">{{ contact.contact }}</span>
+                    <span class="contact-list__id label">{{ contact.contact }}</span>
                   </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action class="ma-0">

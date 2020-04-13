@@ -15,10 +15,10 @@ export default {
   torusBlack: '#252529',
   torusLight: '#FCFCFC',
 
-  // Main background color, supports 2 color gradient
-  text_1: '#FF0000',
+  // Fixed Colors
+  text_1: '#0F1222',
   text_2: '#5C6C7F',
-  text_3: '#EEF2F4',
+  text_3: '#B3C0CE',
   primary: {
     base: '#0364FF',
     lighten5: '#E9EEFE',

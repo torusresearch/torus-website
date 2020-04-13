@@ -1,7 +1,7 @@
 <template>
   <v-container class="wallet-transfer pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4 mobile-view' : ''">
     <div class="d-flex align-center">
-      <div class="font-weight-bold display-1 float-left">{{ t('walletTransfer.transferDetails') }}</div>
+      <div class="font-weight-bold display-1 text_2--text float-left">{{ t('walletTransfer.transferDetails') }}</div>
       <div class="ml-auto">
         <QuickAddress />
       </div>
@@ -10,7 +10,7 @@
       <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721 && $vuetify.breakpoint.xsOnly" px-4 xs12>
         <v-card class="elevation-1 pa-6">
           <div class="d-flex">
-            <span class="body-2">{{ t('walletTransfer.accountBalance') }}</span>
+            <span class="body-2 text_1--text">{{ t('walletTransfer.accountBalance') }}</span>
             <div class="ml-auto">
               <NetworkDisplay :store-network-type="storeNetworkType"></NetworkDisplay>
             </div>
@@ -19,7 +19,7 @@
             <div>
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
               <div v-else>
-                <span id="account-balance" class="display-2 mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
+                <span id="account-balance" class="display-2 text_2--text mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
                 <span class="caption text_2--text">{{ selectedCurrency }}</span>
               </div>
             </div>
@@ -294,7 +294,7 @@
             <div>
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
               <div v-else>
-                <span id="account-balance" class="display-2 mr-1">{{ selectedItem.computedBalanceRounded }}</span>
+                <span id="account-balance" class="display-2 text_2--text mr-1">{{ selectedItem.computedBalanceRounded }}</span>
                 <span class="caption text_2--text">{{ selectedCurrency }}</span>
               </div>
             </div>
@@ -581,9 +581,15 @@ export default {
         const emailObject = {
           from_name: this.$store.state.userInfo.name,
           to_email: this.toAddress,
-          total_amount: this.amount.toString(),
+          total_amount: significantDigits(this.amount.toFormat(5), false, 5),
           token: typeToken.toString(),
           etherscanLink,
+          currency: this.selectedCurrency,
+          currencyAmount: significantDigits(this.amount.times(this.getCurrencyTokenRate).toFormat(2)) || '',
+          tokenImageUrl:
+            this.contractType !== CONTRACT_TYPE_ERC721
+              ? `https://app.tor.us/images/logos/${this.selectedItemDisplay.logo}`
+              : this.selectedItemDisplay.logo,
         }
         post(`${config.api}/transaction/sendemail`, emailObject, {
           headers: {
