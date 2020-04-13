@@ -8,18 +8,20 @@
     </div>
     <v-layout wrap mx-n4 mt-7>
       <v-flex px-4 xs12 md6>
-        <v-card class="card-total elevation-1">
-          <v-layout wrap class="px-6 py-4">
-            <v-flex xs6>
+        <v-card class="card-total elevation-1 px-6 py-4">
+          <div class="d-flex align-center">
+            <div>
               <span class="title text_1--text">{{ t('walletHome.totalValue') }}</span>
-            </v-flex>
-            <v-flex xs6 class="text-right">
+            </div>
+            <div class="ml-auto">
               <NetworkDisplay :network="storeNetworkType.networkName" :store-network-type="storeNetworkType"></NetworkDisplay>
-            </v-flex>
-            <v-flex xs8>
+            </div>
+          </div>
+          <div class="d-flex align-center">
+            <div>
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-3" />
               <div v-else class="d-flex align-end">
-                <span class="display-4 text_2--text text-clamp-one">
+                <span class="text_2--text text-clamp-one" :class="$vuetify.breakpoint.xsOnly ? 'display-2' : 'display-4'">
                   {{ totalPortfolioValue }}
                 </span>
                 <v-menu offset-y max-height="300" z-index="20">
@@ -45,40 +47,38 @@
                   </v-list>
                 </v-menu>
               </div>
+            </div>
+            <div class="ml-auto align-self-end text-right">
+              <span class="description text_3--text" :style="{ lineHeight: '0' }">{{ finalBalancesArray[0].currencyRateText }}</span>
+            </div>
+          </div>
+          <v-layout wrap class="mx-n2 mt-2">
+            <v-flex xs6 px-2>
+              <v-btn
+                v-show="canShowLrc && !whiteLabelTopupHide"
+                block
+                large
+                class="torus-btn1"
+                :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
+                :color="isWhiteLabelActive ? 'torusBrand1' : ''"
+                @click="topup"
+              >
+                <v-icon left>$vuetify.icons.add</v-icon>
+                {{ t('walletHome.topUp') }}
+              </v-btn>
             </v-flex>
-            <v-flex xs4 class="text-right align-self-end">
-              <span class="description text_3--text">{{ finalBalancesArray[0].currencyRateText }}</span>
-            </v-flex>
-            <v-flex xs12>
-              <v-layout class="mx-n2 mt-2">
-                <v-flex xs6 px-2>
-                  <v-btn
-                    v-show="canShowLrc && !whiteLabelTopupHide"
-                    block
-                    large
-                    class="torus-btn1"
-                    :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-                    :color="isWhiteLabelActive ? 'torusBrand1' : ''"
-                    @click="topup"
-                  >
-                    <v-icon left>$vuetify.icons.add</v-icon>
-                    {{ t('walletHome.topUp') }}
-                  </v-btn>
-                </v-flex>
-                <v-flex xs6 px-2>
-                  <v-btn
-                    block
-                    large
-                    class="torus-btn1"
-                    :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-                    :color="isWhiteLabelActive ? 'torusBrand1' : ''"
-                    @click="initiateTransfer"
-                  >
-                    <v-icon left>$vuetify.icons.send</v-icon>
-                    {{ t('walletHome.transfer') }}
-                  </v-btn>
-                </v-flex>
-              </v-layout>
+            <v-flex xs6 px-2>
+              <v-btn
+                block
+                large
+                class="torus-btn1"
+                :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
+                :color="isWhiteLabelActive ? 'torusBrand1' : ''"
+                @click="initiateTransfer"
+              >
+                <v-icon left>$vuetify.icons.send</v-icon>
+                {{ t('walletHome.transfer') }}
+              </v-btn>
             </v-flex>
           </v-layout>
         </v-card>
@@ -157,7 +157,7 @@
 </template>
 
 <script>
-import ComponentLoader from '../../../components/helpers/ComponentLoader'
+// import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
 import QuickAddress from '../../../components/helpers/QuickAddress'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
@@ -169,7 +169,8 @@ import { LOCALE_EN, MAINNET } from '../../../utils/enums'
 
 export default {
   name: 'WalletHome',
-  components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, LearnMore, ComponentLoader, NetworkDisplay },
+  // components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, LearnMore, ComponentLoader, NetworkDisplay },
+  components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, LearnMore, NetworkDisplay },
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],

@@ -9,7 +9,7 @@
           <v-list-item-content>
             <v-list-item-title class="caption text_1--text font-weight-bold mb-2">{{ collectible.name }}</v-list-item-title>
             <v-list-item-subtitle v-if="!$vuetify.breakpoint.xsOnly" class="text_3--text caption">
-              {{ collectible.assets.length }} Assets
+              {{ collectible.assets.length }} Asset{{ collectible.assets.length > 1 ? 's' : '' }}
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>

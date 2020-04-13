@@ -4,13 +4,13 @@
       <v-flex
         px-4
         :class="$vuetify.breakpoint.xsOnly ? 'order-2 pt-2' : 'order-0'"
-        :style="{ marginLeft: $vuetify.breakpoint.xsOnly ? '33px' : '0', maxWidth: '105px' }"
+        :style="{ marginLeft: $vuetify.breakpoint.xsOnly ? '48px' : '0', maxWidth: '105px' }"
       >
         <div class="caption text_1--text font-weight-medium">{{ transaction.dateFormatted }}</div>
         <div class="info text_2--text font-weight-light">{{ transaction.timeFormatted }}</div>
       </v-flex>
       <v-divider v-if="!$vuetify.breakpoint.xsOnly" vertical class="mx-4"></v-divider>
-      <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs8 order-0' : 'xs4 order-1'" pr-4 pl-0>
+      <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs8 order-0 pr-4 pl-3' : 'xs4 order-1 pl-0 pr-4'">
         <div
           class="icon-holder float-left"
           :class="{
@@ -28,7 +28,7 @@
             class="mr-2 ml-2"
             width="36"
           />
-          <img v-else-if="transaction.type === CONTRACT_TYPE_ERC721" :src="transaction.actionIcon" class="mr-2 ml-1" height="36" large />
+          <img v-else-if="transaction.type === CONTRACT_TYPE_ERC721" :src="transaction.actionIcon" class="mr-3 ml-1" height="36" large />
           <v-icon v-else class="float-left" size="24" color="torusBrand1">{{ transaction.actionIcon }}</v-icon>
         </div>
         <div class="caption text_1--text font-weight-medium">{{ transaction.actionText }}</div>
