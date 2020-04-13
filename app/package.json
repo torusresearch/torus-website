@@ -10,7 +10,7 @@
     "build:staging": "npm run pre-build && vue-cli-service build --mode staging && npm run post-build",
     "build:testing": "npm run pre-build && vue-cli-service build --mode testing",
     "build:lrc": "npm run pre-build && vue-cli-service build --mode lrc",
-    "build:alpha4": "npm run build-embed:alpha4 && npm run pre-build && vue-cli-service build --mode alpha4",
+    "build:alpha4": "npm run pre-build && npm vue-cli-service build --mode alpha4",
     "dev": "cross-env NODE_ENV=development VUE_APP_TORUS_BUILD_ENV=development node server.js",
     "locale": "node ./scripts/importLocales.js",
     "lint:js": "eslint --fix 'src/**/*.js'",

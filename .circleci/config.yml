@@ -298,7 +298,6 @@ workflows:
       - deploy-alpha4:
           requires:
             - build-alpha4
-            - test-coverage
           filters:
             branches:
               only:
