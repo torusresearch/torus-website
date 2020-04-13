@@ -1,0 +1,80 @@
+.torus-widget {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+
+  &__logo {
+    max-width: 25px;
+    max-height: 25px;
+  }
+
+  &__panel {
+    position: absolute;
+    bottom: 25px;
+    left: 25px;
+    width: 330px;
+    max-width: inherit;
+    background: #FFFFFF;
+    border: 1px solid #F2F2F2;
+    box-sizing: border-box;
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+    border-radius: 12px;
+
+  }
+
+  &__user-details {
+    background: #FFFFFF;
+    box-shadow: 5px 5px 10px rgba(208, 218, 254, 0.25), -5px -5px 10px #FAFBFF;
+    border-radius: 3px;
+    margin-left: 20px;
+    padding: 10px 0;
+
+    .avatar-container {
+      padding: 2px;
+      border: 2px solid #B3C0CE;
+      border-radius: 50%;
+      background-color: #FFFFFF;
+      margin-left: -20px;
+    }
+  }
+
+
+  .details-container {
+    width: 100%;
+    &__icon {
+      height: 12px;
+      width: 12px;
+    }
+    &__text {
+      font-size: 14px;
+      line-height: 16px;
+      color: #5C6C7F;
+    }
+  }
+
+  &__amount-details {
+    > div {
+      line-height: 1em;
+    }
+    .amount {
+      font-size: 18px;
+      color: #7F8FA4;
+      font-weight: bold;
+    }
+    .v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+      border: 1px solid rgba(206, 208, 214, 0.3);
+      background-color: white;
+      color: #7F8FA4;
+    }
+  }
+
+  &__transaction-details {
+    .avatar-container {
+      border: 1px solid #B3C0CE;
+      border-radius: 50%;
+    }
+    .caption {
+      color: #B3C0CE;
+    }
+  }
+}
