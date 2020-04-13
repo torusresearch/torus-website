@@ -115,9 +115,12 @@ class PreferencesController {
       if (user && user.data) {
         const { transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
         let whiteLabelLocale
+        let torusWhiteLabel
 
         // White Label override
-        let torusWhiteLabel = localStorage.getItem('torus-white-label')
+        if (storageAvailable('localStorage')) {
+          torusWhiteLabel = localStorage.getItem('torus-white-label')
+        }
         if (torusWhiteLabel) {
           torusWhiteLabel = JSON.parse(torusWhiteLabel)
           whiteLabelLocale = torusWhiteLabel.defaultLanguage
