@@ -29,6 +29,17 @@
                 {{ t('login.signIn') }} Google
               </v-btn>
             </v-flex>
+            <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
+              <vue-telegram-login
+                mode="callback"
+                telegram-login="torustestbot"
+                @callback="
+                  (user) => {
+                    triggerLogin({ verifier: TELEGRAM, calledFromEmbed: false, telegramUser: user })
+                  }
+                "
+              />
+            </v-flex>
             <v-flex xs9 sm7 ml-auto mr-auto mb-3>
               <v-layout wrap class="other-login-container">
                 <v-flex xs6 px-1>
@@ -170,6 +181,7 @@
 </template>
 
 <script>
+import { vueTelegramLogin } from 'vue-telegram-login'
 import { mapActions, mapState } from 'vuex'
 
 import {
@@ -192,7 +204,7 @@ import { DISCORD, FACEBOOK, GOOGLE, REDDIT, TELEGRAM, TWITCH } from '../../utils
 
 export default {
   name: 'Login',
-  components: { WalletLoginLoader, WalletLoginLoaderMobile },
+  components: { WalletLoginLoader, WalletLoginLoaderMobile, vueTelegramLogin },
   data() {
     return {
       isLogout: false,
