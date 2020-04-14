@@ -33,11 +33,11 @@
         <v-card-text class="pa-0">
           <div class="d-flex align-center py-3 px-4 card-header elevation-1">
             <div class="flex-grow-1 text-clamp-one">
-              <span class="caption text_1--text font-weight-bold">Curious about how to get tokens?</span>
+              <span class="caption text_1--text font-weight-bold">{{ t('walletHome.curious') }}</span>
             </div>
           </div>
           <div class="d-flex align-center py-3 px-4">
-            <v-btn text x-small class="caption mb-1 mx-auto torusBrand1--text font-weight-medium" @click="topup">Buy them here</v-btn>
+            <v-btn text x-small class="caption mb-1 mx-auto torusBrand1--text font-weight-medium" @click="topup">{{ t('walletHome.buyThem') }}</v-btn>
           </div>
         </v-card-text>
       </v-card>
