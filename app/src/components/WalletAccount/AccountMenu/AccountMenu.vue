@@ -20,27 +20,35 @@
       <div
         v-for="acc in wallets"
         :key="acc.address"
-        class="d-flex account-list__item elevation-1 mb-2 pa-1"
-        :class="{ active: acc.address === selectedAddress }"
+        class="d-flex flex-column account-list__item mb-2 py-2 px-3"
+        :class="{ active: acc.address === selectedAddress, 'theme--dark': $vuetify.theme.dark }"
         @click="changeAccount(acc.address)"
       >
-        <div>
-          <v-icon v-if="acc.type === 'SC'" size="16">$vuetify.icons.smart_contract</v-icon>
-          <img v-else :src="require(`../../../../public/img/icons/google-grey-dark.svg`)" style="width: 16px;" class="ma-1" />
-        </div>
-        <div class="d-flex flex-column account-list__details px-1">
-          <div class="caption">
-            <span class="font-weight-bold">{{ acc.type === 'SC' ? 'Smart Contract Wallet' : userInfo.email }}</span>
-            <span class="float-right">{{ acc.balance }}</span>
+        <div class="d-flex align-center">
+          <div class="mr-2" :style="{ lineHeight: '0' }">
+            <v-icon v-if="acc.type === 'SC'" size="16">$vuetify.icons.smart_contract</v-icon>
+            <img v-else :src="require(`../../../../public/img/icons/google-grey-dark.svg`)" style="width: 16px;" />
           </div>
-          <div class="caption">
+          <div class="caption text_1--text font-weight-bold">
+            <span>{{ acc.type === 'SC' ? 'Smart Contract Wallet' : userInfo.email }}</span>
+          </div>
+          <div class="caption ml-auto text_2--text text-right">
+            <span>{{ acc.balance }}</span>
+          </div>
+        </div>
+        <div class="d-flex align-center mt-1">
+          <div>
             <span class="account-list__address">{{ acc.address }}</span>
-            <span class="float-right">
-              <ShowToolTip :address="acc.address">
-                <v-icon size="12" :class="{ 'torusFont1--text': !$vuetify.theme.dark }" v-text="'$vuetify.icons.copy'" />
+          </div>
+          <div class="ml-auto">
+            <span class="mr-1">
+              <ShowToolTip :is-btn="true" :address="acc.address">
+                <v-icon size="12" class="text_2--text" v-text="'$vuetify.icons.copy'" />
               </ShowToolTip>
+            </span>
+            <span>
               <ExportQrCode :custom-address="acc.address">
-                <v-icon x-small v-text="'$vuetify.icons.qr'" />
+                <v-icon class="text_2--text" x-small v-text="'$vuetify.icons.qr'" />
               </ExportQrCode>
             </span>
           </div>
@@ -48,12 +56,12 @@
       </div>
     </div>
     <v-divider></v-divider>
-    <v-list>
+    <v-list class="ml-1 py-1">
       <v-list-item id="import-account-btn" @click="accountImportDialog = true">
         <v-list-item-action class="mr-2">
-          <v-icon class="torusFont1--text" v-text="'$vuetify.icons.import'" />
+          <v-icon size="24" class="text_2--text" v-text="'$vuetify.icons.import'" />
         </v-list-item-action>
-        <v-list-item-content class="subtitle-2">{{ t('accountMenu.importAccount') }}</v-list-item-content>
+        <v-list-item-content class="caption font-weight-bold text_1--text">{{ t('accountMenu.importAccount') }}</v-list-item-content>
       </v-list-item>
       <v-dialog v-model="accountImportDialog" width="600" class="import-dialog">
         <AccountImport @onClose="accountImportDialog = false" />
@@ -62,7 +70,7 @@
 
     <v-divider></v-divider>
 
-    <v-list>
+    <v-list class="py-1" :style="{ marginLeft: '6px' }">
       <v-list-item
         v-for="headerItem in filteredMenu"
         :id="`${headerItem.name}-link-mobile`"
@@ -71,8 +79,8 @@
         router
         :to="headerItem.route"
       >
-        <v-list-item-action class="mr-2">
-          <v-icon :size="headerItem.icon === 'activities' ? 12 : 16" class="torusFont1--text" v-text="`$vuetify.icons.${headerItem.icon}`" />
+        <v-list-item-action class="mr-2" :style="{ marginLeft: '3px' }">
+          <v-icon :size="headerItem.icon === 'transaction' ? 13 : 15" class="text_2--text" v-text="`$vuetify.icons.${headerItem.icon}`" />
         </v-list-item-action>
         <v-list-item-content>
           <v-list-item-title class="subtitle-2">{{ headerItem.display }}</v-list-item-title>
@@ -80,9 +88,9 @@
       </v-list-item>
       <v-list-item href="https://docs.tor.us/#users" target="_blank">
         <v-list-item-action class="mr-2">
-          <v-icon :small="$vuetify.breakpoint.xsOnly" class="torusFont1--text" v-text="'$vuetify.icons.info'" />
+          <v-icon size="20" class="text_2--text" v-text="'$vuetify.icons.info'" />
         </v-list-item-action>
-        <v-list-item-content class="subtitle-2">{{ t('accountMenu.infoSupport') }}</v-list-item-content>
+        <v-list-item-content class="caption font-weight-bold">{{ t('accountMenu.infoSupport') }}</v-list-item-content>
       </v-list-item>
     </v-list>
 
@@ -93,7 +101,7 @@
 
     <v-divider></v-divider>
     <div class="text-right py-4 px-3">
-      <v-btn text class="body-2 font-weight-bold" @click="logout">{{ t('accountMenu.logOut') }}</v-btn>
+      <v-btn text class="caption text_2--text font-weight-bold" @click="logout">{{ t('accountMenu.logOut') }}</v-btn>
     </div>
   </v-card>
 </template>
@@ -224,20 +232,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.account-list {
-  &__item {
-    cursor: pointer;
-    &:hover,
-    &.active {
-      border-radius: 9px;
-    }
-  }
-  &__details {
-    width: 100%;
-  }
-  &__address {
-    font-size: 8px;
-    color: #8f9fb4;
-  }
-}
+@import 'AccountMenu.scss';
 </style>
