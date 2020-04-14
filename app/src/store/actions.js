@@ -294,7 +294,7 @@ export default {
     }
     return networkController.setProviderType(networkType.host)
   },
-  triggerLogin({ dispatch, commit }, { calledFromEmbed, verifier, preopenInstanceId }) {
+  triggerLogin({ dispatch, commit }, { calledFromEmbed, verifier, telegramUser, preopenInstanceId }) {
     log.info('Verifier: ', verifier)
 
     if (verifier === GOOGLE) {
@@ -583,62 +583,24 @@ export default {
         oauthStream.write({ err: 'user closed popup' })
       })
     } else if (verifier === TELEGRAM) {
-      const state = encodeURIComponent(
-        window.btoa(
-          JSON.stringify({
-            instanceId: torus.instanceId,
-            verifier: TELEGRAM,
-          })
-        )
-      )
-      const finalUrl = `https://dilativeduskydolphin.htmlpasta.com?state=${state}&redirect=${encodeURIComponent(config.redirect_uri)}`
-      const telegramWindow = new PopupHandler({ url: finalUrl, preopenInstanceId })
-      const bc = new BroadcastChannel(`redirect_channel_${torus.instanceId}`, broadcastChannelOptions)
-      bc.addEventListener('message', async (ev) => {
-        try {
-          const {
-            instanceParams: { verifier: returnedVerifier },
-            hashParams: verifierParameters,
-          } = ev.data || {}
-          if (ev.error && ev.error !== '') {
-            log.error(ev.error)
-            oauthStream.write({ err: ev.error })
-          } else if (ev.data && returnedVerifier === TELEGRAM) {
-            const { auth_date: authDate, first_name: firstName, hash, id, last_name: lastName, photo_url: profileImage, username } =
-              ev.data.queryParams || {}
-            log.info(ev.data)
-            log.info(verifierParameters)
+      const { auth_date: authDate, first_name: firstName, hash, id, last_name: lastName, photo_url: profileImage, username } = telegramUser || {}
 
-            commit('setUserInfo', {
-              profileImage,
-              name: `${firstName} ${lastName}`,
-              verifierId: username,
-              verifier: TELEGRAM,
-              verifierParams: {
-                verifier_id: username,
-                photo_url: profileImage,
-                last_name: lastName,
-                first_name: firstName,
-                hash,
-                auth_date: authDate,
-              },
-            })
+      commit('setUserInfo', {
+        profileImage,
+        name: `${firstName} ${lastName}`,
+        verifierId: username,
+        verifier: TELEGRAM,
+        verifierParams: {
+          verifier_id: username,
+          photo_url: profileImage,
+          last_name: lastName,
+          first_name: firstName,
+          hash,
+          auth_date: authDate,
+        },
+      })
 
-            dispatch('handleLogin', { calledFromEmbed, idToken: id })
-          }
-        } catch (error) {
-          log.error(error)
-          oauthStream.write({ err: 'User cancelled login or something went wrong.' })
-        } finally {
-          bc.close()
-          telegramWindow.close()
-        }
-      })
-      telegramWindow.open()
-      telegramWindow.once('close', () => {
-        bc.close()
-        oauthStream.write({ err: 'user closed popup' })
-      })
+      dispatch('handleLogin', { calledFromEmbed, idToken: id })
     }
   },
   subscribeToControllers() {
