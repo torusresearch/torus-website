@@ -1,0 +1,29 @@
+
+.account-list {
+  &__item {
+    border: 0;
+    box-shadow: none;
+    cursor: pointer;
+    &:hover,
+    &.active {
+      background: #ffffff;
+      border: 1px solid #f5f5f5;
+      box-sizing: border-box;
+      box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+      border-radius: 9px;
+      &.theme--dark {
+        border: 0;
+        background: #2F3136;
+        box-shadow: 5px 5px 10px #212121, -5px -5px 10px rgba(55, 56, 60, 0.25);
+      }
+    }
+  }
+  &__details {
+    width: 100%;
+  }
+  &__address {
+    font-size: 8px;
+    color: #8f9fb4;
+    margin-left: 24px;
+  }
+}

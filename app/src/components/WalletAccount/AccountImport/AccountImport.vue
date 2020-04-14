@@ -27,6 +27,7 @@
                   <span class="subtitle-2">{{ t('accountMenu.inputPrivateKey') }}:</span>
                   <v-text-field
                     v-model="privateKey"
+                    class="private-key"
                     outlined
                     :type="showPrivateKey ? 'text' : 'password'"
                     :rules="[rules.required]"
@@ -47,10 +48,12 @@
                     {{ t('accountMenu.back') }}
                   </v-btn>
                   <v-btn
-                    color="torusBrand1"
+                    id="wallet-transfer-submit"
                     depressed
+                    color="torusBrand1 ml-2"
                     :loading="isLoadingPrivate"
                     :disabled="!privateKeyFormValid || isLoadingPrivate"
+                    class="px-8 white--text"
                     @click.prevent="importViaPrivateKey"
                   >
                     {{ t('accountMenu.import') }}
@@ -67,7 +70,7 @@
                 <v-flex xs12 mb-2 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <v-layout wrap align-center justify-space-between>
                     <v-flex grow>
-                      <span>{{ t('accountMenu.uploadJsonLabel') }}</span>
+                      <span class="mr-1">{{ t('accountMenu.uploadJsonLabel') }}</span>
                       <HelpTooltip :title="t('accountMenu.uploadJsonTitle')" :description="t('accountMenu.uploadJsonDesc')"></HelpTooltip>
                     </v-flex>
                     <v-flex shrink>
@@ -84,6 +87,7 @@
                   <span class="subtitle-2">{{ t('accountMenu.enterPassword') }}:</span>
                   <v-text-field
                     v-model="jsonPassword"
+                    class="password-input"
                     outlined
                     name="password"
                     :rules="[rules.required]"
@@ -102,10 +106,12 @@
                     {{ t('accountMenu.back') }}
                   </v-btn>
                   <v-btn
-                    color="torusBrand1"
+                    id="wallet-transfer-submit"
                     depressed
+                    color="torusBrand1 ml-2"
                     :loading="isLoadingKeystore"
                     :disabled="!jsonFileFormValid || isLoadingKeystore"
+                    class="px-8 white--text"
                     @click.prevent="importViaKeyStoreFile"
                   >
                     {{ t('accountMenu.import') }}
@@ -167,6 +173,9 @@ export default {
           value: 'keystore',
         },
       ]
+    },
+    isWhiteLabelActive() {
+      return this.$store.state.isWhiteLabelActive
     },
   },
   methods: {
