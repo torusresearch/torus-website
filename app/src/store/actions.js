@@ -592,15 +592,15 @@ export default {
         verifier: TELEGRAM,
         verifierParams: {
           verifier_id: username,
-          photo_url: profileImage,
-          last_name: lastName,
           first_name: firstName,
-          hash,
-          auth_date: authDate,
+          last_name: lastName,
+          photo_url: profileImage,
+          id: id.toString(),
+          auth_date: authDate.toString(),
         },
       })
 
-      dispatch('handleLogin', { calledFromEmbed, idToken: id.toString() })
+      dispatch('handleLogin', { calledFromEmbed, idToken: hash })
     }
   },
   subscribeToControllers() {
