@@ -600,7 +600,7 @@ export default {
         },
       })
 
-      dispatch('handleLogin', { calledFromEmbed, idToken: id })
+      dispatch('handleLogin', { calledFromEmbed, idToken: id.toString() })
     }
   },
   subscribeToControllers() {
