@@ -191,9 +191,6 @@ jobs:
           command: |
             ssh-keyscan -H lrc.tor.us >> ~/.ssh/known_hosts
             tar czf - dist/ | ssh torus@lrc.tor.us "rm -rf ~/lrc-torus-website/* && tar -zxf - -C ~/lrc-torus-website/"
-            ssh torus@lrc.tor.us "rm -rf ~/lrc-torus-website/*"
-            tar czf - dist/ | ssh torus@lrc.tor.us "cat > ~/lrc-torus-website/dist.tgz"
-            ssh torus@lrc.tor.us "cd ~/lrc-torus-website && tar zxvf dist.tgz"
   deploy-alpha5:
     <<: *job_common
     steps:
@@ -204,9 +201,7 @@ jobs:
           name: "Deploy Over SSH"
           command: |
             ssh-keyscan -H alpha5.tor.us >> ~/.ssh/known_hosts
-            ssh torus@alpha5.tor.us "rm -rf ~/alpha5-torus-website/*"
-            tar czf - dist/ | ssh torus@alpha5.tor.us "cat > ~/alpha5-torus-website/dist.tgz"
-            ssh torus@alpha5.tor.us "cd ~/alpha5-torus-website && tar zxvf dist.tgz"
+            tar czf - dist/ | ssh torus@alpha5.tor.us "rm -rf ~/alpha5-torus-website/* && tar -zxf - -C ~/alpha5-torus-website/"
 
 workflows:
   version: 2
