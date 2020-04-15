@@ -1,16 +1,27 @@
+.card-header {
+  background: #FFFFFF;
+  box-sizing: border-box;
+  border-radius: 6px;
+  line-height: 0;
+
+  .close-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: var(--v-text_1-base);
+  }
+}
+
 .qr-container img {
-  width: 260px;
+  width: 177px;
   @media screen and (max-width: 600px) {
-    max-width: 260px;
+    max-width: 177px;
     width: inherit;
   }
 }
 
-.v-btn.qr-btn {
-  background-color: #F9F9FB;
-  color: #7F8FA4;
-  &.theme--dark {
-    background-color: var(--v-torusBlack2-base);
-    color: #5C6C7F;
+.theme--dark {
+  .card-header {
+    background: var(--v-torusBlack2-base);
   }
 }
