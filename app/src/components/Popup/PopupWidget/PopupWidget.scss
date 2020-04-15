@@ -3,9 +3,34 @@
   bottom: 30px;
   left: 30px;
 
+  &__login-btn {
+    border-radius: 28px;
+    .torus-widget__login {
+      display: block;
+    }
+    .torus-widget__login-with {
+      display: none;
+      width: 125px;
+    }
+    &:hover {
+      width: 150px;
+      .torus-widget__login {
+        display: none;
+      }
+      .torus-widget__login-with {
+        display: block;
+      }
+    }
+  }
+
   &__logo {
     max-width: 25px;
     max-height: 25px;
+  }
+
+  &__login {
+    max-width: 30px;
+    max-height: 30px;
   }
 
   &__panel {

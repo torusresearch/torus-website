@@ -1,10 +1,6 @@
 <template>
   <v-layout>
     <v-flex xs12 text-center>
-      <v-btn color="primary" dark @click.stop="loginDialog = true">
-        Login
-      </v-btn>
-
       <v-dialog v-model="loginDialog" max-width="375" persistent>
         <v-card class="login-dialog-container">
           <v-layout wrap>
@@ -16,7 +12,7 @@
                 height="30"
                 :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
               />
-              <v-btn class="close-btn" icon @click="loginDialog = false">
+              <v-btn class="close-btn" icon @click="closeDialog">
                 <v-icon>$vuetify.icons.close</v-icon>
               </v-btn>
             </v-flex>
@@ -90,9 +86,14 @@ import { DISCORD, FACEBOOK, GOOGLE, REDDIT, TWITCH } from '../../../utils/enums'
 
 export default {
   name: 'PopupLogin',
+  props: {
+    loginDialog: {
+      type: Boolean,
+      dafault: false,
+    },
+  },
   data() {
     return {
-      loginDialog: false,
       GOOGLE,
       FACEBOOK,
       REDDIT,
@@ -127,6 +128,9 @@ export default {
   methods: {
     loginBtnHover(verifier) {
       if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
+    },
+    closeDialog() {
+      this.$emit('closeDialog')
     },
     ...mapActions({
       triggerLogin: 'triggerLogin',

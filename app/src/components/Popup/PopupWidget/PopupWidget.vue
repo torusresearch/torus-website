@@ -1,22 +1,26 @@
 <template>
   <div class="torus-widget">
-    <v-card class="torus-widget__panel pa-4">
+    <v-card v-if="loggedIn && activeWidget" class="torus-widget__panel pa-4">
       <div class="d-flex torus-widget__user-details">
         <div class="avatar-container">
           <v-avatar size="32">
-            <img src="https://avatars2.githubusercontent.com/u/4738957?s=460&v=4" alt="John" />
+            <img :src="userInfo.profileImage" />
           </v-avatar>
         </div>
-        <div class="details-container d-flex flex-column ml-2">
+        <div class="details-container d-flex flex-column ml-2 pr-2">
           <div class="d-flex align-center">
-            <img class="details-container__icon" :src="require(`../../../../public/img/icons/login-google-grey.svg`)" />
-            <div class="details-container__text ml-2">llenoil@gmail.com</div>
+            <img class="details-container__icon" :src="require(`../../../../public/img/icons/login-${userInfo.verifier}-grey.svg`)" />
+            <div class="details-container__text ml-2">{{ userInfo.verifierId }}</div>
             <v-icon size="16" class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
           </div>
           <div class="d-flex align-center">
             <img class="details-container__icon" :src="require(`../../../../public/img/icons/address-wallet.svg`)" />
-            <div class="details-container__text ml-2">0x92232w34D4...c13ef33bE47</div>
-            <v-icon size="8" class="ml-auto text_2--text">$vuetify.icons.copy</v-icon>
+            <div class="details-container__text ml-2">{{ address }}</div>
+            <div class="ml-auto mr-1">
+              <ShowToolTip :address="address">
+                <v-icon size="8" class="text_2--text">$vuetify.icons.copy</v-icon>
+              </ShowToolTip>
+            </div>
           </div>
         </div>
       </div>
@@ -26,7 +30,7 @@
             <span class="caption text_2--text">TOTAL VALUE</span>
           </div>
           <div>
-            <span class="amount">0.1443 USD</span>
+            <span class="amount">{{ totalPortfolioValue }} {{ selectedCurrency }}</span>
           </div>
         </div>
         <div class="ml-auto">
@@ -48,37 +52,154 @@
         <div class="d-flex mb-4 mt-2">
           <div class="avatar-container">
             <v-avatar size="40">
-              <img src="https://avatars2.githubusercontent.com/u/4738957?s=460&v=4" alt="John" />
+              <img
+                v-if="recentTransaction.type === CONTRACT_TYPE_ERC20 || recentTransaction.action === ACTIVITY_ACTION_TOPUP"
+                :src="require(`../../../../public/images/${recentTransaction.actionIcon}`)"
+                :alt="recentTransaction.from"
+                class="mr-2"
+                height="36"
+              />
+              <img
+                v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC721"
+                :src="recentTransaction.actionIcon"
+                class="mr-2"
+                height="36"
+                large
+                color="primary"
+              />
+              <v-icon v-else class="mx-2" color="primary">{{ recentTransaction.actionIcon }}</v-icon>
             </v-avatar>
           </div>
           <div class="ml-4">
-            <div class="body-2 text_2--text">Send ETH</div>
-            <div class="caption">To: 0x92D4...c1bE47</div>
+            <div class="body-2 text_2--text">{{ recentTransaction.actionText }}</div>
+            <div class="caption">
+              {{
+                recentTransaction.action === ACTIVITY_ACTION_SEND
+                  ? `${t('walletActivity.to')} ${recentTransaction.slicedTo}`
+                  : `${t('walletActivity.from')} ${recentTransaction.slicedFrom}`
+              }}
+            </div>
           </div>
           <div class="ml-auto" :style="{ lineHeight: '0px' }">
-            <span class="body-2 text_2--text">0.0001 ETH</span>
+            <span class="body-2 text_2--text">{{ recentTransaction.totalAmountString }}</span>
           </div>
         </div>
       </div>
     </v-card>
-    <v-btn color="primary" fab @click="activeWidget = !activeWidget">
-      <BeatLoader v-if="isLoading" size="10px" color="white" />
-      <img v-else class="torus-widget__logo" :src="require(`../../../../public/img/icons/torus-icon-light.svg`)" />
+    <v-btn v-if="loggedIn" color="primary" fab @click="activeWidget = !activeWidget">
+      <img class="torus-widget__logo" :src="require(`../../../../public/img/icons/torus-icon-light.svg`)" />
+    </v-btn>
+    <v-btn v-else-if="loginInProgress" color="primary" fab>
+      <BeatLoader v-if="loginInProgress" size="10px" color="white" />
+    </v-btn>
+    <v-btn v-else class="torus-widget__login-btn" color="primary" fab @click="login">
+      <img class="torus-widget__login" :src="require(`../../../../public/images/login.png`)" />
+      <img class="torus-widget__login-with" :src="require(`../../../../public/images/login-with-torus.png`)" />
     </v-btn>
   </div>
 </template>
 
 <script>
 import BeatLoader from 'vue-spinner/src/BeatLoader'
+import { mapState } from 'vuex'
+
+import { ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_TOPUP, CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ERC721 } from '../../../utils/enums'
+import { addressSlicer, significantDigits } from '../../../utils/utils'
+import ShowToolTip from '../../helpers/ShowToolTip'
 
 export default {
   name: 'PopupWidget',
-  components: { BeatLoader },
+  components: { BeatLoader, ShowToolTip },
+  props: {
+    loggedIn: {
+      type: Boolean,
+      default: false,
+    },
+    loginInProgress: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
-      isLoading: false,
       activeWidget: false,
+      CONTRACT_TYPE_ERC20,
+      ACTIVITY_ACTION_TOPUP,
+      ACTIVITY_ACTION_SEND,
+      CONTRACT_TYPE_ERC721,
     }
+  },
+  computed: {
+    ...mapState({
+      address: (state) => `${state.selectedAddress.slice(0, 12)}...${state.selectedAddress.slice(-12)}`,
+      userInfo: 'userInfo',
+      selectedCurrency: 'selectedCurrency',
+      wallets: (state) => Object.keys(state.wallet).filter((accumulator) => accumulator !== state.selectedAddress),
+    }),
+    totalPortfolioValue() {
+      return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
+    },
+    recentTransaction() {
+      const { pastTransactions } = this.$store.state
+      const recent = pastTransactions
+        .map((transaction) => {
+          const { id, type, created_at: createdAt, to, from } = transaction
+          let totalAmountString = ''
+          if (transaction.type === CONTRACT_TYPE_ERC721) totalAmountString = transaction.symbol
+          else if (transaction.type === CONTRACT_TYPE_ERC20)
+            totalAmountString = `${significantDigits(Number.parseFloat(transaction.total_amount))} ${transaction.symbol}`
+          else totalAmountString = `${significantDigits(Number.parseFloat(transaction.total_amount))} ETH`
+          transaction.action = this.wallets.includes(to) ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
+          return {
+            id,
+            date: new Date(createdAt),
+            type,
+            action: transaction.action,
+            actionIcon: this.getIcon(transaction),
+            actionText: this.getActionText(transaction),
+            slicedTo: addressSlicer(to),
+            slicedFrom: addressSlicer(from),
+            totalAmountString,
+          }
+        })
+        .sort((a, b) => b.date - a.date)
+
+      return recent.length > 0 ? recent[0] : []
+    },
+  },
+  methods: {
+    login() {
+      this.$emit('onLogin')
+    },
+    getIcon(transaction) {
+      if (transaction.action === ACTIVITY_ACTION_TOPUP) {
+        return `provider-${transaction.from.toLowerCase()}.svg`
+      }
+      if (transaction.action === ACTIVITY_ACTION_SEND || transaction.action === ACTIVITY_ACTION_RECEIVE) {
+        if (transaction.type === CONTRACT_TYPE_ERC721) {
+          return transaction.type_image_link // will be an opensea image url
+        }
+        if (transaction.type === CONTRACT_TYPE_ERC20) {
+          return `logos/${transaction.type_image_link === 'n/a' ? 'eth.svg' : transaction.type_image_link}`
+        }
+        const action = transaction.action.split('.')
+        return action.length >= 1 ? `$vuetify.icons.coins_${transaction.action.split('.')[1].toLowerCase()}` : ''
+      }
+      return ''
+    },
+    getActionText(transaction) {
+      if (transaction.type_name === 'n/a' || transaction.type === 'n/a') {
+        return `${transaction.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+          transaction.type_name !== 'n/a' ? transaction.type_name : transaction.type.toUpperCase()
+        }`
+      }
+      if (transaction.type_name || transaction.type) {
+        return `${transaction.action === ACTIVITY_ACTION_SEND ? this.t('walletActivity.sent') : this.t('walletActivity.received')} ${
+          transaction.type === 'eth' ? transaction.type_name.toUpperCase() : transaction.type_name
+        }`
+      }
+      return `${`${this.t(transaction.action)} ${transaction.from}`} `
+    },
   },
 }
 </script>
