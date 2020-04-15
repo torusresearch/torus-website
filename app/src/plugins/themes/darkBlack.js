@@ -10,7 +10,7 @@ export default {
   torusGray3: '#A2A5B5',
   torusGray4: '#F9F9FB',
   torusFont1: '#FFFFFF',
-  torusFont2: '#7F8FA4',
+  torusFont2: '#EEF2F4',
   torusFontLink_1: '#0364FF',
   torusFontLink_2: '#5495F7',
   torusBlack: '#252529',
