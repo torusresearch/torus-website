@@ -2,8 +2,8 @@
   border-style: dashed;
 }
 
-.private-key, .password-input {
-  ::v-deep &.v-input.v-text-field--outlined > .v-input__control .v-input__icon--append .v-icon {
-    color: var(--v-text_2-base);
+.private-key.v-input, .password-input.v-input {
+  ::v-deep .v-input__append-inner {
+    margin-top: 10px;
   }
 }

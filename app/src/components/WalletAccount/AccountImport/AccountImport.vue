@@ -31,13 +31,18 @@
                     outlined
                     :type="showPrivateKey ? 'text' : 'password'"
                     :rules="[rules.required]"
-                    :append-icon="showPrivateKey ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                     name="private-key"
                     :label="t('accountMenu.privateKey')"
                     single-line
                     @input="canShowError = false"
                     @click:append="togglePrivShow"
-                  ></v-text-field>
+                  >
+                    <template v-slot:append>
+                      <v-btn icon @click="togglePrivShow">
+                        <v-icon class="text_3--text">{{ showPrivateKey ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on' }}</v-icon>
+                      </v-btn>
+                    </template>
+                  </v-text-field>
                 </v-flex>
                 <v-flex v-show="canShowError" xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <span class="red--text">{{ error }}</span>
@@ -91,11 +96,18 @@
                     outlined
                     name="password"
                     :rules="[rules.required]"
-                    :append-icon="showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                     :type="showJsonPassword ? 'text' : 'password'"
                     :placeholder="t('accountMenu.password')"
                     @click:append="toggleJsonPasswordShow"
-                  ></v-text-field>
+                  >
+                    <template v-slot:append>
+                      <v-btn icon @click="toggleJsonPasswordShow">
+                        <v-icon class="text_3--text">
+                          {{ showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on' }}
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                  </v-text-field>
                 </v-flex>
                 <v-flex v-show="canShowError" xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <span class="red--text">{{ error }}</span>

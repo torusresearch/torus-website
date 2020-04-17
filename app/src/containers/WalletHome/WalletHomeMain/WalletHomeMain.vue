@@ -10,8 +10,8 @@
       <v-flex px-4 xs12 md6>
         <v-card class="card-total elevation-1 px-6 py-4">
           <div class="d-flex align-center">
-            <div>
-              <span class="title text_1--text">{{ t('walletHome.totalValue') }}</span>
+            <div :style="{ lineHeight: '1em' }">
+              <span class="title text_1--text" :style="{ lineHeight: '1em' }">{{ t('walletHome.totalValue') }}</span>
             </div>
             <div class="ml-auto">
               <NetworkDisplay :network="storeNetworkType.networkName" :store-network-type="storeNetworkType"></NetworkDisplay>
