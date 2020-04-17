@@ -29,7 +29,7 @@
             <v-icon v-if="acc.type === 'SC'" size="16">$vuetify.icons.smart_contract</v-icon>
             <img v-else :src="require(`../../../../public/img/icons/google-grey-dark.svg`)" style="width: 16px;" />
           </div>
-          <div class="caption text_1--text font-weight-bold">
+          <div class="caption text_1--text font-weight-bold" :style="{ paddingLeft: '2px' }">
             <span>{{ acc.type === 'SC' ? 'Smart Contract Wallet' : userInfo.email }}</span>
           </div>
           <div class="caption ml-auto text_2--text text-right">
@@ -37,7 +37,7 @@
           </div>
         </div>
         <div class="d-flex align-center mt-1">
-          <div>
+          <div :style="{ paddingLeft: '2px' }">
             <span class="account-list__address">{{ acc.address }}</span>
           </div>
           <div class="ml-auto">
@@ -79,11 +79,11 @@
         router
         :to="headerItem.route"
       >
-        <v-list-item-action class="mr-2" :style="{ marginLeft: '3px' }">
+        <v-list-item-action class="mr-1" :style="{ marginLeft: '3px' }">
           <v-icon :size="headerItem.icon === 'transaction' ? 13 : 15" class="text_2--text" v-text="`$vuetify.icons.${headerItem.icon}`" />
         </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-title class="subtitle-2">{{ headerItem.display }}</v-list-item-title>
+          <v-list-item-title class="caption font-weight-bold text_1--text">{{ headerItem.display }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
       <v-list-item href="https://docs.tor.us/#users" target="_blank">
@@ -95,7 +95,7 @@
     </v-list>
 
     <v-divider v-if="$vuetify.breakpoint.xsOnly"></v-divider>
-    <v-list v-if="$vuetify.breakpoint.xsOnly">
+    <v-list v-if="$vuetify.breakpoint.xsOnly" class="ml-1">
       <LanguageSelector></LanguageSelector>
     </v-list>
 

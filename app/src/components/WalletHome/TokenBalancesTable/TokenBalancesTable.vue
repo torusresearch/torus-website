@@ -18,10 +18,10 @@
             </div>
           </div>
           <div class="d-flex align-center py-3 px-4">
-            <div class="more-info text_3--text">
+            <div class="caption text_3--text">
               {{ balance.currencyRateText }}
             </div>
-            <div class="ml-auto more-info text_3--text">
+            <div class="ml-auto caption text_3--text">
               {{ balance.currencyBalance }}
             </div>
           </div>

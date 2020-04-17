@@ -1,8 +1,8 @@
 <template>
-  <div class="d-inline-flex network-chip align-center" :class="chipClass">
+  <div class="d-flex network-chip align-center" :class="chipClass">
     <v-icon v-text="'$vuetify.icons.network'"></v-icon>
     <span class="network-chip__name text-clamp-one" :class="{ 'network-chip__name--mobile': $vuetify.breakpoint.xsOnly }">
-      {{ $vuetify.breakpoint.xsOnly ? shortSelectedNetwork : selectedNetwork }}
+      {{ $vuetify.breakpoint.xsOnly && !activityPage ? shortSelectedNetwork : selectedNetwork }}
     </span>
   </div>
 </template>
@@ -23,6 +23,10 @@ export default {
       },
     },
     isPlain: {
+      type: Boolean,
+      default: false,
+    },
+    activityPage: {
       type: Boolean,
       default: false,
     },

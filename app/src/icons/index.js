@@ -44,6 +44,7 @@ import TimeIcon from './TimeIcon.vue'
 import TokenIcon from './TokenIcon.vue'
 import TopupIcon from './TopupIcon.vue'
 import TransactionIcon from './TransactionIcon.vue'
+import TrashIcon from './TrashIcon.vue'
 import VisibilityOffIcon from './VisibilityOffIcon.vue'
 import VisibilityOnIcon from './VisibilityOnIcon.vue'
 
@@ -191,5 +192,8 @@ export default {
   },
   login_more: {
     component: LoginMoreIcon,
+  },
+  trash: {
+    component: TrashIcon,
   },
 }
