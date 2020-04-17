@@ -583,20 +583,20 @@ export default {
         oauthStream.write({ err: 'user closed popup' })
       })
     } else if (verifier === TELEGRAM) {
-      const { auth_date: authDate, first_name: firstName, hash, id, last_name: lastName, photo_url: profileImage, username } = telegramUser || {}
+      Object.keys(telegramUser).forEach((key) => {
+        telegramUser[key] = telegramUser[key].toString()
+      })
+
+      const { hash, ...data } = telegramUser
 
       commit('setUserInfo', {
-        profileImage,
-        name: `${firstName} ${lastName}`,
-        verifierId: username,
+        profileImage: telegramUser.photo_url,
+        name: `${telegramUser.first_name} ${telegramUser.last_name}`,
+        verifierId: telegramUser.id,
         verifier: TELEGRAM,
         verifierParams: {
-          verifier_id: username,
-          first_name: firstName,
-          last_name: lastName,
-          photo_url: profileImage,
-          id: id.toString(),
-          auth_date: authDate.toString(),
+          verifier_id: telegramUser.id,
+          data,
         },
       })
 
