@@ -23,21 +23,33 @@
           <div class="display-1 text_1--text mb-2">Your Public Address</div>
           <div class="mb-2">
             <ShowToolTip :address="selectedAddress">
-              <span class="caption torusFont2--text">{{ slicedAddress }}</span>
+              <span class="public-address torusFont2--text">{{ selectedAddress }}</span>
               <v-icon size="12" class="torusFont2--text ml-1" v-text="'$vuetify.icons.copy'" />
             </ShowToolTip>
           </div>
           <div class="qr-container mb-8">
             <VueQr
-              ref="address-qr"
-              :logo-src="require(`../../../../public/images/torus-circle.svg`)"
-              :margin="10"
-              :logo-scale="0.4"
-              :logo-corner-radius="145"
-              logo-background-color="white"
+              v-show="$vuetify.theme.dark"
+              :color-dark="'#2F3136'"
+              :background-color="'#2F3136'"
+              :logo-background-color="'#2F3136'"
+              :logo-src="require(`../../../../public/img/icons/t-fill.svg`)"
+              :logo-scale="0.28"
+              :margin="1"
               :text="selectedAddress"
               :size="800"
-              :dot-scale="1"
+              :dot-scale="0.6"
+              :correct-level="3"
+            ></VueQr>
+            <VueQr
+              v-show="!$vuetify.theme.dark"
+              ref="address-qr"
+              :logo-src="require(`../../../../public/img/icons/t-fill.svg`)"
+              :margin="1"
+              :logo-scale="0.28"
+              :text="selectedAddress"
+              :size="800"
+              :dot-scale="0.6"
               :correct-level="3"
             ></VueQr>
           </div>

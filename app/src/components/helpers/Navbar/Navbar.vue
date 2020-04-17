@@ -40,7 +40,7 @@
       v-show="successMsg"
       fixed
       :color="`success ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
-      :class="`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`"
+      :class="[`${$vuetify.theme.dark ? 'white--text' : 'success--text text--darken-1'}`, lrcMsg ? 'is-lrc' : '']"
     >
       <div class="container d-flex align-center">
         <v-spacer />
@@ -58,7 +58,7 @@
       v-show="errorMsg"
       fixed
       :color="`error ${$vuetify.theme.dark ? '' : 'lighten-5'}`"
-      :class="`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`"
+      :class="[`${$vuetify.theme.dark ? 'white--text' : 'error--text text--darken-1'}`, lrcMsg ? 'is-lrc' : '']"
     >
       <div class="container d-flex align-center">
         <v-spacer />

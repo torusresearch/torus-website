@@ -130,7 +130,7 @@
         ></PromotionCard>
       </v-flex>
     </v-layout>
-    <v-layout class="mt-12">
+    <v-layout wrap class="mt-12">
       <v-flex xs12>
         <v-tabs v-model="activeTab" class="home-tab" centered>
           <v-tab :key="t('walletHome.tokens')" class="home-tab-token font-weight-bold">
@@ -142,6 +142,16 @@
             {{ t('walletHome.collectibles') }}
           </v-tab>
         </v-tabs>
+      </v-flex>
+      <v-flex v-if="showSearch" xs12 mt-4>
+        <v-text-field
+          v-model="search"
+          class="search-tokens text_2--text body-2"
+          outlined
+          hide-details
+          placeholder="Search for Tokens"
+          append-icon="$vuetify.icons.search"
+        ></v-text-field>
       </v-flex>
     </v-layout>
 
@@ -211,7 +221,7 @@ export default {
       return this.$store.state.networkType.host === MAINNET
     },
     showSearch() {
-      return this.finalBalancesArray.length > 5
+      return this.finalBalancesArray.length > 10
     },
     isFreshAccount() {
       return this.$store.state.isNewUser

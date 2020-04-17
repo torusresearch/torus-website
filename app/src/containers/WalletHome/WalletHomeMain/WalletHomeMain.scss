@@ -9,6 +9,32 @@
   margin-bottom: -10px;
 }
 
+::v-deep .search-tokens.v-input.v-text-field--outlined {
+  & > .v-input__control {
+    & > .v-input__slot {
+      height: 40px;
+      min-height: 40px;
+      max-width: 562px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.3);
+      box-shadow: inset 0px 4px 28px rgba(46, 91, 255, 0.06);
+      border-radius: 6px;
+      .v-input__append-inner {
+        margin-top: 8px;
+        .v-icon {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+  }
+  &.theme--dark {
+    & > .v-input__control > .v-input__slot {
+      background: var(--v-torusBlack2-base);
+    }
+  }
+}
+
 .home-tab {
   ::v-deep .v-tabs-slider-wrapper {
     display: none;

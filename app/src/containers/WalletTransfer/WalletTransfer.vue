@@ -29,7 +29,7 @@
           </div>
         </v-card>
       </v-flex>
-      <v-flex xs12 sm6>
+      <v-flex xs12 sm6 px-4>
         <v-form ref="form" v-model="formValid" lazy-validation aria-autocomplete="off" autocomplete="off" @submit.prevent="sendCoin">
           <v-card :flat="$vuetify.breakpoint.xsOnly" class="pa-6 form-container" :class="$vuetify.breakpoint.xsOnly ? 'mobile' : 'elevation-1'">
             <v-layout wrap>

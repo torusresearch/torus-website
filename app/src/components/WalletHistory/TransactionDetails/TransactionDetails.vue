@@ -87,7 +87,7 @@
           <v-list-item>
             <v-list-item-content class="details-label">{{ t('walletActivity.network') }}:</v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
-              <NetworkDisplay :network="transaction.networkType" :store-network-type="storeNetworkType"></NetworkDisplay>
+              <NetworkDisplay activity-page="true" :network="transaction.networkType" :store-network-type="storeNetworkType"></NetworkDisplay>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-if="transaction.etherscanLink">

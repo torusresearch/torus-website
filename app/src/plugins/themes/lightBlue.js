@@ -18,7 +18,7 @@ export default {
   // Fixed Colors
   text_1: '#0F1222',
   text_2: '#5C6C7F',
-  text_3: '#B3C0CE',
+  text_3: '#A2A5B5',
   primary: {
     base: '#0364FF',
     lighten5: '#E9EEFE',
