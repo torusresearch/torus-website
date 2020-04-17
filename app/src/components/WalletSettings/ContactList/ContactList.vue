@@ -50,7 +50,7 @@
             <template v-for="contact in contacts">
               <v-list-item :key="`contact-${contact.id}`" class="pl-0 pr-1">
                 <v-list-item-avatar class="ma-0">
-                  <img :src="require(`../../../../public/img/icons/${contact.verifier}-grey.svg`)" style="width: 16px;" class="ma-1" />
+                  <img :src="require(`../../../../public/img/icons/${contact.verifier.toLowerCase()}-grey.svg`)" style="width: 16px;" class="ma-1" />
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title class="font-weight-regular caption">
