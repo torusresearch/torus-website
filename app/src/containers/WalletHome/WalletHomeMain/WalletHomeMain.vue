@@ -9,7 +9,7 @@
     <v-layout wrap mx-n4 mt-7>
       <v-flex px-4 xs12 md6>
         <v-card class="card-total elevation-1 px-6 py-4">
-          <div class="d-flex align-center">
+          <div class="d-flex align-center" :style="{ marginBottom: '5px' }">
             <div :style="{ lineHeight: '1em' }">
               <span class="title text_1--text" :style="{ lineHeight: '1em' }">{{ t('walletHome.totalValue') }}</span>
             </div>
@@ -167,7 +167,7 @@
 </template>
 
 <script>
-// import ComponentLoader from '../../../components/helpers/ComponentLoader'
+import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
 import QuickAddress from '../../../components/helpers/QuickAddress'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
@@ -179,8 +179,7 @@ import { LOCALE_EN, MAINNET } from '../../../utils/enums'
 
 export default {
   name: 'WalletHome',
-  // components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, LearnMore, ComponentLoader, NetworkDisplay },
-  components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, LearnMore, NetworkDisplay },
+  components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, LearnMore, ComponentLoader, NetworkDisplay },
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
@@ -221,7 +220,7 @@ export default {
       return this.$store.state.networkType.host === MAINNET
     },
     showSearch() {
-      return this.finalBalancesArray.length > 10
+      return this.finalBalancesArray.length > 10 || true
     },
     isFreshAccount() {
       return this.$store.state.isNewUser

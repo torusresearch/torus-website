@@ -27,7 +27,7 @@
         <div class="d-flex align-center">
           <div class="mr-2" :style="{ lineHeight: '0' }">
             <v-icon v-if="acc.type === 'SC'" size="16">$vuetify.icons.smart_contract</v-icon>
-            <img v-else :src="require(`../../../../public/img/icons/google-grey-dark.svg`)" style="width: 16px;" />
+            <img v-else :src="require(`../../../../public/img/icons/${userInfo.verifier}-grey-dark.svg`)" style="width: 16px;" />
           </div>
           <div class="caption text_1--text font-weight-bold" :style="{ paddingLeft: '2px' }">
             <span>{{ acc.type === 'SC' ? 'Smart Contract Wallet' : userInfo.email }}</span>
@@ -165,7 +165,6 @@ export default {
     },
     wallets() {
       const { wallet: storeWallet, weiBalance: storeWalletBalance, selectedCurrency } = this.$store.state || {}
-
       const wallets = Object.keys(storeWallet).reduce((accts, x) => {
         const computedBalance = new BigNumber(storeWalletBalance[x]).dividedBy(new BigNumber(10).pow(new BigNumber(18))) || new BigNumber(0)
         const tokenRateMultiplier = new BigNumber(1)
@@ -175,14 +174,16 @@ export default {
         //   storeWallet[x].type === 'EOA' ||
         //   (storeWallet[x].type === 'SC' && storeWallet[x].network === this.$store.state.networkType.host && storeWallet[x].address != 'PROCESSING')
         // )
-        accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${selectedCurrency}`, ...storeWallet[x] })
+        if (typeof storeWallet[x] === 'string') {
+          accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${selectedCurrency}` })
+        } else {
+          accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${selectedCurrency}`, ...storeWallet[x] })
+        }
+
         return accts
       }, [])
       return wallets
     },
-    // wallets() {
-    //   return Object.keys(this.$store.state.wallet).map((wallet, id) => ({ id: id, address: wallet }))
-    // },
     filteredWallets() {
       return this.wallets.filter((accumulator) => accumulator.address !== this.selectedAddress)
     },

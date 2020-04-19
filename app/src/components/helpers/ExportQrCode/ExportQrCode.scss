@@ -1,3 +1,12 @@
+.v-btn.v-btn--icon.qr-btn {
+  background-color: var(--v-torusGray4-base);
+  color: var(--v-torusFont2-base);
+  &.theme--dark {
+    background-color: var(--v-torusBlack2-base);
+    color: #5C6C7F;
+  }
+}
+
 .card-header {
   background: #FFFFFF;
   box-sizing: border-box;

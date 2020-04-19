@@ -32,12 +32,12 @@
       <v-card color="elevation-1">
         <v-card-text class="pa-0">
           <div class="d-flex align-center py-3 px-4 card-header elevation-1">
-            <div class="flex-grow-1 text-clamp-one">
+            <div class="flex-grow-1 text-clamp-one" :style="{ height: '25px' }">
               <span class="caption text_1--text font-weight-bold">{{ t('walletHome.curious') }}</span>
             </div>
           </div>
-          <div class="d-flex align-center py-3 px-4">
-            <v-btn text x-small class="caption mb-1 mx-auto torusBrand1--text font-weight-medium" @click="topup">{{ t('walletHome.buyThem') }}</v-btn>
+          <div class="text-center py-3 px-4" :style="{ lineHeight: '0' }">
+            <a class="torusBrant1--text caption font-weight-medium" @click="topup">{{ t('walletHome.buyThem') }}</a>
           </div>
         </v-card-text>
       </v-card>
