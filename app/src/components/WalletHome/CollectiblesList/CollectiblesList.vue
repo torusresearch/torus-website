@@ -13,7 +13,9 @@
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
-        <div v-if="$vuetify.breakpoint.xsOnly" class="text-right text_3--text">{{ collectible.assets.length }} Assets</div>
+        <div v-if="$vuetify.breakpoint.xsOnly" class="text-right text_3--text">
+          {{ collectible.assets.length }} Asset{{ collectible.assets.length > 1 ? 's' : '' }}
+        </div>
       </v-card>
     </v-flex>
   </v-layout>

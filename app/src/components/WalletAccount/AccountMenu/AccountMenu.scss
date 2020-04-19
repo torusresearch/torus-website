@@ -13,7 +13,7 @@
       border-radius: 9px;
       &.theme--dark {
         border: 0;
-        background: #2F3136;
+        background: var(--v-torusBlack2-base);
         box-shadow: 5px 5px 10px #212121, -5px -5px 10px rgba(55, 56, 60, 0.25);
       }
     }

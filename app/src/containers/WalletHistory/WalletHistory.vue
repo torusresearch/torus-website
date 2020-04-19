@@ -2,9 +2,9 @@
   <v-container class="wallet-activity" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <v-layout mt-3 wrap>
       <v-flex xs12 md7>
-        <div class="text_1--text font-weight-bold display-1 float-left">{{ t('walletActivity.transactionActivities') }}</div>
+        <div class="text_2--text font-weight-bold display-1 float-left">{{ t('walletActivity.transactionActivities') }}</div>
       </v-flex>
-      <v-flex xs12 md5>
+      <v-flex xs12 md5 :class="$vuetify.breakpoint.xsOnly ? 'mt-7' : ''">
         <v-layout mx-n2>
           <v-flex xs6 px-2>
             <v-menu offset-y>
@@ -62,7 +62,7 @@
           </v-flex>
         </v-layout>
       </v-flex>
-      <v-flex xs12 mt-7>
+      <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'mt-6' : 'mt-7'">
         <TxHistoryTable
           :selected-action="selectedAction"
           :selected-period="selectedPeriod"

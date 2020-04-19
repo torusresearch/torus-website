@@ -1,6 +1,6 @@
 .quick-address {
   .v-btn.address-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
-    background-color: #F9F9FB;
+    background-color: var(--v-torusGray4-base);
     color: #7F8FA4;
     border-radius: 12px;
     letter-spacing: 0.1px;

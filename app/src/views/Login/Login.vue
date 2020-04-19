@@ -9,7 +9,7 @@
                 class="mobile-carousel"
                 vertical
                 height="650"
-                interval="5000"
+                interval="7000"
                 hide-delimiters
                 next-icon="$vuetify.icons.login_more"
                 prev-icon="$vuetify.icons.login_more"
@@ -88,7 +88,7 @@
                   </v-layout>
                 </v-carousel-item>
                 <v-carousel-item>
-                  <v-carousel cycle height="650" interval="5000" :show-arrows="false" hide-delimiters>
+                  <v-carousel cycle height="650" interval="7000" :show-arrows="false" hide-delimiters>
                     <v-layout class="login-panel-right login-panel-right--mobile">
                       <v-flex xs10 text-center mx-auto>
                         <v-carousel-item v-for="slide in slides" :key="slide.id">
@@ -228,7 +228,7 @@
         <v-flex v-if="$vuetify.breakpoint.smAndUp" sm4 md6 fill-height class="login-panel-right" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
           <v-layout wrap fill-height align-center>
             <v-flex xs12 text-center>
-              <v-carousel cycle height="650" interval="5000" :show-arrows="false">
+              <v-carousel cycle height="650" interval="7000" :show-arrows="false">
                 <v-carousel-item v-for="slide in slides" :key="slide.id">
                   <img
                     class="mb-7 login-panel-right__image"
