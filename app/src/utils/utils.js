@@ -49,6 +49,7 @@ import {
   SVG,
   THEME_DARK_BLACK_NAME,
   WYRE,
+  XANPOOL,
 } from './enums'
 
 const { BN } = ethUtil
@@ -406,6 +407,21 @@ export const paymentProviders = {
     includeFees: true,
     api: true,
     receiveHint: 'You don’t need an ID to complete this transaction!',
+  },
+  [XANPOOL]: {
+    line1: 'Pay with PayNow / InstaPay / FPS / GoJekPay / UPI / PromptPay / VietelPay / DuitNow',
+    line2: 'flat 2.5% buying, flat 3% selling',
+    line3: '$2,500 / day',
+    line4: 'ETH, USDT',
+    status: ACTIVE,
+    logoExtension: SVG,
+    supportPage: 'mailto:support@xanpool.com',
+    minOrderValue: 1,
+    maxOrderValue: 2500,
+    validCurrencies: ['SGD', 'HKD', 'MYR', 'PHP', 'INR', 'VND', 'THB', 'IDR'],
+    validCryptoCurrencies: ['ETH', 'USDT'],
+    includeFees: true,
+    api: true,
   },
 }
 
