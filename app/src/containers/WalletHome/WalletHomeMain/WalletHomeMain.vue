@@ -84,12 +84,12 @@
         </v-card>
       </v-flex>
       <v-flex v-if="isFreshAccount" px-4 xs12 md6 :class="$vuetify.breakpoint.mdAndUp ? 'mt-0' : 'mt-7'">
-        <v-card class="card-shadow elevation-1">
+        <v-card class="card-shadow elevation-1" :style="{ height: $vuetify.breakpoint.xsOnly ? 'inherit' : '159px' }">
           <v-card-text class="pt-0" :class="$vuetify.breakpoint.lgAndUp ? 'pb-2 px-8' : 'pb-3 px-6'">
             <v-layout>
               <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
                 <div class="body-1 font-weight-bold">{{ t('walletHome.welcome') }} Torus.</div>
-                <v-dialog v-model="dialogLearnMore" max-width="700">
+                <v-dialog v-model="dialogOnboarding" max-width="600">
                   <template v-slot:activator="{ on }">
                     <div class="body-2'">
                       <a id="learn-more-btn" class="torusBrand1--text font-weight-bold" v-on="on">
@@ -98,13 +98,13 @@
                       {{ t('walletHome.aboutWallet') }}.
                     </div>
                   </template>
-                  <LearnMore @onClose="dialogLearnMore = false" />
+                  <Onboarding @onClose="dialogOnboarding = false" />
                 </v-dialog>
               </v-flex>
               <v-flex xs4 pt-4 class="text-right hidden-xs-only">
                 <img
                   :src="require(`../../../../public/images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)"
-                  style="height: 90px;"
+                  style="height: 120px;"
                 />
               </v-flex>
             </v-layout>
@@ -171,7 +171,7 @@ import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
 import QuickAddress from '../../../components/helpers/QuickAddress'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
-import LearnMore from '../../../components/WalletHome/LearnMore'
+import Onboarding from '../../../components/WalletHome/Onboarding'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
 import TokenBalancesTable from '../../../components/WalletHome/TokenBalancesTable'
 import config from '../../../config'
@@ -179,14 +179,14 @@ import { LOCALE_EN, MAINNET } from '../../../utils/enums'
 
 export default {
   name: 'WalletHome',
-  components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, LearnMore, ComponentLoader, NetworkDisplay },
+  components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, Onboarding, ComponentLoader, NetworkDisplay },
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],
       selected: [],
       search: '',
       lastUpdated: '',
-      dialogLearnMore: false,
+      dialogOnboarding: true,
       activeTab: 0,
     }
   },
