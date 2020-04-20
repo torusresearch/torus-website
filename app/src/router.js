@@ -12,7 +12,6 @@ import Login from './views/Login'
 import Popup from './views/Popup'
 import ProviderChange from './views/ProviderChange'
 import RedirectCatch from './views/RedirectCatch'
-import Test from './views/Test'
 import UserInfoRequest from './views/UserInfoRequest'
 import Wallet from './views/Wallet'
 
@@ -35,12 +34,6 @@ const router = new Router({
       path: '/',
       name: 'login',
       component: Login,
-      meta: { requiresAuth: false },
-    },
-    {
-      path: '/test',
-      name: 'test',
-      component: Test,
       meta: { requiresAuth: false },
     },
     {
