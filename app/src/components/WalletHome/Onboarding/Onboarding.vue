@@ -100,10 +100,10 @@
                 <v-img :src="require(`../../../../public/images/onboarding-3.svg`)" />
               </v-flex>
               <v-flex xs6 px-1 class="align-self-end">
-                <v-layout>
-                  <v-flex xs6></v-flex>
-                  <v-flex xs6>
-                    <v-btn block large color="torusBrand1" class="return-btn torus-btn1" @click="closeDialog">
+                <v-layout mx-n1>
+                  <v-flex v-if="!$vuetify.breakpoint.xsOnly" px-1 xs6></v-flex>
+                  <v-flex xs12 sm6 px-1 class="text-right">
+                    <v-btn :block="!$vuetify.breakpoint.xsOnly" large color="torusBrand1" class="return-btn torus-btn1" @click="closeDialog">
                       Return Home
                     </v-btn>
                   </v-flex>
