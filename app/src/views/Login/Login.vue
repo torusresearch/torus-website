@@ -94,7 +94,7 @@
                         <v-carousel-item v-for="slide in slides" :key="slide.id">
                           <img
                             class="mb-6 login-panel-right__image"
-                            :src="require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide.id}.png`)"
+                            :src="require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide.id}.svg`)"
                           />
                           <div class="headline mb-3 text_2--text">{{ slide.title }}</div>
                           <div class="caption text_2--text">{{ slide.sub_title1 }}</div>
@@ -232,11 +232,7 @@
                 <v-carousel-item v-for="slide in slides" :key="slide.id">
                   <img
                     class="mb-7 login-panel-right__image"
-                    :src="
-                      require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide.id}.${
-                        $vuetify.theme.dark ? 'png' : 'svg'
-                      }`)
-                    "
+                    :src="require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide.id}.svg`)"
                   />
                   <div class="display-1 mb-3 font-weight-medium text_2--text">{{ slide.title }}</div>
                   <div class="body-1 text_2--text">{{ slide.sub_title1 }}</div>
