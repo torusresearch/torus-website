@@ -129,7 +129,8 @@ export default class SmartContractWalletController {
       const biconomyReqObj = {
         userAddress: fromSCW,
         apiId: '5e8d745df64c16288c945064', //ropsten specific
-        params: params
+        params: params,
+        gasPrice: '20000000000' //20Gwei
       }
 
       log.info('SmartContractWalletController', txMeta)
