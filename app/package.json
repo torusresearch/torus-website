@@ -79,6 +79,7 @@
     "terser-webpack-plugin": "^2.3.5",
     "vue": "^2.6.11",
     "vue-content-loader": "^0.2.3",
+    "vue-gtm": "^2.2.0",
     "vue-json-pretty": "^1.6.3",
     "vue-qr": "^2.2.1",
     "vue-qrcode-reader": "^2.1.1",
