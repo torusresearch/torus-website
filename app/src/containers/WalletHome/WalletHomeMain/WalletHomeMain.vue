@@ -89,7 +89,7 @@
             <v-layout>
               <v-flex class="pt-4" :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : $vuetify.breakpoint.lgAndUp ? 'xs8' : 'xs9'">
                 <div class="body-1 font-weight-bold">{{ t('walletHome.welcome') }} Torus.</div>
-                <v-dialog v-model="dialogOnboarding" max-width="600">
+                <v-dialog v-model="dialogOnboarding" persistent max-width="600">
                   <template v-slot:activator="{ on }">
                     <div class="body-2'">
                       <a id="learn-more-btn" class="torusBrand1--text font-weight-bold" v-on="on">
@@ -186,7 +186,7 @@ export default {
       selected: [],
       search: '',
       lastUpdated: '',
-      dialogOnboarding: true,
+      dialogOnboarding: false,
       activeTab: 0,
     }
   },
