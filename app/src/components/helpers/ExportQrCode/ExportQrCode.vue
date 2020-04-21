@@ -20,7 +20,7 @@
           </v-btn>
         </v-flex>
         <v-flex xs12 class="text-center pb-10">
-          <div class="display-1 text_1--text mb-2">Your Public Address</div>
+          <div class="display-1 text_1--text mb-2">{{ t('walletHome.yourPublicAddress') }}</div>
           <div class="mb-2">
             <ShowToolTip :address="selectedAddress">
               <span class="public-address torusFont2--text">{{ selectedAddress }}</span>
@@ -55,7 +55,7 @@
           </div>
           <div>
             <v-btn large depressed color="torusBrand1 white--text caption font-weight-bold" class="px-10" @click="downloadQr">
-              Download QR
+              {{ t('walletHome.downloadQR') }}
             </v-btn>
           </div>
         </v-flex>

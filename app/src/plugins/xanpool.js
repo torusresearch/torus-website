@@ -1,22 +1,22 @@
 import log from 'loglevel'
 
 import config from '../config'
-import { get } from '../utils/httpHelpers'
+import { post } from '../utils/httpHelpers'
 
-const getQuote = () => {
-  let response
+const postQuote = (requestObject, headers) => {
   try {
     const options = {
+      mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        ...headers,
       },
     }
-    response = get(`${config.rampApiQuoteHost}`, options)
+    return post(`${config.xanpoolApiQuoteHost}`, requestObject, options)
   } catch (error) {
     log.error(error)
   }
-  return response
+  return undefined
 }
-
-export default getQuote
+export default postQuote

@@ -30,7 +30,7 @@
               <div>
                 <span class="body-2">{{ t('walletTopUp.youSend') }}</span>
                 <span class="caption float-right">
-                  {{ t('walletTopUp.min') }} {{ minOrderValue }}, {{ t('walletTopUp.max') }} {{ maxOrderValue }} {{ selectedCurrency }}*
+                  {{ t('walletTopUp.min') }} {{ minOrderValue }}, {{ t('walletTopUp.max') }} {{ maxOrderValue }} USD*
                 </span>
               </div>
               <v-text-field
@@ -39,7 +39,7 @@
                 :placeholder="sendPlaceholder"
                 outlined
                 :value="fiatValue"
-                :rules="[rules.required, rules.validNumber, rules.maxValidation, rules.minValidation]"
+                :rules="amountRules"
                 aria-label="Amount to Buy"
                 @input="setFiatValue"
               >
@@ -71,10 +71,10 @@
             <v-flex xs12 sm4 px-2>
               <v-select
                 id="currency-selector"
+                v-model="selectedCurrency"
                 class="curency-selector"
                 outlined
                 :items="supportedCurrencies"
-                :value="selectedCurrency"
                 append-icon="$vuetify.icons.select"
                 @change="onCurrencyChange"
               ></v-select>
@@ -154,7 +154,6 @@
 </template>
 
 <script>
-import config from '../../../config'
 import { formatCurrencyNumber, paymentProviders, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../../helpers/HelpTooltip'
 
@@ -193,21 +192,23 @@ export default {
       snackbar: false,
       snackbarText: '',
       snackbarColor: 'success',
-      supportedCurrencies: ['ETH', ...config.supportedCurrencies],
+      selectedCurrency: '',
     }
   },
   computed: {
+    amountRules() {
+      const rules = [this.rules.required, this.rules.validNumber, this.rules.minValidation]
+      if (this.selectedProviderObj.enforceMax) rules.push(this.rules.maxValidation)
+      return rules
+    },
+    supportedCurrencies() {
+      return this.selectedProviderObj.validCurrencies
+    },
     sendPlaceholder() {
       return `0.00 (Min ${formatCurrencyNumber(this.minOrderValue)})`
     },
     selectedProviderObj() {
       return this.paymentProviders[this.selectedProvider]
-    },
-    selectedCurrency() {
-      if (this.selectedProviderObj && this.selectedProviderObj.validCurrencies.includes(this.$store.state.selectedCurrency)) {
-        return this.$store.state.selectedCurrency
-      }
-      return this.selectedProviderObj.validCurrencies[0]
     },
     maxOrderValue() {
       return this.selectedProviderObj.maxOrderValue
@@ -229,13 +230,21 @@ export default {
   },
   mounted() {
     this.selectedCryptoCurrency = 'ETH'
+    if (this.selectedProviderObj && this.selectedProviderObj.validCurrencies.includes(this.$store.state.selectedCurrency)) {
+      this.selectedCurrency = this.$store.state.selectedCurrency
+    } else {
+      ;[this.selectedCurrency] = this.selectedProviderObj.validCurrencies
+    }
     this.setFiatValue(this.minOrderValue)
   },
   methods: {
     significantDigits,
     setFiatValue(newValue) {
       this.fiatValue = newValue
-      if (newValue <= this.maxOrderValue && newValue >= this.minOrderValue) {
+      if (
+        (this.selectedProviderObj.enforceMax && newValue <= this.maxOrderValue && newValue >= this.minOrderValue) ||
+        (!this.selectedProviderObj.enforceMax && newValue >= this.minOrderValue)
+      ) {
         this.fetchQuote()
       }
     },
@@ -271,8 +280,9 @@ export default {
         this.$emit('sendOrder', callback)
       }
     },
-    onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'home' })
+    onCurrencyChange() {
+      this.fetchQuote()
+      // this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'home' })
     },
   },
 }
