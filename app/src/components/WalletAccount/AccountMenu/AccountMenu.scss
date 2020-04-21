@@ -21,9 +21,13 @@
   &__details {
     width: 100%;
   }
+  &__address-container {
+    line-height: 10px;
+    padding-left: 26px;
+  }
   &__address {
+    line-height: 9px;
     font-size: 8px;
     color: #8f9fb4;
-    margin-left: 24px;
   }
 }

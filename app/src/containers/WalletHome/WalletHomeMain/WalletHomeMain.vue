@@ -133,11 +133,11 @@
     <v-layout wrap class="mt-12">
       <v-flex xs12>
         <v-tabs v-model="activeTab" class="home-tab" centered>
-          <v-tab :key="t('walletHome.tokens')" class="home-tab-token font-weight-bold">
+          <v-tab :key="t('walletHome.tokens')" class="home-tab-token gmt-tokens-tab font-weight-bold">
             <v-icon class="mr-1" small left>$vuetify.icons.token</v-icon>
             {{ t('walletHome.tokens') }}
           </v-tab>
-          <v-tab :key="t('walletHome.collectibles')" class="home-tab-collectibles font-weight-bold">
+          <v-tab :key="t('walletHome.collectibles')" class="home-tab-collectibles gmt-collectibles-tab font-weight-bold">
             <v-icon class="mr-1" small left>$vuetify.icons.collectibles</v-icon>
             {{ t('walletHome.collectibles') }}
           </v-tab>
