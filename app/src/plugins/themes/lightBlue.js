@@ -19,6 +19,7 @@ export default {
   text_1: '#0F1222',
   text_2: '#5C6C7F',
   text_3: '#A2A5B5',
+  loginBtnGray: '#9B9B9B',
   primary: {
     base: '#0364FF',
     lighten5: '#E9EEFE',

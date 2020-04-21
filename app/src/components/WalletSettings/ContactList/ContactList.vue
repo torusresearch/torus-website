@@ -50,11 +50,18 @@
             <template v-for="contact in contacts">
               <v-list-item :key="`contact-${contact.id}`" class="pl-0 pr-1">
                 <v-list-item-avatar class="ma-0">
-                  <img :src="require(`../../../../public/img/icons/${contact.verifier.toLowerCase()}-grey.svg`)" style="width: 16px;" class="ma-1" />
+                  <img
+                    v-if="contact.verifier === 'eth'"
+                    :src="require(`../../../../public/img/icons/eth-grey${$vuetify.theme.dark ? '-black' : '-white'}.svg`)"
+                    style="width: 16px;"
+                    class="ma-1"
+                  />
+                  <v-icon v-else size="16" class="torusGray1--text">
+                    {{ `$vuetify.icons.${contact.verifier.toLowerCase()}` }}
+                  </v-icon>
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title class="font-weight-regular caption">
-                    <!-- <span class="text-capitalize">{{ contact.verifier === ETH ? '' : `${contact.verifier}: ` }}</span> -->
                     <span class="text_1--text">{{ contact.name }}</span>
                     -
                     <span class="contact-list__id label">{{ contact.contact }}</span>

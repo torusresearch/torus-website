@@ -45,6 +45,12 @@ import TokenIcon from './TokenIcon.vue'
 import TopupIcon from './TopupIcon.vue'
 import TransactionIcon from './TransactionIcon.vue'
 import TrashIcon from './TrashIcon.vue'
+import VerifierDiscordIcon from './VerifierDiscordIcon.vue'
+import VerifierEnsIcon from './VerifierEnsIcon.vue'
+import VerifierFacebookIcon from './VerifierFacebookIcon.vue'
+import VerifierGoogleIcon from './VerifierGoogleIcon.vue'
+import VerifierRedditIcon from './VerifierRedditIcon.vue'
+import VerifierTwitchIcon from './VerifierTwitchIcon.vue'
 import VisibilityOffIcon from './VisibilityOffIcon.vue'
 import VisibilityOnIcon from './VisibilityOnIcon.vue'
 
@@ -195,5 +201,23 @@ export default {
   },
   trash: {
     component: TrashIcon,
+  },
+  ens: {
+    component: VerifierEnsIcon,
+  },
+  discord: {
+    component: VerifierDiscordIcon,
+  },
+  facebook: {
+    component: VerifierFacebookIcon,
+  },
+  google: {
+    component: VerifierGoogleIcon,
+  },
+  reddit: {
+    component: VerifierRedditIcon,
+  },
+  twitch: {
+    component: VerifierTwitchIcon,
   },
 }
