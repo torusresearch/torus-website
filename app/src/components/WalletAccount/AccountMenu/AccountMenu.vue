@@ -27,11 +27,9 @@
         <div class="d-flex align-center">
           <div class="mr-2" :style="{ lineHeight: '0' }">
             <v-icon v-if="acc.type === 'SC'" size="16">$vuetify.icons.smart_contract</v-icon>
-            <img
-              v-else
-              :src="require(`../../../../public/img/icons/${userInfo.verifier}-grey${$vuetify.theme.dark ? '' : '-dark'}.svg`)"
-              style="width: 16px;"
-            />
+            <v-icon v-else :class="$vuetify.theme.dark ? 'torusGray1--text' : 'torusFont2--text'" size="16">
+              {{ `$vuetify.icons.${userInfo.verifier}` }}
+            </v-icon>
           </div>
           <div class="caption text_1--text font-weight-bold" :style="{ paddingLeft: '2px' }">
             <span>{{ acc.type === 'SC' ? 'Smart Contract Wallet' : userInfo.email }}</span>

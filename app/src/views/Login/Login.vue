@@ -156,7 +156,7 @@
                     @mouseover="activeButton = verifier"
                   >
                     <img v-if="verifier === activeButton" :src="require(`../../../public/img/icons/login-${verifier}.svg`)" />
-                    <img v-else :src="require(`../../../public/img/icons/login-${verifier}-${$vuetify.theme.dark ? 'white' : 'grey'}.svg`)" />
+                    <v-icon v-else :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">{{ `$vuetify.icons.${verifier}` }}</v-icon>
                   </v-btn>
                 </v-flex>
                 <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-12>
