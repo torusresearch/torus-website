@@ -16,7 +16,13 @@
     </div>
     <v-spacer></v-spacer>
     <v-tabs v-if="!$vuetify.breakpoint.smAndDown" centered>
-      <v-tab v-for="headerItem in headerItems" :id="`${headerItem.name}-link`" :key="headerItem.display" :to="headerItem.route">
+      <v-tab
+        v-for="headerItem in headerItems"
+        :id="`${headerItem.name}-link`"
+        :key="headerItem.display"
+        :class="`gmt-page-${headerItem.name === 'history' ? 'activity' : headerItem.name}`"
+        :to="headerItem.route"
+      >
         {{ headerItem.display }}
       </v-tab>
     </v-tabs>

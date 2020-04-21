@@ -50,7 +50,7 @@
                         :color="$vuetify.theme.dark ? '' : 'white'"
                         block
                         :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-                        class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-google"
+                        class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-google gmt-login gmt-login-google"
                         @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
                       >
                         <img
@@ -65,8 +65,8 @@
                       <v-layout wrap mx-n1>
                         <v-flex v-for="verifier in loginButtonsMobile" :key="verifier" xs4 px-1 mt-2>
                           <v-btn
-                            class="login-btn login-btn--mobile"
-                            :class="{ active: verifier === activeButton, isDark: $vuetify.theme.dark }"
+                            class="login-btn login-btn--mobile gmt-login"
+                            :class="[{ active: verifier === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier}`]"
                             type="button"
                             :title="`${t('login.loginWith')} ${verifier}`"
                             @click="triggerLogin({ verifier: verifier, calledFromEmbed: false })"
@@ -144,41 +144,12 @@
                 <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-11']">
                   <div class="headline font-weight-light" :class="$vuetify.theme.dark ? '' : 'text_2--text'">Sign up/in with</div>
                 </v-flex>
-                <v-flex v-if="$vuetify.breakpoint.xsOnly" xs10 sm8 ml-auto mt-2 mr-auto>
-                  <v-btn
-                    id="loginBtn"
-                    :color="$vuetify.theme.dark ? '' : 'white'"
-                    block
-                    :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-                    class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-google"
-                    @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
-                  >
-                    <img class="mr-5" :src="require(`../../../public/img/icons/login-google.svg`)" :class="$vuetify.theme.dark ? 'torus-dark' : ''" />
-                    {{ t('login.signIn') }} Google
-                  </v-btn>
-                </v-flex>
-                <v-flex v-if="$vuetify.breakpoint.xsOnly" xs10 sm8 ml-auto mr-auto>
-                  <v-layout wrap mx-n1>
-                    <v-flex v-for="verifier in loginButtonsMobile" :key="verifier" xs4 px-1 mt-2>
-                      <v-btn
-                        class="login-btn login-btn--mobile"
-                        :class="{ active: verifier === activeButton }"
-                        type="button"
-                        :title="`${t('login.loginWith')} ${verifier}`"
-                        @click="triggerLogin({ verifier: verifier, calledFromEmbed: false })"
-                        @mouseover="activeButton = verifier"
-                      >
-                        <img :src="require(`../../../public/img/icons/login-${verifier}.svg`)" />
-                      </v-btn>
-                    </v-flex>
-                  </v-layout>
-                </v-flex>
-                <v-flex v-if="!$vuetify.breakpoint.xsOnly" xs10 sm8 ml-auto mr-auto mt-4>
+                <v-flex xs10 sm8 ml-auto mr-auto mt-4>
                   <v-btn
                     v-for="verifier in loginButtons"
                     :key="verifier"
-                    class="login-btn"
-                    :class="{ active: verifier === activeButton, isDark: $vuetify.theme.dark }"
+                    class="login-btn gmt-login"
+                    :class="[{ active: verifier === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier}`]"
                     type="button"
                     :title="`${t('login.loginWith')} ${verifier}`"
                     @click="triggerLogin({ verifier: verifier, calledFromEmbed: false })"
