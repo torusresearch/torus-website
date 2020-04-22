@@ -7,7 +7,7 @@
           <v-select
             id="select-network"
             v-model="selectedNetwork"
-            class="select-network-container"
+            class="select-network-container gmt-network-change"
             outlined
             :items="networks"
             item-text="networkName"

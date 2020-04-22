@@ -123,7 +123,7 @@
                 <v-btn
                   id="contact-submit-btn"
                   large
-                  class="torus-btn1 py-1"
+                  class="torus-btn1 py-1 gmt-add-address"
                   :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
                   :color="isWhiteLabelActive ? 'torusBrand1' : ''"
                   block

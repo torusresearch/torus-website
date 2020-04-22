@@ -208,7 +208,12 @@
                   <div class="display-1 mb-3 font-weight-medium text_2--text">{{ slide.title }}</div>
                   <div class="body-1 text_2--text">{{ slide.sub_title1 }}</div>
                   <div class="body-1 text_2--text">{{ slide.sub_title2 }}</div>
-                  <v-btn class="learn-more-btn text_2--text" :class="{ isDark: $vuetify.theme.dark }" :href="slide.link" target="_blank">
+                  <v-btn
+                    class="learn-more-btn gmt-learn-more text_2--text"
+                    :class="{ isDark: $vuetify.theme.dark }"
+                    :href="slide.link"
+                    target="_blank"
+                  >
                     Learn More
                   </v-btn>
                 </v-carousel-item>
