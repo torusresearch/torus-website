@@ -480,9 +480,9 @@ export const fakeStream = {
 }
 
 export function formatSmallNumbers(number, currency = 'usd') {
-  const finalNumber = `${currency.toLowerCase() === 'usd' ? significantDigits(number, 5).toFixed(2) : significantDigits(number, 2).toFixed(5)}`
+  const finalNumber = currency.toLowerCase() === 'usd' ? number.toFixed(2) : number.toFixed(5)
 
-  return `${Number(finalNumber)} ${currency.toUpperCase()}`
+  return `${currency.toLowerCase() === 'usd' ? '' : '~ '}${Number(finalNumber)} ${currency.toUpperCase()}`
 }
 
 export const getUserLanguage = () => {

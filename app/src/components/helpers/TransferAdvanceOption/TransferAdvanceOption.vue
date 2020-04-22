@@ -110,7 +110,7 @@
           <v-layout mt-4 pr-4>
             <v-spacer></v-spacer>
             <v-btn large text @click="onCancel">{{ t('walletTransfer.cancel') }}</v-btn>
-            <v-btn id="adv-opt-submit-btn" large depressed color="torusBrand1" class="ml-4" type="submit" :disabled="!advanceOptionFormValid">
+            <v-btn id="adv-opt-submit-btn" large color="torusBrand1" class="white--text ml-4" type="submit" :disabled="!advanceOptionFormValid">
               {{ t('walletTransfer.save') }}
             </v-btn>
           </v-layout>
