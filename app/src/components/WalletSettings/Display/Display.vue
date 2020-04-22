@@ -7,7 +7,7 @@
           block
           :disabled="theme.name === activeTheme"
           large
-          class="theme-btn"
+          class="theme-btn gmt-display-change"
           :class="[$vuetify.theme.isDark ? 'torusBlack2' : 'white', theme.name === activeTheme ? '' : 'elevation-3']"
         >
           <span>{{ t(theme.label) }}</span>

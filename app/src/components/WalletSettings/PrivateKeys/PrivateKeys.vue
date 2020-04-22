@@ -83,7 +83,7 @@
                       <v-btn
                         v-if="walletJson"
                         id="mobile-json-file-download-btn"
-                        class="white--text"
+                        class="white--text gmt-private-key-download"
                         color="torusBrand1"
                         :href="walletJson"
                         :download="name"
@@ -130,7 +130,7 @@
                 </v-layout>
               </v-list-item-content>
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'ma-1' : ''">
-                <v-btn id="show-private-key-btn" icon small @click="isShowPrivateKey = !isShowPrivateKey">
+                <v-btn id="show-private-key-btn gmt-private-key-show" icon small @click="isShowPrivateKey = !isShowPrivateKey">
                   <img
                     :width="$vuetify.breakpoint.xsOnly ? '20' : ''"
                     :src="require(`../../../../public/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)"
