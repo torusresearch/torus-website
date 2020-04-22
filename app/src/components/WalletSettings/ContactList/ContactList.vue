@@ -24,7 +24,7 @@
               dense
               outlined
               append-icon="$vuetify.icons.select"
-              :items="verifierOptionsFilter"
+              :items="verifierOptions"
               item-text="name"
               item-value="value"
               aria-label="Filter Type"
@@ -50,11 +50,18 @@
             <template v-for="contact in contacts">
               <v-list-item :key="`contact-${contact.id}`" class="pl-0 pr-1">
                 <v-list-item-avatar class="ma-0">
-                  <img :src="require(`../../../../public/img/icons/${contact.verifier.toLowerCase()}-grey.svg`)" style="width: 16px;" class="ma-1" />
+                  <img
+                    v-if="contact.verifier === 'eth'"
+                    :src="require(`../../../../public/img/icons/eth-grey${$vuetify.theme.dark ? '-black' : '-white'}.svg`)"
+                    style="width: 16px;"
+                    class="ma-1"
+                  />
+                  <v-icon v-else size="16" class="torusGray1--text">
+                    {{ `$vuetify.icons.${contact.verifier.toLowerCase()}` }}
+                  </v-icon>
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title class="font-weight-regular caption">
-                    <!-- <span class="text-capitalize">{{ contact.verifier === ETH ? '' : `${contact.verifier}: ` }}</span> -->
                     <span class="text_1--text">{{ contact.name }}</span>
                     -
                     <span class="contact-list__id label">{{ contact.contact }}</span>
@@ -116,7 +123,7 @@
                 <v-btn
                   id="contact-submit-btn"
                   large
-                  class="torus-btn1 py-1"
+                  class="torus-btn1 py-1 gmt-add-address"
                   :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
                   :color="isWhiteLabelActive ? 'torusBrand1' : ''"
                   block
@@ -178,14 +185,6 @@ export default {
         }
         return contact
       })
-    },
-    verifierOptionsFilter() {
-      const verifiers = this.verifierOptions
-      verifiers.unshift({
-        name: 'All',
-        value: '',
-      })
-      return verifiers
     },
     isWhiteLabelActive() {
       return this.$store.state.isWhiteLabelActive

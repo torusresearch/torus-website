@@ -29,9 +29,13 @@
           </div>
         </v-card>
       </v-flex>
-      <v-flex xs12 sm6 px-4>
+      <v-flex xs12 sm6 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
         <v-form ref="form" v-model="formValid" lazy-validation aria-autocomplete="off" autocomplete="off" @submit.prevent="sendCoin">
-          <v-card :flat="$vuetify.breakpoint.xsOnly" class="pa-6 form-container" :class="$vuetify.breakpoint.xsOnly ? 'mobile' : 'elevation-1'">
+          <v-card
+            :flat="$vuetify.breakpoint.xsOnly"
+            class="form-container"
+            :class="$vuetify.breakpoint.xsOnly ? 'mobile py-6 px-4' : 'elevation-1 pa-6'"
+          >
             <v-layout wrap>
               <v-flex xs12>
                 <span class="body-2">{{ t('walletTransfer.selectItem') }}</span>
@@ -246,7 +250,7 @@
                   depressed
                   color="torusBrand1"
                   :disabled="!formValid || speedSelected === '' || selectedVerifier === ''"
-                  class="px-8 white--text"
+                  class="px-8 white--text gmt-wallet-transfer"
                   @click="onTransferClick"
                 >
                   {{ t('walletTransfer.transfer') }}
@@ -294,7 +298,7 @@
             <div>
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
               <div v-else>
-                <span id="account-balance" class="display-2 text_2--text mr-1">{{ selectedItem.computedBalanceRounded }}</span>
+                <span id="account-balance" class="display-2 text_2--text mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
                 <span class="caption text_2--text">{{ selectedCurrency }}</span>
               </div>
             </div>

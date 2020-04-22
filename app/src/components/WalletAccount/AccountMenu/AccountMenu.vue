@@ -27,7 +27,9 @@
         <div class="d-flex align-center">
           <div class="mr-2" :style="{ lineHeight: '0' }">
             <v-icon v-if="acc.type === 'SC'" size="16">$vuetify.icons.smart_contract</v-icon>
-            <img v-else :src="require(`../../../../public/img/icons/${userInfo.verifier}-grey-dark.svg`)" style="width: 16px;" />
+            <v-icon v-else :class="$vuetify.theme.dark ? 'torusGray1--text' : 'torusFont2--text'" size="16">
+              {{ `$vuetify.icons.${userInfo.verifier}` }}
+            </v-icon>
           </div>
           <div class="caption text_1--text font-weight-bold" :style="{ paddingLeft: '2px' }">
             <span>{{ acc.type === 'SC' ? 'Smart Contract Wallet' : userInfo.email }}</span>
@@ -36,19 +38,20 @@
             <span>{{ acc.balance }}</span>
           </div>
         </div>
-        <div class="d-flex align-center mt-1">
-          <div :style="{ paddingLeft: '2px' }">
-            <span class="account-list__address">{{ acc.address }}</span>
+        <div class="d-flex align-start mt-1">
+          <div class="account-list__address-container pt-1" :style="{ maxWidth: $vuetify.breakpoint.xsOnly ? '140px' : 'inherit' }">
+            <div v-if="userInfo.verifier === DISCORD" class="account-list__address">Discord ID: {{ userInfo.verifierId }}</div>
+            <div class="account-list__address mt-1">{{ acc.address }}</div>
           </div>
           <div class="ml-auto">
             <span class="mr-1">
               <ShowToolTip :is-btn="true" :address="acc.address">
-                <v-icon size="12" class="text_2--text" v-text="'$vuetify.icons.copy'" />
+                <v-icon size="12" class="torusFont2--text" v-text="'$vuetify.icons.copy'" />
               </ShowToolTip>
             </span>
             <span>
               <ExportQrCode :custom-address="acc.address">
-                <v-icon class="text_2--text" x-small v-text="'$vuetify.icons.qr'" />
+                <v-icon class="torusFont2--text" x-small v-text="'$vuetify.icons.qr'" />
               </ExportQrCode>
             </span>
           </div>
@@ -133,6 +136,7 @@ export default {
   data() {
     return {
       accountImportDialog: false,
+      DISCORD,
     }
   },
   computed: {

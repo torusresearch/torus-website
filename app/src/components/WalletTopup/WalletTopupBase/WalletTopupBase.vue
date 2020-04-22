@@ -121,7 +121,7 @@
               <template v-slot:activator="{ on }">
                 <span v-on="on">
                   <v-btn
-                    class="torus-btn1 torusBrand1--text"
+                    class="torus-btn1 torusBrand1--text gmt-topup"
                     :disabled="!formValid || !isQuoteFetched"
                     large
                     depressed

@@ -53,9 +53,9 @@
                     {{ t('accountMenu.back') }}
                   </v-btn>
                   <v-btn
-                    id="wallet-transfer-submit"
+                    id="import-account-private"
                     depressed
-                    color="torusBrand1 ml-2"
+                    color="torusBrand1 ml-2 gmt-import-account"
                     :loading="isLoadingPrivate"
                     :disabled="!privateKeyFormValid || isLoadingPrivate"
                     class="px-8 white--text"
@@ -118,12 +118,12 @@
                     {{ t('accountMenu.back') }}
                   </v-btn>
                   <v-btn
-                    id="wallet-transfer-submit"
+                    id="import-account-keystore"
                     depressed
                     color="torusBrand1 ml-2"
                     :loading="isLoadingKeystore"
                     :disabled="!jsonFileFormValid || isLoadingKeystore"
-                    class="px-8 white--text"
+                    class="px-8 white--text gmt-import-account"
                     @click.prevent="importViaKeyStoreFile"
                   >
                     {{ t('accountMenu.import') }}

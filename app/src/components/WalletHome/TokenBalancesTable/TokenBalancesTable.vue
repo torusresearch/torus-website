@@ -22,7 +22,7 @@
               {{ balance.currencyRateText }}
             </div>
             <div class="ml-auto caption text_3--text">
-              {{ balance.currencyBalance }}
+              {{ formatSmallNumbers(balance.currencyBalanceRounded, selectedCurrency) }}
             </div>
           </div>
         </v-card-text>
@@ -68,6 +68,9 @@ export default {
   computed: {
     showFooter() {
       return this.tokenBalances.length > 5
+    },
+    selectedCurrency() {
+      return this.$store.state.selectedCurrency
     },
   },
   methods: {

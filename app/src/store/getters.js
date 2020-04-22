@@ -54,12 +54,15 @@ const tokenBalances = (state) => {
       ...x,
       id: x.symbol,
       computedBalance,
-      computedBalanceRounded: `${significantDigits(computedBalance, false, formatter + 1)}`,
+      computedBalanceRounded: significantDigits(computedBalance, false, formatter + 1),
       formattedBalance: `${x.symbol} ${significantDigits(computedBalance, false, formatter + 1)}`,
+      currencyBalanceRounded: significantDigits(currencyBalance, false, formatter + 1),
       currencyBalance: `${selectedCurrency} ${significantDigits(currencyBalance, false, formatter + 1)}`,
       currencyRateText: `1 ${x.symbol} = ${currencyRate.toFormat(formatter)} ${selectedCurrency}`,
     }
   })
+  // eslint-disable-next-line no-console
+  console.log('finalBalancesArray', finalBalancesArray)
   const totalPortfolioValueReturn = significantDigits(totalPortfolioValue, false, formatter + 1)
   return { finalBalancesArray, totalPortfolioValue: totalPortfolioValueReturn }
 }
