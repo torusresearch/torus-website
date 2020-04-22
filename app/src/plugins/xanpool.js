@@ -5,15 +5,19 @@ import { post } from '../utils/httpHelpers'
 
 const postQuote = (requestObject, headers) => {
   try {
+    const urlencoded = new URLSearchParams()
+    Object.keys(requestObject).forEach((x) => {
+      urlencoded.append(x, requestObject[x])
+    })
     const options = {
       mode: 'cors',
+      isUrlEncodedData: true,
       headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
         ...headers,
       },
     }
-    return post(`${config.xanpoolApiQuoteHost}`, requestObject, options)
+    return post(`${config.xanpoolApiQuoteHost}`, urlencoded, options)
   } catch (error) {
     log.error(error)
   }

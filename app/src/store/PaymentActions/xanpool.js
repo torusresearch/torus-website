@@ -23,6 +23,7 @@ export default {
     const parameters = {
       apiKey: config.xanpoolLiveAPIKEY,
       wallet: selectedAddress || undefined,
+      fiat: currentOrder.fiatValue || undefined,
       cryptoCurrency: currentOrder.selectedCryptoCurrency || undefined,
       currency: currentOrder.selectedCurrency || undefined,
       partnerData: selectedAddress || state.selectedAddress,
