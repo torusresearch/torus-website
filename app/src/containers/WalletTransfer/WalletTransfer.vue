@@ -298,7 +298,7 @@
             <div>
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
               <div v-else>
-                <span id="account-balance" class="display-2 text_2--text mr-1">{{ selectedItem.computedBalanceRounded }}</span>
+                <span id="account-balance" class="display-2 text_2--text mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
                 <span class="caption text_2--text">{{ selectedCurrency }}</span>
               </div>
             </div>

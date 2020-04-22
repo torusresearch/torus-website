@@ -24,7 +24,7 @@
               dense
               outlined
               append-icon="$vuetify.icons.select"
-              :items="verifierOptionsFilter"
+              :items="verifierOptions"
               item-text="name"
               item-value="value"
               aria-label="Filter Type"
@@ -185,14 +185,6 @@ export default {
         }
         return contact
       })
-    },
-    verifierOptionsFilter() {
-      const verifiers = this.verifierOptions
-      verifiers.unshift({
-        name: 'All',
-        value: '',
-      })
-      return verifiers
     },
     isWhiteLabelActive() {
       return this.$store.state.isWhiteLabelActive
