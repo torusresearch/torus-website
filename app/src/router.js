@@ -15,15 +15,6 @@ import RedirectCatch from './views/RedirectCatch'
 import UserInfoRequest from './views/UserInfoRequest'
 import Wallet from './views/Wallet'
 
-// const Popup = () => import('./views/Popup.vue')
-// const Confirm = () => import('./views/Confirm.vue')
-// const Wallet = () => import('./views/Wallet.vue')
-// const Login = () => import('./containers/Login.vue')
-// const WalletHome = () => import('./containers/WalletHome.vue')
-// const WalletHistory = () => import('./containers/WalletHistory.vue')
-// const WalletSettings = () => import('./containers/WalletSettings.vue')
-// const WalletAccounts = () => import('./containers/WalletAccounts.vue')
-
 Vue.use(Router)
 
 const router = new Router({
