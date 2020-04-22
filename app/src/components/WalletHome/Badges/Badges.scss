@@ -1,0 +1,20 @@
+.badges-container {
+  .badge {
+    height: 80px;
+    &__title {
+      line-height: 17px;
+    }
+
+    &__link {
+      line-height: 0;
+      padding-top: 6px;
+      a {
+        font-weight: bold;
+        font-size: 12px;
+        line-height: 14px;
+        color: var(--v-torusBrand1-base);
+        text-decoration: none;
+      }
+    }
+  }
+}
