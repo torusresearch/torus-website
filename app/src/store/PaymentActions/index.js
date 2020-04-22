@@ -1,6 +1,6 @@
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import { MOONPAY, RAMPNETWORK, WYRE } from '../../utils/enums'
+import { MOONPAY, RAMPNETWORK, WYRE, XANPOOL } from '../../utils/enums'
 import { fakeStream, paymentProviders } from '../../utils/utils'
 import moonpay from './moonpay'
 import rampnetwork from './rampnetwork'
@@ -99,6 +99,18 @@ export default {
           // wyre
           const { success } = await dispatch('fetchWyreOrder', {
             currentOrder: { destCurrency: selectedParameters.selectedCryptoCurrency || '', sourceAmount: selectedParameters.fiatValue || '' },
+            preopenInstanceId,
+            selectedAddress: selectedParameters.selectedAddress,
+          })
+          handleSuccess(success)
+        } else if (provider === XANPOOL) {
+          // xanpool
+          const { success } = await dispatch('fetchXanpoolOrder', {
+            currentOrder: {
+              selectedCryptoCurrency: selectedParameters.selectedCryptoCurrency || 'ETH',
+              fiatValue: selectedParameters.fiatValue || '',
+              selectedCurrency: selectedParameters.selectedCurrency || '',
+            },
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress,
           })
