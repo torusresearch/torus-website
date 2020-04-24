@@ -49,40 +49,32 @@
 }
 
 #torusWidget {
-  --torus-brand-1: #0364ff;
-  --torus-brand-2: #5495f7;
-  --torus-brand-3: #cde0ff;
-  --torus-brand-4: #e9eefe;
-  --torus-brand-hover: #075de5;
-  --torus-gray-1: #d3d5e2;
-  --torus-gray-2: #eef2f4;
-  --torus-gray-3: #a2a5b5;
-  --torus-gray-4: #f9f9fb;
-  --torus-font-1: #5c6c7f;
-  --torus-font-2: #7f8fa4;
-  --torus-font-link-1: #0364ff;
-  --torus-font-link-2: #5495f7;
-  --torus-black: #252529;
-  --torus-light: #fcfcfc;
   z-index: 999999;
   position: fixed;
 }
 
-/* DARK */
-#torusWidget.torus-dark {
-  --torus-light: #242529;
-  --torus-gray-2: #dfdfdf;
-  --torus-gray-4: #f9f9fb;
-  --torus-font-1: #d3d3d4;
+/* FAB Speed dial */
+#torusWidget #torusWidget__speed-dial-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#torusWidget #torusWidget__speed-dial-list li {
+  margin-bottom: 16px;
+  opacity: 0;
+}
+
+#torusWidget #torusWidget__speed-dial-list.active li {
+  opacity: 1;
 }
 
 #torusWidget .torus-btn {
-  border-radius: 25px;
-  background-color: var(--torus-brand-1);
+  border-radius: 30px;
+  background-color: #0364ff;
   padding: 14px;
-  margin: 0;
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border: 0;
   cursor: pointer;
   color: white;
@@ -90,8 +82,6 @@
   background-size: 60%;
   background-repeat: no-repeat;
   background-position: center;
-  position: absolute;
-  bottom: 0;
 }
 
 #torusWidget .torus-btn--loading {
@@ -131,8 +121,11 @@
 
 #torusWidget .torus-btn--main.active {
   padding: 12px;
-  transform: scale(0.8);
+  background-color: #eef2f4;
+  transform: scale(0.7);
   transition: transform 0.3s;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+  background-image: url('/img/icons/torus-icon-dark.svg');
 }
 
 #torusWidget .torus-btn--text {
@@ -142,6 +135,14 @@
   font-weight: bold;
   letter-spacing: 0.7px;
   line-height: 19px;
+}
+
+#torusWidget .torus-btn--home {
+  background-image: url('/img/icons/home.svg');
+}
+
+#torusWidget .torus-btn--transfer {
+  background-image: url('/img/icons/indent-increase.svg');
 }
 
 #torusWidget .torus-btn:focus {
@@ -271,7 +272,7 @@
 /* Torus multiple login */
 
 /* Background */
-#torusLoginModal {
+#torus-login-modal {
   position: fixed;
   z-index: 1;
   left: 0;
@@ -279,90 +280,85 @@
   width: 100%;
   height: 100%;
   overflow: auto;
+  color: #0f1222;
   background-color: rgb(33, 33, 33, 0.46);
+  border-color: rgb(33, 33, 33, 0.46);
 }
 
 /* Modal Container */
-#torusLoginModal__modalContainer {
-  /* background: #ffffff;
-  border: 1px solid #f5f5f5; */
-  background: var(--torus-light);
-  border: 1px solid var(--torus-gray-4);
+#torus-login-modal__modal-container {
+  background: #ffffff;
   width: 375px;
   margin: 5% auto;
   padding: 0;
+  border: 1px solid #f5f5f5;
   border-radius: 6px;
   position: relative;
 }
 
-/* DARK */
-#torusWidget.torus-dark #torusLoginModal__modalContainer {
-  border: 0;
-}
-
 /* Contents */
-#torusLoginModal__closeContainer {
+#torus-login-modal__close-container {
   position: absolute;
   right: 16px;
   top: 14px;
 }
 
-#torusLoginModal__close {
+#torus-login-modal__close {
   font-size: 30px;
-  color: var(--torus-gray-2);
+  color: #dfdfdf;
   font-weight: 500;
 }
 
-#torusLoginModal__close:hover,
-#torusLoginModal__close:focus {
+#torus-login-modal__close:hover,
+#torus-login-modal__close:focus {
   text-decoration: none;
   cursor: pointer;
 }
 
-#torusLoginModal__modalContent {
+#torus-login-modal__modal-content {
   padding: 0;
   border: 0px solid white !important;
   font-family: 'Roboto', sans-serif !important;
-  color: var(--torus-font-1);
+  color: #5c6c7f;
   text-align: center;
 }
 
-#torusLoginModal__headerContainer {
+#torus-login-modal__header-container {
   padding: 30px 0 20px;
-  box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+  box-shadow: 0 14px 28px 0 rgba(46, 91, 255, 0.06);
 }
 
-#torusLoginModal__headerContainer img {
+#torus-login-modal__header-container img {
   height: 30px;
   width: auto;
   margin-bottom: 8px;
 }
 
-#torusLoginModal__loginHeader {
+#torus-login-modal__login-header {
   font-size: 24px;
   font-weight: bold;
   line-height: 32px;
   margin: 0;
 }
 
-#torusLoginModal__formContainer {
+#torus-login-modal__form-container {
   text-align: left;
   padding: 16px 24px 50px;
   border-radius: 0 0 6px 6px;
 }
 
-#torusLoginModal__loginSubtitle {
+#torus-login-modal__login-subtitle {
   font-size: 14px;
   margin: 0 0 16px;
 }
 
-#torusLoginModal__loginGoogle {
+#torus-login-modal__login-google {
   box-sizing: border-box;
   height: 50px;
   width: 100%;
-  border: 1px solid var(--torus-gray-2);
+  border: 1px solid #f1f2f6;
   border-radius: 6px;
-  background-color: var(--torus-light);
+  background-color: #ffffff;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -370,15 +366,15 @@
   padding: 15px;
   font-size: 14px;
   font-weight: 500;
-  box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
-  color: var(--torus-font-1);
+  box-shadow: 0 14px 28px 0 rgba(46, 91, 255, 0.06);
+  color: #5c6c7f;
 }
 
-#torusLoginModal__loginGoogle img {
+#torus-login-modal__login-google img {
   margin-right: 20px;
 }
 
-#torusLoginModal__loginList {
+#torus-login-modal__login-list {
   list-style: none;
   padding: 0;
   display: flex;
@@ -387,7 +383,7 @@
   flex-wrap: wrap;
 }
 
-#torusLoginModal__loginList li {
+#torus-login-modal__login-list li {
   flex-basis: 50%;
   flex-grow: 0;
   max-width: 50%;
@@ -395,322 +391,48 @@
   box-sizing: border-box;
 }
 
-#torusLoginModal__loginList button {
+#torus-login-modal__login-list button {
   box-sizing: border-box;
   height: 50px;
   width: 100%;
-  border: 1px solid var(--torus-gray-2);
+  border: 1px solid #f1f2f6;
   border-radius: 6px;
-  background-color: var(--torus-light);
+  background-color: #ffffff;
   cursor: pointer;
   margin: 0;
   box-shadow: 0 14px 28px 0 rgba(46, 91, 255, 0.06);
 }
 
-#torusLoginModal__loginList img {
+#torus-login-modal__login-list img {
   height: 24px;
   width: auto;
 }
 
-#torusLoginModal__loginBtn--reddit {
+#torus-login-modal__login-btn--reddit {
   padding: 6px 0;
 }
 
-#torusLoginModal__loginBtn--reddit img {
+#torus-login-modal__login-btn--reddit img {
   height: 32px;
 }
 
-#torusLoginModal__loginNote {
+#torus-login-modal__login-note {
   font-size: 12px;
 }
 
-#torusLoginModal__loginNote a {
-  color: var(--torus-font-link-1);
+#torus-login-modal__login-note a {
+  color: #5495f7;
   cursor: pointer;
   text-decoration: none;
 }
 
 /* Mobile */
 @media (max-width: 598px) {
-  #torusLoginModal__modalContainer {
+  #torus-login-modal__modal-container {
     width: 100%;
   }
 
-  #torusLoginModal__modalContent {
+  #torus-login-modal__modal-content {
     font-family: 'Roboto', sans-serif !important;
   }
-}
-
-#torusWidget .torusWidget__menu {
-}
-
-#torusWidget .torusWidget__menuBtn {
-  background-color: var(--torusBrand1);
-  background-image: url('/img/torus-icon-light.svg');
-  background-size: 55%;
-  background-position: 55% 55%;
-  background-repeat: no-repeat;
-  border-radius: 50%;
-  border: 0;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-}
-
-#torusWidget .torusWidget__menuBtn:focus {
-  outline: none;
-}
-
-#torusWidget .torusWidget__menuBtn--active {
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-}
-
-#torusWidget .torusWidget__menuPanel {
-  display: none;
-  padding: 15px;
-  background: #ffffff;
-  border: 1px solid #f2f2f2;
-  box-sizing: border-box;
-  box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
-  border-radius: 12px;
-  position: absolute;
-  left: 20px;
-  bottom: 20px;
-}
-
-#torusWidget .torusWidget__panelHeader {
-  background: #ffffff;
-  box-shadow: 5px 5px 10px rgba(208, 218, 254, 0.25), -5px -5px 10px #fafbff;
-  border-radius: 3px;
-  display: flex;
-  margin-left: 16px;
-}
-
-#torusWidget .torusWidget__userInfoContainer {
-  padding: 9px;
-}
-
-#torusWidget .torusWidget__avatarContainer {
-  border-radius: 50%;
-  border: 1px solid #b3c0ce;
-  width: 32px;
-  height: 32px;
-  margin-left: -16px;
-  margin-top: 3px;
-}
-
-#torusWidget .torusWidget__avatarContainer div {
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  border: 1px solid #ffffff;
-  overflow: hidden;
-}
-
-#torusWidget .torusWidget__avatarContainer img {
-  width: 100%;
-  height: auto;
-}
-
-#torusWidget .torusWidget__userId {
-  display: flex;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-#torusWidget .torusWidget__userId img {
-  width: auto;
-  height: 8px;
-  margin-right: 4px;
-}
-
-#torusWidget .torusWidget__userId span {
-  font-family: 'Roboto', sans-serif !important;
-  font-weight: bold;
-  font-size: 8px;
-  line-height: 9px;
-  color: #5c6c7f;
-}
-
-#torusWidget .torusWidget__userAddress {
-  display: flex;
-}
-
-#torusWidget .torusWidget__userAddress span {
-  font-family: 'Roboto', sans-serif !important;
-  font-size: 8px;
-  line-height: 9px;
-  color: #5c6c7f;
-  margin-right: 4px;
-}
-
-#torusWidget img.torusWidget__userAddress--address {
-  width: auto;
-  height: 8px;
-  margin-right: 4px;
-}
-
-#torusWidget .torusWidget__addressCopyContainer {
-  display: inline-block;
-  line-height: 0;
-  position: relative;
-}
-
-#torusWidget .torusWidget__addressCopyTooltip {
-  font-family: 'Roboto', sans-serif !important;
-  position: absolute;
-  display: none;
-  opacity: 0.8;
-  background-color: #2f3136;
-  color: #ffffff;
-  border-radius: 5px;
-  padding: 3px 5px;
-  text-align: center;
-  font-size: 8px;
-  left: 0;
-  bottom: 0;
-  transform: translate(10px, -10px);
-  line-height: normal;
-}
-
-#torusWidget .torusWidget__addressCopyContainer:hover .torusWidget__addressCopyTooltip {
-  display: block;
-}
-
-#torusWidget img.torusWidget__addressCopy {
-  width: auto;
-  height: 8px;
-  cursor: pointer;
-}
-
-#torusWidget .torusWidget__panelBody {
-  margin-top: 18px;
-}
-
-#torusWidget .torusWidget__accountDetails {
-  display: flex;
-}
-
-#torusWidget .torusWidget__amountLabel {
-  font-family: 'Roboto', sans-serif !important;
-  font-size: 8px;
-  line-height: 9px;
-}
-
-#torusWidget .torusWidget__amountValue {
-  font-family: 'Roboto', sans-serif !important;
-  font-weight: bold;
-  font-size: 12px;
-  line-height: 14px;
-  color: #7f8fa4;
-}
-
-#torusWidget .torusWidget__amountLinks {
-  display: flex;
-  margin-left: auto;
-}
-
-#torusWidget .torusWidget__amountLinks > div {
-  cursor: pointer;
-  padding: 8px 0;
-  display: flex;
-  margin-left: 4px;
-  justify-content: center;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  background: #ffffff;
-  border: 1px solid rgba(206, 208, 214, 0.3);
-  box-sizing: border-box;
-  box-shadow: 5px 5px 10px rgba(208, 218, 254, 0.25), -5px -5px 10px #fafbff;
-}
-
-#torusWidget .torusWidget__amountLinks img {
-  width: 100%;
-  height: auto;
-}
-
-#torusWidget .torusWidget__activity {
-  margin-top: 18px;
-}
-
-#torusWidget .torusWidget__activityHeader {
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid rgba(127, 143, 164, 0.5);
-  padding-bottom: 4px;
-  margin-bottom: 4px;
-}
-
-#torusWidget .torusWidget__activityHeader--label {
-  font-family: 'Roboto', sans-serif !important;
-  font-size: 8px;
-  line-height: 9px;
-  color: #5c6c7f;
-}
-
-#torusWidget .torusWidget__activityHeader--viewAll {
-  font-family: 'Roboto', sans-serif !important;
-  margin-left: auto;
-  font-size: 8px;
-  line-height: 9px;
-  color: #b3c0ce;
-  cursor: pointer;
-}
-
-#torusWidget .torusWidget__activityList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-#torusWidget .torusWidget__activityList li {
-  display: flex;
-  align-items: center;
-  font-family: 'Roboto', sans-serif !important;
-  font-size: 8px;
-  line-height: 9px;
-}
-
-#torusWidget .torusWidget__activityLogo {
-  padding: 8px 0;
-  display: flex;
-  justify-content: center;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  background: #ffffff;
-  border: 1px solid rgba(206, 208, 214, 0.3);
-  box-sizing: border-box;
-  box-shadow: 5px 5px 10px rgba(208, 218, 254, 0.25), -5px -5px 10px #fafbff;
-  margin-right: 4px;
-}
-
-#torusWidget .torusWidget__activityLogo img {
-  width: 100%;
-  height: auto;
-}
-
-#torusWidget .torusWidget__activityType {
-  color: #5c6c7f;
-}
-
-#torusWidget .torusWidget__activityType--type {
-  text-transform: capitalize;
-}
-
-#torusWidget .torusWidget__activityTo {
-  color: #b3c0ce;
-}
-
-#torusWidget .torusWidget__activityAmount {
-  margin-left: auto;
-  color: #5c6c7f;
-  align-self: flex-start;
-  margin-top: 3px;
 }

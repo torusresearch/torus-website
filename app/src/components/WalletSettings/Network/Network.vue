@@ -48,8 +48,8 @@
                     <v-btn
                       large
                       class="torus-btn1 py-1"
-                      :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-                      :color="isWhiteLabelActive ? 'torusBrand1' : ''"
+                      :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
+                      :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
                       block
                       :disabled="!formValid"
                       depressed
@@ -100,9 +100,6 @@ export default {
   computed: {
     isRPCSelected() {
       return this.selectedNetwork.host === RPC
-    },
-    isWhiteLabelActive() {
-      return this.$store.state.isWhiteLabelActive
     },
   },
   mounted() {

@@ -36,7 +36,7 @@
               large
               block
               class="torus-btn1 torusBrand1--text"
-              :class="isWhiteLabelActive ? 'torus-btn1--whitelabel' : ''"
+              :class="whiteLabelGlobal.isWhiteLabelActive ? 'torus-btn1--whitelabel' : ''"
               :href="detailsLink"
               target="_blank"
             >
@@ -81,7 +81,7 @@
             large
             block
             class="torus-btn1 torusBrand1--text"
-            :class="isWhiteLabelActive ? 'torus-btn1--whitelabel' : ''"
+            :class="whiteLabelGlobal.isWhiteLabelActive ? 'torus-btn1--whitelabel' : ''"
             :href="detailsLink"
             target="_blank"
           >
@@ -106,11 +106,6 @@ export default {
     detailsLink: { type: String, default: '' },
     detailsLinkTwo: { type: String, default: '' },
     detailsText: { type: String, default: '' },
-  },
-  computed: {
-    isWhiteLabelActive() {
-      return this.$store.state.isWhiteLabelActive
-    },
   },
 }
 </script>

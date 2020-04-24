@@ -124,8 +124,8 @@
                   id="contact-submit-btn"
                   large
                   class="torus-btn1 py-1 gmt-add-address"
-                  :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-                  :color="isWhiteLabelActive ? 'torusBrand1' : ''"
+                  :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
+                  :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
                   block
                   type="submit"
                   :disabled="!contactFormValid"
@@ -185,9 +185,6 @@ export default {
         }
         return contact
       })
-    },
-    isWhiteLabelActive() {
-      return this.$store.state.isWhiteLabelActive
     },
   },
   methods: {
