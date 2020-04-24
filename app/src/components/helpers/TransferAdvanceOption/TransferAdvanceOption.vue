@@ -129,6 +129,7 @@
 
 <script>
 import BigNumber from 'bignumber.js'
+import { mapState } from 'vuex'
 
 import { significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'
@@ -156,13 +157,11 @@ export default {
     }
   },
   computed: {
+    ...mapState(['selectedCurrency', 'currencyData']),
     getCurrencyMultiplier() {
-      const { selectedCurrency, currencyData } = this.$store.state || {}
+      const { selectedCurrency, currencyData } = this
       const currencyMultiplierNumber = selectedCurrency !== 'ETH' ? currencyData[selectedCurrency.toLowerCase()] || 1 : 1
       return new BigNumber(currencyMultiplierNumber)
-    },
-    selectedCurrency() {
-      return this.$store.state.selectedCurrency
     },
     totalCost() {
       const maxLength = Math.max(this.gasAmountDisplay.toString().length, this.displayAmount.toString().length)

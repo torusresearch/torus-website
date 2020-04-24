@@ -12,6 +12,7 @@
 <script>
 import throttle from 'lodash.throttle'
 import log from 'loglevel'
+import { mapState } from 'vuex'
 
 import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 
@@ -26,6 +27,7 @@ export default {
       currentOrder: {},
     }
   },
+  computed: mapState(['selectedAddress']),
   methods: {
     fetchQuote(payload) {
       const self = this
@@ -57,7 +59,7 @@ export default {
         this.$store.dispatch('fetchRampNetworkOrder', {
           currentOrder: this.currentOrder,
           colorCode: this.$vuetify.theme.themes.light.primary.base,
-          selectedAddress: this.$store.state.selectedAddress,
+          selectedAddress: this.selectedAddress,
         })
       )
     },

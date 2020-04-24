@@ -39,7 +39,7 @@
     <v-menu v-if="!$vuetify.breakpoint.smAndDown" offset-y bottom left z-index="20" :close-on-content-click="false">
       <template v-slot:activator="{ on }">
         <v-btn id="menu-dropdown-btn" small text v-on="on">
-          <span class="text-capitalize subtitle-2">{{ userName }}</span>
+          <span class="text-capitalize subtitle-2">{{ userInfo.name }}</span>
           <v-icon class="ml-2 mt-0" small>$vuetify.icons.select</v-icon>
         </v-btn>
       </template>
@@ -101,6 +101,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import { capitalizeFirstLetter } from '../../../utils/utils'
 import AccountMenu from '../../WalletAccount/AccountMenu'
 import LanguageSelector from '../LanguageSelector'
@@ -122,17 +124,9 @@ export default {
     }
   },
   computed: {
+    ...mapState(['userInfo', 'successMsg', 'errorMsg']),
     bannerColor() {
       return this.$vuetify.theme.isDark ? this.$vuetify.theme.themes.dark.infoBanner : this.$vuetify.theme.themes.light.infoBanner
-    },
-    userName() {
-      return this.$store.state.userInfo.name
-    },
-    successMsg() {
-      return this.$store.state.successMsg
-    },
-    errorMsg() {
-      return this.$store.state.errorMsg
     },
     lrcMsg() {
       if (process.env.VUE_APP_TORUS_BUILD_ENV === 'lrc') {

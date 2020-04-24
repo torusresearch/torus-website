@@ -78,6 +78,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 import log from 'loglevel'
+import { mapState } from 'vuex'
 import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
@@ -120,9 +121,24 @@ export default {
     }
   },
   computed: {
-    loadingUserTransactions() {
-      return this.$store.state.loadingUserTransactions
-    },
+    ...mapState({
+      loadingUserTransactions: 'loadingUserTransactions',
+      selectedCurrency: 'selectedCurrency',
+      currencyData: 'currencyData',
+      wallet: 'wallet',
+      pastTransactions: 'pastTransactions',
+      paymentTxStore: 'paymentTx',
+      selectedAddress: 'selectedAddress',
+      networkType: 'networkType',
+      jwtToken: 'jwtToken',
+      assets: 'assets',
+      tokenRates: 'tokenRates',
+      networkId: 'networkId',
+      transactions: 'transactions',
+      wallets(state) {
+        return Object.keys(state.wallet)
+      },
+    }),
     actionTypes() {
       return [
         {
@@ -166,23 +182,11 @@ export default {
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
     },
-    selectedCurrency() {
-      return this.$store.state.selectedCurrency
-    },
     getCurrencyMultiplier() {
-      const { selectedCurrency, currencyData } = this.$store.state || {}
+      const { selectedCurrency, currencyData } = this || {}
       let currencyMultiplier = 1
       if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
       return currencyMultiplier
-    },
-    wallets() {
-      return Object.keys(this.$store.state.wallet).filter((accumulator) => accumulator !== this.selectedAddress)
-    },
-    pastTransactions() {
-      return this.$store.state.pastTransactions
-    },
-    paymentTxStore() {
-      return this.$store.state.paymentTx
     },
   },
   watch: {
@@ -276,7 +280,7 @@ export default {
       return finalTx.sort((a, b) => b.date - a.date) || []
     },
     async calculatePastTransactions() {
-      const { selectedAddress: publicAddress, pastTransactions, jwtToken, networkType } = this.$store.state
+      const { selectedAddress: publicAddress, pastTransactions, jwtToken, networkType } = this || {}
       const pastTx = []
       for (const x of pastTransactions) {
         // eslint-disable-next-line no-continue
@@ -325,7 +329,7 @@ export default {
       this.pastTx = pastTx
     },
     calculateTransactions() {
-      const { networkId, transactions, networkType, tokenRates, assets, selectedAddress } = this.$store.state || {}
+      const { networkId, transactions, networkType, tokenRates, assets, selectedAddress } = this || {}
       const finalTransactions = []
       for (const tx in transactions) {
         const txOld = transactions[tx]
@@ -408,7 +412,7 @@ export default {
       return finalTransactions
     },
     calculatePaymentTransactions() {
-      const { paymentTx: response, networkType } = this.$store.state || {}
+      const { paymentTxStore: response, networkType } = this || {}
       let paymentTx
       if (networkType.host !== MAINNET) paymentTx = []
       else {

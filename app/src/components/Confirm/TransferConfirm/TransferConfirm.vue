@@ -38,7 +38,7 @@
             {{ userInfo.verifierId }}
           </div>
           <div class="network-container">
-            <NetworkDisplay :is-plain="true" :store-network-type="storeNetworkType"></NetworkDisplay>
+            <NetworkDisplay :is-plain="true" :store-network-type="networkType"></NetworkDisplay>
           </div>
           <div class="name name--right text-clamp-one">
             {{ toAddress }}
@@ -159,6 +159,7 @@
 
 <script>
 import BigNumber from 'bignumber.js'
+import { mapState } from 'vuex'
 
 import { significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
@@ -214,14 +215,7 @@ export default {
       default: '',
     },
   },
-  computed: {
-    storeNetworkType() {
-      return this.$store.state.networkType
-    },
-    userInfo() {
-      return this.$store.state.userInfo
-    },
-  },
+  computed: mapState(['networkType', 'userInfo']),
   methods: {
     onCancel() {
       this.$emit('onClose')

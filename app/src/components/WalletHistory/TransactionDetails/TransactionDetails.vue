@@ -87,7 +87,7 @@
           <v-list-item>
             <v-list-item-content class="details-label">{{ t('walletActivity.network') }}:</v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
-              <NetworkDisplay :activity-page="true" :network="transaction.networkType" :store-network-type="storeNetworkType"></NetworkDisplay>
+              <NetworkDisplay :activity-page="true" :network="transaction.networkType" :store-network-type="networkType"></NetworkDisplay>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-if="transaction.etherscanLink">
@@ -104,6 +104,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import {
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
@@ -141,11 +143,7 @@ export default {
       CONTRACT_TYPE_ERC721,
     }
   },
-  computed: {
-    storeNetworkType() {
-      return this.$store.state.networkType
-    },
-  },
+  computed: mapState(['networkType']),
   methods: {
     getChipColor(status) {
       if (status === ACTIVITY_STATUS_SUCCESSFUL) return '#9BE8C7'

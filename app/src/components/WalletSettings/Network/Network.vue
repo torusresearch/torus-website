@@ -72,6 +72,7 @@
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
+import { mapState } from 'vuex'
 
 import { broadcastChannelOptions } from '../../../utils/utils'
 
@@ -98,13 +99,14 @@ export default {
     }
   },
   computed: {
+    ...mapState(['networkType']),
     isRPCSelected() {
       return this.selectedNetwork.host === RPC
     },
   },
   mounted() {
-    this.selectedNetwork = this.$store.state.networkType
-    this.rpc = { ...this.$store.state.networkType }
+    this.selectedNetwork = this.networkType
+    this.rpc = { ...this.networkType }
   },
   methods: {
     showNotification(success) {

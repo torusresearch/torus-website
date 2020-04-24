@@ -126,6 +126,7 @@ export default {
   },
   setWhiteLabel(state, payload) {
     state.whiteLabel = {
+      ...state.whiteLabel,
       isActive: true,
       ...payload,
     }

@@ -20,6 +20,7 @@
 
 <script>
 import log from 'loglevel'
+import { mapState } from 'vuex'
 
 import themes from '../../../plugins/themes'
 
@@ -31,11 +32,9 @@ export default {
       selectedTheme: '',
     }
   },
-  computed: {
-    activeTheme() {
-      return this.$store.state.theme
-    },
-  },
+  computed: mapState({
+    activeTheme: 'theme',
+  }),
   methods: {
     async saveTheme(theme) {
       this.selectedTheme = theme
