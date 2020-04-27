@@ -235,6 +235,7 @@
                 :gas="gas"
                 :display-amount="displayAmount"
                 :selected-currency="selectedCurrency"
+                :currency-data="currencyData"
                 :currency-multiplier="getCurrencyMultiplier"
                 @onSelectSpeed="onSelectSpeed"
               />
@@ -259,6 +260,9 @@
                   <TransferConfirm
                     :to-address="toAddress"
                     :to-verifier="selectedVerifier"
+                    :from-address="userInfo.verifierId"
+                    :from-verifier="userInfo.verifier"
+                    :network-type="networkType"
                     :converted-amount="
                       convertedAmount
                         ? `~ ${convertedAmount} ${

@@ -7,6 +7,10 @@
   justify-content: center;
   flex: none;
 
+  &--minimal {
+    max-width: 200px;
+  }
+  
   .v-icon {
     color: #000000;
     height: 8px;
