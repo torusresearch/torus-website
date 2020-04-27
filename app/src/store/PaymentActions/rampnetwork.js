@@ -23,7 +23,7 @@ export default {
       webhookStatusUrl: `${config.rampApiHost}/transaction`,
       hostUrl: '*',
     }
-    return dispatch('openWidget', { path: config.rampInstantWidget, params: parameters, preopenInstanceId })
+    return dispatch('openWidget', { path: config.rampHost, params: parameters, preopenInstanceId })
   },
   openWidget(context, { path, params, preopenInstanceId }) {
     return new Promise((resolve, reject) => {
