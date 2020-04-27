@@ -140,14 +140,16 @@ class NonceTracker {
     @returns {highestContinuousFrom}
   */
   _getHighestContinuousFrom(txList, startPoint) {
-    const nonces = txList.map((txMeta) => {
-      const { nonce } = txMeta.txParams
-      assert(typeof nonce, 'string', 'nonces should be hex strings')
-      return Number.parseInt(nonce, 16)
-    })
+    const nonces = new Set(
+      txList.map((txMeta) => {
+        const { nonce } = txMeta.txParams
+        assert(typeof nonce, 'string', 'nonces should be hex strings')
+        return Number.parseInt(nonce, 16)
+      })
+    )
 
     let highest = startPoint
-    while (nonces.includes(highest)) {
+    while (nonces.has(highest)) {
       highest += 1
     }
 
