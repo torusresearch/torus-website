@@ -1,3 +1,4 @@
+import randomId from '@chaitanyapotti/random-id'
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 
@@ -7,8 +8,6 @@ import torus from '../../torus'
 import { MOONPAY } from '../../utils/enums'
 import PopupHandler from '../../utils/PopupHandler'
 import { broadcastChannelOptions } from '../../utils/utils'
-
-const randomId = require('@chaitanyapotti/random-id')
 
 export default {
   fetchMoonpayQuote(context, payload) {
