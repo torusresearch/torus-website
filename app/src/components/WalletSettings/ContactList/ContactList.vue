@@ -187,7 +187,7 @@ export default {
           const nameFilter = new RegExp(this.searchName, 'i')
           if (!contact.name.match(nameFilter)) return false
         }
-        return contact
+        return !!contact
       })
     },
   },

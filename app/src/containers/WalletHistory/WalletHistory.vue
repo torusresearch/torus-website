@@ -135,9 +135,7 @@ export default {
       tokenRates: 'tokenRates',
       networkId: 'networkId',
       transactions: 'transactions',
-      wallets(state) {
-        return Object.keys(state.wallet)
-      },
+      wallets: (state) => Object.keys(state.wallet),
     }),
     actionTypes() {
       return [
@@ -296,10 +294,10 @@ export default {
         }
         let totalAmountString = ''
         if (x.type === CONTRACT_TYPE_ERC721) totalAmountString = x.symbol
-        else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = `${this.formatSmallNumbers(Number.parseFloat(x.total_amount), x.symbol)}`
-        else totalAmountString = `${this.formatSmallNumbers(Number.parseFloat(x.total_amount), 'ETH')}`
+        else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.symbol)
+        else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), 'ETH')
         const currencyAmountString =
-          x.type === CONTRACT_TYPE_ERC721 ? '' : `${this.formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency)}`
+          x.type === CONTRACT_TYPE_ERC721 ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency)
         const finalObject = {
           id: x.created_at.toString(),
           date: new Date(x.created_at),
@@ -392,7 +390,7 @@ export default {
           txObject.totalAmount = totalAmount
           txObject.totalAmountString = totalAmountString
           txObject.currencyAmount = this.getCurrencyMultiplier * txObject.totalAmount * tokenRate
-          txObject.currencyAmountString = contractParams.erc721 ? '' : `${this.formatSmallNumbers(txObject.currencyAmount, this.selectedCurrency)}`
+          txObject.currencyAmountString = contractParams.erc721 ? '' : formatSmallNumbers(txObject.currencyAmount, this.selectedCurrency)
           txObject.amount = `${txObject.totalAmountString} / ${txObject.currencyAmountString}`
           txObject.status = txOld.status
           txObject.etherscanLink = getEtherScanHashLink(txOld.hash, networkType.host)
@@ -466,7 +464,6 @@ export default {
         .then((response) => log.info('successfully patched', response))
         .catch((error) => log.error('unable to patch tx', error))
     },
-    formatSmallNumbers,
   },
 }
 </script>

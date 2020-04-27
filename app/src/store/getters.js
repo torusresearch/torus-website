@@ -61,8 +61,6 @@ const tokenBalances = (state) => {
       currencyRateText: `1 ${x.symbol} = ${currencyRate.toFormat(formatter)} ${selectedCurrency}`,
     }
   })
-  // eslint-disable-next-line no-console
-  console.log('finalBalancesArray', finalBalancesArray)
   const totalPortfolioValueReturn = significantDigits(totalPortfolioValue, false, formatter + 1)
   return { finalBalancesArray, totalPortfolioValue: totalPortfolioValueReturn }
 }
