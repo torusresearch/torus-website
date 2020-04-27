@@ -73,10 +73,12 @@ export default {
     // Update vuetify theme
     let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
 
-    if (state.isWhiteLabelActive) {
-      const { whiteLabelTheme } = state
+    if (state.whiteLabel.isActive) {
+      const { theme: whiteLabelTheme } = state.whiteLabel
       theme = themes[whiteLabelTheme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]
-      theme.theme = { ...theme.theme, ...whiteLabelTheme.colors }
+      if (whiteLabelTheme.colors) {
+        theme.theme = { ...theme.theme, ...whiteLabelTheme.colors }
+      }
     }
 
     vuetify.framework.theme.dark = theme.isDark
@@ -123,10 +125,10 @@ export default {
     }
   },
   setWhiteLabel(state, payload) {
-    state.isWhiteLabelActive = true
-    state.whiteLabelTheme = payload.theme
-    state.whiteLabelLogo = payload.logo
-    state.whiteLabelTopupHide = payload.topupHide
-    state.whiteLabelBillboardHide = payload.featuredBillboardHide
+    state.whiteLabel = {
+      ...state.whiteLabel,
+      isActive: true,
+      ...payload,
+    }
   },
 }

@@ -76,6 +76,8 @@
           :display-amount="displayAmount"
           :gas="gas"
           :active-gas-price="activeGasPrice"
+          :selected-currency="selectedCurrency"
+          :currency-data="currencyData"
           @onSave="onSaveAdvanceOptions"
         />
       </v-flex>
@@ -162,6 +164,12 @@ export default {
     isConfirm: {
       type: Boolean,
       default: false,
+    },
+    currencyData: {
+      type: Object,
+      default() {
+        return {}
+      },
     },
   },
   data() {

@@ -96,21 +96,27 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import { SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
 
 export default {
   name: 'PermissionConfirm',
   computed: {
-    selectedNetwork() {
-      let finalNetwork = ''
+    ...mapState({
+      networkType: 'networkType',
+      whiteLabel: 'whiteLabel',
+      selectedNetwork(state) {
+        let finalNetwork = ''
 
-      if (this.network) {
-        return SUPPORTED_NETWORK_TYPES[this.network].networkName
-      }
+        if (this.network) {
+          return SUPPORTED_NETWORK_TYPES[this.network].networkName
+        }
 
-      finalNetwork = !this.$store.state.networkType.networkName ? this.$store.state.networkType.host : this.$store.state.networkType.networkName
-      return finalNetwork
-    },
+        finalNetwork = !state.networkType.networkName ? state.networkType.host : state.networkType.networkName
+        return finalNetwork
+      },
+    }),
   },
   methods: {
     triggerSign() {

@@ -46,6 +46,12 @@ Vue.use(VueGtm, {
 })
 
 Vue.mixin({
+  computed: {
+    whiteLabelGlobal() {
+      const torusWhiteLabel = localStorage.getItem('torus-white-label')
+      return torusWhiteLabel ? { logo: JSON.parse(torusWhiteLabel).logo, isWhiteLabelActive: true } : { isWhiteLabelActive: false }
+    },
+  },
   methods: {
     t(data) {
       if (data === '') return data

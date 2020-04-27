@@ -133,7 +133,7 @@ const router = new Router({
             },
           ],
           beforeEnter(to, from, next) {
-            if (store.state.whiteLabelTopupHide) {
+            if (store.state.whiteLabel.topupHide) {
               return next({ name: 'walletHome' })
             }
             return next()

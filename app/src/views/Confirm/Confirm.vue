@@ -15,7 +15,7 @@
       </v-layout>
       <v-layout wrap align-center mx-6 my-3>
         <v-flex xs12>
-          <NetworkDisplay class="mb-4" :network="network" :store-network-type="network"></NetworkDisplay>
+          <NetworkDisplay :minimal="true" class="mb-4" :store-network-type="network"></NetworkDisplay>
         </v-flex>
         <v-flex v-if="transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM" xs12>
           <ShowToolTip :address="amountTo">
@@ -58,6 +58,7 @@
           :display-amount="value"
           :active-gas-price-confirm="gasPrice"
           :selected-currency="selectedCurrency"
+          :currency-data="currencyData"
           :currency-multiplier="getCurrencyMultiplier"
           :symbol="'ETH'"
           :is-confirm="true"
@@ -86,7 +87,7 @@
               <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappTransfer.cancel') }}</v-btn>
             </v-flex>
             <v-flex xs6 px-2>
-              <v-dialog v-model="confirmDialog" max-width="550" persistent>
+              <v-dialog v-model="confirmDialog" max-width="375" persistent>
                 <template v-slot:activator="{ on }">
                   <v-btn
                     id="confirm-btn"
@@ -103,6 +104,9 @@
                 </template>
                 <TransferConfirm
                   :to-address="receiver"
+                  :from-address="userInfo.verifierId"
+                  :from-verifier="userInfo.verifier"
+                  :network-type="network"
                   :converted-amount="displayAmountConverted"
                   :display-amount="displayAmountValue"
                   :speed-selected="speed"
@@ -118,122 +122,6 @@
           </v-layout>
         </v-flex>
       </v-layout>
-      <!-- OLLD -->
-      <!-- <v-layout wrap>
-        <template v-if="transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM">
-          <v-flex xs12 mb-4 mx-6>
-            <div class="subtitle-2">{{ t('dappTransfer.youSend') }}</div>
-            <v-divider class="mb-1"></v-divider>
-            <div>
-              <img class="mr-2 float-left" :src="assetDetails.logo" height="35px" />
-              <span class="subtitle-2 float-left text_2--text asset-name">{{ assetDetails.name }}</span>
-            </div>
-          </v-flex>
-        </template>
-        <template v-else-if="transactionCategory === TOKEN_METHOD_APPROVE"></template>
-        <v-flex xs12 px-6 mt-4 mb-1>
-          <div class="subtitle-1 font-weight-bold">{{ t('dappTransfer.total') }}</div>
-          <v-divider></v-divider>
-          <div>
-            <span class="subtitle-2">{{ t('dappTransfer.constOfTrans') }}</span>
-            <span class="subtitle-1 float-right torusBrand1--text font-weight-bold">{{ costOfTransaction }}</span>
-          </div>
-          <div v-if="isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE" class="clearfix">
-            <span class="subtitle-1 float-right torusBrand1--text font-weight-bold">+ {{ significantDigits(gasCost) }} ETH</span>
-          </div>
-          <div class="caption float-right clearfix">{{ costOfTransactionConverted }}</div>
-        </v-flex>
-        <v-flex xs12 mb-3 mt-3>
-          <v-dialog v-model="detailsDialog" width="600px">
-            <template v-slot:activator="{ on }">
-              <div id="more-details-link" class="subtitle-2 float-right dialog-launcher torusBrand1--text mx-6" v-on="on">
-                {{ t('dappTransfer.moreDetails') }}
-              </div>
-            </template>
-            <v-card class="pa-4 more-details-container">
-              <v-card-text>
-                <v-layout wrap>
-                  <v-flex xs4 sm2>
-                    {{ t('dappTransfer.rate') }}
-                    <span class="float-right mr-4">:</span>
-                  </v-flex>
-                  <v-flex id="currency-rate" xs8 sm10 class="text_2--text">{{ getCurrencyRate }}</v-flex>
-                  <v-flex xs4 sm2>
-                    {{ t('dappTransfer.network') }}
-                    <span class="float-right mr-4">:</span>
-                  </v-flex>
-                  <v-flex xs8 sm10 class="text_2--text">
-                    <span id="network" class="text-capitalize">{{ network.networkName || network.host }}</span>
-                  </v-flex>
-                  <v-flex xs4 sm2>
-                    {{ t('dappTransfer.type') }}
-                    <span class="float-right mr-4">:</span>
-                  </v-flex>
-                  <v-flex id="type" xs8 sm10 class="text_2--text">{{ header }}</v-flex>
-                  <v-flex v-if="txData || txDataParams !== ''" xs2>
-                    {{ t('dappTransfer.data') }}
-                    <span class="float-right mr-4">:</span>
-                  </v-flex>
-                  <v-flex xs12 mt-1>
-                    <v-card v-if="txDataParams !== ''" flat color="background_3">
-                      <v-card-text>
-                        <pre>{{ txDataParams }}</pre>
-                      </v-card-text>
-                    </v-card>
-                  </v-flex>
-                  <v-flex v-if="txData" xs12 mt-4>
-                    <div class="mb-1">Hex {{ t('dappTransfer.data') }}:</div>
-                    <v-card flat color="background_3" style="word-break: break-all;">
-                      <v-card-text>{{ txData }}</v-card-text>
-                    </v-card>
-                  </v-flex>
-                </v-layout>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn id="less-details-link" color="torusBrand1" text @click="detailsDialog = false">{{ t('dappTransfer.lessDetails') }}</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-flex>
-        <v-flex v-if="topUpErrorShow || canShowError" xs12 px-6 mb-6 class="text-right">
-          <div class="caption error--text">{{ errorMsg }}</div>
-          <div v-if="topUpErrorShow" class="caption mt-1">
-            {{ t('dappTransfer.pleaseTopup1') }}
-            <v-btn color="torusBrand1" class="mx-1 px-2 caption" small outlined @click="topUp">{{ t('dappTransfer.pleaseTopup2') }}</v-btn>
-            {{ t('dappTransfer.pleaseTopup3') }}
-          </div>
-        </v-flex>
-        <v-flex v-if="transactionCategory === TOKEN_METHOD_APPROVE" xs12 px-6 mb-6>
-          <div class="caption error--text">{{ `${t('dappTransfer.byConfirming1')} ${displayAmountValue} ${t('dappTransfer.byConfirming2')}.` }}</div>
-        </v-flex>
-        <v-layout px-6>
-          <v-flex xs6>
-            <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappTransfer.cancel') }}</v-btn>
-          </v-flex>
-          <v-flex xs6>
-            <v-dialog v-model="confirmDialog" max-width="550" persistent>
-              <template v-slot:activator="{ on }">
-                <v-btn id="confirm-btn" :disabled="topUpErrorShow || canShowError" block depressed large color="torusBrand1" class="ml-2" v-on="on">
-                  {{ t('dappTransfer.confirm') }}
-                </v-btn>
-              </template>
-              <TransferConfirm
-                :to-address="receiver"
-                :converted-amount="displayAmountConverted"
-                :display-amount="displayAmountValue"
-                :speed-selected="speed"
-                :asset-selected="assetDetails"
-                :is-non-fungible-token="isNonFungibleToken"
-                :transaction-fee="txFees"
-                :selected-currency="selectedCurrency"
-                @onClose="confirmDialog = false"
-                @onConfirm="triggerSign"
-              ></TransferConfirm>
-            </v-dialog>
-          </v-flex>
-        </v-layout>
-      </v-layout> -->
     </template>
 
     <template v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE || type === TX_TYPED_MESSAGE">
@@ -424,6 +312,7 @@ export default {
       TX_TYPED_MESSAGE,
       TX_PERSONAL_MESSAGE,
       TX_MESSAGE,
+      userInfo: {},
     }
   },
   computed: {
@@ -583,7 +472,7 @@ export default {
         this.typedMessages = finalTypedMessages
       } else {
         let finalValue = new BigNumber('0')
-        const { simulationFails, id, transactionCategory, methodParams, contractParams, txParams: txObject } = txParams || {}
+        const { simulationFails, id, transactionCategory, methodParams, contractParams, txParams: txObject, userInfo } = txParams || {}
         const { value, to, data, from: sender, gas, gasPrice } = txObject || {}
         const { reason = '' } = simulationFails || {}
         if (value) {
@@ -608,6 +497,7 @@ export default {
         const checkSummedTo = toChecksumAddress(to)
         const tokenObject = contractParams
         const decimals = new BigNumber(tokenObject.decimals || '0')
+        this.userInfo = userInfo
         this.selectedToken = tokenObject.symbol || 'ERC20'
         this.id = id
         this.network = network

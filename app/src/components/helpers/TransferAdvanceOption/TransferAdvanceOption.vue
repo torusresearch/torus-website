@@ -146,6 +146,16 @@ export default {
       type: Boolean,
       default: false,
     },
+    selectedCurrency: {
+      type: String,
+      default: 'USD',
+    },
+    currencyData: {
+      type: Object,
+      default() {
+        return {}
+      },
+    },
   },
   data() {
     return {
@@ -157,12 +167,9 @@ export default {
   },
   computed: {
     getCurrencyMultiplier() {
-      const { selectedCurrency, currencyData } = this.$store.state || {}
+      const { selectedCurrency, currencyData } = this
       const currencyMultiplierNumber = selectedCurrency !== 'ETH' ? currencyData[selectedCurrency.toLowerCase()] || 1 : 1
       return new BigNumber(currencyMultiplierNumber)
-    },
-    selectedCurrency() {
-      return this.$store.state.selectedCurrency
     },
     totalCost() {
       const maxLength = Math.max(this.gasAmountDisplay.toString().length, this.displayAmount.toString().length)

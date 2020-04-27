@@ -40,6 +40,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import QuickAddress from '../../../components/helpers/QuickAddress'
 import TopupProviders from '../../../components/WalletTopup/TopupProviders'
 import { getPaymentProviders } from '../../../utils/utils'
@@ -55,8 +57,9 @@ export default {
     }
   },
   computed: {
+    ...mapState(['theme']),
     providers() {
-      return getPaymentProviders(this.$store.state.theme)
+      return getPaymentProviders(this.theme)
     },
   },
   created() {

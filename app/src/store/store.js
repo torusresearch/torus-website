@@ -74,6 +74,7 @@ const VuexStore = new Vuex.Store({
       confirmHandler.networkType = state.networkType
       if (isTx) {
         const txParameters = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
+        txParameters.userInfo = state.userInfo
         log.info(txParameters, 'txParams')
         confirmHandler.txParams = txParameters
         confirmHandler.id = txParameters.id
