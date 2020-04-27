@@ -152,6 +152,7 @@
 <script>
 import * as ethUtil from 'ethereumjs-util'
 import Wallet from 'ethereumjs-wallet'
+import { mapState } from 'vuex'
 
 import ShowToolTip from '../../helpers/ShowToolTip'
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -175,11 +176,9 @@ export default {
     }
   },
   computed: {
-    selectedAddress() {
-      return this.$store.state.selectedAddress
-    },
+    ...mapState(['selectedAddress', 'wallet']),
     selectedKey() {
-      return this.$store.state.wallet[this.selectedAddress]
+      return this.wallet[this.selectedAddress]
     },
   },
   methods: {

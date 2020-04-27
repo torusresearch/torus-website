@@ -124,8 +124,8 @@
                   id="contact-submit-btn"
                   large
                   class="torus-btn1 py-1 gmt-add-address"
-                  :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-                  :color="isWhiteLabelActive ? 'torusBrand1' : ''"
+                  :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
+                  :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
                   block
                   type="submit"
                   :disabled="!contactFormValid"
@@ -143,6 +143,7 @@
 
 <script>
 import log from 'loglevel'
+import { mapState } from 'vuex'
 
 import { ALLOWED_VERIFIERS, ETH } from '../../../utils/enums'
 import { validateVerifierId } from '../../../utils/utils'
@@ -164,6 +165,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      stateContacts: 'contacts',
+    }),
     verifierOptions() {
       const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
       return verifiers.map((verifier) => {
@@ -176,7 +180,7 @@ export default {
       return `${this.t('walletSettings.enter')} ${this.t(verifierLocale)}`
     },
     contacts() {
-      return this.$store.state.contacts.filter((contact) => {
+      return this.stateContacts.filter((contact) => {
         if (this.searchVerifier && this.searchVerifier !== contact.verifier) return false
 
         if (this.searchName) {
@@ -185,9 +189,6 @@ export default {
         }
         return contact
       })
-    },
-    isWhiteLabelActive() {
-      return this.$store.state.isWhiteLabelActive
     },
   },
   methods: {

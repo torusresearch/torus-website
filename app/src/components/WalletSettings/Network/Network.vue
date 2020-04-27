@@ -48,8 +48,8 @@
                     <v-btn
                       large
                       class="torus-btn1 py-1"
-                      :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-                      :color="isWhiteLabelActive ? 'torusBrand1' : ''"
+                      :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
+                      :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
                       block
                       :disabled="!formValid"
                       depressed
@@ -72,6 +72,7 @@
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
+import { mapState } from 'vuex'
 
 import { broadcastChannelOptions } from '../../../utils/utils'
 
@@ -98,16 +99,14 @@ export default {
     }
   },
   computed: {
+    ...mapState(['networkType']),
     isRPCSelected() {
       return this.selectedNetwork.host === RPC
     },
-    isWhiteLabelActive() {
-      return this.$store.state.isWhiteLabelActive
-    },
   },
   mounted() {
-    this.selectedNetwork = this.$store.state.networkType
-    this.rpc = { ...this.$store.state.networkType }
+    this.selectedNetwork = this.networkType
+    this.rpc = { ...this.networkType }
   },
   methods: {
     showNotification(success) {

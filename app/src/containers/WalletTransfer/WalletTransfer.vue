@@ -12,7 +12,7 @@
           <div class="d-flex">
             <span class="body-2 text_1--text">{{ t('walletTransfer.accountBalance') }}</span>
             <div class="ml-auto">
-              <NetworkDisplay :store-network-type="storeNetworkType"></NetworkDisplay>
+              <NetworkDisplay :store-network-type="networkType"></NetworkDisplay>
             </div>
           </div>
           <div class="d-flex mt-3">
@@ -235,6 +235,7 @@
                 :gas="gas"
                 :display-amount="displayAmount"
                 :selected-currency="selectedCurrency"
+                :currency-data="currencyData"
                 :currency-multiplier="getCurrencyMultiplier"
                 @onSelectSpeed="onSelectSpeed"
               />
@@ -259,6 +260,9 @@
                   <TransferConfirm
                     :to-address="toAddress"
                     :to-verifier="selectedVerifier"
+                    :from-address="userInfo.verifierId"
+                    :from-verifier="userInfo.verifier"
+                    :network-type="networkType"
                     :converted-amount="
                       convertedAmount
                         ? `~ ${convertedAmount} ${
@@ -291,7 +295,7 @@
           <div class="d-flex">
             <span class="body-2">{{ t('walletTransfer.accountBalance') }}</span>
             <div class="ml-auto">
-              <NetworkDisplay :store-network-type="storeNetworkType"></NetworkDisplay>
+              <NetworkDisplay :store-network-type="networkType"></NetworkDisplay>
             </div>
           </div>
           <div class="d-flex mt-3">
@@ -328,6 +332,7 @@ import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
 import log from 'loglevel'
 import { QrcodeCapture } from 'vue-qrcode-reader'
+import { mapState } from 'vuex'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
@@ -411,6 +416,18 @@ export default {
     }
   },
   computed: {
+    ...mapState([
+      'selectedCurrency',
+      'weiBalanceLoaded',
+      'tokenDataLoaded',
+      'currencyData',
+      'tokenRates',
+      'contacts',
+      'selectedAddress',
+      'userInfo',
+      'jwtToken',
+      'networkType',
+    ]),
     verifierOptions() {
       const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
       return verifiers.map((verifier) => {
@@ -421,9 +438,6 @@ export default {
     randomName() {
       return `torus-${torus.instanceId}`
     },
-    selectedCurrency() {
-      return this.$store.state.selectedCurrency
-    },
     finalBalancesArray() {
       return this.$store.getters.tokenBalances.finalBalancesArray || []
     },
@@ -432,12 +446,6 @@ export default {
     },
     finalBalancesArrayEthOnly() {
       return this.$store.getters.tokenBalances.finalBalancesArray.filter((token) => token.tokenAddress === '0x') || []
-    },
-    weiBalanceLoaded() {
-      return this.$store.state.weiBalanceLoaded
-    },
-    tokenDataLoaded() {
-      return this.$store.state.tokenDataLoaded
     },
     collectibles() {
       return this.$store.getters.collectibleBalances
@@ -455,15 +463,13 @@ export default {
       return toChecksumAddress(this.tokenAddress)
     },
     getCurrencyMultiplier() {
-      const { selectedCurrency, currencyData } = this.$store.state || {}
-      const currencyMultiplierNumber = selectedCurrency !== 'ETH' ? currencyData[selectedCurrency.toLowerCase()] || 1 : 1
+      const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
       return new BigNumber(currencyMultiplierNumber)
     },
     getCurrencyTokenRate() {
-      const { tokenRates } = this.$store.state
       const currencyMultiplier = this.getCurrencyMultiplier
       let tokenRateMultiplierNumber = 1
-      if (this.contractType === CONTRACT_TYPE_ERC20) tokenRateMultiplierNumber = tokenRates[this.selectedTokenAddress.toLowerCase()] || 0
+      if (this.contractType === CONTRACT_TYPE_ERC20) tokenRateMultiplierNumber = this.tokenRates[this.selectedTokenAddress.toLowerCase()] || 0
       const tokenRateMultiplier = new BigNumber(tokenRateMultiplierNumber)
       return currencyMultiplier.times(tokenRateMultiplier)
     },
@@ -486,7 +492,7 @@ export default {
         : ''
     },
     contactList() {
-      return this.$store.state.contacts.reduce((mappedObject, contact) => {
+      return this.contacts.reduce((mappedObject, contact) => {
         if (contact.verifier === this.selectedVerifier || this.selectedVerifier === '') {
           mappedObject.push({
             name: `${contact.name} (${contact.contact})`,
@@ -503,12 +509,6 @@ export default {
       const targetContact = this.contactSelected
       const addressFound = this.contactList.find((contact) => contact.value.toLowerCase() === targetContact.toLowerCase())
       return addressFound === undefined
-    },
-    selectedAddress() {
-      return this.$store.state.selectedAddress
-    },
-    storeNetworkType() {
-      return this.$store.state.networkType
     },
   },
   watch: {
@@ -581,9 +581,9 @@ export default {
     },
     sendEmail(typeToken, transactionHash) {
       if (/\S+@\S+\.\S+/.test(this.toAddress)) {
-        const etherscanLink = getEtherScanHashLink(transactionHash, this.$store.state.networkType.host)
+        const etherscanLink = getEtherScanHashLink(transactionHash, this.networkType.host)
         const emailObject = {
-          from_name: this.$store.state.userInfo.name,
+          from_name: this.userInfo.name,
           to_email: this.toAddress,
           total_amount: significantDigits(this.amount.toFormat(5), false, 5),
           token: typeToken.toString(),
@@ -597,7 +597,7 @@ export default {
         }
         post(`${config.api}/transaction/sendemail`, emailObject, {
           headers: {
-            Authorization: `Bearer ${this.$store.state.jwtToken}`,
+            Authorization: `Bearer ${this.jwtToken}`,
             'Content-Type': 'application/json; charset=utf-8',
           },
         })

@@ -14,7 +14,7 @@
               <span class="title text_1--text" :style="{ lineHeight: '1em' }">{{ t('walletHome.totalValue') }}</span>
             </div>
             <div class="ml-auto">
-              <NetworkDisplay :network="storeNetworkType.networkName" :store-network-type="storeNetworkType"></NetworkDisplay>
+              <NetworkDisplay :network="networkType.networkName" :store-network-type="networkType"></NetworkDisplay>
             </div>
           </div>
           <div class="d-flex align-center">
@@ -55,12 +55,12 @@
           <v-layout wrap class="mx-n2 mt-2">
             <v-flex xs6 px-2>
               <v-btn
-                v-show="canShowLrc && !whiteLabelTopupHide"
+                v-show="canShowLrc && !whiteLabel.topupHide"
                 block
                 large
                 class="torus-btn1"
-                :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-                :color="isWhiteLabelActive ? 'torusBrand1' : ''"
+                :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
+                :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
                 @click="topup"
               >
                 <v-icon left>$vuetify.icons.add</v-icon>
@@ -72,8 +72,8 @@
                 block
                 large
                 class="torus-btn1"
-                :class="isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
-                :color="isWhiteLabelActive ? 'torusBrand1' : ''"
+                :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
+                :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
                 @click="initiateTransfer"
               >
                 <v-icon left>$vuetify.icons.send</v-icon>
@@ -112,7 +112,7 @@
         </v-card>
       </v-flex>
       <v-flex
-        v-for="(event, i) in isFreshAccount || whiteLabelBillboardHide ? [] : events"
+        v-for="(event, i) in isFreshAccount || whiteLabel.featuredBillboardHide ? [] : events"
         :key="`event-${i}`"
         px-4
         xs12
@@ -167,6 +167,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
 import QuickAddress from '../../../components/helpers/QuickAddress'
@@ -191,17 +193,20 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      whiteLabel: 'whiteLabel',
+      weiBalanceLoaded: 'weiBalanceLoaded',
+      tokenDataLoaded: 'tokenDataLoaded',
+      selectedCurrency: 'selectedCurrency',
+      networkType: 'networkType',
+      isFreshAccount: 'isNewUser',
+      billboard: 'billboard',
+    }),
     canShowLrc() {
       return process.env.VUE_APP_TORUS_BUILD_ENV !== 'lrc'
     },
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
-    },
-    weiBalanceLoaded() {
-      return this.$store.state.weiBalanceLoaded
-    },
-    tokenDataLoaded() {
-      return this.$store.state.tokenDataLoaded
     },
     finalBalancesArray() {
       const balances = this.$store.getters.tokenBalances.finalBalancesArray
@@ -213,42 +218,23 @@ export default {
 
       return this.finalBalancesArray.filter((balance) => balance.name.match(regEx))
     },
-    selectedCurrency() {
-      return this.$store.state.selectedCurrency
-    },
     isRefreshVisible() {
-      return this.$store.state.networkType.host === MAINNET
+      return this.networkType.host === MAINNET
     },
     showSearch() {
       return this.finalBalancesArray.length > 10 || true
     },
-    isFreshAccount() {
-      return this.$store.state.isNewUser
-    },
     events() {
       const events = []
       const lang = this.$vuetify.lang.current
-      const { billboard } = this.$store.state
 
-      Object.keys(billboard).forEach((key) => {
-        const event = billboard[key]
+      Object.keys(this.billboard).forEach((key) => {
+        const event = this.billboard[key]
         const finalEvent = event[lang] || event[LOCALE_EN]
         events.push(finalEvent)
       })
 
       return events
-    },
-    storeNetworkType() {
-      return this.$store.state.networkType
-    },
-    isWhiteLabelActive() {
-      return this.$store.state.isWhiteLabelActive
-    },
-    whiteLabelTopupHide() {
-      return this.$store.state.whiteLabelTopupHide
-    },
-    whiteLabelBillboardHide() {
-      return this.$store.state.whiteLabelBillboardHide
     },
   },
   mounted() {

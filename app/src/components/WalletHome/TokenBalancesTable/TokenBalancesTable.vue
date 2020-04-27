@@ -46,6 +46,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import { formatSmallNumbers } from '../../../utils/utils'
 
 export default {
@@ -66,11 +68,9 @@ export default {
     }
   },
   computed: {
+    ...mapState(['selectedCurrency']),
     showFooter() {
       return this.tokenBalances.length > 5
-    },
-    selectedCurrency() {
-      return this.$store.state.selectedCurrency
     },
   },
   methods: {

@@ -66,6 +66,7 @@
 
 <script>
 import VueQr from 'vue-qr'
+import { mapState } from 'vuex'
 
 import ShowToolTip from '../ShowToolTip'
 
@@ -86,9 +87,11 @@ export default {
     }
   },
   computed: {
-    selectedAddress() {
-      return this.customAddress || this.$store.state.selectedAddress
-    },
+    ...mapState({
+      selectedAddress(state) {
+        return this.customAddress || state.selectedAddress
+      },
+    }),
     slicedAddress() {
       return `${this.selectedAddress.slice(0, 11)}...${this.selectedAddress.slice(-13)}`
     },

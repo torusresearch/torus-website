@@ -186,9 +186,6 @@ export default {
         },
       ]
     },
-    isWhiteLabelActive() {
-      return this.$store.state.isWhiteLabelActive
-    },
   },
   methods: {
     importViaPrivateKey() {

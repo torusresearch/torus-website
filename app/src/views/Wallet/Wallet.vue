@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import Navbar from '../../components/helpers/Navbar'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
 
@@ -32,6 +34,9 @@ export default {
     }
   },
   computed: {
+    ...mapState({
+      whiteLabel: 'whiteLabel',
+    }),
     headerItems() {
       const items = [
         { name: 'home', display: this.t('navBar.home'), route: '/wallet/home', icon: 'settings' },
@@ -39,7 +44,7 @@ export default {
         { name: 'activity', display: this.t('navBar.activity'), route: '/wallet/history', icon: 'activities' },
         { name: 'settings', display: this.t('navBar.settings'), route: '/wallet/settings', icon: 'settings' },
       ]
-      if (process.env.VUE_APP_TORUS_BUILD_ENV !== 'lrc' && !this.$store.state.whiteLabelTopupHide) {
+      if (process.env.VUE_APP_TORUS_BUILD_ENV !== 'lrc' && !this.whiteLabel.topupHide) {
         items.splice(2, 0, { name: 'top-up', display: this.t('navBar.topUp'), route: '/wallet/topup', icon: 'topup' })
       }
       return items

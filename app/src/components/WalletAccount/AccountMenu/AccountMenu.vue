@@ -3,7 +3,7 @@
     <v-list class="pb-0 mb-2">
       <v-list-item>
         <v-list-item-avatar class="ml-2 mr-3">
-          <img :src="profileImage" class="align-start" :alt="userName" onerror="this.src = '/images/person.jpeg';" />
+          <img :src="userInfo.profileImage" class="align-start" :alt="userName" onerror="this.src = '/images/person.jpeg';" />
         </v-list-item-avatar>
         <v-list-item-title>
           <div class="font-weight-bold title d-flex">
@@ -112,6 +112,7 @@
 <script>
 import BigNumber from 'bignumber.js'
 import { BroadcastChannel } from 'broadcast-channel'
+import { mapState } from 'vuex'
 
 import { DISCORD } from '../../../utils/enums'
 import { addressSlicer, broadcastChannelOptions, significantDigits } from '../../../utils/utils'
@@ -140,6 +141,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['userInfo', 'selectedAddress', 'selectedCurrency', 'wallet', 'weiBalance', 'currencyData']),
     userEmail() {
       const verifierLabel = `${this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1)}: `
       return verifierLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
@@ -152,23 +154,11 @@ export default {
       userName = userName.length > 20 ? userName.split(' ')[0] : userName
       return `${userName}'s`
     },
-    profileImage() {
-      return this.userInfo.profileImage
-    },
-    userInfo() {
-      return this.$store.state.userInfo
-    },
-    selectedAddress() {
-      return this.$store.state.selectedAddress
-    },
     slicedSelectedAddress() {
-      return addressSlicer(this.$store.state.selectedAddress)
-    },
-    selectedCurrency() {
-      return this.$store.state.selectedCurrency
+      return addressSlicer(this.selectedAddress)
     },
     wallets() {
-      const { wallet: storeWallet, weiBalance: storeWalletBalance, selectedCurrency } = this.$store.state || {}
+      const { wallet: storeWallet, weiBalance: storeWalletBalance, selectedCurrency } = this || {}
       const wallets = Object.keys(storeWallet).reduce((accts, x) => {
         const computedBalance = new BigNumber(storeWalletBalance[x]).dividedBy(new BigNumber(10).pow(new BigNumber(18))) || new BigNumber(0)
         const tokenRateMultiplier = new BigNumber(1)
@@ -193,7 +183,7 @@ export default {
       return this.wallets.filter((accumulator) => accumulator.address !== this.selectedAddress)
     },
     getCurrencyMultiplier() {
-      const { selectedCurrency, currencyData } = this.$store.state || {}
+      const { selectedCurrency, currencyData } = this || {}
       let currencyMultiplier = 1
       if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
       return currencyMultiplier

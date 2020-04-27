@@ -154,6 +154,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import { formatCurrencyNumber, paymentProviders, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../../helpers/HelpTooltip'
 
@@ -204,6 +206,9 @@ export default {
     supportedCurrencies() {
       return this.selectedProviderObj.validCurrencies
     },
+    ...mapState({
+      storeSelectedCurrency: 'selectedCurrency',
+    }),
     sendPlaceholder() {
       return `0.00 (Min ${formatCurrencyNumber(this.minOrderValue)})`
     },
@@ -230,8 +235,8 @@ export default {
   },
   mounted() {
     this.selectedCryptoCurrency = 'ETH'
-    if (this.selectedProviderObj && this.selectedProviderObj.validCurrencies.includes(this.$store.state.selectedCurrency)) {
-      this.selectedCurrency = this.$store.state.selectedCurrency
+    if (this.selectedProviderObj && this.selectedProviderObj.validCurrencies.includes(this.storeSelectedCurrency)) {
+      this.selectedCurrency = this.storeSelectedCurrency
     } else {
       ;[this.selectedCurrency] = this.selectedProviderObj.validCurrencies
     }

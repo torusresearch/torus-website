@@ -17,15 +17,15 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import ExportQrCode from '../ExportQrCode'
 import ShowToolTip from '../ShowToolTip'
 
 export default {
   components: { ExportQrCode, ShowToolTip },
   computed: {
-    selectedAddress() {
-      return this.$store.state.selectedAddress
-    },
+    ...mapState(['selectedAddress']),
     slicedAddress() {
       return this.$vuetify.breakpoint.xsOnly
         ? `${this.selectedAddress.slice(0, 4)}...${this.selectedAddress.slice(-3)}`
