@@ -199,23 +199,29 @@
         <v-flex v-if="$vuetify.breakpoint.smAndUp" sm4 md6 fill-height class="login-panel-right" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
           <v-layout wrap fill-height align-center>
             <v-flex xs12 text-center>
-              <v-carousel cycle height="650" interval="7000" :show-arrows="false">
+              <v-carousel height="650" interval="7000" :show-arrows="false">
                 <v-carousel-item v-for="slide in slides" :key="slide.id">
-                  <img
-                    class="mb-7 login-panel-right__image"
-                    :src="require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide.id}.svg`)"
-                  />
-                  <div class="display-1 mb-3 font-weight-medium text_2--text">{{ slide.title }}</div>
-                  <div class="body-1 text_2--text">{{ slide.sub_title1 }}</div>
-                  <div class="body-1 text_2--text">{{ slide.sub_title2 }}</div>
-                  <v-btn
-                    class="learn-more-btn gmt-learn-more text_2--text"
-                    :class="{ isDark: $vuetify.theme.dark }"
-                    :href="slide.link"
-                    target="_blank"
-                  >
-                    Learn More
-                  </v-btn>
+                  <div class="d-flex flex-column fill-height justify-end pb-12">
+                    <div class="text-center">
+                      <img
+                        class="mb-7 login-panel-right__image"
+                        :src="require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide.id}.svg`)"
+                      />
+                    </div>
+                    <div class="display-1 mb-3 font-weight-medium text_2--text">{{ slide.title }}</div>
+                    <div class="body-1 text_2--text">{{ slide.sub_title1 }}</div>
+                    <div class="body-1 text_2--text">{{ slide.sub_title2 }}</div>
+                    <div class="mb-5">
+                      <v-btn
+                        class="learn-more-btn gmt-learn-more text_2--text"
+                        :class="{ isDark: $vuetify.theme.dark }"
+                        :href="slide.link"
+                        target="_blank"
+                      >
+                        Learn More
+                      </v-btn>
+                    </div>
+                  </div>
                 </v-carousel-item>
               </v-carousel>
             </v-flex>
