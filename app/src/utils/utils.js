@@ -413,7 +413,7 @@ export const paymentProviders = {
     enforceMax: true,
   },
   [XANPOOL]: {
-    line1: 'PayNow/ InstaPay/ FPS/ GoJekPay/ UPI/ PromptPay/ VietelPay/ DuitNow',
+    line1: 'PayNow/ InstaPay/ FPS/ GoJekPay/ UPI/ PromptPay/ ViettelPay/ DuitNow',
     line2: '2.5% buying, 3% selling',
     line3: '$2,500 / day',
     line4: 'ETH, USDT',
