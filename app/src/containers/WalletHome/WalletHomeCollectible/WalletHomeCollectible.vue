@@ -102,6 +102,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   data() {
     return {
@@ -127,14 +129,9 @@ export default {
       assetActive: false,
     }
   },
-  computed: {
-    platform() {
-      return 'Ethereum Blockchain'
-    },
-    collectibles() {
-      return this.$store.getters.collectibleBalances
-    },
-  },
+  computed: mapGetters({
+    collectibles: 'collectibleBalances',
+  }),
   watch: {
     collectibles(newValue, oldValue) {
       if (newValue !== oldValue) {

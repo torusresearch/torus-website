@@ -78,7 +78,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 import log from 'loglevel'
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
@@ -124,7 +124,6 @@ export default {
     ...mapState({
       loadingUserTransactions: 'loadingUserTransactions',
       selectedCurrency: 'selectedCurrency',
-      currencyData: 'currencyData',
       wallet: 'wallet',
       pastTransactions: 'pastTransactions',
       paymentTxStore: 'paymentTx',
@@ -137,6 +136,7 @@ export default {
       transactions: 'transactions',
       wallets: (state) => Object.keys(state.wallet),
     }),
+    ...mapGetters(['currencyMultiplier']),
     actionTypes() {
       return [
         {
@@ -177,11 +177,6 @@ export default {
         },
       ]
     },
-    getCurrencyMultiplier() {
-      let currencyMultiplier = 1
-      if (this.selectedCurrency !== 'ETH') currencyMultiplier = this.currencyData[this.selectedCurrency.toLowerCase()] || 1
-      return currencyMultiplier
-    },
   },
   watch: {
     pastTransactions() {
@@ -197,9 +192,6 @@ export default {
     this.$vuetify.goTo(0)
   },
   methods: {
-    onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'history' })
-    },
     getStatusText(status) {
       switch (status) {
         case 'rejected':
@@ -382,7 +374,7 @@ export default {
           txObject.slicedTo = addressSlicer(finalTo)
           txObject.totalAmount = totalAmount
           txObject.totalAmountString = totalAmountString
-          txObject.currencyAmount = this.getCurrencyMultiplier * txObject.totalAmount * tokenRate
+          txObject.currencyAmount = this.currencyMultiplier * txObject.totalAmount * tokenRate
           txObject.currencyAmountString = contractParams.erc721 ? '' : formatSmallNumbers(txObject.currencyAmount, this.selectedCurrency)
           txObject.amount = `${txObject.totalAmountString} / ${txObject.currencyAmountString}`
           txObject.status = txOld.status

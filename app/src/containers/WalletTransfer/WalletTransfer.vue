@@ -236,7 +236,7 @@
                 :display-amount="displayAmount"
                 :selected-currency="selectedCurrency"
                 :currency-data="currencyData"
-                :currency-multiplier="getCurrencyMultiplier"
+                :currency-multiplier="currencyMultiplier"
                 @onSelectSpeed="onSelectSpeed"
               />
               <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721" xs12 mb-6 class="text-right">
@@ -332,7 +332,7 @@ import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
 import log from 'loglevel'
 import { QrcodeCapture } from 'vue-qrcode-reader'
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
@@ -416,6 +416,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      tokenBalances: 'tokenBalances',
+      collectibles: 'collectibleBalances',
+    }),
     ...mapState([
       'selectedCurrency',
       'weiBalanceLoaded',
@@ -428,6 +432,7 @@ export default {
       'jwtToken',
       'networkType',
     ]),
+    ...mapGetters(['currencyMultiplier']),
     verifierOptions() {
       try {
         const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
@@ -443,16 +448,13 @@ export default {
       return `torus-${torus.instanceId}`
     },
     finalBalancesArray() {
-      return this.$store.getters.tokenBalances.finalBalancesArray || []
+      return this.tokenBalances.finalBalancesArray || []
     },
     finalBalancesArrayTokens() {
-      return this.$store.getters.tokenBalances.finalBalancesArray.filter((token) => token.tokenAddress !== '0x') || []
+      return this.tokenBalances.finalBalancesArray.filter((token) => token.tokenAddress !== '0x') || []
     },
     finalBalancesArrayEthOnly() {
-      return this.$store.getters.tokenBalances.finalBalancesArray.filter((token) => token.tokenAddress === '0x') || []
-    },
-    collectibles() {
-      return this.$store.getters.collectibleBalances
+      return this.tokenBalances.finalBalancesArray.filter((token) => token.tokenAddress === '0x') || []
     },
     selectedItem() {
       return this.finalBalancesArray.find((x) => x.tokenAddress === this.selectedTokenAddress)
@@ -466,16 +468,11 @@ export default {
       if (this.tokenAddress === '0x' || !isAddress(this.tokenAddress)) return '0x'
       return toChecksumAddress(this.tokenAddress)
     },
-    getCurrencyMultiplier() {
-      const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
-      return new BigNumber(currencyMultiplierNumber)
-    },
     getCurrencyTokenRate() {
-      const currencyMultiplier = this.getCurrencyMultiplier
       let tokenRateMultiplierNumber = 1
       if (this.contractType === CONTRACT_TYPE_ERC20) tokenRateMultiplierNumber = this.tokenRates[this.selectedTokenAddress.toLowerCase()] || 0
       const tokenRateMultiplier = new BigNumber(tokenRateMultiplierNumber)
-      return currencyMultiplier.times(tokenRateMultiplier)
+      return this.currencyMultiplier.times(tokenRateMultiplier)
     },
     convertedTotalCostDisplay() {
       // TODO

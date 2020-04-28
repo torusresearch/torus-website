@@ -502,7 +502,7 @@ export const fakeStream = {
 }
 
 export function formatSmallNumbers(number, currency = 'usd') {
-  const finalNumber = currency.toLowerCase() === 'usd' ? number.toFixed(2) : number.toFixed(5)
+  const finalNumber = currency.toLowerCase() === 'usd' ? Number(number).toFixed(2) : Number(number).toFixed(5)
 
   return `${currency.toLowerCase() === 'usd' ? '' : '~ '}${Number(finalNumber)} ${currency.toUpperCase()}`
 }

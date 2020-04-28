@@ -167,7 +167,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
@@ -193,6 +193,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['tokenBalances']),
     ...mapState({
       whiteLabel: 'whiteLabel',
       weiBalanceLoaded: 'weiBalanceLoaded',
@@ -206,10 +207,10 @@ export default {
       return process.env.VUE_APP_TORUS_BUILD_ENV !== 'lrc'
     },
     totalPortfolioValue() {
-      return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
+      return this.tokenBalances.totalPortfolioValue || '0'
     },
     finalBalancesArray() {
-      const balances = this.$store.getters.tokenBalances.finalBalancesArray
+      const balances = this.tokenBalances.finalBalancesArray
       return balances || []
     },
     filteredBalancesArray() {

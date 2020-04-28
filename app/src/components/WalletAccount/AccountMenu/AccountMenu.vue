@@ -114,12 +114,11 @@
 </template>
 
 <script>
-import BigNumber from 'bignumber.js'
 import { BroadcastChannel } from 'broadcast-channel'
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 import { DISCORD } from '../../../utils/enums'
-import { addressSlicer, broadcastChannelOptions, significantDigits } from '../../../utils/utils'
+import { addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
 import ExportQrCode from '../../helpers/ExportQrCode'
 import LanguageSelector from '../../helpers/LanguageSelector'
 import ShowToolTip from '../../helpers/ShowToolTip'
@@ -145,7 +144,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userInfo', 'selectedAddress', 'selectedCurrency', 'wallet', 'weiBalance', 'currencyData']),
+    ...mapState(['userInfo', 'selectedAddress', 'selectedCurrency', 'currencyData']),
+    ...mapGetters({
+      wallets: 'walletBalances',
+    }),
     userEmail() {
       const verifierLabel = `${this.userInfo.verifier.charAt(0).toUpperCase() + this.userInfo.verifier.slice(1)}: `
       return verifierLabel + (this.userInfo.email !== '' ? this.userInfo.email : this.userInfo.verifierId)
@@ -161,31 +163,8 @@ export default {
     slicedSelectedAddress() {
       return addressSlicer(this.selectedAddress)
     },
-    wallets() {
-      const walletsFinal = Object.keys(this.wallet).reduce((accts, x) => {
-        const computedBalance = new BigNumber(this.weiBalance[x]).dividedBy(new BigNumber(10).pow(new BigNumber(18))) || new BigNumber(0)
-        const tokenRateMultiplier = new BigNumber(1)
-        const currencyRate = new BigNumber(this.getCurrencyMultiplier).times(tokenRateMultiplier)
-        const currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
-
-        if (typeof this.wallet[x] === 'string') {
-          accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${this.selectedCurrency}` })
-        } else {
-          accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${this.selectedCurrency}`, ...this.wallet[x] })
-        }
-
-        return accts
-      }, [])
-
-      return walletsFinal
-    },
     filteredWallets() {
       return this.wallets.filter((accumulator) => accumulator.address !== this.selectedAddress)
-    },
-    getCurrencyMultiplier() {
-      let currencyMultiplier = 1
-      if (this.selectedCurrency !== 'ETH') currencyMultiplier = this.currencyData[this.selectedCurrency.toLowerCase()] || 1
-      return currencyMultiplier
     },
     filteredMenu() {
       if (this.headerItems) {

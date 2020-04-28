@@ -73,8 +73,34 @@ const collectibleBalances = (state) => {
   return assets[selectedAddress] || []
 }
 
+const currencyMultiplier = (state) => {
+  const currencyMultiplierNumber = state.selectedCurrency !== 'ETH' ? state.currencyData[state.selectedCurrency.toLowerCase()] || 1 : 1
+  return new BigNumber(currencyMultiplierNumber)
+}
+
+const walletBalances = (state) => {
+  const walletsFinal = Object.keys(state.wallet).reduce((accts, x) => {
+    const computedBalance = new BigNumber(state.weiBalance[x]).dividedBy(new BigNumber(10).pow(new BigNumber(18))) || new BigNumber(0)
+    const tokenRateMultiplier = new BigNumber(1)
+    const currencyRate = new BigNumber(currencyMultiplier(state)).times(tokenRateMultiplier)
+    const currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
+
+    if (typeof state.wallet[x] === 'string') {
+      accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${state.selectedCurrency}` })
+    } else {
+      accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${state.selectedCurrency}`, ...state.wallet[x] })
+    }
+
+    return accts
+  }, [])
+
+  return walletsFinal
+}
+
 export default {
   unApprovedTransactions,
   tokenBalances,
   collectibleBalances,
+  walletBalances,
+  currencyMultiplier,
 }

@@ -59,7 +59,7 @@
           :active-gas-price-confirm="gasPrice"
           :selected-currency="selectedCurrency"
           :currency-data="currencyData"
-          :currency-multiplier="getCurrencyMultiplier"
+          :currency-multiplier="currencyMultiplier"
           :symbol="'ETH'"
           :is-confirm="true"
           @onSelectSpeed="onSelectSpeed"
@@ -220,6 +220,7 @@ import collectibleABI from 'human-standard-collectible-abi'
 import tokenABI from 'human-standard-token-abi'
 import log from 'loglevel'
 import VueJsonPretty from 'vue-json-pretty'
+import { mapGetters } from 'vuex'
 import { fromWei, hexToNumber, toChecksumAddress } from 'web3-utils'
 
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
@@ -316,6 +317,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['currencyMultiplier']),
     header() {
       switch (this.transactionCategory) {
         case DEPLOY_CONTRACT_ACTION_KEY:
@@ -414,13 +416,8 @@ export default {
         ? 'images/file-signature.svg'
         : 'images/user.svg'
     },
-    getCurrencyMultiplier() {
-      log.info(this.selectedCurrency)
-      const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
-      return new BigNumber(currencyMultiplierNumber)
-    },
     getCurrencyRate() {
-      const ethConverted = this.getCurrencyMultiplier
+      const ethConverted = this.currencyMultiplier
       const tokenPriceConverted = this.isOtherToken ? this.tokenPrice.times(ethConverted) : ethConverted
       const selectedToken = this.isOtherToken ? this.selectedToken : 'ETH'
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
@@ -430,12 +427,12 @@ export default {
     gasPrice(newGasPrice, oldGasPrice) {
       if (!newGasPrice.eq(oldGasPrice)) {
         this.gasCost = newGasPrice.times(this.gasEstimate).div(new BigNumber('10').pow(new BigNumber('9')))
-        this.txFees = this.gasCost.times(this.getCurrencyMultiplier)
+        this.txFees = this.gasCost.times(this.currencyMultiplier)
         const ethCost = this.value.plus(this.gasCost)
         this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
         const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
         this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
-        this.totalUsdCost = significantDigits(ethCost.times(this.getCurrencyMultiplier))
+        this.totalUsdCost = significantDigits(ethCost.times(this.currencyMultiplier))
         if (this.balance.lt(ethCost) && !this.canShowError) {
           this.errorMsg = this.t('dappTransfer.insufficientFunds')
           this.topUpErrorShow = true
@@ -523,7 +520,7 @@ export default {
             }
           }
           this.tokenPrice = new BigNumber(tokenRateMultiplier)
-          this.amountTokenValueConverted = this.tokenPrice.times(this.amountValue).times(this.getCurrencyMultiplier)
+          this.amountTokenValueConverted = this.tokenPrice.times(this.amountValue).times(this.currencyMultiplier)
         } else if (methodParams && contractParams.erc721) {
           log.info(methodParams, contractParams)
           this.isNonFungibleToken = true
@@ -546,20 +543,20 @@ export default {
         this.currencyRateDate = this.getDate()
         this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
-        this.dollarValue = significantDigits(finalValue.times(this.getCurrencyMultiplier))
+        this.dollarValue = significantDigits(finalValue.times(this.currencyMultiplier))
         this.gasPrice = gweiGasPrice // gas price in gwei
-        this.balanceUsd = significantDigits(this.balance.times(this.getCurrencyMultiplier)) // in usd
+        this.balanceUsd = significantDigits(this.balance.times(this.currencyMultiplier)) // in usd
         this.gasEstimate = new BigNumber(hexToNumber(gas)) // gas number
         this.txData = data // data hex
         this.txDataParams = txDataParameters !== '' ? JSON.stringify(txDataParameters, null, 2) : ''
         this.sender = sender // address of sender
         this.gasCost = gweiGasPrice.times(this.gasEstimate).div(new BigNumber('10').pow(new BigNumber('9')))
-        this.txFees = this.gasCost.times(this.getCurrencyMultiplier)
+        this.txFees = this.gasCost.times(this.currencyMultiplier)
         const ethCost = finalValue.plus(this.gasCost)
         this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
         const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
         this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
-        this.totalUsdCost = significantDigits(ethCost.times(this.getCurrencyMultiplier))
+        this.totalUsdCost = significantDigits(ethCost.times(this.currencyMultiplier))
         if (reason) {
           this.errorMsg = reason
           this.canShowError = true
