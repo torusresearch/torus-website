@@ -1,7 +1,7 @@
 <template>
   <v-container class="wallet-home pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <div class="d-flex align-center">
-      <div class="font-weight-bold display-1 text_2--text float-left">Account Balance</div>
+      <div class="font-weight-bold display-1 text_2--text float-left">{{ t('walletHome.walletHome') }}</div>
       <div class="ml-auto">
         <QuickAddress />
       </div>

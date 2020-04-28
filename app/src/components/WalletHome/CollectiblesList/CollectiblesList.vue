@@ -31,8 +31,8 @@
             ></v-img>
           </div>
           <div>
-            <div class="caption text_1--text font-weight-bold mb-1">Get your first item from OpenSea</div>
-            <div class="explore-details text_1--text">Explore the largest decentralised marketplace for blockchain assets</div>
+            <div class="caption text_1--text font-weight-bold mb-1">{{ t('walletHome.exploreTitle') }}</div>
+            <div class="explore-details text_1--text">{{ t('walletHome.exploreSubtitle') }}</div>
           </div>
         </div>
         <div class="text-center">
@@ -44,7 +44,7 @@
             href="https://opensea.io/"
             target="_blank"
           >
-            Explore
+            {{ t('walletHome.explore') }}
           </v-btn>
         </div>
       </v-card>

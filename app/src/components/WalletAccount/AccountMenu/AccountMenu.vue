@@ -32,7 +32,7 @@
         <div class="d-flex align-center">
           <div class="mr-2" :style="{ lineHeight: '0' }">
             <v-icon :class="$vuetify.theme.dark ? 'torusGray1--text' : 'torusFont2--text'" size="16">
-              {{ `$vuetify.icons.${userInfo.verifier}` }}
+              {{ `$vuetify.icons.${userInfo.verifier.toLowerCase()}` }}
             </v-icon>
           </div>
           <div class="caption text_1--text font-weight-bold" :style="{ paddingLeft: '2px' }">

@@ -22,7 +22,7 @@
                     <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
                       <div class="verifier-title font-weight-bold display-1">
                         <span class="text_2--text">
-                          Your
+                          {{ t('login.your') }}
                           <span v-if="activeButton === GOOGLE">
                             <span class="verifier-title__google-blue">G</span>
                             <span class="verifier-title__google-red">o</span>
@@ -38,11 +38,11 @@
                         </span>
                       </div>
                       <div class="font-weight-bold headline text_2--text">
-                        digital wallet in one-click
+                        {{ t('login.digitalWallet') }}
                       </div>
                     </v-flex>
                     <v-flex xs10 sm8 ml-auto mr-auto mt-8>
-                      <div class="headline font-weight-light text_2--text">Sign up/in with</div>
+                      <div class="headline font-weight-light text_2--text">{{ t('login.signUpIn') }}</div>
                     </v-flex>
                     <v-flex xs10 sm8 ml-auto mt-2 mr-auto>
                       <v-btn
@@ -91,21 +91,21 @@
                   <v-carousel cycle height="650" interval="7000" :show-arrows="false" hide-delimiters>
                     <v-layout class="login-panel-right login-panel-right--mobile">
                       <v-flex xs10 text-center mx-auto>
-                        <v-carousel-item v-for="slide in slides" :key="slide.id">
+                        <v-carousel-item v-for="slide in 3" :key="slide">
                           <img
                             class="mb-6 login-panel-right__image"
-                            :src="require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide.id}.svg`)"
+                            :src="require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide}.svg`)"
                           />
-                          <div class="headline mb-3 text_2--text">{{ slide.title }}</div>
-                          <div class="caption text_2--text">{{ slide.sub_title1 }}</div>
-                          <div class="caption text_2--text">{{ slide.sub_title2 }}</div>
+                          <div class="headline mb-3 text_2--text">{{ t(`login.slide${slide}Title`) }}</div>
+                          <div class="caption text_2--text">{{ t(`login.slide${slide}Subtitle1`) }}</div>
+                          <div class="caption text_2--text">{{ t(`login.slide${slide}Subtitle2`) }}</div>
                           <v-btn
                             class="learn-more-btn mt-6"
                             :class="{ isDark: $vuetify.theme.dark, isMobile: $vuetify.breakpoint.xsOnly }"
                             :href="slide.link"
                             target="_blank"
                           >
-                            Learn More
+                            {{ t('login.learnMore') }}
                           </v-btn>
                         </v-carousel-item>
                       </v-flex>
@@ -122,7 +122,7 @@
                 <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
                   <div class="verifier-title font-weight-bold" :class="[$vuetify.breakpoint.xsOnly ? 'display-1' : 'display-2']">
                     <span class="text_2--text">
-                      Your
+                      {{ t('login.your') }}
                       <span v-if="activeButton === GOOGLE">
                         <span class="verifier-title__google-blue">G</span>
                         <span class="verifier-title__google-red">o</span>
@@ -138,11 +138,11 @@
                     </span>
                   </div>
                   <div class="font-weight-bold text_2--text" :class="[$vuetify.breakpoint.xsOnly ? 'headline' : 'display-2']">
-                    digital wallet in one-click
+                    {{ t('login.digitalWallet') }}
                   </div>
                 </v-flex>
                 <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-11']">
-                  <div class="headline font-weight-light" :class="$vuetify.theme.dark ? '' : 'text_2--text'">Sign up/in with</div>
+                  <div class="headline font-weight-light" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
                 </v-flex>
                 <v-flex xs10 sm8 ml-auto mr-auto mt-4>
                   <v-btn
@@ -200,25 +200,25 @@
           <v-layout wrap fill-height align-center>
             <v-flex xs12 text-center>
               <v-carousel height="650" interval="7000" :show-arrows="false">
-                <v-carousel-item v-for="slide in slides" :key="slide.id">
+                <v-carousel-item v-for="slide in 3" :key="slide">
                   <div class="d-flex flex-column fill-height justify-end pb-12">
                     <div class="text-center">
                       <img
                         class="mb-7 login-panel-right__image"
-                        :src="require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide.id}.svg`)"
+                        :src="require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide}.svg`)"
                       />
                     </div>
-                    <div class="display-1 mb-3 font-weight-medium text_2--text">{{ slide.title }}</div>
-                    <div class="body-1 text_2--text">{{ slide.sub_title1 }}</div>
-                    <div class="body-1 text_2--text">{{ slide.sub_title2 }}</div>
+                    <div class="display-1 mb-3 font-weight-medium text_2--text">{{ t(`login.slide${slide}Title`) }}</div>
+                    <div class="body-1 text_2--text">{{ t(`login.slide${slide}Subtitle1`) }}</div>
+                    <div class="body-1 text_2--text">{{ t(`login.slide${slide}Subtitle2`) }}</div>
                     <div class="mb-5">
                       <v-btn
                         class="learn-more-btn gmt-learn-more text_2--text"
                         :class="{ isDark: $vuetify.theme.dark }"
-                        :href="slide.link"
+                        href="https://tor.us"
                         target="_blank"
                       >
-                        Learn More
+                        {{ t('login.learnMore') }}
                       </v-btn>
                     </div>
                   </div>
@@ -270,29 +270,6 @@ export default {
       loginButtons: [GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD],
       loginButtonsMobile: [FACEBOOK, REDDIT, TWITCH, DISCORD],
       activeButton: GOOGLE,
-      slides: [
-        {
-          id: 1,
-          title: 'Send and receive digital currencies via email',
-          sub_title1: 'Transacting on blockchain has never been easier.',
-          sub_title2: 'An email is all you need to get started.',
-          link: 'https://tor.us',
-        },
-        {
-          id: 2,
-          title: 'Purchase digital currencies globally with credit card',
-          sub_title1: 'Choose from a range providers',
-          sub_title2: 'Get currencies at one of the most competitive rates',
-          link: 'https://tor.us',
-        },
-        {
-          id: 3,
-          title: 'Interact with thousands of apps on the blockchain',
-          sub_title1: 'From Finance, Games, Exchanges and more',
-          sub_title2: 'Access the decentralised world with Torus',
-          link: 'https://tor.us',
-        },
-      ],
       verifierCntInterval: null,
     }
   },

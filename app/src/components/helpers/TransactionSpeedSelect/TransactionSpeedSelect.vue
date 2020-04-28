@@ -2,7 +2,7 @@
   <v-flex v-if="isConfirm" xs12>
     <v-layout wrap>
       <v-flex xs4>
-        <span class="caption">Transaction Fee</span>
+        <span class="caption">{{ t('walletTransfer.transactionFee') }}</span>
       </v-flex>
       <v-flex xs8>
         <v-layout v-if="!isAdvanceOption" mx-n2 xs12>
@@ -63,7 +63,7 @@
     <v-layout>
       <v-flex class="body-2 mb-1">
         <span>
-          Transfer Fee
+          {{ t('walletTransfer.transferFee') }}
         </span>
         <TransferAdvanceOption
           :symbol="symbol"

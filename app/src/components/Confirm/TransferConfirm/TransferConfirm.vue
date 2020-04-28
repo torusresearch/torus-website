@@ -17,7 +17,7 @@
         <div class="d-flex transfer-to-from align-center">
           <div class="d-flex icon-container align-center">
             <div class="icon-box elevation-3">
-              <v-icon size="20" class="torusGray1--text">{{ `$vuetify.icons.${fromVerifier}` }}</v-icon>
+              <v-icon size="20" class="torusGray1--text">{{ `$vuetify.icons.${fromVerifier.toLowerCase()}` }}</v-icon>
             </div>
           </div>
 
@@ -27,7 +27,7 @@
 
           <div class="d-flex icon-container icon-container--right align-center">
             <div class="icon-box elevation-3">
-              <v-icon size="20" class="torusGray1--text">{{ `$vuetify.icons.${toVerifier}` }}</v-icon>
+              <v-icon size="20" class="torusGray1--text">{{ `$vuetify.icons.${toVerifier.toLowerCase()}` }}</v-icon>
             </div>
           </div>
         </div>

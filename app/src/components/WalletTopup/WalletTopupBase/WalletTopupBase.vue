@@ -88,9 +88,7 @@
               {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency }} = {{ displayRateString }} {{ selectedCurrency }}
             </div>
 
-            <div class="description mt-6">
-              The process would take approximately 10 - 15 mins.
-            </div>
+            <div class="description mt-6">{{ t('walletTopUp.theProcess') }} 10 - 15 {{ t('walletTopUp.minSmall') }}.</div>
             <div class="description mt-1">
               {{ selectedProviderObj.receiveHint || t('walletTopUp.receiveHint') }}
             </div>

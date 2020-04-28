@@ -12,7 +12,7 @@
               class="search-name caption"
               dense
               hide-details
-              placeholder="Search by name"
+              :placeholder="t('walletSettings.searchByName')"
               outlined
               aria-label="Search Name"
             ></v-text-field>
@@ -28,7 +28,7 @@
               item-text="name"
               item-value="value"
               aria-label="Filter Type"
-              placeholder="Filter by type"
+              :placeholder="t('walletSettings.filterByType')"
             ></v-select>
           </div>
         </div>
