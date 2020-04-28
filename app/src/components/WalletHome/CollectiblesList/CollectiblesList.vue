@@ -1,25 +1,62 @@
 <template>
-  <v-layout class="collectibles-tab-container" wrap align-center>
-    <v-flex v-for="(collectible, i) in collectibles" :key="i" class="xs12 sm6 md4 lg3 px-4 my-4">
-      <v-card class="card-shadow">
-        <v-list-item class="py-4" router-link :to="{ name: 'walletHomeCollectible', params: { address: collectible.address } }">
-          <v-list-item-content class="subtitle-1 font-weight-bold">{{ collectible.name }}</v-list-item-content>
-          <v-list-item-avatar size="100">
+  <v-layout v-if="collectibleBalances.length > 10" class="collectibles-tab-container mx-n4" wrap align-center>
+    <v-flex v-for="(collectible, i) in collectibleBalances" :key="i" class="xs12 sm6 md4 lg3 px-4 mb-4">
+      <v-card class="elevation-1" :class="$vuetify.breakpoint.xsOnly ? 'pt-1 pb-2 px-5' : 'py-2 px-5'">
+        <v-list-item class="px-0" router-link :to="{ name: 'walletHomeCollectible', params: { address: collectible.address } }">
+          <v-list-item-avatar :size="$vuetify.breakpoint.xsOnly ? 36 : 50">
             <v-img :src="collectible.logo" :alt="collectible.name"></v-img>
           </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title class="caption text_1--text font-weight-bold mb-2">{{ collectible.name }}</v-list-item-title>
+            <v-list-item-subtitle v-if="!$vuetify.breakpoint.xsOnly" class="text_3--text caption">
+              {{ collectible.assets.length }} Asset{{ collectible.assets.length > 1 ? 's' : '' }}
+            </v-list-item-subtitle>
+          </v-list-item-content>
         </v-list-item>
+        <div v-if="$vuetify.breakpoint.xsOnly" class="text-right text_3--text">
+          {{ collectible.assets.length }} Asset{{ collectible.assets.length > 1 ? 's' : '' }}
+        </div>
       </v-card>
     </v-flex>
   </v-layout>
+  <div v-else class="d-flex collectibles-tab-container justify-center">
+    <div class="mb-4 explore-container" :class="$vuetify.breakpoint.xsOnly ? 'explore-container--mobile' : ''">
+      <v-card class="elevation-1 py-4 px-3">
+        <div class="d-flex mb-2 align-center">
+          <div class="mr-2">
+            <v-img
+              :width="$vuetify.breakpoint.xsOnly ? 36 : 50"
+              :src="require(`../../../../public/images/opensea-explore.png`)"
+              alt="Explore Opensea"
+            ></v-img>
+          </div>
+          <div>
+            <div class="caption text_1--text font-weight-bold mb-1">Get your first item from OpenSea</div>
+            <div class="explore-details text_1--text">Explore the largest decentralised marketplace for blockchain assets</div>
+          </div>
+        </div>
+        <div class="text-center">
+          <v-btn
+            large
+            class="torus-btn1 px-10"
+            :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
+            :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
+            href="https://opensea.io/"
+            target="_blank"
+          >
+            Explore
+          </v-btn>
+        </div>
+      </v-card>
+    </div>
+  </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
-  computed: {
-    collectibles() {
-      return this.$store.getters.collectibleBalances
-    },
-  },
+  computed: mapGetters(['collectibleBalances']),
 }
 </script>
 

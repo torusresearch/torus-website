@@ -1,8 +1,10 @@
 <template>
-  <v-chip v-if="selectedNetwork !== ''" small class="caption network-chip" :class="!isUrlNetwork ? `network-chip--${host} text-capitalize` : ''">
-    <v-icon size="12" v-text="'$vuetify.icons.network'"></v-icon>
-    <span>{{ selectedNetwork }}</span>
-  </v-chip>
+  <div class="d-flex network-chip align-center" :class="[chipClass, minimal ? 'network-chip--minimal' : '']">
+    <v-icon v-text="'$vuetify.icons.network'"></v-icon>
+    <span class="network-chip__name text-clamp-one" :class="{ 'network-chip__name--mobile': $vuetify.breakpoint.xsOnly }">
+      {{ $vuetify.breakpoint.xsOnly && !minimal && !isPlain ? shortSelectedNetwork : selectedNetwork }}
+    </span>
+  </div>
 </template>
 
 <script>
@@ -20,6 +22,14 @@ export default {
         return { host: MAINNET, networkName: '', chainId: '' }
       },
     },
+    isPlain: {
+      type: Boolean,
+      default: false,
+    },
+    minimal: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     selectedNetwork() {
@@ -34,12 +44,28 @@ export default {
 
       return ''
     },
+    shortSelectedNetwork() {
+      return this.selectedNetwork.replace(' Network', '')
+    },
     host() {
       return this.storeNetworkType.host
     },
     isUrlNetwork() {
       // Checks if input is a url including localhost, ip address and domain name
       return /^((?:http(s)?:\/\/)?([\w-.]+(?:\.[\w-.]+)+|localhost?)[\w!#$&'()*+,./:;=?@[\]~-]+)$/.test(this.selectedNetwork)
+    },
+    chipClass() {
+      const classArray = []
+      if (!this.isUrlNetwork) {
+        classArray.push(`network-chip--${this.host}`)
+        classArray.push('text-capitalize')
+      }
+      if (this.$vuetify.theme.isDark) classArray.push('theme--dark')
+
+      if (this.isPlain) {
+        classArray.push('is-plain')
+      }
+      return classArray
     },
   },
 }

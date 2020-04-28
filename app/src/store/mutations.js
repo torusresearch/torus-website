@@ -1,6 +1,7 @@
 import themes from '../plugins/themes'
 import vuetify from '../plugins/vuetify'
-import { THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { storageAvailable } from '../utils/utils'
 
 export default {
   setUserInfo(state, userInfo) {
@@ -71,10 +72,19 @@ export default {
   setTheme(state, payload) {
     state.theme = payload
     // Update vuetify theme
-    const theme = themes[payload || THEME_LIGHT_BLUE_NAME]
+    let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
+
+    if (state.whiteLabel.isActive) {
+      const { theme: whiteLabelTheme } = state.whiteLabel
+      theme = themes[whiteLabelTheme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]
+      if (whiteLabelTheme.colors) {
+        theme.theme = { ...theme.theme, ...whiteLabelTheme.colors }
+      }
+    }
+
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
-    localStorage.setItem('torus-theme', payload)
+    if (storageAvailable('localStorage')) localStorage.setItem('torus-theme', payload)
   },
   setLocale(state, payload) {
     state.locale = payload
@@ -113,6 +123,13 @@ export default {
     state.iframeMetadata = {
       origin: key,
       ...value,
+    }
+  },
+  setWhiteLabel(state, payload) {
+    state.whiteLabel = {
+      ...state.whiteLabel,
+      isActive: true,
+      ...payload,
     }
   },
 }

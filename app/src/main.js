@@ -3,11 +3,13 @@ import './reset.css'
 
 import log from 'loglevel'
 import Vue from 'vue'
+import VueGtm from 'vue-gtm'
 
 import App from './App.vue'
 import { vuetify } from './plugins'
 import router from './router'
 import store from './store'
+import { storageAvailable } from './utils/utils'
 // import torus from './torus'
 
 log.enableAll()
@@ -36,7 +38,29 @@ switch (buildEnvironment) {
 }
 log.info('VUE_APP_TORUS_BUILD_ENV', process.env.VUE_APP_TORUS_BUILD_ENV)
 
+Vue.use(VueGtm, {
+  id: 'GTM-PDF8MFV', // Your GTM single container ID or array of container ids ['GTM-xxxxxxx', 'GTM-yyyyyyy']
+  enabled: buildEnvironment === 'production', // defaults to true.
+  debug: false, // Whether or not display console logs debugs (optional)
+  loadScript: true,
+  vueRouter: router, // Pass the router instance to automatically sync with router (optional)
+})
+
 Vue.mixin({
+  computed: {
+    whiteLabelGlobal() {
+      if (!storageAvailable('localStorage')) return { isWhiteLabelActive: false }
+
+      let torusWhiteLabel = localStorage.getItem('torus-white-label')
+
+      try {
+        torusWhiteLabel = JSON.parse(torusWhiteLabel)
+        return torusWhiteLabel ? { logo: torusWhiteLabel.logo, isWhiteLabelActive: true } : { isWhiteLabelActive: false }
+      } catch (error) {
+        return { isWhiteLabelActive: false }
+      }
+    },
+  },
   methods: {
     t(data) {
       if (data === '') return data

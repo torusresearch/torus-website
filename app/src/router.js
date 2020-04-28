@@ -4,7 +4,14 @@ import Router from 'vue-router'
 import WalletHistory from './containers/WalletHistory'
 import { WalletHome, WalletHomeCollectible, WalletHomeMain } from './containers/WalletHome'
 import WalletSettings from './containers/WalletSettings'
-import { WalletTopupHome, WalletTopupMoonpay, WalletTopupRampNetwork, WalletTopupSimplex, WalletTopupWyre } from './containers/WalletTopup'
+import {
+  WalletTopupHome,
+  WalletTopupMoonpay,
+  WalletTopupRampNetwork,
+  WalletTopupSimplex,
+  WalletTopupWyre,
+  WalletTopupXanpool,
+} from './containers/WalletTopup'
 import WalletTransfer from './containers/WalletTransfer'
 import store from './store'
 import Confirm from './views/Confirm'
@@ -14,15 +21,6 @@ import ProviderChange from './views/ProviderChange'
 import RedirectCatch from './views/RedirectCatch'
 import UserInfoRequest from './views/UserInfoRequest'
 import Wallet from './views/Wallet'
-
-// const Popup = () => import('./views/Popup.vue')
-// const Confirm = () => import('./views/Confirm.vue')
-// const Wallet = () => import('./views/Wallet.vue')
-// const Login = () => import('./containers/Login.vue')
-// const WalletHome = () => import('./containers/WalletHome.vue')
-// const WalletHistory = () => import('./containers/WalletHistory.vue')
-// const WalletSettings = () => import('./containers/WalletSettings.vue')
-// const WalletAccounts = () => import('./containers/WalletAccounts.vue')
 
 Vue.use(Router)
 
@@ -140,7 +138,18 @@ const router = new Router({
               name: 'walletTopupWyre',
               component: WalletTopupWyre,
             },
+            {
+              path: 'xanpool',
+              name: 'walletTopupXanpool',
+              component: WalletTopupXanpool,
+            },
           ],
+          beforeEnter(to, from, next) {
+            if (store.state.whiteLabel.topupHide) {
+              return next({ name: 'walletHome' })
+            }
+            return next()
+          },
         },
       ],
     },

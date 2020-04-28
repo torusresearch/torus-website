@@ -3,7 +3,7 @@
     <v-card
       v-for="targetProvider in activeProviders"
       :key="targetProvider.name"
-      class="mb-4 topup-provider card-shadow"
+      class="mb-4 topup-provider elevation-1"
       :class="{ active: innerProvider === targetProvider.name }"
       :data-provider="targetProvider.name"
       @click="innerProvider = targetProvider.name"
@@ -11,20 +11,28 @@
       <router-link :to="targetProvider.link">
         <v-list-item :id="`${targetProvider.name}-link`" three-line @click="scrollToPosition">
           <v-list-item-icon class="mr-2 align-self-center">
-            <v-icon v-if="innerProvider === targetProvider.name" class="primary--text">$vuetify.icons.radioOn</v-icon>
-            <v-icon v-else class="text_2--text">$vuetify.icons.radioOff</v-icon>
+            <v-icon v-if="innerProvider === targetProvider.name" :class="$vuetify.theme.isDark ? 'torusLight--text' : 'torusBrand1--text'">
+              $vuetify.icons.radioOn
+            </v-icon>
+            <v-icon v-else :class="$vuetify.theme.isDark ? 'torusLight--text' : 'torusBlack--text'">$vuetify.icons.radioOff</v-icon>
           </v-list-item-icon>
-          <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
+          <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 100 : 130" height="100%" tile class="align-self-center mr-2">
             <img :src="require(`../../../../public/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
           </v-list-item-avatar>
-          <v-list-item-content class="align-self-center text-right caption">
+          <v-list-item-content class="align-self-center text-right text_1--text caption">
             <div>{{ t('walletTopUp.paywith') }} {{ targetProvider.line1 }}</div>
             <div>
               <span class="font-weight-medium">{{ t('walletTopUp.fees') }}</span>
               : {{ targetProvider.line2 }}
             </div>
-            <div>{{ t('walletTopUp.limits') }}: {{ targetProvider.line3 }}</div>
-            <div>{{ t('walletTopUp.currencies') }}: {{ targetProvider.line4 }}</div>
+            <div>
+              <span class="font-weight-medium">{{ t('walletTopUp.limits') }}</span>
+              : {{ targetProvider.line3 }}
+            </div>
+            <div>
+              <span class="font-weight-medium">{{ t('walletTopUp.currencies') }}</span>
+              : {{ targetProvider.line4 }}
+            </div>
           </v-list-item-content>
         </v-list-item>
       </router-link>
@@ -41,7 +49,7 @@
               <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
                 <img :src="require(`../../../../public/images/${targetProvider.logo}`)" />
               </v-list-item-avatar>
-              <v-list-item-content class="align-self-center text-right caption">
+              <v-list-item-content class="align-self-center text-right text_1--text caption">
                 <div>{{ targetProvider.line1 }}</div>
                 <div v-html="targetProvider.line2"></div>
                 <div>{{ targetProvider.line3 }}</div>
@@ -54,10 +62,11 @@
       </v-tooltip>
 
       <div class="mt-4 py-4 px-1 text-gray caption">
-        <div>{{ t('walletTopUp.otherMode') }}</div>
         <div>
-          <a href="mailto:hello@tor.us?Subject=Add%20Payment%20Method" target="_blank">{{ t('walletTopUp.writeToUs') }}</a>
-          {{ t('walletTopUp.otherModeDesc') }}
+          {{ t('walletTopUp.otherMode') }}
+          <a href="mailto:hello@tor.us?Subject=Add%20Payment%20Method" target="_blank" :style="{ textDecoration: 'none' }">
+            {{ t('walletTopUp.writeToUs') }}
+          </a>
         </div>
       </div>
     </template>

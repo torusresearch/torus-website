@@ -1,3 +1,16 @@
 .v-list-item__content {
   line-height: 1.2em;
 }
+
+.explore-container {
+  max-width: 315px;
+  &--mobile {
+    max-width: inherit;
+    width: 100%;
+  }
+}
+
+.explore-details {
+  font-size: 10px;
+  line-height: 12px;
+}

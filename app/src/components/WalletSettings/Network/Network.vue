@@ -1,13 +1,13 @@
 <template>
-  <div :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
+  <div :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
     <v-form ref="networkForm" v-model="formValid" lazy-validation @submit.prevent="">
-      <span class="subtitle-2">{{ t('walletSettings.selectNetwork') }}</span>
+      <span class="body-2">{{ t('walletSettings.selectNetwork') }}</span>
       <v-layout wrap>
-        <v-flex xs12 md6>
+        <v-flex xs12>
           <v-select
             id="select-network"
             v-model="selectedNetwork"
-            class="select-network-container"
+            class="select-network-container gmt-network-change"
             outlined
             :items="networks"
             item-text="networkName"
@@ -21,7 +21,7 @@
       </v-layout>
 
       <template v-if="isRPCSelected">
-        <v-flex xs12 md6>
+        <v-flex xs12>
           <v-text-field
             v-model="rpc.networkName"
             :placeholder="t('walletSettings.enterNetworkName')"
@@ -30,25 +30,39 @@
           ></v-text-field>
         </v-flex>
 
-        <v-flex xs12 md6>
+        <v-flex xs12>
           <v-text-field v-model="rpc.host" :placeholder="t('walletSettings.enterRpc')" :rules="[rules.required]" outlined></v-text-field>
         </v-flex>
 
-        <v-flex xs12 md6>
+        <v-flex xs12>
           <v-text-field v-model="rpc.chainId" :placeholder="t('walletSettings.enterChainId')" outlined></v-text-field>
         </v-flex>
 
-        <v-flex xs12 sm4 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
-          <v-tooltip bottom :disabled="formValid">
-            <template v-slot:activator="{ on }">
-              <span v-on="on">
-                <v-btn block :disabled="!formValid" depressed color="primary" @click="setRPC">
-                  {{ t('walletSettings.save') }}
-                </v-btn>
-              </span>
-            </template>
-            <span>{{ t('walletSettings.resolveErrors') }}</span>
-          </v-tooltip>
+        <v-flex xs12 :class="!$vuetify.breakpoint.xsOnly ? 'pl-2' : ''">
+          <v-layout>
+            <v-spacer></v-spacer>
+            <v-flex xs4>
+              <v-tooltip bottom :disabled="formValid">
+                <template v-slot:activator="{ on }">
+                  <span v-on="on">
+                    <v-btn
+                      large
+                      class="torus-btn1 py-1"
+                      :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
+                      :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
+                      block
+                      :disabled="!formValid"
+                      depressed
+                      @click="setRPC"
+                    >
+                      {{ t('walletSettings.save') }}
+                    </v-btn>
+                  </span>
+                </template>
+                <span>{{ t('walletSettings.resolveErrors') }}</span>
+              </v-tooltip>
+            </v-flex>
+          </v-layout>
         </v-flex>
       </template>
     </v-form>
@@ -58,6 +72,7 @@
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
+import { mapState } from 'vuex'
 
 import { broadcastChannelOptions } from '../../../utils/utils'
 
@@ -84,13 +99,14 @@ export default {
     }
   },
   computed: {
+    ...mapState(['networkType']),
     isRPCSelected() {
       return this.selectedNetwork.host === RPC
     },
   },
   mounted() {
-    this.selectedNetwork = this.$store.state.networkType
-    this.rpc = { ...this.$store.state.networkType }
+    this.selectedNetwork = this.networkType
+    this.rpc = { ...this.networkType }
   },
   methods: {
     showNotification(success) {

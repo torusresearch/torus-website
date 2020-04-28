@@ -1,38 +1,18 @@
 <template>
-  <div class="select-theme-container" :class="$vuetify.breakpoint.xsOnly ? '' : 'py-4 px-12'">
-    <div class="body-2 text_1--text mb-1 px-1">{{ t('walletSettings.selectTheme') }}</div>
-    <v-layout wrap>
-      <v-flex xs12 md6 px-1 mb-1>
-        <v-menu class="" transition="slide-y-transition" bottom>
-          <template v-slot:activator="{ on }">
-            <v-chip class="select-theme" :style="themeOptionStyle(selectedTheme)" label outlined large v-on="on">
-              <span>{{ selectedTheme ? t(selectedTheme.label) : t('walletSettings.selectTheme') }}</span>
-              <div class="flex-grow-1 text-right pr-2">
-                <v-icon right>$vuetify.icons.select</v-icon>
-              </div>
-            </v-chip>
-          </template>
-          <v-list class="select-theme-list pa-0">
-            <v-list-item
-              v-for="theme in themes"
-              :key="`${theme.name}`"
-              :style="themeOptionStyle(theme)"
-              class="select-theme-item"
-              @click="selectedTheme = theme"
-            >
-              {{ t(theme.label) }}
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-flex>
-    </v-layout>
-    <v-layout class="mt-4">
-      <v-flex xs12 md6>
-        <v-layout wrap>
-          <v-flex xs12 sm4 :class="$vuetify.breakpoint.xsOnly ? '' : 'pl-2'">
-            <v-btn color="primary" block depressed class="px-12 py-1" @click="saveTheme">{{ t('walletSettings.save') }}</v-btn>
-          </v-flex>
-        </v-layout>
+  <div class="select-theme-container" :class="$vuetify.breakpoint.xsOnly ? 'pt-5' : 'py-5 px-4'">
+    <div class="body-2 torusFont1--text mb-2 px-1">{{ t('walletSettings.selectTheme') }}</div>
+    <v-layout wrap mx-n3>
+      <v-flex v-for="theme in themes" :key="theme.name" px-3 xs6 @click="saveTheme(theme)">
+        <v-btn
+          block
+          :disabled="theme.name === activeTheme"
+          large
+          class="theme-btn gmt-display-change"
+          :class="[$vuetify.theme.isDark ? 'torusBlack2' : 'white', theme.name === activeTheme ? '' : 'elevation-3']"
+        >
+          <span>{{ t(theme.label) }}</span>
+          <img :src="require(`../../../../public/images/${theme.icon}`)" />
+        </v-btn>
       </v-flex>
     </v-layout>
   </div>
@@ -40,6 +20,7 @@
 
 <script>
 import log from 'loglevel'
+import { mapState } from 'vuex'
 
 import themes from '../../../plugins/themes'
 
@@ -51,21 +32,23 @@ export default {
       selectedTheme: '',
     }
   },
+  computed: mapState({
+    activeTheme: 'theme',
+  }),
   methods: {
-    async saveTheme() {
+    async saveTheme(theme) {
+      this.selectedTheme = theme
       try {
         await this.$store.dispatch('setUserTheme', this.selectedTheme.name)
       } catch (error) {
         log.error(error)
-      } finally {
-        this.selectedTheme = ''
       }
     },
     themeOptionStyle(theme) {
       if (!theme) return {}
       return {
-        color: `${theme.theme.primary.base} !important`,
-        backgroundColor: `${theme.theme.background_body_1} !important`,
+        color: `${theme.theme.torusBrand1.base} !important`,
+        backgroundColor: `${theme.theme.torusLight} !important`,
       }
     },
   },

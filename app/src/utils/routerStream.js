@@ -25,7 +25,7 @@ export default (...arguments_) => {
     },
   })
 
-  arguments_.forEach(add)
+  arguments_.forEach((x) => add(x))
 
   return { mergeSteam: output, splitStream: split }
 
@@ -40,7 +40,7 @@ export default (...arguments_) => {
 
   function add(source) {
     if (Array.isArray(source)) {
-      source.forEach(add)
+      source.forEach((x) => add(x))
       return this
     }
     const mapperPassthrough = new PassThrough({ objectMode: true })

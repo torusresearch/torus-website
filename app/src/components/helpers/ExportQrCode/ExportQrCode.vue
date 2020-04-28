@@ -1,45 +1,72 @@
 <template>
-  <v-dialog v-model="qrDialoag" width="450">
+  <v-dialog v-model="qrDialoag" width="350">
     <template v-slot:activator="{ on }">
-      <v-btn id="openQr" icon small aria-label="Open QR" v-on="on">
-        <v-icon small class="primary--text" v-text="'$vuetify.icons.qr'" />
+      <v-btn id="openQr" class="qr-btn" icon small aria-label="Open QR" v-on="on">
+        <slot></slot>
       </v-btn>
     </template>
     <v-card>
-      <div class="text-right">
-        <v-btn large icon @click="qrDialoag = false">
-          <v-icon size="48" large>$vuetify.icons.close</v-icon>
-        </v-btn>
-      </div>
-      <v-card-text class="text-center qr-container">
-        <div class="headline font-weight-bold">{{ t('walletHome.yourPublicAddress') }}</div>
-        <div class="caption text_2--text mb-4">
-          <ShowToolTip :address="selectedAddress">{{ slicedAddress }}</ShowToolTip>
-        </div>
-        <VueQr
-          ref="address-qr"
-          :logo-src="require(`../../../../public/images/torus-circle.svg`)"
-          :margin="10"
-          :logo-scale="0.4"
-          :logo-corner-radius="145"
-          logo-background-color="white"
-          :text="selectedAddress"
-          :size="800"
-          :dot-scale="1"
-          :correct-level="3"
-        ></VueQr>
-        <div class="mt-8">
-          <v-btn depressed color="primary" class="px-12" @click="downloadQr">
-            <v-icon small>$vuetify.icons.download</v-icon>
+      <v-layout wrap>
+        <v-flex class="card-header text-center" xs12 py-10 px-6>
+          <img
+            class="home-link mx-auto"
+            alt="Torus Logo"
+            width="104"
+            height="24"
+            :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+          />
+          <v-btn class="close-btn" icon @click="qrDialoag = false">
+            <v-icon>$vuetify.icons.close</v-icon>
           </v-btn>
-        </div>
-      </v-card-text>
+        </v-flex>
+        <v-flex xs12 class="text-center pb-10">
+          <div class="display-1 text_1--text mb-2">{{ t('walletHome.yourPublicAddress') }}</div>
+          <div class="mb-2">
+            <ShowToolTip :address="selectedAddress">
+              <span class="public-address torusFont2--text">{{ selectedAddress }}</span>
+              <v-icon size="12" class="torusFont2--text ml-1" v-text="'$vuetify.icons.copy'" />
+            </ShowToolTip>
+          </div>
+          <div class="qr-container mb-8">
+            <VueQr
+              v-show="$vuetify.theme.dark"
+              :color-dark="'#2F3136'"
+              :background-color="'#2F3136'"
+              :logo-background-color="'#2F3136'"
+              :logo-src="require(`../../../../public/img/icons/t-fill.svg`)"
+              :logo-scale="0.28"
+              :margin="1"
+              :text="selectedAddress"
+              :size="800"
+              :dot-scale="0.6"
+              :correct-level="3"
+            ></VueQr>
+            <VueQr
+              v-show="!$vuetify.theme.dark"
+              ref="address-qr"
+              :logo-src="require(`../../../../public/img/icons/t-fill.svg`)"
+              :margin="1"
+              :logo-scale="0.28"
+              :text="selectedAddress"
+              :size="800"
+              :dot-scale="0.6"
+              :correct-level="3"
+            ></VueQr>
+          </div>
+          <div>
+            <v-btn large depressed color="torusBrand1 white--text caption font-weight-bold" class="px-10" @click="downloadQr">
+              {{ t('walletHome.downloadQR') }}
+            </v-btn>
+          </div>
+        </v-flex>
+      </v-layout>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
 import VueQr from 'vue-qr'
+import { mapState } from 'vuex'
 
 import ShowToolTip from '../ShowToolTip'
 
@@ -48,17 +75,25 @@ export default {
     ShowToolTip,
     VueQr,
   },
+  props: {
+    customAddress: {
+      type: String,
+      default: '',
+    },
+  },
   data() {
     return {
       qrDialoag: false,
     }
   },
   computed: {
-    selectedAddress() {
-      return this.$store.state.selectedAddress
-    },
+    ...mapState({
+      selectedAddress(state) {
+        return this.customAddress || state.selectedAddress
+      },
+    }),
     slicedAddress() {
-      return `${this.selectedAddress.slice(0, 20)}...${this.selectedAddress.slice(-10)}`
+      return `${this.selectedAddress.slice(0, 11)}...${this.selectedAddress.slice(-13)}`
     },
   },
   methods: {

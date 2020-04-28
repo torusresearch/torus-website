@@ -19,19 +19,19 @@
               14.9290806 0.909832782,14.6768743 0.141998315,14.4433809 C0.057630233,14.4179196 1.0792339e-17,
               14.3401587 0,14.2520325 L0,10.5508603 C-3.24223108e-16,10.4615642 0.0591954629,
               10.383087 0.145055774,10.3585555 L2.8,9.6 L2.8,9.6 Z"
-            stroke="#0364FF"
+            stroke="currentColor"
             stroke-width="1.5"
             stroke-linecap="round"
           ></path>
           <path
             d="M19.1900442,7.20774695 C20.167262,6.47845398 20.8,5.31311893 20.8,4 C20.8,1.790861 19.009139,
               0 16.8,0 C14.590861,0 12.8,1.790861 12.8,4"
-            stroke="#0364FF"
+            stroke="currentColor"
             stroke-width="1.5"
             stroke-linecap="round"
           ></path>
-          <circle fill="#0364FF" cx="6.8" cy="10.8" r="1.2"></circle>
-          <path d="M22.3668737,11.2 C22.192944,12 21.6706527,12.4 20.8,12.4" stroke="#0364FF" stroke-width="1.5" stroke-linecap="round"></path>
+          <circle fill="currentColor" cx="6.8" cy="10.8" r="1.2"></circle>
+          <path d="M22.3668737,11.2 C22.192944,12 21.6706527,12.4 20.8,12.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
         </g>
       </g>
     </g>

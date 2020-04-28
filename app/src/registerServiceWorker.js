@@ -2,7 +2,8 @@
 
 import log from 'loglevel'
 import { register } from 'register-service-worker'
-import sriToolbox from 'sri-toolbox'
+
+import generateIntegrity from './utils/integrity'
 
 const swIntegrity = 'SERVICE_WORKER_SHA_INTEGRITY' // string-replaced
 const swUrl = `${process.env.BASE_URL}service-worker.js`
@@ -95,7 +96,7 @@ if (
         }
         // if response data fails integrity check, throw
         const text = await resp.text()
-        const integrity = sriToolbox.generate(
+        const integrity = generateIntegrity(
           {
             algorithms: ['sha384'],
           },

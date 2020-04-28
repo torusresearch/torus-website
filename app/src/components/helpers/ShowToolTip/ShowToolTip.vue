@@ -1,7 +1,10 @@
 <template>
   <v-tooltip bottom>
     <template v-slot:activator="{ on }">
-      <span class="selected-account" :color="$vuetify.theme.torus_accept" size="18" v-on="on" @click.stop="copyToClip(address)">
+      <v-btn v-if="isBtn" icon small class="selected-account" v-on="on" @click.stop="copyToClip(address)">
+        <slot></slot>
+      </v-btn>
+      <span v-else class="selected-account" :color="$vuetify.theme.torus_accept" size="18" v-on="on" @click.stop="copyToClip(address)">
         <slot></slot>
       </span>
     </template>
@@ -21,6 +24,10 @@ export default {
     address: {
       type: String,
       default: '',
+    },
+    isBtn: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

@@ -1,10 +1,12 @@
 import ActivitiesIcon from './ActivitiesIcon.vue'
 import AddIcon from './AddIcon.vue'
+import AddressIcon from './AddressIcon.vue'
 import ArrowDownCircleIcon from './ArrowDownCircleIcon.vue'
 import ArrowLeftCircleIcon from './ArrowLeftCircleIcon.vue'
 import ArrowRightCircleIcon from './ArrowRightCircleIcon.vue'
 import ArrowUpCircleIcon from './ArrowUpCircleIcon.vue'
 import BalanceIcon from './BalanceIcon.vue'
+import CalendarIcon from './CalendarIcon.vue'
 import CheckCircleIcon from './CheckCircleIcon.vue'
 import ChevronDoubleRightIcon from './ChevronDoubleRightIcon.vue'
 import ChevronLeftIcon from './ChevronLeftIcon.vue'
@@ -24,6 +26,7 @@ import InfoIcon from './InfoIcon.vue'
 import KeyIcon from './KeyIcon.vue'
 import ListIcon from './ListIcon.vue'
 import LockIcon from './LockIcon.vue'
+import LoginMoreIcon from './LoginMoreIcon.vue'
 import NetworkIcon from './NetworkIcon.vue'
 import PersonIcon from './PersonIcon.vue'
 import QrIcon from './QrIcon.vue'
@@ -41,6 +44,13 @@ import TimeIcon from './TimeIcon.vue'
 import TokenIcon from './TokenIcon.vue'
 import TopupIcon from './TopupIcon.vue'
 import TransactionIcon from './TransactionIcon.vue'
+import TrashIcon from './TrashIcon.vue'
+import VerifierDiscordIcon from './VerifierDiscordIcon.vue'
+import VerifierEnsIcon from './VerifierEnsIcon.vue'
+import VerifierFacebookIcon from './VerifierFacebookIcon.vue'
+import VerifierGoogleIcon from './VerifierGoogleIcon.vue'
+import VerifierRedditIcon from './VerifierRedditIcon.vue'
+import VerifierTwitchIcon from './VerifierTwitchIcon.vue'
 import VisibilityOffIcon from './VisibilityOffIcon.vue'
 import VisibilityOnIcon from './VisibilityOnIcon.vue'
 
@@ -179,5 +189,35 @@ export default {
   },
   copy: {
     component: CopyIcon,
+  },
+  calendar: {
+    component: CalendarIcon,
+  },
+  address: {
+    component: AddressIcon,
+  },
+  login_more: {
+    component: LoginMoreIcon,
+  },
+  trash: {
+    component: TrashIcon,
+  },
+  ens: {
+    component: VerifierEnsIcon,
+  },
+  discord: {
+    component: VerifierDiscordIcon,
+  },
+  facebook: {
+    component: VerifierFacebookIcon,
+  },
+  google: {
+    component: VerifierGoogleIcon,
+  },
+  reddit: {
+    component: VerifierRedditIcon,
+  },
+  twitch: {
+    component: VerifierTwitchIcon,
   },
 }

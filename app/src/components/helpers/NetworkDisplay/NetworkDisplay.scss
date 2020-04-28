@@ -1,10 +1,35 @@
-.v-chip.network-chip {
+.network-chip {
   height: 20px;
-  background: #ffe9b3;
-  color: #0f1222;
+  background: #FFE9B3;
+  color: #000000;
+  border-radius: 10px;
+  padding: 0 12px;
+  justify-content: center;
+  flex: none;
 
+  &--minimal {
+    max-width: 200px;
+  }
+  
   .v-icon {
-    color: #0f1222;
+    color: #000000;
+    height: 8px;
+    width: 8px;
+    margin-right: 8px;
+  }
+
+  &__name {
+    margin-top: -2px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: left;
+    &--mobile {
+      font-size: 10px;
+    }
+  }
+
+  &.theme--dark, .v-icon {
+    color: #5C6C7F;
   }
 
   &.network-chip--mainnet {
@@ -33,5 +58,20 @@
 
   &.network-chip--matic {
     background: #efe2ff;
+  }
+
+  &.is-plain {
+    background: none;
+    .network-chip__name {
+      font-size: 12px;
+      font-weight: normal;
+      text-align: left;
+    }
+    &.theme--dark {
+      color: #D3D5E2;
+      .v-icon {
+        color: #D3D5E2;
+      }
+    }
   }
 }

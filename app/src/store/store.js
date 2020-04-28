@@ -74,6 +74,7 @@ const VuexStore = new Vuex.Store({
       confirmHandler.networkType = state.networkType
       if (isTx) {
         const txParameters = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
+        txParameters.userInfo = state.userInfo
         log.info(txParameters, 'txParams')
         confirmHandler.txParams = txParameters
         confirmHandler.id = txParameters.id
@@ -338,7 +339,10 @@ VuexStore.subscribe((mutation, state) => {
 
 if (storageAvailable('localStorage')) {
   const torusTheme = localStorage.getItem('torus-theme')
-  if (torusTheme) {
+  const torusWhiteLabel = localStorage.getItem('torus-white-label')
+  if (torusWhiteLabel) {
+    VuexStore.commit('setWhiteLabel', JSON.parse(torusWhiteLabel))
+  } else if (torusTheme) {
     VuexStore.commit('setTheme', torusTheme)
   }
 }

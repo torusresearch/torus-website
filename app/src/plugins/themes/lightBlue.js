@@ -1,11 +1,25 @@
 export default {
-  // Main background color, supports 2 color gradient
-  background_body_1: '#FCFCFC',
-  background_body_2: '#FCFCFC',
-  background: '#9E9E9E',
+  // V8
+  torusBrand1: '#0364FF',
+  torusBrand2: '#5495F7',
+  torusBrand3: '#CDE0FF',
+  torusBrandHover: '#075DE5',
+  torusGray1: '#D3D5E2',
+  torusGray2: '#EEF2F4',
+  torusGray3: '#A2A5B5',
+  torusGray4: '#F9F9FB',
+  torusFont1: '#0F1222',
+  torusFont2: '#7F8FA4',
+  torusFontLink1: '#0364FF',
+  torusFontLink2: '#5495F7',
+  torusBlack: '#252529',
+  torusLight: '#FCFCFC',
+
+  // Fixed Colors
   text_1: '#0F1222',
   text_2: '#5C6C7F',
-  text_3: '#EEF2F4',
+  text_3: '#A2A5B5',
+  loginBtnGray: '#9B9B9B',
   primary: {
     base: '#0364FF',
     lighten5: '#E9EEFE',

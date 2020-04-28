@@ -196,7 +196,7 @@ export default class AccountTracker {
           await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_KOVAN)
           break
         default:
-          await Promise.all(addresses.map(this._updateAccount.bind(this)))
+          await Promise.all(addresses.map((x) => this._updateAccount(x)))
       }
     }
   }
@@ -239,7 +239,7 @@ export default class AccountTracker {
       return this.store.updateState({ accounts })
     } catch (error) {
       log.warn('Torus - Account Tracker single call balance fetch failed', error)
-      return Promise.all(addresses.map(this._updateAccount.bind(this)))
+      return Promise.all(addresses.map((x) => this._updateAccount(x)))
     }
   }
 }
