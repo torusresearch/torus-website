@@ -39,10 +39,6 @@
         </v-layout>
         <v-layout v-if="isAdvanceOption" align-center>
           <v-flex xs12>
-            <!-- <div class="subtitle-2 font-weight-bold">
-              {{ getEthAmountDisplay(gas, activeGasPrice) }}
-              <span class="caption text_2--text">( ~ {{ getGasDisplayString(activeGasPrice) }} )</span>
-            </div> -->
             <v-text-field :value="getEthAmountDisplay(gas, activeGasPrice)" outlined readonly hide-details></v-text-field>
           </v-flex>
         </v-layout>
@@ -68,8 +64,6 @@
       <v-flex class="body-2 mb-1">
         <span>
           Transfer Fee
-          <!-- {{ t('walletTransfer.selectSpeed') }}
-          <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" /> -->
         </span>
         <TransferAdvanceOption
           :symbol="symbol"
@@ -191,7 +185,7 @@ export default {
       }
     },
   },
-  created() {
+  mounted() {
     fetch('https://ethgasstation.info/json/ethgasAPI.json', {
       headers: {},
       referrer: 'http://ethgasstation.info/json/',

@@ -3,7 +3,12 @@
     <v-list class="pb-0 mb-2">
       <v-list-item>
         <v-list-item-avatar class="ml-2 mr-3">
-          <img :src="userInfo.profileImage" class="align-start" :alt="userName" onerror="this.src = '/images/person.jpeg';" />
+          <img
+            :src="userInfo.profileImage"
+            class="align-start"
+            :alt="userName"
+            onerror="if (!this.src.includes('/images/person.jpeg')) this.src = '/images/person.jpeg';"
+          />
         </v-list-item-avatar>
         <v-list-item-title>
           <div class="font-weight-bold title d-flex">
@@ -26,13 +31,12 @@
       >
         <div class="d-flex align-center">
           <div class="mr-2" :style="{ lineHeight: '0' }">
-            <v-icon v-if="acc.type === 'SC'" size="16">$vuetify.icons.smart_contract</v-icon>
-            <v-icon v-else :class="$vuetify.theme.dark ? 'torusGray1--text' : 'torusFont2--text'" size="16">
+            <v-icon :class="$vuetify.theme.dark ? 'torusGray1--text' : 'torusFont2--text'" size="16">
               {{ `$vuetify.icons.${userInfo.verifier}` }}
             </v-icon>
           </div>
           <div class="caption text_1--text font-weight-bold" :style="{ paddingLeft: '2px' }">
-            <span>{{ acc.type === 'SC' ? 'Smart Contract Wallet' : userInfo.email }}</span>
+            <span>{{ userInfo.email }}</span>
           </div>
           <div class="caption ml-auto text_2--text text-right">
             <span>{{ acc.balance }}</span>
@@ -158,38 +162,30 @@ export default {
       return addressSlicer(this.selectedAddress)
     },
     wallets() {
-      const { wallet: storeWallet, weiBalance: storeWalletBalance, selectedCurrency } = this || {}
-      const wallets = Object.keys(storeWallet).reduce((accts, x) => {
-        const computedBalance = new BigNumber(storeWalletBalance[x]).dividedBy(new BigNumber(10).pow(new BigNumber(18))) || new BigNumber(0)
+      const walletsFinal = Object.keys(this.wallet).reduce((accts, x) => {
+        const computedBalance = new BigNumber(this.weiBalance[x]).dividedBy(new BigNumber(10).pow(new BigNumber(18))) || new BigNumber(0)
         const tokenRateMultiplier = new BigNumber(1)
         const currencyRate = new BigNumber(this.getCurrencyMultiplier).times(tokenRateMultiplier)
         const currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
-        // if (
-        //   storeWallet[x].type === 'EOA' ||
-        //   (storeWallet[x].type === 'SC' && storeWallet[x].network === this.$store.state.networkType.host && storeWallet[x].address != 'PROCESSING')
-        // )
-        if (typeof storeWallet[x] === 'string') {
-          accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${selectedCurrency}` })
+
+        if (typeof this.wallet[x] === 'string') {
+          accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${this.selectedCurrency}` })
         } else {
-          accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${selectedCurrency}`, ...storeWallet[x] })
+          accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${this.selectedCurrency}`, ...this.wallet[x] })
         }
 
         return accts
       }, [])
 
-      return wallets
+      return walletsFinal
     },
     filteredWallets() {
       return this.wallets.filter((accumulator) => accumulator.address !== this.selectedAddress)
     },
     getCurrencyMultiplier() {
-      const { selectedCurrency, currencyData } = this || {}
       let currencyMultiplier = 1
-      if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+      if (this.selectedCurrency !== 'ETH') currencyMultiplier = this.currencyData[this.selectedCurrency.toLowerCase()] || 1
       return currencyMultiplier
-    },
-    totalPortfolioValue() {
-      return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
     },
     filteredMenu() {
       if (this.headerItems) {

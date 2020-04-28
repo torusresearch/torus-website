@@ -18,7 +18,7 @@ import {
 } from '../utils/enums'
 import { get, post, remove } from '../utils/httpHelpers'
 import PopupHandler from '../utils/PopupHandler'
-import { broadcastChannelOptions, fakeStream, getIFrameOriginObject } from '../utils/utils'
+import { broadcastChannelOptions, fakeStream, getIFrameOriginObject, storageAvailable } from '../utils/utils'
 import {
   accountTrackerHandler,
   assetControllerHandler,
@@ -635,7 +635,7 @@ export default {
           dispatch('processAuthMessage', { message, selectedAddress: data.ethAddress, calledFromEmbed }),
         ])
 
-        if (!calledFromEmbed) localStorage.removeItem('torus-white-label')
+        if (!calledFromEmbed && storageAvailable('localStorage')) localStorage.removeItem('torus-white-label')
         dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
         // continue enable function
         const { ethAddress } = data

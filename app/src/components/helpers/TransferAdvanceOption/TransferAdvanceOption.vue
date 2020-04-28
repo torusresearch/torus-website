@@ -167,8 +167,7 @@ export default {
   },
   computed: {
     getCurrencyMultiplier() {
-      const { selectedCurrency, currencyData } = this
-      const currencyMultiplierNumber = selectedCurrency !== 'ETH' ? currencyData[selectedCurrency.toLowerCase()] || 1 : 1
+      const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
       return new BigNumber(currencyMultiplierNumber)
     },
     totalCost() {

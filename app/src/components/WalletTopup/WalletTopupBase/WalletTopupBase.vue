@@ -94,23 +94,6 @@
             <div class="description mt-1">
               {{ selectedProviderObj.receiveHint || t('walletTopUp.receiveHint') }}
             </div>
-            <!-- <div class="body-2">
-              {{ t('walletTopUp.receive') }}
-              <span class="caption float-right text_2--text">
-                {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency }} = {{ displayRateString }} {{ selectedCurrency }}
-              </span>
-            </div>
-            <v-text-field
-              id="receive"
-              readonly
-              placeholder="0.00"
-              :suffix="selectedCryptoCurrency"
-              :value="cryptoCurrencyValue"
-              :hint="selectedProviderObj.receiveHint || t('walletTopUp.receiveHint')"
-              persistent-hint
-              outlined
-              aria-label="Amount to Receive"
-            ></v-text-field> -->
           </v-flex>
         </v-layout>
       </v-form>
@@ -137,13 +120,6 @@
             <div class="description mt-1">{{ t('walletTopUp.redirectMessage') }}</div>
           </div>
         </v-flex>
-        <!-- <v-flex class="mt-10 text-center text_2--text caption">
-          {{ t('walletTopUp.contact1') }}
-          <a href="mailto:hello@tor.us?Subject=Topup%20Support%20or%20Inquiry" target="_blank">
-            {{ t('walletTopUp.contact2') }}
-          </a>
-          {{ t('walletTopUp.contact3') }}
-        </v-flex> -->
       </v-layout>
     </v-card>
     <v-snackbar v-model="snackbar" :color="snackbarColor">

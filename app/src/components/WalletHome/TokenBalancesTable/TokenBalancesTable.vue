@@ -8,7 +8,7 @@
               <img
                 :src="require(`../../../../public/images/logos/${balance.logo}`)"
                 class="inline-small d-inline-flex"
-                onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = 'images/logos/eth.svg';"
                 :alt="balance.logo"
               />
               <span class="caption text_1--text ml-1 font-weight-bold">{{ balance.name }}</span>

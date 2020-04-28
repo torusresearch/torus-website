@@ -412,8 +412,12 @@
         const torusTheme = localStorage.getItem('torus-theme')
         const torusWhiteLabel = localStorage.getItem('torus-white-label')
         if (torusWhiteLabel !== null) {
-          const whiteLabelData = JSON.parse(torusWhiteLabel)
-          theme = whiteLabelData.whiteLabelIsDark ? 'dark' : 'light'
+          try {
+            const whiteLabelData = JSON.parse(torusWhiteLabel)
+            theme = whiteLabelData.whiteLabelIsDark ? 'dark' : 'light'
+          } catch (error) {
+            log.error(error)
+          }
         } else if (torusTheme) {
           theme = torusTheme.split('-')[0]
         }

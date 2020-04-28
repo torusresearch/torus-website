@@ -1,6 +1,6 @@
 <template>
   <v-layout class="collectibles-tab-container mx-n4" wrap align-center>
-    <v-flex v-for="(collectible, i) in collectibles" :key="i" class="xs12 sm6 md4 lg3 px-4 mb-4">
+    <v-flex v-for="(collectible, i) in collectibleBalances" :key="i" class="xs12 sm6 md4 lg3 px-4 mb-4">
       <v-card class="elevation-1" :class="$vuetify.breakpoint.xsOnly ? 'pt-1 pb-2 px-5' : 'py-2 px-5'">
         <v-list-item class="px-0" router-link :to="{ name: 'walletHomeCollectible', params: { address: collectible.address } }">
           <v-list-item-avatar :size="$vuetify.breakpoint.xsOnly ? 36 : 50">
@@ -22,12 +22,10 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
-  computed: {
-    collectibles() {
-      return this.$store.getters.collectibleBalances
-    },
-  },
+  computed: mapGetters(['collectibleBalances']),
 }
 </script>
 

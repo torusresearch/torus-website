@@ -8,7 +8,7 @@
           :width="whiteLabelGlobal.isWhiteLabelActive ? '' : '135'"
           :height="whiteLabelGlobal.isWhiteLabelActive ? '50' : '30'"
           :src="
-            whiteLabelGlobal.isWhiteLabelActive
+            whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
               ? whiteLabelGlobal.logo
               : require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
           "

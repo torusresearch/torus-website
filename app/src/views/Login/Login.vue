@@ -326,21 +326,17 @@ export default {
   },
   mounted() {
     if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
-  },
-  created() {
+
     this.isLogout = this.$route.name !== 'login'
 
     if (this.$vuetify.breakpoint.xsOnly) {
       let verifierCnt = 0
 
       this.verifierCntInterval = setInterval(() => {
-        // eslint-disable-next-line no-console
-        console.log(verifierCnt, this.loginButtons[verifierCnt])
         this.activeButton = this.loginButtons[verifierCnt]
         verifierCnt += 1
         if (verifierCnt >= this.loginButtons.length) verifierCnt = 0
       }, 2000)
-      // [GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD]
     }
   },
   beforeDestroy() {

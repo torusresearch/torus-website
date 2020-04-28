@@ -1,6 +1,7 @@
 import themes from '../plugins/themes'
 import vuetify from '../plugins/vuetify'
 import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { storageAvailable } from '../utils/utils'
 
 export default {
   setUserInfo(state, userInfo) {
@@ -83,7 +84,7 @@ export default {
 
     vuetify.framework.theme.dark = theme.isDark
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
-    localStorage.setItem('torus-theme', payload)
+    if (storageAvailable('localStorage')) localStorage.setItem('torus-theme', payload)
   },
   setLocale(state, payload) {
     state.locale = payload

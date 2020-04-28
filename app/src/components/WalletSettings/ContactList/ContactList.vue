@@ -169,11 +169,16 @@ export default {
       stateContacts: 'contacts',
     }),
     verifierOptions() {
-      const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
-      return verifiers.map((verifier) => {
-        verifier.name = this.t(verifier.name)
-        return verifier
-      })
+      try {
+        const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
+        return verifiers.map((verifier) => {
+          verifier.name = this.t(verifier.name)
+          return verifier
+        })
+      } catch (error) {
+        log.error(error)
+        return []
+      }
     },
     verifierPlaceholder() {
       const verifierLocale = ALLOWED_VERIFIERS.find((verifier) => verifier.value === this.selectedVerifier).name

@@ -177,13 +177,9 @@ export default {
         },
       ]
     },
-    totalPortfolioValue() {
-      return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
-    },
     getCurrencyMultiplier() {
-      const { selectedCurrency, currencyData } = this || {}
       let currencyMultiplier = 1
-      if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
+      if (this.selectedCurrency !== 'ETH') currencyMultiplier = this.currencyData[this.selectedCurrency.toLowerCase()] || 1
       return currencyMultiplier
     },
   },
@@ -263,9 +259,8 @@ export default {
     calculateFinalTransactions() {
       if (this.loadingPastTransactions || this.loadingOrders || this.loadingUserTransactions) return []
       let finalTx = this.paymentTx
-      const { pastTx } = this
       const transactions = this.calculateTransactions()
-      finalTx = [...transactions, ...finalTx, ...pastTx]
+      finalTx = [...transactions, ...finalTx, ...this.pastTx]
       finalTx = finalTx.reduce((accumulator, x) => {
         x.actionIcon = this.getIcon(x)
         x.actionText = this.getActionText(x)
@@ -278,19 +273,18 @@ export default {
       return finalTx.sort((a, b) => b.date - a.date) || []
     },
     async calculatePastTransactions() {
-      const { selectedAddress: publicAddress, pastTransactions, jwtToken, networkType } = this || {}
       const pastTx = []
-      for (const x of pastTransactions) {
+      for (const x of this.pastTransactions) {
         // eslint-disable-next-line no-continue
-        if (x.network !== networkType.host) continue
+        if (x.network !== this.networkType.host) continue
         let { status } = x
         if (
           x.status !== 'confirmed' &&
-          (publicAddress.toLowerCase() === x.from.toLowerCase() || publicAddress.toLowerCase() === x.to.toLowerCase())
+          (this.selectedAddress.toLowerCase() === x.from.toLowerCase() || this.selectedAddress.toLowerCase() === x.to.toLowerCase())
         ) {
           // eslint-disable-next-line no-await-in-loop
           status = await getEthTxStatus(x.transaction_hash, torus.web3)
-          if (publicAddress.toLowerCase() === x.from.toLowerCase()) this.patchTx(x, status, jwtToken)
+          if (this.selectedAddress.toLowerCase() === x.from.toLowerCase()) this.patchTx(x, status, this.jwtToken)
         }
         let totalAmountString = ''
         if (x.type === CONTRACT_TYPE_ERC721) totalAmountString = x.symbol
@@ -327,11 +321,10 @@ export default {
       this.pastTx = pastTx
     },
     calculateTransactions() {
-      const { networkId, transactions, networkType, tokenRates, assets, selectedAddress } = this || {}
       const finalTransactions = []
-      for (const tx in transactions) {
-        const txOld = transactions[tx]
-        if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
+      for (const tx in this.transactions) {
+        const txOld = this.transactions[tx]
+        if (txOld.metamaskNetworkId.toString() === this.networkId.toString()) {
           const { methodParams, contractParams, txParams, transactionCategory } = txOld
           let amountTo
           let amountValue
@@ -352,7 +345,7 @@ export default {
             const { name = '' } = contractParams
 
             // Get asset name of the 721
-            const contract = assets[selectedAddress].find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
+            const contract = this.assets[this.selectedAddress].find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
             log.info(contract, amountValue)
             if (contract) {
               const assetObject = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
@@ -362,7 +355,7 @@ export default {
             }
           } else if (contractParams.erc20) {
             // ERC20 transfer
-            tokenRate = contractParams.erc20 ? tokenRates[txParams.to] : 1
+            tokenRate = contractParams.erc20 ? this.tokenRates[txParams.to] : 1
             if (methodParams && Array.isArray(methodParams)) {
               if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
                 ;[, amountTo, amountValue] = methodParams || []
@@ -393,8 +386,8 @@ export default {
           txObject.currencyAmountString = contractParams.erc721 ? '' : formatSmallNumbers(txObject.currencyAmount, this.selectedCurrency)
           txObject.amount = `${txObject.totalAmountString} / ${txObject.currencyAmountString}`
           txObject.status = txOld.status
-          txObject.etherscanLink = getEtherScanHashLink(txOld.hash, networkType.host)
-          txObject.networkType = networkType.host
+          txObject.etherscanLink = getEtherScanHashLink(txOld.hash, this.networkType.host)
+          txObject.networkType = this.networkType.host
           txObject.ethRate = `1 ${(contractParams && contractParams.symbol) || 'ETH'} = ${significantDigits(
             Number.parseFloat(txObject.currencyAmount) / Number.parseFloat(txObject.totalAmount)
           )}`
@@ -410,11 +403,10 @@ export default {
       return finalTransactions
     },
     calculatePaymentTransactions() {
-      const { paymentTxStore: response, networkType } = this || {}
       let paymentTx
-      if (networkType.host !== MAINNET) paymentTx = []
+      if (this.networkType.host !== MAINNET) paymentTx = []
       else {
-        paymentTx = response.reduce((accumulator, x) => {
+        paymentTx = this.paymentTxStore.reduce((accumulator, x) => {
           let action = ''
           if (ACTIVITY_ACTION_TOPUP.includes(x.action.toLowerCase())) action = ACTIVITY_ACTION_TOPUP
           else if (ACTIVITY_ACTION_SEND.includes(x.action.toLowerCase())) action = ACTIVITY_ACTION_SEND

@@ -60,7 +60,7 @@
                           <img
                             :src="require(`../../../public/images/logos/${token.logo}`)"
                             height="20px"
-                            onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = 'images/logos/eth.svg';"
                             :alt="token.name"
                           />
                         </v-list-item-icon>
@@ -78,7 +78,7 @@
                           <img
                             :src="require(`../../../public/images/logos/${token.logo}`)"
                             height="20px"
-                            onerror="if (this.src !== 'eth.svg') this.src = 'images/logos/eth.svg';"
+                            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = 'images/logos/eth.svg';"
                             :alt="token.name"
                           />
                         </v-list-item-icon>
@@ -429,11 +429,15 @@ export default {
       'networkType',
     ]),
     verifierOptions() {
-      const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
-      return verifiers.map((verifier) => {
-        verifier.name = this.t(verifier.name)
-        return verifier
-      })
+      try {
+        const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
+        return verifiers.map((verifier) => {
+          verifier.name = this.t(verifier.name)
+          return verifier
+        })
+      } catch (error) {
+        return []
+      }
     },
     randomName() {
       return `torus-${torus.instanceId}`
@@ -683,13 +687,12 @@ export default {
                 resolve(new BigNumber('0'))
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC20) {
-            const { selectedAddress } = this
             const value = `0x${this.amount
               .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
               .dp(0, BigNumber.ROUND_DOWN)
               .toString(16)}`
-            this.getTransferMethod(this.contractType, selectedAddress, toAddress, value)
-              .estimateGas({ from: selectedAddress })
+            this.getTransferMethod(this.contractType, this.selectedAddress, toAddress, value)
+              .estimateGas({ from: this.selectedAddress })
               .then((response) => {
                 log.info(response, 'gas')
                 resolve(new BigNumber(response || '0'))
@@ -699,9 +702,8 @@ export default {
                 resolve(new BigNumber('0'))
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC721) {
-            const { selectedAddress } = this
-            this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId)
-              .estimateGas({ from: selectedAddress })
+            this.getTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId)
+              .estimateGas({ from: this.selectedAddress })
               .then((response) => {
                 resolve(new BigNumber(response || '0'))
               })
@@ -816,7 +818,6 @@ export default {
     async sendCoin() {
       const toAddress = this.toEthAddress
       const fastGasPrice = `0x${this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
-      const { selectedAddress } = this
       if (this.contractType === CONTRACT_TYPE_ETH) {
         const value = `0x${this.amount
           .times(new BigNumber(10).pow(new BigNumber(18)))
@@ -825,7 +826,7 @@ export default {
         log.info(this.gas.toString())
         torus.web3.eth.sendTransaction(
           {
-            from: selectedAddress,
+            from: this.selectedAddress,
             to: toAddress,
             value,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
@@ -857,9 +858,9 @@ export default {
           .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
           .dp(0, BigNumber.ROUND_DOWN)
           .toString(16)}`
-        this.getTransferMethod(this.contractType, selectedAddress, toAddress, value).send(
+        this.getTransferMethod(this.contractType, this.selectedAddress, toAddress, value).send(
           {
-            from: selectedAddress,
+            from: this.selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice,
           },
@@ -885,9 +886,9 @@ export default {
           }
         )
       } else if (this.contractType === CONTRACT_TYPE_ERC721) {
-        this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId).send(
+        this.getTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId).send(
           {
-            from: selectedAddress,
+            from: this.selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice,
           },

@@ -122,13 +122,17 @@ class PreferencesController {
           torusWhiteLabel = localStorage.getItem('torus-white-label')
         }
         if (torusWhiteLabel) {
-          torusWhiteLabel = JSON.parse(torusWhiteLabel)
-          whiteLabelLocale = torusWhiteLabel.defaultLanguage
+          try {
+            torusWhiteLabel = JSON.parse(torusWhiteLabel)
+            whiteLabelLocale = torusWhiteLabel.defaultLanguage
 
-          const selectedLocale = LOCALES.find((localeInner) => {
-            return localeInner.value === torusWhiteLabel.defaultLanguage
-          })
-          if (selectedLocale) whiteLabelLocale = selectedLocale.value
+            const selectedLocale = LOCALES.find((localeInner) => {
+              return localeInner.value === torusWhiteLabel.defaultLanguage
+            })
+            if (selectedLocale) whiteLabelLocale = selectedLocale.value
+          } catch (error) {
+            log.error(error)
+          }
         }
 
         this.store.updateState({
