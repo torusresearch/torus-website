@@ -775,7 +775,4 @@ export default {
   setErrorMessage(context, payload) {
     prefsController.handleError(payload)
   },
-  setWhiteLabel({ commit }, payload) {
-    commit('setWhiteLabel', payload)
-  },
 }

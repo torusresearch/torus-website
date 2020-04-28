@@ -223,7 +223,7 @@ export default {
       return this.networkType.host === MAINNET
     },
     showSearch() {
-      return this.finalBalancesArray.length > 10 || true
+      return this.finalBalancesArray.length > 10
     },
     events() {
       const events = []

@@ -220,7 +220,6 @@ import collectibleABI from 'human-standard-collectible-abi'
 import tokenABI from 'human-standard-token-abi'
 import log from 'loglevel'
 import VueJsonPretty from 'vue-json-pretty'
-import { mapGetters } from 'vuex'
 import { fromWei, hexToNumber, toChecksumAddress } from 'web3-utils'
 
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
@@ -317,7 +316,6 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['currencyMultiplier']),
     header() {
       switch (this.transactionCategory) {
         case DEPLOY_CONTRACT_ACTION_KEY:
@@ -415,6 +413,10 @@ export default {
       return this.transactionCategory === DEPLOY_CONTRACT_ACTION_KEY || this.transactionCategory === CONTRACT_INTERACTION_KEY
         ? 'images/file-signature.svg'
         : 'images/user.svg'
+    },
+    currencyMultiplier() {
+      const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
+      return new BigNumber(currencyMultiplierNumber)
     },
     getCurrencyRate() {
       const ethConverted = this.currencyMultiplier

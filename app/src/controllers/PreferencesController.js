@@ -220,7 +220,6 @@ class PreferencesController {
     if (payload === this.state.locale) return
     try {
       await patch(`${config.api}/user/locale`, { locale: payload }, this.headers)
-      // eslint-disable-next-line no-console
       this.store.updateState({ locale: payload })
       // this.handleSuccess('navBar.snackSuccessLocale')
     } catch (error) {

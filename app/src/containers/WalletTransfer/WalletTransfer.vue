@@ -419,6 +419,7 @@ export default {
     ...mapGetters({
       tokenBalances: 'tokenBalances',
       collectibles: 'collectibleBalances',
+      currencyMultiplier: 'currencyMultiplier',
     }),
     ...mapState([
       'selectedCurrency',
@@ -432,7 +433,6 @@ export default {
       'jwtToken',
       'networkType',
     ]),
-    ...mapGetters(['currencyMultiplier']),
     verifierOptions() {
       try {
         const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))

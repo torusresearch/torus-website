@@ -22,10 +22,10 @@
             Allow {{ origin.hostname }} change your network to
             {{ (SUPPORTED_NETWORK_TYPES[network.networkName] && SUPPORTED_NETWORK_TYPES[network.networkName].networkName) || network.networkName }}
           </span>
-          <br />
+          <!-- <br />
           <v-btn small text class="caption torusBrand1--text" @click="editPermissions">
             Edit permissions
-          </v-btn>
+          </v-btn> -->
         </v-flex>
       </v-layout>
       <v-divider class="mx-6"></v-divider>
