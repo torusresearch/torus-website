@@ -53,15 +53,14 @@
             </div>
           </v-flex>
           <v-flex class="flex-grow-0" mt-auto>
-            <v-layout mx-n1>
+            <v-layout wrap mx-n1>
               <v-flex xs6 px-1>
-                <img :src="require(`../../../../public/images/onboarding-2.svg`)" />
+                <img class="onboarding-image" :src="require(`../../../../public/images/onboarding-2.svg`)" />
               </v-flex>
               <v-flex xs6 px-1 class="align-self-end">
                 <v-layout mx-n1>
-                  <v-flex v-if="!$vuetify.breakpoint.xsOnly" px-1 xs6></v-flex>
-                  <v-flex xs12 sm6 px-1 class="text-right">
-                    <v-btn :block="!$vuetify.breakpoint.xsOnly" large color="torusBrand1" class="return-btn torus-btn1" @click="closeDialog">
+                  <v-flex xs12 px-1 class="text-right">
+                    <v-btn large color="torusBrand1" class="return-btn torus-btn1" @click="closeDialog">
                       {{ t('walletHome.obYesOk') }}
                     </v-btn>
                   </v-flex>
@@ -89,14 +88,14 @@
           <v-flex class="flex-grow-0" mt-auto>
             <v-layout mx-n1>
               <v-flex xs6 px-1>
-                <img :src="require(`../../../../public/images/onboarding-2.svg`)" />
+                <img class="onboarding-image" :src="require(`../../../../public/images/onboarding-2.svg`)" />
               </v-flex>
               <v-flex xs6 px-1 class="align-self-end">
-                <v-layout mx-n1>
-                  <v-flex xs6 px-1>
+                <v-layout wrap mx-n1>
+                  <v-flex xs12 sm6 px-1>
                     <v-btn block text large class="text_3--text" @click="closeDialog">{{ t('walletHome.obNoSkip') }}</v-btn>
                   </v-flex>
-                  <v-flex xs6 px-1>
+                  <v-flex xs12 sm6 px-1>
                     <v-btn
                       block
                       large
@@ -129,13 +128,12 @@
           <v-flex class="flex-grow-0" mt-auto>
             <v-layout mx-n1>
               <v-flex xs6 px-1>
-                <img :src="require(`../../../../public/images/onboarding-3.svg`)" />
+                <img class="onboarding-image" :src="require(`../../../../public/images/onboarding-3.svg`)" />
               </v-flex>
               <v-flex xs6 px-1 class="align-self-end">
                 <v-layout mx-n1>
-                  <v-flex v-if="!$vuetify.breakpoint.xsOnly" px-1 xs6></v-flex>
-                  <v-flex xs12 sm6 px-1 class="text-right">
-                    <v-btn :block="!$vuetify.breakpoint.xsOnly" large color="torusBrand1" class="return-btn torus-btn1" @click="closeDialog">
+                  <v-flex xs12 px-1 class="text-right">
+                    <v-btn large color="torusBrand1" class="return-btn torus-btn1" @click="closeDialog">
                       {{ t('walletHome.obNoReturnHome') }}
                     </v-btn>
                   </v-flex>
