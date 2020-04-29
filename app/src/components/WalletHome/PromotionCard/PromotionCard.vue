@@ -1,5 +1,5 @@
 <template>
-  <v-card class="elevation-1 promotion-card">
+  <v-card class="elevation-1 promotion-card" :class="{ isMobile: $vuetify.breakpoint.xsOnly }">
     <v-layout class="d-flex flex-column fill-height py-4 px-6">
       <v-flex class="flex-grow-1 d-flex">
         <div class="promotion-text pr-3">
