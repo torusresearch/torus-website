@@ -190,6 +190,7 @@ export default {
       lastUpdated: '',
       dialogOnboarding: false,
       activeTab: 0,
+      isFreshAccount: true,
     }
   },
   computed: {
@@ -200,7 +201,7 @@ export default {
       tokenDataLoaded: 'tokenDataLoaded',
       selectedCurrency: 'selectedCurrency',
       networkType: 'networkType',
-      isFreshAccount: 'isNewUser',
+      // isFreshAccount: 'isNewUser',
       billboard: 'billboard',
     }),
     canShowLrc() {
