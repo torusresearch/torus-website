@@ -303,7 +303,7 @@
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
               <div v-else>
                 <span id="account-balance" class="display-2 text_2--text mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
-                <span class="caption text_2--text">{{ selectedCurrency }}</span>
+                <span class="caption text_2--text">{{ selectedItem.symbol }}</span>
               </div>
             </div>
             <div class="caption text-right currency-rate align-self-end text_2--text ml-auto">
