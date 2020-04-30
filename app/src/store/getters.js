@@ -13,22 +13,47 @@ const unApprovedTransactions = (state) => {
   }
   return transactions
 }
+
+const currencyMultiplier = (state) => {
+  const currencyMultiplierNumber = state.selectedCurrency !== 'ETH' ? state.currencyData[state.selectedCurrency.toLowerCase()] || 1 : 1
+  return new BigNumber(currencyMultiplierNumber)
+}
+
 const tokenBalances = (state) => {
-  const { weiBalance, tokenData: tokenDataState, tokenRates: tokenRatesState, currencyData, selectedCurrency, networkType, selectedAddress } =
-    state || {}
+  const { finalBalancesArray, totalPortfolioValueReturn } = calculateBalances(state, state.selectedAddress)
+  return { finalBalancesArray, totalPortfolioValue: totalPortfolioValueReturn }
+}
+
+const collectibleBalances = (state) => {
+  const { networkType, assets, selectedAddress } = state || {}
+  if (networkType.host !== MAINNET) {
+    assets[selectedAddress] = []
+  }
+  return assets[selectedAddress] || []
+}
+
+const walletBalances = (state) => {
+  const walletsFinal = Object.keys(state.wallet).reduce((accts, y) => {
+    const { finalBalancesArray, totalPortfolioValueReturn } = calculateBalances(state, y)
+    accts.push({ address: y, finalBalancesArray, totalPortfolioValue: totalPortfolioValueReturn })
+    return accts
+  }, [])
+
+  return walletsFinal
+}
+
+function calculateBalances(state, y) {
+  const { weiBalance, tokenData: tokenDataState, tokenRates: tokenRatesState, selectedCurrency, networkType } = state || {}
   let tokenData = tokenDataState
   let tokenRates = tokenRatesState
   if (networkType.host !== MAINNET) {
     tokenData = {}
     tokenRates = {}
   }
-  let currencyMultiplierNumber = 1
   const formatter = selectedCurrency !== 'ETH' ? 2 : 3
-  if (selectedCurrency !== 'ETH') currencyMultiplierNumber = currencyData[selectedCurrency.toLowerCase()] || 1
-  const currencyMultiplier = new BigNumber(currencyMultiplierNumber)
   let full = [
     {
-      balance: weiBalance[selectedAddress] || '0',
+      balance: weiBalance[y] || '0',
       decimals: 18,
       erc20: false,
       logo: 'eth.svg',
@@ -37,9 +62,8 @@ const tokenBalances = (state) => {
       tokenAddress: '0x',
     },
   ]
-  // because vue/babel is stupid
-  if (tokenData && tokenData[selectedAddress] && Object.keys(tokenData[selectedAddress]).length > 0) {
-    full = [...full, ...tokenData[selectedAddress]]
+  if (tokenData && tokenData[y] && Object.keys(tokenData[y]).length > 0) {
+    full = [...full, ...tokenData[y]]
   }
   let totalPortfolioValue = new BigNumber(0)
   const finalBalancesArray = full.map((x) => {
@@ -47,7 +71,7 @@ const tokenBalances = (state) => {
     let tokenRateMultiplierNumber = 1
     if (x.tokenAddress !== '0x') tokenRateMultiplierNumber = tokenRates[x.tokenAddress.toLowerCase()] || 0
     const tokenRateMultiplier = new BigNumber(tokenRateMultiplierNumber)
-    const currencyRate = currencyMultiplier.times(tokenRateMultiplier)
+    const currencyRate = currencyMultiplier(state).times(tokenRateMultiplier)
     const currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
     totalPortfolioValue = totalPortfolioValue.plus(currencyBalance)
     return {
@@ -62,39 +86,7 @@ const tokenBalances = (state) => {
     }
   })
   const totalPortfolioValueReturn = significantDigits(totalPortfolioValue, false, formatter + 1)
-  return { finalBalancesArray, totalPortfolioValue: totalPortfolioValueReturn }
-}
-
-const collectibleBalances = (state) => {
-  const { networkType, assets, selectedAddress } = state || {}
-  if (networkType.host !== MAINNET) {
-    assets[selectedAddress] = []
-  }
-  return assets[selectedAddress] || []
-}
-
-const currencyMultiplier = (state) => {
-  const currencyMultiplierNumber = state.selectedCurrency !== 'ETH' ? state.currencyData[state.selectedCurrency.toLowerCase()] || 1 : 1
-  return new BigNumber(currencyMultiplierNumber)
-}
-
-const walletBalances = (state) => {
-  const walletsFinal = Object.keys(state.wallet).reduce((accts, x) => {
-    const computedBalance = new BigNumber(state.weiBalance[x]).dividedBy(new BigNumber(10).pow(new BigNumber(18))) || new BigNumber(0)
-    const tokenRateMultiplier = new BigNumber(1)
-    const currencyRate = new BigNumber(currencyMultiplier(state)).times(tokenRateMultiplier)
-    const currencyBalance = computedBalance.times(currencyRate) || new BigNumber(0)
-
-    if (typeof state.wallet[x] === 'string') {
-      accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${state.selectedCurrency}` })
-    } else {
-      accts.push({ address: x, balance: `${significantDigits(currencyBalance, false, 3)} ${state.selectedCurrency}`, ...state.wallet[x] })
-    }
-
-    return accts
-  }, [])
-
-  return walletsFinal
+  return { finalBalancesArray, totalPortfolioValueReturn }
 }
 
 export default {

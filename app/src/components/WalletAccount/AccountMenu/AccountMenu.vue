@@ -39,7 +39,7 @@
             <span>{{ index === 0 ? userInfo.email : `${t('accountMenu.account')} #${index + 1}` }}</span>
           </div>
           <div class="caption ml-auto text_2--text text-right">
-            <span>{{ acc.balance }}</span>
+            <span>{{ acc.totalPortfolioValue }} {{ selectedCurrency }}</span>
           </div>
         </div>
         <div class="d-flex align-start mt-1">
