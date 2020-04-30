@@ -18,7 +18,7 @@
           <div class="d-flex icon-container align-center">
             <div class="icon-box elevation-3" :class="{ isDark: $vuetify.theme.isDark }">
               <v-icon size="20" class="torusGray1--text">
-                {{ `$vuetify.icons.${fromVerifier.toLowerCase() === 'eth' ? 'account' : fromVerifier.toLowerCase()}` }}
+                {{ `$vuetify.icons.${fromVerifier === ETH ? 'account' : fromVerifier.toLowerCase()}` }}
               </v-icon>
             </div>
           </div>
@@ -31,7 +31,7 @@
             <div class="icon-box elevation-3" :class="{ isDark: $vuetify.theme.isDark }">
               <div v-if="dappName !== ''" class="v-icon dapp-icon torusGray1--text">DApp</div>
               <v-icon v-else size="20" class="torusGray1--text">
-                {{ `$vuetify.icons.${toVerifier.toLowerCase() === 'eth' ? 'account' : toVerifier.toLowerCase()}` }}
+                {{ `$vuetify.icons.${toVerifier === ETH ? 'account' : toVerifier.toLowerCase()}` }}
               </v-icon>
             </div>
           </div>
@@ -111,7 +111,7 @@
 <script>
 import BigNumber from 'bignumber.js'
 
-import { MAINNET } from '../../../utils/enums'
+import { ETH, MAINNET } from '../../../utils/enums'
 import { significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 
@@ -183,6 +183,11 @@ export default {
       type: String,
       default: '',
     },
+  },
+  data() {
+    return {
+      ETH,
+    }
   },
   methods: {
     onCancel() {
