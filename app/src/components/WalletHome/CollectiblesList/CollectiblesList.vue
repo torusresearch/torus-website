@@ -9,12 +9,12 @@
           <v-list-item-content>
             <v-list-item-title class="caption text_1--text font-weight-bold mb-2">{{ collectible.name }}</v-list-item-title>
             <v-list-item-subtitle v-if="!$vuetify.breakpoint.xsOnly" class="text_3--text caption">
-              {{ collectible.assets.length }} Asset{{ collectible.assets.length > 1 ? 's' : '' }}
+              {{ collectible.assets.length }} {{ collectible.assets.length > 1 ? t('walletHome.assets') : t('walletHome.asset') }}
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
         <div v-if="$vuetify.breakpoint.xsOnly" class="text-right text_3--text">
-          {{ collectible.assets.length }} Asset{{ collectible.assets.length > 1 ? 's' : '' }}
+          {{ collectible.assets.length }} {{ collectible.assets.length > 1 ? t('walletHome.assets') : t('walletHome.asset') }}
         </div>
       </v-card>
     </v-flex>

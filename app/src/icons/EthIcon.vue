@@ -10,7 +10,7 @@
     xml:space="preserve"
   >
     <g transform="translate(0.000000, 14.000000)">
-      <path fill="#38393A" d="M19.9,16L7.5,8.7L19.9,26L32.3,8.7L19.9,16L19.9,16z M20.1-14L7.7,6.4l12.4,7.3l12.4-7.2L20.1-14z" />
+      <path fill="currentColor" d="M19.9,16L7.5,8.7L19.9,26L32.3,8.7L19.9,16L19.9,16z M20.1-14L7.7,6.4l12.4,7.3l12.4-7.2L20.1-14z" />
     </g>
   </svg>
 </template>

@@ -61,7 +61,7 @@
         <span>Coming Soon</span>
       </v-tooltip>
 
-      <div class="mt-4 py-4 px-1 text-gray caption">
+      <div id="write-to-us" class="mt-4 py-4 px-1 text-gray caption">
         <div>
           {{ t('walletTopUp.otherMode') }}
           <a href="mailto:hello@tor.us?Subject=Add%20Payment%20Method" target="_blank" :style="{ textDecoration: 'none' }">
@@ -118,7 +118,8 @@ export default {
   },
   methods: {
     scrollToPosition() {
-      const element = document.querySelector('#providerForm')
+      if (!this.$vuetify.breakpoint.xsOnly) return
+      const element = document.querySelector('#write-to-us')
       setTimeout(() => {
         if (element) {
           element.scrollIntoView({

@@ -203,6 +203,9 @@ export default {
       isFreshAccount: 'isNewUser',
       billboard: 'billboard',
     }),
+    icons() {
+      return this.$vuetify.icons.values
+    },
     canShowLrc() {
       return process.env.VUE_APP_TORUS_BUILD_ENV !== 'lrc'
     },

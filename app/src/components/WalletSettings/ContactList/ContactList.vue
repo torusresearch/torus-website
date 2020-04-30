@@ -98,7 +98,7 @@
                 class="select-verifier-container"
                 outlined
                 append-icon="$vuetify.icons.select"
-                :items="verifierOptions"
+                :items="verifierOptionsNew"
                 item-text="name"
                 item-value="value"
                 aria-label="Select Contact Verifier"
@@ -171,10 +171,17 @@ export default {
     verifierOptions() {
       try {
         const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
-        return verifiers.map((verifier) => {
+        verifiers.map((verifier) => {
           verifier.name = this.t(verifier.name)
           return verifier
         })
+
+        verifiers.unshift({
+          name: 'All',
+          value: '',
+        })
+
+        return verifiers
       } catch (error) {
         log.error(error)
         return []
@@ -194,6 +201,9 @@ export default {
         }
         return !!contact
       })
+    },
+    verifierOptionsNew() {
+      return this.verifierOptions.filter((verifier) => verifier.name !== 'All')
     },
   },
   methods: {

@@ -835,8 +835,8 @@ export default {
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = 'Your transfer cannot be processed'
-                this.messageModalDetails = 'Please try again'
+                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
               }
               log.error(error)
             } else {
@@ -845,8 +845,8 @@ export default {
 
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = 'Your transfer is being processed'
-              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
+              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
+              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
             }
           }
         )
@@ -867,8 +867,8 @@ export default {
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = 'Your transfer cannot be processed'
-                this.messageModalDetails = 'Please try again'
+                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
               }
               log.error(error)
             } else {
@@ -877,8 +877,8 @@ export default {
 
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = 'Your transfer is being processed'
-              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
+              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
+              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
             }
           }
         )
@@ -895,8 +895,8 @@ export default {
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = 'Your transfer cannot be processed'
-                this.messageModalDetails = 'Please try again'
+                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
               }
               log.error(error)
             } else {
@@ -904,8 +904,8 @@ export default {
               this.sendEmail(this.assetSelected.name, transactionHash)
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = 'Your transfer is being processed'
-              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
+              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
+              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
             }
           }
         )
@@ -982,7 +982,7 @@ export default {
           this.toAddress = qrParameters.get('to')
         } else {
           this.toAddress = ''
-          this.qrErrorMsg = 'Incorrect QR Code'
+          this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
         }
       } catch (error) {
         if (isAddress(result)) {
@@ -990,7 +990,7 @@ export default {
           this.toAddress = result
         } else {
           this.toAddress = ''
-          this.qrErrorMsg = 'Incorrect QR Code'
+          this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
         }
       } finally {
         this.contactSelected = this.toAddress

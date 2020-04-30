@@ -23,7 +23,7 @@
 
     <div class="px-3 mb-3 account-list">
       <div
-        v-for="acc in wallets"
+        v-for="(acc, index) in wallets"
         :key="acc.address"
         class="d-flex flex-column account-list__item mb-2 py-2 px-3"
         :class="{ active: acc.address === selectedAddress, 'theme--dark': $vuetify.theme.dark }"
@@ -32,11 +32,11 @@
         <div class="d-flex align-center">
           <div class="mr-2" :style="{ lineHeight: '0' }">
             <v-icon :class="$vuetify.theme.dark ? 'torusGray1--text' : 'torusFont2--text'" size="16">
-              {{ `$vuetify.icons.${userInfo.verifier.toLowerCase()}` }}
+              {{ `$vuetify.icons.${index === 0 ? userInfo.verifier.toLowerCase() : 'account'}` }}
             </v-icon>
           </div>
           <div class="caption text_1--text font-weight-bold" :style="{ paddingLeft: '2px' }">
-            <span>{{ userInfo.email }}</span>
+            <span>{{ index === 0 ? userInfo.email : `${t('accountMenu.account')} #${index + 1}` }}</span>
           </div>
           <div class="caption ml-auto text_2--text text-right">
             <span>{{ acc.balance }}</span>
@@ -66,7 +66,7 @@
     <v-list class="ml-1 py-1">
       <v-list-item id="import-account-btn" @click="accountImportDialog = true">
         <v-list-item-action class="mr-2">
-          <v-icon size="24" class="text_2--text" v-text="'$vuetify.icons.import'" />
+          <v-icon size="24" class="text_2--text" v-text="'$vuetify.icons.add'" />
         </v-list-item-action>
         <v-list-item-content class="caption font-weight-bold text_1--text">{{ t('accountMenu.importAccount') }}</v-list-item-content>
       </v-list-item>
