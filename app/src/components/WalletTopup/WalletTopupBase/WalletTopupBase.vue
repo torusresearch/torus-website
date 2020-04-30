@@ -30,7 +30,8 @@
               <div>
                 <span class="body-2">{{ t('walletTopUp.youSend') }}</span>
                 <span class="caption float-right">
-                  {{ t('walletTopUp.min') }} {{ minOrderValue }}, {{ t('walletTopUp.max') }} {{ maxOrderValue }} USD*
+                  {{ t('walletTopUp.min') }} {{ selectedProvider === XANPOOL ? '0.1 ETH' : minOrderValue }}, {{ t('walletTopUp.max') }}
+                  {{ maxOrderValue }} USD*
                 </span>
               </div>
               <v-text-field
@@ -130,6 +131,7 @@
 <script>
 import { mapState } from 'vuex'
 
+import { XANPOOL } from '../../../utils/enums'
 import { formatCurrencyNumber, paymentProviders, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../../helpers/HelpTooltip'
 
@@ -169,6 +171,7 @@ export default {
       snackbarText: '',
       snackbarColor: 'success',
       selectedCurrency: '',
+      XANPOOL,
     }
   },
   computed: {
