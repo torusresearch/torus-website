@@ -29,6 +29,21 @@
           </div>
           <div class="qr-container mb-8">
             <VueQr
+              v-show="$vuetify.theme.dark"
+              :color-dark="'#252529'"
+              :color-light="'#FCFCFC'"
+              :background-color="'#2F3136'"
+              :logo-background-color="'#2F3136'"
+              :logo-src="require(`../../../../public/img/icons/t-fill.svg`)"
+              :logo-scale="0.28"
+              :margin="1"
+              :text="selectedAddress"
+              :size="800"
+              :dot-scale="0.6"
+              :correct-level="3"
+            ></VueQr>
+            <VueQr
+              v-show="!$vuetify.theme.dark"
               ref="address-qr"
               :logo-src="require(`../../../../public/img/icons/t-fill.svg`)"
               :margin="20"
@@ -37,7 +52,6 @@
               :size="800"
               :dot-scale="0.6"
               :correct-level="3"
-              :white-margin="2"
             ></VueQr>
           </div>
           <div>
