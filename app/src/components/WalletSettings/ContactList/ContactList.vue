@@ -169,23 +169,13 @@ export default {
       stateContacts: 'contacts',
     }),
     verifierOptions() {
-      try {
-        const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
-        verifiers.map((verifier) => {
-          verifier.name = this.t(verifier.name)
-          return verifier
-        })
-
-        verifiers.unshift({
+      return [
+        {
           name: 'All',
           value: '',
-        })
-
-        return verifiers
-      } catch (error) {
-        log.error(error)
-        return []
-      }
+        },
+        ...this.verifierOptionsNew,
+      ]
     },
     verifierPlaceholder() {
       const verifierLocale = ALLOWED_VERIFIERS.find((verifier) => verifier.value === this.selectedVerifier).name
@@ -203,7 +193,16 @@ export default {
       })
     },
     verifierOptionsNew() {
-      return this.verifierOptions.filter((verifier) => verifier.name !== 'All')
+      try {
+        const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
+        return verifiers.map((verifier) => {
+          verifier.name = this.t(verifier.name)
+          return verifier
+        })
+      } catch (error) {
+        log.error(error)
+        return []
+      }
     },
   },
   methods: {
