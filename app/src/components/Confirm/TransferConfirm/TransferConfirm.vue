@@ -9,7 +9,7 @@
           height="30"
           :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
         />
-        <div class="headline">{{ /** t('walletTransfer.transferConfirm') */ }}Confirm Transaction</div>
+        <div class="headline">{{ t('walletTransfer.confirmTransaction') }}</div>
       </v-flex>
     </v-layout>
     <v-layout py-3 px-6 wrap>
@@ -70,10 +70,8 @@
             <span class="caption">{{ t('walletTransfer.transferFee') }}</span>
           </div>
           <div class="ml-auto">
-            <div class="caption text-right font-weight-medium">
-              {{ transactionFee }} {{ selectedCurrency }}
-              <span class="caption-2">(~ {{ speedSelected }} Mins)</span>
-            </div>
+            <div class="caption text-right font-weight-medium">{{ transactionFee }} {{ selectedCurrency }}</div>
+            <div class="caption-2 text-right">(~ {{ speedSelected }} {{ t('walletTransfer.minute') }})</div>
           </div>
         </div>
       </v-flex>
@@ -175,8 +173,10 @@ export default {
       default: '',
     },
     networkType: {
-      type: String,
-      default: '',
+      type: Object,
+      default() {
+        return {}
+      },
     },
     dappName: {
       type: String,
