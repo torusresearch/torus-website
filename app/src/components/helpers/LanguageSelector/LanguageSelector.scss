@@ -12,6 +12,11 @@
       border-radius: 6px;
       background-color: var(--v-torusBrand3-base);
     }
+
+    .v-list-item__action.isMobile {
+      margin-top: 9px;
+      margin-bottom: 9px;
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 <template>
   <svg width="29px" height="24px" viewBox="0 0 29 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
-      <g transform="translate(-763.000000, -351.000000)" stroke="#A2A5B5" stroke-width="2.8">
+      <g transform="translate(-763.000000, -351.000000)" stroke="currentColor" stroke-width="2.8">
         <g transform="translate(150.000000, 261.000000)">
           <g transform="translate(615.000000, 92.000000)">
             <path d="M18.0555556,5.71428571 L23.6111111,0" />
