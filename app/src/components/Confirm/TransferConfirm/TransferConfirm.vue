@@ -108,6 +108,7 @@
 <script>
 import BigNumber from 'bignumber.js'
 
+import { MAINNET } from '../../../utils/enums'
 import { significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 
@@ -170,8 +171,10 @@ export default {
       default: '',
     },
     networkType: {
-      type: String,
-      default: '',
+      type: Object,
+      default() {
+        return { host: MAINNET, networkName: '', chainId: '' }
+      },
     },
   },
   methods: {

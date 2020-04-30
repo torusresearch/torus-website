@@ -475,7 +475,6 @@ export default {
       return this.currencyMultiplier.times(tokenRateMultiplier)
     },
     convertedTotalCostDisplay() {
-      // TODO
       return `~ ${significantDigits(this.convertedTotalCost)} ${this.selectedCurrency}`
     },
     currencyBalanceDisplay() {
@@ -586,7 +585,7 @@ export default {
         const emailObject = {
           from_name: this.userInfo.name,
           to_email: this.toAddress,
-          total_amount: significantDigits(this.amount.toFormat(5), false, 5),
+          total_amount: significantDigits(this.amount.toFormat(5), false, 5).toString(),
           token: typeToken.toString(),
           etherscanLink,
           currency: this.selectedCurrency,
