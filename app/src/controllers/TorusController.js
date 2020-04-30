@@ -316,22 +316,7 @@ export default class TorusController extends EventEmitter {
   // =============================================================================
 
   initTorusKeyring(keyArray, addresses) {
-    return new Promise((resolve, reject) => {
-      this.keyringController
-        .deserialize(keyArray)
-        .then(() => {
-          log.info('keyring deserialized')
-          resolve()
-        })
-        .catch((error) => {
-          reject(error)
-          log.error('unable to deserialize keyring', error)
-        })
-      this.accountTracker.syncWithAddresses(addresses)
-    })
-
-    // this.setupControllerConnection()
-    // this.accountTracker._updateAccounts()
+    return Promise.all([this.keyringController.deserialize(keyArray), this.accountTracker.syncWithAddresses(addresses)])
   }
 
   async addAccount(key, address) {
