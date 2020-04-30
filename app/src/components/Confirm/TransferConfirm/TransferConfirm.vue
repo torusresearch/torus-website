@@ -111,6 +111,7 @@
 <script>
 import BigNumber from 'bignumber.js'
 
+import { MAINNET } from '../../../utils/enums'
 import { significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 
@@ -175,7 +176,7 @@ export default {
     networkType: {
       type: Object,
       default() {
-        return {}
+        return { host: MAINNET, networkName: '', chainId: '' }
       },
     },
     dappName: {

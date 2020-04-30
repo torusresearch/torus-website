@@ -303,7 +303,7 @@
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
               <div v-else>
                 <span id="account-balance" class="display-2 text_2--text mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
-                <span class="caption text_2--text">{{ selectedCurrency }}</span>
+                <span class="caption text_2--text">{{ selectedItem.symbol }}</span>
               </div>
             </div>
             <div class="caption text-right currency-rate align-self-end text_2--text ml-auto">
@@ -475,7 +475,6 @@ export default {
       return this.currencyMultiplier.times(tokenRateMultiplier)
     },
     convertedTotalCostDisplay() {
-      // TODO
       return `~ ${significantDigits(this.convertedTotalCost)} ${this.selectedCurrency}`
     },
     currencyBalanceDisplay() {
@@ -586,7 +585,7 @@ export default {
         const emailObject = {
           from_name: this.userInfo.name,
           to_email: this.toAddress,
-          total_amount: significantDigits(this.amount.toFormat(5), false, 5),
+          total_amount: significantDigits(this.amount.toFormat(5), false, 5).toString(),
           token: typeToken.toString(),
           etherscanLink,
           currency: this.selectedCurrency,

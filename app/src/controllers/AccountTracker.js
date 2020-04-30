@@ -107,8 +107,8 @@ export default class AccountTracker {
       }
     })
 
-    this.addAccounts(accountsToAdd)
     this.removeAccount(accountsToRemove)
+    return this.addAccounts(accountsToAdd)
   }
 
   /**
@@ -118,7 +118,7 @@ export default class AccountTracker {
    * @param {array} addresses An array of hex addresses of new accounts to track
    *
    */
-  addAccounts(addresses) {
+  async addAccounts(addresses) {
     const { accounts } = this.store.getState()
     // add initial state for addresses
     addresses.forEach((address) => {
@@ -127,8 +127,8 @@ export default class AccountTracker {
     // save accounts state
     this.store.updateState({ accounts })
     // fetch balances for the accounts if there is block number ready
-    if (!this._currentBlockNumber) return
-    this._updateAccounts()
+    if (!this._currentBlockNumber) return undefined
+    return this._updateAccounts()
   }
 
   /**
