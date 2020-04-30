@@ -6,6 +6,7 @@
           <v-layout v-if="!isLogout" wrap>
             <v-flex v-if="$vuetify.breakpoint.xsOnly" xs12>
               <v-carousel
+                cycle
                 class="mobile-carousel"
                 vertical
                 height="650"
@@ -199,7 +200,7 @@
         <v-flex v-if="$vuetify.breakpoint.smAndUp" sm4 md6 fill-height class="login-panel-right" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
           <v-layout wrap fill-height align-center>
             <v-flex xs12 text-center>
-              <v-carousel height="650" interval="7000" :show-arrows="false">
+              <v-carousel cycle height="650" interval="7000" :show-arrows="false">
                 <v-carousel-item v-for="slide in 3" :key="slide">
                   <div class="d-flex flex-column fill-height justify-end pb-12">
                     <div class="text-center">

@@ -35,7 +35,6 @@
                     :label="t('accountMenu.privateKey')"
                     single-line
                     @input="canShowError = false"
-                    @click:append="togglePrivShow"
                   >
                     <template v-slot:append>
                       <v-btn icon @click="togglePrivShow">
