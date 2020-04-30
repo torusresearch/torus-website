@@ -9,15 +9,17 @@
           height="30"
           :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
         />
-        <div class="headline">{{ /** t('walletTransfer.transferConfirm') */ }}Confirm Transaction</div>
+        <div class="headline">{{ t('walletTransfer.confirmTransaction') }}</div>
       </v-flex>
     </v-layout>
     <v-layout py-3 px-6 wrap>
       <v-flex xs12>
         <div class="d-flex transfer-to-from align-center">
           <div class="d-flex icon-container align-center">
-            <div class="icon-box elevation-3">
-              <v-icon size="20" class="torusGray1--text">{{ `$vuetify.icons.${fromVerifier.toLowerCase()}` }}</v-icon>
+            <div class="icon-box elevation-3" :class="{ isDark: $vuetify.theme.isDark }">
+              <v-icon size="20" class="torusGray1--text">
+                {{ `$vuetify.icons.${fromVerifier === ETH ? 'account' : fromVerifier.toLowerCase()}` }}
+              </v-icon>
             </div>
           </div>
 
@@ -26,8 +28,11 @@
           </div>
 
           <div class="d-flex icon-container icon-container--right align-center">
-            <div class="icon-box elevation-3">
-              <v-icon size="20" class="torusGray1--text">{{ `$vuetify.icons.${toVerifier.toLowerCase()}` }}</v-icon>
+            <div class="icon-box elevation-3" :class="{ isDark: $vuetify.theme.isDark }">
+              <div v-if="dappName !== ''" class="v-icon dapp-icon torusGray1--text">DApp</div>
+              <v-icon v-else size="20" class="torusGray1--text">
+                {{ `$vuetify.icons.${toVerifier === ETH ? 'account' : toVerifier.toLowerCase()}` }}
+              </v-icon>
             </div>
           </div>
         </div>
@@ -40,8 +45,8 @@
           <div class="network-container">
             <NetworkDisplay :is-plain="true" :store-network-type="networkType"></NetworkDisplay>
           </div>
-          <div class="name name--right text-clamp-one">
-            {{ toAddress }}
+          <div class="name name--right" :class="{ textClampOne: dappName !== '' }">
+            {{ dappName === '' ? toAddress : dappName }}
           </div>
         </div>
       </v-flex>
@@ -65,10 +70,8 @@
             <span class="caption">{{ t('walletTransfer.transferFee') }}</span>
           </div>
           <div class="ml-auto">
-            <div class="caption text-right font-weight-medium">
-              {{ transactionFee }} {{ selectedCurrency }}
-              <span class="caption-2">(~ {{ speedSelected }} Mins)</span>
-            </div>
+            <div class="caption text-right font-weight-medium">{{ transactionFee }} {{ selectedCurrency }}</div>
+            <div class="caption-2 text-right">(~ {{ speedSelected }} {{ t('walletTransfer.minute') }})</div>
           </div>
         </div>
       </v-flex>
@@ -108,7 +111,7 @@
 <script>
 import BigNumber from 'bignumber.js'
 
-import { MAINNET } from '../../../utils/enums'
+import { ETH, MAINNET } from '../../../utils/enums'
 import { significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 
@@ -176,6 +179,15 @@ export default {
         return { host: MAINNET, networkName: '', chainId: '' }
       },
     },
+    dappName: {
+      type: String,
+      default: '',
+    },
+  },
+  data() {
+    return {
+      ETH,
+    }
   },
   methods: {
     onCancel() {

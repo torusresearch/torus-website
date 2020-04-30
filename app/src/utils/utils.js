@@ -501,10 +501,10 @@ export const fakeStream = {
   write: () => {},
 }
 
-export function formatSmallNumbers(number, currency = 'usd') {
+export function formatSmallNumbers(number, currency = 'usd', noTilde = false) {
   const finalNumber = currency.toLowerCase() === 'usd' ? Number(number).toFixed(2) : Number(number).toFixed(5)
 
-  return `${currency.toLowerCase() === 'usd' ? '' : '~ '}${Number(finalNumber)} ${currency.toUpperCase()}`
+  return `${currency.toLowerCase() === 'usd' || noTilde ? '' : '~ '}${Number(finalNumber)} ${currency.toUpperCase()}`
 }
 
 export const getUserLanguage = () => {

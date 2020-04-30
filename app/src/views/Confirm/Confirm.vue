@@ -103,7 +103,7 @@
                   </v-btn>
                 </template>
                 <TransferConfirm
-                  :to-address="receiver"
+                  :dapp-name="origin.hostname"
                   :from-address="userInfo.verifierId"
                   :from-verifier="userInfo.verifier"
                   :network-type="network"

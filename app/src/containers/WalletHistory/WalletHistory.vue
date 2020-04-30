@@ -280,10 +280,10 @@ export default {
         }
         let totalAmountString = ''
         if (x.type === CONTRACT_TYPE_ERC721) totalAmountString = x.symbol
-        else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.symbol)
-        else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), 'ETH')
+        else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.symbol, true)
+        else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), 'ETH', true)
         const currencyAmountString =
-          x.type === CONTRACT_TYPE_ERC721 ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency)
+          x.type === CONTRACT_TYPE_ERC721 ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
         const finalObject = {
           id: x.created_at.toString(),
           date: new Date(x.created_at),
@@ -375,7 +375,7 @@ export default {
           txObject.totalAmount = totalAmount
           txObject.totalAmountString = totalAmountString
           txObject.currencyAmount = this.currencyMultiplier * txObject.totalAmount * tokenRate
-          txObject.currencyAmountString = contractParams.erc721 ? '' : formatSmallNumbers(txObject.currencyAmount, this.selectedCurrency)
+          txObject.currencyAmountString = contractParams.erc721 ? '' : formatSmallNumbers(txObject.currencyAmount, this.selectedCurrency, true)
           txObject.amount = `${txObject.totalAmountString} / ${txObject.currencyAmountString}`
           txObject.status = txOld.status
           txObject.etherscanLink = getEtherScanHashLink(txOld.hash, this.networkType.host)
