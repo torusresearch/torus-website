@@ -44,7 +44,7 @@
         </div>
         <div class="d-flex align-start mt-1">
           <div class="account-list__address-container pt-1" :style="{ maxWidth: $vuetify.breakpoint.xsOnly ? '140px' : 'inherit' }">
-            <div v-if="userInfo.verifier === DISCORD" class="account-list__address">Discord ID: {{ userInfo.verifierId }}</div>
+            <div v-if="userInfo.verifier === DISCORD && index === 0" class="account-list__address">Discord ID: {{ userInfo.verifierId }}</div>
             <div class="account-list__address mt-1">{{ acc.address }}</div>
           </div>
           <div class="ml-auto">
@@ -77,7 +77,7 @@
 
     <v-divider></v-divider>
 
-    <v-list class="py-1" :style="{ marginLeft: '6px' }">
+    <v-list v-if="$vuetify.breakpoint.xsOnly" class="py-1" :style="{ marginLeft: '6px' }">
       <v-list-item
         v-for="headerItem in filteredMenu"
         :id="`${headerItem.name}-link-mobile`"
@@ -93,17 +93,17 @@
           <v-list-item-title class="caption font-weight-bold text_1--text">{{ headerItem.display }}</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
+    </v-list>
+
+    <v-divider v-if="$vuetify.breakpoint.xsOnly"></v-divider>
+    <v-list class="ml-1">
       <v-list-item href="https://docs.tor.us/#users" target="_blank">
         <v-list-item-action class="mr-2">
           <v-icon size="20" class="text_2--text" v-text="'$vuetify.icons.info'" />
         </v-list-item-action>
         <v-list-item-content class="caption font-weight-bold">{{ t('accountMenu.infoSupport') }}</v-list-item-content>
       </v-list-item>
-    </v-list>
-
-    <v-divider v-if="$vuetify.breakpoint.xsOnly"></v-divider>
-    <v-list v-if="$vuetify.breakpoint.xsOnly" class="ml-1">
-      <LanguageSelector></LanguageSelector>
+      <LanguageSelector v-if="$vuetify.breakpoint.xsOnly"></LanguageSelector>
     </v-list>
 
     <v-divider></v-divider>
