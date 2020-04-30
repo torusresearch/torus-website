@@ -13,7 +13,7 @@
               @click="selectSpeed('average', averageGasPrice)"
             >
               <div class="d-flex">
-                <img :src="require(`../../../../public/img/icons/speed-bicycle.svg`)" class="mr-2 ml-auto" />
+                <img :src="require(`../../../../public/img/icons/speed-bicycle${$vuetify.theme.isDark ? '-dark' : ''}.svg`)" class="mr-2 ml-auto" />
                 <div class="mr-auto">
                   <div class="btn-speed__speed">~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
                   <div class="btn-speed__price">{{ getGasDisplayString(averageGasPrice) }}</div>
@@ -28,7 +28,7 @@
               @click="selectSpeed('fastest', fastestGasPrice)"
             >
               <div class="d-flex">
-                <img :src="require(`../../../../public/img/icons/speed-car.svg`)" class="mr-2 ml-auto" />
+                <img :src="require(`../../../../public/img/icons/speed-car${$vuetify.theme.isDark ? '-dark' : ''}.svg`)" class="mr-2 ml-auto" />
                 <div class="mr-auto">
                   <div class="btn-speed__speed">~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
                   <div class="btn-speed__price">{{ getGasDisplayString(fastestGasPrice) }}</div>
@@ -84,7 +84,7 @@
           @click="selectSpeed('average', averageGasPrice)"
         >
           <div class="d-flex">
-            <img :src="require(`../../../../public/img/icons/speed-bicycle.svg`)" class="mr-2 ml-auto" />
+            <img :src="require(`../../../../public/img/icons/speed-bicycle${$vuetify.theme.isDark ? '-dark' : ''}.svg`)" class="mr-2 ml-auto" />
             <div class="mr-auto">
               <div class="btn-speed__speed">~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
               <div class="btn-speed__price">{{ getGasDisplayString(averageGasPrice) }}</div>
@@ -99,7 +99,7 @@
           @click="selectSpeed('fastest', fastestGasPrice)"
         >
           <div class="d-flex">
-            <img :src="require(`../../../../public/img/icons/speed-car.svg`)" class="mr-2 ml-auto" />
+            <img :src="require(`../../../../public/img/icons/speed-car${$vuetify.theme.isDark ? '-dark' : ''}.svg`)" class="mr-2 ml-auto" />
             <div class="mr-auto">
               <div class="btn-speed__speed">~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
               <div class="btn-speed__price">{{ getGasDisplayString(fastestGasPrice) }}</div>

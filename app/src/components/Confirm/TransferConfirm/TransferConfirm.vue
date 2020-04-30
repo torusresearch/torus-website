@@ -16,8 +16,10 @@
       <v-flex xs12>
         <div class="d-flex transfer-to-from align-center">
           <div class="d-flex icon-container align-center">
-            <div class="icon-box elevation-3">
-              <v-icon size="20" class="torusGray1--text">{{ `$vuetify.icons.${fromVerifier.toLowerCase()}` }}</v-icon>
+            <div class="icon-box elevation-3" :class="{ isDark: $vuetify.theme.isDark }">
+              <v-icon size="20" class="torusGray1--text">
+                {{ `$vuetify.icons.${fromVerifier.toLowerCase() === 'eth' ? 'account' : fromVerifier.toLowerCase()}` }}
+              </v-icon>
             </div>
           </div>
 
@@ -26,8 +28,11 @@
           </div>
 
           <div class="d-flex icon-container icon-container--right align-center">
-            <div class="icon-box elevation-3">
-              <v-icon size="20" class="torusGray1--text">{{ `$vuetify.icons.${toVerifier.toLowerCase()}` }}</v-icon>
+            <div class="icon-box elevation-3" :class="{ isDark: $vuetify.theme.isDark }">
+              <div v-if="dappName !== ''" class="v-icon dapp-icon torusGray1--text">DApp</div>
+              <v-icon v-else size="20" class="torusGray1--text">
+                {{ `$vuetify.icons.${toVerifier.toLowerCase() === 'eth' ? 'account' : toVerifier.toLowerCase()}` }}
+              </v-icon>
             </div>
           </div>
         </div>
@@ -40,8 +45,8 @@
           <div class="network-container">
             <NetworkDisplay :is-plain="true" :store-network-type="networkType"></NetworkDisplay>
           </div>
-          <div class="name name--right text-clamp-one">
-            {{ toAddress }}
+          <div class="name name--right" :class="{ textClampOne: dappName !== '' }">
+            {{ dappName === '' ? toAddress : dappName }}
           </div>
         </div>
       </v-flex>
@@ -170,6 +175,10 @@ export default {
       default: '',
     },
     networkType: {
+      type: String,
+      default: '',
+    },
+    dappName: {
       type: String,
       default: '',
     },

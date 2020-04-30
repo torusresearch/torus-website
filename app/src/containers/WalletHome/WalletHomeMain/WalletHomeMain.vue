@@ -125,7 +125,7 @@
           :image-dark-path="event.imageDarkUrl"
           :subtitle="event.description"
           :details-link="event.callToActionLink"
-          :details-link-two="'https://l.tor.us/l?s=Tw8mUUp47Q3XKrjnU7zbbQ'"
+          :details-link-two="event.callToActionLinkTwo"
           :details-text="event.callToActionText"
         ></PromotionCard>
       </v-flex>
