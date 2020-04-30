@@ -35,7 +35,7 @@
               depressed
               large
               block
-              class="torus-btn1 torusBrand1--text"
+              class="torus-btn1 torusBrand1--text gmt-billboard-cta"
               :class="whiteLabelGlobal.isWhiteLabelActive ? 'torus-btn1--whitelabel' : ''"
               :href="detailsLink"
               target="_blank"
