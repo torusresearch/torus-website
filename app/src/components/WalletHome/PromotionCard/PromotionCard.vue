@@ -22,7 +22,7 @@
         <v-layout wrap class="mx-n3 more-details-container">
           <v-flex v-if="!!detailsLinkTwo" xs12 sm6 px-3 :class="$vuetify.breakpoint.xsOnly ? 'mb-2' : ''">
             <ShowToolTip :address="detailsLinkTwo">
-              <div :class="{ 'theme--dark': $vuetify.theme.isDark }" class="d-flex align-center copy-link elevation-3 px-4 py-1">
+              <div :class="{ 'theme--dark': $vuetify.theme.isDark }" class="d-flex align-center gmt-share-referral copy-link elevation-3 px-4 py-1">
                 <div class="torusFont2--text flex-grow-1 text-clamp-one">{{ detailsLinkTwo }}</div>
                 <v-icon class="ml-auto flex-grow-0 torusFont2--text" x-small :style="{ width: '20px' }">
                   $vuetify.icons.copy
@@ -50,7 +50,10 @@
 </template>
 
 <script>
+import ShowToolTip from '../../helpers/ShowToolTip'
+
 export default {
+  components: { ShowToolTip },
   props: {
     title: { type: String, default: '' },
     subtitle: { type: String, default: '' },
