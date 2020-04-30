@@ -23,9 +23,14 @@
                           small
                           :rules="[rules.required]"
                           :type="showJsonPassword ? 'text' : 'password'"
-                          :append-icon="showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
-                          @click:append="showJsonPassword = !showJsonPassword"
                         >
+                          <template v-slot:append>
+                            <v-btn icon @click="showJsonPassword = !showJsonPassword">
+                              <v-icon class="text_3--text">
+                                {{ showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on' }}
+                              </v-icon>
+                            </v-btn>
+                          </template>
                           <template v-if="!$vuetify.breakpoint.xsOnly" v-slot:append-outer>
                             <v-btn
                               v-if="!walletJson"

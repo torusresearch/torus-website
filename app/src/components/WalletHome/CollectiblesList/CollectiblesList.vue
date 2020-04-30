@@ -24,11 +24,11 @@
       <v-card class="elevation-1 py-4 px-3">
         <div class="d-flex mb-2 align-center">
           <div class="mr-2">
-            <v-img
-              :width="$vuetify.breakpoint.xsOnly ? 36 : 50"
-              :src="require(`../../../../public/images/opensea-explore.png`)"
+            <img
+              :width="$vuetify.breakpoint.xsOnly ? 51 : 51"
+              :src="require(`../../../../public/images/opensea-logo${$vuetify.theme.isDark ? '-dark' : ''}.svg`)"
               alt="Explore Opensea"
-            ></v-img>
+            />
           </div>
           <div>
             <div class="caption text_1--text font-weight-bold mb-1">{{ t('walletHome.exploreTitle') }}</div>
