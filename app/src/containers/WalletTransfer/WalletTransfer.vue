@@ -783,6 +783,7 @@ export default {
       }
     },
     changeSelectedToCurrency(value) {
+      if (this.toggle_exclusive === value) return
       this.toggle_exclusive = value
       const currencyRate = this.getCurrencyTokenRate
       if (value === 0) {
