@@ -340,10 +340,10 @@ export default {
       if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
     },
     scrollUp() {
-      this.selectedCarouselItem = 0
+      this.selectedCarouselItem = 1
     },
     scrollDown() {
-      this.selectedCarouselItem = 1
+      this.selectedCarouselItem = 0
     },
   },
 }
