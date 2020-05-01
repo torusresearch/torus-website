@@ -93,13 +93,22 @@ function onloadTorus(torus) {
     targetWindow: window.parent,
   })
 
+  const channelStream = new LocalMessageDuplexStream({
+    name: 'iframe_chan',
+    target: 'embed_chan',
+    targetWindow: window.parent,
+  })
+
   torus.metamaskMux = setupMultiplex(metamaskStream)
   torus.communicationMux = setupMultiplex(communicationStream)
   torus.communicationMux.setMaxListeners(50)
+  torus.channelMux = setupMultiplex(channelStream)
+  torus.channelMux.setMaxListeners(50)
 
   const providerOutStream = torus.metamaskMux.getStream('provider')
 
   torusController.setupUntrustedCommunication(providerOutStream, getIFrameOrigin())
+  torusController.channelController.setupChannelRpcStream(torus.channelMux)
 
   return torus
 }

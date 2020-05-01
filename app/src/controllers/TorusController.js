@@ -24,6 +24,7 @@ import AccountTracker from './AccountTracker'
 import AssetContractController from './AssetsContractController'
 import AssetController from './AssetsController'
 import AssetDetectionController from './AssetsDetectionController'
+import ChannelController from './ChannelController'
 import CurrencyController from './CurrencyController'
 import DetectTokensController from './DetectTokensController'
 import MessageManager from './MessageManager'
@@ -192,6 +193,12 @@ export default class TorusController extends EventEmitter {
         options.rehydrate()
       }, 50)
     }
+
+    // // channel method management
+    this.channelController = new ChannelController({
+      keyringController: this.keyringController,
+      networkController: this.networkController,
+    })
   }
 
   /**
@@ -316,7 +323,11 @@ export default class TorusController extends EventEmitter {
   // =============================================================================
 
   initTorusKeyring(keyArray, addresses) {
-    return Promise.all([this.keyringController.deserialize(keyArray), this.accountTracker.syncWithAddresses(addresses)])
+    return Promise.all([
+      this.keyringController.deserialize(keyArray),
+      this.accountTracker.syncWithAddresses(addresses),
+      this.channelController.initChannel(),
+    ])
   }
 
   async addAccount(key, address) {
