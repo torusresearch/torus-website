@@ -43,7 +43,7 @@
             <div class="text-clamp-one">{{ fromVerifierId }}</div>
             <div class="name--address">{{ addressSlicer(fromAddress) }}</div>
           </div>
-          <div class="network-container">
+          <div class="network-container flex-grow-1" :class="{ isMobile: $vuetify.breakpoint.xsOnly }">
             <NetworkDisplay :is-plain="true" :store-network-type="networkType"></NetworkDisplay>
           </div>
           <div class="name name--right">

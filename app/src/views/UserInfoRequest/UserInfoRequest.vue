@@ -30,11 +30,11 @@
         <v-flex xs12 mb-2>
           <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
 
-          <v-card flat class="grey lighten-3">
+          <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
-              <div class="d-flex request-from">
-                <a :href="origin.href" target="_blank" class="caption torusBrand1--text">{{ origin.hostname }}</a>
-                <v-btn x-small color="white" class="link-icon ml-auto" :href="origin.href" target="_blank">
+              <div class="d-flex request-from align-center">
+                <a :href="origin.href" target="_blank" class="caption font-weight-medium torusBrand1--text">{{ origin.hostname }}</a>
+                <v-btn x-small :color="$vuetify.theme.isDark ? 'torusBlack2' : 'white'" class="link-icon ml-auto" :href="origin.href" target="_blank">
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
                 </v-btn>
               </div>
