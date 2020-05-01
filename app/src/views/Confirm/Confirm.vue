@@ -44,7 +44,7 @@
       <v-layout mx-6 my-4 wrap>
         <v-flex xs4 class="pt-3">
           <div class="caption">
-            Total Cost
+            {{ t('walletTransfer.totalCost') }}
             <!-- {{ t('dappTransfer.total') }} -->
           </div>
         </v-flex>
