@@ -1,5 +1,6 @@
 .btn-speed {
   padding: 14px;
+  opacity: 0.3;
   &.is-confirm {
     padding: 8px 14px;
   }
@@ -10,25 +11,27 @@
     line-height: 12px;
   }
   &__speed {
-    color: #4A4A4A;
+    color: #4a4a4a;
   }
   &__price {
-    color: #5C6C7F;
+    color: #5c6c7f;
   }
   &.selected {
-    background-color: var(--v-torusBrand3-base);
+    opacity: 1;
+    font-weight: bold;
   }
   &.theme--dark {
     background-color: var(--v-torusBlack2-base);
     opacity: 0.4;
     .btn-speed__speed {
-      color: #D3D3D4;
+      color: #d3d3d4;
     }
     .btn-speed__price {
       color: #979797;
     }
     &.selected {
       opacity: 1;
+      font-weight: bold;
     }
   }
 }

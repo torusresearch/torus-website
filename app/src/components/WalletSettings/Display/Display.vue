@@ -5,10 +5,9 @@
       <v-flex v-for="theme in themes" :key="theme.name" px-3 xs6 @click="saveTheme(theme)">
         <v-btn
           block
-          :disabled="theme.name === activeTheme"
           large
           class="theme-btn gmt-display-change"
-          :class="[$vuetify.theme.isDark ? 'torusBlack2' : 'white', theme.name === activeTheme ? '' : 'elevation-3']"
+          :class="[$vuetify.theme.isDark ? 'torusBlack2' : 'white', theme.name === activeTheme ? 'active' : 'elevation-3']"
         >
           <span>{{ t(theme.label) }}</span>
           <img :src="require(`../../../../public/images/${theme.icon}`)" />
@@ -37,6 +36,7 @@ export default {
   }),
   methods: {
     async saveTheme(theme) {
+      if (this.selectedTheme === theme) return
       this.selectedTheme = theme
       try {
         await this.$store.dispatch('setUserTheme', this.selectedTheme.name)
