@@ -20,6 +20,7 @@
   }
   &.theme--dark {
     background-color: var(--v-torusBlack2-base);
+    opacity: 0.4;
     .btn-speed__speed {
       color: #D3D3D4;
     }
@@ -27,7 +28,7 @@
       color: #979797;
     }
     &.selected {
-      background-color: var(--v-torusBlack-base);
+      opacity: 1;
     }
   }
 }

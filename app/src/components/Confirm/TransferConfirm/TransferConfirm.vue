@@ -56,13 +56,13 @@
     <v-divider class="mx-6 my-3"></v-divider>
     <v-layout mx-6 py-3 wrap>
       <v-flex xs12>
-        <div class="d-flex align-start" :class="isNonFungibleToken ? 'align-center' : 'align-start'">
+        <div class="d-flex align-start justify-space-between" :class="isNonFungibleToken ? 'align-center' : 'align-start'">
           <div :style="{ lineHeight: '0px' }">
             <span class="caption">{{ isNonFungibleToken ? t('walletTransfer.assetToSend') : t('walletTransfer.amountToSend') }}</span>
           </div>
-          <div v-if="isNonFungibleToken" class="ml-auto d-flex caption align-center">
-            <img class="mr-2" :src="assetSelected.image" height="24px" />
-            <div>{{ assetSelected.name }}</div>
+          <div v-if="isNonFungibleToken" class="ml-auto caption d-flex align-center text-right" :style="{ maxWidth: '200px' }">
+            <span class="mr-2">{{ assetSelected.name }}</span>
+            <img :src="assetSelected.image" height="30px" />
           </div>
           <div v-else class="ml-auto">
             <div class="caption text-right font-weight-medium">{{ displayAmount }}</div>

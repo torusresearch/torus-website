@@ -210,7 +210,7 @@
                       id="coin-mode-btn"
                       small
                       class="send-mode mr-2"
-                      :class="!!toggle_exclusive ? `torus-btn1 ${$vuetify.theme.isDark ? 'torusFont2--text' : 'text_2--text'}` : 'active'"
+                      :class="!!toggle_exclusive ? `torus-btn1 ${$vuetify.theme.isDark ? 'torusGray3--text' : 'torusGray1--text'}` : 'active'"
                       :disabled="!toggle_exclusive"
                       :outlined="!!toggle_exclusive"
                       @click="changeSelectedToCurrency(0)"
@@ -222,7 +222,7 @@
                       id="currency-mode-btn"
                       small
                       class="send-mode"
-                      :class="!toggle_exclusive ? `torus-btn1 ${$vuetify.theme.isDark ? 'torusFont2--text' : 'text_2--text'}` : 'active'"
+                      :class="!toggle_exclusive ? `torus-btn1 ${$vuetify.theme.isDark ? 'torusGray3--text' : 'torusGray1--text'}` : 'active'"
                       :disabled="!!toggle_exclusive"
                       :outlined="!toggle_exclusive"
                       @click="changeSelectedToCurrency(1)"
