@@ -103,10 +103,11 @@
               <template v-slot:activator="{ on }">
                 <span v-on="on">
                   <v-btn
-                    class="torus-btn1 torusBrand1--text gmt-topup"
+                    class="px-8 white--text gmt-topup"
                     :disabled="!formValid || !isQuoteFetched"
                     large
                     depressed
+                    color="torusBrand1"
                     type="submit"
                     @click.prevent="sendOrder"
                   >
