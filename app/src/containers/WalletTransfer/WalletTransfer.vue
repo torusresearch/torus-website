@@ -218,6 +218,7 @@
                       {{ selectedItem && selectedItem.symbol }}
                     </v-btn>
                     <v-btn
+                      v-if="selectedCurrency !== (selectedItem && selectedItem.symbol)"
                       id="currency-mode-btn"
                       small
                       class="send-mode"
