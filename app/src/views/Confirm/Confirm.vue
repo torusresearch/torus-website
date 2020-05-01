@@ -81,7 +81,18 @@
             readonly
           ></v-text-field>
         </v-flex>
-        <v-flex xs12 mt-10>
+        <v-flex v-if="(topUpErrorShow || canShowError)" xs12 mb-4 class="text-right">
+          <div class="caption error--text">{{ errorMsg }}</div>
+          <div v-if="topUpErrorShow" class="caption mt-1">
+            {{ t('dappTransfer.pleaseTopup1') }}
+            <v-btn color="primary" class="mx-1 px-2 caption" small outlined @click="topUp">{{ t('dappTransfer.pleaseTopup2') }}</v-btn>
+            {{ t('dappTransfer.pleaseTopup3') }}
+          </div>
+        </v-flex>
+        <v-flex v-if="transactionCategory === TOKEN_METHOD_APPROVE" xs12 mb-4>
+          <div class="caption error--text">{{ `${t('dappTransfer.byConfirming1')} ${displayAmountValue} ${t('dappTransfer.byConfirming2')}.` }}</div>
+        </v-flex>
+        <v-flex xs12 mt-4>
           <v-layout mx-n2>
             <v-flex xs6 px-2>
               <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappTransfer.cancel') }}</v-btn>

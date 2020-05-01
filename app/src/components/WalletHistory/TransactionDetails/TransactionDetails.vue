@@ -56,36 +56,59 @@
     </v-layout>
     <v-divider v-if="showDetails" class="mt-2"></v-divider>
     <v-layout v-if="showDetails" wrap>
-      <v-flex xs12 class="activity-details">
+      <v-flex xs12 class="activity-details" :class="{ isMobile: $vuetify.breakpoint.xsOnly }">
         <v-list class="mx-n4 caption">
           <v-list-item>
-            <v-list-item-content class="details-label text_1--text">{{ t('walletActivity.startedAt') }}:</v-list-item-content>
+            <v-list-item-content class="details-label text_1--text">
+              <div class="d-flex">
+                <span>{{ t('walletActivity.startedAt') }}</span>
+                <span class="ml-auto">:</span>
+              </div>
+            </v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
               <span>{{ transaction.timeFormatted }} - {{ transaction.dateFormatted }}</span>
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
             <v-list-item-content class="details-label text_1--text">
-              {{ transaction.action === ACTIVITY_ACTION_SEND ? t('walletActivity.sendTo') : t('walletActivity.receiveFrom') }}:
+              <div class="d-flex">
+                <span>{{ transaction.action === ACTIVITY_ACTION_SEND ? t('walletActivity.sendTo') : t('walletActivity.receiveFrom') }}</span>
+                <span class="ml-auto">:</span>
+              </div>
             </v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
               <span>{{ transaction.action === ACTIVITY_ACTION_SEND ? transaction.to : transaction.from }}</span>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-if="transaction.type !== CONTRACT_TYPE_ERC721">
-            <v-list-item-content class="details-label text_1--text">{{ t('walletActivity.rate') }}:</v-list-item-content>
+            <v-list-item-content class="details-label text_1--text">
+              <div class="d-flex">
+                <span>{{ t('walletActivity.rate') }}</span>
+                <span class="ml-auto">:</span>
+              </div>
+            </v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
               <span>{{ transaction.ethRate }} {{ transaction.currencyUsed }}</span>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-if="transaction.type !== CONTRACT_TYPE_ERC721">
-            <v-list-item-content class="details-label text_1--text">{{ t('walletActivity.amount') }}:</v-list-item-content>
+            <v-list-item-content class="details-label text_1--text">
+              <div class="d-flex">
+                <span>{{ t('walletActivity.amount') }}</span>
+                <span class="ml-auto">:</span>
+              </div>
+            </v-list-item-content>
             <v-list-item-content class="details-value text_2--text amount-text">
               {{ transaction.totalAmountString }} /{{ transaction.currencyAmountString }}
             </v-list-item-content>
           </v-list-item>
           <v-list-item>
-            <v-list-item-content class="details-label">{{ t('walletActivity.network') }}:</v-list-item-content>
+            <v-list-item-content class="details-label text_1--text">
+              <div class="d-flex">
+                <span>{{ t('walletActivity.network') }}</span>
+                <span class="ml-auto">:</span>
+              </div>
+            </v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
               <NetworkDisplay :minimal="true" :network="transaction.networkType" :store-network-type="networkType"></NetworkDisplay>
             </v-list-item-content>
