@@ -209,8 +209,9 @@
                     <v-btn
                       id="coin-mode-btn"
                       small
-                      class="send-mode"
-                      :class="!!toggle_exclusive ? 'torus-btn1 torusBrand1--text' : 'active'"
+                      class="send-mode mr-2"
+                      :class="!!toggle_exclusive ? `torus-btn1 ${$vuetify.theme.isDark ? 'torusFont2--text' : 'text_2--text'}` : 'active'"
+                      :disabled="!toggle_exclusive"
                       :outlined="!!toggle_exclusive"
                       @click="changeSelectedToCurrency(0)"
                     >
@@ -220,7 +221,8 @@
                       id="currency-mode-btn"
                       small
                       class="send-mode"
-                      :class="!toggle_exclusive ? 'torus-btn1 torusBrand1--text' : 'active'"
+                      :class="!toggle_exclusive ? `torus-btn1 ${$vuetify.theme.isDark ? 'torusFont2--text' : 'text_2--text'}` : 'active'"
+                      :disabled="!!toggle_exclusive"
                       :outlined="!toggle_exclusive"
                       @click="changeSelectedToCurrency(1)"
                     >
@@ -239,7 +241,12 @@
                 :currency-multiplier="currencyMultiplier"
                 @onSelectSpeed="onSelectSpeed"
               />
-              <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721" xs12 mb-6 class="text-right">
+              <v-flex v-if="contractType === CONTRACT_TYPE_ERC721" xs12 mb-6 class="text-right">
+                <div class="subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
+                <div class="headline text_2--text">{{ getEthAmount(gas, activeGasPrice) }} ETH</div>
+                <div class="caption text_2--text">{{ gasPriceInCurrency }} {{ selectedCurrency }}</div>
+              </v-flex>
+              <v-flex v-else xs12 mb-6 class="text-right">
                 <div class="subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
                 <div class="headline text_2--text">{{ totalCost || 0 }} {{ totalCostSuffix }}</div>
                 <div class="caption text_2--text">{{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}</div>
@@ -258,9 +265,11 @@
                 </v-btn>
                 <v-dialog v-model="confirmDialog" max-width="375" persistent>
                   <TransferConfirm
-                    :to-address="toAddress"
+                    :to-address="toEthAddress"
+                    :to-verifier-id="toAddress"
                     :to-verifier="selectedVerifier"
-                    :from-address="userInfo.verifierId"
+                    :from-address="selectedAddress"
+                    :from-verifier-id="userInfo.verifierId"
                     :from-verifier="userInfo.verifier"
                     :network-type="networkType"
                     :converted-amount="
@@ -277,6 +286,7 @@
                     :is-non-fungible-token="contractType === CONTRACT_TYPE_ERC721"
                     :speed-selected="timeTaken"
                     :transaction-fee="gasPriceInCurrency"
+                    :transaction-fee-eth="`${getEthAmount(gas, activeGasPrice)} ETH`"
                     :selected-currency="selectedCurrency"
                     :send-eth-to-contract-error="sendEthToContractError"
                     :total-cost="`${totalCost || 0} ${totalCostSuffix}`"

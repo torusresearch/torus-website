@@ -104,8 +104,10 @@
                 </template>
                 <TransferConfirm
                   :dapp-name="origin.hostname"
-                  :from-address="userInfo.verifierId"
+                  :from-address="sender"
+                  :from-verifier-id="userInfo.verifierId"
                   :from-verifier="userInfo.verifier"
+                  :to-address="amountTo"
                   :network-type="network"
                   :converted-amount="displayAmountConverted"
                   :display-amount="displayAmountValue"
@@ -113,7 +115,12 @@
                   :asset-selected="assetDetails"
                   :is-non-fungible-token="isNonFungibleToken"
                   :transaction-fee="txFees"
+                  :transaction-fee-eth="`${gasCost} ETH`"
                   :selected-currency="selectedCurrency"
+                  :total-cost="`${costOfTransaction} ${
+                    isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE ? '+ ' + significantDigits(gasCost) + 'ETH' : ''
+                  }`"
+                  :total-cost-converted="costOfTransactionConverted"
                   @onClose="confirmDialog = false"
                   @onConfirm="triggerSign"
                 ></TransferConfirm>
