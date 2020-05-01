@@ -39,14 +39,16 @@
       </v-flex>
       <v-flex xs12>
         <div class="d-flex transfer-to-from__details">
-          <div class="name text-clamp-one">
-            {{ fromAddress }}
+          <div class="name">
+            <div class="text-clamp-one">{{ fromVerifierId }}</div>
+            <div class="name--address">{{ addressSlicer(fromAddress) }}</div>
           </div>
           <div class="network-container">
             <NetworkDisplay :is-plain="true" :store-network-type="networkType"></NetworkDisplay>
           </div>
-          <div class="name name--right" :class="{ textClampOne: dappName !== '' }">
-            {{ dappName === '' ? toAddress : dappName }}
+          <div class="name name--right">
+            <div class="text-clamp-one">{{ dappName === '' ? (toVerifier === ETH ? 'ETH Address' : toVerifierId) : dappName }}</div>
+            <div class="name--address">{{ addressSlicer(toAddress) }}</div>
           </div>
         </div>
       </v-flex>
@@ -54,11 +56,15 @@
     <v-divider class="mx-6 my-3"></v-divider>
     <v-layout mx-6 py-3 wrap>
       <v-flex xs12>
-        <div class="d-flex align-start">
+        <div class="d-flex align-start" :class="isNonFungibleToken ? 'align-center' : 'align-start'">
           <div :style="{ lineHeight: '0px' }">
             <span class="caption">{{ isNonFungibleToken ? t('walletTransfer.assetToSend') : t('walletTransfer.amountToSend') }}</span>
           </div>
-          <div class="ml-auto">
+          <div v-if="isNonFungibleToken" class="ml-auto d-flex caption align-center">
+            <img class="mr-2" :src="assetSelected.image" height="24px" />
+            <div>{{ assetSelected.name }}</div>
+          </div>
+          <div v-else class="ml-auto">
             <div class="caption text-right font-weight-medium">{{ displayAmount }}</div>
             <div class="caption-2 text-right">{{ convertedAmount }}</div>
           </div>
@@ -84,8 +90,8 @@
             <span class="subtitle-2">Total Cost</span>
           </div>
           <div class="ml-auto">
-            <div class="subtitle-2 text-right">{{ totalCost }}</div>
-            <div class="caption-2 text-right">{{ totalCostConverted }}</div>
+            <div class="subtitle-2 text-right">{{ isNonFungibleToken ? transactionFeeEth : totalCost }}</div>
+            <div class="caption-2 text-right">{{ isNonFungibleToken ? `${transactionFee} ${selectedCurrency}` : totalCostConverted }}</div>
           </div>
         </div>
       </v-flex>
@@ -112,7 +118,7 @@
 import BigNumber from 'bignumber.js'
 
 import { ETH, MAINNET } from '../../../utils/enums'
-import { significantDigits } from '../../../utils/utils'
+import { addressSlicer, significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 
 export default {
@@ -126,6 +132,10 @@ export default {
       type: String,
       default: 'eth',
     },
+    toVerifierId: {
+      type: String,
+      default: '',
+    },
     fromAddress: {
       type: String,
       default: '0x',
@@ -133,6 +143,10 @@ export default {
     fromVerifier: {
       type: String,
       default: 'eth',
+    },
+    fromVerifierId: {
+      type: String,
+      default: '',
     },
     selectedCurrency: {
       type: String,
@@ -153,6 +167,10 @@ export default {
     transactionFee: {
       type: BigNumber,
       default: new BigNumber('0'),
+    },
+    transactionFeeEth: {
+      type: String,
+      default: '',
     },
     assetSelected: {
       type: Object,
@@ -198,6 +216,7 @@ export default {
       this.$emit('onClose')
     },
     significantDigits,
+    addressSlicer,
   },
 }
 </script>
