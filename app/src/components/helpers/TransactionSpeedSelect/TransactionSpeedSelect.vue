@@ -172,9 +172,9 @@ export default {
       speedSelected: '',
       averageGasPrice: new BigNumber('5'),
       fastestGasPrice: new BigNumber('20'),
-      activeGasPrice: new BigNumber('0'),
-      averageGasPriceSpeed: '',
-      fastestGasPriceSpeed: '',
+      activeGasPrice: new BigNumber('5'),
+      averageGasPriceSpeed: '3.7',
+      fastestGasPriceSpeed: '0.5',
     }
   },
   watch: {
@@ -223,6 +223,7 @@ export default {
       )
       .catch((error) => {
         log.error(error)
+        this.selectSpeed('average', this.averageGasPrice)
       })
   },
   methods: {
