@@ -1,7 +1,6 @@
-const log = require('loglevel')
-const ObservableStore = require('obs-store')
-
-const connext = require('@connext/client')
+import * as connext from '@connext/client'
+import log from 'loglevel'
+import ObservableStore from 'obs-store'
 
 class ChannelController {
   /**
