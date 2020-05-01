@@ -42,13 +42,13 @@
       </v-layout>
       <v-divider class="mx-6 my-4"></v-divider>
       <v-layout mx-6 my-4 wrap>
-        <v-flex xs4 class="pt-3">
+        <v-flex xs3 class="pt-3">
           <div class="caption">
             {{ t('walletTransfer.totalCost') }}
             <!-- {{ t('dappTransfer.total') }} -->
           </div>
         </v-flex>
-        <v-flex xs8>
+        <v-flex xs9>
           <v-text-field v-model="displayAmountValue" :hint="displayAmountConverted" outlined persistent-hint readonly></v-text-field>
         </v-flex>
       </v-layout>
@@ -67,10 +67,10 @@
       </v-layout>
       <v-divider class="mt-10 my-4"></v-divider>
       <v-layout mx-6 my-4 wrap>
-        <v-flex xs4 class="pt-3">
+        <v-flex xs3 class="pt-3">
           <div class="caption">{{ t('dappTransfer.youSend') }}</div>
         </v-flex>
-        <v-flex xs8>
+        <v-flex xs9>
           <v-text-field
             :value="`${costOfTransaction} ${
               isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE ? '+ ' + significantDigits(gasCost) + 'ETH' : ''
