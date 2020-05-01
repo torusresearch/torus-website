@@ -6,12 +6,12 @@
           <v-layout v-if="!isLogout" wrap>
             <v-flex v-if="$vuetify.breakpoint.xsOnly" xs12>
               <v-carousel
-                cycle
+                v-model="selectedCarouselItem"
                 class="mobile-carousel"
                 vertical
-                height="650"
                 interval="7000"
                 hide-delimiters
+                :touch="{ up: scrollUp, down: scrollDown }"
                 next-icon="$vuetify.icons.login_more"
                 prev-icon="$vuetify.icons.login_more"
               >
@@ -89,7 +89,7 @@
                   </v-layout>
                 </v-carousel-item>
                 <v-carousel-item reverse-transition="fade-transition" transition="fade-transition">
-                  <v-carousel cycle height="650" interval="7000" :show-arrows="false" hide-delimiters>
+                  <v-carousel cycle height="650" interval="7000" :show-arrows="false" hide-delimiters :touch="{ up: scrollUp, down: scrollDown }">
                     <v-layout class="login-panel-right login-panel-right--mobile">
                       <v-flex xs10 text-center mx-auto>
                         <v-carousel-item v-for="slide in 3" :key="slide" reverse-transition="fade-transition" transition="fade-transition">
@@ -272,6 +272,7 @@ export default {
       loginButtonsMobile: [FACEBOOK, REDDIT, TWITCH, DISCORD],
       activeButton: GOOGLE,
       verifierCntInterval: null,
+      selectedCarouselItem: 0,
     }
   },
   computed: mapState({
@@ -337,6 +338,12 @@ export default {
     },
     loginBtnHover(verifier) {
       if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
+    },
+    scrollUp() {
+      this.selectedCarouselItem = 0
+    },
+    scrollDown() {
+      this.selectedCarouselItem = 1
     },
   },
 }
