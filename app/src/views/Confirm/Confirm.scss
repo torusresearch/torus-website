@@ -119,8 +119,15 @@
   line-height: 35px;
 }
 
-::v-deep .v-input.v-text-field--outlined > .v-input__control > .v-input__slot {
-  min-height: 40px !important;
+::v-deep .v-input.v-text-field--outlined {
+  & > .v-input__control > .v-input__slot {
+    min-height: 40px !important;
+  }
+  &.theme--dark {
+    .v-input__slot {
+      background: var(--v-torusBlack2-base) !important;
+    }
+  }
 }
 
 ::v-deep .v-messages {
