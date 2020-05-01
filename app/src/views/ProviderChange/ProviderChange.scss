@@ -45,9 +45,14 @@
   background: transparent;
 }
 
-.v-btn.link-icon {
-  min-width: 20px;
+::v-deep .v-btn.link-icon {
+  height: 24px;
+  width: 24px;
+  min-width: 24px;
   padding: 0;
+  &.theme--dark { 
+    box-shadow: 5px 5px 10px #242529, -5px -5px 10px #37383C !important;
+  }
 }
 
 .more-details-lnk {

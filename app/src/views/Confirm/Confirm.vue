@@ -148,11 +148,11 @@
         <v-flex xs12 mb-2>
           <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
 
-          <v-card flat class="grey lighten-3">
+          <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
-              <div class="d-flex request-from">
-                <a :href="origin.href" target="_blank" class="caption torusBrand1--text">{{ origin.hostname }}</a>
-                <v-btn x-small color="white" class="link-icon ml-auto" :href="origin.href" target="_blank">
+              <div class="d-flex request-from align-center">
+                <a :href="origin.href" target="_blank" class="caption font-weight-medium torusBrand1--text">{{ origin.hostname }}</a>
+                <v-btn x-small :color="$vuetify.theme.isDark ? 'torusBlack2' : 'white'" class="link-icon ml-auto" :href="origin.href" target="_blank">
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
                 </v-btn>
               </div>
@@ -170,9 +170,9 @@
           </div>
         </v-flex>
         <v-flex xs12 mb-4 mx-6>
-          <v-list class="note-list grey lighten-3">
+          <v-list class="note-list lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-list-item class="pa-0">
-              <v-list-item-content flat class="pa-1 background" :class="$vuetify.theme.dark ? 'lighten-4' : 'lighten-3'">
+              <v-list-item-content flat class="pa-1" :class="[$vuetify.theme.dark ? 'lighten-4' : 'background lighten-3']">
                 <v-card flat class="caption text-left pa-2 word-break typedMessageBox">
                   <v-expansion-panels v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE">
                     <p :class="$vuetify.theme.dark ? '' : 'text_2--text'" style="text-align: left;">{{ message }}</p>
@@ -188,7 +188,7 @@
                   </v-expansion-panels>
 
                   <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && Array.isArray(typedMessages)">
-                    <v-expansion-panel>
+                    <v-expansion-panel :class="$vuetify.theme.isDark ? 'dark--theme' : ''">
                       <v-expansion-panel-header>{{ t('dappTransfer.dataSmall') }}</v-expansion-panel-header>
                       <v-expansion-panel-content v-for="(typedMessage, index) in typedMessages" :key="index">
                         <VueJsonPretty :path="'res'" :data="typedMessage" :showline="true" :deep="5"></VueJsonPretty>

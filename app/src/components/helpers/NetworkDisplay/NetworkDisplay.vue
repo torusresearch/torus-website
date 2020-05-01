@@ -2,7 +2,7 @@
   <div class="d-flex network-chip align-center" :class="[chipClass, minimal ? 'network-chip--minimal' : '']">
     <v-icon v-text="'$vuetify.icons.network'"></v-icon>
     <span class="network-chip__name text-clamp-one" :class="{ 'network-chip__name--mobile': $vuetify.breakpoint.xsOnly }">
-      {{ $vuetify.breakpoint.xsOnly && !minimal && !isPlain ? shortSelectedNetwork : selectedNetwork }}
+      {{ $vuetify.breakpoint.xsOnly && !minimal ? shortSelectedNetwork : selectedNetwork }}
     </span>
   </div>
 </template>
