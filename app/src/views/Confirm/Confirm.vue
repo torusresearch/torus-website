@@ -81,6 +81,61 @@
             readonly
           ></v-text-field>
         </v-flex>
+        <v-flex xs12 mb-3 mt-3>
+          <v-dialog v-model="detailsDialog" width="600px">
+            <template v-slot:activator="{ on }">
+              <div id="more-details-link" class="subtitle-2 float-right dialog-launcher primary--text" v-on="on">
+                {{ t('dappTransfer.moreDetails') }}
+              </div>
+            </template>
+            <v-card class="pa-4 more-details-container">
+              <v-card-text class="text_1--text">
+                <v-layout wrap>
+                  <v-flex xs4 sm2>
+                    {{ t('dappTransfer.rate') }}
+                    <span class="float-right mr-4">:</span>
+                  </v-flex>
+                  <v-flex id="currency-rate" xs8 sm10 class="text_2--text">{{ getCurrencyRate }}</v-flex>
+                  <v-flex xs4 sm2>
+                    {{ t('dappTransfer.network') }}
+                    <span class="float-right mr-4">:</span>
+                  </v-flex>
+                  <v-flex xs8 sm10 class="text_2--text">
+                    <span id="network" class="text-capitalize">{{ network.networkName || network.host }}</span>
+                  </v-flex>
+                  <v-flex xs4 sm2>
+                    {{ t('dappTransfer.type') }}
+                    <span class="float-right mr-4">:</span>
+                  </v-flex>
+                  <v-flex id="type" xs8 sm10 class="text_2--text">{{ header }}</v-flex>
+                  <v-flex v-if="txData || txDataParams !== ''" xs2>
+                    {{ t('dappTransfer.data') }}
+                    <span class="float-right mr-4">:</span>
+                  </v-flex>
+                  <v-flex xs12 mt-1>
+                    <v-card v-if="txDataParams !== ''" flat color="background_3">
+                      <v-card-text>
+                        <pre>{{ txDataParams }}</pre>
+                      </v-card-text>
+                    </v-card>
+                  </v-flex>
+                  <v-flex v-if="txData" xs12 mt-4>
+                    <div class="mb-1">Hex {{ t('dappTransfer.data') }}:</div>
+                    <v-card flat color="background_3" style="word-break: break-all;">
+                      <v-card-text>{{ txData }}</v-card-text>
+                    </v-card>
+                  </v-flex>
+                </v-layout>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn id="less-details-link" color="primary" text @click="detailsDialog = false">
+                  {{ t('dappTransfer.lessDetails') }}
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-flex>
         <v-flex v-if="(topUpErrorShow || canShowError)" xs12 mb-4 class="text-right">
           <div class="caption error--text">{{ errorMsg }}</div>
           <div v-if="topUpErrorShow" class="caption mt-1">
