@@ -15,7 +15,7 @@
                 next-icon="$vuetify.icons.login_more"
                 prev-icon="$vuetify.icons.login_more"
               >
-                <v-carousel-item>
+                <v-carousel-item reverse-transition="fade-transition" transition="fade-transition">
                   <v-layout wrap>
                     <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
                       <img width="180" :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
@@ -64,7 +64,7 @@
                     </v-flex>
                     <v-flex xs10 sm8 ml-auto mr-auto>
                       <v-layout wrap mx-n1>
-                        <v-flex v-for="verifier in loginButtonsMobile" :key="verifier" xs4 px-1 mt-2>
+                        <v-flex v-for="verifier in loginButtonsMobile" :key="verifier" xs6 px-1 mt-2>
                           <v-btn
                             class="login-btn login-btn--mobile gmt-login"
                             :class="[{ active: verifier === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier}`]"
@@ -88,11 +88,11 @@
                     </v-flex>
                   </v-layout>
                 </v-carousel-item>
-                <v-carousel-item>
+                <v-carousel-item reverse-transition="fade-transition" transition="fade-transition">
                   <v-carousel cycle height="650" interval="7000" :show-arrows="false" hide-delimiters>
                     <v-layout class="login-panel-right login-panel-right--mobile">
                       <v-flex xs10 text-center mx-auto>
-                        <v-carousel-item v-for="slide in 3" :key="slide">
+                        <v-carousel-item v-for="slide in 3" :key="slide" reverse-transition="fade-transition" transition="fade-transition">
                           <img
                             class="mb-6 login-panel-right__image"
                             :src="require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide}.svg`)"
@@ -201,7 +201,7 @@
           <v-layout wrap fill-height align-center>
             <v-flex xs12 text-center>
               <v-carousel cycle height="650" interval="7000" :show-arrows="false">
-                <v-carousel-item v-for="slide in 3" :key="slide">
+                <v-carousel-item v-for="slide in 3" :key="slide" reverse-transition="fade-transition" transition="fade-transition">
                   <div class="d-flex flex-column fill-height justify-end pb-12">
                     <div class="text-center">
                       <img
