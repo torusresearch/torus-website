@@ -7,8 +7,12 @@
             class="home-link mr-1"
             alt="Torus Logo"
             width="70"
-            height="16"
-            :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+            :height="whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo ? 'inherit' : '17'"
+            :src="
+              whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
+                ? whiteLabelGlobal.logo
+                : require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
+            "
           />
           <div class="display-1 text_2--text">{{ t('dappTransfer.confirmation') }}</div>
         </v-flex>
@@ -204,8 +208,12 @@
             class="home-link mr-1"
             alt="Torus Logo"
             width="70"
-            height="16"
-            :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+            :height="whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo ? 'inherit' : '17'"
+            :src="
+              whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
+                ? whiteLabelGlobal.logo
+                : require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
+            "
           />
           <div class="display-1 text_2--text">{{ t('dappTransfer.permission') }}</div>
         </v-flex>
@@ -230,7 +238,8 @@
         <v-flex xs12 mt-0 mb-2 mx-6>
           <div class="d-flex align-center">
             <div class="mr-2 note-list__icon">
-              <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
+              <v-icon v-if="whiteLabelGlobal.isWhiteLabelActive" small class="torusBrand1--text">$vuetify.icons.check_circle</v-icon>
+              <img v-else :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
             </div>
             <div class="caption text_2--text text-capitalize">{{ t('dappTransfer.dataSmall') }}</div>
           </div>

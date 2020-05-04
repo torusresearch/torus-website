@@ -27,7 +27,8 @@
 
 #torusAlert {
   --torus-brand-1: #0364ff;
-  color: black;
+  --torus-light: #fcfcfc;
+  color: #0f1222;
   height: auto;
   z-index: 99999999;
   position: fixed;
@@ -37,9 +38,15 @@
   width: 260px;
   box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--torus-light);
   font-family: 'Roboto', sans-serif !important;
   padding: 20px;
+}
+
+#torusAlert.torus-dark {
+  --torus-light: #242529;
+  --torus-font-1: #d3d3d4;
+  color: var(--torus-font-1);
 }
 
 #torusAlert #torusAlert__title {
@@ -453,7 +460,7 @@
 }
 
 #torus-login-modal__login-note a {
-  color: var(--torus-font-link-1);
+  color: var(--torus-brand-1);
   cursor: pointer;
   text-decoration: none;
 }
