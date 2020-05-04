@@ -18,7 +18,7 @@ import {
 } from '../utils/enums'
 import { get, post, remove } from '../utils/httpHelpers'
 import PopupHandler from '../utils/PopupHandler'
-import { broadcastChannelOptions, fakeStream, getIFrameOriginObject } from '../utils/utils'
+import { broadcastChannelOptions, fakeStream, getIFrameOriginObject, storageAvailable } from '../utils/utils'
 import {
   accountTrackerHandler,
   assetControllerHandler,
@@ -144,7 +144,7 @@ export default {
       url: finalUrl,
       preopenInstanceId,
       target: '_blank',
-      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=500',
+      features: 'directories=0,titlebar=0,toolbar=0,status=0,location=0,menubar=0,height=660,width=375',
     })
     bc.addEventListener('message', async (ev) => {
       const { type = '', approve = false } = ev.data
@@ -630,10 +630,9 @@ export default {
         const message = response[1]
         dispatch('addWallet', data) // synchronous
         dispatch('subscribeToControllers')
-        await Promise.all([
-          dispatch('initTorusKeyring', data),
-          dispatch('processAuthMessage', { message, selectedAddress: data.ethAddress, calledFromEmbed }),
-        ])
+        await dispatch('initTorusKeyring', data)
+        await dispatch('processAuthMessage', { message, selectedAddress: data.ethAddress, calledFromEmbed })
+        if (!calledFromEmbed && storageAvailable('localStorage')) localStorage.removeItem('torus-white-label')
         dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
         // continue enable function
         const { ethAddress } = data
@@ -700,10 +699,12 @@ export default {
     return new Promise((resolve, reject) => {
       // Fixes loading theme for too long
       commit('setTheme', state.theme)
+
       const { calledFromEmbed, rehydrate, token } = payload
       const { userInfo, selectedCurrency, theme, locale } = state
       log.info(selectedCurrency)
       const { verifier, verifierId } = userInfo
+
       prefsController.jwtToken = token
       prefsController.sync(
         (user) => {
@@ -750,10 +751,8 @@ export default {
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       if (selectedAddress && wallet[selectedAddress]) {
         setTimeout(() => dispatch('subscribeToControllers'), 50)
-        await Promise.all([
-          torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet)),
-          dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true }),
-        ])
+        await torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet))
+        await dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true })
         dispatch('updateSelectedAddress', { selectedAddress })
         dispatch('updateNetworkId', { networkId })
         // TODO: deprercate rehydrate true for the next major version bump

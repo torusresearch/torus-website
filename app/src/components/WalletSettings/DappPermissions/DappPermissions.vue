@@ -1,6 +1,6 @@
 <template>
   <v-card class="dapp-permisson-container">
-    <v-card-text class="text_1--text">
+    <v-card-text>
       <v-container>
         <v-layout mt-4 wrap class="wallet-dapp-permission">
           <v-flex xs12 px-4 class="title-container mb-4">
@@ -13,7 +13,7 @@
               </p>
             </div>
 
-            <v-btn depressed color="primary" @click="addPermission">
+            <v-btn depressed class="white--text" color="torusBrand1" @click="addPermission">
               <v-icon left>$vuetify.icons.add</v-icon>
               {{ t('walletSettings.addNewList') }}
             </v-btn>

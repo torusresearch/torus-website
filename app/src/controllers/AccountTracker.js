@@ -107,8 +107,8 @@ export default class AccountTracker {
       }
     })
 
-    this.addAccounts(accountsToAdd)
     this.removeAccount(accountsToRemove)
+    return this.addAccounts(accountsToAdd)
   }
 
   /**
@@ -118,7 +118,7 @@ export default class AccountTracker {
    * @param {array} addresses An array of hex addresses of new accounts to track
    *
    */
-  addAccounts(addresses) {
+  async addAccounts(addresses) {
     const { accounts } = this.store.getState()
     // add initial state for addresses
     addresses.forEach((address) => {
@@ -127,8 +127,8 @@ export default class AccountTracker {
     // save accounts state
     this.store.updateState({ accounts })
     // fetch balances for the accounts if there is block number ready
-    if (!this._currentBlockNumber) return
-    this._updateAccounts()
+    if (!this._currentBlockNumber) return undefined
+    return this._updateAccounts()
   }
 
   /**
@@ -196,7 +196,7 @@ export default class AccountTracker {
           await this._updateAccountsViaBalanceChecker(addresses, SINGLE_CALL_BALANCES_ADDRESS_KOVAN)
           break
         default:
-          await Promise.all(addresses.map(this._updateAccount.bind(this)))
+          await Promise.all(addresses.map((x) => this._updateAccount(x)))
       }
     }
   }
@@ -239,7 +239,7 @@ export default class AccountTracker {
       return this.store.updateState({ accounts })
     } catch (error) {
       log.warn('Torus - Account Tracker single call balance fetch failed', error)
-      return Promise.all(addresses.map(this._updateAccount.bind(this)))
+      return Promise.all(addresses.map((x) => this._updateAccount(x)))
     }
   }
 }

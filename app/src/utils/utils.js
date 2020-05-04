@@ -1,6 +1,6 @@
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
-import * as ethUtil from 'ethereumjs-util'
+import { addHexPrefix, BN, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
 import { isAddress } from 'web3-utils'
 
@@ -49,9 +49,8 @@ import {
   SVG,
   THEME_DARK_BLACK_NAME,
   WYRE,
+  XANPOOL,
 } from './enums'
-
-const { BN } = ethUtil
 
 const networkToNameMap = {
   [ROPSTEN]: ROPSTEN_DISPLAY_NAME,
@@ -178,7 +177,7 @@ export function sufficientBalance(txParameters, hexBalance) {
  *
  */
 export function bnToHex(inputBn) {
-  return ethUtil.addHexPrefix(inputBn.toString(16))
+  return addHexPrefix(inputBn.toString(16))
 }
 
 /**
@@ -189,7 +188,7 @@ export function bnToHex(inputBn) {
  *
  */
 export function hexToBn(inputHex) {
-  return new BN(ethUtil.stripHexPrefix(inputHex), 16)
+  return new BN(stripHexPrefix(inputHex), 16)
 }
 
 /**
@@ -215,7 +214,7 @@ export function BnMultiplyByFraction(targetBN, numerator, denominator) {
  */
 export function hexToText(hex) {
   try {
-    const stripped = ethUtil.stripHexPrefix(hex)
+    const stripped = stripHexPrefix(hex)
     const buff = Buffer.from(stripped, 'hex')
     return buff.toString('utf8')
   } catch (error) {
@@ -347,7 +346,7 @@ export function formatDate(date) {
 
 export const paymentProviders = {
   [SIMPLEX]: {
-    line1: 'Credit / Debit Card',
+    line1: 'Credit/ Debit Card',
     line2: '5% or 10 USD',
     line3: '$20,000/day, $50,000/mo',
     line4: 'ETH',
@@ -360,9 +359,10 @@ export const paymentProviders = {
     validCryptoCurrencies: ['ETH'],
     includeFees: true,
     api: true,
+    enforceMax: true,
   },
   [MOONPAY]: {
-    line1: 'Credit / Debit Card / Apple Pay',
+    line1: 'Credit/ Debit Card/ Apple Pay',
     line2: '4.5% or 5 USD',
     line3: '2,000€/day, 10,000€/mo',
     line4: 'ETH, DAI, TUSD, USDC, USDT',
@@ -370,26 +370,28 @@ export const paymentProviders = {
     logoExtension: SVG,
     supportPage: 'https://help.moonpay.io/en/',
     minOrderValue: 24.99,
-    maxOrderValue: 2000,
+    maxOrderValue: 2200,
     validCurrencies: ['USD', 'EUR', 'GBP'],
     validCryptoCurrencies: ['ETH', 'DAI', 'TUSD', 'USDC', 'USDT'],
     includeFees: true,
     api: true,
+    enforceMax: true,
   },
   [WYRE]: {
-    line1: 'Apple Pay/Debit Card',
+    line1: 'Apple Pay/ Debit Card',
     line2: '1.5% + 30¢',
     line3: '$250/day',
     line4: 'ETH, DAI, WETH, USDC',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'https://support.sendwyre.com/en/',
-    minOrderValue: 20,
+    minOrderValue: 1,
     maxOrderValue: 250,
     validCurrencies: ['USD'],
     validCryptoCurrencies: ['ETH', 'DAI', 'USDC'],
     includeFees: false,
     api: true,
+    enforceMax: true,
   },
   [RAMPNETWORK]: {
     line1: 'Bank transfer',
@@ -406,6 +408,24 @@ export const paymentProviders = {
     includeFees: true,
     api: true,
     receiveHint: 'You don’t need an ID to complete this transaction!',
+    enforceMax: true,
+  },
+  [XANPOOL]: {
+    line1: 'PayNow/ InstaPay/ FPS/ GoJekPay/ UPI/ PromptPay/ ViettelPay/ DuitNow',
+    line2: '2.5% buying, 3% selling',
+    line3: '$2,500 / day',
+    line4: 'ETH, USDT',
+    status: ACTIVE,
+    logoExtension: SVG,
+    supportPage: 'mailto:support@xanpool.com',
+    minOrderValue: 30,
+    maxOrderValue: 2500,
+    validCurrencies: ['SGD', 'HKD', 'MYR', 'PHP', 'INR', 'VND', 'THB', 'IDR'],
+    validCryptoCurrencies: ['ETH', 'USDT'],
+    includeFees: true,
+    api: true,
+    sell: true,
+    enforceMax: false,
   },
 }
 
@@ -477,6 +497,12 @@ export const getIFrameOriginObject = () => {
 
 export const fakeStream = {
   write: () => {},
+}
+
+export function formatSmallNumbers(number, currency = 'usd', noTilde = false) {
+  const finalNumber = currency.toLowerCase() === 'usd' ? Number(number).toFixed(2) : Number(number).toFixed(5)
+
+  return `${currency.toLowerCase() === 'usd' || noTilde ? '' : '~ '}${Number(finalNumber)} ${currency.toUpperCase()}`
 }
 
 export const getUserLanguage = () => {

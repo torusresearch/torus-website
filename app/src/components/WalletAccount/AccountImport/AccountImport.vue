@@ -27,16 +27,21 @@
                   <span class="subtitle-2">{{ t('accountMenu.inputPrivateKey') }}:</span>
                   <v-text-field
                     v-model="privateKey"
+                    class="private-key"
                     outlined
                     :type="showPrivateKey ? 'text' : 'password'"
                     :rules="[rules.required]"
-                    :append-icon="showPrivateKey ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                     name="private-key"
                     :label="t('accountMenu.privateKey')"
                     single-line
                     @input="canShowError = false"
-                    @click:append="togglePrivShow"
-                  ></v-text-field>
+                  >
+                    <template v-slot:append>
+                      <v-btn icon @click="togglePrivShow">
+                        <v-icon class="text_3--text">{{ showPrivateKey ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on' }}</v-icon>
+                      </v-btn>
+                    </template>
+                  </v-text-field>
                 </v-flex>
                 <v-flex v-show="canShowError" xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <span class="red--text">{{ error }}</span>
@@ -47,10 +52,12 @@
                     {{ t('accountMenu.back') }}
                   </v-btn>
                   <v-btn
-                    color="primary"
+                    id="import-account-private"
                     depressed
+                    color="torusBrand1 ml-2 gmt-import-account"
                     :loading="isLoadingPrivate"
                     :disabled="!privateKeyFormValid || isLoadingPrivate"
+                    class="px-8 white--text"
                     @click.prevent="importViaPrivateKey"
                   >
                     {{ t('accountMenu.import') }}
@@ -67,11 +74,11 @@
                 <v-flex xs12 mb-2 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <v-layout wrap align-center justify-space-between>
                     <v-flex grow>
-                      <span>{{ t('accountMenu.uploadJsonLabel') }}</span>
+                      <span class="mr-1">{{ t('accountMenu.uploadJsonLabel') }}</span>
                       <HelpTooltip :title="t('accountMenu.uploadJsonTitle')" :description="t('accountMenu.uploadJsonDesc')"></HelpTooltip>
                     </v-flex>
                     <v-flex shrink>
-                      <v-btn outlined class="upload-button" color="primary" @click.prevent="$refs.keystoreUpload.click">
+                      <v-btn outlined class="upload-button" color="torusBrand1" @click.prevent="$refs.keystoreUpload.click">
                         <v-icon left>$vuetify.icons.question</v-icon>
                         {{ t('accountMenu.upload') }}
                       </v-btn>
@@ -84,14 +91,22 @@
                   <span class="subtitle-2">{{ t('accountMenu.enterPassword') }}:</span>
                   <v-text-field
                     v-model="jsonPassword"
+                    class="password-input"
                     outlined
                     name="password"
                     :rules="[rules.required]"
-                    :append-icon="showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
                     :type="showJsonPassword ? 'text' : 'password'"
                     :placeholder="t('accountMenu.password')"
                     @click:append="toggleJsonPasswordShow"
-                  ></v-text-field>
+                  >
+                    <template v-slot:append>
+                      <v-btn icon @click="toggleJsonPasswordShow">
+                        <v-icon class="text_3--text">
+                          {{ showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on' }}
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                  </v-text-field>
                 </v-flex>
                 <v-flex v-show="canShowError" xs12 :class="$vuetify.breakpoint.xsOnly ? 'px-1' : 'px-4'">
                   <span class="red--text">{{ error }}</span>
@@ -102,10 +117,12 @@
                     {{ t('accountMenu.back') }}
                   </v-btn>
                   <v-btn
-                    color="primary"
+                    id="import-account-keystore"
                     depressed
+                    color="torusBrand1 ml-2"
                     :loading="isLoadingKeystore"
                     :disabled="!jsonFileFormValid || isLoadingKeystore"
+                    class="px-8 white--text gmt-import-account"
                     @click.prevent="importViaKeyStoreFile"
                   >
                     {{ t('accountMenu.import') }}
@@ -122,7 +139,7 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import * as ethUtil from 'ethereumjs-util'
+import { bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
 
 import { broadcastChannelOptions } from '../../../utils/utils'
@@ -227,7 +244,7 @@ export default {
           worker.postMessage({ type: 'unlockWallet', data: [keyData, this.jsonPassword] })
           worker.addEventListener('message', (event) => {
             const { _privKey: stringPrivateKey } = event.data
-            const privKey = ethUtil.stripHexPrefix(ethUtil.bufferToHex(Buffer.from(stringPrivateKey)))
+            const privKey = stripHexPrefix(bufferToHex(Buffer.from(stringPrivateKey)))
             this.$store
               .dispatch('finishImportAccount', { privKey })
               .then((privateKey) => {

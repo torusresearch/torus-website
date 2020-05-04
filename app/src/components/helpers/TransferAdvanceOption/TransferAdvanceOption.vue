@@ -1,8 +1,8 @@
 <template>
   <v-dialog v-model="dialog" persistent>
     <template v-slot:activator="{ on }">
-      <a v-show="displayAmount" id="advance-option-link" class="float-right primary--text subtitle-2" v-on="on">
-        {{ t('walletTransfer.advancedOptions') }}
+      <a v-show="displayAmount" id="advance-option-link" class="float-right torusBrand1--text" :class="isConfirm ? 'caption' : 'body-2'" v-on="on">
+        {{ isConfirm ? 'Edit' : t('walletTransfer.advancedOptions') }}
       </a>
     </template>
     <v-card class="advance-option py-4">
@@ -91,7 +91,7 @@
                 <v-flex xs12 sm6 px-4 :class="$vuetify.breakpoint.xsOnly ? 'mt-5' : ''">
                   <span class="subtitle-2">{{ t('walletTransfer.newTotal') }}</span>
                   <template v-if="$vuetify.breakpoint.xsOnly">
-                    <span class="float-right subtitle-1 font-weight-bold primary--text">{{ totalCost }} {{ symbol }}</span>
+                    <span class="float-right subtitle-1 font-weight-bold torusBrand1--text">{{ totalCost }} {{ symbol }}</span>
                     <v-divider class="mt-1 mb-2"></v-divider>
                   </template>
                   <v-text-field
@@ -110,7 +110,14 @@
           <v-layout mt-4 pr-4>
             <v-spacer></v-spacer>
             <v-btn large text @click="onCancel">{{ t('walletTransfer.cancel') }}</v-btn>
-            <v-btn id="adv-opt-submit-btn" large depressed color="primary" class="ml-4" type="submit" :disabled="!advanceOptionFormValid">
+            <v-btn
+              id="adv-opt-submit-btn"
+              large
+              color="torusBrand1"
+              class="white--text ml-4 gmt-advance-option"
+              type="submit"
+              :disabled="!advanceOptionFormValid"
+            >
               {{ t('walletTransfer.save') }}
             </v-btn>
           </v-layout>
@@ -122,6 +129,7 @@
 
 <script>
 import BigNumber from 'bignumber.js'
+import { mapGetters } from 'vuex'
 
 import { significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../HelpTooltip'
@@ -135,6 +143,20 @@ export default {
     gas: { type: BigNumber, default: new BigNumber('0') },
     displayAmount: { type: BigNumber, default: new BigNumber('0') },
     symbol: { type: String, default: '' },
+    isConfirm: {
+      type: Boolean,
+      default: false,
+    },
+    selectedCurrency: {
+      type: String,
+      default: 'USD',
+    },
+    currencyData: {
+      type: Object,
+      default() {
+        return {}
+      },
+    },
   },
   data() {
     return {
@@ -145,14 +167,7 @@ export default {
     }
   },
   computed: {
-    getCurrencyMultiplier() {
-      const { selectedCurrency, currencyData } = this.$store.state || {}
-      const currencyMultiplierNumber = selectedCurrency !== 'ETH' ? currencyData[selectedCurrency.toLowerCase()] || 1 : 1
-      return new BigNumber(currencyMultiplierNumber)
-    },
-    selectedCurrency() {
-      return this.$store.state.selectedCurrency
-    },
+    ...mapGetters(['currencyMultiplier']),
     totalCost() {
       const maxLength = Math.max(this.gasAmountDisplay.toString().length, this.displayAmount.toString().length)
       return significantDigits(new BigNumber(this.displayAmount).plus(this.gasAmount).toString(), false, maxLength - 2)
@@ -207,8 +222,7 @@ export default {
       this.advancedGas = this.gas
     },
     convertedDisplay(amount) {
-      const currencyMultiplier = this.getCurrencyMultiplier
-      const bigNumber = !BigNumber.isBigNumber(amount) ? new BigNumber(amount).times(currencyMultiplier) : amount.times(currencyMultiplier)
+      const bigNumber = !BigNumber.isBigNumber(amount) ? new BigNumber(amount).times(this.currencyMultiplier) : amount.times(this.currencyMultiplier)
       const converted = significantDigits(bigNumber)
 
       return `~ ${converted} ${this.selectedCurrency}`

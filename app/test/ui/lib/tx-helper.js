@@ -1,7 +1,8 @@
-const log = require('loglevel')
-const { valuesFor } = require('./util')
+import log from 'loglevel'
 
-module.exports = function txHelper(unapprovedTxs, unapprovedMsgs, personalMsgs, typedMessages, network) {
+import { valuesFor } from './util'
+
+function txHelper(unapprovedTxs, unapprovedMsgs, personalMsgs, typedMessages, network) {
   log.debug('tx-helper called with params:')
   log.debug({ unapprovedTxs, unapprovedMsgs, personalMsgs, typedMessages, network })
 
@@ -24,3 +25,5 @@ module.exports = function txHelper(unapprovedTxs, unapprovedMsgs, personalMsgs, 
 
   return allValues
 }
+
+export default txHelper

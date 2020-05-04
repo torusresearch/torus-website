@@ -1,29 +1,9 @@
-.topup-providers {
-  .coming-soon {
-    opacity: 0.4;
-  }
-}
-
-.v-tooltip__content {
-  background: #fff;
-  border: 1px solid var(--v-primary-base);
-  color: var(--v-primary-base);
-  &::after {
-    content: ' ';
-    position: absolute;
-    transform: rotate(90deg);
-    top: 50%;
-    left: 0%;
-    margin-left: -10px;
-    margin-top: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: var(--v-primary-base) transparent transparent transparent;
-  }
+.v-card.theme--light.active {
+  border-color: var(--v-torusBrand1-base);
 }
 
 .v-card.theme--dark.active {
-  background: var(--v-background_4-base);
+  border: 1px solid #5C6C7F
 }
 
 .v-card a {

@@ -19,7 +19,7 @@ export const post = (url = '', data = {}, options_ = {}) => {
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
     },
-    body: JSON.stringify(data),
+    body: options_.isUrlEncodedData ? data : JSON.stringify(data),
   }
   const options = {
     ...defaultOptions,

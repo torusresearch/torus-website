@@ -59,6 +59,13 @@ const initialState = {
   embedState: {
     enabledVerifiers: { [GOOGLE]: true, [FACEBOOK]: true, [REDDIT]: true, [TWITCH]: true, [DISCORD]: true },
   },
+  whiteLabel: {
+    isActive: false,
+    theme: {},
+    logo: '',
+    topupHide: false,
+    featuredBillboardHide: false,
+  },
 }
 
 export default initialState

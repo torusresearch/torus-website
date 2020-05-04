@@ -1,11 +1,12 @@
 import vuetify from '../../plugins/vuetify'
 import torus from '../../torus'
-import { MOONPAY, RAMPNETWORK, WYRE } from '../../utils/enums'
+import { MOONPAY, RAMPNETWORK, WYRE, XANPOOL } from '../../utils/enums'
 import { fakeStream, paymentProviders } from '../../utils/utils'
 import moonpay from './moonpay'
 import rampnetwork from './rampnetwork'
 import simplex from './simplex'
 import wyre from './wyre'
+import xanpool from './xanpool'
 
 const topupStream = (torus && torus.communicationMux && torus.communicationMux.getStream('topup')) || fakeStream
 
@@ -33,6 +34,7 @@ export default {
   ...rampnetwork,
   ...moonpay,
   ...wyre,
+  ...xanpool,
   async initiateTopup({ state, dispatch }, { provider, params, preopenInstanceId }) {
     if (paymentProviders[provider] && paymentProviders[provider].api) {
       try {
@@ -49,7 +51,8 @@ export default {
         if (selectedParameters.fiatValue) {
           const requestedOrderAmount = +Number.parseFloat(selectedParameters.fiatValue) || 0
           if (requestedOrderAmount < selectedProvider.minOrderValue) throw new Error('Requested amount is lower than supported')
-          if (requestedOrderAmount > selectedProvider.maxOrderValue) throw new Error('Requested amount is higher than supported')
+          if (requestedOrderAmount > selectedProvider.maxOrderValue && selectedProvider.enforceMax)
+            throw new Error('Requested amount is higher than supported')
         }
         if (selectedParameters.selectedCurrency && !selectedProvider.validCurrencies.includes(selectedParameters.selectedCurrency))
           throw new Error('Unsupported currency')
@@ -96,6 +99,18 @@ export default {
           // wyre
           const { success } = await dispatch('fetchWyreOrder', {
             currentOrder: { destCurrency: selectedParameters.selectedCryptoCurrency || '', sourceAmount: selectedParameters.fiatValue || '' },
+            preopenInstanceId,
+            selectedAddress: selectedParameters.selectedAddress,
+          })
+          handleSuccess(success)
+        } else if (provider === XANPOOL) {
+          // xanpool
+          const { success } = await dispatch('fetchXanpoolOrder', {
+            currentOrder: {
+              selectedCryptoCurrency: selectedParameters.selectedCryptoCurrency || 'ETH',
+              fiatValue: selectedParameters.fiatValue || '',
+              selectedCurrency: selectedParameters.selectedCurrency || '',
+            },
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress,
           })

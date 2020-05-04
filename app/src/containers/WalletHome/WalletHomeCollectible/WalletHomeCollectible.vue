@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-container>
     <v-breadcrumbs class="px-4 subtitle-1 font-weight-bold" :items="breadcrumb">
       <template v-slot:divider>
         <v-icon small>$vuetify.icons.page_next_double</v-icon>
@@ -30,8 +30,7 @@
       <v-flex v-for="asset in selectedContract.assets" :key="asset.tokenId" xs12 sm3 md2 px-4 pb-4>
         <!-- Asset Desktop View -->
         <v-expand-transition>
-          <v-card v-if="!$vuetify.breakpoint.xsOnly" class="mx-auto asset card-shadow" max-width="344" :ripple="false" @click="toggleDetails($event)">
-            <!-- <v-img :src="asset.image" height="140px" :style="{ backgroundColor: asset.color }"></v-img> -->
+          <v-card v-if="!$vuetify.breakpoint.xsOnly" class="mx-auto asset elevation-1" max-width="344" :ripple="false" @click="toggleDetails($event)">
             <div class="text-center">
               <img :src="asset.image" style="width: auto; height: 140px;" :alt="asset.name || `${selectedContract.name} #${asset.tokenId}`" />
             </div>
@@ -50,7 +49,7 @@
               <div class="font-weight-medium mt-2">ID</div>
               <div class="ml-2 text_2--text">#{{ asset.tokenId }}</div>
               <div class="mt-4">
-                <v-btn block depressed :outlined="$vuetify.theme.dark" class="primary--text transfer-btn mb-2" @click="transferAsset(asset)">
+                <v-btn block depressed :outlined="$vuetify.theme.dark" class="torusBrand1--text transfer-btn mb-2" @click="transferAsset(asset)">
                   {{ t('walletHome.transfer') }}
                 </v-btn>
                 <v-btn block depressed @click.stop="toggleDetails($event)">{{ t('walletHome.close') }}</v-btn>
@@ -61,8 +60,7 @@
 
         <!-- Asset Mobile View -->
         <v-expand-transition>
-          <v-card v-if="$vuetify.breakpoint.xsOnly" class="asset card-shadow asset--mobile" @click="toggleDetails($event)">
-            <!-- <v-list-item :style="{ backgroundColor: asset.color }"> -->
+          <v-card v-if="$vuetify.breakpoint.xsOnly" class="asset elevation-1 asset--mobile" @click="toggleDetails($event)">
             <v-list-item>
               <v-list-item-content class="asset-text">
                 <div
@@ -91,7 +89,7 @@
                 <v-btn block depressed class="more-info-hide mx-0" @click.stop="toggleDetails($event)">{{ t('walletHome.lessInfo') }}</v-btn>
               </v-flex>
               <v-flex xs6 class="px-2">
-                <v-btn block depressed :outlined="$vuetify.theme.dark" class="primary--text transfer-btn" @click="transferAsset(asset)">
+                <v-btn block depressed :outlined="$vuetify.theme.dark" class="torusBrand1--text transfer-btn" @click="transferAsset(asset)">
                   {{ t('walletHome.transfer') }}
                 </v-btn>
               </v-flex>
@@ -100,10 +98,12 @@
         </v-expand-transition>
       </v-flex>
     </v-layout>
-  </div>
+  </v-container>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   data() {
     return {
@@ -129,14 +129,9 @@ export default {
       assetActive: false,
     }
   },
-  computed: {
-    platform() {
-      return 'Ethereum Blockchain'
-    },
-    collectibles() {
-      return this.$store.getters.collectibleBalances
-    },
-  },
+  computed: mapGetters({
+    collectibles: 'collectibleBalances',
+  }),
   watch: {
     collectibles(newValue, oldValue) {
       if (newValue !== oldValue) {
