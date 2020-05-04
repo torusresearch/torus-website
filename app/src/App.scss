@@ -179,7 +179,9 @@
   
   .v-btn:not(.v-btn--text):not(.v-btn--icon) {
     box-shadow: 0px 0px 2px rgba(51, 65, 80, 0.03), 0px 2px 2px rgba(51, 65, 80, 0.03);
-    border-radius: 6px;
+    &:not(.v-btn--round) {
+      border-radius: 6px;
+    }
   }
 
   
