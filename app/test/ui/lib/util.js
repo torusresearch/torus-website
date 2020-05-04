@@ -23,10 +23,6 @@ const valueTable = {
   szabo: '1000000',
   finney: '1000',
   ether: '1',
-  kether: '0.001',
-  mether: '0.000001',
-  gether: '0.000000001',
-  tether: '0.000000000001',
 }
 const bnTable = {}
 for (const currency in valueTable) {

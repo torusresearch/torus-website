@@ -274,7 +274,7 @@ describe('MetaMaskController', () => {
       try {
         await metamaskController.signMessage(messages[0].msgParams)
       } catch (error) {
-        assert.strictEqual(error.message, 'message length is invalid')
+        assert.strictEqual(error.message, 'Expected message to be an Uint8Array with length 32')
       }
     })
   })
