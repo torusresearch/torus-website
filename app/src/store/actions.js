@@ -635,7 +635,7 @@ export default {
           dispatch('processAuthMessage', { message, selectedAddress: data.ethAddress, calledFromEmbed }),
         ])
 
-        if (!calledFromEmbed && storageAvailable('localStorage')) localStorage.removeItem('torus-white-label')
+        if (!calledFromEmbed && storageAvailable('sessionStorage')) sessionStorage.removeItem('torus-white-label')
         dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
         // continue enable function
         const { ethAddress } = data

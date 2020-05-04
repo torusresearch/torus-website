@@ -408,18 +408,22 @@
           )
         }
       }
+
       if (storageAvailable('localStorage')) {
         const torusTheme = localStorage.getItem('torus-theme')
-        const torusWhiteLabel = localStorage.getItem('torus-white-label')
-        if (torusWhiteLabel !== null) {
-          try {
-            const whiteLabelData = JSON.parse(torusWhiteLabel)
-            theme = whiteLabelData.whiteLabelIsDark ? 'dark' : 'light'
-          } catch (error) {
-            console.error(error)
-          }
-        } else if (torusTheme) {
+        if (torusTheme) {
           theme = torusTheme.split('-')[0]
+        }
+        if (storageAvailable('sessionStorage')) {
+          const torusWhiteLabel = sessionStorage.getItem('torus-white-label')
+          if (torusWhiteLabel !== null) {
+            try {
+              const whiteLabelData = JSON.parse(torusWhiteLabel)
+              theme = whiteLabelData.whiteLabelIsDark ? 'dark' : 'light'
+            } catch (error) {
+              console.error(error)
+            }
+          }
         }
       }
 
