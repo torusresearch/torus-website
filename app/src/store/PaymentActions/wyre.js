@@ -18,6 +18,7 @@ const Wyre = {
       redirectUrl: `${config.redirect_uri}?state=${instanceState}`,
       referenceId: selectedAddress || state.selectedAddress,
       sourceAmount: currentOrder.sourceAmount || undefined,
+      failureRedirectUrl: `${config.redirect_uri}?state=${instanceState}`,
     }
 
     return dispatch('postWyreOrder', { params: parameters, path: config.wyreHost, preopenInstanceId })

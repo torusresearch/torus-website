@@ -1,52 +1,72 @@
 <template>
-  <v-container px-0 py-6>
+  <v-container px-0 py-0>
     <template v-if="type === 'none'">
       <ChangeProviderScreenLoader />
     </template>
     <template v-else>
-      <!-- <permission-confirm @triggerSign="triggerSign" @triggerDeny="triggerDeny" /> -->
-      <v-layout wrap align-center mx-6 mb-6>
-        <v-flex xs12 class="text_1--text font-weight-bold headline float-left">{{ t('dappInfo.permission') }}</v-flex>
-        <v-flex xs12>
-          <NetworkDisplay :store-network-type="currentNetwork"></NetworkDisplay>
+      <v-layout py-6 class="elevation-1">
+        <v-flex xs12 text-center>
+          <img
+            class="home-link mr-1"
+            alt="Torus Logo"
+            width="70"
+            height="16"
+            :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+          />
+          <div class="display-1 text_2--text">{{ t('dappInfo.permission') }}</div>
         </v-flex>
       </v-layout>
-      <v-layout wrap>
-        <v-flex xs12 mb-2 mx-6>
-          <div class="subtitle-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
+      <v-layout wrap align-center mx-8 my-6>
+        <v-flex class="text-center">
+          <span class="headline text_2--text">
+            Allow {{ origin.hostname }} change your network to
+            {{ (SUPPORTED_NETWORK_TYPES[network.networkName] && SUPPORTED_NETWORK_TYPES[network.networkName].networkName) || network.networkName }}
+          </span>
+          <!-- <br />
+          <v-btn small text class="caption torusBrand1--text" @click="editPermissions">
+            Edit permissions
+          </v-btn> -->
+        </v-flex>
+      </v-layout>
+      <v-divider class="mx-6"></v-divider>
+      <v-layout wrap align-center ma-6>
+        <v-flex xs12 mb-2>
+          <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
 
-          <v-card flat class="grey lighten-3">
+          <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
-              <div class="subtitle-2 primary--text request-from">
-                <a :href="origin.href" target="_blank">{{ origin.hostname }}</a>
-                <a :href="origin.href" target="_blank" class="float-right">
+              <div class="d-flex request-from align-center">
+                <a :href="origin.href" target="_blank" class="caption font-weight-medium torusBrand1--text">{{ origin.hostname }}</a>
+                <v-btn x-small :color="$vuetify.theme.isDark ? 'torusBlack2' : 'white'" class="link-icon ml-auto" :href="origin.href" target="_blank">
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
-                </a>
+                </v-btn>
               </div>
             </v-card-text>
           </v-card>
         </v-flex>
+        <v-flex xs12 mt-4>
+          <div class="caption mb-2 text_2--text">Current network</div>
 
-        <v-flex xs12 my-4 mx-6 class="note-list">
-          <div class="d-flex mb-2">
-            <div class="mr-5 note-list__icon">
-              <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
-            </div>
-            <div class="caption text_2--text">
-              {{ t('dappProvider.toChangeNetwork') }}
-              <span class="text-capitalize">{{ type === 'rpc' ? `${network.networkName} : ${network.host}` : network.host }}</span>
-            </div>
-          </div>
+          <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
+            <v-card-text>
+              <div class="caption text_2--text request-from">
+                <span>{{ currentNetwork.networkName }}</span>
+              </div>
+            </v-card-text>
+          </v-card>
         </v-flex>
-
-        <v-layout px-6 mx-3>
-          <v-flex xs6>
-            <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappProvider.cancel') }}</v-btn>
-          </v-flex>
-          <v-flex xs6>
-            <v-btn block depressed large color="primary" class="ml-2" @click="triggerSign">{{ t('dappProvider.confirm') }}</v-btn>
-          </v-flex>
-        </v-layout>
+        <v-flex xs12 mt-8>
+          <v-layout mx-n2>
+            <v-flex xs6 px-2>
+              <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappProvider.cancel') }}</v-btn>
+            </v-flex>
+            <v-flex xs6 px-2>
+              <v-btn block depressed large class="torus-btn1 white--text" color="torusBrand1" @click="triggerSign">
+                {{ t('dappProvider.confirm') }}
+              </v-btn>
+            </v-flex>
+          </v-layout>
+        </v-flex>
       </v-layout>
     </template>
   </v-container>
@@ -55,17 +75,14 @@
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
 
-import NetworkDisplay from '../../components/helpers/NetworkDisplay'
 import { ChangeProviderScreenLoader } from '../../content-loader'
+import { SUPPORTED_NETWORK_TYPES } from '../../utils/enums'
 import { broadcastChannelOptions } from '../../utils/utils'
-// import PermissionConfirm from '../../components/Confirm/PermissionConfirm'
 
 export default {
   name: 'Confirm',
   components: {
     ChangeProviderScreenLoader,
-    NetworkDisplay,
-    // PermissionConfirm
   },
   data() {
     return {
@@ -74,6 +91,7 @@ export default {
       network: {},
       currentNetwork: {},
       channel: '',
+      SUPPORTED_NETWORK_TYPES,
     }
   },
   mounted() {
@@ -106,6 +124,9 @@ export default {
       const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
       await bc.postMessage({ data: { type: 'provider-change-result', approve: false } })
       bc.close()
+    },
+    editPermissions() {
+      this.$router.push({ path: '/wallet/settings' }).catch((_) => {})
     },
   },
 }

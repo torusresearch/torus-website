@@ -1,8 +1,5 @@
 <template>
   <svg width="16px" height="14px" viewBox="0 0 16 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: sketchtool 55.2 (78181) - https://sketchapp.com -->
-    <title>E1B764FF-ACA4-4767-81CD-A2CBACA53BC1</title>
-    <desc>Created with sketchtool.</desc>
     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
       <g transform="translate(-483.000000, -484.000000)">
         <g transform="translate(150.000000, 60.000000)">

@@ -1,3 +1,9 @@
 .upload-button.v-btn {
   border-style: dashed;
 }
+
+.private-key.v-input, .password-input.v-input {
+  ::v-deep .v-input__append-inner {
+    margin-top: 10px;
+  }
+}

@@ -15,8 +15,26 @@
   }
 
   .icon-holder {
-    min-width: 50px;
-    text-align: center;
+    &.circle {
+      min-height: 40px;
+      min-width: 40px;
+      width: 40px;
+      background: #F6F5F7;
+      border-radius: 50%;
+      margin-right: 8px;
+      margin-left: 4px;
+      display: flex;
+      .v-icon {
+        margin: auto;
+      }
+    }
+    .v-icon {
+      margin-left: 8px;
+      margin-top: 2px;
+    }
+    img {
+      margin-left: 8px;
+    }
   }
 }
 
@@ -32,13 +50,12 @@
   .details-label {
     font-weight: 400;
     flex: 1;
+    max-width: 125px;
+    padding-right: 17px;
   }
 
   .details-value {
     flex: 4;
-  }
-  .network-chip {
-    max-width: 200px;
   }
   .amount-text {
     div {
@@ -47,5 +64,11 @@
   }
   .etherscan-lnk {
     text-decoration: none;
+  }
+
+  &.isMobile {
+    .details-label {
+      padding-right: 4px;
+    }
   }
 }

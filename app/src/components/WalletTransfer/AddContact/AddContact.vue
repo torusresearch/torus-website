@@ -1,13 +1,13 @@
 <template>
   <v-dialog v-model="addContactDialog" width="400">
     <template v-slot:activator="{ on }">
-      <v-btn depressed x-small block class="caption primary lighten-5 primary--text add-contact-alert" v-on="on">
+      <v-btn depressed x-small block class="caption torusBrand1 lighten-5 torusBrand1--text add-contact-alert" v-on="on">
         {{ t('walletTransfer.clickToAddContact') }}
       </v-btn>
     </template>
     <v-card class="add-contact-container">
       <v-form ref="addContactForm" v-model="contactFormValid" lazy-validation @submit.prevent="addContact">
-        <v-card-text class="text_1--text py-6">
+        <v-card-text class="py-6">
           <v-layout wrap>
             <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
               <div class="font-weight-bold headline">{{ t('walletTransfer.addContact') }}</div>
@@ -26,7 +26,9 @@
           </v-flex>
           <v-divider vertical></v-divider>
           <v-flex xs6>
-            <v-btn type="submit" color="primary" depressed class="px-12 py-1" :disabled="!contactFormValid">{{ t('walletTransfer.confirm') }}</v-btn>
+            <v-btn type="submit" color="torusBrand1" depressed class="px-12 py-1 white--text" :disabled="!contactFormValid">
+              {{ t('walletTransfer.confirm') }}
+            </v-btn>
           </v-flex>
         </v-card-actions>
       </v-form>

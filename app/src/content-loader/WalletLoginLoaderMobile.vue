@@ -1,5 +1,5 @@
 <template>
-  <ContentLoader :height="600" :width="450" :speed="2" primary-color="#E7EDF3" secondary-color="#ecebeb">
+  <ContentLoader :height="600" :width="450" :speed="2" torus_brand1-color="#E7EDF3" secondary-color="#ecebeb">
     <rect x="47.5" y="27.61" rx="0" ry="0" width="124.68" height="28.18" />
     <rect x="47.5" y="89.61" rx="0" ry="0" width="183.13" height="27.31" />
     <rect x="47.5" y="129.61" rx="0" ry="0" width="335.08" height="10.75" />

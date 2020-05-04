@@ -1,34 +1,68 @@
 <template>
-  <div class="wallet-activity">
+  <v-container class="wallet-activity" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <v-layout mt-3 wrap>
-      <v-flex xs12 px-4 mb-4>
-        <div class="text-black font-weight-bold headline float-left">{{ t('walletActivity.transactionActivities') }}</div>
-        <div class="float-right" :class="$vuetify.breakpoint.xsOnly ? 'mt-4' : ''">
-          <v-select
-            id="transaction-selector"
-            v-model="selectedAction"
-            class="pt-0 mt-0 ml-2 subtitle-2 nav-selector transaction"
-            height="25px"
-            hide-details
-            :menu-props="{ bottom: true, offsetY: true }"
-            :items="actionTypes"
-            append-icon="$vuetify.icons.select"
-            aria-label="Filter Transacation Type"
-          />
-          <v-select
-            id="period-selector"
-            v-model="selectedPeriod"
-            class="pt-0 mt-0 ml-2 subtitle-2 nav-selector period"
-            height="25px"
-            hide-details
-            :menu-props="{ bottom: true, offsetY: true }"
-            :items="periods"
-            append-icon="$vuetify.icons.select"
-            aria-label="Filter Transacation Period"
-          />
-        </div>
+      <v-flex xs12 md7>
+        <div class="text_2--text font-weight-bold display-1 float-left">{{ t('walletActivity.transactionActivities') }}</div>
       </v-flex>
-      <v-flex xs12 px-4 mb-4>
+      <v-flex xs12 md5 :class="$vuetify.breakpoint.xsOnly ? 'mt-7' : ''">
+        <v-layout mx-n2>
+          <v-flex xs6 px-2>
+            <v-menu offset-y>
+              <template v-slot:activator="{ on }">
+                <div class="d-flex align-center filter-selector pa-2" :class="{ 'theme--dark': $vuetify.theme.isDark }" v-on="on">
+                  <v-icon x-small class="text_2--text">$vuetify.icons.activities</v-icon>
+                  <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedAction) }}</span>
+                  <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
+                </div>
+              </template>
+              <v-card class="pa-3">
+                <v-list min-width="190" dense>
+                  <v-list-item-group color="torusBrand1">
+                    <v-list-item
+                      v-for="actionType in actionTypes"
+                      :key="actionType.value"
+                      :class="selectedAction === actionType.value ? 'active' : ''"
+                      @click="selectedAction = actionType.value"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>{{ actionType.text }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-list>
+              </v-card>
+            </v-menu>
+          </v-flex>
+          <v-flex xs6 px-2>
+            <v-menu offset-y>
+              <template v-slot:activator="{ on }">
+                <div class="d-flex align-center filter-selector pa-2" :class="{ 'theme--dark': $vuetify.theme.isDark }" v-on="on">
+                  <v-icon class="text_2--text" small>$vuetify.icons.calendar</v-icon>
+                  <span class="ml-1 text_1--text" :class="$vuetify.breakpoint.xsOnly ? 'caption' : 'body-2'">{{ t(selectedPeriod) }}</span>
+                  <v-icon class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
+                </div>
+              </template>
+              <v-card class="pa-3">
+                <v-list min-width="190" dense>
+                  <v-list-item-group color="torusBrand1">
+                    <v-list-item
+                      v-for="period in periods"
+                      :key="period.value"
+                      :class="selectedPeriod === period.value ? 'active' : ''"
+                      @click="selectedPeriod = period.value"
+                    >
+                      <v-list-item-content>
+                        <v-list-item-title>{{ period.text }}</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-list>
+              </v-card>
+            </v-menu>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+      <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'mt-6' : 'mt-7'">
         <TxHistoryTable
           :selected-action="selectedAction"
           :selected-period="selectedPeriod"
@@ -37,13 +71,14 @@
         />
       </v-flex>
     </v-layout>
-  </div>
+  </v-container>
 </template>
 
 <script>
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 import log from 'loglevel'
+import { mapGetters, mapState } from 'vuex'
 import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
@@ -68,7 +103,7 @@ import {
   TOKEN_METHOD_TRANSFER_FROM,
 } from '../../utils/enums'
 import { patch } from '../../utils/httpHelpers'
-import { addressSlicer, formatDate, getEtherScanHashLink, getEthTxStatus, significantDigits } from '../../utils/utils'
+import { addressSlicer, formatDate, formatSmallNumbers, getEtherScanHashLink, getEthTxStatus, significantDigits } from '../../utils/utils'
 
 export default {
   name: 'WalletHistory',
@@ -86,9 +121,22 @@ export default {
     }
   },
   computed: {
-    loadingUserTransactions() {
-      return this.$store.state.loadingUserTransactions
-    },
+    ...mapState({
+      loadingUserTransactions: 'loadingUserTransactions',
+      selectedCurrency: 'selectedCurrency',
+      wallet: 'wallet',
+      pastTransactions: 'pastTransactions',
+      paymentTxStore: 'paymentTx',
+      selectedAddress: 'selectedAddress',
+      networkType: 'networkType',
+      jwtToken: 'jwtToken',
+      assets: 'assets',
+      tokenRates: 'tokenRates',
+      networkId: 'networkId',
+      transactions: 'transactions',
+      wallets: (state) => Object.keys(state.wallet),
+    }),
+    ...mapGetters(['currencyMultiplier']),
     actionTypes() {
       return [
         {
@@ -129,27 +177,6 @@ export default {
         },
       ]
     },
-    totalPortfolioValue() {
-      return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
-    },
-    selectedCurrency() {
-      return this.$store.state.selectedCurrency
-    },
-    getCurrencyMultiplier() {
-      const { selectedCurrency, currencyData } = this.$store.state || {}
-      let currencyMultiplier = 1
-      if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
-      return currencyMultiplier
-    },
-    wallets() {
-      return Object.keys(this.$store.state.wallet).filter((accumulator) => accumulator !== this.selectedAddress)
-    },
-    pastTransactions() {
-      return this.$store.state.pastTransactions
-    },
-    paymentTxStore() {
-      return this.$store.state.paymentTx
-    },
   },
   watch: {
     pastTransactions() {
@@ -165,9 +192,6 @@ export default {
     this.$vuetify.goTo(0)
   },
   methods: {
-    onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'history' })
-    },
     getStatusText(status) {
       switch (status) {
         case 'rejected':
@@ -227,9 +251,8 @@ export default {
     calculateFinalTransactions() {
       if (this.loadingPastTransactions || this.loadingOrders || this.loadingUserTransactions) return []
       let finalTx = this.paymentTx
-      const { pastTx } = this
       const transactions = this.calculateTransactions()
-      finalTx = [...transactions, ...finalTx, ...pastTx]
+      finalTx = [...transactions, ...finalTx, ...this.pastTx]
       finalTx = finalTx.reduce((accumulator, x) => {
         x.actionIcon = this.getIcon(x)
         x.actionText = this.getActionText(x)
@@ -242,26 +265,25 @@ export default {
       return finalTx.sort((a, b) => b.date - a.date) || []
     },
     async calculatePastTransactions() {
-      const { selectedAddress: publicAddress, pastTransactions, jwtToken, networkType } = this.$store.state
       const pastTx = []
-      for (const x of pastTransactions) {
+      for (const x of this.pastTransactions) {
         // eslint-disable-next-line no-continue
-        if (x.network !== networkType.host) continue
+        if (x.network !== this.networkType.host) continue
         let { status } = x
         if (
           x.status !== 'confirmed' &&
-          (publicAddress.toLowerCase() === x.from.toLowerCase() || publicAddress.toLowerCase() === x.to.toLowerCase())
+          (this.selectedAddress.toLowerCase() === x.from.toLowerCase() || this.selectedAddress.toLowerCase() === x.to.toLowerCase())
         ) {
           // eslint-disable-next-line no-await-in-loop
           status = await getEthTxStatus(x.transaction_hash, torus.web3)
-          if (publicAddress.toLowerCase() === x.from.toLowerCase()) this.patchTx(x, status, jwtToken)
+          if (this.selectedAddress.toLowerCase() === x.from.toLowerCase()) this.patchTx(x, status, this.jwtToken)
         }
         let totalAmountString = ''
         if (x.type === CONTRACT_TYPE_ERC721) totalAmountString = x.symbol
-        else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = `${significantDigits(Number.parseFloat(x.total_amount))} ${x.symbol}`
-        else totalAmountString = `${significantDigits(Number.parseFloat(x.total_amount))} ETH`
+        else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.symbol, true)
+        else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), 'ETH', true)
         const currencyAmountString =
-          x.type === CONTRACT_TYPE_ERC721 ? '' : `${significantDigits(Number.parseFloat(x.currency_amount))} ${x.selected_currency}`
+          x.type === CONTRACT_TYPE_ERC721 ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
         const finalObject = {
           id: x.created_at.toString(),
           date: new Date(x.created_at),
@@ -291,11 +313,10 @@ export default {
       this.pastTx = pastTx
     },
     calculateTransactions() {
-      const { networkId, transactions, networkType, tokenRates, assets, selectedAddress } = this.$store.state || {}
       const finalTransactions = []
-      for (const tx in transactions) {
-        const txOld = transactions[tx]
-        if (txOld.metamaskNetworkId.toString() === networkId.toString()) {
+      for (const tx in this.transactions) {
+        const txOld = this.transactions[tx]
+        if (txOld.metamaskNetworkId.toString() === this.networkId.toString()) {
           const { methodParams, contractParams, txParams, transactionCategory } = txOld
           let amountTo
           let amountValue
@@ -316,7 +337,7 @@ export default {
             const { name = '' } = contractParams
 
             // Get asset name of the 721
-            const contract = assets[selectedAddress].find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
+            const contract = this.assets[this.selectedAddress].find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
             log.info(contract, amountValue)
             if (contract) {
               const assetObject = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
@@ -326,7 +347,7 @@ export default {
             }
           } else if (contractParams.erc20) {
             // ERC20 transfer
-            tokenRate = contractParams.erc20 ? tokenRates[txParams.to] : 1
+            tokenRate = contractParams.erc20 ? this.tokenRates[txParams.to] : 1
             if (methodParams && Array.isArray(methodParams)) {
               if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
                 ;[, amountTo, amountValue] = methodParams || []
@@ -353,12 +374,12 @@ export default {
           txObject.slicedTo = addressSlicer(finalTo)
           txObject.totalAmount = totalAmount
           txObject.totalAmountString = totalAmountString
-          txObject.currencyAmount = this.getCurrencyMultiplier * txObject.totalAmount * tokenRate
-          txObject.currencyAmountString = contractParams.erc721 ? '' : `${significantDigits(txObject.currencyAmount)} ${this.selectedCurrency}`
+          txObject.currencyAmount = this.currencyMultiplier * txObject.totalAmount * tokenRate
+          txObject.currencyAmountString = contractParams.erc721 ? '' : formatSmallNumbers(txObject.currencyAmount, this.selectedCurrency, true)
           txObject.amount = `${txObject.totalAmountString} / ${txObject.currencyAmountString}`
           txObject.status = txOld.status
-          txObject.etherscanLink = getEtherScanHashLink(txOld.hash, networkType.host)
-          txObject.networkType = networkType.host
+          txObject.etherscanLink = getEtherScanHashLink(txOld.hash, this.networkType.host)
+          txObject.networkType = this.networkType.host
           txObject.ethRate = `1 ${(contractParams && contractParams.symbol) || 'ETH'} = ${significantDigits(
             Number.parseFloat(txObject.currencyAmount) / Number.parseFloat(txObject.totalAmount)
           )}`
@@ -374,11 +395,10 @@ export default {
       return finalTransactions
     },
     calculatePaymentTransactions() {
-      const { paymentTx: response, networkType } = this.$store.state || {}
       let paymentTx
-      if (networkType.host !== MAINNET) paymentTx = []
+      if (this.networkType.host !== MAINNET) paymentTx = []
       else {
-        paymentTx = response.reduce((accumulator, x) => {
+        paymentTx = this.paymentTxStore.reduce((accumulator, x) => {
           let action = ''
           if (ACTIVITY_ACTION_TOPUP.includes(x.action.toLowerCase())) action = ACTIVITY_ACTION_TOPUP
           else if (ACTIVITY_ACTION_SEND.includes(x.action.toLowerCase())) action = ACTIVITY_ACTION_SEND

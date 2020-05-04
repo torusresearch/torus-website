@@ -12,7 +12,7 @@ const getQuote = () => {
         Accept: 'application/json',
       },
     }
-    response = get(`${config.rampInstantAssets}`, options)
+    response = get(`${config.rampApiQuoteHost}`, options)
   } catch (error) {
     log.error(error)
   }

@@ -1,6 +1,6 @@
 <template>
   <v-card class="private-key-container">
-    <v-card-text class="text_1--text py-6">
+    <v-card-text class="py-6">
       <v-layout wrap>
         <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? '' : 'px-4'">
           <div class="font-weight-bold headline">{{ t('walletSettings.privateKey') }}</div>
@@ -23,14 +23,20 @@
                           small
                           :rules="[rules.required]"
                           :type="showJsonPassword ? 'text' : 'password'"
-                          :append-icon="showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
-                          @click:append="showJsonPassword = !showJsonPassword"
                         >
+                          <template v-slot:append>
+                            <v-btn icon @click="showJsonPassword = !showJsonPassword">
+                              <v-icon class="text_3--text">
+                                {{ showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on' }}
+                              </v-icon>
+                            </v-btn>
+                          </template>
                           <template v-if="!$vuetify.breakpoint.xsOnly" v-slot:append-outer>
                             <v-btn
                               v-if="!walletJson"
                               id="json-file-confirm-btn"
-                              color="primary"
+                              class="white--text"
+                              color="torusBrand1"
                               depressed
                               width="155px"
                               :disabled="!downloadFormValid || isLoadingDownloadWallet"
@@ -45,7 +51,15 @@
                                 </span>
                               </template>
                             </v-btn>
-                            <v-btn v-if="walletJson" id="json-file-download-btn" depressed color="primary" :href="walletJson" :download="name">
+                            <v-btn
+                              v-if="walletJson"
+                              id="json-file-download-btn"
+                              class="white--text"
+                              depressed
+                              color="torusBrand1"
+                              :href="walletJson"
+                              :download="name"
+                            >
                               {{ t('walletSettings.downloadWallet') }}
                             </v-btn>
                           </template>
@@ -56,7 +70,8 @@
                       <v-btn
                         v-if="!walletJson"
                         id="mobile-json-file-confirm-btn"
-                        color="primary"
+                        class="white--text"
+                        color="torusBrand1"
                         :disabled="!downloadFormValid || isLoadingDownloadWallet"
                         width="155px"
                         :loading="isLoadingDownloadWallet"
@@ -70,7 +85,14 @@
                           </span>
                         </template>
                       </v-btn>
-                      <v-btn v-if="walletJson" id="mobile-json-file-download-btn" color="primary" :href="walletJson" :download="name">
+                      <v-btn
+                        v-if="walletJson"
+                        id="mobile-json-file-download-btn"
+                        class="white--text gmt-private-key-download"
+                        color="torusBrand1"
+                        :href="walletJson"
+                        :download="name"
+                      >
                         {{ t('walletSettings.downloadWallet') }}
                       </v-btn>
                     </v-flex>
@@ -100,7 +122,7 @@
                   </v-flex>
                   <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs12 text-center' : ''">
                     <ShowToolTip :address="selectedKey">
-                      <v-btn id="click-to-copy-btn" text small class="primary--text" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'caption'">
+                      <v-btn id="click-to-copy-btn" text small class="torusBrand1--text" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'caption'">
                         <img
                           :src="require('../../../../public/img/icons/copy-primary.svg')"
                           class="mr-1"
@@ -113,7 +135,7 @@
                 </v-layout>
               </v-list-item-content>
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'ma-1' : ''">
-                <v-btn id="show-private-key-btn" icon small @click="isShowPrivateKey = !isShowPrivateKey">
+                <v-btn id="show-private-key-btn gmt-private-key-show" icon small @click="isShowPrivateKey = !isShowPrivateKey">
                   <img
                     :width="$vuetify.breakpoint.xsOnly ? '20' : ''"
                     :src="require(`../../../../public/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)"
@@ -135,6 +157,7 @@
 <script>
 import * as ethUtil from 'ethereumjs-util'
 import Wallet from 'ethereumjs-wallet'
+import { mapState } from 'vuex'
 
 import ShowToolTip from '../../helpers/ShowToolTip'
 // eslint-disable-next-line import/no-webpack-loader-syntax
@@ -158,11 +181,9 @@ export default {
     }
   },
   computed: {
-    selectedAddress() {
-      return this.$store.state.selectedAddress
-    },
+    ...mapState(['selectedAddress', 'wallet']),
     selectedKey() {
-      return this.$store.state.wallet[this.selectedAddress]
+      return this.wallet[this.selectedAddress]
     },
   },
   methods: {

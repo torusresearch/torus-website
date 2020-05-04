@@ -44,6 +44,13 @@ const initialState = {
   errorMsg: '',
   successMsg: '',
   iframeMetadata: { origin: '', name: '', icon: '' },
+  whiteLabel: {
+    isActive: false,
+    theme: {},
+    logo: '',
+    topupHide: false,
+    featuredBillboardHide: false,
+  },
 }
 
 export default initialState
