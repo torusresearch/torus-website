@@ -1,6 +1,6 @@
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
-import * as ethUtil from 'ethereumjs-util'
+import { addHexPrefix, BN, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
 import { isAddress } from 'web3-utils'
 
@@ -51,8 +51,6 @@ import {
   WYRE,
   XANPOOL,
 } from './enums'
-
-const { BN } = ethUtil
 
 const networkToNameMap = {
   [ROPSTEN]: ROPSTEN_DISPLAY_NAME,
@@ -179,7 +177,7 @@ export function sufficientBalance(txParameters, hexBalance) {
  *
  */
 export function bnToHex(inputBn) {
-  return ethUtil.addHexPrefix(inputBn.toString(16))
+  return addHexPrefix(inputBn.toString(16))
 }
 
 /**
@@ -190,7 +188,7 @@ export function bnToHex(inputBn) {
  *
  */
 export function hexToBn(inputHex) {
-  return new BN(ethUtil.stripHexPrefix(inputHex), 16)
+  return new BN(stripHexPrefix(inputHex), 16)
 }
 
 /**
@@ -216,7 +214,7 @@ export function BnMultiplyByFraction(targetBN, numerator, denominator) {
  */
 export function hexToText(hex) {
   try {
-    const stripped = ethUtil.stripHexPrefix(hex)
+    const stripped = stripHexPrefix(hex)
     const buff = Buffer.from(stripped, 'hex')
     return buff.toString('utf8')
   } catch (error) {

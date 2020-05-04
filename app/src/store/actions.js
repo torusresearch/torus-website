@@ -630,11 +630,8 @@ export default {
         const message = response[1]
         dispatch('addWallet', data) // synchronous
         dispatch('subscribeToControllers')
-        await Promise.all([
-          dispatch('initTorusKeyring', data),
-          dispatch('processAuthMessage', { message, selectedAddress: data.ethAddress, calledFromEmbed }),
-        ])
-
+        await dispatch('initTorusKeyring', data)
+        await dispatch('processAuthMessage', { message, selectedAddress: data.ethAddress, calledFromEmbed })
         if (!calledFromEmbed && storageAvailable('localStorage')) localStorage.removeItem('torus-white-label')
         dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
         // continue enable function
@@ -754,10 +751,8 @@ export default {
       else await dispatch('setProviderType', { network: networkType, type: RPC })
       if (selectedAddress && wallet[selectedAddress]) {
         setTimeout(() => dispatch('subscribeToControllers'), 50)
-        await Promise.all([
-          torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet)),
-          dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true }),
-        ])
+        await torus.torusController.initTorusKeyring(Object.values(wallet), Object.keys(wallet))
+        await dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true })
         dispatch('updateSelectedAddress', { selectedAddress })
         dispatch('updateNetworkId', { networkId })
         // TODO: deprercate rehydrate true for the next major version bump

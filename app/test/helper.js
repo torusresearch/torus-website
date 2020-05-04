@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-console */
 import Ganache from 'ganache-core'
 import log from 'loglevel'
