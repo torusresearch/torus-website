@@ -1,12 +1,12 @@
 /* eslint-disable */
+import { addHexPrefix, BN, isValidAddress as isValidAddressUtil, isValidChecksumAddress, toChecksumAddress, stripHexPrefix } from 'ethereumjs-util'
+import abi from 'human-standard-token-abi'
 import { DateTime } from 'luxon'
 
-const abi = require('human-standard-token-abi')
-const ethUtil = require('ethereumjs-util')
-const hexToBn = require('./hex-to-bn')
+import hexToBn from './hex-to-bn'
 
-const MIN_GAS_PRICE_GWEI_BN = new ethUtil.BN(1)
-const GWEI_FACTOR = new ethUtil.BN(1e9)
+const MIN_GAS_PRICE_GWEI_BN = new BN(1)
+const GWEI_FACTOR = new BN(1e9)
 const MIN_GAS_PRICE_BN = MIN_GAS_PRICE_GWEI_BN.mul(GWEI_FACTOR)
 
 // formatData :: ( date: <Unix Timestamp> ) -> String
@@ -30,7 +30,7 @@ const valueTable = {
 }
 const bnTable = {}
 for (const currency in valueTable) {
-  bnTable[currency] = new ethUtil.BN(valueTable[currency], 10)
+  bnTable[currency] = new BN(valueTable[currency], 10)
 }
 
 function valuesFor(object) {
@@ -42,7 +42,7 @@ function addressSummary(address, firstSegLength = 10, lastSegLength = 4, include
   if (!address) return ''
   let checked = checksumAddress(address)
   if (!includeHex) {
-    checked = ethUtil.stripHexPrefix(checked)
+    checked = stripHexPrefix(checked)
   }
   return checked ? `${checked.slice(0, firstSegLength)}...${checked.slice(checked.length - lastSegLength)}` : '...'
 }
@@ -54,9 +54,9 @@ function miniAddressSummary(address) {
 }
 
 function isValidAddress(address) {
-  const prefixed = ethUtil.addHexPrefix(address)
+  const prefixed = addHexPrefix(address)
   if (address === '0x0000000000000000000000000000000000000000') return false
-  return (isAllOneCase(prefixed) && ethUtil.isValidAddress(prefixed)) || ethUtil.isValidChecksumAddress(prefixed)
+  return (isAllOneCase(prefixed) && isValidAddressUtil(prefixed)) || isValidChecksumAddress(prefixed)
 }
 
 function isValidENSAddress(address) {
@@ -64,9 +64,9 @@ function isValidENSAddress(address) {
 }
 
 function isInvalidChecksumAddress(address) {
-  const prefixed = ethUtil.addHexPrefix(address)
+  const prefixed = addHexPrefix(address)
   if (address === '0x0000000000000000000000000000000000000000') return false
-  return !isAllOneCase(prefixed) && !ethUtil.isValidChecksumAddress(prefixed) && ethUtil.isValidAddress(prefixed)
+  return !isAllOneCase(prefixed) && !isValidChecksumAddress(prefixed) && isValidAddressUtil(prefixed)
 }
 
 function isAllOneCase(address) {
@@ -78,9 +78,9 @@ function isAllOneCase(address) {
 
 // Takes wei Hex, returns wei BN, even if input is null
 function numericBalance(balance) {
-  if (!balance) return new ethUtil.BN(0, 16)
-  const stripped = ethUtil.stripHexPrefix(balance)
-  return new ethUtil.BN(stripped, 16)
+  if (!balance) return new BN(0, 16)
+  const stripped = stripHexPrefix(balance)
+  return new BN(stripped, 16)
 }
 
 // Takes  hex, returns [beforeDecimal, afterDecimal]
@@ -148,7 +148,7 @@ function generateBalanceObject(formattedBalance, decimalsToKeep = 1) {
 
 function shortenBalance(balance, decimalsToKeep = 1) {
   let truncatedValue
-  const convertedBalance = parseFloat(balance)
+  const convertedBalance = Number.parseFloat(balance)
   if (convertedBalance > 1000000) {
     truncatedValue = (balance / 1000000).toFixed(decimalsToKeep)
     return `${truncatedValue}m`
@@ -174,7 +174,7 @@ function shortenBalance(balance, decimalsToKeep = 1) {
 }
 
 function dataSize(data) {
-  const size = data ? ethUtil.stripHexPrefix(data).length : 0
+  const size = data ? stripHexPrefix(data).length : 0
   return `${size} bytes`
 }
 
@@ -189,7 +189,7 @@ function normalizeToWei(amount, currency) {
 
 function normalizeEthStringToWei(string) {
   const parts = string.split('.')
-  let eth = new ethUtil.BN(parts[0], 10).mul(bnTable.wei)
+  let eth = new BN(parts[0], 10).mul(bnTable.wei)
   if (parts[1]) {
     let decimal = parts[1]
     while (decimal.length < 18) {
@@ -198,16 +198,16 @@ function normalizeEthStringToWei(string) {
     if (decimal.length > 18) {
       decimal = decimal.slice(0, 18)
     }
-    const decimalBN = new ethUtil.BN(decimal, 10)
+    const decimalBN = new BN(decimal, 10)
     eth = eth.add(decimalBN)
   }
   return eth
 }
 
-const multiple = new ethUtil.BN('10000', 10)
+const multiple = new BN('10000', 10)
 function normalizeNumberToWei(n, currency) {
   const enlarged = n * 10000
-  const amount = new ethUtil.BN(String(enlarged), 10)
+  const amount = new BN(String(enlarged), 10)
   return normalizeToWei(amount, currency).div(multiple)
 }
 
@@ -230,8 +230,8 @@ function isHex(string) {
 }
 
 function bnMultiplyByFraction(targetBN, numerator, denominator) {
-  const numberBN = new ethUtil.BN(numerator)
-  const denomBN = new ethUtil.BN(denominator)
+  const numberBN = new BN(numerator)
+  const denomBN = new BN(denominator)
   return targetBN.mul(numberBN).div(denomBN)
 }
 
@@ -259,7 +259,7 @@ function exportAsFile(filename, data, type = 'text/csv') {
     element.download = filename
     document.body.append(element)
     element.click()
-    document.body.removeChild(element)
+    element.remove()
   }
 }
 
@@ -278,7 +278,7 @@ function getTokenAddressFromTokenObject(token) {
  * @returns {String} - checksummed address
  */
 function checksumAddress(address) {
-  return address ? ethUtil.toChecksumAddress(address) : ''
+  return address ? toChecksumAddress(address) : ''
 }
 
 function addressSlicer(address = '') {
@@ -289,7 +289,7 @@ function addressSlicer(address = '') {
   return `${address.slice(0, 6)}...${address.slice(-4)}`
 }
 
-module.exports = {
+export {
   valuesFor,
   addressSummary,
   miniAddressSummary,

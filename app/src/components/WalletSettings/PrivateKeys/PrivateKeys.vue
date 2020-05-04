@@ -155,8 +155,8 @@
 </template>
 
 <script>
-import * as ethUtil from 'ethereumjs-util'
-import Wallet from 'ethereumjs-wallet'
+import { stripHexPrefix } from 'ethereumjs-util'
+import { fromPrivateKey } from 'ethereumjs-wallet'
 import { mapState } from 'vuex'
 
 import ShowToolTip from '../../helpers/ShowToolTip'
@@ -228,9 +228,9 @@ export default {
       return createdWallet
     },
     generateWallet(privateKey) {
-      const stripped = ethUtil.stripHexPrefix(privateKey)
+      const stripped = stripHexPrefix(privateKey)
       const buffer = Buffer.from(stripped, 'hex')
-      const wallet = Wallet.fromPrivateKey(buffer)
+      const wallet = fromPrivateKey(buffer)
       return wallet
     },
     createBlob(mime, string_) {

@@ -14,11 +14,13 @@ class StreamWindow {
     if (!preopenInstanceId) {
       this.preopenInstanceId = randomId()
       if (windowStream.on) {
-        windowStream.on('data', (chunk) => {
+        this.closeHandler = (chunk) => {
           if (chunk.name === 'opened_window' && this.preopenInstanceId === chunk.data.preopenInstanceId) {
             this.open(url)
+            windowStream.removeListener('data', this.closeHandler)
           }
-        })
+        }
+        windowStream.on('data', this.closeHandler)
       }
       windowStream.write({
         name: 'create_window',
@@ -65,22 +67,25 @@ class StreamWindow {
           },
         })
       }, 200)
-      const preopenHandler = (chunk) => {
+      this.preopenHandler = (chunk) => {
         const { preopenInstanceId, closed } = chunk.data
         if (preopenInstanceId === this.preopenInstanceId && closed) {
           this.closed = true
-          windowStream.removeListener('data', preopenHandler)
+          windowStream.removeListener('data', this.preopenHandler)
         }
       }
-      if (windowStream.on) windowStream.on('data', preopenHandler)
+      if (windowStream.on) windowStream.on('data', this.preopenHandler)
     })
   }
 
   close() {
+    // TODO: CLEAN UP LISTENERS ON WINDOW STREAM HERE TOO
     windowStream.write({
       preopenInstanceId: this.preopenInstanceId,
       close: true,
     })
+    windowStream.removeListener('data', this.preopenHandler)
+    windowStream.removeListener('data', this.closeHandler)
   }
 }
 

@@ -1,7 +1,7 @@
 import erc20Contracts from 'eth-contract-metadata'
 import { ethErrors } from 'eth-json-rpc-errors'
-import Transaction from 'ethereumjs-tx'
-import * as ethUtil from 'ethereumjs-util'
+import { Transaction } from 'ethereumjs-tx'
+import { addHexPrefix, BN, bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import EthQuery from 'ethjs-query'
 import collectibleAbi from 'human-standard-collectible-abi'
 import tokenAbi from 'human-standard-token-abi'
@@ -260,13 +260,13 @@ class TransactionController extends EventEmitter {
   async addTxGasDefaults(txMeta, getCodeResponse) {
     const { txParams } = txMeta
     // ensure value
-    txParams.value = txParams.value ? ethUtil.addHexPrefix(txParams.value) : '0x0'
+    txParams.value = txParams.value ? addHexPrefix(txParams.value) : '0x0'
     txMeta.gasPriceSpecified = Boolean(txParams.gasPrice)
     let { gasPrice } = txParams
     if (!gasPrice) {
       gasPrice = this.getGasPrice ? this.getGasPrice() : await this.query.gasPrice()
     }
-    txParams.gasPrice = ethUtil.addHexPrefix(gasPrice.toString(16))
+    txParams.gasPrice = addHexPrefix(gasPrice.toString(16))
     // set gasLimit
     const result = await this.txGasUtil.analyzeGasUsage(txMeta, getCodeResponse)
     return result
@@ -286,11 +286,11 @@ class TransactionController extends EventEmitter {
     const originalTxMeta = this.txStateManager.getTx(originalTxId)
     const { txParams } = originalTxMeta
     const lastGasPrice = gasPrice || originalTxMeta.txParams.gasPrice
-    const suggestedGasPriceBN = new ethUtil.BN(ethUtil.stripHexPrefix(this.getGasPrice()), 16)
-    const lastGasPriceBN = new ethUtil.BN(ethUtil.stripHexPrefix(lastGasPrice), 16)
+    const suggestedGasPriceBN = new BN(stripHexPrefix(this.getGasPrice()), 16)
+    const lastGasPriceBN = new BN(stripHexPrefix(lastGasPrice), 16)
     // essentially lastGasPrice * 1.1 but
     // dont trust decimals so a round about way of doing that
-    const lastGasPriceBNBumped = lastGasPriceBN.mul(new ethUtil.BN(110, 10)).div(new ethUtil.BN(100, 10))
+    const lastGasPriceBNBumped = lastGasPriceBN.mul(new BN(110, 10)).div(new BN(100, 10))
     // transactions that are being retried require a >=%10 bump or the clients will throw an error
     txParams.gasPrice = suggestedGasPriceBN.gt(lastGasPriceBNBumped)
       ? `0x${suggestedGasPriceBN.toString(16)}`
@@ -407,7 +407,7 @@ class TransactionController extends EventEmitter {
       // if txMeta has lastGasPrice then it is a retry at same nonce with higher
       // gas price transaction and their for the nonce should not be calculated
       const nonce = txMeta.lastGasPrice ? txMeta.txParams.nonce : nonceLock.nextNonce
-      txMeta.txParams.nonce = ethUtil.addHexPrefix(nonce.toString(16))
+      txMeta.txParams.nonce = addHexPrefix(nonce.toString(16))
       // add nonce debugging information to txMeta
       txMeta.nonceDetails = nonceLock.nonceDetails
       this.txStateManager.updateTx(txMeta, 'transactions#approveTransaction')
@@ -444,20 +444,20 @@ class TransactionController extends EventEmitter {
     const txParameters = { ...txMeta.txParams, chainId }
     // sign tx
     const fromAddress = txParameters.from
-    const ethTx = new Transaction(txParameters)
+    const ethTx = new Transaction(txParameters, { chain: chainId })
     await this.signEthTx(ethTx, fromAddress)
 
     // add r,s,v values for provider request purposes see createMetamaskMiddleware
     // and JSON rpc standard for further explanation
-    txMeta.r = ethUtil.bufferToHex(ethTx.r)
-    txMeta.s = ethUtil.bufferToHex(ethTx.s)
-    txMeta.v = ethUtil.bufferToHex(ethTx.v)
+    txMeta.r = bufferToHex(ethTx.r)
+    txMeta.s = bufferToHex(ethTx.s)
+    txMeta.v = bufferToHex(ethTx.v)
 
     this.txStateManager.updateTx(txMeta, 'transactions#signTransaction: add r, s, v values')
 
     // set state to signed
     this.txStateManager.setTxStatusSigned(txMeta.id)
-    const rawTx = ethUtil.bufferToHex(ethTx.serialize())
+    const rawTx = bufferToHex(ethTx.serialize())
     return rawTx
   }
 
@@ -476,8 +476,8 @@ class TransactionController extends EventEmitter {
       txHash = await this.query.sendRawTransaction(rawTx)
     } catch (error) {
       if (error.message.toLowerCase().includes('known transaction')) {
-        txHash = sha3(ethUtil.addHexPrefix(rawTx)).toString('hex')
-        txHash = ethUtil.addHexPrefix(txHash)
+        txHash = sha3(addHexPrefix(rawTx)).toString('hex')
+        txHash = addHexPrefix(txHash)
       } else {
         throw error
       }
