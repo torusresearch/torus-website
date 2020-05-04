@@ -288,15 +288,7 @@ export default {
       this.$router.push({ path: '/wallet/topup' }).catch((_) => {})
     },
     setDateUpdated() {
-      const currentDateTime = new Date()
-      const day = currentDateTime.getDate().toString().padStart(2, '0')
-      const month = (currentDateTime.getMonth() + 1).toString().padStart(2, '0')
-      const date = `${day}/${month}/${currentDateTime.getFullYear().toString().slice(2, 4)}`
-
-      const hours = currentDateTime.getHours().toString().padStart(2, '0')
-      const mins = currentDateTime.getMinutes().toString().padStart(2, '0')
-      const time = `${hours}:${mins}`
-      this.lastUpdated = `${date}, ${time}`
+      this.lastUpdated = new Date().toLocaleString()
     },
   },
 }
