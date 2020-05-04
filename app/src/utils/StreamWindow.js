@@ -79,13 +79,12 @@ class StreamWindow {
   }
 
   close() {
-    // TODO: CLEAN UP LISTENERS ON WINDOW STREAM HERE TOO
     windowStream.write({
       preopenInstanceId: this.preopenInstanceId,
       close: true,
     })
-    windowStream.removeListener('data', this.preopenHandler)
-    windowStream.removeListener('data', this.closeHandler)
+    if (this.preopenHandler) windowStream.removeListener('data', this.preopenHandler)
+    if (this.closeHandler) windowStream.removeListener('data', this.closeHandler)
   }
 }
 
