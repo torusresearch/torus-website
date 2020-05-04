@@ -163,6 +163,24 @@
         <CollectiblesList></CollectiblesList>
       </v-tab-item>
     </v-tabs-items>
+
+    <v-layout class="mt-12">
+      <v-flex xs12 class="refresh text-right">
+        <v-btn
+          class="gmt-refresh-tokens"
+          :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'"
+          height="24"
+          width="24"
+          fab
+          @click="refreshBalances"
+        >
+          <v-icon color="torusFont2" size="8">$vuetify.icons.refresh</v-icon>
+        </v-btn>
+        <v-chip :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'" class="text_2--text ml-2" small>
+          {{ t('walletHome.lastUpdate') }} {{ lastUpdated }}
+        </v-chip>
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 
@@ -270,15 +288,7 @@ export default {
       this.$router.push({ path: '/wallet/topup' }).catch((_) => {})
     },
     setDateUpdated() {
-      const currentDateTime = new Date()
-      const day = currentDateTime.getDate().toString().padStart(2, '0')
-      const month = (currentDateTime.getMonth() + 1).toString().padStart(2, '0')
-      const date = `${day}/${month}/${currentDateTime.getFullYear().toString().slice(2, 4)}`
-
-      const hours = currentDateTime.getHours().toString().padStart(2, '0')
-      const mins = currentDateTime.getMinutes().toString().padStart(2, '0')
-      const time = `${hours}:${mins}`
-      this.lastUpdated = `${date}, ${time}`
+      this.lastUpdated = new Date().toLocaleString()
     },
   },
 }
