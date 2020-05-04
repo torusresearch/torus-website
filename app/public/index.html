@@ -419,7 +419,13 @@
           if (torusWhiteLabel !== null) {
             try {
               const whiteLabelData = JSON.parse(torusWhiteLabel)
-              theme = whiteLabelData.whiteLabelIsDark ? 'dark' : 'light'
+              if(whiteLabelData.theme) {
+                theme = whiteLabelData.theme.isDark ? 'dark' : 'light'
+                if(whiteLabelData.theme.colors && whiteLabelData.theme.colors.torusBrand1) {
+                  const beats = document.querySelectorAll('.spinner .beat')
+                  beats.forEach((beat) => beat.style.backgroundColor = whiteLabelData.theme.colors.torusBrand1)
+                }              
+              }              
             } catch (error) {
               console.error(error)
             }
