@@ -22,6 +22,7 @@ export default {
   wyreAccountId: 'AC_RUQMPNP7QQY',
   rampHost: 'https://widget-instant.ramp.network',
   rampApiQuoteHost: 'https://api-instant.ramp.network/api/host-api/assets',
+  rampAPIKEY: 'dw9fe8drpzmdfuks79ub5hvmqzuyjbme4kwkwkqf',
   xanpoolHost: 'https://checkout.xanpool.com',
   xanpoolLiveAPIKEY: '778522fccc19a010f100f437c4aca60j',
   xanpoolTestHost: 'https://checkout.sandbox.xanpool.com',
