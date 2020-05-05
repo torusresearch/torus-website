@@ -6,7 +6,7 @@ import stream from 'stream'
 import { injectStore as onloadInjection } from '../onload'
 import torus from '../torus'
 import { USER_INFO_REQUEST_APPROVED, USER_INFO_REQUEST_NEW, USER_INFO_REQUEST_REJECTED } from '../utils/enums'
-import { broadcastChannelOptions, isMain, storageAvailable } from '../utils/utils'
+import { broadcastChannelOptions, isMain } from '../utils/utils'
 import { injectStore as controllerInjection } from './controllerSubscriptions'
 import VuexStore from './store'
 
@@ -47,7 +47,7 @@ if (!isMain) {
       data: { whiteLabel = {} },
     } = chunk
     if (name === 'init_stream') {
-      if (storageAvailable('sessionStorage')) sessionStorage.setItem('torus-white-label', JSON.stringify(whiteLabel))
+      VuexStore.commit('setWhiteLabel', whiteLabel)
     }
   })
 

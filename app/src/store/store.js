@@ -49,6 +49,7 @@ if (storageAvailable('sessionStorage')) {
       locale: state.locale,
       billboard: state.billboard,
       contacts: state.contacts,
+      whiteLabel: state.whiteLabel,
       // pastTransactions: state.pastTransactions
     }),
   })
@@ -339,20 +340,9 @@ VuexStore.subscribe((mutation, state) => {
 
 if (storageAvailable('localStorage')) {
   const torusTheme = localStorage.getItem('torus-theme')
-  if (storageAvailable('sessionStorage')) {
-    const torusWhiteLabel = sessionStorage.getItem('torus-white-label')
-    if (torusWhiteLabel) {
-      VuexStore.commit('setWhiteLabel', JSON.parse(torusWhiteLabel))
-    } else if (torusTheme) {
-      VuexStore.commit('setTheme', torusTheme)
-    }
-  } else if (torusTheme) {
+  if (torusTheme) {
     VuexStore.commit('setTheme', torusTheme)
   }
 }
-
-// torus.torusController.networkController.networkStore.subscribe(state => {
-//   VuexStore.dispatch('updateNetworkId', { networkId: state })
-// })
 
 export default VuexStore

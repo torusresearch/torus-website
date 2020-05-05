@@ -72,19 +72,7 @@ export default {
   setTheme(state, payload) {
     state.theme = payload
     // Update vuetify theme
-    let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
-
-    if (state.whiteLabel.isActive) {
-      const { theme: whiteLabelTheme } = state.whiteLabel
-      theme = themes[whiteLabelTheme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]
-      if (whiteLabelTheme.colors) {
-        theme.theme = { ...theme.theme, ...whiteLabelTheme.colors }
-      }
-    }
-
-    vuetify.framework.theme.dark = theme.isDark
-    vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
-    if (storageAvailable('localStorage')) localStorage.setItem('torus-theme', payload)
+    localThemeSet(payload, state)
   },
   setLocale(state, payload) {
     state.locale = payload
@@ -131,5 +119,20 @@ export default {
       isActive: true,
       ...payload,
     }
+    localThemeSet(undefined, state)
+    if (storageAvailable('sessionStorage')) sessionStorage.setItem('torus-white-label', JSON.stringify(payload))
   },
+}
+function localThemeSet(payload, state) {
+  let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
+  if (state.whiteLabel.isActive) {
+    const { theme: whiteLabelTheme } = state.whiteLabel
+    theme = themes[whiteLabelTheme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]
+    if (whiteLabelTheme.colors) {
+      theme.theme = { ...theme.theme, ...whiteLabelTheme.colors }
+    }
+  }
+  vuetify.framework.theme.dark = theme.isDark
+  vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
+  if (storageAvailable('localStorage')) localStorage.setItem('torus-theme', payload)
 }
