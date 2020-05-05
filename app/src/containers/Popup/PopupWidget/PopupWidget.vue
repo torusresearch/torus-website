@@ -1,5 +1,5 @@
 <template>
-  <div class="torus-widget">
+  <div class="torus-widget" :class="[embedState.buttonPosition, loginDialog ? 'login-dialog' : '']">
     <v-card v-if="loggedIn && activeWidget" class="torus-widget__panel pa-4">
       <div class="d-flex torus-widget__user-details">
         <div class="avatar-container">
@@ -94,7 +94,7 @@
     </v-btn>
     <v-btn v-else class="torus-widget__login-btn" color="primary" fab @click="login">
       <img class="torus-widget__login" :src="require(`../../../../public/images/login.png`)" />
-      <img class="torus-widget__login-with" :src="require(`../../../../public/images/login-with-torus.png`)" />
+      <span class="torus-widget__login-with">Login</span>
     </v-btn>
   </div>
 </template>
@@ -135,6 +135,7 @@ export default {
       userInfo: 'userInfo',
       selectedCurrency: 'selectedCurrency',
       wallets: (state) => Object.keys(state.wallet).filter((accumulator) => accumulator !== state.selectedAddress),
+      embedState: 'embedState',
     }),
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'

@@ -1,4 +1,22 @@
 .torus-widget {
+  position: absolute;
+  &.top-left {
+    top: 30px;
+    left: 30px;
+  }
+  &.top-right {
+    top: 30px;
+    right: 30px;
+  }
+  &.bottom-right {
+    bottom: 30px;
+    right: 30px;
+  }
+  &.bottom-left {
+    bottom: 30px;
+    left: 30px;
+  }
+
   &__login-btn {
     border-radius: 28px;
     .torus-widget__login {
@@ -6,10 +24,10 @@
     }
     .torus-widget__login-with {
       display: none;
-      width: 125px;
+      line-height: 0;
+      font-weight: 700;
     }
     &:hover {
-      width: 150px;
       .torus-widget__login {
         display: none;
       }
