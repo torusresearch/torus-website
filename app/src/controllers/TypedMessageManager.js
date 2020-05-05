@@ -1,7 +1,7 @@
 /* eslint-disable no-case-declarations */
 import assert from 'assert'
 import { ethErrors } from 'eth-json-rpc-errors'
-import * as sigUtil from 'eth-sig-util'
+import { TYPED_MESSAGE_SCHEMA, typedSignatureHash } from 'eth-sig-util'
 import EventEmitter from 'events'
 import jsonschema from 'jsonschema'
 import log from 'loglevel'
@@ -144,7 +144,7 @@ export default class TypedMessageManager extends EventEmitter {
         assert.ok(Array.isArray(parameters.data), 'Data should be an array.')
         assert.strictEqual(typeof parameters.from, 'string', 'From field must be a string.')
         assert.doesNotThrow(() => {
-          sigUtil.typedSignatureHash(parameters.data)
+          typedSignatureHash(parameters.data)
         }, 'Expected EIP712 typed data')
         break
       case 'V3':
@@ -158,7 +158,7 @@ export default class TypedMessageManager extends EventEmitter {
         assert.doesNotThrow(() => {
           data = JSON.parse(parameters.data)
         }, 'Data must be passed as a valid JSON string.')
-        const validation = jsonschema.validate(data, sigUtil.TYPED_MESSAGE_SCHEMA)
+        const validation = jsonschema.validate(data, TYPED_MESSAGE_SCHEMA)
         assert.ok(data.primaryType in data.types, `Primary type of "${data.primaryType}" has no type definition.`)
         assert.strictEqual(validation.errors.length, 0, 'Data must conform to EIP-712 schema. See https://git.io/fNtcx.')
         const { chainId } = data.domain

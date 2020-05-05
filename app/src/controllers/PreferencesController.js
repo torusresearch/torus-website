@@ -118,8 +118,8 @@ class PreferencesController {
         let torusWhiteLabel
 
         // White Label override
-        if (storageAvailable('localStorage')) {
-          torusWhiteLabel = localStorage.getItem('torus-white-label')
+        if (storageAvailable('sessionStorage')) {
+          torusWhiteLabel = sessionStorage.getItem('torus-white-label')
         }
         if (torusWhiteLabel) {
           try {

@@ -52,7 +52,7 @@
                         block
                         :class="$vuetify.theme.dark ? 'torus-dark' : ''"
                         class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn-google gmt-login gmt-login-google"
-                        @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
+                        @click="startLogin(GOOGLE)"
                       >
                         <img
                           class="mr-5"
@@ -70,7 +70,7 @@
                             :class="[{ active: verifier === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier}`]"
                             type="button"
                             :title="`${t('login.loginWith')} ${verifier}`"
-                            @click="triggerLogin({ verifier: verifier, calledFromEmbed: false })"
+                            @click="startLogin(verifier)"
                             @mouseover="loginBtnHover(verifier)"
                           >
                             <img :src="require(`../../../public/img/icons/login-${verifier}.svg`)" />
@@ -153,7 +153,7 @@
                     :class="[{ active: verifier === activeButton, isDark: $vuetify.theme.dark }, `gmt-login-${verifier}`]"
                     type="button"
                     :title="`${t('login.loginWith')} ${verifier}`"
-                    @click="triggerLogin({ verifier: verifier, calledFromEmbed: false })"
+                    @click="startLogin(verifier)"
                     @mouseover="activeButton = verifier"
                   >
                     <img v-if="verifier === activeButton" :src="require(`../../../public/img/icons/login-${verifier}.svg`)" />
@@ -233,10 +233,15 @@
     <template v-else>
       <component :is="activeLoader"></component>
     </template>
+    <v-snackbar v-model="snackbar" :color="snackbarColor">
+      {{ snackbarText }}
+      <v-btn dark text @click="snackbar = false">{{ t('walletTopUp.close') }}</v-btn>
+    </v-snackbar>
   </div>
 </template>
 
 <script>
+import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
 import {
@@ -273,12 +278,15 @@ export default {
       activeButton: GOOGLE,
       verifierCntInterval: null,
       selectedCarouselItem: 0,
+      loginInProgress: false,
+      snackbar: false,
+      snackbarText: '',
+      snackbarColor: 'error',
     }
   },
   computed: mapState({
     selectedAddress: 'selectedAddress',
-    loggedIn: (state) => state.selectedAddress !== '' && !state.loginInProgress,
-    loginInProgress: 'loginInProgress',
+    loggedIn: (state) => state.selectedAddress !== '' && !this.loginInProgress,
     activeLoader() {
       const redirectPath = this.$route.query.redirect
 
@@ -331,10 +339,22 @@ export default {
     ...mapActions({
       triggerLogin: 'triggerLogin',
     }),
+    async startLogin(verifier) {
+      try {
+        this.loginInProgress = true
+        await this.triggerLogin({ verifier, calledFromEmbed: false })
+      } catch (error) {
+        log.error(error)
+        this.snackbar = true
+        this.snackbarColor = 'error'
+        this.snackbarText = this.t('login.loginError')
+      } finally {
+        this.loginInProgress = false
+      }
+    },
     returnHome() {
       this.$router.push({ path: '/' }).catch((_) => {})
       this.isLogout = false
-      // window.location.href = process.env.BASE_URL
     },
     loginBtnHover(verifier) {
       if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier

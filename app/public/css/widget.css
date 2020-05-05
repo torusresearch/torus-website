@@ -1,5 +1,34 @@
+#torusWidget {
+  z-index: 999999;
+  position: fixed;
+  --torus-brand-1: #0364ff;
+  --torus-brand-2: #5495f7;
+  --torus-brand-3: #cde0ff;
+  --torus-brand-4: #e9eefe;
+  --torus-brand-hover: #075de5;
+  --torus-gray-1: #d3d5e2;
+  --torus-gray-2: #eef2f4;
+  --torus-gray-3: #a2a5b5;
+  --torus-gray-4: #f9f9fb;
+  --torus-font-1: #5c6c7f;
+  --torus-font-2: #7f8fa4;
+  --torus-font-link-1: #0364ff;
+  --torus-font-link-2: #5495f7;
+  --torus-black: #252529;
+  --torus-light: #fcfcfc;
+}
+
+#torusWidget.torus-dark {
+  --torus-light: #242529;
+  --torus-gray-2: #dfdfdf;
+  --torus-gray-4: #f9f9fb;
+  --torus-font-1: #d3d3d4;
+}
+
 #torusAlert {
-  color: black;
+  --torus-brand-1: #0364ff;
+  --torus-light: #fcfcfc;
+  color: #0f1222;
   height: auto;
   z-index: 99999999;
   position: fixed;
@@ -9,9 +38,15 @@
   width: 260px;
   box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--torus-light);
   font-family: 'Roboto', sans-serif !important;
   padding: 20px;
+}
+
+#torusAlert.torus-dark {
+  --torus-light: #242529;
+  --torus-font-1: #d3d3d4;
+  color: var(--torus-font-1);
 }
 
 #torusAlert #torusAlert__title {
@@ -35,7 +70,7 @@
 
 #torusAlert #torusAlert__btn {
   font-size: 14px;
-  background-color: #0364ff;
+  background-color: var(--torus-brand-1);
   margin: 24px 0 0;
   width: 100px;
   height: 40px;
@@ -46,11 +81,6 @@
   background-size: 60%;
   background-repeat: no-repeat;
   background-position: center;
-}
-
-#torusWidget {
-  z-index: 999999;
-  position: fixed;
 }
 
 /* FAB Speed dial */
@@ -71,7 +101,7 @@
 
 #torusWidget .torus-btn {
   border-radius: 30px;
-  background-color: #0364ff;
+  background-color: var(--torus-brand-1);
   padding: 14px;
   width: 60px;
   height: 60px;
@@ -287,13 +317,18 @@
 
 /* Modal Container */
 #torus-login-modal__modal-container {
-  background: #ffffff;
   width: 375px;
   margin: 5% auto;
   padding: 0;
-  border: 1px solid #f5f5f5;
   border-radius: 6px;
   position: relative;
+  background: var(--torus-light);
+  border: 1px solid var(--torus-gray-4);
+}
+
+/* DARK */
+#torusWidget.torus-dark #torus-login-modal__modal-container {
+  border: 0;
 }
 
 /* Contents */
@@ -305,7 +340,7 @@
 
 #torus-login-modal__close {
   font-size: 30px;
-  color: #dfdfdf;
+  color: var(--torus-gray-2);
   font-weight: 500;
 }
 
@@ -319,13 +354,17 @@
   padding: 0;
   border: 0px solid white !important;
   font-family: 'Roboto', sans-serif !important;
-  color: #5c6c7f;
+  color: var(--torus-font-1);
   text-align: center;
 }
 
 #torus-login-modal__header-container {
   padding: 30px 0 20px;
-  box-shadow: 0 14px 28px 0 rgba(46, 91, 255, 0.06);
+  box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+}
+
+#torusWidget.torus-dark #torus-login-modal__header-container {
+  box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
 }
 
 #torus-login-modal__header-container img {
@@ -356,9 +395,9 @@
   box-sizing: border-box;
   height: 50px;
   width: 100%;
-  border: 1px solid #f1f2f6;
+  border: 1px solid var(--torus-gray-2);
   border-radius: 6px;
-  background-color: #ffffff;
+  background-color: var(--torus-light);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -366,8 +405,8 @@
   padding: 15px;
   font-size: 14px;
   font-weight: 500;
-  box-shadow: 0 14px 28px 0 rgba(46, 91, 255, 0.06);
-  color: #5c6c7f;
+  box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+  color: var(--torus-font-1);
 }
 
 #torus-login-modal__login-google img {
@@ -395,9 +434,9 @@
   box-sizing: border-box;
   height: 50px;
   width: 100%;
-  border: 1px solid #f1f2f6;
+  border: 1px solid var(--torus-gray-2);
   border-radius: 6px;
-  background-color: #ffffff;
+  background-color: var(--torus-light);
   cursor: pointer;
   margin: 0;
   box-shadow: 0 14px 28px 0 rgba(46, 91, 255, 0.06);
@@ -421,7 +460,7 @@
 }
 
 #torus-login-modal__login-note a {
-  color: #5495f7;
+  color: var(--torus-brand-1);
   cursor: pointer;
   text-decoration: none;
 }

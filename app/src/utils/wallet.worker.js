@@ -1,7 +1,6 @@
+import { stripHexPrefix } from 'ethereumjs-util'
 import Wallet from 'ethereumjs-wallet'
-import ThirdPartyWallets from 'ethereumjs-wallet/thirdparty'
-
-const ethUtil = require('ethereumjs-util')
+import { fromEtherWallet } from 'ethereumjs-wallet/thirdparty'
 
 const fromMyEtherWalletV2 = (json) => {
   if (json.privKey.length !== 64) {
@@ -13,13 +12,13 @@ const fromMyEtherWalletV2 = (json) => {
 const getWalletFromPrivKeyFile = (jsonfile, password) => {
   if (jsonfile.encseed != null) return Wallet.fromEthSale(jsonfile, password)
   if (jsonfile.Crypto != null || jsonfile.crypto != null) return Wallet.fromV3(jsonfile, password, true)
-  if (jsonfile.hash != null) return ThirdPartyWallets.fromEtherWallet(jsonfile, password)
+  if (jsonfile.hash != null) return fromEtherWallet(jsonfile, password)
   if (jsonfile.publisher === 'MyEtherWallet') return fromMyEtherWalletV2(jsonfile)
   throw new Error('Invalid Wallet file')
 }
 
 const generateWallet = (privateKey) => {
-  const stripped = ethUtil.stripHexPrefix(privateKey)
+  const stripped = stripHexPrefix(privateKey)
   const buffer = Buffer.from(stripped, 'hex')
   const wallet = Wallet.fromPrivateKey(buffer)
   return wallet
