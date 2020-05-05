@@ -22,7 +22,6 @@ const initialState = {
     verifierParams: {}, // general params
   },
   // loaders
-  loginInProgress: false,
   weiBalanceLoaded: false, // Use on showing spinners
   tokenDataLoaded: false, // Use on showing spinners
   loadingUserTransactions: true,
