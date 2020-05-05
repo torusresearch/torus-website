@@ -42,7 +42,6 @@ const initialState = {
   // preferences
   selectedAddress: '',
   jwtToken: '',
-
   selectedCurrency: 'USD',
   pastTransactions: [],
   paymentTx: [],
@@ -58,6 +57,7 @@ const initialState = {
   embedState: {
     enabledVerifiers: { [GOOGLE]: true, [FACEBOOK]: true, [REDDIT]: true, [TWITCH]: true, [DISCORD]: true },
     isOAuthModalVisible: false,
+    buttonPosition: 'bottom-left',
   },
   whiteLabel: {
     isActive: false,
