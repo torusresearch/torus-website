@@ -1,6 +1,6 @@
 import randomId from '@chaitanyapotti/random-id'
 import Torus from '@toruslabs/torus.js'
-import * as ethUtil from 'ethereumjs-util'
+import { hashPersonalMessage } from 'ethereumjs-util'
 import log from 'loglevel'
 
 import config from './config'
@@ -60,7 +60,7 @@ class TorusExtended extends Torus {
 
   hashMessage(message) {
     const bufferedMessage = Buffer.from(message)
-    return ethUtil.hashPersonalMessage(bufferedMessage)
+    return hashPersonalMessage(bufferedMessage).toString('hex')
   }
 }
 

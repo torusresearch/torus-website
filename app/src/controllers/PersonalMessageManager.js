@@ -1,5 +1,5 @@
 import { ethErrors } from 'eth-json-rpc-errors'
-import * as ethUtil from 'ethereumjs-util'
+import { addHexPrefix, bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import EventEmitter from 'events'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
@@ -284,14 +284,14 @@ export default class PersonalMessageManager extends EventEmitter {
    */
   normalizeMsgData(data) {
     try {
-      const stripped = ethUtil.stripHexPrefix(data)
+      const stripped = stripHexPrefix(data)
       if (stripped.match(hexRe)) {
-        return ethUtil.addHexPrefix(stripped)
+        return addHexPrefix(stripped)
       }
     } catch (error) {
       log.debug('Message was not hex encoded, interpreting as utf8.')
     }
 
-    return ethUtil.bufferToHex(Buffer.from(data, 'utf8'))
+    return bufferToHex(Buffer.from(data, 'utf8'))
   }
 }

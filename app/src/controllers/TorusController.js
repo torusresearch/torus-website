@@ -1,7 +1,7 @@
 import createFilterMiddleware from 'eth-json-rpc-filters'
 import createSubscriptionManager from 'eth-json-rpc-filters/subscriptionManager'
 import providerAsMiddleware from 'eth-json-rpc-middleware/providerAsMiddleware'
-import * as sigUtil from 'eth-sig-util'
+import { normalize } from 'eth-sig-util'
 import { BN } from 'ethereumjs-util'
 import EventEmitter from 'events'
 import RpcEngine from 'json-rpc-engine'
@@ -546,7 +546,7 @@ export default class TorusController extends EventEmitter {
     const { version: messageVersion } = messageParameters
     try {
       const cleanMessageParameters = await this.typedMessageManager.approveMessage(messageParameters)
-      const address = toChecksumAddress(sigUtil.normalize(cleanMessageParameters.from))
+      const address = toChecksumAddress(normalize(cleanMessageParameters.from))
       const signature = await this.keyringController.signTypedData(address, cleanMessageParameters.data, messageVersion)
       this.typedMessageManager.setMsgStatusSigned(messageId, signature)
       this.getState()

@@ -28,7 +28,7 @@ export default {
   xanpoolTestAPIKEY: 'sandbox_778522fccc19a010f100f437c4aca60j',
   xanpoolApiQuoteHost: 'https://xanpool.com/api/transactions/estimate',
   GOOGLE_CLIENT_ID: '876733105116-i0hj3s53qiio5k95prpfmj0hp0gmgtor.apps.googleusercontent.com',
-  FACEBOOK_APP_ID: '2554219104599979',
+  FACEBOOK_CLIENT_ID: '2554219104599979',
   TWITCH_CLIENT_ID: 'tfppratfiloo53g1x133ofa4rc29px',
   REDDIT_CLIENT_ID: 'dcQJYPaG481XyQ',
   DISCORD_CLIENT_ID: '630308572013527060',

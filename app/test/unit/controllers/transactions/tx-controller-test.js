@@ -1,8 +1,8 @@
 /* eslint-disable */
 import assert from 'assert'
 import EventEmitter from 'events'
-import * as ethUtil from 'ethereumjs-util'
-import EthTx from 'ethereumjs-tx'
+import { toBuffer } from 'ethereumjs-util'
+import { Transaction as EthTx } from 'ethereumjs-tx'
 import ObservableStore from 'obs-store'
 import sinon from 'sinon'
 import TransactionController from '../../../../src/controllers/TransactionController'
@@ -340,7 +340,7 @@ describe('Transaction Controller', function () {
       txController
         .signTransaction('1')
         .then((rawTx) => {
-          const ethTx = new EthTx(ethUtil.toBuffer(rawTx))
+          const ethTx = new EthTx(toBuffer(rawTx), { chain: currentNetworkId })
           assert.equal(ethTx.getChainId(), currentNetworkId)
           done()
         })
