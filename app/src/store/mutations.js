@@ -35,9 +35,6 @@ export default {
   setTransactions(state, transactions) {
     state.transactions = transactions
   },
-  setLoginInProgress(state, payload) {
-    state.loginInProgress = payload
-  },
   setCurrencyData(state, data) {
     state.currencyData = { ...state.currencyData, [data.currentCurrency]: data.conversionRate }
   },
