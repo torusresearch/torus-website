@@ -26,6 +26,7 @@ const initialState = {
   tokenDataLoaded: false, // Use on showing spinners
   loadingUserTransactions: true,
   isNewUser: false,
+  isOAuthModalVisible: false,
   // account handled
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object

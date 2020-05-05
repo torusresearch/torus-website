@@ -1,28 +1,29 @@
 <template>
-  <v-container>
-    <PopupLogin v-if="!loggedIn && !loginInProgress" :login-dialog="loginDialog" @closeDialog="loginDialog = false" />
-    <PopupWidget :login-in-progress="loginInProgress" :logged-in="loggedIn" @onLogin="loginDialog = true" />
+  <v-container class="pa-0">
+    <PopupLogin :login-dialog="loginDialog" @closeDialog="cancelLogin" />
+    <PopupWidget :login-dialog="loginDialog" :logged-in="loggedIn" @onLogin="startLogin" />
   </v-container>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
-import PopupLogin from '../../components/Popup/PopupLogin'
-import PopupWidget from '../../components/Popup/PopupWidget'
+import PopupLogin from '../../containers/Popup/PopupLogin'
+import PopupWidget from '../../containers/Popup/PopupWidget'
 
 export default {
   name: 'Popup',
   components: { PopupLogin, PopupWidget },
-  data() {
-    return {
-      loginDialog: false,
-    }
-  },
   computed: mapState({
-    loginInProgress: 'loginInProgress',
-    loggedIn: (state) => state.selectedAddress !== '' && !state.loginInProgress,
+    loggedIn: (state) => state.selectedAddress !== '',
+    loginDialog: 'isOAuthModalVisible',
   }),
+  methods: {
+    ...mapActions({
+      cancelLogin: 'cancelLogin',
+      startLogin: 'startLogin',
+    }),
+  },
 }
 </script>
 

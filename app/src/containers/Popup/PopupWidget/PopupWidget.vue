@@ -89,8 +89,8 @@
     <v-btn v-if="loggedIn" color="primary" fab @click="activeWidget = !activeWidget">
       <img class="torus-widget__logo" :src="require(`../../../../public/img/icons/torus-icon-light.svg`)" />
     </v-btn>
-    <v-btn v-else-if="loginInProgress" color="primary" fab>
-      <BeatLoader v-if="loginInProgress" size="10px" color="white" />
+    <v-btn v-else-if="loginDialog" color="primary" fab>
+      <BeatLoader size="10px" color="white" />
     </v-btn>
     <v-btn v-else class="torus-widget__login-btn" color="primary" fab @click="login">
       <img class="torus-widget__login" :src="require(`../../../../public/images/login.png`)" />
@@ -103,9 +103,9 @@
 import BeatLoader from 'vue-spinner/src/BeatLoader'
 import { mapState } from 'vuex'
 
+import ShowToolTip from '../../../components/helpers/ShowToolTip'
 import { ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_TOPUP, CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ERC721 } from '../../../utils/enums'
 import { addressSlicer, significantDigits } from '../../../utils/utils'
-import ShowToolTip from '../../helpers/ShowToolTip'
 
 export default {
   name: 'PopupWidget',
@@ -115,7 +115,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    loginInProgress: {
+    loginDialog: {
       type: Boolean,
       default: false,
     },

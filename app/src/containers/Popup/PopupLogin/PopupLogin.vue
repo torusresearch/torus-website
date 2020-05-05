@@ -1,7 +1,7 @@
 <template>
   <v-layout>
     <v-flex xs12 text-center>
-      <v-dialog v-model="loginDialog" max-width="375" persistent>
+      <v-dialog :value="loginDialog && showModal" max-width="375" persistent>
         <v-card class="login-dialog-container">
           <v-layout wrap>
             <v-flex class="login-header" xs12 pt-8 pb-6 px-6>
@@ -53,7 +53,7 @@
                     type="button"
                     :title="`${t('login.loginWith')} ${verifier}`"
                     @mouseover="loginBtnHover(verifier)"
-                    @click="triggerLogin({ verifier: verifier, calledFromEmbed: true })"
+                    @click="startLogin(verifier)"
                   >
                     <img
                       v-if="verifier === activeButton || $vuetify.breakpoint.xsOnly"
@@ -80,6 +80,7 @@
 </template>
 
 <script>
+import log from 'loglevel'
 import { mapActions, mapState } from 'vuex'
 
 import { DISCORD, FACEBOOK, GOOGLE, REDDIT, TWITCH } from '../../../utils/enums'
@@ -101,6 +102,7 @@ export default {
       DISCORD,
       activeButton: GOOGLE,
       verifierCntInterval: null,
+      showModal: true,
     }
   },
   computed: {
@@ -114,7 +116,7 @@ export default {
   beforeDestroy() {
     if (this.verifierCntInterval) clearInterval(this.verifierCntInterval)
   },
-  created() {
+  mounted() {
     if (this.$vuetify.breakpoint.xsOnly) {
       let verifierCnt = 0
 
@@ -128,6 +130,16 @@ export default {
   methods: {
     loginBtnHover(verifier) {
       if (!this.$vuetify.breakpoint.xsOnly) this.activeButton = verifier
+    },
+    async startLogin(verifier) {
+      try {
+        this.showModal = false
+        await this.triggerLogin({ verifier, calledFromEmbed: true })
+      } catch (error) {
+        log.error(error)
+      } finally {
+        this.showModal = true
+      }
     },
     closeDialog() {
       this.$emit('closeDialog')

@@ -357,6 +357,7 @@ export default {
     } catch (error) {
       log.error(error)
       oauthStream.write({ err: error })
+      commit('setOAuthModalStatus', false)
       throw error
     }
   },
@@ -382,7 +383,7 @@ export default {
   deleteContact(_, payload) {
     return prefsController.deleteContact(payload)
   },
-  async handleLogin({ state, dispatch }, { calledFromEmbed, oAuthToken }) {
+  async handleLogin({ state, dispatch, commit }, { calledFromEmbed, oAuthToken }) {
     // The error in this is caught above
     const {
       userInfo: { verifierId, verifier, verifierParams },
@@ -405,7 +406,8 @@ export default {
     const { ethAddress } = data
     if (calledFromEmbed) {
       setTimeout(() => {
-        torus.continueEnable(ethAddress)
+        oauthStream.write({ selectedAddress: ethAddress })
+        commit('setOAuthModalStatus', false)
       }, 50)
     }
     // TODO: deprercate rehydrate false for the next major version bump
@@ -531,5 +533,12 @@ export default {
   },
   setErrorMessage(context, payload) {
     prefsController.handleError(payload)
+  },
+  cancelLogin({ commit }) {
+    oauthStream.write({ err: { message: 'User cancelled login' } })
+    commit('setOAuthModalStatus', false)
+  },
+  async startLogin({ commit }) {
+    commit('setOAuthModalStatus', true)
   },
 }

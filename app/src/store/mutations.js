@@ -122,6 +122,9 @@ export default {
     localThemeSet(undefined, state)
     if (storageAvailable('sessionStorage')) sessionStorage.setItem('torus-white-label', JSON.stringify(payload))
   },
+  setOAuthModalStatus(state, payload) {
+    state.isOAuthModalVisible = payload
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
@@ -134,5 +137,5 @@ function localThemeSet(payload, state) {
   }
   vuetify.framework.theme.dark = theme.isDark
   vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
-  if (storageAvailable('localStorage')) localStorage.setItem('torus-theme', payload)
+  if (storageAvailable('localStorage') && payload) localStorage.setItem('torus-theme', payload)
 }

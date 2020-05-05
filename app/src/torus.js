@@ -14,14 +14,7 @@ class TorusExtended extends Torus {
   constructor() {
     super()
     this.instanceId = randomId()
-
     this.setupMultiplex = setupMultiplex
-  }
-
-  continueEnable(selectedAddress) {
-    log.info('ENABLE WITH: ', selectedAddress)
-    const oauthStream = this.communicationMux.getStream('oauth')
-    oauthStream.write({ selectedAddress })
   }
 
   updateStaticData(payload) {
