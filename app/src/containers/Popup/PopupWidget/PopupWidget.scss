@@ -1,20 +1,24 @@
 .torus-widget {
   position: absolute;
+  --positionWidth: 0px;
+  &.login-dialog {
+    --positionWidth: 34px;
+  }
   &.top-left {
-    top: 30px;
-    left: 30px;
+    top: var(--positionWidth);
+    left: var(--positionWidth);
   }
   &.top-right {
-    top: 30px;
-    right: 30px;
+    top: var(--positionWidth);
+    right: var(--positionWidth);
   }
   &.bottom-right {
-    bottom: 30px;
-    right: 30px;
+    bottom: var(--positionWidth);
+    right: var(--positionWidth);
   }
   &.bottom-left {
-    bottom: 30px;
-    left: 30px;
+    bottom: var(--positionWidth);
+    left: var(--positionWidth);
   }
 
   &__login-btn {
@@ -53,30 +57,28 @@
     left: 25px;
     width: 330px;
     max-width: inherit;
-    background: #FFFFFF;
-    border: 1px solid #F2F2F2;
+    background: #ffffff;
+    border: 1px solid #f2f2f2;
     box-sizing: border-box;
     box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
     border-radius: 12px;
-
   }
 
   &__user-details {
-    background: #FFFFFF;
-    box-shadow: 5px 5px 10px rgba(208, 218, 254, 0.25), -5px -5px 10px #FAFBFF;
+    background: #ffffff;
+    box-shadow: 5px 5px 10px rgba(208, 218, 254, 0.25), -5px -5px 10px #fafbff;
     border-radius: 3px;
     margin-left: 20px;
     padding: 10px 0;
 
     .avatar-container {
       padding: 2px;
-      border: 2px solid #B3C0CE;
+      border: 2px solid #b3c0ce;
       border-radius: 50%;
-      background-color: #FFFFFF;
+      background-color: #ffffff;
       margin-left: -20px;
     }
   }
-
 
   .details-container {
     width: 100%;
@@ -87,7 +89,7 @@
     &__text {
       font-size: 14px;
       line-height: 16px;
-      color: #5C6C7F;
+      color: #5c6c7f;
     }
   }
 
@@ -97,23 +99,23 @@
     }
     .amount {
       font-size: 18px;
-      color: #7F8FA4;
+      color: #7f8fa4;
       font-weight: bold;
     }
     .v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
       border: 1px solid rgba(206, 208, 214, 0.3);
       background-color: white;
-      color: #7F8FA4;
+      color: #7f8fa4;
     }
   }
 
   &__transaction-details {
     .avatar-container {
-      border: 1px solid #B3C0CE;
+      border: 1px solid #b3c0ce;
       border-radius: 50%;
     }
     .caption {
-      color: #B3C0CE;
+      color: #b3c0ce;
     }
   }
 }

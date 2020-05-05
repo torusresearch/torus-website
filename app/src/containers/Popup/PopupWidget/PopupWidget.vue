@@ -1,5 +1,5 @@
 <template>
-  <div class="torus-widget" :class="[embedState.buttonPosition, loginDialog ? 'login-dialog' : '']">
+  <div class="torus-widget" :class="[loginDialog ? `login-dialog ${embedState.buttonPosition}` : '']">
     <v-card v-if="loggedIn && activeWidget" class="torus-widget__panel pa-4">
       <div class="d-flex torus-widget__user-details">
         <div class="avatar-container">
