@@ -26,7 +26,6 @@ const initialState = {
   tokenDataLoaded: false, // Use on showing spinners
   loadingUserTransactions: true,
   isNewUser: false,
-  isOAuthModalVisible: false,
   // account handled
   wallet: {}, // Account specific object
   weiBalance: {}, // Account specific object
@@ -58,6 +57,7 @@ const initialState = {
   iframeMetadata: { origin: '', name: '', icon: '' },
   embedState: {
     enabledVerifiers: { [GOOGLE]: true, [FACEBOOK]: true, [REDDIT]: true, [TWITCH]: true, [DISCORD]: true },
+    isOAuthModalVisible: false,
   },
   whiteLabel: {
     isActive: false,

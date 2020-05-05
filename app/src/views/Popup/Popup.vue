@@ -16,7 +16,7 @@ export default {
   components: { PopupLogin, PopupWidget },
   computed: mapState({
     loggedIn: (state) => state.selectedAddress !== '',
-    loginDialog: 'isOAuthModalVisible',
+    loginDialog: (state) => state.embedState.isOAuthModalVisible,
   }),
   methods: {
     ...mapActions({

@@ -111,7 +111,13 @@ export default {
     }
   },
   setEnabledVerifiers(state, payload) {
-    state.embedState.enabledVerifiers = { ...state.embedState.enabledVerifiers, ...payload }
+    state.embedState = {
+      ...state.embedState,
+      enabledVerifiers: { ...state.embedState.enabledVerifiers, ...payload },
+    }
+  },
+  setButtonPosition(state, payload) {
+    state.embedState = { ...state.embedState, buttonPosition: payload || 'bottom-left' }
   },
   setWhiteLabel(state, payload) {
     state.whiteLabel = {
@@ -123,7 +129,10 @@ export default {
     if (storageAvailable('sessionStorage')) sessionStorage.setItem('torus-white-label', JSON.stringify(payload))
   },
   setOAuthModalStatus(state, payload) {
-    state.isOAuthModalVisible = payload
+    state.embedState = {
+      ...state.embedState,
+      isOAuthModalVisible: payload,
+    }
   },
 }
 function localThemeSet(payload, state) {
