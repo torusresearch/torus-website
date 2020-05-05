@@ -294,3 +294,7 @@ export const SAFE_METHODS = [
   'metamask_watchAsset',
   'wallet_watchAsset',
 ]
+
+export const BADGES_TOPUP = 'topUp'
+export const BADGES_TRANSACTION = 'transaction'
+export const BADGES_COLLECTIBLE = 'collectible'

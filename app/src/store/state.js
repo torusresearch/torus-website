@@ -1,4 +1,14 @@
-import { LOCALE_EN, MAINNET, MAINNET_CODE, MAINNET_DISPLAY_NAME, THEME_LIGHT_BLUE_NAME, USER_INFO_REQUEST_NEW } from '../utils/enums'
+import {
+  BADGES_COLLECTIBLE,
+  BADGES_TOPUP,
+  BADGES_TRANSACTION,
+  LOCALE_EN,
+  MAINNET,
+  MAINNET_CODE,
+  MAINNET_DISPLAY_NAME,
+  THEME_LIGHT_BLUE_NAME,
+  USER_INFO_REQUEST_NEW,
+} from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -49,6 +59,11 @@ const initialState = {
     logo: '',
     topupHide: false,
     featuredBillboardHide: false,
+  },
+  badgesCompletion: {
+    [BADGES_COLLECTIBLE]: false,
+    [BADGES_TOPUP]: false,
+    [BADGES_TRANSACTION]: false,
   },
 }
 
