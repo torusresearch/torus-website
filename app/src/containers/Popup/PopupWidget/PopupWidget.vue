@@ -1,5 +1,5 @@
 <template>
-  <div class="torus-widget" :class="[loginDialog ? `login-dialog ${embedState.buttonPosition}` : '']">
+  <div class="torus-widget" :class="[loginDialog || activeWidget ? `login-dialog ${embedState.buttonPosition}` : '']">
     <v-card v-if="loggedIn && activeWidget" class="torus-widget__panel pa-4">
       <div class="d-flex torus-widget__user-details">
         <div class="avatar-container">
@@ -86,7 +86,7 @@
         </div>
       </div>
     </v-card>
-    <v-btn v-if="loggedIn" color="primary" fab @click="activeWidget = !activeWidget">
+    <v-btn v-if="loggedIn" color="primary" fab @click="showWidget">
       <img class="torus-widget__logo" :src="require(`../../../../public/img/icons/torus-icon-light.svg`)" />
     </v-btn>
     <v-btn v-else-if="loginDialog" color="primary" fab>
@@ -101,7 +101,7 @@
 
 <script>
 import BeatLoader from 'vue-spinner/src/BeatLoader'
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 import ShowToolTip from '../../../components/helpers/ShowToolTip'
 import { ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_TOPUP, CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ERC721 } from '../../../utils/enums'
@@ -169,7 +169,11 @@ export default {
     },
   },
   methods: {
+    ...mapActions({
+      toggleWidgetVisibility: 'toggleWidgetVisibility',
+    }),
     login() {
+      this.toggleWidgetVisibility(true)
       this.$emit('onLogin')
     },
     getIcon(transaction) {
@@ -200,6 +204,10 @@ export default {
         }`
       }
       return `${`${this.t(transaction.action)} ${transaction.from}`} `
+    },
+    showWidget() {
+      this.toggleWidgetVisibility(!this.activeWidget)
+      this.activeWidget = !this.activeWidget
     },
   },
 }

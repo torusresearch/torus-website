@@ -55,10 +55,12 @@ const {
 } = torusController || {}
 
 // stream to send logged in status
-const statusStream = (torus && torus.communicationMux && torus.communicationMux.getStream('status')) || fakeStream
-const oauthStream = (torus && torus.communicationMux && torus.communicationMux.getStream('oauth')) || fakeStream
-const userInfoStream = (torus && torus.communicationMux && torus.communicationMux.getStream('user_info')) || fakeStream
-const providerChangeStream = (torus && torus.communicationMux && torus.communicationMux.getStream('provider_change')) || fakeStream
+const { communicationMux = { getStream: () => fakeStream } } = torus || {}
+const statusStream = communicationMux.getStream('status')
+const oauthStream = communicationMux.getStream('oauth')
+const userInfoStream = communicationMux.getStream('user_info')
+const providerChangeStream = communicationMux.getStream('provider_change')
+const widgetStream = communicationMux.getStream('widget')
 
 const handleProviderChangeSuccess = () => {
   setTimeout(() => {
@@ -538,7 +540,12 @@ export default {
     oauthStream.write({ err: { message: 'User cancelled login' } })
     commit('setOAuthModalStatus', false)
   },
-  async startLogin({ commit }) {
+  startLogin({ commit }) {
     commit('setOAuthModalStatus', true)
+  },
+  toggleWidgetVisibility(context, payload) {
+    widgetStream.write({
+      data: payload,
+    })
   },
 }
