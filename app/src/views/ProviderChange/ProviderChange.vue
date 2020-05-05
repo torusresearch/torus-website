@@ -10,8 +10,12 @@
             class="home-link mr-1"
             alt="Torus Logo"
             width="70"
-            height="16"
-            :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+            :height="whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo ? 'inherit' : '17'"
+            :src="
+              whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
+                ? whiteLabelGlobal.logo
+                : require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
+            "
           />
           <div class="display-1 text_2--text">{{ t('dappInfo.permission') }}</div>
         </v-flex>

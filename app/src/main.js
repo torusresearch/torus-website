@@ -49,9 +49,9 @@ Vue.use(VueGtm, {
 Vue.mixin({
   computed: {
     whiteLabelGlobal() {
-      if (!storageAvailable('localStorage')) return { isWhiteLabelActive: false }
+      if (!storageAvailable('sessionStorage')) return { isWhiteLabelActive: false }
 
-      let torusWhiteLabel = localStorage.getItem('torus-white-label')
+      let torusWhiteLabel = sessionStorage.getItem('torus-white-label')
 
       try {
         torusWhiteLabel = JSON.parse(torusWhiteLabel)
