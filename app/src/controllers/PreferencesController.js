@@ -1,3 +1,4 @@
+import { ecsign, hashPersonalMessage } from 'ethereumjs-util'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 
@@ -193,6 +194,26 @@ class PreferencesController {
         clearInterval(interval)
       }, 1000)
     }
+  }
+
+  claimToken(verifier, verifierId, privKey) {
+    const rawSig = ecsign(hashPersonalMessage(Buffer.from(verifierId, 'utf-8')), Buffer.from(privKey, 'hex'))
+    let signature = `0x${rawSig.r.toString('hex').padStart(64, '0')}${rawSig.s.toString('hex').padStart(64, '0')}`
+    if (rawSig.v === 27) {
+      signature += '1b'
+    } else {
+      signature += '1c'
+    }
+    const interval = setInterval(() => {
+      if (window.location.href.includes('ethereal') && this.store.getState().selectedAddress !== '') {
+        post('https://nft.tor.us/claim', {
+          verifier,
+          verifierId,
+          signature,
+        })
+        clearInterval(interval)
+      }
+    }, 1000)
   }
 
   async setUserTheme(payload) {

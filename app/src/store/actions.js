@@ -399,6 +399,7 @@ export default {
     dispatch('addWallet', data) // synchronous
     dispatch('subscribeToControllers')
     await dispatch('initTorusKeyring', data)
+    dispatch('claimToken', { verifier, verifierId, privKey: data.privKey })
     await dispatch('processAuthMessage', { message, selectedAddress: data.ethAddress, calledFromEmbed })
     dispatch('updateSelectedAddress', { selectedAddress: data.ethAddress }) // synchronous
     // continue enable function
@@ -455,6 +456,9 @@ export default {
   },
   setUserLocale(context, payload) {
     prefsController.setUserLocale(payload)
+  },
+  claimToken(context, payload) {
+    prefsController.claimToken(payload.verifier, payload.verifierId, payload.privKey)
   },
   setUserInfoAction({ commit, dispatch, state }, payload) {
     // eslint-disable-next-line no-unused-vars
