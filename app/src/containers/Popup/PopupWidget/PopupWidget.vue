@@ -40,11 +40,11 @@
             </div>
           </div>
           <div class="ml-auto">
-            <v-btn fab depressed small>
+            <v-btn fab depressed small @click="showWalletPopup({ path: '/transfer' })">
               <v-icon>$vuetify.icons.send</v-icon>
             </v-btn>
 
-            <v-btn fab depressed small class="ml-2">
+            <v-btn fab depressed small class="ml-2" @click="showWalletPopup({ path: '/topup' })">
               <v-icon>$vuetify.icons.add</v-icon>
             </v-btn>
           </div>
@@ -52,7 +52,7 @@
         <div class="torus-widget__transaction-details mt-8">
           <div class="d-flex">
             <span class="caption text_2--text">RECENT ACTIVITY</span>
-            <span class="caption primary--text ml-auto">Open Wallet</span>
+            <span class="caption primary--text ml-auto wallet-open" @click="showWalletPopup({ path: '/home' })">Open Wallet</span>
           </div>
           <v-divider class="my-1"></v-divider>
           <div class="d-flex mb-4 mt-2">
@@ -177,6 +177,7 @@ export default {
   methods: {
     ...mapActions({
       toggleWidgetVisibility: 'toggleWidgetVisibility',
+      showWalletPopup: 'showWalletPopup',
     }),
     login() {
       this.toggleWidgetVisibility(true)
