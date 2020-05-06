@@ -55,11 +55,10 @@
                     @mouseover="loginBtnHover(verifier)"
                     @click="startLogin(verifier)"
                   >
-                    <img
-                      v-if="verifier === activeButton || $vuetify.breakpoint.xsOnly"
-                      :src="require(`../../../../public/img/icons/login-${verifier}.svg`)"
-                    />
-                    <img v-else :src="require(`../../../../public/img/icons/login-${verifier}-${$vuetify.theme.dark ? 'white' : 'grey'}.svg`)" />
+                    <img v-if="verifier === activeButton" :src="require(`../../../../public/img/icons/login-${verifier}.svg`)" />
+                    <v-icon v-else size="30" :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
+                      {{ `$vuetify.icons.${verifier}` }}
+                    </v-icon>
                   </v-btn>
                 </v-flex>
               </v-layout>

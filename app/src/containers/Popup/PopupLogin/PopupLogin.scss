@@ -24,6 +24,11 @@
   }
   
   .verifier-title {
+    img {
+      height: 18px;
+      margin-bottom: -4px;
+      margin-left: 2px;
+    }
     &__google-blue {
       color: #4285F4;
     }
@@ -62,6 +67,10 @@
     min-width: inherit;
     padding: 0;
     height: 56px;
+    img {
+      width: 32px;
+      height: 32px;
+    }
   }
   
   &.theme--dark {

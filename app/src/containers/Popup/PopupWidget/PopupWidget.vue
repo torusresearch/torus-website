@@ -10,7 +10,7 @@
           </div>
           <div class="details-container d-flex flex-column ml-2 pr-2">
             <div class="d-flex align-center">
-              <img class="details-container__icon" :src="require(`../../../../public/img/icons/login-${userInfo.verifier}-grey.svg`)" />
+              <v-icon size="12" class="details-container__icon torusGray1--text">{{ `$vuetify.icons.${userInfo.verifier}` }}</v-icon>
               <div class="details-container__text ml-2">{{ userInfo.verifierId }}</div>
               <!-- Will add when dropdown available -->
               <!-- <v-icon size="16" class="ml-auto text_2--text">$vuetify.icons.select</v-icon> -->
@@ -62,7 +62,6 @@
                   v-if="recentTransaction.type === CONTRACT_TYPE_ERC20 || recentTransaction.action === ACTIVITY_ACTION_TOPUP"
                   :src="require(`../../../../public/images/${recentTransaction.actionIcon}`)"
                   :alt="recentTransaction.from"
-                  class="mr-2"
                   height="36"
                 />
                 <img
