@@ -1,5 +1,5 @@
 <template>
-  <div class="torus-widget" :class="[loginDialog || activeWidget ? `login-dialog ${embedState.buttonPosition}` : '']">
+  <div class="torus-widget" :class="embedState.buttonPosition">
     <v-card v-if="loggedIn && activeWidget" class="torus-widget__panel pa-4">
       <div class="d-flex torus-widget__user-details">
         <div class="avatar-container">
@@ -205,9 +205,10 @@ export default {
       }
       return `${`${this.t(transaction.action)} ${transaction.from}`} `
     },
-    showWidget() {
-      this.toggleWidgetVisibility(!this.activeWidget)
-      this.activeWidget = !this.activeWidget
+    async showWidget() {
+      const currentWidgetVisibility = this.activeWidget
+      this.toggleWidgetVisibility(!currentWidgetVisibility)
+      this.activeWidget = !currentWidgetVisibility
     },
   },
 }

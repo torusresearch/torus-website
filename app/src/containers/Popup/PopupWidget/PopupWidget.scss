@@ -1,9 +1,6 @@
 .torus-widget {
   position: absolute;
-  --positionWidth: 0px;
-  &.login-dialog {
-    --positionWidth: 34px;
-  }
+  --positionWidth: 14px;
   &.top-left {
     top: var(--positionWidth);
     left: var(--positionWidth);
