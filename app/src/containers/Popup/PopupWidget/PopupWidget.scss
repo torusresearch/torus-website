@@ -18,6 +18,10 @@
     left: var(--positionWidth);
   }
 
+  &__btn {
+    z-index: 999999;
+  }
+
   &__login-btn {
     border-radius: 28px;
     .torus-widget__login {
@@ -47,21 +51,37 @@
     max-width: 30px;
     max-height: 30px;
   }
+}
 
-  &__panel {
-    position: absolute;
-    bottom: 25px;
-    left: 25px;
-    width: 330px;
-    max-width: inherit;
-    background: #ffffff;
-    border: 1px solid #f2f2f2;
-    box-sizing: border-box;
-    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
-    border-radius: 12px;
+
+.torus-widget__panel {
+  --panelPositionWidth: 35px;
+  position: absolute;
+  width: 330px;
+  max-width: inherit;
+  background: #ffffff;
+  border: 1px solid #f2f2f2;
+  box-sizing: border-box;
+  box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+  border-radius: 12px;
+  &.top-left {
+    top: var(--panelPositionWidth);
+    left: var(--panelPositionWidth);
+  }
+  &.top-right {
+    top: var(--panelPositionWidth);
+    right: var(--panelPositionWidth);
+  }
+  &.bottom-right {
+    bottom: var(--panelPositionWidth);
+    right: var(--panelPositionWidth);
+  }
+  &.bottom-left {
+    bottom: var(--panelPositionWidth);
+    left: var(--panelPositionWidth);
   }
 
-  &__user-details {
+  .torus-widget__user-details {
     background: #ffffff;
     box-shadow: 5px 5px 10px rgba(208, 218, 254, 0.25), -5px -5px 10px #fafbff;
     border-radius: 3px;
@@ -90,7 +110,7 @@
     }
   }
 
-  &__amount-details {
+  .torus-widget__amount-details {
     > div {
       line-height: 1em;
     }
@@ -106,7 +126,7 @@
     }
   }
 
-  &__transaction-details {
+  .torus-widget__transaction-details {
     .avatar-container {
       border: 1px solid #b3c0ce;
       border-radius: 50%;
@@ -115,4 +135,8 @@
       color: #b3c0ce;
     }
   }
+}
+
+::v-deep .v-dialog {
+  box-shadow: none !important;
 }

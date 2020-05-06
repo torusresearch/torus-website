@@ -1,92 +1,98 @@
 <template>
   <div class="torus-widget" :class="embedState.buttonPosition">
-    <v-card v-if="loggedIn && activeWidget" class="torus-widget__panel pa-4">
-      <div class="d-flex torus-widget__user-details">
-        <div class="avatar-container">
-          <v-avatar size="32">
-            <img :src="userInfo.profileImage" />
-          </v-avatar>
-        </div>
-        <div class="details-container d-flex flex-column ml-2 pr-2">
-          <div class="d-flex align-center">
-            <img class="details-container__icon" :src="require(`../../../../public/img/icons/login-${userInfo.verifier}-grey.svg`)" />
-            <div class="details-container__text ml-2">{{ userInfo.verifierId }}</div>
-            <v-icon size="16" class="ml-auto text_2--text">$vuetify.icons.select</v-icon>
-          </div>
-          <div class="d-flex align-center">
-            <img class="details-container__icon" :src="require(`../../../../public/img/icons/address-wallet.svg`)" />
-            <div class="details-container__text ml-2">{{ address }}</div>
-            <div class="ml-auto mr-1">
-              <ShowToolTip :address="address">
-                <v-icon size="8" class="text_2--text">$vuetify.icons.copy</v-icon>
-              </ShowToolTip>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="d-flex torus-widget__amount-details mt-5">
-        <div>
-          <div>
-            <span class="caption text_2--text">TOTAL VALUE</span>
-          </div>
-          <div>
-            <span class="amount">{{ totalPortfolioValue }} {{ selectedCurrency }}</span>
-          </div>
-        </div>
-        <div class="ml-auto">
-          <v-btn fab depressed small>
-            <v-icon>$vuetify.icons.send</v-icon>
-          </v-btn>
-
-          <v-btn fab depressed small class="ml-2">
-            <v-icon>$vuetify.icons.add</v-icon>
-          </v-btn>
-        </div>
-      </div>
-      <div class="torus-widget__transaction-details mt-8">
-        <div class="d-flex">
-          <span class="caption text_2--text">RECENT ACTIVITY</span>
-          <span class="caption primary--text ml-auto">Open Wallet</span>
-        </div>
-        <v-divider class="my-1"></v-divider>
-        <div class="d-flex mb-4 mt-2">
+    <v-dialog v-if="loggedIn" v-model="activeWidget" max-width="375" @click:outside="showWidget">
+      <div class="torus-widget__panel pa-4" :class="embedState.buttonPosition">
+        <div class="d-flex torus-widget__user-details">
           <div class="avatar-container">
-            <v-avatar size="40">
-              <img
-                v-if="recentTransaction.type === CONTRACT_TYPE_ERC20 || recentTransaction.action === ACTIVITY_ACTION_TOPUP"
-                :src="require(`../../../../public/images/${recentTransaction.actionIcon}`)"
-                :alt="recentTransaction.from"
-                class="mr-2"
-                height="36"
-              />
-              <img
-                v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC721"
-                :src="recentTransaction.actionIcon"
-                class="mr-2"
-                height="36"
-                large
-                color="primary"
-              />
-              <v-icon v-else class="mx-2" color="primary">{{ recentTransaction.actionIcon }}</v-icon>
+            <v-avatar size="32">
+              <img :src="userInfo.profileImage" />
             </v-avatar>
           </div>
-          <div class="ml-4">
-            <div class="body-2 text_2--text">{{ recentTransaction.actionText }}</div>
-            <div class="caption">
-              {{
-                recentTransaction.action === ACTIVITY_ACTION_SEND
-                  ? `${t('walletActivity.to')} ${recentTransaction.slicedTo}`
-                  : `${t('walletActivity.from')} ${recentTransaction.slicedFrom}`
-              }}
+          <div class="details-container d-flex flex-column ml-2 pr-2">
+            <div class="d-flex align-center">
+              <img class="details-container__icon" :src="require(`../../../../public/img/icons/login-${userInfo.verifier}-grey.svg`)" />
+              <div class="details-container__text ml-2">{{ userInfo.verifierId }}</div>
+              <!-- Will add when dropdown available -->
+              <!-- <v-icon size="16" class="ml-auto text_2--text">$vuetify.icons.select</v-icon> -->
+            </div>
+            <div class="d-flex align-center">
+              <img class="details-container__icon" :src="require(`../../../../public/img/icons/address-wallet.svg`)" />
+              <div class="details-container__text ml-2">
+                <ShowToolTip :address="address">
+                  {{ address }}
+                </ShowToolTip>
+              </div>
+              <div class="ml-auto mr-1">
+                <ShowToolTip :address="address">
+                  <v-icon size="8" class="text_2--text">$vuetify.icons.copy</v-icon>
+                </ShowToolTip>
+              </div>
             </div>
           </div>
-          <div class="ml-auto" :style="{ lineHeight: '0px' }">
-            <span class="body-2 text_2--text">{{ recentTransaction.totalAmountString }}</span>
+        </div>
+        <div class="d-flex torus-widget__amount-details mt-5">
+          <div>
+            <div>
+              <span class="caption text_2--text">TOTAL VALUE</span>
+            </div>
+            <div>
+              <span class="amount">{{ totalPortfolioValue }} {{ selectedCurrency }}</span>
+            </div>
+          </div>
+          <div class="ml-auto">
+            <v-btn fab depressed small>
+              <v-icon>$vuetify.icons.send</v-icon>
+            </v-btn>
+
+            <v-btn fab depressed small class="ml-2">
+              <v-icon>$vuetify.icons.add</v-icon>
+            </v-btn>
+          </div>
+        </div>
+        <div class="torus-widget__transaction-details mt-8">
+          <div class="d-flex">
+            <span class="caption text_2--text">RECENT ACTIVITY</span>
+            <span class="caption primary--text ml-auto">Open Wallet</span>
+          </div>
+          <v-divider class="my-1"></v-divider>
+          <div class="d-flex mb-4 mt-2">
+            <div class="avatar-container">
+              <v-avatar size="40">
+                <img
+                  v-if="recentTransaction.type === CONTRACT_TYPE_ERC20 || recentTransaction.action === ACTIVITY_ACTION_TOPUP"
+                  :src="require(`../../../../public/images/${recentTransaction.actionIcon}`)"
+                  :alt="recentTransaction.from"
+                  class="mr-2"
+                  height="36"
+                />
+                <img
+                  v-else-if="recentTransaction.type === CONTRACT_TYPE_ERC721"
+                  :src="recentTransaction.actionIcon"
+                  height="36"
+                  large
+                  color="primary"
+                />
+                <v-icon v-else class="mx-2" color="primary">{{ recentTransaction.actionIcon }}</v-icon>
+              </v-avatar>
+            </div>
+            <div class="ml-4 pt-1">
+              <div class="caption text_2--text text-clamp-one">{{ recentTransaction.actionText }}</div>
+              <div class="caption text-clamp-one">
+                {{
+                  recentTransaction.action === ACTIVITY_ACTION_SEND
+                    ? `${t('walletActivity.to')} ${recentTransaction.slicedTo}`
+                    : `${t('walletActivity.from')} ${recentTransaction.slicedFrom}`
+                }}
+              </div>
+            </div>
+            <div class="ml-auto pt-1" :style="{ lineHeight: '0px' }">
+              <span class="caption text_2--text">{{ recentTransaction.totalAmountString }}</span>
+            </div>
           </div>
         </div>
       </div>
-    </v-card>
-    <v-btn v-if="loggedIn" color="primary" fab @click="showWidget">
+    </v-dialog>
+    <v-btn v-if="loggedIn" class="torus-widget__btn" color="primary" fab @click="showWidget">
       <img class="torus-widget__logo" :src="require(`../../../../public/img/icons/torus-icon-light.svg`)" />
     </v-btn>
     <v-btn v-else-if="loginDialog" color="primary" fab>
