@@ -55,7 +55,7 @@
             <span class="caption primary--text ml-auto wallet-open" @click="showWalletPopup({ path: '/home' })">{{ t('dappPopup.openWallet') }}</span>
           </div>
           <v-divider class="my-1"></v-divider>
-          <div class="d-flex mb-4 mt-2">
+          <div v-if="recentTransaction" class="d-flex mb-4 mt-2">
             <div class="avatar-container">
               <v-avatar size="40">
                 <img
@@ -140,38 +140,37 @@ export default {
       address: (state) => `${state.selectedAddress.slice(0, 12)}...${state.selectedAddress.slice(-12)}`,
       userInfo: 'userInfo',
       selectedCurrency: 'selectedCurrency',
-      wallets: (state) => Object.keys(state.wallet).filter((accumulator) => accumulator !== state.selectedAddress),
+      wallets: (state) => Object.keys(state.wallet).filter((x) => x !== state.selectedAddress),
       embedState: 'embedState',
+      pastTransactions: 'pastTransactions',
     }),
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
     },
     recentTransaction() {
-      const { pastTransactions } = this.$store.state
-      const recent = pastTransactions
-        .map((transaction) => {
-          const { id, type, created_at: createdAt, to, from } = transaction
-          let totalAmountString = ''
-          if (transaction.type === CONTRACT_TYPE_ERC721) totalAmountString = transaction.symbol
-          else if (transaction.type === CONTRACT_TYPE_ERC20)
-            totalAmountString = `${significantDigits(Number.parseFloat(transaction.total_amount))} ${transaction.symbol}`
-          else totalAmountString = `${significantDigits(Number.parseFloat(transaction.total_amount))} ETH`
-          transaction.action = this.wallets.includes(to) ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
-          return {
-            id,
-            date: new Date(createdAt),
-            type,
-            action: transaction.action,
-            actionIcon: this.getIcon(transaction),
-            actionText: this.getActionText(transaction),
-            slicedTo: addressSlicer(to),
-            slicedFrom: addressSlicer(from),
-            totalAmountString,
-          }
-        })
-        .sort((a, b) => b.date - a.date)
+      const oldTx = this.pastTransactions
+      const [recent] = oldTx.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) || []
 
-      return recent.length > 0 ? recent[0] : []
+      if (!recent) return undefined
+
+      const { id, type, created_at: createdAt, to, from } = recent
+      let totalAmountString = ''
+      if (recent.type === CONTRACT_TYPE_ERC721) totalAmountString = recent.symbol
+      else if (recent.type === CONTRACT_TYPE_ERC20)
+        totalAmountString = `${significantDigits(Number.parseFloat(recent.total_amount))} ${recent.symbol}`
+      else totalAmountString = `${significantDigits(Number.parseFloat(recent.total_amount))} ETH`
+      recent.action = this.wallets.includes(to) ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
+      return {
+        id,
+        date: new Date(createdAt),
+        type,
+        action: recent.action,
+        actionIcon: this.getIcon(recent),
+        actionText: this.getActionText(recent),
+        slicedTo: addressSlicer(to),
+        slicedFrom: addressSlicer(from),
+        totalAmountString,
+      }
     },
   },
   methods: {
@@ -212,7 +211,7 @@ export default {
       }
       return `${`${this.t(transaction.action)} ${transaction.from}`} `
     },
-    async showWidget() {
+    showWidget() {
       const currentWidgetVisibility = this.activeWidget
       this.toggleWidgetVisibility(!currentWidgetVisibility)
       this.activeWidget = !currentWidgetVisibility
