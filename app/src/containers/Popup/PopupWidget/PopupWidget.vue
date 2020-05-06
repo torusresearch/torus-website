@@ -33,7 +33,7 @@
         <div class="d-flex torus-widget__amount-details mt-5">
           <div>
             <div>
-              <span class="caption text_2--text">TOTAL VALUE</span>
+              <span class="caption text_2--text">{{ t('dappPopup.totalValue') }}</span>
             </div>
             <div>
               <span class="amount">{{ totalPortfolioValue }} {{ selectedCurrency }}</span>
@@ -51,8 +51,8 @@
         </div>
         <div class="torus-widget__transaction-details mt-8">
           <div class="d-flex">
-            <span class="caption text_2--text">RECENT ACTIVITY</span>
-            <span class="caption primary--text ml-auto wallet-open" @click="showWalletPopup({ path: '/home' })">Open Wallet</span>
+            <span class="caption text_2--text">{{ t('dappPopup.recentActivity') }}</span>
+            <span class="caption primary--text ml-auto wallet-open" @click="showWalletPopup({ path: '/home' })">{{ t('dappPopup.openWallet') }}</span>
           </div>
           <v-divider class="my-1"></v-divider>
           <div class="d-flex mb-4 mt-2">
