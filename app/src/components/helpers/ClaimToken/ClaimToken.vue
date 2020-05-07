@@ -14,7 +14,7 @@
           <div>You have claimed your event Token!</div>
         </div>
 
-        <v-btn color="torusBrand4" large class="torusBrand1--text mb-10 px-12">
+        <v-btn color="torusBrand4" large class="torusBrand1--text mb-10 px-12" @click="onCancel">
           Return Home
         </v-btn>
       </v-flex>
