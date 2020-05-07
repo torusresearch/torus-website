@@ -259,7 +259,7 @@ export default {
   mounted() {
     this.setDateUpdated()
 
-    this.activeTab = this.$route.hash === '#collectibles' ? 1 : 0
+    this.activeTab = this.$route.hash === '#collectibles' ? 0 : 1
 
     this.$vuetify.goTo(0)
   },
