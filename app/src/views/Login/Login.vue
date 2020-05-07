@@ -1,5 +1,5 @@
 <template>
-  <div :class="[{ 'background-login': !loggedIn }, 'default']">
+  <div :class="[{ 'background-login': !loggedIn }, 'default', $vuetify.breakpoint.xsOnly ? 'isMobile' : '']">
     <template v-if="!loginInProgress">
       <v-layout wrap fill-height align-center justify-center class="login-panel-left" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
         <v-flex xs12 sm8 md6>

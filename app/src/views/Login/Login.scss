@@ -1,19 +1,9 @@
 .login-panel-left.torus-dark {
-  background: linear-gradient(43.08deg, #26272C 0.89%, rgba(43, 44, 49, 0.975926) 19.43%, rgba(42, 43, 48, 0.980053) 37.98%, rgba(42, 43, 48, 0.97911) 60.77%, rgba(42, 43, 48, 0.979198) 70.3%);
+  background: transparent;
 }
 
 .login-panel-right {
-  background-image: url('/images/login-bg-ethereal.png');
-  background-repeat: no-repeat;
-  background-size: auto 100%;
-  background-color: rgb(3, 100, 255);
-  background-position: right bottom;
-
-  &.login-panel-right--mobile {
-    background-position: 80% bottom;
-    background-size: 100% 100%;
-    background-position: right bottom;
-  }
+  background: transparent;
 
   .caption {
     width: 80%;
@@ -163,11 +153,13 @@ a {
 
 
 .background-login {
+  background-image: url('/images/login-bg-ethereal.png');
   position: relative;
+  background-position: right center;
   @extend .default;
 
-  @media only screen and (min-width: 1264px) {
-    background-size: 100%;
+  &.isMobile {
+    background-position: 60% center;
   }
 }
 
