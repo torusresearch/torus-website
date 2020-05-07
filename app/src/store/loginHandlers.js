@@ -1,6 +1,7 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 
+import config from '../config'
 import torus from '../torus'
 import { get } from '../utils/httpHelpers'
 import PopupHandler from '../utils/PopupHandler'
@@ -47,6 +48,7 @@ export async function twitchHandler(verifierParameters) {
   const userInfo = await get('https://api.twitch.tv/helix/users', {
     headers: {
       Authorization: `Bearer ${accessToken}`,
+      'Client-ID': config.TWITCH_CLIENT_ID,
     },
   })
   const [{ profile_image_url: profileImage, display_name: name, email, id: verifierId }] = userInfo.data || {}
