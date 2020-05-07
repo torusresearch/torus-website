@@ -5,7 +5,7 @@
         <v-flex xs12 sm8 md6>
           <v-layout v-if="!isLogout" wrap>
             <v-flex v-if="$vuetify.breakpoint.xsOnly" xs12>
-              <v-carousel v-model="selectedCarouselItem" class="mobile-carousel" vertical interval="7000" hide-delimiters show-arrows="false">
+              <v-carousel v-model="selectedCarouselItem" class="mobile-carousel" vertical hide-delimiters :show-arrows="false">
                 <v-carousel-item reverse-transition="fade-transition" transition="fade-transition">
                   <v-layout wrap>
                     <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
@@ -14,7 +14,8 @@
                     <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
                       <div class="verifier-title font-weight-bold display-1">
                         <span class="text_2--text">
-                          {{ t('login.your') }}
+                          Sign in to claim your event token and stand a chance to win the Ethereal Digital Giveaway
+                          <!-- {{ t('login.your') }}
                           <span v-if="activeButton === GOOGLE">
                             <span class="verifier-title__google-blue">G</span>
                             <span class="verifier-title__google-red">o</span>
@@ -26,12 +27,12 @@
                           <span v-else-if="activeButton === FACEBOOK" class="verifier-title__facebook">Facebook</span>
                           <span v-else-if="activeButton === REDDIT" class="verifier-title__reddit">Reddit</span>
                           <span v-else-if="activeButton === TWITCH" class="verifier-title__twitch">Twitch</span>
-                          <span v-else-if="activeButton === DISCORD" class="verifier-title__discord">Discord</span>
+                          <span v-else-if="activeButton === DISCORD" class="verifier-title__discord">Discord</span> -->
                         </span>
                       </div>
-                      <div class="font-weight-bold headline text_2--text">
+                      <!-- <div class="font-weight-bold headline text_2--text">
                         {{ t('login.digitalWallet') }}
-                      </div>
+                      </div> -->
                     </v-flex>
                     <v-flex xs10 sm8 ml-auto mr-auto mt-8>
                       <div class="headline font-weight-light text_2--text">{{ t('login.signUpIn') }}</div>
@@ -69,7 +70,7 @@
                         </v-flex>
                       </v-layout>
                     </v-flex>
-                    <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-12>
+                    <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-7>
                       <span class="body-1 text_2--text">
                         {{ t('login.acceptTerms') }}
                         <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
@@ -109,13 +110,14 @@
             </v-flex>
             <v-flex v-else xs12>
               <v-layout wrap>
-                <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
+                <v-flex class="mb-8" xs10 sm8 ml-auto mr-auto>
                   <img :src="require(`../../../public/images/torus-ethereal-logo.svg`)" />
                 </v-flex>
                 <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
-                  <div class="verifier-title font-weight-bold" :class="[$vuetify.breakpoint.xsOnly ? 'display-1' : 'display-2']">
+                  <div class="verifier-title font-weight-bold">
                     <span class="text_2--text">
-                      {{ t('login.your') }}
+                      Sign in to claim your event token and stand a chance to win the Ethereal Digital Giveaway
+                      <!-- {{ t('login.your') }}
                       <span v-if="activeButton === GOOGLE">
                         <span class="verifier-title__google-blue">G</span>
                         <span class="verifier-title__google-red">o</span>
@@ -127,12 +129,12 @@
                       <span v-else-if="activeButton === FACEBOOK" class="verifier-title__facebook">Facebook</span>
                       <span v-else-if="activeButton === REDDIT" class="verifier-title__reddit">Reddit</span>
                       <span v-else-if="activeButton === TWITCH" class="verifier-title__twitch">Twitch</span>
-                      <span v-else-if="activeButton === DISCORD" class="verifier-title__discord">Discord</span>
+                      <span v-else-if="activeButton === DISCORD" class="verifier-title__discord">Discord</span> -->
                     </span>
                   </div>
-                  <div class="font-weight-bold text_2--text" :class="[$vuetify.breakpoint.xsOnly ? 'headline' : 'display-2']">
+                  <!-- <div class="font-weight-bold text_2--text" :class="[$vuetify.breakpoint.xsOnly ? 'headline' : 'display-2']">
                     {{ t('login.digitalWallet') }}
-                  </div>
+                  </div> -->
                 </v-flex>
                 <v-flex xs10 sm8 ml-auto mr-auto :class="[$vuetify.breakpoint.xsOnly ? 'mt-8' : 'mt-11']">
                   <div class="headline font-weight-light" :class="$vuetify.theme.dark ? '' : 'text_2--text'">{{ t('login.signUpIn') }}</div>
