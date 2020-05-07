@@ -45,6 +45,7 @@ class PreferencesController {
       contacts: [],
       permissions: [],
       paymentTx: [],
+      showEtherealEvent: false,
       ...options.initState,
     }
 
@@ -211,6 +212,12 @@ class PreferencesController {
           verifierId,
           signature,
         })
+          .then(() => {
+            this.store.updateState({ showEtherealEvent: true })
+          })
+          .catch((error) => {
+            log.error(error)
+          })
         clearInterval(interval)
       }
     }, 1000)

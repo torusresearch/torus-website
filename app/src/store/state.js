@@ -50,6 +50,7 @@ const initialState = {
     topupHide: false,
     featuredBillboardHide: false,
   },
+  showEtherealEvent: false,
 }
 
 export default initialState

@@ -4,8 +4,10 @@
       <v-icon>$vuetify.icons.close</v-icon>
     </v-btn>
     <v-layout wrap>
-      <v-flex class="card-shadow text-center" py-8 mb-4 xs12>
-        <img :src="require(`../../../../public/images/status-${modalType}.svg`)" width="64" />
+      <v-flex class="elevation-1 text-center" py-8 mb-4 xs12>
+        <slot name="image">
+          <img :src="require(`../../../../public/images/status-${modalType}.svg`)" width="64" />
+        </slot>
       </v-flex>
 
       <v-flex xs12 mx-10 class="text-center">
@@ -59,6 +61,10 @@ export default {
       default: false,
     },
     goTo: {
+      type: String,
+      default: '',
+    },
+    modalImage: {
       type: String,
       default: '',
     },

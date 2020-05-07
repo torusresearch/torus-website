@@ -14,6 +14,18 @@
       <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
       <router-view></router-view>
     </v-content>
+    <v-dialog v-model="showEtherealEvent" max-width="375" persistent>
+      <MessageModal
+        :detail-text="messageModalDetails"
+        :modal-type="MESSAGE_MODAL_TYPE_SUCCESS"
+        :title="messageModalTitle"
+        @onClose="$store.state.showEtherealEvent = false"
+      >
+        <template v-slot:image>
+          <img :src="require(`../../../public/images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)" style="height: 120px;" />
+        </template>
+      </MessageModal>
+    </v-dialog>
   </div>
 </template>
 
@@ -22,20 +34,27 @@ import { mapState } from 'vuex'
 
 import Navbar from '../../components/helpers/Navbar'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
+import MessageModal from '../../components/WalletTransfer/MessageModal'
+import { MESSAGE_MODAL_TYPE_SUCCESS } from '../../utils/enums'
 
 export default {
   components: {
     Navbar,
     AccountMenu,
+    MessageModal,
   },
   data() {
     return {
       drawer: false,
+      MESSAGE_MODAL_TYPE_SUCCESS,
+      messageModalDetails: 'Please check your email',
+      messageModalTitle: 'You got a NFT Token',
     }
   },
   computed: {
     ...mapState({
       whiteLabel: 'whiteLabel',
+      showEtherealEvent: 'showEtherealEvent',
     }),
     headerItems() {
       const items = [
