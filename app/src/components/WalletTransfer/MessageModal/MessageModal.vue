@@ -64,10 +64,6 @@ export default {
       type: String,
       default: '',
     },
-    modalImage: {
-      type: String,
-      default: '',
-    },
   },
   data() {
     return {
