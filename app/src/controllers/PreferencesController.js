@@ -214,6 +214,9 @@ class PreferencesController {
         })
           .then(() => {
             this.store.updateState({ showEtherealEvent: true })
+            setTimeout(() => {
+              this.store.updateState({ showEtherealEvent: false })
+            }, 5000)
           })
           .catch((error) => {
             log.error(error)
