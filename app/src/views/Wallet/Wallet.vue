@@ -14,12 +14,16 @@
       <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
       <router-view></router-view>
     </v-content>
+    <v-dialog v-model="showEtherealEvent" max-width="375" persistent>
+      <ClaimToken @onClose="$store.state.showEtherealEvent = false" />
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 
+import ClaimToken from '../../components/helpers/ClaimToken'
 import Navbar from '../../components/helpers/Navbar'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
 
@@ -27,6 +31,7 @@ export default {
   components: {
     Navbar,
     AccountMenu,
+    ClaimToken,
   },
   data() {
     return {
@@ -36,6 +41,7 @@ export default {
   computed: {
     ...mapState({
       whiteLabel: 'whiteLabel',
+      showEtherealEvent: 'showEtherealEvent',
     }),
     headerItems() {
       const items = [

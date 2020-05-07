@@ -4,7 +4,7 @@
       <v-icon>$vuetify.icons.close</v-icon>
     </v-btn>
     <v-layout wrap>
-      <v-flex class="card-shadow text-center" py-8 mb-4 xs12>
+      <v-flex class="elevation-1 text-center" py-8 mb-4 xs12>
         <img :src="require(`../../../../public/images/status-${modalType}.svg`)" width="64" />
       </v-flex>
 

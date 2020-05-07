@@ -119,6 +119,9 @@ export default {
     localThemeSet(undefined, state)
     if (storageAvailable('sessionStorage')) sessionStorage.setItem('torus-white-label', JSON.stringify(payload))
   },
+  setShowEtherealEvent(state, payload) {
+    state.showEtherealEvent = payload
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_DARK_BLACK_NAME]
