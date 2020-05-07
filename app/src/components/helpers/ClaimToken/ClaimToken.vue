@@ -11,7 +11,7 @@
       <v-flex xs12 mx-10 class="text-center">
         <div class="mb-2 font-weight-bold text_2--text display-1">Congratulations</div>
         <div class="mb-5 text_2--text details">
-          <div>You have claimed your event Token!</div>
+          <div>You have claimed your event Token! It takes a few minutes to appear in your wallet</div>
         </div>
 
         <v-btn color="torusBrand4" large class="torusBrand1--text mb-10 px-12" @click="onCancel">
