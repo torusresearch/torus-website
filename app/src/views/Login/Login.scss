@@ -3,19 +3,21 @@
 }
 
 .login-panel-right {
-  background: linear-gradient(36.97deg, #F1F4FB 39.12%, rgba(241, 244, 251, 0) 83.1%);
+  background-image: url('/images/login-bg-ethereal.png');
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  background-color: rgb(3, 100, 255);
+  background-position: right bottom;
+
+  &.login-panel-right--mobile {
+    background-position: 80% bottom;
+    background-size: 100% 100%;
+    background-position: right bottom;
+  }
 
   .caption {
     width: 80%;
     margin: auto;
-  }
-
-  &.torus-dark {
-    background: linear-gradient(222.08deg, #26272C 1.73%, rgba(40, 41, 46, 0.988961) 42.88%, rgba(40, 41, 46, 0.989349) 61.68%, rgba(46, 47, 52, 0.960249) 86.96%);
-  }
-
-  &.login-panel-right--mobile {
-    background: none;
   }
 
   &__image {
@@ -211,5 +213,36 @@ html {
     &.v-btn--active {
       background-color: var(--v-torusGray3-base);
     }
+  }
+}
+
+.ethereal-container {
+  background: #FFFFFF !important;
+  opacity: 0.8;
+  box-shadow: 0px 14px 28px rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  .header {
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 28px;
+    text-align: center;
+    color: #3D0EBD;
+    border-bottom: 0.5px solid #3023AE;
+  }
+  .details {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 19px;
+    color: #404145;
+  }
+  .note {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 14px;
+    text-align: center;
+
+    color: #63549A;
+  }
+  .divider {
   }
 }

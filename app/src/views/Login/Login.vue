@@ -5,20 +5,11 @@
         <v-flex xs12 sm8 md6>
           <v-layout v-if="!isLogout" wrap>
             <v-flex v-if="$vuetify.breakpoint.xsOnly" xs12>
-              <v-carousel
-                v-model="selectedCarouselItem"
-                class="mobile-carousel"
-                vertical
-                interval="7000"
-                hide-delimiters
-                :touch="{ up: scrollUp, down: scrollDown }"
-                next-icon="$vuetify.icons.login_more"
-                prev-icon="$vuetify.icons.login_more"
-              >
+              <v-carousel v-model="selectedCarouselItem" class="mobile-carousel" vertical interval="7000" hide-delimiters show-arrows="false">
                 <v-carousel-item reverse-transition="fade-transition" transition="fade-transition">
                   <v-layout wrap>
                     <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
-                      <img width="180" :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
+                      <img width="300" :src="require(`../../../public/images/torus-ethereal-logo.svg`)" />
                     </v-flex>
                     <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
                       <div class="verifier-title font-weight-bold display-1">
@@ -89,36 +80,37 @@
                   </v-layout>
                 </v-carousel-item>
                 <v-carousel-item reverse-transition="fade-transition" transition="fade-transition">
-                  <v-carousel cycle height="650" interval="7000" :show-arrows="false" hide-delimiters :touch="{ up: scrollUp, down: scrollDown }">
-                    <v-layout class="login-panel-right login-panel-right--mobile">
-                      <v-flex xs10 text-center mx-auto>
-                        <v-carousel-item v-for="slide in 3" :key="slide" reverse-transition="fade-transition" transition="fade-transition">
-                          <img
-                            class="mb-6 login-panel-right__image"
-                            :src="require(`../../../public/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide}.svg`)"
-                          />
-                          <div class="headline mb-3 text_2--text">{{ t(`login.slide${slide}Title`) }}</div>
-                          <div class="caption text_2--text">{{ t(`login.slide${slide}Subtitle1`) }}</div>
-                          <div class="caption text_2--text">{{ t(`login.slide${slide}Subtitle2`) }}</div>
-                          <v-btn
-                            class="learn-more-btn mt-6"
-                            :class="{ isDark: $vuetify.theme.dark, isMobile: $vuetify.breakpoint.xsOnly }"
-                            :href="slide.link"
-                            target="_blank"
-                          >
-                            {{ t('login.learnMore') }}
-                          </v-btn>
-                        </v-carousel-item>
-                      </v-flex>
-                    </v-layout>
-                  </v-carousel>
+                  <v-layout class="login-panel-right login-panel-right--mobile fill height">
+                    <v-flex xs10 text-center mx-auto>
+                      <v-card class="ethereal-container mx-auto pa-8 px-5" width="326">
+                        <v-layout wrap>
+                          <v-flex xs12 class="text-center header pb-2 mb-4">
+                            <span>Ethereal Digital Giveaway</span>
+                          </v-flex>
+                          <v-flex class="details text-left" xs6>Masterclass</v-flex>
+                          <v-flex class="details text-right" xs6>(worth $180)</v-flex>
+                          <v-flex class="details text-left" xs6>Blinklist Premium</v-flex>
+                          <v-flex class="details text-right" xs6>(worth $120)</v-flex>
+                          <v-flex class="details text-left" xs6>Amazon Prime</v-flex>
+                          <v-flex class="details text-right" xs6>(worth $119)</v-flex>
+                          <v-flex class="details text-left" xs6>Netflix</v-flex>
+                          <v-flex class="details text-right" xs6>(worth $96)</v-flex>
+                          <v-flex class="details text-left" xs6>Zoom Pro</v-flex>
+                          <v-flex class="details text-right" xs6>(worth $90)</v-flex>
+                          <v-flex xs12 class="note mt-6">
+                            Stand a chance to win one of the above when you claim your Ethereal Token!
+                          </v-flex>
+                        </v-layout>
+                      </v-card>
+                    </v-flex>
+                  </v-layout>
                 </v-carousel-item>
               </v-carousel>
             </v-flex>
             <v-flex v-else xs12>
               <v-layout wrap>
                 <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
-                  <img width="180" :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" />
+                  <img :src="require(`../../../public/images/torus-ethereal-logo.svg`)" />
                 </v-flex>
                 <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
                   <div class="verifier-title font-weight-bold" :class="[$vuetify.breakpoint.xsOnly ? 'display-1' : 'display-2']">
@@ -200,7 +192,27 @@
         <v-flex v-if="$vuetify.breakpoint.smAndUp" sm4 md6 fill-height class="login-panel-right" :class="$vuetify.theme.dark ? 'torus-dark' : ''">
           <v-layout wrap fill-height align-center>
             <v-flex xs12 text-center>
-              <v-carousel cycle height="650" interval="7000" :show-arrows="false">
+              <v-card class="ethereal-container mx-auto pa-8 px-5" width="326">
+                <v-layout wrap>
+                  <v-flex xs12 class="text-center header pb-2 mb-4">
+                    <span>Ethereal Digital Giveaway</span>
+                  </v-flex>
+                  <v-flex class="details text-left" xs6>Masterclass</v-flex>
+                  <v-flex class="details text-right" xs6>(worth $180)</v-flex>
+                  <v-flex class="details text-left" xs6>Blinklist Premium</v-flex>
+                  <v-flex class="details text-right" xs6>(worth $120)</v-flex>
+                  <v-flex class="details text-left" xs6>Amazon Prime</v-flex>
+                  <v-flex class="details text-right" xs6>(worth $119)</v-flex>
+                  <v-flex class="details text-left" xs6>Netflix</v-flex>
+                  <v-flex class="details text-right" xs6>(worth $96)</v-flex>
+                  <v-flex class="details text-left" xs6>Zoom Pro</v-flex>
+                  <v-flex class="details text-right" xs6>(worth $90)</v-flex>
+                  <v-flex xs12 class="note mt-6">
+                    Stand a chance to win one of the above when you claim your Ethereal Token!
+                  </v-flex>
+                </v-layout>
+              </v-card>
+              <!-- <v-carousel cycle height="650" interval="7000" :show-arrows="false">
                 <v-carousel-item v-for="slide in 3" :key="slide" reverse-transition="fade-transition" transition="fade-transition">
                   <div class="d-flex flex-column fill-height justify-end pb-12">
                     <div class="text-center">
@@ -224,7 +236,7 @@
                     </div>
                   </div>
                 </v-carousel-item>
-              </v-carousel>
+              </v-carousel> -->
             </v-flex>
           </v-layout>
         </v-flex>
