@@ -15,13 +15,13 @@
       <router-view></router-view>
     </v-content>
     <v-dialog v-model="showEtherealEvent" max-width="375" persistent>
-      <ClaimToken @onClose="$store.state.showEtherealEvent = false" />
+      <ClaimToken @onClose="setShowEtherealEvent(false)" />
     </v-dialog>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 
 import ClaimToken from '../../components/helpers/ClaimToken'
 import Navbar from '../../components/helpers/Navbar'
@@ -55,6 +55,11 @@ export default {
       }
       return items
     },
+  },
+  methods: {
+    ...mapMutations({
+      setShowEtherealEvent: 'setShowEtherealEvent',
+    }),
   },
 }
 </script>
