@@ -1,6 +1,6 @@
 /* eslint-disable */
 import assert from 'assert'
-import Transaction from 'ethereumjs-tx'
+import { Transaction } from 'ethereumjs-tx'
 
 import { hexToBn, bnToHex } from '../../../../src/utils/utils'
 import TxUtils from '../../../../src/utils/TxGasUtil'
@@ -33,7 +33,7 @@ describe('txUtils', function () {
         nonce: '0x3',
         chainId: 42,
       }
-      const ethTx = new Transaction(txParams)
+      const ethTx = new Transaction(txParams, { chain: txParams.chainId })
       assert.equal(ethTx.getChainId(), 42, 'chainId is set from tx params')
     })
   })

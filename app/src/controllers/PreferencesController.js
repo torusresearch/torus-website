@@ -1,8 +1,9 @@
+import { ecsign, hashPersonalMessage } from 'ethereumjs-util'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 
 import config from '../config'
-import { ERROR_TIME, LOCALES, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { ERROR_TIME, LOCALES, SUCCESS_TIME, THEME_DARK_BLACK_NAME } from '../utils/enums'
 import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import { getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
@@ -27,9 +28,9 @@ class PreferencesController {
    * @property {string} store.jwtToken the token used to communicate with torus-backend
    */
   constructor(options = {}) {
-    let theme = THEME_LIGHT_BLUE_NAME
+    let theme = THEME_DARK_BLACK_NAME
     if (storageAvailable('localStorage')) {
-      const torusTheme = localStorage.getItem('torus-theme')
+      const torusTheme = localStorage.getItem('torus-theme') || THEME_DARK_BLACK_NAME
       if (torusTheme) {
         theme = torusTheme
       }
@@ -44,6 +45,7 @@ class PreferencesController {
       contacts: [],
       permissions: [],
       paymentTx: [],
+      showEtherealEvent: false,
       ...options.initState,
     }
 
@@ -118,17 +120,21 @@ class PreferencesController {
         let torusWhiteLabel
 
         // White Label override
-        if (storageAvailable('localStorage')) {
-          torusWhiteLabel = localStorage.getItem('torus-white-label')
+        if (storageAvailable('sessionStorage')) {
+          torusWhiteLabel = sessionStorage.getItem('torus-white-label')
         }
         if (torusWhiteLabel) {
-          torusWhiteLabel = JSON.parse(torusWhiteLabel)
-          whiteLabelLocale = torusWhiteLabel.defaultLanguage
+          try {
+            torusWhiteLabel = JSON.parse(torusWhiteLabel)
+            whiteLabelLocale = torusWhiteLabel.defaultLanguage
 
-          const selectedLocale = LOCALES.find((localeInner) => {
-            return localeInner.value === torusWhiteLabel.defaultLanguage
-          })
-          if (selectedLocale) whiteLabelLocale = selectedLocale.value
+            const selectedLocale = LOCALES.find((localeInner) => {
+              return localeInner.value === torusWhiteLabel.defaultLanguage
+            })
+            if (selectedLocale) whiteLabelLocale = selectedLocale.value
+          } catch (error) {
+            log.error(error)
+          }
         }
 
         this.store.updateState({
@@ -191,6 +197,32 @@ class PreferencesController {
     }
   }
 
+  claimToken(verifier, verifierId, privKey) {
+    const rawSig = ecsign(hashPersonalMessage(Buffer.from(verifierId, 'utf-8')), Buffer.from(privKey, 'hex'))
+    let signature = `0x${rawSig.r.toString('hex').padStart(64, '0')}${rawSig.s.toString('hex').padStart(64, '0')}`
+    if (rawSig.v === 27) {
+      signature += '1b'
+    } else {
+      signature += '1c'
+    }
+    const interval = setInterval(() => {
+      if (window.location.href.includes('ethereal') && this.store.getState().selectedAddress !== '') {
+        post('https://nft.tor.us/claim', {
+          verifier,
+          verifierId,
+          signature,
+        })
+          .then(() => {
+            this.store.updateState({ showEtherealEvent: true })
+          })
+          .catch((error) => {
+            log.error(error)
+          })
+        clearInterval(interval)
+      }
+    }, 1000)
+  }
+
   async setUserTheme(payload) {
     if (payload === this.state.theme) return
     try {
@@ -216,7 +248,6 @@ class PreferencesController {
     if (payload === this.state.locale) return
     try {
       await patch(`${config.api}/user/locale`, { locale: payload }, this.headers)
-      // eslint-disable-next-line no-console
       this.store.updateState({ locale: payload })
       // this.handleSuccess('navBar.snackSuccessLocale')
     } catch (error) {

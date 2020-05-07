@@ -1,4 +1,4 @@
-import { LOCALE_EN, MAINNET, MAINNET_CODE, MAINNET_DISPLAY_NAME, THEME_LIGHT_BLUE_NAME, USER_INFO_REQUEST_NEW } from '../utils/enums'
+import { LOCALE_EN, MAINNET, MAINNET_CODE, MAINNET_DISPLAY_NAME, THEME_DARK_BLACK_NAME, USER_INFO_REQUEST_NEW } from '../utils/enums'
 
 const initialState = {
   userInfo: {
@@ -10,7 +10,6 @@ const initialState = {
     verifierParams: {}, // general params
   },
   // loaders
-  loginInProgress: false,
   weiBalanceLoaded: false, // Use on showing spinners
   tokenDataLoaded: false, // Use on showing spinners
   loadingUserTransactions: true,
@@ -35,7 +34,7 @@ const initialState = {
   selectedCurrency: 'USD',
   pastTransactions: [],
   paymentTx: [],
-  theme: THEME_LIGHT_BLUE_NAME,
+  theme: THEME_DARK_BLACK_NAME,
   locale: LOCALE_EN,
   billboard: [],
   contacts: [],
@@ -51,6 +50,7 @@ const initialState = {
     topupHide: false,
     featuredBillboardHide: false,
   },
+  showEtherealEvent: false,
 }
 
 export default initialState

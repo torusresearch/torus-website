@@ -30,7 +30,8 @@
               <div>
                 <span class="body-2">{{ t('walletTopUp.youSend') }}</span>
                 <span class="caption float-right">
-                  {{ t('walletTopUp.min') }} {{ minOrderValue }}, {{ t('walletTopUp.max') }} {{ maxOrderValue }} USD*
+                  {{ t('walletTopUp.min') }} {{ selectedProvider === XANPOOL ? '0.1 ETH' : minOrderValue }}, {{ t('walletTopUp.max') }}
+                  {{ maxOrderValue }} USD*
                 </span>
               </div>
               <v-text-field
@@ -88,29 +89,10 @@
               {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency }} = {{ displayRateString }} {{ selectedCurrency }}
             </div>
 
-            <div class="description mt-6">
-              The process would take approximately 10 - 15 mins.
-            </div>
+            <div class="description mt-6">{{ t('walletTopUp.theProcess') }} 10 - 15 {{ t('walletTopUp.minSmall') }}.</div>
             <div class="description mt-1">
               {{ selectedProviderObj.receiveHint || t('walletTopUp.receiveHint') }}
             </div>
-            <!-- <div class="body-2">
-              {{ t('walletTopUp.receive') }}
-              <span class="caption float-right text_2--text">
-                {{ t('walletTopUp.rate') }} : 1 {{ selectedCryptoCurrency }} = {{ displayRateString }} {{ selectedCurrency }}
-              </span>
-            </div>
-            <v-text-field
-              id="receive"
-              readonly
-              placeholder="0.00"
-              :suffix="selectedCryptoCurrency"
-              :value="cryptoCurrencyValue"
-              :hint="selectedProviderObj.receiveHint || t('walletTopUp.receiveHint')"
-              persistent-hint
-              outlined
-              aria-label="Amount to Receive"
-            ></v-text-field> -->
           </v-flex>
         </v-layout>
       </v-form>
@@ -121,10 +103,11 @@
               <template v-slot:activator="{ on }">
                 <span v-on="on">
                   <v-btn
-                    class="torus-btn1 torusBrand1--text gmt-topup"
+                    class="px-8 white--text gmt-topup"
                     :disabled="!formValid || !isQuoteFetched"
                     large
                     depressed
+                    color="torusBrand1"
                     type="submit"
                     @click.prevent="sendOrder"
                   >
@@ -137,13 +120,6 @@
             <div class="description mt-1">{{ t('walletTopUp.redirectMessage') }}</div>
           </div>
         </v-flex>
-        <!-- <v-flex class="mt-10 text-center text_2--text caption">
-          {{ t('walletTopUp.contact1') }}
-          <a href="mailto:hello@tor.us?Subject=Topup%20Support%20or%20Inquiry" target="_blank">
-            {{ t('walletTopUp.contact2') }}
-          </a>
-          {{ t('walletTopUp.contact3') }}
-        </v-flex> -->
       </v-layout>
     </v-card>
     <v-snackbar v-model="snackbar" :color="snackbarColor">
@@ -156,6 +132,7 @@
 <script>
 import { mapState } from 'vuex'
 
+import { XANPOOL } from '../../../utils/enums'
 import { formatCurrencyNumber, paymentProviders, significantDigits } from '../../../utils/utils'
 import HelpTooltip from '../../helpers/HelpTooltip'
 
@@ -195,6 +172,7 @@ export default {
       snackbarText: '',
       snackbarColor: 'success',
       selectedCurrency: '',
+      XANPOOL,
     }
   },
   computed: {

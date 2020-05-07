@@ -23,9 +23,14 @@
                           small
                           :rules="[rules.required]"
                           :type="showJsonPassword ? 'text' : 'password'"
-                          :append-icon="showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on'"
-                          @click:append="showJsonPassword = !showJsonPassword"
                         >
+                          <template v-slot:append>
+                            <v-btn icon @click="showJsonPassword = !showJsonPassword">
+                              <v-icon class="text_3--text">
+                                {{ showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on' }}
+                              </v-icon>
+                            </v-btn>
+                          </template>
                           <template v-if="!$vuetify.breakpoint.xsOnly" v-slot:append-outer>
                             <v-btn
                               v-if="!walletJson"
@@ -150,8 +155,8 @@
 </template>
 
 <script>
-import * as ethUtil from 'ethereumjs-util'
-import Wallet from 'ethereumjs-wallet'
+import { stripHexPrefix } from 'ethereumjs-util'
+import { fromPrivateKey } from 'ethereumjs-wallet'
 import { mapState } from 'vuex'
 
 import ShowToolTip from '../../helpers/ShowToolTip'
@@ -223,9 +228,9 @@ export default {
       return createdWallet
     },
     generateWallet(privateKey) {
-      const stripped = ethUtil.stripHexPrefix(privateKey)
+      const stripped = stripHexPrefix(privateKey)
       const buffer = Buffer.from(stripped, 'hex')
-      const wallet = Wallet.fromPrivateKey(buffer)
+      const wallet = fromPrivateKey(buffer)
       return wallet
     },
     createBlob(mime, string_) {

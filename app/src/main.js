@@ -9,6 +9,7 @@ import App from './App.vue'
 import { vuetify } from './plugins'
 import router from './router'
 import store from './store'
+import { storageAvailable } from './utils/utils'
 // import torus from './torus'
 
 log.enableAll()
@@ -39,8 +40,8 @@ log.info('VUE_APP_TORUS_BUILD_ENV', process.env.VUE_APP_TORUS_BUILD_ENV)
 
 Vue.use(VueGtm, {
   id: 'GTM-PDF8MFV', // Your GTM single container ID or array of container ids ['GTM-xxxxxxx', 'GTM-yyyyyyy']
-  enabled: true, // defaults to true.
-  debug: true, // Whether or not display console logs debugs (optional)
+  enabled: buildEnvironment === 'production' || buildEnvironment === 'testing', // defaults to true. change on production
+  debug: false, // Whether or not display console logs debugs (optional)
   loadScript: true,
   vueRouter: router, // Pass the router instance to automatically sync with router (optional)
 })
@@ -48,8 +49,16 @@ Vue.use(VueGtm, {
 Vue.mixin({
   computed: {
     whiteLabelGlobal() {
-      const torusWhiteLabel = localStorage.getItem('torus-white-label')
-      return torusWhiteLabel ? { logo: JSON.parse(torusWhiteLabel).logo, isWhiteLabelActive: true } : { isWhiteLabelActive: false }
+      if (!storageAvailable('sessionStorage')) return { isWhiteLabelActive: false }
+
+      let torusWhiteLabel = sessionStorage.getItem('torus-white-label')
+
+      try {
+        torusWhiteLabel = JSON.parse(torusWhiteLabel)
+        return torusWhiteLabel ? { logo: torusWhiteLabel.logo, isWhiteLabelActive: true } : { isWhiteLabelActive: false }
+      } catch (error) {
+        return { isWhiteLabelActive: false }
+      }
     },
   },
   methods: {

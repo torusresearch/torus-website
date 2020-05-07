@@ -30,7 +30,8 @@
           <div class="qr-container mb-8">
             <VueQr
               v-show="$vuetify.theme.dark"
-              :color-dark="'#2F3136'"
+              :color-dark="'#252529'"
+              :color-light="'#FCFCFC'"
               :background-color="'#2F3136'"
               :logo-background-color="'#2F3136'"
               :logo-src="require(`../../../../public/img/icons/t-fill.svg`)"
@@ -45,7 +46,7 @@
               v-show="!$vuetify.theme.dark"
               ref="address-qr"
               :logo-src="require(`../../../../public/img/icons/t-fill.svg`)"
-              :margin="1"
+              :margin="20"
               :logo-scale="0.28"
               :text="selectedAddress"
               :size="800"

@@ -1,6 +1,5 @@
+import { BN } from 'ethereumjs-util'
 import Web3 from 'web3'
-
-const { BN } = require('ethereumjs-util')
 
 const web3 = new Web3()
 const { sha3 } = web3.utils

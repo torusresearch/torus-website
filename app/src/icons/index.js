@@ -1,3 +1,4 @@
+import AccountIcon from './AccountIcon.vue'
 import ActivitiesIcon from './ActivitiesIcon.vue'
 import AddIcon from './AddIcon.vue'
 import AddressIcon from './AddressIcon.vue'
@@ -21,7 +22,6 @@ import CopyIcon from './CopyIcon.vue'
 import DownloadIcon from './DownloadIcon.vue'
 import EthIcon from './EthIcon.vue'
 import GlobeIcon from './GlobeIcon.vue'
-import ImportIcon from './ImportIcon.vue'
 import InfoIcon from './InfoIcon.vue'
 import KeyIcon from './KeyIcon.vue'
 import ListIcon from './ListIcon.vue'
@@ -151,9 +151,6 @@ export default {
   balance: {
     component: BalanceIcon,
   },
-  import: {
-    component: ImportIcon,
-  },
   info: {
     component: InfoIcon,
   },
@@ -219,5 +216,8 @@ export default {
   },
   twitch: {
     component: VerifierTwitchIcon,
+  },
+  account: {
+    component: AccountIcon,
   },
 }

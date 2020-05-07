@@ -1,5 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const express = require('express')
-const compression = require('compression')
 
 const app = express()
 const fs = require('fs')
@@ -14,7 +14,6 @@ const certOptions = {
   cert: fs.readFileSync(path.resolve('../ssl/server.crt')),
 }
 // app.all(/^(?!(\/notsupported)).*$/, ensureCompatibleBrowser)
-app.use(compression())
 // Prevents cross-frame clickjacking attacks from external websites
 const securityHeaderMiddleware = (request, response, next) => {
   // response.setHeader('Content-Security-Policy', 'default-src https: "unsafe-inline"')

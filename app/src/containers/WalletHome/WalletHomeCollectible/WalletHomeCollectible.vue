@@ -31,7 +31,6 @@
         <!-- Asset Desktop View -->
         <v-expand-transition>
           <v-card v-if="!$vuetify.breakpoint.xsOnly" class="mx-auto asset elevation-1" max-width="344" :ripple="false" @click="toggleDetails($event)">
-            <!-- <v-img :src="asset.image" height="140px" :style="{ backgroundColor: asset.color }"></v-img> -->
             <div class="text-center">
               <img :src="asset.image" style="width: auto; height: 140px;" :alt="asset.name || `${selectedContract.name} #${asset.tokenId}`" />
             </div>
@@ -62,7 +61,6 @@
         <!-- Asset Mobile View -->
         <v-expand-transition>
           <v-card v-if="$vuetify.breakpoint.xsOnly" class="asset elevation-1 asset--mobile" @click="toggleDetails($event)">
-            <!-- <v-list-item :style="{ backgroundColor: asset.color }"> -->
             <v-list-item>
               <v-list-item-content class="asset-text">
                 <div
@@ -104,6 +102,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   data() {
     return {
@@ -129,14 +129,9 @@ export default {
       assetActive: false,
     }
   },
-  computed: {
-    platform() {
-      return 'Ethereum Blockchain'
-    },
-    collectibles() {
-      return this.$store.getters.collectibleBalances
-    },
-  },
+  computed: mapGetters({
+    collectibles: 'collectibleBalances',
+  }),
   watch: {
     collectibles(newValue, oldValue) {
       if (newValue !== oldValue) {

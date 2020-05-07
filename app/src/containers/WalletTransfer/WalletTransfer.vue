@@ -20,7 +20,7 @@
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
               <div v-else>
                 <span id="account-balance" class="display-2 text_2--text mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
-                <span class="caption text_2--text">{{ selectedCurrency }}</span>
+                <span class="caption text_2--text">{{ selectedItem && selectedItem.symbol }}</span>
               </div>
             </div>
             <div class="caption text-right currency-rate align-self-end text_2--text ml-auto">
@@ -60,7 +60,7 @@
                           <img
                             :src="require(`../../../public/images/logos/${token.logo}`)"
                             height="20px"
-                            onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = 'images/logos/eth.svg';"
                             :alt="token.name"
                           />
                         </v-list-item-icon>
@@ -78,7 +78,7 @@
                           <img
                             :src="require(`../../../public/images/logos/${token.logo}`)"
                             height="20px"
-                            onerror="if (this.src !== 'eth.svg') this.src = 'images/logos/eth.svg';"
+                            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = 'images/logos/eth.svg';"
                             :alt="token.name"
                           />
                         </v-list-item-icon>
@@ -209,18 +209,21 @@
                     <v-btn
                       id="coin-mode-btn"
                       small
-                      class="send-mode"
-                      :class="!!toggle_exclusive ? 'torus-btn1 torusBrand1--text' : 'active'"
+                      class="send-mode mr-2"
+                      :class="!!toggle_exclusive ? `torus-btn1 ${$vuetify.theme.isDark ? 'torusGray3--text' : 'torusGray1--text'}` : 'active'"
+                      :disabled="!toggle_exclusive"
                       :outlined="!!toggle_exclusive"
                       @click="changeSelectedToCurrency(0)"
                     >
                       {{ selectedItem && selectedItem.symbol }}
                     </v-btn>
                     <v-btn
+                      v-if="selectedCurrency !== (selectedItem && selectedItem.symbol)"
                       id="currency-mode-btn"
                       small
                       class="send-mode"
-                      :class="!toggle_exclusive ? 'torus-btn1 torusBrand1--text' : 'active'"
+                      :class="!toggle_exclusive ? `torus-btn1 ${$vuetify.theme.isDark ? 'torusGray3--text' : 'torusGray1--text'}` : 'active'"
+                      :disabled="!!toggle_exclusive"
                       :outlined="!toggle_exclusive"
                       @click="changeSelectedToCurrency(1)"
                     >
@@ -236,10 +239,15 @@
                 :display-amount="displayAmount"
                 :selected-currency="selectedCurrency"
                 :currency-data="currencyData"
-                :currency-multiplier="getCurrencyMultiplier"
+                :currency-multiplier="currencyMultiplier"
                 @onSelectSpeed="onSelectSpeed"
               />
-              <v-flex v-if="contractType !== CONTRACT_TYPE_ERC721" xs12 mb-6 class="text-right">
+              <v-flex v-if="contractType === CONTRACT_TYPE_ERC721" xs12 mb-6 class="text-right">
+                <div class="subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
+                <div class="headline text_2--text">{{ getEthAmount(gas, activeGasPrice) }} ETH</div>
+                <div class="caption text_2--text">{{ gasPriceInCurrency }} {{ selectedCurrency }}</div>
+              </v-flex>
+              <v-flex v-else xs12 mb-6 class="text-right">
                 <div class="subtitle-2">{{ t('walletTransfer.totalCost') }}</div>
                 <div class="headline text_2--text">{{ totalCost || 0 }} {{ totalCostSuffix }}</div>
                 <div class="caption text_2--text">{{ convertedTotalCost ? convertedTotalCostDisplay : `~ 0 ${selectedCurrency}` }}</div>
@@ -258,9 +266,11 @@
                 </v-btn>
                 <v-dialog v-model="confirmDialog" max-width="375" persistent>
                   <TransferConfirm
-                    :to-address="toAddress"
+                    :to-address="toEthAddress"
+                    :to-verifier-id="toAddress"
                     :to-verifier="selectedVerifier"
-                    :from-address="userInfo.verifierId"
+                    :from-address="selectedAddress"
+                    :from-verifier-id="userInfo.verifierId"
                     :from-verifier="userInfo.verifier"
                     :network-type="networkType"
                     :converted-amount="
@@ -277,6 +287,7 @@
                     :is-non-fungible-token="contractType === CONTRACT_TYPE_ERC721"
                     :speed-selected="timeTaken"
                     :transaction-fee="gasPriceInCurrency"
+                    :transaction-fee-eth="`${getEthAmount(gas, activeGasPrice)} ETH`"
                     :selected-currency="selectedCurrency"
                     :send-eth-to-contract-error="sendEthToContractError"
                     :total-cost="`${totalCost || 0} ${totalCostSuffix}`"
@@ -303,7 +314,7 @@
               <ComponentLoader v-if="!weiBalanceLoaded || !tokenDataLoaded" class="mt-2" />
               <div v-else>
                 <span id="account-balance" class="display-2 text_2--text mr-1">{{ selectedItem && selectedItem.computedBalanceRounded }}</span>
-                <span class="caption text_2--text">{{ selectedCurrency }}</span>
+                <span class="caption text_2--text">{{ selectedItem && selectedItem.symbol }}</span>
               </div>
             </div>
             <div class="caption text-right currency-rate align-self-end text_2--text ml-auto">
@@ -332,7 +343,7 @@ import erc721TransferABI from 'human-standard-collectible-abi'
 import erc20TransferABI from 'human-standard-token-abi'
 import log from 'loglevel'
 import { QrcodeCapture } from 'vue-qrcode-reader'
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import { isAddress, toChecksumAddress } from 'web3-utils'
 
 import TransferConfirm from '../../components/Confirm/TransferConfirm'
@@ -416,6 +427,11 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      tokenBalances: 'tokenBalances',
+      collectibles: 'collectibleBalances',
+      currencyMultiplier: 'currencyMultiplier',
+    }),
     ...mapState([
       'selectedCurrency',
       'weiBalanceLoaded',
@@ -429,26 +445,27 @@ export default {
       'networkType',
     ]),
     verifierOptions() {
-      const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
-      return verifiers.map((verifier) => {
-        verifier.name = this.t(verifier.name)
-        return verifier
-      })
+      try {
+        const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
+        return verifiers.map((verifier) => {
+          verifier.name = this.t(verifier.name)
+          return verifier
+        })
+      } catch (error) {
+        return []
+      }
     },
     randomName() {
       return `torus-${torus.instanceId}`
     },
     finalBalancesArray() {
-      return this.$store.getters.tokenBalances.finalBalancesArray || []
+      return this.tokenBalances.finalBalancesArray || []
     },
     finalBalancesArrayTokens() {
-      return this.$store.getters.tokenBalances.finalBalancesArray.filter((token) => token.tokenAddress !== '0x') || []
+      return this.tokenBalances.finalBalancesArray.filter((token) => token.tokenAddress !== '0x') || []
     },
     finalBalancesArrayEthOnly() {
-      return this.$store.getters.tokenBalances.finalBalancesArray.filter((token) => token.tokenAddress === '0x') || []
-    },
-    collectibles() {
-      return this.$store.getters.collectibleBalances
+      return this.tokenBalances.finalBalancesArray.filter((token) => token.tokenAddress === '0x') || []
     },
     selectedItem() {
       return this.finalBalancesArray.find((x) => x.tokenAddress === this.selectedTokenAddress)
@@ -462,19 +479,13 @@ export default {
       if (this.tokenAddress === '0x' || !isAddress(this.tokenAddress)) return '0x'
       return toChecksumAddress(this.tokenAddress)
     },
-    getCurrencyMultiplier() {
-      const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
-      return new BigNumber(currencyMultiplierNumber)
-    },
     getCurrencyTokenRate() {
-      const currencyMultiplier = this.getCurrencyMultiplier
       let tokenRateMultiplierNumber = 1
       if (this.contractType === CONTRACT_TYPE_ERC20) tokenRateMultiplierNumber = this.tokenRates[this.selectedTokenAddress.toLowerCase()] || 0
       const tokenRateMultiplier = new BigNumber(tokenRateMultiplierNumber)
-      return currencyMultiplier.times(tokenRateMultiplier)
+      return this.currencyMultiplier.times(tokenRateMultiplier)
     },
     convertedTotalCostDisplay() {
-      // TODO
       return `~ ${significantDigits(this.convertedTotalCost)} ${this.selectedCurrency}`
     },
     currencyBalanceDisplay() {
@@ -585,7 +596,7 @@ export default {
         const emailObject = {
           from_name: this.userInfo.name,
           to_email: this.toAddress,
-          total_amount: significantDigits(this.amount.toFormat(5), false, 5),
+          total_amount: significantDigits(this.amount.toFormat(5), false, 5).toString(),
           token: typeToken.toString(),
           etherscanLink,
           currency: this.selectedCurrency,
@@ -683,13 +694,12 @@ export default {
                 resolve(new BigNumber('0'))
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC20) {
-            const { selectedAddress } = this
             const value = `0x${this.amount
               .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
               .dp(0, BigNumber.ROUND_DOWN)
               .toString(16)}`
-            this.getTransferMethod(this.contractType, selectedAddress, toAddress, value)
-              .estimateGas({ from: selectedAddress })
+            this.getTransferMethod(this.contractType, this.selectedAddress, toAddress, value)
+              .estimateGas({ from: this.selectedAddress })
               .then((response) => {
                 log.info(response, 'gas')
                 resolve(new BigNumber(response || '0'))
@@ -699,9 +709,8 @@ export default {
                 resolve(new BigNumber('0'))
               })
           } else if (this.contractType === CONTRACT_TYPE_ERC721) {
-            const { selectedAddress } = this
-            this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId)
-              .estimateGas({ from: selectedAddress })
+            this.getTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId)
+              .estimateGas({ from: this.selectedAddress })
               .then((response) => {
                 resolve(new BigNumber(response || '0'))
               })
@@ -785,6 +794,7 @@ export default {
       }
     },
     changeSelectedToCurrency(value) {
+      if (this.toggle_exclusive === value) return
       this.toggle_exclusive = value
       const currencyRate = this.getCurrencyTokenRate
       if (value === 0) {
@@ -816,7 +826,6 @@ export default {
     async sendCoin() {
       const toAddress = this.toEthAddress
       const fastGasPrice = `0x${this.activeGasPrice.times(new BigNumber(10).pow(new BigNumber(9))).toString(16)}`
-      const { selectedAddress } = this
       if (this.contractType === CONTRACT_TYPE_ETH) {
         const value = `0x${this.amount
           .times(new BigNumber(10).pow(new BigNumber(18)))
@@ -825,7 +834,7 @@ export default {
         log.info(this.gas.toString())
         torus.web3.eth.sendTransaction(
           {
-            from: selectedAddress,
+            from: this.selectedAddress,
             to: toAddress,
             value,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
@@ -837,8 +846,8 @@ export default {
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = 'Your transfer cannot be processed'
-                this.messageModalDetails = 'Please try again'
+                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
               }
               log.error(error)
             } else {
@@ -847,8 +856,8 @@ export default {
 
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = 'Your transfer is being processed'
-              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
+              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
+              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
             }
           }
         )
@@ -857,9 +866,9 @@ export default {
           .times(new BigNumber(10).pow(new BigNumber(this.selectedItem.decimals)))
           .dp(0, BigNumber.ROUND_DOWN)
           .toString(16)}`
-        this.getTransferMethod(this.contractType, selectedAddress, toAddress, value).send(
+        this.getTransferMethod(this.contractType, this.selectedAddress, toAddress, value).send(
           {
-            from: selectedAddress,
+            from: this.selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice,
           },
@@ -869,8 +878,8 @@ export default {
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = 'Your transfer cannot be processed'
-                this.messageModalDetails = 'Please try again'
+                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
               }
               log.error(error)
             } else {
@@ -879,15 +888,15 @@ export default {
 
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = 'Your transfer is being processed'
-              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
+              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
+              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
             }
           }
         )
       } else if (this.contractType === CONTRACT_TYPE_ERC721) {
-        this.getTransferMethod(this.contractType, selectedAddress, toAddress, this.assetSelected.tokenId).send(
+        this.getTransferMethod(this.contractType, this.selectedAddress, toAddress, this.assetSelected.tokenId).send(
           {
-            from: selectedAddress,
+            from: this.selectedAddress,
             gas: this.gas.eq(new BigNumber('0')) ? undefined : `0x${this.gas.toString(16)}`,
             gasPrice: fastGasPrice,
           },
@@ -897,8 +906,8 @@ export default {
               if (!error.message.match(regEx)) {
                 this.messageModalShow = true
                 this.messageModalType = MESSAGE_MODAL_TYPE_FAIL
-                this.messageModalTitle = 'Your transfer cannot be processed'
-                this.messageModalDetails = 'Please try again'
+                this.messageModalTitle = this.t('walletTransfer.transferFailTitle')
+                this.messageModalDetails = this.t('walletTransfer.transferFailMessage')
               }
               log.error(error)
             } else {
@@ -906,8 +915,8 @@ export default {
               this.sendEmail(this.assetSelected.name, transactionHash)
               this.messageModalShow = true
               this.messageModalType = MESSAGE_MODAL_TYPE_SUCCESS
-              this.messageModalTitle = 'Your transfer is being processed'
-              this.messageModalDetails = 'Your transaction will be completed in approximately {time} min'
+              this.messageModalTitle = this.t('walletTransfer.transferSuccessTitle')
+              this.messageModalDetails = this.t('walletTransfer.transferSuccessMessage')
             }
           }
         )
@@ -984,7 +993,7 @@ export default {
           this.toAddress = qrParameters.get('to')
         } else {
           this.toAddress = ''
-          this.qrErrorMsg = 'Incorrect QR Code'
+          this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
         }
       } catch (error) {
         if (isAddress(result)) {
@@ -992,7 +1001,7 @@ export default {
           this.toAddress = result
         } else {
           this.toAddress = ''
-          this.qrErrorMsg = 'Incorrect QR Code'
+          this.qrErrorMsg = this.t('walletTransfer.incorrectQR')
         }
       } finally {
         this.contactSelected = this.toAddress

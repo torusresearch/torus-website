@@ -1,48 +1,17 @@
 <template>
-  <svg width="16px" height="14px" viewBox="0 0 16 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: sketchtool 55.2 (78181) - https://sketchapp.com -->
-    <title>E1B764FF-ACA4-4767-81CD-A2CBACA53BC1</title>
-    <desc>Created with sketchtool.</desc>
-    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-      <g transform="translate(-483.000000, -484.000000)">
-        <g transform="translate(150.000000, 60.000000)">
-          <g transform="translate(333.000000, 422.000000)">
-            <g transform="translate(0.000000, 1.000000)">
-              <rect fill="#000000" opacity="0" x="0" y="0" width="16" height="16" />
-              <path
-                :d="`M2.66666667,6 C2.66666667,4 4.66666667,2.66666667 7.25,2.66666667 L8.75,2.66666667 C11.3333333,
-                  2.66666667 13.3333333,4 13.3333333,6.66666667`"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                :d="`M13.3333333,10 C13.3333333,12 11.3333333,13.3333333 8.75,13.3333333 L7.25,13.3333333 C4.66666667,
-                  13.3333333 2.66666667,12 2.66666667,9.33333333`"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <polyline
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                points="12 6.66666667 13.3333333 8 14.6666667 6.66666667"
-              />
-              <polyline
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                points="4 9.33333333 2.66666667 8 1.33333333 9.33333333"
-              />
-            </g>
-          </g>
-        </g>
-      </g>
-    </g>
+  <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M5.85032 2.02065C5.3461 1.54852 4.69174 1.28971 3.99755 1.29032C2.74823 1.29142 1.66968 2.14803
+        1.37189 3.33629C1.35021 3.42279 1.27315 3.48387 1.18397 3.48387H0.259726C0.13879 3.48387 0.0469193
+        3.37408 0.0692903 3.25523C0.418274 1.402 2.04537 0 4 0C5.07174 0 6.04502 0.421548 6.76314
+        1.10782L7.33919 0.531774C7.58305 0.287919 8 0.460629 8 0.8055V2.96774C8 3.18153 7.82669 3.35484
+        7.6129 3.35484H5.45066C5.10579 3.35484 4.93308 2.93789 5.17694 2.69402L5.85032 2.02065ZM0.387097
+        4.64516H2.54934C2.89421 4.64516 3.06692 5.06211 2.82306 5.30598L2.14968 5.97937C2.6539 6.45152
+        3.30831 6.71032 4.00252 6.70969C5.25119 6.70856 6.33018 5.85253 6.62811 4.66374C6.64979 4.57724
+        6.72685 4.51616 6.81603 4.51616H7.74029C7.86123 4.51616 7.9531 4.62595 7.93073 4.74481C7.58173
+        6.598 5.95463 8 4 8C2.92826 8 1.95498 7.57845 1.23685 6.89218L0.660806 7.46823C0.416952 7.71208 0
+        7.53937 0 7.1945V5.03226C0 4.81847 0.173306 4.64516 0.387097 4.64516Z"
+      fill="currentColor"
+    />
   </svg>
 </template>

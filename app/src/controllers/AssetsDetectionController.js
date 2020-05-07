@@ -136,7 +136,7 @@ export default class AssetsDetectionController {
         {
           description,
           image: imageURL || (contractImage || '').replace('=s60', '=s240'),
-          name,
+          name: name || `${contractName}#${tokenID}`,
           contractAddress,
           contractName,
           contractSymbol,

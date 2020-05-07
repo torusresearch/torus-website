@@ -1,17 +1,10 @@
 .promotion-card {
   height: 159px;
-  .v-card__text {
-    height: 157px;
-    @media screen and (max-width: 600px) {
-      height: inherit;
-    }
-  }
-  img {
-    height: auto;
-    width: 50px;
-  }
   .torus-btn1--whitelabel {
     border: 1px solid var(--v-torusBrand1-base) !important;
+  }
+  &.isMobile {
+    height: inherit;
   }
 }
 .more-details-container {

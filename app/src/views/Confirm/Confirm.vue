@@ -7,8 +7,12 @@
             class="home-link mr-1"
             alt="Torus Logo"
             width="70"
-            height="16"
-            :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+            :height="whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo ? 'inherit' : '17'"
+            :src="
+              whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
+                ? whiteLabelGlobal.logo
+                : require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
+            "
           />
           <div class="display-1 text_2--text">{{ t('dappTransfer.confirmation') }}</div>
         </v-flex>
@@ -42,13 +46,13 @@
       </v-layout>
       <v-divider class="mx-6 my-4"></v-divider>
       <v-layout mx-6 my-4 wrap>
-        <v-flex xs4 class="pt-3">
+        <v-flex xs3 class="pt-3">
           <div class="caption">
-            Total Cost
+            {{ t('walletTransfer.totalCost') }}
             <!-- {{ t('dappTransfer.total') }} -->
           </div>
         </v-flex>
-        <v-flex xs8>
+        <v-flex xs9>
           <v-text-field v-model="displayAmountValue" :hint="displayAmountConverted" outlined persistent-hint readonly></v-text-field>
         </v-flex>
       </v-layout>
@@ -59,7 +63,7 @@
           :active-gas-price-confirm="gasPrice"
           :selected-currency="selectedCurrency"
           :currency-data="currencyData"
-          :currency-multiplier="getCurrencyMultiplier"
+          :currency-multiplier="currencyMultiplier"
           :symbol="'ETH'"
           :is-confirm="true"
           @onSelectSpeed="onSelectSpeed"
@@ -67,10 +71,10 @@
       </v-layout>
       <v-divider class="mt-10 my-4"></v-divider>
       <v-layout mx-6 my-4 wrap>
-        <v-flex xs4 class="pt-3">
+        <v-flex xs3 class="pt-3">
           <div class="caption">{{ t('dappTransfer.youSend') }}</div>
         </v-flex>
-        <v-flex xs8>
+        <v-flex xs9>
           <v-text-field
             :value="`${costOfTransaction} ${
               isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE ? '+ ' + significantDigits(gasCost) + 'ETH' : ''
@@ -81,7 +85,73 @@
             readonly
           ></v-text-field>
         </v-flex>
-        <v-flex xs12 mt-10>
+        <v-flex xs12 mb-3 mt-3>
+          <v-dialog v-model="detailsDialog" width="600px">
+            <template v-slot:activator="{ on }">
+              <div id="more-details-link" class="subtitle-2 float-right dialog-launcher primary--text" v-on="on">
+                {{ t('dappTransfer.moreDetails') }}
+              </div>
+            </template>
+            <v-card class="pa-4 more-details-container">
+              <v-card-text class="text_1--text">
+                <v-layout wrap>
+                  <v-flex xs4 sm2>
+                    {{ t('dappTransfer.rate') }}
+                    <span class="float-right mr-4">:</span>
+                  </v-flex>
+                  <v-flex id="currency-rate" xs8 sm10 class="text_2--text">{{ getCurrencyRate }}</v-flex>
+                  <v-flex xs4 sm2>
+                    {{ t('dappTransfer.network') }}
+                    <span class="float-right mr-4">:</span>
+                  </v-flex>
+                  <v-flex xs8 sm10 class="text_2--text">
+                    <span id="network" class="text-capitalize">{{ network.networkName || network.host }}</span>
+                  </v-flex>
+                  <v-flex xs4 sm2>
+                    {{ t('dappTransfer.type') }}
+                    <span class="float-right mr-4">:</span>
+                  </v-flex>
+                  <v-flex id="type" xs8 sm10 class="text_2--text">{{ header }}</v-flex>
+                  <v-flex v-if="txData || txDataParams !== ''" xs2>
+                    {{ t('dappTransfer.data') }}
+                    <span class="float-right mr-4">:</span>
+                  </v-flex>
+                  <v-flex xs12 mt-1>
+                    <v-card v-if="txDataParams !== ''" flat color="background_3">
+                      <v-card-text>
+                        <pre>{{ txDataParams }}</pre>
+                      </v-card-text>
+                    </v-card>
+                  </v-flex>
+                  <v-flex v-if="txData" xs12 mt-4>
+                    <div class="mb-1">Hex {{ t('dappTransfer.data') }}:</div>
+                    <v-card flat color="background_3" style="word-break: break-all;">
+                      <v-card-text>{{ txData }}</v-card-text>
+                    </v-card>
+                  </v-flex>
+                </v-layout>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn id="less-details-link" color="primary" text @click="detailsDialog = false">
+                  {{ t('dappTransfer.lessDetails') }}
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </v-flex>
+        <v-flex v-if="(topUpErrorShow || canShowError)" xs12 mb-4 class="text-right">
+          <div class="caption error--text">{{ errorMsg }}</div>
+          <div v-if="topUpErrorShow" class="caption mt-1">
+            {{ t('dappTransfer.pleaseTopup1') }}
+            <v-btn color="primary" class="mx-1 px-2 caption" small outlined @click="topUp">{{ t('dappTransfer.pleaseTopup2') }}</v-btn>
+            {{ t('dappTransfer.pleaseTopup3') }}
+          </div>
+        </v-flex>
+        <v-flex v-if="transactionCategory === TOKEN_METHOD_APPROVE" xs12 mb-4>
+          <div class="caption error--text">{{ `${t('dappTransfer.byConfirming1')} ${displayAmountValue} ${t('dappTransfer.byConfirming2')}.` }}</div>
+        </v-flex>
+        <v-flex xs12 mt-4>
           <v-layout mx-n2>
             <v-flex xs6 px-2>
               <v-btn block text large class="text_2--text" @click="triggerDeny">{{ t('dappTransfer.cancel') }}</v-btn>
@@ -103,9 +173,11 @@
                   </v-btn>
                 </template>
                 <TransferConfirm
-                  :to-address="receiver"
-                  :from-address="userInfo.verifierId"
+                  :dapp-name="origin.hostname"
+                  :from-address="sender"
+                  :from-verifier-id="userInfo.verifierId"
                   :from-verifier="userInfo.verifier"
+                  :to-address="amountTo"
                   :network-type="network"
                   :converted-amount="displayAmountConverted"
                   :display-amount="displayAmountValue"
@@ -113,7 +185,12 @@
                   :asset-selected="assetDetails"
                   :is-non-fungible-token="isNonFungibleToken"
                   :transaction-fee="txFees"
+                  :transaction-fee-eth="`${gasCost} ETH`"
                   :selected-currency="selectedCurrency"
+                  :total-cost="`${costOfTransaction} ${
+                    isOtherToken && transactionCategory !== TOKEN_METHOD_APPROVE ? '+ ' + significantDigits(gasCost) + 'ETH' : ''
+                  }`"
+                  :total-cost-converted="costOfTransactionConverted"
                   @onClose="confirmDialog = false"
                   @onConfirm="triggerSign"
                 ></TransferConfirm>
@@ -131,8 +208,12 @@
             class="home-link mr-1"
             alt="Torus Logo"
             width="70"
-            height="16"
-            :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+            :height="whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo ? 'inherit' : '17'"
+            :src="
+              whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
+                ? whiteLabelGlobal.logo
+                : require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
+            "
           />
           <div class="display-1 text_2--text">{{ t('dappTransfer.permission') }}</div>
         </v-flex>
@@ -141,11 +222,11 @@
         <v-flex xs12 mb-2>
           <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
 
-          <v-card flat class="grey lighten-3">
+          <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
-              <div class="d-flex request-from">
-                <a :href="origin.href" target="_blank" class="caption torusBrand1--text">{{ origin.hostname }}</a>
-                <v-btn x-small color="white" class="link-icon ml-auto" :href="origin.href" target="_blank">
+              <div class="d-flex request-from align-center">
+                <a :href="origin.href" target="_blank" class="caption font-weight-medium torusBrand1--text">{{ origin.hostname }}</a>
+                <v-btn x-small :color="$vuetify.theme.isDark ? 'torusBlack2' : 'white'" class="link-icon ml-auto" :href="origin.href" target="_blank">
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
                 </v-btn>
               </div>
@@ -157,15 +238,16 @@
         <v-flex xs12 mt-0 mb-2 mx-6>
           <div class="d-flex align-center">
             <div class="mr-2 note-list__icon">
-              <img :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
+              <v-icon v-if="whiteLabelGlobal.isWhiteLabelActive" small class="torusBrand1--text">$vuetify.icons.check_circle</v-icon>
+              <img v-else :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
             </div>
             <div class="caption text_2--text text-capitalize">{{ t('dappTransfer.dataSmall') }}</div>
           </div>
         </v-flex>
         <v-flex xs12 mb-4 mx-6>
-          <v-list class="note-list grey lighten-3">
+          <v-list class="note-list lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-list-item class="pa-0">
-              <v-list-item-content flat class="pa-1 background" :class="$vuetify.theme.dark ? 'lighten-4' : 'lighten-3'">
+              <v-list-item-content flat class="pa-1" :class="[$vuetify.theme.dark ? 'lighten-4' : 'background lighten-3']">
                 <v-card flat class="caption text-left pa-2 word-break typedMessageBox">
                   <v-expansion-panels v-if="type === TX_PERSONAL_MESSAGE || type === TX_MESSAGE">
                     <p :class="$vuetify.theme.dark ? '' : 'text_2--text'" style="text-align: left;">{{ message }}</p>
@@ -181,7 +263,7 @@
                   </v-expansion-panels>
 
                   <v-expansion-panels v-else-if="type === TX_TYPED_MESSAGE && Array.isArray(typedMessages)">
-                    <v-expansion-panel>
+                    <v-expansion-panel :class="$vuetify.theme.isDark ? 'dark--theme' : ''">
                       <v-expansion-panel-header>{{ t('dappTransfer.dataSmall') }}</v-expansion-panel-header>
                       <v-expansion-panel-content v-for="(typedMessage, index) in typedMessages" :key="index">
                         <VueJsonPretty :path="'res'" :data="typedMessage" :showline="true" :deep="5"></VueJsonPretty>
@@ -414,13 +496,12 @@ export default {
         ? 'images/file-signature.svg'
         : 'images/user.svg'
     },
-    getCurrencyMultiplier() {
-      log.info(this.selectedCurrency)
+    currencyMultiplier() {
       const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
       return new BigNumber(currencyMultiplierNumber)
     },
     getCurrencyRate() {
-      const ethConverted = this.getCurrencyMultiplier
+      const ethConverted = this.currencyMultiplier
       const tokenPriceConverted = this.isOtherToken ? this.tokenPrice.times(ethConverted) : ethConverted
       const selectedToken = this.isOtherToken ? this.selectedToken : 'ETH'
       return `1 ${selectedToken} = ${significantDigits(tokenPriceConverted)} ${this.selectedCurrency} @ ${this.currencyRateDate}`
@@ -430,12 +511,12 @@ export default {
     gasPrice(newGasPrice, oldGasPrice) {
       if (!newGasPrice.eq(oldGasPrice)) {
         this.gasCost = newGasPrice.times(this.gasEstimate).div(new BigNumber('10').pow(new BigNumber('9')))
-        this.txFees = this.gasCost.times(this.getCurrencyMultiplier)
+        this.txFees = this.gasCost.times(this.currencyMultiplier)
         const ethCost = this.value.plus(this.gasCost)
         this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
         const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
         this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
-        this.totalUsdCost = significantDigits(ethCost.times(this.getCurrencyMultiplier))
+        this.totalUsdCost = significantDigits(ethCost.times(this.currencyMultiplier))
         if (this.balance.lt(ethCost) && !this.canShowError) {
           this.errorMsg = this.t('dappTransfer.insufficientFunds')
           this.topUpErrorShow = true
@@ -523,7 +604,7 @@ export default {
             }
           }
           this.tokenPrice = new BigNumber(tokenRateMultiplier)
-          this.amountTokenValueConverted = this.tokenPrice.times(this.amountValue).times(this.getCurrencyMultiplier)
+          this.amountTokenValueConverted = this.tokenPrice.times(this.amountValue).times(this.currencyMultiplier)
         } else if (methodParams && contractParams.erc721) {
           log.info(methodParams, contractParams)
           this.isNonFungibleToken = true
@@ -546,20 +627,20 @@ export default {
         this.currencyRateDate = this.getDate()
         this.receiver = to // address of receiver
         this.value = finalValue // value of eth sending
-        this.dollarValue = significantDigits(finalValue.times(this.getCurrencyMultiplier))
+        this.dollarValue = significantDigits(finalValue.times(this.currencyMultiplier))
         this.gasPrice = gweiGasPrice // gas price in gwei
-        this.balanceUsd = significantDigits(this.balance.times(this.getCurrencyMultiplier)) // in usd
+        this.balanceUsd = significantDigits(this.balance.times(this.currencyMultiplier)) // in usd
         this.gasEstimate = new BigNumber(hexToNumber(gas)) // gas number
         this.txData = data // data hex
         this.txDataParams = txDataParameters !== '' ? JSON.stringify(txDataParameters, null, 2) : ''
         this.sender = sender // address of sender
         this.gasCost = gweiGasPrice.times(this.gasEstimate).div(new BigNumber('10').pow(new BigNumber('9')))
-        this.txFees = this.gasCost.times(this.getCurrencyMultiplier)
+        this.txFees = this.gasCost.times(this.currencyMultiplier)
         const ethCost = finalValue.plus(this.gasCost)
         this.totalEthCost = ethCost // significantDigits(ethCost.toFixed(5), false, 3) || 0
         const gasCostLength = Math.max(significantDigits(this.gasCost).toString().length, significantDigits(ethCost).toString().length)
         this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
-        this.totalUsdCost = significantDigits(ethCost.times(this.getCurrencyMultiplier))
+        this.totalUsdCost = significantDigits(ethCost.times(this.currencyMultiplier))
         if (reason) {
           this.errorMsg = reason
           this.canShowError = true

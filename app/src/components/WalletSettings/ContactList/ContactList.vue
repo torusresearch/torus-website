@@ -12,7 +12,7 @@
               class="search-name caption"
               dense
               hide-details
-              placeholder="Search by name"
+              :placeholder="t('walletSettings.searchByName')"
               outlined
               aria-label="Search Name"
             ></v-text-field>
@@ -28,7 +28,7 @@
               item-text="name"
               item-value="value"
               aria-label="Filter Type"
-              placeholder="Filter by type"
+              :placeholder="t('walletSettings.filterByType')"
             ></v-select>
           </div>
         </div>
@@ -98,7 +98,7 @@
                 class="select-verifier-container"
                 outlined
                 append-icon="$vuetify.icons.select"
-                :items="verifierOptions"
+                :items="verifierOptionsNew"
                 item-text="name"
                 item-value="value"
                 aria-label="Select Contact Verifier"
@@ -169,11 +169,13 @@ export default {
       stateContacts: 'contacts',
     }),
     verifierOptions() {
-      const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
-      return verifiers.map((verifier) => {
-        verifier.name = this.t(verifier.name)
-        return verifier
-      })
+      return [
+        {
+          name: 'All',
+          value: '',
+        },
+        ...this.verifierOptionsNew,
+      ]
     },
     verifierPlaceholder() {
       const verifierLocale = ALLOWED_VERIFIERS.find((verifier) => verifier.value === this.selectedVerifier).name
@@ -187,8 +189,20 @@ export default {
           const nameFilter = new RegExp(this.searchName, 'i')
           if (!contact.name.match(nameFilter)) return false
         }
-        return contact
+        return !!contact
       })
+    },
+    verifierOptionsNew() {
+      try {
+        const verifiers = JSON.parse(JSON.stringify(ALLOWED_VERIFIERS))
+        return verifiers.map((verifier) => {
+          verifier.name = this.t(verifier.name)
+          return verifier
+        })
+      } catch (error) {
+        log.error(error)
+        return []
+      }
     },
   },
   methods: {

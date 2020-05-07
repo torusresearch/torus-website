@@ -14,12 +14,20 @@
         border-radius: 50%;
         background: #FFFFFF;
         box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+        &.isDark {
+          background-color: var(--v-torusBlack2-base);
+        }
       }
-      img, .v-icon {
+      img, .v-icon, .dapp-icon {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+      }
+      .dapp-icon {
+        font-weight: bold;
+        font-size: 14px;
+        line-height: 16px;
       }
     }
   }
@@ -30,12 +38,19 @@
       line-height: 14px;
       text-align: center;
       color: #5C6C7F;
-      width: 78px;
+      width: 84px;
       height: 14px;
       margin-top: 4px;
+      &--address {
+        font-size: 10px;
+      }
     }
     .network-container {
       margin-top: -24px;
+      min-width: 162px;
+      &.isMobile {
+        min-width: 112px;
+      }
     }
   }
 

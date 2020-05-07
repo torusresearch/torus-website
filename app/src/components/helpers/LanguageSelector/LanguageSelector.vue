@@ -8,7 +8,7 @@
       </v-btn>
 
       <v-list-item v-else v-on="on">
-        <v-list-item-action class="ml-1 mr-1">
+        <v-list-item-action class="ml-1 mr-1" :class="{ isMobile: $vuetify.breakpoint.xsOnly }">
           <img :src="require('../../../../public/img/icons/globe.svg')" width="15" height="30" alt="Torus language globe" />
         </v-list-item-action>
         <v-list-item-content>

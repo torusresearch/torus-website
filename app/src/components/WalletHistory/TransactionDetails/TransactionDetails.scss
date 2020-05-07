@@ -50,6 +50,8 @@
   .details-label {
     font-weight: 400;
     flex: 1;
+    max-width: 125px;
+    padding-right: 17px;
   }
 
   .details-value {
@@ -62,5 +64,11 @@
   }
   .etherscan-lnk {
     text-decoration: none;
+  }
+
+  &.isMobile {
+    .details-label {
+      padding-right: 4px;
+    }
   }
 }

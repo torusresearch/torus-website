@@ -9,6 +9,7 @@ import torus from '../torus'
 import ConfirmHandler from '../utils/ConfirmHandler'
 import {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
+  THEME_DARK_BLACK_NAME,
   TOKEN_METHOD_TRANSFER_FROM,
   TX_MESSAGE,
   TX_PERSONAL_MESSAGE,
@@ -49,6 +50,7 @@ if (storageAvailable('sessionStorage')) {
       locale: state.locale,
       billboard: state.billboard,
       contacts: state.contacts,
+      whiteLabel: state.whiteLabel,
       // pastTransactions: state.pastTransactions
     }),
   })
@@ -338,17 +340,10 @@ VuexStore.subscribe((mutation, state) => {
 })
 
 if (storageAvailable('localStorage')) {
-  const torusTheme = localStorage.getItem('torus-theme')
-  const torusWhiteLabel = localStorage.getItem('torus-white-label')
-  if (torusWhiteLabel) {
-    VuexStore.dispatch('setWhiteLabel', JSON.parse(torusWhiteLabel))
-  } else if (torusTheme) {
+  const torusTheme = localStorage.getItem('torus-theme') || THEME_DARK_BLACK_NAME
+  if (torusTheme) {
     VuexStore.commit('setTheme', torusTheme)
   }
 }
-
-// torus.torusController.networkController.networkStore.subscribe(state => {
-//   VuexStore.dispatch('updateNetworkId', { networkId: state })
-// })
 
 export default VuexStore

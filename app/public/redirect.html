@@ -135,8 +135,25 @@
         if (torusTheme) {
           theme = torusTheme.split('-')[0]
         }
+        if (storageAvailable('sessionStorage')) {
+          const torusWhiteLabel = sessionStorage.getItem('torus-white-label')
+          if (torusWhiteLabel !== null) {
+            try {
+              const whiteLabelData = JSON.parse(torusWhiteLabel)
+              if(whiteLabelData.theme) {
+                theme = whiteLabelData.theme.isDark ? 'dark' : 'light'
+                if(whiteLabelData.theme.colors && whiteLabelData.theme.colors.torusBrand1) {
+                  const beats = document.querySelectorAll('.spinner .beat')
+                  beats.forEach((beat) => beat.style.backgroundColor = whiteLabelData.theme.colors.torusBrand1)
+                }              
+              }
+            } catch (error) {
+              console.error(error)
+            }
+          }
+        }
       }
-
+      
       if (theme === 'dark') {
         document.querySelector('h1.title').style.color = '#d3d3d4'
         document.querySelector('body').style.backgroundColor = '#24252A'

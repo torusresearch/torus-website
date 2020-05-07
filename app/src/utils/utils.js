@@ -1,6 +1,6 @@
 import assert from 'assert'
 import BigNumber from 'bignumber.js'
-import * as ethUtil from 'ethereumjs-util'
+import { addHexPrefix, BN, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
 import { isAddress } from 'web3-utils'
 
@@ -51,8 +51,6 @@ import {
   WYRE,
   XANPOOL,
 } from './enums'
-
-const { BN } = ethUtil
 
 const networkToNameMap = {
   [ROPSTEN]: ROPSTEN_DISPLAY_NAME,
@@ -179,7 +177,7 @@ export function sufficientBalance(txParameters, hexBalance) {
  *
  */
 export function bnToHex(inputBn) {
-  return ethUtil.addHexPrefix(inputBn.toString(16))
+  return addHexPrefix(inputBn.toString(16))
 }
 
 /**
@@ -190,7 +188,7 @@ export function bnToHex(inputBn) {
  *
  */
 export function hexToBn(inputHex) {
-  return new BN(ethUtil.stripHexPrefix(inputHex), 16)
+  return new BN(stripHexPrefix(inputHex), 16)
 }
 
 /**
@@ -216,7 +214,7 @@ export function BnMultiplyByFraction(targetBN, numerator, denominator) {
  */
 export function hexToText(hex) {
   try {
-    const stripped = ethUtil.stripHexPrefix(hex)
+    const stripped = stripHexPrefix(hex)
     const buff = Buffer.from(stripped, 'hex')
     return buff.toString('utf8')
   } catch (error) {
@@ -413,14 +411,14 @@ export const paymentProviders = {
     enforceMax: true,
   },
   [XANPOOL]: {
-    line1: 'PayNow/ InstaPay/ FPS/ GoJekPay/ UPI/ PromptPay/ VietelPay/ DuitNow',
+    line1: 'PayNow/ InstaPay/ FPS/ GoJekPay/ UPI/ PromptPay/ ViettelPay/ DuitNow',
     line2: '2.5% buying, 3% selling',
     line3: '$2,500 / day',
     line4: 'ETH, USDT',
     status: ACTIVE,
     logoExtension: SVG,
     supportPage: 'mailto:support@xanpool.com',
-    minOrderValue: 1,
+    minOrderValue: 30,
     maxOrderValue: 2500,
     validCurrencies: ['SGD', 'HKD', 'MYR', 'PHP', 'INR', 'VND', 'THB', 'IDR'],
     validCryptoCurrencies: ['ETH', 'USDT'],
@@ -501,10 +499,10 @@ export const fakeStream = {
   write: () => {},
 }
 
-export function formatSmallNumbers(number, currency = 'usd') {
-  const finalNumber = currency.toLowerCase() === 'usd' ? number.toFixed(2) : number.toFixed(5)
+export function formatSmallNumbers(number, currency = 'usd', noTilde = false) {
+  const finalNumber = currency.toLowerCase() === 'usd' ? Number(number).toFixed(2) : Number(number).toFixed(5)
 
-  return `${currency.toLowerCase() === 'usd' ? '' : '~ '}${Number(finalNumber)} ${currency.toUpperCase()}`
+  return `${currency.toLowerCase() === 'usd' || noTilde ? '' : '~ '}${Number(finalNumber)} ${currency.toUpperCase()}`
 }
 
 export const getUserLanguage = () => {

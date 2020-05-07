@@ -1,10 +1,11 @@
 /* eslint-disable */
 import assert from 'assert'
-import * as ethUtil from 'ethereumjs-util'
-import * as sigUtil from 'eth-sig-util'
-import EthereumTx from 'ethereumjs-tx'
-import TorusKeyring from '../../../src/controllers/TorusKeyring'
+import { recoverPersonalSignature, recoverTypedSignatureLegacy, recoverTypedSignature_v4, recoverTypedSignature } from 'eth-sig-util'
+import { Transaction as EthereumTx } from 'ethereumjs-tx'
+import { bufferToHex, bufferToInt, ecrecover, pubToAddress, rlphash, toBuffer, stripHexPrefix } from 'ethereumjs-util'
 import log from 'loglevel'
+
+import TorusKeyring from '../../../src/controllers/TorusKeyring'
 
 const TYPE_STR = 'Torus Keyring'
 
@@ -51,7 +52,7 @@ describe('torus-keyring', () => {
       await keyring.deserialize([testAccount.key])
       assert.strictEqual(keyring.wallets.length, 1, 'has one wallet')
       const serialized = await keyring.serialize()
-      assert.strictEqual(serialized[0], ethUtil.stripHexPrefix(testAccount.key))
+      assert.strictEqual(serialized[0], stripHexPrefix(testAccount.key))
       const accounts = await keyring.getAccounts()
       assert.deepStrictEqual(accounts, [testAccount.address], 'accounts match expected')
     })
@@ -114,7 +115,7 @@ describe('torus-keyring', () => {
 
     it('reliably can decode messages it signs', async () => {
       const message = 'hello there!'
-      const messageHashHex = ethUtil.bufferToHex(ethUtil.rlphash(message))
+      const messageHashHex = bufferToHex(rlphash(message))
       await keyring.deserialize([privateKey])
       await keyring.addRandomAccounts(9)
       const addresses = await keyring.getAccounts()
@@ -122,12 +123,12 @@ describe('torus-keyring', () => {
       signatures.forEach((sgn, index) => {
         const address = addresses[index]
 
-        const r = ethUtil.toBuffer(sgn.slice(0, 66))
-        const s = ethUtil.toBuffer(`0x${sgn.slice(66, 130)}`)
-        const v = ethUtil.bufferToInt(ethUtil.toBuffer(`0x${sgn.slice(130, 132)}`))
-        const m = ethUtil.toBuffer(messageHashHex)
-        const pub = ethUtil.ecrecover(m, v, r, s)
-        const adr = `0x${ethUtil.pubToAddress(pub).toString('hex')}`
+        const r = toBuffer(sgn.slice(0, 66))
+        const s = toBuffer(`0x${sgn.slice(66, 130)}`)
+        const v = bufferToInt(toBuffer(`0x${sgn.slice(130, 132)}`))
+        const m = toBuffer(messageHashHex)
+        const pub = ecrecover(m, v, r, s)
+        const adr = `0x${pubToAddress(pub).toString('hex')}`
 
         assert.strictEqual(adr, address, 'recovers address from signature correctly')
       })
@@ -156,7 +157,7 @@ describe('torus-keyring', () => {
       const desiredOutput = '0xa12164fed66719297d2cf407bb314d07feb12c02'
       keyring.wallets.push({
         getAddress() {
-          return ethUtil.toBuffer(desiredOutput)
+          return toBuffer(desiredOutput)
         },
       })
 
@@ -213,15 +214,15 @@ describe('torus-keyring', () => {
 
   it('should sign personal message', async () => {
     const keyringController = new TorusKeyring([testAccount.key])
-    const data = ethUtil.bufferToHex(Buffer.from('Hello from test', 'utf8'))
+    const data = bufferToHex(Buffer.from('Hello from test', 'utf8'))
     const signature = await keyringController.signPersonalMessage(testAccount.address, data)
-    const recovered = sigUtil.recoverPersonalSignature({ data, sig: signature })
+    const recovered = recoverPersonalSignature({ data, sig: signature })
     assert(testAccount.address === recovered)
   })
 
   it('should sign typed message V1', async () => {
     const keyringController = new TorusKeyring([testAccount.key])
-    const typedMsgParams = [
+    const typedMessageParameters = [
       {
         name: 'Message',
         type: 'string',
@@ -233,14 +234,14 @@ describe('torus-keyring', () => {
         value: '1337',
       },
     ]
-    const signature = await keyringController.signTypedData(testAccount.address, typedMsgParams, 'V1')
-    const recovered = sigUtil.recoverTypedSignatureLegacy({ data: typedMsgParams, sig: signature })
+    const signature = await keyringController.signTypedData(testAccount.address, typedMessageParameters, 'V1')
+    const recovered = recoverTypedSignatureLegacy({ data: typedMessageParameters, sig: signature })
     assert(testAccount.address === recovered)
   })
 
   it('should sign typed message V3', async () => {
     const keyringController = new TorusKeyring([testAccount.key])
-    const msgParams = {
+    const messageParameters = {
       domain: {
         chainId: 1,
         name: 'Ether Mail',
@@ -271,14 +272,14 @@ describe('torus-keyring', () => {
         ],
       },
     }
-    const signature = await keyringController.signTypedData(testAccount.address, JSON.stringify(msgParams), 'V3')
-    const recovered = sigUtil.recoverTypedSignature({ data: msgParams, sig: signature })
+    const signature = await keyringController.signTypedData(testAccount.address, JSON.stringify(messageParameters), 'V3')
+    const recovered = recoverTypedSignature({ data: messageParameters, sig: signature })
     assert(testAccount.address === recovered)
   })
 
   it('should sign typed message V4', async () => {
     const keyringController = new TorusKeyring([testAccount.key])
-    const msgParams = {
+    const messageParameters = {
       domain: {
         chainId: 1,
         name: 'Ether Mail',
@@ -326,25 +327,25 @@ describe('torus-keyring', () => {
       },
     }
 
-    const signature = await keyringController.signTypedData(testAccount.address, JSON.stringify(msgParams), 'V4')
-    const recovered = sigUtil.recoverTypedSignature_v4({ data: msgParams, sig: signature })
+    const signature = await keyringController.signTypedData(testAccount.address, JSON.stringify(messageParameters), 'V4')
+    const recovered = recoverTypedSignature_v4({ data: messageParameters, sig: signature })
     assert(testAccount.address === recovered)
   })
 
   it('should fail when sign typed message format is wrong', async () => {
     const keyringController = new TorusKeyring([testAccount.key])
-    const msgParams = [{}]
+    const messageParameters = [{}]
     let error1
     try {
-      await keyringController.signTypedData(testAccount.address, msgParams, 'V1')
-    } catch (e) {
-      error1 = e
+      await keyringController.signTypedData(testAccount.address, messageParameters, 'V1')
+    } catch (error) {
+      error1 = error
     }
     let error2
     try {
-      await keyringController.signTypedData(testAccount.address, msgParams, 'V3')
-    } catch (e) {
-      error2 = e
+      await keyringController.signTypedData(testAccount.address, messageParameters, 'V3')
+    } catch (error) {
+      error2 = error
     }
     assert(error1.message.includes('Expect argument to be non-empty array'))
     assert(error2.message.includes("Cannot read property 'EIP712Domain' of undefined"))
@@ -361,7 +362,7 @@ describe('torus-keyring', () => {
       to: '0x51253087e6f8358b5f10c0a94315d69db3357859',
       value: '0x5208',
     }
-    const ethTransaction = new EthereumTx({ ...transaction })
+    const ethTransaction = new EthereumTx(transaction, { chain: 'ropsten' })
     const signature = await keyringController.signTransaction(ethTransaction, testAccount.address)
     assert(signature !== '')
   })

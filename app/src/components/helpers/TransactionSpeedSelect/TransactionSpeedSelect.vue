@@ -1,10 +1,10 @@
 <template>
   <v-flex v-if="isConfirm" xs12>
-    <v-layout wrap>
-      <v-flex xs4>
-        <span class="caption">Transaction Fee</span>
+    <v-layout wrap align-center>
+      <v-flex xs3>
+        <span class="caption">{{ t('walletTransfer.transactionFee') }}</span>
       </v-flex>
-      <v-flex xs8>
+      <v-flex xs9>
         <v-layout v-if="!isAdvanceOption" mx-n2 xs12>
           <v-flex xs6 px-2 mb-1>
             <div
@@ -13,7 +13,7 @@
               @click="selectSpeed('average', averageGasPrice)"
             >
               <div class="d-flex">
-                <img :src="require(`../../../../public/img/icons/speed-bicycle.svg`)" class="mr-2 ml-auto" />
+                <img :src="require(`../../../../public/img/icons/speed-bicycle${$vuetify.theme.isDark ? '-dark' : ''}.svg`)" class="mr-2 ml-auto" />
                 <div class="mr-auto">
                   <div class="btn-speed__speed">~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
                   <div class="btn-speed__price">{{ getGasDisplayString(averageGasPrice) }}</div>
@@ -28,7 +28,7 @@
               @click="selectSpeed('fastest', fastestGasPrice)"
             >
               <div class="d-flex">
-                <img :src="require(`../../../../public/img/icons/speed-car.svg`)" class="mr-2 ml-auto" />
+                <img :src="require(`../../../../public/img/icons/speed-car${$vuetify.theme.isDark ? '-dark' : ''}.svg`)" class="mr-2 ml-auto" />
                 <div class="mr-auto">
                   <div class="btn-speed__speed">~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
                   <div class="btn-speed__price">{{ getGasDisplayString(fastestGasPrice) }}</div>
@@ -39,10 +39,6 @@
         </v-layout>
         <v-layout v-if="isAdvanceOption" align-center>
           <v-flex xs12>
-            <!-- <div class="subtitle-2 font-weight-bold">
-              {{ getEthAmountDisplay(gas, activeGasPrice) }}
-              <span class="caption text_2--text">( ~ {{ getGasDisplayString(activeGasPrice) }} )</span>
-            </div> -->
             <v-text-field :value="getEthAmountDisplay(gas, activeGasPrice)" outlined readonly hide-details></v-text-field>
           </v-flex>
         </v-layout>
@@ -67,9 +63,7 @@
     <v-layout>
       <v-flex class="body-2 mb-1">
         <span>
-          Transfer Fee
-          <!-- {{ t('walletTransfer.selectSpeed') }}
-          <HelpTooltip :title="t('walletTransfer.transferFee')" :description="t('walletTransfer.transferFeeDesc')" /> -->
+          {{ t('walletTransfer.transferFee') }}
         </span>
         <TransferAdvanceOption
           :symbol="symbol"
@@ -90,7 +84,7 @@
           @click="selectSpeed('average', averageGasPrice)"
         >
           <div class="d-flex">
-            <img :src="require(`../../../../public/img/icons/speed-bicycle.svg`)" class="mr-2 ml-auto" />
+            <img :src="require(`../../../../public/img/icons/speed-bicycle${$vuetify.theme.isDark ? '-dark' : ''}.svg`)" class="mr-2 ml-auto" />
             <div class="mr-auto">
               <div class="btn-speed__speed">~ {{ averageGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
               <div class="btn-speed__price">{{ getGasDisplayString(averageGasPrice) }}</div>
@@ -105,7 +99,7 @@
           @click="selectSpeed('fastest', fastestGasPrice)"
         >
           <div class="d-flex">
-            <img :src="require(`../../../../public/img/icons/speed-car.svg`)" class="mr-2 ml-auto" />
+            <img :src="require(`../../../../public/img/icons/speed-car${$vuetify.theme.isDark ? '-dark' : ''}.svg`)" class="mr-2 ml-auto" />
             <div class="mr-auto">
               <div class="btn-speed__speed">~ {{ fastestGasPriceSpeed }} {{ t('walletTransfer.minute') }}</div>
               <div class="btn-speed__price">{{ getGasDisplayString(fastestGasPrice) }}</div>
@@ -178,9 +172,9 @@ export default {
       speedSelected: '',
       averageGasPrice: new BigNumber('5'),
       fastestGasPrice: new BigNumber('20'),
-      activeGasPrice: new BigNumber('0'),
-      averageGasPriceSpeed: '',
-      fastestGasPriceSpeed: '',
+      activeGasPrice: new BigNumber('5'),
+      averageGasPriceSpeed: '3.7',
+      fastestGasPriceSpeed: '0.5',
     }
   },
   watch: {
@@ -191,7 +185,7 @@ export default {
       }
     },
   },
-  created() {
+  mounted() {
     fetch('https://ethgasstation.info/json/ethgasAPI.json', {
       headers: {},
       referrer: 'http://ethgasstation.info/json/',
@@ -229,6 +223,7 @@ export default {
       )
       .catch((error) => {
         log.error(error)
+        this.selectSpeed('average', this.averageGasPrice)
       })
   },
   methods: {

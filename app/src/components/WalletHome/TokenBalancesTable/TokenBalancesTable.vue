@@ -1,6 +1,6 @@
 <template>
   <v-layout class="home-cards token-balance-tab-container mx-n4" wrap align-center :justify-center="tokenBalances.length < 4">
-    <v-flex v-for="(balance, index) in tokenBalances" :key="index" class="xs12 sm6 md3 mb-4 px-4">
+    <v-flex v-for="(balance, index) in tokenBalances" :key="index" class="xs12 sm6 md4 lg3 mb-4 px-4">
       <v-card color="elevation-1" router-link :to="{ name: 'walletTransfer', query: { contract: balance.tokenAddress } }">
         <v-card-text class="pa-0">
           <div class="d-flex align-center py-3 px-4 card-header elevation-1">
@@ -8,7 +8,7 @@
               <img
                 :src="require(`../../../../public/images/logos/${balance.logo}`)"
                 class="inline-small d-inline-flex"
-                onerror="if (this.src != 'eth.svg') this.src = 'images/logos/eth.svg';"
+                onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = 'images/logos/eth.svg';"
                 :alt="balance.logo"
               />
               <span class="caption text_1--text ml-1 font-weight-bold">{{ balance.name }}</span>
@@ -28,7 +28,7 @@
         </v-card-text>
       </v-card>
     </v-flex>
-    <v-flex class="xs12 sm6 md3 mb-4 px-4">
+    <v-flex class="xs12 sm6 md4 lg3 mb-4 px-4">
       <v-card color="elevation-1">
         <v-card-text class="pa-0">
           <div class="d-flex align-center py-3 px-4 card-header elevation-1">

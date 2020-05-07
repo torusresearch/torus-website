@@ -9,15 +9,17 @@
           height="30"
           :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
         />
-        <div class="headline">{{ /** t('walletTransfer.transferConfirm') */ }}Confirm Transaction</div>
+        <div class="headline">{{ t('walletTransfer.confirmTransaction') }}</div>
       </v-flex>
     </v-layout>
     <v-layout py-3 px-6 wrap>
       <v-flex xs12>
         <div class="d-flex transfer-to-from align-center">
           <div class="d-flex icon-container align-center">
-            <div class="icon-box elevation-3">
-              <v-icon size="20" class="torusGray1--text">{{ `$vuetify.icons.${fromVerifier}` }}</v-icon>
+            <div class="icon-box elevation-3" :class="{ isDark: $vuetify.theme.isDark }">
+              <v-icon size="20" class="torusGray1--text">
+                {{ `$vuetify.icons.${fromVerifier === ETH ? 'account' : fromVerifier.toLowerCase()}` }}
+              </v-icon>
             </div>
           </div>
 
@@ -26,22 +28,27 @@
           </div>
 
           <div class="d-flex icon-container icon-container--right align-center">
-            <div class="icon-box elevation-3">
-              <v-icon size="20" class="torusGray1--text">{{ `$vuetify.icons.${toVerifier}` }}</v-icon>
+            <div class="icon-box elevation-3" :class="{ isDark: $vuetify.theme.isDark }">
+              <div v-if="dappName !== ''" class="v-icon dapp-icon torusGray1--text">DApp</div>
+              <v-icon v-else size="20" class="torusGray1--text">
+                {{ `$vuetify.icons.${toVerifier === ETH ? 'account' : toVerifier.toLowerCase()}` }}
+              </v-icon>
             </div>
           </div>
         </div>
       </v-flex>
       <v-flex xs12>
         <div class="d-flex transfer-to-from__details">
-          <div class="name text-clamp-one">
-            {{ fromAddress }}
+          <div class="name">
+            <div class="text-clamp-one">{{ fromVerifierId }}</div>
+            <div class="name--address">{{ addressSlicer(fromAddress) }}</div>
           </div>
-          <div class="network-container">
+          <div class="network-container flex-grow-1" :class="{ isMobile: $vuetify.breakpoint.xsOnly }">
             <NetworkDisplay :is-plain="true" :store-network-type="networkType"></NetworkDisplay>
           </div>
-          <div class="name name--right text-clamp-one">
-            {{ toAddress }}
+          <div class="name name--right">
+            <div class="text-clamp-one">{{ dappName === '' ? (toVerifier === ETH ? 'ETH Address' : toVerifierId) : dappName }}</div>
+            <div class="name--address">{{ addressSlicer(toAddress) }}</div>
           </div>
         </div>
       </v-flex>
@@ -49,11 +56,15 @@
     <v-divider class="mx-6 my-3"></v-divider>
     <v-layout mx-6 py-3 wrap>
       <v-flex xs12>
-        <div class="d-flex align-start">
+        <div class="d-flex align-start justify-space-between" :class="isNonFungibleToken ? 'align-center' : 'align-start'">
           <div :style="{ lineHeight: '0px' }">
             <span class="caption">{{ isNonFungibleToken ? t('walletTransfer.assetToSend') : t('walletTransfer.amountToSend') }}</span>
           </div>
-          <div class="ml-auto">
+          <div v-if="isNonFungibleToken" class="ml-auto caption d-flex align-center text-right" :style="{ maxWidth: '200px' }">
+            <span class="mr-2">{{ assetSelected.name }}</span>
+            <img :src="assetSelected.image" height="30px" />
+          </div>
+          <div v-else class="ml-auto">
             <div class="caption text-right font-weight-medium">{{ displayAmount }}</div>
             <div class="caption-2 text-right">{{ convertedAmount }}</div>
           </div>
@@ -65,10 +76,8 @@
             <span class="caption">{{ t('walletTransfer.transferFee') }}</span>
           </div>
           <div class="ml-auto">
-            <div class="caption text-right font-weight-medium">
-              {{ transactionFee }} {{ selectedCurrency }}
-              <span class="caption-2">(~ {{ speedSelected }} Mins)</span>
-            </div>
+            <div class="caption text-right font-weight-medium">{{ transactionFee }} {{ selectedCurrency }}</div>
+            <div class="caption-2 text-right">(~ {{ speedSelected }} {{ t('walletTransfer.minute') }})</div>
           </div>
         </div>
       </v-flex>
@@ -78,11 +87,11 @@
       <v-flex xs12>
         <div class="d-flex align-start">
           <div :style="{ lineHeight: '0px' }">
-            <span class="subtitle-2">Total Cost</span>
+            <span class="subtitle-2">{{ t('walletTransfer.totalCost') }}</span>
           </div>
           <div class="ml-auto">
-            <div class="subtitle-2 text-right">{{ totalCost }}</div>
-            <div class="caption-2 text-right">{{ totalCostConverted }}</div>
+            <div class="subtitle-2 text-right">{{ isNonFungibleToken ? transactionFeeEth : totalCost }}</div>
+            <div class="caption-2 text-right">{{ isNonFungibleToken ? `${transactionFee} ${selectedCurrency}` : totalCostConverted }}</div>
           </div>
         </div>
       </v-flex>
@@ -108,7 +117,8 @@
 <script>
 import BigNumber from 'bignumber.js'
 
-import { significantDigits } from '../../../utils/utils'
+import { ETH, MAINNET } from '../../../utils/enums'
+import { addressSlicer, significantDigits } from '../../../utils/utils'
 import NetworkDisplay from '../../helpers/NetworkDisplay'
 
 export default {
@@ -122,6 +132,10 @@ export default {
       type: String,
       default: 'eth',
     },
+    toVerifierId: {
+      type: String,
+      default: '',
+    },
     fromAddress: {
       type: String,
       default: '0x',
@@ -129,6 +143,10 @@ export default {
     fromVerifier: {
       type: String,
       default: 'eth',
+    },
+    fromVerifierId: {
+      type: String,
+      default: '',
     },
     selectedCurrency: {
       type: String,
@@ -150,6 +168,10 @@ export default {
       type: BigNumber,
       default: new BigNumber('0'),
     },
+    transactionFeeEth: {
+      type: String,
+      default: '',
+    },
     assetSelected: {
       type: Object,
       default() {
@@ -170,9 +192,20 @@ export default {
       default: '',
     },
     networkType: {
+      type: Object,
+      default() {
+        return { host: MAINNET, networkName: '', chainId: '' }
+      },
+    },
+    dappName: {
       type: String,
       default: '',
     },
+  },
+  data() {
+    return {
+      ETH,
+    }
   },
   methods: {
     onCancel() {
@@ -183,6 +216,7 @@ export default {
       this.$emit('onClose')
     },
     significantDigits,
+    addressSlicer,
   },
 }
 </script>

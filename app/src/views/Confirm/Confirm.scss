@@ -11,6 +11,15 @@
   text-decoration: none;
 }
 
+::v-deep .v-text-field__details {
+  padding-top: 6px !important;
+  padding-right: 0 !important;
+}
+
+::v-deep .v-input {
+  font-size: 14px;
+}
+
 .card-upper-icon {
   width: 12px;
   height: 12px;
@@ -56,27 +65,46 @@
   word-break: break-all;
 }
 
-::v-deep .v-expansion-panel .vjs-tree .vjs-value__string {
-  color: var(--v-torusBrand1-base) !important;
-}
-
-::v-deep .v-expansion-panel .vjs-tree .vjs-tree__brackets {
-  color: gray !important;
-  display: none;
-}
-
-::v-deep .vjs-tree .vjs-tree__content.has-line {
-  border-left: 1px solid #bfcbd9;
-}
-
 .v-expansion-panel {
   background: transparent !important;
   margin-bottom: 5px;
+
+  ::v-deep .vjs-tree .vjs-value {
+    color: #303030 !important;
+    font-size: 12px;
+  }
+
+  ::v-deep .vjs-tree .vjs-key {
+    color: #5C6C7F !important;
+    font-size: 12px;
+  }
+
+  ::v-deep .vjs-tree .vjs-tree__brackets {
+    display: none;
+  }
+
+  ::v-deep .vjs-tree .vjs-tree__content.has-line {
+    border-left: 1px solid #bfcbd9;
+  }
+
+  &.theme--dark {
+    ::v-deep .vjs-tree .vjs-value {
+      color: #EEF2F4 !important;
+    }
+  
+    ::v-deep .vjs-tree .vjs-key {
+      color: #A2A5B5 !important;
+    }
+  
+    ::v-deep .vjs-tree .vjs-tree__content.has-line {
+      border-left: 1px solid #bfcbd9;
+    }
+  }
 }
 
 .v-expansion-panel::before {
   box-shadow: none;
-  border-left: 2px solid var(--v-torusBrand1-base);
+  border-left: 2px solid #C1CBD8;
   border-radius: 0;
 }
 
@@ -85,7 +113,7 @@
 }
 
 .v-expansion-panel-header {
-  color: var(--v-torusBrand1-base) !important;
+  color: var(--v-text_1-base) !important;
 }
 
 .background_3 {
@@ -100,10 +128,27 @@
   line-height: 35px;
 }
 
-::v-deep .v-input.v-text-field--outlined > .v-input__control > .v-input__slot {
-  min-height: 40px !important;
+::v-deep .v-input.v-text-field--outlined {
+  & > .v-input__control > .v-input__slot {
+    min-height: 40px !important;
+  }
+  &.theme--dark {
+    .v-input__slot {
+      background: var(--v-torusBlack2-base) !important;
+    }
+  }
 }
 
 ::v-deep .v-messages {
   text-align: right;
+}
+
+::v-deep .v-btn.link-icon {
+  height: 24px;
+  width: 24px;
+  min-width: 24px;
+  padding: 0;
+  &.theme--dark { 
+    box-shadow: 5px 5px 10px #242529, -5px -5px 10px #37383C !important;
+  }
 }

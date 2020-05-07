@@ -1,7 +1,7 @@
 <template>
   <v-container class="wallet-home pt-6" :class="$vuetify.breakpoint.xsOnly ? 'px-4' : ''">
     <div class="d-flex align-center">
-      <div class="font-weight-bold display-1 text_2--text float-left">Account Balance</div>
+      <div class="font-weight-bold display-1 text_2--text float-left">{{ t('walletHome.walletHome') }}</div>
       <div class="ml-auto">
         <QuickAddress />
       </div>
@@ -163,11 +163,29 @@
         <CollectiblesList></CollectiblesList>
       </v-tab-item>
     </v-tabs-items>
+
+    <v-layout class="mt-12">
+      <v-flex xs12 class="refresh text-right">
+        <v-btn
+          class="gmt-refresh-tokens"
+          :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'"
+          height="24"
+          width="24"
+          fab
+          @click="refreshBalances"
+        >
+          <v-icon color="torusFont2" size="8">$vuetify.icons.refresh</v-icon>
+        </v-btn>
+        <v-chip :color="$vuetify.theme.isDark ? 'torusBlack2' : 'torusGray4'" class="text_2--text ml-2" small>
+          {{ t('walletHome.lastUpdate') }} {{ lastUpdated }}
+        </v-chip>
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
@@ -193,6 +211,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['tokenBalances']),
     ...mapState({
       whiteLabel: 'whiteLabel',
       weiBalanceLoaded: 'weiBalanceLoaded',
@@ -206,10 +225,10 @@ export default {
       return process.env.VUE_APP_TORUS_BUILD_ENV !== 'lrc' && process.env.VUE_APP_TORUS_BUILD_ENV !== 'alpha4'
     },
     totalPortfolioValue() {
-      return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
+      return this.tokenBalances.totalPortfolioValue || '0'
     },
     finalBalancesArray() {
-      const balances = this.$store.getters.tokenBalances.finalBalancesArray
+      const balances = this.tokenBalances.finalBalancesArray
       return balances || []
     },
     filteredBalancesArray() {
@@ -222,7 +241,7 @@ export default {
       return this.networkType.host === MAINNET
     },
     showSearch() {
-      return this.finalBalancesArray.length > 10 || true
+      return this.finalBalancesArray.length > 10
     },
     events() {
       const events = []
@@ -240,7 +259,7 @@ export default {
   mounted() {
     this.setDateUpdated()
 
-    this.activeTab = this.$route.hash === '#collectibles' ? 1 : 0
+    this.activeTab = this.$route.hash === '#collectibles' ? 0 : 1
 
     this.$vuetify.goTo(0)
   },
@@ -269,15 +288,7 @@ export default {
       this.$router.push({ path: '/wallet/topup' }).catch((_) => {})
     },
     setDateUpdated() {
-      const currentDateTime = new Date()
-      const day = currentDateTime.getDate().toString().padStart(2, '0')
-      const month = (currentDateTime.getMonth() + 1).toString().padStart(2, '0')
-      const date = `${day}/${month}/${currentDateTime.getFullYear().toString().slice(2, 4)}`
-
-      const hours = currentDateTime.getHours().toString().padStart(2, '0')
-      const mins = currentDateTime.getMinutes().toString().padStart(2, '0')
-      const time = `${hours}:${mins}`
-      this.lastUpdated = `${date}, ${time}`
+      this.lastUpdated = new Date().toLocaleString()
     },
   },
 }

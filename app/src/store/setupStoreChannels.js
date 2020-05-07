@@ -40,6 +40,17 @@ if (!isMain) {
     VuexStore.dispatch('initiateTopup', chunk.data)
   })
 
+  const initStream = torus.communicationMux.getStream('init_stream')
+  initStream.on('data', (chunk) => {
+    const {
+      name,
+      data: { whiteLabel = {} },
+    } = chunk
+    if (name === 'init_stream') {
+      VuexStore.commit('setWhiteLabel', whiteLabel)
+    }
+  })
+
   // Provider change section
   const providerChangeStream = torus.communicationMux.getStream('provider_change')
   providerChangeStream.on('data', (chunk) => {
@@ -118,12 +129,6 @@ if (!isMain) {
         VuexStore.dispatch('setProviderType', ev.data.payload)
       }
     }
-  })
-
-  // White Label section
-  const whiteLabelStream = torus.communicationMux.getStream('white_label')
-  whiteLabelStream.on('data', (chunk) => {
-    localStorage.setItem('torus-white-label', JSON.stringify(chunk.data))
   })
 }
 

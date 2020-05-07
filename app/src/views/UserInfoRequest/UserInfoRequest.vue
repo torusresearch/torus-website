@@ -10,8 +10,12 @@
             class="home-link mr-1"
             alt="Torus Logo"
             width="70"
-            height="16"
-            :src="require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+            :height="whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo ? 'inherit' : '17'"
+            :src="
+              whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
+                ? whiteLabelGlobal.logo
+                : require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
+            "
           />
           <div class="display-1 text_2--text">{{ t('dappInfo.permission') }}</div>
         </v-flex>
@@ -19,10 +23,10 @@
       <v-layout wrap align-center mx-8 my-6>
         <v-flex class="text-center">
           <span class="headline text_2--text">Allow {{ origin.hostname }} to access your Google Email Address, Profile Photo and Name</span>
-          <br />
+          <!-- <br />
           <v-btn small text class="caption torusBrand1--text" @click="editPermissions">
             Edit permissions
-          </v-btn>
+          </v-btn> -->
         </v-flex>
       </v-layout>
       <v-divider class="mx-6"></v-divider>
@@ -30,11 +34,11 @@
         <v-flex xs12 mb-2>
           <div class="caption mb-2 text_2--text">{{ t('dappProvider.requestFrom') }}:</div>
 
-          <v-card flat class="grey lighten-3">
+          <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
-              <div class="d-flex request-from">
-                <a :href="origin.href" target="_blank" class="caption torusBrand1--text">{{ origin.hostname }}</a>
-                <v-btn x-small color="white" class="link-icon ml-auto" :href="origin.href" target="_blank">
+              <div class="d-flex request-from align-center">
+                <a :href="origin.href" target="_blank" class="caption font-weight-medium torusBrand1--text">{{ origin.hostname }}</a>
+                <v-btn x-small :color="$vuetify.theme.isDark ? 'torusBlack2' : 'white'" class="link-icon ml-auto" :href="origin.href" target="_blank">
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
                 </v-btn>
               </div>

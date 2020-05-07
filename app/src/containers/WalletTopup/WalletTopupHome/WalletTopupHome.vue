@@ -62,12 +62,11 @@ export default {
       return getPaymentProviders(this.theme)
     },
   },
-  created() {
+  mounted() {
     const routerPath = this.$router.currentRoute.path
     const foundPath = this.providers.find((x) => x.link === routerPath)
     this.selectedProvider = foundPath ? foundPath.name : ''
-  },
-  mounted() {
+
     this.$vuetify.goTo(0)
   },
 }
