@@ -1,5 +1,5 @@
 <template>
-  <v-card class="badges-alert-container">
+  <v-card class="claim-token-container">
     <v-btn class="close-btn" icon @click="onCancel">
       <v-icon>$vuetify.icons.close</v-icon>
     </v-btn>
