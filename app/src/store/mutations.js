@@ -121,7 +121,7 @@ export default {
   },
 }
 function localThemeSet(payload, state) {
-  let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
+  let theme = themes[payload || THEME_DARK_BLACK_NAME]
   if (state.whiteLabel.isActive) {
     const { theme: whiteLabelTheme } = state.whiteLabel
     theme = themes[whiteLabelTheme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME]

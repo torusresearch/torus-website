@@ -3,7 +3,7 @@ import log from 'loglevel'
 import ObservableStore from 'obs-store'
 
 import config from '../config'
-import { ERROR_TIME, LOCALES, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { ERROR_TIME, LOCALES, SUCCESS_TIME, THEME_DARK_BLACK_NAME } from '../utils/enums'
 import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import { getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
@@ -28,9 +28,9 @@ class PreferencesController {
    * @property {string} store.jwtToken the token used to communicate with torus-backend
    */
   constructor(options = {}) {
-    let theme = THEME_LIGHT_BLUE_NAME
+    let theme = THEME_DARK_BLACK_NAME
     if (storageAvailable('localStorage')) {
-      const torusTheme = localStorage.getItem('torus-theme')
+      const torusTheme = localStorage.getItem('torus-theme') || THEME_DARK_BLACK_NAME
       if (torusTheme) {
         theme = torusTheme
       }

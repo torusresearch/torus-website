@@ -9,6 +9,7 @@ import torus from '../torus'
 import ConfirmHandler from '../utils/ConfirmHandler'
 import {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
+  THEME_DARK_BLACK_NAME,
   TOKEN_METHOD_TRANSFER_FROM,
   TX_MESSAGE,
   TX_PERSONAL_MESSAGE,
@@ -339,7 +340,7 @@ VuexStore.subscribe((mutation, state) => {
 })
 
 if (storageAvailable('localStorage')) {
-  const torusTheme = localStorage.getItem('torus-theme')
+  const torusTheme = localStorage.getItem('torus-theme') || THEME_DARK_BLACK_NAME
   if (torusTheme) {
     VuexStore.commit('setTheme', torusTheme)
   }
