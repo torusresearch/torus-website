@@ -47,7 +47,7 @@ if (!isMain) {
       data: { whiteLabel = {} },
     } = chunk
     if (name === 'init_stream') {
-      VuexStore.commit('setWhiteLabel', whiteLabel)
+      if (Object.keys(whiteLabel).length > 0) VuexStore.commit('setWhiteLabel', whiteLabel)
     }
   })
 
