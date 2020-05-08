@@ -74,9 +74,8 @@ import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
+import { RPC, RPC_DISPLAY_NAME, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
 import { broadcastChannelOptions } from '../../../utils/utils'
-
-const { RPC, RPC_DISPLAY_NAME, SUPPORTED_NETWORK_TYPES } = require('../../../utils/enums')
 
 export default {
   name: 'NetworkSettings',

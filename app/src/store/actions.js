@@ -5,6 +5,7 @@ import { toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import torus from '../torus'
+import accountImporter from '../utils/accountImporter'
 import {
   DISCORD,
   FACEBOOK,
@@ -35,8 +36,6 @@ import {
 } from './controllerSubscriptions'
 import { discordHandler, facebookHandler, googleHandler, handleLoginWindow, redditHandler, twitchHandler } from './loginHandlers'
 import initialState from './state'
-
-const accountImporter = require('../utils/accountImporter')
 
 const { baseRoute } = config
 const { torusController } = torus || {}
