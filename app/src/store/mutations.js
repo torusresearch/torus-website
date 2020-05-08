@@ -129,7 +129,9 @@ function localThemeSet(payload, state) {
       theme.theme = { ...theme.theme, ...whiteLabelTheme.colors }
     }
   }
-  vuetify.framework.theme.dark = theme.isDark
-  vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
+  if (payload || state.whiteLabel.isActive) {
+    vuetify.framework.theme.dark = theme.isDark
+    vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
+  }
   if (storageAvailable('localStorage') && payload) localStorage.setItem('torus-theme', payload)
 }
