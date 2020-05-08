@@ -1,7 +1,7 @@
 <template>
   <div class="torus-widget" :class="embedState.buttonPosition">
     <v-dialog v-if="loggedIn" v-model="activeWidget" max-width="375" @click:outside="showWidget">
-      <div class="torus-widget__panel pa-4" :class="embedState.buttonPosition">
+      <div class="torus-widget__panel pa-4" :class="[embedState.buttonPosition, $vuetify.theme.isDark ? 'isDark' : '']">
         <div class="d-flex torus-widget__user-details">
           <div class="avatar-container">
             <v-avatar size="32">
@@ -35,8 +35,8 @@
             <div>
               <span class="caption text_2--text">{{ t('dappPopup.totalValue') }}</span>
             </div>
-            <div>
-              <span class="amount">{{ totalPortfolioValue }} {{ selectedCurrency }}</span>
+            <div class="mt-1">
+              <span class="amount text_2--text">{{ totalPortfolioValue }} {{ selectedCurrency }}</span>
             </div>
           </div>
           <div class="ml-auto">

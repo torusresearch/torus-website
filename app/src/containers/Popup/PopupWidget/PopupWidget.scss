@@ -116,13 +116,13 @@
     }
     .amount {
       font-size: 18px;
-      color: #7f8fa4;
       font-weight: bold;
     }
     .v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
       border: 1px solid rgba(206, 208, 214, 0.3);
       background-color: white;
-      color: #7f8fa4;
+      color: var(--v-torusBrand1-base);;
+      box-shadow: 5px 5px 10px rgba(208, 218, 254, 0.25), -5px -5px 10px #FAFBFF;
     }
   }
 
@@ -133,6 +133,32 @@
     }
     .caption {
       color: #b3c0ce;
+    }
+  }
+
+
+  &.isDark {
+    background: var(--v-torusBlack-base);
+    border: 0;
+    .torus-widget__user-details {
+      background: var(--v-torusBlack-base);
+      box-shadow: 5px 5px 10px rgba(36, 37, 41, 0.25), -5px -5px 10px #37383C;
+      .avatar-container {
+        background-color: var(--v-torusBlack-base);
+      }
+    }
+    .details-container {
+      &__text {
+        color: var(--v-torusFont2-base);;
+      }
+    }
+    .torus-widget__amount-details {
+      .amount {
+        color: var(--v-torusFont2-base);
+      }
+      .v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+        box-shadow: 5px 5px 10px rgba(36, 37, 41, 0.25), -5px -5px 10px #37383C;
+      }
     }
   }
 }
