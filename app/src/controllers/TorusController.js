@@ -36,7 +36,6 @@ import TokenRatesController from './TokenRatesController'
 import KeyringController from './TorusKeyring'
 import TransactionController from './TransactionController'
 import TypedMessageManager from './TypedMessageManager'
-// const Dnode = require('dnode')
 // defaults and constants
 const GWEI_BN = new BN('1000000000')
 

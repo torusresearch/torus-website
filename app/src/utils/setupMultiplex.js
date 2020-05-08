@@ -1,7 +1,6 @@
 import log from 'loglevel'
-
-const ObjectMultiplex = require('obj-multiplex')
-const pump = require('pump')
+import ObjectMultiplex from 'obj-multiplex'
+import pump from 'pump'
 
 function setupMultiplex(connectionStream) {
   const mux = new ObjectMultiplex()

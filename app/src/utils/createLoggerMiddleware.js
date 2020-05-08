@@ -1,6 +1,4 @@
-const log = require('loglevel')
-
-module.exports = createLoggerMiddleware
+import log from 'loglevel'
 
 /**
  * Returns a middleware that logs RPC activity
@@ -19,3 +17,5 @@ function createLoggerMiddleware(options) {
     })
   }
 }
+
+export default createLoggerMiddleware
