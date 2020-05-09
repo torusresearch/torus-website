@@ -54,8 +54,8 @@ if (!isMain) {
     } = chunk
     if (name === 'init_stream') {
       VuexStore.commit('setEnabledVerifiers', enabledVerifiers)
-      VuexStore.commit('setWhiteLabel', whiteLabel)
       VuexStore.commit('setButtonPosition', buttonPosition)
+      if (Object.keys(whiteLabel).length > 0) VuexStore.commit('setWhiteLabel', whiteLabel)
     }
   })
 
