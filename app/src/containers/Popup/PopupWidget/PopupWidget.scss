@@ -43,8 +43,16 @@
   }
 
   &__logo {
-    max-width: 25px;
-    max-height: 25px;
+    max-width: 35px;
+    max-height: 35px;
+    width: 35px;
+    height: 35px;
+    &.torus-logo {
+      max-width: 25px;
+      max-height: 25px;
+      width: auto;
+      height: auto;
+    }
   }
 
   &__login {

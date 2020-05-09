@@ -1,3 +1,5 @@
+import merge from 'deepmerge'
+
 import themes from '../plugins/themes'
 import vuetify from '../plugins/vuetify'
 import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
@@ -72,8 +74,7 @@ export default {
     localThemeSet(payload, state)
   },
   setLocale(state, payload) {
-    state.locale = payload
-    vuetify.framework.lang.current = payload
+    updateDefaultLanguage(state, payload)
   },
   setAssets(state, payload) {
     state.assets = { ...state.assets, ...payload }
@@ -127,7 +128,17 @@ export default {
     }
     localThemeSet(undefined, state)
     // TODO: set locale here from defaultLanguage
-    if (storageAvailable('sessionStorage') && payload) sessionStorage.setItem('torus-white-label', JSON.stringify(payload))
+
+    if (storageAvailable('sessionStorage') && payload) {
+      sessionStorage.setItem('torus-white-label', JSON.stringify(payload))
+
+      if (payload && payload.defaultLanguage) {
+        updateDefaultLanguage(state, payload.defaultLanguage)
+      }
+      if (payload && payload.customTranslations) {
+        vuetify.framework.lang.locales = merge(vuetify.framework.lang.locales, payload.customTranslations)
+      }
+    }
   },
   setOAuthModalStatus(state, payload) {
     state.embedState = {
@@ -150,4 +161,8 @@ function localThemeSet(payload, state) {
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
   }
   if (storageAvailable('localStorage') && payload) localStorage.setItem('torus-theme', payload)
+}
+function updateDefaultLanguage(state, language) {
+  state.locale = language
+  vuetify.framework.lang.current = language
 }

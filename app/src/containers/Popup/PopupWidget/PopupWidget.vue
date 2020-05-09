@@ -92,7 +92,15 @@
       </div>
     </v-dialog>
     <v-btn v-if="loggedIn" class="torus-widget__btn" color="primary" fab @click="showWidget">
-      <img class="torus-widget__logo" :src="require(`../../../../public/img/icons/torus-icon-light.svg`)" />
+      <img
+        class="torus-widget__logo"
+        :class="whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logoLight ? '' : 'torus-logo'"
+        :src="
+          whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logoLight
+            ? whiteLabelGlobal.logoLight || whiteLabelGlobal.logo
+            : require(`../../../../public/img/icons/torus-icon-light.svg`)
+        "
+      />
     </v-btn>
     <v-btn v-else-if="loginDialog" color="primary" fab>
       <BeatLoader size="10px" color="white" />

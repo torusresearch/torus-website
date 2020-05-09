@@ -8,9 +8,12 @@
               <img
                 class="home-link mr-1"
                 alt="Torus Logo"
-                width="120"
-                height="30"
-                :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+                :height="whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo ? '50' : '30'"
+                :src="
+                  whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
+                    ? whiteLabelGlobal.logo
+                    : require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
+                "
               />
               <v-btn class="close-btn" icon @click="closeDialog">
                 <v-icon>$vuetify.icons.close</v-icon>
@@ -66,7 +69,15 @@
             <v-flex mt-8 mb-4>
               <span class="caption torus_text--text">
                 {{ t('login.acceptTerms') }}
-                <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" :style="{ textDecoration: 'none' }">
+                <a
+                  :href="
+                    whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.tncLink
+                      ? whiteLabelGlobal.tncLink
+                      : 'https://docs.tor.us/legal/terms-and-conditions'
+                  "
+                  target="_blank"
+                  :style="{ textDecoration: 'none' }"
+                >
                   <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
                 </a>
               </span>
