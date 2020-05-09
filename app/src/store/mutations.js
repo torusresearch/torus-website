@@ -126,6 +126,7 @@ export default {
       ...payload,
     }
     localThemeSet(undefined, state)
+    // TODO: set locale here from defaultLanguage
     if (storageAvailable('sessionStorage') && payload) sessionStorage.setItem('torus-white-label', JSON.stringify(payload))
   },
   setOAuthModalStatus(state, payload) {
