@@ -2,7 +2,7 @@ import merge from 'deepmerge'
 
 import themes from '../plugins/themes'
 import vuetify from '../plugins/vuetify'
-import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { LOCALES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { storageAvailable } from '../utils/utils'
 
 export default {
@@ -127,17 +127,22 @@ export default {
       ...payload,
     }
     localThemeSet(undefined, state)
-    // TODO: set locale here from defaultLanguage
-
+    // Set locale here from defaultLanguage
     if (storageAvailable('sessionStorage') && payload) {
-      sessionStorage.setItem('torus-white-label', JSON.stringify(payload))
-
-      if (payload && payload.defaultLanguage) {
+      // Checks if whitelabel defaultLanguage is supported
+      const selectedLocale = LOCALES.find((localeInner) => {
+        return localeInner.value === payload.defaultLanguage
+      })
+      if (selectedLocale) {
+        payload.defaultLanguage = selectedLocale.value
         updateDefaultLanguage(state, payload.defaultLanguage)
       }
-      if (payload && payload.customTranslations) {
+
+      if (payload.customTranslations) {
         vuetify.framework.lang.locales = merge(vuetify.framework.lang.locales, payload.customTranslations)
       }
+
+      sessionStorage.setItem('torus-white-label', JSON.stringify(payload))
     }
   },
   setOAuthModalStatus(state, payload) {
