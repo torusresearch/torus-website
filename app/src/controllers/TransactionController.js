@@ -1,5 +1,6 @@
 import erc20Contracts from 'eth-contract-metadata'
 import { ethErrors } from 'eth-json-rpc-errors'
+import Common from 'ethereumjs-common'
 import { Transaction } from 'ethereumjs-tx'
 import { addHexPrefix, BN, bufferToHex, stripHexPrefix } from 'ethereumjs-util'
 import EthQuery from 'ethjs-query'
@@ -17,7 +18,12 @@ import {
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   CONTRACT_INTERACTION_KEY,
   DEPLOY_CONTRACT_ACTION_KEY,
+  GOERLI_CODE,
+  KOVAN_CODE,
+  MAINNET_CODE,
   OLD_ERC721_LIST,
+  RINKEBY_CODE,
+  ROPSTEN_CODE,
   SEND_ETHER_ACTION_KEY,
   TOKEN_METHOD_APPROVE,
   TOKEN_METHOD_TRANSFER,
@@ -36,6 +42,7 @@ import TransactionStateManager from './TransactionStateManager'
 
 const tokenABIDecoder = new AbiDecoder(tokenAbi)
 const collectibleABIDecoder = new AbiDecoder(collectibleAbi)
+const SUPPORTED_CHAINS = new Set([GOERLI_CODE, KOVAN_CODE, MAINNET_CODE, RINKEBY_CODE, ROPSTEN_CODE])
 
 /**
   Transaction Controller is an aggregate of sub-controllers and trackers
@@ -444,7 +451,20 @@ class TransactionController extends EventEmitter {
     const txParameters = { ...txMeta.txParams, chainId }
     // sign tx
     const fromAddress = txParameters.from
-    const ethTx = new Transaction(txParameters, { chain: chainId })
+    let chainParameters
+    if (SUPPORTED_CHAINS.has(chainId)) chainParameters = { chain: chainId }
+    else {
+      chainParameters = {
+        common: Common.forCustomChain(
+          1,
+          {
+            chainId,
+          },
+          'istanbul'
+        ),
+      }
+    }
+    const ethTx = new Transaction(txParameters, chainParameters)
     await this.signEthTx(ethTx, fromAddress)
 
     // add r,s,v values for provider request purposes see createMetamaskMiddleware

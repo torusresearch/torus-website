@@ -50,6 +50,7 @@ if (storageAvailable('sessionStorage')) {
       billboard: state.billboard,
       contacts: state.contacts,
       whiteLabel: state.whiteLabel,
+      supportedNetworks: state.supportedNetworks,
       // pastTransactions: state.pastTransactions
     }),
   })

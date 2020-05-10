@@ -282,14 +282,16 @@ export default {
     context.commit('setNetworkId', payload.networkId)
     torus.updateStaticData({ networkId: payload.networkId })
   },
-  setProviderType(context, payload) {
+  setProviderType({ commit }, payload) {
     let networkType = payload.network
+    let isSupportedNetwork = false
     if (SUPPORTED_NETWORK_TYPES[networkType.host]) {
       networkType = SUPPORTED_NETWORK_TYPES[networkType.host]
+      isSupportedNetwork = true
     }
-    context.commit('setNetworkType', networkType)
-    if (payload.type && payload.type === RPC) {
-      return torusController.setCustomRpc(networkType.host, networkType.chainId, 'ETH', networkType.networkName)
+    commit('setNetworkType', networkType)
+    if ((payload.type && payload.type === RPC) || !isSupportedNetwork) {
+      return torusController.setCustomRpc(networkType.host, networkType.chainId || 1, 'ETH', networkType.networkName || '')
     }
     return networkController.setProviderType(networkType.host)
   },
