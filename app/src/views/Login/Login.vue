@@ -14,22 +14,6 @@
               <span>{{ t('login.message') }}</span>
             </v-flex>
             <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
-              <v-btn
-                id="loginBtn"
-                :color="$vuetify.theme.dark ? '' : 'white'"
-                block
-                :class="$vuetify.theme.dark ? 'torus-dark' : ''"
-                class="body-1 font-weight-bold card-shadow-v8 text_2--text login-btn"
-                @click="triggerLogin({ verifier: GOOGLE, calledFromEmbed: false })"
-              >
-                <img
-                  :src="require(`../../../public/img/icons/google${$vuetify.theme.dark ? '-dark' : ''}.svg`)"
-                  :class="$vuetify.theme.dark ? 'mr-4 torus-dark' : 'mr-6'"
-                />
-                {{ t('login.signIn') }} Google
-              </v-btn>
-            </v-flex>
-            <v-flex xs9 sm7 ml-auto mb-2 mr-auto>
               <vue-telegram-login
                 mode="callback"
                 telegram-login="torustestbot"
@@ -39,70 +23,6 @@
                   }
                 "
               />
-            </v-flex>
-            <v-flex xs9 sm7 ml-auto mr-auto mb-3>
-              <v-layout wrap class="other-login-container">
-                <v-flex xs6 px-1>
-                  <v-btn
-                    :large="!$vuetify.breakpoint.xsOnly"
-                    :color="$vuetify.theme.dark ? '' : 'white'"
-                    :class="$vuetify.theme.dark ? 'torus-dark' : 'card-shadow-v8'"
-                    :depressed="$vuetify.theme.dark"
-                    block
-                    class="other-login-btn"
-                    type="button"
-                    :title="`${t('login.loginWith')} Facebook`"
-                    @click="triggerLogin({ verifier: FACEBOOK, calledFromEmbed: false })"
-                  >
-                    <img height="32" :src="require(`../../../public/img/icons/facebook${$vuetify.theme.dark ? '-dark' : ''}.svg`)" />
-                  </v-btn>
-                </v-flex>
-                <v-flex xs6 px-1>
-                  <v-btn
-                    :large="!$vuetify.breakpoint.xsOnly"
-                    :color="$vuetify.theme.dark ? '' : 'white'"
-                    :class="$vuetify.theme.dark ? 'torus-dark' : 'card-shadow-v8'"
-                    :depressed="$vuetify.theme.dark"
-                    block
-                    class="other-login-btn"
-                    type="button"
-                    :title="`${t('login.loginWith')} Reddit`"
-                    @click="triggerLogin({ verifier: REDDIT, calledFromEmbed: false })"
-                  >
-                    <img height="32" :src="require(`../../../public/img/icons/reddit${$vuetify.theme.dark ? '-dark' : ''}.svg`)" />
-                  </v-btn>
-                </v-flex>
-                <v-flex xs6 px-1>
-                  <v-btn
-                    :large="!$vuetify.breakpoint.xsOnly"
-                    :color="$vuetify.theme.dark ? '' : 'white'"
-                    :class="$vuetify.theme.dark ? 'torus-dark' : 'card-shadow-v8'"
-                    :depressed="$vuetify.theme.dark"
-                    block
-                    class="other-login-btn"
-                    type="button"
-                    :title="`${t('login.loginWith')} Twitch`"
-                    @click="triggerLogin({ verifier: TWITCH, calledFromEmbed: false })"
-                  >
-                    <img height="32" :src="require(`../../../public/img/icons/twitch${$vuetify.theme.dark ? '-dark' : ''}.svg`)" />
-                  </v-btn>
-                </v-flex>
-                <v-flex xs6 px-1>
-                  <v-btn
-                    :large="!$vuetify.breakpoint.xsOnly"
-                    :color="$vuetify.theme.dark ? '' : 'white'"
-                    :class="$vuetify.theme.dark ? 'torus-dark' : 'card-shadow-v8'"
-                    :depressed="$vuetify.theme.dark"
-                    block
-                    class="other-login-btn"
-                    type="button"
-                    :title="`${t('login.loginWith')} Discord`"
-                    @click="triggerLogin({ verifier: DISCORD, calledFromEmbed: false })"
-                  >
-                    <img height="32" :src="require(`../../../public/img/icons/discord${$vuetify.theme.dark ? '-dark' : ''}.svg`)" />
-                  </v-btn>
-                </v-flex>
-              </v-layout>
             </v-flex>
             <v-flex class="caption" mb-6 xs9 sm7 ml-auto mr-auto>
               <span class="text_2--text body-1">
