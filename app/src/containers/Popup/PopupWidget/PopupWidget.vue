@@ -44,7 +44,7 @@
               <v-icon>$vuetify.icons.send</v-icon>
             </v-btn>
 
-            <v-btn fab depressed small class="ml-2" @click="showWalletPopup({ path: '/topup' })">
+            <v-btn v-if="!whiteLabel.topupHide" fab depressed small class="ml-2" @click="showWalletPopup({ path: '/topup' })">
               <v-icon>$vuetify.icons.add</v-icon>
             </v-btn>
           </div>
@@ -150,6 +150,7 @@ export default {
       wallets: (state) => Object.keys(state.wallet).filter((x) => x !== state.selectedAddress),
       embedState: 'embedState',
       pastTransactions: 'pastTransactions',
+      whiteLabel: 'whiteLabel',
     }),
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
