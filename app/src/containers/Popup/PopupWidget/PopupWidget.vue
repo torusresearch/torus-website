@@ -187,7 +187,6 @@ export default {
       showWalletPopup: 'showWalletPopup',
     }),
     login() {
-      this.toggleWidgetVisibility(true)
       this.$emit('onLogin')
     },
     getIcon(transaction) {

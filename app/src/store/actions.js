@@ -537,12 +537,14 @@ export default {
   setErrorMessage(context, payload) {
     prefsController.handleError(payload)
   },
-  cancelLogin({ commit }) {
+  cancelLogin({ commit, dispatch }) {
     oauthStream.write({ err: { message: 'User cancelled login' } })
     commit('setOAuthModalStatus', false)
+    dispatch('toggleWidgetVisibility', false)
   },
-  startLogin({ commit }) {
+  startLogin({ commit, dispatch }) {
     commit('setOAuthModalStatus', true)
+    dispatch('toggleWidgetVisibility', true)
   },
   toggleWidgetVisibility(context, payload) {
     widgetStream.write({

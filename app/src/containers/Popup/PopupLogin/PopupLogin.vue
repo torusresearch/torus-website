@@ -147,6 +147,7 @@ export default {
         await this.triggerLogin({ verifier, calledFromEmbed: true })
       } catch (error) {
         log.error(error)
+        this.closeDialog()
       } finally {
         this.showModal = true
       }
