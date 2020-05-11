@@ -268,9 +268,10 @@ class TransactionController extends EventEmitter {
     const { txParams } = txMeta
     // ensure value
     txParams.value = txParams.value ? addHexPrefix(txParams.value) : '0x0'
-    txMeta.gasPriceSpecified = Boolean(Number(txParams.gasPrice))
+    const gasPriceNumber = Number(txParams.gasPrice)
+    txMeta.gasPriceSpecified = Boolean(gasPriceNumber)
     let { gasPrice } = txParams
-    if (!gasPrice || !Number(gasPrice)) {
+    if (!gasPrice || !gasPriceNumber) {
       gasPrice = this.getGasPrice ? this.getGasPrice() : await this.query.gasPrice()
     }
     txParams.gasPrice = addHexPrefix(gasPrice.toString(16))
