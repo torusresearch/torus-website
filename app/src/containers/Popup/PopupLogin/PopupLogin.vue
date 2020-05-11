@@ -4,7 +4,7 @@
       <v-dialog :value="loginDialog && showModal" max-width="375" persistent>
         <v-card class="login-dialog-container">
           <v-layout wrap>
-            <v-flex class="login-header" xs12 pt-8 pb-6 px-6>
+            <v-flex text-center class="login-header" xs12 pt-8 pb-6 px-6>
               <img
                 class="home-link mr-1"
                 alt="Torus Logo"
@@ -23,7 +23,11 @@
           <v-layout wrap pa-6>
             <v-flex xs12>
               <div class="verifier-title headline torus_text--text font-weight-bold">
-                <span>
+                <span v-if="$vuetify.breakpoint.xsOnly">
+                  {{ t('login.your') }}
+                  <img :src="require(`../../../../public/images/login-verifiers.gif`)" />
+                </span>
+                <span v-else>
                   {{ t('login.your') }}
                   <span v-if="activeButton === GOOGLE">
                     <span class="verifier-title__google-blue">G</span>
@@ -58,7 +62,10 @@
                     @mouseover="loginBtnHover(verifier)"
                     @click="startLogin(verifier)"
                   >
-                    <img v-if="verifier === activeButton" :src="require(`../../../../public/img/icons/login-${verifier}.svg`)" />
+                    <img
+                      v-if="verifier === activeButton || $vuetify.breakpoint.xsOnly"
+                      :src="require(`../../../../public/img/icons/login-${verifier}.svg`)"
+                    />
                     <v-icon v-else size="30" :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
                       {{ `$vuetify.icons.${verifier}` }}
                     </v-icon>
@@ -111,7 +118,6 @@ export default {
       TWITCH,
       DISCORD,
       activeButton: GOOGLE,
-      verifierCntInterval: null,
       showModal: true,
     }
   },
@@ -122,20 +128,6 @@ export default {
     loginButtons() {
       return Object.keys(this.enabledVerifiers).filter((x) => this.enabledVerifiers[x])
     },
-  },
-  beforeDestroy() {
-    if (this.verifierCntInterval) clearInterval(this.verifierCntInterval)
-  },
-  mounted() {
-    if (this.$vuetify.breakpoint.xsOnly) {
-      let verifierCnt = 0
-
-      this.verifierCntInterval = setInterval(() => {
-        this.activeButton = this.loginButtons[verifierCnt]
-        verifierCnt += 1
-        if (verifierCnt >= this.loginButtons.length) verifierCnt = 0
-      }, 2000)
-    }
   },
   methods: {
     loginBtnHover(verifier) {

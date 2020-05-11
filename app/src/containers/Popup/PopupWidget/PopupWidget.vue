@@ -49,7 +49,11 @@
             </v-btn>
           </div>
         </div>
-        <div class="torus-widget__transaction-details mt-8">
+        <div class="d-flex align-center text_2--text" :style="{ marginTop: '2px' }">
+          <v-icon size="8" v-text="'$vuetify.icons.network'"></v-icon>
+          <span class="network-name ml-1">{{ networkType.networkName || networkType.host }}</span>
+        </div>
+        <div class="torus-widget__transaction-details mt-5">
           <div class="d-flex">
             <span class="caption text_2--text">{{ t('dappPopup.recentActivity') }}</span>
             <span class="caption primary--text ml-auto wallet-open" @click="showWalletPopup({ path: '/home' })">{{ t('dappPopup.openWallet') }}</span>
@@ -151,13 +155,14 @@ export default {
       embedState: 'embedState',
       pastTransactions: 'pastTransactions',
       whiteLabel: 'whiteLabel',
+      networkType: 'networkType',
     }),
     totalPortfolioValue() {
       return this.$store.getters.tokenBalances.totalPortfolioValue || '0'
     },
     recentTransaction() {
       const oldTx = this.pastTransactions
-      const [recent] = oldTx.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) || []
+      const [recent] = oldTx.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) || []
 
       if (!recent) return undefined
 

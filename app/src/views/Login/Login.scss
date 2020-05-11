@@ -118,6 +118,10 @@
 }
 
 .verifier-title {
+  img {
+    height: 23px;
+    margin-bottom: -5px;
+  }
   &__google-blue {
     color: #4285F4;
   }
