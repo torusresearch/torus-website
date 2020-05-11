@@ -92,7 +92,6 @@ export default {
   computed: {
     ...mapState(['networkType', 'supportedNetworks']),
     networks() {
-      log.info(this.supportedNetworks)
       return [
         ...Object.values(this.supportedNetworks),
         {
