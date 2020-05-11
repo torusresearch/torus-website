@@ -265,7 +265,6 @@ export default {
       loginButtons: [GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD],
       loginButtonsMobile: [FACEBOOK, REDDIT, TWITCH, DISCORD],
       activeButton: GOOGLE,
-      verifierCntInterval: null,
       selectedCarouselItem: 0,
       loginInProgress: false,
       snackbar: false,
@@ -310,19 +309,6 @@ export default {
     if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
 
     this.isLogout = this.$route.name !== 'login'
-
-    if (this.$vuetify.breakpoint.xsOnly) {
-      let verifierCnt = 0
-
-      this.verifierCntInterval = setInterval(() => {
-        this.activeButton = this.loginButtons[verifierCnt]
-        verifierCnt += 1
-        if (verifierCnt >= this.loginButtons.length) verifierCnt = 0
-      }, 2000)
-    }
-  },
-  beforeDestroy() {
-    if (this.verifierCntInterval) clearInterval(this.verifierCntInterval)
   },
   methods: {
     ...mapActions({

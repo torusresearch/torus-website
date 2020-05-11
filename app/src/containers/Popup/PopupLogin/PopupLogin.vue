@@ -118,7 +118,6 @@ export default {
       TWITCH,
       DISCORD,
       activeButton: GOOGLE,
-      verifierCntInterval: null,
       showModal: true,
     }
   },
@@ -129,9 +128,6 @@ export default {
     loginButtons() {
       return Object.keys(this.enabledVerifiers).filter((x) => this.enabledVerifiers[x])
     },
-  },
-  beforeDestroy() {
-    if (this.verifierCntInterval) clearInterval(this.verifierCntInterval)
   },
   methods: {
     loginBtnHover(verifier) {
