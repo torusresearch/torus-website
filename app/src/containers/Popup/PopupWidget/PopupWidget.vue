@@ -22,9 +22,9 @@
                   {{ address }}
                 </ShowToolTip>
               </div>
-              <div class="ml-auto mr-1">
+              <div class="ml-auto mr-1 mt-n1">
                 <ShowToolTip :address="address">
-                  <v-icon size="8" class="text_2--text">$vuetify.icons.copy</v-icon>
+                  <v-icon size="12" class="text_2--text">$vuetify.icons.copy</v-icon>
                 </ShowToolTip>
               </div>
             </div>
