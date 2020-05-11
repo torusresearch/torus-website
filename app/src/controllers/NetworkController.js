@@ -124,7 +124,7 @@ export default class NetworkController extends EventEmitter {
    * @param {string} network
    * @param {Object} type
    */
-  setNetworkState(network, type) {
+  setNetworkState(network, type, force = false) {
     if (network === 'loading') {
       this.networkStore.putState(network)
       return
@@ -132,9 +132,13 @@ export default class NetworkController extends EventEmitter {
     if (!type) {
       return
     }
-    // eslint-disable-next-line no-param-reassign
-    network = networks.networkList[type] && networks.networkList[type].chainId ? networks.networkList[type].chainId : network
-    this.networkStore.putState(network)
+    let cachedNetwork
+    if (force) {
+      cachedNetwork = network
+    } else if (networks.networkList[type] && networks.networkList[type].chainId) {
+      cachedNetwork = networks.networkList[type].chainId
+    } else cachedNetwork = network
+    this.networkStore.putState(cachedNetwork)
   }
 
   /**
@@ -164,7 +168,7 @@ export default class NetworkController extends EventEmitter {
           return
         }
         log.info(`web3.getNetwork returned ${network}`)
-        this.setNetworkState(network, type)
+        this.setNetworkState(network, type, true)
       }
     })
   }

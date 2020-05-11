@@ -74,7 +74,7 @@ import { BroadcastChannel } from 'broadcast-channel'
 import log from 'loglevel'
 import { mapState } from 'vuex'
 
-import { RPC, RPC_DISPLAY_NAME, SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
+import { RPC, RPC_DISPLAY_NAME } from '../../../utils/enums'
 import { broadcastChannelOptions } from '../../../utils/utils'
 
 export default {
@@ -82,14 +82,6 @@ export default {
   data() {
     return {
       selectedNetwork: {},
-      networks: [
-        ...Object.values(SUPPORTED_NETWORK_TYPES),
-        {
-          networkName: RPC_DISPLAY_NAME,
-          host: RPC,
-          chainId: '',
-        },
-      ],
       rpc: { chainId: '', networkName: '', host: '' },
       formValid: true,
       rules: {
@@ -98,7 +90,17 @@ export default {
     }
   },
   computed: {
-    ...mapState(['networkType']),
+    ...mapState(['networkType', 'supportedNetworks']),
+    networks() {
+      return [
+        ...Object.values(this.supportedNetworks),
+        {
+          networkName: RPC_DISPLAY_NAME,
+          host: RPC,
+          chainId: '',
+        },
+      ]
+    },
     isRPCSelected() {
       return this.selectedNetwork.host === RPC
     },
@@ -131,11 +133,11 @@ export default {
     },
     setRPC() {
       if (this.$refs.networkForm.validate()) {
-        // this.selectedNetwork = RPC
         const payload = { network: this.rpc, type: RPC }
         this.$store
           .dispatch('setProviderType', payload)
           .then(() => {
+            this.selectedNetwork = this.networks.find((x) => x.host === this.rpc.host)
             this.showNotification(true)
             this.sendToIframe(payload)
           })

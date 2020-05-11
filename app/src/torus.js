@@ -28,7 +28,9 @@ class TorusExtended extends Torus {
     } else if (payload.networkId) {
       publicConfigOutStream.write(JSON.stringify({ networkVersion: payload.networkId }))
       if (payload.networkId !== 'loading') {
-        publicConfigOutStream.write(JSON.stringify({ chainId: selectChainId(payload.networkId.toString(), this.torusController.provider) }))
+        publicConfigOutStream.write(
+          JSON.stringify({ chainId: selectChainId(payload.networkId.toString(), this.torusController.networkController.networkStore) })
+        )
       }
     } else if (payload.isUnlocked) {
       publicConfigOutStream.write(JSON.stringify({ isUnlocked: payload.isUnlocked }))

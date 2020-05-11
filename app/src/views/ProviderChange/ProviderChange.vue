@@ -53,7 +53,7 @@
           <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
               <div class="caption text_2--text request-from">
-                <span>{{ currentNetwork.networkName }}</span>
+                <span>{{ currentNetwork.networkName || currentNetwork.host }}</span>
               </div>
             </v-card-text>
           </v-card>
@@ -102,8 +102,9 @@ export default {
         .replace(/{host}/gi, this.origin.hostname)
         .replace(
           /{network}/gi,
-          (SUPPORTED_NETWORK_TYPES[this.network.networkName] && SUPPORTED_NETWORK_TYPES[this.network.networkName].networkName) ||
-            this.network.networkName
+          (SUPPORTED_NETWORK_TYPES[this.network.host] && SUPPORTED_NETWORK_TYPES[this.network.host].networkName) ||
+            this.network.networkName ||
+            this.network.host
         )
     },
   },
