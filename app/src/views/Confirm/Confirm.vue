@@ -2,7 +2,7 @@
   <v-container px-0 py-0 class="confirm-container">
     <template v-if="type === TX_TRANSACTION">
       <v-layout pa-6 class="elevation-1">
-        <v-flex xs12>
+        <v-flex text-center xs12>
           <img
             class="home-link mr-1"
             alt="Torus Logo"

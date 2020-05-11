@@ -89,6 +89,10 @@
     left: var(--panelPositionWidth);
   }
 
+  .network-name {
+    font-size: 8px;
+  }
+
   .torus-widget__user-details {
     background: #ffffff;
     box-shadow: 5px 5px 10px rgba(208, 218, 254, 0.25), -5px -5px 10px #fafbff;
