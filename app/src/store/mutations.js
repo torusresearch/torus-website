@@ -32,9 +32,12 @@ export default {
   setNetworkType(state, networkType) {
     const currentHosts = Object.keys(state.supportedNetworks)
     if (!currentHosts.includes(networkType.host)) {
-      state.supportedNetworks = { ...state.supportedNetworks, [networkType.host]: { ...networkType } }
+      state.supportedNetworks = {
+        ...state.supportedNetworks,
+        [networkType.host]: { ...networkType, networkName: networkType.networkName || networkType.host },
+      }
     }
-    state.networkType = networkType
+    state.networkType = { ...networkType, networkName: networkType.networkName || networkType.host }
   },
   setTransactions(state, transactions) {
     state.transactions = transactions
