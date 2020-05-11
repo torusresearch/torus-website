@@ -90,6 +90,7 @@ class DetectTokensController {
 
   async refreshTokenBalances() {
     if (this.network.store.getState().provider.type !== MAINNET || this.selectedAddress === '') {
+      this.detectedTokensStore.putState({ tokens: [] })
       return
     }
     const oldTokens = this.detectedTokensStore.getState().tokens
