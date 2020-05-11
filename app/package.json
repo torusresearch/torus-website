@@ -44,6 +44,7 @@
     "eth-json-rpc-middleware": "^4.4.1",
     "eth-query": "^2.1.2",
     "eth-sig-util": "^2.5.3",
+    "ethereumjs-common": "^1.5.1",
     "ethereumjs-tx": "^2.1.2",
     "ethereumjs-util": "^7.0.0",
     "ethereumjs-wallet": "^0.6.3",

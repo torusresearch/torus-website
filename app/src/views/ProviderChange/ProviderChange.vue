@@ -24,7 +24,7 @@
         <v-flex class="text-center">
           <span class="headline text_2--text">
             Allow {{ origin.hostname }} change your network to
-            {{ (SUPPORTED_NETWORK_TYPES[network.networkName] && SUPPORTED_NETWORK_TYPES[network.networkName].networkName) || network.networkName }}
+            {{ (SUPPORTED_NETWORK_TYPES[network.host] && SUPPORTED_NETWORK_TYPES[network.host].networkName) || network.networkName || network.host }}
           </span>
           <!-- <br />
           <v-btn small text class="caption torusBrand1--text" @click="editPermissions">
@@ -54,7 +54,7 @@
           <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
               <div class="caption text_2--text request-from">
-                <span>{{ currentNetwork.networkName }}</span>
+                <span>{{ currentNetwork.networkName || currentNetwork.host }}</span>
               </div>
             </v-card-text>
           </v-card>

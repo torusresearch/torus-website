@@ -98,19 +98,18 @@
 <script>
 import { mapState } from 'vuex'
 
-import { SUPPORTED_NETWORK_TYPES } from '../../../utils/enums'
-
 export default {
   name: 'PermissionConfirm',
   computed: {
     ...mapState({
       networkType: 'networkType',
       whiteLabel: 'whiteLabel',
+      supportedNetworks: 'supportedNetworks',
       selectedNetwork(state) {
         let finalNetwork = ''
 
         if (this.network) {
-          return SUPPORTED_NETWORK_TYPES[this.network].networkName
+          return this.supportedNetworks[this.network].networkName
         }
 
         finalNetwork = !state.networkType.networkName ? state.networkType.host : state.networkType.networkName
