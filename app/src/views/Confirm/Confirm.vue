@@ -23,7 +23,7 @@
         </v-flex>
         <v-flex v-if="transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM" xs12>
           <ShowToolTip :address="amountTo">
-            <div class="caption">To: {{ amountTo }}</div>
+            <div class="caption">{{ t('dappTransfer.to') }}: {{ amountTo }}</div>
           </ShowToolTip>
         </v-flex>
         <v-flex v-else-if="transactionCategory === TOKEN_METHOD_APPROVE" xs12 class="text-center">
@@ -36,12 +36,12 @@
             v-if="[TOKEN_METHOD_APPROVE, TOKEN_METHOD_TRANSFER, TOKEN_METHOD_TRANSFER_FROM].indexOf(transactionCategory) >= 0"
             :address="amountTo"
           >
-            <div class="caption">To: {{ amountTo }}</div>
+            <div class="caption">{{ t('dappTransfer.to') }}: {{ amountTo }}</div>
           </ShowToolTip>
           <ShowToolTip v-else-if="[SEND_ETHER_ACTION_KEY, CONTRACT_INTERACTION_KEY].indexOf(transactionCategory) >= 0" :address="receiver">
-            <div class="caption">To: {{ receiver }}</div>
+            <div class="caption">{{ t('dappTransfer.to') }}: {{ receiver }}</div>
           </ShowToolTip>
-          <div v-else class="caption">To: {{ displayAmountTo }}</div>
+          <div v-else class="caption">{{ t('dappTransfer.to') }}: {{ displayAmountTo }}</div>
         </v-flex>
       </v-layout>
       <v-divider class="mx-6 my-4"></v-divider>
@@ -49,7 +49,6 @@
         <v-flex xs3 class="pt-3">
           <div class="caption">
             {{ t('walletTransfer.totalCost') }}
-            <!-- {{ t('dappTransfer.total') }} -->
           </div>
         </v-flex>
         <v-flex xs9>

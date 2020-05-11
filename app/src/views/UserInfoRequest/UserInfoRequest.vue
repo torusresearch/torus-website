@@ -21,12 +21,11 @@
         </v-flex>
       </v-layout>
       <v-layout wrap align-center mx-8 my-6>
-        <v-flex class="text-center">
-          <span class="headline text_2--text">Allow {{ origin.hostname }} to access your Google Email Address, Profile Photo and Name</span>
-          <!-- <br />
-          <v-btn small text class="caption torusBrand1--text" @click="editPermissions">
-            Edit permissions
-          </v-btn> -->
+        <v-flex class="text-center" xs12>
+          <span class="headline text_2--text">{{ t('dappPermission.allowAccess').replace(/{host}/gi, origin.hostname) }}</span>
+        </v-flex>
+        <v-flex v-if="message" class="text-center" xs12>
+          <span class="headline text_2--text">{{ message }}</span>
         </v-flex>
       </v-layout>
       <v-divider class="mx-6"></v-divider>

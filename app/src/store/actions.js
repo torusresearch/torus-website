@@ -54,10 +54,12 @@ const {
 } = torusController || {}
 
 // stream to send logged in status
-const statusStream = (torus && torus.communicationMux && torus.communicationMux.getStream('status')) || fakeStream
-const oauthStream = (torus && torus.communicationMux && torus.communicationMux.getStream('oauth')) || fakeStream
-const userInfoStream = (torus && torus.communicationMux && torus.communicationMux.getStream('user_info')) || fakeStream
-const providerChangeStream = (torus && torus.communicationMux && torus.communicationMux.getStream('provider_change')) || fakeStream
+const { communicationMux = { getStream: () => fakeStream } } = torus || {}
+const statusStream = communicationMux.getStream('status')
+const oauthStream = communicationMux.getStream('oauth')
+const userInfoStream = communicationMux.getStream('user_info')
+const providerChangeStream = communicationMux.getStream('provider_change')
+const widgetStream = communicationMux.getStream('widget')
 
 const handleProviderChangeSuccess = () => {
   setTimeout(() => {
@@ -358,6 +360,7 @@ export default {
     } catch (error) {
       log.error(error)
       oauthStream.write({ err: error })
+      commit('setOAuthModalStatus', false)
       throw error
     }
   },
@@ -383,7 +386,7 @@ export default {
   deleteContact(_, payload) {
     return prefsController.deleteContact(payload)
   },
-  async handleLogin({ state, dispatch }, { calledFromEmbed, oAuthToken }) {
+  async handleLogin({ state, dispatch, commit }, { calledFromEmbed, oAuthToken }) {
     // The error in this is caught above
     const {
       userInfo: { verifierId, verifier, verifierParams },
@@ -406,7 +409,8 @@ export default {
     const { ethAddress } = data
     if (calledFromEmbed) {
       setTimeout(() => {
-        torus.continueEnable(ethAddress)
+        oauthStream.write({ selectedAddress: ethAddress })
+        commit('setOAuthModalStatus', false)
       }, 50)
     }
     // TODO: deprercate rehydrate false for the next major version bump
@@ -532,5 +536,17 @@ export default {
   },
   setErrorMessage(context, payload) {
     prefsController.handleError(payload)
+  },
+  cancelLogin({ commit }) {
+    oauthStream.write({ err: { message: 'User cancelled login' } })
+    commit('setOAuthModalStatus', false)
+  },
+  startLogin({ commit }) {
+    commit('setOAuthModalStatus', true)
+  },
+  toggleWidgetVisibility(context, payload) {
+    widgetStream.write({
+      data: payload,
+    })
   },
 }

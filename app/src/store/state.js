@@ -1,10 +1,15 @@
 import {
+  DISCORD,
+  FACEBOOK,
+  GOOGLE,
   LOCALE_EN,
   MAINNET,
   MAINNET_CODE,
   MAINNET_DISPLAY_NAME,
+  REDDIT,
   SUPPORTED_NETWORK_TYPES,
   THEME_LIGHT_BLUE_NAME,
+  TWITCH,
   USER_INFO_REQUEST_NEW,
 } from '../utils/enums'
 
@@ -52,6 +57,11 @@ const initialState = {
   errorMsg: '',
   successMsg: '',
   iframeMetadata: { origin: '', name: '', icon: '' },
+  embedState: {
+    enabledVerifiers: { [GOOGLE]: true, [FACEBOOK]: true, [REDDIT]: true, [TWITCH]: true, [DISCORD]: true },
+    isOAuthModalVisible: false,
+    buttonPosition: 'bottom-left',
+  },
   whiteLabel: {
     isActive: false,
     theme: {},

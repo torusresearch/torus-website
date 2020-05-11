@@ -23,7 +23,13 @@ if (!isMain) {
 
   // Oauth section
   torus.communicationMux.getStream('oauth').on('data', (chunk) => {
-    VuexStore.dispatch('triggerLogin', chunk.data)
+    const { name, data } = chunk
+    if (name === 'oauth_modal') {
+      // show modal route
+      VuexStore.commit('setOAuthModalStatus', true)
+    } else if (name === 'oauth') {
+      VuexStore.dispatch('triggerLogin', data)
+    }
   })
   pump(torus.communicationMux.getStream('oauth'), passthroughStream, (error) => {
     if (error) log.error(error)
@@ -44,9 +50,11 @@ if (!isMain) {
   initStream.on('data', (chunk) => {
     const {
       name,
-      data: { whiteLabel = {} },
+      data: { enabledVerifiers = {}, whiteLabel = {}, buttonPosition = '' },
     } = chunk
     if (name === 'init_stream') {
+      VuexStore.commit('setEnabledVerifiers', enabledVerifiers)
+      VuexStore.commit('setButtonPosition', buttonPosition)
       if (Object.keys(whiteLabel).length > 0) VuexStore.commit('setWhiteLabel', whiteLabel)
     }
   })

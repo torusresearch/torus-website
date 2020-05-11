@@ -5,9 +5,13 @@
         <img
           class="home-link mr-1"
           alt="Torus Logo"
-          width="135"
-          height="30"
-          :src="require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+          width="70"
+          :height="whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo ? 'inherit' : '17'"
+          :src="
+            whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
+              ? whiteLabelGlobal.logo
+              : require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
+          "
         />
         <div class="headline">{{ t('walletTransfer.confirmTransaction') }}</div>
       </v-flex>
