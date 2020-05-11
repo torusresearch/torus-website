@@ -1,8 +1,9 @@
-const mergeMiddleware = require('json-rpc-engine/src/mergeMiddleware')
-const createScaffoldMiddleware = require('json-rpc-engine/src/createScaffoldMiddleware')
-const createWalletSubprovider = require('eth-json-rpc-middleware/wallet')
-const createAsyncMiddleware = require('json-rpc-engine/src/createAsyncMiddleware')
-const { formatTxMetaForRpcResult } = require('./utils')
+import createWalletSubprovider from 'eth-json-rpc-middleware/wallet'
+import createAsyncMiddleware from 'json-rpc-engine/src/createAsyncMiddleware'
+import createScaffoldMiddleware from 'json-rpc-engine/src/createScaffoldMiddleware'
+import mergeMiddleware from 'json-rpc-engine/src/mergeMiddleware'
+
+import { formatTxMetaForRpcResult } from './utils'
 
 export default function createMetamaskMiddleware({
   version,

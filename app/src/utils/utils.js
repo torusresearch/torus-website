@@ -473,9 +473,9 @@ export const standardNetworkId = {
   [MATIC_CODE.toString()]: MATIC_CHAIN_ID,
 }
 
-export function selectChainId(network, provider) {
-  const { chainId } = provider
-  return standardNetworkId[network] || `0x${Number.parseInt(chainId, 10).toString(16)}`
+export function selectChainId(network, store) {
+  const networkId = store.getState()
+  return standardNetworkId[network] || `0x${Number.parseInt(networkId, 10).toString(16)}`
 }
 
 export const isMain = window.location === window.parent.location && window.location.origin === config.baseUrl

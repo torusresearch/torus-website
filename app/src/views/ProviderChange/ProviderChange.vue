@@ -23,8 +23,7 @@
       <v-layout wrap align-center mx-8 my-6>
         <v-flex class="text-center">
           <span class="headline text_2--text">
-            Allow {{ origin.hostname }} change your network to
-            {{ (SUPPORTED_NETWORK_TYPES[network.networkName] && SUPPORTED_NETWORK_TYPES[network.networkName].networkName) || network.networkName }}
+            {{ headline }}
           </span>
           <!-- <br />
           <v-btn small text class="caption torusBrand1--text" @click="editPermissions">
@@ -49,12 +48,12 @@
           </v-card>
         </v-flex>
         <v-flex xs12 mt-4>
-          <div class="caption mb-2 text_2--text">Current network</div>
+          <div class="caption mb-2 text_2--text">{{ t('dappPermission.currentNetwork') }}</div>
 
           <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
               <div class="caption text_2--text request-from">
-                <span>{{ currentNetwork.networkName }}</span>
+                <span>{{ currentNetwork.networkName || currentNetwork.host }}</span>
               </div>
             </v-card-text>
           </v-card>
@@ -95,8 +94,19 @@ export default {
       network: {},
       currentNetwork: {},
       channel: '',
-      SUPPORTED_NETWORK_TYPES,
     }
+  },
+  computed: {
+    headline() {
+      return this.t('dappPermission.allowNetworkChange')
+        .replace(/{host}/gi, this.origin.hostname)
+        .replace(
+          /{network}/gi,
+          (SUPPORTED_NETWORK_TYPES[this.network.host] && SUPPORTED_NETWORK_TYPES[this.network.host].networkName) ||
+            this.network.networkName ||
+            this.network.host
+        )
+    },
   },
   mounted() {
     this.channel = `torus_provider_change_channel_${new URLSearchParams(window.location.search).get('instanceId')}`

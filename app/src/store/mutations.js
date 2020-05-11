@@ -1,6 +1,8 @@
+import merge from 'deepmerge'
+
 import themes from '../plugins/themes'
 import vuetify from '../plugins/vuetify'
-import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { LOCALES, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { storageAvailable } from '../utils/utils'
 
 export default {
@@ -30,7 +32,14 @@ export default {
     state.networkId = networkId
   },
   setNetworkType(state, networkType) {
-    state.networkType = networkType
+    const currentHosts = Object.keys(state.supportedNetworks)
+    if (!currentHosts.includes(networkType.host)) {
+      state.supportedNetworks = {
+        ...state.supportedNetworks,
+        [networkType.host]: { ...networkType, networkName: networkType.networkName || networkType.host },
+      }
+    }
+    state.networkType = { ...networkType, networkName: networkType.networkName || networkType.host }
   },
   setTransactions(state, transactions) {
     state.transactions = transactions
@@ -72,8 +81,7 @@ export default {
     localThemeSet(payload, state)
   },
   setLocale(state, payload) {
-    state.locale = payload
-    vuetify.framework.lang.current = payload
+    updateDefaultLanguage(state, payload)
   },
   setAssets(state, payload) {
     state.assets = { ...state.assets, ...payload }
@@ -110,6 +118,15 @@ export default {
       ...value,
     }
   },
+  setEnabledVerifiers(state, payload) {
+    state.embedState = {
+      ...state.embedState,
+      enabledVerifiers: { ...state.embedState.enabledVerifiers, ...payload },
+    }
+  },
+  setButtonPosition(state, payload) {
+    state.embedState = { ...state.embedState, buttonPosition: payload || 'bottom-left' }
+  },
   setWhiteLabel(state, payload) {
     state.whiteLabel = {
       ...state.whiteLabel,
@@ -117,7 +134,29 @@ export default {
       ...payload,
     }
     localThemeSet(undefined, state)
-    if (storageAvailable('sessionStorage') && payload) sessionStorage.setItem('torus-white-label', JSON.stringify(payload))
+    // Set locale here from defaultLanguage
+    if (storageAvailable('sessionStorage') && payload) {
+      // Checks if whitelabel defaultLanguage is supported
+      const selectedLocale = LOCALES.find((localeInner) => {
+        return localeInner.value === payload.defaultLanguage
+      })
+      if (selectedLocale) {
+        payload.defaultLanguage = selectedLocale.value
+        updateDefaultLanguage(state, payload.defaultLanguage)
+      }
+
+      if (payload.customTranslations) {
+        vuetify.framework.lang.locales = merge(vuetify.framework.lang.locales, payload.customTranslations)
+      }
+
+      sessionStorage.setItem('torus-white-label', JSON.stringify(payload))
+    }
+  },
+  setOAuthModalStatus(state, payload) {
+    state.embedState = {
+      ...state.embedState,
+      isOAuthModalVisible: payload,
+    }
   },
 }
 function localThemeSet(payload, state) {
@@ -134,4 +173,8 @@ function localThemeSet(payload, state) {
     vuetify.framework.theme.themes[theme.isDark ? 'dark' : 'light'] = theme.theme
   }
   if (storageAvailable('localStorage') && payload) localStorage.setItem('torus-theme', payload)
+}
+function updateDefaultLanguage(state, language) {
+  state.locale = language
+  vuetify.framework.lang.current = language
 }

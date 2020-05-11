@@ -24,18 +24,7 @@
                       <div class="verifier-title font-weight-bold display-1">
                         <span class="text_2--text">
                           {{ t('login.your') }}
-                          <span v-if="activeButton === GOOGLE">
-                            <span class="verifier-title__google-blue">G</span>
-                            <span class="verifier-title__google-red">o</span>
-                            <span class="verifier-title__google-yellow">o</span>
-                            <span class="verifier-title__google-blue">g</span>
-                            <span class="verifier-title__google-green">l</span>
-                            <span class="verifier-title__google-red">e</span>
-                          </span>
-                          <span v-else-if="activeButton === FACEBOOK" class="verifier-title__facebook">Facebook</span>
-                          <span v-else-if="activeButton === REDDIT" class="verifier-title__reddit">Reddit</span>
-                          <span v-else-if="activeButton === TWITCH" class="verifier-title__twitch">Twitch</span>
-                          <span v-else-if="activeButton === DISCORD" class="verifier-title__discord">Discord</span>
+                          <img :src="require(`../../../public/images/login-verifiers.gif`)" />
                         </span>
                       </div>
                       <div class="font-weight-bold headline text_2--text">
@@ -276,7 +265,6 @@ export default {
       loginButtons: [GOOGLE, FACEBOOK, REDDIT, TWITCH, DISCORD],
       loginButtonsMobile: [FACEBOOK, REDDIT, TWITCH, DISCORD],
       activeButton: GOOGLE,
-      verifierCntInterval: null,
       selectedCarouselItem: 0,
       loginInProgress: false,
       snackbar: false,
@@ -321,19 +309,6 @@ export default {
     if (this.selectedAddress !== '') this.$router.push(this.$route.query.redirect || '/wallet').catch((_) => {})
 
     this.isLogout = this.$route.name !== 'login'
-
-    if (this.$vuetify.breakpoint.xsOnly) {
-      let verifierCnt = 0
-
-      this.verifierCntInterval = setInterval(() => {
-        this.activeButton = this.loginButtons[verifierCnt]
-        verifierCnt += 1
-        if (verifierCnt >= this.loginButtons.length) verifierCnt = 0
-      }, 2000)
-    }
-  },
-  beforeDestroy() {
-    if (this.verifierCntInterval) clearInterval(this.verifierCntInterval)
   },
   methods: {
     ...mapActions({

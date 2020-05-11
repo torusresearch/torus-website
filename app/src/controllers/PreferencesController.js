@@ -2,7 +2,7 @@ import log from 'loglevel'
 import ObservableStore from 'obs-store'
 
 import config from '../config'
-import { ERROR_TIME, LOCALES, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { ERROR_TIME, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import { getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
@@ -115,23 +115,17 @@ class PreferencesController {
       if (user && user.data) {
         const { transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
         let whiteLabelLocale
-        let torusWhiteLabel
 
         // White Label override
         if (storageAvailable('sessionStorage')) {
-          torusWhiteLabel = sessionStorage.getItem('torus-white-label')
-        }
-        if (torusWhiteLabel) {
-          try {
-            torusWhiteLabel = JSON.parse(torusWhiteLabel)
-            whiteLabelLocale = torusWhiteLabel.defaultLanguage
-
-            const selectedLocale = LOCALES.find((localeInner) => {
-              return localeInner.value === torusWhiteLabel.defaultLanguage
-            })
-            if (selectedLocale) whiteLabelLocale = selectedLocale.value
-          } catch (error) {
-            log.error(error)
+          let torusWhiteLabel = sessionStorage.getItem('torus-white-label')
+          if (torusWhiteLabel) {
+            try {
+              torusWhiteLabel = JSON.parse(torusWhiteLabel)
+              whiteLabelLocale = torusWhiteLabel.defaultLanguage
+            } catch (error) {
+              log.error(error)
+            }
           }
         }
 

@@ -56,7 +56,15 @@ Vue.mixin({
 
       try {
         torusWhiteLabel = JSON.parse(torusWhiteLabel)
-        return torusWhiteLabel ? { logo: torusWhiteLabel.logo, isWhiteLabelActive: true } : { isWhiteLabelActive: false }
+        if (!torusWhiteLabel) return { isWhiteLabelActive: false }
+
+        return {
+          logo: this.$vuetify.theme.isDark ? torusWhiteLabel.logoLight : torusWhiteLabel.logoDark,
+          logoDark: torusWhiteLabel.logoDark,
+          logoLight: torusWhiteLabel.logoLight,
+          tncLink: torusWhiteLabel.tncLink,
+          isWhiteLabelActive: true,
+        }
       } catch (error) {
         return { isWhiteLabelActive: false }
       }
