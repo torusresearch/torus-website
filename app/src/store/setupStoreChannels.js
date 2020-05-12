@@ -99,8 +99,6 @@ if (!isMain) {
           userInfoAccessStream.write({ name: 'user_info_access_response', data: { approved: true, payload } })
           break
         case USER_INFO_REQUEST_REJECTED:
-          userInfoAccessStream.write({ name: 'user_info_access_response', data: { rejected: true } })
-          break
         case USER_INFO_REQUEST_NEW:
         default:
           userInfoAccessStream.write({ name: 'user_info_access_response', data: { newRequest: true } })
