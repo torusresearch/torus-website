@@ -240,7 +240,7 @@
               <v-icon v-if="whiteLabelGlobal.isWhiteLabelActive" small class="torusBrand1--text">$vuetify.icons.check_circle</v-icon>
               <img v-else :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
             </div>
-            <div class="caption text_2--text text-capitalize">{{ t('dappTransfer.dataSmall') }}</div>
+            <div class="caption text_2--text text-capitalize">{{ t('dappTransfer.data') }}</div>
           </div>
         </v-flex>
         <v-flex xs12 mb-4 mx-6>
@@ -531,7 +531,10 @@ export default {
     const bc = new BroadcastChannel(this.channel, broadcastChannelOptions)
     bc.addEventListener('message', async (ev) => {
       if (ev.name !== 'send-params') return
-      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, currencyData, network } = ev.data || {}
+      const { type, msgParams, txParams, origin, balance, selectedCurrency, tokenRates, jwtToken, whiteLabel, currencyData, network } = ev.data || {}
+
+      this.$store.commit('setWhiteLabel', whiteLabel)
+
       this.selectedCurrency = selectedCurrency
       this.currencyData = currencyData
       if (txParams && txParams.id.toString() !== queryParameterId) return
