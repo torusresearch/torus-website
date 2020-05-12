@@ -3,9 +3,9 @@
     <v-layout class="redirect-container" :class="$vuetify.breakpoint.xsOnly ? 'redirect-container--mobile' : ''" row wrap align-center>
       <v-flex text-center>
         <BeatLoader :color="$vuetify.theme.dark ? $vuetify.theme.themes.dark.torusBrand1 : $vuetify.theme.themes.light.torusBrand1" />
-        <div class="redirect-title font-weight-bold mt-3">
+        <!-- <div class="redirect-title font-weight-bold mt-3">
           {{ t('dappGeneral.loading') }}
-        </div>
+        </div> -->
       </v-flex>
     </v-layout>
   </v-container>
