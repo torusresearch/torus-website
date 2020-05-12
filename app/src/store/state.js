@@ -62,6 +62,7 @@ const initialState = {
     isOAuthModalVisible: false,
     buttonPosition: 'bottom-left',
     torusWidgetVisibility: true,
+    isTopupModalVisible: false,
   },
   whiteLabel: {
     isActive: false,

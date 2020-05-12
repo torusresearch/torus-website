@@ -8,7 +8,7 @@
       :data-provider="targetProvider.name"
       @click="innerProvider = targetProvider.name"
     >
-      <router-link :to="targetProvider.link">
+      <router-link v-if="!isTopupModalVisible" :to="targetProvider.link">
         <v-list-item :id="`${targetProvider.name}-link`" three-line @click="scrollToPosition">
           <v-list-item-icon class="mr-2 align-self-center">
             <v-icon v-if="innerProvider === targetProvider.name" :class="$vuetify.theme.isDark ? 'torusLight--text' : 'torusBrand1--text'">
@@ -36,6 +36,34 @@
           </v-list-item-content>
         </v-list-item>
       </router-link>
+      <template v-else>
+        <v-list-item :id="`${targetProvider.name}-link`" three-line @click="scrollToPosition">
+          <v-list-item-icon class="mr-2 align-self-center">
+            <v-icon v-if="innerProvider === targetProvider.name" :class="$vuetify.theme.isDark ? 'torusLight--text' : 'torusBrand1--text'">
+              $vuetify.icons.radioOn
+            </v-icon>
+            <v-icon v-else :class="$vuetify.theme.isDark ? 'torusLight--text' : 'torusBlack--text'">$vuetify.icons.radioOff</v-icon>
+          </v-list-item-icon>
+          <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 100 : 130" height="100%" tile class="align-self-center mr-2">
+            <img :src="require(`../../../../public/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
+          </v-list-item-avatar>
+          <v-list-item-content class="align-self-center text-right text_1--text caption">
+            <div>{{ t('walletTopUp.paywith') }} {{ targetProvider.line1 }}</div>
+            <div>
+              <span class="font-weight-medium">{{ t('walletTopUp.fees') }}</span>
+              : {{ targetProvider.line2 }}
+            </div>
+            <div>
+              <span class="font-weight-medium">{{ t('walletTopUp.limits') }}</span>
+              : {{ targetProvider.line3 }}
+            </div>
+            <div>
+              <span class="font-weight-medium">{{ t('walletTopUp.currencies') }}</span>
+              : {{ targetProvider.line4 }}
+            </div>
+          </v-list-item-content>
+        </v-list-item>
+      </template>
     </v-card>
 
     <template>
@@ -87,6 +115,9 @@ export default {
       default() {
         return []
       },
+    },
+    isTopupModalVisible: {
+      type: Boolean,
     },
   },
   data() {

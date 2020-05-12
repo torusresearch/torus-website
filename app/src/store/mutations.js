@@ -161,6 +161,9 @@ export default {
   setTorusWidgetVisibility(state, payload) {
     state.embedState = { ...state.embedState, torusWidgetVisibility: payload }
   },
+  setTopupmodalStatus(state, payload) {
+    state.embedState = { ...state.embedState, isTopupModalVisible: payload }
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]

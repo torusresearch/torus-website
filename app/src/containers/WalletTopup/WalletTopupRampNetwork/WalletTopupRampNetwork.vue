@@ -17,6 +17,7 @@ import { mapState } from 'vuex'
 import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 
 export default {
+  name: 'WalletTopupRampNetwork',
   components: {
     WalletTopupBase,
   },

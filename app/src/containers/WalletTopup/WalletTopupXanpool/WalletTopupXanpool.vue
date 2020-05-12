@@ -16,6 +16,7 @@ import log from 'loglevel'
 import WalletTopupBase from '../../../components/WalletTopup/WalletTopupBase'
 
 export default {
+  name: 'WalletTopupXanpool',
   components: {
     WalletTopupBase,
   },

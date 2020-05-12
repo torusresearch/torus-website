@@ -1,0 +1,93 @@
+.login-dialog-container {
+  ::v-deep .v-dialog {
+    border-radius: 6px;
+  }
+
+  .torus_text--text {
+    color: #5C6C7F;
+  }
+  
+  .login-header {
+    background: #FFFFFF;
+    border: 1px solid #F5F5F5;
+    box-sizing: border-box;
+    box-shadow: 0px 14px 28px rgba(46, 91, 255, 0.06);
+    border-radius: 6px;
+    line-height: 0;
+  
+    .close-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      color: #DFDFDF;
+    }
+  }
+  
+  .verifier-title {
+    img {
+      height: 18px;
+      margin-bottom: -4px;
+      margin-left: 2px;
+    }
+    &__google-blue {
+      color: #4285F4;
+    }
+    &__google-red {
+      color: #EA4335;
+    }
+    &__google-yellow {
+      color: #FBBC05;
+    }
+    &__google-green {
+      color: #34A853;
+    }
+    &__facebook {
+      color: #3478EA;
+    }
+    &__reddit {
+      color: #FF4500;
+    }
+    &__twitch {
+      color: #695790;
+    }
+    &__discord {
+      color: #7289DA;
+    }
+  }
+  
+  .verifier-subtitle {
+    font-size: 18px;
+  }
+  
+  .login-btn.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+    background: #FFFFFF;
+    border: 1px solid #F1F2F6;
+    box-sizing: border-box;
+    box-shadow: 0px 18.2385px 36.4771px rgba(46, 91, 255, 0.06);
+    min-width: inherit;
+    padding: 0;
+    height: 56px;
+    img {
+      width: 32px;
+      height: 32px;
+    }
+  }
+  
+  &.theme--dark {
+    background: #242529;
+    .torus_text--text {
+      color: #D3D3D4;
+    }
+    .login-header {
+      background: #242529;
+      box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+      border: 0;
+    }
+
+    .login-btn.v-btn:not(.v-btn--flat):not(.v-btn--text):not(.v-btn--outlined) {
+      background: #2F3136;
+      border: 1px solid #404145;
+      box-shadow: 0px 14px 28px rgba(92, 108, 127, 0.06);
+    }
+  }
+}

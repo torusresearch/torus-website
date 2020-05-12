@@ -35,7 +35,7 @@ export default {
   ...moonpay,
   ...wyre,
   ...xanpool,
-  async initiateTopup({ state, dispatch }, { provider, params, preopenInstanceId }) {
+  async initiateTopup({ state, dispatch, commit }, { provider, params, preopenInstanceId }) {
     if (paymentProviders[provider] && paymentProviders[provider].api) {
       try {
         const selectedProvider = paymentProviders[provider]
@@ -120,7 +120,10 @@ export default {
         handleFailure(error)
       }
     } else {
-      handleFailure(new Error('Unsupported/Invalid provider selected'))
+      // handleFailure(new Error('Unsupported/Invalid provider selected'))
+      // Show UI modal
+      dispatch('toggleWidgetVisibility', true)
+      commit('setTopupmodalStatus', true)
     }
   },
 }

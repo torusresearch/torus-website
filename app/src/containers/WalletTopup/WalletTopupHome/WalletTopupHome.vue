@@ -15,6 +15,7 @@
     <v-layout mt-7 mx-n4 wrap>
       <TopupProviders
         :selected-provider="selectedProvider"
+        :is-topup-modal-visible="isTopupModalVisible"
         :providers="providers"
         @onSelectProvider="
           (selected) => {
@@ -32,8 +33,15 @@
         </div>
       </v-flex>
 
-      <v-flex id="providerForm" xs12 sm6 md7 mb-4 px-4>
+      <v-flex v-if="!isTopupModalVisible" id="providerForm" xs12 sm6 md7 mb-4 px-4>
         <router-view></router-view>
+      </v-flex>
+      <v-flex v-else id="providerForm" xs12 sm6 md7 mb-4 px-4>
+        <WalletTopupSimplex v-if="selectedProvider === SIMPLEX" />
+        <WalletTopupMoonpay v-if="selectedProvider === MOONPAY" />
+        <WalletTopupWyre v-if="selectedProvider === WYRE" />
+        <WalletTopupRampNetwork v-if="selectedProvider === RAMPNETWORK" />
+        <WalletTopupXanpool v-if="selectedProvider === XANPOOL" />
       </v-flex>
     </v-layout>
   </v-container>
@@ -44,21 +52,40 @@ import { mapState } from 'vuex'
 
 import QuickAddress from '../../../components/helpers/QuickAddress'
 import TopupProviders from '../../../components/WalletTopup/TopupProviders'
-import { THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME } from '../../../utils/enums'
+import { MOONPAY, RAMPNETWORK, SIMPLEX, THEME_DARK_BLACK_NAME, THEME_LIGHT_BLUE_NAME, WYRE, XANPOOL } from '../../../utils/enums'
 import { getPaymentProviders } from '../../../utils/utils'
+import WalletTopupMoonpay from '../WalletTopupMoonpay'
+import WalletTopupRampNetwork from '../WalletTopupRampNetwork'
+import WalletTopupSimplex from '../WalletTopupSimplex'
+import WalletTopupWyre from '../WalletTopupWyre'
+import WalletTopupXanpool from '../WalletTopupXanpool'
 
 export default {
+  name: 'WalletTopupHome',
   components: {
     TopupProviders,
     QuickAddress,
+    WalletTopupMoonpay,
+    WalletTopupRampNetwork,
+    WalletTopupSimplex,
+    WalletTopupWyre,
+    WalletTopupXanpool,
   },
   data() {
     return {
       selectedProvider: '',
+      MOONPAY,
+      SIMPLEX,
+      RAMPNETWORK,
+      WYRE,
+      XANPOOL,
     }
   },
   computed: {
     ...mapState(['theme', 'whiteLabel']),
+    ...mapState({
+      isTopupModalVisible: (state) => state.embedState.isTopupModalVisible,
+    }),
     providers() {
       if (this.whiteLabel.isActive) {
         return getPaymentProviders(this.whiteLabel.theme.isDark ? THEME_DARK_BLACK_NAME : THEME_LIGHT_BLUE_NAME)
