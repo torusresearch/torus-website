@@ -1,7 +1,7 @@
 <template>
   <v-container class="pa-0">
     <PopupLogin :login-dialog="loginDialog" @closeDialog="cancelLogin" />
-    <PopupWidget :login-dialog="loginDialog" :logged-in="loggedIn" @onLogin="startLogin" />
+    <PopupWidget v-if="torusWidgetVisibility" :login-dialog="loginDialog" :logged-in="loggedIn" @onLogin="startLogin" />
   </v-container>
 </template>
 
@@ -17,6 +17,7 @@ export default {
   computed: mapState({
     loggedIn: (state) => state.selectedAddress !== '',
     loginDialog: (state) => state.embedState.isOAuthModalVisible,
+    torusWidgetVisibility: (state) => state.embedState.torusWidgetVisibility,
   }),
   methods: {
     ...mapActions({
