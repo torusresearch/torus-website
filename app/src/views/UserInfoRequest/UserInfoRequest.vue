@@ -95,11 +95,13 @@ export default {
       const {
         payload: { verifier = '', message = '' },
         origin = '',
+        whiteLabel,
       } = ev.data
       this.origin = origin // origin of tx: website url
       this.type = 'userInfo'
       this.verifier = verifier
       this.message = message
+      this.$store.commit('setWhiteLabel', whiteLabel)
       bc.close()
     })
     bc.postMessage({ data: { type: 'popup-loaded' } })

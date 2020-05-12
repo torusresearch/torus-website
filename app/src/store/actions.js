@@ -156,6 +156,7 @@ export default {
             origin: getIFrameOriginObject(),
             payload,
             currentNetwork: state.networkType,
+            whiteLabel: state.whiteLabel,
           },
         })
       } else if (type === 'provider-change-result') {
@@ -214,6 +215,7 @@ export default {
           data: {
             origin: getIFrameOriginObject(),
             payload: { ...payload, verifier: state.userInfo.verifier },
+            whiteLabel: state.whiteLabel,
           },
         })
       } else if (type === 'user-info-request-result') {

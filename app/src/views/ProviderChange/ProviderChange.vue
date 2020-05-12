@@ -116,11 +116,14 @@ export default {
         payload: { network, type },
         origin,
         currentNetwork,
+        whiteLabel,
       } = ev.data || {}
       this.origin = origin // origin of tx: website url
       this.network = network
       this.type = type
       this.currentNetwork = currentNetwork
+
+      this.$store.commit('setWhiteLabel', whiteLabel)
 
       bc.close()
     })
