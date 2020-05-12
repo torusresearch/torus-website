@@ -61,6 +61,7 @@ const initialState = {
     enabledVerifiers: { [GOOGLE]: true, [FACEBOOK]: true, [REDDIT]: true, [TWITCH]: true, [DISCORD]: true },
     isOAuthModalVisible: false,
     buttonPosition: 'bottom-left',
+    torusWidgetVisibility: true,
   },
   whiteLabel: {
     isActive: false,
