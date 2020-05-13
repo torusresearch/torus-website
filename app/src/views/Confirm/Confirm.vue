@@ -140,7 +140,7 @@
           </v-dialog>
         </v-flex>
         <v-flex v-if="(topUpErrorShow || canShowError)" xs12 mb-4 class="text-right">
-          <div class="caption error--text">{{ errorMsg }}</div>
+          <div class="caption error--text">{{ errorMsg === 'dappTransfer.insufficientFunds' ? t('dappTransfer.insufficientFunds') : errorMsg }}</div>
           <div v-if="topUpErrorShow" class="caption mt-1">
             {{ t('dappTransfer.pleaseTopup1') }}
             <v-btn color="primary" class="mx-1 px-2 caption" small outlined @click="topUp">{{ t('dappTransfer.pleaseTopup2') }}</v-btn>
@@ -517,7 +517,7 @@ export default {
         this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
         this.totalUsdCost = significantDigits(ethCost.times(this.currencyMultiplier))
         if (this.balance.lt(ethCost) && !this.canShowError) {
-          this.errorMsg = this.t('dappTransfer.insufficientFunds')
+          this.errorMsg = 'dappTransfer.insufficientFunds'
           this.topUpErrorShow = true
         }
       }
@@ -648,7 +648,7 @@ export default {
           this.canShowError = true
         }
         if (this.balance.lt(ethCost) && !this.canShowError) {
-          this.errorMsg = this.t('dappTransfer.insufficientFunds')
+          this.errorMsg = 'dappTransfer.insufficientFunds'
           this.topUpErrorShow = true
         }
       }
