@@ -185,7 +185,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
@@ -264,6 +264,7 @@ export default {
     this.$vuetify.goTo(0)
   },
   methods: {
+    ...mapActions(['forceFetchTokens', 'setSelectedCurrency']),
     select(selectedItem) {
       // this is so that we don't break their api
       this.selected = []
@@ -274,10 +275,10 @@ export default {
       })
     },
     onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'home' })
+      this.setSelectedCurrency({ selectedCurrency: value, origin: 'home' })
     },
     refreshBalances() {
-      this.$store.dispatch('forceFetchTokens')
+      this.forceFetchTokens()
       this.setDateUpdated()
     },
     initiateTransfer() {

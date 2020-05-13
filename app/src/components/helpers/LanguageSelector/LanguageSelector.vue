@@ -40,6 +40,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 import { LOCALES } from '../../../utils/enums'
 
 export default {
@@ -57,8 +59,9 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['setUserLocale']),
     changeLocale(locale) {
-      this.$store.dispatch('setUserLocale', locale)
+      this.setUserLocale(locale)
     },
   },
 }
