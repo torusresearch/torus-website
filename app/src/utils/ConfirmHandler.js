@@ -53,6 +53,7 @@ class ConfirmHandler {
         jwtToken: this.jwtToken,
         currencyData: this.currencyData,
         network: this.networkType,
+        whiteLabel: this.whiteLabel,
       },
     })
   }
@@ -69,6 +70,7 @@ class ConfirmHandler {
         jwtToken: this.jwtToken,
         currencyData: this.currencyData,
         network: this.networkType,
+        whiteLabel: this.whiteLabel,
       },
     })
   }

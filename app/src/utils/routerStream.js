@@ -1,4 +1,3 @@
-// var Transform = require('readable-stream').Transform
 import log from 'loglevel'
 import { Duplex, PassThrough } from 'readable-stream'
 

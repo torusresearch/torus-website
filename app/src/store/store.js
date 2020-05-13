@@ -50,6 +50,7 @@ if (storageAvailable('sessionStorage')) {
       billboard: state.billboard,
       contacts: state.contacts,
       whiteLabel: state.whiteLabel,
+      supportedNetworks: state.supportedNetworks,
       // pastTransactions: state.pastTransactions
     }),
   })
@@ -73,6 +74,7 @@ const VuexStore = new Vuex.Store({
       confirmHandler.jwtToken = state.jwtToken
       confirmHandler.currencyData = state.currencyData
       confirmHandler.networkType = state.networkType
+      confirmHandler.whiteLabel = state.whiteLabel
       if (isTx) {
         const txParameters = getters.unApprovedTransactions[getters.unApprovedTransactions.length - 1]
         txParameters.userInfo = state.userInfo

@@ -2,11 +2,17 @@ import {
   BADGES_COLLECTIBLE,
   BADGES_TOPUP,
   BADGES_TRANSACTION,
+  DISCORD,
+  FACEBOOK,
+  GOOGLE,
   LOCALE_EN,
   MAINNET,
   MAINNET_CODE,
   MAINNET_DISPLAY_NAME,
+  REDDIT,
+  SUPPORTED_NETWORK_TYPES,
   THEME_LIGHT_BLUE_NAME,
+  TWITCH,
   USER_INFO_REQUEST_NEW,
 } from '../utils/enums'
 
@@ -40,6 +46,7 @@ const initialState = {
   // preferences
   selectedAddress: '',
   jwtToken: '',
+  supportedNetworks: { ...SUPPORTED_NETWORK_TYPES },
 
   selectedCurrency: 'USD',
   pastTransactions: [],
@@ -53,6 +60,12 @@ const initialState = {
   errorMsg: '',
   successMsg: '',
   iframeMetadata: { origin: '', name: '', icon: '' },
+  embedState: {
+    enabledVerifiers: { [GOOGLE]: true, [FACEBOOK]: true, [REDDIT]: true, [TWITCH]: true, [DISCORD]: true },
+    isOAuthModalVisible: false,
+    buttonPosition: 'bottom-left',
+    torusWidgetVisibility: true,
+  },
   whiteLabel: {
     isActive: false,
     theme: {},

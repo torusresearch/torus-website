@@ -52,10 +52,19 @@ Vue.mixin({
       if (!storageAvailable('sessionStorage')) return { isWhiteLabelActive: false }
 
       let torusWhiteLabel = sessionStorage.getItem('torus-white-label')
+      if (torusWhiteLabel === null) return { isWhiteLabelActive: false }
 
       try {
         torusWhiteLabel = JSON.parse(torusWhiteLabel)
-        return torusWhiteLabel ? { logo: torusWhiteLabel.logo, isWhiteLabelActive: true } : { isWhiteLabelActive: false }
+        if (!torusWhiteLabel) return { isWhiteLabelActive: false }
+
+        return {
+          logo: this.$vuetify.theme.isDark ? torusWhiteLabel.logoLight : torusWhiteLabel.logoDark,
+          logoDark: torusWhiteLabel.logoDark,
+          logoLight: torusWhiteLabel.logoLight,
+          tncLink: torusWhiteLabel.tncLink,
+          isWhiteLabelActive: true,
+        }
       } catch (error) {
         return { isWhiteLabelActive: false }
       }

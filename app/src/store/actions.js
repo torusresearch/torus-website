@@ -5,6 +5,7 @@ import { toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import torus from '../torus'
+import accountImporter from '../utils/accountImporter'
 import {
   DISCORD,
   FACEBOOK,
@@ -36,8 +37,6 @@ import {
 import { discordHandler, facebookHandler, googleHandler, handleLoginWindow, redditHandler, twitchHandler } from './loginHandlers'
 import initialState from './state'
 
-const accountImporter = require('../utils/accountImporter')
-
 const { baseRoute } = config
 const { torusController } = torus || {}
 const {
@@ -55,10 +54,12 @@ const {
 } = torusController || {}
 
 // stream to send logged in status
-const statusStream = (torus && torus.communicationMux && torus.communicationMux.getStream('status')) || fakeStream
-const oauthStream = (torus && torus.communicationMux && torus.communicationMux.getStream('oauth')) || fakeStream
-const userInfoStream = (torus && torus.communicationMux && torus.communicationMux.getStream('user_info')) || fakeStream
-const providerChangeStream = (torus && torus.communicationMux && torus.communicationMux.getStream('provider_change')) || fakeStream
+const { communicationMux = { getStream: () => fakeStream } } = torus || {}
+const statusStream = communicationMux.getStream('status')
+const oauthStream = communicationMux.getStream('oauth')
+const userInfoStream = communicationMux.getStream('user_info')
+const providerChangeStream = communicationMux.getStream('provider_change')
+const widgetStream = communicationMux.getStream('widget')
 
 const handleProviderChangeSuccess = () => {
   setTimeout(() => {
@@ -155,6 +156,7 @@ export default {
             origin: getIFrameOriginObject(),
             payload,
             currentNetwork: state.networkType,
+            whiteLabel: state.whiteLabel,
           },
         })
       } else if (type === 'provider-change-result') {
@@ -213,6 +215,7 @@ export default {
           data: {
             origin: getIFrameOriginObject(),
             payload: { ...payload, verifier: state.userInfo.verifier },
+            whiteLabel: state.whiteLabel,
           },
         })
       } else if (type === 'user-info-request-result') {
@@ -283,14 +286,16 @@ export default {
     context.commit('setNetworkId', payload.networkId)
     torus.updateStaticData({ networkId: payload.networkId })
   },
-  setProviderType(context, payload) {
+  setProviderType({ commit }, payload) {
     let networkType = payload.network
+    let isSupportedNetwork = false
     if (SUPPORTED_NETWORK_TYPES[networkType.host]) {
       networkType = SUPPORTED_NETWORK_TYPES[networkType.host]
+      isSupportedNetwork = true
     }
-    context.commit('setNetworkType', networkType)
-    if (payload.type && payload.type === RPC) {
-      return torusController.setCustomRpc(networkType.host, networkType.chainId, 'ETH', networkType.networkName)
+    commit('setNetworkType', networkType)
+    if ((payload.type && payload.type === RPC) || !isSupportedNetwork) {
+      return torusController.setCustomRpc(networkType.host, networkType.chainId || 1, 'ETH', networkType.networkName || '')
     }
     return networkController.setProviderType(networkType.host)
   },
@@ -357,6 +362,7 @@ export default {
     } catch (error) {
       log.error(error)
       oauthStream.write({ err: error })
+      commit('setOAuthModalStatus', false)
       throw error
     }
   },
@@ -382,7 +388,7 @@ export default {
   deleteContact(_, payload) {
     return prefsController.deleteContact(payload)
   },
-  async handleLogin({ state, dispatch }, { calledFromEmbed, oAuthToken }) {
+  async handleLogin({ state, dispatch, commit }, { calledFromEmbed, oAuthToken }) {
     // The error in this is caught above
     const {
       userInfo: { verifierId, verifier, verifierParams },
@@ -405,7 +411,8 @@ export default {
     const { ethAddress } = data
     if (calledFromEmbed) {
       setTimeout(() => {
-        torus.continueEnable(ethAddress)
+        oauthStream.write({ selectedAddress: ethAddress })
+        commit('setOAuthModalStatus', false)
       }, 50)
     }
     // TODO: deprercate rehydrate false for the next major version bump
@@ -531,5 +538,19 @@ export default {
   },
   setErrorMessage(context, payload) {
     prefsController.handleError(payload)
+  },
+  cancelLogin({ commit, dispatch }) {
+    oauthStream.write({ err: { message: 'User cancelled login' } })
+    commit('setOAuthModalStatus', false)
+    dispatch('toggleWidgetVisibility', false)
+  },
+  startLogin({ commit, dispatch }) {
+    commit('setOAuthModalStatus', true)
+    dispatch('toggleWidgetVisibility', true)
+  },
+  toggleWidgetVisibility(context, payload) {
+    widgetStream.write({
+      data: payload,
+    })
   },
 }
