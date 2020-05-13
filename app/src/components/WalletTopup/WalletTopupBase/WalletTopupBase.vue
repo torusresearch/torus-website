@@ -221,7 +221,7 @@ export default {
     this.setFiatValue(this.minOrderValue)
   },
   methods: {
-    ...mapActions(['toggleWidgetVisibility']),
+    ...mapActions(['toggleWidgetVisibility', 'handleTopupSuccess', 'handleTopupFailure']),
     ...mapMutations(['setTopupmodalStatus']),
     significantDigits,
     setFiatValue(newValue) {
@@ -250,6 +250,7 @@ export default {
               this.snackbarColor = 'error'
               this.snackbarText = 'Something went wrong'
             }
+            this.handleTopupSuccess(success)
           })
             .catch((error) => {
               this.snackbar = true
@@ -261,7 +262,7 @@ export default {
                 fiatValue: this.fiatValue,
                 selectedCryptoCurrency: this.selectedCryptoCurrency,
               })
-              return undefined
+              this.handleTopupFailure(error)
             })
             .finally(() => {
               this.toggleWidgetVisibility(false)

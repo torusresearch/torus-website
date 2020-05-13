@@ -10,25 +10,6 @@ import xanpool from './xanpool'
 
 const topupStream = (torus && torus.communicationMux && torus.communicationMux.getStream('topup')) || fakeStream
 
-const handleSuccess = (success) => {
-  topupStream.write({
-    name: 'topup_response',
-    data: {
-      success,
-    },
-  })
-}
-
-const handleFailure = (error) => {
-  topupStream.write({
-    name: 'topup_response',
-    data: {
-      success: false,
-      error: error.message || 'Internal error',
-    },
-  })
-}
-
 export default {
   ...simplex,
   ...rampnetwork,
@@ -80,7 +61,7 @@ export default {
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress,
           })
-          handleSuccess(success)
+          dispatch('handleTopupSuccess', success)
         } else if (provider === MOONPAY) {
           // moonpay
           const currentOrder = {
@@ -94,7 +75,7 @@ export default {
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress,
           })
-          handleSuccess(success)
+          dispatch('handleTopupSuccess', success)
         } else if (provider === WYRE) {
           // wyre
           const { success } = await dispatch('fetchWyreOrder', {
@@ -102,7 +83,7 @@ export default {
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress,
           })
-          handleSuccess(success)
+          dispatch('handleTopupSuccess', success)
         } else if (provider === XANPOOL) {
           // xanpool
           const { success } = await dispatch('fetchXanpoolOrder', {
@@ -114,10 +95,10 @@ export default {
             preopenInstanceId,
             selectedAddress: selectedParameters.selectedAddress,
           })
-          handleSuccess(success)
+          dispatch('handleTopupSuccess', success)
         }
       } catch (error) {
-        handleFailure(error)
+        dispatch('handleTopupFailure', error)
       }
     } else {
       // handleFailure(new Error('Unsupported/Invalid provider selected'))
@@ -125,5 +106,22 @@ export default {
       dispatch('toggleWidgetVisibility', true)
       commit('setTopupmodalStatus', true)
     }
+  },
+  handleTopupSuccess(context, payload) {
+    topupStream.write({
+      name: 'topup_response',
+      data: {
+        success: payload,
+      },
+    })
+  },
+  handleTopupFailure(context, payload) {
+    topupStream.write({
+      name: 'topup_response',
+      data: {
+        success: false,
+        error: payload.message || 'Internal error',
+      },
+    })
   },
 }
