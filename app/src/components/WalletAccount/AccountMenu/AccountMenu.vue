@@ -115,7 +115,7 @@
 
 <script>
 import { BroadcastChannel } from 'broadcast-channel'
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import { DISCORD } from '../../../utils/enums'
 import { addressSlicer, broadcastChannelOptions } from '../../../utils/utils'
@@ -174,6 +174,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['logOut', 'updateSelectedAddress']),
     async logout() {
       const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
       if (urlInstance && urlInstance !== '') {
@@ -181,11 +182,11 @@ export default {
         await bc.postMessage({ data: { type: 'logout' } })
         bc.close()
       }
-      this.$store.dispatch('logOut')
+      this.logOut()
       this.$router.push({ path: '/logout' }).catch((_) => {})
     },
     async changeAccount(newAddress) {
-      this.$store.dispatch('updateSelectedAddress', { selectedAddress: newAddress })
+      this.updateSelectedAddress({ selectedAddress: newAddress })
       const urlInstance = new URLSearchParams(window.location.search).get('instanceId')
       if (urlInstance && urlInstance !== '') {
         const selectedAddressChannel = new BroadcastChannel(`selected_address_channel_${urlInstance}`, broadcastChannelOptions)

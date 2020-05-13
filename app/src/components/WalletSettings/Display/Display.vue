@@ -19,7 +19,7 @@
 
 <script>
 import log from 'loglevel'
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 
 import themes from '../../../plugins/themes'
 
@@ -35,11 +35,12 @@ export default {
     activeTheme: 'theme',
   }),
   methods: {
+    ...mapActions(['setUserTheme']),
     async saveTheme(theme) {
       if (this.selectedTheme === theme) return
       this.selectedTheme = theme
       try {
-        await this.$store.dispatch('setUserTheme', this.selectedTheme.name)
+        await this.setUserTheme(this.selectedTheme.name)
       } catch (error) {
         log.error(error)
       }
