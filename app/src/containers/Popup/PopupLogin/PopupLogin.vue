@@ -76,15 +76,7 @@
             <v-flex mt-8 mb-4>
               <span class="caption torus_text--text">
                 {{ t('login.acceptTerms') }}
-                <a
-                  :href="
-                    whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.tncLink
-                      ? whiteLabelGlobal.tncLink
-                      : 'https://docs.tor.us/legal/terms-and-conditions'
-                  "
-                  target="_blank"
-                  :style="{ textDecoration: 'none' }"
-                >
+                <a :href="tncLink" target="_blank" :style="{ textDecoration: 'none' }">
                   <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
                 </a>
               </span>
@@ -127,6 +119,17 @@ export default {
     }),
     loginButtons() {
       return Object.keys(this.enabledVerifiers).filter((x) => this.enabledVerifiers[x])
+    },
+    localeSelected() {
+      return this.$vuetify.lang.current
+    },
+    tncLink() {
+      let finalLink = 'https://docs.tor.us/legal/terms-and-conditions'
+      const { isWhiteLabelActive, tncLink } = this.whiteLabelGlobal
+      if (isWhiteLabelActive && tncLink) {
+        finalLink = tncLink[this.localeSelected] || tncLink[Object.keys(tncLink)[0]]
+      }
+      return finalLink
     },
   },
   methods: {
