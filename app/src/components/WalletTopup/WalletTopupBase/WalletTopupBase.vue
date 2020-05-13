@@ -130,7 +130,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 
 import { XANPOOL } from '../../../utils/enums'
 import { formatCurrencyNumber, paymentProviders, significantDigits } from '../../../utils/utils'
@@ -221,6 +221,8 @@ export default {
     this.setFiatValue(this.minOrderValue)
   },
   methods: {
+    ...mapActions(['toggleWidgetVisibility']),
+    ...mapMutations(['setTopupmodalStatus']),
     significantDigits,
     setFiatValue(newValue) {
       this.fiatValue = newValue
@@ -248,17 +250,23 @@ export default {
               this.snackbarColor = 'error'
               this.snackbarText = 'Something went wrong'
             }
-          }).catch((error) => {
-            this.snackbar = true
-            this.snackbarColor = 'error'
-            this.snackbarText = error
-            this.isQuoteFetched = false
-            this.$emit('clearQuote', {
-              selectedCurrency: this.selectedCurrency,
-              fiatValue: this.fiatValue,
-              selectedCryptoCurrency: this.selectedCryptoCurrency,
-            })
           })
+            .catch((error) => {
+              this.snackbar = true
+              this.snackbarColor = 'error'
+              this.snackbarText = error
+              this.isQuoteFetched = false
+              this.$emit('clearQuote', {
+                selectedCurrency: this.selectedCurrency,
+                fiatValue: this.fiatValue,
+                selectedCryptoCurrency: this.selectedCryptoCurrency,
+              })
+              return undefined
+            })
+            .finally(() => {
+              this.toggleWidgetVisibility(false)
+              this.setTopupmodalStatus(false)
+            })
         }
         this.$emit('sendOrder', callback)
       }

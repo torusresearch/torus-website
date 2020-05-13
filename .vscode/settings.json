@@ -53,6 +53,7 @@
       "simple-import-sort/sort": "error",
       "operator-linebreak": 0,
       "promise/always-return": 0,
+      "promise/catch-or-return": 0,
       "unicorn/filename-case": 0,
       "vue/no-v-html": 0,
       "vue/array-bracket-spacing": 2,
