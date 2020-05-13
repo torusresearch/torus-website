@@ -58,7 +58,7 @@
                 v-show="canShowLrc && !whiteLabel.topupHide"
                 block
                 large
-                class="torus-btn1"
+                class="torus-btn1 gtm-topup-cta"
                 :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
                 :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
                 @click="topup"
@@ -71,7 +71,7 @@
               <v-btn
                 block
                 large
-                class="torus-btn1"
+                class="torus-btn1 gtm-transfer-cta"
                 :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
                 :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
                 @click="initiateTransfer"

@@ -37,7 +37,7 @@
             </div>
           </div>
           <div class="text-center py-3 px-4" :style="{ lineHeight: '0' }">
-            <a class="torusBrant1--text caption font-weight-medium" @click="topup">{{ t('walletHome.buyThem') }}</a>
+            <a class="torusBrant1--text caption font-weight-medium gtm-buy-token-cta" @click="topup">{{ t('walletHome.buyThem') }}</a>
           </div>
         </v-card-text>
       </v-card>
