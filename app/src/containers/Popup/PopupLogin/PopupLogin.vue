@@ -76,7 +76,7 @@
             <v-flex mt-8 mb-4>
               <span class="caption torus_text--text">
                 {{ t('login.acceptTerms') }}
-                <a :href="tncLink" target="_blank" :style="{ textDecoration: 'none' }">
+                <a :href="tncLink" target="_blank" rel="noreferrer noopener" :style="{ textDecoration: 'none' }">
                   <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
                 </a>
               </span>

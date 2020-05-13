@@ -97,7 +97,7 @@
 
     <v-divider v-if="$vuetify.breakpoint.xsOnly"></v-divider>
     <v-list class="ml-1">
-      <v-list-item href="https://docs.tor.us/#users" target="_blank">
+      <v-list-item href="https://docs.tor.us/#users" target="_blank" rel="noreferrer noopener">
         <v-list-item-action class="mr-2">
           <v-icon size="20" class="text_2--text" v-text="'$vuetify.icons.info'" />
         </v-list-item-action>

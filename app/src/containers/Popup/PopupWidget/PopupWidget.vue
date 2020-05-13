@@ -18,12 +18,12 @@
             <div class="d-flex align-center">
               <img class="details-container__icon" :src="require(`../../../../public/img/icons/address-wallet.svg`)" />
               <div class="details-container__text ml-2">
-                <ShowToolTip :address="address">
+                <ShowToolTip :address="fullAddress">
                   {{ address }}
                 </ShowToolTip>
               </div>
               <div class="ml-auto mr-1 mt-n1">
-                <ShowToolTip :address="address">
+                <ShowToolTip :address="fullAddress">
                   <v-icon size="12" class="text_2--text">$vuetify.icons.copy</v-icon>
                 </ShowToolTip>
               </div>
@@ -149,6 +149,7 @@ export default {
   computed: {
     ...mapState({
       address: (state) => `${state.selectedAddress.slice(0, 12)}...${state.selectedAddress.slice(-12)}`,
+      fullAddress: (state) => state.selectedAddress,
       userInfo: 'userInfo',
       selectedCurrency: 'selectedCurrency',
       wallets: (state) => Object.keys(state.wallet).filter((x) => x !== state.selectedAddress),

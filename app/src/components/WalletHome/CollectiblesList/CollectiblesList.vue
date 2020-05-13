@@ -43,6 +43,7 @@
             :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
             href="https://opensea.io/"
             target="_blank"
+            rel="noreferrer noopener"
           >
             {{ t('walletHome.explore') }}
           </v-btn>

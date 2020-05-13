@@ -39,6 +39,7 @@
               :class="whiteLabelGlobal.isWhiteLabelActive ? 'torus-btn1--whitelabel' : ''"
               :href="detailsLink"
               target="_blank"
+              rel="noreferrer noopener"
             >
               {{ detailsText }}
             </v-btn>
