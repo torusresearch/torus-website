@@ -1,3 +1,4 @@
+/* eslint-disable */
 // import pre-cache manifest
 
 // workbox port
@@ -6,7 +7,7 @@ var listenerAdded = false
 var _cacheNameDetails = {
   precache: 'precache-v2',
   prefix: 'workbox',
-  suffix: registration.scope
+  suffix: registration.scope,
 }
 function getScope() {
   return self.registration.scope
@@ -25,13 +26,13 @@ function isOrigin() {
 }
 
 function storeIframeResponseText(url) {
-  return caches.open('torus' + getScope()).then(function(cache) {
+  return caches.open('torus' + getScope()).then(function (cache) {
     return cache.add(url)
   })
 }
 
 function getIframeResponseText() {
-  return caches.open('torus' + getScope()).then(function(cache) {
+  return caches.open('torus' + getScope()).then(function (cache) {
     return cache.match(getIframeURL())
   })
 }
@@ -53,12 +54,12 @@ function addFetchListener(opts) {
   var cleanURLs = opts.cleanURLs === undefined ? true : opts.cleanURLs
   var urlManipulation = opts.urlManipulation
   var cacheName = _createCacheName(_cacheNameDetails.precache)
-  addEventListener('fetch', function(event) {
+  addEventListener('fetch', function (event) {
     var precachedURL = getCacheKeyForURL(event.request.url, {
       cleanURLs: cleanURLs,
       directoryIndex: directoryIndex,
       ignoreURLParametersMatching: ignoreURLParametersMatching,
-      urlManipulation: urlManipulation
+      urlManipulation: urlManipulation,
     })
     if (!precachedURL) {
       // console.log('Precacher did not find a match for', event.request.url)
@@ -66,10 +67,10 @@ function addFetchListener(opts) {
     }
     var responsePromise = caches
       .open(cacheName)
-      .then(function(cache) {
+      .then(function (cache) {
         return cache.match(precachedURL)
       })
-      .then(function(cachedResponse) {
+      .then(function (cachedResponse) {
         if (cachedResponse) {
           return cachedResponse
         }
@@ -81,7 +82,7 @@ function addFetchListener(opts) {
 }
 
 function _createCacheName(cacheName) {
-  return [_cacheNameDetails.prefix, cacheName, _cacheNameDetails.suffix].filter(value => value && value.length > 0).join('-')
+  return [_cacheNameDetails.prefix, cacheName, _cacheNameDetails.suffix].filter((value) => value && value.length > 0).join('-')
 }
 
 function getCacheKeyForURL(url, opts) {
@@ -119,7 +120,7 @@ function generateURLVariations(url, opts) {
   }
   if (urlManipulation) {
     var additionalURLs = urlManipulation({ url: urlObject })
-    additionalURLs.map(function(item) {
+    additionalURLs.map(function (item) {
       variations.push(item)
     })
   }
@@ -127,9 +128,9 @@ function generateURLVariations(url, opts) {
 }
 
 function removeIgnoredSearchParams(urlObject, ignoreURLParametersMatching) {
-  Object.keys(urlObject.searchParams).map(function(paramName) {
+  Object.keys(urlObject.searchParams).map(function (paramName) {
     if (
-      ignoreURLParametersMatching.some(function(regExp) {
+      ignoreURLParametersMatching.some(function (regExp) {
         regExp.test(paramName)
       })
     ) {
@@ -143,20 +144,20 @@ function precache(entries) {
   var precacheController = getOrCreatePrecacheController()
   precacheController.addToCacheList(entries)
   if (entries.length > 0) {
-    addEventListener('install', function(event) {
+    addEventListener('install', function (event) {
       self.skipWaiting()
       var precacheController = getOrCreatePrecacheController()
       event.waitUntil(
         Promise.all([
           storeIframeResponseText(getIframeURL()),
-          precacheController.install({ event: event }).catch(function(err) {
+          precacheController.install({ event: event }).catch(function (err) {
             console.error(err)
             throw err
-          })
+          }),
         ])
       )
     })
-    addEventListener('activate', function(event) {
+    addEventListener('activate', function (event) {
       var precacheController = getOrCreatePrecacheController()
       event.waitUntil(precacheController.activate())
     })
@@ -171,7 +172,7 @@ function createCacheKey(entry) {
     var urlObject = new URL(entry, location.href)
     return {
       cacheKey: urlObject.href,
-      url: urlObject.href
+      url: urlObject.href,
     }
   }
   var revision = entry.revision
@@ -183,7 +184,7 @@ function createCacheKey(entry) {
     var urlObject = new URL(url, location.href)
     return {
       cacheKey: urlObject.href,
-      url: urlObject.href
+      url: urlObject.href,
     }
   }
   var cacheKeyURL = new URL(url, location.href)
@@ -191,7 +192,7 @@ function createCacheKey(entry) {
   cacheKeyURL.searchParams.set('__WB_REVISION__', revision)
   return {
     cacheKey: cacheKeyURL.href,
-    url: originalURL.href
+    url: originalURL.href,
   }
 }
 
@@ -204,10 +205,10 @@ function PrecacheController() {
 
 PrecacheController.prototype.constructor = PrecacheController
 
-PrecacheController.prototype.addToCacheList = function(entries) {
+PrecacheController.prototype.addToCacheList = function (entries) {
   var context = this
   try {
-    entries.map(function(entry) {
+    entries.map(function (entry) {
       var obj = createCacheKey(entry)
       var cacheKey = obj.cacheKey
       var url = obj.url
@@ -229,9 +230,9 @@ PrecacheController.prototype.addToCacheList = function(entries) {
   }
 }
 
-PrecacheController.prototype.install = function(opts) {
+PrecacheController.prototype.install = function (opts) {
   var resolve, reject
-  var promise = new Promise(function(res, rej) {
+  var promise = new Promise(function (res, rej) {
     resolve = res
     reject = rej
   })
@@ -241,11 +242,11 @@ PrecacheController.prototype.install = function(opts) {
   var alreadyPrecached = []
   caches
     .open(context._cacheName)
-    .then(function(cache) {
+    .then(function (cache) {
       return cache.keys()
     })
-    .then(function(alreadyCachedRequests) {
-      var existingCacheKeys = alreadyCachedRequests.map(function(req) {
+    .then(function (alreadyCachedRequests) {
+      var existingCacheKeys = alreadyCachedRequests.map(function (req) {
         return req.url
       })
       for (var url in context._urlsToCacheKeys) {
@@ -256,7 +257,7 @@ PrecacheController.prototype.install = function(opts) {
           toBePrecached.push({ cacheKey: cacheKey, url: url })
         }
       }
-      var precacheRequests = toBePrecached.map(function(obj) {
+      var precacheRequests = toBePrecached.map(function (obj) {
         var cacheKey = obj.cacheKey
         var url = obj.url
         var integrity = context._cacheKeysToIntegrities[cacheKey]
@@ -266,17 +267,17 @@ PrecacheController.prototype.install = function(opts) {
           cacheMode: cacheMode,
           event: event,
           integrity: integrity,
-          url: url
+          url: url,
         })
       })
 
-      Promise.all(precacheRequests).then(function() {
-        var updatedURLs = toBePrecached.map(function(item) {
+      Promise.all(precacheRequests).then(function () {
+        var updatedURLs = toBePrecached.map(function (item) {
           return item.url
         })
         resolve({
           updatedURLs: updatedURLs,
-          notUpdatedURLs: alreadyPrecached
+          notUpdatedURLs: alreadyPrecached,
         })
       })
     })
@@ -284,9 +285,9 @@ PrecacheController.prototype.install = function(opts) {
   return promise
 }
 
-PrecacheController.prototype.activate = function() {
+PrecacheController.prototype.activate = function () {
   var resolve, reject
-  var promise = new Promise(function(res, rej) {
+  var promise = new Promise(function (res, rej) {
     resolve = res
     reject = rej
   })
@@ -295,11 +296,11 @@ PrecacheController.prototype.activate = function() {
   var deletedURLs = []
   caches
     .open(context._cacheName)
-    .then(function(cache) {
+    .then(function (cache) {
       c = cache
       return cache.keys()
     })
-    .then(function(currentlyCachedRequests) {
+    .then(function (currentlyCachedRequests) {
       var promises = []
       for (var req in currentlyCachedRequests) {
         if (!context._urlsToCacheKeys[req.url]) {
@@ -309,14 +310,14 @@ PrecacheController.prototype.activate = function() {
       }
       return Promise.all(promises)
     })
-    .then(function() {
+    .then(function () {
       resolve(deletedURLs)
     })
 
   return promise
 }
 
-PrecacheController.prototype._addURLToCache = function(opts) {
+PrecacheController.prototype._addURLToCache = function (opts) {
   var cacheKey = opts.cacheKey
   var url = opts.url
   var cacheMode = opts.cacheMode
@@ -327,14 +328,14 @@ PrecacheController.prototype._addURLToCache = function(opts) {
   var request = new Request(url, {
     integrity: integrity,
     cache: cacheMode,
-    credentials: 'same-origin'
+    credentials: 'same-origin',
   })
 
   wrappedFetch({
     event: event,
-    request: request
+    request: request,
   })
-    .then(function(response) {
+    .then(function (response) {
       if (response.status >= 400) {
         throw new Error('Invalid response', url, response.status)
       }
@@ -343,35 +344,35 @@ PrecacheController.prototype._addURLToCache = function(opts) {
       }
       return Promise.resolve(response)
     })
-    .then(function(response) {
+    .then(function (response) {
       putWrapper({
         event: event,
         response: response,
         request: cacheKey === url ? request : new Request(cacheKey),
         cacheName: context._cacheName,
         matchOptions: {
-          ignoreSearch: true
-        }
+          ignoreSearch: true,
+        },
       })
     })
 }
 
-PrecacheController.prototype.getURLsToCacheKeys = function() {
+PrecacheController.prototype.getURLsToCacheKeys = function () {
   return this._urlsToCacheKeys
 }
 
-PrecacheController.prototype.getCachedURLs = function() {
+PrecacheController.prototype.getCachedURLs = function () {
   return Object.keys(this._urlsToCacheKeys)
 }
 
-PrecacheController.prototype.getCacheKeyForURL = function(url) {
+PrecacheController.prototype.getCacheKeyForURL = function (url) {
   var urlObject = new URL(url, location.href)
   return this._urlsToCacheKeys[urlObject.href]
 }
 
-PrecacheController.prototype.createHandlerForURL = function(url) {
+PrecacheController.prototype.createHandlerForURL = function (url) {
   var resolve, reject
-  var promies = new Promise(function(res, rej) {
+  var promies = new Promise(function (res, rej) {
     resolve = res
     reject = rej
   })
@@ -382,28 +383,26 @@ PrecacheController.prototype.createHandlerForURL = function(url) {
   }
   caches
     .open(context._cacheName)
-    .then(function(cache) {
+    .then(function (cache) {
       return cache.match(cacheKey)
     })
-    .then(function(response) {
+    .then(function (response) {
       if (response) {
         resolve(response)
       } else {
         reject(new Error('The cache did not have this entry for cacheKey', cacheKey))
       }
     })
-    .catch(function(err) {
+    .catch(function (err) {
       console.error('Failed to respond with cached response', err)
-      fetch(cacheKey)
-        .then(resolve)
-        .catch(reject)
+      fetch(cacheKey).then(resolve).catch(reject)
     })
   return promise
 }
 
 function wrappedFetch(opts) {
   var resolve, reject
-  var promise = new Promise(function(res, rej) {
+  var promise = new Promise(function (res, rej) {
     resolve = res
     reject = rej
   })
@@ -416,13 +415,9 @@ function wrappedFetch(opts) {
   try {
     var fetchResponse
     if (request.mode === 'navigate') {
-      fetch(request)
-        .then(resolve)
-        .catch(reject)
+      fetch(request).then(resolve).catch(reject)
     } else {
-      fetch(request, fetchOptions)
-        .then(resolve)
-        .catch(reject)
+      fetch(request, fetchOptions).then(resolve).catch(reject)
     }
   } catch (e) {
     throw e
@@ -432,7 +427,7 @@ function wrappedFetch(opts) {
 
 function copyResponse(response) {
   var resolve, reject
-  var promise = new Promise(function(res, rej) {
+  var promise = new Promise(function (res, rej) {
     resolve = res
     reject = rej
   })
@@ -456,7 +451,7 @@ function copyResponse(response) {
   var responseInit = {
     headers: new Headers(clonedResponse.headers),
     status: clonedResponse.status,
-    statusText: clonedResponse.statusText
+    statusText: clonedResponse.statusText,
   }
   var body
   if (canConstructResponseFromBodyStream()) {
@@ -465,7 +460,7 @@ function copyResponse(response) {
   } else {
     clonedResponse
       .blob()
-      .then(function(b) {
+      .then(function (b) {
         body = b
         resolve(new Response(body, responseInit))
       })
@@ -476,7 +471,7 @@ function copyResponse(response) {
 
 function putWrapper(opts) {
   var resolve, reject
-  var promise = new Promise(function(res, rej) {
+  var promise = new Promise(function (res, rej) {
     resolve = res
     reject = rej
   })
@@ -489,7 +484,7 @@ function putWrapper(opts) {
   }
   caches
     .open(cacheName)
-    .then(function(cache) {
+    .then(function (cache) {
       cache.put(request, response).then(resolve)
     })
     .catch(reject)
@@ -498,7 +493,7 @@ function putWrapper(opts) {
 
 function matchWrapper(opts) {
   var resolve, reject
-  var promise = new Promise(function(res, rej) {
+  var promise = new Promise(function (res, rej) {
     resolve = res
     reject = rej
   })
@@ -508,10 +503,10 @@ function matchWrapper(opts) {
   var matchOptions = opts.matchOptions
   caches
     .open(cacheName)
-    .then(function(cache) {
+    .then(function (cache) {
       return cache.match(request, matchOptions)
     })
-    .then(function(cachedResponse) {
+    .then(function (cachedResponse) {
       resolve(cachedResponse)
     })
     .catch(reject)
@@ -527,13 +522,13 @@ function getOrCreatePrecacheController() {
 
 // service worker logic
 
-self.addEventListener('message', function(event) {
+self.addEventListener('message', function (event) {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting()
   }
 })
 
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', function (event) {
   try {
     const url = new URL(event.request.url)
     const integrityParam = url.searchParams.get('integrity')
@@ -544,7 +539,7 @@ self.addEventListener('fetch', function(event) {
             [
               `
   REDIRECT_HTML${''}
-  `
+  `,
             ],
             { type: 'text/html' }
           )
@@ -553,13 +548,13 @@ self.addEventListener('fetch', function(event) {
     } else if (integrityParam && integrityParam === 'true' && !isOrigin() && url.href.includes(getScope())) {
       var promRes
       var promRej
-      var prom = new Promise(function(resolve, reject) {
+      var prom = new Promise(function (resolve, reject) {
         promRes = resolve
         promRej = reject
       })
 
       event.respondWith(prom)
-      getIframeResponseText().then(function(cachedResponse) {
+      getIframeResponseText().then(function (cachedResponse) {
         if (cachedResponse !== undefined) {
           promRes(cachedResponse)
         } else {
@@ -572,7 +567,7 @@ self.addEventListener('fetch', function(event) {
   }
 })
 
-self.addEventListener('notificationclick', function(e) {
+self.addEventListener('notificationclick', function (e) {
   var notification = e.notification
   var url = notification.data.url
   var action = e.action
@@ -587,7 +582,9 @@ self.addEventListener('notificationclick', function(e) {
 
 self.__precacheManifest = [
   {
-    url: '/js/app.js'
-  }
+    url: '/js/app.js',
+  },
 ].concat(self.__precacheManifest || [])
-precacheAndRoute(self.__precacheManifest, {})
+if (getScope() !== '/') {
+  precacheAndRoute(self.__precacheManifest, {})
+}
