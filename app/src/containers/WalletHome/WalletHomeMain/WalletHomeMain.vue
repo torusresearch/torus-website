@@ -26,7 +26,15 @@
                 </span>
                 <v-menu offset-y max-height="300" z-index="20">
                   <template v-slot:activator="{ on }">
-                    <v-btn x-small text class="text_3--text" :class="{ 'currency-selector': $vuetify.breakpoint.mAndUp }" v-on="on">
+                    <v-btn
+                      x-small
+                      text
+                      class="text_3--text"
+                      :class="{ 'currency-selector': $vuetify.breakpoint.mAndUp }"
+                      title="Select currency"
+                      aria-label="Select currency"
+                      v-on="on"
+                    >
                       <span id="selected-currency" class="description">{{ selectedCurrency }}</span>
                       <v-icon class="text_3--text" small>$vuetify.icons.select</v-icon>
                     </v-btn>
@@ -58,7 +66,7 @@
                 v-show="canShowLrc && !whiteLabel.topupHide"
                 block
                 large
-                class="torus-btn1"
+                class="torus-btn1 gtm-topup-cta"
                 :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
                 :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
                 @click="topup"
@@ -71,7 +79,7 @@
               <v-btn
                 block
                 large
-                class="torus-btn1"
+                class="torus-btn1 gtm-transfer-cta"
                 :class="whiteLabelGlobal.isWhiteLabelActive ? 'white--text' : 'torusBrand1--text'"
                 :color="whiteLabelGlobal.isWhiteLabelActive ? 'torusBrand1' : ''"
                 @click="initiateTransfer"
@@ -105,6 +113,7 @@
                 <img
                   :src="require(`../../../../public/images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`)"
                   style="height: 120px;"
+                  alt="Onboarding"
                 />
               </v-flex>
             </v-layout>
@@ -172,6 +181,7 @@
           height="24"
           width="24"
           fab
+          aria-label="Refresh Balances"
           @click="refreshBalances"
         >
           <v-icon color="torusFont2" size="8">$vuetify.icons.refresh</v-icon>
@@ -185,7 +195,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
@@ -264,6 +274,7 @@ export default {
     this.$vuetify.goTo(0)
   },
   methods: {
+    ...mapActions(['forceFetchTokens', 'setSelectedCurrency']),
     select(selectedItem) {
       // this is so that we don't break their api
       this.selected = []
@@ -274,14 +285,13 @@ export default {
       })
     },
     onCurrencyChange(value) {
-      this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'home' })
+      this.setSelectedCurrency({ selectedCurrency: value, origin: 'home' })
     },
     refreshBalances() {
-      this.$store.dispatch('forceFetchTokens')
+      this.forceFetchTokens()
       this.setDateUpdated()
     },
     initiateTransfer() {
-      // this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
       this.$router.push({ name: 'walletTransfer' }).catch((_) => {})
     },
     topup() {

@@ -140,7 +140,7 @@
           </v-dialog>
         </v-flex>
         <v-flex v-if="(topUpErrorShow || canShowError)" xs12 mb-4 class="text-right">
-          <div class="caption error--text">{{ errorMsg }}</div>
+          <div class="caption error--text">{{ errorMsg === 'dappTransfer.insufficientFunds' ? t('dappTransfer.insufficientFunds') : errorMsg }}</div>
           <div v-if="topUpErrorShow" class="caption mt-1">
             {{ t('dappTransfer.pleaseTopup1') }}
             <v-btn color="primary" class="mx-1 px-2 caption" small outlined @click="topUp">{{ t('dappTransfer.pleaseTopup2') }}</v-btn>
@@ -224,9 +224,19 @@
           <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
               <div class="d-flex request-from align-center">
-                <a :href="origin.href" target="_blank" class="caption font-weight-medium torusBrand1--text">{{ origin.hostname }}</a>
-                <v-btn x-small :color="$vuetify.theme.isDark ? 'torusBlack2' : 'white'" class="link-icon ml-auto" :href="origin.href" target="_blank">
-                  <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
+                <a :href="origin.href" target="_blank" rel="noreferrer noopener" class="caption font-weight-medium torusBrand1--text">
+                  {{ origin.hostname }}
+                </a>
+                <v-btn
+                  x-small
+                  :color="$vuetify.theme.isDark ? 'torusBlack2' : 'white'"
+                  class="link-icon ml-auto"
+                  :href="origin.href"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  :aria-label="`Open ${origin.hostname} Link`"
+                >
+                  <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" alt="Origin Link Icon" />
                 </v-btn>
               </div>
             </v-card-text>
@@ -238,7 +248,7 @@
           <div class="d-flex align-center">
             <div class="mr-2 note-list__icon">
               <v-icon v-if="whiteLabelGlobal.isWhiteLabelActive" small class="torusBrand1--text">$vuetify.icons.check_circle</v-icon>
-              <img v-else :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
+              <img v-else :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" alt="Data Icon" />
             </div>
             <div class="caption text_2--text text-capitalize">{{ t('dappTransfer.data') }}</div>
           </div>
@@ -517,7 +527,7 @@ export default {
         this.totalEthCostDisplay = significantDigits(ethCost, false, gasCostLength - 2)
         this.totalUsdCost = significantDigits(ethCost.times(this.currencyMultiplier))
         if (this.balance.lt(ethCost) && !this.canShowError) {
-          this.errorMsg = this.t('dappTransfer.insufficientFunds')
+          this.errorMsg = 'dappTransfer.insufficientFunds'
           this.topUpErrorShow = true
         }
       }
@@ -648,7 +658,7 @@ export default {
           this.canShowError = true
         }
         if (this.balance.lt(ethCost) && !this.canShowError) {
-          this.errorMsg = this.t('dappTransfer.insufficientFunds')
+          this.errorMsg = 'dappTransfer.insufficientFunds'
           this.topUpErrorShow = true
         }
       }

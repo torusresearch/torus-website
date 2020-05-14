@@ -15,7 +15,7 @@
                     : require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
                 "
               />
-              <v-btn class="close-btn" icon @click="closeDialog">
+              <v-btn class="close-btn" icon aria-label="Close Login Modal" @click="closeDialog">
                 <v-icon>$vuetify.icons.close</v-icon>
               </v-btn>
             </v-flex>
@@ -25,7 +25,7 @@
               <div class="verifier-title headline torus_text--text font-weight-bold">
                 <span v-if="$vuetify.breakpoint.xsOnly">
                   {{ t('login.your') }}
-                  <img :src="require(`../../../../public/images/login-verifiers.gif`)" />
+                  <img :src="require(`../../../../public/images/login-verifiers.gif`)" alt="Login Verifier Icon" />
                 </span>
                 <span v-else>
                   {{ t('login.your') }}
@@ -65,6 +65,7 @@
                     <img
                       v-if="verifier === activeButton || $vuetify.breakpoint.xsOnly"
                       :src="require(`../../../../public/img/icons/login-${verifier}.svg`)"
+                      :alt="`${verifier} Icon`"
                     />
                     <v-icon v-else size="30" :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
                       {{ `$vuetify.icons.${verifier}` }}
@@ -76,15 +77,7 @@
             <v-flex mt-8 mb-4>
               <span class="caption torus_text--text">
                 {{ t('login.acceptTerms') }}
-                <a
-                  :href="
-                    whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.tncLink
-                      ? whiteLabelGlobal.tncLink
-                      : 'https://docs.tor.us/legal/terms-and-conditions'
-                  "
-                  target="_blank"
-                  :style="{ textDecoration: 'none' }"
-                >
+                <a :href="tncLink" target="_blank" rel="noreferrer noopener" :style="{ textDecoration: 'none' }">
                   <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
                 </a>
               </span>
@@ -127,6 +120,17 @@ export default {
     }),
     loginButtons() {
       return Object.keys(this.enabledVerifiers).filter((x) => this.enabledVerifiers[x])
+    },
+    localeSelected() {
+      return this.$vuetify.lang.current
+    },
+    tncLink() {
+      let finalLink = 'https://docs.tor.us/legal/terms-and-conditions'
+      const { isWhiteLabelActive, tncLink } = this.whiteLabelGlobal
+      if (isWhiteLabelActive && tncLink) {
+        finalLink = tncLink[this.localeSelected] || tncLink[Object.keys(tncLink)[0]]
+      }
+      return finalLink
     },
   },
   methods: {

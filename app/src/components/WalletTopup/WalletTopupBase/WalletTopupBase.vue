@@ -265,7 +265,6 @@ export default {
     },
     onCurrencyChange() {
       this.fetchQuote()
-      // this.$store.dispatch('setSelectedCurrency', { selectedCurrency: value, origin: 'home' })
     },
   },
 }

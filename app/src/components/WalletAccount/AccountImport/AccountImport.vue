@@ -37,7 +37,7 @@
                     @input="canShowError = false"
                   >
                     <template v-slot:append>
-                      <v-btn icon @click="togglePrivShow">
+                      <v-btn icon aria-label="Show/Hide Private Key" @click="togglePrivShow">
                         <v-icon class="text_3--text">{{ showPrivateKey ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on' }}</v-icon>
                       </v-btn>
                     </template>
@@ -100,7 +100,7 @@
                     @click:append="toggleJsonPasswordShow"
                   >
                     <template v-slot:append>
-                      <v-btn icon @click="toggleJsonPasswordShow">
+                      <v-btn icon aria-label="Show/Hide JSON Password" @click="toggleJsonPasswordShow">
                         <v-icon class="text_3--text">
                           {{ showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on' }}
                         </v-icon>

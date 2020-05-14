@@ -149,7 +149,7 @@ class PreferencesController {
   }
 
   /* istanbul ignore next */
-  createUser(selectedCurrency, theme, verifier, verifierId, locale) {
+  createUser(selectedCurrency, theme, verifier, verifierId) {
     return post(
       `${config.api}/user`,
       {
@@ -157,7 +157,6 @@ class PreferencesController {
         theme,
         verifier,
         verifierId,
-        locale,
       },
       this.headers
     )

@@ -24,11 +24,18 @@
           <img
             v-if="transaction.type === CONTRACT_TYPE_ERC20 || transaction.action === ACTIVITY_ACTION_TOPUP"
             :src="require(`../../../../public/images/${transaction.actionIcon}`)"
-            :alt="transaction.from"
+            :alt="`${transaction.from} Icon`"
             class="mr-2 ml-2"
             width="36"
           />
-          <img v-else-if="transaction.type === CONTRACT_TYPE_ERC721" :src="transaction.actionIcon" class="mr-3 ml-1" height="36" large />
+          <img
+            v-else-if="transaction.type === CONTRACT_TYPE_ERC721"
+            :src="transaction.actionIcon"
+            class="mr-3 ml-1"
+            height="36"
+            large
+            :alt="`${transaction.from} Icon`"
+          />
           <v-icon v-else class="float-left" size="24" color="torusBrand1">{{ transaction.actionIcon }}</v-icon>
         </div>
         <div class="caption text_1--text font-weight-medium">{{ transaction.actionText }}</div>
@@ -115,7 +122,7 @@
           </v-list-item>
           <v-list-item v-if="transaction.etherscanLink">
             <v-list-item-content class="details-value text_2--text text-right mt-1">
-              <a class="etherscan-lnk" color="torusBrand1" :href="transaction.etherscanLink" target="_blank">
+              <a class="etherscan-lnk" color="torusBrand1" :href="transaction.etherscanLink" target="_blank" rel="noreferrer noopener">
                 {{ t('walletActivity.viewOnEtherscan') }}
               </a>
             </v-list-item-content>
