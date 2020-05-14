@@ -26,7 +26,15 @@
                 </span>
                 <v-menu offset-y max-height="300" z-index="20">
                   <template v-slot:activator="{ on }">
-                    <v-btn x-small text class="text_3--text" :class="{ 'currency-selector': $vuetify.breakpoint.mAndUp }" v-on="on">
+                    <v-btn
+                      x-small
+                      text
+                      class="text_3--text"
+                      :class="{ 'currency-selector': $vuetify.breakpoint.mAndUp }"
+                      title="Select currency"
+                      aria-label="Select currency"
+                      v-on="on"
+                    >
                       <span id="selected-currency" class="description">{{ selectedCurrency }}</span>
                       <v-icon class="text_3--text" small>$vuetify.icons.select</v-icon>
                     </v-btn>
@@ -173,6 +181,7 @@
           height="24"
           width="24"
           fab
+          aria-label="Refresh Balances"
           @click="refreshBalances"
         >
           <v-icon color="torusFont2" size="8">$vuetify.icons.refresh</v-icon>
@@ -283,7 +292,6 @@ export default {
       this.setDateUpdated()
     },
     initiateTransfer() {
-      // this.$router.push({ path: '/wallet/transfer', query: { address: this.selected[0].tokenAddress.toLowerCase() } })
       this.$router.push({ name: 'walletTransfer' }).catch((_) => {})
     },
     topup() {

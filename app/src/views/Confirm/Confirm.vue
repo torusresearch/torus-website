@@ -234,6 +234,7 @@
                   :href="origin.href"
                   target="_blank"
                   rel="noreferrer noopener"
+                  :aria-label="`Open ${origin.hostname} Link`"
                 >
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" alt="Origin Link Icon" />
                 </v-btn>

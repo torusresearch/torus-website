@@ -69,7 +69,7 @@
                   </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action class="ma-0">
-                  <v-btn class="delete-btn" color="text_2" icon small:aria-label="`Delete ${contact.name}`" @click="deleteContact(contact.id)">
+                  <v-btn class="delete-btn" color="text_2" icon small :aria-label="`Delete ${contact.name}`" @click="deleteContact(contact.id)">
                     <v-icon x-small>$vuetify.icons.trash</v-icon>
                   </v-btn>
                 </v-list-item-action>

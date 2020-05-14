@@ -1,6 +1,6 @@
 <template>
   <v-card class="torus-v8 message-modal">
-    <v-btn class="close-btn" icon @click="onCancel">
+    <v-btn class="close-btn" icon aria-label="Close Message Modal" @click="onCancel">
       <v-icon>$vuetify.icons.close</v-icon>
     </v-btn>
     <v-layout wrap>

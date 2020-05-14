@@ -29,7 +29,7 @@
                           :type="showJsonPassword ? 'text' : 'password'"
                         >
                           <template v-slot:append>
-                            <v-btn icon @click="showJsonPassword = !showJsonPassword">
+                            <v-btn icon aria-label="Show/Hide JSON Password" @click="showJsonPassword = !showJsonPassword">
                               <v-icon class="text_3--text">
                                 {{ showJsonPassword ? '$vuetify.icons.visibility_off' : '$vuetify.icons.visibility_on' }}
                               </v-icon>
@@ -104,11 +104,11 @@
                 </v-expand-transition>
               </v-list-item-content>
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'ma-1' : ''">
-                <v-btn id="show-download-form-btn" icon small @click="isShowGetPassword = true">
+                <v-btn id="show-download-form-btn" aria-label="Show/Hide Download JSON form" icon small @click="isShowGetPassword = true">
                   <img
                     :width="$vuetify.breakpoint.xsOnly ? '16' : ''"
                     :src="require('../../../../public/img/icons/download-primary.svg')"
-                    alt="Show Get Password Button"
+                    alt="Show/Hide Download JSON form"
                   />
                 </v-btn>
               </v-list-item-icon>
@@ -144,7 +144,13 @@
                 </v-layout>
               </v-list-item-content>
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'ma-1' : ''">
-                <v-btn id="show-private-key-btn gmt-private-key-show" icon small @click="isShowPrivateKey = !isShowPrivateKey">
+                <v-btn
+                  id="show-private-key-btn gmt-private-key-show"
+                  icon
+                  small
+                  aria-label="Show/Hide Private Key"
+                  @click="isShowPrivateKey = !isShowPrivateKey"
+                >
                   <img
                     :width="$vuetify.breakpoint.xsOnly ? '20' : ''"
                     :src="require(`../../../../public/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)"

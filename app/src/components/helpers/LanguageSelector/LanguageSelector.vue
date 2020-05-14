@@ -1,7 +1,7 @@
 <template>
   <v-menu offset-y :bottom="!$vuetify.breakpoint.xsOnly" :top="$vuetify.breakpoint.xsOnly" left z-index="20">
     <template v-slot:activator="{ on }">
-      <v-btn v-if="!$vuetify.breakpoint.xsOnly" id="locale-dropdown-btn" class="locale-selector" small text v-on="on">
+      <v-btn v-if="!$vuetify.breakpoint.xsOnly" id="locale-dropdown-btn" class="locale-selector" small text aria-label="Select Language" v-on="on">
         <img :src="require('../../../../public/img/icons/globe.svg')" width="15" height="30" alt="Language Icon" />
         <span class="ml-1" :class="$vuetify.breakpoint.xsOnly">{{ selectedLabel }}</span>
         <v-icon class="ml-2" small>$vuetify.icons.select</v-icon>

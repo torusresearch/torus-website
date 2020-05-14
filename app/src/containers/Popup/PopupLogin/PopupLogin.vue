@@ -15,7 +15,7 @@
                     : require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
                 "
               />
-              <v-btn class="close-btn" icon @click="closeDialog">
+              <v-btn class="close-btn" icon aria-label="Close Login Modal" @click="closeDialog">
                 <v-icon>$vuetify.icons.close</v-icon>
               </v-btn>
             </v-flex>

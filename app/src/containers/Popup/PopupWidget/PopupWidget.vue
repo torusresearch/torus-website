@@ -40,11 +40,20 @@
             </div>
           </div>
           <div class="ml-auto">
-            <v-btn fab depressed small @click="showWalletPopup({ path: '/transfer' })">
+            <v-btn fab depressed small title="Open Transfer Page" aria-label="Open Transfer Page" @click="showWalletPopup({ path: '/transfer' })">
               <v-icon>$vuetify.icons.send</v-icon>
             </v-btn>
 
-            <v-btn v-if="!whiteLabel.topupHide" fab depressed small class="ml-2" @click="showWalletPopup({ path: '/topup' })">
+            <v-btn
+              v-if="!whiteLabel.topupHide"
+              fab
+              depressed
+              small
+              class="ml-2"
+              title="Open Topup Page"
+              aria-label="Open Topupu Page"
+              @click="showWalletPopup({ path: '/topup' })"
+            >
               <v-icon>$vuetify.icons.add</v-icon>
             </v-btn>
           </div>
@@ -96,7 +105,7 @@
         </div>
       </div>
     </v-dialog>
-    <v-btn v-if="loggedIn" class="torus-widget__btn" color="primary" fab @click="showWidget">
+    <v-btn v-if="loggedIn" class="torus-widget__btn" color="primary" fab aria-label="Show/Hide Widget Panel" @click="showWidget">
       <img
         class="torus-widget__logo"
         :class="whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logoLight ? '' : 'torus-logo'"
