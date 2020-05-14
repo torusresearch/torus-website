@@ -70,7 +70,7 @@
                     <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-12>
                       <span class="body-1 text_2--text">
                         {{ t('login.acceptTerms') }}
-                        <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
+                        <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
                           <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
                         </a>
                       </span>
@@ -94,6 +94,7 @@
                             :class="{ isDark: $vuetify.theme.dark, isMobile: $vuetify.breakpoint.xsOnly }"
                             :href="slide.link"
                             target="_blank"
+                            rel="noreferrer noopener"
                           >
                             {{ t('login.learnMore') }}
                           </v-btn>
@@ -152,7 +153,7 @@
                 <v-flex mb-6 xs10 sm8 ml-auto mr-auto mt-12>
                   <span class="body-1 text_2--text">
                     {{ t('login.acceptTerms') }}
-                    <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank">
+                    <a href="https://docs.tor.us/legal/terms-and-conditions" target="_blank" rel="noreferrer noopener">
                       <span class="torusBrand1--text">{{ t('login.termsAndConditions') }}</span>
                     </a>
                   </span>
@@ -207,6 +208,7 @@
                         :class="{ isDark: $vuetify.theme.dark }"
                         href="https://tor.us"
                         target="_blank"
+                        rel="noreferrer noopener"
                       >
                         {{ t('login.learnMore') }}
                       </v-btn>

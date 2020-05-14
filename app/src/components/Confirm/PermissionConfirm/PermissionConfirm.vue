@@ -76,7 +76,9 @@
           <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="caption permission-note">
             <img :src="require(`../../../../public/images/exclamation-triangle.png`)" />
             {{ t('dappPermission.note').replace(/\{num\}/gi, 6) }}.
-            <a class="font-italic" :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'">{{ t('dappPermission.learnMore') }}</a>
+            <a class="font-italic" rel="noreferrer noopener" :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'">
+              {{ t('dappPermission.learnMore') }}
+            </a>
           </div>
         </v-card>
 

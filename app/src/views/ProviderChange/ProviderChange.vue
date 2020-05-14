@@ -39,8 +39,17 @@
           <v-card flat class="lighten-3" :class="$vuetify.theme.isDark ? '' : 'grey'">
             <v-card-text>
               <div class="d-flex request-from align-center">
-                <a :href="origin.href" target="_blank" class="caption font-weight-medium torusBrand1--text">{{ origin.hostname }}</a>
-                <v-btn x-small :color="$vuetify.theme.isDark ? 'torusBlack2' : 'white'" class="link-icon ml-auto" :href="origin.href" target="_blank">
+                <a :href="origin.href" target="_blank" rel="noreferrer noopener" class="caption font-weight-medium torusBrand1--text">
+                  {{ origin.hostname }}
+                </a>
+                <v-btn
+                  x-small
+                  :color="$vuetify.theme.isDark ? 'torusBlack2' : 'white'"
+                  class="link-icon ml-auto"
+                  :href="origin.href"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
                   <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
                 </v-btn>
               </div>

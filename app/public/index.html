@@ -9,6 +9,10 @@
     <meta name="author" content="Torus Labs" />
     <link rel="shortcut icon" href="<%= BASE_URL %>favicon.png" />
     <title>Torus</title>
+    <link rel="preconnect" href="https://www.google-analytics.com" />
+    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     <link rel="stylesheet" href="<%= BASE_URL %>css/skeleton.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" />
     <style>
@@ -419,13 +423,13 @@
           if (torusWhiteLabel !== null) {
             try {
               const whiteLabelData = JSON.parse(torusWhiteLabel)
-              if(whiteLabelData.theme) {
+              if (whiteLabelData.theme) {
                 theme = whiteLabelData.theme.isDark ? 'dark' : 'light'
-                if(whiteLabelData.theme.colors && whiteLabelData.theme.colors.torusBrand1) {
+                if (whiteLabelData.theme.colors && whiteLabelData.theme.colors.torusBrand1) {
                   const beats = document.querySelectorAll('.spinner .beat')
-                  beats.forEach((beat) => beat.style.backgroundColor = whiteLabelData.theme.colors.torusBrand1)
-                }              
-              }              
+                  beats.forEach((beat) => (beat.style.backgroundColor = whiteLabelData.theme.colors.torusBrand1))
+                }
+              }
             } catch (error) {
               console.error(error)
             }

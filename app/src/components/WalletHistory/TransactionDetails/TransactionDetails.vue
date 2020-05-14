@@ -115,7 +115,7 @@
           </v-list-item>
           <v-list-item v-if="transaction.etherscanLink">
             <v-list-item-content class="details-value text_2--text text-right mt-1">
-              <a class="etherscan-lnk" color="torusBrand1" :href="transaction.etherscanLink" target="_blank">
+              <a class="etherscan-lnk" color="torusBrand1" :href="transaction.etherscanLink" target="_blank" rel="noreferrer noopener">
                 {{ t('walletActivity.viewOnEtherscan') }}
               </a>
             </v-list-item-content>
