@@ -7,7 +7,5 @@ let swReplaced = swBase.toString().replace('REDIRECT_HTML', redirectHTML.toStrin
 if (process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging') {
   const version = `v${JSON.parse(fs.readFileSync(path.resolve(__dirname, '../package.json'))).version}`
   swReplaced = swReplaced.replace('/js/app.js', `/${version}/js/app.js`)
-} else {
-  throw new Error('WHATTT')
 }
 fs.writeFileSync(`${__dirname}/../public/sw.js`, swReplaced)
