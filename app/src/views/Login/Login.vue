@@ -102,7 +102,7 @@
                             target="_blank"
                             rel="noreferrer noopener"
                           >
-                            {{ t('login.learnMore') }}
+                            {{ t('login.visitOurWebsite') }}
                           </v-btn>
                         </v-carousel-item>
                       </v-flex>
@@ -230,7 +230,7 @@
                         target="_blank"
                         rel="noreferrer noopener"
                       >
-                        {{ t('login.learnMore') }}
+                        {{ t('login.visitOurWebsite') }}
                       </v-btn>
                     </div>
                   </div>
