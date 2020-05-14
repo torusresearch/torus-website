@@ -1,7 +1,13 @@
 <template>
   <v-layout class="home-cards token-balance-tab-container mx-n4" wrap align-center :justify-center="tokenBalances.length < 4">
     <v-flex v-for="(balance, index) in tokenBalances" :key="index" class="xs12 sm6 md4 lg3 mb-4 px-4">
-      <v-card color="elevation-1" router-link :to="{ name: 'walletTransfer', query: { contract: balance.tokenAddress } }">
+      <v-card
+        color="elevation-1"
+        router-link
+        :to="{ name: 'walletTransfer', query: { contract: balance.tokenAddress } }"
+        :title="`Transfer ${balance.symbol}`"
+        :aria-label="`Transfer ${balance.symbol}`"
+      >
         <v-card-text class="pa-0">
           <div class="d-flex align-center py-3 px-4 card-header elevation-1">
             <div class="flex-grow-1 text-clamp-one">

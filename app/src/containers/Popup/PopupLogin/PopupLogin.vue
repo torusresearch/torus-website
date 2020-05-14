@@ -15,7 +15,7 @@
                     : require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
                 "
               />
-              <v-btn class="close-btn" icon @click="closeDialog">
+              <v-btn class="close-btn" icon aria-label="Close Login Modal" @click="closeDialog">
                 <v-icon>$vuetify.icons.close</v-icon>
               </v-btn>
             </v-flex>
@@ -25,7 +25,7 @@
               <div class="verifier-title headline torus_text--text font-weight-bold">
                 <span v-if="$vuetify.breakpoint.xsOnly">
                   {{ t('login.your') }}
-                  <img :src="require(`../../../../public/images/login-verifiers.gif`)" />
+                  <img :src="require(`../../../../public/images/login-verifiers.gif`)" alt="Login Verifier Icon" />
                 </span>
                 <span v-else>
                   {{ t('login.your') }}
@@ -65,6 +65,7 @@
                     <img
                       v-if="verifier === activeButton || $vuetify.breakpoint.xsOnly"
                       :src="require(`../../../../public/img/icons/login-${verifier}.svg`)"
+                      :alt="`${verifier} Icon`"
                     />
                     <v-icon v-else size="30" :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">
                       {{ `$vuetify.icons.${verifier}` }}
