@@ -585,6 +585,11 @@ self.__precacheManifest = [
     url: '/js/app.js',
   },
 ].concat(self.__precacheManifest || [])
-if (getScope() !== '/') {
-  precacheAndRoute(self.__precacheManifest, {})
+
+try {
+  if (new URL(self.getScope()).pathname !== '/') {
+    precacheAndRoute(self.__precacheManifest, {})
+  }
+} catch (error) {
+  console.error(error)
 }
