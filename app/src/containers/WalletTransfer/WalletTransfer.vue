@@ -93,7 +93,7 @@
                       </v-subheader>
                       <v-list-item v-for="collectible in collectibles" :key="collectible.address" @click="selectedItemChanged(collectible.address)">
                         <v-list-item-icon class="ml-8 mr-1">
-                          <img :src="collectible.logo" height="20px" />
+                          <img :src="collectible.logo" height="20px" :alt="`${collectible.name} Logo`" />
                         </v-list-item-icon>
                         <v-list-item-content>
                           <v-list-item-title class="body-2">{{ collectible.name }}</v-list-item-title>

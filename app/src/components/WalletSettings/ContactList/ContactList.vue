@@ -55,6 +55,7 @@
                     :src="require(`../../../../public/img/icons/eth-grey${$vuetify.theme.dark ? '-black' : '-white'}.svg`)"
                     style="width: 16px;"
                     class="ma-1"
+                    :alt="`${contact.verifier} Icon`"
                   />
                   <v-icon v-else size="16" class="torusGray1--text">
                     {{ `$vuetify.icons.${contact.verifier.toLowerCase()}` }}

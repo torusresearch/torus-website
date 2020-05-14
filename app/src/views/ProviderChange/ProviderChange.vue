@@ -50,7 +50,7 @@
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
+                  <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" alt="Open Link Icon" />
                 </v-btn>
               </div>
             </v-card-text>

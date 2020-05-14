@@ -10,7 +10,7 @@
           :class="[$vuetify.theme.isDark ? 'torusBlack2' : 'white', theme.name === activeTheme ? 'active' : 'elevation-3']"
         >
           <span>{{ t(theme.label) }}</span>
-          <img :src="require(`../../../../public/images/${theme.icon}`)" />
+          <img :src="require(`../../../../public/images/${theme.icon}`)" alt="Display Settings Icon" />
         </v-btn>
       </v-flex>
     </v-layout>

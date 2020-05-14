@@ -9,7 +9,11 @@
           <v-list>
             <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
-                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require('../../../../public/img/icons/file-text-grey.svg')" />
+                <img
+                  :width="$vuetify.breakpoint.xsOnly ? '16' : ''"
+                  :src="require('../../../../public/img/icons/file-text-grey.svg')"
+                  alt="Download JSON Icon"
+                />
               </v-list-item-icon>
               <v-list-item-content>
                 <div class="subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.downloadSoftCopy') }} (JSON)</div>
@@ -101,7 +105,11 @@
               </v-list-item-content>
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'ma-1' : ''">
                 <v-btn id="show-download-form-btn" icon small @click="isShowGetPassword = true">
-                  <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require('../../../../public/img/icons/download-primary.svg')" />
+                  <img
+                    :width="$vuetify.breakpoint.xsOnly ? '16' : ''"
+                    :src="require('../../../../public/img/icons/download-primary.svg')"
+                    alt="Show Get Password Button"
+                  />
                 </v-btn>
               </v-list-item-icon>
             </v-list-item>
@@ -110,7 +118,7 @@
 
             <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
-                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require(`../../../../public/img/icons/key.svg`)" />
+                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="require(`../../../../public/img/icons/key.svg`)" alt="Key Icon" />
               </v-list-item-icon>
               <v-list-item-content>
                 <div class="subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.showPrivateKey') }}</div>
@@ -127,6 +135,7 @@
                           :src="require('../../../../public/img/icons/copy-primary.svg')"
                           class="mr-1"
                           :width="$vuetify.breakpoint.xsOnly ? '12' : '20'"
+                          alt="Copy Icon"
                         />
                         {{ t('walletSettings.clickCopy') }}
                       </v-btn>
@@ -139,6 +148,7 @@
                   <img
                     :width="$vuetify.breakpoint.xsOnly ? '20' : ''"
                     :src="require(`../../../../public/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)"
+                    alt="Toggle Password Icon"
                   />
                 </v-btn>
               </v-list-item-icon>

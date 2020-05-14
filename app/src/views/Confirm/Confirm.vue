@@ -235,7 +235,7 @@
                   target="_blank"
                   rel="noreferrer noopener"
                 >
-                  <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" />
+                  <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" alt="Origin Link Icon" />
                 </v-btn>
               </div>
             </v-card-text>
@@ -247,7 +247,7 @@
           <div class="d-flex align-center">
             <div class="mr-2 note-list__icon">
               <v-icon v-if="whiteLabelGlobal.isWhiteLabelActive" small class="torusBrand1--text">$vuetify.icons.check_circle</v-icon>
-              <img v-else :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" />
+              <img v-else :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" alt="Data Icon" />
             </div>
             <div class="caption text_2--text text-capitalize">{{ t('dappTransfer.data') }}</div>
           </div>

@@ -5,7 +5,7 @@
         <div class="d-flex torus-widget__user-details">
           <div class="avatar-container">
             <v-avatar size="32">
-              <img :src="userInfo.profileImage" />
+              <img :src="userInfo.profileImage" :alt="`${userInfo.verifierId} Avatar`" />
             </v-avatar>
           </div>
           <div class="details-container d-flex flex-column ml-2 pr-2">
@@ -16,7 +16,7 @@
               <!-- <v-icon size="16" class="ml-auto text_2--text">$vuetify.icons.select</v-icon> -->
             </div>
             <div class="d-flex align-center">
-              <img class="details-container__icon" :src="require(`../../../../public/img/icons/address-wallet.svg`)" />
+              <img class="details-container__icon" :src="require(`../../../../public/img/icons/address-wallet.svg`)" alt="Address Icon" />
               <div class="details-container__text ml-2">
                 <ShowToolTip :address="fullAddress">
                   {{ address }}
@@ -74,6 +74,7 @@
                   height="36"
                   large
                   color="primary"
+                  :alt="recentTransaction.from"
                 />
                 <v-icon v-else class="mx-2" color="primary">{{ recentTransaction.actionIcon }}</v-icon>
               </v-avatar>
@@ -104,13 +105,14 @@
             ? whiteLabelGlobal.logoLight || whiteLabelGlobal.logo
             : require(`../../../../public/img/icons/torus-icon-light.svg`)
         "
+        alt="Torus Logo"
       />
     </v-btn>
     <v-btn v-else-if="loginDialog" color="primary" fab>
       <BeatLoader size="10px" color="white" />
     </v-btn>
     <v-btn v-else class="torus-widget__login-btn" color="primary" fab @click="login">
-      <img class="torus-widget__login" :src="require(`../../../../public/images/login.png`)" />
+      <img class="torus-widget__login" :src="require(`../../../../public/images/login.png`)" alt="Login Icon" />
       <span class="torus-widget__login-with">Login</span>
     </v-btn>
   </div>
