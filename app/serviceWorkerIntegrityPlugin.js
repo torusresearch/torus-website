@@ -11,7 +11,6 @@ module.exports = class ServiceWorkerIntegrityPlugin {
     const fs = require('fs')
     const { RawSource } = require('webpack-sources')
     const ID = 'service-worker-integrity-plugin'
-    const readFile = compiler.inputFileSystem.readFile.bind(compiler.inputFileSystem)
     const getFileName = function (compilation, partialName) {
       return Object.keys(compilation.assets).find((name) => name.includes(partialName))
     }
