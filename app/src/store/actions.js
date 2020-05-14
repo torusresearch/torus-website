@@ -1,25 +1,41 @@
 import { BroadcastChannel } from 'broadcast-channel'
 import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
-import { toChecksumAddress } from 'web3-utils'
+import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import torus from '../torus'
 import accountImporter from '../utils/accountImporter'
 import {
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_ACTION_TOPUP,
+  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721,
   DISCORD,
   FACEBOOK,
   GOOGLE,
   REDDIT,
   RPC,
   SUPPORTED_NETWORK_TYPES,
+  TOKEN_METHOD_TRANSFER_FROM,
   TWITCH,
   USER_INFO_REQUEST_APPROVED,
   USER_INFO_REQUEST_REJECTED,
 } from '../utils/enums'
 import { post, remove } from '../utils/httpHelpers'
 import PopupHandler from '../utils/PopupHandler'
-import { broadcastChannelOptions, fakeStream, getIFrameOriginObject } from '../utils/utils'
+import {
+  addressSlicer,
+  broadcastChannelOptions,
+  fakeStream,
+  formatSmallNumbers,
+  getEtherScanHashLink,
+  getEthTxStatus,
+  getIFrameOriginObject,
+  significantDigits,
+} from '../utils/utils'
 import {
   accountTrackerHandler,
   assetControllerHandler,
@@ -27,6 +43,8 @@ import {
   errorMsgHandler as errorMessageHandler,
   messageManagerHandler,
   metadataHandler,
+  pastTransactionsHandler,
+  paymentTxHandler,
   personalMessageManagerHandler,
   prefsControllerHandler,
   successMsgHandler as successMessageHandler,
@@ -103,6 +121,8 @@ export default {
     prefsController.store.unsubscribe(prefsControllerHandler)
     prefsController.successStore.unsubscribe(successMessageHandler)
     prefsController.errorStore.unsubscribe(errorMessageHandler)
+    prefsController.paymentTxStore.unsubscribe(paymentTxHandler)
+    prefsController.pastTransactionsStore.unsubscribe(pastTransactionsHandler)
     torus.updateStaticData({ isUnlocked: false })
   },
   setSelectedCurrency({ commit }, payload) {
@@ -378,6 +398,8 @@ export default {
     prefsController.store.subscribe(prefsControllerHandler)
     prefsController.successStore.subscribe(successMessageHandler)
     prefsController.errorStore.subscribe(errorMessageHandler)
+    prefsController.paymentTxStore.subscribe(paymentTxHandler)
+    prefsController.pastTransactionsStore.subscribe(pastTransactionsHandler)
   },
   initTorusKeyring(_, payload) {
     return torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
@@ -553,4 +575,176 @@ export default {
       data: payload,
     })
   },
+  async updatePastTransactions({ commit, state }, payload) {
+    const pastTx = []
+    const pendingTx = []
+    const lowerCaseSelectedAddress = state.selectedAddress.toLowerCase()
+    const wallets = Object.keys(state.wallet)
+    for (const x of payload) {
+      if (x.status !== 'confirmed' && (lowerCaseSelectedAddress === x.from.toLowerCase() || lowerCaseSelectedAddress === x.to.toLowerCase())) {
+        pendingTx.push(x)
+      } else {
+        const finalObject = formatPastTx(x, wallets)
+        pastTx.push(finalObject)
+      }
+    }
+    const pendingTxPromises = pendingTx.map((x) => getEthTxStatus(x.transaction_hash, torus.web3).catch((error) => log.error(error)))
+    log.info(pendingTxPromises.length, 'hello')
+    const resolvedTxStatuses = await Promise.all(pendingTxPromises)
+    for (const [index, element] of pendingTx.entries()) {
+      const finalObject = formatPastTx(element, wallets)
+      finalObject.status = resolvedTxStatuses[index]
+      pastTx.push(finalObject)
+      log.info(finalObject, element, 'ex')
+      if (lowerCaseSelectedAddress === element.from.toLowerCase() && finalObject.status !== element.status)
+        prefsController.patchPastTx(element.id, finalObject.status)
+    }
+    // eslint-disable-next-line no-console
+    console.log(pastTx)
+    commit('setPastTransactions', pastTx)
+  },
+  updatePaymentTx({ commit }, payload) {
+    const accumulator = []
+    for (const x of payload) {
+      let action = ''
+      const lowerCaseAction = x.action.toLowerCase()
+      if (ACTIVITY_ACTION_TOPUP.includes(lowerCaseAction)) action = ACTIVITY_ACTION_TOPUP
+      else if (ACTIVITY_ACTION_SEND.includes(lowerCaseAction)) action = ACTIVITY_ACTION_SEND
+      else if (ACTIVITY_ACTION_RECEIVE.includes(lowerCaseAction)) action = ACTIVITY_ACTION_RECEIVE
+
+      accumulator.push({
+        id: x.id,
+        date: new Date(x.date),
+        from: x.from,
+        slicedFrom: x.slicedFrom,
+        action,
+        to: x.to,
+        slicedTo: x.slicedTo,
+        totalAmount: x.totalAmount,
+        totalAmountString: x.totalAmountString,
+        currencyAmount: x.currencyAmount,
+        currencyAmountString: x.currencyAmountString,
+        amount: x.amount,
+        ethRate: x.ethRate,
+        status: x.status.toLowerCase(),
+        etherscanLink: x.etherscanLink || '',
+        currencyUsed: x.currencyUsed,
+      })
+    }
+    // eslint-disable-next-line no-console
+    console.log(accumulator)
+    commit('setPaymentTx', accumulator)
+  },
+  updateCalculatedTx({ commit, state }, payload) {
+    const finalTransactions = []
+    for (const id in payload) {
+      const txOld = payload[id]
+      if (txOld.metamaskNetworkId.toString() === state.networkId.toString()) {
+        const { methodParams, contractParams, txParams, transactionCategory } = txOld
+        let amountTo
+        let amountValue
+        let totalAmountString
+        let totalAmount
+        let finalTo
+        let tokenRate = 1
+
+        if (contractParams.erc721) {
+          // Handling cryptokitties
+          if (contractParams.isSpecial) {
+            ;[amountTo, amountValue] = methodParams || []
+          } else {
+            // Rest of the 721s
+            ;[, amountTo, amountValue] = methodParams || []
+          }
+          const { name = '' } = contractParams
+          // Get asset name of the 721
+          const contract = this.assets[this.selectedAddress].find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
+          log.info(contract, amountValue)
+          if (contract) {
+            const assetObject = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
+            log.info(assetObject)
+            totalAmountString = (assetObject && assetObject.name) || ''
+            finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+          }
+        } else if (contractParams.erc20) {
+          // ERC20 transfer
+          tokenRate = contractParams.erc20 ? this.tokenRates[txParams.to] : 1
+          if (methodParams && Array.isArray(methodParams)) {
+            if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
+              ;[, amountTo, amountValue] = methodParams || []
+            } else {
+              ;[amountTo, amountValue] = methodParams || []
+            }
+          }
+          totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
+          totalAmountString = `${significantDigits(Number.parseFloat(totalAmount))} ${contractParams.symbol}`
+          finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+        } else {
+          tokenRate = 1
+          totalAmount = fromWei(toBN(txParams.value))
+          totalAmountString = `${significantDigits(Number.parseFloat(totalAmount))} ETH`
+          finalTo = toChecksumAddress(txOld.txParams.to)
+        }
+        const txObject = {}
+        txObject.id = txOld.time.toString()
+        txObject.action = this.wallets.includes(txOld.txParams.to) ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
+        txObject.date = new Date(txOld.time)
+        txObject.from = toChecksumAddress(txOld.txParams.from)
+        txObject.slicedFrom = addressSlicer(txOld.txParams.from)
+        txObject.to = finalTo
+        txObject.slicedTo = addressSlicer(finalTo)
+        txObject.totalAmount = totalAmount
+        txObject.totalAmountString = totalAmountString
+        txObject.currencyAmount = this.currencyMultiplier * txObject.totalAmount * tokenRate
+        txObject.currencyAmountString = contractParams.erc721 ? '' : formatSmallNumbers(txObject.currencyAmount, this.selectedCurrency, true)
+        txObject.amount = `${txObject.totalAmountString} / ${txObject.currencyAmountString}`
+        txObject.status = txOld.status
+        txObject.etherscanLink = getEtherScanHashLink(txOld.hash, this.networkType.host)
+        txObject.networkType = this.networkType.host
+        txObject.ethRate = `1 ${(contractParams && contractParams.symbol) || 'ETH'} = ${significantDigits(
+          Number.parseFloat(txObject.currencyAmount) / Number.parseFloat(txObject.totalAmount)
+        )}`
+        txObject.currencyUsed = this.selectedCurrency
+        txObject.type = 'eth'
+        if (contractParams && contractParams.erc20) txObject.type = 'erc20'
+        else if (contractParams && contractParams.erc721) txObject.type = 'erc721'
+        txObject.type_name = contractParams && contractParams.name ? contractParams.name : 'n/a'
+        txObject.type_image_link = contractParams && contractParams.logo ? contractParams.logo : 'n/a'
+        finalTransactions.push(txObject)
+      }
+    }
+    commit('setCalculatedTx', finalTransactions)
+  },
+}
+
+function formatPastTx(x, wallets) {
+  let totalAmountString = ''
+  if (x.type === CONTRACT_TYPE_ERC721) totalAmountString = x.symbol
+  else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.symbol, true)
+  else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), 'ETH', true)
+  const currencyAmountString =
+    x.type === CONTRACT_TYPE_ERC721 ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
+  const finalObject = {
+    id: x.created_at.toString(),
+    date: new Date(x.created_at),
+    from: x.from,
+    slicedFrom: addressSlicer(x.from),
+    to: x.to,
+    slicedTo: addressSlicer(x.to),
+    action: wallets.includes(x.to) ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
+    totalAmount: x.total_amount,
+    totalAmountString,
+    currencyAmount: x.currency_amount,
+    currencyAmountString,
+    amount: `${totalAmountString} / ${currencyAmountString}`,
+    status: x.status,
+    etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network),
+    networkType: x.network,
+    ethRate: `1 ${x.symbol} = ${significantDigits(Number.parseFloat(x.currency_amount) / Number.parseFloat(x.total_amount))}`,
+    currencyUsed: x.selected_currency,
+    type: x.type,
+    type_name: x.type_name,
+    type_image_link: x.type_image_link,
+  }
+  return finalObject
 }

@@ -55,6 +55,7 @@ export function transactionControllerHandler({ transactions }) {
     }
     // log.info(updatedTransactions, 'txs')
     getStore().commit('setTransactions', updatedTransactions)
+    // getStore().dispatch('updateCalculatedTx', updatedTransactions)
   }
 }
 
@@ -112,4 +113,12 @@ export function errorMsgHandler(error) {
 
 export function metadataHandler(state) {
   getStore().commit('setMetaData', state)
+}
+
+export function pastTransactionsHandler(state) {
+  getStore().dispatch('updatePastTransactions', state)
+}
+
+export function paymentTxHandler(state) {
+  getStore().dispatch('updatePaymentTx', state)
 }

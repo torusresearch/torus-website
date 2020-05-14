@@ -7,7 +7,7 @@ import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import { getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
 
-// By default, poll every 1 minute
+// By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
 
 class PreferencesController {
@@ -18,7 +18,6 @@ class PreferencesController {
    * @property {object} store The stored object containing a users preferences, stored in torus-backend
    * @property {string} store.selectedAddress A hex string that matches the currently selected address in the app
    * @property {string} store.selectedCurrency A string showing the user selected currency
-   * @property {Array} store.pastTransactions A list of past Transactions of user
    * @property {string} store.theme the user selected theme
    * @property {string} store.locale the user selected locale
    * @property {Array} store.billboard the contents of torus-billboard (depends on the locale)
@@ -37,13 +36,11 @@ class PreferencesController {
     const initState = {
       selectedAddress: '',
       selectedCurrency: 'USD',
-      pastTransactions: [],
       theme,
       locale: getUserLanguage(),
       billboard: {},
       contacts: [],
       permissions: [],
-      paymentTx: [],
       ...options.initState,
     }
 
@@ -54,6 +51,8 @@ class PreferencesController {
     this.metadataStore = new ObservableStore({})
     this.errorStore = new ObservableStore('')
     this.successStore = new ObservableStore('')
+    this.pastTransactionsStore = new ObservableStore([])
+    this.paymentTxStore = new ObservableStore([])
   }
 
   set jwtToken(token) {
@@ -131,13 +130,13 @@ class PreferencesController {
 
         this.store.updateState({
           contacts,
-          pastTransactions: transactions,
           theme,
           selectedCurrency: defaultCurrency,
           locale: whiteLabelLocale || locale || getUserLanguage(),
-          paymentTx: (paymentTx && paymentTx.data) || [],
           permissions,
         })
+        this.paymentTxStore.putState((paymentTx && paymentTx.data) || [])
+        this.pastTransactionsStore.putState(transactions)
         if (callback) return callback(user)
         // this.permissionsController._initializePermissions(permissions)
       }
@@ -290,6 +289,23 @@ class PreferencesController {
       log.info(resp)
     } catch (error) {
       log.error(error)
+    }
+  }
+
+  /* istanbul ignore next */
+  async patchPastTx(txId, status) {
+    try {
+      const response = await patch(
+        `${config.api}/transaction`,
+        {
+          id: txId,
+          status,
+        },
+        this.headers
+      )
+      log.info('successfully patched', response)
+    } catch (error) {
+      log.error('unable to patch tx', error)
     }
   }
 

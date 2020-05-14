@@ -25,7 +25,6 @@ const initialState = {
   // loaders
   weiBalanceLoaded: false, // Use on showing spinners
   tokenDataLoaded: false, // Use on showing spinners
-  loadingUserTransactions: true,
   isNewUser: false,
   // account handled
   wallet: {}, // Account specific object
@@ -48,6 +47,7 @@ const initialState = {
   selectedCurrency: 'USD',
   pastTransactions: [],
   paymentTx: [],
+  calculatedTx: [],
   theme: THEME_LIGHT_BLUE_NAME,
   locale: LOCALE_EN,
   billboard: [],

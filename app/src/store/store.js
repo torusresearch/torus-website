@@ -51,7 +51,8 @@ if (storageAvailable('sessionStorage')) {
       contacts: state.contacts,
       whiteLabel: state.whiteLabel,
       supportedNetworks: state.supportedNetworks,
-      // pastTransactions: state.pastTransactions
+      pastTransactions: state.pastTransactions,
+      paymentTx: state.paymentTx,
     }),
   })
 }

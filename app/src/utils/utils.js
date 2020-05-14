@@ -336,8 +336,9 @@ export function validateVerifierId(selectedVerifier, value) {
   return true
 }
 
-export function formatDate(date) {
+export function formatDate(inputDate) {
   const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  const date = new Date(inputDate)
   const day = date.getDate()
   const month = monthList[date.getMonth()]
   const year = date.getFullYear()

@@ -70,10 +70,12 @@ export default {
   },
   setPastTransactions(state, payload) {
     state.pastTransactions = payload
-    state.loadingUserTransactions = false
   },
   patchPastTransactions(state, payload) {
     state.pastTransactions = [...state.pastTransactions, payload]
+  },
+  setCalculatedTx(state, payload) {
+    state.calculatedTx = payload
   },
   setTheme(state, payload) {
     state.theme = payload
