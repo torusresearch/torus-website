@@ -2,13 +2,13 @@ import { ethErrors } from 'eth-json-rpc-errors'
 import JsonRpcEngine from 'json-rpc-engine'
 import asMiddleware from 'json-rpc-engine/src/asMiddleware'
 import log from 'loglevel'
-// import ObservableStore from 'obs-store'
-import { CapabilitiesController as RpcCap } from 'rpc-cap'
 
+// import ObservableStore from 'obs-store'
+// import { CapabilitiesController as RpcCap } from 'rpc-cap'
 // Methods that do not require any permissions to use:
 import {
   CAVEAT_NAMES,
-  SAFE_METHODS, // methods that do not require any permissions to use
+  // SAFE_METHODS, // methods that do not require any permissions to use
   WALLET_PREFIX,
 } from '../utils/enums'
 import createMethodMiddleware from '../utils/methodMiddleware'
@@ -19,7 +19,7 @@ export default class PermissionsController {
     this.getKeyringAccounts = getKeyringAccounts
     this.setSiteMetadata = setSiteMetadata
     this._restrictedMethods = getRestrictedMethods(this)
-    this._initializePermissions({})
+    // this._initializePermissions({})
   }
 
   createMiddleware({ origin }) {
@@ -206,46 +206,46 @@ export default class PermissionsController {
    *
    * @param {string} origin = The origin string representing the domain.
    */
-  _initializePermissions(restoredState) {
-    // these permission requests are almost certainly stale
-    const initState = { ...restoredState, permissionsRequests: [] }
+  // _initializePermissions(restoredState) {
+  //   // these permission requests are almost certainly stale
+  //   const initState = { ...restoredState, permissionsRequests: [] }
 
-    this.pendingApprovals = {}
+  //   this.pendingApprovals = {}
 
-    this.permissions = new RpcCap(
-      {
-        // Supports passthrough methods:
-        safeMethods: SAFE_METHODS,
+  //   this.permissions = new RpcCap(
+  //     {
+  //       // Supports passthrough methods:
+  //       safeMethods: SAFE_METHODS,
 
-        // optional prefix for internal methods
-        methodPrefix: WALLET_PREFIX,
+  //       // optional prefix for internal methods
+  //       methodPrefix: WALLET_PREFIX,
 
-        restrictedMethods: this._restrictedMethods,
+  //       restrictedMethods: this._restrictedMethods,
 
-        /**
-         * A promise-returning callback used to determine whether to approve
-         * permissions requests or not.
-         *
-         * Currently only returns a boolean, but eventually should return any
-         * specific parameters or amendments to the permissions.
-         *
-         * @param {string} req - The internal rpc-cap user request object.
-         */
-        requestUserApproval: async (request) => {
-          const {
-            metadata: { id },
-          } = request
+  //       /**
+  //        * A promise-returning callback used to determine whether to approve
+  //        * permissions requests or not.
+  //        *
+  //        * Currently only returns a boolean, but eventually should return any
+  //        * specific parameters or amendments to the permissions.
+  //        *
+  //        * @param {string} req - The internal rpc-cap user request object.
+  //        */
+  //       requestUserApproval: async (request) => {
+  //         const {
+  //           metadata: { id },
+  //         } = request
 
-          this._platform.openExtensionInBrowser(`connect/${id}`)
+  //         this._platform.openExtensionInBrowser(`connect/${id}`)
 
-          return new Promise((resolve, reject) => {
-            this.pendingApprovals[id] = { resolve, reject }
-          })
-        },
-      },
-      initState
-    )
-  }
+  //         return new Promise((resolve, reject) => {
+  //           this.pendingApprovals[id] = { resolve, reject }
+  //         })
+  //       },
+  //     },
+  //     initState
+  //   )
+  // }
 }
 
 export function addInternalMethodPrefix(method) {
