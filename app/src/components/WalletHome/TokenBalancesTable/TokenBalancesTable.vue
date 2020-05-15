@@ -12,7 +12,7 @@
           <div class="d-flex align-center py-3 px-4 card-header elevation-1">
             <div class="flex-grow-1 text-clamp-one">
               <img
-                :src="require(`../../../../public/images/logos/${balance.logo}`)"
+                :src="`../../../images/logos/${balance.logo}`"
                 class="inline-small d-inline-flex"
                 onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = 'images/logos/eth.svg';"
                 :alt="balance.logo"

@@ -11,7 +11,7 @@
             :src="
               whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
                 ? whiteLabelGlobal.logo
-                : require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
+                : `../../images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`
             "
           />
           <div class="display-1 text_2--text">{{ t('dappTransfer.confirmation') }}</div>
@@ -211,7 +211,7 @@
             :src="
               whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
                 ? whiteLabelGlobal.logo
-                : require(`../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
+                : `../../images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`
             "
           />
           <div class="display-1 text_2--text">{{ t('dappTransfer.permission') }}</div>
@@ -236,7 +236,7 @@
                   rel="noreferrer noopener"
                   :aria-label="`Open ${origin.hostname} Link`"
                 >
-                  <img :src="require('../../../public/img/icons/open-in-new-grey.svg')" class="card-upper-icon" alt="Origin Link Icon" />
+                  <img :src="'../../img/icons/open-in-new-grey.svg'" class="card-upper-icon" alt="Origin Link Icon" />
                 </v-btn>
               </div>
             </v-card-text>
@@ -248,7 +248,7 @@
           <div class="d-flex align-center">
             <div class="mr-2 note-list__icon">
               <v-icon v-if="whiteLabelGlobal.isWhiteLabelActive" small class="torusBrand1--text">$vuetify.icons.check_circle</v-icon>
-              <img v-else :src="require(`../../../public/img/icons/check-circle-primary.svg`)" width="12" alt="Data Icon" />
+              <img v-else :src="`../../img/icons/check-circle-primary.svg`" width="12" alt="Data Icon" />
             </div>
             <div class="caption text_2--text text-capitalize">{{ t('dappTransfer.data') }}</div>
           </div>

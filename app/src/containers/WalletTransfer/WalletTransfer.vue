@@ -58,7 +58,7 @@
                       >
                         <v-list-item-icon class="mr-1">
                           <img
-                            :src="require(`../../../public/images/logos/${token.logo}`)"
+                            :src="`../../images/logos/${token.logo}`"
                             height="20px"
                             onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = 'images/logos/eth.svg';"
                             :alt="token.name"
@@ -76,7 +76,7 @@
                       <v-list-item v-for="token in finalBalancesArrayTokens" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
                         <v-list-item-icon class="ml-8 mr-1">
                           <img
-                            :src="require(`../../../public/images/logos/${token.logo}`)"
+                            :src="`../../images/logos/${token.logo}`"
                             height="20px"
                             onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = 'images/logos/eth.svg';"
                             :alt="token.name"

@@ -10,12 +10,12 @@
           :src="
             whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
               ? whiteLabelGlobal.logo
-              : require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
+              : `../../../images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`
           "
         />
       </router-link>
       <router-link v-if="$vuetify.breakpoint.xsOnly" id="logo-home-lnk" :to="{ name: 'walletHome' }">
-        <img :src="require('../../../../public/img/icons/t-fill.svg')" width="35" height="30" alt="Torus Logo" />
+        <img :src="'../../../img/icons/t-fill.svg'" width="35" height="30" alt="Torus Logo" />
       </router-link>
     </div>
     <v-spacer></v-spacer>

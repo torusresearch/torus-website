@@ -23,7 +23,7 @@
         >
           <img
             v-if="transaction.type === CONTRACT_TYPE_ERC20 || transaction.action === ACTIVITY_ACTION_TOPUP"
-            :src="require(`../../../../public/images/${transaction.actionIcon}`)"
+            :src="`../../../images/${transaction.actionIcon}`"
             :alt="`${transaction.from} Icon`"
             class="mr-2 ml-2"
             width="36"

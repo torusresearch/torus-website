@@ -2,14 +2,14 @@
   <v-menu offset-y :bottom="!$vuetify.breakpoint.smAndDown" :top="$vuetify.breakpoint.smAndDown" left z-index="20">
     <template v-slot:activator="{ on }">
       <v-btn v-if="!$vuetify.breakpoint.smAndDown" id="locale-dropdown-btn" class="locale-selector" small text aria-label="Select Language" v-on="on">
-        <img :src="require('../../../../public/img/icons/globe.svg')" width="15" height="30" alt="Language Icon" />
+        <img :src="'../../../img/icons/globe.svg'" width="15" height="30" alt="Language Icon" />
         <span class="ml-1" :class="$vuetify.breakpoint.smAndDown">{{ selectedLabel }}</span>
         <v-icon class="ml-2" small>$vuetify.icons.select</v-icon>
       </v-btn>
 
       <v-list-item v-else v-on="on">
         <v-list-item-action class="ml-1 mr-1" :class="{ isMobile: $vuetify.breakpoint.smAndDown }">
-          <img :src="require('../../../../public/img/icons/globe.svg')" width="15" height="30" alt="Language Icon" />
+          <img :src="'../../../img/icons/globe.svg'" width="15" height="30" alt="Language Icon" />
         </v-list-item-action>
         <v-list-item-content>
           <span class="caption font-weight-bold">
