@@ -17,7 +17,7 @@
             <v-icon v-else :class="$vuetify.theme.isDark ? 'torusLight--text' : 'torusBlack--text'">$vuetify.icons.radioOff</v-icon>
           </v-list-item-icon>
           <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 100 : 130" height="100%" tile class="align-self-center mr-2">
-            <img :src="`../../../assets/images/${targetProvider.logo}`" :alt="targetProvider.name" />
+            <img :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
           </v-list-item-avatar>
           <v-list-item-content class="align-self-center text-right text_1--text caption">
             <div>{{ t('walletTopUp.paywith') }} {{ targetProvider.line1 }}</div>
@@ -47,7 +47,7 @@
                 <v-icon color="grey">$vuetify.icons.radioOff</v-icon>
               </v-list-item-icon>
               <v-list-item-avatar :width="$vuetify.breakpoint.xsOnly ? 105 : 138" height="100%" tile class="align-self-center mr-2">
-                <img :src="`../../../assets/images/${targetProvider.logo}`" :alt="targetProvider.name" />
+                <img :src="require(`../../../assets/images/${targetProvider.logo}`)" :alt="targetProvider.name" />
               </v-list-item-avatar>
               <v-list-item-content class="align-self-center text-right text_1--text caption">
                 <div>{{ targetProvider.line1 }}</div>

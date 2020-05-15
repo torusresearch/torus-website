@@ -114,7 +114,7 @@
 
             <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
-                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="`../../../assets/img/icons/key.svg`" alt="Key Icon" />
+                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" src="../../../assets/img/icons/key.svg" alt="Key Icon" />
               </v-list-item-icon>
               <v-list-item-content>
                 <div class="subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.showPrivateKey') }}</div>
@@ -149,7 +149,7 @@
                 >
                   <img
                     :width="$vuetify.breakpoint.xsOnly ? '20' : ''"
-                    :src="`../../../assets/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`"
+                    :src="require(`../../../assets/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`)"
                     alt="Toggle Password Icon"
                   />
                 </v-btn>

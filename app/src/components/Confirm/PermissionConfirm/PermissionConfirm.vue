@@ -2,7 +2,7 @@
   <v-container px-0 py-6 class="permission-container">
     <v-layout wrap>
       <v-flex class="card-shadow text-center" py-6 mb-4 xs12>
-        <img :src="`../../../assets/images/security.svg`" alt="Security Icon" />
+        <img src="../../../assets/images/security.svg" alt="Security Icon" />
         <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="headline font-weight-bold">
           {{ t('dappPermission.permission') }}
         </div>
@@ -12,7 +12,7 @@
           <v-flex xs3 style="position: relative;">
             <div class="logo-container d-flex align-center justify-center float-right">
               <!-- Update with proper logo -->
-              <img class="logo-from" :src="`../../../assets/images/logos/augur_logo.png`" :alt="`${origin} Logo`" />
+              <img class="logo-from" src="../../../assets/images/logos/augur_logo.png" :alt="`${origin} Logo`" />
             </div>
             <br />
             <br />
@@ -29,7 +29,7 @@
           <v-flex xs3>
             <!-- Update with proper target -->
             <div class="logo-container d-flex align-center justify-center float-left">
-              <img :src="`../../../assets/images/oval-google.svg`" alt="Target Logo" />
+              <img src="../../../assets/images/oval-google.svg" alt="Target Logo" />
             </div>
             <br />
             <br />
@@ -74,7 +74,7 @@
 
         <v-card class="card-shadow px-3 py-4 mb-8">
           <div :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'" class="caption permission-note">
-            <img :src="`../../../assets/images/exclamation-triangle.png`" alt="Alert Icon" />
+            <img src="../../../assets/images/exclamation-triangle.png" alt="Alert Icon" />
             {{ t('dappPermission.note').replace(/\{num\}/gi, 6) }}.
             <a class="font-italic" rel="noreferrer noopener" :class="$vuetify.theme.dark ? 'text_3--text' : 'text_2--text'">
               {{ t('dappPermission.learnMore') }}

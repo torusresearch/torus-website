@@ -5,7 +5,7 @@
     </v-btn>
     <v-layout wrap>
       <v-flex class="card-shadow text-center" py-8 mb-4 xs12>
-        <img :src="`../../../assets/images/status-${modalType}.svg`" width="64" :alt="modalType" />
+        <img :src="require(`../../../assets/images/status-${modalType}.svg`)" width="64" :alt="modalType" />
       </v-flex>
 
       <v-flex xs12 mx-10 class="text-center">

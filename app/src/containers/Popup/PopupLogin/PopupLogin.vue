@@ -25,7 +25,7 @@
               <div class="verifier-title headline torus_text--text font-weight-bold">
                 <span v-if="$vuetify.breakpoint.xsOnly">
                   {{ t('login.your') }}
-                  <img :src="`../../../assets/images/login-verifiers.gif`" alt="Login Verifier Icon" />
+                  <img :src="require(`../../../assets/images/login-verifiers.gif`)" alt="Login Verifier Icon" />
                 </span>
                 <span v-else>
                   {{ t('login.your') }}
@@ -64,7 +64,7 @@
                   >
                     <img
                       v-if="verifier === activeButton || $vuetify.breakpoint.xsOnly"
-                      :src="`../../../assets/img/icons/login-${verifier}.svg`"
+                      :src="require(`../../../assets/img/icons/login-${verifier}.svg`)"
                       :alt="`${verifier} Icon`"
                     />
                     <v-icon v-else size="30" :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">

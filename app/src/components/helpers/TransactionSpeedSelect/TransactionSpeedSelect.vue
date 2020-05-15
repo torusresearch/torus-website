@@ -14,7 +14,7 @@
             >
               <div class="d-flex">
                 <img
-                  :src="`../../../assets/img/icons/speed-bicycle${$vuetify.theme.isDark ? '-dark' : ''}.svg`"
+                  :src="require(`../../../assets/img/icons/speed-bicycle${$vuetify.theme.isDark ? '-dark' : ''}.svg`)"
                   class="mr-2 ml-auto"
                   alt="Average Speed Icon"
                 />
@@ -33,7 +33,7 @@
             >
               <div class="d-flex">
                 <img
-                  :src="`../../../assets/img/icons/speed-car${$vuetify.theme.isDark ? '-dark' : ''}.svg`"
+                  :src="require(`../../../assets/img/icons/speed-car${$vuetify.theme.isDark ? '-dark' : ''}.svg`)"
                   class="mr-2 ml-auto"
                   alt="Fastest Speed Icon"
                 />
@@ -93,7 +93,7 @@
         >
           <div class="d-flex">
             <img
-              :src="`../../../assets/img/icons/speed-bicycle${$vuetify.theme.isDark ? '-dark' : ''}.svg`"
+              :src="require(`../../../assets/img/icons/speed-bicycle${$vuetify.theme.isDark ? '-dark' : ''}.svg`)"
               class="mr-2 ml-auto"
               alt="Average Speed Icon"
             />
@@ -112,7 +112,7 @@
         >
           <div class="d-flex">
             <img
-              :src="`../../../assets/img/icons/speed-car${$vuetify.theme.isDark ? '-dark' : ''}.svg`"
+              :src="require(`../../../assets/img/icons/speed-car${$vuetify.theme.isDark ? '-dark' : ''}.svg`)"
               class="mr-2 ml-auto"
               alt="Fastest Speed Icon"
             />

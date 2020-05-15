@@ -18,13 +18,17 @@
                 <v-carousel-item reverse-transition="fade-transition" transition="fade-transition">
                   <v-layout wrap>
                     <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
-                      <img width="180" :src="`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`" alt="Torus Logo" />
+                      <img
+                        width="180"
+                        :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)"
+                        alt="Torus Logo"
+                      />
                     </v-flex>
                     <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
                       <div class="verifier-title font-weight-bold display-1">
                         <span class="text_2--text">
                           {{ t('login.your') }}
-                          <img :src="`../../assets/images/login-verifiers.gif`" alt="Login Verifiers" />
+                          <img :src="require(`../../assets/images/login-verifiers.gif`)" alt="Login Verifiers" />
                         </span>
                       </div>
                       <div class="font-weight-bold headline text_2--text">
@@ -45,7 +49,7 @@
                       >
                         <img
                           class="mr-5"
-                          :src="`../../assets/img/icons/login-google.svg`"
+                          src="../../assets/img/icons/login-google.svg"
                           :class="$vuetify.theme.dark ? 'torus-dark' : ''"
                           alt="Google Icon"
                         />
@@ -63,7 +67,7 @@
                             @click="startLogin(verifier)"
                             @mouseover="loginBtnHover(verifier)"
                           >
-                            <img :src="`../../assets/img/icons/login-${verifier}.svg`" :alt="`${verifier} Icon`" />
+                            <img :src="require(`../../assets/img/icons/login-${verifier}.svg`)" :alt="`${verifier} Icon`" />
                           </v-btn>
                         </v-flex>
                       </v-layout>
@@ -85,7 +89,7 @@
                         <v-carousel-item v-for="slide in 3" :key="slide" reverse-transition="fade-transition" transition="fade-transition">
                           <img
                             class="mb-6 login-panel-right__image"
-                            :src="`../../assets/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide}.svg`"
+                            :src="require(`../../assets/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide}.svg`)"
                             alt="Login Carousel"
                           />
                           <div class="headline mb-3 text_2--text">{{ t(`login.slide${slide}Title`) }}</div>
@@ -110,7 +114,7 @@
             <v-flex v-else xs12>
               <v-layout wrap>
                 <v-flex class="mb-5" xs10 sm8 ml-auto mr-auto>
-                  <img width="180" :src="`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`" alt="Torus Logo" />
+                  <img width="180" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
                 </v-flex>
                 <v-flex class="mb-2" xs10 sm8 ml-auto mr-auto>
                   <div class="verifier-title font-weight-bold" :class="[$vuetify.breakpoint.xsOnly ? 'display-1' : 'display-2']">
@@ -148,7 +152,7 @@
                     @click="startLogin(verifier)"
                     @mouseover="activeButton = verifier"
                   >
-                    <img v-if="verifier === activeButton" :src="`../../assets/img/icons/login-${verifier}.svg`" :alt="`${verifier} Icon`" />
+                    <img v-if="verifier === activeButton" :src="require(`../../assets/img/icons/login-${verifier}.svg`)" :alt="`${verifier} Icon`" />
                     <v-icon v-else :class="$vuetify.theme.dark ? 'white--text' : 'loginBtnGray--text'">{{ `$vuetify.icons.${verifier}` }}</v-icon>
                   </v-btn>
                 </v-flex>
@@ -165,10 +169,15 @@
           </v-layout>
           <v-layout v-else wrap align-center justify-center align-content-center>
             <v-flex xs12 text-center mb-12>
-              <img width="180" :src="`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`" alt="Torus Logo" />
+              <img width="180" :src="require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)" alt="Torus Logo" />
             </v-flex>
             <v-flex xs12 text-center>
-              <img width="200px" height="auto" :src="`../../assets/images/logout${$vuetify.theme.dark ? '-dark' : ''}.svg`" alt="Logout Image" />
+              <img
+                width="200px"
+                height="auto"
+                :src="require(`../../assets/images/logout${$vuetify.theme.dark ? '-dark' : ''}.svg`)"
+                alt="Logout Image"
+              />
             </v-flex>
             <v-flex xs12>
               <div class="text-center subtitle-1 font-weight-bold">{{ t('login.beenLoggedOut') }}</div>
@@ -198,7 +207,7 @@
                     <div class="text-center">
                       <img
                         class="mb-7 login-panel-right__image"
-                        :src="`../../assets/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide}.svg`"
+                        :src="require(`../../assets/images/login-bg-${$vuetify.theme.dark ? 'dark-' : ''}${slide}.svg`)"
                         alt="Login Carousel"
                       />
                     </div>

@@ -248,7 +248,7 @@
           <div class="d-flex align-center">
             <div class="mr-2 note-list__icon">
               <v-icon v-if="whiteLabelGlobal.isWhiteLabelActive" small class="torusBrand1--text">$vuetify.icons.check_circle</v-icon>
-              <img v-else :src="`../../assets/img/icons/check-circle-primary.svg`" width="12" alt="Data Icon" />
+              <img v-else src="../../assets/img/icons/check-circle-primary.svg" width="12" alt="Data Icon" />
             </div>
             <div class="caption text_2--text text-capitalize">{{ t('dappTransfer.data') }}</div>
           </div>
