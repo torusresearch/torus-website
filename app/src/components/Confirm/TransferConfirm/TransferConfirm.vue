@@ -10,7 +10,7 @@
           :src="
             whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
               ? whiteLabelGlobal.logo
-              : `../../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`
+              : require(`../../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
           "
         />
         <div class="headline">{{ t('walletTransfer.confirmTransaction') }}</div>

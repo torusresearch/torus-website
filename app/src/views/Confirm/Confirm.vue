@@ -11,7 +11,7 @@
             :src="
               whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
                 ? whiteLabelGlobal.logo
-                : `../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`
+                : require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
             "
           />
           <div class="display-1 text_2--text">{{ t('dappTransfer.confirmation') }}</div>
@@ -211,7 +211,7 @@
             :src="
               whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
                 ? whiteLabelGlobal.logo
-                : `../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`
+                : require(`../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
             "
           />
           <div class="display-1 text_2--text">{{ t('dappTransfer.permission') }}</div>
@@ -236,7 +236,7 @@
                   rel="noreferrer noopener"
                   :aria-label="`Open ${origin.hostname} Link`"
                 >
-                  <img :src="'../../assets/img/icons/open-in-new-grey.svg'" class="card-upper-icon" alt="Origin Link Icon" />
+                  <img src="../../assets/img/icons/open-in-new-grey.svg" class="card-upper-icon" alt="Origin Link Icon" />
                 </v-btn>
               </div>
             </v-card-text>

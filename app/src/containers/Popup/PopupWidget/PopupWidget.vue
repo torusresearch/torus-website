@@ -112,7 +112,7 @@
         :src="
           whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logoLight
             ? whiteLabelGlobal.logoLight || whiteLabelGlobal.logo
-            : `../../../assets/img/icons/torus-icon-light.svg`
+            : require(`../../../assets/img/icons/torus-icon-light.svg`)
         "
         alt="Torus Logo"
       />

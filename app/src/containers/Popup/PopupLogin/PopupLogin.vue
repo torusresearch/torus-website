@@ -12,7 +12,7 @@
                 :src="
                   whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
                     ? whiteLabelGlobal.logo
-                    : `../../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`
+                    : require(`../../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
                 "
               />
               <v-btn class="close-btn" icon aria-label="Close Login Modal" @click="closeDialog">
