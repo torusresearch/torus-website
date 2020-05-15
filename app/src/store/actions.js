@@ -470,7 +470,7 @@ export default {
       commit('setTheme', state.theme)
 
       const { calledFromEmbed, rehydrate, token } = payload
-      const { userInfo, selectedCurrency, theme, locale } = state
+      const { userInfo, selectedCurrency, theme } = state
       log.info(selectedCurrency)
       const { verifier, verifierId } = userInfo
 
@@ -486,7 +486,7 @@ export default {
           }
         },
         async () => {
-          await prefsController.createUser(selectedCurrency, theme, verifier, verifierId, locale)
+          await prefsController.createUser(selectedCurrency, theme, verifier, verifierId)
           commit('setNewUser', true)
           dispatch('setSelectedCurrency', { selectedCurrency: state.selectedCurrency, origin: 'store' })
           prefsController.storeUserLogin(verifier, verifierId, { calledFromEmbed, rehydrate })

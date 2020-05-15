@@ -66,7 +66,7 @@
           </div>
           <div v-if="isNonFungibleToken" class="ml-auto caption d-flex align-center text-right" :style="{ maxWidth: '200px' }">
             <span class="mr-2">{{ assetSelected.name }}</span>
-            <img :src="assetSelected.image" height="30px" />
+            <img :src="assetSelected.image" height="30px" :alt="assetSelected.name" />
           </div>
           <div v-else class="ml-auto">
             <div class="caption text-right font-weight-medium">{{ displayAmount }}</div>

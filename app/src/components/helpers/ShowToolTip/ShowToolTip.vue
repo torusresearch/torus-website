@@ -1,7 +1,7 @@
 <template>
   <v-tooltip bottom>
     <template v-slot:activator="{ on }">
-      <v-btn v-if="isBtn" icon small class="selected-account" v-on="on" @click.stop="copyToClip(address)">
+      <v-btn v-if="isBtn" icon small class="selected-account" aria-label="Copy to clipboard" v-on="on" @click.stop="copyToClip(address)">
         <slot></slot>
       </v-btn>
       <span v-else class="selected-account" :color="$vuetify.theme.torus_accept" size="18" v-on="on" @click.stop="copyToClip(address)">
