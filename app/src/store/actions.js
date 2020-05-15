@@ -553,4 +553,7 @@ export default {
       data: payload,
     })
   },
+  setUserBadge(context, payload) {
+    prefsController.setUserBadge(payload)
+  },
 }

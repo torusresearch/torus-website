@@ -15,7 +15,7 @@
           <div>{{ badge.details2 }}</div>
         </div>
 
-        <v-btn color="torusBrand4" large class="torusBrand1--text mb-10 px-12">
+        <v-btn color="torusBrand4" large class="torusBrand1--text mb-10 px-12" @click="onReturnHome">
           Return Home
         </v-btn>
       </v-flex>
@@ -35,7 +35,16 @@ export default {
   },
   methods: {
     onCancel() {
-      this.$emit('closeBadge', this.badge.type)
+      this.$emit('closeBadge', {
+        type: this.badge.type,
+        returnHome: false,
+      })
+    },
+    onReturnHome() {
+      this.$emit('closeBadge', {
+        type: this.badge.type,
+        returnHome: true,
+      })
     },
   },
 }

@@ -27,10 +27,17 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
+import { BADGES_COLLECTIBLE, BADGES_TOPUP, BADGES_TRANSACTION } from '../../../utils/enums'
+
 export default {
-  data() {
-    return {
-      badges: [
+  computed: {
+    ...mapState({
+      badgesCompletion: 'badgesCompletion',
+    }),
+    badges() {
+      return [
         {
           title: 'Torus Wallet Account Created',
           image: 'badge-wallet-created',
@@ -44,7 +51,7 @@ export default {
           image: 'badge-topped-wallet',
           link: '/wallet/topup',
           linkText: 'Go to Top-up Page',
-          completed: true,
+          completed: this.badgesCompletion[BADGES_TOPUP],
           external: false,
         },
         {
@@ -52,7 +59,7 @@ export default {
           image: 'badge-first-transaction',
           link: '/wallet/transfer',
           linkText: 'Go to Transfer Page',
-          completed: false,
+          completed: this.badgesCompletion[BADGES_TRANSACTION],
           external: false,
         },
         {
@@ -60,11 +67,11 @@ export default {
           image: 'badge-first-collectible',
           link: 'https://opensea.io/',
           linkText: 'Go to OpenSea',
-          completed: false,
+          completed: this.badgesCompletion[BADGES_COLLECTIBLE],
           external: true,
         },
-      ],
-    }
+      ]
+    },
   },
 }
 </script>

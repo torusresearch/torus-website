@@ -14,20 +14,20 @@
       <hr v-if="!$vuetify.theme.dark" class="navbar-line" />
       <router-view></router-view>
     </v-content>
-    <v-dialog v-if="badgesCompletion[BADGES_TOPUP]" v-model="badgesCompletion[BADGES_TOPUP]" persistent width="375">
+    <v-dialog v-if="badgesTopupDialog" v-model="badgesTopupDialog" persistent width="375">
       <BadgesAlert :badge="badges[BADGES_TOPUP]" @closeBadge="closeBadge" />
     </v-dialog>
-    <v-dialog v-else-if="badgesCompletion[BADGES_TRANSACTION]" v-model="badgesCompletion[BADGES_TRANSACTION]" persistent width="375">
+    <v-dialog v-else-if="badgesTransactionDialog" v-model="badgesTransactionDialog" persistent width="375">
       <BadgesAlert :badge="badges[BADGES_TRANSACTION]" @closeBadge="closeBadge" />
     </v-dialog>
-    <v-dialog v-else-if="badgesCompletion[BADGES_COLLECTIBLE]" v-model="badgesCompletion[BADGES_COLLECTIBLE]" persistent width="375">
+    <v-dialog v-else-if="badgesCollectibleDialog" v-model="badgesCollectibleDialog" persistent width="375">
       <BadgesAlert :badge="badges[BADGES_COLLECTIBLE]" @closeBadge="closeBadge" />
     </v-dialog>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 
 import Navbar from '../../components/helpers/Navbar'
 import AccountMenu from '../../components/WalletAccount/AccountMenu'
@@ -52,7 +52,10 @@ export default {
     ...mapState({
       whiteLabel: 'whiteLabel',
       badgesCompletion: 'badgesCompletion',
+      pastTransactions: 'pastTransactions',
+      paymentTxStore: 'paymentTx',
     }),
+    ...mapGetters(['collectibleBalances']),
     headerItems() {
       const items = [
         { name: 'home', display: this.t('navBar.home'), route: '/wallet/home', icon: 'settings' },
@@ -90,11 +93,21 @@ export default {
         },
       }
     },
+    badgesCollectibleDialog() {
+      return this.collectibleBalances && this.collectibleBalances.length > 0 && this.badgesCompletion[BADGES_COLLECTIBLE] === false
+    },
+    badgesTopupDialog() {
+      return this.paymentTxStore && this.paymentTxStore.length > 0 && this.badgesCompletion[BADGES_TOPUP] === false
+    },
+    badgesTransactionDialog() {
+      return this.pastTransactions && this.pastTransactions.length > 0 && this.badgesCompletion[BADGES_TRANSACTION] === false
+    },
   },
   methods: {
-    closeBadge(type) {
-      // Move to action and trigger request
-      this.badgesCompletion[type] = false
+    ...mapActions(['setUserBadge']),
+    closeBadge(data) {
+      this.setUserBadge(data.type)
+      if (data.returnHome) this.$router.push({ name: 'walletHome' })
     },
   },
 }

@@ -2,13 +2,18 @@ import log from 'loglevel'
 import ObservableStore from 'obs-store'
 
 import config from '../config'
-import { ERROR_TIME, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import { BADGES_COLLECTIBLE, BADGES_TOPUP, BADGES_TRANSACTION, ERROR_TIME, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import { getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
 
 // By default, poll every 1 minute
 const DEFAULT_INTERVAL = 180 * 1000
+const DEFAULT_BADGES_COMPLETION = {
+  [BADGES_COLLECTIBLE]: false,
+  [BADGES_TOPUP]: false,
+  [BADGES_TRANSACTION]: false,
+}
 
 class PreferencesController {
   /**
@@ -44,6 +49,7 @@ class PreferencesController {
       contacts: [],
       permissions: [],
       paymentTx: [],
+      badgesCompletion: DEFAULT_BADGES_COMPLETION,
       ...options.initState,
     }
 
@@ -113,8 +119,9 @@ class PreferencesController {
         }),
       ])
       if (user && user.data) {
-        const { transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
+        const { badge: userBadges, transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
         let whiteLabelLocale
+        let badgesCompletion = DEFAULT_BADGES_COMPLETION
 
         // White Label override
         if (storageAvailable('sessionStorage')) {
@@ -129,6 +136,14 @@ class PreferencesController {
           }
         }
 
+        if (userBadges !== '') {
+          try {
+            badgesCompletion = JSON.parse(userBadges)
+          } catch (error) {
+            log.error(error)
+          }
+        }
+
         this.store.updateState({
           contacts,
           pastTransactions: transactions,
@@ -137,6 +152,7 @@ class PreferencesController {
           locale: whiteLabelLocale || locale || getUserLanguage(),
           paymentTx: (paymentTx && paymentTx.data) || [],
           permissions,
+          badgesCompletion,
         })
         if (callback) return callback(user)
         // this.permissionsController._initializePermissions(permissions)
@@ -316,6 +332,16 @@ class PreferencesController {
       if (!this._jwtToken) return
       this.sync()
     }, interval)
+  }
+
+  async setUserBadge(payload) {
+    const newBadgeCompletion = { ...this.state.badgesCompletion, ...{ [payload]: true } }
+    this.store.updateState({ badgesCompletion: newBadgeCompletion })
+    try {
+      await patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers)
+    } catch (error) {
+      log.error('unable to set badge', error)
+    }
   }
 }
 
