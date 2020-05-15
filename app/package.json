@@ -145,7 +145,6 @@
     "through2": "^3.0.1",
     "uglifyify": "^5.0.2",
     "vue-cli-plugin-vuetify": "^2.0.5",
-    "vue-cli-plugin-webpack-bundle-analyzer": "^2.0.0",
     "vue-template-compiler": "^2.6.11",
     "vuetify-loader": "^1.4.3",
     "worker-loader": "^2.0.0"
