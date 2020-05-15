@@ -111,7 +111,7 @@
               </v-flex>
               <v-flex xs4 pt-4 class="text-right hidden-xs-only">
                 <img
-                  :src="`../../../images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`"
+                  :src="`../../../assets/images/${$vuetify.theme.dark ? 'home-illustration' : 'learn-more'}.svg`"
                   style="height: 120px;"
                   alt="Onboarding"
                 />

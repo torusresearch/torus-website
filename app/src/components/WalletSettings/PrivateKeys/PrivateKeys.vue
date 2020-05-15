@@ -9,7 +9,7 @@
           <v-list>
             <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
-                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="'../../../img/icons/file-text-grey.svg'" alt="Download JSON Icon" />
+                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="'../../../assets/img/icons/file-text-grey.svg'" alt="Download JSON Icon" />
               </v-list-item-icon>
               <v-list-item-content>
                 <div class="subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.downloadSoftCopy') }} (JSON)</div>
@@ -103,7 +103,7 @@
                 <v-btn id="show-download-form-btn" aria-label="Show/Hide Download JSON form" icon small @click="isShowGetPassword = true">
                   <img
                     :width="$vuetify.breakpoint.xsOnly ? '16' : ''"
-                    :src="'../../../img/icons/download-primary.svg'"
+                    :src="'../../../assets/img/icons/download-primary.svg'"
                     alt="Show/Hide Download JSON form"
                   />
                 </v-btn>
@@ -114,7 +114,7 @@
 
             <v-list-item :class="$vuetify.breakpoint.xsOnly ? 'px-0' : ''">
               <v-list-item-icon :class="$vuetify.breakpoint.xsOnly ? 'mr-1' : ''">
-                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="`../../../img/icons/key.svg`" alt="Key Icon" />
+                <img :width="$vuetify.breakpoint.xsOnly ? '16' : ''" :src="`../../../assets/img/icons/key.svg`" alt="Key Icon" />
               </v-list-item-icon>
               <v-list-item-content>
                 <div class="subtitle-1 flex-grow-1 font-weight-bold">{{ t('walletSettings.showPrivateKey') }}</div>
@@ -128,7 +128,7 @@
                     <ShowToolTip :address="selectedKey">
                       <v-btn id="click-to-copy-btn" text small class="torusBrand1--text" :class="$vuetify.breakpoint.xsOnly ? 'mt-2' : 'caption'">
                         <img
-                          :src="'../../../img/icons/copy-primary.svg'"
+                          :src="'../../../assets/img/icons/copy-primary.svg'"
                           class="mr-1"
                           :width="$vuetify.breakpoint.xsOnly ? '12' : '20'"
                           alt="Copy Icon"
@@ -149,7 +149,7 @@
                 >
                   <img
                     :width="$vuetify.breakpoint.xsOnly ? '20' : ''"
-                    :src="`../../../img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`"
+                    :src="`../../../assets/img/icons/eye${isShowPrivateKey ? '-off' : ''}-primary.svg`"
                     alt="Toggle Password Icon"
                   />
                 </v-btn>

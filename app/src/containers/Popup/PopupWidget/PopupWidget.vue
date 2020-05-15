@@ -16,7 +16,7 @@
               <!-- <v-icon size="16" class="ml-auto text_2--text">$vuetify.icons.select</v-icon> -->
             </div>
             <div class="d-flex align-center">
-              <img class="details-container__icon" :src="`../../../img/icons/address-wallet.svg`" alt="Address Icon" />
+              <img class="details-container__icon" :src="`../../../assets/img/icons/address-wallet.svg`" alt="Address Icon" />
               <div class="details-container__text ml-2">
                 <ShowToolTip :address="fullAddress">
                   {{ address }}
@@ -73,7 +73,7 @@
               <v-avatar size="40">
                 <img
                   v-if="recentTransaction.type === CONTRACT_TYPE_ERC20 || recentTransaction.action === ACTIVITY_ACTION_TOPUP"
-                  :src="`../../../images/${recentTransaction.actionIcon}`"
+                  :src="`../../../assets/images/${recentTransaction.actionIcon}`"
                   :alt="recentTransaction.from"
                   height="36"
                 />
@@ -112,7 +112,7 @@
         :src="
           whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logoLight
             ? whiteLabelGlobal.logoLight || whiteLabelGlobal.logo
-            : `../../../img/icons/torus-icon-light.svg`
+            : `../../../assets/img/icons/torus-icon-light.svg`
         "
         alt="Torus Logo"
       />
@@ -121,7 +121,7 @@
       <BeatLoader size="10px" color="white" />
     </v-btn>
     <v-btn v-else class="torus-widget__login-btn" color="primary" fab @click="login">
-      <img class="torus-widget__login" :src="`../../../images/login.png`" alt="Login Icon" />
+      <img class="torus-widget__login" :src="`../../../assets/images/login.png`" alt="Login Icon" />
       <span class="torus-widget__login-with">Login</span>
     </v-btn>
   </div>

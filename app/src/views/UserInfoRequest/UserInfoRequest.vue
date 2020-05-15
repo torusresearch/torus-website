@@ -14,7 +14,7 @@
             :src="
               whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
                 ? whiteLabelGlobal.logo
-                : `../../images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`
+                : `../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`
             "
           />
           <div class="display-1 text_2--text">{{ t('dappInfo.permission') }}</div>
@@ -48,7 +48,7 @@
                   rel="noreferrer noopener"
                   :aria-label="`Open ${origin.hostname} Link`"
                 >
-                  <img :src="'../../img/icons/open-in-new-grey.svg'" class="card-upper-icon" alt="Link Icon" />
+                  <img :src="'../../assets/img/icons/open-in-new-grey.svg'" class="card-upper-icon" alt="Link Icon" />
                 </v-btn>
               </div>
             </v-card-text>

@@ -26,7 +26,7 @@
           <div class="mr-2">
             <img
               :width="$vuetify.breakpoint.xsOnly ? 51 : 51"
-              :src="`../../../images/opensea-logo${$vuetify.theme.isDark ? '-dark' : ''}.svg`"
+              :src="`../../../assets/images/opensea-logo${$vuetify.theme.isDark ? '-dark' : ''}.svg`"
               alt="Explore Opensea"
             />
           </div>

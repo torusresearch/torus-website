@@ -13,7 +13,7 @@
             alt="Torus Logo"
             width="104"
             height="24"
-            :src="`../../../images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`"
+            :src="`../../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`"
           />
           <v-btn class="close-btn" icon aria-label="Close Export QR" title="Close Export QR" @click="qrDialoag = false">
             <v-icon>$vuetify.icons.close</v-icon>
@@ -34,7 +34,7 @@
               :color-light="'#FCFCFC'"
               :background-color="'#2F3136'"
               :logo-background-color="'#2F3136'"
-              :logo-src="`../../../img/icons/t-fill.svg`"
+              :logo-src="`../../../assets/img/icons/t-fill.svg`"
               :logo-scale="0.28"
               :margin="1"
               :text="selectedAddress"
@@ -45,7 +45,7 @@
             <VueQr
               v-show="!$vuetify.theme.dark"
               ref="address-qr"
-              :logo-src="`../../../img/icons/t-fill.svg`"
+              :logo-src="`../../../assets/img/icons/t-fill.svg`"
               :margin="20"
               :logo-scale="0.28"
               :text="selectedAddress"
