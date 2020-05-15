@@ -33,7 +33,7 @@ export default class PermissionsController {
       })
     )
 
-    engine.push(this.permissions.providerMiddlewareFunction.bind(this.permissions, { origin }))
+    // engine.push(this.permissions.providerMiddlewareFunction.bind(this.permissions, { origin }))
     return asMiddleware(engine)
   }
 
