@@ -77,7 +77,7 @@
 
     <v-divider></v-divider>
 
-    <v-list v-if="$vuetify.breakpoint.xsOnly" class="py-1" :style="{ marginLeft: '6px' }">
+    <v-list v-if="$vuetify.breakpoint.smAndDown" class="py-1" :style="{ marginLeft: '6px' }">
       <v-list-item
         v-for="headerItem in filteredMenu"
         :id="`${headerItem.name}-link-mobile`"
@@ -94,8 +94,7 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
-
-    <v-divider v-if="$vuetify.breakpoint.xsOnly"></v-divider>
+    <v-divider v-if="$vuetify.breakpoint.smAndDown"></v-divider>
     <v-list class="ml-1">
       <v-list-item href="https://docs.tor.us/#users" target="_blank" rel="noreferrer noopener">
         <v-list-item-action class="mr-2">
@@ -103,7 +102,7 @@
         </v-list-item-action>
         <v-list-item-content class="caption font-weight-bold">{{ t('accountMenu.infoSupport') }}</v-list-item-content>
       </v-list-item>
-      <LanguageSelector v-if="$vuetify.breakpoint.xsOnly"></LanguageSelector>
+      <LanguageSelector v-if="$vuetify.breakpoint.smAndDown"></LanguageSelector>
     </v-list>
 
     <v-divider></v-divider>
