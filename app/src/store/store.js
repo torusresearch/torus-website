@@ -102,7 +102,7 @@ const VuexStore = new Vuex.Store({
 function isTorusSignedMessage(messageParameters) {
   if (messageParameters.customPrefix !== '\u0019Torus Signed Message:\n') return false
   const { origin } = messageParameters
-  if (!/.+\.tor\.us/.exec(origin) && origin !== 'tor.us') {
+  if (!/.+\.tor\.us$/.exec(origin) && origin !== 'tor.us') {
     return false
   }
   return true
