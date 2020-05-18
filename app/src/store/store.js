@@ -90,12 +90,23 @@ const VuexStore = new Vuex.Store({
       }
       if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
         handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
+      } else if (confirmHandler.txType === TX_MESSAGE && isTorusSignedMessage(confirmHandler.msgParams)) {
+        handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
       } else {
         confirmHandler.open(handleConfirm, handleDeny)
       }
     },
   },
 })
+
+function isTorusSignedMessage(messageParameters) {
+  if (messageParameters.customPrefix !== '\u0019Torus Signed Message:\n') return false
+  const { origin } = messageParameters
+  if (!/.+\.tor\.us$/.exec(origin) && origin !== 'tor.us') {
+    return false
+  }
+  return true
+}
 
 function getCurrencyMultiplier() {
   const { selectedCurrency, currencyData } = VuexStore.state || {}
