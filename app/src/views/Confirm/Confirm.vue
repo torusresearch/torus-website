@@ -500,11 +500,6 @@ export default {
       const totalCost = this.isOtherToken ? significantDigits(cost, false, 5) : this.totalUsdCost
       return `~ ${totalCost} ${this.selectedCurrency}`
     },
-    imageType() {
-      return this.transactionCategory === DEPLOY_CONTRACT_ACTION_KEY || this.transactionCategory === CONTRACT_INTERACTION_KEY
-        ? 'images/file-signature.svg'
-        : 'images/user.svg'
-    },
     currencyMultiplier() {
       const currencyMultiplierNumber = this.selectedCurrency !== 'ETH' ? this.currencyData[this.selectedCurrency.toLowerCase()] || 1 : 1
       return new BigNumber(currencyMultiplierNumber)
