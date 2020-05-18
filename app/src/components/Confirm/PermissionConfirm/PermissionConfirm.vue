@@ -12,7 +12,7 @@
           <v-flex xs3 style="position: relative;">
             <div class="logo-container d-flex align-center justify-center float-right">
               <!-- Update with proper logo -->
-              <img class="logo-from" src="../../../assets/images/logos/augur_logo.png" :alt="`${origin} Logo`" />
+              <img class="logo-from" :src="`${logosUrl}/augur_logo.png`" :alt="`${origin} Logo`" />
             </div>
             <br />
             <br />
@@ -100,8 +100,15 @@
 <script>
 import { mapState } from 'vuex'
 
+import config from '../../../config'
+
 export default {
   name: 'PermissionConfirm',
+  data() {
+    return {
+      logosUrl: config.logosUrl,
+    }
+  },
   computed: {
     ...mapState({
       networkType: 'networkType',

@@ -12,9 +12,9 @@
           <div class="d-flex align-center py-3 px-4 card-header elevation-1">
             <div class="flex-grow-1 text-clamp-one">
               <img
-                :src="require(`../../../assets/images/logos/${balance.logo}`)"
+                :src="`${logosUrl}/${balance.logo}`"
                 class="inline-small d-inline-flex"
-                onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = 'images/logos/eth.svg';"
+                onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
                 :alt="balance.logo"
               />
               <span class="caption text_1--text ml-1 font-weight-bold">{{ balance.name }}</span>
@@ -54,6 +54,7 @@
 <script>
 import { mapState } from 'vuex'
 
+import config from '../../../config'
 import { formatSmallNumbers } from '../../../utils/utils'
 
 export default {
@@ -71,6 +72,7 @@ export default {
         sortBy: 'name',
       },
       dialog: false,
+      logosUrl: config.logosUrl,
     }
   },
   computed: {

@@ -72,7 +72,14 @@
             <div class="avatar-container">
               <v-avatar size="40">
                 <img
-                  v-if="recentTransaction.type === CONTRACT_TYPE_ERC20 || recentTransaction.action === ACTIVITY_ACTION_TOPUP"
+                  v-if="recentTransaction.type === CONTRACT_TYPE_ERC20"
+                  :src="`${logosUrl}/${recentTransaction.actionIcon}`"
+                  :alt="recentTransaction.from"
+                  height="36"
+                  onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
+                />
+                <img
+                  v-else-if="recentTransaction.action === ACTIVITY_ACTION_TOPUP"
                   :src="require(`../../../assets/images/${recentTransaction.actionIcon}`)"
                   :alt="recentTransaction.from"
                   height="36"
@@ -132,6 +139,7 @@ import BeatLoader from 'vue-spinner/src/BeatLoader'
 import { mapActions, mapState } from 'vuex'
 
 import ShowToolTip from '../../../components/helpers/ShowToolTip'
+import config from '../../../config'
 import { ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_TOPUP, CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ERC721 } from '../../../utils/enums'
 import { addressSlicer, significantDigits } from '../../../utils/utils'
 
@@ -155,6 +163,7 @@ export default {
       ACTIVITY_ACTION_TOPUP,
       ACTIVITY_ACTION_SEND,
       CONTRACT_TYPE_ERC721,
+      logosUrl: config.logosUrl,
     }
   },
   computed: {
@@ -215,7 +224,7 @@ export default {
           return transaction.type_image_link // will be an opensea image url
         }
         if (transaction.type === CONTRACT_TYPE_ERC20) {
-          return `logos/${transaction.type_image_link === 'n/a' ? 'eth.svg' : transaction.type_image_link}`
+          return `${transaction.type_image_link === 'n/a' ? 'eth.svg' : transaction.type_image_link}`
         }
         const action = transaction.action.split('.')
         return action.length >= 1 ? `$vuetify.icons.coins_${transaction.action.split('.')[1].toLowerCase()}` : ''

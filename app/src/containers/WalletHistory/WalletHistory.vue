@@ -235,7 +235,7 @@ export default {
           return activity.type_image_link // will be an opensea image url
         }
         if (activity.type === CONTRACT_TYPE_ERC20) {
-          return `logos/${activity.type_image_link === 'n/a' ? 'eth.svg' : activity.type_image_link}`
+          return `${activity.type_image_link === 'n/a' ? 'eth.svg' : activity.type_image_link}`
         }
         const action = activity.action.split('.')
         return action.length >= 1 ? `$vuetify.icons.coins_${activity.action.split('.')[1].toLowerCase()}` : ''

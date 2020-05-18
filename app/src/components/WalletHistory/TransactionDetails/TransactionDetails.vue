@@ -22,7 +22,15 @@
           }"
         >
           <img
-            v-if="transaction.type === CONTRACT_TYPE_ERC20 || transaction.action === ACTIVITY_ACTION_TOPUP"
+            v-if="transaction.type === CONTRACT_TYPE_ERC20"
+            :src="`${logosUrl}/${transaction.actionIcon}`"
+            :alt="`${transaction.from} Icon`"
+            class="mr-2 ml-2"
+            width="36"
+            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
+          />
+          <img
+            v-else-if="transaction.action === ACTIVITY_ACTION_TOPUP"
             :src="require(`../../../assets/images/${transaction.actionIcon}`)"
             :alt="`${transaction.from} Icon`"
             class="mr-2 ml-2"
@@ -136,6 +144,7 @@
 <script>
 import { mapState } from 'vuex'
 
+import config from '../../../config'
 import {
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
@@ -171,6 +180,7 @@ export default {
       ACTIVITY_ACTION_TOPUP,
       CONTRACT_TYPE_ERC20,
       CONTRACT_TYPE_ERC721,
+      logosUrl: config.logosUrl,
     }
   },
   computed: mapState(['networkType']),
