@@ -5,6 +5,7 @@ import Web3 from 'web3'
 import config from '../config'
 import { ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_TOPUP, ERROR_TIME, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
 import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
+import { notifyUser } from '../utils/notifications'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import { formatPastTx, getEthTxStatus, getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
 
@@ -216,6 +217,36 @@ class PreferencesController {
         this.patchPastTx(element.id, finalObject.status)
     }
     this.pastTransactionsStore.putState(pastTx)
+  }
+
+  async patchNewTx(tx) {
+    const formattedTx = formatPastTx(tx)
+    const storePastTx = this.pastTransactionsStore.getState()
+    const duplicateIndex = storePastTx.findIndex((x) => x.transaction_hash === tx.transaction_hash && x.networkType === tx.network)
+    if (tx.status === 'submitted' || tx.status === 'confirmed') {
+      if (duplicateIndex === -1 && tx.status === 'submitted') {
+        // No duplicate found
+        this.pastTransactionsStore.putState(storePastTx.concat([formattedTx]))
+        this.postPastTx(tx)
+        try {
+          notifyUser(formattedTx.etherscanLink)
+        } catch (error) {
+          log.error(error)
+        }
+      } else {
+        storePastTx[duplicateIndex] = formattedTx
+        this.pastTransactionsStore.putState([...storePastTx])
+      }
+    }
+  }
+
+  async postPastTx(tx) {
+    try {
+      const response = await post(`${config.api}/transaction`, tx, this.headers)
+      log.info('successfully added', response)
+    } catch (error) {
+      log.error(error, 'unable to insert transaction')
+    }
   }
 
   /* istanbul ignore next */

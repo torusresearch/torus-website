@@ -7,8 +7,6 @@ import config from '../config'
 import torus from '../torus'
 import accountImporter from '../utils/accountImporter'
 import {
-  ACTIVITY_ACTION_RECEIVE,
-  ACTIVITY_ACTION_SEND,
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   DISCORD,
   FACEBOOK,
@@ -23,15 +21,7 @@ import {
 } from '../utils/enums'
 import { post, remove } from '../utils/httpHelpers'
 import PopupHandler from '../utils/PopupHandler'
-import {
-  addressSlicer,
-  broadcastChannelOptions,
-  fakeStream,
-  formatSmallNumbers,
-  getEtherScanHashLink,
-  getIFrameOriginObject,
-  significantDigits,
-} from '../utils/utils'
+import { broadcastChannelOptions, fakeStream, getIFrameOriginObject } from '../utils/utils'
 import {
   accountTrackerHandler,
   assetControllerHandler,
@@ -571,18 +561,21 @@ export default {
       data: payload,
     })
   },
-  updateCalculatedTx({ commit, state }, payload) {
-    const finalTransactions = []
+  updateCalculatedTx({ state, getters }, payload) {
     for (const id in payload) {
       const txOld = payload[id]
       if (txOld.metamaskNetworkId.toString() === state.networkId.toString()) {
-        const { methodParams, contractParams, txParams, transactionCategory } = txOld
+        const { methodParams, contractParams, txParams, transactionCategory, time, hash, status } = txOld
         let amountTo
         let amountValue
-        let totalAmountString
+        let assetName
         let totalAmount
         let finalTo
         let tokenRate = 1
+        let type
+        let typeName
+        let typeImageLink
+        let symbol
 
         if (contractParams.erc721) {
           // Handling cryptokitties
@@ -592,19 +585,23 @@ export default {
             // Rest of the 721s
             ;[, amountTo, amountValue] = methodParams || []
           }
-          const { name = '' } = contractParams
+          const { name = '', logo } = contractParams
           // Get asset name of the 721
-          const contract = this.assets[this.selectedAddress].find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
+          const contract = state.assets[state.selectedAddress].find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
           log.info(contract, amountValue)
           if (contract) {
-            const assetObject = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
-            log.info(assetObject)
-            totalAmountString = (assetObject && assetObject.name) || ''
+            const { name: foundAssetName } = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
+            assetName = foundAssetName || ''
+            symbol = assetName
+            type = 'erc721'
+            typeName = name
+            typeImageLink = logo
+            totalAmount = fromWei(toBN(txParams.value))
             finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
           }
         } else if (contractParams.erc20) {
           // ERC20 transfer
-          tokenRate = contractParams.erc20 ? this.tokenRates[txParams.to] : 1
+          tokenRate = state.tokenRates[txParams.to]
           if (methodParams && Array.isArray(methodParams)) {
             if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
               ;[, amountTo, amountValue] = methodParams || []
@@ -612,43 +609,43 @@ export default {
               ;[amountTo, amountValue] = methodParams || []
             }
           }
-          totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
-          totalAmountString = `${significantDigits(Number.parseFloat(totalAmount))} ${contractParams.symbol}`
+          const { symbol: contractSymbol, name, logo } = contractParams
+          symbol = contractSymbol
+          type = 'erc20'
+          typeName = name
+          typeImageLink = logo
+          totalAmount = fromWei(toBN(amountValue && amountValue.value ? amountValue.value : txParams.value))
           finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
         } else {
           tokenRate = 1
+          symbol = 'ETH'
+          type = 'eth'
+          typeName = 'eth'
+          typeImageLink = 'n/a'
           totalAmount = fromWei(toBN(txParams.value))
-          totalAmountString = `${significantDigits(Number.parseFloat(totalAmount))} ETH`
-          finalTo = toChecksumAddress(txOld.txParams.to)
+          finalTo = toChecksumAddress(txParams.to)
         }
-        const txObject = {}
-        txObject.id = txOld.time.toString()
-        txObject.action = this.wallets.includes(txOld.txParams.to) ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND
-        txObject.date = new Date(txOld.time)
-        txObject.from = toChecksumAddress(txOld.txParams.from)
-        txObject.slicedFrom = addressSlicer(txOld.txParams.from)
-        txObject.to = finalTo
-        txObject.slicedTo = addressSlicer(finalTo)
-        txObject.totalAmount = totalAmount
-        txObject.totalAmountString = totalAmountString
-        txObject.currencyAmount = this.currencyMultiplier * txObject.totalAmount * tokenRate
-        txObject.currencyAmountString = contractParams.erc721 ? '' : formatSmallNumbers(txObject.currencyAmount, this.selectedCurrency, true)
-        txObject.amount = `${txObject.totalAmountString} / ${txObject.currencyAmountString}`
-        txObject.status = txOld.status
-        txObject.etherscanLink = getEtherScanHashLink(txOld.hash, this.networkType.host)
-        txObject.networkType = this.networkType.host
-        txObject.ethRate = `1 ${(contractParams && contractParams.symbol) || 'ETH'} = ${significantDigits(
-          Number.parseFloat(txObject.currencyAmount) / Number.parseFloat(txObject.totalAmount)
-        )}`
-        txObject.currencyUsed = this.selectedCurrency
-        txObject.type = 'eth'
-        if (contractParams && contractParams.erc20) txObject.type = 'erc20'
-        else if (contractParams && contractParams.erc721) txObject.type = 'erc721'
-        txObject.type_name = contractParams && contractParams.name ? contractParams.name : 'n/a'
-        txObject.type_image_link = contractParams && contractParams.logo ? contractParams.logo : 'n/a'
-        finalTransactions.push(txObject)
+        // Goes to db
+        const txObject = {
+          created_at: new Date(time),
+          from: toChecksumAddress(txParams.from),
+          to: finalTo,
+          total_amount: totalAmount,
+          gas: txParams.gas,
+          gasPrice: txParams.gasPrice,
+          symbol,
+          nonce: txParams.nonce,
+          type,
+          type_name: typeName,
+          type_image_link: typeImageLink,
+          currency_amount: (getters.currencyMultiplier * Number.parseFloat(totalAmount) * tokenRate).toString(),
+          selected_currency: state.selectedCurrency,
+          status,
+          network: state.networkType.host,
+          transaction_hash: hash,
+        }
+        prefsController.patchNewTx(txObject)
       }
     }
-    commit('setCalculatedTx', finalTransactions)
   },
 }

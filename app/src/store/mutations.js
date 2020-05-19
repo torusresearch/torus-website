@@ -74,9 +74,6 @@ export default {
   patchPastTransactions(state, payload) {
     state.pastTransactions = [...state.pastTransactions, payload]
   },
-  setCalculatedTx(state, payload) {
-    state.calculatedTx = payload
-  },
   setTheme(state, payload) {
     state.theme = payload
     // Update vuetify theme

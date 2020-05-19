@@ -47,7 +47,6 @@ const initialState = {
   selectedCurrency: 'USD',
   pastTransactions: [],
   paymentTx: [],
-  calculatedTx: [],
   theme: THEME_LIGHT_BLUE_NAME,
   locale: LOCALE_EN,
   billboard: [],

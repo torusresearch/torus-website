@@ -53,9 +53,8 @@ export function transactionControllerHandler({ transactions }) {
         updatedTransactions.push(transactions[id])
       }
     }
-    // log.info(updatedTransactions, 'txs')
     getStore().commit('setTransactions', updatedTransactions)
-    // getStore().dispatch('updateCalculatedTx', updatedTransactions)
+    getStore().dispatch('updateCalculatedTx', updatedTransactions)
   }
 }
 

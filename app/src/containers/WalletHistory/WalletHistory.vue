@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapState } from 'vuex'
 
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
 import config from '../../config'
@@ -104,19 +104,10 @@ export default {
   },
   computed: {
     ...mapState({
-      selectedCurrency: 'selectedCurrency',
-      wallet: 'wallet',
       pastTx: 'pastTransactions',
       paymentTx: (state) => (state.networkType.host === MAINNET ? state.paymentTx : []),
-      selectedAddress: 'selectedAddress',
-      networkType: 'networkType',
-      assets: 'assets',
-      tokenRates: 'tokenRates',
-      networkId: 'networkId',
-      transactions: 'transactions',
       wallets: (state) => Object.keys(state.wallet),
     }),
-    ...mapGetters(['currencyMultiplier']),
     actionTypes() {
       return [
         {
@@ -216,9 +207,7 @@ export default {
       return new Date(time).toTimeString().slice(0, 8)
     },
     calculateFinalTransactions() {
-      let finalTx = this.paymentTx || []
-      const transactions = this.calculateTransactions()
-      finalTx = [...transactions, ...finalTx, ...this.pastTx]
+      let finalTx = this.paymentTx.concat(this.pastTx)
       finalTx = finalTx.reduce((accumulator, x) => {
         x.actionIcon = this.getIcon(x)
         x.actionText = this.getActionText(x)
