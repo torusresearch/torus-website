@@ -9,10 +9,7 @@ import accountImporter from '../utils/accountImporter'
 import {
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
-  ACTIVITY_ACTION_TOPUP,
   COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
-  CONTRACT_TYPE_ERC20,
-  CONTRACT_TYPE_ERC721,
   DISCORD,
   FACEBOOK,
   GOOGLE,
@@ -32,7 +29,6 @@ import {
   fakeStream,
   formatSmallNumbers,
   getEtherScanHashLink,
-  getEthTxStatus,
   getIFrameOriginObject,
   significantDigits,
 } from '../utils/utils'
@@ -546,7 +542,7 @@ export default {
         await dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true })
         dispatch('updateSelectedAddress', { selectedAddress })
         dispatch('updateNetworkId', { networkId })
-        // TODO: deprercate rehydrate true for the next major version bump
+        // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })
         log.info('rehydrated wallet')
         torus.updateStaticData({ isUnlocked: true })
@@ -574,66 +570,6 @@ export default {
     widgetStream.write({
       data: payload,
     })
-  },
-  async updatePastTransactions({ commit, state }, payload) {
-    const pastTx = []
-    const pendingTx = []
-    const lowerCaseSelectedAddress = state.selectedAddress.toLowerCase()
-    const wallets = Object.keys(state.wallet)
-    for (const x of payload) {
-      if (x.status !== 'confirmed' && (lowerCaseSelectedAddress === x.from.toLowerCase() || lowerCaseSelectedAddress === x.to.toLowerCase())) {
-        pendingTx.push(x)
-      } else {
-        const finalObject = formatPastTx(x, wallets)
-        pastTx.push(finalObject)
-      }
-    }
-    const pendingTxPromises = pendingTx.map((x) => getEthTxStatus(x.transaction_hash, torus.web3).catch((error) => log.error(error)))
-    log.info(pendingTxPromises.length, 'hello')
-    const resolvedTxStatuses = await Promise.all(pendingTxPromises)
-    for (const [index, element] of pendingTx.entries()) {
-      const finalObject = formatPastTx(element, wallets)
-      finalObject.status = resolvedTxStatuses[index]
-      pastTx.push(finalObject)
-      log.info(finalObject, element, 'ex')
-      if (lowerCaseSelectedAddress === element.from.toLowerCase() && finalObject.status !== element.status)
-        prefsController.patchPastTx(element.id, finalObject.status)
-    }
-    // eslint-disable-next-line no-console
-    console.log(pastTx)
-    commit('setPastTransactions', pastTx)
-  },
-  updatePaymentTx({ commit }, payload) {
-    const accumulator = []
-    for (const x of payload) {
-      let action = ''
-      const lowerCaseAction = x.action.toLowerCase()
-      if (ACTIVITY_ACTION_TOPUP.includes(lowerCaseAction)) action = ACTIVITY_ACTION_TOPUP
-      else if (ACTIVITY_ACTION_SEND.includes(lowerCaseAction)) action = ACTIVITY_ACTION_SEND
-      else if (ACTIVITY_ACTION_RECEIVE.includes(lowerCaseAction)) action = ACTIVITY_ACTION_RECEIVE
-
-      accumulator.push({
-        id: x.id,
-        date: new Date(x.date),
-        from: x.from,
-        slicedFrom: x.slicedFrom,
-        action,
-        to: x.to,
-        slicedTo: x.slicedTo,
-        totalAmount: x.totalAmount,
-        totalAmountString: x.totalAmountString,
-        currencyAmount: x.currencyAmount,
-        currencyAmountString: x.currencyAmountString,
-        amount: x.amount,
-        ethRate: x.ethRate,
-        status: x.status.toLowerCase(),
-        etherscanLink: x.etherscanLink || '',
-        currencyUsed: x.currencyUsed,
-      })
-    }
-    // eslint-disable-next-line no-console
-    console.log(accumulator)
-    commit('setPaymentTx', accumulator)
   },
   updateCalculatedTx({ commit, state }, payload) {
     const finalTransactions = []
@@ -715,36 +651,4 @@ export default {
     }
     commit('setCalculatedTx', finalTransactions)
   },
-}
-
-function formatPastTx(x, wallets) {
-  let totalAmountString = ''
-  if (x.type === CONTRACT_TYPE_ERC721) totalAmountString = x.symbol
-  else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.symbol, true)
-  else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), 'ETH', true)
-  const currencyAmountString =
-    x.type === CONTRACT_TYPE_ERC721 ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
-  const finalObject = {
-    id: x.created_at.toString(),
-    date: new Date(x.created_at),
-    from: x.from,
-    slicedFrom: addressSlicer(x.from),
-    to: x.to,
-    slicedTo: addressSlicer(x.to),
-    action: wallets.includes(x.to) ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
-    totalAmount: x.total_amount,
-    totalAmountString,
-    currencyAmount: x.currency_amount,
-    currencyAmountString,
-    amount: `${totalAmountString} / ${currencyAmountString}`,
-    status: x.status,
-    etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network),
-    networkType: x.network,
-    ethRate: `1 ${x.symbol} = ${significantDigits(Number.parseFloat(x.currency_amount) / Number.parseFloat(x.total_amount))}`,
-    currencyUsed: x.selected_currency,
-    type: x.type,
-    type_name: x.type_name,
-    type_image_link: x.type_image_link,
-  }
-  return finalObject
 }

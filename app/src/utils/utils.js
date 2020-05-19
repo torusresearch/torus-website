@@ -8,6 +8,10 @@ import config from '../config'
 import languages from '../plugins/locales'
 import {
   ACTIVE,
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_SEND,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721,
   DISCORD,
   ENVIRONMENT_TYPE_FULLSCREEN,
   ENVIRONMENT_TYPE_NOTIFICATION,
@@ -63,6 +67,8 @@ const networkToNameMap = {
   [KOVAN_CODE]: KOVAN_DISPLAY_NAME,
   [GOERLI_CODE]: GOERLI_DISPLAY_NAME,
 }
+
+const ETHERSCAN_SUPPORTED_NETWORKS = new Set([MAINNET, RINKEBY, ROPSTEN, GOERLI, KOVAN])
 
 export const getNetworkDisplayName = (key) => networkToNameMap[key]
 
@@ -282,9 +288,9 @@ export async function isSmartContractAddress(address, web3) {
   return !codeIsEmpty
 }
 
-export function getEtherScanHashLink(txHash, network = null) {
-  const localNetwork = network === null ? 'mainnet' : network
-  return network === 'mainnet' ? `https://etherscan.io/tx/${txHash}` : `https://${localNetwork}.etherscan.io/tx/${txHash}`
+export function getEtherScanHashLink(txHash, network) {
+  if (!ETHERSCAN_SUPPORTED_NETWORKS.has(network)) return ''
+  return network === 'mainnet' ? `https://etherscan.io/tx/${txHash}` : `https://${network}.etherscan.io/tx/${txHash}`
 }
 
 export const statusObject = {
@@ -511,4 +517,36 @@ export const getUserLanguage = () => {
   userLanguage = userLanguage.split('-')
   userLanguage = Object.prototype.hasOwnProperty.call(languages, userLanguage[0]) ? userLanguage[0] : 'en'
   return userLanguage
+}
+
+export const formatPastTx = (x, lowerCaseSelectedAddress) => {
+  let totalAmountString = ''
+  if (x.type === CONTRACT_TYPE_ERC721) totalAmountString = x.symbol
+  else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.symbol, true)
+  else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), 'ETH', true)
+  const currencyAmountString =
+    x.type === CONTRACT_TYPE_ERC721 ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
+  const finalObject = {
+    id: x.created_at.toString(),
+    date: new Date(x.created_at),
+    from: x.from,
+    slicedFrom: addressSlicer(x.from),
+    to: x.to,
+    slicedTo: addressSlicer(x.to),
+    action: lowerCaseSelectedAddress === x.to.toLowerCase() ? ACTIVITY_ACTION_RECEIVE : ACTIVITY_ACTION_SEND,
+    totalAmount: x.total_amount,
+    totalAmountString,
+    currencyAmount: x.currency_amount,
+    currencyAmountString,
+    amount: `${totalAmountString} / ${currencyAmountString}`,
+    status: x.status,
+    etherscanLink: getEtherScanHashLink(x.transaction_hash, x.network || MAINNET),
+    networkType: x.network,
+    ethRate: `1 ${x.symbol} = ${significantDigits(Number.parseFloat(x.currency_amount) / Number.parseFloat(x.total_amount))}`,
+    currencyUsed: x.selected_currency,
+    type: x.type,
+    type_name: x.type_name,
+    type_image_link: x.type_image_link,
+  }
+  return finalObject
 }

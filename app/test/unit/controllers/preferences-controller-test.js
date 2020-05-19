@@ -72,6 +72,13 @@ describe('Preferences Controller', () => {
   })
 
   describe('sync', () => {
+    beforeEach(() => {
+      sandbox.stub(preferencesController, 'calculatePaymentTx')
+      sandbox.stub(preferencesController, 'calculatePastTx')
+    })
+    afterEach(() => {
+      sandbox.restore()
+    })
     it('user sync error', async () => {
       nock('https://api.tor.us').get(/.*/).replyWithError(new TypeError('Invalid request')).log(noop)
       nock('https://common-api.tor.us')
@@ -123,18 +130,18 @@ describe('Preferences Controller', () => {
       nock('https://common-api.tor.us')
         .get('/transaction')
         .reply(200, {
-          data: ['hello'],
+          data: [],
         })
         .log(noop)
       await preferencesController.sync()
-      assert.deepStrictEqual(preferencesController.state.pastTransactions, userData.transactions)
+      assert.deepStrictEqual(preferencesController.pastTransactionsStore.getState(), userData.transactions)
       assert.deepStrictEqual(preferencesController.state.selectedCurrency, userData.default_currency)
       assert.deepStrictEqual(preferencesController.state.contacts, userData.contacts)
       assert.deepStrictEqual(preferencesController.state.theme, userData.theme)
       assert.deepStrictEqual(preferencesController.state.locale, userData.locale)
       assert.deepStrictEqual(preferencesController.state.theme, userData.theme)
       assert.deepStrictEqual(preferencesController.state.permissions, userData.permissions)
-      assert.deepStrictEqual(preferencesController.state.paymentTx, ['hello'])
+      assert.deepStrictEqual(preferencesController.paymentTxStore.getState(), [])
     })
   })
 

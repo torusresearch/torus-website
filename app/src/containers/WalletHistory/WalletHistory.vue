@@ -106,7 +106,7 @@ export default {
     ...mapState({
       selectedCurrency: 'selectedCurrency',
       wallet: 'wallet',
-      pastTx: (state) => state.pastTransactions.filter((x) => x.networkType === state.networkType.host),
+      pastTx: 'pastTransactions',
       paymentTx: (state) => (state.networkType.host === MAINNET ? state.paymentTx : []),
       selectedAddress: 'selectedAddress',
       networkType: 'networkType',
@@ -213,7 +213,7 @@ export default {
       return ''
     },
     formatTime(time) {
-      return time.toTimeString().slice(0, 8)
+      return new Date(time).toTimeString().slice(0, 8)
     },
     calculateFinalTransactions() {
       let finalTx = this.paymentTx || []

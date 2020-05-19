@@ -116,9 +116,9 @@ export function metadataHandler(state) {
 }
 
 export function pastTransactionsHandler(state) {
-  getStore().dispatch('updatePastTransactions', state)
+  getStore().commit('setPastTransactions', state)
 }
 
 export function paymentTxHandler(state) {
-  getStore().dispatch('updatePaymentTx', state)
+  getStore().commit('setPaymentTx', state)
 }
