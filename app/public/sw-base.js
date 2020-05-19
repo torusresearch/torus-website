@@ -587,7 +587,9 @@ self.__precacheManifest = [
 ].concat(self.__precacheManifest || [])
 
 try {
-  if (new URL(self.getScope()).pathname !== '/') {
+  if (process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging') {
+    if (new URL(self.getScope()).pathname !== '/') precacheAndRoute(self.__precacheManifest, {})
+  } else {
     precacheAndRoute(self.__precacheManifest, {})
   }
 } catch (error) {
