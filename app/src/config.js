@@ -38,5 +38,5 @@ export default {
   api: 'https://api.tor.us',
   supportedCurrencies: ['USD', 'AUD', 'BTC', 'CAD', 'DAI', 'ETC', 'EUR', 'GBP', 'HKD', 'IDR', 'INR', 'JPY', 'PHP', 'RUB', 'SGD', 'UAH'],
   additionalCurrencies: ['ANT', 'BAT', 'DASH', 'DGD', 'GNO', 'LTC', 'QTUM', 'REP', 'SAI', 'XEM', 'XLM', 'XMR', 'XRP', 'ZEC'],
-  logosUrl: 'https://s3.amazonaws.com/app.tor.us/logos',
+  logosUrl: 'https://images.toruswallet.io',
 }
