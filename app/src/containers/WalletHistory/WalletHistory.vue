@@ -63,7 +63,7 @@
         </v-layout>
       </v-flex>
       <v-flex xs12 :class="$vuetify.breakpoint.xsOnly ? 'mt-6' : 'mt-7'">
-        <TxHistoryTable :selected-action="selectedAction" :selected-period="selectedPeriod" :transactions="calculateFinalTransactions()" />
+        <TxHistoryTable :selected-action="selectedAction" :selected-period="selectedPeriod" :transactions="calculatedFinalTx" />
       </v-flex>
     </v-layout>
   </v-container>
@@ -148,6 +148,19 @@ export default {
         },
       ]
     },
+    calculatedFinalTx() {
+      let finalTx = this.paymentTx.concat(this.pastTx)
+      finalTx = finalTx.reduce((accumulator, x) => {
+        x.actionIcon = this.getIcon(x)
+        x.actionText = this.getActionText(x)
+        x.statusText = this.getStatusText(x.status)
+        x.dateFormatted = formatDate(x.date)
+        x.timeFormatted = this.formatTime(x.date)
+        if (x.etherscanLink === '' || accumulator.findIndex((y) => y.etherscanLink === x.etherscanLink) === -1) accumulator.push(x)
+        return accumulator
+      }, [])
+      return finalTx.sort((a, b) => b.date - a.date) || []
+    },
   },
   mounted() {
     this.$vuetify.goTo(0)
@@ -205,22 +218,6 @@ export default {
     },
     formatTime(time) {
       return new Date(time).toTimeString().slice(0, 8)
-    },
-    calculateFinalTransactions() {
-      let finalTx = this.paymentTx.concat(this.pastTx)
-      finalTx = finalTx.reduce((accumulator, x) => {
-        x.actionIcon = this.getIcon(x)
-        x.actionText = this.getActionText(x)
-        x.statusText = this.getStatusText(x.status)
-        x.dateFormatted = formatDate(x.date)
-        x.timeFormatted = this.formatTime(x.date)
-        if (x.etherscanLink === '' || accumulator.findIndex((y) => y.etherscanLink === x.etherscanLink) === -1) accumulator.push(x)
-        return accumulator
-      }, [])
-      return finalTx.sort((a, b) => b.date - a.date) || []
-    },
-    calculateTransactions() {
-      return []
     },
   },
 }
