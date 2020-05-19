@@ -587,8 +587,9 @@ self.__precacheManifest = [
 ].concat(self.__precacheManifest || [])
 
 try {
-  if (process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging') {
-    if (new URL(self.getScope()).pathname !== '/') precacheAndRoute(self.__precacheManifest, {})
+  const { pathname, hostname } = new URL(self.getScope())
+  if (hostname === 'app.tor.us' || hostname === 'staging.tor.us') {
+    if (pathname !== '/') precacheAndRoute(self.__precacheManifest, {})
   } else {
     precacheAndRoute(self.__precacheManifest, {})
   }
