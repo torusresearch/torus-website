@@ -585,6 +585,14 @@ self.__precacheManifest = [
     url: '/js/app.js',
   },
 ].concat(self.__precacheManifest || [])
-if (getScope() !== '/') {
-  precacheAndRoute(self.__precacheManifest, {})
+
+try {
+  const { pathname, hostname } = new URL(self.getScope())
+  if (hostname === 'app.tor.us' || hostname === 'staging.tor.us') {
+    if (pathname !== '/') precacheAndRoute(self.__precacheManifest, {})
+  } else {
+    precacheAndRoute(self.__precacheManifest, {})
+  }
+} catch (error) {
+  console.error(error)
 }

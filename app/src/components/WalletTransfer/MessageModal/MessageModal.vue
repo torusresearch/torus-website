@@ -1,11 +1,11 @@
 <template>
   <v-card class="torus-v8 message-modal">
-    <v-btn class="close-btn" icon @click="onCancel">
+    <v-btn class="close-btn" icon aria-label="Close Message Modal" @click="onCancel">
       <v-icon>$vuetify.icons.close</v-icon>
     </v-btn>
     <v-layout wrap>
       <v-flex class="card-shadow text-center" py-8 mb-4 xs12>
-        <img :src="require(`../../../../public/images/status-${modalType}.svg`)" width="64" />
+        <img :src="require(`../../../assets/images/status-${modalType}.svg`)" width="64" :alt="modalType" />
       </v-flex>
 
       <v-flex xs12 mx-10 class="text-center">

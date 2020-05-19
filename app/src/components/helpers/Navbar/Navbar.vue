@@ -10,12 +10,12 @@
           :src="
             whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logo
               ? whiteLabelGlobal.logo
-              : require(`../../../../public/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
+              : require(`../../../assets/images/torus-logo-${$vuetify.theme.dark ? 'white' : 'blue'}.svg`)
           "
         />
       </router-link>
       <router-link v-if="$vuetify.breakpoint.xsOnly" id="logo-home-lnk" :to="{ name: 'walletHome' }">
-        <img :src="require('../../../../public/img/icons/t-fill.svg')" width="35" height="30" alt="Torus Logo" />
+        <img src="../../../assets/img/icons/t-fill.svg" width="35" height="30" alt="Torus Logo" />
       </router-link>
     </div>
     <v-spacer></v-spacer>
@@ -38,7 +38,7 @@
     <LanguageSelector v-if="!$vuetify.breakpoint.smAndDown"></LanguageSelector>
     <v-menu v-if="!$vuetify.breakpoint.smAndDown" offset-y bottom left z-index="20" :close-on-content-click="false">
       <template v-slot:activator="{ on }">
-        <v-btn id="menu-dropdown-btn" small text v-on="on">
+        <v-btn id="menu-dropdown-btn" small text aria-label="View Account Menu" v-on="on">
           <span class="text-capitalize subtitle-2">{{ userInfo.name }}</span>
           <v-icon class="ml-2 mt-0" small>$vuetify.icons.select</v-icon>
         </v-btn>

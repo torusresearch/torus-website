@@ -22,13 +22,28 @@
           }"
         >
           <img
-            v-if="transaction.type === CONTRACT_TYPE_ERC20 || transaction.action === ACTIVITY_ACTION_TOPUP"
-            :src="require(`../../../../public/images/${transaction.actionIcon}`)"
-            :alt="transaction.from"
+            v-if="transaction.type === CONTRACT_TYPE_ERC20"
+            :src="`${logosUrl}/${transaction.actionIcon}`"
+            :alt="`${transaction.from} Icon`"
+            class="mr-2 ml-2"
+            width="36"
+            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
+          />
+          <img
+            v-else-if="transaction.action === ACTIVITY_ACTION_TOPUP"
+            :src="require(`../../../assets/images/${transaction.actionIcon}`)"
+            :alt="`${transaction.from} Icon`"
             class="mr-2 ml-2"
             width="36"
           />
-          <img v-else-if="transaction.type === CONTRACT_TYPE_ERC721" :src="transaction.actionIcon" class="mr-3 ml-1" height="36" large />
+          <img
+            v-else-if="transaction.type === CONTRACT_TYPE_ERC721"
+            :src="transaction.actionIcon"
+            class="mr-3 ml-1"
+            height="36"
+            large
+            :alt="`${transaction.from} Icon`"
+          />
           <v-icon v-else class="float-left" size="24" color="torusBrand1">{{ transaction.actionIcon }}</v-icon>
         </div>
         <div class="caption text_1--text font-weight-medium">{{ transaction.actionText }}</div>
@@ -129,6 +144,7 @@
 <script>
 import { mapState } from 'vuex'
 
+import config from '../../../config'
 import {
   ACTIVITY_ACTION_RECEIVE,
   ACTIVITY_ACTION_SEND,
@@ -164,6 +180,7 @@ export default {
       ACTIVITY_ACTION_TOPUP,
       CONTRACT_TYPE_ERC20,
       CONTRACT_TYPE_ERC721,
+      logosUrl: config.logosUrl,
     }
   },
   computed: mapState(['networkType']),

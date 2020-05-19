@@ -5,7 +5,7 @@
         <div class="d-flex torus-widget__user-details">
           <div class="avatar-container">
             <v-avatar size="32">
-              <img :src="userInfo.profileImage" />
+              <img :src="userInfo.profileImage" :alt="`${userInfo.verifierId} Avatar`" />
             </v-avatar>
           </div>
           <div class="details-container d-flex flex-column ml-2 pr-2">
@@ -16,7 +16,7 @@
               <!-- <v-icon size="16" class="ml-auto text_2--text">$vuetify.icons.select</v-icon> -->
             </div>
             <div class="d-flex align-center">
-              <img class="details-container__icon" :src="require(`../../../../public/img/icons/address-wallet.svg`)" />
+              <img class="details-container__icon" src="../../../assets/img/icons/address-wallet.svg" alt="Address Icon" />
               <div class="details-container__text ml-2">
                 <ShowToolTip :address="fullAddress">
                   {{ address }}
@@ -40,11 +40,20 @@
             </div>
           </div>
           <div class="ml-auto">
-            <v-btn fab depressed small @click="showWalletPopup({ path: '/transfer' })">
+            <v-btn fab depressed small title="Open Transfer Page" aria-label="Open Transfer Page" @click="showWalletPopup({ path: '/transfer' })">
               <v-icon>$vuetify.icons.send</v-icon>
             </v-btn>
 
-            <v-btn v-if="!whiteLabel.topupHide" fab depressed small class="ml-2" @click="showWalletPopup({ path: '/topup' })">
+            <v-btn
+              v-if="!whiteLabel.topupHide"
+              fab
+              depressed
+              small
+              class="ml-2"
+              title="Open Topup Page"
+              aria-label="Open Topupu Page"
+              @click="showWalletPopup({ path: '/topup' })"
+            >
               <v-icon>$vuetify.icons.add</v-icon>
             </v-btn>
           </div>
@@ -63,8 +72,15 @@
             <div class="avatar-container">
               <v-avatar size="40">
                 <img
-                  v-if="recentTransaction.type === CONTRACT_TYPE_ERC20 || recentTransaction.action === ACTIVITY_ACTION_TOPUP"
-                  :src="require(`../../../../public/images/${recentTransaction.actionIcon}`)"
+                  v-if="recentTransaction.type === CONTRACT_TYPE_ERC20"
+                  :src="`${logosUrl}/${recentTransaction.actionIcon}`"
+                  :alt="recentTransaction.from"
+                  height="36"
+                  onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
+                />
+                <img
+                  v-else-if="recentTransaction.action === ACTIVITY_ACTION_TOPUP"
+                  :src="require(`../../../assets/images/${recentTransaction.actionIcon}`)"
                   :alt="recentTransaction.from"
                   height="36"
                 />
@@ -74,6 +90,7 @@
                   height="36"
                   large
                   color="primary"
+                  :alt="recentTransaction.from"
                 />
                 <v-icon v-else class="mx-2" color="primary">{{ recentTransaction.actionIcon }}</v-icon>
               </v-avatar>
@@ -95,22 +112,23 @@
         </div>
       </div>
     </v-dialog>
-    <v-btn v-if="loggedIn" class="torus-widget__btn" color="primary" fab @click="showWidget">
+    <v-btn v-if="loggedIn" class="torus-widget__btn" color="primary" fab aria-label="Show/Hide Widget Panel" @click="showWidget">
       <img
         class="torus-widget__logo"
         :class="whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logoLight ? '' : 'torus-logo'"
         :src="
           whiteLabelGlobal.isWhiteLabelActive && whiteLabelGlobal.logoLight
             ? whiteLabelGlobal.logoLight || whiteLabelGlobal.logo
-            : require(`../../../../public/img/icons/torus-icon-light.svg`)
+            : require(`../../../assets/img/icons/torus-icon-light.svg`)
         "
+        alt="Torus Logo"
       />
     </v-btn>
     <v-btn v-else-if="loginDialog" color="primary" fab>
       <BeatLoader size="10px" color="white" />
     </v-btn>
     <v-btn v-else class="torus-widget__login-btn" color="primary" fab @click="login">
-      <img class="torus-widget__login" :src="require(`../../../../public/images/login.png`)" />
+      <img class="torus-widget__login" src="../../../assets/images/login.png" alt="Login Icon" />
       <span class="torus-widget__login-with">Login</span>
     </v-btn>
   </div>
@@ -121,6 +139,7 @@ import BeatLoader from 'vue-spinner/src/BeatLoader'
 import { mapActions, mapState } from 'vuex'
 
 import ShowToolTip from '../../../components/helpers/ShowToolTip'
+import config from '../../../config'
 import { ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_TOPUP, CONTRACT_TYPE_ERC20, CONTRACT_TYPE_ERC721 } from '../../../utils/enums'
 import { addressSlicer, significantDigits } from '../../../utils/utils'
 
@@ -144,6 +163,7 @@ export default {
       ACTIVITY_ACTION_TOPUP,
       ACTIVITY_ACTION_SEND,
       CONTRACT_TYPE_ERC721,
+      logosUrl: config.logosUrl,
     }
   },
   computed: {
@@ -204,7 +224,7 @@ export default {
           return transaction.type_image_link // will be an opensea image url
         }
         if (transaction.type === CONTRACT_TYPE_ERC20) {
-          return `logos/${transaction.type_image_link === 'n/a' ? 'eth.svg' : transaction.type_image_link}`
+          return `${transaction.type_image_link === 'n/a' ? 'eth.svg' : transaction.type_image_link}`
         }
         const action = transaction.action.split('.')
         return action.length >= 1 ? `$vuetify.icons.coins_${transaction.action.split('.')[1].toLowerCase()}` : ''
