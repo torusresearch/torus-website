@@ -1,4 +1,5 @@
 import { BroadcastChannel } from 'broadcast-channel'
+import clone from 'clone'
 import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
 import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
@@ -89,6 +90,10 @@ const handleProviderChangeDeny = (error) => {
 if (prefsController) {
   prefsController.metadataStore.subscribe(metadataHandler)
 }
+function resetStore(store, handler, initState) {
+  if (initState) store.putState(clone(initState))
+  store.unsubscribe(handler)
+}
 
 export default {
   logOut({ commit, state }, _) {
@@ -96,19 +101,19 @@ export default {
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
     statusStream.write({ loggedIn: false })
-    accountTracker.store.unsubscribe(accountTrackerHandler)
-    txController.store.unsubscribe(transactionControllerHandler)
-    assetController.store.unsubscribe(assetControllerHandler)
-    typedMessageManager.store.unsubscribe(typedMessageManagerHandler)
-    personalMessageManager.store.unsubscribe(personalMessageManagerHandler)
-    messageManager.store.unsubscribe(messageManagerHandler)
-    detectTokensController.detectedTokensStore.unsubscribe(detectTokensControllerHandler)
-    tokenRatesController.store.unsubscribe(tokenRatesControllerHandler)
-    prefsController.store.unsubscribe(prefsControllerHandler)
-    prefsController.successStore.unsubscribe(successMessageHandler)
-    prefsController.errorStore.unsubscribe(errorMessageHandler)
-    prefsController.paymentTxStore.unsubscribe(paymentTxHandler)
-    prefsController.pastTransactionsStore.unsubscribe(pastTransactionsHandler)
+    resetStore(accountTracker.store, accountTrackerHandler)
+    resetStore(txController.store, transactionControllerHandler)
+    resetStore(assetController.store, assetControllerHandler)
+    resetStore(typedMessageManager.store, typedMessageManagerHandler)
+    resetStore(personalMessageManager.store, personalMessageManagerHandler)
+    resetStore(messageManager.store, messageManagerHandler)
+    resetStore(detectTokensController.detectedTokensStore, detectTokensControllerHandler, detectTokensController.initState)
+    resetStore(tokenRatesController.store, tokenRatesControllerHandler)
+    resetStore(prefsController.store, prefsControllerHandler, prefsController.initState)
+    resetStore(prefsController.successStore, successMessageHandler)
+    resetStore(prefsController.errorStore, errorMessageHandler)
+    resetStore(prefsController.paymentTxStore, paymentTxHandler, [])
+    resetStore(prefsController.pastTransactionsStore, pastTransactionsHandler, [])
     torus.updateStaticData({ isUnlocked: false })
   },
   setSelectedCurrency({ commit }, payload) {

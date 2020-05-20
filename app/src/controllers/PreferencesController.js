@@ -1,3 +1,4 @@
+import clone from 'clone'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import Web3 from 'web3'
@@ -47,6 +48,8 @@ class PreferencesController {
       permissions: [],
       ...initialState,
     }
+
+    this.initState = clone(initState)
 
     this.network = network
     this.web3 = new Web3(provider)
