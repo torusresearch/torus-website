@@ -107,7 +107,7 @@ export default {
     ...mapActions(['setUserBadge']),
     closeBadge(data) {
       this.setUserBadge(data.type)
-      if (data.returnHome) this.$router.push({ name: 'walletHome' })
+      if (data.returnHome && !['walletHomeMain', 'walletHome'].includes(this.$route.name)) this.$router.push({ name: 'walletHome' })
     },
   },
 }

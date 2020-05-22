@@ -15,7 +15,7 @@
           <div>{{ badge.details2 }}</div>
         </div>
 
-        <v-btn color="torusBrand4" large class="torusBrand1--text mb-10 px-12" @click="onReturnHome">
+        <v-btn :color="$vuetify.theme.isDark ? '' : 'torusBrand4'" large class="torusBrand1--text mb-10 px-12" @click="onReturnHome">
           {{ t('walletHome.returnHome') }}
         </v-btn>
       </v-flex>
