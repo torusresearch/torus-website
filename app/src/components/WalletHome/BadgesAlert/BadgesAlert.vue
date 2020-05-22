@@ -5,7 +5,7 @@
     </v-btn>
     <v-layout wrap>
       <v-flex class="elevation-1 text-center" mb-6 py-3 xs12>
-        <img :src="require(`../../../../public/img/icons/${badge.image}-done.svg`)" width="152" />
+        <img :src="require(`../../../assets/images/${badge.image}-done.svg`)" width="152" />
       </v-flex>
 
       <v-flex xs12 mx-10 class="text-center">

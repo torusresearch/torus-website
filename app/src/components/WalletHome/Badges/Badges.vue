@@ -9,7 +9,7 @@
           <v-card class="badge elevation-1 py-3">
             <div class="d-flex px-4 align-top">
               <div :style="{ lineHeight: '0px' }">
-                <img :src="require(`../../../../public/img/icons/${badge.image}${badge.completed ? '-active' : ''}.svg`)" />
+                <img :src="require(`../../../assets/images/${badge.image}${badge.completed ? '-active' : ''}.svg`)" />
               </div>
               <div class="pt-1 ml-2">
                 <div class="subtitle-2 badge__title" v-html="badge.title" />
