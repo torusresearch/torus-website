@@ -15,7 +15,7 @@
               <v-flex xs6 px-4>
                 <v-card class="elevation-1 fill-height px-3" :dark="$vuetify.theme.isDark" :light="!$vuetify.theme.isDark" @click="carouselCount = 1">
                   <div class="d-flex flex-column text-center fill-height justify-center">
-                    <img :src="require(`../../../../public/images/onboarding-1-1.svg`)" :alt="t('walletHome.obSetupYes')" />
+                    <img src="../../../assets/images/onboarding-1-1.svg" :alt="t('walletHome.obSetupYes')" />
                     <div class="text_2--text body-2 font-weight-bold mt-6">
                       <span>{{ t('walletHome.obSetupYes') }}</span>
                     </div>
@@ -26,7 +26,7 @@
               <v-flex xs6 px-4>
                 <v-card class="elevation-1 fill-height px-3" :dark="$vuetify.theme.isDark" :light="!$vuetify.theme.isDark" @click="carouselCount = 2">
                   <div class="d-flex flex-column text-center fill-height justify-center">
-                    <img :src="require(`../../../../public/images/onboarding-1-2.svg`)" :alt="t('walletHome.obSetupNo')" />
+                    <img src="../../../assets/images/onboarding-1-2.svg" :alt="t('walletHome.obSetupNo')" />
                     <div class="text_2--text body-2 font-weight-bold mt-6">
                       <span>{{ t('walletHome.obSetupNo') }}</span>
                     </div>
@@ -55,7 +55,7 @@
           <v-flex class="flex-grow-0" mt-auto>
             <v-layout wrap mx-n1>
               <v-flex xs6 px-1>
-                <img class="onboarding-image" :src="require(`../../../../public/images/onboarding-2.svg`)" alt="Onboarding Features" />
+                <img class="onboarding-image" src="../../../assets/images/onboarding-2-yes.svg" alt="Onboarding Features" />
               </v-flex>
               <v-flex xs6 px-1 class="align-self-end">
                 <v-layout mx-n1>
@@ -88,7 +88,7 @@
           <v-flex class="flex-grow-0" mt-auto>
             <v-layout mx-n1>
               <v-flex xs6 px-1>
-                <img class="onboarding-image" :src="require(`../../../../public/images/onboarding-2.svg`)" alt="Onboarding Getting Started" />
+                <img class="onboarding-image" src="../../../assets/images/onboarding-2-no.svg" alt="Onboarding Getting Started" />
               </v-flex>
               <v-flex xs6 px-1 class="align-self-end">
                 <v-layout wrap mx-n1>
@@ -128,7 +128,7 @@
           <v-flex class="flex-grow-0" mt-auto>
             <v-layout mx-n1>
               <v-flex xs6 px-1>
-                <img class="onboarding-image" :src="require(`../../../../public/images/onboarding-3.svg`)" alt="Onboaring Privacy and Security" />
+                <img class="onboarding-image" src="../../../assets/images/onboarding-3.svg" alt="Onboaring Privacy and Security" />
               </v-flex>
               <v-flex xs6 px-1 class="align-self-end">
                 <v-layout mx-n1>

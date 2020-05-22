@@ -21,7 +21,7 @@ import ComposedStore from 'obs-store/lib/composed'
 import { createEventEmitterProxy, createSwappableProxy } from 'swappable-obj-proxy'
 
 import createMetamaskMiddleware from '../utils/createMetamaskMiddleware'
-import { GOERLI, KOVAN, LOCALHOST, MAINNET, MATIC, MATIC_CODE, MATIC_URL, RINKEBY, ROPSTEN, SUPPORTED_NETWORK_TYPES } from '../utils/enums'
+import { GOERLI, KOVAN, LOCALHOST, MAINNET, MATIC, MATIC_CODE, MATIC_URL, RINKEBY, ROPSTEN, RPC, SUPPORTED_NETWORK_TYPES } from '../utils/enums'
 
 // defaults and constants
 const defaultProviderConfig = { type: 'mainnet' }
@@ -40,7 +40,7 @@ export default class NetworkController extends EventEmitter {
     const providerConfig = options.provider || defaultProviderConfig
     log.info(providerConfig)
     if (!SUPPORTED_NETWORK_TYPES[providerConfig.rpcTarget]) {
-      providerConfig.type = 'rpc'
+      providerConfig.type = RPC
     }
     this.providerStore = new ObservableStore(providerConfig)
     this.networkStore = new ObservableStore('loading')
@@ -61,21 +61,9 @@ export default class NetworkController extends EventEmitter {
   }
 
   getNetworkNameFromNetworkCode() {
-    return this.getProviderConfig().type
-    // switch (parseInt(this.providerStore., 10)) {
-    //   case MAINNET_CODE:
-    //     return MAINNET
-    //   case RINKEBY_CODE:
-    //     return RINKEBY
-    //   case ROPSTEN_CODE:
-    //     return ROPSTEN
-    //   case KOVAN_CODE:
-    //     return KOVAN
-    //   case GOERLI_CODE:
-    //     return GOERLI
-    //   default:
-    //     return 'loading'
-    // }
+    const { type, rpcTarget } = this.getProviderConfig()
+    if (type === RPC) return rpcTarget
+    return type
   }
 
   /**

@@ -1,13 +1,26 @@
+import clone from 'clone'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
+import Web3 from 'web3'
 
 import config from '../config'
-import { BADGES_COLLECTIBLE, BADGES_TOPUP, BADGES_TRANSACTION, ERROR_TIME, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import {
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_ACTION_TOPUP,
+  BADGES_COLLECTIBLE,
+  BADGES_TOPUP,
+  BADGES_TRANSACTION,
+  ERROR_TIME,
+  SUCCESS_TIME,
+  THEME_LIGHT_BLUE_NAME,
+} from '../utils/enums'
 import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
+import { notifyUser } from '../utils/notifications'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
-import { getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
+import { formatPastTx, getEthTxStatus, getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
 
-// By default, poll every 1 minute
+// By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
 const DEFAULT_BADGES_COMPLETION = {
   [BADGES_COLLECTIBLE]: false,
@@ -23,7 +36,6 @@ class PreferencesController {
    * @property {object} store The stored object containing a users preferences, stored in torus-backend
    * @property {string} store.selectedAddress A hex string that matches the currently selected address in the app
    * @property {string} store.selectedCurrency A string showing the user selected currency
-   * @property {Array} store.pastTransactions A list of past Transactions of user
    * @property {string} store.theme the user selected theme
    * @property {string} store.locale the user selected locale
    * @property {Array} store.billboard the contents of torus-billboard (depends on the locale)
@@ -39,19 +51,26 @@ class PreferencesController {
         theme = torusTheme
       }
     }
+    const { initialState = {}, network, provider } = options
+
     const initState = {
       selectedAddress: '',
       selectedCurrency: 'USD',
-      pastTransactions: [],
       theme,
       locale: getUserLanguage(),
       billboard: {},
       contacts: [],
       permissions: [],
-      paymentTx: [],
       badgesCompletion: DEFAULT_BADGES_COMPLETION,
-      ...options.initState,
+      ...initialState,
     }
+
+    this.initState = clone(initState)
+
+    this.network = network
+    this.web3 = new Web3(provider)
+
+    this.fetchedPastTx = []
 
     this.interval = options.interval || DEFAULT_INTERVAL
     this.jwtToken = ''
@@ -60,6 +79,8 @@ class PreferencesController {
     this.metadataStore = new ObservableStore({})
     this.errorStore = new ObservableStore('')
     this.successStore = new ObservableStore('')
+    this.pastTransactionsStore = new ObservableStore([])
+    this.paymentTxStore = new ObservableStore([])
   }
 
   set jwtToken(token) {
@@ -146,14 +167,17 @@ class PreferencesController {
 
         this.store.updateState({
           contacts,
-          pastTransactions: transactions,
           theme,
           selectedCurrency: defaultCurrency,
           locale: whiteLabelLocale || locale || getUserLanguage(),
-          paymentTx: (paymentTx && paymentTx.data) || [],
           permissions,
           badgesCompletion,
         })
+        if (paymentTx && paymentTx.data) {
+          this.calculatePaymentTx(paymentTx.data)
+        }
+        this.fetchedPastTx = transactions
+        this.calculatePastTx(transactions)
         if (callback) return callback(user)
         // this.permissionsController._initializePermissions(permissions)
       }
@@ -162,6 +186,102 @@ class PreferencesController {
       log.error(error)
       return undefined
     }
+  }
+
+  calculatePaymentTx(txs) {
+    const accumulator = []
+    for (const x of txs) {
+      let action = ''
+      const lowerCaseAction = x.action.toLowerCase()
+      if (ACTIVITY_ACTION_TOPUP.includes(lowerCaseAction)) action = ACTIVITY_ACTION_TOPUP
+      else if (ACTIVITY_ACTION_SEND.includes(lowerCaseAction)) action = ACTIVITY_ACTION_SEND
+      else if (ACTIVITY_ACTION_RECEIVE.includes(lowerCaseAction)) action = ACTIVITY_ACTION_RECEIVE
+
+      accumulator.push({
+        id: x.id,
+        date: new Date(x.date),
+        from: x.from,
+        slicedFrom: x.slicedFrom,
+        action,
+        to: x.to,
+        slicedTo: x.slicedTo,
+        totalAmount: x.totalAmount,
+        totalAmountString: x.totalAmountString,
+        currencyAmount: x.currencyAmount,
+        currencyAmountString: x.currencyAmountString,
+        amount: x.amount,
+        ethRate: x.ethRate,
+        status: x.status.toLowerCase(),
+        etherscanLink: x.etherscanLink || '',
+        currencyUsed: x.currencyUsed,
+      })
+    }
+    this.paymentTxStore.putState(accumulator)
+  }
+
+  async calculatePastTx(txs) {
+    const pastTx = []
+    const pendingTx = []
+    const lowerCaseSelectedAddress = this.state.selectedAddress.toLowerCase()
+    for (const x of txs) {
+      if (
+        x.network === this.network.getNetworkNameFromNetworkCode() &&
+        (lowerCaseSelectedAddress === x.from.toLowerCase() || lowerCaseSelectedAddress === x.to.toLowerCase())
+      ) {
+        if (x.status !== 'confirmed') {
+          pendingTx.push(x)
+        } else {
+          const finalObject = formatPastTx(x, lowerCaseSelectedAddress)
+          pastTx.push(finalObject)
+        }
+      }
+    }
+    const pendingTxPromises = pendingTx.map((x) => getEthTxStatus(x.transaction_hash, this.web3).catch((error) => log.error(error)))
+    const resolvedTxStatuses = await Promise.all(pendingTxPromises)
+    for (const [index, element] of pendingTx.entries()) {
+      const finalObject = formatPastTx(element, lowerCaseSelectedAddress)
+      finalObject.status = resolvedTxStatuses[index]
+      pastTx.push(finalObject)
+      if (lowerCaseSelectedAddress === element.from.toLowerCase() && finalObject.status !== element.status)
+        this.patchPastTx(element.id, finalObject.status)
+    }
+    this.pastTransactionsStore.putState(pastTx)
+  }
+
+  async patchNewTx(tx) {
+    const formattedTx = formatPastTx(tx)
+    const storePastTx = this.pastTransactionsStore.getState()
+    const duplicateIndex = storePastTx.findIndex((x) => x.transaction_hash === tx.transaction_hash && x.networkType === tx.network)
+    if (tx.status === 'submitted' || tx.status === 'confirmed') {
+      if (duplicateIndex === -1 && tx.status === 'submitted') {
+        // No duplicate found
+        this.pastTransactionsStore.putState(storePastTx.concat([formattedTx]))
+        this.postPastTx(tx)
+        try {
+          notifyUser(formattedTx.etherscanLink)
+        } catch (error) {
+          log.error(error)
+        }
+      } else {
+        storePastTx[duplicateIndex] = formattedTx
+        this.pastTransactionsStore.putState([...storePastTx])
+      }
+    }
+  }
+
+  async postPastTx(tx) {
+    try {
+      const response = await post(`${config.api}/transaction`, tx, this.headers)
+      log.info('successfully added', response)
+    } catch (error) {
+      log.error(error, 'unable to insert transaction')
+    }
+  }
+
+  /* istanbul ignore next */
+  recalculatePastTx() {
+    // This triggers store update which calculates past Tx status for that network
+    this.calculatePastTx(this.fetchedPastTx)
   }
 
   /* istanbul ignore next */
@@ -309,6 +429,23 @@ class PreferencesController {
     }
   }
 
+  /* istanbul ignore next */
+  async patchPastTx(txId, status) {
+    try {
+      const response = await patch(
+        `${config.api}/transaction`,
+        {
+          id: txId,
+          status,
+        },
+        this.headers
+      )
+      log.info('successfully patched', response)
+    } catch (error) {
+      log.error('unable to patch tx', error)
+    }
+  }
+
   setSiteMetadata(origin, domainMetadata) {
     this.metadataStore.updateState({ [origin]: domainMetadata })
   }
@@ -316,6 +453,7 @@ class PreferencesController {
   setSelectedAddress(address) {
     if (this.state.selectedAddress === address) return
     this.store.updateState({ selectedAddress: address })
+    this.recalculatePastTx()
     // this.sync()
   }
 

@@ -42,21 +42,14 @@ module.exports = {
     }
   },
   chainWebpack: (config) => {
-    config.resolve.alias.set('bn.js', 'fork-bn.js')
+    config.resolve.alias.set('bn.js', path.resolve(__dirname, 'node_modules/bn.js'))
+    config.resolve.alias.set('lodash', path.resolve(__dirname, 'node_modules/lodash'))
     if (process.env.NODE_ENV === 'production') {
       config
         .plugin('service-worker-integrity')
         .use(serviceWorkerIntegrityPlugin, ['app.html', 'SERVICE_WORKER_SHA_INTEGRITY', 'service-worker.js'])
         .after('workbox')
     }
-    // config.module
-    //   .rule('worker')
-    //   .test(/\.worker\.js$/)
-    //   .use('worker-loader')
-    //   .loader('worker-loader')
-    //   .tap(options => {
-    //     return options
-    //   })
   },
 
   publicPath: process.env.VUE_APP_TORUS_BUILD_ENV === 'production' || process.env.VUE_APP_TORUS_BUILD_ENV === 'staging' ? `/${version}/` : '/',

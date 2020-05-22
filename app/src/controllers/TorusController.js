@@ -100,6 +100,11 @@ export default class TorusController extends EventEmitter {
       tokensStore: this.detectTokensController.detectedTokensStore,
     })
 
+    this.prefsController = new PreferencesController({
+      network: this.networkController,
+      provider: this.provider,
+    })
+
     // start and stop polling for balances based on activeControllerConnections
     this.on('controllerConnectionChanged', (activeControllerConnections) => {
       if (activeControllerConnections > 0) {
@@ -114,13 +119,11 @@ export default class TorusController extends EventEmitter {
       this.accountTracker._updateAccounts()
       this.detectTokensController.restartTokenDetection()
       this.assetDetectionController.restartAssetDetection()
-      // TODO: trigger asset detection
+      this.prefsController.recalculatePastTx()
     })
 
     // key mgmt
     this.keyringController = new KeyringController()
-    this.prefsController = new PreferencesController()
-
     this.publicConfigStore = this.initPublicConfigStore()
 
     this.permissionsController = new PermissionsController({

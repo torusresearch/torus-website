@@ -70,7 +70,6 @@ export default {
   },
   setPastTransactions(state, payload) {
     state.pastTransactions = payload
-    state.loadingUserTransactions = false
   },
   patchPastTransactions(state, payload) {
     state.pastTransactions = [...state.pastTransactions, payload]
