@@ -39,7 +39,7 @@ export default {
     badges() {
       return [
         {
-          title: 'Torus Wallet Account Created',
+          title: this.t('walletHome.walletCreated'),
           image: 'badge-wallet-created',
           link: '',
           linkText: '',
@@ -47,26 +47,26 @@ export default {
           external: false,
         },
         {
-          title: 'Top-up your<br/>Wallet',
+          title: this.t('walletHome.topUpWallet'),
           image: 'badge-topped-wallet',
           link: '/wallet/topup',
-          linkText: 'Go to Top-up Page',
+          linkText: this.t('walletHome.goToTopUp'),
           completed: this.badgesCompletion[BADGES_TOPUP],
           external: false,
         },
         {
-          title: 'Conduct First<br/>Transaction',
+          title: this.t('walletHome.conductFirstTransaction'),
           image: 'badge-first-transaction',
           link: '/wallet/transfer',
-          linkText: 'Go to Transfer Page',
+          linkText: this.t('walletHome.goToTransfer'),
           completed: this.badgesCompletion[BADGES_TRANSACTION],
           external: false,
         },
         {
-          title: 'Get your first collectible from OpenSea',
+          title: this.t('walletHome.getFirstCollectible'),
           image: 'badge-first-collectible',
           link: 'https://opensea.io/',
-          linkText: 'Go to OpenSea',
+          linkText: this.t('walletHome.goToOpensea'),
           completed: this.badgesCompletion[BADGES_COLLECTIBLE],
           external: true,
         },

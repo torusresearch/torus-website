@@ -16,7 +16,7 @@
         </div>
 
         <v-btn color="torusBrand4" large class="torusBrand1--text mb-10 px-12" @click="onReturnHome">
-          Return Home
+          {{ t('walletHome.returnHome') }}
         </v-btn>
       </v-flex>
     </v-layout>
