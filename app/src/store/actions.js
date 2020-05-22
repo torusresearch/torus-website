@@ -1,18 +1,21 @@
 import { BroadcastChannel } from 'broadcast-channel'
+import clone from 'clone'
 import jwtDecode from 'jwt-decode'
 import log from 'loglevel'
-import { toChecksumAddress } from 'web3-utils'
+import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
 import config from '../config'
 import torus from '../torus'
 import accountImporter from '../utils/accountImporter'
 import {
+  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
   DISCORD,
   FACEBOOK,
   GOOGLE,
   REDDIT,
   RPC,
   SUPPORTED_NETWORK_TYPES,
+  TOKEN_METHOD_TRANSFER_FROM,
   TWITCH,
   USER_INFO_REQUEST_APPROVED,
   USER_INFO_REQUEST_REJECTED,
@@ -27,6 +30,8 @@ import {
   errorMsgHandler as errorMessageHandler,
   messageManagerHandler,
   metadataHandler,
+  pastTransactionsHandler,
+  paymentTxHandler,
   personalMessageManagerHandler,
   prefsControllerHandler,
   successMsgHandler as successMessageHandler,
@@ -85,6 +90,10 @@ const handleProviderChangeDeny = (error) => {
 if (prefsController) {
   prefsController.metadataStore.subscribe(metadataHandler)
 }
+function resetStore(store, handler, initState) {
+  if (initState) store.putState(clone(initState))
+  store.unsubscribe(handler)
+}
 
 export default {
   logOut({ commit, state }, _) {
@@ -92,17 +101,19 @@ export default {
     // commit('setTheme', THEME_LIGHT_BLUE_NAME)
     // if (storageAvailable('sessionStorage')) window.sessionStorage.clear()
     statusStream.write({ loggedIn: false })
-    accountTracker.store.unsubscribe(accountTrackerHandler)
-    txController.store.unsubscribe(transactionControllerHandler)
-    assetController.store.unsubscribe(assetControllerHandler)
-    typedMessageManager.store.unsubscribe(typedMessageManagerHandler)
-    personalMessageManager.store.unsubscribe(personalMessageManagerHandler)
-    messageManager.store.unsubscribe(messageManagerHandler)
-    detectTokensController.detectedTokensStore.unsubscribe(detectTokensControllerHandler)
-    tokenRatesController.store.unsubscribe(tokenRatesControllerHandler)
-    prefsController.store.unsubscribe(prefsControllerHandler)
-    prefsController.successStore.unsubscribe(successMessageHandler)
-    prefsController.errorStore.unsubscribe(errorMessageHandler)
+    resetStore(accountTracker.store, accountTrackerHandler)
+    resetStore(txController.store, transactionControllerHandler)
+    resetStore(assetController.store, assetControllerHandler)
+    resetStore(typedMessageManager.store, typedMessageManagerHandler)
+    resetStore(personalMessageManager.store, personalMessageManagerHandler)
+    resetStore(messageManager.store, messageManagerHandler)
+    resetStore(detectTokensController.detectedTokensStore, detectTokensControllerHandler, detectTokensController.initState)
+    resetStore(tokenRatesController.store, tokenRatesControllerHandler)
+    resetStore(prefsController.store, prefsControllerHandler, prefsController.initState)
+    resetStore(prefsController.successStore, successMessageHandler)
+    resetStore(prefsController.errorStore, errorMessageHandler)
+    resetStore(prefsController.paymentTxStore, paymentTxHandler, [])
+    resetStore(prefsController.pastTransactionsStore, pastTransactionsHandler, [])
     torus.updateStaticData({ isUnlocked: false })
   },
   setSelectedCurrency({ commit }, payload) {
@@ -378,6 +389,8 @@ export default {
     prefsController.store.subscribe(prefsControllerHandler)
     prefsController.successStore.subscribe(successMessageHandler)
     prefsController.errorStore.subscribe(errorMessageHandler)
+    prefsController.paymentTxStore.subscribe(paymentTxHandler)
+    prefsController.pastTransactionsStore.subscribe(pastTransactionsHandler)
   },
   initTorusKeyring(_, payload) {
     return torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])
@@ -524,7 +537,7 @@ export default {
         await dispatch('setUserInfoAction', { token: jwtToken, calledFromEmbed: false, rehydrate: true })
         dispatch('updateSelectedAddress', { selectedAddress })
         dispatch('updateNetworkId', { networkId })
-        // TODO: deprercate rehydrate true for the next major version bump
+        // TODO: deprecate rehydrate true for the next major version bump
         statusStream.write({ loggedIn: true, rehydrate: true, verifier })
         log.info('rehydrated wallet')
         torus.updateStaticData({ isUnlocked: true })
@@ -552,5 +565,92 @@ export default {
     widgetStream.write({
       data: payload,
     })
+  },
+  updateCalculatedTx({ state, getters }, payload) {
+    for (const id in payload) {
+      const txOld = payload[id]
+      if (txOld.metamaskNetworkId.toString() === state.networkId.toString()) {
+        const { methodParams, contractParams, txParams, transactionCategory, time, hash, status } = txOld
+        let amountTo
+        let amountValue
+        let assetName
+        let totalAmount
+        let finalTo
+        let tokenRate = 1
+        let type
+        let typeName
+        let typeImageLink
+        let symbol
+
+        if (contractParams.erc721) {
+          // Handling cryptokitties
+          if (contractParams.isSpecial) {
+            ;[amountTo, amountValue] = methodParams || []
+          } else {
+            // Rest of the 721s
+            ;[, amountTo, amountValue] = methodParams || []
+          }
+          const { name = '', logo } = contractParams
+          // Get asset name of the 721
+          const contract = state.assets[state.selectedAddress].find((x) => x.name.toLowerCase() === name.toLowerCase()) || {}
+          log.info(contract, amountValue)
+          if (contract) {
+            const { name: foundAssetName } = contract.assets.find((x) => x.tokenId.toString() === amountValue.value.toString()) || {}
+            assetName = foundAssetName || ''
+            symbol = assetName
+            type = 'erc721'
+            typeName = name
+            typeImageLink = logo
+            totalAmount = fromWei(toBN(txParams.value))
+            finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+          }
+        } else if (contractParams.erc20) {
+          // ERC20 transfer
+          tokenRate = state.tokenRates[txParams.to]
+          if (methodParams && Array.isArray(methodParams)) {
+            if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
+              ;[, amountTo, amountValue] = methodParams || []
+            } else {
+              ;[amountTo, amountValue] = methodParams || []
+            }
+          }
+          const { symbol: contractSymbol, name, logo } = contractParams
+          symbol = contractSymbol
+          type = 'erc20'
+          typeName = name
+          typeImageLink = logo
+          totalAmount = fromWei(toBN(amountValue && amountValue.value ? amountValue.value : txParams.value))
+          finalTo = amountTo && isAddress(amountTo.value) && toChecksumAddress(amountTo.value)
+        } else {
+          tokenRate = 1
+          symbol = 'ETH'
+          type = 'eth'
+          typeName = 'eth'
+          typeImageLink = 'n/a'
+          totalAmount = fromWei(toBN(txParams.value))
+          finalTo = toChecksumAddress(txParams.to)
+        }
+        // Goes to db
+        const txObject = {
+          created_at: new Date(time),
+          from: toChecksumAddress(txParams.from),
+          to: finalTo,
+          total_amount: totalAmount,
+          gas: txParams.gas,
+          gasPrice: txParams.gasPrice,
+          symbol,
+          nonce: txParams.nonce,
+          type,
+          type_name: typeName,
+          type_image_link: typeImageLink,
+          currency_amount: (getters.currencyMultiplier * Number.parseFloat(totalAmount) * tokenRate).toString(),
+          selected_currency: state.selectedCurrency,
+          status,
+          network: state.networkType.host,
+          transaction_hash: hash,
+        }
+        prefsController.patchNewTx(txObject)
+      }
+    }
   },
 }

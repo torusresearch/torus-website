@@ -52,7 +52,7 @@
                 <v-list-item-avatar class="ma-0">
                   <img
                     v-if="contact.verifier === 'eth'"
-                    :src="require(`../../../../public/img/icons/eth-grey${$vuetify.theme.dark ? '-black' : '-white'}.svg`)"
+                    :src="require(`../../../assets/img/icons/eth-grey${$vuetify.theme.dark ? '-black' : '-white'}.svg`)"
                     style="width: 16px;"
                     class="ma-1"
                     :alt="`${contact.verifier} Icon`"

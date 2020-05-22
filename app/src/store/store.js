@@ -2,22 +2,13 @@ import log from 'loglevel'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
-import { fromWei, hexToUtf8, isAddress, toBN, toChecksumAddress } from 'web3-utils'
+import { fromWei, hexToUtf8 } from 'web3-utils'
 
 import config from '../config'
 import torus from '../torus'
 import ConfirmHandler from '../utils/ConfirmHandler'
-import {
-  COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM,
-  TOKEN_METHOD_TRANSFER_FROM,
-  TX_MESSAGE,
-  TX_PERSONAL_MESSAGE,
-  TX_TRANSACTION,
-  TX_TYPED_MESSAGE,
-} from '../utils/enums'
-import { post } from '../utils/httpHelpers'
-import { notifyUser } from '../utils/notifications'
-import { getEtherScanHashLink, storageAvailable } from '../utils/utils'
+import { TX_MESSAGE, TX_PERSONAL_MESSAGE, TX_TRANSACTION, TX_TYPED_MESSAGE } from '../utils/enums'
+import { storageAvailable } from '../utils/utils'
 import actions from './actions'
 import defaultGetters from './getters'
 import mutations from './mutations'
@@ -51,7 +42,8 @@ if (storageAvailable('sessionStorage')) {
       contacts: state.contacts,
       whiteLabel: state.whiteLabel,
       supportedNetworks: state.supportedNetworks,
-      // pastTransactions: state.pastTransactions
+      pastTransactions: state.pastTransactions,
+      paymentTx: state.paymentTx,
     }),
   })
 }
@@ -90,6 +82,8 @@ const VuexStore = new Vuex.Store({
       }
       if (window.location === window.parent.location && window.location.origin === config.baseUrl) {
         handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
+      } else if (confirmHandler.txType === TX_MESSAGE && isTorusSignedMessage(confirmHandler.msgParams)) {
+        handleConfirm({ data: { txType: confirmHandler.txType, id: confirmHandler.id } })
       } else {
         confirmHandler.open(handleConfirm, handleDeny)
       }
@@ -97,11 +91,13 @@ const VuexStore = new Vuex.Store({
   },
 })
 
-function getCurrencyMultiplier() {
-  const { selectedCurrency, currencyData } = VuexStore.state || {}
-  let currencyMultiplier = 1
-  if (selectedCurrency !== 'ETH') currencyMultiplier = currencyData[selectedCurrency.toLowerCase()] || 1
-  return currencyMultiplier
+function isTorusSignedMessage(messageParameters) {
+  if (messageParameters.customPrefix !== '\u0019Torus Signed Message:\n') return false
+  const { origin } = messageParameters
+  if (!/.+\.tor\.us$/.exec(origin) && origin !== 'tor.us') {
+    return false
+  }
+  return true
 }
 
 function handleConfirm(ev) {
@@ -234,111 +230,6 @@ function isTorusTransaction() {
   }
   return isLatestTx
 }
-
-VuexStore.subscribe((mutation, state) => {
-  // will rewrite later
-  if (mutation.type === 'setTransactions' && state.jwtToken) {
-    const txs = mutation.payload
-    for (const id in txs) {
-      const txMeta = txs[id]
-      if (txMeta.status === 'submitted' && id >= 0) {
-        // insert into db here
-        const { methodParams, contractParams, txParams, transactionCategory, time, hash } = txMeta
-        let amountTo
-        let amountValue
-        let assetName
-        let tokenRate
-        let symbol
-        let type
-        let typeName
-        let typeImageLink
-        let totalAmount
-
-        if (contractParams.erc721) {
-          // Handling cryptokitties
-          if (contractParams.isSpecial) {
-            ;[amountTo, amountValue] = methodParams || []
-          } else {
-            // Rest of the 721s
-            ;[, amountTo, amountValue] = methodParams || []
-          }
-
-          // Get asset name of the 721
-          const [contract] = state.assets[state.selectedAddress].filter((x) => x.name.toLowerCase() === contractParams.name.toLowerCase()) || []
-          const [assetObject] = contract.assets.filter((x) => x.tokenId.toString() === amountValue.value.toString()) || []
-          assetName = assetObject.name || ''
-
-          symbol = assetName
-          type = 'erc721'
-          typeName = contractParams.name
-          typeImageLink = contractParams.logo
-          totalAmount = fromWei(toBN(txParams.value))
-        } else if (contractParams.erc20) {
-          // ERC20 transfer
-          tokenRate = contractParams.erc20 ? state.tokenRates[txParams.to] : 1
-          if (methodParams && Array.isArray(methodParams)) {
-            if (transactionCategory === TOKEN_METHOD_TRANSFER_FROM || transactionCategory === COLLECTIBLE_METHOD_SAFE_TRANSFER_FROM) {
-              ;[, amountTo, amountValue] = methodParams || []
-            } else {
-              ;[amountTo, amountValue] = methodParams || []
-            }
-          }
-          symbol = contractParams.symbol
-          type = 'erc20'
-          typeName = contractParams.name
-          typeImageLink = contractParams.logo
-          totalAmount = amountValue && amountValue.value ? fromWei(toBN(amountValue.value)) : fromWei(toBN(txParams.value))
-        } else {
-          // ETH transfers
-          tokenRate = 1
-          symbol = 'ETH'
-          type = 'eth'
-          typeName = 'eth'
-          typeImageLink = 'n/a'
-          totalAmount = fromWei(toBN(txParams.value))
-        }
-        const txObject = {
-          created_at: new Date(time),
-          from: toChecksumAddress(txParams.from),
-          to: amountTo && isAddress(amountTo.value) ? toChecksumAddress(amountTo.value) : toChecksumAddress(txParams.to),
-          total_amount: totalAmount,
-          gas: txParams.gas,
-          gasPrice: txParams.gasPrice,
-          symbol,
-          nonce: txParams.nonce,
-          type,
-          type_name: typeName,
-          type_image_link: typeImageLink,
-          currency_amount: (getCurrencyMultiplier() * Number.parseFloat(totalAmount) * tokenRate).toString(),
-          selected_currency: state.selectedCurrency,
-          status: 'submitted',
-          network: state.networkType.host,
-          transaction_hash: hash,
-        }
-        if (state.pastTransactions.findIndex((x) => x.transaction_hash === txObject.transaction_hash && x.network === txObject.network) === -1) {
-          // User notification
-          try {
-            notifyUser(getEtherScanHashLink(hash, state.networkType.host))
-          } catch (error) {
-            log.error(error)
-          }
-
-          post(`${config.api}/transaction`, txObject, {
-            headers: {
-              Authorization: `Bearer ${state.jwtToken}`,
-              'Content-Type': 'application/json; charset=utf-8',
-            },
-          })
-            .then((response) => {
-              if (response.response.length > 0) VuexStore.commit('patchPastTransactions', { ...txObject, id: response.response[0] })
-              log.info('successfully added', response)
-            })
-            .catch((error) => log.error(error, 'unable to insert transaction'))
-        }
-      }
-    }
-  }
-})
 
 if (storageAvailable('localStorage')) {
   const torusTheme = localStorage.getItem('torus-theme')

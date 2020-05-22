@@ -58,9 +58,9 @@
                       >
                         <v-list-item-icon class="mr-1">
                           <img
-                            :src="require(`../../../public/images/logos/${token.logo}`)"
+                            :src="`${logosUrl}/${token.logo}`"
                             height="20px"
-                            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = 'images/logos/eth.svg';"
+                            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
                             :alt="token.name"
                           />
                         </v-list-item-icon>
@@ -76,9 +76,9 @@
                       <v-list-item v-for="token in finalBalancesArrayTokens" :key="token.id" @click="selectedItemChanged(token.tokenAddress)">
                         <v-list-item-icon class="ml-8 mr-1">
                           <img
-                            :src="require(`../../../public/images/logos/${token.logo}`)"
+                            :src="`${logosUrl}/${token.logo}`"
                             height="20px"
-                            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = 'images/logos/eth.svg';"
+                            onerror="if (!this.src.includes('images/logos/eth.svg')) this.src = '/images/logos/eth.svg';"
                             :alt="token.name"
                           />
                         </v-list-item-icon>
@@ -431,6 +431,7 @@ export default {
       CONTRACT_TYPE_ETH,
       CONTRACT_TYPE_ERC20,
       CONTRACT_TYPE_ERC721,
+      logosUrl: config.logosUrl,
     }
   },
   computed: {
@@ -609,9 +610,7 @@ export default {
           currency: this.selectedCurrency,
           currencyAmount: significantDigits(this.amount.times(this.getCurrencyTokenRate).toFormat(2)) || '',
           tokenImageUrl:
-            this.contractType !== CONTRACT_TYPE_ERC721
-              ? `https://app.tor.us/images/logos/${this.selectedItemDisplay.logo}`
-              : this.selectedItemDisplay.logo,
+            this.contractType !== CONTRACT_TYPE_ERC721 ? `${this.logosUrl}/${this.selectedItemDisplay.logo}` : this.selectedItemDisplay.logo,
         }
         post(`${config.api}/transaction/sendemail`, emailObject, {
           headers: {
