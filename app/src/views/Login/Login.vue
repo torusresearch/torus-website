@@ -98,7 +98,7 @@
                           <v-btn
                             class="learn-more-btn mt-6"
                             :class="{ isDark: $vuetify.theme.dark, isMobile: $vuetify.breakpoint.xsOnly }"
-                            :href="slide.link"
+                            href="https://tor.us"
                             target="_blank"
                             rel="noreferrer noopener"
                           >
