@@ -141,7 +141,7 @@
     "sinon": "^9.0.2",
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
-    "terser-webpack-plugin": "2.3.6",
+    "terser-webpack-plugin": "3.0.2",
     "through2": "^3.0.1",
     "uglifyify": "^5.0.2",
     "vue-cli-plugin-vuetify": "^2.0.5",
