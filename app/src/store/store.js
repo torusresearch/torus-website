@@ -44,6 +44,7 @@ if (storageAvailable('sessionStorage')) {
       supportedNetworks: state.supportedNetworks,
       pastTransactions: state.pastTransactions,
       paymentTx: state.paymentTx,
+      etherscanTx: state.etherscanTx,
     }),
   })
 }

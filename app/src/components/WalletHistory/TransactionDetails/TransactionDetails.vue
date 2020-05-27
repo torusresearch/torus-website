@@ -46,7 +46,10 @@
           />
           <v-icon v-else class="float-left" size="24" color="torusBrand1">{{ transaction.actionIcon }}</v-icon>
         </div>
-        <div class="caption text_1--text font-weight-medium">{{ transaction.actionText }}</div>
+        <div class="caption text_1--text font-weight-medium d-flex">
+          <span>{{ transaction.actionText }}</span>
+          <v-chip v-if="transaction.isEtherscan" class="etherscan-chip ml-2" x-small>External</v-chip>
+        </div>
         <div class="info text_2--text font-weight-light">
           {{
             transaction.action === ACTIVITY_ACTION_SEND

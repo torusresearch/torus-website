@@ -160,6 +160,9 @@ export default {
   setTorusWidgetVisibility(state, payload) {
     state.embedState = { ...state.embedState, torusWidgetVisibility: payload }
   },
+  setEtherscanTx(state, payload) {
+    state.etherscanTx = payload
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]

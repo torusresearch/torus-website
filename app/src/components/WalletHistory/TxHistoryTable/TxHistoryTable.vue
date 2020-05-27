@@ -9,7 +9,7 @@
       hide-default-footer
     >
       <template v-slot:default="props">
-        <TransactionDetails v-for="transaction in props.items" :key="transaction.id" :transaction="transaction" />
+        <TransactionDetails v-for="(transaction, index) in props.items" :key="index" :transaction="transaction" />
       </template>
     </v-data-iterator>
 

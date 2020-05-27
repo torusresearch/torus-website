@@ -27,6 +27,7 @@ import {
   assetControllerHandler,
   detectTokensControllerHandler,
   errorMsgHandler as errorMessageHandler,
+  etherscanTxHandler,
   messageManagerHandler,
   metadataHandler,
   pastTransactionsHandler,
@@ -109,6 +110,7 @@ export default {
     prefsController.errorStore.unsubscribe(errorMessageHandler)
     prefsController.paymentTxStore.unsubscribe(paymentTxHandler)
     prefsController.pastTransactionsStore.unsubscribe(pastTransactionsHandler)
+    prefsController.etherscanTxStore.unsubscribe(etherscanTxHandler)
     torus.updateStaticData({ isUnlocked: false })
   },
   setSelectedCurrency({ commit }, payload) {
@@ -386,6 +388,7 @@ export default {
     prefsController.errorStore.subscribe(errorMessageHandler)
     prefsController.paymentTxStore.subscribe(paymentTxHandler)
     prefsController.pastTransactionsStore.subscribe(pastTransactionsHandler)
+    prefsController.etherscanTxStore.subscribe(etherscanTxHandler)
   },
   initTorusKeyring(_, payload) {
     return torusController.initTorusKeyring([payload.privKey], [payload.ethAddress])

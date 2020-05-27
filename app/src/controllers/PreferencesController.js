@@ -1,10 +1,22 @@
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import Web3 from 'web3'
+import { fromWei, toBN } from 'web3-utils'
 
 import config from '../config'
-import { ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_TOPUP, ERROR_TIME, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
-import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
+import {
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_ACTION_TOPUP,
+  CONTRACT_TYPE_ERC20,
+  CONTRACT_TYPE_ERC721,
+  CONTRACT_TYPE_ETH,
+  ERROR_TIME,
+  MAINNET,
+  SUCCESS_TIME,
+  THEME_LIGHT_BLUE_NAME,
+} from '../utils/enums'
+import { get, getEtherscanTransactions, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
 import { notifyUser } from '../utils/notifications'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
 import { formatPastTx, getEthTxStatus, getIFrameOrigin, getUserLanguage, storageAvailable } from '../utils/utils'
@@ -62,6 +74,7 @@ class PreferencesController {
     this.successStore = new ObservableStore('')
     this.pastTransactionsStore = new ObservableStore([])
     this.paymentTxStore = new ObservableStore([])
+    this.etherscanTxStore = new ObservableStore([])
   }
 
   set jwtToken(token) {
@@ -112,12 +125,15 @@ class PreferencesController {
 
   async sync(callback, errorCallback) {
     try {
-      const [user, paymentTx] = await Promise.all([
+      const [user, paymentTx, etherscanTx] = await Promise.all([
         get(`${config.api}/user`, this.headers).catch((_) => {
           if (errorCallback) errorCallback()
         }),
         getPastOrders({}, this.headers.headers).catch((error) => {
           log.error('unable to fetch past orders', error)
+        }),
+        getEtherscanTransactions({}, this.headers.headers).catch((error) => {
+          log.error('unable to fetch etherscan transactions', error)
         }),
       ])
       if (user && user.data) {
@@ -146,6 +162,9 @@ class PreferencesController {
         })
         if (paymentTx && paymentTx.data) {
           this.calculatePaymentTx(paymentTx.data)
+        }
+        if (etherscanTx && etherscanTx.data) {
+          this.calculateEtherscanTx(etherscanTx.data)
         }
         this.fetchedPastTx = transactions
         this.calculatePastTx(transactions)
@@ -217,6 +236,76 @@ class PreferencesController {
         this.patchPastTx(element.id, finalObject.status)
     }
     this.pastTransactionsStore.putState(pastTx)
+  }
+
+  async calculateEtherscanTx(txs) {
+    const finalTxs = txs.reduce((accumulator, x) => {
+      // NORMAL
+      // Check selected currency
+      if (x.input && x.input === '0x') {
+        const totalAmount = fromWei(toBN(x.value))
+        const transaction = formatPastTx({
+          type: CONTRACT_TYPE_ETH,
+          created_at: x.timeStamp * 1000,
+          from: x.from,
+          to: x.to,
+          total_amount: totalAmount,
+          currency_amount: totalAmount,
+          status: x.txreceipt_status === '1' ? 'success' : 'failed',
+          transaction_hash: x.hash,
+          network: MAINNET,
+          symbol: 'ETH',
+          selected_currency: 'ETH',
+          type_image_link: 'n/a',
+          type_name: 'n/a',
+        })
+        accumulator.push(transaction)
+      } else if (x.tokenID) {
+        // ERC 721
+        // type image Link
+        const transaction = formatPastTx({
+          type: CONTRACT_TYPE_ERC721,
+          created_at: x.timeStamp * 1000,
+          from: x.from,
+          to: x.to,
+          status: 'success',
+          transaction_hash: x.hash,
+          network: MAINNET,
+          symbol: x.tokenID,
+          selected_currency: x.tokenSymbol,
+          type_image_link: '',
+          type_name: x.tokenName,
+        })
+        transaction.contractAddress = x.contractAddress
+        transaction.tokenId = x.tokenID
+        accumulator.push(transaction)
+      } else {
+        // ERC 20
+        // type image Link
+        const totalAmount = fromWei(toBN(x.value))
+        const transaction = formatPastTx({
+          type: CONTRACT_TYPE_ERC20,
+          created_at: x.timeStamp * 1000,
+          from: x.from,
+          to: x.to,
+          total_amount: totalAmount,
+          currency_amount: totalAmount,
+          status: 'success',
+          transaction_hash: x.hash,
+          network: MAINNET,
+          symbol: x.tokenSymbol,
+          selected_currency: x.tokenSymbol,
+          type_image_link: 'kyber.svg',
+          type_name: x.tokenName,
+        })
+        transaction.contractAddress = x.contractAddress
+        accumulator.push(transaction)
+      }
+
+      return accumulator
+    }, [])
+
+    this.etherscanTxStore.putState(finalTxs)
   }
 
   async patchNewTx(tx) {

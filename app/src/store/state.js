@@ -69,6 +69,7 @@ const initialState = {
     topupHide: false,
     featuredBillboardHide: false,
   },
+  etherscanTx: [],
 }
 
 export default initialState

@@ -135,3 +135,22 @@ export const promiseRace = (url, options, timeout) => {
     }),
   ])
 }
+
+export const getEtherscanTransactions = (parameters = {}, headers) => {
+  try {
+    const options = {
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...headers,
+      },
+    }
+    const url = new URL(`${config.api}/etherscan`)
+    Object.keys(parameters).forEach((key) => url.searchParams.append(key, parameters[key]))
+    return get(url.href, options)
+  } catch (error) {
+    log.error(error)
+    return undefined
+  }
+}
