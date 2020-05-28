@@ -9,6 +9,9 @@
     font-weight: normal;
     font-size: 10px;
     line-height: 12px;
+    &.isDark {
+      background: #242529;
+    }
   }
 
   .v-chip.status-chip {
