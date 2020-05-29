@@ -286,9 +286,11 @@ export default {
       snackbarColor: 'error',
     }
   },
-  computed: mapState({
-    selectedAddress: 'selectedAddress',
-    loggedIn: (state) => state.selectedAddress !== '' && !this.loginInProgress,
+  computed: {
+    ...mapState(['selectedAddress']),
+    loggedIn() {
+      return this.selectedAddress !== '' && !this.loginInProgress
+    },
     activeLoader() {
       const redirectPath = this.$route.query.redirect
 
@@ -309,7 +311,7 @@ export default {
       }
       return this.$vuetify.breakpoint.xsOnly ? WalletHomeLoaderMobile : WalletHomeLoader
     },
-  }),
+  },
   watch: {
     selectedAddress(newAddress, oldAddress) {
       if (newAddress !== oldAddress && newAddress !== '') {
