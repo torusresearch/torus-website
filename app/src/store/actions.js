@@ -126,7 +126,7 @@ export default {
     detectTokensController.refreshTokenBalances()
     assetDetectionController.restartAssetDetection()
     try {
-      const response = await torusController.prefsController.getEtherScanTokenBalances()
+      const response = await prefsController.getEtherScanTokenBalances()
       const { data } = response
       data.forEach((object) => {
         detectTokensController.detectEtherscanTokenBalance(toChecksumAddress(object.contractAddress), {
