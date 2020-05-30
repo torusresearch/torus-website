@@ -34,7 +34,7 @@
               :color-light="'#FCFCFC'"
               :background-color="'#2F3136'"
               :logo-background-color="'#2F3136'"
-              logo-src="../../../assets/img/icons/t-fill.svg"
+              :logo-src="require('../../../assets/img/icons/t-fill.svg')"
               :logo-scale="0.28"
               :margin="1"
               :text="selectedAddress"
@@ -45,7 +45,7 @@
             <VueQr
               v-show="!$vuetify.theme.dark"
               ref="address-qr"
-              logo-src="../../../assets/img/icons/t-fill.svg"
+              :logo-src="require('../../../assets/img/icons/t-fill.svg')"
               :margin="20"
               :logo-scale="0.28"
               :text="selectedAddress"
