@@ -160,6 +160,9 @@ export default {
   setTorusWidgetVisibility(state, payload) {
     state.embedState = { ...state.embedState, torusWidgetVisibility: payload }
   },
+  setBadgesCompletion(state, payload) {
+    state.badgesCompletion = payload
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]

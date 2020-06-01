@@ -4,7 +4,17 @@ import ObservableStore from 'obs-store'
 import Web3 from 'web3'
 
 import config from '../config'
-import { ACTIVITY_ACTION_RECEIVE, ACTIVITY_ACTION_SEND, ACTIVITY_ACTION_TOPUP, ERROR_TIME, SUCCESS_TIME, THEME_LIGHT_BLUE_NAME } from '../utils/enums'
+import {
+  ACTIVITY_ACTION_RECEIVE,
+  ACTIVITY_ACTION_SEND,
+  ACTIVITY_ACTION_TOPUP,
+  BADGES_COLLECTIBLE,
+  BADGES_TOPUP,
+  BADGES_TRANSACTION,
+  ERROR_TIME,
+  SUCCESS_TIME,
+  THEME_LIGHT_BLUE_NAME,
+} from '../utils/enums'
 import { get, getPastOrders, patch, post, remove } from '../utils/httpHelpers'
 import { notifyUser } from '../utils/notifications'
 import { isErrorObject, prettyPrintData } from '../utils/permissionUtils'
@@ -12,6 +22,11 @@ import { formatPastTx, getEthTxStatus, getIFrameOrigin, getUserLanguage, storage
 
 // By default, poll every 3 minutes
 const DEFAULT_INTERVAL = 180 * 1000
+const DEFAULT_BADGES_COMPLETION = {
+  [BADGES_COLLECTIBLE]: false,
+  [BADGES_TOPUP]: false,
+  [BADGES_TRANSACTION]: false,
+}
 
 class PreferencesController {
   /**
@@ -46,6 +61,7 @@ class PreferencesController {
       billboard: {},
       contacts: [],
       permissions: [],
+      badgesCompletion: DEFAULT_BADGES_COMPLETION,
       ...initialState,
     }
 
@@ -124,8 +140,9 @@ class PreferencesController {
         }),
       ])
       if (user && user.data) {
-        const { transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
+        const { badge: userBadges, transactions, default_currency: defaultCurrency, contacts, theme, locale, permissions } = user.data || {}
         let whiteLabelLocale
+        let badgesCompletion = DEFAULT_BADGES_COMPLETION
 
         // White Label override
         if (storageAvailable('sessionStorage')) {
@@ -140,12 +157,21 @@ class PreferencesController {
           }
         }
 
+        if (userBadges) {
+          try {
+            badgesCompletion = JSON.parse(userBadges)
+          } catch (error) {
+            log.error(error)
+          }
+        }
+
         this.store.updateState({
           contacts,
           theme,
           selectedCurrency: defaultCurrency,
           locale: whiteLabelLocale || locale || getUserLanguage(),
           permissions,
+          badgesCompletion,
         })
         if (paymentTx && paymentTx.data) {
           this.calculatePaymentTx(paymentTx.data)
@@ -444,6 +470,16 @@ class PreferencesController {
       if (!this._jwtToken) return
       this.sync()
     }, interval)
+  }
+
+  async setUserBadge(payload) {
+    const newBadgeCompletion = { ...this.state.badgesCompletion, ...{ [payload]: true } }
+    this.store.updateState({ badgesCompletion: newBadgeCompletion })
+    try {
+      await patch(`${config.api}/user/badge`, { badge: JSON.stringify(newBadgeCompletion) }, this.headers)
+    } catch (error) {
+      log.error('unable to set badge', error)
+    }
   }
 }
 

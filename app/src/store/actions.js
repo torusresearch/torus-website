@@ -653,4 +653,7 @@ export default {
       }
     }
   },
+  setUserBadge(context, payload) {
+    prefsController.setUserBadge(payload)
+  },
 }

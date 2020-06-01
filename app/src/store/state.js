@@ -1,4 +1,7 @@
 import {
+  BADGES_COLLECTIBLE,
+  BADGES_TOPUP,
+  BADGES_TRANSACTION,
   DISCORD,
   FACEBOOK,
   GOOGLE,
@@ -68,6 +71,11 @@ const initialState = {
     logo: '',
     topupHide: false,
     featuredBillboardHide: false,
+  },
+  badgesCompletion: {
+    [BADGES_COLLECTIBLE]: false,
+    [BADGES_TOPUP]: false,
+    [BADGES_TRANSACTION]: false,
   },
 }
 
