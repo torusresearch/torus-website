@@ -157,7 +157,7 @@ class PreferencesController {
           }
         }
 
-        if (userBadges !== '') {
+        if (userBadges) {
           try {
             badgesCompletion = JSON.parse(userBadges)
           } catch (error) {
