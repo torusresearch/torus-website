@@ -139,7 +139,14 @@
         ></PromotionCard>
       </v-flex>
     </v-layout>
-    <v-layout wrap class="mt-12">
+
+    <v-layout class="mt-8">
+      <v-flex xs12>
+        <Badges />
+      </v-flex>
+    </v-layout>
+
+    <v-layout wrap class="mt-6">
       <v-flex xs12>
         <v-tabs v-model="activeTab" class="home-tab" centered>
           <v-tab :key="t('walletHome.tokens')" class="home-tab-token gmt-tokens-tab font-weight-bold">
@@ -200,6 +207,7 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 import ComponentLoader from '../../../components/helpers/ComponentLoader'
 import NetworkDisplay from '../../../components/helpers/NetworkDisplay'
 import QuickAddress from '../../../components/helpers/QuickAddress'
+import Badges from '../../../components/WalletHome/Badges'
 import CollectiblesList from '../../../components/WalletHome/CollectiblesList'
 import Onboarding from '../../../components/WalletHome/Onboarding'
 import PromotionCard from '../../../components/WalletHome/PromotionCard'
@@ -209,7 +217,7 @@ import { LOCALE_EN, MAINNET } from '../../../utils/enums'
 
 export default {
   name: 'WalletHome',
-  components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, Onboarding, ComponentLoader, NetworkDisplay },
+  components: { TokenBalancesTable, CollectiblesList, QuickAddress, PromotionCard, Onboarding, ComponentLoader, NetworkDisplay, Badges },
   data() {
     return {
       supportedCurrencies: ['ETH', ...config.supportedCurrencies],

@@ -24,6 +24,7 @@ class DetectTokensController {
   constructor({ interval = DEFAULT_INTERVAL, network, provider } = {}) {
     this.interval = interval
     this.network = network
+    this.initState = { tokens: [] }
     this.detectedTokensStore = new ObservableStore({ tokens: [] })
     this._provider = provider
     this.web3 = new Web3(this._provider)

@@ -70,6 +70,7 @@ const initialState = {
     featuredBillboardHide: false,
   },
   etherscanTx: [],
+  badgesCompletion: {},
 }
 
 export default initialState

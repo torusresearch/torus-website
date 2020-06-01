@@ -163,6 +163,9 @@ export default {
   setEtherscanTx(state, payload) {
     state.etherscanTx = payload
   },
+  setBadgesCompletion(state, payload) {
+    state.badgesCompletion = payload
+  },
 }
 function localThemeSet(payload, state) {
   let theme = themes[payload || THEME_LIGHT_BLUE_NAME]
