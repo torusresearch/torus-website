@@ -1,7 +1,7 @@
 <template>
   <v-layout wrap class="badges-container">
     <v-flex xs12>
-      <div class="display-1" :class="$vuetify.theme.dark ? 'torusGray2--text' : 'text_2--text'">Getting Started</div>
+      <div class="display-1" :class="$vuetify.theme.dark ? 'torusGray2--text' : 'text_2--text'">{{ t('walletHome.gettingStarted') }}</div>
     </v-flex>
     <v-flex xs12 mt-6>
       <v-layout :wrap="$vuetify.breakpoint.xsOnly" mx-n4>
