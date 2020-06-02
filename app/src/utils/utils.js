@@ -525,7 +525,7 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
   else if (x.type === CONTRACT_TYPE_ERC20) totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), x.symbol, true)
   else totalAmountString = formatSmallNumbers(Number.parseFloat(x.total_amount), 'ETH', true)
   const currencyAmountString =
-    x.type === CONTRACT_TYPE_ERC721 ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
+    x.type === CONTRACT_TYPE_ERC721 || x.isEtherscan ? '' : formatSmallNumbers(Number.parseFloat(x.currency_amount), x.selected_currency, true)
   const finalObject = {
     id: x.created_at.toString(),
     date: new Date(x.created_at),
@@ -547,7 +547,7 @@ export const formatPastTx = (x, lowerCaseSelectedAddress) => {
     type: x.type,
     type_name: x.type_name,
     type_image_link: x.type_image_link,
-    transaction_hash: x.transaction_hash,
+    isEtherscan: x.isEtherscan,
   }
   return finalObject
 }

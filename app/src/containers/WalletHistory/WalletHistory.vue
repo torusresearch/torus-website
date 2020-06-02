@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapState } from 'vuex'
 
 import TxHistoryTable from '../../components/WalletHistory/TxHistoryTable'
 import config from '../../config'
@@ -109,7 +109,6 @@ export default {
       paymentTx: (state) => (state.networkType.host === MAINNET ? state.paymentTx : []),
       wallets: (state) => Object.keys(state.wallet),
     }),
-    ...mapGetters(['collectibleBalances', 'tokenBalances']),
     actionTypes() {
       return [
         {
@@ -151,7 +150,7 @@ export default {
       ]
     },
     calculatedFinalTx() {
-      let finalTx = this.paymentTx.concat(this.pastTx, this.etherscanTransactions)
+      let finalTx = this.paymentTx.concat(this.pastTx, this.etherscanTx)
       finalTx = finalTx.reduce((accumulator, x) => {
         x.actionIcon = this.getIcon(x)
         x.actionText = this.getActionText(x)
@@ -162,38 +161,6 @@ export default {
         return accumulator
       }, [])
       return finalTx.sort((a, b) => b.date - a.date) || []
-    },
-    etherscanTransactions() {
-      return this.etherscanTx.reduce((transactions, transaction) => {
-        transaction.isEtherscan = true
-        if (transaction.type === CONTRACT_TYPE_ERC721) {
-          const contract = this.collectibleBalances.find((collectible) => collectible.address === transaction.contractAddress)
-
-          if (contract) {
-            const token = contract.assets.find((asset) => asset.tokenId.toString() === transaction.tokenId)
-
-            transaction.totalAmountString = (token && token.name) || transaction.tokenId
-            transaction.type_image_link = contract.logo
-            transaction.type_name = contract.name
-            transactions.push(transaction)
-          }
-        } else if (transaction.type === CONTRACT_TYPE_ERC20) {
-          if (this.tokenBalances && this.tokenBalances.finalBalancesArray) {
-            const contract = this.tokenBalances.finalBalancesArray.find(
-              (token) => token.tokenAddress.toLowerCase() === transaction.contractAddress.toLowerCase()
-            )
-
-            if (contract) {
-              transaction.type_image_link = contract.logo
-              transaction.type_name = contract.name
-              transactions.push(transaction)
-            }
-          }
-        } else {
-          transactions.push(transaction)
-        }
-        return transactions
-      }, [])
     },
   },
   mounted() {

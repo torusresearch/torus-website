@@ -54,7 +54,7 @@
             :class="{ isDark: $vuetify.theme.isDark }"
             x-small
           >
-            {{ $vuetify.breakpoint.smAndDown ? 'External' : 'External transaction' }}
+            {{ $vuetify.breakpoint.smAndDown ? t('walletActivity.external') : t('walletActivity.externalTransaction') }}
           </v-chip>
         </div>
         <div class="info text_2--text font-weight-light">
@@ -80,7 +80,7 @@
           <span v-if="transaction.type !== CONTRACT_TYPE_ERC721 && transaction.action === ACTIVITY_ACTION_SEND" class="error--text">-</span>
           {{ transaction.totalAmountString }}
         </div>
-        <div v-if="!transaction.isEtherscan" class="info text_2--text font-weight-light">{{ transaction.currencyAmountString }}</div>
+        <div class="info text_2--text font-weight-light">{{ transaction.currencyAmountString }}</div>
       </v-flex>
       <v-flex :class="$vuetify.breakpoint.xsOnly ? 'xs6 ml-auto text-right mt-3 order-3' : 'xs2 ml-auto text-right order-4'" px-4>
         <v-chip class="status-chip black--text" :color="getChipColor(transaction.statusText)" small>
@@ -122,7 +122,7 @@
               </div>
             </v-list-item-content>
             <v-list-item-content class="details-value text_2--text">
-              <span>{{ transaction.isEtherscan ? 'Unavailable' : `${transaction.ethRate} ${transaction.currencyUsed}` }}</span>
+              <span>{{ transaction.isEtherscan ? t('walletActivity.unavailable') : `${transaction.ethRate} ${transaction.currencyUsed}` }}</span>
             </v-list-item-content>
           </v-list-item>
           <v-list-item v-if="transaction.type !== CONTRACT_TYPE_ERC721">
@@ -133,7 +133,7 @@
               </div>
             </v-list-item-content>
             <v-list-item-content class="details-value text_2--text amount-text">
-              {{ transaction.totalAmountString }} {{ transaction.isEtherscan ? '' : `/${transaction.currencyAmountString}` }}
+              {{ transaction.totalAmountString }} {{ transaction.currencyAmountString ? `/${transaction.currencyAmountString}` : '' }}
             </v-list-item-content>
           </v-list-item>
           <v-list-item>

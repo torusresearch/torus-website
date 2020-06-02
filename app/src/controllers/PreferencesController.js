@@ -1,9 +1,11 @@
 import clone from 'clone'
+import erc20Contracts from 'eth-contract-metadata'
 import log from 'loglevel'
 import ObservableStore from 'obs-store'
 import Web3 from 'web3'
-import { fromWei, toBN } from 'web3-utils'
+import { fromWei, isAddress, toBN, toChecksumAddress } from 'web3-utils'
 
+import erc721Contracts from '../assets/assets-map.json'
 import config from '../config'
 import {
   ACTIVITY_ACTION_RECEIVE,
@@ -66,7 +68,7 @@ class PreferencesController {
       billboard: {},
       contacts: [],
       permissions: [],
-      badgesCompletion: DEFAULT_BADGES_COMPLETION,
+      badgesCompletion: {},
       ...initialState,
     }
 
@@ -262,68 +264,44 @@ class PreferencesController {
 
   async calculateEtherscanTx(txs) {
     const finalTxs = txs.reduce((accumulator, x) => {
-      // NORMAL
-      // Check selected currency
-      if (x.input && x.input === '0x') {
-        const totalAmount = fromWei(toBN(x.value))
-        const transaction = formatPastTx({
-          type: CONTRACT_TYPE_ETH,
-          created_at: x.timeStamp * 1000,
-          from: x.from,
-          to: x.to,
-          total_amount: totalAmount,
-          currency_amount: totalAmount,
-          status: x.txreceipt_status === '1' ? 'success' : 'failed',
-          transaction_hash: x.hash,
-          network: MAINNET,
-          symbol: 'ETH',
-          selected_currency: 'ETH',
-          type_image_link: 'n/a',
-          type_name: 'n/a',
-        })
-        accumulator.push(transaction)
-      } else if (x.tokenID) {
-        // ERC 721
-        // type image Link
-        const transaction = formatPastTx({
-          type: CONTRACT_TYPE_ERC721,
-          created_at: x.timeStamp * 1000,
-          from: x.from,
-          to: x.to,
-          status: 'success',
-          transaction_hash: x.hash,
-          network: MAINNET,
-          symbol: x.tokenID,
-          selected_currency: x.tokenSymbol,
-          type_image_link: '',
-          type_name: x.tokenName,
-        })
-        transaction.contractAddress = x.contractAddress
-        transaction.tokenId = x.tokenID
-        accumulator.push(transaction)
-      } else {
-        // ERC 20
-        // type image Link
-        const totalAmount = fromWei(toBN(x.value))
-        const transaction = formatPastTx({
-          type: CONTRACT_TYPE_ERC20,
-          created_at: x.timeStamp * 1000,
-          from: x.from,
-          to: x.to,
-          total_amount: totalAmount,
-          currency_amount: totalAmount,
-          status: 'success',
-          transaction_hash: x.hash,
-          network: MAINNET,
-          symbol: x.tokenSymbol,
-          selected_currency: x.tokenSymbol,
-          type_image_link: 'kyber.svg',
-          type_name: x.tokenName,
-        })
-        transaction.contractAddress = x.contractAddress
-        accumulator.push(transaction)
+      const totalAmount = x.value ? fromWei(toBN(x.value)) : ''
+      const etherscanTransaction = {
+        type: CONTRACT_TYPE_ETH,
+        symbol: 'ETH',
+        type_image_link: 'n/a',
+        type_name: 'n/a',
+        total_amount: totalAmount,
+        created_at: x.timeStamp * 1000,
+        from: x.from,
+        to: x.to,
+        transaction_hash: x.hash,
+        network: MAINNET,
+        status: x.txreceipt_status && x.txreceipt_status === '0' ? 'failed' : 'success',
+        isEtherscan: true,
       }
 
+      if (x.contractAddress) {
+        const transactionType = x.tokenID ? CONTRACT_TYPE_ERC721 : CONTRACT_TYPE_ERC20
+        let contract
+        if (transactionType === CONTRACT_TYPE_ERC20) {
+          let checkSummedTo = x.contractAddress
+          if (isAddress(x.contractAddress)) checkSummedTo = toChecksumAddress(x.contractAddress)
+          contract = Object.prototype.hasOwnProperty.call(erc20Contracts, checkSummedTo) ? erc20Contracts[checkSummedTo] : {}
+        } else {
+          contract = Object.prototype.hasOwnProperty.call(erc721Contracts, x.contractAddress.toLowerCase())
+            ? erc721Contracts[x.contractAddress.toLowerCase()]
+            : {}
+        }
+
+        if (contract) {
+          etherscanTransaction.symbol = transactionType === CONTRACT_TYPE_ERC20 ? contract.symbol : x.tokenID
+          etherscanTransaction.type_image_link = contract.logo
+          etherscanTransaction.type_name = contract.name
+        }
+        etherscanTransaction.type = transactionType
+      }
+
+      accumulator.push(formatPastTx(etherscanTransaction))
       return accumulator
     }, [])
 
