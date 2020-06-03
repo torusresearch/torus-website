@@ -105,6 +105,7 @@ export default {
   computed: {
     ...mapState({
       pastTx: 'pastTransactions',
+      etherscanTx: (state) => (state.networkType.host === MAINNET ? state.etherscanTx : []),
       paymentTx: (state) => (state.networkType.host === MAINNET ? state.paymentTx : []),
       wallets: (state) => Object.keys(state.wallet),
     }),
@@ -149,7 +150,7 @@ export default {
       ]
     },
     calculatedFinalTx() {
-      let finalTx = this.paymentTx.concat(this.pastTx)
+      let finalTx = this.paymentTx.concat(this.pastTx, this.etherscanTx)
       finalTx = finalTx.reduce((accumulator, x) => {
         x.actionIcon = this.getIcon(x)
         x.actionText = this.getActionText(x)

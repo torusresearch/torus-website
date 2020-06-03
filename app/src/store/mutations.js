@@ -160,6 +160,9 @@ export default {
   setTorusWidgetVisibility(state, payload) {
     state.embedState = { ...state.embedState, torusWidgetVisibility: payload }
   },
+  setEtherscanTx(state, payload) {
+    state.etherscanTx = payload
+  },
   setBadgesCompletion(state, payload) {
     state.badgesCompletion = payload
   },
