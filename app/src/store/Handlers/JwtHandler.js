@@ -13,9 +13,9 @@ export default class JwtHandler extends AbstractLoginHandler {
 
   PROMPT = 'login'
 
-  constructor({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false, typeofLogin, jwtParameters }) {
+  constructor({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false, typeOfLogin, jwtParameters }) {
     super({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
-    this.typeofLogin = typeofLogin
+    this.typeOfLogin = typeOfLogin
     this.jwtParameters = jwtParameters
     this.setFinalUrl()
   }

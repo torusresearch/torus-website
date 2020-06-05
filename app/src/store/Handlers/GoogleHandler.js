@@ -8,7 +8,7 @@ export default class GoogleHandler extends AbstractLoginHandler {
 
   PROMPT = 'consent select_account'
 
-  constructor(clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false) {
+  constructor({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false }) {
     super({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
     this.setFinalUrl()
   }

@@ -310,13 +310,13 @@ export default {
   },
   async triggerLogin({ dispatch, commit }, { calledFromEmbed, verifier, preopenInstanceId, typeOfLogin, jwtParameters, redirectToOpener }) {
     try {
-      log.info('Verifier: ', verifier, ' typeOfLogin: ', typeOfLogin)
       // This is to maintain backward compatibility
       let internalTypeOfLogin = typeOfLogin
       if (!internalTypeOfLogin) internalTypeOfLogin = verifier
+      log.info('Verifier: ', verifier, ' typeOfLogin: ', internalTypeOfLogin)
       const { domain, connection } = config.loginToConnectionMap[internalTypeOfLogin] || {}
       const loginHandler = createHandler({
-        typeofLogin: internalTypeOfLogin,
+        typeOfLogin: internalTypeOfLogin,
         clientId: config.clientIdMap[internalTypeOfLogin],
         verifier: config.verifierMap[internalTypeOfLogin] || verifier,
         redirect_uri: config.redirect_uri,

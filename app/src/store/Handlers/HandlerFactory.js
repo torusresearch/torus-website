@@ -7,8 +7,8 @@ import PasswordlessHandler from './PasswordlessHandler'
 import RedditHandler from './RedditHandler'
 import TwitchHandler from './TwitchHandler'
 
-const createHandler = ({ typeofLogin, clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false, jwtParameters }) => {
-  switch (typeofLogin) {
+const createHandler = ({ typeOfLogin, clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener = false, jwtParameters }) => {
+  switch (typeOfLogin) {
     case GOOGLE:
       return new GoogleHandler({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
     case FACEBOOK:
@@ -20,14 +20,14 @@ const createHandler = ({ typeofLogin, clientId, verifier, redirect_uri, preopenI
     case DISCORD:
       return new DiscordHandler({ clientId, verifier, redirect_uri, preopenInstanceId, redirectToOpener })
     case PASSWORDLESS:
-      return new PasswordlessHandler({ clientId, verifier, redirect_uri, typeofLogin, preopenInstanceId, redirectToOpener, jwtParameters })
+      return new PasswordlessHandler({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener, jwtParameters })
     case GITHUB:
     case LINKEDIN:
     case TWITTER:
     case WEIBO:
     case EMAIL_PASSWORD:
     case JWT:
-      return new JwtHandler({ clientId, verifier, redirect_uri, typeofLogin, preopenInstanceId, redirectToOpener, jwtParameters })
+      return new JwtHandler({ clientId, verifier, redirect_uri, typeOfLogin, preopenInstanceId, redirectToOpener, jwtParameters })
     default:
       throw new Error('Invalid login type')
   }
